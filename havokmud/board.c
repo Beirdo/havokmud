@@ -29,7 +29,6 @@ void save_board(struct bulletin_board *bd, int vnum)
 
   if ((fl = fopen(buf, "w")) == NULL) {
     log("Unable to save board");
-    //mprintf(,  LOG_BEEP, SEV_ALL, "Unable to save board #%d", vnum);
     return;
   }
 
@@ -62,11 +61,11 @@ void new_board_message(struct char_data *ch, struct bulletin_board *bd, char *ti
 
   if (IS_IMMORTAL(ch)) {
     if (reply_to == -1)
-      sprintf(buf,  "$c000Y%s$c000w", (title && *title) ? title : "Untitled");
+      sprintf(buf,  "%s", (title && *title) ? title : "Untitled");
     else
-      sprintf(buf,  "$c000Y%s$c000w", (title && *title) ? title : "Untitled");
+      sprintf(buf,  "%s", (title && *title) ? title : "Untitled");
   } else if (reply_to == -1) {
-    sprintf(buf,  "$c000Y%s$c000w", (title && *title) ? title : "Untitled");
+    sprintf(buf,  "%s", (title && *title) ? title : "Untitled");
   } else {
     strncpy(buf, (title && *title) ? title : "Untitled", 128);
   }
@@ -155,7 +154,7 @@ bool reply_board_message(struct char_data *ch, char *arg, struct obj_data *board
   if (bd == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in reply_board_message - bd = 0");
     return TRUE;
   }
 
@@ -173,7 +172,7 @@ bool reply_board_message(struct char_data *ch, char *arg, struct obj_data *board
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
 
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in reply_board_message - msg = 0");
     return TRUE;
   }
 
@@ -182,7 +181,7 @@ bool reply_board_message(struct char_data *ch, char *arg, struct obj_data *board
     ;
 
   if (!*arg)
-    sprintf(buf,  "re: %s", strip_ansi(ansi_buf, msg->title, 128));
+    sprintf(buf,  "re: %s", /*strip_ansi(ansi_buf, */msg->title/*, 128)*/);
   else
     strncpy(buf, arg, 128);
 
@@ -230,7 +229,7 @@ void delete_board_message(struct bulletin_board *bd, short message_id)
   if (msg == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", bd->board_num);
-    log("SOmething went wrong");
+    log("Something went wrong in delete_board_message - msg = 0");
     return;
   }
 
@@ -259,8 +258,7 @@ bool remove_board_message(struct char_data *ch, char *arg, struct obj_data *boar
   struct bulletin_board *bd;
   struct bulletin_board_message *msg;
   int tmessage;
-  char buf[128];
-char a1[MAX_INPUT_LENGTH];
+char a1[MAX_INPUT_LENGTH], buf[MAX_STRING_LENGTH];
   one_argument(arg, a1);
 
   if (!*a1 || !(tmessage = atoi(a1)))
@@ -274,7 +272,7 @@ char a1[MAX_INPUT_LENGTH];
   if (bd == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in remove_board_message - bd = 0");
     return TRUE;
   }
 
@@ -290,7 +288,7 @@ char a1[MAX_INPUT_LENGTH];
   if (msg == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in reply_board_message - msg = 0");
     return TRUE;
   }
 
@@ -310,7 +308,8 @@ char a1[MAX_INPUT_LENGTH];
 
   //mprintf(line_log,  0, SEV_LOW, "%s just removed message %d from board %ld",
   //        GET_NAME(ch), tmessage, obj_index[board->item_number].virtual);
-log("SOmething went wrong");
+  sprintf(buf,"%s just removed message %d from board %ld", GET_NAME(ch), tmessage, obj_index[board->item_number].virtual);
+  log(buf);
   save_board(bd, obj_index[board->item_number].virtual);
 
   return TRUE;
@@ -343,7 +342,7 @@ char a1[MAX_INPUT_LENGTH];
   if (bd == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in display_board_message - bd = 0");
     return TRUE;
   }
 
@@ -360,14 +359,14 @@ char a1[MAX_INPUT_LENGTH];
   if (msg == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in display_board_message - msg = 0");
     return TRUE;
   }
 
   /* We've got the message, simply print it out to the character now */
-  sprintf(buffer, " Author [%3d] : %s\r\n"
+  sprintf(buffer, " Message [%3d]  Author: %s\r\n"
            " Date: %s Topic: %s\r\n"
-           "--------------------------\r\n\r\n%s",
+           "------------------------------------------------------------------------\r\n\r\n%s",
            tmessage, msg->author, asctime(localtime(&msg->date)), msg->title,
            msg->text ? msg->text : "N/M\r\n");
 
@@ -386,7 +385,7 @@ void list_board_replies(struct bulletin_board *bd, struct descriptor_data *d, sh
 {
   struct  bulletin_board_message *msg;
   short   i;
-  char    buf[128];
+  char    buf[128], buf2[255];
 
   for (msg = bd->messages; msg; msg = msg->next) {
     if (msg->reply_to == message_id) { /* found a reply to an upper post */
@@ -406,7 +405,14 @@ void list_board_replies(struct bulletin_board *bd, struct descriptor_data *d, sh
         }
       }
 
-      list_append(d, "$c000W%3d$c000w : %-10s [$c000R%s$c000w] -- %s\r\n", msg->message_id, msg->author, buf, msg->title);
+/* chop the last characters to make it line out pretty  -Lennya */
+sprintf(buf2, "%-35s", msg->title);
+for (i = 0; i < depth; i++)
+	buf2[strlen(buf2)-1] = '\0';
+
+
+      list_append(d, "$c000W%3d$c000w : $c000c%s$c000w %-12s  [$c000c%s$c000w]\r\n", msg->message_id, buf2, msg->author, buf);
+//      list_append(d, "$c000W%3d$c000w : %-10s [$c000R%s$c000w] -- %s\r\n", msg->message_id, msg->author, buf, msg->title);
       list_board_replies(bd, d, msg->message_id, depth + 1);
     }
   }
@@ -438,7 +444,7 @@ void list_board_messages(struct bulletin_board *bd, struct descriptor_data *d)
         }
       }
 
-      list_append(d, "$c000W%3d$c000w : %-10s [$c000B%s$c000w] -- %s\r\n", msg->message_id, msg->author, buf, msg->title);
+      list_append(d, "$c000W%3d$c000w : $c0008%-35s$c000w %-12s  [$c0008%s$c000w]\r\n", msg->message_id, msg->title, msg->author, buf);
       list_board_replies(bd, d, msg->message_id, 1);
     }
   }
@@ -472,7 +478,7 @@ char a1[MAX_INPUT_LENGTH];
   if (bd == NULL) {
     //mprintf(line_log,  LOG_BEEP | LOG_ASSERT, SEV_ALL,
     //        "Bugginess in board %ld", obj_index[board->item_number].virtual);
-    log("SOmething went wrong");
+    log("Something went wrong in show_board - bd = 0");
     return TRUE;
   }
 
@@ -487,8 +493,8 @@ char a1[MAX_INPUT_LENGTH];
     list_append(ch->desc, "%s appears to be empty.\r\n", CAP(OBJS(board, ch)));
   } else {
     list_append(ch->desc, "There are %d messages on %s.\r\n\r\n"
-                          "Current Discussions:\r\n"
-                          "------------------------------------------------------------------------\r\n",
+                          " Current Discussions:\r\n"
+                          "----------------------------------------------------------------------------------\r\n",
                           bd->num_posts, OBJS(board, ch));
     list_board_messages(bd, ch->desc);
   }
@@ -514,7 +520,7 @@ void free_board(int board_num)
   if (bd == NULL) {
     //mprintf(line_log,  LOG_BEEP, SEV_ALL,
     //        "Bulletin board #%d is non-existant according to free_board", board_num);
-    log("SOmething went wrong");
+    log("Something went wrong in free_board - bd = 0");
     return;
   }
 
@@ -666,7 +672,7 @@ char a1[MAX_INPUT_LENGTH];
       free_board(obj_index[obj->item_number].virtual);
       //mprintf(line_log,  0, SEV_LOW, "%s just reset bulletin board #%ld",
       //        GET_NAME(ch), obj_index[obj->item_number].virtual);
-      log("SOmething just reset a board");
+      log("Someone just reset a board");
       return TRUE;
     }
 
