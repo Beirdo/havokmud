@@ -931,7 +931,6 @@ void gain_exp(struct char_data *ch, int gain)
 				if (GET_LEVEL(ch,i)&&(GET_LEVEL(ch,i))<RacialMax[chrace][i]) {
 					if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+2].exp - 1) { /* is already maxxed */
 						send_to_char("You must gain at your guild before you can acquire more experience.\n\r", ch);
-//						GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1; /* so doesn't need more xps. */
 						return;
 					} else if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+1].exp) { /* char was levelled, not maxxed */
 						if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+2].exp -1) { /* but hits max with this one */
@@ -955,7 +954,9 @@ void gain_exp(struct char_data *ch, int gain)
 			}
 		}
 
-      GET_EXP(ch)+=gain;
+		GET_EXP(ch)+=gain;
+		if(!IS_SET(ch->specials.act, PLR_LEGEND))
+			CheckLegendStatus(ch);
 
 
  	if (IS_PC(ch)) {

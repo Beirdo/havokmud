@@ -3715,6 +3715,25 @@ struct obj_data *find_a_rare(struct obj_data *obj)
 	return(0); /* no rares found */
 }
 
+void CheckLegendStatus(struct char_data *ch)
+{
+	char buf[MAX_STRING_LENGTH];
+
+	if(IS_NPC(ch))
+		return;
+
+	if(IS_SET(ch->specials.act, PLR_LEGEND) || IS_IMMORTAL(ch))
+		return;
+
+	if(GET_EXP(ch) > 200000000 && ch->specials.m_kills >= 5000 && GET_LEADERSHIP_EXP(ch) > 200000000) {
+		//set legend status
+		SET_BIT(ch->specials.act, PLR_LEGEND);
+		sprintf(buf, "The Gods have seen fit to raise %s to the status of Legend!\n\r",GET_NAME(ch));
+		send_to_all(buf);
+	}
+	return;
+}
+
 char *lower(char *s)
 {
   static char c[1000];

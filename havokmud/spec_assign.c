@@ -1406,7 +1406,7 @@ void assign_mobiles()
 	{52850, DruidGuildMaster },
 	{52853, gnome_collector },
 
-// ideaguy mob procedures
+// Talesian mob procedures
 	{ 37802, sageactions},
 	{ 37803, guardianextraction},
 	{ 37804, ghastsmell},
@@ -1504,7 +1504,7 @@ void assign_objects()
    /*End Thunder Mountain Keep Objects*/
 /* King's Grove */
 	{ 27, qp_potion },
-// ideaguy object procedures
+// Talesian object procedures
 	{37821, mirrorofopposition },
 
 
@@ -1694,7 +1694,7 @@ void assign_rooms()
 
     { 53025,   Fountain}, /* Luna's fountain */
 
-// ideaguy room procedures
+// Talesian room procedures
 	{ 37840, traproom},
 	{ 37823, guardianroom},
 	{ 37857, trapjawsroom},

@@ -2444,7 +2444,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 /* End Tarantis */
 
-/* start Ideaguy procs */
+/* start Talesian's procs */
 
 // vnum assignments
 #define WAITTOGOHOME  98765
@@ -2472,7 +2472,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 /* @Name: sageactions
  * @description: The sage acts like a lich with phylactery.  If the item (37812) is not where it should be, he chases it.  If it doesn't exist at all, he dies.  In combat he can summon help
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37802)
 */
 int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
@@ -2887,9 +2887,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 }
 
 
-/* @Name: ideaguy_traproom
+/* @Name: traproom
  * @description: A room which does fire damage, but only once, and changes the room description
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: room(37840)
 */
 
@@ -2965,7 +2965,7 @@ int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 
 /* @Name: guardianroom
  * @description: A room which will create guardians, prevent people from travelling north the first time they try, then they have to fight their way through and more mobiles will jump out and join the fight
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: room(37823)
 */
 
@@ -3016,9 +3016,9 @@ int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 }
 
 
-/* @Name: ideaguy_guardianextraction
- * @description: A mob function used by the guardians from ideaguy_guardianroom to clean themselves out of the room if there are no PC's there to fight, also resets the trap
- * @Author: Rick Peplinski (Ideaguy)
+/* @Name: guardianextraction
+ * @description: A mob function used by the guardians from guardianroom to clean themselves out of the room if there are no PC's there to fight, also resets the trap
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: room(37823)
 */
 
@@ -3055,7 +3055,7 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_dat
 /* @Name: trapjawsroom
  * @description: A room which prevents people from going north, slashing them, unless they deactivate
     the trap using the toss object command.  toss person will result in a pissed off person
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: room(37857)
  */
 int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
@@ -3139,10 +3139,10 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 }
 
 
-/* @Name: ideaguy_confusionmob
+/* @Name: confusionmob
  * @description: This mob will attempt to make players flee using their 'best' method.
     Uses ability scores as saves rather than saves vs spells
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37811)
 */
 
@@ -3205,7 +3205,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 /* @Name: ventroom
  * @description: A room will capture commands, looking for object based commands to use on the vent, which exists in another room
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: room(37839)
  */
 int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
@@ -3298,10 +3298,10 @@ int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 	return(TRUE);
 }
 
-/* @Name: ideaguy_ghastsmell
+/* @Name: ghastsmell
  * @description: A mob proc which will disease people, but only if the mob is fighting,
     and only when a player does a command, so the more you struggle, the worse it gets
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37804)
  */
 // ghast smell which makes all in room get diseased if they are fighting someone
@@ -3348,7 +3348,7 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 /* @Name: ghoultouch
  * @description: A mob proc which will stun people at pretty much every opportunity, probably more of an annoyance than truly deadly if you have a group, but potentially killer if you are attempting to solo
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37805)
  */
 // ghoul touch which does stunned for a round (GET_POS(ch) == POS_STUNNED, WAIT_STATE) (make this happen even if bashed)
@@ -3369,7 +3369,7 @@ int ghoultouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 /* @Name: shadowtouch
  * @description: A mob proc which will weaken, and tire opponents.  Weaken bigtime, down to a nautral 3 str + magical effects, and move get reduced 40% each time
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37806)
  */
 // shadow touch which does -str and -move
@@ -3403,7 +3403,7 @@ int shadowtouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 /* @Name: moldexplosion
  * @description: A mob proc which if a player kills the mob, it poisons everybody in the room, no save except IMM_POISON.
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37807)
 */
 // mold, which is fine if left alone, and blows up and poisons everybody in room if it dies : type == EVENT_DEATH
@@ -3437,7 +3437,7 @@ int moldexplosion(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 /* @Name: boneshardbreather
  * @description: A mob proc which does a breath weapon for a bone golem.
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37809)
  */
 // bone golem (breathe bone shards!)
@@ -3468,7 +3468,7 @@ int boneshardbreather(struct char_data *ch, int cmd, char *arg, struct char_data
 
 /* @Name: mistgolemtrap
  * @description: A mob proc which will 'capture' a PC (transfer him to a no-magic, no exit, silenced room) but everybody will be returned when mist golem dies.
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: mob(37810)
  */
 // mist golem (sucks somebody in, teleports them to a room "The Mist" where can't get out until mist golem dies)
@@ -3511,7 +3511,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mo
  * @description: An obj proc which will dopplegang a PC.  Copies just about everything I could think of, makes mob
     hate him, and attack him using his own equipment.  Players will probably really hate being on the receiving end
     of their +30 hasted damrolls.
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: obj(37821)
 */
 int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
@@ -3717,7 +3717,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	return(TRUE);
 }
 
-/* end Ideaguy procs */
+/* end Talesian procs */
 
 
 /* start shopkeeper .. this to make shops easier to build  -Lennya  20030731*/

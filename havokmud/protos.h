@@ -2164,6 +2164,7 @@ void *Mymalloc( long size);
 int SpaceForSkills(struct char_data *ch);
 int CountLims(struct obj_data *obj);
 struct obj_data *find_a_rare(struct obj_data *obj);
+void CheckLegendStatus(struct char_data *ch);
 char *lower(char *s);
 int getFreeAffSlot( struct obj_data *obj);
 void SetRacialStuff( struct char_data *mob);
@@ -2371,7 +2372,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd);
 /* Sentinel's Zone */
 int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
-/* Ideaguy's zone */
+/* Talesian's zone */
 int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

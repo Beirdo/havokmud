@@ -3753,7 +3753,7 @@ struct char_data *FindAnyVictim( struct char_data *ch)
 /* @Name: CreateAMob
  * @description: Helper function for 'summoning' mobs.  Will use a current mob as a focal point,
     and capable of giving default actions and descriptions, or specialized
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: N/A
  */
 struct char_data *CreateAMob(struct char_data *mob, int vmobnum, int MobAdjust, char *buf) {
@@ -3791,7 +3791,7 @@ struct char_data *CreateAMob(struct char_data *mob, int vmobnum, int MobAdjust, 
 
 /* @Name: AttackRandomChar
  * @description: Helper function for mobs.  Will use a current mob as a focal point, and will attack any non-immortal PC
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: N/A
  */
 struct char_data *AttackRandomChar(struct char_data *mob) {
@@ -3820,7 +3820,7 @@ struct char_data *AttackRandomChar(struct char_data *mob) {
 
 /* @Name: doroomdamage
  * @description: A helper function, to handle the odd damage things that happen in the various rooms and mobiles
- * @Author: Rick Peplinski (Ideaguy)
+ * @Author: Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: N/A
  */
 int doroomdamage(struct char_data *tempchar, int dam, int attacktype) {
