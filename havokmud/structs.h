@@ -1972,7 +1972,7 @@ struct class_titles {
 
 Mage
 	brew, create potions of mage spells
-	mana shield, lets mana soak up damage (ignoring resistt, suscept, sanc) before hps
+	mana shield, lets mana soak up damage (ignoring resist, suscept, sanc) before hps
 	+10 mana regen
 
 Cleric

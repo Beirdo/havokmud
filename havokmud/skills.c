@@ -3821,165 +3821,275 @@ void do_sending( struct char_data *ch, char *argument, int cmd)
 
 
 /*
-** BREW for Mages and Clerics, done by Greg Hovey..
+** BREW for mages, done by Greg Hovey..
 */
 
 #if 1
+
+#define EMPTY_POTION 29
+#define EMPTY_SCROLL 32
+
+void do_scribe( struct char_data *ch, char *argument, int cmd)
+{
+	char buf[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+	char arg[MAX_INPUT_LENGTH];
+	struct obj_data *obj;
+	int sn = -1, x, slot = 0, percent = 0, formula=0;
+
+	if(!MainClass(ch, CLERIC_LEVEL_IND) && !IS_IMMORTAL(ch)) {
+		send_to_char("Alas, you can only dream of scribing scrolls.\n\r",ch);
+		return;
+	}
+
+	if (!ch->skills) {
+		send_to_char("You don't seem to have any skills.\n\r",ch);
+		return;
+	}
+
+	if (!(ch->skills[SKILL_BREW].learned)) {
+		send_to_char("You cannot seem to comprehend the intricacies of scribing.\n\r",ch);
+		return;
+	}
+
+	if (!argument)  {
+		send_to_char("Which spell would you like to scribe?\n\r",ch);
+		return;
+	}
+
+	if((GET_MANA(ch) < 50 && GetMaxLevel(ch) <= 50)) {
+		send_to_char("You don't have enough mana to scribe that spell.\n\r",ch);
+		return;
+	}
+
+	argument = one_argument( argument, arg );
+
+	if(!(obj = read_object(EMPTY_SCROLL, VIRTUAL))) {
+		log("no default scroll could be found for scribe");
+		send_to_char("woops, something's wrong.\n\r",ch);
+		return;
+	}
+
+//find spell number..
+	for(x = 0; x < 250; x++) {
+		if(is_abbrev(arg, spells[x])) {
+			sn = x;
+			break;
+		}
+	}
+
+	if(sn == -1) {  //no spell found?
+		send_to_char("Scribe what??.\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills[sn].learned) {  //do you know that spell?
+		send_to_char("You don't know of this spell.\n\r",ch);
+		return;
+	}
+
+	if (!(spell_info[sn].min_level_cleric)) {  //is it a mage spell?
+		send_to_char("Alas, you cannot scribe that spell, it's not in your sphere.\n\r",ch);
+		return;
+	}
+
+	if (spell_info[sn].brewable == 0){
+		send_to_char("You can't scribe this spell.\n\r",ch);
+		return;
+	}
+
+	if((GET_MANA(ch) < spell_info[sn].min_usesmana*2) && !IS_IMMORTAL(ch)) {
+		send_to_char("You don't have enough mana to scribe that spell.\n\r",ch);
+		return;
+	}
+
+	act("$n holds up a scroll and binds it with enchantments.",TRUE,ch, obj, NULL, TO_ROOM );
+	act("You bind an empty scroll with enchantments.",TRUE,ch,obj,NULL,TO_CHAR);
+
+	formula = (ch->skills[SKILL_SCRIBE].learned)/slot + GET_INT(ch)/3+ GET_WIS(ch)/3;
+	if(formula > 98)
+		formula = 98;
+
+	if((number(1,101) >= formula || ch->skills[SKILL_SCRIBE].learned < 10 ) && !IS_IMMORTAL(ch)) {
+
+		WAIT_STATE(ch,PULSE_VIOLENCE*6);
+		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_CHAR );
+		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_ROOM );
+		GET_HIT(ch) -= 10;
+		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		act("$n yelps in pain.",TRUE,ch,0,NULL,TO_ROOM);
+		act("Ouch!",TRUE,ch,0,NULL,TO_CHAR);
+
+		extract_obj(obj);
+
+		return;
+	} else {
+
+		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		sprintf(buf, "You have imbued a spell to %s.\n\r", obj->short_description);
+		send_to_char( buf, ch );
+		send_to_char("The scribing process was a success!\n\r", ch);
+
+		if(obj->short_description)
+			free(obj->short_description);
+
+		sprintf(buf,"a scroll of %s",spells[sn]);
+		obj->short_description = (char *)strdup( buf );
+
+		if(obj->name)
+			free(obj->name);
+
+		sprintf(buf,"scroll %s",spells[sn]);
+		obj->name = (char *)strdup( buf );
+
+		if(obj->description)
+			free(obj->description);
+		sprintf(buf,"%s","A scroll, bound with enchantments, lies on the ground.");
+		obj->description = (char *)strdup( buf );
+
+		obj->level = GetMaxLevel(ch);  //set ego to level.
+		obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
+		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
+
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
+		WAIT_STATE(ch,PULSE_VIOLENCE*4);
+		return;
+	}
+    return;
+}
+
 void do_brew( struct char_data *ch, char *argument, int cmd)
 {
-  char buf[MAX_INPUT_LENGTH];
-  char buf2[MAX_INPUT_LENGTH];
-  char arg[MAX_INPUT_LENGTH];
-  struct obj_data *obj;
-  int sn = -1,x,slot = 0,percent = 0,formula=0;
+	char buf[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+	char arg[MAX_INPUT_LENGTH];
+	struct obj_data *obj;
+	int sn = -1, x, slot = 0, percent = 0, formula=0;
 
-  if(!((GetMaxLevel(ch) > 50)
-       || OnlyClass(ch,CLASS_CLERIC)
-       || OnlyClass(ch,CLASS_MAGIC_USER)
-       || HasClass(ch,CLASS_SORCERER))){
-    send_to_char("Alas, you can only dream of brewing your own potions.\n\r"
-		 ,ch);
-    return;
-  }
-
-  if (!ch->skills) {
-    send_to_char("You don't seem to have any skills.\n\r",ch);
-    return;
-  }
-  if (!(ch->skills[SKILL_BREW].learned)) {
-    send_to_char("You haven't been properly trained in the art of brewing.\n\r"
-		 ,ch);
-    return;
-  }
-  if (!argument)  {
-    send_to_char("What would you like to brew?\n\r",ch);
-    return;
-  }
-  if((GET_MANA(ch) < 50 && GetMaxLevel(ch) < 50)) {
-    send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
-    return;
-  }
-
-  argument = one_argument( argument, arg );
-
-  if(!(obj = ch->equipment[17])){ /*holding=17*/
-    send_to_char("You must be holding a vial or potion.",ch);
-    return;
-  }
-  if (obj->obj_flags.type_flag!=ITEM_POTION) {
-    act("You can only brew potions.\n\r",FALSE,ch,0,0,TO_CHAR);
-    return;
-  }
-  //find spell number..
-  for(x = 0;x < 250;x++) {
-    if(is_abbrev(arg,spells[x])) {
-      sn = x;
-      break;
-    }
-  }
-  if(sn == -1) {  //no spell found?
-      send_to_char("Brew what??.\n\r",ch);
-      return;
-  }
-  if(!ch->skills[sn].learned) {  //do you know that spell?
-    send_to_char("You don't know of this spell.\n\r",ch);
-    return;
-  }
-  /*check if defensive spell or self spell*/
-
-  act("$n begins preparing a potion.",TRUE,ch, obj, NULL, TO_ROOM );
-  act("You start preparing a potion.",TRUE,ch,obj,NULL,TO_CHAR);
-
-  if(!((GET_MANA(ch) < spell_info[sn].min_usesmana*3) || GetMaxLevel(ch) > 50)) {
-    send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
-    return;
-  }
-  else
-    if((GetMaxLevel(ch) < 50)) {
-      GET_MANA(ch) -= 50;
-    }
-
-  //check available spell slots in potion..
-
-  if(obj->obj_flags.value[1]==-1)
-    slot = 1;
-  else if(obj->obj_flags.value[2]==-1)
-    slot = 2;
-  else if(obj->obj_flags.value[3]==-1)
-    slot = 3;
-  else
-    slot = -1;
-
-
-  sprintf(buf,"Brewable??: %d",spell_info[sn].brewable);
-
-  send_to_char(buf,ch);
-  if (spell_info[sn].brewable == 0){
-    send_to_char("You can't brew that spell.\n\r",ch);
-    return;
-  }
-  /*switch (number(1,5)){
-
-    }
-  */
-	if (slot != -1) {
-
-	   formula = (ch->skills[SKILL_BREW].learned)/slot + GET_INT(ch)/3+ GET_WIS(ch)/3;
- 	   if(formula > 100)
-		  formula = 100;
+	if(!MainClass(ch, MAGE_LEVEL_IND) && !IS_IMMORTAL(ch)) {
+		send_to_char("Alas, you can only dream of brewing your own potions.\n\r",ch);
+		return;
 	}
-  if((number(1,101) >= (formula)
-  	||ch->skills[SKILL_BREW].learned < 10 || slot == -1) && !IS_IMMORTAL(ch)) {
 
-  	WAIT_STATE(ch,PULSE_VIOLENCE*16);
-    act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_CHAR );
-    act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_ROOM );
-    GET_HIT(ch) -= 50;//spell_info[sn].mana*4;
-    GET_MANA(ch)-= spell_info[sn].min_usesmana*3;
-    act("$n screams in pain as $p exploded on $m.",TRUE,ch,obj,NULL,TO_ROOM);
-    act("You scream in pain as $p explodes.",TRUE,ch,obj,NULL,TO_CHAR);
+	if (!ch->skills) {
+		send_to_char("You don't seem to have any skills.\n\r",ch);
+		return;
+	}
 
-    extract_obj( obj );
+	if (!(ch->skills[SKILL_BREW].learned)) {
+		send_to_char("You haven't been properly trained in the art of brewing.\n\r",ch);
+		return;
+	}
 
-    return;
-  }else
-    {
+	if (!argument)  {
+		send_to_char("What would you like to brew?\n\r",ch);
+		return;
+	}
 
-		if (slot == -1) {
-			send_to_char("The potion can gain no more new effects",ch);
-			return;
+	if((GET_MANA(ch) < 50 && GetMaxLevel(ch) <= 50)) {
+		send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
+		return;
+	}
+
+	argument = one_argument( argument, arg );
+
+
+	if(!(obj = read_object(EMPTY_POTION, VIRTUAL))) {
+		log("no default potion could be found for brew");
+		send_to_char("woops, something's wrong.\n\r",ch);
+		return;
+	}
+
+//find spell number..
+	for(x = 0; x < 250; x++) {
+		if(is_abbrev(arg, spells[x])) {
+			sn = x;
+			break;
 		}
-      GET_MANA(ch)-= spell_info[sn].min_usesmana*3;
-      sprintf(buf, "You have imbued a new spell to %s.\n\r"
-	      , obj->short_description);
-      send_to_char( buf, ch );
-      send_to_char("The brew was a success!\n\r", ch);
+	}
 
-      if(obj->short_description)
-	free(obj->short_description);
-      sprintf(buf,"%s","weird potion");
+	if(sn == -1) {  //no spell found?
+		send_to_char("Brew what??.\n\r",ch);
+		return;
+	}
 
-      obj->short_description = buf;
-      if(obj->name)
-	free(obj->name);
+	if(!ch->skills[sn].learned) {  //do you know that spell?
+		send_to_char("You don't know of this spell.\n\r",ch);
+		return;
+	}
 
-      sprintf(buf,"%s","weird potion");
-      obj->name = buf;
-      if(obj->description)
-	free(obj->description);
-      sprintf(buf,"%s","A weird coloured potion is on the ground.");
+	if (!(spell_info[sn].min_level_magic)) {  //is it a mage spell?
+		send_to_char("You cannot concoct that spell!\n\r",ch);
+		return;
+	}
 
-      obj->description = buf;
-      obj->obj_flags.value[slot] = sn+1;  //set spell in slot..
-	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
-	gain_exp(ch, 100);
-     WAIT_STATE(ch,PULSE_VIOLENCE*12);
+	if (spell_info[sn].brewable == 0){
+		send_to_char("You can't brew that spell.\n\r",ch);
+		return;
+	}
 
-      return;
-    }
+	if((GET_MANA(ch) < spell_info[sn].min_usesmana*2) && !IS_IMMORTAL(ch)) {
+		send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
+		return;
+	}
 
+	act("$n begins preparing a potion.",TRUE,ch, obj, NULL, TO_ROOM );
+	act("You start preparing a potion.",TRUE,ch,obj,NULL,TO_CHAR);
+
+	formula = (ch->skills[SKILL_BREW].learned)/slot + GET_INT(ch)/3+ GET_WIS(ch)/3;
+	if(formula > 98)
+		formula = 98;
+
+	if((number(1,101) >= formula || ch->skills[SKILL_BREW].learned < 10 ) && !IS_IMMORTAL(ch)) {
+
+		WAIT_STATE(ch,PULSE_VIOLENCE*10);
+		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_CHAR );
+		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_ROOM );
+		GET_HIT(ch) -= spell_info[sn].min_level_magic;
+		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		act("$n screams in pain as $p exploded on $m.",TRUE,ch,obj,NULL,TO_ROOM);
+		act("You scream in pain as $p explodes.",TRUE,ch,obj,NULL,TO_CHAR);
+
+		extract_obj(obj);
+
+		return;
+	} else {
+
+		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		sprintf(buf, "You have imbued a new spell to %s.\n\r", obj->short_description);
+		send_to_char( buf, ch );
+		send_to_char("The brew was a success!\n\r", ch);
+
+		if(obj->short_description)
+			free(obj->short_description);
+
+		sprintf(buf,"a potion of %s",spells[sn]);
+		obj->short_description = (char *)strdup( buf );
+
+		if(obj->name)
+			free(obj->name);
+
+		sprintf(buf,"potion %s",spells[sn]);
+		obj->name = (char *)strdup( buf );
+
+		if(obj->description)
+			free(obj->description);
+		sprintf(buf,"%s","A weird coloured potion is on the ground.");
+		obj->description = (char *)strdup( buf );
+
+		obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
+		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
+
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
+		WAIT_STATE(ch,PULSE_VIOLENCE*6);
+		return;
+	}
     return;
-} /*End Brew*/
+}
+
+
 #endif
 
 /* New paladin charge skill.  Must be mounted.. Basically backstab code

@@ -1129,6 +1129,7 @@ void check_reboot();
 int GetClassLevel(struct char_data *ch, int class);
 int CountBits(int class);
 int OnlyClass( struct char_data *ch, int class);
+int MainClass(struct char_data *ch, int indicator);
 int HasClass(struct char_data *ch, int class);
 int HowManyClasses(struct char_data *ch);
 int BestFightingClass(struct char_data *ch);
@@ -1237,6 +1238,7 @@ void do_blessing(struct char_data *ch, char *argument, int cmd);
 void do_heroic_rescue(struct char_data *ch, char *arguement, int command);
 
 void do_brew( struct char_data *ch, char *argument, int cmd);
+void do_scribe( struct char_data *ch, char *argument, int cmd);
 
 void check_memorize(struct char_data *ch, struct affected_type *af);
 void do_memorize(struct char_data *ch, char *argument, int cmd);

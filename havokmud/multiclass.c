@@ -65,6 +65,15 @@ int OnlyClass( struct char_data *ch, int class)
 
 }
 
+int MainClass(struct char_data *ch, int indicator)
+{
+
+  if((ch->specials.remortclass - 1) == indicator)
+     return(TRUE);
+
+  return(FALSE);
+}
+
 
 int HasClass(struct char_data *ch, int class)
 {

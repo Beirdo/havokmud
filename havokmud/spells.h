@@ -279,7 +279,7 @@
 #define SKILL_SCRY		232 /* psi, msw */
 #define SKILL_ADRENALIZE	233 /* psi, msw */
 
-#define SKILL_BREW		234 /* cleric/mages, msw */
+#define SKILL_BREW		234 /* mages, msw */
 #define SKILL_RATION		235 /* ranger/druid, msw */
 
 #define SKILL_HOLY_WARCRY	236  /* paladin, msw */
@@ -451,9 +451,11 @@
 
 #define LAST_BARD_SONG			380 /* make sure to place new songs between first and last song. And no spells! */
 
+#define SKILL_SCRIBE			381
 
 
-#define MAX_EXIST_SPELL         380   /* max number of skills/spells */
+
+#define MAX_EXIST_SPELL         381   /* max number of skills/spells */
 
 
 
