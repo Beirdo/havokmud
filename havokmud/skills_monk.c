@@ -11,9 +11,158 @@
 #include "protos.h"
 #include "externs.h"
 #include "utils.h"
+#if 0
+void do_disarm(struct char_data *ch, char *argument, int cmd)
+{
+    char           *name;
+    int             percent;
+    struct char_data *victim;
+    struct obj_data *w,
+                   *trap;
 
-/* disarm */
-/* dodge */
+    if (!ch->skills) {
+        return;
+    }
+
+    if (check_peaceful(ch, "You feel too peaceful to contemplate "
+                           "violence.\n\r")) {
+        return;
+    }
+
+    if (!IS_PC(ch) && cmd) {
+        return;
+    }
+
+    /*
+     *   get victim
+     */
+    argument = get_argument(argument, &name);
+    if (!name) {
+        send_to_char("Disarm who/what?\n\r", ch);
+        return;
+    }
+
+    if(!(victim = get_char_room_vis(ch, name))) {
+        if (ch->specials.fighting) {
+            victim = ch->specials.fighting;
+        } else {
+            if (!ch->skills) {
+                send_to_char("You do not have skills!\n\r", ch);
+                return;
+            }
+
+            if (!ch->skills[SKILL_REMOVE_TRAP].learned) {
+                send_to_char("Disarm who?\n\r", ch);
+                return;
+            } else {
+                if (MOUNTED(ch)) {
+                    send_to_char("Yeah... right... while mounted\n\r", ch);
+                    return;
+                }
+
+                if (!(trap = get_obj_in_list_vis(ch, name, 
+                                         real_roomp(ch->in_room)->contents)) &&
+                    !(trap = get_obj_in_list_vis(ch, name, ch->carrying))) {
+                    send_to_char("Disarm what?\n\r", ch);
+                    return;
+                }
+
+                if (trap) {
+                    remove_trap(ch, trap);
+                    return;
+                }
+            }
+        }
+    }
+
+    if (victim == ch) {
+        send_to_char("Aren't we funny today...\n\r", ch);
+        return;
+    }
+
+    if (victim != ch->specials.fighting) {
+        send_to_char("but you aren't fighting them!\n\r", ch);
+        return;
+    }
+
+    if (ch->attackers > 3) {
+        send_to_char("There is no room to disarm!\n\r", ch);
+        return;
+    }
+
+    if (!HasClass(ch, CLASS_WARRIOR | CLASS_MONK | CLASS_BARBARIAN | 
+                      CLASS_RANGER | CLASS_PALADIN | CLASS_THIEF)) {
+        send_to_char("You're no warrior!\n\r", ch);
+        return;
+    }
+
+    /* 
+     * 101% is a complete failure 
+     */
+    percent = number(1, 101);   
+
+    percent -= dex_app[(int)GET_DEX(ch)].reaction * 10;
+    percent += dex_app[(int)GET_DEX(victim)].reaction * 10;
+    if (!ch->equipment[WIELD] && !HasClass(ch, CLASS_MONK)) {
+        percent += 50;
+    }
+
+    percent += GetMaxLevel(victim);
+    if (HasClass(victim, CLASS_MONK)) {
+        percent += GetMaxLevel(victim);
+    }
+    if (HasClass(ch, CLASS_MONK)) {
+        percent -= GetMaxLevel(ch);
+    } else {
+        percent -= GetMaxLevel(ch) >> 1;
+    }
+
+    if (percent > ch->skills[SKILL_DISARM].learned) {
+        act("You try to disarm $N, but fail miserably.",
+            TRUE, ch, 0, victim, TO_CHAR);
+        act("$n does a nifty fighting move, but then falls on $s butt.",
+            TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SITTING;
+        if (IS_NPC(victim) && GET_POS(victim) > POSITION_SLEEPING &&
+            !victim->specials.fighting) {
+            set_fighting(victim, ch);
+        }
+        LearnFromMistake(ch, SKILL_DISARM, 0, 95);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 3);
+    } else {
+        if (victim->equipment[WIELD]) {
+            w = unequip_char(victim, WIELD);
+            act("$n makes an impressive fighting move.",
+                TRUE, ch, 0, 0, TO_ROOM);
+            act("You send $p flying from $N's grasp.", TRUE, ch, w, victim,
+                TO_CHAR);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
+                         "using your combat abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
+            act("$p flies from your grasp.", TRUE, ch, w, victim, TO_VICT);
+            /*
+             * send the object to a nearby room, instead 
+             */
+            obj_to_room(w, victim->in_room);
+        } else {
+            act("You try to disarm $N, but $E doesn't have a weapon.",
+                TRUE, ch, 0, victim, TO_CHAR);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for"
+                         " using your combat abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
+            act("$n makes an impressive fighting move, but does little more.",
+                TRUE, ch, 0, 0, TO_ROOM);
+        }
+        if (IS_NPC(victim) && GET_POS(victim) > POSITION_SLEEPING &&
+            !victim->specials.fighting) {
+            set_fighting(victim, ch);
+        }
+        WAIT_STATE(victim, PULSE_VIOLENCE * 2);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 2);
+    }
+}
+#endif
+/* dodge is an innate ability checked for when fighting */
 
 void do_feign_death(struct char_data *ch, char *arg, int cmd)
 {
@@ -191,10 +340,163 @@ void do_flowerfist(struct char_data *ch, char *argument, int cmd)
 
     WAIT_STATE(ch, PULSE_VIOLENCE * 2);
 }
+#if 0
+void do_hide(struct char_data *ch, char *argument, int cmd)
+{
+    byte            percent;
 
-/* hide */
-/* kick */
+    dlog("in do_hide");
 
+    if (cmd == 334 && !HasClass(ch, CLASS_BARBARIAN)) {
+        send_to_char("Hey, you can't do that!\n\r", ch);
+        return;
+    }
+    if (cmd == 153 && !HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
+        send_to_char("Hey, you can't do that!\n\r", ch);
+        return;
+    }
+    if (IS_AFFECTED(ch, AFF_HIDE)) {
+        REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
+    }
+    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_BARBARIAN |
+                      CLASS_RANGER)) {
+        send_to_char("You're not trained to hide!\n\r", ch);
+        return;
+    }
+    if (!HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER)) {
+        send_to_char("You attempt to hide in the shadows.\n\r", ch);
+    } else {
+        send_to_char("You attempt to camouflage yourself.\n\r", ch);
+    }
+    if (HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER) && !OUTSIDE(ch)) {
+        send_to_char("You must do this outdoors.\n\r", ch);
+        return;
+    }
+    if (MOUNTED(ch)) {
+        send_to_char("Yeah... right... while mounted\n\r", ch);
+        return;
+    }
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
+     */
+    if (!ch->skills) {
+        return;
+    }
+    if (percent > ch->skills[SKILL_HIDE].learned +
+        dex_app_skill[(int)GET_DEX(ch)].hide) {
+        LearnFromMistake(ch, SKILL_HIDE, 1, 90);
+        if (cmd) {
+            WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+        }
+        return;
+    }
+    SET_BIT(ch->specials.affected_by, AFF_HIDE);
+    if (cmd) {
+        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+    }
+}
+#endif
+#if 0
+void do_kick(struct char_data *ch, char *argument, int cmd)
+{
+    struct char_data *victim;
+    char           *name;
+    int             dam;
+    byte            percent;
+
+    dlog("in do_kick");
+
+    if (!ch->skills) {
+        return;
+    }
+    if (check_peaceful(ch,
+                    "You feel too peaceful to contemplate violence.\n\r")) {
+        return;
+    }
+    if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
+        !HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN | CLASS_RANGER |
+                      CLASS_PALADIN) && !HasClass(ch, CLASS_MONK)) {
+        send_to_char("You're no warrior or monk!\n\r", ch);
+        return;
+    }
+
+    argument = get_argument(argument, &name);
+    if (!name || !(victim = get_char_room_vis(ch, name))) {
+        if (ch->specials.fighting) {
+            victim = ch->specials.fighting;
+        } else {
+            send_to_char("Kick who?\n\r", ch);
+            return;
+        }
+    }
+    
+    if (victim == ch) {
+        send_to_char("Aren't we funny today...\n\r", ch);
+        return;
+    }
+    
+    if (MOUNTED(victim)) {
+        send_to_char("You can't kick while mounted!\n\r", ch);
+        return;
+    }
+    
+    if (ch->attackers > 3) {
+        send_to_char("There's no room to kick!\n\r", ch);
+        return;
+    }
+    
+    if (victim->attackers >= 4) {
+        send_to_char("You can't get close enough to them to kick!\n\r", ch);
+        return;
+    }
+    
+    percent = ((10 - (GET_AC(victim) / 10))) + number(1, 101);
+    
+    /*
+     * 101% is a complete failure
+     */
+    if (GET_RACE(victim) == RACE_GHOST) {
+        kick_messages(ch, victim, 0);
+        SetVictFighting(ch, victim);
+        return;
+    } else if (!IS_NPC(victim) && (GetMaxLevel(victim) > MAX_MORT)) {
+        kick_messages(ch, victim, 0);
+        SetVictFighting(ch, victim);
+        SetCharFighting(ch, victim);
+        return;
+    }
+    
+    if (GET_POS(victim) <= POSITION_SLEEPING) {
+        percent = 1;
+    }
+    
+    if (percent > ch->skills[SKILL_KICK].learned) {
+        if (GET_POS(victim) > POSITION_DEAD) {
+            damage(ch, victim, 0, SKILL_KICK);
+            kick_messages(ch, victim, 0);
+        }
+        LearnFromMistake(ch, SKILL_KICK, 0, 90);
+    } else {
+        if (GET_POS(victim) > POSITION_DEAD) {
+            dam = GET_LEVEL(ch, BestFightingClass(ch));
+            if (!HasClass(ch, CLASS_MONK) || IS_NPC(ch)) {
+                /*
+                 * so guards use fighter dam
+                 */
+                dam = dam >> 1;
+            }
+            kick_messages(ch, victim, dam);
+            damage(ch, victim, dam, SKILL_KICK);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
+                         "using your combat abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
+        }
+        WAIT_STATE(victim, PULSE_VIOLENCE);
+    }
+    WAIT_STATE(ch, PULSE_VIOLENCE * 3);
+}
+#endif
 void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
@@ -309,10 +611,6 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     FALSE, ch, 0, victim, TO_CHAR);
                 act("$c000C$n's legsweep lands a killing blow to $M.",
                     FALSE, ch, 0, victim, TO_ROOM);
-#if 0
-                   act("$c000C$n's legsweep lands a killing blow to your "
-                   "head.",FALSE, ch,0,victim,TO_VICT);
-#endif
                 sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
                              "for using your combat abilities.$c0007\n\r");
                 send_to_char(buf, ch);
@@ -322,8 +620,94 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
         }
     }
 }
-/* pick lock */
+#if 0
+void do_pick(struct char_data *ch, char *argument, int cmd)
+{
+    byte            percent;
+    int             door;
+    char           *type,
+                   *dir;
+    struct room_direction_data *exitp;
+    struct obj_data *obj;
+    struct char_data *victim;
 
+    dlog("in do_pick");
+
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
+
+    percent = number(1, 101);   /* 101% is a complete failure */
+
+    if (!ch->skills) {
+        send_to_char("You failed to pick the lock.\n\r", ch);
+        return;
+    }
+
+    if (!HasClass(ch, CLASS_THIEF) && !HasClass(ch, CLASS_MONK)) {
+        send_to_char("You're no thief!\n\r", ch);
+        return;
+    }
+
+    if (percent > (ch->skills[SKILL_PICK_LOCK].learned)) {
+        send_to_char("You failed to pick the lock.\n\r", ch);
+        act("$n mutters as $s lockpicks jam in the lock.", TRUE, ch, 0, 0,
+            TO_ROOM);
+        LearnFromMistake(ch, SKILL_PICK_LOCK, 0, 90);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 4);
+        return;
+    }
+
+    if (!type) {
+        send_to_char("Pick what?\n\r", ch);
+        return;
+    } 
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
+        /*
+         * this is an object 
+         */
+        if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
+            send_to_char("That's not a container.\n\r", ch);
+        } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
+            send_to_char("Silly - it ain't even closed!\n\r", ch);
+        } else if (obj->obj_flags.value[2] < 0) { 
+            send_to_char("Odd - you can't seem to find a keyhole.\n\r", ch);
+        } else if (!IS_SET(obj->obj_flags.value[1], CONT_LOCKED)) {
+            send_to_char("Oho! This thing is NOT locked!\n\r", ch);
+        } else if (IS_SET(obj->obj_flags.value[1], CONT_PICKPROOF)) {
+            send_to_char("It resists your attempts at picking it.\n\r", ch);
+        } else {
+            REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+            send_to_char("*Click*\n\r", ch);
+            act("$n fiddles with $p.", FALSE, ch, obj, 0, TO_ROOM);
+        }
+    } else if ((door = find_door(ch, type, dir)) >= 0) {
+        exitp = EXIT(ch, door);
+        if (!IS_SET(exitp->exit_info, EX_ISDOOR)) {
+            send_to_char("That's absurd.\n\r", ch);
+        } else if (!IS_SET(exitp->exit_info, EX_CLOSED)) {
+            send_to_char("You realize that the door is already open.\n\r", ch);
+        } else if (exitp->key < 0) {
+            send_to_char("You can't seem to spot any lock to pick.\n\r", ch);
+        } else if (!IS_SET(exitp->exit_info, EX_LOCKED)) {
+            send_to_char("Oh.. it wasn't locked at all.\n\r", ch);
+        } else if (IS_SET(exitp->exit_info, EX_PICKPROOF)) {
+            send_to_char("You seem to be unable to pick this lock.\n\r", ch);
+        } else {
+            if (exitp->keyword) {
+                act("$n skillfully picks the lock of the $F.", 0, ch, 0,
+                    exitp->keyword, TO_ROOM);
+            } else {
+                act("$n picks the lock.", TRUE, ch, 0, 0, TO_ROOM);
+            }
+            send_to_char("The lock quickly yields to your skills.\n\r", ch);
+            raw_unlock_door(ch, exitp, door);
+
+        }
+    }
+}
+#endif
 void do_quivering_palm(struct char_data *ch, char *arg, int cmd)
 {
     struct char_data *victim;
@@ -414,8 +798,60 @@ void do_quivering_palm(struct char_data *ch, char *arg, int cmd)
 }
 /* retreat is built into flee */
 /* safe fall is an inate ability with only a check in !fly rooms */
-/* sneak */
+#if 0
+void do_sneak(struct char_data *ch, char *argument, int cmd)
+{
+    byte            percent;
 
+    dlog("in do_sneak");
+
+    if (IS_AFFECTED2(ch, AFF2_SKILL_SNEAK)) {
+        if (IS_AFFECTED(ch, AFF_HIDE)) {
+            REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
+        }
+        REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
+        send_to_char("You are no longer sneaky.\n\r", ch);
+        return;
+    }
+    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
+        send_to_char("You're not trained to walk silently!\n\r", ch);
+        return;
+    }
+    if (HasClass(ch, CLASS_RANGER) && !OUTSIDE(ch)) {
+        if (!IS_IMMORTAL(ch)) {
+            send_to_char("You must do this outdoors!\n\r", ch);
+            return;
+        }
+    }
+    if (MOUNTED(ch)) {
+        send_to_char("Yeah... right... while mounted\n\r", ch);
+        return;
+    }
+    if (!IS_AFFECTED(ch, AFF_SILENCE)) {
+        if (HasWBits(ch, ITEM_HUM)) {
+            send_to_char("Gonna be hard to sneak around with that thing "
+                         "humming\n\r", ch);
+            return;
+        }
+    }
+    send_to_char("Ok, you'll try to move silently for a while.\n\r", ch);
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
+     */
+    if (!ch->skills) {
+        return;
+    }
+    if (IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
+        send_to_char("You stop being sneaky!", ch);
+        REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
+    } else {
+        send_to_char("You start jumping from shadow to shadow.", ch);
+        SET_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+    }
+}
+#endif
 void do_springleap(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
