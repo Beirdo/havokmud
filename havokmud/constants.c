@@ -213,9 +213,8 @@ const char     *spell_wear_off_msg[] = {
     "",                         /* 200 geyser */
     "Your wings finally cramp and give out.",   /* 201 Wings Fly */
     "Your wings stop feeling sore and tired.",  /* 202 Wings Tired */
-    "At long last your wings have healed enough to allow flight.",      /* 203 
-                                                                         * Wings 
-                                                                         * Burned */
+    "At long last your wings have healed enough to allow flight.",  
+    /* 203 Wings Burned */
     "You feel less protected from good beings.",
     "You no longer feel big.",
     "",
@@ -323,7 +322,7 @@ const char     *spell_wear_off_msg[] = {
     "You slowly fade back into the undead's view.",
     "",
     "The bones reinfusing your armor fall apart.",
-    "The battlescarred armor surrounding you winks out of existence.",  // 310
+    "The battlescarred armor surrounding you winks out of existence.",/* 310 */ 
     "The cloak of darkness lift, and you can see once more.",
     "You feel in control of yourself once more.",
     "",
@@ -333,7 +332,7 @@ const char     *spell_wear_off_msg[] = {
     "",
     "Your skin loses its cold-resistant quality.",
     "",
-    "",                         // 320
+    "",                         /* 320 */
     "",
     "Your body halts the process of decay.",
     "",
@@ -343,7 +342,7 @@ const char     *spell_wear_off_msg[] = {
     "",
     "The eye of the dead ceases to aid you.",
     "",
-    "",                         // 330
+    "",                         /* 330 */
     "Your agreement with your Lord has come to an end.",
     "",
     "The negative aura surrounding your hands blinks out.",
@@ -351,16 +350,16 @@ const char     *spell_wear_off_msg[] = {
     "",
     "",
     "Your mental reserves have restored enough to raise another flesh golem.",
-    "The aura of freezing flames that surrounds you melts.",    // 338
+    "The aura of freezing flames that surrounds you melts.",    /* 338 */
     "wall of thought",
     "mind tap",
     "Your blade barrier winks out of existence.",
-    "Mana no longer protects you.",     // SPELL_MANA_SHIELD
-    "Your iron skins rust and fall off.",       // SKILL_IRON_SKINS
+    "Mana no longer protects you.",     /* 342 SPELL_MANA_SHIELD */
+    "Your iron skins rust and fall off.",       /* 343 SKILL_IRON_SKINS */
     "",
     "",
     "",
-    "",                         // SKILL_FLURRY
+    "",                         /* 347 SKILL_FLURRY */
     "", "\n"
 };
 
@@ -675,7 +674,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",
     "",
     "$n's magical suit of bones crumbles to dust.",
-    "The battlescarred armor surrounding $n winks out of existence.",   // 310
+    "The battlescarred armor surrounding $n winks out of existence.", /* 310 */
     "The cloak of darkness lifts from $n's eyes.",
     "$n seems to be in control of $s own actions once more..",
     "",
@@ -685,7 +684,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",
     "$n's skin loses its palue hue.",
     "",
-    "",                         // 320
+    "",                         /* 320 */
     "",
     "The stench of decay disappears as $n's body heals up.",
     "",
@@ -695,7 +694,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",
     "The eerie blue light in $n's eye dims.",
     "",
-    "",                         // 330
+    "",                         /* 330 */
     "",
     "",
     "The negative aura surrounding $n's hands blinks out.",
@@ -703,16 +702,16 @@ const char     *spell_wear_off_room_msg[] = {
     "",
     "",
     "",
-    "The aura of freezing flames surrounding $n melts.",        // 338
+    "The aura of freezing flames surrounding $n melts.",        /* 338 */
     "wall of thought",
     "mind tap",
     "$n's blade barrier winks out of existence.",
-    "$n's mana shield exhausts itself", // SPELL_MANA_SHIELD
-    "$n's iron skins rust away.",       // SPELL_IRON_SKINS
+    "$n's mana shield exhausts itself", /* 342 SPELL_MANA_SHIELD */
+    "$n's iron skins rust away.",       /* 343 SPELL_IRON_SKINS */
     "",
     "",
     "",
-    "",                         // SKILL_FLURRY
+    "",                         /* 347 SKILL_FLURRY */
     "", "\n"
 };
 
@@ -849,11 +848,11 @@ const char     *spell_wear_off_soon_msg[] = {
     "You feel your bond to the animals begin to slip.",
     "You feel your bond to the animals begin to slip.",
     "You feel your bond to the animals begin to slip.",
-    "Your link to the Elemental Plane of Fire is becoming tenuous.",    /* FireServant */
-    "Your link to the Elemental Plane of Earth is becoming tenuous.",   /* EarthServant */
-    "Your link to the Elemental Plane of Water is becoming tenuous.",   // Water
-    "Your link to the Elemental Plane of Air is becoming tenuous.",     // Air 
-                                                                        // Servant
+    /* servants */
+    "Your link to the Elemental Plane of Fire is becoming tenuous.",
+    "Your link to the Elemental Plane of Earth is becoming tenuous.",
+    "Your link to the Elemental Plane of Water is becoming tenuous.",
+    "Your link to the Elemental Plane of Air is becoming tenuous.",     
     "spell 136 please report.",
     "spell 137 please report.",
     "spell 138 please report.",
@@ -919,8 +918,8 @@ const char     *spell_wear_off_soon_msg[] = {
     "",
     "",
     "",                         /* 200 */
-    "Your wings begin to get very sore... you'd better land soon.",     /* 201 */
-    "You give your wings an experimental flap. They should support you again soon.",
+    "Your wings begin to get very sore... you'd better land soon.", /* 201 */
+    "You stretch your wings.  They should support you again soon.",
     "",
     "Your protection from good wavers briefly.",
     "",                         /* 205 */
@@ -980,12 +979,16 @@ const char     *spell_wear_off_soon_msg[] = {
     "Your protection from electricity wavers for a moment",
     "",
     "",
-    "Your globe of fire breath protection shimmers for a moment before pulsing strongly",       /* 262 
-                                                                                                 */
-    "Your globe of frost breath protection shimmers for a moment before pulsing strongly",
-    "Your globe of electricity breath protection shimmers for a moment before pulsing strongly",
-    "Your globe of acid breath protection shimmers for a moment before pulsing strongly",
-    "Your globe of gas breath protection shimmers for a moment before pulsing strongly",
+    "Your globe of fire breath protection shimmers for a moment "
+        "before pulsing strongly",       /* 262 */
+    "Your globe of frost breath protection shimmers for a moment "
+        "before pulsing strongly",
+    "Your globe of electricity breath protection shimmers for a moment "
+        "before pulsing strongly",
+    "Your globe of acid breath protection shimmers for a moment "
+        "before pulsing strongly",
+    "Your globe of gas breath protection shimmers for a moment "
+        "before pulsing strongly",
     "You lose control of your wizardeye for a moment",
     "",
     "",
@@ -1029,7 +1032,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "Your protection from undead eyes wavers for a moment.",
     "",
     "",
-    "",                         // 310
+    "",                         /* 310 */
     "The cloak of darkness draped over your vision seems to shift slightly..",
     "You feel a bit more in control of yourself.",
     "",
@@ -1039,7 +1042,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "",
     "The white hue of your skin seems to tan slightly..",
     "",
-    "",                         // 320
+    "",                         /* 320 */
     "",
     "Your body has done much in halting the process of decay.",
     "",
@@ -1049,7 +1052,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "",
     "Your eye of the dead seems to stray a bit.",
     "",
-    "",                         // 330
+    "",                         /* 330 */
     "Your agreement with your Lord is close to coming to an end.",
     "",
     "The negative aura surrounding your hands begins to waver.",
@@ -1057,12 +1060,12 @@ const char     *spell_wear_off_soon_msg[] = {
     "",
     "",
     "",
-    "Your aura of freezing flames hisses softly.",      // 338
+    "Your aura of freezing flames hisses softly.",      /* 338 */
     "wall of thought",
     "mind tap",
     "Your blade barrier wavers a moment.",
-    "Your mana protection weakens some.",       // SPELL_MANA_SHIELD
-    "Your iron skins are nearly rusted away.",  // SPELL_IRON_SKINS
+    "Your mana protection weakens some.",       /* SPELL_MANA_SHIELD */
+    "Your iron skins are nearly rusted away.",  /* SPELL_IRON_SKINS */
     "",
     "",
     "",
@@ -1272,8 +1275,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "",
     "",                         /* 200 */
-    "$n's wings falter momentarily, but continue to keep $s aloft.",    /* 201 
-                                                                         * WingsFly */
+    "$n's wings falter momentarily, but continue to keep $s aloft.",/* 201 */ 
     "",
     "",
     "",
@@ -1335,10 +1337,8 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "$n's energy protection wavers briefly",
     "$n's electric protection wavers briefly",
     "",                         /* 260 */
-    "",                         /* missed comma here, maybe problem? msw
-                                 * 8/8/94 */
-    "$n's fire breath globe of protection shimmers for a moment",       /* 262 
-                                                                         */
+    "",                 
+    "$n's fire breath globe of protection shimmers for a moment", /* 262 */
     "$n's frost breath globe of protection shimmers for a moment",
     "$n's electricity breath globe of protection shimmers for a moment",
     "$n's acid breath globe of protection shimmers for a moment",
@@ -1386,7 +1386,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "",
     "",
-    "",                         // 310
+    "",                         /* 310 */
     "",
     "$n seems a bit more in control of $mself.",
     "",
@@ -1396,7 +1396,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "The white hue of $n's skin seems to tan slightly..",
     "",
-    "",                         // 320
+    "",                         /* 320 */
     "",
     "The stench of decay seems to abate a bit.",
     "",
@@ -1406,7 +1406,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "The cold blue light in $n's eye pulses a moment.",
     "",
-    "",                         // 330
+    "",                         /* 330 */
     "",
     "",
     "The negative aura surrounding $n's hands begins to waver.",
@@ -1414,12 +1414,12 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "",
     "",
-    "$n's aura of freezing flames hisses softly.",      // 338
+    "$n's aura of freezing flames hisses softly.",      /* 338 */
     "wall of thought",
     "mind tap",
     "$n's blade barrier wavers a moment.",
-    "$n's mana protection fades momentarily.",  // SPELL_MANA_SHIELD
-    "$n's skin seems to rust a bit.",   // SPELL_IRON_SKINS
+    "$n's mana protection fades momentarily.",  /* SPELL_MANA_SHIELD */
+    "$n's skin seems to rust a bit.",   /* SPELL_IRON_SKINS */
     "",
     "",
     "",
@@ -1460,17 +1460,17 @@ const int       movement_loss[] = {
     4,                          /* Desert */
     1,                          /* Tree */
 
-    15,                         // SECT_SEA 12 //New ascii sea
-    0,                          // SECT_BLANK 13
-    6,                          // SECT_ROCK_MOUNTAIN 14
-    7,                          // SECT_SNOW_MOUNTAIN 15
-    3,                          // SECT_RUINS 16
-    4,                          // SECT_JUNGLE 17
-    4,                          // SECT_SWAMP 18
-    7,                          // SECT_LAVA 19
-    2,                          // SECT_ENTRANCE 20
-    3,                          // SECT_FARM 21
-    0                           // SECT_EMPTY 22
+    15,                         /* SECT_SEA 12 New ascii sea */
+    0,                          /* SECT_BLANK 13 */
+    6,                          /* SECT_ROCK_MOUNTAIN 14 */
+    7,                          /* SECT_SNOW_MOUNTAIN 15 */
+    3,                          /* SECT_RUINS 16 */
+    4,                          /* SECT_JUNGLE 17 */
+    4,                          /* SECT_SWAMP 18 */
+    7,                          /* SECT_LAVA 19 */
+    2,                          /* SECT_ENTRANCE 20 */
+    3,                          /* SECT_FARM 21 */
+    0                           /* SECT_EMPTY 22 */
 };
 
 const char     *exits[] = {
@@ -1634,266 +1634,352 @@ const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
      */
     /*
      * mutt 
-     */ {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
+     */ 
+     {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
     /*
      * Hum 
-     */ {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
+     */ 
+     {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
     /*
      * moonelf
-     */ {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40, 0},
+     */ 
+     {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40, 0},
     /*
      * dwrf 
-     */ {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0, 0},
+     */ 
+     {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0, 0},
     /*
      * 1/2 
-     */ {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0, 0},
     /*
      * r_gnm
-     */ {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0, 0},
+     */ 
+     {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0, 0},
     /*
      * rep 
-     */ {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0, 0},
+     */ 
+     {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0, 0},
     /*
      * Myst 
-     */ {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0, 0},
+     */ 
+     {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0, 0},
     /*
      * were 
-     */ {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0, 0},
+     */ 
+     {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0, 0},
     /*
      * drag 
-     */ {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0, 0},
     /*
      * unded
-     */ {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0, 0},
-
+     */ 
+     {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0, 0},
     /*
      * ork 
-     */ {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0, 0},
+     */ 
+     {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0, 0},
     /*
      * insct
-     */ {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0, 0},
+     */ 
+     {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0, 0},
     /*
      * arach
-     */ {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0, 0},
     /*
      * saur 
-     */ {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0, 0},
     /*
      * fish 
-     */ {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0, 0},
     /*
      * bird 
-     */ {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0, 0},
+     */ 
+     {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0, 0},
     /*
      * giant
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * pred 
-     */ {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0, 0},
+     */ 
+     {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0, 0},
     /*
      * para 
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * slime
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * demon
-     */ {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0, 0},
     /*
      * snake
-     */ {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0, 0},
+     */ 
+     {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0, 0},
     /*
      * herb 
-     */ {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
+     */ 
+     {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
     /*
      * tree 
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * vegan
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * elmnt
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * planr
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * devil
-     */ {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0, 0},
     /*
      * ghost
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * gobln
-     */ {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0, 50},
+     */ 
+     {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0, 50},
     /*
      * troll
-     */ {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0, 0},
+     */ 
+     {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0, 0},
     /*
      * vegmn
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * mndf 
-     */ {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0, 0},
     /*
      * prim 
-     */ {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0, 0},
+     */ 
+     {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0, 0},
     /*
      * enfn 
-     */ {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
     /*
      * drow 
-     */ {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40, 40},
+     */ 
+     {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40, 40},
     /*
      * golem
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * skexi
-     */ {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0, 0},
     /*
      * trog 
-     */ {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0, 0},
+     */ 
+     {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0, 0},
     /*
      * patrn
-     */ {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0, 0},
     /*
      * labrn
-     */ {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
     /*
      * sartn
-     */ {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0, 0},
     /*
      * tytn 
-     */ {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0, 0},
+     */ 
+     {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0, 0},
     /*
      * smrf 
-     */ {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0},
+     */ 
+     {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0},
     /*
      * roo 
-     */ {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0, 0},
+     */ 
+     {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0, 0},
     /*
      * horse
-     */ {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
+     */ 
+     {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
     /*
      * drgdm
-     */ {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0, 0},
     /*
      * astrl
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * god 
-     */ {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50, 50},
+     */ 
+     {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50, 50},
     /*
      * giant hill 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * giant frost 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * giant fire 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * giant cloud 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * giant storm 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * giant stone 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
      * drag red 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag black 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag green
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag white 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag blue 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag silver
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag gold
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag bronze
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag cooper
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag brass 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * unded vamp
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded lich
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded wigh
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded ghas
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded spec
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded zomb
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded skel
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded ghou
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * halfelf 
-     */ {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40, 0},
+     */ 
+     {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40, 0},
     /*
      * half-ogre
-     */ {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-orc 
-     */ {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-gian
-     */ {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0, 0},
     /*
      * lizardman
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
     /*
      * dar-dwrf 
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 40},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 40},
     /*
      * dep-gnome
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
     /*
      * gnoll 
-     */ {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0, 0},
     /*
      * goldelf 
-     */ {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40, 0},
+     */ 
+     {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40, 0},
     /*
      * wildelf 
-     */ {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40, 0},
+     */ 
+     {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40, 0},
     /*
      * sea-elf 
-     */ {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40, 0},
+     */ 
+     {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40, 0},
     /*
      * for-gnm 
-     */ {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0, 0},
+     */ 
+     {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0, 0},
     /*
      * avariel 
-     */ {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0}
+     */ 
+     {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0}
     /*
      * m c f t d k b s p r psi ne 
      */
@@ -1909,266 +1995,352 @@ const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
      */
     /*
      * mutt 
-     */ {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
+     */ 
+     {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
     /*
      * Hum 
-     */ {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
+     */ 
+     {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
     /*
      * moonelf
-     */ {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40},
+     */ 
+     {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40},
     /*
      * dwrf 
-     */ {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0},
+     */ 
+     {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0},
     /*
      * 1/2 
-     */ {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0},
+     */ 
+     {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0},
     /*
      * r_gnm
-     */ {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0},
+     */ 
+     {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0},
     /*
      * rep 
-     */ {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0},
+     */ 
+     {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0},
     /*
      * Myst 
-     */ {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0},
+     */ 
+     {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0},
     /*
      * were 
-     */ {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0},
+     */ 
+     {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0},
     /*
      * drag 
-     */ {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0},
     /*
      * unded
-     */ {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0},
-
+     */ 
+     {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0},
     /*
      * ork 
-     */ {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0},
+     */ 
+     {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0},
     /*
      * insct
-     */ {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0},
+     */ 
+     {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0},
     /*
      * arach
-     */ {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0},
     /*
      * saur 
-     */ {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0},
     /*
      * fish 
-     */ {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0},
     /*
      * bird 
-     */ {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0},
+     */ 
+     {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0},
     /*
      * giant
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * pred 
-     */ {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0},
+     */ 
+     {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0},
     /*
      * para 
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * slime
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * demon
-     */ {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0},
+     */ 
+     {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0},
     /*
      * snake
-     */ {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0},
+     */ 
+     {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0},
     /*
      * herb 
-     */ {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
+     */ 
+     {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
     /*
      * tree 
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * vegan
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * elmnt
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * planr
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * devil
-     */ {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0},
+     */ 
+     {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0},
     /*
      * ghost
-     */ {0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * gobln
-     */ {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0},
+     */ 
+     {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0},
     /*
      * troll
-     */ {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0},
+     */ 
+     {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0},
     /*
      * vegmn
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * mndf 
-     */ {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0},
+     */ 
+     {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0},
     /*
      * prim 
-     */ {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0},
+     */ 
+     {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0},
     /*
      * enfn 
-     */ {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
+     */ 
+     {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
     /*
      * drow 
-     */ {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40},
+     */ 
+     {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40},
     /*
      * golem
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * skexi
-     */ {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0},
+     */ 
+     {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0},
     /*
      * trog 
-     */ {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0},
+     */ 
+     {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0},
     /*
      * patrn
-     */ {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0},
+     */ 
+     {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0},
     /*
      * labrn
-     */ {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
+     */ 
+     {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
     /*
      * sartn
-     */ {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0},
+     */ 
+     {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0},
     /*
      * tytn 
-     */ {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0},
+     */ 
+     {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0},
     /*
      * smrf 
-     */ {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0},
+     */ 
+     {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0},
     /*
      * roo 
-     */ {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0},
+     */ 
+     {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0},
     /*
      * horse
-     */ {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
+     */ 
+     {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
     /*
      * drgdm
-     */ {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0},
+     */ 
+     {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0},
     /*
      * astrl
-     */ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * god 
-     */ {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50},
+     */ 
+     {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50},
     /*
      * giant hill 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * giant frost 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * giant fire 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * giant cloud 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * giant storm 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * giant stone 
-     */ {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
      * drag red 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag black 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag green
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag white 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag blue 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag silver
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag gold
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag bronze
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag cooper
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag brass 
-     */ {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
+     */ 
+     {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * unded vamp
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded lich
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded wigh
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded ghas
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded spec
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded zomb
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded skel
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded ghou
-     */ {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
+     */ 
+     {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * halfelf 
-     */ {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40},
+     */ 
+     {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40},
     /*
      * half-ogre
-     */ {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-orc 
-     */ {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0},
+     */ 
+     {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-gian
-     */ {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0},
+     */ 
+     {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0},
     /*
      * lizardman
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
      * dar-dwrf 
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
      * dep-gnome
-     */ {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
+     */ 
+     {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
      * gnoll 
-     */ {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0},
+     */ 
+     {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0},
     /*
      * goldelf 
-     */ {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40},
+     */ 
+     {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40},
     /*
      * wildelf 
-     */ {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40},
+     */ 
+     {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40},
     /*
      * sea-elf 
-     */ {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40},
+     */ 
+     {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40},
     /*
      * for-gnm 
-     */ {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0},
+     */ 
+     {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0},
     /*
      * avariel 
-     */ {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0},
+     */ 
+     {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},  /* New Races */
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -2304,8 +2476,7 @@ const char     *fullness[] = {
 const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
     {{"Man", "Woman", 0},       /* Mage */
      {"Supplicant", "Supplicant", 1},   /* Revision by Naril */
-     {"Apprentice", "Apprentice", 2500},        /* Huge Revision by Rocky, 
-                                                 * thanks! */
+     {"Apprentice", "Apprentice", 2500},        /* Huge Revision by Rocky */
      {"Student", "Student", 5000},
      {"Scholar", "Scholar", 10000},
      {"Trickster", "Trickster", 20000},
@@ -2734,10 +2905,8 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
      {"Immortal", "Immortal", 231500000},
      {"Immortal", "Immortal", 233000000},
      {"Immortal", "Immortal", 234500000},
-     {"Immortal", "Immortal", 235500000},       /* most of the titles
-                                                 * Donated */
-     {"Immortal", "Immortal", 236500000},       /* by Og, the Chicken
-                                                 * King! */
+     {"Immortal", "Immortal", 235500000},
+     {"Immortal", "Immortal", 236500000},       
      {"Extirpator", "Queen", 237500000},
      {"God", "Goddess", 238500000},
      {"Implementor", "Implementrix", 239500000},
@@ -3215,34 +3384,34 @@ const char     *RaceName[] = {
 };
 
 const char     *item_types[] = {
-    "UNDEFINED",                // 0
+    "UNDEFINED",                /* 0 */
     "LIGHT",
     "SCROLL",
     "WAND",
     "STAFF",
-    "WEAPON",                   // 5
+    "WEAPON",                   /* 5 */
     "FIRE WEAPON",
     "MISSILE",
     "TREASURE",
     "ARMOR",
-    "POTION",                   // 10
+    "POTION",                   /* 10 */
     "WORN",
     "OTHER",
     "TRASH",
     "TRAP",
-    "CONTAINER",                // 15
+    "CONTAINER",                /* 15 */
     "NOTE",
     "LIQUID CONTAINER",
     "KEY",
     "FOOD",
-    "MONEY",                    // 20
+    "MONEY",                    /* 20 */
     "PEN",
     "BOAT",
     "AUDIO",
     "BOARD",
-    "TREE",                     // 25
+    "TREE",                     /* 25 */
     "ROCK",
-    "PORTAL",                   // 27
+    "PORTAL",                   /* 27 */
     "INSTRUMENT",
     "SHIPS HELM",
     "\n"
@@ -3930,8 +4099,7 @@ const int       thaco[MAX_CLASS][ABS_MAX_LVL] = {
     {100, 20, 20, 20, 19, 19, 19, 18, 18, 18, 17, 17, 17, 16, 16, 16, 15,
      15, 15, 14, 14, 14, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10, 9,
      9, 9, 8, 8, 8, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 1, 1, 1, 1, 1, 1, 1,
-     1, 1,
-     1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 
 };
 
@@ -4342,8 +4510,7 @@ struct chr_app_type chr_apply[26] = {
     {25, +95},
 };
 
-const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
-                                         * thanks */
+const char     *spell_desc[] = {        /* Last reviewed by Sentinel */
     "!ERROR!",
     "$n is surrounded by a armor-like magical shield",
     "!Teleport!",
@@ -4547,8 +4714,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "",                         /* 200 */
     "$n is using $s wings to stay aloft.",      /* Wings flying */
     "$n's wings are resting.",
-    "$n's wings are a painful mass of charred skin and feathers.",      /* wings 
-                                                                         * burned */
+    "$n's wings are a painful mass of charred skin and feathers.",
     "$n is protected from good.",
     "$n is gigantic.",
     "",
@@ -4607,8 +4773,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "$n has protectection from electricity surrounding $mself.",
     "",                         /* 260 */
     "",
-    "$n is surrounded by a globe of protection from fire breath.",      /* 262 
-                                                                         */
+    "$n is surrounded by a globe of protection from fire breath.",  /* 262 */
     "$n is surrounded by a globe of protection from frost breath.",
     "$n is surrounded by a globe of protection from electric breath.",
     "$n is surrounded by a globe of protection from acid breath.",
@@ -4646,7 +4811,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "",
     "",
     "",
-    "",                         // 300
+    "",                         /* 300 */
     "",
     "",
     "",
@@ -4656,7 +4821,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "Blackness surrounds $n.",
     "",
     "Bones cover $n.",
-    "$n is surrounded by spirits.",     // 310
+    "$n is surrounded by spirits.",     /* 310 */
     "",
     "",
     "",
@@ -4666,7 +4831,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "",
     "$n skin seems cold.",
     "",
-    "",                         // 320
+    "",                         /* 320 */
     "",
     "",
     "",
@@ -4676,7 +4841,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "",
     "$n eyes glow black.",
     "",
-    "",                         // 330
+    "",                         /* 330 */
     "$n's soul belongs to the Dark Lord.",
     "",
     "Dark energy surrounds $n.",
@@ -4686,7 +4851,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
     "",
     "An aura of chill flames surrounds $n.",
     "",
-    "",                         // 340
+    "",                         /* 340 */
     "A whirling barrier of blades surrounds $n.",
     "\n"
 };
@@ -4694,475 +4859,352 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel, big
 #if 1
 const struct QuestItem QuestList[4][IMMORTAL] = {
     {                           /* magic user */
-     {2402, "An unusual way of looking at things."},
-     {1, "It can be found in the donation room, or on your head\n\r"},
-     {1410, "Its a heavy bag of white powder\n\r"},
-     {6010,
-      "You can make pies out of them, deer seem to like them too\n\r"},
-     {3013,
-      "Its a yummy breakfast food, they go great with eggs and cheese\n\r"},
-     {20, "If you twiddle your thumbs enough, you'll find one.\n\r"},
-     {24764, "Dead people might wear them on their hands\n\r"},
-     {112, "If you found one of these, it would be mighty strange!\n\r"},
-     {106, "Eye of Toad and Toe of Frog, bring me one or the other\n\r"},
-     {109,
-      "A child's favorite place holds the object of my desire, on the dark river\n\r"},
-     /*
-      * 10 
-      */
-     {3628, "The latest in New padded footwear\n\r"},
-     {113,
-      "A child might play with one, when the skexies aren't around\n\r"},
-     {19204, "A precious moon in a misty castle\n\r"},
-     {20006, "Are you a fly? You might run into one. Beware..\n\r"},
-     {1109, "Little people have tiny weapons.. bring me one\n\r"},
-     {6203, "IReallyReallyWantACurvedBlade\n\r"},
-     {21007,
-      "I want to be taller and younger, find the nasty children\n\r"},
-     {5228, "Don't you find screaming women so disarming?\n\r"},
-     {7204, "Vaulted lightning\n\r"},
-     {16043, "Precious elements can come in dull, dark mines\n\r"},
-     /*
-      * 20 
-      */
-     {20007, "You'll catch him napping, no guardian of passing time."},
-     {16903,
-      "Nature's mistake, carried by a man on a new moon, fish on full."},
-     {5226, "Sealed in the hands of a city's failed guardian."},
-     {10900, "Anachronistic rectangular receptacle holds circular plane."},     /* Sentry, 
-                                                                                 * TL 
-                                                                                 */
-     {13840, "What kind of conditioner does one use for asps?"},        /* Medusa, 
-                                                                         * GQ 
-                                                                         */
-     {7406, "If you don't bring a scroll of recall, you might die a fiery death"},      /* Room 
-                                                                                         * 7284, 
-                                                                                         * SM 
-                                                                                         */
-     {120, "Dock down anchor"}, /* Ixitxachitl, NT */
-     {21008, "Very useful, behind a hearth."},  /* Dog, OR */
-     {10002, "He didn't put them to sleep with these, the results were quite deadly"},  /* On 
-                                                                                         * Corpse, 
-                                                                                         * DCE 
-                                                                                         */
-     {3648, "Unsummoned, they pose large problems. What you want is on their queen."},  /* Chieftess, 
-                                                                                         * HGS 
-                                                                                         */
-     {15805, "A single sample of fine plumage, held by a guard and a ghost."},  /* Guard 
-                                                                                 * & 
-                                                                                 * Brack, 
-                                                                                 * SK 
-                                                                                 */
-     {21141, "In the land of the troglodytes there is a headpiece with unpleasant powers."},    /* Case, 
-                                                                                                 * TR 
-                                                                                                 */
-     {1532, "Three witches have the flighty component you need."},      /* Pot, 
-                                                                         * MT 
-                                                                         */
-     {5304, "A spectral force holds the key to advancement in a geometric dead end."},  /* Spectre, 
-                                                                                         * PY 
-                                                                                         */
-     {9496,
-      "A great golden sword was once taken by the giants of the great with north.  return it. Bring friends."},
-     {5105, "What you need is as dark as the heart of the elf who wields it."}, /* Weaponsmaster, 
-                                                                                 * DR 
-                                                                                 */
-     {21011, "The key to your current problem is in Orshingal, on a haughty strutter."},        /* Enfan, 
-                                                                                                 * OR 
-                                                                                                 */
-     {27004, "A small explosive pinapple shaped object. Ever see Monty-Python?, you might find it in the hands of sorcerous undead men"},       /* ???, 
-                                                                                                                                                 * Haplo's 
-                                                                                                                                                 */
-     {6616, "You might smile if drinking a can of this. Look in Prydain."},     /* ???, 
-                                                                                 * PRY 
-                                                                                 */
-     {21125, "With enough of this strong amber drink you'd forget about the nightly ghosts."},  /* Crate, 
-                                                                                                 * ARO 
-                                                                                                 */
-     /*
-      * 40 
-      */
-     {5309,
-      "Powerful items of magic follow... first bring me a medallion of mana\n\r"},
-     {1585,
-      "Bubble bubble, toil and trouble, bring me a staff on the double\n\r"},
-     {21003,
-      "I need some good boots, you know how strange it is to find them\n\r"},
-     {13704, "Watch for a dragon, find his ring\n\r"},
-     {252, "Dead-makers cloaks, buried deep in stone\n\r"},
-     {3670, "bottled mana\n\r"},
-     {1104, "The master of fireworks, take his silver"},
-     {5020,
-      "You're not a real mage till you get platinum from purple\n\r"},
-     {1599, "Grand Major\n\r"},
-     {20002, "She's hiding in her room, but she has my hat!\n\r"}
-     }, {                       /* cleric */
-         {0, ""},
-         {1, "It can be found in the donation room, or on your head\n\r"},
-         {1110,
-          "White and young, with no corners or sides, a golden treasure can be found inside\n\r"},
-         {3070,
-          "The armorer might have a pair, but they're not his best on hand\n\r"},
-         {3057, "judicandus dies\n\r"},
-         {6001, "I want clothes i can play chess on\n\r"},
-         {16033, "A goblin's favorite food, the eastern path\n\r"},
-         {107, "Every righteous cleric should have one, but few do\n\r"},
-         {4000, "I have a weakness for cheap rings\n\r"},
-         {3025, "cleaver for hire, just outside of midgaard\n\r"},
-         /*
-          * 10 
-          */
-         {3649,
-          "My wife needs something New, to help keep her girlish figure\n\r"},
-         {7202,
-          "mindflayers have small ones, especially in the sewers\n\r"},
-         {19203, "the weapon of a traitor, lost in a fog\n\r"},
-         {15814,
-          "striped black and white, take what this gelfling-friend offers\n\r"},
-         {119, "Play with a gypsy child when he asks you to\n\r"},
-         {5012,
-          "You might use these to kill a vampire, they are in the desert\n\r"},
-         {6809,
-          "Really cool sunglasses, on a really cool guy, in a really cool place\n\r"},
-         {17021, "The proof is in the volcano\n\r"},
-         {3648, "Giant women have great fashion sense\n\r"},
-         {27001,
-          "Undead have the strangest law enforcement tools, near a split in the river\n\r"},
-         /*
-          * 20
-          */
-         {105, "A venomed bite will end your life - you need the jaws that do it."},    /* Rattler 
-                                                                                         * fangs, 
-                                                                                         * MidT 
-                                                                                         */
-         {3668, "Buy some wine from a fortuneteller's brother."},       /* Gypsy 
-                                                                         * Bartender 
-                                                                         */
-         {1703, "On a cat, but not in the petting zoo."},       /* Bengal
-                                                                 * tiger , 
-                                                                 * MZ */
-         {13758, "Held by a doggie with who will bite you and bite you and bite you."}, /* Cerebus, 
-                                                                                         * Hades 
-                                                                                         */
-         {5240, "In the old city you'll find the accursed vibrant stone you require."}, /* Lamia, 
-                                                                                         * OT 
-                                                                                         */
-         {5013, "Where can you go for directions in the desert? Try the wet spot."},    /* Oasis 
-                                                                                         * Map, 
-                                                                                         * GED 
-                                                                                         */
-         {17011, "{An unholy symbol on an unholy creature under a fuming mountain."},   /* Amelia, 
-                                                                                         * WPM 
-                                                                                         */
-         {1708, "Some liar's got it in a cul-de-sac. The high priests of Odin know the way."},  /* Liar 
-                                                                                                 * in 
-                                                                                                 * room 
-                                                                                                 * 10911, 
-                                                                                                 * TL 
-                                                                                                 */
-         {9203, "What would you use to swat a very large mosquito? Get it from the giants."},   /* Giant, 
-                                                                                                 * HGS 
-                                                                                                 */
-         {21109, "A bow made of dark wood, carried by a troglodyte."},  /* Trog, 
-                                                                         * CT 
-                                                                         */
-         /*
-          * 30 
-          */
-         {15817, "In an secret cold place, a dark flower is carried by a midnight one."},       /* Bechemel, 
-                                                                                                 * SK 
-                                                                                                 */
-         {9430, "Argent Ursa, Crevasse of the Arctic Enlargements"},
-         {6112, "If you would be king, you'd need one. With a wooded worm."},   /* Dragon, 
-                                                                                 * DH-D 
-                                                                                 */
-         {1758, "Carried by a hag in the dark lake under the sewers."}, /* Sea 
-                                                                         * Hag, 
-                                                                         * SM 
-                                                                         */
-         {27411, "This Roo's better than you and she has the stick to prove it."},      /* Queen 
-                                                                                         * Roo, 
-                                                                                         * LDU 
-                                                                                         */
-
-         {5317, "The dead don't lie still when properly prepared."},    /* Mummy, 
-                                                                         * PY 
-                                                                         */
-         {5033, "You can get it off a drider, but he won't give it to you."},   /* Drider, 
-                                                                                 * DR 
-                                                                                 */
-         {16615, "South of a bay, past a portal, into a tower, be prepared"},   /* Hoeur, 
-                                                                                 * HR 
-                                                                                 */
-         {121, "To the far southeast, in the lair of a pair of arachnids."},    /* Cave 
-                                                                                 * Spiders, 
-                                                                                 * TR 
-                                                                                 */
-         {13901, "On the shore, down the river from the troll-bridge"}, /* RHY 
-                                                                         */
-         /*
-          * 40 
-          */
-         {5104, "Four heads are better than one\n\r"},
-         {15806,
-          "You don't stand a ghost of a chance against a glow of white and a cloak of fire"},
-         {16022, "a Powerful, blunt, and fragile weapon\n\r"},
-         {122, "The sole possession of a devil down-under\n\r"},
-         {7220, "The highest thing at the top of a chain"},
-         {13785, "From the fairest\n\r"},
-         {1597, "Mana in a green ring\n\r"},
-         {1563, "Famous, blue and very very rare"},
-         {5001, "Search for a banded male\n\r"},
-         {20003, "Ensnared for power, she holds the helmet of the wise"}
-
-         }, {                   /* warrior */
-             {2402, "An unusual way of looking at things."},
-             {11,
-              "Something you might find in the donation room, or on your body\n\r"},
-             {16034,
-              "Goblins have been known to play with these, especially in dark caves\n\r"},
-             {6000, "A decent weapon, just the right size for a tree\n\r"},
-             {24760, "Dead men's feet look like this\n\r"},
-             {1413, "You were SUPPOSED to bell the CAT!\n\r"},
-             {18256, "In the city of Mordilnia, a shield of roygiv\n\r"},
-             {8121, "A bag that opens with a ripping sound\n\r"},
-             {108, "Floating for safety on the dark\n\r"},
-             {123,
-              "A mule stole my hat, now he fights in front of an audience\n\r"},
-             /*
-              * 10 
-              */
-             {3621,
-              "Thank goodness when I broke my arm, I still had my New shield\n\r"},
-             {117,
-              "If you get this, someone will be quite howling angry\n\r"},
-             {7405, "Sewer Secret Light Sources\n\r"},
-             {6205,
-              "my eyes just arent as fast to focus as they used to be\n\r"},
-             {4051, "These warriors seem scarred, but its all in their head"},  /* Scarred 
-                                                                                 * Warrior, 
-                                                                                 * MM 
-                                                                                 */
-             {5219, "Fresh deer.. yum!\n\r"},
-             {16015,
-              "An ugly bird in the mountains once told me: 'A despotic ruler rules with one of these'\n\r"},
-             {1718, "Hey, that's not a painting at all! But boy is she ugly! In the new city."},        /* Mimic, 
-                                                                                                         * NT 
-                                                                                                         */
-             {5032,
-              "Bushwhacked, Bushwhacked, West, West, Green. Start at the obvious\n\r"},
-             {3685, "Mightier than a sword, wielded by a four man\n\r"},
-             /*
-              * 20 
-              */
-             {5100, "Learn humility: I want a common sword\n\r"},
-             {16902, "They'd all be normal in a moonless world. You need to steal a silver stole"},     /* Werefox, 
-                                                                                                         * LY 
-                                                                                                         */
-             {17022, "A lion with a woman's torso holds the book you need."},   /* Gynosphinx, 
-                                                                                 * WPM 
-                                                                                 */
-             {5206, "To hold the girth of a corpulent man, it must be ferrous. In the old city hall."}, /* Cabinet, 
-                                                                                                         * OT 
-                                                                                                         */
-             {1737, "In the hands of an elf with a green thumb."},      /* Gardener, 
-                                                                         * NT 
-                                                                         */
-             {5306, "my mommy gave me a knife, but i lost it\n\r"},
-             {21006, "Childlike, maybe, but they're not children. You need the locked up cloth."},      /* Case, 
-                                                                                                         * OR 
-                                                                                                         */
-             {9204, "The largest in the hands of the largest of the large"},    /* Giant 
-                                                                                 * Chief, 
-                                                                                 * HGS 
-                                                                                 */
-             {1721, "Get the toolbook of the trade from the royal cook in the new city."},      /* Chef, 
-                                                                                                 * NT 
-                                                                                                 */
-             {16901, "Only an elephant's might be as big as this bores' mouthpiece."},  /* Boarish, 
-                                                                                         * LY 
-                                                                                         */
-             /*
-              * 30 
-              */
-             {6511,
-              "A bearded woman might be so engaged, but a guard's got this one."},
-             {5101, "Dark elves can be noble too, but they won't let you take their arms."},    /* Drow 
-                                                                                                 * Noble, 
-                                                                                                 * DR 
-                                                                                                 */
-             {1761, "In a suspended polygon, in a chest which is not."},        /* Mimic, 
-                                                                                 * PY 
-                                                                                 */
-             {15812, "You think that water can't be sharp? Look under birdland."},      /* Ice 
-                                                                                         * Pick, 
-                                                                                         * SK 
-                                                                                         */
-             {16046, "A miner's tool in the dwarven mines"},    /* Shovel, 
-                                                                 * ?? */
-             {21114, "These skeletal beasts will reel you in, you want the crowbar."},  /* Cave 
-                                                                                         * Fisher, 
-                                                                                         * MVE 
-                                                                                         */
-             {13762, "Once in Hades, the key to getting out lies with a long dead warrior."},   /* Skeletal 
-                                                                                                 * Warrior, 
-                                                                                                 * Hades 
-                                                                                                 */
-             {20005, "This usurper will think you very tasty, defeat him for the thing you need."},     /* Yevaud, 
-                                                                                                         * AR 
-                                                                                                         */
-             {5019, "A nasty potion in the hands of an even nastier desert worm."},     /* Worm, 
-                                                                                         * GED 
-                                                                                         */
-             {10002, "This item can be found on 'Al'"}, /* On Corpse, DCE */
-             /*
-              * 40 
-              */
-             {5221,
-              "Weapons are the keys to the remaining quests. First, bring me a Stone golem's sword"},
-             {9442, "The weapon of the largest giant in the rift"},
-             {15808, "Weapon of champions"},
-             {13775, "By the light of the moon\n\r"},
-             {21004,
-              "By name, you can assume its the largest weapon in the game\n\r"},
-             {3092,
-              "He's always pissed, and so are his guards. take his weapon and make it yours\n\r"},
-             {5002, "The weapon of the oldest wyrm\n\r"},
-             {5107, "One Two Three Four Five Six\n\r"},
-             {1430, "It rises from the ashes, and guards a tower\n\r"},
-             {5019,
-              "You're not a REAL fighter til you've had one of these, enchanted\n\r"}
-
-             }, {               /* thief */
-                 {2402, "An unusual way of looking at things."},
-                 {4,
-                  "You might find one of these in the donation room, or in your hand\n\r"},
-                 {3071, "They're the best on hand for 5 coins\n\r"},
-                 {30,
-                  "At the wrong end of a nasty spell, or a heavy hitter\n\r"},
-                 {3902, "Michelob or Guiness Stout. which is better?\n\r"},
-                 {24767, "I've heard that skeletons love bleach\n\r"},
-                 {6006, "Nearly useless in a hearth\n\r"},
-                 {4104, "Its what makes kobolds green\n\r"},
-                 {42,
-                  "Do she-devils steal, as they flap their bat wings?\n\r"},
-                 {19202, "Animal light, lost in a fog\n\r"},
-                 {3647, "These New boots were made for walking\n\r"},
-                 {4101, "Hands only a warrior could love\n\r"},
-                 {116, "Near a road to somewhere city\n\r"},
-                 {111,
-                  "Only a fool would look at the end of the river\n\r"},
-                 {15812,
-                  "I'd love a really cool backstabbing weapon..  Make sure it doesn't melt\n\r"},
-                 {17023,
-                  "Being charming can be offensive, especially in a plumed white cap\n\r"},
-                 {9205, "You could hide a giant in this stuff\n\r"},
-                 {10002,
-                  "feeling tired and fuzzy?  Exhibit some stealth, or you just might get eaten\n\r"},
-                 {3690,
-                  "I am an old man, but I will crush you at chess\n\r"},
-                 {5000, "Find a dark dwarf. Pick something silver\n\r"},
-                 /*
-                  * 20 
-                  */
-                 {15802, "It's easy work to work a rejected bird for the means to his former home."},   /* Skexie 
-                                                                                                         * Reject, 
-                                                                                                         * SK 
-                                                                                                         */
-                 {1750, "In the twisted forest of the Graecians a man in a black cloak has it."},       /* Put 
-                                                                                                         * on 
-                                                                                                         * 13731, 
-                                                                                                         * GRF 
-                                                                                                         */
-                 {5012, "Vampire's bane in a wicker basket near a desert pool.a"},      /* Basket, 
-                                                                                         * GED 
-                                                                                         */
-                 {20008, "The toothless dragon eats the means to your advancement."},   /* Young 
-                                                                                         * Wormkin, 
-                                                                                         * AR 
-                                                                                         */
-                 {6810, "You are everywhere you look in this frozen northern maze of ice."},    /* Room 
-                                                                                                 * 6854, 
-                                                                                                 * ART 
-                                                                                                 */
-                 {255, "Get the happy stick from a desert worm."},      /* Young 
-                                                                         * Worm, 
-                                                                         * GED 
-                                                                         */
-                 {7190, "In a secret sewer place a squeaking rodent wears a trinket."}, /* Rat, 
-                                                                                         * SM 
-                                                                                         */
-                 {7205, "The master flayer under the city has it on him, but not in use. Steal it!"},   /* Master 
-                                                                                                         * mind, 
-                                                                                                         * SM 
-                                                                                                         */
-                 {7230, "You could be stoned for skinning this subterranean reptilian monster."},       /* Basilisk, 
-                                                                                                         * SM 
-                                                                                                         */
-                 {3690, "An old man at the park might have one, but these old men are in the new city."},       /* Old 
-                                                                                                                 * man, 
-                                                                                                                 * NT 
-                                                                                                                 */
-                 /*
-                  * 30 
-                  */
-                 {1729, "In the forest north of the new city a traveller lost his way. It's on him."},  /* Lost 
-                                                                                                         * Adventurer, 
-                                                                                                         * MT 
-                                                                                                         */
-                 {1708, "It's growing on a cliff face, on the way to the lost kingdom."},       /* In 
-                                                                                                 * room 
-                                                                                                 * 21170, 
-                                                                                                 * MVE 
-                                                                                                 */
-                 {1759, "The moon's phase can change a man. Find the badger in a tavern."},     /* Werebadger, 
-                                                                                                 * LY 
-                                                                                                 */
-                 {1718, "You'll find it in the only ice cave a stone's throw from a desert."},  /* In 
-                                                                                                 * room 
-                                                                                                 * 10010, 
-                                                                                                 * DCE 
-                                                                                                 */
-                 {5243, "I hope it is clear which stone you will need"},        /* Lamia, 
-                                                                                 * OT 
-                                                                                 */
-                 {5302, "In a hanging desert artifact, the softest golem has the key to your success."},        /* Clay 
-                                                                                                                 * Golem, 
-                                                                                                                 * PY 
-                                                                                                                 */
-                 {21008, "If your dog were this ugly, you'd lock him in a fireplace too!"},     /* Dog, 
-                                                                                                 * OR 
-                                                                                                 */
-                 {9206, "It can be electrifying scaling a dragon; a big guy must have done it."},       /* Chieftain, 
-                                                                                                         * HGS 
-                                                                                                         */
-                 {6524, "The dwarven mazekeeper has the only pair, if you can find him."},      /* Mazekeeper, 
-                                                                                                 * Dwarf 
-                                                                                                 * Mines 
-                                                                                                 */
-                 {1533, "Three witches in the mage's tower have the orb you need"},     /* Pot, 
-                                                                                         * MT 
-                                                                                         */
-                 /*
-                  * 40 
-                  */
-                 {9425,
-                  "A huge gemstone, guarded by ice toads, beware their poison"},
-                 {5113, "The weapon of a maiden, shaped like a goddess"},
-                 {21014, "The dagger of a yellow-belly"},
-                 {5037,
-                  "A thief of great reknown, at least he doesn't use a spoon"},
-                 {1101,
-                  "Elven blade of ancient lore, matches insects blow for blow"},
-                 {27000,
-                  "It strikes like a rattlesnake, but not as deadly"},
-                 {27409,
-                  "The weapon of a primitive man, just right for killing his mortal foe"},
-                 {1594, "White wielded by white, glowing white\n\r"},
-                 {20001,
-                  "He judges your soul, wields a weapon that shares your name"},
-                 {13703, "Watch for a dragon, he wears that which you seek"}
-                 }
+        {2402, "An unusual way of looking at things."},
+        {1, "It can be found in the donation room, or on your head\n\r"},
+        {1410, "Its a heavy bag of white powder\n\r"},
+        {6010, "You can make pies out of them, deer seem to like them too\n\r"},
+        {3013, "Its a yummy breakfast food, they go great with eggs and "
+               "cheese\n\r"},
+        {20, "If you twiddle your thumbs enough, you'll find one.\n\r"},
+        {24764, "Dead people might wear them on their hands\n\r"},
+        {112, "If you found one of these, it would be mighty strange!\n\r"},
+        {106, "Eye of Toad and Toe of Frog, bring me one or the other\n\r"},
+        {109, "A child's favorite place holds the object of my desire, on "
+              "the dark river\n\r"},
+        /*
+         * 10 
+         */
+        {3628, "The latest in New padded footwear\n\r"},
+        {113, "A child might play with one, when the skexies aren't "
+              "around\n\r"},
+        {19204, "A precious moon in a misty castle\n\r"},
+        {20006, "Are you a fly? You might run into one. Beware..\n\r"},
+        {1109, "Little people have tiny weapons.. bring me one\n\r"},
+        {6203, "IReallyReallyWantACurvedBlade\n\r"},
+        {21007, "I want to be taller and younger, find the nasty children\n\r"},
+        {5228, "Don't you find screaming women so disarming?\n\r"},
+        {7204, "Vaulted lightning\n\r"},
+        {16043, "Precious elements can come in dull, dark mines\n\r"},
+        /*
+         * 20 
+         */
+        {20007, "You'll catch him napping, no guardian of passing time."},
+        {16903, "Nature's mistake, carried by a man on a new moon, "
+                "fish on full."},
+        {5226, "Sealed in the hands of a city's failed guardian."},
+        {10900, "Anachronistic rectangular receptacle holds circular "
+                "plane."}, /* Sentry, TL */
+        {13840, "What kind of conditioner does one use for "
+                "asps?"},/* Medusa, GQ */
+        {7406, "If you don't bring a scroll of recall, you might die a "
+               "fiery death"},      /* Room 7284, SM */
+        {120, "Dock down anchor"}, /* Ixitxachitl, NT */
+        {21008, "Very useful, behind a hearth."},  /* Dog, OR */
+        {10002, "He didn't put them to sleep with these, the results were "
+                "quite deadly"},  /* On Corpse, DCE */
+        {3648, "Unsummoned, they pose large problems. What you want is on "
+               "their queen."},  /* Chieftess, HGS */
+        {15805, "A single sample of fine plumage, held by a guard and "
+             "a ghost."},  /* Guard & Brack, SK */
+        {21141, "In the land of the troglodytes there is a headpiece with "
+             "unpleasant powers."},    /* Case, TR */
+        {1532, "Three witches have the flighty component you need."},/*Pot,MT*/
+        {5304, "A spectral force holds the key to advancement in a geometric "
+               "dead end."},  /* Spectre, PY */
+        {9496, "A great golden sword was once taken by the giants of the "
+               "great with north.  return it. Bring friends."},
+        {5105, "What you need is as dark as the heart of the elf "
+               "who wields it."}, /* Weaponsmaster, DR */
+        {21011, "The key to your current problem is in Orshingal, on a "
+                "haughty strutter."},  /* Enfan, OR */
+        {27004, "A small explosive pinapple shaped object. Ever see "
+                "Monty-Python?, you might find it in the hands of sorcerous "
+                "undead men"},       /* ???, Haplo's */
+        {6616, "You might smile if drinking a can of this. Look in "
+               "Prydain."},     /* ???, PRY */
+        {21125, "With enough of this strong amber drink you'd forget about "
+                "the nightly ghosts."},  /* Crate, ARO */
+        /*
+         * 40 
+         */
+        {5309, "Powerful items of magic follow... first bring me a medallion "
+               "of mana\n\r"},
+        {1585, "Bubble bubble, toil and trouble, bring me a staff on the "
+               "double\n\r"},
+        {21003, "I need some good boots, you know how strange it is to find "
+                "them\n\r"},
+        {13704, "Watch for a dragon, find his ring\n\r"},
+        {252, "Dead-makers cloaks, buried deep in stone\n\r"},
+        {3670, "bottled mana\n\r"},
+        {1104, "The master of fireworks, take his silver"},
+        {5020, "You're not a real mage till you get platinum from purple\n\r"},
+        {1599, "Grand Major\n\r"},
+        {20002, "She's hiding in her room, but she has my hat!\n\r"}
+    }, 
+    {                       /* cleric */
+        {0, ""},
+        {1, "It can be found in the donation room, or on your head\n\r"},
+        {1110, "White and young, with no corners or sides, a golden "
+               "treasure can be found inside\n\r"},
+        {3070, "The armorer might have a pair, but they're not his "
+               "best on hand\n\r"},
+        {3057, "judicandus dies\n\r"},
+        {6001, "I want clothes i can play chess on\n\r"},
+        {16033, "A goblin's favorite food, the eastern path\n\r"},
+        {107, "Every righteous cleric should have one, but few do\n\r"},
+        {4000, "I have a weakness for cheap rings\n\r"},
+        {3025, "cleaver for hire, just outside of midgaard\n\r"},
+        /*
+         * 10 
+         */
+        {3649, "My wife needs something New, to help keep her girlish "
+               "figure\n\r"},
+        {7202, "mindflayers have small ones, especially in the sewers\n\r"},
+        {19203, "the weapon of a traitor, lost in a fog\n\r"},
+        {15814, "striped black and white, take what this gelfling-friend "
+                "offers\n\r"},
+        {119, "Play with a gypsy child when he asks you to\n\r"},
+        {5012, "You might use these to kill a vampire, they are in the "
+               "desert\n\r"},
+        {6809, "Really cool sunglasses, on a really cool guy, in a really "
+               "cool place\n\r"},
+        {17021, "The proof is in the volcano\n\r"},
+        {3648, "Giant women have great fashion sense\n\r"},
+        {27001, "Undead have the strangest law enforcement tools, near a "
+                "split in the river\n\r"},
+        /*
+         * 20
+         */
+        {105, "A venomed bite will end your life - you need the jaws that "
+              "do it."},    /* Rattler fangs, MidT */
+        {3668, "Buy some wine from a fortuneteller's "
+               "brother."}, /* Gypsy Bartender */
+        {1703, "On a cat, but not in the petting zoo."},/* Bengal tiger, MZ */
+        {13758, "Held by a doggie with who will bite you and bite you "
+                "and bite you."}, /* Cerebus, Hades */
+        {5240, "In the old city you'll find the accursed vibrant stone "
+               "you require."}, /* Lamia, OT */
+        {5013, "Where can you go for directions in the desert? Try the "
+               "wet spot."},    /* Oasis Map, GED */
+        {17011, "{An unholy symbol on an unholy creature under a fuming "
+                "mountain."},   /* Amelia, WPM */
+        {1708, "Some liar's got it in a cul-de-sac. The high priests of "
+               "Odin know the way."},  /* Liar in room 10911, TL */
+        {9203, "What would you use to swat a very large mosquito? Get it "
+               "from the giants."},   /* Giant, HGS */
+        {21109, "A bow made of dark wood, carried by a "
+                "troglodyte."},  /* Trog, CT */
+        /*
+         * 30 
+         */
+        {15817, "In an secret cold place, a dark flower is carried by a "
+                "midnight one."},  /* Bechemel, SK */
+        {9430, "Argent Ursa, Crevasse of the Arctic Enlargements"},
+        {6112, "If you would be king, you'd need one. With a wooded "
+               "worm."},   /* Dragon, DH-D */
+        {1758, "Carried by a hag in the dark lake under the "
+               "sewers."}, /* Sea Hag, SM */
+        {27411, "This Roo's better than you and she has the stick to "
+                "prove it."},      /* Queen Roo, LDU */
+        {5317, "The dead don't lie still when properly "
+               "prepared."},    /* Mummy, PY */
+        {5033, "You can get it off a drider, but he won't give it to "
+               "you."},   /* Drider, DR */
+        {16615, "South of a bay, past a portal, into a tower, be "
+                "prepared"},   /* Hoeur, HR */
+        {121, "To the far southeast, in the lair of a pair of "
+              "arachnids."},    /* Cave Spiders, TR */
+        {13901, "On the shore, down the river from the "
+                "troll-bridge"}, /* RHY */
+        /*
+         * 40 
+         */
+        {5104, "Four heads are better than one\n\r"},
+        {15806, "You don't stand a ghost of a chance against a glow of "
+                "white and a cloak of fire"},
+        {16022, "a Powerful, blunt, and fragile weapon\n\r"},
+        {122, "The sole possession of a devil down-under\n\r"},
+        {7220, "The highest thing at the top of a chain"},
+        {13785, "From the fairest\n\r"},
+        {1597, "Mana in a green ring\n\r"},
+        {1563, "Famous, blue and very very rare"},
+        {5001, "Search for a banded male\n\r"},
+        {20003, "Ensnared for power, she holds the helmet of the wise"}
+    }, 
+    {                   /* warrior */
+        {2402, "An unusual way of looking at things."},
+        {11, "Something you might find in the donation room, or on "
+             "your body\n\r"},
+        {16034, "Goblins have been known to play with these, especially "
+             "in dark caves\n\r"},
+        {6000, "A decent weapon, just the right size for a tree\n\r"},
+        {24760, "Dead men's feet look like this\n\r"},
+        {1413, "You were SUPPOSED to bell the CAT!\n\r"},
+        {18256, "In the city of Mordilnia, a shield of roygiv\n\r"},
+        {8121, "A bag that opens with a ripping sound\n\r"},
+        {108, "Floating for safety on the dark\n\r"},
+        {123, "A mule stole my hat, now he fights in front of an "
+              "audience\n\r"},
+        /*
+         * 10 
+         */
+        {3621, "Thank goodness when I broke my arm, I still had my New "
+               "shield\n\r"},
+        {117, "If you get this, someone will be quite howling angry\n\r"},
+        {7405, "Sewer Secret Light Sources\n\r"},
+        {6205, "my eyes just arent as fast to focus as they used to be\n\r"},
+        {4051, "These warriors seem scarred, but its all in their "
+               "head"},  /* Scarred Warrior, MM */
+        {5219, "Fresh deer.. yum!\n\r"},
+        {16015, "An ugly bird in the mountains once told me: 'A despotic "
+                "ruler rules with one of these'\n\r"},
+        {1718, "Hey, that's not a painting at all! But boy is she ugly! "
+               "In the new city."},        /* Mimic, NT */
+        {5032, "Bushwhacked, Bushwhacked, West, West, Green. Start at "
+               "the obvious\n\r"},
+        {3685, "Mightier than a sword, wielded by a four man\n\r"},
+        /*
+         * 20 
+         */
+        {5100, "Learn humility: I want a common sword\n\r"},
+        {16902, "They'd all be normal in a moonless world. You need to "
+                "steal a silver stole"},     /* Werefox, LY */
+        {17022, "A lion with a woman's torso holds the book you "
+                "need."},   /* Gynosphinx, WPM */
+        {5206, "To hold the girth of a corpulent man, it must be ferrous. "
+               "In the old city hall."}, /* Cabinet, OT */
+        {1737, "In the hands of an elf with a green thumb."},/* Gardener, NT */
+        {5306, "my mommy gave me a knife, but i lost it\n\r"},
+        {21006, "Childlike, maybe, but they're not children. You need the "
+                "locked up cloth."},      /* Case, OR */
+        {9204, "The largest in the hands of the largest of the "
+               "large"},    /* Giant Chief, HGS */
+        {1721, "Get the toolbook of the trade from the royal cook in the "
+               "new city."},      /* Chef, NT */
+        {16901, "Only an elephant's might be as big as this bores' "
+                "mouthpiece."},  /* Boarish, LY */
+        /*
+         * 30 
+         */
+        {6511, "A bearded woman might be so engaged, but a guard's got "
+               "this one."},
+        {5101, "Dark elves can be noble too, but they won't let you take "
+               "their arms."},    /* Drow Noble, DR */
+        {1761, "In a suspended polygon, in a chest which is not."},/*Mimic, PY*/
+        {15812, "You think that water can't be sharp? Look under "
+                "birdland."},      /* Ice Pick, SK */
+        {16046, "A miner's tool in the dwarven mines"}, /* Shovel, ?? */
+        {21114, "These skeletal beasts will reel you in, you want the "
+                "crowbar."},  /* Cave Fisher, MVE */
+        {13762, "Once in Hades, the key to getting out lies with a long "
+                "dead warrior."},   /* Skeletal Warrior, Hades */
+        {20005, "This usurper will think you very tasty, defeat him for the "
+                "thing you need."},     /* Yevaud, AR */
+        {5019, "A nasty potion in the hands of an even nastier desert "
+               "worm."},     /* Worm, GED */
+        {10002, "This item can be found on 'Al'"}, /* On Corpse, DCE */
+        /*
+         * 40 
+         */
+        {5221, "Weapons are the keys to the remaining quests. First, bring "
+               "me a Stone golem's sword"},
+        {9442, "The weapon of the largest giant in the rift"},
+        {15808, "Weapon of champions"},
+        {13775, "By the light of the moon\n\r"},
+        {21004, "By name, you can assume its the largest weapon in the "
+                "game\n\r"},
+        {3092, "He's always pissed, and so are his guards. take his weapon "
+               "and make it yours\n\r"},
+        {5002, "The weapon of the oldest wyrm\n\r"},
+        {5107, "One Two Three Four Five Six\n\r"},
+        {1430, "It rises from the ashes, and guards a tower\n\r"},
+        {5019, "You're not a REAL fighter til you've had one of these, "
+               "enchanted\n\r"}
+    }, 
+    {               /* thief */
+        {2402, "An unusual way of looking at things."},
+        {4, "You might find one of these in the donation room, or in "
+            "your hand\n\r"},
+        {3071, "They're the best on hand for 5 coins\n\r"},
+        {30, "At the wrong end of a nasty spell, or a heavy hitter\n\r"},
+        {3902, "Michelob or Guiness Stout. which is better?\n\r"},
+        {24767, "I've heard that skeletons love bleach\n\r"},
+        {6006, "Nearly useless in a hearth\n\r"},
+        {4104, "Its what makes kobolds green\n\r"},
+        {42, "Do she-devils steal, as they flap their bat wings?\n\r"},
+        {19202, "Animal light, lost in a fog\n\r"},
+        {3647, "These New boots were made for walking\n\r"},
+        {4101, "Hands only a warrior could love\n\r"},
+        {116, "Near a road to somewhere city\n\r"},
+        {111, "Only a fool would look at the end of the river\n\r"},
+        {15812, "I'd love a really cool backstabbing weapon..  Make sure "
+                "it doesn't melt\n\r"},
+        {17023, "Being charming can be offensive, especially in a plumed "
+                "white cap\n\r"},
+        {9205, "You could hide a giant in this stuff\n\r"},
+        {10002, "feeling tired and fuzzy?  Exhibit some stealth, or you "
+                "just might get eaten\n\r"},
+        {3690, "I am an old man, but I will crush you at chess\n\r"},
+        {5000, "Find a dark dwarf. Pick something silver\n\r"},
+        /*
+         * 20 
+         */
+        {15802, "It's easy work to work a rejected bird for the means "
+                "to his former home."},   /* Skexie Reject, SK */
+        {1750, "In the twisted forest of the Graecians a man in a black "
+               "cloak has it."},       /* Put on 13731, GRF */
+        {5012, "Vampire's bane in a wicker basket near a desert "
+               "pool."},   /* Basket, GED */
+        {20008, "The toothless dragon eats the means to your "
+                "advancement."},   /* Young Wormkin, AR */
+        {6810, "You are everywhere you look in this frozen northern "
+               "maze of ice."},    /* Room 6854, ART */
+        {255, "Get the happy stick from a desert worm."},/* Young Worm, GED */
+        {7190, "In a secret sewer place a squeaking rodent wears a "
+               "trinket."}, /* Rat, SM */
+        {7205, "The master flayer under the city has it on him, but "
+               "not in use. Steal it!"},   /* Master mind, SM */
+        {7230, "You could be stoned for skinning this subterranean "
+               "reptilian monster."},       /* Basilisk, SM */
+        {3690, "An old man at the park might have one, but these old men "
+               "are in the new city."},       /* Old man, NT */
+        /*
+         * 30 
+         */
+        {1729, "In the forest north of the new city a traveller lost "
+               "his way. It's on him."},  /* Lost Adventurer, MT */
+        {1708, "It's growing on a cliff face, on the way to the lost "
+               "kingdom."},       /* In room 21170, MVE */
+        {1759, "The moon's phase can change a man. Find the badger in a "
+               "tavern."},     /* Werebadger, LY */
+        {1718, "You'll find it in the only ice cave a stone's throw from "
+               "a desert."},  /* In room 10010, DCE */
+        {5243, "I hope it is clear which stone you will need"}, /* Lamia, OT */
+        {5302, "In a hanging desert artifact, the softest golem has the "
+               "key to your success."},        /* Clay Golem, PY */
+        {21008, "If your dog were this ugly, you'd lock him in a "
+                "fireplace too!"},     /* Dog, OR */
+        {9206, "It can be electrifying scaling a dragon; a big guy must "
+               "have done it."},       /* Chieftain, HGS */
+        {6524, "The dwarven mazekeeper has the only pair, if you can "
+               "find him."},      /* Mazekeeper, Dwarf Mines */
+        {1533, "Three witches in the mage's tower have the orb you "
+               "need"},     /* Pot, MT */
+        /*
+         * 40 
+         */
+        {9425, "A huge gemstone, guarded by ice toads, beware their poison"},
+        {5113, "The weapon of a maiden, shaped like a goddess"},
+        {21014, "The dagger of a yellow-belly"},
+        {5037, "A thief of great reknown, at least he doesn't use a spoon"},
+        {1101, "Elven blade of ancient lore, matches insects blow for blow"},
+        {27000, "It strikes like a rattlesnake, but not as deadly"},
+        {27409, "The weapon of a primitive man, just right for killing "
+                "his mortal foe"},
+        {1594, "White wielded by white, glowing white\n\r"},
+        {20001, "He judges your soul, wields a weapon that shares your name"},
+        {13703, "Watch for a dragon, he wears that which you seek"}
+    }
 };
 #endif
 
@@ -5603,7 +5645,9 @@ const struct skillset sorcskills[] = {
 const struct skillset mainpaladinskills[] = {
     {"aura of power", SPELL_AURA_POWER, 15, 45},
     {"call steed", SKILL_STEED, 11, 45},
-    // {"circle of protection", SPELL_CIRCLE_PROTECTION ,1},
+#if 0    
+    {"circle of protection", SPELL_CIRCLE_PROTECTION ,1},
+#endif    
     {"enlightenment", SPELL_ENLIGHTENMENT, 25, 45},
     {"holy armor", SPELL_HOLY_ARMOR, 5, 45},
     {"holy strength", SPELL_HOLY_STRENGTH, 3, 45},
@@ -5899,10 +5943,9 @@ const struct skillset mainwarriorskills[] = {
 const struct skillset warriorskills[] = {
     {"bash", SKILL_BASH, 1, 45},
     {"bellow", SKILL_BELLOW, 1, 45},
-    /*
-     * {"doorbash", SKILL_DOORBASH, 1}, this one can be learned at the
-     * ninjamaster 
-     */
+#if 0    
+    {"doorbash", SKILL_DOORBASH, 1}, / *this one learned at ninjamaster */
+#endif
     {"kick", SKILL_KICK, 1, 45},
     {"rescue", SKILL_RESCUE, 1, 45},
     {"skin", SKILL_TAN, 1, 45},
@@ -6008,20 +6051,20 @@ const struct skillset barbskills[] = {
     {"bash", SKILL_BASH, 1, 45},
     {"bellow", SKILL_BELLOW, 1, 45},
     {"berserk", SKILL_BERSERK, 1, 45},
-    {"camouflage", SKILL_HIDE, 1, 45},      // 5
+    {"camouflage", SKILL_HIDE, 1, 45},      /* 5 */
     {"climb", SKILL_CLIMB, 1, 45},
     {"disarm", SKILL_DISARM, 1, 45},
     {"disguise", SKILL_DISGUISE, 1, 45},
     {"dodge", SKILL_DODGE, 1, 45},
-    {"doorbash", SKILL_DOORBASH, 1, 45},    // 10
+    {"doorbash", SKILL_DOORBASH, 1, 45},    /* 10 */
     {"find food", SKILL_FIND_FOOD, 1, 45},
     {"find water", SKILL_FIND_WATER, 1, 45},
     {"first aid", SKILL_FIRST_AID, 1, 45},
     {"hunt", SKILL_HUNT, 1, 45},
-    {"retreat", SKILL_RETREAT, 1, 45},      // 15
+    {"retreat", SKILL_RETREAT, 1, 45},      /* 15 */
     {"skin", SKILL_TAN, 1, 45},
     {"spy", SKILL_SPY, 1, 45},
-    {"switch opponents", SKILL_SWITCH_OPP, 1, 45},  // 18
+    {"switch opponents", SKILL_SWITCH_OPP, 1, 45},  /* 18 */
     {"None", -1, -1, -1}
 };
 
@@ -6085,8 +6128,10 @@ const struct skillset necroskills[] = {
     {"None", -1, -1, -1}
 };
 
-// '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge,
-// 6=gargantuan '
+/* 
+ * '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge,
+ * 6=gargantuan '
+ */
 const struct race_type race_list[] = {
     {RACE_HALFBREED, "Half-Breed", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_HUMAN, "Human", 17, 0, 21, 41, 61, 91, 121, 3},
@@ -6160,8 +6205,7 @@ const struct race_type race_list[] = {
     {RACE_UNDEAD_GHAST, "Undead Ghast", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_UNDEAD_SPECTRE, "Undead Spectre", 17, 0, 21, 41, 61, 91, 121, 4},
     {RACE_UNDEAD_ZOMBIE, "Undead Zombie", 17, 0, 21, 41, 61, 91, 121, 3},
-    {RACE_UNDEAD_SKELETON, "Undead Skeleton", 17, 0, 21, 41, 61, 91, 121,
-     3},
+    {RACE_UNDEAD_SKELETON, "Undead Skeleton", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_UNDEAD_GHOUL, "Undead Ghoul", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_HALF_ELF, "Half-Elf", 25, 0, 51, 100, 151, 226, 301, 3},
     {RACE_HALF_OGRE, "Half-Ogre", 17, 0, 15, 29, 43, 64, 85, 4},
@@ -6185,8 +6229,7 @@ const struct race_type race_list[] = {
     {RACE_BASILISK, "Basilisk", 17, 0, 21, 41, 61, 91, 121, 6},
     {RACE_GARGOYLE, "Gargoyle", 17, 0, 21, 41, 61, 91, 121, 5},
     {RACE_DRIDER, "Drider", 17, 0, 21, 41, 61, 91, 121, 3},
-    {RACE_DISPLACER_BEAST, "Displacer Beast", 17, 0, 21, 41, 61, 91, 121,
-     4},
+    {RACE_DISPLACER_BEAST, "Displacer Beast", 17, 0, 21, 41, 61, 91, 121, 4},
     {RACE_GRIFFON, "Griffon", 17, 0, 21, 41, 61, 91, 121, 5},
     {RACE_HELL_HOUND, "Hell Hound", 17, 0, 21, 41, 61, 91, 121, 2},
     {RACE_HYDRA, "Hydra", 17, 0, 21, 41, 61, 91, 121, 5},
@@ -6206,8 +6249,7 @@ const struct race_type race_list[] = {
     {RACE_UMBER_HULK, "Umber Hulk", 17, 0, 21, 41, 61, 91, 121, 4},
     {RACE_SLUG, "Slug", 17, 0, 21, 41, 61, 91, 121, 2},
     {RACE_BULETTE, "Bulette", 17, 0, 21, 41, 61, 91, 121, 2},
-    {RACE_CARRION_CRAWLER, "Carrion Crawler", 17, 0, 21, 41, 61, 91, 121,
-     2},
+    {RACE_CARRION_CRAWLER, "Carrion Crawler", 17, 0, 21, 41, 61, 91, 121, 2},
     {RACE_DRACOLISK, "Dracolisk", 17, 0, 21, 41, 61, 91, 121, 4},
     {RACE_BANSHEE, "Banshee", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_BEHOLDER, "Beholder", 17, 0, 21, 41, 61, 91, 121, 5},
@@ -6234,22 +6276,29 @@ const char     *RaceDesc[132] = {
         "in just about every class and have average stats.\n",
 
     "   Sharp features such as pointed ears set this race apart from most.\n"
-        "They are known to be flightly and not dependable. Elves are also known to be\n"
+        "They are known to be flightly and not dependable. Elves are "
+        "also known to be\n"
         "some of the best magicians around, as well as being on of the most\n"
         "dexterous races.\n",
 
     "   Wide as a barrel and about as tall. This short stalky race builds\n"
-        "the best stone houses/tunnels or anything made of stone around. Dwarves are\n"
-        "known to have very good constitution, but as also known to be very hard to\n"
-        "get along with. If a dwarf does not have a beard a foot long he must be a\n"
+        "the best stone houses/tunnels or anything made of stone around. "
+        "Dwarves are\n"
+        "known to have very good constitution, but as also known to be very "
+        "hard to\n"
+        "get along with. If a dwarf does not have a beard a foot long he "
+        "must be a\n"
         "baby.\n",
 
     "  Mini-humans is what they look like, but nothing like humans are\n"
-        "they. Halflings like to enjoy good food and lay about. They are good at most\n"
-        "thief skills when born, although they are generally not a evil race.\n",
+        "they. Halflings like to enjoy good food and lay about. They are "
+        "good at most\n"
+        "thief skills when born, although they are generally not a evil "
+        "race.\n",
 
     "   Some would say that these guys look like a dwarf with a very large\n"
-        "nose, I would not say that to a dwarf though. Gnomes are known to be very\n"
+        "nose, I would not say that to a dwarf though. Gnomes are known "
+        "to be very\n"
         "intelligent, but are not wise at all.\n",
 
     "Reptiles are cold blooded and have scales.\n",
@@ -6259,90 +6308,120 @@ const char     *RaceDesc[132] = {
     "Lycanthropes are humans who can transform themselves to resemble normal\n"
         "animals or monsters.\n",
 
-    "Dragons arn't meant to be toyed with.  Dragons are huge scaled reptile like\n"
+    "Dragons arn't meant to be toyed with.  Dragons are huge scaled reptile "
+        "like\n"
         "creatures with various affects and types.\n",
 
-    "Undead creatures are generally monsters brought back from the dead by an evil\n"
+    "Undead creatures are generally monsters brought back from the dead "
+        "by an evil\n"
         "mage of some sort.\n",
 
     "Orcs are one of the most common, and disliked, of the demihuman races.\n"
         "They are agressive and warlike.\n",
 
-    "Insects are the heartiest and the most numerous of creatures. Normal insects \n"
-        "are found almost everywhere. The giant variety, with added brawn and power, \n"
+    "Insects are the heartiest and the most numerous of creatures. Normal "
+        "insects \n"
+        "are found almost everywhere. The giant variety, with added brawn "
+        "and power, \n"
         "make tough opponents.\n",
 
-    "Spiders and Arachnids are aggressive predators, dwelling both above and below \n"
-        "ground. Most listed here are poisonous and bite prey first, because unconscious\n"
+    "Spiders and Arachnids are aggressive predators, dwelling both "
+        "above and below \n"
+        "ground. Most listed here are poisonous and bite prey first, "
+        "because unconscious\n"
         "victims are easier to carry to a lair.\n",
 
-    "Dinosaurs are found on alternate planes of existence, or even on lost continents.\n"
+    "Dinosaurs are found on alternate planes of existence, or even on "
+        "lost continents.\n"
         "They are very rare.\n",
 
-    "Any of numerous cold-blooded aquatic vertebrates, characteristically having fins,\n"
+    "Any of numerous cold-blooded aquatic vertebrates, characteristically "
+        "having fins,\n"
         "gills, and a streamlined body. \n",
 
-    "Avians, whether magical or mundane in nature, are among the most interesting creatures\n"
-        "ever to evolve. Their unique physiology sets them apart from all other life, and their\n"
-        "grace and beauty have earned them a place of respect and adoration in the tales of\n"
+    "Avians, whether magical or mundane in nature, are among the most "
+        "interesting creatures\n"
+        "ever to evolve. Their unique physiology sets them apart from "
+        "all other life, and their\n"
+        "grace and beauty have earned them a place of respect and adoration "
+        "in the tales of\n"
         "many races.\n",
 
-    "These species vary greatly n power and intelligences.There are different \n"
+    "These species vary greatly n power and intelligences.There are "
+        "different \n"
         "types of giants out there.\n",
 
-    "Not much are know about these Predator creatures except for there desire to\n"
+    "Not much are know about these Predator creatures except for there "
+        "desire to\n"
         "hunt out and feeding on the living.\n",
 
-    "An organism that grows, feeds, and is sheltered on or in a different organism \n"
+    "An organism that grows, feeds, and is sheltered on or in a "
+        "different organism \n"
         "while contributing nothing to the survival of its host.\n",
 
-    "Slime is a strain of monstrous plant life, that grows while clinging to \n"
-        "ceilings. Slime favors moist, subterranean regions. It feeds on whatever \n"
-        "animal, vegetable, or metallic substances happen to cross its path. \n",
+    "Slime is a strain of monstrous plant life, that grows while "
+        "clinging to \n"
+        "ceilings. Slime favors moist, subterranean regions. It feeds "
+        "on whatever \n"
+        "animal, vegetable, or metallic substances happen to cross its "
+        "path. \n",
 
     "Demons are evil vial creatures that are pretty dangerous to play with.\n",
 
-    "Snakes vary in size and slay their prey with deadly venom.  Neutralize poison\n"
+    "Snakes vary in size and slay their prey with deadly venom.  "
+        "Neutralize poison\n"
         "counters snake bites\n",
 
     "They like to eat grass and plants.\n",
 
-    "A perennial woody plant having a main trunk and usually a distinct crown.\n",
+    "A perennial woody plant having a main trunk and usually a "
+        "distinct crown.\n",
 
     "A perennial plant gone bad.\n",
 
-    "Elementals are strong, but relatively stupid being conjured up from their \n"
+    "Elementals are strong, but relatively stupid being conjured up "
+        "from their \n"
         "normal habitat on the elemental planes.\n",
 
     "Planar species are normally found inhabiting on the elemental planes.\n",
 
-    "Devils are extremely evil creatures and shouldn't be taken lightly. Goes by a\n"
+    "Devils are extremely evil creatures and shouldn't be taken lightly. "
+        "Goes by a\n"
         "varity of names.\n",
 
-    "Ghosts are the spirits of humans who were either so greatly evil in life \n"
-        "or whose deaths were so unusually emotional they have been cursed with the \n"
-        "gift of undead status. Thus, they roam about at night or in places of darkness.\n"
-        "These spirits hate goodness and life, hungering to draw the living essences from\n"
+    "Ghosts are the spirits of humans who were either so greatly evil "
+        "in life \n"
+        "or whose deaths were so unusually emotional they have been "
+        "cursed with the \n"
+        "gift of undead status. Thus, they roam about at night or in "
+        "places of darkness.\n"
+        "These spirits hate goodness and life, hungering to draw the "
+        "living essences from\n"
         "the living.\n",
 
-    "Goblins are small, nasty humanoids... They would be no concern except for\n"
+    "Goblins are small, nasty humanoids... They would be no concern "
+        "except for\n"
         "there great numbers.\n",
 
-    "Trolls are ravenous horrors found in almost all climates and locales.  They \n"
-        "attack with their diry, clawed hands and must be killed quickly because they \n"
+    "Trolls are ravenous horrors found in almost all climates and "
+        "locales.  They \n"
+        "attack with their diry, clawed hands and must be killed "
+        "quickly because they \n"
         "regenerate hit points.\n",
 
     "Not much is know about the Vegman race.\n",
 
     "Not much is know about the MindFlayr race.**\n",
 
-    "Primates that are characterized by long arms and legs, large dog-like muzzles, \n"
+    "Primates that are characterized by long arms and legs, large "
+        "dog-like muzzles, \n"
         "and sharp canine teeth.\n",
 
     "Not much is know about the Enfan race.\n",
 
     "   The most evil race of elves, these live under the ground and rarely\n"
-        "tunnel out to the surface. The sun and any light hurts their eyes extremely\n"
+        "tunnel out to the surface. The sun and any light hurts their "
+        "eyes extremely\n"
         "so. Generally drow have black colored skin and white hair.\n",
 
     "Golems are magically created automatons of great power.  Golems can be \n"
@@ -6350,9 +6429,12 @@ const char     *RaceDesc[132] = {
 
     "Skexies are weird birdlike creatures.\n",
 
-    "Troglodytes are a warlike race of carnivorous reptilian humanoids that dwell\n"
-        "in natural subterranean caverns and in the cracks and crevices of mountains.\n"
-        "They hate man above all other creatures and often launch bloody raids on human \n"
+    "Troglodytes are a warlike race of carnivorous reptilian humanoids "
+        "that dwell\n"
+        "in natural subterranean caverns and in the cracks and crevices "
+        "of mountains.\n"
+        "They hate man above all other creatures and often launch bloody "
+        "raids on human \n"
         "communities in search of food and steel. \n",
 
     "Not much is know about the Patryn race.\n",
@@ -6363,180 +6445,256 @@ const char     *RaceDesc[132] = {
 
     "Not much is know about the Tytan race.\n",
 
-    "Are small little blue creatures that like to sing and dance.. (Don't ask)\n",
+    "Are small little blue creatures that like to sing and "
+        "dance.. (Don't ask)\n",
 
     "Not much is know about the Roo race.\n",
 
-    "A large hoofed mammal having a short-haired coat, a long mane, and a long tail,\n"
+    "A large hoofed mammal having a short-haired coat, a long mane, "
+        "and a long tail,\n"
         "domesticated since ancient times and used for riding.\n",
 
     "Not much is known about this race.\n",
 
     "Not much is know about these astral creatures. **\n",
 
-    "An immortal creature of the realm, generally unkillable and human like in appearance.\n",
+    "An immortal creature of the realm, generally unkillable and human "
+        "like in appearance.\n",
 
-    "Hill giants are one of the smaller of the giant races, they are brutish hulk\n"
+    "Hill giants are one of the smaller of the giant races, they are "
+        "brutish hulk\n"
         "possessing low intelliences and tremendous strength.\n",
 
-    "These giants have a reputation for rudeness and stupididtiy.  While the reputation\n"
+    "These giants have a reputation for rudeness and stupididtiy.  While "
+        "the reputation\n"
         "may be deserved, frost giants are crafty skilled fighters.\n",
 
-    "Fire giants are brutal and ruthless warriors who resemble huge dwarves and \n"
+    "Fire giants are brutal and ruthless warriors who resemble huge "
+        "dwarves and \n"
         "have flaming red or orange hair and coal black skin.\n",
 
-    "These members of the giant races consider themselves to be above all others of \n"
+    "These members of the giant races consider themselves to be above "
+        "all others of \n"
         "the species, except storm giants, whom they view as equals.\n",
 
-    "The most noble and intelligent of the giant races.  These giants are dangerous \n"
+    "The most noble and intelligent of the giant races.  These giants "
+        "are dangerous \n"
         "fighters when angry, and can often use magic.\n",
 
-    "Stone giants are lean, but muscular. Their hard, hairless flesh is smooth and gray,\n"
-        "making it easy for them to blend in with their mountainous surroundings. Their gaunt\n"
-        "facial features and deep, sunken black eyes make them seem perpetually grim.\n",
+    "Stone giants are lean, but muscular. Their hard, hairless flesh is "
+        "smooth and gray,\n"
+        "making it easy for them to blend in with their mountainous "
+        "surroundings. Their gaunt\n"
+        "facial features and deep, sunken black eyes make them seem "
+        "perpetually grim.\n",
 
-    "Red dragons can exhale great spouts of flame or attack with their claws and fangs.\n",
+    "Red dragons can exhale great spouts of flame or attack with their "
+        "claws and fangs.\n",
 
-    "Black dragons are abusive, quick to anger, and resent intrusions of any kind. They \n"
-        "like dismal surroundings, heavy vegetation, and prefer darkness to daylight. Although\n"
-        "not as intelligent as other dragons, black dragons are instinctively cunning \n"
+    "Black dragons are abusive, quick to anger, and resent intrusions "
+        "of any kind. They \n"
+        "like dismal surroundings, heavy vegetation, and prefer darkness "
+        "to daylight. Although\n"
+        "not as intelligent as other dragons, black dragons are "
+        "instinctively cunning \n"
         "and malevolent.\n",
 
-    "Green dragons are bad tempered, mean, cruel, and rude. They hate goodness and \n"
-        "good-aligned creatures. They love intrigue and seek to enslave other woodland \n"
+    "Green dragons are bad tempered, mean, cruel, and rude. They hate "
+        "goodness and \n"
+        "good-aligned creatures. They love intrigue and seek to enslave "
+        "other woodland \n"
         "creatures, killing those who cannot be controlled or intimidated.\n",
 
-    "Unique among dragons in their preferences for cold climates, these evil beast \n"
-        "can attack with their freezing cold breath in addition to razor sharp claws and \n"
-        "fangs.  Small in size and not as intelligent as their cousins,  these dragons are \n"
+    "Unique among dragons in their preferences for cold climates, these "
+        "evil beast \n"
+        "can attack with their freezing cold breath in addition to razor "
+        "sharp claws and \n"
+        "fangs.  Smaller in size and not as intelligent as their cousins,  "
+        "these dragons are \n"
         "still quite dangerous.\n",
 
-    "Blue dragons are extremely territorial and voracious. They love to spend long hours \n"
-        "preparing ambushes for herd animals and unwary travelers, and they spend equally long \n"
+    "Blue dragons are extremely territorial and voracious. They love to "
+        "spend long hours \n"
+        "preparing ambushes for herd animals and unwary travelers, "
+        "and they spend equally long \n"
         "hours dwelling on their success and admiring their trophies. \n",
 
-    "Silver dragons are kind and helpful. They will cheerfully assist good creatures if \n"
-        "their need is genuine. They often take the forms of kindly old men or fair damsels \n"
+    "Silver dragons are kind and helpful. They will cheerfully assist "
+        "good creatures if \n"
+        "their need is genuine. They often take the forms of kindly old "
+        "men or fair damsels \n"
         "when associating with people. \n",
 
-    "Gold dragons are wise, judicious, and benevolent. They often embark on self-appointed\n"
-        "quests to promote goodness, and are not easily distracted from them. They hate \n"
-        "injustice and foul play. A gold dragon frequently assumes human or animal guise and \n"
+    "Gold dragons are wise, judicious, and benevolent. They often embark "
+        "on self-appointed\n"
+        "quests to promote goodness, and are not easily distracted from "
+        "them. They hate \n"
+        "injustice and foul play. A gold dragon frequently assumes human "
+        "or animal guise and \n"
         "usually will be encountered disguised.\n",
 
-    "Bronze dragons are inquisitive and fond of humans and demi-humans. They enjoy \n"
-        "polymorphing into small, friendly animals so they can unobtrusively observe humans and \n"
-        "demi-humans, especially adventurers. Bronze dragons thrive on simple challenges such \n"
-        "as riddles and harmless contests. They are fascinated by warfare and will eagerly join \n"
+    "Bronze dragons are inquisitive and fond of humans and demi-humans. "
+        "They enjoy \n"
+        "polymorphing into small, friendly animals so they can "
+        "unobtrusively observe humans and \n"
+        "demi-humans, especially adventurers. Bronze dragons thrive on "
+        "simple challenges such \n"
+        "as riddles and harmless contests. They are fascinated by warfare "
+        "and will eagerly join \n"
         "an army if the cause is just and the pay is good.\n",
 
-    "Copper dragons are incorrigible pranksters, joke tellers, and riddlers. They are prideful\n"
-        "and are not good losers, although they are reasonably good winners. They are particularly\n"
-        "selfish, and greedy for their alignment, and have an almost neutral outlook where wealth \n"
+    "Copper dragons are incorrigible pranksters, joke tellers, and riddlers. "
+        "They are prideful\n"
+        "and are not good losers, although they are reasonably good winners. "
+        "They are particularly\n"
+        "selfish, and greedy for their alignment, and have an almost "
+        "neutral outlook where wealth \n"
         "is concerned.\n",
 
-    "Brass dragons are great talkers, but not particularly good conversationalists. They are \n"
-        "egotistical and often boorish. They oftern have useful information, but will divulge it\n"
-        "only after drifting off the subject many times and after hints that a gift would be\n"
+    "Brass dragons are great talkers, but not particularly good "
+        "conversationalists. They are \n"
+        "egotistical and often boorish. They oftern have useful "
+        "information, but will divulge it\n"
+        "only after drifting off the subject many times and after hints "
+        "that a gift would be\n"
         "appreciated.\n",
 
-    "Theses undead feed on the blood of the living.  Often they are indistinguishable\n"
-        "from humans, and they maintain abilies they possessed in life (Inlucding sometimes\n"
+    "Theses undead feed on the blood of the living.  Often they are "
+        "indistinguishable\n"
+        "from humans, and they maintain abilies they possessed in life "
+        "(Inlucding sometimes\n"
         "spellcasting).  Vampires can only be hit by magical weapons.\n",
 
-    "This is perhaps the single most powerful type of undead creature.  A lich is the\n"
-        "remains of a powerful magic user who has kept his body animated after death \n"
-        "through the use of foul magics.  Liches can use magic as they did while still \n"
-        "living, and have other powers similar to greater undead creatures.\n",
+    "This is perhaps the single most powerful type of undead creature.  A "
+        "lich is the\n"
+        "remains of a powerful magic user who has kept his body animated "
+        "after death \n"
+        "through the use of foul magics.  Liches can use magic as they did "
+        "while still \n"
+        "living, and have other powers similar to greater undead "
+        "creatures.\n",
 
-    "These undead creatues have burning eyes set in mummified features.  They feed\n"
-        "on adventures' life essences and can only be hit by silver or magical weapons.\n",
+    "These undead creatues have burning eyes set in mummified features.  "
+        "They feed\n"
+        "on adventures' life essences and can only be hit by silver or "
+        "magical weapons.\n",
 
-    "These creatures are so like ghouls as to be completely indistinguishable from them,\n"
-        "and they are usually found only with a pack of ghouls. When a pack of ghouls and \n"
-        "ghasts attacks it will quickly become evident that ghasts are present, for they\n"
-        "exude a carrion stench in a 10' radius which causes retching and nausea.\n",
+    "These creatures are so like ghouls as to be completely "
+        "indistinguishable from them,\n"
+        "and they are usually found only with a pack of ghouls. When a "
+        "pack of ghouls and \n"
+        "ghasts attacks it will quickly become evident that ghasts "
+        "are present, for they\n"
+        "exude a carrion stench in a 10' radius which causes retching "
+        "and nausea.\n",
 
     "These undead spirits haunt the most desolate and deserted places.  They\n"
-        "attack all living creatues with mindless rage, drain life levels, and can \n"
+        "attack all living creatues with mindless rage, drain life levels, "
+        "and can \n"
         "only be hit by magical weapons.\n",
 
-    "Zombies are mindless, animated undead controlled by evil wizards or clerics.\n"
-        "While more dangerous than skeletons, they move very slowly and can be damaged\n"
+    "Zombies are mindless, animated undead controlled by evil wizards or "
+        "clerics.\n"
+        "While more dangerous than skeletons, they move very slowly and can "
+        "be damaged\n"
         "by holy water.\n",
 
-    "These undead are one of the weaker types.  Skeletons are animated by evil wizards\n"
+    "These undead are one of the weaker types.  Skeletons are animated by "
+        "evil wizards\n"
         "or clerics and are often used as guardains or warriors.\n",
 
-    "Ghouls are undead creatues who feed on the flesh of those who are still living.\n"
+    "Ghouls are undead creatues who feed on the flesh of those who are "
+        "still living.\n"
         "Their attacks can paralyze all races of characetsrs except elves.\n",
 
     "   A Half breed of human and elf, this race calls no place home and\n"
-        "tries to make anywhere s/he stays their home. A Half elf can take on the\n"
+        "tries to make anywhere s/he stays their home. A Half elf can take "
+        "on the\n"
         "qualities of either of it human or elvish parents.\n",
 
     "   Half Ogres are huge harry human looking race. They are not very\n"
-        "smart nor very quick moving about, however they are strong and healthy.\n",
+        "smart nor very quick moving about, however they are strong "
+        "and healthy.\n",
 
     "   Half human and half orc, this guy looks like a very very ugly human.\n"
         "Not very sure where to live these guys can be very dangerous or very\n"
         "helpful.\n",
 
     "Race of half giant and half human, they look more human than anything\n"
-        "and can often be confused as a large human. Half-Giants are known for their\n"
+        "and can often be confused as a large human. Half-Giants are known "
+        "for their\n"
         "high strength and constitution.\n",
 
-    "Lizard men are savage reptilian humanoids.  They generally attack in groups.\n",
+    "Lizard men are savage reptilian humanoids.  They generally attack "
+        "in groups.\n",
 
     "   Wide as a barrel and about as tall. This short stalky race builds\n"
-        "the best stone houses/tunnels or anything made of stone around. Dwarves are\n"
-        "known to have very good constitution, but as also known to be very hard to\n"
-        "get along with. If a dwarf does not have a beard a foot long he must be a\n"
+        "the best stone houses/tunnels or anything made of stone around. "
+        "Dwarves are\n"
+        "known to have very good constitution, but as also known to be "
+        "very hard to\n"
+        "get along with. If a dwarf does not have a beard a foot long he "
+        "must be a\n"
         "baby.\n",
 
-    "Small cousins of the dwarves, gnomes are friendly but reticent, quick to help\n"
-        "their friends but rarely seen by other races unless they want to be. They tend\n"
-        "to dwell underground in hilly, wooded regions where they can pursue their \n"
+    "Small cousins of the dwarves, gnomes are friendly but reticent, "
+        "quick to help\n"
+        "their friends but rarely seen by other races unless they want "
+        "to be. They tend\n"
+        "to dwell underground in hilly, wooded regions where they can "
+        "pursue their \n"
         "interests in peace.\n",
 
-    "Gnolls are large, evil, hyena-like humanoids that roam in loosely organized \n"
-        "packs.  They attack by overwhelming unwary victims with their numbers.\n",
+    "Gnolls are large, evil, hyena-like humanoids that roam in loosely "
+        "organized \n"
+        "packs.  They attack by overwhelming unwary victims with their "
+        "numbers.\n",
 
     "   Sharp features such as pointed ears set this race apart from most.\n"
-        "They are known to be flightly and not dependable. Elves are also known to be\n"
+        "They are known to be flightly and not dependable. Elves are also "
+        "known to be\n"
         "some of the best magicians around, as well as being on of the most\n"
         "dexterous races.\n",
 
     "   Sharp features such as pointed ears set this race apart from most.\n"
-        "They are known to be flightly and not dependable. Elves are also known to be\n"
+        "They are known to be flightly and not dependable. Elves are also "
+        "known to be\n"
         "some of the best magicians around, as well as being on of the most\n"
         "dexterous races.\n",
 
     "   Sharp features such as pointed ears set this race apart from most.\n"
-        "They are known to be flightly and not dependable. Elves are also known to be\n"
+        "They are known to be flightly and not dependable. Elves are also "
+        "known to be\n"
         "some of the best magicians around, as well as being on of the most\n"
         "dexterous races.\n",
 
     "   Some would say that these guys look like a dwarf with a very large\n"
-        "nose, I would not say that to a dwarf though. Gnomes are known to be very\n"
+        "nose, I would not say that to a dwarf though. Gnomes are known to "
+        "be very\n"
         "intelligent, but are not wise at all.\n",
 
     "  Avariel are a sub-species of elf, blessed with a pair of feathered\n"
-        "wings. These wings are attached between their shoulder blades and range in\n"
-        "color from white to black, with most being some shade of tufted grey.\n"
-        "These wings are somewhat vulnerable to fire, and as a result Avariel tend\n"
+        "wings. These wings are attached between their shoulder blades and "
+        "range in\n"
+        "color from white to black, with most being some shade of tufted "
+        "grey.\n"
+        "These wings are somewhat vulnerable to fire, and as a result "
+        "Avariel tend\n"
         "to be somewhat paranoid about fire wielding mages and other natural\n"
         "sources of flame.\n",
 
-    "These foes look like giant two headed orcs.  They have great strength and \n"
+    "These foes look like giant two headed orcs.  They have great strength "
+        "and \n"
         "can wield two spiked clubs that inflict terrible damage in combat.\n",
 
-    "A repulsive creature that appears as part cock, part lizard.  They have the\n"
+    "A repulsive creature that appears as part cock, part lizard.  They have "
+        "the\n"
         "power to turn flesh to stone. \n",
 
     "Large reptilian carnivores with big Teeth!!\n",
 
-    "Reptilian monsters whose very gaze can turn to stone any fleshy creature.\n",
+    "Reptilian monsters whose very gaze can turn to stone any fleshy "
+        "creature.\n",
 
     "Ferocious predators of a magical nature.  Gargoyles are typically found \n"
         "amid ruins or dwellins in underground caverns.\n",
@@ -6544,129 +6702,179 @@ const char     *RaceDesc[132] = {
     "Part dark-efl, part spider monster.  This horror is the subterranean \n"
         "counterpart of the centaur.\n",
 
-    "Displacer beasts resemble a sixlegged puma with two ebony tentacles growing \n"
-        "from behind its shoulders.  These beasts have the magical ability to displace\n"
-        "their image about three feet from their actual body, making them especially \n"
+    "Displacer beasts resemble a sixlegged puma with two ebony tentacles "
+        "growing \n"
+        "from behind its shoulders.  These beasts have the magical "
+        "ability to displace\n"
+        "their image about three feet from their actual body, making "
+        "them especially \n"
         "tricky opponents.\n",
 
-    "Half-lion, half-eagle avian carnivores.  Their favorite prey is horses and \n"
+    "Half-lion, half-eagle avian carnivores.  Their favorite prey is "
+        "horses and \n"
         "their distant kin.\n",
 
-    "Theses other-planar creatures resemble wolves, but they can breathe fire and \n"
+    "Theses other-planar creatures resemble wolves, but they can breathe "
+        "fire and \n"
         "detect invisible enemies.\n",
 
-    "Immense reptillian monsters with multiple heads.  All of its heads must be \n"
-        "severed before a hydra can be slain.  Hydras come in many sizes, with an \n"
+    "Immense reptillian monsters with multiple heads.  All of its heads "
+        "must be \n"
+        "severed before a hydra can be slain.  Hydras come in many sizes, "
+        "with an \n"
         "increasing number of heads as they grow stronger.\n",
 
-    "Stony monsters which immune to normal weapons and can attack many times with \n"
+    "Stony monsters which immune to normal weapons and can attack many "
+        "times with \n"
         "their sharp claws and spikes.\n",
 
-    "Large cold climate relatives of the elephants found in warmer regions.\n",
+    "Large cold climate relatives of the elephants found in warmer "
+        "regions.\n",
 
     "These are hideous womencreatures with coilng masses of snakes for hair. \n"
         "They can turn a person to stone with thir gaze.\n",
 
-    "These creature are part-man and part-bull warriors.  They are highly intelligent\n"
+    "These creature are part-man and part-bull warriors.  They are "
+        "highly intelligent\n"
         "and dangerous opponents.\n",
 
-    "Theses are huge omnivorous bats who like nothing better than warm blooded \n"
+    "Theses are huge omnivorous bats who like nothing better than "
+        "warm blooded \n"
         "humanoids for dinner.\n",
 
-    "These scavengers have long tentacles that they use to scoop trash into their\n"
+    "These scavengers have long tentacles that they use to scoop "
+        "trash into their\n"
         "cavernous mouths.\n",
 
-    "This is a more powerful form of Otyugh.  These disgusting scavengers have several\n"
+    "This is a more powerful form of Otyugh.  These disgusting scavengers "
+        "have several\n"
         "vicious attacks and a heavily armored body.\n",
 
-    "thses are sometimes referred to as polar woarms. They inhabit cold regions and are \n"
-        "aggressive predators who have been known to attack even frost giants.\n",
+    "these are sometimes referred to as polar woarms. They inhabit "
+        "cold regions and are \n"
+        "aggressive predators who have been known to attack even "
+        "frost giants.\n",
 
-    "These enormous carnivores burrow through solid ground in search of small(Man-sized)\n"
+    "These enormous carnivores burrow through solid ground in search "
+        "of small(Man-sized)\n"
         "morsels.\n",
 
-    "These are giant, poisonous spiders with the ability to phase in and out of this\n"
-        "dimension.  They are 'phased in' until they attack and are 'phased out' afterward.\n",
+    "These are giant, poisonous spiders with the ability to phase "
+        "in and out of this\n"
+        "dimension.  They are 'phased in' until they attack and "
+        "are 'phased out' afterward.\n",
 
-    "An extremely rare creature that is part-lion, and has the upper torso of a woman. \n"
-        "Rather than fight, sphinxes will often converse with the adventurers.\n",
+    "An extremely rare creature that is part-lion, and has the "
+        "upper torso of a woman. \n"
+        "Rather than fight, sphinxes will often converse with "
+        "the adventurers.\n",
 
     "Large, vicous wolves.\n",
 
-    "These creatures are distant relativies of dragons.  They attack by biting and using\n"
+    "These creatures are distant relativies of dragons.  They "
+        "attack by biting and using\n"
         "the poisonous sting in their tail.\n",
 
-    "These powerful subterranean creatures can use their claws to burrow through solid \n"
+    "These powerful subterranean creatures can use their claws "
+        "to burrow through solid \n"
         "stone in search of prey.\n",
 
-    "These omnivorous garden pest are kind of slimy and attack by biting and can spit a \n"
+    "These omnivorous garden pest are kind of slimy and attack by "
+        "biting and can spit a \n"
         "higly corrosive acid.\n",
 
-    "Also called landsharks, these are the results of a mad mage's experiment.  They are\n"
+    "Also called landsharks, these are the results of a mad "
+        "mage's experiment.  They are\n"
         "supid, irascible and always hungry.\n",
 
-    "These are giant, segmented creatures whose eight tentacles can attack once apiece \n"
-        "each around.  Carrion crawlers paralyze their victims and devour them.\n",
+    "These are giant, segmented creatures whose eight tentacles can "
+        "attack once apiece \n"
+        "each around.  Carrion crawlers paralyze their victims and "
+        "devour them.\n",
 
-    "These creatures are the hybrid offspring of rogue black dragons and basilisk.  \n"
-        "Dracolisk combine a dragon's breath attack with the petrifying gaze of a basilisk.\n",
+    "These creatures are the hybrid offspring of rogue black dragons "
+        "and basilisk.  \n"
+        "Dracolisk combine a dragon's breath attack with the petrifying "
+        "gaze of a basilisk.\n",
 
-    "These evil spirits' keening wail strikes fear into the hearts of men.  They attack \n"
+    "These evil spirits' keening wail strikes fear into the hearts "
+        "of men.  They attack \n"
         "with a chilling touch.\n",
 
-    "Also called eye tyrants or Spheres of Many Eyes, they are solitary horrors of great\n"
-        "power.  Each of the creatures' eyes has a unique magical pwer, and they are armored \n"
+    "Also called eye tyrants or Spheres of Many Eyes, they are "
+        "solitary horrors of great\n"
+        "power.  Each of the creatures' eyes has a unique magical "
+        "pwer, and they are armored \n"
         "with tough chitinous skin.\n",
 
-    "These are a rare and dangerous form of undead beholder.  They appear as sluggish, \n"
-        "wounded beholders, but still possess some of their orignal magical pwoers.\n",
+    "These are a rare and dangerous form of undead beholder.  They "
+        "appear as sluggish, \n"
+        "wounded beholders, but still possess some of their orignal "
+        "magical pwoers.\n",
 
-    "These are powerful undead dragons whose attacks include a breath weapon and a \n"
+    "These are powerful undead dragons whose attacks include a breath "
+        "weapon and a \n"
         "paralyzing touch.\n",
 
-    "These evils spirits ply victims with illusion and false civility, but in reality are\n"
+    "These evils spirits ply victims with illusion and false civility, "
+        "but in reality are\n"
         "cunning fighter/magic-users.\n",
 
     "A creation of Bane.\n",
 
-    "Ankhegs are burrowing monsters usually found in forests and farming areas.  They resemble\n"
-        "legged worms armed with wicked mandibles and sharply hooked limbs.\n",
+    "Ankhegs are burrowing monsters usually found in forests and "
+        "farming areas.  They resemble\n"
+        "legged worms armed with wicked mandibles and sharply hooked "
+        "limbs.\n",
 
-    "Bugbears are giant, hairy cousins of goblins.  They stand about 7' tall and are powerful\n"
+    "Bugbears are giant, hairy cousins of goblins.  They stand about "
+        "7' tall and are powerful\n"
         "warriors.\n",
 
-    "Efreet are genies from the elemental plane of fire.  These creatures are immune to all \n"
+    "Efreet are genies from the elemental plane of fire.  These creatures "
+        "are immune to all \n"
         "forms of fire but can hit by other magical attacks.\n",
 
-    "Harpies are wicked avian humanoids thay prey upon nearly all creatures resembling wolves,\n"
+    "Harpies are wicked avian humanoids thay prey upon nearly all "
+        "creatures resembling wolves,\n"
         "but they can breathe fire and can detect invisible enemies.\n",
 
-    "Manticores are a strage mix: They have a lions torso and legs, bats wings, a spiked tipped\n"
-        "tail and a human head.  They fire voileys of spikes from their tails and have a great \n"
+    "Manticores are a strage mix: They have a lions torso and legs, "
+        "bats wings, a spiked tipped\n"
+        "tail and a human head.  They fire voileys of spikes from their "
+        "tails and have a great \n"
         "appetite for human flesh.\n",
 
-    "Scrags, also called river trolls, live in waterways and are related to trolls.They\n"
+    "Scrags, also called river trolls, live in waterways and are related "
+        "to trolls.They\n"
         "perhaps the most feared of all troll-kind.\n",
 
-    "Owlbears are thought to be a hybrid created by some long-forgotten wizard.  They have \n"
-        "the body of a large bear, and the head and slashing beak of a giant owl.   Owlbears \n"
+    "Owlbears are thought to be a hybrid created by some long-forgotten "
+        "wizard.  They have \n"
+        "the body of a large bear, and the head and slashing beak of a "
+        "giant owl.   Owlbears \n"
         "are vicious, evil tempered, and ravenous.\n",
 
-    "Squids are dangerous varieties of the smaller sea creatures.  They are known to attack \n"
+    "Squids are dangerous varieties of the smaller sea creatures.  They "
+        "are known to attack \n"
         "travelers on the Trackless Sea.\n",
 
-    "Tigers are carnivourous predators that are sometimes trained for combat.\n",
+    "Tigers are carnivourous predators that are sometimes trained for "
+        "combat.\n",
 
-    "Theses evil undead spirits feed on adventures life essences and, like wights, can\n"
+    "Theses evil undead spirits feed on adventures life essences and, "
+        "like wights, can\n"
         "only be hit by silver or magical weapons.\n",
 
-    "Yetis are large creatures that inhabit ice regions.  Their white fur makes them nearly \n"
-        "invisible.  Oftentimes, you cannont spot them until they are within 10 to 30 feet of you.\n"
+    "Yetis are large creatures that inhabit ice regions.  Their white "
+        "fur makes them nearly \n"
+        "invisible.  Oftentimes, you cannont spot them until they are "
+        "within 10 to 30 feet of you.\n"
 };
 
 const char     *AttackType[] = {
     "Smite",
-    "Stab",                     // 1
+    "Stab",                     /* 1 */
     "Whip",
     "Slash",
     "Smash",
@@ -6675,17 +6883,19 @@ const char     *AttackType[] = {
     "Pound",
     "Claw",
     "Bite",
-    "Sting",                    // 10
+    "Sting",                    /* 10 */
     "Pierce",
     "Blast",
     "Impale",
     "Range Weapon",
-    // "Unknown",//15
-    // "Unknown",//16
+#if 0    
+    "Unknown", /* 15 */
+    "Unknown", /* 16 */
+#endif    
     "Jab",
     "Punch",
     "Strike",
-    "Undefined",                // test for 0
+    "Undefined",                /* test for 0 */
     "\n"
 };
 
@@ -6845,9 +7055,9 @@ const struct clan clan_list[MAX_CLAN] = {
     {0, "None", "None", "No description", 3005},
     {1, "the Exiled", "exiled", "Exiled from a clan", 3005},
     {2, "the $c000BStorm$c000xCloaks", "{$c000BS$c000xC$c000w}",
-     "No clan description set", 22704},
+        "No clan description set", 22704},
     {3, "the Brothers of Eternal Light", "$c000WBoEL$c000w",
-     "No clan description set", 22717},
+        "No clan description set", 22717},
     {4, "the Order", "{$c000WO$c000w}", "No clan description set", 22737},
     {5, "NewClan1", "N1", "No Clan description", 3005},
     {6, "NewClan2", "N2", "No Clan description", 3005},
@@ -6873,43 +7083,68 @@ const char     *languagelist[] = {
 char           *classname[] =
     { "Mu", "Cl", "Wa", "Th", "Dr", "Mo", "Ba", "So", "Pa", "Ra", "Ps",
 "Ne" };
-// None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon,
-// Returners
-/*
- * const char *MortalLevel[7][3] = {
- * {"$c0008Apprentice","$c0008Apprentice" ,"$c0008Apprentice"},
- * {"$c0004Pilgrim" ,"$c0004Pilgrim" ,"$c0004Pilgrim"}, {"$c0006Explorer"
- * ,"$c0006Explorer" ,"$c0006Explorer",},
- * {"$c0014Adventurer","$c0014Adventurer" ,"$c0014Adventurer"},
- * {"$c0015Mystical" ,"$c0015Mystical" ,"$c0015Mystical"}, {"$c000BHero"
- * ,"$c000BHero" ,"$c000BHero"}, {"$c000RHero" ,"$c000RHeroine"
- * ,"$c000RHero"} }; 
+/* 
+ * None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon,
+ * Returners
  */
-/*
- * case 51: sprintf(levels,"Newbie Immortal"); break; case 52:
- * sprintf(levels,"Saint"); break; case 53: sprintf(levels,"Creator");
- * break; case 54: sprintf(levels,"Demi God"); break; case 55:
- * sprintf(levels,"God"); break; case 56: sprintf(levels,"Greater God");
- * break; case 57: sprintf(levels,"Overseer"); break; case 58:
- * sprintf(levels,"SD Lord"); break; case 59: sprintf(levels,"Lord of
- * Realm"); break; case 60: sprintf(levels,"God of Realm"); break; Lesser
- * this.. greater that.. kind of sucks.. come up with new names. (Deity
- * Lesser Diety.. Greater diety.. Lesser god.. god.. greater god my ass..
- * those names suck.. 
- */
-/*
- * const char *ImmortalLevel[10][3] = { {"Supreme Being","Supreme
- * Being","Supreme Being"}, //60 {"Lesser Deity","Lesser Deity","Lesser
- * Deity"}, //51 {"Deity","Deity","Deity"}, //52 {"Greater Deity","Greater 
- * Deity","Greater Deity"}, //53 {"Lesser God", "Lesser Goddess", "Lesser
- * God"}, //54 {"God","Goddess","God"}, //55 {"Greater God", "Greater
- * Goddess","Greater God"}, //56 {"God of Judgement""Goddess of
- * Judgement", "Judgement Caller"}, //57 {"Lord", "Lady", "Thing"}, //58
- * {"Supreme Lady", "Supreme Lord", "Supreme Thing"} //59
- * 
- * }; 
- */
+#if 0
+const char *MortalLevel[7][3] = {
+    {"$c0008Apprentice","$c0008Apprentice" ,"$c0008Apprentice"},
+    {"$c0004Pilgrim" ,"$c0004Pilgrim" ,"$c0004Pilgrim"}, {"$c0006Explorer"
+     ,"$c0006Explorer" ,"$c0006Explorer",},
+    {"$c0014Adventurer","$c0014Adventurer" ,"$c0014Adventurer"},
+    {"$c0015Mystical" ,"$c0015Mystical" ,"$c0015Mystical"}, {"$c000BHero"
+     ,"$c000BHero" ,"$c000BHero"}, {"$c000RHero" ,"$c000RHeroine"
+     ,"$c000RHero"} }; 
+ 
 
+    case 51: 
+        sprintf(levels,"Newbie Immortal"); 
+        break; 
+    case 52:
+        sprintf(levels,"Saint"); 
+        break; 
+    case 53: 
+        sprintf(levels,"Creator");
+        break; 
+    case 54: 
+        sprintf(levels,"Demi God"); 
+        break; 
+    case 55:
+        sprintf(levels,"God"); 
+        break; 
+    case 56: 
+        sprintf(levels,"Greater God");
+        break; 
+    case 57: 
+        sprintf(levels,"Overseer"); 
+        break; 
+    case 58:
+        sprintf(levels,"SD Lord"); 
+        break; 
+    case 59: 
+        sprintf(levels,"Lord of Realm"); 
+        break; 
+    case 60: 
+        sprintf(levels,"God of Realm"); 
+        break; 
+        Lesser
+ /* using new names for levels */
+const char *ImmortalLevel[10][3] = { 
+    
+    {"Supreme Being","Supreme Being","Supreme Being"}, /* 60 */ 
+    {"Lesser Deity","Lesser Deity","Lesser Deity"}, /* 51 */ 
+    {"Deity","Deity","Deity"}, /* 52 */ 
+    {"Greater Deity","Greater Deity","Greater Deity"}, /* 53 */ 
+    {"Lesser God", "Lesser Goddess", "Lesser God"}, /* 54 */ 
+    {"God","Goddess","God"}, /* 55 */ 
+    {"Greater God", "Greater Goddess","Greater God"}, /* 56 */ 
+    {"God of Judgement""Goddess of Judgement", "Judgement Caller"}, /* 57 */ 
+    {"Lord", "Lady", "Thing"}, /* 58 */
+    {"Supreme Lady", "Supreme Lord", "Supreme Thing"} /* 59 */
+}; 
+ 
+#endif
 /*
  * xcoord, y coord, Disembark room, embark room 
  */
