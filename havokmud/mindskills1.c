@@ -636,7 +636,9 @@ void mind_psychic_impersonation(int level, struct char_data *ch,
 void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    fulldam,
+                    count = 0;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -648,6 +650,7 @@ void mind_ultra_blast(int level, struct char_data *ch,
      */
     dam = dice(level, 4);
     dam += level;
+    fulldam = dam;
 
     act("You blast out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, victim, TO_CHAR);
@@ -656,6 +659,11 @@ void mind_ultra_blast(int level, struct char_data *ch,
 
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
         temp = tmp_victim->next;
+        dam = fulldam;
+        count ++;
+        if (count >= 7) {
+            break;
+        }
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
                 if (!saves_spell(tmp_victim, SAVING_SPELL)) {
