@@ -47,8 +47,8 @@ extern const struct race_type race_list[];
 extern struct str_app_type str_app[];
 
 funcp           bweapons[] = {
-    cast_geyser, cast_fire_breath, cast_gas_breath, 
-    cast_frost_breath, cast_acid_breath, 
+    cast_geyser, cast_fire_breath, cast_gas_breath,
+    cast_frost_breath, cast_acid_breath,
     cast_lightning_breath
 };
 
@@ -186,7 +186,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
     if (!buf) {
         send_to_char("Dismiss whom?\n\r", ch);
         return;
-    } 
+    }
 
     bits = generic_find(buf, FIND_CHAR_ROOM, ch, &tmp_char, &dummy);
     if (tmp_char) {
@@ -1827,7 +1827,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         sprintf(buf1, "$c000cYou chat '$c0008%s$c000c'", argument);
         act(buf1, FALSE, ch, 0, 0, TO_CHAR);
     }
-    
+
     sprintf(buf1, "$c000c-=$c0008%s$c000c=- clan chats '$c0008%s$c000c'\n\r",
             GET_NAME(ch), argument);
 
@@ -1842,7 +1842,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
              (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
               !IS_SET(i->character->specials.act, PLR_NOOOC) &&
               !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
-            !check_soundproof(i->character) && 
+            !check_soundproof(i->character) &&
             GET_CLAN(i->character) == GET_CLAN(ch)) {
 
             send_to_char(buf1, i->character);
@@ -1922,6 +1922,71 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
         }
     }
 }
+
+void do_dig(struct char_data *ch, char *argument, int cmd) {
+
+    /*char buffer[MAX_STRING_LENGTH];*/
+
+    struct obj_data *o, *prize;
+
+    dlog("in do_dig (With a shovel)");
+
+    if(!(o = ch->equipment[HOLD])) {
+        send_to_char("Hmmm, what happen to that shovel?",ch);
+        return;
+    }
+
+    if(ITEM_TYPE(o) != ITEM_SHOVEL) {
+        send_to_char("How do you plan on shovelling with that thing?",ch);
+        return;
+    }
+
+    if(o->obj_flags.value[0] < 1) {
+        send_to_char("The shovel appears to be broken!", ch);
+        return;
+    }
+
+    if(o->obj_flags.value[1] != ch->in_room) { /*not in currect room*/
+
+        o->obj_flags.value[0]--;
+
+
+        /* if the object is below 0, break it..*/
+        if(o->obj_flags.value[0] < 1) {
+            send_to_char("You start digging long and hard.  *SNAP*\n\r"
+                        "Your shovel suddently breaks in two!",ch);
+            /*Rename object afterwards-Not done*/
+        } else
+            send_to_char("You start to dig... After much digging,"
+                         " you come up with a whole lot of nothing",ch);
+        /*lag for a few seconds */
+
+        return;
+    } else {  /*Bingo! We are in the right spot!!*/
+        if(o->obj_flags.value[3]==1) {
+
+            send_to_char("You dig and dig, but find nothing more "
+                    "than what you found earlier.",ch);
+             /*Print message to all in room*/
+            return;
+        }
+
+        if(!(prize = read_object(o->obj_flags.value[2], VIRTUAL))) {
+            send_to_char("You dig and dig, but unfornuately, only find a shoe"
+                         ,ch);
+            /*Print message to all in room*/
+            return;
+        }
+
+        ch_printf(ch,"You dig and dig long and hard... \n\r"
+                "You just discovered %s!!", prize->short_description );
+         /* Print info to room*/
+        obj_to_room(prize, ch->in_room);
+        o->obj_flags.value[3]=1;
+
+    }
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -478,9 +478,10 @@ typedef struct {
 #define ITEM_BOARD     24
 #define ITEM_TREE      25
 #define ITEM_ROCK      26
-#define ITEM_PORTAL             27
+#define ITEM_PORTAL    27
 #define ITEM_INSTRUMENT 28
-#define ITEM_SHIPS_HELM  29
+#define ITEM_SHIPS_HELM 29
+#define ITEM_SHOVEL    30
 
 /*
  * Bitvector For 'wear_flags'

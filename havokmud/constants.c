@@ -4043,6 +4043,7 @@ const char     *item_types[] = {
     "PORTAL",                   /* 27 */
     "INSTRUMENT",
     "SHIPS HELM",
+    "SHOVEL",
     "\n"
 };
 

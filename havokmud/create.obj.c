@@ -138,7 +138,7 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
         check = 1 << i;
 
         sprintf(buf, "%-2d [%s] %s", i + 1,
-                ((ch->specials.objedit->obj_flags.extra_flags & (check)) ? 
+                ((ch->specials.objedit->obj_flags.extra_flags & (check)) ?
                  "X" : " "), extra_bits[i]);
         send_to_char(buf, ch);
     }
@@ -193,7 +193,7 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
         check = 1 << i;
 
         sprintf(buf, "%-2d [%s] %s", i + 1,
-                ((ch->specials.objedit->obj_flags.wear_flags & (check)) ? 
+                ((ch->specials.objedit->obj_flags.wear_flags & (check)) ?
                  "X" : " "), wear_bits[i]);
         send_to_char(buf, ch);
     }
@@ -215,7 +215,7 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR)) {
         return;
     }
-    /* 
+    /*
      * someone is forced to do something. can be bad!
      * the ch->desc->str field will cause problems...
      */
@@ -223,14 +223,14 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-#if 0    
-    if (GetMaxLevel(ch) < GREATER_GOD && 
-            !IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) { 
-        send_to_char("You do not have access to object editing.\n\r",ch); 
-        return; 
-    } 
+#if 0
+    if (GetMaxLevel(ch) < GREATER_GOD &&
+            !IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) {
+        send_to_char("You do not have access to object editing.\n\r",ch);
+        return;
+    }
     /*
-     * this has been temporarilly removed... 
+     * this has been temporarilly removed...
      */
 #endif
 
@@ -251,7 +251,7 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     }
     ch->specials.objedit = obj_index[obj->item_number].data;
 #else
-    
+
     ch->specials.objedit = obj;
 #endif
 
@@ -556,7 +556,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.oedit) {
         case CHANGE_OBJ_TYPE:
-            if (update < 0 || update > 29) {
+            if (update < 0 || update > 30) {
                 return;
             } else {
                 ch->specials.objedit->obj_flags.type_flag = update;
@@ -574,7 +574,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     row = 0;
-    for (i = 0; i < 30; i++) {
+    for (i = 0; i < 31; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
         if (i & 1) {
             row++;
@@ -584,7 +584,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
         send_to_char(buf, ch);
     }
 
-    sprintf(buf, VT_CURSPOS, 20, 1);
+    sprintf(buf, VT_CURSPOS, 21, 1);
     send_to_char(buf, ch);
     send_to_char("Select the number to set to, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
@@ -860,7 +860,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
         case 41:
         case 42:
         case 50:
-        case 51:    
+        case 51:
         case 52:
         case 53:
         case 54:
@@ -1229,7 +1229,7 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
     default:
 #if 0
         send_to_char("Bad value",ch);
-#endif        
+#endif
         break;
     }
 }
@@ -1271,13 +1271,13 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             return;
         }
 
-        if ((ch->specials.objedit->obj_flags.type_flag == ITEM_SCROLL && 
-             value != 0) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_WAND && 
-             value == 3) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_STAFF && 
-             value == 3) || 
-            (ch->specials.objedit->obj_flags.type_flag == ITEM_POTION && 
+        if ((ch->specials.objedit->obj_flags.type_flag == ITEM_SCROLL &&
+             value != 0) ||
+            (ch->specials.objedit->obj_flags.type_flag == ITEM_WAND &&
+             value == 3) ||
+            (ch->specials.objedit->obj_flags.type_flag == ITEM_STAFF &&
+             value == 3) ||
+            (ch->specials.objedit->obj_flags.type_flag == ITEM_POTION &&
              value != 0)) {
             if (update >= 45 && update <= 52) {
                 skill = TRUE;
@@ -1335,7 +1335,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue1 is the level of casting this scroll "
                          "casts.", ch);
         } else if (value == 1) {
-            send_to_char("\n\rValue2 is the first spell this scroll casts.", 
+            send_to_char("\n\rValue2 is the first spell this scroll casts.",
                          ch);
         } else if (value == 2) {
             send_to_char("\n\rValue3 is the second spell this scroll casts.",
@@ -1407,7 +1407,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue3 is the max range [in rooms] and the "
                          "todam.", ch);
         } else {
-            send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r", 
+            send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r",
                          ch);
             send_to_char("1  - hit         2 - pound\n\r", ch);
             send_to_char("3  - pierce      4 - slash\n\r", ch);
@@ -1592,10 +1592,23 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rY coordinate of ship.", ch);
         } else if (value == 2) {
             send_to_char("\n\rSpeed of ship.", ch);
-        } else if (value == 3) {            
-            send_to_char("\n\rSize of ship.", ch);
+        } else if (value == 3) {
+            send_to_char("\n\rLevel of ship.", ch);
         } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
+        break;
+    case ITEM_SHOVEL:
+        if (value == 0) {
+           send_to_char("\n\rNumber of usages.", ch);
+        } else if (value == 1) {
+           send_to_char("\n\rWhere to dig?(VNUM)", ch);
+        } else if (value == 2) {
+           send_to_char("\n\rPrize for receiving.(VNUM)", ch);
+        } else if (value == 3) {
+           send_to_char("\n\rObject found? 1 yes/0 no.", ch);
+        } else {
+           send_to_char("\n\rValue not used for this item type.\n\r", ch);
         }
         break;
     default:

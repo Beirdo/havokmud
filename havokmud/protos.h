@@ -293,6 +293,7 @@ void            kick_messages(struct char_data *ch,
                               struct char_data *victim, int damage);
 void            do_disengage(struct char_data *ch, char *argument,
                              int cmd);
+void do_dig(struct char_data *ch, char *argument, int cmd);
 /*
  * From act.other.c
  */
