@@ -1555,6 +1555,8 @@ AddCommand("style",do_style, 572, POSITION_STANDING,0);
 AddCommand("fight",do_style, 572, POSITION_STANDING,0);
 
   AddCommand("iwizlist",do_iwizlist,573,POSITION_DEAD,0);
+
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

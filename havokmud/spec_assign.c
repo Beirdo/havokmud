@@ -1443,8 +1443,9 @@ void assign_objects()
    {45493, thunder_blue_pill},
    {45494, grayswandir},
    {51831, altarofsin },
-   {51827, applepie },
+   {51827, chestproc }, //appliepie },
    {51832, trinketcount },
+
 /*End Thunder Mountain Keep Objects*/
 	{ -1, NULL },
   };
@@ -1531,6 +1532,7 @@ void assign_rooms()
 { 44129,  Magic_Pool},//  in proc_assign and add to protos
 { 44114,  Read_Room},// in proc_assign and add to protos..
 { 51827, sinbarrel },
+{ 50, preperationproc },
     { -1, NULL},
   };
   int i;
