@@ -38,7 +38,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
    char tmp_str[MAX_INPUT_LENGTH*2];
    char *str_pos, *i;
    int temp;
-  
+
    /* Add cost for an item and it's contents, and next->contents */
 
    if(obj)
@@ -1191,10 +1191,17 @@ void load_char_extra(struct char_data *ch)
 	      do_set_flags(ch,tmp,0);
 	    } else
 	      if(!strcmp(p,"clan")) { /* Clan info*/
-		char tmp2[256];
-		sprintf(tmp2,"clan %s", s);
-		do_set_flags(ch,tmp2,0);
+			char tmp2[256];
+			sprintf(tmp2,"clan %s", s);
+			do_set_flags(ch,tmp2,0);
+			} else
+			   if(!strcmp(p,"hostip")) { /* hostIP*/
+				 ch->specials.hostip = strdup(s);
 	      } else
+	      	      if(!strcmp(p,"rumored")) { /* Clan info*/
+		  			ch->specials.rumor = strdup(s);
+		  			} else
+
 		if (!strcmp(p,"setsev")) {      /* setup severity level */
 		do_setsev(ch,s,0);
 	} else
@@ -1269,6 +1276,9 @@ void write_char_extra( struct char_data *ch)
   }
   if (ch->specials.clan) {
     fprintf(fp, "clan: %s\n",ch->specials.clan);
+  }
+  if (ch->specials.hostip) {
+    fprintf(fp, "hostip: %s\n",ch->specials.hostip);
   }
 
   if (ch->specials.A_list) {

@@ -2101,8 +2101,16 @@ if (GET_NAME(d->character))
         }
       }
 
+	load_char_extra(d->character); /*Load extra fromfile*/
+	if(d->character->specials.hostip==NULL)
 
-      sprintf(buf, "%s[%s] has connected.", GET_NAME(d->character), d->host);
+      sprintf(buf, "%s[%s] has connected."
+      	, GET_NAME(d->character), d->host);
+	else
+	  sprintf(buf, "%s[%s] has connected./n/rLast connected from[%s]"
+      	, GET_NAME(d->character), d->host, d->character->specials.hostip);
+
+	  d->character->specials.hostip = d->host;
       log(buf);
       SEND_TO_Q(motd, d);
       SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);

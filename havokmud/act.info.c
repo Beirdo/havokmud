@@ -2429,7 +2429,7 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
 	send_to_char(buf,ch);
    }
 
-  sprintf(buf,"You have %d practice sessions remaining.\n\r",
+  sprintf(buf,"$c0005You have $c0015%d $c0005practice sessions remaining.\n\r",
 	      ch->specials.spells_to_learn);
   send_to_char(buf, ch);
 

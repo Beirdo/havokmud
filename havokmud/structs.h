@@ -1123,7 +1123,7 @@ struct char_special_data
   int *clanNum;
   char *rumor;
   char *group_name; /* current group name if any... */
-
+  char *hostip;     /* (GH)  keep track of IP */
   Alias   *A_list;
   struct char_data *misc;
   struct char_data *fighting; /* Opponent                          */
