@@ -210,9 +210,9 @@ if (!ch)
     return;
   } else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
     if (add) {
-      SET_BIT(ch->specials.affected_by2, bitv);
+      SET_BIT(ch->specials.affected_by2, mod);
     } else {
-      REMOVE_BIT(ch->specials.affected_by2, bitv);
+      REMOVE_BIT(ch->specials.affected_by2, mod);//bitv);
     }
     return;
   } else {

@@ -1198,8 +1198,8 @@ dlog("in do_stat");
     /* stats on room */
     if (!str_cmp("room", arg1)) {
       rm = real_roomp(ch->in_room);
-      sprintf(buf, "Room name: %s, Of zone : %d. V-Number : %d, R-number : %d\n\r",
-	      rm->name, rm->zone, rm->number, ch->in_room);
+      sprintf(buf, "Room name: %s, Of zone : %d. V-Number : %d, R-number : %d (%d)\n\r",
+	      rm->name, rm->zone, rm->number, ch->in_room, rm->special);
       send_to_char(buf, ch);
 
       sprinttype(rm->sector_type,sector_types,buf2);
@@ -1524,7 +1524,7 @@ if (k->player.user_flags) {
        send_to_char(buf, ch);
       }
 
-    if (k->specials.affected_by2||1) {
+    if (k->specials.affected_by2 || 1) {
        sprintbit((unsigned)k->specials.affected_by2,affected_bits2,buf);
        send_to_char("Affected by2: ", ch);
        strcat(buf,"\n\r");
@@ -1787,7 +1787,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
       send_to_char("Can affect char :\n\r", ch);
       for (i=0;i<MAX_OBJ_AFFECT;i++) {
 	sprinttype(j->affected[i].location,apply_types,buf2);
-	sprintf(buf,"    Affects : %s By ", buf2);
+	sprintf(buf,"    Affects : %s By ",i, buf2);
 	send_to_char(buf, ch);
 
         switch(j->affected[i].location) {
@@ -1807,6 +1807,11 @@ if (aff->type <=MAX_EXIST_SPELL) {
         case APPLY_SPELL:
            sprintbit(j->affected[i].modifier,affected_bits, buf2);
            strcat(buf2,"\n\r");
+           break;
+        case APPLY_BV2:
+        case APPLY_SPELL2:
+           sprintbit(j->affected[i].modifier,affected_bits2, buf2);
+		   strcat(buf2,"\n\r");
            break;
         case APPLY_RACE_SLAYER:
            sprintf(buf2,"%s\n\r", RaceName[j->affected[i].modifier]);
@@ -4244,6 +4249,7 @@ dlog("in do_show");
 								   sprintf(buf2,buf);
 								   break;
 								//(GH)Should i put this here??  case APPLY_BV2:
+								case APPLY_BV2:
 								case APPLY_SPELL2:
 								   sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
 								   sprintf(buf,"");

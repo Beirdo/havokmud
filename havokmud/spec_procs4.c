@@ -31,8 +31,9 @@ extern int rev_dir[];
 /* @Name: This is the chest part of the royal rumble proc.
  * @description: Once there is only 1 person left in the arena, the chest will open.
  * @Author: Greg Hovey (Banon)
- * @Assigned to obj/mob/room:
+ * @Assigned to obj/mob/room: Obj(51152)
 */
+#define RUMBLE_ZONE 188
 int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
 {
      char buf[MAX_INPUT_LENGTH+80];
@@ -43,14 +44,18 @@ int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *ob
 
    dlog("in chestproc");
 
-	if(countPeople(2)>1)  {
-		ch_printf(ch,"You can't open the chest yet, there is still people in the battle arena!%d", countPeople(2));
+	if(countPeople(RUMBLE_ZONE)>1)  {
+		ch_printf(ch,"You can't open the chest yet, there is still people in the battle arena!%d", countPeople(RUMBLE_ZONE));
 		return(TRUE);
 	} else
 		return(FALSE);
 }
 
-
+/* @Name: CountPeople in zone Function
+ * @description: This function counts the number of people in a zone.
+ * @Author: Greg Hovey (Banon)
+ * @Used: used in chestproc and preparationproc
+*/
 int countPeople(int zonenr) {
 	int count=0;
 	struct descriptor_data *d;
@@ -69,30 +74,57 @@ int countPeople(int zonenr) {
 }
 /* part of royal rumble proc */
 
+int count_People_in_room(int room) {
+	  struct char_data *i;
+	  int count=0;
+		for (i=real_roomp(room)->people; i; i = i->next_in_room) {
+			if(i) //this counts the number of people in just this room.
+				count++;
+		}
+	return count;
+}
 
+
+
+/* @Name: This is the chest part of the royal rumble proc.
+ * @description: Once there is only 1 person left in the arena, the chest will open.
+ * @Author: Greg Hovey (Banon)
+ * @Assigned to obj/mob/room: Room(51151)
+*/
 int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 
 	  struct char_data *i;
-	  int count=0;
+	  int count=0, rand=0,x=0, zone=0;
 
 
-	if (cmd!=67)
+	if (cmd!=67)   //temporary command
 		return(FALSE);
 
-	for (i=real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
-		if(i)
-			count++;
-	}
+	count = count_People_in_room(ch->in_room);
+	zone = countPeople(RUMBLE_ZONE);
 
-	if((countPeople(2)-count )==1){
-		send_to_char("1 person in arena.. boot someone new",ch);
+	if((zone-count )==1 || (zone-count)==0){
 
+
+		//send_to_char("1 person in arena.. boot someone new",ch);
+		rand=number(0,count-1);
+
+				for (i=real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
+					if(i && x==rand) {
+						send_to_zone("$c000BThe gong sounds as someone new gets pushed into the arena.%c000w",ch);
+						char_from_room(i);
+						char_to_room(i,number(51153,51158));
+						return(TRUE);
+					}
+					x++;
+
+ 				}
 	} else
-	ch_printf(ch,"Number of people in zone:%d   Number of people in room:%d",countPeople(2), count);
+	ch_printf(ch,"Number of people in zone:%d   Number of people in room:%d",zone, count);
 
 
- 	return(FALSE);
+ 	return(TRUE);
 }
 
 /* Stuff for Heximal's new zones -Lennya 20030315*/

@@ -1455,8 +1455,10 @@ void assign_objects()
    {51831, altarofsin },
    {51827, applepie },
    {51832, trinketcount },
+   /*End Thunder Mountain Keep Objects*/
 
-/*End Thunder Mountain Keep Objects*/
+   { 51152, chestproc },  //royal rumble proc
+
 	{ -1, NULL },
   };
 
@@ -1558,7 +1560,7 @@ void assign_rooms()
 { 44129,  Magic_Pool},//  in proc_assign and add to protos
 { 44114,  Read_Room},// in proc_assign and add to protos..
 { 51827, sinbarrel },
-{ 50, preperationproc },
+{ 51151, preperationproc },  //Royal rumble proc.
     { -1, NULL},
   };
   int i;

@@ -772,6 +772,8 @@ struct room_data
 
 	struct large_room_data *large;  /* special for large rooms         */
 
+	int special;
+
 };
 /* ======================================================================== */
 
