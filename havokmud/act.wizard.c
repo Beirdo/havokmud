@@ -2037,15 +2037,15 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     (int) k->generic);
             strcat(buf, buf2);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
-			/*
-			 * language
-			 */
-			 if (!ch->player.speaks) {
-        	     ch->player.speaks = SPEAK_COMMON;
-			 }
-			 sprintf(buf, "%sCurrently Speaking: %s%s%s", color1, color2,
-			 		 languagelist[ch->player.speaks], color1);
-			 act(buf, FALSE, ch, 0, 0, TO_CHAR);
+            /*
+             * language
+             */
+             if (!ch->player.speaks) {
+                 ch->player.speaks = SPEAK_COMMON;
+             }
+             sprintf(buf, "%sCurrently Speaking: %s%s%s", color1, color2,
+                     languagelist[ch->player.speaks], color1);
+             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
 
             /*
