@@ -6186,7 +6186,7 @@ int dragon(struct char_data *ch, int cmd, char *arg,
     sprintf(buf, "%s spews forth from $n's mouth!$c000w",
             dragonTable[i].breath[j].spews );
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-
+    WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     level = GetMaxLevel(ch);
     
     for (tar_char = real_roomp(ch->in_room)->people; tar_char;

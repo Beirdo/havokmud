@@ -2329,7 +2329,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_IMMORTAL(ch) && !HasClass(ch, SORCERER_LEVEL_IND)) {
+    if (!IS_IMMORTAL(ch) && !HasClass(ch, CLASS_SORCERER)) {
         send_to_char("What, do you think you're a sorcerer?\n\r", ch);
         return;
     }
