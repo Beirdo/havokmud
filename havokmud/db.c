@@ -5018,7 +5018,7 @@ char           *fread_string(FILE * f1)
 void free_char(struct char_data *ch)
 {
     struct affected_type *af,
-                   *af1;
+                   *af1 = NULL;
     int             i;
 
     if (GET_NAME(ch)) {
