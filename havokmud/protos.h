@@ -1988,7 +1988,6 @@ void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
 void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
 void do_steed(struct char_data *ch, char *argument, int cmd);
 void do_stop(struct char_data *ch, char *argument, int cmd);
-void do_play(struct char_data *ch, char *argument, int cmd);
 
 /* From utility.c */
 int advatoi (const char *s);
@@ -2384,5 +2383,5 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
 void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void spell_song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 

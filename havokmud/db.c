@@ -4130,7 +4130,8 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.charging=0;
 	ch->specials.auction = 0;//st->auction;
 	ch->specials.minbid = 0;//st->minbid;
-	ch->specials.is_playing = 0;//st->minbid;
+	ch->specials.is_playing = 0;
+	ch->specials.is_hearing = 0;
 	ch->style=0;
 	       /* new stuff added 1-26-95 msw */
 	       /* need to malloc the space for the pc struct */

@@ -128,6 +128,7 @@ int mana_limit(struct char_data *ch)
   }
   if (HasClass(ch,CLASS_BARD)) {
     max +=100;
+    max += GET_LEVEL(ch, BARD_LEVEL_IND) * 4;
   }
   if (HasClass(ch, CLASS_NECROMANCER)) {
     max += 100;
@@ -625,7 +626,7 @@ void advance_level(struct char_data *ch, int class)
       add_hp += 2;
     break;
   case BARD_LEVEL_IND:
-    if(GET_LEVEL(ch,BARD_LEVEL_IND) < 15)
+    if(GET_LEVEL(ch,BARD_LEVEL_IND) < 12)
       add_hp += number (2,10);
     else
       add_hp += 2;
@@ -1185,6 +1186,9 @@ int i;
       		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, WARRIOR_LEVEL_IND)))*.05);
 
 	} else if (HasClass(ch, CLASS_THIEF))     { /* give thief classes (without warrior) a little more attacks: 1.6 */
+      		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, THIEF_LEVEL_IND)))*.02);
+
+	} else if (HasClass(ch, CLASS_BARD))     { /* give bard classes a little more attacks: 1.6 at 30 */
       		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, THIEF_LEVEL_IND)))*.02);
 	}
 	// special case for monks

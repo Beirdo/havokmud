@@ -5241,7 +5241,7 @@ void play_song_of_battle( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
-    spell_song_of_battle(level, ch, 0, 0);
+    song_of_battle(level, ch, 0, 0);
     break;
   default:
       log("serious screw-up in play_song_of_battle");

@@ -3160,18 +3160,19 @@ void PlaysongPulseStuff(int pulse)
 	struct room_data *rp;
 	struct char_data *tmp, *tmp2;
 	char buf[80];
-	int spl = 0, cost = 0;
+	int spl = 0, cost = 0, singer = 0;
 
 	if (pulse < 0)
 		return;
 
+	/* let's assume only players play sustained spells */
 	for (i = descriptor_list; i; i=i->next) {
 		if (!i->connected) {
 			ch = i->character;
 			if(ch->specials.is_playing) {
 				spl = ch->specials.is_playing;
 				/* let's see what the mana cost per round is: */
-				cost = (int)USE_MANA(ch, (int)spl);
+				cost = (int)(USE_MANA(ch, (int)spl)/10);
 				GET_MANA(ch) -= cost;
 				if(cost > GET_MANA(ch)) {
 					/* outta mana, stop playing */
@@ -3187,18 +3188,41 @@ void PlaysongPulseStuff(int pulse)
 					}
 					for (tmp = rp->people; tmp; tmp = tmp2) {
 						tmp2 = tmp->next_in_room;
-						if(tmp->specials.is_playing == spl) /* there is, don't remove affects, we're done here */
-							return;
-					}
-
-					/* remove spell affects from all people in room */
-					for (tmp = rp->people;tmp;tmp=tmp2) {
-						tmp2 = tmp->next_in_room;
-						if(affected_by_spell(tmp, spl)) {
-							send_to_char("As the bard song ends, you feel more like yourself again.\n\r",tmp);
-							affect_from_char(tmp, spl);
+						if(tmp->specials.is_playing == spl) { /* there is, don't remove affects, we're done here */
+							singer = 1;
+							break;
 						}
 					}
+					if(!singer)
+						/* remove spell affects from those hearing the song */
+						for (tmp = rp->people;tmp;tmp=tmp2) {
+							tmp2 = tmp->next_in_room;
+							if(tmp->specials.is_hearing == spl) {
+								send_to_char("As the bard song ends, you feel more like yourself again.\n\r",tmp);
+								affect_from_char(tmp, spl);
+								tmp->specials.is_hearing = 0;
+							}
+						}
+				}
+			} else if(ch->specials.is_hearing) { /* see if there's still someone in the room singing */
+				spl = ch->specials.is_hearing;
+				if(ch->in_room)
+					rp = real_roomp(ch->in_room);
+				if(!rp) {
+					log("weirdness in PlaysongPulseStuff");
+					return;
+				}
+				for (tmp = rp->people; tmp; tmp = tmp2) {
+					tmp2 = tmp->next_in_room;
+					if(tmp->specials.is_playing == spl) { /* there is, don't remove affects, we're done here */
+						singer = 1;
+						break;
+					}
+				}
+				if(!singer) {
+					send_to_char("As the bard song fades from your hearing, you feel more like yourself again.\n\r",ch);
+					affect_from_char(ch, spl);
+					tmp->specials.is_hearing = 0;
 				}
 			}
 		}

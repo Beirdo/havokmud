@@ -1623,10 +1623,9 @@ AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
 AddCommand("tweak", do_tweak, 598, POSITION_STANDING, 55);
 AddCommand("mrebuild",do_mrebuild,599,POSITION_STANDING,59);
 
-AddCommand("weave", do_cast, 600, POSITION_RESTING, 1);
-AddCommand("play",do_play,601,POSITION_STANDING,1);
+AddCommand("play", do_cast, 600, POSITION_RESTING, 1);
 AddCommand("stop",do_stop,601,POSITION_STANDING,1);
-AddCommand("sharpen",do_sharpen,603,POSITION_RESTING,1);
+AddCommand("sharpen",do_sharpen,602,POSITION_RESTING,1);
 }
 
 

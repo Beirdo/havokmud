@@ -405,27 +405,70 @@
 
 #define SPELL_BLADE_BARRIER		341
 
-#define FIRST_SUSTAINED_SONG	342
-#define SONG_OF_BATTLE			342
-#define LAST_SUSTAINED_SONG	    342
 
-#define MAX_EXIST_SPELL         342   /* max number of skills/spells */
+/* bard stuff */
+#define SKILL_DETECT_SOUND		342
+#define SONG_OF_OPENING			343
+#define SKILL_THROW_VOICE		344
+#define SKILL_VENTRILOQUATE		345
+#define SONG_OF_COMPREHENSION	346
+#define SONG_OF_BITING_WORDS	347
+#define SONG_OF_THE_LULLABY		348
+#define SONG_OF_CHARMING		349
+#define SONG_OF_FREEZING_NORTH	350
+#define SONG_OF_ENTRALLMENT		351
+#define SONG_OF_CALMING			352
+#define SONG_OF_THE_GUARDIAN	353
+#define SONG_OF_MUSCLE			354
+#define SONG_OF_MINT_AND_LEMON	355
+#define SKILL_KNOW_ALIGNMENT	356
+#define SONG_OF_SEEING			357
+#define SONG_OF_SPELL_BREACHING	358
+#define SKILL_KNOW_MONSTER		359
+#define SONG_OF_LIGHTNING		360
+#define SONG_OF_LEVITATION		361
+#define SONG_OF_THE_WINTER_GALE	362
+#define SONG_OF_DAZZLING		363
+#define SKILL_LEGEND_LORE		364
+#define SONG_OF_THE_HUNT		365
+#define SONG_OF_HERALDRY		366
+#define SONG_OF_LEGENDARY_WEAPON	367
+#define SONG_OF_LETHARGY		368
+#define SONG_OF_SPIRITS			369
+#define SONG_OF_THE_HIGH_HUNT	370
+#define SONG_OF_SILENCE			371
+#define SONG_OF_SPEED			372
+#define SONG_OF_SUMMONER		373
+#define SONG_OF_SIGHT			374
+#define SONG_OF_THE_HEARTH		375
+#define SONG_OF_ETERNAL_LIGHT	376
+#define SONG_OF_WANDERER		377
+#define SOUNDS_OF_FEAR			378
+#define SONG_OF_BATTLE			379
+#define HEROS_CHANT				380
+
+#define MAX_EXIST_SPELL         380   /* max number of skills/spells */
 
 
-#define FIRST_BREATH_WEAPON	     356 /*	201 */ //306
-#define SPELL_FIRE_BREATH            356 /*	206 starts at306*/
-#define SPELL_GAS_BREATH             357 /*	202 */
-#define SPELL_FROST_BREATH           358 /*	203 */
-#define SPELL_ACID_BREATH            359 /*	204 */
-#define SPELL_LIGHTNING_BREATH       360 /*	205 */
-#define SPELL_DEHYDRATION_BREATH     361 /*	206 */
-#define SPELL_VAPOR_BREATH	     362 /*	207 */
-#define SPELL_SOUND_BREATH	     363 /*	208 */
-#define SPELL_SHARD_BREATH	     364 /*	209 */
-#define SPELL_SLEEP_BREATH	     365 /*	210 */
-#define SPELL_LIGHT_BREATH	     366 /*	211 */
-#define SPELL_DARK_BREATH	     367 /*	212 */
-#define LAST_BREATH_WEAPON	     367 /*	212 */
+
+
+
+
+
+#define FIRST_BREATH_WEAPON	     382 /*	201 */ //306//356
+#define SPELL_FIRE_BREATH        382 /*	206 starts at306*/
+#define SPELL_GAS_BREATH         383 /*	202 */
+#define SPELL_FROST_BREATH       384 /*	203 */
+#define SPELL_ACID_BREATH        385 /*	204 */
+#define SPELL_LIGHTNING_BREATH   386 /*	205 */
+#define SPELL_DEHYDRATION_BREATH 387 /*	206 */
+#define SPELL_VAPOR_BREATH	     388 /*	207 */
+#define SPELL_SOUND_BREATH	     389 /*	208 */
+#define SPELL_SHARD_BREATH	     390 /*	209 */
+#define SPELL_SLEEP_BREATH	     391 /*	210 */
+#define SPELL_LIGHT_BREATH	     392 /*	211 */
+#define SPELL_DARK_BREATH	     393 /*	212 */
+#define LAST_BREATH_WEAPON	     393 /*	212 */
 
 /* NOTE!!!!!!!!!!!!!!!
    all spells MUST be before these types.   Otherwise, certain aspects of
@@ -433,25 +476,25 @@
    */
 
 
-#define TYPE_HIT                     371 //use to be 311
-#define TYPE_BLUDGEON                372
-#define TYPE_PIERCE                  373
-#define TYPE_SLASH                   374
-#define TYPE_WHIP                    375
-#define TYPE_CLAW                    376
-#define TYPE_BITE                    377
-#define TYPE_STING                   378
-#define TYPE_CRUSH                   379
-#define TYPE_CLEAVE                  380
-#define TYPE_STAB                    381
-#define TYPE_SMASH                   382
-#define TYPE_SMITE                   383
-#define TYPE_BLAST                   384
-#define TYPE_IMPALE				     385
-#define TYPE_RANGE_WEAPON	         386
-#define TYPE_JAB                     387
-#define TYPE_PUNCH                   388
-#define TYPE_STRIKE                  389
+#define TYPE_HIT                     400 //use to be 311
+#define TYPE_BLUDGEON                401
+#define TYPE_PIERCE                  402
+#define TYPE_SLASH                   403
+#define TYPE_WHIP                    404
+#define TYPE_CLAW                    405
+#define TYPE_BITE                    406
+#define TYPE_STING                   407
+#define TYPE_CRUSH                   408
+#define TYPE_CLEAVE                  409
+#define TYPE_STAB                    410
+#define TYPE_SMASH                   411
+#define TYPE_SMITE                   412
+#define TYPE_BLAST                   413
+#define TYPE_IMPALE				     414
+#define TYPE_RANGE_WEAPON	         415
+#define TYPE_JAB                     416
+#define TYPE_PUNCH                   417
+#define TYPE_STRIKE                  418
 
 
 /* all new weapons to practice (GH) */
@@ -521,12 +564,12 @@
 
 	/* This one needs to be after all real damage skills, might wanna */
 	/* alter messages if you move it */
-#define TYPE_SUFFERING               390
+#define TYPE_SUFFERING               419
                                    /* MAX is MAX_SKILLS = 350 */
 
 /* More anything but spells and weapontypes can be insterted here! */
 #define MAX_TYPES 70
-#define MAX_SPL_LIST	350
+#define MAX_SPL_LIST	380
 
 #define SAVING_PARA   0
 #define SAVING_ROD    1

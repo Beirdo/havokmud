@@ -2655,7 +2655,9 @@ void perform_violence(int pulse)
                   if (ch->equipment[WIELD])
                   {
                      /* set it to one, they only get one attack */
-                     x = 1.000;
+                     /* two  -Lennya */
+                     x = MIN(2, (1 + GET_LEVEL(ch, MONK_LEVEL_IND)/16.0));
+
                   }
                }
 
@@ -2736,6 +2738,22 @@ void perform_violence(int pulse)
 				}
 				//sprintf(temp,"\n\rNumatks:%.2f\n\r",x);
 				//send_to_char(temp,ch);
+
+			/* Bards do not hit when using an INSTRUMENT   -Lennya */
+			if (HasClass(ch, CLASS_BARD) && !IS_IMMORTAL(ch)) {
+				if (ch->equipment[WIELD])
+					if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
+						x = 0;
+				else if (ch->equipment[HOLD])
+					if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
+						x = 0;
+				else if (ch->equipment[WEAR_LIGHT])
+					if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
+						x = 0;
+
+			}
+
+
                while(x > 0.999)
                {
                   if(ch->specials.fighting)

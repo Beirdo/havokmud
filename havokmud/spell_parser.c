@@ -2118,17 +2118,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	char name[MAX_INPUT_LENGTH];
 	char ori_argument[256];     /* make a copy of argument for log */
 	int qend, spl, i,exp;
-#if 0
-	int  mlev, clev, dlev, minl;
-#endif
 	bool target_ok;
-
-#if 0
-	/* disabled, trying out new style of casting by npc's. Use the same */
-	/* rules as the PC use! magic_user_imp 				    */
-	if (IS_NPC(ch) && (!IS_SET(ch->specials.act, ACT_POLYSELF)))
-		return;
-#endif
+	extern struct chr_app_type chr_apply[];
 
 	if (!IsHumanoid(ch)) {
 		send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
@@ -2153,8 +2144,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (cmd!=370 && apply_soundproof(ch))
+	if (cmd!=370 && apply_soundproof(ch)) {
+		send_to_char("Too silent here to make a noise.\n\r", ch);
 		return;
+	}
 
 	if (cmd == 370 && !HasClass(ch,CLASS_PSI)) { /* take away mind spells for non psi */
 		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
@@ -2171,20 +2164,24 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	}
 
 	argument = skip_spaces(argument);
-/* did not want to invoke strcpy.. so added this loop to copy string [polax] */
-	for(i=0;argument[i] && (i < 255);i++)  /* enforce bound check on i */
+	for(i=0;argument[i] && (i < 255);i++)
 		ori_argument[i] = argument[i];
-	ori_argument[i] = '\0';  /* ensure proper null termination */
-/* modification end */
+	ori_argument[i] = '\0';
 
 	/* If there is no chars in argument */
 	if (!(*argument)) {
-		send_to_char("Cast which what where?\n\r", ch);
+		if (cmd != 600)
+			send_to_char("Cast which what where?\n\r", ch);
+		else
+			send_to_char("Sing which what where?\n\r", ch);
 		return;
 	}
 
 	if (*argument != '\'') {
-		send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		if (cmd != 600)
+			send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		else
+			send_to_char("Songs must always be enclosed by the vibrant symbols : '\n\r",ch);
 		return;
 	}
 
@@ -2192,7 +2189,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
 		*(argument+qend) = LOWER(*(argument+qend));
 	if (*(argument+qend) != '\'') {
-		send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		if (cmd != 600)
+			send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		else
+			send_to_char("Songs must always be enclosed by the vibrant symbols : '\n\r",ch);
 		return;
 	}
 
@@ -2204,7 +2204,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	}
 
 
-	/* mobs do not get  skills so we just check it for PC's */
+	/* mobs do not get skills so we just check it for PC's */
 	if (!ch->skills)
 		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
 			send_to_char("You do not have skills!\n\r",ch);
@@ -2223,21 +2223,14 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-#if 1
-	/* this should make sorcerer learned spells be forced to be recalled */
 	if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
 					!IS_IMMORTAL(ch) && IS_SET(ch->skills[spl].flags,SKILL_KNOWN_SORCERER) ) {
 		send_to_char("You must use recall for this spell.\n\r",ch);
 		return;
 	}
-#endif
 
-	if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
+	if(ch->skills[spl].learned == 0) {
 		send_to_char("You have no knowledge of this spell.\n\r",ch);
-		return;
-	}
-	if(spl >= FIRST_SUSTAINED_SONG && spl <= LAST_SUSTAINED_SONG) {
-		send_to_char("Alas, that's a song. Try playing it.\n\r",ch);
 		return;
 	}
 
@@ -2259,7 +2252,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				default:
 					send_to_char("It seems like you're in pretty bad shape!\n\r",ch);
 					break;
-			} /* Switch */
+			}
 		} else {
 			if (!IS_IMMORTAL(ch)) {
 				if ((spell_info[spl].min_level_magic > GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
@@ -2283,20 +2276,22 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 			tar_char = 0;
 			tar_obj = 0;
 
-			if (IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
+			if (cmd != 600 && IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
 								check_peaceful(ch,"This seems to be an dead magic zone!\n\r"))
 				return;
+			else if (cmd == 600 && IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
+								check_peaceful(ch,"Ah, no battle songs in here, matey!\n\r"))
+				return;
 
-/* for seeing what the other guys are doing test */
+
 			if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
-				sprintf(buf,"%s cast %s",GET_NAME(ch),ori_argument);  /* changed argument */
+				sprintf(buf,"%s cast %s",GET_NAME(ch),ori_argument);
 				log(buf);
 			}
 
 			if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
 				argument = one_argument(argument, name);
 
-				//(GH)  if name argument == self then target == Casters name..
 				if (str_cmp(name,"self")==0) {
 					sprintf(name,"%s",GET_NAME(ch));
 				}
@@ -2310,7 +2305,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							if (tar_char == ch || tar_char == ch->specials.fighting ||
 									tar_char->attackers < 6 || tar_char->specials.fighting == ch)
 								target_ok = TRUE;
-							else {
+							else if(cmd != 600) {
 								send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
 								target_ok = FALSE;
 							}
@@ -2331,10 +2326,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
 							target_ok = TRUE;
 					/* world obj spells, locate object & transport via plant */
-					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
-//						if (tar_obj = get_obj_vis(ch, name))
-							target_ok = TRUE;
-							sprintf(argument,"%s",name);
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD)) {
+						target_ok = TRUE;
+						sprintf(argument,"%s",name);
+					}
 					/* eq obj spells */
 					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
 						for(i=0; i<MAX_WEAR && !target_ok; i++)
@@ -2369,7 +2364,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						}
 					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_FIGHT_VICT))
 						if (ch->specials.fighting) {
-							/* WARNING, MAKE INTO POINTER */
 							tar_char = ch->specials.fighting;
 							target_ok = TRUE;
 						}
@@ -2399,18 +2393,31 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 						send_to_char("Nothing at all by that name.\n\r", ch);
 				} else { /* Nothing was given as argument */
-					if (spell_info[spl].targets < TAR_OBJ_INV)
-						send_to_char("Who should the spell be cast upon?\n\r", ch);
-					else
-						send_to_char("What should the spell be cast upon?\n\r", ch);
+					if (spell_info[spl].targets < TAR_OBJ_INV) {
+						if(cmd != 600)
+							send_to_char("Who should the spell be cast upon?\n\r", ch);
+						else
+							send_to_char("Who should the song be aimed at?\n\r", ch);
+					} else {
+						if(cmd != 600)
+							send_to_char("What should the spell be cast upon?\n\r", ch);
+						else
+							send_to_char("What should the song be aimed at?\n\r", ch);
+					}
 				}
 				return;
 			} else { /* TARGET IS OK */
 				if ((tar_char == ch) && IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
-					send_to_char("You can not cast this spell upon yourself.\n\r", ch);
+					if(cmd != 600)
+						send_to_char("You can not cast this spell upon yourself.\n\r", ch);
+					else
+						send_to_char("You can not aim this song at yourself.\n\r", ch);
 					return;
 				} else if ((tar_char != ch) && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
-					send_to_char("You can only cast this spell upon yourself.\n\r", ch);
+					if(cmd != 600)
+						send_to_char("You can only cast this spell upon yourself.\n\r", ch);
+					else
+						send_to_char("You can only aim this song at yourself.\n\r", ch);
 					return;
 				} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
 					send_to_char("You are afraid that it could harm your master.\n\r", ch);
@@ -2441,8 +2448,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 			if (spl != SPELL_VENTRILOQUATE && cmd != 370 && cmd !=600 )  /* mind, weave */
 				say_spell(ch, spl);
 			else if(spl != SPELL_VENTRILOQUATE && cmd == 600) { /* make bards do a pretty song thing instead */
-				ch_printf(ch,"You start weaving %s.\n\r",spells[spl-1]);
-				act("$n takes a deep breath, and bursts into a song.",FALSE, ch, 0, 0, TO_ROOM);
+				ch_printf(ch,"You start weaving the notes to the %s.\n\r",spells[spl-1]);
+				act("$n takes a deep breath, and starts to play a song.",FALSE, ch, 0, 0, TO_ROOM);
 			}
 
 			WAIT_STATE(ch, spell_info[spl].beats);
@@ -2454,7 +2461,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
 				max = ch->specials.spellfail;
 				max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
-/* check EQ and alter spellfail accordingly */
+				if(cmd == 600)
+					max -= chr_apply[GET_CHR(ch)].reaction; /* 0 at 12cha, 30 at 18cha */
 				switch(BestMagicClass(ch)) {
 					case	MAGE_LEVEL_IND:
 						if (EqWBits(ch,ITEM_ANTI_MAGE))
@@ -2505,13 +2513,14 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					max += spell_info[spl].spellfail/2;
 				if (cmd == 283)  /* recall:  less chance of spell fail ... */
 					max = max/2;
-				/* memorized spells don't fail ... bcw */
+
 				if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special) && cmd != 283 ) {
-//					if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
-//						send_to_char("You have no knowledge of this spell.\n\r",ch);
-//						return;
-//					}
-					send_to_char("You lost your concentration!\n\r", ch);
+					if(cmd != 600)
+						send_to_char("You lost your concentration!\n\r", ch);
+					else {
+						send_to_char("You croak loudly, then blush furiously.\n\r", ch);
+						act("$n emits a loud croak, and blushes furiously.\n\r",FALSE, ch, 0, 0, TO_ROOM);
+					}
 					cost = (int)USE_MANA(ch, (int)spl);
 					GET_MANA(ch) -= (cost>>1);
 					LearnFromMistake(ch, spl, 0, 95);
@@ -2525,6 +2534,12 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							act("$n wastes a spell on $s own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
 							return;
 						}
+					}
+					if (IS_AFFECTED(tar_char,AFF_SILENCE) && cmd == 600) {
+						act("Your song seems to have no impact on $N.",FALSE,ch,0,tar_char,TO_CHAR);
+						act("$n's song seems to leave &N unaffected.",FALSE,ch,0,tar_char,TO_NOTVICT);
+						act("$n seems to yell something at you, but you're in a state of blessed silence.",FALSE,ch,0,0,TO_VICT);
+						return;
 					}
 					if (tar_char) {
 						if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
@@ -2543,11 +2558,12 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
 						return;
 					}
-					if (check_nomagic(ch,"Your skill appears useless in this magic dead zone.",
-										"$n's spell dissolves like so much wet toilet paper."))
-						return;
+					if (cmd != 600 && check_nomagic(ch,"Your skill appears useless in this magic dead zone.",
+											"$n's spell dissolves like so much wet toilet paper."))
+							return;
 				}
-				send_to_char("Ok.\n\r",ch);
+				if(cmd != 600)
+					send_to_char("Ok.\n\r",ch);
 				((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
 				cost = (int)USE_MANA(ch, (int)spl);
 				exp = NewExpCap(ch, cost*50);
@@ -2560,40 +2576,60 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						if(ITEM_TYPE(instrument) == ITEM_INSTRUMENT) {
 							if(instrument->obj_flags.value[0] > -1 && instrument->obj_flags.value[0] < 51) {
 								cost = (int) cost *(1 - ((float)(instrument->obj_flags.value[0])/100));
-								GET_MANA(ch) -= cost;
 							} else {
 								/* this value is off limits! */
 								log("some instrument has an invalid mana reduction value!");
 							}
 						}
 					}
-					GET_MANA(ch) -= cost;
-				} else {
-					GET_MANA(ch) -= cost;
 				}
-				sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
+				GET_MANA(ch) -= cost;
+				if(cmd == 600)
+					sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert playing abilities.$c000w\n\r",exp);
+				else
+					sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
 				send_to_char(buf,ch);
 				gain_exp(ch, exp);
 			}
 		}	/* if GET_POS < min_pos */
 		return;
 	}
-	switch (number(1,5)) {
-		case 1:
-			send_to_char("Bylle Grylle Grop Gryf???\n\r", ch);
-			break;
-		case 2:
-			send_to_char("Olle Bolle Snop Snyf?\n\r",ch);
-			break;
-		case 3:
-			send_to_char("Olle Grylle Bolle Bylle?!?\n\r",ch);
-			break;
-		case 4:
-			send_to_char("Gryffe Olle Gnyffe Snop???\n\r",ch);
-			break;
-		default:
-			send_to_char("Bolle Snylle Gryf Bylle?!!?\n\r",ch);
-			break;
+	if(cmd != 600) {
+		switch (number(1,5)) {
+			case 1:
+				send_to_char("Bylle Grylle Grop Gryf???\n\r", ch);
+				break;
+			case 2:
+				send_to_char("Olle Bolle Snop Snyf?\n\r",ch);
+				break;
+			case 3:
+				send_to_char("Olle Grylle Bolle Bylle?!?\n\r",ch);
+				break;
+			case 4:
+				send_to_char("Gryffe Olle Gnyffe Snop???\n\r",ch);
+				break;
+			default:
+				send_to_char("Bolle Snylle Gryf Bylle?!!?\n\r",ch);
+				break;
+		}
+	} else {
+		switch (number(1,5)) {
+			case 1:
+				send_to_char("Do re mi fa sol la ti do?\n\r", ch);
+				break;
+			case 2:
+				send_to_char("Mi do sol sol la ti!\n\r",ch);
+				break;
+			case 3:
+				send_to_char("Fa fa la la ti do ti do?!?\n\r",ch);
+				break;
+			case 4:
+				send_to_char("Re mi sol fa mi re do??\n\r",ch);
+				break;
+			default:
+				send_to_char("Do do la la re re mi sol?\n\r",ch);
+				break;
+		}
 	}
 }
 
@@ -3905,7 +3941,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
   spello(342,24,POSITION_STANDING, LOW_IMMORTAL, 45,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  4, TAR_IGNORE , play_song_of_battle, 0,0, 4, LOW_IMMORTAL);
+  40, TAR_IGNORE , play_song_of_battle, 0,0, 4, LOW_IMMORTAL);
 
 
 }

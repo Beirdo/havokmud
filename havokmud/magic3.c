@@ -4504,7 +4504,7 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 	}
 }
 
-void spell_song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	struct affected_type af;
 	struct char_data *tmp, *tmp2;
@@ -4520,17 +4520,20 @@ void spell_song_of_battle(byte level, struct char_data *ch, struct char_data *vi
 	for (tmp = rp->people;tmp;tmp=tmp2) {
 		tmp2 = tmp->next_in_room;
 		if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
-			if(!affected_by_spell(ch, SONG_OF_BATTLE)) {
-				send_to_char("You feel like a fight!\n\r",ch);
-				act("$n gets a bloodthirsty look in $s eyes.", FALSE, tmp, 0, 0, TO_ROOM);
+			if(tmp->specials.is_hearing != SONG_OF_BATTLE) {
+				if(!affected_by_spell(ch, SONG_OF_BATTLE)) {
+					send_to_char("You feel like a fight!\n\r",ch);
+					act("Hearing the song of battle, $n gets a bloodthirsty look in $s eyes.", FALSE, tmp, 0, 0, TO_ROOM);
 
+				}
 				af.type      = SONG_OF_BATTLE;
-				af.duration  = 10;
+				af.duration  = 999;
 				af.modifier  = 3;
 				af.location  = APPLY_HITNDAM;
 				af.bitvector = 0;
-
 				affect_to_char(tmp, &af);
+
+				tmp->specials.is_hearing = SONG_OF_BATTLE;
 			}
 		}
 	}

@@ -1355,6 +1355,7 @@ struct char_special_data
 	char *quest_no;	 /* what mob says when returning wrong item */
 
 	int is_playing;
+	int is_hearing;
 
   };
 
