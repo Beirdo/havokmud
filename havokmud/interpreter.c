@@ -115,7 +115,6 @@ const int moon_elf_class_choice[]= {
 	CLASS_PALADIN,
 	CLASS_RANGER,
 	CLASS_PSI,
-	CLASS_BARD,
 	CLASS_WARRIOR+CLASS_MAGIC_USER,
 	CLASS_WARRIOR+CLASS_THIEF,
 	CLASS_MAGIC_USER+CLASS_THIEF,
@@ -184,7 +183,6 @@ CLASS_WARRIOR,
 CLASS_THIEF,
 CLASS_PALADIN,
 CLASS_RANGER,
-CLASS_BARD,
 CLASS_WARRIOR+CLASS_THIEF,
 CLASS_WARRIOR+CLASS_CLERIC,
 	/* NEW CLASS SELECTIONS HERE */
@@ -196,7 +194,6 @@ CLASS_MAGIC_USER,
 CLASS_CLERIC,
 CLASS_WARRIOR,
 CLASS_THIEF,
-CLASS_BARD,
 CLASS_THIEF+CLASS_WARRIOR,
 	/* NEW CLASS SELECTIONS HERE */
 0
@@ -240,7 +237,6 @@ CLASS_BARBARIAN,
 CLASS_PALADIN,
 CLASS_RANGER,
 CLASS_PSI,
-CLASS_BARD,
 CLASS_NECROMANCER,
 CLASS_WARRIOR+CLASS_DRUID,
 CLASS_WARRIOR+CLASS_THIEF,
@@ -344,7 +340,6 @@ CLASS_BARBARIAN,
 CLASS_PALADIN,
 CLASS_RANGER,
 CLASS_PSI,
-CLASS_BARD,
 /* new clases below here */
 
 0
@@ -1608,18 +1603,14 @@ AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
 AddCommand("tweak", do_tweak, 598, POSITION_STANDING, 55);
 AddCommand("mrebuild",do_mrebuild,599,POSITION_STANDING,59);
 
-AddCommand("play", do_cast, 600, POSITION_RESTING, 1);
-AddCommand("stop",do_stop,601,POSITION_STANDING,1);
 AddCommand("sharpen",do_sharpen,602,POSITION_RESTING,1);
 AddCommand("eval", do_eval, 603, POSITION_STANDING, 53);
 AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
 
 AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
-AddCommand("voice", do_throw_voice, 606, POSITION_SITTING, 1);
-AddCommand("detect sound", do_detect_sound, 607, POSITION_STANDING, 1);
-AddCommand("know", do_know, 608, POSITION_RESTING, 1);
-AddCommand("lore", do_legend_lore, 609, POSITION_RESTING, 1);
-AddCommand("ventriloquate", do_ventriloquate, 610, POSITION_SITTING, 1);
+
+// room here
+
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
 AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
@@ -1944,7 +1935,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
 
 
-			if(HasClass(d->character,CLASS_PALADIN) || HasClass(d->character,CLASS_BARD))
+			if(HasClass(d->character,CLASS_PALADIN))
 				sprintf(bufx,"Please select your alignment ($c000WGood$c000w)");
 			else
 				if (HasClass(d->character, CLASS_DRUID))
@@ -2033,7 +2024,7 @@ d->host);
 	      {
 			case 'n':
 		    case 'N':
-		    	if(!HasClass(d->character, CLASS_BARD) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_NECROMANCER)) {
+		    	if(!HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_NECROMANCER)) {
 			  	GET_ALIGNMENT(d->character)=1;
 			  	send_to_char("You have chosen to be Neutral in alignment.\n\r\n\r",d->character);
 			  	STATE(d) = CON_CREATION_MENU;
@@ -2056,7 +2047,7 @@ d->host);
 	      case 'e':
 	      case 'E':
 
-			if(!HasClass(d->character, CLASS_BARD) && !HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
+			if(!HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
 				GET_ALIGNMENT(d->character)=-1000;
 				send_to_char("You have chosen the dark side.\n\r\n\r",d->character);
 				STATE(d) = CON_CREATION_MENU;
@@ -3940,8 +3931,8 @@ int show_race_choice(struct descriptor_data *d)
 	char buf[255],buf2[254];
 
 SEND_TO_Q(  "                                  Level Limits\n\r",d);
-sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
-	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","bd","ne");
+sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
+	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","ne");
 	SEND_TO_Q(buf,d);
 
 	while (race_choice[i]!=-1) {
@@ -3964,7 +3955,7 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %
 	 }
 
 send_to_char("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,dr=druid,mk=monk\n\r",d->character);
-send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard, ne=necromancer\n\r\n\r",d->character);
+send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi, ne=necromancer\n\r\n\r",d->character);
 }
 
 

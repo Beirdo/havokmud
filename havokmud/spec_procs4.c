@@ -8,10 +8,8 @@
 /*   external vars  */
 /*   external vars  */
   extern struct skillset warriorskills[];
-  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
-  extern struct skillset bardskills[];
   extern struct skillset monkskills[];
   extern struct skillset mageskills[];
   extern struct skillset clericskills[];
@@ -2859,8 +2857,6 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_da
 		RangerGuildmaster(ch, cmd, 0, guildmaster, 0);
 	} else if(IS_SET(guildmaster->specials.act, ACT_PSI)) {
 		PsiGuildmaster(ch, cmd, 0, guildmaster, 0);
-	} else if(IS_SET(guildmaster->specials.act, ACT_BARD)) {
-		BardGuildMaster(ch, cmd, 0, guildmaster, 0);
 	} else if(IS_SET(guildmaster->specials.act, ACT_NECROMANCER)) {
 		NecromancerGuildMaster(ch, cmd, 0, guildmaster, 0);
 	} else {

@@ -812,11 +812,11 @@ if (!ch->skills) {
 		if (t != ch) {
 			if ((t->skills) && number(1,diff) < t->skills[skill_num].learned ||
 						GetMaxLevel(t) >= LOW_IMMORTAL || IS_NPC(t) ||
-						affected_by_spell(t,SKILL_ESP) || affected_by_spell(t,SPELL_COMP_LANGUAGES)|| affected_by_spell(t, SONG_OF_COMPREHENSION) ||
+						affected_by_spell(t,SKILL_ESP) || affected_by_spell(t,SPELL_COMP_LANGUAGES) ||
 						ch->player.speaks == 9) {
 				/* these guys always understand */
 				if (GetMaxLevel(t) >= LOW_IMMORTAL || affected_by_spell(t,SKILL_ESP) ||
-								affected_by_spell(t,SPELL_COMP_LANGUAGES) || IS_NPC(t) || affected_by_spell(t, SONG_OF_COMPREHENSION) ||
+								affected_by_spell(t,SPELL_COMP_LANGUAGES) || IS_NPC(t)  ||
 								ch->player.speaks == SPEAK_ALL)  //Part 3 and last part of the speak all thing
                       							                  //- Manwe Windmaster 200697
 					act(buf3, FALSE,ch,0,t,TO_VICT);

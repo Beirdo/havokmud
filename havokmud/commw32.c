@@ -715,12 +715,6 @@ memory_check("end 5, begin 6");
 	      traveling_qp(pulse);
     }
 
-	if (!(pulse % PULSE_PLAYSONG)) {
-		dlog("Before playing song pulse");
-		memory_check("playing song pulse");
-	      PlaysongPulseStuff(pulse);
-    }
-
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");
 	memory_check(" before pulse weather");

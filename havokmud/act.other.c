@@ -847,10 +847,8 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
   char buf[254], buffer[MAX_STRING_LENGTH], temp[20];
   int i = 0;
   extern struct skillset warriorskills[];
-  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
-  extern struct skillset bardskills[];
     extern struct skillset necroskills[];
   extern struct skillset monkskills[];
   extern struct skillset warmonkskills[];
@@ -909,7 +907,7 @@ dlog("in do_practice");
 			}
 			i++;
 		}
-		i=0;
+/*		i=0;
 		if(OnlyClass(ch,CLASS_WARRIOR)) {
 	  		while(scwarskills[i].level != -1) {
 				if (IS_SET(ch->skills[scwarskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -925,7 +923,7 @@ dlog("in do_practice");
 				}
 				i++;
 			}
-		}
+		}*/
 		i=0;
 		while(warninjaskills[i].level != -1) {
 			if (IS_SET(ch->skills[warninjaskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1348,48 +1346,7 @@ dlog("in do_practice");
 	}
 	break;
 
-    case 'a':
-    case 'A':
-      {
-        if (!HasClass(ch, CLASS_BARD)) {
-  	send_to_char("I bet you think you're a bard.\n\r", ch);
-  	return;
-        }
-  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
-  		while(bardskills[i].level != -1) {
-  			if (IS_SET(ch->skills[bardskills[i].skillnum].flags,SKILL_KNOWN)) {
-  				sprintf(buf,"[%-2d] %-30s %-15s",bardskills[i].level,
-  						bardskills[i].name,how_good(ch->skills[bardskills[i].skillnum].learned));
-  				if (IsSpecialized(ch->skills[bardskills[i].skillnum].special))
-  					strcat(buf," (special)");
-  				strcat(buf," \n\r");
-  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-  					break;
-  				strcat(buffer, buf);
-  				strcat(buffer, "\r");
-  			}
-  			i++;
-  		}
-  		i=0;
- 		while(loreskills[i].level != -1) {
- 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
- 				sprintf(buf,"[%-2d] %-30s %-15s",loreskills[i].level,
- 						loreskills[i].name,how_good(ch->skills[loreskills[i].skillnum].learned));
- 				if (IsSpecialized(ch->skills[loreskills[i].skillnum].special))
- 					strcat(buf," (special)");
- 				strcat(buf," \n\r");
- 				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
- 					break;
- 				strcat(buffer, buf);
- 				strcat(buffer, "\r");
- 			}
- 			i++;
-		}
-  		page_string(ch->desc, buffer, 1);
-  		return;
-  	}
-  	break;
-    case 'n':
+   case 'n':
     case 'N':
       {
         if (!HasClass(ch, CLASS_NECROMANCER)) {
@@ -2282,7 +2239,6 @@ dlog("in do_recite");
 		!HasClass(ch, CLASS_CLERIC) &&
 		!HasClass(ch, CLASS_DRUID) &&
 		!HasClass(ch, CLASS_NECROMANCER) &&
-		!HasClass(ch, CLASS_BARD) &&
 		!HasClass(ch, CLASS_SORCERER)) {
 		if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned ||
 				ch->skills[SKILL_READ_MAGIC].learned == 0) {

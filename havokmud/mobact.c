@@ -402,11 +402,6 @@ if (!no_specials) {		/* do not run these if disabled */
         return;
         }
     }
- if (IS_SET(ch->specials.act,ACT_BARD)) {
-   if (fighter(ch,0,"",ch,PULSE_TICK)) { /*Bard mob not made yet */
-       return;
-       }
-    }
 
   } /* !no_special */
 

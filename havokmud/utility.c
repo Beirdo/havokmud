@@ -113,9 +113,6 @@ int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
 	if (HasClass(ch, CLASS_DRUID) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_DRUID))
 		return(FALSE);
 
-	if (HasClass(ch, CLASS_BARD) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARD))
-		return(FALSE);
-
 	if (HasClass(ch, CLASS_NECROMANCER) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER))
 		return(FALSE);
 
@@ -167,9 +164,6 @@ int GetItemClassRestrictions(struct obj_data *obj)
     total += CLASS_DRUID;
   }
 
-  if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARD)) {
-    total += CLASS_BARD;
-  }
   if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER)) {
     total += CLASS_NECROMANCER;
   }
@@ -2990,7 +2984,7 @@ int CheckForBlockedMove
   strcpy(buf2, "The guard humiliates $n, and blocks $s way.");
 
   if ((IS_NPC(ch) && (IS_POLICE(ch))) || (GetMaxLevel(ch) >= DEMIGOD) ||
-      (IS_AFFECTED(ch, AFF_SNEAK) || IS_AFFECTED2(ch, AFF2_GUARDIAN_ANGEL)))
+      (IS_AFFECTED(ch, AFF_SNEAK)))
     return(FALSE);
 
 
@@ -3361,116 +3355,6 @@ void ArenaPulseStuff(int pulse)
 			}
 		} /* not enough or too many people in arena */
 	} /* arena not closed */
-}
-
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
-#define USE_MANA(ch, sn) \
-  MAX((int)spell_info[sn].min_usesmana,100/MAX(2,(2+GET_LEVEL(ch, BestMagicClass(ch))-SPELL_LEVEL(ch,sn))))
-
-void PlaysongPulseStuff(int pulse)
-{
-	struct descriptor_data *i;
-	register struct char_data *ch;
-	struct room_data *rp;
-	struct char_data *tmp, *tmp2;
-	char buf[80];
-	int spl = 0, cost = 0, singer = 0;
-
-	if (pulse < 0)
-		return;
-
-	/* let's assume only players play sustained spells */
-	for (i = descriptor_list; i; i=i->next) {
-		if (!i->connected) {
-			ch = i->character;
-			if(ch->specials.is_playing) {
-				spl = ch->specials.is_playing;
-				/* let's see what the mana cost per round is: */
-				cost = (int)(USE_MANA(ch, (int)spl)/10);
-				GET_MANA(ch) -= cost;
-				if(ch->in_room)
-					rp = real_roomp(ch->in_room);
-				if(!rp) {
-					log("weirdness in PlaysongPulseStuff");
-					return;
-				}
-				if(cost > GET_MANA(ch)) {
-					/* outta mana, stop playing */
-					send_to_char("Your voice drained, there's no other option but to end your song.\n\r",ch);
-					act("$n's voice turns into a croak, and, blushing furiously, $e ends $s song.",FALSE, ch, 0,0,TO_ROOM);
-					ch->specials.is_playing = 0;
-					/* is there someone else in the room playing this song? */
-					for (tmp = rp->people; tmp; tmp = tmp2) {
-						tmp2 = tmp->next_in_room;
-						if(tmp->specials.is_playing == spl) { /* there is, don't remove affects, we're done here */
-							singer = 1;
-							break;
-						}
-					}
-					if(!singer)
-						/* remove spell affects from those hearing the song */
-						for (tmp = rp->people;tmp;tmp=tmp2) {
-							tmp2 = tmp->next_in_room;
-							if(tmp->specials.is_hearing == spl) {
-								send_to_char("As the bard song ends, you feel more like yourself again.\n\r",tmp);
-								affect_from_char(tmp, spl);
-								tmp->specials.is_hearing = 0;
-							}
-						}
-				} else {
-					if (IS_SET(spell_info[spl].targets, TAR_VIOLENT)) { /* make sure all non grouped are affected */
-						for (tmp = rp->people; tmp; tmp = tmp2) {
-							tmp2 = tmp->next_in_room;
-							if (!in_group(ch, tmp) || !IS_AFFECTED(tmp,AFF_GROUP)) {
-								if(!tmp->specials.is_hearing) {
-									((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
-									tmp->specials.is_hearing == spl;
-								}
-							}
-						}
-					} else if (IS_SET(spell_info[spl].targets, TAR_GROUP)) { /* make sure all groupees are affected */
-						for (tmp = rp->people; tmp; tmp = tmp2) {
-							tmp2 = tmp->next_in_room;
-							if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
-								if(tmp->specials.is_hearing != spl) {
-									((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
-									tmp->specials.is_hearing == spl;
-								}
-							}
-						}
-					} else if (IS_SET(spell_info[spl].targets, TAR_ROOM)) { /* make sure all peeps are affected */
-						for (tmp = rp->people; tmp; tmp = tmp2) {
-							tmp2 = tmp->next_in_room;
-							if(!tmp->specials.is_hearing) {
-								((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
-								tmp->specials.is_hearing == spl;
-							}
-						}
-					}
-				}
-			} else if(ch->specials.is_hearing) { /* see if there's still someone in the room singing */
-				spl = ch->specials.is_hearing;
-				if(ch->in_room)
-					rp = real_roomp(ch->in_room);
-				if(!rp) {
-					log("weirdness in PlaysongPulseStuff");
-					return;
-				}
-				for (tmp = rp->people; tmp; tmp = tmp2) {
-					tmp2 = tmp->next_in_room;
-					if(tmp->specials.is_playing == spl) { /* there is, don't remove affects, we're done here */
-						singer = 1;
-						break;
-					}
-				}
-				if(!singer) {
-					send_to_char("As the bard song fades from your hearing, you feel more like yourself again.\n\r",ch);
-					affect_from_char(ch, spl);
-					ch->specials.is_hearing = 0;
-				}
-			}
-		}
-	}
 }
 
 void AuctionPulseStuff(int pulse)

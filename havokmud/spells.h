@@ -406,56 +406,19 @@
 #define SPELL_BLADE_BARRIER		341
 
 
-/* bard stuff */
-#define FIRST_BARD_SONG			342
 
-#define SKILL_DETECT_SOUND		342
-#define SONG_OF_OPENING			343 // done
-#define SKILL_THROW_VOICE		344
-#define SKILL_VENTRILOQUATE		345
-#define SONG_OF_COMPREHENSION	346 // done
-#define SONG_OF_BITING_WORDS	347 // done
-#define SONG_OF_THE_LULLABY		348 // done
-#define SONG_OF_CHARMING		349 // done
-#define SONG_OF_FREEZING_NORTH	350 // done
-#define SONG_OF_ENTRALLMENT		351 // done
-#define SONG_OF_CALMING			352 // done
-#define SONG_OF_THE_GUARDIAN	353 // done? check out the sneak thing
-#define SONG_OF_MUSCLE			354 // done, lalala, bards are soooo boring
-#define SONG_OF_MINT_AND_LEMON	355 // done
-#define SKILL_KNOW_ALIGNMENT	356
-#define SONG_OF_SEEING			357 // done
-#define SONG_OF_SPELL_BREACHING	358 // done
-#define SKILL_KNOW_MONSTER		359
-#define SONG_OF_LIGHTNING		360 // done
-#define SONG_OF_LEVITATION		361 // done
-#define SONG_OF_THE_WINTER_GALE	362 // done
-#define SONG_OF_DAZZLING		363 // done
-#define SKILL_LEGEND_LORE		364
-#define SONG_OF_THE_HUNT		365 // done
-#define SONG_OF_HERALDRY		366 // done
-#define SONG_OF_LEGENDARY_WEAPON	367 // done
-#define SONG_OF_LETHARGY		368 // done
-#define SONG_OF_SPIRITS			369 // done
-#define SONG_OF_THE_HIGH_HUNT	370 // done
-#define SONG_OF_SILENCE			371 // done
-#define SONG_OF_SPEED			372 // done
-#define SONG_OF_SUMMONER		373 // done
-#define SONG_OF_SIGHT			374 // done
-#define SONG_OF_THE_HEARTH		375 // done
-#define SONG_OF_ETERNAL_LIGHT	376
-#define SONG_OF_WANDERER		377
-#define SOUNDS_OF_FEAR			378
-#define SONG_OF_BATTLE			379 // done
-#define HEROS_CHANT				380 // done
+#define SPELL_MANA_SHIELD		342
+#define SPELL_IRON_SKIN			343
+#define SKILL_SENSE_ITEM		344
+#define SKILL_KINOLOCK			345
+#define SKILL_FLOWER_FIST		346
+#define SKILL_FLURRY			347
 
-#define LAST_BARD_SONG			380 /* make sure to place new songs between first and last song. And no spells! */
-
-#define SKILL_SCRIBE			381
+#define SKILL_SCRIBE			348
 
 
 
-#define MAX_EXIST_SPELL         381   /* max number of skills/spells */
+#define MAX_EXIST_SPELL         348   /* max number of skills/spells */
 
 
 

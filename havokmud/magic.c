@@ -2424,7 +2424,7 @@ void spell_comp_languages(byte level, struct char_data *ch,
 	if (!victim)
 	   return;
 
- if (!affected_by_spell(victim, SPELL_COMP_LANGUAGES) && !affected_by_spell(victim, SONG_OF_COMPREHENSION)) {
+ if (!affected_by_spell(victim, SPELL_COMP_LANGUAGES)) {
 
  if (ch != victim) {
     act("$n gently touches $N's ears.", FALSE, ch, 0, victim, TO_NOTVICT);

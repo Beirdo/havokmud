@@ -1601,7 +1601,7 @@ void construct_who_list(char *buf, int cmd,
      if (godlevel>=person->invis_level && real_roomp(person->in_room)) {
           count++; color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
             if(!IS_IMMORTAL(person)) {
-              for(bit=1,i=total=classn=0;i<PSI_LEVEL_IND+1;i++, bit<<=1) {
+              for(bit=1,i=total=classn=0;i<NECROMANCER_LEVEL_IND+1;i++, bit<<=1) {
                 if(HasClass(person,bit)) {
                   classn++; total+=person->player.level[i];
                   if(strlen(classes)!=0) strcat(classes,"/");

@@ -559,105 +559,6 @@ void cast_chillshield( byte level, struct char_data *ch, char *arg,
 void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
-/* bard stuff */
-void play_song_of_opening( byte level, struct char_data *ch, char *arg,
-     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_comprehension( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_biting_words( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_lullaby( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_charming( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_freezing_north( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_enthrallment( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_calming( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_guardian( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_muscle( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_mint_and_lemon( byte level, struct char_data *ch, char *arg,
-     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_seeing( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_spell_breaching( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_lightning( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_levitation( byte level, struct char_data *ch, char *arg,
-	 int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_winter_gale( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_dazzling( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_hunt( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_heraldry( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_legendary_weapon( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_lethargy( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_spirits( byte level, struct char_data *ch, char *arg,
-	 int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_high_hunt( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_silence( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_speed( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_summoner( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_sight( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_the_hearth( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_eternal_light( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_wanderer( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_sounds_of_fear( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_song_of_battle( byte level, struct char_data *ch, char *arg,
-     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-void play_heros_chant( byte level, struct char_data *ch, char *arg,
-	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
 
 
@@ -1013,48 +914,14 @@ char *spells[]=
    "wall of thought",
    "mind tap",
 	"blade barrier", /* 341 - blade barrier */
-
-	/* bard songs */
-	"detect sound",
-	"song of opening",
-	"throw voice",
-	"ventriloquate",
-	"song of comprehension",
-	"song of biting words",
-	"song of the lullaby",
-	"song of charming",
-	"song of the freezing north",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"song of mint and lemon",
-	"know alignment",
-	"song of seeing",
-	"song of spell breaching",
-	"know monster",
-	"song of lightning",//360
-	"song of levitation",
-	"song of the winter gale",
-	"song of dazzling",
-	"legend lore",
-	"song of the hunt",
-	"song of heraldry",
-	"song of the legendary weapon",
-	"song of lethargy",
-	"song of spirits",
-	"song of the high hunt",//370
-	"song of silence",
-	"song of speed",
-	"song of the summoner",
-	"song of sight",
-	"song of the hearth",
-	"song of eternal light",
-	"song of the wanderer",
-	"sounds of fear",
-	"song of battle",
-	"heroes chant",//380
-   "\n"
+	"mana shield",
+	"iron skin",
+	"sense item",
+	"kinolock",
+	"flower fist",
+	"flurry of blows",
+	"scribe", //348
+  "\n"
 };
 
 
@@ -1145,14 +1012,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {20,17,17,16,16,13,13,12,12, 9, 9, 8, 8, 5, 5, 4, 4, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {19,17,17,16,16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 6, 6, 6, 6, 4, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 },
-/* bard */
-{
-  {16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 5, 5, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {18,16,16,15,15,13,13,12,12,10,10, 9, 9, 7, 7, 6, 6, 5, 5, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {17,15,15,14,14,12,12,11,11, 9, 9, 8, 8, 6, 6, 5, 5, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {20,17,17,16,16,13,13,12,12, 9, 9, 8, 8, 5, 5, 4, 4, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {19,17,17,16,16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 6, 6, 6, 6, 4, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}, /* Necromancer */
+ /* Necromancer */
 {
   {11,10,10,10, 9, 9, 9, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 4, 2, 2, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
   {16,14,14,14,13,13,13,11,11,11,10,10,10, 9, 9, 9, 8, 8, 8, 6, 6, 5, 4, 3, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0},
@@ -1217,9 +1077,6 @@ int SPELL_LEVEL(struct char_data *ch, int sn)
 
   if (HasClass(ch, CLASS_DRUID))
     min = MIN(min, spell_info[sn].min_level_druid);
-
-  if (HasClass(ch, CLASS_BARD))
-    min = MIN(min, spell_info[sn].min_level_bard);
 
   return(min);
 
@@ -2287,22 +2144,9 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
 		return;
 	}
-	if (cmd == 600 && !HasClass(ch,CLASS_BARD)) { /* take away sing spells for non-bards */
-		send_to_char("You try to sing a pretty song, but it sounds awful.\n\r", ch);
-		return;
-	}
-
 	if (!IS_IMMORTAL(ch) && HasClass(ch,CLASS_NECROMANCER) && (GET_ALIGNMENT(ch) >= -350)) {
 		/* necro too GOOD to cast */
 		send_to_char("Alas, you have strayed too far from the Dark Lord's guidance.\n\r", ch);
-		return;
-	}
-	if (cmd == 600 && ch->specials.is_playing) { /* make him stop his singing first */
-		do_stop(ch, "", 601);
-	}
-	if (!IS_IMMORTAL(ch) && HasClass(ch,CLASS_BARD) && (GET_ALIGNMENT(ch) <= 350)) {
-		/* bard too EVIL to play */
-		send_to_char("Alas, your alignment doesn't allow for singing pretty songs.\n\r", ch);
 		return;
 	}
 
@@ -2374,17 +2218,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (( (spl > LAST_BARD_SONG) || (spl < FIRST_BARD_SONG) ) && cmd == 600) {
-		send_to_char("You can only play songs, not spells.\n\r",ch);
-		return;
-	}
-
-	if (( (spl <= LAST_BARD_SONG) && (spl >= FIRST_BARD_SONG) ) && cmd != 600) {
-		send_to_char("Where did you come from?! Songs are meant to be played!\n\r",ch);
-		return;
-	}
-
-
 	if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 		if (GET_POS(ch) < spell_info[spl].minimum_position) {
 			switch(GET_POS(ch)) {
@@ -2412,7 +2245,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					(spell_info[spl].min_level_paladin > GET_LEVEL(ch,PALADIN_LEVEL_IND)) &&
 					(spell_info[spl].min_level_ranger > GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
 					(spell_info[spl].min_level_psi > GET_LEVEL(ch,PSI_LEVEL_IND)) &&
-					(spell_info[spl].min_level_bard > GET_LEVEL(ch, BARD_LEVEL_IND)) &&
 					(spell_info[spl].min_level_druid > GET_LEVEL(ch, DRUID_LEVEL_IND)) &&
 					(spell_info[spl].min_level_necromancer > GET_LEVEL(ch, NECROMANCER_LEVEL_IND))) {
 					send_to_char("Sorry, you can't do that.\n\r", ch);
@@ -2612,12 +2444,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				}
 			}
 
-			if (spl != SPELL_VENTRILOQUATE && cmd != 370 && cmd !=600 )  /* mind, weave */
+			if (spl != SPELL_VENTRILOQUATE && cmd != 370)  /* mind*/
 				say_spell(ch, spl);
-			else if(spl != SPELL_VENTRILOQUATE && cmd == 600) { /* make bards do a pretty song thing instead */
-				ch_printf(ch,"You start weaving the notes to the %s.\n\r",spells[spl-1]);
-				act("$n takes a deep breath, and starts to play a song.",FALSE, ch, 0, 0, TO_ROOM);
-			}
 
 			WAIT_STATE(ch, spell_info[spl].beats);
 
@@ -2659,10 +2487,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						if (EqWBits(ch,ITEM_ANTI_RANGER))
 							max+=10; /* 20% harder to cast spells */
 						break;
-					case    BARD_LEVEL_IND:
-						if(EqWBits(ch, ITEM_ANTI_BARD))
-							max+=10;
-						break;
 					case    NECROMANCER_LEVEL_IND:
 						if(EqWBits(ch, ITEM_ANTI_NECROMANCER))
 							max+=10;
@@ -2682,12 +2506,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					max = max/2;
 
 				if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special) && cmd != 283 ) {
-					if(cmd != 600)
-						send_to_char("You lost your concentration!\n\r", ch);
-					else {
-						send_to_char("You croak loudly, then blush furiously.\n\r", ch);
-						act("$n emits a loud croak, and blushes furiously.\n\r",FALSE, ch, 0, 0, TO_ROOM);
-					}
+					send_to_char("You lost your concentration!\n\r", ch);
 					cost = (int)USE_MANA(ch, (int)spl);
 					GET_MANA(ch) -= (cost>>1);
 					LearnFromMistake(ch, spl, 0, 95);
@@ -2709,12 +2528,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,tar_char,TO_VICT);
 							return;
 						}
-						if (IS_AFFECTED(tar_char,AFF_SILENCE) && cmd == 600) {
-							act("Your song seems to have no impact on $N.",FALSE,ch,0,tar_char,TO_CHAR);
-							act("$n's song seems to leave &N unaffected.",FALSE,ch,0,tar_char,TO_NOTVICT);
-							act("$n seems to yell something at you, but you're in a state of blessed silence.",FALSE,ch,0,0,TO_VICT);
-							return;
-						}
 						if (GET_POS(tar_char) == POSITION_DEAD) {
 							send_to_char("The magic fizzles against the dead body.\n", ch);
 							return;
@@ -2725,43 +2538,27 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
 						return;
 					}
-					if (cmd != 600 && check_nomagic(ch,"Your skill appears useless in this magic dead zone.\n\r",
+					if (check_nomagic(ch,"Your skill appears useless in this magic dead zone.\n\r",
 											"$n's spell dissolves like so much wet toilet paper.\n\r"))
 							return;
 				}
-				if(cmd != 600)
-					send_to_char("Ok.\n\r",ch);
+
+				send_to_char("Ok.\n\r",ch);
 				((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
 				cost = (int)USE_MANA(ch, (int)spl);
 				exp = NewExpCap(ch, cost*50);
 				if (cmd == 283) /* recall */ {
 					FORGET(ch, spl);
-				} else if (cmd == 600) {
-					struct obj_data *instrument;
-					/* bards get reduced mana cost for holding instrument, depending on obj value */
-					if(instrument=ch->equipment[HOLD]) {
-						if(ITEM_TYPE(instrument) == ITEM_INSTRUMENT) {
-							if(instrument->obj_flags.value[0] > -1 && instrument->obj_flags.value[0] < 51) {
-								cost = (int) cost *(1 - ((float)(instrument->obj_flags.value[0])/100));
-							} else {
-								/* this value is off limits! */
-								log("some instrument has an invalid mana reduction value!");
-							}
-						}
-					}
 				}
 				GET_MANA(ch) -= cost;
-				if(cmd == 600)
-					sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert playing abilities.$c000w\n\r",exp);
-				else
-					sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
+				sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
 				send_to_char(buf,ch);
 				gain_exp(ch, exp);
 			}
 		}	/* if GET_POS < min_pos */
 		return;
 	}
-	if(cmd != 600) {
+
 		switch (number(1,5)) {
 			case 1:
 				send_to_char("Bylle Grylle Grop Gryf???\n\r", ch);
@@ -2779,25 +2576,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				send_to_char("Bolle Snylle Gryf Bylle?!!?\n\r",ch);
 				break;
 		}
-	} else {
-		switch (number(1,5)) {
-			case 1:
-				send_to_char("Do re mi fa sol la ti do?\n\r", ch);
-				break;
-			case 2:
-				send_to_char("Mi do sol sol la ti!\n\r",ch);
-				break;
-			case 3:
-				send_to_char("Fa fa la la ti do ti do?!?\n\r",ch);
-				break;
-			case 4:
-				send_to_char("Re mi sol fa mi re do??\n\r",ch);
-				break;
-			default:
-				send_to_char("Do do la la re re mi sol?\n\r",ch);
-				break;
-		}
-	}
+
 }
 
 
@@ -4035,146 +3814,36 @@ void assign_spell_pointers()
 	40,	 TAR_IGNORE , cast_blade_barrier, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);
 
 
-
-	spello(343,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+/*	spello(375,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_IGNORE , play_song_of_opening, 0,0, 1, LOW_IMMORTAL);
-
-	spello(346,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_CHAR_ROOM , play_song_of_comprehension, 0,0, 5, LOW_IMMORTAL);
-
-	spello(347,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	20, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_biting_words, 0,0, 6, LOW_IMMORTAL);
-
-	spello(348,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	15, TAR_CHAR_ROOM , play_song_of_the_lullaby, 0,0, 7, LOW_IMMORTAL);
-
-	spello(349,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_CHAR_ROOM , play_song_of_charming, 0,0, 8, LOW_IMMORTAL);
-
-	spello(350,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	15, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_freezing_north, 0,0, 8, LOW_IMMORTAL);
-
-	spello(351,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_IGNORE , play_song_of_enthrallment, 0,0, 8, LOW_IMMORTAL);
-
-	spello(352,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	15, TAR_CHAR_ROOM , play_song_of_calming, 0,0, 8, LOW_IMMORTAL);
-
-	spello(353,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	20, TAR_IGNORE , play_song_of_the_guardian, 0,0, 9, LOW_IMMORTAL);
-
-	spello(354,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_CHAR_ROOM , play_song_of_muscle, 0,0, 10, LOW_IMMORTAL);
-
-	spello(355,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	5, TAR_CHAR_ROOM , play_song_of_mint_and_lemon, 0,0, 10, LOW_IMMORTAL);
-
-
-
-	spello(357,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_CHAR_ROOM , play_song_of_seeing, 0,0, 12, LOW_IMMORTAL);
-
-	spello(358,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	15, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_spell_breaching, 0,0, 13, LOW_IMMORTAL);
-
-
-
-	spello(360,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	16, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_lightning, 0,0, 14, LOW_IMMORTAL);
-
-	spello(361,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	15, TAR_CHAR_ROOM , play_song_of_levitation, 0,0, 15, LOW_IMMORTAL);
-
-	spello(362,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_IGNORE , play_song_of_the_winter_gale, 0,0, 15, LOW_IMMORTAL);
-
-	spello(363,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	5, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_dazzling, 0,0, 15, LOW_IMMORTAL);
-
-
-
-	spello(365,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	10, TAR_CHAR_ROOM , play_song_of_the_hunt, 0,0, 16, LOW_IMMORTAL);
-
-	spello(366,48,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	100, TAR_OBJ_INV | TAR_OBJ_ROOM , play_song_of_heraldry, 0,0, 18, LOW_IMMORTAL);
-
-	spello(367,48,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	100, TAR_OBJ_INV | TAR_OBJ_ROOM , play_song_of_legendary_weapon, 0,0, 20, LOW_IMMORTAL);
-
-	spello(368,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	20, TAR_CHAR_ROOM , play_song_of_lethargy, 0,0, 23, LOW_IMMORTAL);
-
-	spello(369,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE , play_song_of_spirits, 0,0, 24, LOW_IMMORTAL);
-
-	spello(370,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	20, TAR_CHAR_ROOM , play_song_of_the_high_hunt, 0,0, 24, LOW_IMMORTAL);
-
-	spello(371,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_silence, 0,0, 25, LOW_IMMORTAL);
-
-	spello(372,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	25, TAR_CHAR_ROOM , play_song_of_speed, 0,0, 27, LOW_IMMORTAL);
-
-	spello(373,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	25, TAR_CHAR_WORLD , play_song_of_summoner, 0,0, 31, LOW_IMMORTAL);
-
-	spello(374,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_CHAR_ROOM , play_song_of_sight, 0,0, 44, LOW_IMMORTAL);
-
-	spello(375,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_IGNORE , play_song_of_the_hearth, 0,0, 45, LOW_IMMORTAL);
+	30, TAR_IGNORE , cast_mana_shield, 0,0, 45, LOW_IMMORTAL);
 
 	spello(376,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_IGNORE | TAR_ROOM, play_song_of_eternal_light, 0,0, 14, LOW_IMMORTAL);
+	30, TAR_IGNORE | TAR_ROOM, cast_iron_skin, 0,0, 14, LOW_IMMORTAL);
 
 	spello(377,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, play_song_of_wanderer, 0,0, 35, LOW_IMMORTAL);
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 35, LOW_IMMORTAL);// sense item
 
-	spello(378,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	spello(377,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	25, TAR_IGNORE  | TAR_ROOM, play_sounds_of_fear, 0,0, 37, LOW_IMMORTAL);
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 35, LOW_IMMORTAL);// kinolock
 
 	spello(379,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, play_song_of_battle, 0,0, 40, LOW_IMMORTAL);
+	25, TAR_IGNORE  | TAR_ROOM, 0, 0,0, 37, LOW_IMMORTAL);// flowerfist
 
-	spello(380,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	spello(380,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	80, TAR_CHAR_ROOM | TAR_GROUP, play_heros_chant, 0,0, 50, LOW_IMMORTAL);
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 40, LOW_IMMORTAL);// flurry of blows
 
+	spello(381,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	80, TAR_CHAR_ROOM | TAR_GROUP, 0, 0,0, 50, LOW_IMMORTAL);// scribe
+	*/
 }
+
 void SpellWearOffSoon(int s, struct char_data *ch)
 {
 

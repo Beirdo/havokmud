@@ -2731,19 +2731,6 @@ void perform_violence(int pulse)
 						x = x - x*0.40;
 				}
 
-				/* Bards do not hit when using an INSTRUMENT   -Lennya */
-				if (HasClass(ch, CLASS_BARD) && !IS_IMMORTAL(ch)) {
-					if (ch->equipment[WIELD])
-						if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
-							x = 0;
-					if (ch->equipment[HOLD])
-						if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
-							x = 0;
-					if (ch->equipment[WEAR_LIGHT])
-						if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
-							x = 0;
-				}
-
                while(x > 0.999)
                {
                   if(ch->specials.fighting)
@@ -3081,7 +3068,7 @@ struct char_data *FindVictim( struct char_data *ch)
   while(tmp_ch) {
 
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&&
-	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch!=tmp_ch)) {
+	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) ) && (ch!=tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
 
 	if ((tmp_ch->specials.zone != ch->specials.zone &&
@@ -3157,7 +3144,7 @@ if (affected_by_spell(tmp_ch,SKILL_DISGUISE) ||
   for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch;
        tmp_ch=tmp_ch->next_in_room) {
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&&
-	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch != tmp_ch)) {
+	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) ) && (ch != tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
 	if ((tmp_ch->specials.zone != ch->specials.zone &&
 	    !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
@@ -3214,7 +3201,7 @@ struct char_data *FindVictim(struct char_data *ch)
 
 
 for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_room) {
-    if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch!=tmp_ch)) {
+    if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK) ) && (ch!=tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
  		if ((tmp_ch->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
 	    IS_SET(tmp_ch->specials.act, ACT_ANNOYING))
@@ -3223,7 +3210,7 @@ for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_roo
 
   for (vict = rp->people; vict; vict = vict->next_in_room) {
     if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
-        (!IS_AFFECTED(vict, AFF_SNEAK) && !IS_AFFECTED2(vict, AFF2_GUARDIAN_ANGEL)) && (ch != vict)) {
+        (!IS_AFFECTED(vict, AFF_SNEAK) ) && (ch != vict)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
 		if ((vict->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races,
             GET_RACE(vict))) || IS_SET(vict->specials.act, ACT_ANNOYING)) {
@@ -3286,7 +3273,7 @@ for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_roo
 
   for (vict = rp->people; vict; vict = vict->next_in_room) {
     if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
-        (!IS_AFFECTED(vict, AFF_SNEAK) && !IS_AFFECTED2(vict, AFF2_GUARDIAN_ANGEL)) && (ch != vict)) {
+        (!IS_AFFECTED(vict, AFF_SNEAK) ) && (ch != vict)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
         if ((vict->specials.zone != ch->specials.zone &&
 	    !strchr(zone_table[ch->specials.zone].races, GET_RACE(vict))) ||
@@ -3535,7 +3522,6 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case SPELL_GAS_BREATH:
   case SPELL_SUNRAY:
   case SPELL_DISINTEGRATE:
-  case SONG_OF_BITING_WORDS:
     Our_Bit = IMM_ENERGY;
     break;
 

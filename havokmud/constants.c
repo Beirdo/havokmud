@@ -2786,71 +2786,6 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
  },
 
 #if 1
-{
-	{"Man",		"Woman",						0}, /*Bard*/
-	{"Singer",	"Singer",						1}, /*1*/
-	{"Singer",	"Singer",						1500},
-	{"Master Singer", "Master Singer", 			3000},
-	{"Rhymer",	"Rhymer",						6000},
-	{"Rhymer",	"Rhymer",						12000},
-	{"Master Rhymer", "Master Rhymer", 			24000},
-	{"Lyrist",	"Lyrist",						50000},
-	{"Lyrist",	"Lyrist",						100000},
-	{"Master Lyrist", "Master Lyrist", 			200000},
-	{"Sonnateer",	"Sonnateer",				400000}, /*10*/
-	{"Sonnateer",	"Sonnateer",				600000},
-	{"Master Sonnateer", "Master Sonnateer", 	800000},
-	{"Skald",	"Skald",        				1000000},
-	{"Skald",	"Skald",						1200000},
-	{"Master Skald","Master Skald",				1400000},
-	{"Racaraide",	"Racaraide",    			1600000},
-	{"Racaraide",	"Racaraide",				1800000},
-	{"Master Racaraide","Master Racaraide",		2100000},
-	{"Joungleur",	"Joungleur",				2400000},
-	{"Joungleur",	"Joungleur",				2700000}, /*20*/
-	{"Master Joungleur", "Master Joungleur", 	3000000},
-	{"Troubadour",	"Troubadour",				3300000},
-	{"Troubadour",	"Troubadour",				3502000},
-	{"Master Troubadour", "Master Troubadour", 	3703000},
-	{"Minstrel",	"Minstrel",					3904000},
-	{"Minstrel",	"Minstrel",					4105000},
-	{"Master Minstrel", "Master Minstrel",		5006000},
-	{"Muse",	"Muse",         				6070000},
-	{"Muse",	"Muse",	        				8080000},
-   	{"Master Muse",	"Master Muse",				9000000}, /*30*/
-	{"Lorist",	"Lorist",						11000000},
-	{"Lorist",	"Lorist",						12000000},
-	{"Master Lorist","Master Lorist",			13000000},
-	{"Tenor",	"Soprano",       				14000000},
-	{"Second Tenor","Second Soprano",    		15000000},
-	{"Bass",	"Mezzo-Soprano",     			16000000},
-	{"Baritone",	"Alto",	        			17000000},
-	{"Tone Master",	"Tone Mistress",     		18000000},
-	{"Bard",	"Bard",        					19000000},
-	{"Bard",	"Bard",	        				20000000}, /*40*/
-	{"Song Enchanter","Song Enchantress",		21010000},
-	{"Songweaver",	"Songweaver",				25030000},
-	{"Honey Voice",	"Honey Voice",				30040000},
-	{"Enchanter Bard","Enchanter Bard",			35500000},
-	{"Fury Bard",	"Fury Bard",				40600000},
-	{"Protector Bard","Protector Bard",			45700000},
-	{"Voice of Chaos","Voice of Chaos",			50080000},
-	{"Voice of Command","Voice of Command",		55900000},
-	{"High Bard",	"High Bard",				60000000},
-	{"Master Bard",	"Master Bard",				65000000}, /*50*/
-	{"Immortal Bard", "Immortal Bard",		200000000},
-	{"Immortal Bard",	"Immortal Bard",	211000000},
-	{"Immortal Bard",	"Immortal Bard",	220000000},
-	{"Immortal Bard",	"Immortal Bard",	230000000},
-	{"Immortal Bard",	"Immortal Bard",	245000000},
-	{"Immortal Bard",	"Immortal Bard",	250000000},
-	{"Immortal Bard",	"Immortal Bard",	269000000},
-	{"Immortal Bard",	"Immortal Bard",	270000000},
-	{"Immortal",	"Immortal",	280000000},
-	{"Immortal",	"Immortal",	299000000}
-  },
-#endif
-#if 1
   {   {"Man",         "Woman",               0},   /* Necromancer */
       {"Grave Digger",  "Grave Digger",          1},   /* */
       {"Grave Robber",  "Grave Robber",          2500},/* */
@@ -3148,7 +3083,7 @@ const char *extra_bits[] = {
         "ANTI-MONK",
         "ANTI-DRUID",
         "ONLY-CLASS",
-	"ANTI-BARD",
+    "unused"
 	"RARE",
 	"QUEST",
 	"UNIQUE",
@@ -3473,8 +3408,8 @@ const char *pc_class_types[] = {
 	"(Paladin)",
 	"(Ranger)",
 	"(Psionist)",
-	"(Bard)",
 	"(Necromancer)",
+	"(empty)",
 	"\n"
 };
 
@@ -3490,8 +3425,8 @@ const char *class_names[] = {
 	"Paladin",
 	"Ranger",
 	"Psionist",
-	"Bard",
 	"Necromancer",
+	"empty",
 	"\n"
 };
 
@@ -3549,7 +3484,6 @@ const char *action_bits[] = {
 	"PALADIN",
 	"RANGER",
 	"PSIONIST",
-	"BARD",
 	"\n"
 };
 
@@ -3736,11 +3670,6 @@ const int thaco[MAX_CLASS][ABS_MAX_LVL] = {
    { 100,20,20,20,19,19,19,19,18,18,18,17,17,17,17,16,16,16,15,15,15,15,14,14,14
 ,13,13,13,13,12,12,12,11,11,11,11,10,10,10,9,9,9,9,8,8,8,7,7,7,7,6,1,1,1,1,1,1,1
      ,1,1,1,1,1,1,1,1,1,1,1,1},
-   /*Bard Class */
- { 100,20,20,20,19,19,19,19,18,18,18,17,17,17,17,16,16,16,15,15,15,15,14,14,14
-,13,13,13,13,12,12,12,11,11,11,11,10,10,10,9,9,9,9,8,8,8,7,7,7,7,6,1,1,1,1,1,1,1
-,1,1,1,1,1,1,1,1,1,1,1,1},
-
 /*Necromancer */
    { 100,20,20,20,19,19,19,18,18,18,17,17,17,16,16,16,15,15,15,14,14,14,13,13,13
 ,12,12,12,11,11,11,10,10,10,9,9,9,8,8,8,7,7,7,6,6,6,5,5,5,4,4,1,1,1,1,1,1,1,1,1,
@@ -5474,7 +5403,6 @@ const struct skillset monkskills[] = {
 };
 const struct skillset mainbarbskills[] = {
  {"None", 				-1							,-1}
- {"None", 				-1							,-1}
 };
 const struct skillset barbskills[] = {
    {"avoid backattack",SKILL_AVOID_BACK_ATTACK, 1},
@@ -5558,62 +5486,6 @@ const struct skillset necroskills[] = {
 	{"None",				-1							,-1}
 };
 
-const struct skillset mainbardskills[] = {
- {"None", 				-1							,-1}
-};
-const struct skillset bardskills[] = {
-	{"bash",						SKILL_BASH						,2},// dude - bash, kick and rescue? madness!
-	{"climb",						SKILL_CLIMB						,1},
-	{"detect invisibility",			SPELL_DETECT_INVISIBLE			,6},
-	{"detect magic ",				SPELL_DETECT_MAGIC				,5},
-	{"detect sound",				SKILL_DETECT_SOUND				,1},
-	{"dodge",						SKILL_DODGE						,1},
-	{"faerie fire",					SPELL_FAERIE_FIRE				,9},
-	{"heroes chant",				HEROS_CHANT						,50},
-	{"kick",						SKILL_KICK						,3},
-	{"know alignment",				SKILL_KNOW_ALIGNMENT			,11},
-	{"know monster",				SKILL_KNOW_MONSTER				,13},
-	{"legend lore",					SKILL_LEGEND_LORE				,15},
-	{"rescue",						SKILL_RESCUE					,3},
-	{"retreat",						SKILL_RETREAT					,1},
-	{"shield" ,						SPELL_SHIELD					,5},
-	{"song of battle",				SONG_OF_BATTLE					,40},
-	{"song of biting words",		SONG_OF_BITING_WORDS			,6},
-	{"song of calming",				SONG_OF_CALMING					,8},
-	{"song of charming",			SONG_OF_CHARMING				,8},
-	{"song of comprehension",		SONG_OF_COMPREHENSION			,5},
-	{"song of dazzling",			SONG_OF_DAZZLING				,15},
-	{"song of enthrallment",		SONG_OF_ENTRALLMENT				,8},
-	{"song of eternal light",		SONG_OF_ETERNAL_LIGHT			,1},
-	{"song of heraldry",			SONG_OF_HERALDRY				,20},
-	{"song of lethargy",			SONG_OF_LETHARGY				,23},
-	{"song of levitation",			SONG_OF_LEVITATION				,15},
-	{"song of lightning",			SONG_OF_LIGHTNING				,14},
-	{"song of mint and lemon",		SONG_OF_MINT_AND_LEMON			,10},
-	{"song of muscle",				SONG_OF_MUSCLE					,10},
-	{"song of seeing",				SONG_OF_SEEING					,12},
-	{"song of sight",				SONG_OF_SIGHT					,44},
-	{"song of silence",				SONG_OF_SILENCE					,25},
-	{"song of speed",				SONG_OF_SPEED					,27},
-	{"song of spell breaching",		SONG_OF_SPELL_BREACHING			,13},
-	{"song of spirits",				SONG_OF_SPIRITS					,24},
-	{"song of the freezing north",	SONG_OF_FREEZING_NORTH			,8},
-	{"song of the guardian",		SONG_OF_THE_GUARDIAN			,9},
-	{"song of the hearth",			SONG_OF_THE_HEARTH				,45},
-	{"song of the high hunt",		SONG_OF_THE_HIGH_HUNT			,24},
-	{"song of the hunt",			SONG_OF_THE_HUNT				,16},
-	{"song of the lullaby",			SONG_OF_THE_LULLABY				,7},
-	{"song of the legendary weapon",	SONG_OF_LEGENDARY_WEAPON		,18},
-	{"song of the summoner",		SONG_OF_SUMMONER				,31},
-	{"song of the wanderer",		SONG_OF_WANDERER				,35},
-	{"song of the winter gale",		SONG_OF_THE_WINTER_GALE			,15},
-	{"sounds of fear",				SOUNDS_OF_FEAR					,37},
-	{"spy",							SKILL_SPY						,4},
-	{"steal",   					SKILL_STEAL						,1},
-	{"throw voice",					SKILL_THROW_VOICE				,5},
-	{"ventriloquate",				SKILL_VENTRILOQUATE				,5},
-	{"None",						-1								,-1}
-};
 
 // '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge, 6=gargantuan '
 const struct race_type race_list[] = {

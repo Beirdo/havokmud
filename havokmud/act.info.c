@@ -84,10 +84,8 @@ extern long SystemFlags;
   extern char *RaceNames[];
   extern const char *fight_styles[];
   extern struct skillset warriorskills[];
-  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
-  extern struct skillset bardskills[];
     extern struct skillset necroskills[];
   extern struct skillset monkskills[];
   extern struct skillset mageskills[];
@@ -1437,7 +1435,7 @@ dlog("in do_look");
   else if ( IS_AFFECTED(ch, AFF_BLIND) )
     send_to_char("You can't see a damn thing, you're blinded!\n\r", ch);
   else if  ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) &&
-	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT) && ch->specials.is_hearing != SONG_OF_ETERNAL_LIGHT)) {
+	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT) )) {
     send_to_char("It is very dark in here.. Find a lightsource to see.\n\r", ch);
     if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
@@ -2689,14 +2687,13 @@ char *PrintTitle(struct char_data *person,char type) {
 		  return buffer;
 
 		case 'l':
-		  sprintf(buffer,"%s has levels:[m%-2d.c%-2d.w%-2d.t%-2d.d%-2d.k%-2d.b%-2d.s%-2d.p%-2d.r%-2d.i%-2d.a%-2d.n%-2d] ", GET_NAME(person),
+		  sprintf(buffer,"%s has levels:[m%-2d.c%-2d.w%-2d.t%-2d.d%-2d.k%-2d.b%-2d.s%-2d.p%-2d.r%-2d.i%-2d.n%-2d] ", GET_NAME(person),
 			person->player.level[0],person->player.level[1],
 			person->player.level[2],person->player.level[3],
 			person->player.level[4],person->player.level[5],
 			person->player.level[6],person->player.level[7],
 			person->player.level[8],person->player.level[9],
-			person->player.level[10],person->player.level[11],
-			person->player.level[12]);
+			person->player.level[10],person->player.level[11]);
 		  	return buffer;
 
 		case 'h':
@@ -3225,13 +3222,13 @@ dlog("in do_who");
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 'l':
-		  sprintf(ttbuf,"Level:[%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d] ",
+		  sprintf(ttbuf,"Level:[%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d] ",
 			person->player.level[0],person->player.level[1],
 			person->player.level[2],person->player.level[3],
 			person->player.level[4],person->player.level[5],
 			person->player.level[6],person->player.level[7],
 			person->player.level[8],person->player.level[9],
-			person->player.level[10]);
+			person->player.level[10],person->player.level[11]);
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 'h':
@@ -3677,11 +3674,6 @@ dlog("in do_levels");
   case 'N':
   case 'n':
     class = NECROMANCER_LEVEL_IND;
-    break;
-
-  case 'A':
-  case 'a':
-    class = BARD_LEVEL_IND;
     break;
 
   case 'I':
@@ -4624,7 +4616,7 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
-		i = 0;
+/*		i = 0;
 		if(OnlyClass(ch,CLASS_WARRIOR)) {
 			while(scwarskills[i].level != -1) {
 				sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
@@ -4638,7 +4630,7 @@ dlog("in do_show_skill");
 				strcat(buffer, "\r");
 				i++;
 			}
-		}
+		} */
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4792,31 +4784,6 @@ dlog("in do_show_skill");
 	}
     break;
 
-  case 'a':
-  case 'A':
-    {
-      if (!HasClass(ch, CLASS_BARD)) {
-	send_to_char("I bet you think you're a Bard.\n\r", ch);
-	return;
-      }
-		send_to_char("Your class can learn these skills:\n\r", ch);
-		while(bardskills[i].level != -1) {
-			sprintf(buf,"[%-2d] %-30s %-15s",bardskills[i].level,
-						bardskills[i].name,how_good(ch->skills[bardskills[i].skillnum].learned));
-			if (IsSpecialized(ch->skills[bardskills[i].skillnum].special))
-				strcat(buf," (special)");
-			strcat(buf," \n\r");
-			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-				break;
-			strcat(buffer, buf);
-			strcat(buffer, "\r");
-			i++;
-		}
-		page_string(ch->desc, buffer, 1);
-		return;
-	}
-    break;
-
   case 'n':
   case 'N':
     {
@@ -4944,7 +4911,7 @@ dlog("in do_show_skill");
     break;
 
   default:
-    send_to_char("Which class? (skill [m s c w t d r p k i a n])\n\r", ch);
+    send_to_char("Which class? (skill [m s c w t d r p k i n])\n\r", ch);
   }
 
 }

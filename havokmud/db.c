@@ -4727,8 +4727,6 @@ void reset_char(struct char_data *ch)
     }
   }
 
-  /* Setting Bard level (GH) */
-
   SET_BIT(ch->specials.act, PLR_ECHO);
 
   ch->hunt_dist = 0;
@@ -4924,10 +4922,8 @@ if (!HasClass(ch,CLASS_RANGER))
    ch->player.level[9]=0;
 if (!HasClass(ch,CLASS_PSI))
    ch->player.level[10]=0;
-if (!HasClass(ch,CLASS_BARD))
-   ch->player.level[11]=0;
 if (!HasClass(ch,CLASS_NECROMANCER))
-   ch->player.level[12]=0;
+   ch->player.level[11]=0;
 
 
 ch->player.has_mail=FALSE;

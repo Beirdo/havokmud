@@ -1433,7 +1433,7 @@ dlog("in do_stat");
 				color1, color2, k->player.level[6], color1, color3, k->player.level[7],
 				color1, color2, k->player.level[8], color1, color3, k->player.level[9],
 				color1, color2, k->player.level[10], color1, color3, k->player.level[11],
-				color1, color2, k->player.level[12], color1, color3, GET_ALIGNMENT(k), color1);
+				color1, color3, GET_ALIGNMENT(k), color1);
 			act(buf,FALSE,ch,0,0,TO_CHAR);
 
 			ch_printf(ch,"%sRemort Class: %s%s%s.\n\r", color1, color2, class_names[k->specials.remortclass], color1);
@@ -2240,8 +2240,7 @@ dlog("in do_set");
 	"class - Sets Class\n\r"
 	"	  1 = Mage	 2 = Cleric  	 4 = Warrior  	  8 = Thief\n\r"
 	"	 16 = Druid	32 = Monk  	64 = Barbarian	128 = Sorceror\n\r"
-	"	256 = Paladin  512 = Ranger   1024 = Psionist  2048 = Bard(Not Done)\n\r"
-	"  4096 = necromancer\n\r"
+	"	256 = Paladin  512 = Ranger   1024 = Psionist  2048 = Necromancer\n\r"
 	"For Multi-class characters add the numbers of the required classes together\n\r"
 	"ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\n\r"
 	"\n\r"
@@ -3610,7 +3609,7 @@ ch->skills[STYLE_STANDARD].learned = 95;
 
 if (HasClass(ch,
  CLASS_CLERIC|CLASS_MAGIC_USER|CLASS_SORCERER|CLASS_PSI|
- CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID|CLASS_BARD|CLASS_NECROMANCER))
+ CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID|CLASS_NECROMANCER))
  ch->skills[SKILL_READ_MAGIC].learned = 95;
 
 	SetDefaultLang(ch);  /* the skill */
@@ -3843,17 +3842,13 @@ dlog("in do_advance");
 	case 's' :
 	  lin_class = SORCERER_LEVEL_IND;
 	  break;
-	case 'A' :
-	case 'a' :
-	  lin_class = BARD_LEVEL_IND;
-	  break;
 	case 'N' :
 	case 'n' :
 	  lin_class = NECROMANCER_LEVEL_IND;
 	  break;
 
 	default:
-	  send_to_char("Must supply a class (M C W T D K B P R I S A N)\n\r", ch);
+	  send_to_char("Must supply a class (M C W T D K B P R I S N)\n\r", ch);
 	  return;
 	  break;
 
@@ -7357,8 +7352,6 @@ int eval(struct obj_data *object) {
 					if(IS_OBJ_STAT(object,ITEM_ANTI_MAGE))
 						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_NECROMANCER))
-						total+= -1;
-					if(IS_OBJ_STAT(object,ITEM_ANTI_BARD))
 						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_PSI))
 						total+= -1;

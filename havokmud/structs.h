@@ -77,7 +77,7 @@ typedef struct alias_type {
 #define PREP_ROOM_EXITS 13
 #define ARENA_ENTRANCE 39900
 
-#define MAX_CLASS 13
+#define MAX_CLASS 12
 #define OLD_MAX_CLASS 4
 
 #define ABS_MAX_CLASS 20   	  /* USER FILE, DO NOT CHANGE! */
@@ -217,10 +217,9 @@ struct QuestItem {
 #define PALADIN_LEVEL_IND   8
 #define RANGER_LEVEL_IND    9
 #define PSI_LEVEL_IND	    10
-#define BARD_LEVEL_IND      11
-#define NECROMANCER_LEVEL_IND 12
+#define NECROMANCER_LEVEL_IND 11
 
-#define CLASS_COUNT  12
+#define CLASS_COUNT  11
 
 
 /* user flags */
@@ -363,7 +362,6 @@ struct QuestItem {
 #define PULSE_DARKNESS	250
 #define PULSE_ARENA	100 /* see if there's a winner in arena */
 #define PULSE_AUCTION 80 /* every 20 seconds */
-#define PULSE_PLAYSONG 12 /* every 3 seconds */
 #define PULSE_TROLLREGEN 14 /* every once in a while */
 #define PULSE_TQP 40 /* do a travel check for the qp, every 10 secs */
 #define MAX_ROOMS   5000
@@ -559,8 +557,8 @@ typedef struct {
 #define ITEM_ANTI_MONK		BV26//67108864
 #define ITEM_ANTI_DRUID		BV27//134217728
 #define ITEM_ONLY_CLASS	    BV28//    268435456
-#define ITEM_ANTI_BARD      BV29//    536870912
-#define ITEM_RARE           BV30//
+#define ITEM_UNUSED			BV29
+#define ITEM_RARE     		BV30//    536870912
 #define ITEM_QUEST			BV31
 
 /* UNIQUE AND PC CORPSE HERE */
@@ -953,9 +951,8 @@ struct room_data
 #define AFF2_WINGSTIRED        BV15// 0x40000000
 /* necro stuff */
 #define AFF2_INVIS_TO_UNDEAD   BV16
-/* bard stuff */
-#define AFF2_GUARDIAN_ANGEL	   BV17 /* bard mad sneak spell. blame xenon, not me */
-#define AFF2_SONG_OF_WANDERER  BV18 /* no move use */
+
+/* empty slots here! */
 
 #define AFF2_SKILL_SNEAK       BV19
 
@@ -1051,8 +1048,7 @@ struct room_data
 #define CLASS_PALADIN    BV08//256
 #define CLASS_RANGER  	 BV09//512
 #define CLASS_PSI	     BV10//1024
-#define CLASS_BARD       BV11//    2048
-#define CLASS_NECROMANCER BV12
+#define CLASS_NECROMANCER BV11
 
 /* sex */
 #define SEX_NEUTRAL   0
@@ -1108,7 +1104,7 @@ struct room_data
 #define ACT_PALADIN	(1<<28)
 #define ACT_RANGER	(1<<29)
 #define ACT_PSI		(1<<30)
-#define ACT_BARD        (1<<31)
+// room for one more
 
 /* for common mobile procedures: specials.proc */
 #define PROC_NONE			0  /* no proc */
@@ -1401,8 +1397,7 @@ struct char_special_data
 #define SKILL_KNOWN_PALADIN	    BV09//512
 #define SKILL_KNOWN_RANGER	    BV10//1024
 #define SKILL_KNOWN_PSI		    BV11//2048
-#define SKILL_KNOWN_BARD        BV12//4096
-#define SKILL_KNOWN_NECROMANCER BV13//8192
+#define SKILL_KNOWN_NECROMANCER BV12//4096
 
 /* end */
 

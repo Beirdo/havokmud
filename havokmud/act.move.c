@@ -318,15 +318,11 @@ if (!IS_AFFECTED(ch,AFF_FLYING))
   }
 
   if (!MOUNTED(ch)) {
-	if(IS_AFFECTED2(ch, AFF2_SONG_OF_WANDERER))
-		need_movement = 0;
     if (GET_MOVE(ch)<need_movement) {
       send_to_char("You are too exhausted.\n\r",ch);
       return(FALSE);
     }
   } else {
-	if(IS_AFFECTED2(MOUNTED(ch), AFF2_SONG_OF_WANDERER))
-		need_movement = 0;
     if (GET_MOVE(MOUNTED(ch))<need_movement) {
       send_to_char("Your mount is too exhausted.\n\r", ch);
       return(FALSE);
@@ -534,7 +530,7 @@ int DisplayMove( struct char_data *ch, int dir, int was_in, int total)
 
   for (tmp_ch = real_roomp(was_in)->people; tmp_ch;
        tmp_ch= tmp_ch->next_in_room) {
-    if ((!IS_AFFECTED(ch, AFF_SNEAK) && !IS_AFFECTED2(ch, AFF2_GUARDIAN_ANGEL)) || (IS_IMMORTAL(tmp_ch))) {
+    if ((!IS_AFFECTED(ch, AFF_SNEAK) ) || (IS_IMMORTAL(tmp_ch))) {
       if ((ch != tmp_ch) && (AWAKE(tmp_ch)) && (CAN_SEE(tmp_ch, ch))) {
 	if (!IS_AFFECTED(ch, AFF_SILENCE) || number(0,2)) {
 	  if (total > 1) {
@@ -585,7 +581,7 @@ int DisplayMove( struct char_data *ch, int dir, int was_in, int total)
 
   for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch;
        tmp_ch = tmp_ch->next_in_room) {
-    if (((!IS_AFFECTED(ch, AFF_SNEAK) && !IS_AFFECTED2(ch, AFF2_GUARDIAN_ANGEL)) || (IS_IMMORTAL(tmp_ch))) &&
+    if (((!IS_AFFECTED(ch, AFF_SNEAK) ) || (IS_IMMORTAL(tmp_ch))) &&
 	(CAN_SEE(tmp_ch,ch)) &&	(AWAKE(tmp_ch))) {
       if (tmp_ch != ch && (!IS_AFFECTED(ch, AFF_SILENCE) || number(0,2))) {
 	if (dir < 4) {
