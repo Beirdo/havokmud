@@ -87,7 +87,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
             act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
             send_to_char("You relax.\n\r", ch);
@@ -241,7 +241,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (argument && *argument) {
+    if (argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -320,7 +320,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (argument && *argument) {
+    if (argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -980,7 +980,7 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
         return;
@@ -1014,7 +1014,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("I beg your pardon?\n\r", ch);
         return;
     }
@@ -1046,7 +1046,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Pardon?\n\r", ch);
         return;
     }
@@ -1437,12 +1437,14 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
      * set ch->specials.group_name to the argument
      */
     arg = skip_spaces(arg);
-
-    send_to_char("Setting your group name to: ", ch);
-    send_to_char(arg, ch);
-    send_to_char("\n\r", ch);
-    ch->specials.group_name = strdup(arg);
-
+    if( arg ) {
+        send_to_char("Setting your group name to: ", ch);
+        send_to_char(arg, ch);
+        send_to_char("\n\r", ch);
+        ch->specials.group_name = strdup(arg);
+    } else {
+        send_to_char("Clearing your group name\n\r", ch);
+    }
 }
 
 void do_quaff(struct char_data *ch, char *argument, int cmd)
@@ -2173,8 +2175,8 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
         if (ch->specials.A_list) {
             if (GET_ALIAS(ch, num)) {
                 strcpy(buf, GET_ALIAS(ch, num));
-                if (arg && *arg) {
-                    sprintf(buf2, "%s%s", buf, arg);
+                if (arg) {
+                    sprintf(buf2, "%s %s", buf, arg);
                     command_interpreter(ch, buf2);
                 } else {
                     command_interpreter(ch, buf);
@@ -2332,7 +2334,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     /*
      * If there is no chars in argument
      */
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r",
                      ch);
 
@@ -2906,7 +2908,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 {
     char           *type,
                    *field,
-                   *name;
+                   *newfield,
+                   *temp;
 
     dlog("in do_set_flags");
 
@@ -2915,7 +2918,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &type);
-    argument = get_argument(argument, &field);
+    field = skip_spaces(argument);
 
     if (!type) {
         send_to_char("Set, but set what?!?!? type help set for further "
@@ -2970,6 +2973,20 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
            field[strlen(field) - 1] == '\n' ||
            field[strlen(field) - 1] == ' ') {
         field[strlen(field) - 1] = '\0';
+    }
+
+    newfield = strdup(field);
+    if( !newfield ) {
+        Log( "Out of memory in do_set" );
+        return;
+    }
+    temp = newfield;
+
+    temp = get_argument(temp, &field);
+    if(!field) {
+        Log("Strangeness in do_set");
+        free( newfield );
+        return;
     }
 
     if (!strcmp(type, "sound")) {
@@ -3038,8 +3055,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "groupname")) {
-        name = skip_spaces(field);
-        do_group_name(ch, name, 0);
+        do_group_name(ch, newfield, 0);
     } else if (!strcmp(type, "autoexits")) {
         if (strstr(field, "enable")) {
             act("Setting autodisplay exits on.", FALSE, ch, 0, 0, TO_CHAR);
@@ -3124,31 +3140,26 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
             return;
         }
-        if (*field) {
-            /*
-             * set email to field
-             */
-            if (ch->specials.email) {
-                free(ch->specials.email);
-            }
 
-            while( strchr( field, '\n' ) ) {
-                *(strchr( field, '\n' )) = '\0';
-            }
+        /*
+         * set email to field
+         */
+        if (ch->specials.email) {
+            free(ch->specials.email);
+        }
 
-            while( strchr( field, '\r' ) ) {
-                *(strchr( field, '\r' )) = '\0';
-            }
+        while( strchr( field, '\n' ) ) {
+            *(strchr( field, '\n' )) = '\0';
+        }
 
-            ch->specials.email = strdup(field);
-            if (cmd) {
-                write_char_extra(ch);
-                send_to_char("Email address set.\n\r", ch);
-            }
-        } else {
-            if (cmd) {
-                send_to_char("Set email address to what?\n\r", ch);
-            }
+        while( strchr( field, '\r' ) ) {
+            *(strchr( field, '\r' )) = '\0';
+        }
+
+        ch->specials.email = strdup(field);
+        if (cmd) {
+            write_char_extra(ch);
+            send_to_char("Email address set.\n\r", ch);
         }
     } else {
         send_to_char("Unknown type to set.\n\r", ch);

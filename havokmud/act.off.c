@@ -2422,8 +2422,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *fw,
                    *ms;
-    char           *arg1,
-                   *arg2;
+    char           *arg1;
 
     dlog("in do_weapon_load");
 
@@ -2455,8 +2454,6 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &arg1);
-    arg2 = skip_spaces(argument);
-
     if (!arg1) {
         send_to_char("You must specify the projectile to load!\n\r", ch);
         return;
@@ -2859,15 +2856,14 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
-
     if ((ch->master && IS_AFFECTED(ch, AFF_CHARM)) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!argument || !*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("Hrm... normally, you should CHAT something...\n\r", ch);
         return;
     }
@@ -2936,15 +2932,14 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
-
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!argument || !*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("Your fellow questees aren't interested in hearing "
                      "nothing.\n\r", ch);
         return;

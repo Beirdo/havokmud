@@ -1512,13 +1512,14 @@ void load_char_extra(struct char_data *ch)
             if( s ) {
                 /* eat leading spaces and trailing carriage return/linefeed */
                 s = skip_spaces(s);
+                if( s ) {
+                    while(strchr(s, '\n')) {
+                        *(strchr(s, '\n')) = '\0';
+                    }
 
-                while(strchr(s, '\n')) {
-                    *(strchr(s, '\n')) = '\0';
-                }
-
-                while(strchr(s, '\r')) {
-                    *(strchr(s, '\r')) = '\0';
+                    while(strchr(s, '\r')) {
+                        *(strchr(s, '\r')) = '\0';
+                    }
                 }
             }
 

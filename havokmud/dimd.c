@@ -353,7 +353,7 @@ void do_dlink(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
+    if (!argument || (mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
     if (IS_SET(muds[mud].flags, DD_CONNECTED)) {
@@ -385,7 +385,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
+    if (!argument || (mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
     if (!IS_SET(muds[mud].flags, DD_CONNECTED)) {
@@ -489,6 +489,10 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
 void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
     argument = skip_spaces(argument);
+    if( !argument ) {
+        msg("Use either on, off, gossip, muse, or think.", ch);
+        return;
+    }
 
     if (!strcasecmp(argument, "on")) {
         if (dimd_on) {
@@ -1152,7 +1156,7 @@ void dimd_loop(void)
                             scan = one_lc_dimd_argument(scan, toname);
                             scan = skip_spaces(scan);
 
-                            if (!(vict = get_char(toname)) || 
+                            if (!scan || !(vict = get_char(toname)) || 
                                 !dimd_can_see(fromgodlevel, vict)) {
                                 strcpy(buf, "No char by that name.");
                             } else {

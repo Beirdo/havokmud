@@ -405,7 +405,6 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &buf);
-    name = skip_spaces(argument);
 
     if (!buf || (act_nr = find_action(FindCommandNumber(buf))) < 0) {
         send_to_char("That action is not supported.\n\r", ch);
@@ -419,6 +418,7 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
         name = skip_spaces(argument);
     } else {
         buf = NULL;
+        name = NULL;
     }
 
 #if 0

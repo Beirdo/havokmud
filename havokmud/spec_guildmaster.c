@@ -73,7 +73,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     arg = skip_spaces(arg);
 
     if ((cmd == 164) || (cmd == 170)) {
-        if (!arg || (strlen(arg) == 0)) {
+        if (!arg) {
             sprintf(buf, " swim   :  %s\n\r",
                     how_good(ch->skills[SKILL_SWIM].learned));
             send_to_char(buf, ch);
@@ -201,7 +201,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     arg = skip_spaces(arg);
 
     if (cmd == 164 || cmd == 170) {
-        if (!arg || !*arg) {
+        if (!arg) {
             sprintf(buf, " hunt           :  %s\n\r",
                     how_good(ch->skills[SKILL_HUNT].learned));
             send_to_char(buf, ch);
@@ -945,7 +945,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!arg || !*arg) {
+        if (!arg) {
             sprintf(buf, "You have got %d practice sessions left.\n\r",
                     ch->specials.spells_to_learn);
             send_to_char(buf, ch);
@@ -973,7 +973,11 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         arg = skip_spaces(arg);
-        number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
+        if( arg ) {
+            number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
+        } else {
+            number = -1;
+        }
         index = spell_index[number];
         if (number == -1 || index == -1) {
             do_say(guildmaster, "You do not know of this spell.", 0);
@@ -1080,7 +1084,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!arg || !*arg) {
+        if (!arg) {
             sprintf(buf, "You have got %d practice sessions left.\n\r",
                     ch->specials.spells_to_learn);
             send_to_char(buf, ch);
@@ -1108,7 +1112,11 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         arg = skip_spaces(arg);
-        number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
+        if( arg ) {
+            number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
+        } else {
+            number = -1;
+        }
         index = spell_index[number];
         if (number == -1 || index == -1) {
             do_say(guildmaster, "You do not know of this spell.", 0);

@@ -7116,7 +7116,7 @@ int godsay(struct char_data *ch, int cmd, char *argument,
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
         return( TRUE );
     }

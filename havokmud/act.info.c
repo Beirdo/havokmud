@@ -2764,8 +2764,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     spellcheck = 0;
 
     argument = skip_spaces(argument);
-
-    if (argument && *argument) {
+    if (argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return;
@@ -2886,19 +2885,23 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                  */
                 send_to_char("No remote or exact matches found.\n\r", ch);
                 send_to_char("Try a different query.\n\r", ch);
-                sprintf(buf, "%s is looking for a help on \"%s\". Can someone "
-                             "help %s?", GET_NAME(ch), argument, HMHR(ch));
-                Log(buf);
-                /*
-                 * add query to ADD_HELP
-                 */
-                if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                    Log("Could not open the ADD_HELP-file.\n\r");
-                    return;
+                if( argument ) {
+                    sprintf(buf, "%s is looking for a help on \"%s\". Can "
+                                 "someone help %s?", GET_NAME(ch), argument, 
+                            HMHR(ch));
+                    Log(buf);
+
+                    /*
+                     * add query to ADD_HELP
+                     */
+                    if (!(fl = fopen(NEWHELP_FILE, "a"))) {
+                        Log("Could not open the ADD_HELP-file.\n\r");
+                        return;
+                    }
+                    sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
+                    fputs(buf, fl);
+                    fclose(fl);
                 }
-                sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
-                fputs(buf, fl);
-                fclose(fl);
                 return;
             } 
             
@@ -2908,8 +2911,9 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         
         send_to_char("No remote or exact matches found.\n\r", ch);
         return;
+
+        send_to_char(help, ch);
     }
-    send_to_char(help, ch);
 }
 
 
@@ -2985,7 +2989,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 	}
 
     argument = skip_spaces(argument);
-    if (argument && *argument) {
+    if (argument) {
         if (!wizhelp_index) {
             send_to_char("No wizhelp available.\n\r", ch);
             return;
@@ -3933,8 +3937,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
      */
 
     argument = skip_spaces(argument);
-
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("You must supply a class!\n\r", ch);
         return;
     }
@@ -5577,7 +5580,6 @@ void do_glance(struct char_data *ch, char *argument, int cmd)
     } 
 
     send_to_char("Try to glance at someone...", ch);
-    return;
 }
 
 void do_whoarena(struct char_data *ch, char *argument, int cmd)

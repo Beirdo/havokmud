@@ -1467,7 +1467,7 @@ void command_interpreter(struct char_data *ch, char *argument)
     /*
      * New parser by DM
      */
-    if (arg1 && *arg1) {
+    if (arg1) {
         n = FindValidCommand(arg1);
     } else {
         n = NULL;
@@ -2073,6 +2073,12 @@ void nanny(struct descriptor_data *d, char *arg)
         show_menu(d);
 #endif
         arg = skip_spaces(arg);
+        if( !arg ) {
+            show_menu(d);
+            send_to_char("Invalid Choice.. Try again..", d->character);
+            return;
+        }
+
         switch (*arg) {
         case '1':
             SEND_TO_Q("What is your sex (M/F) ? ", d);
@@ -2232,6 +2238,11 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
     case CON_ALIGNMENT:
         arg = skip_spaces(arg);
+        if( !arg ) {
+            SEND_TO_Q("Please select a alignment.\n\r", d);
+            return;
+        }
+
         switch (*arg) {
         case 'n':
         case 'N':
@@ -2276,6 +2287,15 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_ANSI:
         arg = skip_spaces(arg);
+        if( !arg ) {
+            SEND_TO_Q("Please type Yes or No.\n\r", d);
+            SEND_TO_Q("Would you like ansi colors? :", d);
+#if 0
+            STATE(d) = CON_ANSI;
+#endif
+            return;
+        }
+
         switch (*arg) {
         case 'y':
         case 'Y':
@@ -2305,11 +2325,12 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
             break;
         }
+        break;
 
     case CON_QRACE:
         d->character->reroll = 20;
         arg = skip_spaces(arg);
-        if (!arg || !*arg) {
+        if (!arg) {
             show_race_choice(d);
             SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
             STATE(d) = CON_QRACE;
@@ -2355,7 +2376,7 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         arg = skip_spaces(arg);
-        if (!arg || !*arg) {
+        if (!arg) {
             close_socket(d);
         } else {
             if (_parse_name(arg, tmp_name)) {
@@ -2417,6 +2438,14 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
+        if( !arg ) {
+            /*
+             * Please do Y or N
+             */
+            SEND_TO_Q("Please type Yes or No? ", d);
+            return;
+        }
+
         if (*arg == 'y' || *arg == 'Y') {
             write(d->descriptor, echo_on, 4);
             SEND_TO_Q("New character.\n\r", d);
@@ -2448,7 +2477,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || !*arg) {
+        if (!arg) {
             close_socket(d);
         } else {
             if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
@@ -2596,7 +2625,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || !*arg || strlen(arg) > 10) {
+        if (!arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Illegal password.\n\r", d);
             SEND_TO_Q("Password: ", d);
@@ -2622,7 +2651,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+        if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Passwords don't match.\n\r", d);
@@ -2652,6 +2681,12 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
+        if( !arg ) {
+            SEND_TO_Q("That's not a sex..\n\r", d);
+            SEND_TO_Q("What IS your sex? :", d);
+            return;
+        }
+
         switch (*arg) {
         case 'm':
         case 'M':
@@ -2686,7 +2721,7 @@ void nanny(struct descriptor_data *d, char *arg)
          */
         arg = skip_spaces(arg);
         index = 0;
-        while (*arg && index < MAX_STAT) {
+        while (arg && *arg && index < MAX_STAT) {
             if (*arg == 'S' || *arg == 's') {
                 d->stat[index++] = 's';
             }
@@ -2778,7 +2813,7 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         d->character->reroll--;
 
-        if (*arg != 'r' && *arg != 'R') {
+        if (arg && *arg != 'r' && *arg != 'R') {
             SEND_TO_Q("Stats chosen!\n\r", d);
 
             STATE(d) = CON_CREATION_MENU;
@@ -2840,29 +2875,6 @@ void nanny(struct descriptor_data *d, char *arg)
             SEND_TO_Q("Stats chosen!", d);
             STATE(d) = CON_CREATION_MENU;
             break;
-#if 0
-            if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-                STATE(d) = CON_AUTH;
-                SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
-            } else {
-                sprintf(buf, "%s [%s] new player.",
-                        GET_NAME(d->character), d->host);
-                Log(buf);
-                /*
-                 ** now that classes are set, initialize
-                 */
-                init_char(d->character);
-                /*
-                 * create an entry in the file
-                 */
-                d->pos = create_entry(GET_NAME(d->character));
-                save_char(d->character, AUTO_RENT);
-
-                SEND_TO_Q("\n\r\n*** PRESS ENTER: ", d);
-                STATE(d) = CON_PRESS_ENTER;
-                break;
-            }
-#endif
         }
         break;
 
@@ -2875,9 +2887,6 @@ void nanny(struct descriptor_data *d, char *arg)
         }
         STATE(d) = CON_RMOTD;
         send_to_char(motd, d->character);
-#if 0
-        SEND_TO_Q(motd, d);
-#endif
         SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
         STATE(d) = CON_RMOTD;
         break;
@@ -2886,9 +2895,8 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         d->character->specials.remortclass = 0;
 
-        pick = atoi(arg);
-
-        if (HasClass(d->character, pc_num_class(pick))) {
+        if (arg && (pick = atoi(arg)) &&
+            HasClass(d->character, pc_num_class(pick))) {
             d->character->specials.remortclass = pick + 1;
             STATE(d) = CON_CREATION_MENU;
             show_menu(d);
@@ -2914,6 +2922,14 @@ void nanny(struct descriptor_data *d, char *arg)
          */
 
         arg = skip_spaces(arg);
+        if( !arg ) {
+            SEND_TO_Q("Invalid selection!\n\r", d);
+            show_class_selection(d, GET_RACE(d->character));
+            SEND_TO_Q("Enter ? for help.\n\r", d);
+            SEND_TO_Q("\n\rClass :", d);
+            return;
+        }
+
         d->character->player.class = 0;
         count = 0;
         oops = FALSE;
@@ -3420,7 +3436,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_CHECK_MAGE_TYPE:
         arg = skip_spaces(arg);
-        if (!strcmp(arg, "yes")) {
+        if (arg && !strcmp(arg, "yes")) {
             d->character->player.class -= CLASS_MAGIC_USER;
             d->character->player.class += CLASS_SORCERER;
         }
@@ -3478,7 +3494,8 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_DELETE_ME:
         arg = skip_spaces(arg);
-        if (!strcmp(arg, "yes") && strcmp("Guest", GET_NAME(d->character))) {
+        if (arg && !strcmp(arg, "yes") && 
+            strcmp("Guest", GET_NAME(d->character))) {
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
             Log(buf);
             for (i = 0; i <= top_of_p_table; i++) {
@@ -3689,7 +3706,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!arg || !*arg || strlen(arg) > 10) {
+        if (!arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Illegal password.\n\r", d);
@@ -3720,7 +3737,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
+        if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Passwords don't match.\n\r", d);
             SEND_TO_Q("Retype password: ", d);

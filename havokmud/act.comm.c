@@ -30,7 +30,7 @@ void do_say(struct char_data *ch, char *argument, int cmd)
         return;
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
     } else {
         sprintf(buf, "$c0015$n says '%s'", argument);
@@ -105,7 +105,6 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    argument = skip_spaces(argument);
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
             send_to_char("I don't think so :-)", ch->master);
@@ -118,9 +117,9 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!argument || !*argument) {
-        send_to_char("Shout? Yes! Fine! Shout we must, but WHAT??\n\r",
-                     ch);
+    argument = skip_spaces(argument);
+    if (!argument) {
+        send_to_char("Shout? Yes! Fine! Shout we must, but WHAT??\n\r", ch);
     } else {
 		if (argument[0] == '%') {
             do_OOCaction(ch, argument, cmd);
@@ -185,7 +184,6 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    argument = skip_spaces(argument);
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
             send_to_char("I don't think so :-)", ch->master);
@@ -193,7 +191,8 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (!argument || !*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("Yell? Yes! but what!\n\r", ch);
     } else {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
@@ -262,7 +261,7 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
     dlog("in do_commune,think");
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Communing among the gods is fine, but WHAT?\n\r", ch);
 	} else {
         if (argument[0] == '%') {
@@ -639,7 +638,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
     dlog("in do_sign");
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Yes, but WHAT do you want to sign?\n\r", ch);
         return;
     }
@@ -794,7 +793,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
         return;
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
         return;
     }
@@ -957,7 +956,7 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
 
     argument = skip_spaces(argument);
 
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("What do you want to group tell!??\n\r", ch);
         return;
     }
@@ -1120,7 +1119,7 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Pray to a deity, but what?!?! (pray <DeityName> "
                      "<prayer>)\n\r", ch);
         return;
@@ -1183,9 +1182,6 @@ void do_telepathy(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_telepathy");
 
-    argument = get_argument(argument, &name);
-    message = skip_spaces(argument);
-
     if (!HasClass(ch, CLASS_PSI) && !IS_AFFECTED(ch, AFF_TELEPATHY)) {
         send_to_char("What do you think you are? A Telepath?\n\r", ch);
         return;
@@ -1196,6 +1192,9 @@ void do_telepathy(struct char_data *ch, char *argument, int cmd)
                      ch);
         return;
     }
+
+    argument = get_argument(argument, &name);
+    message = skip_spaces(argument);
 
     if (!name || !message) {
         send_to_char("Who do you wish to bespeak what??\n\r", ch);
@@ -1284,8 +1283,6 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    argument = skip_spaces(argument);
-
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
             send_to_char("I don't think so :-)", ch->master);
@@ -1293,7 +1290,9 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (!argument || !*argument) {
+    argument = skip_spaces(argument);
+
+    if (!argument) {
         send_to_char("Hrm... normally, you should OOC something...\n\r", ch);
         return;
     }

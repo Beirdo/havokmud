@@ -2707,6 +2707,9 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
      */
     while (arg && *arg && !found) {
         arg = skip_spaces(arg);
+        if( !arg ) {
+            break;
+        }
 
         for (i = 0; (name[i] = arg[i]) && (name[i] != ' '); i++) {
             /* 

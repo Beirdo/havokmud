@@ -3600,7 +3600,7 @@ void cast_command(int level, struct char_data *ch, char *arg,
     }
 
     arg = skip_spaces(arg);
-    if (arg && *arg) {
+    if (arg) {
         p = fname(arg);
 
         if (((GetMaxLevel(tar_ch) < 6 && GET_INT(tar_ch) < 13) ||
@@ -3785,7 +3785,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
          * get the argument, parse it into a direction 
          */
         arg = skip_spaces(arg);
-        if (!arg || !*arg) {
+        if (!arg) {
             send_to_char("you must supply a direction!\n\r", ch);
             return;
         }

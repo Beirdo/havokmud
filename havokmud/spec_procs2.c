@@ -3163,7 +3163,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                       FindMobInRoomWithFunction(ch->in_room, PrisonGuard);
 
             arg = skip_spaces(arg);
-            strcpy(buf, (arg ? arg : 0));
+            strcpy(buf, (arg ? arg : ""));
 
             if (cmd == 302) {   /* gos */
                 act("$n glares at you", FALSE, PGuard, 0, ch, TO_VICT);
@@ -5343,7 +5343,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
 
             act("$n appears in a dazzling explosion of light!",
                 FALSE, ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            command_interpreter(ch, "look");
             return (TRUE);
         }
     }

@@ -221,7 +221,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
     }
     
     argument = skip_spaces(argument);
-    if (argument && *argument) {
+    if (argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return (FALSE);

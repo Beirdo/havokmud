@@ -3155,11 +3155,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 send_to_char("Sorry, you can't do that.\n\r", ch);
                 return;
             }
-            /* 
-             * Point to the last ' 
-             */
 
-            argument = skip_spaces(argument);
             /*
              **************** Locate targets **************** */
             target_ok = FALSE;
@@ -3186,11 +3182,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             if (!IS_SET(spell_info[index].targets, TAR_IGNORE)) {
                 argument = get_argument(argument, &name);
 
-                if (name && strcmp(name, "self") == 0) {
-                    sprintf(name, "%s", GET_NAME(ch));
-                }
-
                 if (name) {
+                    if (!strcmp(name, "self")) {
+                        name = GET_NAME(ch);
+                    }
+
                     /*
                      * room char spells 
                      */

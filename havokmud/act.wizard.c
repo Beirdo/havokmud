@@ -154,9 +154,9 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (argument) {
-        argument = skip_spaces(argument);
+    argument = skip_spaces(argument);
 
+    if (argument) {
         /*
          * get response (rest of argument)
          */
@@ -372,7 +372,7 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!arg || !*arg) {
+    if (!arg) {
         send_to_char("Your current bamfin is:\n\r", ch);
         act(ch->specials.poofin, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfin <bamf definition>\n\r", ch);
@@ -422,7 +422,7 @@ void do_bamfout(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!arg || !*arg) {
+    if (!arg) {
         send_to_char("Your current bamfout is:\n\r", ch);
         act(ch->specials.poofout, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfout <bamf definition>\n\r", ch);
@@ -599,7 +599,6 @@ void do_zclean(struct char_data *ch, char *argument, int cmdnum)
     }
 
     argument = skip_spaces(argument);
-
     if (!argument || (zone = atoi(argument)) < 1) {
         send_to_char("Zclean <zone_number> (and don't even think about "
                      "cleaning Void)\n\r", ch);
@@ -797,7 +796,7 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("rload <start> [<end>]\n\r", ch);
         return;
     }
@@ -860,7 +859,7 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         start = ch->in_room;
         end   = ch->in_room;
         if (!(start > 0 && start < WORLD_SIZE)) {
@@ -919,7 +918,7 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
     }
 
     arg = skip_spaces(arg);
-    if (!arg || !*arg) {
+    if (!arg) {
         send_to_char("Yes.. But what?\n\r", ch);
         return;
     }
@@ -945,7 +944,7 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         if (IS_SET(ch->specials.act, PLR_ECHO)) {
             send_to_char("echo off\n\r", ch);
             REMOVE_BIT(ch->specials.act, PLR_ECHO);
@@ -973,7 +972,7 @@ void do_system(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("That must be a mistake...\n\rTry arguments 1-8 (Info, "
                      "Ann, Upd, sys, warn, reb, wel, note)\n\r", ch);
         return;
@@ -2265,13 +2264,12 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+    argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("Oedit what?!? I need a <num/change>!(oedit <item> "
                      "<field> <num>)\n\r", ch);
         return;
     }
-
-    argument = skip_spaces(argument);
 
     /*
      * object
@@ -6853,17 +6851,17 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (apply_soundproof(ch))
+    if (apply_soundproof(ch)) {
         return;
-
-    argument = skip_spaces(argument);
+    }
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) && !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!(*argument)) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("yell? Yes! but what!\n\r", ch);
     } else {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
