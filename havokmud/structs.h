@@ -86,7 +86,7 @@ struct QuestItem {
   char *where;
 };
 
-#define VERSION "1.7 by Pentak and Forbathian"
+#define VERSION "1.8"
 /*
   tailoring stuff
 */
