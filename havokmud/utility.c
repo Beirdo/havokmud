@@ -3024,7 +3024,7 @@ void AdvicePulseStuff(int pulse)
       if (IS_PC(ch)) {
 		if (ch->in_room != NOWHERE) {
 			if (IS_SET(ch->player.user_flags, NEW_USER)) {
-				sprintf(buffer,"$c000GAdvice: '$c000w%s$c000G'",advicelist[number(0,numberadvice)]);
+				sprintf(buffer,"$c000GAdvice: '$c000w%s$c000G'\n\r",advicelist[number(0,numberadvice)]);
 				if(AWAKE(ch))
 					send_to_char(buffer,ch);
 			}

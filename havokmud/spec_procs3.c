@@ -6606,16 +6606,16 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
    one_argument(arg,buf);
 
   if(*buf) {
-     if(!(str_cmp("pool",buf)) || !(str_cmp("gate",buf)) ||
-        !(str_cmp("gate pool",buf))) {
+     if(!(str_cmp("portal",buf)) || !(str_cmp("gate",buf)) ||
+        !(str_cmp("gate portal",buf))) {
        if(portal=get_char_room("pool",ch->in_room)) {
            send_to_char("\n\r",ch);
-           send_to_char("You seen enough of this path, you enter the Gate of Sin.\n\r",ch);
+           send_to_char("Having seen enough of this path, you enter the Gate of Sin.\n\r",ch);
            send_to_char("\n\r",ch);
-           act("$n enters the gate of Sin and dissapears from your vicinity!", FALSE , ch, 0, 0, TO_ROOM);
+           act("$n enters the Gate of Sin and disappears from your vicinity.", FALSE , ch, 0, 0, TO_ROOM);
            char_from_room(ch);
            char_to_room(ch,51804);
-           act("Proven a true sinner, $n materializes from one of the altar's seven sides!", FALSE, ch, 0, 0, TO_ROOM);
+           act("Proven a true sinner, $n materializes from one of the altar's seven sides.", FALSE, ch, 0, 0, TO_ROOM);
            do_look(ch, "", 0);
            return(TRUE);
        }
@@ -6638,7 +6638,7 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
   if (type == EVENT_DEATH)    {
 	mobtmp = read_mobile(real_mobile(51803),REAL);
     char_to_room(mobtmp, 51817);
-    act("$n falls to the ground and crumbles.  You then hear a weird scream in a distance.", FALSE, ch, 0, 0, TO_ROOM);
+    act("$n gasps his last breath, but the supply of sinners seems no less.", FALSE, ch, 0, 0, TO_ROOM);
 	return(TRUE);
   }
 
@@ -6649,13 +6649,15 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
   	if(ch->specials.fighting) {
 
            send_to_char("\n\r",ch);
-           send_to_char("$c0012The Rage overtakes you quickly!$c0007.\n\r",ch);
+           send_to_char("$c0012The Rage overtakes you quickly!$c0007\n\r",ch);
            send_to_char("\n\r",ch);
-           act("$c00012$n seems to have found the rage, and is whisked away from the fight.$c0007!", FALSE , ch, 0, 0, TO_ROOM);
+           act("$c0012$n seems to have found the rage, and is whisked away from the fight.$c0007", FALSE , ch, 0, 0, TO_ROOM);
            char_from_room(ch);
            char_to_room(ch,51823);
            act("$n madly rages about, then calms down when there's no more quarries about.", FALSE, ch, 0, 0, TO_ROOM);
            do_look(ch, "", 0);
+           return(TRUE);
+           send_to_char("You rage about, then realize there's noone to fight and calm down.\n\r",ch);
 
 	}
 	else
@@ -6685,14 +6687,14 @@ int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 	            send_to_char("Out of options, you finally decide to succumb to the tantalizing toxins of the mead \n\rand take a long draught. You must have quite a tummy!\n\r",ch);
 	            send_to_char("\n\r",ch);
 	            act("$n meditates a moment, takes a long draught of the mead and disappears!", FALSE , ch, 0, 0, TO_ROOM);
-	            send_to_char("You feel a bit dizzy from so much mead.",ch);
 	            GET_COND(ch,DRUNK)=25;
 	            GET_COND(ch,FULL)=25;
 	            GET_COND(ch,THIRST)=20;
 	            char_from_room(ch);
-	            char_to_room(ch,51804);
+	            char_to_room(ch,51828);
 	            act("$n climbs out of the barrel, swaying slightly.", FALSE, ch, 0, 0, TO_ROOM);
 	            do_look(ch, "", 0);
+	            send_to_char("You feel a bit dizzy from so much mead.",ch);
 
 	return(TRUE);
     } /* end strcmpi() */
@@ -6951,11 +6953,11 @@ int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data 
 		return(FALSE);
 
 
-	do_system(ch, "A large gong sound echoes through-out the lands.\n\r", 1);
+	do_system(ch, "A large gong sound echoes through-out the lands.", 1);
 
 	/*Send all in group too room 51878 */
 
-	/*No group.. just you.. tyhen move them*/
+	/*No group.. just you.. then move them*/
 	if (!IS_AFFECTED(ch, AFF_GROUP)) {
 		char_from_room(ch);
 	  char_to_room(ch, 51878);
@@ -7027,7 +7029,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 		return(FALSE);
 
 
-	send_to_room("\n\rThe greedy sinner looks around the tent, and doesn't fail to notice the chest standing\n\r", mob->in_room);
+	send_to_room("The greedy sinner looks around the tent, and doesn't fail to notice the chest standing\n\r", mob->in_room);
 	send_to_room("in the center. It sneaks up to the chest, quickly grabs a trinket, and cackles gleefully.\n\r", mob->in_room);
 	send_to_room("Still laughing like a madman, it quaffs a misty potion and fades out of existence.\n\r", mob->in_room);
 
