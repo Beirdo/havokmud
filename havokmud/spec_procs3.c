@@ -4928,7 +4928,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 			}
 			act("$n hands over 2 pills: one black and one blue.", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'The riddle is this:'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'When one stands on sold ground'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'When one stands on solid ground'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'They look up and cannot deny'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'That the law of nature's demand'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'Determines the shade of this cloudless sky'", FALSE, vict, 0, 0, TO_ROOM);
@@ -4938,7 +4938,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 		if (test == 1)
 		{
 			act("$n says, 'I can only tell you the riddle:'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'When one stands on sold ground'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'When one stands on solid ground'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'They look up and cannot deny'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'That the law of nature's demand'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'Determines the shade of this cloudless sky'", FALSE, vict, 0, 0, TO_ROOM);
@@ -5305,6 +5305,9 @@ int bahamut_prayer(struct char_data *ch, struct char_data *vict)
   int test = 0;
   struct char_data *tmp_ch;
   struct char_data *i;
+
+  if(IS_PC(ch))
+    return(0);
 
 	if (GET_HIT(ch) <= 2000)
 	{
@@ -5971,6 +5974,9 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
   }
 	return(FALSE);
+<<<<<<< spec_procs3.c
+}
+=======
 }
 
 /* Toy for Banon.. a new say for him (GH) April 2002 */
@@ -6002,4 +6008,4 @@ int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, 
        }
   }
 
-}
+}>>>>>>> 1.28
