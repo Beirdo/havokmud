@@ -1315,53 +1315,57 @@ void spell_locate_object(byte level, struct char_data *ch,
   char name[256];
   char buf[MAX_STRING_LENGTH],buf2[256];
   int j;
-
-	assert(ch);
-
+  
+  assert(ch);
+  
   if (!obj) {
     send_to_char("Everywhere, you sense them everywhere!??\n\r",ch);
     return;
   }
-
+  
   if (!obj->name || !(*obj->name)) {
     send_to_char("Which object?\n\r", ch);
     return;
   }
-
-
+  
+  
   strcpy(name, obj->name);
-
-	j=level>>2;
-        if(j<2) j=2;
-
-        sprintf(buf,"");
-
-	for (i = object_list; i && (j>0); i = i->next)
+  
+  j=level>>2;
+  if(j<2) j=2;
+  
+  sprintf(buf,"");
+  
+  for (i = object_list; i && (j>0); i = i->next)
     if (isname(name, i->name)) {
       if(i->carried_by) {
 	if (strlen(PERS_LOC(i->carried_by, ch))>0) {
           sprintf(buf2,"%s carried by %s.\n\r",
-            i->short_description,PERS(i->carried_by,ch));
+		  i->short_description,PERS(i->carried_by,ch));
           strcat(buf,buf2);
+	  j--;
 	}
       } else if(i->equipped_by) {
 	if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
           sprintf(buf2,"%s equipped by %s.\n\r",
 		  i->short_description,PERS(i->equipped_by,ch));
-	strcat(buf,buf2);
+	  strcat(buf,buf2);
+	  j--;
 	}
       } else if (i->in_obj) {
-          sprintf(buf2,"%s in %s.\n\r",i->short_description,
-            i->in_obj->short_description);
+	sprintf(buf2,"%s in %s.\n\r",i->short_description,
+		i->in_obj->short_description);
 	strcat(buf,buf2);
+	j--;
       } else {
-          sprintf(buf2,"%s in %s.\n\r",i->short_description,
-		(i->in_room == NOWHERE ? "use but uncertain." : real_roomp(i->in_room)->name));
+	sprintf(buf2,"%s in %s.\n\r",i->short_description,
+		(i->in_room == NOWHERE ? "use but uncertain." : 
+		 real_roomp(i->in_room)->name));
 	strcat(buf,buf2);
-         j--;
+	j--;
       }
     }
-
+  
 	page_string(ch->desc,buf,0);
 
   if(j==0)

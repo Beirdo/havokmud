@@ -1857,7 +1857,7 @@ for (vict=character_list;vict;vict= tmp) {
    act("$n lets out a squalk of a bellow then blushes.",FALSE,ch,0,0,TO_ROOM);
    LearnFromMistake(ch, SKILL_BELLOW, 0, 95);
  }
-  WAIT_STATE(ch, PULSE_VIOLENCE*3);       
+  WAIT_STATE(ch, PULSE_VIOLENCE*2);       
 }
 
 /* ranger skill */

@@ -1462,7 +1462,8 @@ if (k->specials.affected_by) {
        act(buf, FALSE, ch,0,0,TO_CHAR);
 	for(aff = k->affected; aff; aff = aff->next) {
 if (aff->type <=MAX_EXIST_SPELL) {
-	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005'",spells[aff->type-1]);
+	  sprintf(buf, "$c0005Spell : '$c0014%s $c0005($c0014%d$c0005)'"
+		  ,spells[aff->type-1],(aff->type));
 	  act(buf,FALSE, ch,0,0,TO_CHAR);
 
 	  sprintf(buf,"     $c0005Modifies $c0014%s $c0005by $c0015%d$c0005 points",

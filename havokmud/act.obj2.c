@@ -854,45 +854,47 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WIELD]) {
         send_to_char("You are already wielding something.\n\r", ch);
       } else if (ch->equipment[WEAR_LIGHT] && ch->equipment[HOLD]) {
-          send_to_char("You must first remove something from one of your hands.\n\r", ch);
+	send_to_char("You must first remove something from one of your hands.\n\r"
+		     , ch);
       } else {
-
+	
         if (GET_OBJ_WEIGHT(obj_object) >
             str_app[STRENGTH_APPLY_INDEX(ch)].wield_w)
-    {
-          send_to_char("It is too heavy for you to use single-handedly.\n\r",ch);
-          if (GET_OBJ_WEIGHT(obj_object) <
-              (3*str_app[STRENGTH_APPLY_INDEX(ch)].wield_w)/2)
-      {
-            send_to_char("But, you can use it two handed\n\r", ch);
-            if (ch->equipment[WEAR_SHIELD])
-        {
-              send_to_char("If you removed your shield\n\r", ch);
-        } /* wearing shield */
-
-             else if (ch->equipment[HOLD] || ch->equipment[WEAR_LIGHT])
-           {
-              send_to_char("If you removed what was in your hands\n\r", ch);
-           } /* holding light type */
-
-           else
-        {
-              perform_wear(ch,obj_object,keyword);
-              obj_from_char(obj_object);
-              equip_char(ch, obj_object, WIELD);
-        } /*  fine, wear it */
-    } /* strong enough */
-     else
-     {
-       send_to_char("You are to weak to wield it two handed also.\n\r",ch);
-     } /* to weak to wield two handed */
-
- } else { sprintf(buffer,"%s :Ok\n\r",obj_object->short_description);
-          send_to_char(buffer, ch);
-          perform_wear(ch,obj_object,keyword);
-          obj_from_char(obj_object);
-          equip_char(ch, obj_object, WIELD);
-        }
+	  {
+	    send_to_char("It is too heavy for you to use single-handedly.\n\r",ch);
+	    if (GET_OBJ_WEIGHT(obj_object) <
+		(3*str_app[STRENGTH_APPLY_INDEX(ch)].wield_w)/2)
+	      {
+		send_to_char("But, you can use it two handed\n\r", ch);
+		if (ch->equipment[WEAR_SHIELD])
+		  {
+		    send_to_char("If you removed your shield\n\r", ch);
+		  } /* wearing shield */
+		
+		else if (ch->equipment[HOLD] || ch->equipment[WEAR_LIGHT])
+		  {
+		    send_to_char("If you removed what was in your hands\n\r", ch);
+		  } /* holding light type */
+		
+		else
+		  {
+		    perform_wear(ch,obj_object,keyword);
+		    obj_from_char(obj_object);
+		    equip_char(ch, obj_object, WIELD);
+		  } /*  fine, wear it */
+	      } /* strong enough */
+	    else
+	      {
+		send_to_char("You are to weak to wield it two handed also.\n\r",ch);
+	      } /* to weak to wield two handed */
+	    
+	  } else { 
+	    sprintf(buffer," Ok\n\r");//,obj_object->short_description);
+	    send_to_char(buffer, ch);
+	    perform_wear(ch,obj_object,keyword);
+	    obj_from_char(obj_object);
+	    equip_char(ch, obj_object, WIELD);
+	  }
       }
     } else {
       send_to_char("You can't wield that.\n\r", ch);
@@ -933,7 +935,7 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
             return;
           }
         }
-        sprintf(buffer,"%s :Ok.\n\r",obj_object->short_description);
+        sprintf(buffer," Ok.\n\r");//,obj_object->short_description);
         send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
