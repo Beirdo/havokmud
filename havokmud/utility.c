@@ -3906,23 +3906,40 @@ int HasWBits(struct char_data *ch, int bits)
 
 int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 {
-char buf[128];
+	char buf[128];
+	char buffer [254];
 
-  if (!ch->skills) return(0);
+sprintf(buffer,"6a. entered learnmistake");
+log(buffer);
+	if (!ch->skills) {
+sprintf(buffer,"6b. !ch->skills");
+log(buffer);
+		return(0);
+	}
 
-  if (!IS_SET(ch->skills[sknum].flags, SKILL_KNOWN))
-    return(0);
+	if (!IS_SET(ch->skills[sknum].flags, SKILL_KNOWN)) {
+sprintf(buffer,"6b. skill not known!");
+log(buffer);
+		return(0);
+	}
 
-  if (ch->skills[sknum].learned < max && ch->skills[sknum].learned > 0)   {
-    if (number(1, 101) > ch->skills[sknum].learned/2)     {
-      if (!silent)
-	send_to_char("You learn from your mistake\n\r", ch);
-      ch->skills[sknum].learned+=1;
-      if (ch->skills[sknum].learned >= max)
-	if (!silent)
-	  send_to_char("You are now learned in this skill!\n\r", ch);
-    }
-  }
+sprintf(buffer,"6b. sknum: %d   silent: %d   max: %d",sknum, silent, max);
+log(buffer);
+
+	if (ch->skills[sknum].learned < max && ch->skills[sknum].learned > 0) {
+sprintf(buffer,"6c. 0 < skill < max");
+log(buffer);
+		if (number(1, 101) > ch->skills[sknum].learned/2) {
+sprintf(buffer,"6d. random > skill/2");
+log(buffer);
+			if (!silent)
+				send_to_char("You learn from your mistake\n\r", ch);
+			ch->skills[sknum].learned+=1;
+			if (ch->skills[sknum].learned >= max)
+				if (!silent)
+					send_to_char("You are now learned in this skill!\n\r", ch);
+		}
+	}
 }
 
 /* if (!IsOnPmp(roomnumber)) then they are on another plane! */

@@ -1308,15 +1308,15 @@ if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
     send_to_char("No such object.\n\r",ch);
 }
 #else
-void spell_locate_object(byte level, struct char_data *ch,struct char_data *victim, struct obj_data *obj)
+void spell_locate_object(byte level, struct char_data *ch,struct char_data *victim, char *arg)//struct obj_data *obj)
 {
 	struct obj_data *i;
 	char name[256];
 	char buf[MAX_STRING_LENGTH],buf2[256];
-	int j;
+	int j, found = 0;
 
 	assert(ch);
-
+/*
 	if (!obj) {
 		send_to_char("Everywhere, you sense them everywhere!??\n\r",ch);
 		return;
@@ -1325,11 +1325,16 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 		send_to_char("Which object?\n\r", ch);
 		return;
 	}
+*/
+//	strcpy(name, arg);//obj->name);
+	sprintf(name,"%s",arg);
 
-	strcpy(name, obj->name);
+	/* when starting out, no object has been found yet */
+	found = 0;
 
 	j=level>>2;
-	if(j<2) j=2;
+	if(j<2)
+		j=2;
 
 	sprintf(buf,"");
 
@@ -1337,32 +1342,7 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 		if (isname(name, i->name)) {
 			/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
 			if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
-/*				if (i->in_room != NOWHERE) {
-					sprintf(buf2,"%s in %s.\n\r",i->short_description,real_roomp(i->in_room)->name);
-					strcat(buf,buf2);
-					j--;
-				} else if (obj->carried_by != NULL) {
-					sprintf(buf2,"%s carried by %s.\n\r",i->short_description,PERS(i->carried_by,ch));
-					strcat(buf,buf2);
-					j--;
-				} else if (obj->equipped_by != NULL) {
-					sprintf(buf2,"%s equipped by %s.\n\r",i->short_description,PERS(i->equipped_by,ch));
-					strcat(buf,buf2);
-					j--;
-				} else if (obj->in_obj) {
-					sprintf(buf2,"%s in %s.\n\r",i->short_description,i->in_obj->short_description);
-					strcat(buf,buf2);
-					j--;
-				} else {
-					sprintf(buf2, "%s has an uncertain location\n\r",obj->short_description);
-					strcat(buf,buf2);
-					j--;
-				}
-
-				* Blech, I can't figure out why locate works so shitty.
-				* Like, when you locate something you're carrying, that's
-				* the only item that shows up.      -Lennya
-				*/
+				found = 1; /* we found at least one item */
 				if(i->carried_by) {
 					if (strlen(PERS_LOC(i->carried_by, ch))>0) {
 						sprintf(buf2,"%s carried by %s.\n\r",i->short_description,PERS(i->carried_by,ch));
@@ -1391,8 +1371,8 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 
 	if(j==0)
 		send_to_char("You are very confused.\n\r",ch);
-	if(j==level>>1)
-		send_to_char("No such object.\n\r",ch);
+	if(found == 0)
+		send_to_char("Nothing at all by that name.\n\r",ch);
 }
 
 
@@ -1718,7 +1698,7 @@ void spell_strength(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim,SPELL_STRENGTH)) {
      act("You feel stronger.", FALSE, victim,0,0,TO_CHAR);
-     act("$n seems stronger!\n\r",
+     act("$n seems stronger!",
 	  FALSE, victim, 0, 0, TO_ROOM);
      af.type      = SPELL_STRENGTH;
      af.duration  = 2*level;

@@ -5,7 +5,7 @@
 #include "protos.h"
 
 /* struct room_data *real_roomp(int); */
-
+extern struct index_data *obj_index;
 extern struct char_data *character_list;
 extern struct obj_data *object_list;
 extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
@@ -942,19 +942,42 @@ void gain_exp_regardless(struct char_data *ch, int gain, int class)
     set_title(ch);
 }
 
+#define FOODSTUFF  705
+#define DRINKSTUFF 706
 void gain_condition(struct char_data *ch,int condition,int value)
 {
-  bool intoxicated;
+	bool intoxicated;
+	struct obj_data *tmp_obj;
+	struct obj_data *next_obj;
+	char buf[254];
 
-  if(GET_COND(ch, condition)==-1) /* No change */
-    return;
+	if(GET_COND(ch, condition)==-1) /* No change */
+		return;
 
-  intoxicated=(GET_COND(ch, DRUNK) > 0);
+	intoxicated=(GET_COND(ch, DRUNK) > 0);
 
-  GET_COND(ch, condition)  += value;
+	GET_COND(ch, condition)  += value;
 
-  GET_COND(ch,condition) = MAX(0,GET_COND(ch,condition));
-  GET_COND(ch,condition) = MIN(24,GET_COND(ch,condition));
+	GET_COND(ch,condition) = MAX(0,GET_COND(ch,condition));
+	GET_COND(ch,condition) = MIN(24,GET_COND(ch,condition));
+
+	/* a little something to keep me from having to feed my newbies   -Lennya */
+	for(tmp_obj = ch->carrying; tmp_obj; tmp_obj = next_obj) {
+		next_obj = tmp_obj->next_content;
+		if(obj_index[tmp_obj->item_number].virtual == FOODSTUFF) {
+			if(condition == FULL && GET_COND(ch,condition) == 4) {
+				sprintf(buf,"%s briefly glows, sating your appetite.",tmp_obj->short_description);
+				act(buf,FALSE, ch, 0, 0, TO_CHAR);
+				GET_COND(ch, condition) = 20;
+			}
+		} else if(obj_index[tmp_obj->item_number].virtual == DRINKSTUFF) {
+			if(condition == THIRST && GET_COND(ch,condition) == 4) {
+				sprintf(buf,"%s briefly glows, quenching your thirst.",tmp_obj->short_description);
+				act(buf,FALSE, ch, 0, 0, TO_CHAR);
+				GET_COND(ch, condition) = 20;
+			}
+		}
+	}
 
   if(GET_COND(ch,condition))
     return;

@@ -475,7 +475,6 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 			/* Found no valid victim to switch to, let's continue clobbering this paralyzed vict */
 		}
 	}
-
 }
 
 /*

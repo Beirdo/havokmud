@@ -4846,7 +4846,7 @@ const struct skillset monkskills[] = {
 	{"feign death",		SKILL_FEIGN_DEATH	 ,1},
 	{"hide",			SKILL_HIDE			 ,1},
 	{"kick",			SKILL_KICK			 ,1},
-	{"legsweep",		SKILL_SWITCH_OPP	 ,1},
+	{"legsweep",		SKILL_LEG_SWEEP		 ,1},
 	{"pick lock",		SKILL_PICK_LOCK		 ,1},
 	{"quivering palm",	SKILL_QUIV_PALM		,30},
 	{"retreat",			SKILL_RETREAT		 ,1},

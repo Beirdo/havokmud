@@ -669,7 +669,7 @@ dlog("in do_bash");
 			if (!damage(ch, victim, 2, SKILL_BASH)) {
 				WAIT_STATE(victim, PULSE_VIOLENCE*2);
 				GET_POS(victim) = POSITION_SITTING;
-				sprintf(buf,"You receive 100 experience for using your bashing abilites.\n\r.",ch);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your bashing abilites.$c0007\n\r",ch);
 				send_to_char(buf,ch);
 				gain_exp(ch, 100);
 				WAIT_STATE(ch, PULSE_VIOLENCE*2);
@@ -681,107 +681,124 @@ dlog("in do_bash");
 
 void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
 {
-  struct char_data *victim;
-  char name[256];
-  byte percent;
-  char buf[100];
+	struct char_data *victim;
+	char name[256];
+	byte percent;
+	char buf[100];
+	char buffer[254];
 
 dlog("in do_leg_sweep");
-  if (!ch->skills)
-    return;
 
-   if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
-    return;
+	if (!ch->skills)
+		return;
 
-if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
- if (!HasClass(ch, CLASS_MONK)) {
-     send_to_char("You're no monk!\n\r", ch);
-     return;
-    }
+	if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
+		return;
 
-  only_argument(argument, name);
+	if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+		if (!HasClass(ch, CLASS_MONK)) {
+			send_to_char("You're no monk!\n\r", ch);
+			return;
+		}
 
-  if (!(victim = get_char_room_vis(ch, name))) {
-    if (ch->specials.fighting) {
-      victim = ch->specials.fighting;
-    } else {
-      send_to_char("Who do you wish to legsweep??\n\r", ch);
-      return;
-    }
-  }
+	only_argument(argument, name);
+
+	if (!(victim = get_char_room_vis(ch, name))) {
+		if (ch->specials.fighting) {
+			victim = ch->specials.fighting;
+		} else {
+			send_to_char("Who do you wish to legsweep??\n\r", ch);
+			return;
+		}
+	}
+
+	if (victim == ch) {
+		send_to_char("Aren't we funny today...\n\r", ch);
+		return;
+	}
+
+	if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+		if (!IsGiant(ch)) {
+			act("$N is MUCH too large to legsweep!", FALSE, ch, 0, victim, TO_CHAR);
+			return;
+		}
+	}
+
+	if (MOUNTED(victim)) {
+		send_to_char("You'll end up booting your targets mount if you do that!\n\r", ch);
+		return;
+	}
+
+	if (MOUNTED(ch)) {
+		send_to_char("You'll end up booting your mount if you do that!\n\r", ch);
+		return;
+	}
 
 
-  if (victim == ch) {
-    send_to_char("Aren't we funny today...\n\r", ch);
-    return;
-  }
+	if (ch->attackers > 2) {
+		send_to_char("There are too many people around to do that!\n\r",ch);
+		return;
+	}
 
-  if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
-    if (!IsGiant(ch)) {
-      act("$N is MUCH too large to legsweep!", FALSE, ch, 0, victim, TO_CHAR);
-      return;
-    }
-  }
+	if (victim->attackers >= 3) {
+		send_to_char("You'll end up giving your buddies a good boot if you do that!\n\r", ch);
+		return;
+	}
 
-  if (MOUNTED(victim)) {
-    send_to_char("You'll end up booting your targets mount if you do that!\n\r", ch);
-    return;
-  }
+	percent=number(1,101); /* 101% is a complete failure */
 
-  if (MOUNTED(ch)) {
-    send_to_char("You'll end up booting your mount if you do that!\n\r", ch);
-    return;
-  }
+sprintf(buffer,"1. percent = %d",percent);
+log(buffer);
 
+	/* some modifications to account for dexterity, and level */
+	percent -= dex_app[GET_DEX(ch)].reaction*10;
+	percent += dex_app[GET_DEX(victim)].reaction*10;
 
-  if (ch->attackers > 2) {
-    send_to_char("There are too many people around to do that!\n\r",ch);
-    return;
-  }
+sprintf(buffer,"2. percent = %d",percent);
+log(buffer);
 
-  if (victim->attackers >= 3) {
-    send_to_char("You'll end up giving your buddies a good boot if you do that!\n\r", ch);
-    return;
-  }
+	if (GetMaxLevel(victim) > 12) {
+		percent += ((GetMaxLevel(victim)-10) * 5);
+	}
 
-  percent=number(1,101); /* 101% is a complete failure */
+sprintf(buffer,"3. percent = %d",percent);
+log(buffer);
 
-  /* some modifications to account for dexterity, and level */
-  percent -= dex_app[GET_DEX(ch)].reaction*10;
-  percent += dex_app[GET_DEX(victim)].reaction*10;
+sprintf(buffer,"4. skill = %d",ch->skills[SKILL_LEG_SWEEP].learned);
+log(buffer);
 
-  if (GetMaxLevel(victim) > 12) {
-    percent += ((GetMaxLevel(victim)-10) * 5);
-  }
-
-  if (percent > ch->skills[SKILL_LEG_SWEEP].learned) {
-    if (GET_POS(victim) > POSITION_DEAD) {
-      damage(ch, victim, 0, SKILL_LEG_SWEEP);
-      GET_POS(ch) = POSITION_SITTING;
-    }
-    act("You try to do quick spin and knock $N's legs out, but miss."
-	        	,FALSE, ch, 0, victim,TO_CHAR);
-	act("$n tries to do a quick spin and knock $N's legs out, but misses $M."
-         	,FALSE, ch,0,victim,TO_ROOM);
-    LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
-    WAIT_STATE(ch, PULSE_VIOLENCE*3);
-  } else {
-    if (GET_POS(victim) > POSITION_DEAD) {
-      GET_POS(victim) = POSITION_SITTING;
-      if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
-         WAIT_STATE(victim, PULSE_VIOLENCE*2);
-         GET_POS(victim) = POSITION_SITTING;
-        act("$c000CYou do a quick spin and knock $N's legs out from underneath $M."
-        	,FALSE, ch, 0, victim,TO_CHAR);
-        act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M."
-         	,FALSE, ch,0,victim,TO_ROOM);
-        sprintf(buf,"You receive 100 experience for using your leg sweep abilites.\n\r.",ch);
-		send_to_char(buf,ch);
-		gain_exp(ch, 100);
-      }
-    }
-  }
-  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+	if (percent > ch->skills[SKILL_LEG_SWEEP].learned) {
+sprintf(buffer,"5. failure");
+log(buffer);
+		if (GET_POS(victim) > POSITION_DEAD) {
+			damage(ch, victim, 0, SKILL_LEG_SWEEP);
+			GET_POS(ch) = POSITION_SITTING;
+		}
+		act("$c000CYou try to do quick spin and knock $N's legs out, but miss.",FALSE, ch, 0, victim,TO_CHAR);
+		act("$c000C$n tries to do a quick spin and knock $N's legs out, but misses $M.",FALSE, ch,0,victim,TO_ROOM);
+sprintf(buffer,"6. attempting learnmistake");
+log(buffer);
+		LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
+sprintf(buffer,"7. attempted learnmistake");
+log(buffer);
+		WAIT_STATE(ch, PULSE_VIOLENCE*3);
+	} else {
+sprintf(buffer,"5. success");
+log(buffer);
+		if (GET_POS(victim) > POSITION_DEAD) {
+			GET_POS(victim) = POSITION_SITTING;
+			if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
+				WAIT_STATE(victim, PULSE_VIOLENCE*2);
+				GET_POS(victim) = POSITION_SITTING;
+				act("$c000CYou do a quick spin and knock $N's legs out from underneath $M.",FALSE, ch, 0, victim,TO_CHAR);
+				act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M.",FALSE, ch,0,victim,TO_ROOM);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your sweeping abilites.$c0007\n\r",ch);
+				send_to_char(buf,ch);
+				gain_exp(ch, 100);
+				WAIT_STATE(ch, PULSE_VIOLENCE*2);
+			}
+		}
+	}
 }
 
 /* Mend skill for imms and sc warriors, repairs armor and weapons

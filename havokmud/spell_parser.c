@@ -766,13 +766,14 @@ char *spells[]=
    "wrath of god",
    "pacifism",
    "aura of power",     /*295 */
-   "brew",
+   "legsweep",
    "charge",
    "standard",
    "berserked",
    "aggressive",
    "defensive",
    "evasive",
+   "mend",				/*303*/
    "\n"
 };
 
@@ -1893,507 +1894,433 @@ void do_id(struct char_data *ch, char *argument, int cmd) {
 /* Assumes that *argument does start with first letter of chopped string */
 void do_cast(struct char_data *ch, char *argument, int cmd)
 {
-  char buf[254];
-  struct obj_data *tar_obj;
-  struct char_data *tar_char;
-  char name[MAX_INPUT_LENGTH];
-  char ori_argument[256];     /* make a copy of argument for log */
-  int qend, spl, i,exp;
+	char buf[254];
+	struct obj_data *tar_obj;
+	struct char_data *tar_char;
+	char name[MAX_INPUT_LENGTH];
+	char ori_argument[256];     /* make a copy of argument for log */
+	int qend, spl, i,exp;
 #if 0
-  int  mlev, clev, dlev, minl;
+	int  mlev, clev, dlev, minl;
 #endif
-  bool target_ok;
+	bool target_ok;
 
 #if 0
-
-/* disabled, trying out new style of casting by npc's. Use the same */
-/* rules as the PC use! magic_user_imp 				    */
-
-  if (IS_NPC(ch) && (!IS_SET(ch->specials.act, ACT_POLYSELF)))
-    return;
-
+	/* disabled, trying out new style of casting by npc's. Use the same */
+	/* rules as the PC use! magic_user_imp 				    */
+	if (IS_NPC(ch) && (!IS_SET(ch->specials.act, ACT_POLYSELF)))
+		return;
 #endif
 
+	if (!IsHumanoid(ch)) {
+		send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
+		return;
+	}
 
-
-  if (!IsHumanoid(ch)) {
-    send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
-    return;
-  }
-
-  if (!IS_IMMORTAL(ch)) {
-    if (BestMagicClass(ch) == WARRIOR_LEVEL_IND) {
-      send_to_char("Think you had better stick to fighting...\n\r", ch);
-      return;
-    } else if (BestMagicClass(ch) == THIEF_LEVEL_IND) {
-      send_to_char("Think you should stick to stealing...\n\r", ch);
-      return;
-    } else if (BestMagicClass(ch) == MONK_LEVEL_IND) {
-      send_to_char("Think you should stick to meditating...\n\r", ch);
-      return;
-    }
-  }
-
+	if (!IS_IMMORTAL(ch)) {
+		if (BestMagicClass(ch) == WARRIOR_LEVEL_IND) {
+			send_to_char("Think you had better stick to fighting...\n\r", ch);
+			return;
+		} else if (BestMagicClass(ch) == THIEF_LEVEL_IND) {
+			send_to_char("Think you should stick to stealing...\n\r", ch);
+			return;
+		} else if (BestMagicClass(ch) == MONK_LEVEL_IND) {
+			send_to_char("Think you should stick to meditating...\n\r", ch);
+			return;
+		}
+	}
 
 	if (cmd!=370 && apply_soundproof(ch))
 		return;
 
-	if (cmd == 370 && !HasClass(ch,CLASS_PSI)) {
+	if (cmd == 370 && !HasClass(ch,CLASS_PSI)) { /* take away mind spells for non psi */
 		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
 		return;
 	}
 
-  argument = skip_spaces(argument);
-
+	argument = skip_spaces(argument);
 /* did not want to invoke strcpy.. so added this loop to copy string [polax] */
-  for(i=0;argument[i] && (i < 255);i++)  /* enforce bound check on i */
-     ori_argument[i] = argument[i];
-  ori_argument[i] = '\0';  /* ensure proper null termination */
+	for(i=0;argument[i] && (i < 255);i++)  /* enforce bound check on i */
+		ori_argument[i] = argument[i];
+	ori_argument[i] = '\0';  /* ensure proper null termination */
 /* modification end */
 
-  /* If there is no chars in argument */
-  if (!(*argument)) {
-    send_to_char("Cast which what where?\n\r", ch);
-    return;
-  }
+	/* If there is no chars in argument */
+	if (!(*argument)) {
+		send_to_char("Cast which what where?\n\r", ch);
+		return;
+	}
 
-  if (*argument != '\'') {
+	if (*argument != '\'') {
+		send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		return;
+	}
 
-/*    sprintf(buf,argument);
-    log(buf); */
+	/* Locate the last quote && lowercase the magic words (if any) */
+	for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
+		*(argument+qend) = LOWER(*(argument+qend));
+	if (*(argument+qend) != '\'') {
+		send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		return;
+	}
 
-    send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
-    return;
-  }
+	spl = old_search_block(argument, 1, qend-1,spells, 0);
 
-  /* Locate the last quote && lowercase the magic words (if any) */
-
-  for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
-    *(argument+qend) = LOWER(*(argument+qend));
-
-  if (*(argument+qend) != '\'') {
-    send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
-    return;
-  }
-
-  spl = old_search_block(argument, 1, qend-1,spells, 0);
-
-  if (!spl) {
-    send_to_char("Nothing seems to happen ! WOW! \n\r",ch);
-    return;
-  }
+	if (!spl) {
+		send_to_char("Nothing seems to happen! Wow! \n\r",ch);
+		return;
+	}
 
 
 	/* mobs do not get  skills so we just check it for PC's */
+	if (!ch->skills)
+		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+			send_to_char("You do not have skills!\n\r",ch);
+			return;
+		}
 
-  if (!ch->skills)
-   if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
-     send_to_char("You do not have skills!\n\r",ch);
-     return;
-    }
+	if (cmd != 370 && OnlyClass(ch, CLASS_PSI)) {
+		send_to_char("Use your mind!\n\r",ch);
+		return;
+	}
 
-
- if (cmd != 370 && OnlyClass(ch, CLASS_PSI)) {
- 	send_to_char("Use your mind!\n\r",ch);
- 	return;
- 	}
-
-if ((cmd == 84 || cmd == 370) && OnlyClass(ch,CLASS_SORCERER)) {
-	send_to_char("You must use recall.\n\r",ch);
-	return;
+	if ((cmd == 84 || cmd == 370) && OnlyClass(ch,CLASS_SORCERER)) {
+		send_to_char("You must use recall.\n\r",ch);
+		return;
 	}
 
 #if 1
-/* this should make sorcerer learned spells be forced to be recalled */
-if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
-    !IS_IMMORTAL(ch) && IS_SET(ch->skills[spl].flags,SKILL_KNOWN_SORCERER) ) {
-   send_to_char("You must use recall for this spell.\n\r",ch);
-   return;
-  }
-#endif
-
-  if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
-    if (GET_POS(ch) < spell_info[spl].minimum_position) {
-      switch(GET_POS(ch)) {
-      case POSITION_SLEEPING :
-	send_to_char("You dream about great magical powers.\n\r", ch);
-	break;
-      case POSITION_RESTING :
-	send_to_char("You can't concentrate enough while resting.\n\r",ch);
-	break;
-      case POSITION_SITTING :
-	send_to_char("You can't do this sitting!\n\r", ch);
-	break;
-      case POSITION_FIGHTING :
-	send_to_char("Impossible! You can't concentrate enough!.\n\r", ch);
-	break;
-      default:
-	send_to_char("It seems like you're in pretty bad shape!\n\r",ch);
-	break;
-      } /* Switch */
-    }	else {
-
-      if (!IS_IMMORTAL(ch)) {
-
-	if ((spell_info[spl].min_level_magic >
-	     GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
-
-           (spell_info[spl].min_level_sorcerer >
-	     GET_LEVEL(ch,SORCERER_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_cleric >
-	     GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_paladin >
-	     GET_LEVEL(ch,PALADIN_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_ranger >
-	     GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_psi >
-	     GET_LEVEL(ch,PSI_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_bard >
-	     GET_LEVEL(ch, BARD_LEVEL_IND)) &&
-
-	    (spell_info[spl].min_level_druid >
-	     GET_LEVEL(ch, DRUID_LEVEL_IND))) {
-
-	  send_to_char("Sorry, you can't do that.\n\r", ch);
-	  return;
-	}
-      }
-      argument+=qend+1;	/* Point to the last ' */
-      for(;*argument == ' '; argument++);
-
-      /* **************** Locate targets **************** */
-
-      target_ok = FALSE;
-      tar_char = 0;
-      tar_obj = 0;
-
-      if (IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
-	  check_peaceful(ch,
-	  "This seems to be an dead magic zone!\n\r"))
-	return;
-
-   /* for seeing what the other guys are doing test */
-
-if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
-     sprintf(buf,"%s cast %s",GET_NAME(ch),ori_argument);  /* changed argument */
-     log(buf);
-  }
-
-      if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
-
-	argument = one_argument(argument, name);
-
-	//(GH)  if name argument == self then target == Casters name..
-	if (str_cmp(name,"self")==0){
-	  sprintf(name,"%s",GET_NAME(ch));
-	}
-#if 0
-	if (*name) {
-	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
-	    if (tar_char = get_char_room_vis(ch, name))
-	      ||(str_cmp(GET_NAME(ch),name)==0)) {
-	    if (str_cmp(GET_NAME(ch),name)==0)
-	      tar_char = ch;
-	    if (tar_char == ch || tar_char == ch->specials.fighting ||
-		tar_char->attackers < 6 ||
-		tar_char->specials.fighting == ch)
-	      target_ok = TRUE;
-	    else {
-	      send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
-	      target_ok = FALSE;
-	    }
-	  } else {
-	    target_ok = FALSE;
-	  }
-	}
-#endif
-	if (*name) {
-	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
-	    if ((tar_char = get_char_room_vis(ch, name))
-		||(str_cmp(GET_NAME(ch),name)==0)) {
-	      if (str_cmp(GET_NAME(ch),name)==0)
-		tar_char = ch;
-	      if (tar_char == ch || tar_char == ch->specials.fighting ||
-		  tar_char->attackers < 6 ||
-		  tar_char->specials.fighting == ch)
-		target_ok = TRUE;
-	      else {
-		send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
-		target_ok = FALSE;
-	      }
-	    } else {
-	      target_ok = FALSE;
-	    }
-	  }
-
-	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
-	  if (tar_char = get_char_vis(ch, name))
-	    target_ok = TRUE;
-
-	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
-	  if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
-	    target_ok = TRUE;
-
-	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
-	  if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
-	    target_ok = TRUE;
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
-	    if (tar_obj = get_obj_vis(ch, name))
-	      target_ok = TRUE;
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
-	    for(i=0; i<MAX_WEAR && !target_ok; i++)
-	      if (ch->equipment[i] && str_cmp(name, ch->equipment[i]->name) == 0) {
-		tar_obj = ch->equipment[i];
-		target_ok = TRUE;
-	      }
-	  }
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY))
-	    if (str_cmp(GET_NAME(ch), name) == 0) {
-	      tar_char = ch;
-	      target_ok = TRUE;
-	    }
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
-	    tar_obj = (void*)name;
-	    target_ok = TRUE;
-	  }
-
-	  if (tar_char) {
-	    if (IS_NPC(tar_char))
-	      if (IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
-		send_to_char("You can't cast magic on that!",ch);
+	/* this should make sorcerer learned spells be forced to be recalled */
+	if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
+					!IS_IMMORTAL(ch) && IS_SET(ch->skills[spl].flags,SKILL_KNOWN_SORCERER) ) {
+		send_to_char("You must use recall for this spell.\n\r",ch);
 		return;
-	      }
-	  }
-
-
-	} else { /* No argument was typed */
-
-	  if (IS_SET(spell_info[spl].targets, TAR_FIGHT_SELF))
-	    if (ch->specials.fighting) {
-	      tar_char = ch;
-	      target_ok = TRUE;
-	    }
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_FIGHT_VICT))
-	    if (ch->specials.fighting) {
-	      /* WARNING, MAKE INTO POINTER */
-	      tar_char = ch->specials.fighting;
-	      target_ok = TRUE;
-	    }
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
-	    tar_char = ch;
-	    target_ok = TRUE;
-	  }
-
 	}
+#endif
 
-      } else {
-	target_ok = TRUE; /* No target, is a good target */
-      }
+	if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
+		if (GET_POS(ch) < spell_info[spl].minimum_position) {
+			switch(GET_POS(ch)) {
+				case POSITION_SLEEPING :
+					send_to_char("You dream about great magical powers.\n\r", ch);
+					break;
+				case POSITION_RESTING :
+					send_to_char("You can't concentrate enough while resting.\n\r",ch);
+					break;
+				case POSITION_SITTING :
+					send_to_char("You can't do this sitting!\n\r", ch);
+					break;
+				case POSITION_FIGHTING :
+					send_to_char("Impossible! You can't concentrate enough!.\n\r", ch);
+					break;
+				default:
+					send_to_char("It seems like you're in pretty bad shape!\n\r",ch);
+					break;
+			} /* Switch */
+		} else {
+			if (!IS_IMMORTAL(ch)) {
+				if ((spell_info[spl].min_level_magic > GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
+					(spell_info[spl].min_level_sorcerer > GET_LEVEL(ch,SORCERER_LEVEL_IND)) &&
+					(spell_info[spl].min_level_cleric > GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
+					(spell_info[spl].min_level_paladin > GET_LEVEL(ch,PALADIN_LEVEL_IND)) &&
+					(spell_info[spl].min_level_ranger > GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
+					(spell_info[spl].min_level_psi > GET_LEVEL(ch,PSI_LEVEL_IND)) &&
+					(spell_info[spl].min_level_bard > GET_LEVEL(ch, BARD_LEVEL_IND)) &&
+					(spell_info[spl].min_level_druid > GET_LEVEL(ch, DRUID_LEVEL_IND))) {
+					send_to_char("Sorry, you can't do that.\n\r", ch);
+					return;
+				}
+			}
+			argument+=qend+1;	/* Point to the last ' */
+			for(;*argument == ' '; argument++);
 
+				/* **************** Locate targets **************** */
+			target_ok = FALSE;
+			tar_char = 0;
+			tar_obj = 0;
 
-      if (!target_ok) {
-	if (*name) {
-	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
-	    send_to_char("Nobody playing by that name.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM))
-	    send_to_char("Nobody here by that name.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
-	    send_to_char("You are not carrying anything like that.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
-	    send_to_char("Nothing here by that name.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
-	    send_to_char("Nothing at all by that name.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP))
-	    send_to_char("You are not wearing anything like that.\n\r", ch);
-	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
-	    send_to_char("Nothing at all by that name.\n\r", ch);
+			if (IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
+								check_peaceful(ch,"This seems to be an dead magic zone!\n\r"))
+				return;
 
-	} else { /* Nothing was given as argument */
-	  if (spell_info[spl].targets < TAR_OBJ_INV)
-	    send_to_char("Who should the spell be cast upon?\n\r", ch);
-	  else
-	    send_to_char("What should the spell be cast upon?\n\r", ch);
-	}
-	return;
-      } else { /* TARGET IS OK */
-	if ((tar_char == ch) && IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
-	  send_to_char("You can not cast this spell upon yourself.\n\r", ch);
-	  return;
-	}
-	else if ((tar_char != ch) && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
-	  send_to_char("You can only cast this spell upon yourself.\n\r", ch);
-	  return;
-	} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
-	  send_to_char("You are afraid that it could harm your master.\n\r", ch);
-	  return;
-	}
-      }
+/* for seeing what the other guys are doing test */
+			if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
+				sprintf(buf,"%s cast %s",GET_NAME(ch),ori_argument);  /* changed argument */
+				log(buf);
+			}
 
+			if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
+				argument = one_argument(argument, name);
 
+				//(GH)  if name argument == self then target == Casters name..
+				if (str_cmp(name,"self")==0) {
+					sprintf(name,"%s",GET_NAME(ch));
+				}
 
+				if (*name) {
+					/* room char spells */
+					if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
+						if ((tar_char = get_char_room_vis(ch, name)) || (str_cmp(GET_NAME(ch),name)==0)) {
+							if (str_cmp(GET_NAME(ch),name)==0)
+								tar_char = ch;
+							if (tar_char == ch || tar_char == ch->specials.fighting ||
+									tar_char->attackers < 6 || tar_char->specials.fighting == ch)
+								target_ok = TRUE;
+							else {
+								send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
+								target_ok = FALSE;
+							}
+						} else {
+							target_ok = FALSE;
+						}
+					}
+					/* world char spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+						if (tar_char = get_char_vis(ch, name))
+							target_ok = TRUE;
+					/* inv obj spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+						if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
+							target_ok = TRUE;
+					/* room obj spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+						if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
+							target_ok = TRUE;
+					/* world obj spells, locate object & transport via plant */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
+//						if (tar_obj = get_obj_vis(ch, name))
+							target_ok = TRUE;
+							sprintf(argument,"%s",name);
+					/* eq obj spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
+						for(i=0; i<MAX_WEAR && !target_ok; i++)
+							if (ch->equipment[i] && str_cmp(name, ch->equipment[i]->name) == 0) {
+								tar_obj = ch->equipment[i];
+								target_ok = TRUE;
+							}
+					}
+					/* self only spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY))
+						if (str_cmp(GET_NAME(ch), name) == 0) {
+							tar_char = ch;
+							target_ok = TRUE;
+						}
+					/* name spells (?) */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
+						tar_obj = (void*)name;
+						target_ok = TRUE;
+					}
+					if (tar_char) {
+						if (IS_NPC(tar_char))
+							if (IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
+								send_to_char("You can't cast magic on that!",ch);
+								return;
+							}
+					}
+				} else { /* No argument was typed */
+					if (IS_SET(spell_info[spl].targets, TAR_FIGHT_SELF))
+						if (ch->specials.fighting) {
+							tar_char = ch;
+							target_ok = TRUE;
+						}
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_FIGHT_VICT))
+						if (ch->specials.fighting) {
+							/* WARNING, MAKE INTO POINTER */
+							tar_char = ch->specials.fighting;
+							target_ok = TRUE;
+						}
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
+						tar_char = ch;
+						target_ok = TRUE;
+					}
+				}
+			} else {
+				target_ok = TRUE; /* No target, is a good target */
+			}
 
-      if (cmd == 283)
-      { /* recall */
-	if (!MEMORIZED(ch, spl))
-	{
-	  send_to_char("You don't have that spell memorized!\n\r", ch);
-	  return;
-	}
-      } else {
-	if (GetMaxLevel(ch) < LOW_IMMORTAL) {
-	  if (GET_MANA(ch) < (unsigned int)USE_MANA(ch, (int)spl) ||
-	      GET_MANA(ch) <=0) {
-	    send_to_char("You can't summon enough energy!\n\r", ch);
-	    return;
-	  }
-	}
-      }
+			if (!target_ok) {
+				if (*name) {
+					if (IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+						send_to_char("Nobody playing by that name.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM))
+						send_to_char("Nobody here by that name.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+						send_to_char("You are not carrying anything like that.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+						send_to_char("Nothing here by that name.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
+						send_to_char("Nothing at all by that name.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP))
+						send_to_char("You are not wearing anything like that.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
+						send_to_char("Nothing at all by that name.\n\r", ch);
+				} else { /* Nothing was given as argument */
+					if (spell_info[spl].targets < TAR_OBJ_INV)
+						send_to_char("Who should the spell be cast upon?\n\r", ch);
+					else
+						send_to_char("What should the spell be cast upon?\n\r", ch);
+				}
+				return;
+			} else { /* TARGET IS OK */
+				if ((tar_char == ch) && IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
+					send_to_char("You can not cast this spell upon yourself.\n\r", ch);
+					return;
+				} else if ((tar_char != ch) && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
+					send_to_char("You can only cast this spell upon yourself.\n\r", ch);
+					return;
+				} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
+					send_to_char("You are afraid that it could harm your master.\n\r", ch);
+					return;
+				}
+			}
 
-      if (spl != SPELL_VENTRILOQUATE && cmd != 370)  /* :-) */
-	say_spell(ch, spl);		/* psi's do not utter! */
+			if (cmd == 283) { /* recall */
+				if (!MEMORIZED(ch, spl)) {
+					send_to_char("You don't have that spell memorized!\n\r", ch);
+					return;
+				}
+			} else {
+				if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+					if (GET_MANA(ch) < (unsigned int)USE_MANA(ch, (int)spl) || GET_MANA(ch) <=0) {
+						send_to_char("You can't summon enough energy!\n\r", ch);
+						return;
+					}
+				}
+			}
 
-      WAIT_STATE(ch, spell_info[spl].beats);
+			if (spl != SPELL_VENTRILOQUATE && cmd != 370)  /* :-) */
+				say_spell(ch, spl);		/* psi's do not utter! */
 
-      if ((spell_info[spl].spell_pointer == 0) && spl>0)
-	send_to_char("Sorry, this magic has not yet been implemented :(\n\r",
-		     ch);
-      else {
-	int max, cost;
+			WAIT_STATE(ch, spell_info[spl].beats);
 
-	max = ch->specials.spellfail;
-	max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
+			if ((spell_info[spl].spell_pointer == 0) && spl>0)
+				send_to_char("Sorry, this magic has not yet been implemented :(\n\r",ch);
+			else {
+				int max, cost;
 
+				max = ch->specials.spellfail;
+				max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
 /* check EQ and alter spellfail accordingly */
-	switch(BestMagicClass(ch)) {
-		case	MAGE_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_MAGE))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case	SORCERER_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_MAGE))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case	CLERIC_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_CLERIC))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case	DRUID_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_DRUID))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case	PALADIN_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_PALADIN))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case 	PSI_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_PSI))
-					max+=10; /* 20% harder to cast spells */
-					break;
-		case 	RANGER_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_RANGER))
-					max+=10; /* 20% harder to cast spells */
-					break;
-	        case    BARD_LEVEL_IND:if(EqWBits(ch, ITEM_ANTI_BARD))
-	          max+=10;
-		break;
-	default:if (EqWBits(ch,ITEM_ANTI_MAGE))
-	  max+=10; /* 20% harder to cast spells */
-		break;
-	} /* end switch */
+				switch(BestMagicClass(ch)) {
+					case	MAGE_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_MAGE))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case	SORCERER_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_MAGE))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case	CLERIC_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_CLERIC))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case	DRUID_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_DRUID))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case	PALADIN_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_PALADIN))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case 	PSI_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_PSI))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case 	RANGER_LEVEL_IND:
+						if (EqWBits(ch,ITEM_ANTI_RANGER))
+							max+=10; /* 20% harder to cast spells */
+						break;
+					case    BARD_LEVEL_IND:
+						if(EqWBits(ch, ITEM_ANTI_BARD))
+							max+=10;
+						break;
+					default:
+						if (EqWBits(ch,ITEM_ANTI_MAGE))
+							max+=10; /* 20% harder to cast spells */
+						break;
+				}
+				/* end EQ check	*/
+				if (ch->attackers > 0)
+					max += spell_info[spl].spellfail;
+				else if (ch->specials.fighting)
+					max += spell_info[spl].spellfail/2;
+				if (cmd == 283)  /* recall:  less chance of spell fail ... */
+					max = max/2;
+				/* memorized spells don't fail ... bcw */
+				if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special) && cmd != 283 ) {
+					if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
+						send_to_char("You have no knowledge of this spell.\n\r",ch);
+						return;
+					}
+					send_to_char("You lost your concentration!\n\r", ch);
+					cost = (int)USE_MANA(ch, (int)spl);
+					GET_MANA(ch) -= (cost>>1);
+					LearnFromMistake(ch, spl, 0, 95);
+					return;
+				}
 
-
-	/* end EQ check				    */
-	if (ch->attackers > 0)
-	  max += spell_info[spl].spellfail;
-	else if (ch->specials.fighting)
-	  max += spell_info[spl].spellfail/2;
-
-	if (cmd == 283)  /* recall:  less chance of spell fail ... */
-	  max = max/2;
-
-	/* memorized spells don't fail ... bcw */
-	if (number(1,max) > ch->skills[spl].learned &&
-	    !IsSpecialized(ch->skills[spl].special) &&
-	    cmd != 283 )      {
-	  if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
-	    send_to_char("You have no knowledge of this spell.\n\r",ch);
-	    return;
-	  }
-	  send_to_char("You lost your concentration!\n\r", ch);
-	  cost = (int)USE_MANA(ch, (int)spl);
-	  GET_MANA(ch) -= (cost>>1);
-	  LearnFromMistake(ch, spl, 0, 95);
-	  return;
+				if (!IS_IMMORTAL(ch)) {
+					if (tar_char == ch) {
+						if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
+							act("Your magic fizzles against your own anti-magic shell!", FALSE, ch, 0, 0, TO_CHAR);
+							act("$n wastes a spell on their own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
+							return;
+						}
+					}
+					if (tar_char) {
+						if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
+							act("Your magic fizzles against $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_CHAR);
+							act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_NOTVICT);
+							act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,tar_char,TO_VICT);
+							return;
+						}
+						if (GET_POS(tar_char) == POSITION_DEAD) {
+							send_to_char("The magic fizzles against the dead body.\n", ch);
+							return;
+						}
+					}
+					if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
+						act("Your magic fizzles against your anti-magic shell!",FALSE,ch,0,0,TO_CHAR);
+						act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
+						return;
+					}
+					if (check_nomagic(ch,"Your skill appears useless in this magic dead zone.",
+										"$n's spell dissolves like so much wet toilet paper."))
+						return;
+				}
+				send_to_char("Ok.\n\r",ch);
+				((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
+				cost = (int)USE_MANA(ch, (int)spl);
+				if (cmd == 283) /* recall */ {
+					FORGET(ch, spl);
+				} else {
+					GET_MANA(ch) -= cost;
+				}
+				exp = NewExpCap(ch, cost*50);
+				sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
+				send_to_char(buf,ch);
+				gain_exp(ch, exp);
+			}
+		}	/* if GET_POS < min_pos */
+		return;
 	}
-
-
-  if (!IS_IMMORTAL(ch)) {
-
-	if (tar_char == ch) {
-	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
-	    act("Your magic fizzles against your own anti-magic shell!", FALSE, ch, 0, 0, TO_CHAR);
-	    act("$n wastes a spell on their own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
-	    return;
-	 }
+	switch (number(1,5)) {
+		case 1:
+			send_to_char("Bylle Grylle Grop Gryf???\n\r", ch);
+			break;
+		case 2:
+			send_to_char("Olle Bolle Snop Snyf?\n\r",ch);
+			break;
+		case 3:
+			send_to_char("Olle Grylle Bolle Bylle?!?\n\r",ch);
+			break;
+		case 4:
+			send_to_char("Gryffe Olle Gnyffe Snop???\n\r",ch);
+			break;
+		default:
+			send_to_char("Bolle Snylle Gryf Bylle?!!?\n\r",ch);
+			break;
 	}
-
-        if (tar_char) {
-
-	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
-	    act("Your magic fizzles against $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_CHAR);
-	    act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_NOTVICT);
-	    act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,tar_char,TO_VICT);
-	    return;
-	   }
-
-	  if (GET_POS(tar_char) == POSITION_DEAD) {
-	    send_to_char("The magic fizzles against the dead body.\n", ch);
-	    return;
-	  }
-	}
-
-if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
-	act("Your magic fizzles against your anti-magic shell!",FALSE,ch,0,0,TO_CHAR);
-	act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
-	return;
-	}
-
-	if (check_nomagic(ch,
-	     "Your skill appears useless in this magic dead zone.",
-	    "$n's spell dissolves like so much wet toilet paper"))
-	  return;
-}
-	send_to_char("Ok.\n\r",ch);
-	((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
-	cost = (int)USE_MANA(ch, (int)spl);
-	if (cmd == 283) /* recall */ {
-	  FORGET(ch, spl);
-	} else {
-	  GET_MANA(ch) -= cost;
-	}
-
-	exp = NewExpCap(ch, cost*50);
-	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",exp);
-	send_to_char(buf,ch);
-	gain_exp(ch, exp);
-      }
-
-    }	/* if GET_POS < min_pos */
-
-    return;
-  }
-
-  switch (number(1,5)){
-  case 1: send_to_char("Bylle Grylle Grop Gryf???\n\r", ch); break;
-  case 2: send_to_char("Olle Bolle Snop Snyf?\n\r",ch); break;
-  case 3: send_to_char("Olle Grylle Bolle Bylle?!?\n\r",ch); break;
-  case 4: send_to_char("Gryffe Olle Gnyffe Snop???\n\r",ch); break;
-  default: send_to_char("Bolle Snylle Gryf Bylle?!!?\n\r",ch); break;
-  }
 }
 
 

@@ -1438,7 +1438,7 @@ void cast_locate_object( byte level, struct char_data *ch, char *arg, int type,
 {
   switch (type) {
     case SPELL_TYPE_SPELL:
-      spell_locate_object(level, ch, NULL, tar_obj);
+      spell_locate_object(level, ch, NULL, arg);//tar_obj);
       break;
     default :
       log("Serious screw-up in locate object!");

@@ -3705,9 +3705,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 							return(TRUE);
 						}
 
-						if (monkskills[x].skillnum == SKILL_SAFE_FALL || monkskills[x].skillnum == SKILL_LEG_SWEEP
-							/* clutch to make leg sweep superb, why is learnfrommistake not working? */
-											|| monkskills[x].skillnum == SKILL_DODGE) {
+						if (monkskills[x].skillnum == SKILL_SAFE_FALL || monkskills[x].skillnum == SKILL_DODGE) {
 							if (ch->skills[monkskills[x].skillnum].learned >= 95) {
 								send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
 											" 'You are a master of this art, I can teach you no more.'\n\r",ch);

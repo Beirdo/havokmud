@@ -766,7 +766,7 @@ void spell_heal(byte level, struct char_data *ch,
 void spell_invisibility(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj);
 void spell_locate_object(byte level, struct char_data *ch,
-			 struct char_data *victim, struct obj_data *obj);
+			 struct char_data *victim, char *arg);//struct obj_data *obj);
 void spell_poison(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj);
 void spell_protection_from_evil(byte level, struct char_data *ch,
