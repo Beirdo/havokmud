@@ -2479,6 +2479,8 @@ int does_Load(int num, int max ) {
 
 	if (max == 0)
   return (TRUE);
+
+  return TRUE;
 #if 1
   sprintf(buff,"num=%d  max=%d", num, max);
   log(buff);
