@@ -625,13 +625,13 @@ dlog("in do_flee");
 				}
 
 				// gotta make ALL ch's attackers stop fighting, not just one
-				for(tmp = rp->people; tmp; tmp->next_in_room) {
-					if(tmp->specials.fighting == ch)
-						stop_fighting(tmp);
-				}
+//				for(tmp = rp->people; tmp; tmp->next_in_room) {
+//					if(tmp->specials.fighting == ch)
+//						stop_fighting(tmp);
+//				}
 
-//				if (ch->specials.fighting->specials.fighting == ch)
-//					stop_fighting(ch->specials.fighting);
+				if (ch->specials.fighting->specials.fighting == ch)
+					stop_fighting(ch->specials.fighting);
 
 				if (ch->specials.fighting)
 					stop_fighting(ch);
