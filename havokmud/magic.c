@@ -2233,7 +2233,7 @@ void spell_sense_life(byte level, struct char_data *ch,
 
 	assert(victim);
 
-  if (!affected_by_spell(victim, SPELL_SENSE_LIFE))  {
+  if ((!affected_by_spell(victim, SPELL_SENSE_LIFE)) && (!IS_AFFECTED(victim, AFF_SENSE_LIFE))) {
  if (ch != victim) {
     act("$n waves $s hands around $N's eyes.", FALSE, ch, 0, victim, TO_NOTVICT);
     act("You help $N see hidden life forms.", FALSE, ch, 0, victim, TO_CHAR);
