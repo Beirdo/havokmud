@@ -132,18 +132,12 @@ void cast_astral_walk(int level, struct char_data *ch, char *arg,
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_POTION:
     case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_STAFF:
         if (!tar_ch) {
-            send_to_char("Yes, but who do you wish to walk to?\n", ch);
+            tar_ch = ch;
         } else {
             spell_astral_walk(level, ch, tar_ch, 0);
         }
-        break;
-    case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
-             tar_ch; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) {
-                spell_astral_walk(level, ch, tar_ch, 0);
-            }
         break;
     default:
         Log("Serious screw-up in astral walk!");
