@@ -4890,7 +4890,7 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
       return(FALSE);
 
     if (port->obj_flags.value[1] <= 0 ||
-	port->obj_flags.value[1] > 50000) {
+	port->obj_flags.value[1] > 80000) { /* see hash.h Mythos */
       send_to_char("The portal leads nowhere\n\r", ch);
       return;
     }

@@ -14,4 +14,4 @@ struct hash_header {
 };
 
 
-#define WORLD_SIZE 50000
+#define WORLD_SIZE 80000  /* raised due to limit being hit - Mythos 9-25-01 */
