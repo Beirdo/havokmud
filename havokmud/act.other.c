@@ -2574,7 +2574,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                  */
 
                 if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
-                    act("$N looks to be too puny and week to join you.",
+                    act("$N looks to be too puny and weak to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
                     return;
                 }
@@ -2686,7 +2686,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                      * your stronger??
                      */
                     if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
-                        act("$N looks to be too puny and week to join you.",
+                        act("$N looks to be too puny and weak to join you.",
                             FALSE, ch, 0, victim, TO_CHAR);
                         return;
                     }
