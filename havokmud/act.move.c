@@ -1133,11 +1133,10 @@ int has_key(struct char_data *ch, int key)
         }
     }
 
-    if (ch->equipment[HOLD] &&
-        obj_index[ch->equipment[HOLD]->item_number].virtual == key) {
+    if ((o = ch->equipment[HOLD]) && obj_index[o->item_number].virtual == key) {
         if (IS_OBJ_STAT(o, ITEM_BRITTLE)) {
             MakeScrap(ch, NULL, o);
-            send_to_char("They key crumbles in your hand as you turn it.\n\r",
+            send_to_char("The key crumbles in your hand as you turn it.\n\r",
                          ch);
         }
         return (1);
