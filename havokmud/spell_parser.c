@@ -986,7 +986,7 @@ struct spell_info_type spell_info[] = {
     { 67, cast_acid_blast, 15, 24, POSITION_FIGHTING, 
       6, IMMORTAL, IMMORTAL, 6, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, 20, 0 },
-    { 68, cast_water_breath, 12, POSITION_STANDING, 
+    { 68, cast_water_breath, 15, 12, POSITION_STANDING, 
       9, IMMORTAL, 6, 9, IMMORTAL, 17, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM, 0, 1 },
     { 69, cast_flying, 15, 12, POSITION_STANDING, 
