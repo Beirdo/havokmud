@@ -1000,10 +1000,14 @@ void do_open(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_open");
 
-    arg = strdup(argument);
-    if( !arg ) {
-        Log( "Serious buggerup in open" );
-        return;
+    if( argument ) {
+        arg = strdup(argument);
+        if( !arg ) {
+            Log( "Serious buggerup in open" );
+            return;
+        }
+    } else {
+        arg = NULL;
     }
 
     argument = get_argument(argument, &type);
@@ -1014,8 +1018,8 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                     &obj)) {
+    if (arg && generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                            &obj)) {
         /*
          * this is an object 
          */
@@ -1051,7 +1055,10 @@ void do_open(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can't OPEN that.\r\n", ch);
         }
     }
-    free(arg);
+
+    if( arg ) {
+        free(arg);
+    }
 }
 
 void do_close(struct char_data *ch, char *argument, int cmd)
