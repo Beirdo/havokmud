@@ -840,6 +840,22 @@ dlog("in do_emote");
 	  return;
 	}
 #if 1
+
+		for (i = 0; *(oriarg + i) == ' '; i++);
+
+		if (!*(oriarg + i))
+			send_to_char("Yes.. But what?\n\r", ch);
+		else {
+			sprintf(buf,"$n %s", oriarg + i);
+			act(buf,FALSE,ch,0,0,TO_ROOM);
+			if (IS_SET(ch->specials.act,PLR_ECHO))
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			else
+				send_to_char("Ok.\n\r",ch);
+		}
+#endif
+/*
+#if 1
 	i = 0;
 	j = 0;
 	k = 0;
@@ -972,6 +988,7 @@ log("entered the simple emote");
 		}
 	}
 #endif
+*/
 }
 
 
