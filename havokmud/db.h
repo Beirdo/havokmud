@@ -26,8 +26,6 @@
 
 #define IWIZLIST_FILE      "iwizlist"   /* for WIZLIST */
 
-#define MAIL_FILE         "mud_mail"    /* */
-
 #define REAL 0
 #define VIRTUAL 1
 
