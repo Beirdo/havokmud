@@ -464,8 +464,10 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
     int             start_room,
                     end_room,
                     zone;
-    char            c;
     FILE           *fp;
+    char           *arg1,
+                   *arg2,
+                   *arg3;
 
     dlog("in do_zsave");
 
@@ -475,14 +477,17 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
     /*
      *   read in parameters (room #s)
      */
-    zone = start_room = end_room = -1;
-    sscanf(argument, "%d%c%d%c%d", &zone, &c, &start_room, &c, &end_room);
 
-    if ((zone == -1)) {
-        send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r",
-                     ch);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+    argument = get_argument(argument, &arg3);
+
+    if( !arg1 ) {
+        send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r", ch);
         return;
     }
+    zone = atoi(arg1);
+
     if (zone > top_of_zone_table) {
         send_to_char("Invalid zone number\r\n", ch);
         return;
@@ -499,10 +504,15 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
         send_to_char("Sorry, that zone isn't initialized yet\r\n", ch);
         return;
     }
-    if (start_room == -1 || end_room == -1) {
+
+    if( !arg2 || !arg3 ) {
         start_room = zone ? (zone_table[zone - 1].top + 1) : 0;
         end_room = zone_table[zone].top;
+    } else {
+        start_room = atoi(arg2);
+        end_room   = atoi(arg3);
     }
+
     fp = (FILE *) MakeZoneFile(ch, zone);
     if (!fp) {
         send_to_char("Couldn't make file.. try again later\n\r", ch);
@@ -530,9 +540,9 @@ void do_zload(struct char_data *ch, char *argument, int cmdnum)
      *   read in parameters (room #s)
      */
     zone = -1;
-    sscanf(argument, "%d", &zone);
 
-    if (zone < 1) {
+    argument = skip_spaces(argument);
+    if (!argument || (zone = atoi(argument)) < 1) {
         send_to_char("Zload <zone_number>\n\r", ch);
         return;
     }
@@ -587,9 +597,10 @@ void do_zclean(struct char_data *ch, char *argument, int cmdnum)
     if (IS_NPC(ch)) {
         return;
     }
-    sscanf(argument, "%d", &zone);
 
-    if (zone < 1) {
+    argument = skip_spaces(argument);
+
+    if (!argument || (zone = atoi(argument)) < 1) {
         send_to_char("Zclean <zone_number> (and don't even think about "
                      "cleaning Void)\n\r", ch);
         return;
@@ -771,8 +782,10 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
 void do_rload(struct char_data *ch, char *argument, int cmd)
 {
     int             i;
-    int             start = -1,
-                    end = -2;
+    int             start,
+                    end;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_rload");
 
@@ -788,13 +801,21 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
         send_to_char("rload <start> [<end>]\n\r", ch);
         return;
     }
-    sscanf(argument, "%d %d", &start, &end);
-    if (start == -1) {
+
+    argument = get_argument( argument, &arg1 );
+    argument = get_argument( argument, &arg2 );
+
+    if( !arg1 ) {
         return;
     }
-    if (end == -2) {
+    start = atoi(arg1);
+
+    if( !arg2 ) {
         end = start;
+    } else {
+        end = atoi(arg2);
     }
+
     if (end < start) {
         send_to_char("Hey, end room must be >= start room\r\n", ch);
         return;
@@ -823,9 +844,11 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
 
 void do_rsave(struct char_data *ch, char *argument, int cmd)
 {
-    long            start = -1,
-                    end = -2,
+    long            start,
+                    end,
                     i;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_rsave");
 
@@ -839,19 +862,28 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
     argument = skip_spaces(argument);
     if (!argument || !*argument) {
         start = ch->in_room;
+        end   = ch->in_room;
         if (!(start > 0 && start < WORLD_SIZE)) {
             send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
             return;
         }
     } else {
-        sscanf(argument, "%ld %ld", &start, &end);
+        argument = get_argument(argument, &arg1);
+        argument = get_argument(argument, &arg2);
+
+        if( !arg1 ) {
+            return;
+        }
+
+        start = atol(arg1);
+
+        if( !arg2 ) {
+            end = start;
+        } else {
+            end = atol(arg2);
+        }
     }
-    if (start == -1) {
-        return;
-    }
-    if (end == -2) {
-        end = start;
-    }
+
     if (end < start) {
         send_to_char("Hey, end room must be >= start room\r\n", ch);
         return;
@@ -3223,6 +3255,8 @@ void do_load(struct char_data *ch, char *argument, int cmd)
     struct obj_data *obj;
     char           *type,
                    *num,
+                   *arg1,
+                   *arg2,
                     buf[100];
     int             number;
     int             start,
@@ -3350,23 +3384,22 @@ void do_load(struct char_data *ch, char *argument, int cmd)
         if (GetMaxLevel(ch) < CREATOR) {
             return;
         }
-        switch (sscanf(num, "%d %d", &start, &end)) {
-        case 2:
-            /*
-             * we got both numbers
-             */
-            RoomLoad(ch, start, end);
-            break;
-        case 1:
-            /*
-             * we only got one, load it
-             */
-            RoomLoad(ch, start, start);
-            break;
-        default:
+
+        num = get_argument(num, &arg1);
+        num = get_argument(num, &arg2);
+
+        if( !arg1 ) {
             send_to_char("Load? Fine!  Load we must, But what?\n\r", ch);
-            break;
+            return;
         }
+        start = atoi(arg1);
+
+        if( !arg2 ) {
+            end = start;
+        } else {
+            end = atoi(arg2);
+        }
+        RoomLoad(ch, start, end);
     } else {
         send_to_char("Usage: load (object|mobile) (number|name)\n\r"
                      "       load room start [end]\n\r", ch);
@@ -5061,9 +5094,10 @@ void do_invis(struct char_data *ch, char *argument, int cmd)
 void do_create(struct char_data *ch, char *argument, int cmd)
 {
     int             i,
-                    count,
                     start,
                     end;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_create");
 
@@ -5071,11 +5105,18 @@ void do_create(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    count = sscanf(argument, "%d %d", &start, &end);
-    if (count < 2) {
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
+    if(!arg1 || !arg2) {
         send_to_char(" create <start> <end>\n\r", ch);
         return;
     }
+
+
+    start = atoi(arg1);
+    end   = atoi(arg2);
+
     if (start > end) {
         send_to_char(" create <start> <end>\n\r", ch);
         return;
@@ -7649,8 +7690,10 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
     int             start_room,
                     end_room,
                     zone;
-    char            c;
     FILE           *fp = NULL;
+    char           *arg1,
+                   *arg2,
+                   *arg3;
 
     dlog("in do_zconv");
 
@@ -7660,13 +7703,16 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
     /*
      *   read in parameters (room #s)
      */
-    zone = start_room = end_room = -1;
-    sscanf(argument, "%d%c%d%c%d", &zone, &c, &start_room, &c, &end_room);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+    argument = get_argument(argument, &arg3);
 
-    if ((zone == -1)) {
+    if( !arg1 ) {
         send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r", ch);
         return;
     }
+    zone = atoi(arg1);
+
 
     if (zone > top_of_zone_table) {
         send_to_char("Invalid zone number\r\n", ch);
@@ -7687,9 +7733,12 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
         return;
     }
 
-    if (start_room == -1 || end_room == -1) {
+    if( !arg2 || !arg3 ) {
         start_room = zone ? (zone_table[zone - 1].top + 1) : 0;
         end_room = zone_table[zone].top;
+    } else {
+        start_room = atoi(arg2);
+        end_room   = atoi(arg3);
     }
 
     /*
