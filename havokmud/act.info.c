@@ -2572,28 +2572,28 @@ dlog("in do_who");
 		sprintf(levels,"%32s","");
 		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
 
-//		sprintf(tbuf, "%-32s $c0005: $c0007%s",
-//				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+		sprintf(tbuf, "%-32s $c0005: $c0007%s",
+				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 /* commented this out becuz %-10s uses up its space for color codes as well,
  * thus making it necessary to use the same amount of colors for each clan, too
  * much of a bother imo.   -Lennya
  */
 
 //		strcpy(levels,tbuf);
-		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else if(GET_CLAN(person)>0)
-			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else
-			sprintf(bufx, "           "); /* length 11 */
+//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else if(GET_CLAN(person)>0)
+//			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else
+//			sprintf(bufx, "           "); /* length 11 */
 /* fix up length, ugly stuff */
-		length = 11; /* this should be enough length for any clan abbrev */
-		clength = length - color_strlen(ch, bufx, 596);
-		for(j = 1; j <= clength; j++) {
-			strcat(bufx, " "); /* add some spaces */
-		}
-		sprintf(tbuf, "%-32s %s $c0005: $c0007%s",
-				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//		length = 11; /* this should be enough length for any clan abbrev */
+//		clength = length - color_strlen(ch, bufx, 596);
+//		for(j = 1; j <= clength; j++) {
+//			strcat(bufx, " "); /* add some spaces */
+//		}
+//		sprintf(tbuf, "%-32s %s $c0005: $c0007%s",
+//				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
 	} else {
 		switch(GetMaxLevel(person)) {
@@ -2677,23 +2677,23 @@ dlog("in do_who");
 		if(!strcmp(GET_NAME(person), "Banon")) {
 			strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
 
-//			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
-//						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
+						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
-		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else if(GET_CLAN(person)>0)
-			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else
-			sprintf(bufx, "           "); /* length 11 */
+//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else if(GET_CLAN(person)>0)
+//			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else
+//			sprintf(bufx, "           "); /* length 11 */
 /* fix up length, ugly stuff */
-		length = 11; /* this should be enough length for any clan abbrev */
-		clength = length - color_strlen(ch, bufx, 596);
-		for(j = 1; j <= clength; j++) {
-			strcat(bufx, " "); /* add some spaces */
-		}
-		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
-				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//		length = 11; /* this should be enough length for any clan abbrev */
+//		clength = length - color_strlen(ch, bufx, 596);
+//		for(j = 1; j <= clength; j++) {
+//			strcat(bufx, " "); /* add some spaces */
+///		}
+//		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
+//				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
 //			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
 //				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
@@ -2707,23 +2707,23 @@ dlog("in do_who");
 
 		} else {
 			strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-//			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
-//							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
+							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
-		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else if(GET_CLAN(person)>0)
-			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
-		else
-			sprintf(bufx, "           "); /* length 11 */
+//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else if(GET_CLAN(person)>0)
+//			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+//		else
+//			sprintf(bufx, "           "); /* length 11 */
 /* fix up length, ugly stuff */
-		length = 11; /* this should be enough length for any clan abbrev */
-		clength = length - color_strlen(ch, bufx, 596);
-		for(j = 1; j <= clength; j++) {
-			strcat(bufx, " "); /* add some spaces */
-		}
-		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
-				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//		length = 11; /* this should be enough length for any clan abbrev */
+///		clength = length - color_strlen(ch, bufx, 596);
+//		for(j = 1; j <= clength; j++) {
+//			strcat(bufx, " "); /* add some spaces */
+//		}
+//		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
+//				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
 //			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
 //				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
