@@ -4256,7 +4256,9 @@ dlog("in do_throw_voice");
 			LearnFromMistake(ch, SKILL_THROW_VOICE, 0, 95);
 			GET_MOVE(ch) -= 5;
 		} else {
-			dam = dice(1,4) + (int)GetMaxLevel(ch)/2;
+			dam = GetMaxLevel(ch);
+			dam >>= 1;
+			dam += dice(1,4); // 1D4 + lev/2
 			damage(ch, vict, dam, SKILL_THROW_VOICE);
 			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 			gain_exp(ch, 100);
