@@ -1061,12 +1061,7 @@ void do_first_aid(struct char_data *ch, char *arg, int cmd)
         af.duration = 6;
         send_to_char("You attempt to render first aid unto yourself, but "
                      "fail.\n\r", ch);
-        if (ch->skills[SKILL_FIRST_AID].learned < 95 && 
-            ch->skills[SKILL_FIRST_AID].learned > 0 &&
-            number(1, 101) > ch->skills[SKILL_FIRST_AID].learned) {
-            ch->skills[SKILL_FIRST_AID].learned++;
-            send_to_char("You learn from your mistake.\n\r", ch);
-        }
+        LearnFromMistake(ch, SKILL_FIRST_AID, 0, 95);
     }
 
     af.type = SKILL_FIRST_AID;
