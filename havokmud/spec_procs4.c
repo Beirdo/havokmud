@@ -1196,9 +1196,121 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 }
 
 /* Ashamael's Citystate of Tarantis */
-#define NIGHTWALKER 740
-#define SPAWNROOM 740
-#define WAITROOM 737
+#define NIGHTWALKER 49600
+#define SPAWNROOM 49799
+#define DEST_ROOM 49460
+#define REAVER_RM 49701
+#define WAITROOM 49601
+
+#define TARANTIS_PORTAL 49701
+#define REAVER_PORTAL 49460
+
+/* Proc that makes a portal spawn at nighttime 8pm, and close at dawn 5pm. */
+int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
+{
+	struct room_data *spawnroom;
+	struct char_data *nightwalker;
+	struct obj_data *obj;
+	extern struct time_info_data time_info;
+//	char doorname[MAX_STRING_LENGTH +30], buf[MAX_STRING_LENGTH +30];
+	char buffer[MAX_STRING_LENGTH +30];
+	int dummyroom = 0;
+
+	if(time_info.hours < 20 || time_info.hours > 5) { /* it should not be there */
+		rp = real_roomp(WAITROOM);
+		if(rp) {
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+					dummyroom = ch->in_room;
+					char_from_room(ch);
+					char_to_room(ch,WAITROOM);
+					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					extract_obj(obj);
+					char_from_room(ch);
+					char_to_room(ch,dummyroom);
+				}
+			}
+		}
+		rp = real_roomp(REAVER_RM);
+		if(rp) {
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+					dummyroom = ch->in_room;
+					char_from_room(ch);
+					char_to_room(ch,REAVER_RM);
+					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					extract_obj(obj);
+					char_from_room(ch);
+					char_to_room(ch,dummyroom);
+				}
+			}
+		}
+		rp = real_roomp(DEST_ROOM);
+		if(rp) {
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == REAVER_PORTAL) {
+					dummyroom = ch->in_room;
+					char_from_room(ch);
+					char_to_room(ch,DEST_ROOM);
+					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					extract_obj(obj);
+					char_from_room(ch);
+					char_to_room(ch,dummyroom);
+				}
+			}
+		} /* all portals are gone, now do the transfer mob thing*/
+		if (time_info.hours == 9) {
+			spawnroom = real_roomp(SPAWNROOM);
+			if (!spawnroom) {
+				log("No nightwalker spawnroom found, blame Ash.");
+				return(FALSE);
+			}
+			while (spawnroom->people) {
+				nightwalker = spawnroom->people;
+				char_from_room(nightwalker);
+				char_to_room(nightwalker, WAITROOM);
+			}
+		}
+	} else { /* portals should appear */
+		rp = real_roomp(WAITROOM);
+		if(rp) {
+			if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
+				dummyroom = ch->in_room;
+				char_from_room(ch);
+				char_to_room(ch,WAITROOM);
+				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
+				obj_to_room(obj,WAITROOM);
+				char_from_room(ch);
+				char_to_room(ch,dummyroom);
+			}
+		}
+		rp = real_roomp(REAVER_RM);
+		if(rp) {
+			if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
+				dummyroom = ch->in_room;
+				char_from_room(ch);
+				char_to_room(ch,REAVER_RM);
+				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
+				obj_to_room(obj,REAVER_RM);
+				char_from_room(ch);
+				char_to_room(ch,dummyroom);
+			}
+		}
+		rp = real_roomp(DEST_ROOM);
+		if(rp) {
+			if(obj = read_object(REAVER_PORTAL, VIRTUAL)) {
+				dummyroom = ch->in_room;
+				char_from_room(ch);
+				char_to_room(ch,DEST_ROOM);
+				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
+				obj_to_room(obj,DEST_ROOM);
+				char_from_room(ch);
+				char_to_room(ch,dummyroom);
+			}
+		}
+	}
+}
+#if 0
 /* Proc that makes a door open at nighttime 8pm, and close at dawn 5pm. */
 int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
 {
@@ -1292,15 +1404,36 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
 	}
 	return(FALSE);
 }
-
+#endif
 
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	char buf[254];
 	struct char_data *freshmob;
+	struct room_data *rp;
+	struct obj_data *obj;
+	int roomnr = 0, found = 0;
+
+	if(!ch)
+		return(FALSE);
 
 	if (!IS_NPC(ch))
 		return(FALSE);
+
+	/* Make them enter portal if they're in the right spot */
+	if(ch->in_room) {
+		roomnr = ch->in_room;
+		if(roomnr == SPAWNROOM) {
+			if(rp = real_roomp(roomnr)) {
+				for(obj = rp->contents; obj; obj = obj->next_content) {
+					if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+						do_enter(ch, "portal", 7);
+						return(FALSE);
+					}
+				}
+			}
+		}
+	}
 
 	/* if event death, do the die thing and load up a new mob at a spawn_room */
 	if (type == EVENT_DEATH) {

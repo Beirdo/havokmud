@@ -2303,6 +2303,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int timed_door(struct char_data *ch, struct room_data *rp, int cmd);
+int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd);
 
 /* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

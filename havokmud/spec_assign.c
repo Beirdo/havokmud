@@ -1401,8 +1401,8 @@ void assign_mobiles()
 	{3959, mermaid }, /* roaming mermaids */
 
 /* City State of Tarantis */
-	{740, nightwalker },
-	{1000, timed_door }, /* mob to stick the door proc on */
+	{49600, nightwalker },
+	{49702, portal_regulator }, /* mob to stick the portal proc on */
 
 
 /* Heximal's new zone */

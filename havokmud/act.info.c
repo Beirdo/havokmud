@@ -2559,7 +2559,7 @@ char *GetLevelTitle(struct char_data *ch) {
 		person=(d->original?d->original:d->character);
 
 		if(person) {
-			if(GetMaxLevel(person)) { /* class reset during who/char_generation   bug fix */
+			if(GetMaxLevel(person)) { /* class reset during who/char_generation   bug fix -Lennya */
 
 				/*Get mortal class titles */
 				if(!IS_IMMORTAL(person)) {

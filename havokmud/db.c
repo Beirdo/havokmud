@@ -1751,11 +1751,11 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
     fscanf(mob_fi, " %d ", &tmp);
     if (tmp == -1) {
       fscanf(mob_fi, " %d ", &tmp);
- sprintf(buf,"money = %d",tmp);
- log(buf);
+// sprintf(buf,"money = %d",tmp);
+// log(buf);
       mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);
- sprintf(buf,"money = %d",mob->points.gold);
- log(buf);
+// sprintf(buf,"money = %d",mob->points.gold);
+// log(buf);
       fscanf(mob_fi, " %d ", &tmp);
       GET_EXP(mob) = tmp;
       fscanf(mob_fi, " %d \n", &tmp);
@@ -1765,8 +1765,8 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
       if(IsSmall(mob))
 	mob->abilities.str -= 1;
     } else {
- sprintf(buf,"beepmoney = %d",tmp);
- log(buf);
+// sprintf(buf,"beepmoney = %d",tmp);
+// log(buf);
       mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
       fscanf(mob_fi, " %d \n", &tmp);
       GET_EXP(mob) = tmp;
