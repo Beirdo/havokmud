@@ -2644,12 +2644,12 @@ send_to_char("@\n\r"
              }
 
        } else if (!strcmp(field, "leaderexp")) {
-             if (is_number(parmstr)) {
+//             if (is_number(parmstr)) {
 	           sscanf(parmstr,"%d",&parm);
 	           GET_LEADERSHIP_EXP(mob) = parm;
-             } else {
-	            send_to_char("argument must be a number\n\r", ch);
-             }
+//             } else {
+//	            send_to_char("argument must be a number\n\r", ch);
+//             }
 
        } else if (!strcmp(field, "clanleader")) {
              if (!IS_SET(mob->specials.act, PLR_CLAN_LEADER)) {
