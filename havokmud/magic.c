@@ -439,9 +439,11 @@ void spell_earthquake(int level, struct char_data *ch,
 void spell_dispel_evil(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    int             dam = 1;
-
+    int             dam;
+    
     assert(ch && victim);
+    dam = dice(5,10);
+    
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }

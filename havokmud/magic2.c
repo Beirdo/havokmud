@@ -325,7 +325,9 @@ void spell_flamestrike(int level, struct char_data *ch,
 void spell_dispel_good(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-
+    int     dam;
+    
+    dam = dice(5,10);
     assert(ch && victim);
     assert((level >= 1) && (level <= ABS_MAX_LVL));
 
@@ -344,6 +346,10 @@ void spell_dispel_good(int level, struct char_data *ch,
             act("$n forces you from this plane.", TRUE, ch, 0, victim, TO_VICT);
             gain_exp(ch, MIN(GET_EXP(victim) / 2, 50000));
             extract_char(victim);
+        } else {
+            act("$N resists the attack.", TRUE, ch, 0, victim, TO_CHAR);
+            act("You resist $n's attack.", TRUE, ch, 0, victim, TO_VICT);
+            damage(ch, victim, dam, SPELL_EARTHQUAKE);
         }
     } else {
         act("$N laughs at you.", TRUE, ch, 0, victim, TO_CHAR);
