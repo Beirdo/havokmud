@@ -42,6 +42,9 @@ extern struct index_data *mob_index;
 extern const struct clan clan_list[MAX_CLAN];
 extern long     SystemFlags;
 
+extern const struct race_type race_list[];
+extern struct str_app_type str_app[];
+
 funcp           bweapons[] = {
     cast_geyser, cast_fire_breath, cast_gas_breath, 
     cast_frost_breath, cast_acid_breath, 
@@ -766,8 +769,28 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     char           *name;
-    byte            percent;
-    char            buf[100];
+
+    int             percent;
+    int             goodbash;
+    int             bashlearned;
+    double          vicwait;
+    double          chwait;
+    int             vicsize;
+    int             chsize;
+    int             strbonus;
+
+    int BashSizeDifferential [7][7] = {
+    /* Basher is vertical, bashee is horizontal */
+    /* Gen is for a general size mob, which is treated as tiny */
+    /*        Gen    T     S    M    L    H    G  */
+    /* Gen*/ {  0,   0,   -5, -10, -20, -30, -40},
+    /* T */  {  0,   0,   -5, -10, -20, -30, -40},
+    /* S */  { 10,  10,    0,  -5, -10, -20, -30},
+    /* M */  { -5,  -5,   10,   0,  -5, -10, -20},
+    /* L */  {-10, -10,   -5,  10,   0,  -5, -10},
+    /* H */  {-20, -20,  -10,  -5,  10,   0,  -5},
+    /* G */  {-30, -30,  -20, -10,  -5,  10,   0}
+    };
 
     dlog("in do_bash");
 
@@ -775,16 +798,10 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-#if 0
-    if (!IS_PC(ch) && cmd && !IS_SET(ch->specials.act, ACT_POLYSELF))
-        return;
-#endif
-
     if (check_peaceful(ch,
                        "You feel too peaceful to contemplate violence.\n\r")) {
         return;
     }
-
     if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
         if (!HasClass(ch, CLASS_WARRIOR | CLASS_PALADIN | CLASS_RANGER |
                           CLASS_BARBARIAN)) {
@@ -799,6 +816,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &name);
+
     if (!name || !(victim = get_char_room_vis(ch, name))) {
         if (ch->specials.fighting) {
             victim = ch->specials.fighting;
@@ -808,20 +826,21 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         }
     }
 
+    if(!ch->specials.fighting) {
+        set_fighting(ch,victim);
+    }
+    if(!victim->specials.fighting) {
+        set_fighting(victim,ch);
+    }
+
     if (A_NOASSIST(ch, victim)) {
         act("$N is already engaged with someone else!", FALSE, ch, 0,
             victim, TO_CHAR);
         return;
     }
 
-    if (victim == ch) {
+    if (victim == ch || IS_IMMORTAL(victim)) {
         send_to_char("Aren't we funny today...\n\r", ch);
-        return;
-    }
-
-    if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE) &&
-        !IsGiant(ch)) {
-        act("$N is MUCH too large to bash!", FALSE, ch, 0, victim, TO_CHAR);
         return;
     }
 
@@ -829,63 +848,307 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         send_to_char("You can't bash a mounted target!\n\r", ch);
         return;
     }
-
     if (MOUNTED(ch)) {
         send_to_char("You can't bash while mounted!\n\r", ch);
         return;
     }
 
-#if 0
-    if (!ch->skills) {
-        if (GET_POS(victim) > POSITION_DEAD) {
-            damage(ch, victim, 0, SKILL_BASH);
-            GET_POS(ch) = POSITION_SITTING;
-        }
-    }
-#endif
-
     if (ch->attackers > 3) {
         send_to_char("There's no room to bash!\n\r", ch);
         return;
     }
-
     if (victim->attackers >= 6) {
         send_to_char("You can't get close enough to them to bash!\n\r", ch);
         return;
     }
+    percent = number(1, 100);   /* 100 is a complete failure, 1 is success */
 
-    percent = number(1, 101);   /* 101% is a complete failure */
-    /*
-     * some modifications to account for dexterity, and level
-     */
-    percent -= dex_app[(int)GET_DEX(ch)].reaction * 10;
-    percent += dex_app[(int)GET_DEX(victim)].reaction * 10;
+    if(percent < 6) {
+        goodbash = 10;  /* Middle of the road a 2 round lag for both */
+    }
+    else if(percent > 95) {
+        goodbash = -4; /* Middle of the road a 2 round lag miss */
+    }
+    else {
+        /* Dexterity adjustment, 5% per reaction bonus */
+        percent += dex_app[(int)GET_DEX(victim)].reaction * 5;
+        percent -= dex_app[(int)GET_DEX(ch)].reaction *5;
 
-    if (GetMaxLevel(victim) > 12) {
-        percent += ((GetMaxLevel(victim) - 10) * 5);
+        /* Size difference between basher and bashee */
+        chsize = race_list[ch->race].size;
+        vicsize = race_list[victim->race].size;
+        if(affected_by_spell(ch, SPELL_GIANT_GROWTH)) {
+            chsize++;
+        }
+        if(IS_NPC(ch) && IS_SET(ch->specials.act, ACT_HUGE)) {
+            chsize += 2;
+        }
+        if(IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+            vicsize += 2;
+        }
+        if(affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
+            vicsize++;
+        }
+        if(chsize > 6) {
+            chsize = 6;
+        }
+        if(chsize < 0) {
+            chsize = 0;
+        }
+        if(vicsize > 6) {
+            vicsize = 6;
+        }
+        if(vicsize < 0) {
+            vicsize = 0;
+        }
+        /* 062104 - Changed to half differential by request of Gordon */
+        percent -= BashSizeDifferential[chsize][vicsize] * .5;
+
+        /* Level difference between basher and bashee */
+        /* 062104 - Changed to only 1% penalty/bonus from 2% per
+                    level difference  */
+        if(OnlyClass(ch, CLASS_WARRIOR) || OnlyClass(ch, CLASS_BARBARIAN) ||
+            OnlyClass(ch, CLASS_PALADIN) || OnlyClass(ch, CLASS_RANGER)) {
+            percent -= (GET_LEVEL(ch,BestFightingClass(ch)) -
+                        GetMaxLevel(victim)) * 1;
+        }
+        /* 062104 - Changed to only 10% penalty from 20% for multi-class */
+        else {
+            percent -= ((GET_LEVEL(ch,BestFightingClass(ch)) * 0.9) -
+                         GetMaxLevel(victim)) * 1;
     }
 
-    if (percent > ch->skills[SKILL_BASH].learned) {
-        if (GET_POS(victim) > POSITION_DEAD) {
-            damage(ch, victim, 0, SKILL_BASH);
-            GET_POS(ch) = POSITION_SITTING;
+        bashlearned = ch->skills[SKILL_BASH].learned;
+
+        if(percent < bashlearned) {
+            if(percent * 3 < bashlearned) {
+                /* Wow */
+                goodbash = 6;
+            }
+            else if(percent * 2.5 < bashlearned) {
+                /* Very Good */
+                goodbash = 5;
+            }
+            else if(percent * 2.0 < bashlearned) {
+                /* Good */
+                goodbash = 4;
+            }
+            else if(percent * 1.5 < bashlearned) {
+                /* Not Bad */
+                goodbash = 3;
+            }
+            else if(percent * 1.25 < bashlearned) {
+                goodbash = 2;
+                /* Made It */
+            }
+            else {
+                goodbash = 1;
+                /* Squeaked By */
+            }
         }
-        LearnFromMistake(ch, SKILL_BASH, 0, 90);
-        WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-    } else {
-        if (GET_POS(victim) > POSITION_DEAD) {
-            GET_POS(victim) = POSITION_SITTING;
-            if (!damage(ch, victim, 2, SKILL_BASH)) {
-                WAIT_STATE(victim, PULSE_VIOLENCE * 2);
-                GET_POS(victim) = POSITION_SITTING;
-                sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r");
-                send_to_char(buf, ch);
-                gain_exp(ch, 100);
-                WAIT_STATE(ch, PULSE_VIOLENCE * 2);
+        else {
+            if(percent - bashlearned > 40) {
+                /* Ouch! */
+                goodbash = -6;
+            }
+            else if(percent - bashlearned > 30) {
+                /* Whoops! */
+                goodbash = -5;
+            }
+            else if(percent - bashlearned > 20) {
+                /* Missed! */
+                goodbash = -4;
+            }
+            else if(percent - bashlearned > 10) {
+                /* Just Missed! */
+                goodbash = -3;
+            }
+            else if(percent - bashlearned > 5) {
+                goodbash = -2;
+                /* How Did I Miss? */
+            }
+            else {
+                goodbash = -1;
+                /* The Gods Must Smile On My Opponent */
             }
         }
     }
+
+    if(goodbash > 0) {
+        GET_POS(victim) = POSITION_SITTING;
+        strbonus = str_app[STRENGTH_APPLY_INDEX(ch)].todam;
+        if(strbonus > 0) {
+            goodbash += (strbonus >> 1) + (strbonus & 1);
+            goodbash += number(1,(strbonus >> 1) + (strbonus & 1));
+        }
+        if(strbonus < 0) {
+            strbonus = strbonus * -1;
+            goodbash -= (strbonus >> 1) + (strbonus & 1);
+            goodbash -= number(1,(strbonus >> 1) + (strbonus & 1));
+        }
+
+        /* min is original 1 with a -4 for a -3 */
+        /* max is original 6 with a +7 for a 13 */
+        /* I'm going to make an assumption that most bashers */
+        /* will be around an 18/80 strength */
+        /* which means that the average basher will end up */
+        /* with a goodbash number between a minimum of 5 and a */
+        /* maximum of 10, an 18/100 strength pushes the minimum up to */
+        /* 7 and the maximum at 12 */
+        /* a 19 strength (half-giant, troll) will put their */
+        /* minimum at 8 range, which makes them a */
+        /* very good, almost always 2 round basher */
+        /* -3 through 3 == 1 round bashee, 2 round basher */
+        /* 4 through 8 == 1 round bashee, 1.5 round basher */
+        /* 9 through 11 == 2 round bashee, 2 round basher */
+        /* 12 through 13 == 3 round bashee, 2 round basher */
+        if(goodbash < 4) {
+            vicwait = 1;
+            chwait = 2;
+            act("You push $N, sending $M to the ground but you almost hit"
+                " the ground very hard yourself!",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n pushes you, pushing you to the ground, but $e loses $s"
+                " balance badly, nearly falling.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n pushes $N to the ground, but stumbles and almost hits the "
+                "ground $mself, $e seems shaken.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash < 9) {
+            vicwait = 1;
+            chwait = 1.5;
+            act("You barely manage to slam into $N, sending $M to the ground, "
+                "it might take you longer to recover tham $M.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n stumbles and slams into you, pushing you to the ground, "
+                "but you recover quickly, even faster than $m.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n slams $N to the ground, but stumbles and $n recovers "
+                "more quickly than $N.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash < 12) {
+            vicwait = 2;
+            chwait = 2;
+            act("You slam into $N, sending $M sprawling to the ground.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n slams into you, sending you sprawling to the ground.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n slams into $N sending $M to the ground.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else {
+            vicwait = 3;
+            chwait = 2;
+            act("You slam into $N, sending $M flying through the air to land "
+                "in a crumpled heap on the ground, $E won't be getting up "
+                "anytime soon.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n slams into you, you go flying through the air to hit "
+                "the ground very hard, fireworks go off in your head.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n slams into $N, who goes soaring through the air to "
+                "land in a crumpled heap several yards away.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+    }
+    else {
+            GET_POS(ch) = POSITION_SITTING;
+        if(goodbash <= -6) {
+            vicwait = 0;
+            chwait = 3;
+            act("You throw yourself at $N, who sidesteps you neatly.  You end "
+                "up falling flat on your face, making you dizzy and "
+                "disoriented.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n attempts to slam into you, but you sidestep the clumsy "
+                "fool and $e falls flat on $s face.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n attempts to slam $N to the ground, but $N sidesteps $m "
+                "neatly, and $n ends up falling flat on $s face.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash <= -5) {
+            vicwait = 0;
+            chwait = 2.5;
+            act("You aim to slam into $N, but stumble short of your target "
+                "and end up sitting on the ground without putting $M in any "
+                "danger.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n tries to charge at you, but stumbles and ends up sitting "
+                "on $s rump in front of you.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n tries to slam into $N, but trips and doesn't come even "
+                "close and actually ends up sitting on the ground in front "
+                "of $N looking stupid.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash <= -4) {
+            vicwait = 0;
+            chwait = 2;
+            act("You attempt to slam $N to the ground, but miss badly, which "
+                "puts you on the ground instead.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n attempts to ram $s shoulder into you, but $e misjudges "
+                "badly and ends up sprawled on the ground.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n attempt to slam into $N, but misses badly and ends up "
+                "sprawled on the ground instead.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash <= -3) {
+            vicwait = 0;
+            chwait = 1.5;
+            act("You attempt to slam $N to the ground, but miss, which "
+                "puts you on the ground, but in a good position to recover.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n attempts to ram $s shoulder into you, but $e misjudges "
+                "and ends up on the ground, but in good shape.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n attempt to slam into $N, but misses and ends up "
+                "on the ground instead, scrambling to recover.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else if(goodbash <= -2) {
+            vicwait = 0;
+            chwait = 1;
+            act("You attempt to slam $N to the ground, but just miss, which "
+                "puts you on the ground, but already you are recovering for "
+                "your next attempt.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n attempts to ram $s shoulder into you, but $e misjudges "
+                "and ends up on the ground, but is surging quickly back "
+                "$s feet.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n attempt to slam into $N, but misses and ends up "
+                "on the ground instead, however, $e is recovering quickly "
+                "for another attempt.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        else {
+            vicwait = 0;
+            chwait = .5;
+            act("You barely miss slamming into $N, which sends you stumbling "
+                "to one knee, but you are almost instantly ready to try "
+                "again.",
+                FALSE, ch, 0, victim, TO_CHAR);
+            act("$n just misses slamming into you, he drops to one knee to "
+                "recover, and is almost instantly ready to try again.",
+                FALSE, ch, 0, victim, TO_VICT);
+            act("$n just misses slamming into $N, but $e recovers quickly, "
+                "dropping to one knee and looks ready to try again.",
+                FALSE, ch, 0, victim, TO_NOTVICT);
+        }
+        LearnFromMistake(ch, SKILL_BASH, 0, 90);
+            }
+    if(chwait) {
+        WAIT_STATE(ch, chwait * PULSE_VIOLENCE);
+        }
+    if(vicwait) {
+        WAIT_STATE(victim, vicwait * PULSE_VIOLENCE);
+    }
+    return;
 }
 
 void do_leg_sweep(struct char_data *ch, char *argument, int cmd)

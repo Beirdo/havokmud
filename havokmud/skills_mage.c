@@ -2095,8 +2095,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
     if (affected_by_spell(victim, SPELL_CIRCLE_PROTECTION) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_CIRCLE_PROTECTION);
-        send_to_char("You don't have a clue what you just lost, since it "
-                     "doesn't do anything yet.\n\r", victim);
+        send_to_char("Your circle of protection fails!\n\r", victim);
     }
 
     if (affected_by_spell(victim, SPELL_AURA_POWER) &&

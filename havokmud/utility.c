@@ -855,6 +855,27 @@ void sprintbit(unsigned long vektor, char *names[], char *result)
     }
 }
 
+void sprintclasses(unsigned long vektor, char *result)
+{
+    long            nr;
+
+    *result = '\0';
+
+    for( nr = 0; vektor && nr < MAX_CLASS; vektor >>=1, nr++ ) {
+        if( vektor & 1 ) {
+            strcat( result, classes[nr].name );
+
+            if( vektor & (~1) ) {
+                strcat( result, "/" );
+            }
+        }
+    }
+
+    if( !*result ) {
+        strcat( result, "NOBITS" );
+    }
+}
+
 void sprinttype(int type, char *names[], char *result)
 {
     int             nr;
@@ -4050,25 +4071,25 @@ void SetRacialStuff(struct char_data *mob)
         }
         break;
     case RACE_GIANT_FROST:
-        SET_BIT(mob->M_immune, IMM_COLD);
+        SET_BIT(mob->immune, IMM_COLD);
         SET_BIT(mob->susc, IMM_FIRE);
         break;
     case RACE_GIANT_FIRE:
-        SET_BIT(mob->M_immune, IMM_FIRE);
+        SET_BIT(mob->immune, IMM_FIRE);
         SET_BIT(mob->susc, IMM_COLD);
         break;
     case RACE_GIANT_CLOUD:
         /*
          * should be gas... but no IMM_GAS
          */
-        SET_BIT(mob->M_immune, IMM_SLEEP);
+        SET_BIT(mob->immune, IMM_SLEEP);
         SET_BIT(mob->susc, IMM_ACID);
         break;
     case RACE_GIANT_STORM:
-        SET_BIT(mob->M_immune, IMM_ELEC);
+        SET_BIT(mob->immune, IMM_ELEC);
         break;
     case RACE_GIANT_STONE:
-        SET_BIT(mob->M_immune, IMM_PIERCE);
+        SET_BIT(mob->immune, IMM_PIERCE);
         break;
     case RACE_UNDEAD:
     case RACE_UNDEAD_VAMPIRE:
@@ -4428,12 +4449,21 @@ int GetNewRace(struct char_file_u *s)
         case RACE_HALF_ELF:
         case RACE_HALF_OGRE:
         case RACE_HALF_ORC:
+            try_again = FALSE;
+            break;
         case RACE_HALF_GIANT:
         case RACE_GIANT_HILL:
         case RACE_GIANT_FROST:
         case RACE_GIANT_FIRE:
         case RACE_GIANT_CLOUD:
         case RACE_GIANT_STORM:
+            if (!number(0,9)) {
+                try_again = TRUE;
+                break;
+            } else {
+                try_again = FALSE;
+                break;
+            }
         case RACE_ROO:
         case RACE_PRIMATE:
         case RACE_GOBLIN:

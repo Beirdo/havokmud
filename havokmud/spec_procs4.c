@@ -29,6 +29,9 @@ extern char    *dirs[];
 extern int      rev_dir[];
 extern struct zone_data *zone_table;
 
+extern const struct class_def classes[MAX_CLASS];
+
+
 void            printmap(struct char_data *ch, int x, int y, int sizex,
                          int sizey);
 struct obj_data *SailDirection(struct obj_data *obj, int direction);
@@ -5602,6 +5605,107 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
     }
 
     return (FALSE);
+}
+
+/*
+ * @Name:           skillfixer
+ * @description:    A mob proc will fix the problem generated
+ *                  by the lack of SKILL_KNOWN_?class? bit added
+ *                  to the skill[].flags.  This proc will check
+ *                  each player, and add the appropriate skill[].flags.
+ *                  It will check each player on cmd then once in
+ *                  a while it will go through the whole player list
+ *                  and fix everybody to verify.
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob()
+ */
+
+int skillfixer(struct char_data *ch, int cmd, char *arg,
+           struct char_data *mob, int type)
+{
+    int             i;
+    int             j;
+    int             k;
+    int             m;
+    int             n;
+    char            buf[256];
+
+    if (!ch->skills) {
+        return( FALSE );
+    }
+
+    if (!(mob = get_char_room("nondescript man skill fixer", ch->in_room))) {
+        sprintf(buf, "skill fixer proc is attached to a mob without "
+                     "proper name, in room %ld", ch->in_room);
+        Log(buf);
+        return (FALSE);
+    }
+
+    if (cmd != 531 || ch == mob ) {
+        return( FALSE );
+    }
+
+    for (i = 0; i < MAX_SKILLS; i++) {
+        if (!IS_SET(ch->skills[i].flags, SKILL_KNOWN)) {
+            continue;
+        }
+
+        for (j = 0, m = 1; j < MAX_CLASS; j++, m <<= 1) {
+            /*
+             * Currently can only do a few classes because of size 
+             * restrictions on char_skill_data 
+             */
+            if (!HasClass(ch, m) ||
+                (m != CLASS_CLERIC && m != CLASS_MAGIC_USER &&
+                 m != CLASS_SORCERER && m != CLASS_DRUID)) {
+                continue;
+            }
+
+            for (k = 0; classes[j].skills[k].level != -1; k++) {
+                if (classes[j].skills[k].skillnum != i) {
+                    continue;
+                }
+
+                if (m == CLASS_CLERIC && 
+                    !IS_SET(ch->skills[i].flags, SKILL_KNOWN_CLERIC)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_CLERIC);
+                } else if (m == CLASS_MAGIC_USER &&
+                           !IS_SET(ch->skills[i].flags, SKILL_KNOWN_MAGE)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_MAGE);
+                } else if (m == CLASS_SORCERER &&
+                           !IS_SET(ch->skills[i].flags, SKILL_KNOWN_SORCERER)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_SORCERER);
+                } else if (m == CLASS_DRUID &&
+                           !IS_SET(ch->skills[i].flags, SKILL_KNOWN_DRUID)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_DRUID);
+                }
+            }
+
+            for (n = 0; classes[j].skills[n].level != -1; n++) {
+                if (classes[j].mainskills[n].skillnum != i) {
+                    continue;
+                }
+
+                if (m == CLASS_CLERIC && 
+                    !IS_SET(ch->skills[i].flags, SKILL_KNOWN_CLERIC)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_CLERIC);
+                } else if (m == CLASS_MAGIC_USER &&
+                           IS_SET(ch->skills[i].flags, SKILL_KNOWN_MAGE)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_MAGE);
+                } else if (m == CLASS_SORCERER &&
+                           !IS_SET(ch->skills[i].flags, SKILL_KNOWN_SORCERER)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_SORCERER);
+                } else if (m == CLASS_DRUID &&
+                           !IS_SET(ch->skills[i].flags, SKILL_KNOWN_DRUID)) {
+                    SET_BIT(ch->skills[i].flags, SKILL_KNOWN_DRUID);
+                }
+            }
+        }
+    }
+
+    sprintf(buf, "tell %s Your skills have been patched up.", GET_NAME(ch));
+    command_interpreter(mob, buf);
+    return( TRUE );
 }
 
 /*

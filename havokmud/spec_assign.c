@@ -165,6 +165,7 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( sinpool, PROC_MOBILE ),
     REGISTER_PROC( sin_spawner, PROC_MOBILE ),
     REGISTER_PROC( sisyphus, PROC_MOBILE ),
+    REGISTER_PROC( skillfixer, PROC_MOBILE ),
     REGISTER_PROC( Slavalis, PROC_MOBILE ),
     REGISTER_PROC( SleepBreather, PROC_MOBILE ),
     REGISTER_PROC( snake, PROC_MOBILE ),
@@ -286,6 +287,7 @@ struct special_proc_entry mobSpecials[] = {
     {4, Inquisitor},
     {6, AcidBlob },
 #endif        
+    {7, skillfixer},
     {25, magic_user},
 
     {30, MageGuildMaster},

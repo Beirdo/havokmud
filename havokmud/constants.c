@@ -1051,6 +1051,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"enlightenment", SPELL_ENLIGHTENMENT, 25, 45},
         {"holy armor", SPELL_HOLY_ARMOR, 5, 45},
         {"holy strength", SPELL_HOLY_STRENGTH, 3, 45},
+        {"circle of protection", SPELL_CIRCLE_PROTECTION, 25, 45},
         {"None", -1, -1, -1}
       },
       /* Titles */
@@ -4378,7 +4379,9 @@ const char     *special_user_flags[] = {
     "FAST-MAP",
     "\n"
 };
-const char     *immunity_names[] = { "Fire",
+
+const char     *immunity_names[] = { 
+    "Fire",
     "Cold",
     "Electricity",
     "Energy",

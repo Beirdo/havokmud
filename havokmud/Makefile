@@ -16,11 +16,11 @@ LIBS = -lcrypt
 
 SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	act.other.c act.social.c act.wizard.c ansi_parser.c board.c bsd.c \
-	comm.c constants.c create.c create.help.c create.mob.c create.obj.c \
-	db.c fight.c handler.c hash.c heap.c interpreter.c limits.c magic2.c \
-	magic3.c magic.c magicutils.c mail.c mindskills1.c mind_use1.c \
-	mobact.c modify.c mod.text.c multiclass.c opinion.c paginate.c \
-	parser.c reception.c security.c shop.c signals.c skills.c \
+	classes.c comm.c constants.c create.c create.help.c create.mob.c \
+	create.obj.c db.c fight.c handler.c hash.c heap.c interpreter.c \
+	limits.c magic2.c magic3.c magic.c magicutils.c mail.c mindskills1.c \
+	mind_use1.c mobact.c modify.c mod.text.c multiclass.c opinion.c \
+	paginate.c parser.c reception.c security.c shop.c signals.c skills.c \
 	skills_mage.c skills_necromancer.c \
 	sound.c \
 	spec_assign.c spec_guildmaster.c spec_procs2.c spec_procs3.c \
