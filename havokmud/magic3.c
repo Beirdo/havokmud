@@ -3898,7 +3898,7 @@ void spell_soul_steal(byte level, struct char_data *ch, struct char_data *victim
 		return;
 	}
 
-	mana = 20 + number(-8,50);
+	mana = 20 + number(-8,70);
 
 	act("Briefly, a glowing strand of energy seems to fleet from $N to $n.",FALSE, ch, 0, victim, TO_NOTVICT);
 	act("A glowing strand of energy coming from $N fortifies your mental condition.",FALSE, ch, 0, victim, TO_CHAR);

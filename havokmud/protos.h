@@ -2183,6 +2183,7 @@ int CheckEgoGive(struct char_data *ch,struct char_data *vict,
 					 struct obj_data *obj);
 int HowManySpecials(struct char_data *ch) ;
 void tweak(struct obj_data *obj);
+int MobCastCheck(struct char_data *ch, int psi);
 
 struct obj_data *find_tqp();
 int count_tqp();

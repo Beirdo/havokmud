@@ -652,6 +652,18 @@ int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	if (cmd || !AWAKE(ch) || IS_AFFECTED(ch, AFF_PARALYSIS))
 		return(FALSE);
 
+	if(!MobCastCheck(ch, 0)) {
+/*		if(ch->specials.fighting) {
+			act("$n reevaluates his priorities, and decides it's best to get out.", 1, ch, 0, 0, TO_ROOM);
+			do_flee(ch, "", 0);
+		} else { // mages get funky skillz
+			act("$n quickly prepares a potion of dispel magic, and quaffs it!", 1, ch, 0, 0, TO_ROOM);
+			spell_dispel_magic(level, ch, ch, 0);
+		}
+*/
+		return(TRUE);
+	}
+
 	if (!ch->specials.fighting && !IS_PC(ch)) {
 		if ((GET_POS(ch) > POSITION_STUNNED) && (GET_POS(ch) < POSITION_FIGHTING)) {
 			StandUp(ch);
@@ -1011,6 +1023,9 @@ int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 		StandUp(ch);
 		return(TRUE);
 	}
+	if(!MobCastCheck(ch, 0)) {
+		return(TRUE);
+	}
 	if (check_soundproof(ch))
 		return(FALSE);
 	if (check_nomagic(ch, 0, 0))
@@ -1343,6 +1358,11 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 		StandUp(ch);
 		return(TRUE);
 	}
+
+	if(!MobCastCheck(ch, 0)) {
+		return(TRUE);
+	}
+
 	if (check_soundproof(ch))
 		return(FALSE);
 	if (check_nomagic(ch, 0, 0))
@@ -1763,7 +1783,9 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 		StandUp(ch);
 		return(TRUE);
 	}
-
+	if(!MobCastCheck(ch, 0)) {
+		return(TRUE);
+	}
 	if (check_soundproof(ch)) return(FALSE);
 
 	if (check_nomagic(ch, 0, 0))

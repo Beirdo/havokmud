@@ -2881,6 +2881,9 @@ int Psionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob, in
      command_interpreter(mob,"stand");
      return(TRUE);
     }
+	if(!MobCastCheck(ch, 1)) {
+		return(TRUE);
+	}
 
  if (!IS_SET(mob->player.class, CLASS_PSI))
     {
@@ -3526,79 +3529,82 @@ int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
  		return(fighter(ch,cmd,arg,mob,type));
 
  	if (!ch->specials.fighting) {
- 		if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
-			act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
-			cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
- 		}
+		if(MobCastCheck(ch, 0)) {
+			if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
+				act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+				return(TRUE);
+			}
 
  #ifdef PREP_SPELLS
 
- 		if (!ch->desc) { /* is it a mob? */
- 			/* low level spellup */
- 			if (!affected_by_spell(ch,SPELL_BARKSKIN)) {
- 				act("$n utters the words 'oakey dokey'.",FALSE,ch,0,0,TO_ROOM);
- 				cast_barkskin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 				return(TRUE);
- 			}
- 			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
- 				act("$n utters the words 'anti evil'.",FALSE,ch,0,0,TO_ROOM);
- 				cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 				return(TRUE);
- 			}
+			if (!ch->desc) { /* is it a mob? */
+				/* low level spellup */
+				if (!affected_by_spell(ch,SPELL_BARKSKIN)) {
+					act("$n utters the words 'oakey dokey'.",FALSE,ch,0,0,TO_ROOM);
+					cast_barkskin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
+					act("$n utters the words 'anti evil'.",FALSE,ch,0,0,TO_ROOM);
+					cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
 
- 			/* mid level spellup */
- 			if (GetMaxLevel(ch)>19) {
- 				if (!affected_by_spell(ch,SPELL_GIANT_GROWTH)) {
- 					act("$n utters the words 'The Blessings of Kane'.",FALSE,ch,0,0,TO_ROOM);
- 					cast_giant_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 					return(TRUE);
- 				}
- 			}
+				/* mid level spellup */
+				if (GetMaxLevel(ch)>19) {
+					if (!affected_by_spell(ch,SPELL_GIANT_GROWTH)) {
+						act("$n utters the words 'The Blessings of Kane'.",FALSE,ch,0,0,TO_ROOM);
+						cast_giant_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+						return(TRUE);
+					}
+				}
 
- 			/* high level spellup */
- 			if (GetMaxLevel(ch)>29) {
- 				/* let's give ranger some pets */
- 				if (!affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && OUTSIDE(ch) && !ch->followers && !IS_SET(real_roomp((ch)->in_room)->room_flags,TUNNEL)) {
- 					act("$n whistles loudly.",FALSE,ch,0,0,TO_ROOM);
- 					cast_animal_summon_3(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 					if (affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && ch->followers) {
- 						do_order(ch, "followers guard on", 0);
- 						do_group(ch, "all",0);
- 						act("$n utters the words 'instant growth'.",FALSE,ch,0,0,TO_ROOM);
- 						for (fol = ch->followers ; fol ;fol = fol->next) {
- 							if (!affected_by_spell(fol->follower, SPELL_ANIMAL_GROWTH)) {
- 								cast_animal_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,fol->follower,0);
- 								WAIT_STATE(ch, PULSE_VIOLENCE);
- 							}
- 						}
- 					}
- 					return(TRUE);
- 				}
- 			}
+				/* high level spellup */
+				if (GetMaxLevel(ch)>29) {
+					/* let's give ranger some pets */
+					if (!affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && OUTSIDE(ch) && !ch->followers && !IS_SET(real_roomp((ch)->in_room)->room_flags,TUNNEL)) {
+						act("$n whistles loudly.",FALSE,ch,0,0,TO_ROOM);
+						cast_animal_summon_3(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+						if (affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && ch->followers) {
+							do_order(ch, "followers guard on", 0);
+							do_group(ch, "all",0);
+							act("$n utters the words 'instant growth'.",FALSE,ch,0,0,TO_ROOM);
+							for (fol = ch->followers ; fol ;fol = fol->next) {
+								if (!affected_by_spell(fol->follower, SPELL_ANIMAL_GROWTH)) {
+									cast_animal_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,fol->follower,0);
+									WAIT_STATE(ch, PULSE_VIOLENCE);
+								}
+							}
+						}
+						return(TRUE);
+					}
+				}
 
- 			/* low level removes */
- 			if (affected_by_spell(ch,SPELL_POISON)) {
- 				act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
- 				cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 				return(TRUE);
- 			}
+				/* low level removes */
+				if (affected_by_spell(ch,SPELL_POISON)) {
+					act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
+					cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
 
- 			/* hi level removes */
- 			if (GetMaxLevel(ch) >24) {
- 				if (affected_by_spell(ch,SPELL_CURSE)) {
- 					act("$n utters the words 'neutralize'.",FALSE,ch,0,0,TO_ROOM);
- 					cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 					return(TRUE);
- 				}
-			}
+				/* hi level removes */
+				if (GetMaxLevel(ch) >24) {
+					if (affected_by_spell(ch,SPELL_CURSE)) {
+						act("$n utters the words 'neutralize'.",FALSE,ch,0,0,TO_ROOM);
+						cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+						return(TRUE);
+					}
+				}
 
- 			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
- 				act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
- 				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
- 				return(TRUE);
- 			}
- 		} /* it was a NPC */
+				if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
+					act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
+					cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			} /* it was a NPC */
  #endif
+		} // MobCastCheck
  	} else { /* char is fighting */
 		return(fighter(ch,cmd,arg,mob,type));
  	}

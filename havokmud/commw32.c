@@ -1261,6 +1261,8 @@ if (newd)
 
 //write_to_descriptor(newd,ParseAnsiColors(1 ,login));
   SEND_TO_Q(ParseAnsiColors(1,login), newd);
+  SEND_TO_Q("If you're using Tintin or Lyntin, your client may not display the password\n\r", newd);
+  SEND_TO_Q("sequence unless you change your settings. Please do not be discouraged.\n\r\n\r", newd);
   SEND_TO_Q("What is thy name? ", newd);
 
   return(0);

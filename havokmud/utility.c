@@ -6119,3 +6119,51 @@ dlog("in tweak");
 		}
 	}
 }
+
+int MobCastCheck(struct char_data *ch, int psi)
+{
+	struct char_data *vict;
+
+	if(!ch) {
+		log("no char in MobCastCheck");
+		return(FALSE);
+	}
+
+	if(ch->in_room < 1) {
+		log("invalid room in MobCastCheck");
+		return(FALSE);
+	}
+
+	if(!(real_roomp(ch->in_room))) {
+		log("non-existant room for MobCastCheck");
+		return(FALSE);
+	}
+
+	if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
+		send_to_char("Muh?\n\r",ch);
+		act("$n seems to want to cast a spell, but nothing sensible comes out.", FALSE, ch, 0, 0, TO_ROOM);
+		return(FALSE);
+	}
+	if (affected_by_spell(ch,SPELL_SILENCE) && !psi) {
+		send_to_char("You can't cast, you're silenced!\n\r",ch);
+		act("$n seems to want to cast a spell, but $s voice seems to fail $m.", FALSE, ch, 0, 0, TO_ROOM);
+		return(FALSE);
+	}
+
+	if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
+		act("Your magic fizzles against your anti-magic shell!",FALSE,ch,0,0,TO_CHAR);
+		act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
+		return(FALSE);
+	}
+	if(ch->specials.fighting) {
+		if (vict = ch->specials.fighting) {
+			if(affected_by_spell(vict,SPELL_ANTI_MAGIC_SHELL)) {
+				act("Your magic fizzles against $N's anti-magic shell!",FALSE,ch,0,vict,TO_CHAR);
+				act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,vict,TO_NOTVICT);
+				act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,vict,TO_VICT);
+				return(FALSE);
+			}
+		}
+	}
+	return(TRUE);
+}
