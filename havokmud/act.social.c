@@ -408,13 +408,12 @@ half_chop(argument,buf,name); //  only_argument(argument, buf);
   }  else
     *buf = '\0';
 
-
-
+/*
 if(!*buf) {
 	send_to_char("ooc %<Social name> <Person/object/no arg>.\n\r",ch);
 	return;
 }
-/*Need to find right social tho.. smile for now */
+*/
 
  if (!*name)    { /* No arguments */
 

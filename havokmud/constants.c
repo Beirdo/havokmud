@@ -4043,7 +4043,7 @@ const char *spell_desc[] = { /* Last reviewed by Sentinel, big thanks */
   "spell89, please report.",
   "spell90, please report.",  /* 90 */
   "spell91, please report.",
-  "$n's skin has taken on the consitency of hard granite",
+  "$n's skin has taken on the consistency of hard granite",
   "spell93, please report.",
   "$n's eyes glow with a silvery hue",
   "spell95, please report",

@@ -3586,7 +3586,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 
 	sprintf(buf1, "reimb/%s", lower(ch->player.name));
 	if (!(fl = fopen(buf1, "r+b")))  {
-		act("The figure looks around, and promptly disappears!.", TRUE, mob, 0, 0, TO_ROOM);
+		act("The figure looks around, and promptly disappears!", TRUE, mob, 0, 0, TO_ROOM);
 		char_from_room(mob);
 		extract_char(mob);
 		return(TRUE);
@@ -3595,7 +3595,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	rewind(fl);
 
 	if (!ReadObjs(fl, &st)) {
-		act("The figure looks around, and promptly disappears!.", TRUE, mob, 0, 0, TO_ROOM);
+		act("The figure looks around, and promptly disappears!", TRUE, mob, 0, 0, TO_ROOM);
 		char_from_room(mob);
 		extract_char(mob);
 		return(TRUE);

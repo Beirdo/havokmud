@@ -4053,7 +4053,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 			obj->level = GetMaxLevel(ch);  //set ego to level.
 		}
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
-		obj->obj_flags.timer = 12;
+		obj->obj_flags.timer = 42;
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
@@ -4213,7 +4213,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		else
 			obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
-		obj->obj_flags.timer = 18;
+		obj->obj_flags.timer = 60;
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
