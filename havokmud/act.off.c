@@ -715,12 +715,17 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 if (ch->specials.fighting->specials.fighting == ch) {
                     stop_fighting(ch->specials.fighting);
                 }
+
                 if (ch->specials.fighting) {
                     stop_fighting(ch);
                 }
+
+#if 0
                 if (ch->attackers) {
                     Log("fleeing dude still being attacked?! Could be bad.");
                 }
+#endif
+
                 if (IS_PC(ch)) {
                     if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) &&
                         !IS_AFFECTED(ch, AFF_HIDE)) {
