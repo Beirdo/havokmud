@@ -5801,7 +5801,7 @@ const int zoneloc[171] = {1792,
 
 const struct clan clan_list[MAX_CLAN] = {
   {0, "None","None","No description", 3005  },
-  {1, "Exiles", "$c000xe$c000RX$c000xiles", "Exiled from a clan", 3005 },
+  {1, "Exiles", "$c000xe$c000RX$c000xiled", "Exiled from a clan", 3005 },
   {2, "StormCloak","{$c000BS$c000xC}","No clan description set", 3005 },
   {3, "Brothers of Eternal Light","$c000WBoEL$c000w","No clan description set", 3005 },
   {4, "Order", "{$c000WO$c000w}", "No clan description set", 3005 },

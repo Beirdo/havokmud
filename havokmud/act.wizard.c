@@ -6842,11 +6842,24 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
    tmp3 = atoi(arg3);
 
    if ((tmp1 > tmp2) || tmp1 < 0 || tmp1 > 60 || tmp2 <0 || tmp2 > 60 || tmp3 > 4 || tmp3 < 0) {
-     send_to_char("Type 'startarena help' for more info.", ch);
+     send_to_char("Type 'startarena help' for more info.\n\r", ch);
      return;
     }
 
-	/* set flags to be FALSE */
+
+
+   if ((tmp1 == 0 && tmp2 == 0)){
+
+       MinArenaLevel = tmp1;
+       MaxArenaLevel = tmp2;
+
+       sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
+       send_to_all(buf);
+       sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
+       log(buf);
+       return;
+   } else {
+	/* first set flags to be FALSE */
 	ArenaNoGroup = ArenaNoAssist = ArenaNoDispel = ArenaNoMagic = 0;
 	ArenaNoWSpells = ArenaNoSlay = ArenaNoFlee = ArenaNoHaste = 0;
 	ArenaNoPets = ArenaNoTravel = ArenaNoBash = 0;
@@ -6882,17 +6895,6 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 		}
 	}
 
-   if ((tmp1 == 0 && tmp2 == 0)){
-
-       MinArenaLevel = tmp1;
-       MaxArenaLevel = tmp2;
-
-       sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
-       send_to_all(buf);
-       sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
-       log(buf);
-       return;
-   } else {
        MinArenaLevel = tmp1;
        MaxArenaLevel = tmp2;
        Quadrant = tmp3;
