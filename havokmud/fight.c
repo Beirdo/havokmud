@@ -1550,7 +1550,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
         if(!saves_spell(ch, SAVING_SPELL-4))
           {BurnWings(ch);}
 	lev = GetMaxLevel(v);
-	dam = dice(1,6)+lev;
+	dam = dice(1,6)+(lev/2);
 	if (damage(v, ch, dam, SPELL_FIRESHIELD)) 	{
 	  if (GET_POS(ch) == POSITION_DEAD)
 	    return(TRUE);
