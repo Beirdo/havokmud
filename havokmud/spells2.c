@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -2269,7 +2270,7 @@ void cast_dragon_breath(byte level, struct char_data *ch, char *arg,
 
     if (scan->vnum == 0) {
         send_to_char("Hey, this potion isn't in my list!\n\r", ch);
-        sprintf(buf, "unlisted breath potion %s %d", potion->short_description,
+        sprintf(buf, "unlisted breath potion %s %ld", potion->short_description,
                 obj_index[potion->item_number].virtual);
         Log(buf);
         return;
@@ -2393,8 +2394,7 @@ void cast_knock(byte level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
-    char            dir[MAX_INPUT_LENGTH],
-                    buf[MAX_INPUT_LENGTH];
+    char            dir[MAX_INPUT_LENGTH];
     char            otype[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     struct char_data *victim;
@@ -2753,7 +2753,7 @@ void cast_poly_self(byte level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     char            buffer[40];
-    int             mobn,
+    int             mobn = 0,
                     X = LAST_POLY_MOB,
                     found = FALSE;
     struct char_data *mob;
@@ -3616,7 +3616,7 @@ void cast_change_form(byte level, struct char_data *ch, char *arg,
                       struct obj_data *tar_obj)
 {
     char            buffer[40];
-    int             mobn,
+    int             mobn = 0,
                     X = LAST_DRUID_MOB,
                     found = FALSE;
     struct char_data *mob;
@@ -4408,8 +4408,6 @@ void cast_portal(byte level, struct char_data *ch, char *arg,
                  int type, struct char_data *tar_ch,
                  struct obj_data *tar_obj)
 {
-    char            buf[512];
-
     switch (type) {
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_SCROLL:

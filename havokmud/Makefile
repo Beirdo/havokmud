@@ -12,7 +12,7 @@ CC=gcc
 LD=$(CC)
 
 ##  these are architecture dependent flags
-COMPILEFLAGS = -g -O6 #-Wall #-Werror
+COMPILEFLAGS = -g -O6 -Wall -Werror
 ##
 CFLAGS = $(COMPILEFLAGS) $(GAMEFLAGS)
 

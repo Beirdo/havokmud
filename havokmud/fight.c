@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -68,6 +69,7 @@ extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern char    *spells[];
 extern char    *ItemDamType[];
 extern int      ItemSaveThrows[22][5];
+extern struct dex_app_type dex_app[];
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
 extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
@@ -101,13 +103,6 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
                                char *location_hit, char *location_hit_s);
 void            raw_kill_arena(struct char_data *ch);
 char           *fread_string(FILE * f1);
-
-void            free(void *ptr);
-
-void            abort(void);
-void           *calloc(size_t num_of_objs, size_t size_of_objs);
-void            exit(int status);
-int             abs(int i);
 
 
 void            DeleteHatreds(struct char_data *ch);
@@ -5921,9 +5916,8 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
         "above",
         "below"
     };
-    int             opdir[] = { 2, 3, 0, 1, 5, 4 }, rmod, cdir, rang, cdr;
+    int             rmod, cdir, rang, cdr;
     char            buf[MAX_STRING_LENGTH];
-    extern struct dex_app_type dex_app[];
 
     /*
      * Returns 1 on a hit, 0 otherwise 
@@ -5972,7 +5966,7 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
          */
         if (rng > 0) {
             sprintf(buf, "$p from %s narrowly misses $n!",
-                    dir_name[opdir[tdir]]);
+                    dir_name[opdir(tdir)]);
             act(buf, FALSE, targ, missile, 0, TO_ROOM);
             act("$p misses $N.", TRUE, ch, missile, targ, TO_CHAR);
         } else {
@@ -5981,7 +5975,7 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
         if (AWAKE(targ)) {
             if (rng > 0) {
                 sprintf(buf, "$p whizzes past from %s, narrowly missing you!",
-                        dir_name[opdir[tdir]]);
+                        dir_name[opdir(tdir)]);
                 act(buf, TRUE, targ, missile, 0, TO_CHAR);
             } else {
                 act("$n fires $p at you, narrowly missing!",
@@ -6014,10 +6008,10 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
         dam += dice(missile->obj_flags.value[1], missile->obj_flags.value[2]);
         dam = MAX(1, dam);
         AddHated(targ, ch);
-        sprintf(buf, "$p from %s hits $n!", dir_name[opdir[tdir]]);
+        sprintf(buf, "$p from %s hits $n!", dir_name[opdir(tdir)]);
         act("$p hits $N!", TRUE, ch, missile, targ, TO_CHAR);
         act(buf, TRUE, targ, missile, 0, TO_ROOM);
-        sprintf(buf, "$p from %s hits you!", dir_name[opdir[tdir]]);
+        sprintf(buf, "$p from %s hits you!", dir_name[opdir(tdir)]);
         act(buf, TRUE, targ, missile, 0, TO_CHAR);
         damage(ch, targ, dam, TYPE_RANGE_WEAPON);
 

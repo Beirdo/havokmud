@@ -29,6 +29,7 @@ int RecGetObjRoom(struct obj_data *obj)
     if (obj->in_obj) {
         return (RecGetObjRoom(obj->in_obj));
     }
+    return( -1 );
 }
 
 void MakeNoise(int room, char *local_snd, char *distant_snd)

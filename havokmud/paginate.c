@@ -10,6 +10,8 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "protos.h"
 #include "utils.h"

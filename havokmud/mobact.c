@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "protos.h"
@@ -588,7 +589,7 @@ int UseViolentHeldItem(struct char_data *ch)
                     v = v->next_in_room;
                 }
 
-                if (ch->specials.fighting = v) {
+                if ((ch->specials.fighting = v)) {
                     tokillnum = i + 1;
                 }
             }
@@ -664,7 +665,7 @@ int AssistFriend(struct char_data *ch)
     targ = 0;
 
     if (check_peaceful(ch, "")) {
-        return;
+        return(0);
     }
 #if 0
     assert(ch->in_room >= 0);
@@ -713,7 +714,7 @@ int AssistFriend(struct char_data *ch)
     return (1);
 }
 
-FindABetterWeapon(struct char_data * mob)
+int FindABetterWeapon(struct char_data * mob)
 {
     struct obj_data *o,
                    *best;
@@ -799,6 +800,7 @@ FindABetterWeapon(struct char_data * mob)
     } else if (mob->equipment[WIELD]) {
         do_remove(mob, mob->equipment[WIELD]->name, 0);
     }
+    return (FALSE);
 }
 
 int GetDamage(struct obj_data *w, struct char_data *ch)
@@ -888,9 +890,8 @@ int MobFriend(struct char_data *ch, struct char_data *f)
         } else if (IS_NPC(f)) {
             return (TRUE);
         }
-    } else {
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 void PulseMobiles(int type)
@@ -910,7 +911,6 @@ void DoScript(struct char_data *ch)
                     check = 0;
     char            buf[255],
                     buf2[255],
-                    buf3[255],
                    *s;
 
     strcpy(buf, script_data[ch->script].script[ch->commandp].line);

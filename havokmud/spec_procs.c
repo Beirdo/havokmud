@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -75,6 +76,19 @@ struct social_type {
     char           *cmd;
     int             next_line;
 };
+
+struct memory {
+    short           pointer;
+    char          **names;
+    int            *status;
+    short           index;
+    short           c;
+};
+
+
+int affect_status(struct memory *mem, struct char_data *ch,
+                  struct char_data *t, int aff_status);
+
 
 /*************************************/
 /*
@@ -179,6 +193,7 @@ int dump(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
             GET_GOLD(ch) += value;
         }
     }
+    return( TRUE );
 }
 
 int mayor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -946,6 +961,7 @@ int geyser(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         send_to_zone("The volcano rumbles slightly.\n\r", ch);
         return (TRUE);
     }
+    return( FALSE );
 }
 
 int green_slime(struct char_data *ch, int cmd, char *arg,
@@ -969,6 +985,7 @@ int green_slime(struct char_data *ch, int cmd, char *arg,
 int DracoLich(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob, int type)
 {
+    return( FALSE );
 }
 
 int Drow(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -1029,6 +1046,7 @@ int Drow(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int Leader(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
            int type)
 {
+    return( FALSE );
 }
 
 int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -1105,6 +1123,7 @@ int Inquisitor(struct char_data *ch, int cmd, char *arg,
     default:
         break;
     }
+    return (FALSE);
 }
 
 int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -1438,6 +1457,7 @@ int puff(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     default:
         return (0);
     }
+    return( FALSE );
 }
 
 int regenerator(struct char_data *ch, int cmd, char *arg,
@@ -1453,6 +1473,7 @@ int regenerator(struct char_data *ch, int cmd, char *arg,
         act("$n regenerates.", TRUE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     }
+    return( FALSE );
 }
 
 int replicant(struct char_data *ch, int cmd, char *arg,
@@ -1495,7 +1516,7 @@ int Tytan(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     
     switch (ch->generic) {
     case TYT_NONE:
-        if (vict = FindVictim(ch)) {
+        if ((vict = FindVictim(ch))) {
             ch->generic = TYT_CIT;
             SetHunting(ch, vict);
         }
@@ -1575,6 +1596,7 @@ int AbbarachDragon(struct char_data *ch, int cmd, char *arg,
     } else {
         return (BreathWeapon(ch, cmd, arg, mob, type));
     }
+    return( FALSE );
 }
 
 int fido(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -2008,6 +2030,7 @@ int AGGRESSIVE(struct char_data *ch, int cmd, char *arg,
             }
         }
     }
+    return( TRUE );
 }
 
 int citizen(struct char_data *ch, int cmd, char *arg,
@@ -2042,6 +2065,7 @@ int MidgaardCityguard(struct char_data *ch, int cmd, char *arg,
 int Ringwraith(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
+#if 0
     static char     buf[256];
     struct char_data *victim;
     static int      howmanyrings = -1;
@@ -2052,6 +2076,7 @@ int Ringwraith(struct char_data *ch, int cmd, char *arg,
     }              *wh;
     int             rnum,
                     dir;
+#endif
 
     if (!AWAKE(ch) || !IS_NPC(ch) || cmd) {
         return (FALSE);
@@ -2278,7 +2303,7 @@ int zm_stunned_followers(struct char_data *zmaster)
     return FALSE;
 }
 
-zm_init_combat(struct char_data * zmaster, struct char_data * target)
+void zm_init_combat(struct char_data * zmaster, struct char_data * target)
 {
     struct follow_type *fwr;
     for (fwr = zmaster->followers; fwr; fwr = fwr->next) {
@@ -2345,7 +2370,6 @@ int zombie_master(struct char_data *ch, int cmd, char *arg,
 {
     struct obj_data *temp1;
     struct char_data *zmaster;
-    char            buf[240];
     int             dir;
 
     zmaster = find_mobile_here_with_spec_proc(zombie_master, ch->in_room);
@@ -2982,6 +3006,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
     extract_char(ch);
     save_char(ch, save_room);
     ch->in_room = save_room;
+    return( TRUE );
 }
 
 /***********************************************************************
@@ -3073,8 +3098,8 @@ int jabberwocky(struct char_data *ch, int cmd, char *arg,
         } else {
             FighterMove(ch);
         }
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 int flame(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -3090,8 +3115,8 @@ int flame(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         } else {
             FighterMove(ch);
         }
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 int banana(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
@@ -3224,7 +3249,7 @@ int jugglernaut(struct char_data *ch, int cmd, char *arg,
     return (FALSE);
 }
 
-static char    *elf_comm[] = {
+char    *elf_comm[] = {
     "wake", "yawn",
     "stand", "say Well, back to work.", "get all",
     "eat bread", "wink",
@@ -3480,18 +3505,20 @@ int StormGiant(struct char_data *ch, int cmd, char *arg,
                                     SPELL_TYPE_SPELL, vict, 0);
             }
         }
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 int Manticore(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob, int type)
 {
+    return (FALSE);
 }
 
 int Kraken(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
            int type)
 {
+    return (FALSE);
 }
 
 int fighter(struct char_data *ch, int cmd, char *arg,
@@ -3546,9 +3573,7 @@ int NewThalosMayor(struct char_data *ch, int cmd, char *arg,
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
     }
-    if (ch->specials.fighting) {
-        return (FALSE);
-    } else {
+    if (!ch->specials.fighting) {
         /* 
          * state info 
          */
@@ -3771,6 +3796,7 @@ int NewThalosMayor(struct char_data *ch, int cmd, char *arg,
             break;
         }
     }
+    return( FALSE );
 }
 
 int SultanGuard(struct char_data *ch, int cmd, char *arg,
@@ -4061,8 +4087,7 @@ int StatTeller(struct char_data *ch, int cmd, char *arg,
                     sprintf(buf, "$c0013[$c0015$N$c0013] tells you 'I sense "
                                  "your damroll is about %d.'",
                             ch->points.damroll +
-                            str_app[STRENGTH_APPLY_INDEX(ch)].todam,
-                            ch->points.damroll);
+                            str_app[STRENGTH_APPLY_INDEX(ch)].todam );
                 } else {
                     sprintf(buf, "$c0013[$c0015$N$c0013] tells you 'I sense "
                                  "your hitroll is about %d.'",
@@ -4214,8 +4239,6 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
     int             i;
     char            buf[256];
 
-    extern char     DestroyedItems;
-
     if (cmd && cmd != 156) {
         return (FALSE);
     }
@@ -4312,6 +4335,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                 0, targ, TO_VICT);
         }
     }
+    return( FALSE );
 }
 
 int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
@@ -4366,12 +4390,13 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         act("That used up $p.", FALSE, ch, obj, t, TO_CHAR);
         extract_obj(obj);
     }
+    return( TRUE );
 }
 
 int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
            int type)
 {
-    struct char_data *t;
+    struct char_data *t = NULL;
     struct obj_data *obj,
                    *i;
     char            buf[80],
@@ -4571,14 +4596,6 @@ char           *lattimore_descs[] = {
     "An orc sleeps restlessly on a bunk.\n\r",
     "There is an orc stading on a barrel here.\n\r",
     "An orc is traveling down the corridor at high speed.\n\r"
-};
-
-struct memory {
-    short           pointer;
-    char          **names;
-    int            *status;
-    short           index;
-    short           c;
 };
 
 #define Lattimore_Initialize  0
@@ -5146,6 +5163,7 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
         command_interpreter(ch, buf);
         return (TRUE);
     }
+    return( FALSE );
 }
 
 
@@ -5186,6 +5204,7 @@ int shaman(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (cleric(ch, cmd, arg, mob, type));
         }
     }
+    return( FALSE );
 }
 
 #define SHAMAN_NAME "shaman"
@@ -5233,6 +5252,7 @@ int golgar(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (FALSE);
         }
     }
+    return( FALSE );
 }
 
 int troguard(struct char_data *ch, int cmd, char *arg,
@@ -5505,7 +5525,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     int             i;
     struct char_data *vict,
                    *master;
-    struct obj_data *obj;
+    struct obj_data *obj = NULL;
     int             (*valik) ();
     bool            gave_this_click = FALSE;
     short           quest_lines[4];
@@ -6055,7 +6075,9 @@ int web_slinger(struct char_data *ch, int cmd, char *arg,
          */
         act("$n casts sticky webs upon you!", TRUE, ch, 0, 0, TO_ROOM);
         cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+        return( TRUE );
     }
+    return( FALSE );
 }
 
 /*

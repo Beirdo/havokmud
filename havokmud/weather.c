@@ -54,8 +54,7 @@ void another_hour(int mode)
 {
     char            moon[20],
                     buf[100];
-    int             tmp,
-                    i;
+    int             tmp;
 
     time_info.hours++;
 

@@ -574,8 +574,7 @@ int mail_ok(struct char_data *ch)
  */
 struct char_data *find_mailman(struct char_data *ch)
 {
-    struct char_data *mailman,
-                   *temp;
+    struct char_data *mailman;
 
     if (!mail_ok(ch)) {
         return 0;
@@ -599,7 +598,7 @@ struct char_data *find_mailman(struct char_data *ch)
 
 void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
 {
-    struct char_data *mailman;
+    struct char_data *mailman = NULL;
     char            buf[200],
                     recipient[100],
                    *tmp;
@@ -664,13 +663,7 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
 
 void bugmail(struct char_data *ch, char *arg, int cmd)
 {
-    /*
-     * i will make it go to both of us later -bcw
-     */
-    int             tmp_cmd = 0;
-
     postmaster_send_mail(ch, cmd, "Gordon");
-
 }
 
 void postmaster_check_mail(struct char_data *ch, int cmd, char *arg)
@@ -703,9 +696,7 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
     char            buf[200],
                     recipient[100],
                    *tmp;
-    char            buf2[200];
     struct obj_data *tmp_obj;
-    int             i;
 
     if (!(mailman = find_mailman(ch))) {
         return;

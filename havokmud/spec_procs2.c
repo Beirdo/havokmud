@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "protos.h"
 
@@ -8,6 +10,7 @@
  * external vars 
  */
 
+#if 0
 extern struct skillset warriorskills[];
 extern struct skillset thiefskills[];
 extern struct skillset barbskills[];
@@ -37,6 +40,7 @@ extern struct skillset maindruidskills[];
 extern struct skillset mainpaladinskills[];
 extern struct skillset mainrangerskills[];
 extern struct skillset mainpsiskills[];
+#endif
 
 extern struct room_data *world;
 extern struct char_data *character_list;
@@ -173,12 +177,6 @@ int Magic_Fountain(struct char_data *ch, int cmd, char *arg,
 {
 
     char            buf[MAX_INPUT_LENGTH];
-
-    extern int      drink_aff[][3];
-
-    extern struct weather_data weather_info;
-    void            name_to_drinkcon(struct obj_data *obj, int type);
-    void            name_from_drinkcon(struct obj_data *obj);
 
     if (cmd == 11) {
         /* 
@@ -493,7 +491,6 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
 int Summoner(struct char_data *ch, int cmd, char *arg,
              struct char_data *mob, int type)
 {
-    struct descriptor_data *d;
     struct char_data *targ = 0;
     struct char_list *i;
     char            buf[255];
@@ -1100,17 +1097,10 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
     struct char_data *vict;
-    struct follow_type *fol;
-    byte            lspell,
-                    healperc = 0;
-    int             to_room,
-                    num = 2,
-                    try = 0,
-                    avgbare = 0,
-                    size = 0,
-                    nr = 0;
+    byte            lspell;
+    int             to_room = 0;
     extern int      top_of_world;
-    struct room_data *room;
+    struct room_data *room = NULL;
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -1516,16 +1506,12 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 {
     struct char_data *vict = 0;
     struct follow_type *fol;
-    byte            lspell,
-                    healperc = 0;
-    int             to_room,
-                    num = 2,
-                    try = 0,
-                    avgbare = 0,
-                    size = 0,
-                    nr = 0;
+    byte            lspell;
+    int             to_room = 0,
+                    num = 2;
     extern int      top_of_world;
-    struct room_data *room;
+    struct room_data *room = NULL;
+
 #if 0
     Log("entered druid proc");
 #endif
@@ -2005,7 +1991,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         /*
          * do heal 
          */
-        if (IS_AFFECTED(ch, AFF_BLIND) && lspell >= 4 & !number(0, 3)) {
+        if (IS_AFFECTED(ch, AFF_BLIND) && lspell >= 4 && !number(0, 3)) {
             act("$n utters the words 'Praise Pentak, I can see!'", 1, ch,
                 0, 0, TO_ROOM);
             cast_cure_blind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
@@ -2382,7 +2368,7 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         case 18:
         case 19:
         default:
-            act("$n utters the words 'Hurts, doesn't it??'", 1, ch, 0, 0,
+            act("$n utters the words 'Hurts, doesn't it?'", 1, ch, 0, 0,
                 TO_ROOM);
             cast_harm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
             break;
@@ -2394,7 +2380,7 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
          * do heal 
          */
 
-        if (IS_AFFECTED(ch, AFF_BLIND) && lspell >= 4 & !number(0, 3)) {
+        if (IS_AFFECTED(ch, AFF_BLIND) && lspell >= 4 && !number(0, 3)) {
             act("$n utters the words 'Praise Celestian, I can SEE!'", 1,
                 ch, 0, 0, TO_ROOM);
             cast_cure_blind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
@@ -2881,22 +2867,22 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
               char *arg, int cmd)
 {
+#if 0
     char            obj_name[50],
                     vict_name[50];
     struct char_data *vict;
     struct obj_data *obj;
+#endif
 
 #if EASY_LEVELS
-    if (GET_LEVEL(ch, Class) > 0) {
+    if (GET_LEVEL(ch, Class) > 0 && cmd == GAIN) {
         /* 
          * for now.. so as not to give it away 
          */
-        if (cmd == GAIN) {
-            GainLevel(ch, Class);
-            return (TRUE);
-        }
-        return (FALSE);
+        GainLevel(ch, Class);
+        return (TRUE);
     }
+    return (FALSE);
 #endif
 
 #if 0
@@ -2970,6 +2956,7 @@ int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
         return (FALSE);
     }
 #endif
+    return (FALSE);
 }
 
 int AbyssGateKeeper(struct char_data *ch, int cmd, char *arg,
@@ -3671,7 +3658,6 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
     char            obj_name[80],
                     vict_name[80],
                     buf[MAX_INPUT_LENGTH];
-    char            tbuf[80];
     struct char_data *vict;
     struct obj_data *obj;
     int             test = 0;
@@ -3794,6 +3780,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
     }
+    return( FALSE );
 }
 
 int DogCatcher(struct char_data *ch, int cmd, char *arg,
@@ -3801,7 +3788,6 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[128];
     struct char_data *tch;
-    struct room_data *rp;
 
     if (ch->specials.fighting) {
         if (magic_user(ch, cmd, arg, mob, type)) {
@@ -4063,8 +4049,8 @@ void free_victims(struct breath_victim *head)
     }
 }
 
-int breath_weapon(struct char_data *ch, struct char_data *target,
-                  int mana_cost, void (*func) ())
+void breath_weapon(struct char_data *ch, struct char_data *target,
+                   int mana_cost, void (*func) ())
 {
     struct breath_victim *hitlist,
                    *scan;
@@ -4102,8 +4088,8 @@ int breath_weapon(struct char_data *ch, struct char_data *target,
     free_victims(hitlist);
 }
 
-int use_breath_weapon(struct char_data *ch, struct char_data *target,
-                      int cost, void (*func) ())
+void use_breath_weapon(struct char_data *ch, struct char_data *target,
+                       int cost, void (*func) ())
 {
     if (GET_MANA(ch) >= 0) {
         breath_weapon(ch, target, cost, func);
@@ -4245,7 +4231,7 @@ void DruidHeal(struct char_data *ch, int level)
     }
 }
 
-int DruidTree(struct char_data *ch)
+void DruidTree(struct char_data *ch)
 {
     act("$n utters the words 'harumph!'", FALSE, ch, 0, 0, TO_ROOM);
     act("$n takes on the form and shape of a huge tree!", FALSE, ch, 0, 0,
@@ -4268,7 +4254,7 @@ int DruidTree(struct char_data *ch)
     REMOVE_BIT(ch->specials.act, ACT_SPEC);
 }
 
-int DruidMob(struct char_data *ch)
+void DruidMob(struct char_data *ch)
 {
     act("$n utters the words 'lagomorph'", FALSE, ch, 0, 0, TO_ROOM);
     act("$n takes on the form and shape of a huge lion", FALSE, ch, 0, 0,
@@ -4488,6 +4474,7 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
             DruidAttackSpells(ch, vict, level);
         }
     }
+    return(FALSE);
 }
 
 int MonkChallenger(struct char_data *ch, int cmd, char *arg,
@@ -4634,7 +4621,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
                 do_return(ch, "", 0);
             }
             GET_EXP(ch) = MIN(titles[DRUID_LEVEL_IND]
-                              [GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
+                              [(int)GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
                               GET_EXP(ch));
             send_to_char("Go home\n\r", ch);
             char_from_room(ch);
@@ -4720,7 +4707,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                 do_return(ch, "", 0);
             }
             GET_EXP(ch) = MIN(titles[MONK_LEVEL_IND]
-                              [GET_LEVEL(ch, MONK_LEVEL_IND)].exp,
+                              [(int)GET_LEVEL(ch, MONK_LEVEL_IND)].exp,
                               GET_EXP(ch));
             send_to_char("Go home.\n\r", ch);
             char_from_room(ch);
@@ -4889,7 +4876,7 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
              * see hash.h Mythos 
              */
             send_to_char("The portal leads nowhere\n\r", ch);
-            return;
+            return( FALSE );
         }
 
         act("$n enters $p, and vanishes!", FALSE, ch, port, 0, TO_ROOM);
@@ -4911,12 +4898,12 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
             extract_obj(obj);
         }
     }
+    return( TRUE );
 }
 
 int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
            int type)
 {
-
     if (type == PULSE_COMMAND) {
         return (FALSE);
     } else {
@@ -4933,6 +4920,7 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
             extract_obj(obj);
         }
     }
+    return( TRUE );
 }
 
 int attack_rats(struct char_data *ch, int cmd, char *arg,
@@ -4970,6 +4958,7 @@ int attack_rats(struct char_data *ch, int cmd, char *arg,
     }
 
     go_direction(ch, dir);
+    return( TRUE );
 }
 
 
@@ -5236,7 +5225,7 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
 {
     int             c,
                     i[3],
-                    ind;
+                    ind = 0;
     char            buf[255];
 
     if (cmd != 224) {
@@ -5481,7 +5470,6 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
     int             check = -1,
                     x = 0;
     char            buf[50];
-    char            buf2[256];
     int             j;
     struct char_data *post;
 
@@ -5497,7 +5485,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
         *buf = tolower(*buf);
         if (!str_cmp("post", buf) || !str_cmp("ethereal", buf) ||
             !str_cmp("ethereal post", buf)) {
-            if (post = get_char_room("ethereal post", ch->in_room)) {
+            if ((post = get_char_room("ethereal post", ch->in_room))) {
                 /*
                  * Check to see where the post is going 
                  */
@@ -5582,8 +5570,6 @@ extern float    shop_multiplier;
 int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
                   struct char_data *mob, int type)
 {
-    char            buf[255];
-
     if (type == PULSE_COMMAND) {
         return (FALSE);
     }
@@ -5695,9 +5681,8 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
             shop_multiplier = 1.5;
             break;
         }
-
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 /*
@@ -5925,8 +5910,6 @@ int arena_fireball_trap(struct char_data *ch, int cmd, char *arg,
 int arena_dispel_trap(struct char_data *ch, int cmd, char *arg,
                       struct room_data *rp, int type)
 {
-    char            buf[MAX_STRING_LENGTH + 30];
-
     if (cmd >= 1 && cmd <= 6) {
         spell_dispel_magic(50, ch, ch, 0);
 #if 0        
@@ -5942,14 +5925,11 @@ int arena_dispel_trap(struct char_data *ch, int cmd, char *arg,
 int dispel_room(struct char_data *ch, int cmd, char *arg,
                 struct room_data *rp, int type)
 {
-    char            buf[MAX_STRING_LENGTH + 30];
-
     if (cmd == 5) {
         /* 
          * Up 
          */
         spell_dispel_magic(50, ch, ch, 0);
-        return (FALSE);
     }
     return (FALSE);
 }
@@ -5957,8 +5937,6 @@ int dispel_room(struct char_data *ch, int cmd, char *arg,
 int fiery_alley(struct char_data *ch, int cmd, char *arg,
                 struct room_data *rp, int type)
 {
-    char            buf[MAX_STRING_LENGTH + 30];
-
     if (ch->in_room == 40287 && cmd == 4) {
         /* 
          * West 

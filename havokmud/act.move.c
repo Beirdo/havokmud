@@ -24,8 +24,6 @@ extern char    *dirs[];
 extern int      movement_loss[];
 extern char    *exits[];
 
-int             DisplayMove(struct char_data *ch, int dir, int was_in,
-                            int total);
 int             DisplayGroupMove(struct char_data *ch, int dir, int was_in,
                                  int total);
 int             DisplayOneMove(struct char_data *ch, int dir, int was_in);

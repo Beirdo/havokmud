@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 #include "protos.h"
 
 /*
@@ -32,6 +33,7 @@ void            printmap(struct char_data *ch, int x, int y, int sizex,
                          int sizey);
 struct obj_data *SailDirection(struct obj_data *obj, int direction);
 int             CanSail(struct obj_data *obj, int direction);
+int ReadObjs(FILE * fl, struct obj_file_u *st);
 
 /*
  * two global integers for Sentinel's cog room procedure 
@@ -450,9 +452,6 @@ char            oceanmap[101][260] = {
 int chestproc(struct char_data *ch, int cmd, char *argument,
               struct obj_data *obj, int type)
 {
-    char            buf[MAX_INPUT_LENGTH + 80];
-    int             count;
-
     if (cmd != 99) {
         /* 
          * open chest
@@ -473,58 +472,6 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
     } else {
         return (FALSE);
     }
-}
-
-/*
- * @Name: CountPeople in zone Function @description: This function counts
- * the number of people in a zone. @Author: Greg Hovey (Banon) @Used: used 
- * in chestproc and preparationproc 
- */
-int countPeople(int zonenr)
-{
-    int             count = 0;
-    struct descriptor_data *d;
-    struct char_data *person;
-#if 0
-    for(d = descriptor_list; d; d = d->next) {
-        person=(d->original?d->original:d->character); 
-        if(person) {
-            if(person->in_room > 0) { 
-                if(real_roomp(person->in_room)->zone == zonenr) { 
-                    count++; 
-                } 
-            } 
-        } 
-    } 
-    return count; 
-#endif
-    for (d = descriptor_list; d; d = d->next) {
-        person = (d->original ? d->original : d->character);
-
-        if (person && real_roomp(person->in_room) &&
-            real_roomp(person->in_room)->zone == zonenr) {
-            count++;
-        }
-    }
-
-    return count;
-
-}
-
-int count_People_in_room(int room)
-{
-    struct char_data *i;
-    int             count = 0;
-
-    if (real_roomp(room)) {
-        for (i = real_roomp(room)->people; i; i = i->next_in_room) {
-            if (i) {
-                // this counts the number of people in just this room.
-                count++;
-            }
-        }
-    }
-    return count;
 }
 
 /*
@@ -738,9 +685,6 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
 int greed_disabler(struct char_data *ch, int cmd, char *arg,
                    struct room_data *rp, int type)
 {
-
-    char            buf[MAX_STRING_LENGTH + 30];
-
     if (cmd == 60) {
         /* 
          * drop 
@@ -757,8 +701,6 @@ int greed_disabler(struct char_data *ch, int cmd, char *arg,
 int lag_room(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
-    char            buf[MAX_STRING_LENGTH + 30];
-
     if (cmd) {
         /* 
          * if a player enters ANY command, they'll experience two rounds of 
@@ -976,6 +918,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         Log("finished finding targets, wait for next func call");
 #endif
     }
+    return( FALSE );
 }
 
 int Deshima(struct char_data *ch, int cmd, char *arg,
@@ -1104,7 +1047,6 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
     struct char_data *i,
                    *next;
     struct affected_type af;
-    int             r_num = 0;
     char            buf[128];
 
     if (cmd || !AWAKE(ch)) {
@@ -1288,7 +1230,7 @@ int generate_legend_statue(void)
                 /*
                  * load the generic item 
                  */
-                if (obj = read_object(itype, VIRTUAL)) {
+                if ((obj = read_object(itype, VIRTUAL))) {
                     /*
                      * and string it up a bit 
                      */
@@ -1424,8 +1366,6 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
                 struct room_data *rp, int type)
 {
     char            buf[MAX_INPUT_LENGTH];
-    int             affect = 1;
-    int             berry = 0;
     struct obj_data *obj;
 
     if (!ch || !cmd || cmd != 155) {
@@ -1440,7 +1380,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
             act("$n picks an acorn.", FALSE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE);
 
-            if (obj = read_object(ACORN, VIRTUAL)) {
+            if ((obj = read_object(ACORN, VIRTUAL))) {
                 obj_to_char(obj, ch);
             } else {
                 Log("no acorns found for pick_acorns");
@@ -1460,7 +1400,6 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
 int legendfountain(struct char_data *ch, int cmd, char *arg,
                    struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
     int             level = 50;
 
     if (cmd != 11) {
@@ -1603,7 +1542,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         } 
 
-        if (gnome = read_mobile(GNOME_MOB, VIRTUAL)) {
+        if ((gnome = read_mobile(GNOME_MOB, VIRTUAL))) {
             send_to_char("You courteously knock on the little door, and it "
                          "opens.\n\r", ch);
             char_to_room(gnome, ch->in_room);
@@ -1634,13 +1573,12 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
                     obj_name[120],
                     vict_name[120];
     struct char_data *gnome,
-                   *tmp_ch,
+                   *tmp_ch = NULL,
                    *j,
-                   *receiver;
+                   *receiver = NULL;
     struct obj_data *obj,
                    *i,
-                   *reward,
-                   *next;
+                   *reward;
     int             obj_num = 0,
                     x = 0;
     int             HasCollectibles[4] = { 0, 0, 0, 0 };
@@ -1671,7 +1609,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
     if (!(gnome = get_char_room("gnome female collector", ch->in_room))) {
         sprintf(buf, "gnome_collector proc is attached to a mob without "
-                     "proper name, in room %d", ch->in_room);
+                     "proper name, in room %ld", ch->in_room);
         Log(buf);
         return (FALSE);
     }
@@ -1724,8 +1662,8 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     if (!IS_SET(gnome->specials.act, ACT_SENTINEL)) {
         SET_BIT(gnome->specials.act, ACT_SENTINEL);
     }
-    if (i = gnome->carrying) {
-        for (i; i; i = i->next_content) {
+    if ((i = gnome->carrying)) {
+        for (; i; i = i->next_content) {
             if (obj_index[i->item_number].virtual == COLLECTIBLE_1) {
                 HasCollectibles[0] = 1;
             } else if (obj_index[i->item_number].virtual == COLLECTIBLE_2) {
@@ -1747,7 +1685,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
         if (winner) {
             act("$n says, 'Woop, I got everything i need now! Thank you ever "
                 "so much.", FALSE, gnome, 0, 0, TO_ROOM);
-            if (reward = read_object(REWARD_GNOME, VIRTUAL)) {
+            if ((reward = read_object(REWARD_GNOME, VIRTUAL))) {
                 act("I would express my gratitude by presenting you with this "
                     "magical ring.", FALSE, gnome, 0, 0, TO_ROOM);
                 act("I came across it in an ancient traveller's corpse, back "
@@ -1810,7 +1748,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
 
         arg = one_argument(arg, vict_name);
 
-        if (!*vict_name || !(tmp_ch = get_char_room_vis(ch, vict_name)) && 
+        if ((!*vict_name || !(tmp_ch = get_char_room_vis(ch, vict_name))) && 
             tmp_ch != gnome) {
             return (FALSE);
         }
@@ -1849,8 +1787,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
 
 int qp_potion(struct char_data *ch, int cmd, char *arg)
 {
-    char            buf[254],
-                    buffer[254];
+    char            buf[254];
     struct obj_data *found;
     struct obj_data *obj;
     int             pot_rnr = 0;
@@ -1995,8 +1932,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
     struct obj_data *obj,
                    *cmp,
                    *stone;
-    char            buf[254],
-                    buff[123];
+    char            buf[254];
     int             w_type = 0;
 
     if (!ch || !cmd || cmd != 602) {
@@ -2033,7 +1969,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (obj = get_obj_in_list_vis(ch, buf, ch->carrying)) {
+    if ((obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
         if ((ITEM_TYPE(obj) == ITEM_WEAPON)) {
             /*
              * can only sharpen edged weapons 
@@ -2157,9 +2093,7 @@ int janaurius(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob)
 {
 
-    struct char_data *guard,
-                   *i,
-                   *next,
+    struct char_data *i,
                    *target;
 
     if (!ch->specials.fighting && !ch->attackers) {
@@ -2171,7 +2105,7 @@ int janaurius(struct char_data *ch, int cmd, char *arg,
     if (ch->generic) {
         return (FALSE);
     }
-    if (target = ch->specials.fighting) {
+    if ((target = ch->specials.fighting)) {
         ch->generic = 1;
         for (i = character_list; i; i = i->next) {
             if (mob_index[i->nr].virtual == 51166) {
@@ -2180,6 +2114,7 @@ int janaurius(struct char_data *ch, int cmd, char *arg,
             }
         }
     }
+    return( FALSE );
 }
 
 #define CHESTS_ROOM 51161
@@ -2344,7 +2279,6 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
                    *back;
     char            doorname[MAX_STRING_LENGTH + 30],
                     buf[MAX_STRING_LENGTH + 30];
-    char            buffer[MAX_STRING_LENGTH + 30];
     int             doordir = 0;
     char           *dir_name[] = {
         "to the north",
@@ -2430,7 +2364,6 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
     struct char_data *nightwalker;
     struct obj_data *obj;
     extern struct time_info_data time_info;
-    char            buffer[MAX_STRING_LENGTH + 30];
     int             check = 0;
 
     if (time_info.hours < 20 && time_info.hours > 5) {
@@ -2692,9 +2625,8 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
 int master_smith(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    char            buf[254];
     struct char_data *yeelorn;
-    struct room_data *rp;
+    struct room_data *rp = NULL;
     struct obj_data *obj,
                    *i,
                    *obj1,
@@ -2708,13 +2640,6 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
     int             found3 = 0;
     int             found4 = 0;
     int             found5 = 0;
-    char            name1[254],
-                    name2[254],
-                    name3[254],
-                    name4[254],
-                    name5[254];
-
-    extern struct obj_data *object_list;
 
     if (!ch || !cmd || IS_NPC(ch)) {
         return (FALSE);
@@ -3051,7 +2976,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 extract_obj(obj5);
             }
 
-            if (obj = read_object(SMITH_SHIELD, VIRTUAL)) {
+            if ((obj = read_object(SMITH_SHIELD, VIRTUAL))) {
                 obj_to_char(obj, ch);
                 send_to_char("You give your items to Yeelorn, along with an "
                              "incredible heap of coins.\n\r", ch);
@@ -3097,12 +3022,9 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
 int nightwalker(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
-    char            buf[254];
     struct char_data *freshmob;
     struct room_data *rp;
     struct obj_data *obj;
-    int             roomnr = 0,
-                    found = 0;
 
     if (!ch) {
         return (FALSE);
@@ -3205,7 +3127,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     int             currroomnum = -1;
     char            buf[80];
     struct obj_data *curritem;
-    struct obj_data *theitem;
+    struct obj_data *theitem = NULL;
     struct obj_data *ventobj;
     struct room_data *ventroom;
     struct obj_data *corpse;
@@ -3239,7 +3161,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         act("$n suddenly screams in agony and falls into a pile of dust.",
             FALSE, mob, 0, 0, TO_ROOM);
         for (j = 0; j < MAX_WEAR; j++) {
-            if (tempobj = mob->equipment[j]) {
+            if ((tempobj = mob->equipment[j])) {
                 if (tempobj->contains) {
                     obj_to_char(unequip_char(mob, j), mob);
                 } else {
@@ -3248,11 +3170,11 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        while (tempobj = mob->carrying) {
+        while ((tempobj = mob->carrying)) {
             if (!tempobj->contains) {
                 MakeScrap(mob, NULL, tempobj);
             } else {
-                while (nextobj = tempobj->contains) {
+                while ((nextobj = tempobj->contains)) {
                     obj_from_obj(nextobj);
                     obj_to_char(nextobj, mob);
                 }
@@ -3281,7 +3203,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * demi-lich v25000 r2069 in DEMILICHSTORAGE 
                  * if demi-lich in rnum
                  */
-                if (tempchar = get_char_room("demi lich", DEMILICHSTORAGE)) {
+                if ((tempchar = get_char_room("demi lich", DEMILICHSTORAGE))) {
                     do_say(mob, "I call for you, your debt will be removed for"
                                 " this service!", 0);
                     char_from_room(tempchar);
@@ -3296,8 +3218,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * dracolich v5010 r942 in DRACOLICHSTORAGE 
                  * if dracolich in rnum
                  */
-                if (tempchar = get_char_room("dracolich lich",
-                                             DRACOLICHSTORAGE)) {
+                if ((tempchar = get_char_room("dracolich lich",
+                                              DRACOLICHSTORAGE))) {
                     do_say(mob, "I helped create you, come and fulfill your "
                                 "debt!", 0);
                     char_from_room(tempchar);
@@ -3315,8 +3237,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * The Wretched Vampire v2573 r2473 in VAMPIRESTORAGE 
                  * if The Wretched Vampire in rnum
                  */
-                if (tempchar = get_char_room("The Wretched Vampire",
-                                             VAMPIRESTORAGE)) {
+                if ((tempchar = get_char_room("The Wretched Vampire",
+                                              VAMPIRESTORAGE))) {
                     do_say(mob, "I provide you with sustenance, avail yourself"
                                 " and aid me!", 0);
                     char_from_room(tempchar);
@@ -3335,8 +3257,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * death-knight v16219 r1664 in DEATHKNIGHTSTORAGE
                  * if death knight in rnum
                  */
-                if (tempchar = get_char_room("death knight",
-                                             DEATHKNIGHTSTORAGE)) {
+                if ((tempchar = get_char_room("death knight",
+                                              DEATHKNIGHTSTORAGE))) {
                     do_say(mob, "I can aid you in your quest of death if you "
                                 "come to my side now!", 0);
                     GET_RACE(tempchar) = RACE_UNDEAD;
@@ -3355,8 +3277,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * Ghastly Undead Demon v23022 r2439 in UNDEADDEMONSTORAGE
                  * if ghastly-undead-demon in rnum
                  */
-                if (tempchar = get_char_room("Ghastly Undead Demon",
-                                             UNDEADDEMONSTORAGE)) {
+                if ((tempchar = get_char_room("Ghastly Undead Demon",
+                                              UNDEADDEMONSTORAGE))) {
                     do_say(mob, "I will remove your torment, if you remove my "
                                 "foes!", 0);
                     char_from_room(tempchar);
@@ -3450,7 +3372,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             FALSE, mob, 0, 0, TO_ROOM);
 
         for (j = 0; j < MAX_WEAR; j++) {
-            if (tempobj = mob->equipment[j]) {
+            if ((tempobj = mob->equipment[j])) {
                 if (tempobj->contains) {
                     obj_to_char(unequip_char(mob, j), mob);
                 } else {
@@ -3459,11 +3381,11 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        while (tempobj = mob->carrying) {
+        while ((tempobj = mob->carrying)) {
             if (!tempobj->contains) {
                 MakeScrap(mob, NULL, tempobj);
             } else {
-                while (nextobj = tempobj->contains) {
+                while ((nextobj = tempobj->contains)) {
                     obj_from_obj(nextobj);
                     obj_to_char(nextobj, mob);
                 }
@@ -3903,7 +3825,7 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
                        "One of the reliefs on the walls jumps out and attacks i"
                        "you!");
         } else {
-            for (i; i > 0; i--) {
+            for (; i > 0; i--) {
                 CreateAMob(ch, GUARDIANMOBVNUM, 4,
                            "One of the reliefs on the walls jumps out and "
                            "attacks you!");
@@ -3928,7 +3850,7 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
                  * create more mobs
                  */
                 numbertocreate = MAX(1, i >> 1);
-                for (j; j < numbertocreate; j++) {
+                for (; j < numbertocreate; j++) {
                     CreateAMob(ch, GUARDIANMOBVNUM, 4,
                                "Another relief jumps off the wall, becoming "
                                "real and deadly!");
@@ -4047,7 +3969,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
 
         only_argument(arg, buf);
 
-        if (tossitem = get_obj_in_list_vis(ch, buf, ch->carrying)) {
+        if ((tossitem = get_obj_in_list_vis(ch, buf, ch->carrying))) {
             act("You toss $p towards the gaping jaws and they crash down "
                 "suddenly on it, smashing it to pieces.", FALSE, ch, tossitem,
                 0, TO_CHAR);
@@ -4083,7 +4005,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         } 
         
-        if (tempchar = get_char_room(buf, ch->in_room)) {
+        if ((tempchar = get_char_room(buf, ch->in_room))) {
             if (tempchar == ch) {
                 act("You want to toss yourself?", FALSE, ch, 0, 0, TO_CHAR);
             } else {
@@ -4129,7 +4051,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
     int             makethemflee = 1;
     int             currroomnum = 0;
 
-    if (tempchar = mob->specials.fighting) {
+    if ((tempchar = mob->specials.fighting)) {
         if (number(0, 4) > 0) {
             if (dice(4, 6) < GET_CHR(tempchar) &&
                 dice(4, 6) < GET_INT(tempchar) &&
@@ -4731,7 +4653,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
             total_equip_cost += mob->equipment[i]->obj_flags.cost;
             mob->equipment[i]->obj_flags.timer = 500;
             if (GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
-                while (tempobj = mob->equipment[i]->contains) {
+                while ((tempobj = mob->equipment[i]->contains)) {
                     extract_obj(tempobj);
                 }
             }
@@ -4854,13 +4776,10 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                struct char_data *shopkeep, int type)
 {
     struct room_data *rp;
-    struct char_data *j,
-                   *next;
-    struct obj_data *obj,
+    struct obj_data *obj = NULL,
                    *cond_ptr[50],
-                   *store_obj;
-    char            buf[120],
-                    itemname[120],
+                   *store_obj = NULL;
+    char            itemname[120],
                     newarg[100];
     float           modifier = 1.0;
     int             cost = 0,
@@ -5025,7 +4944,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         i = 1;
 
         while (i <= num && stop == 0) {
-            if (obj = get_obj_in_list_vis(ch, itemname, shopkeep->carrying)) {
+            if ((obj = get_obj_in_list_vis(ch, itemname, shopkeep->carrying))) {
                 cost = (int) obj->obj_flags.cost * modifier;
                 if (cost < 0) {
                     cost = 0;
@@ -5095,7 +5014,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
+        if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
             cost = (int) obj->obj_flags.cost / (3 * modifier);
             /*
              * lets not have shops buying non-rentables
@@ -5142,7 +5061,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
+        if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
             cost = (int) obj->obj_flags.cost / (3 * modifier);
             if (cost < 400) {
                 ch_printf(ch, "%s doesn't buy worthless junk like that.\n\r",
@@ -5211,7 +5130,7 @@ int troll_regen(struct char_data *ch)
         return (FALSE);
     }
     if (number(0, 2)) {
-        return;
+        return( FALSE );
     }
     GET_HIT(ch) += number(1, 3);
     if (GET_HIT(ch) > GET_MAX_HIT(ch)) {
@@ -5219,14 +5138,13 @@ int troll_regen(struct char_data *ch)
     }
     act("$n's wounds seem to close of their own.", FALSE, ch, 0, 0, TO_ROOM);
     act("Your wounds close of their own accord.", FALSE, ch, 0, 0, TO_CHAR);
+    return( TRUE );
 }
 
 int disembark_ship(struct char_data *ch, int cmd, char *argument,
                    struct obj_data *obj, int type)
 {
     int             x = 0;
-    int             room = 0,
-                    go = 0;
 
     if (cmd == 621) {
         /* 
@@ -5481,6 +5399,7 @@ void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
     int             loop = 0;
     void            printColors(struct char_data *ch, char *buf);
     char            buf[256];
+    char            buf2[256];
 #if 0
     printf("Displaying map at coord X%d-Y%d with display size of "
            "%d by %d.\n\r\n\r",x,y,sizex, sizey);
@@ -5510,18 +5429,14 @@ void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
         buf[y + sizey + 1] = '\0';
         /* 
          * move to the start of where they should see on that row 
-         */
-        buf + y - sizey;
-
-        /* 
          * Print that mofo out 
          */
-        sprintf(buf, "|%s|\n\r", buf + y - sizey);
+        sprintf(buf2, "|%s|\n\r", &buf[y - sizey]);
 #if 0
         send_to_char(buf,ch);
         printmapcolors(buf);
 #endif
-        printColors(ch, buf);
+        printColors(ch, buf2);
     }
 
     sprintf(buf, "$c000B]$c000W");
@@ -5547,7 +5462,8 @@ void printColors(struct char_data *ch, char *buf)
 #endif
     char            buffer[2048];
     char            last = ' ';
-    sprintf(buffer, "");
+
+    buffer[0] = '\0';
 
     while (buf[x] != '\0') {
         switch (buf[x]) {
@@ -5620,7 +5536,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
         *buf = tolower(*buf);
         if (!str_cmp("ship", buf) || !str_cmp("ship", buf) || 
             !str_cmp("ship", buf)) {
-            if (ship = get_char_room("", ch->in_room)) {
+            if ((ship = get_char_room("", ch->in_room))) {
                 j = mob_index[ship->nr].virtual;
 
                 send_to_char("You enter the ship.\n\r", ch);

@@ -67,6 +67,7 @@ int CountBits(int class)
     if (class == CLASS_NECROMANCER) {
         return (13);
     }
+    return(0);
 }
 
 int OnlyClass(struct char_data *ch, int class)
@@ -340,7 +341,7 @@ int GetSecMaxLev(struct char_data *ch)
 
 int GetALevel(struct char_data *ch, int which)
 {
-    byte            ind[MAX_CLASS],
+    int             ind[MAX_CLASS],
                     j,
                     k,
                     i;
@@ -366,6 +367,7 @@ int GetALevel(struct char_data *ch, int which)
     if (which > -1 && which < 4) {
         return (ind[which]);
     }
+    return(0);
 }
 
 int GetThirdMaxLev(struct char_data *ch)

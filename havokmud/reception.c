@@ -7,7 +7,10 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "protos.h"
 
@@ -23,6 +26,9 @@ extern int      top_of_p_table;
 
 int             cur_depth = 0;
 
+void WriteObjs(FILE * fl, struct obj_file_u *st);
+int ReadObjs(FILE * fl, struct obj_file_u *st);
+
 /*
  ************************************************************************
  * Routines used for the "Offer"                                           *
@@ -31,8 +37,7 @@ int             cur_depth = 0;
 void add_obj_cost(struct char_data *ch, struct char_data *re,
                   struct obj_data *obj, struct obj_cost *cost)
 {
-    char            buf[MAX_INPUT_LENGTH],
-                    buf2[MAX_INPUT_LENGTH];
+    char            buf[MAX_INPUT_LENGTH];
     char            tmp_str[MAX_INPUT_LENGTH * 2];
     char           *str_pos,
                    *i;
@@ -135,8 +140,6 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
     struct obj_data *tmp,
                    *tmp_next_obj,
                    *rare;
-    extern struct char_data *auctioneer;
-    extern struct char_data *bidder;
 
     cost->total_cost = 100;
     cost->no_carried = 0;
@@ -493,14 +496,13 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
 
     struct obj_data *obj;
     struct obj_data *in_obj[64],
-                   *last_obj;
+                   *last_obj = NULL;
     int             tmp_cur_depth = 0;
     int             i,
                     j;
 
     void            obj_to_char(struct obj_data *object,
                                 struct char_data *ch);
-    extern const char *wear_bits[];
 
     for (i = 0; i < st->number; i++) {
         if (st->objects[i].item_number > -1
@@ -718,10 +720,7 @@ void load_char_objs(struct char_data *ch)
 int reimb_char_objs(struct char_data *ch)
 {
     FILE           *fl;
-    bool            found = FALSE;
-    float           timegold;
     struct obj_file_u st;
-    struct obj_data *tmp;
     char            tbuf[200];
     int             i;
 
@@ -837,7 +836,7 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
     if (obj->name) {
         strcpy(oe->name, obj->name);
     } else {
-        sprintf(buf, "object %d has no name!",
+        sprintf(buf, "object %ld has no name!",
                 obj_index[obj->item_number].virtual);
         Log(buf);
     }
@@ -881,7 +880,6 @@ int contained_weight(struct obj_data *container)
 void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
                   struct char_data *ch, int delete)
 {
-    static char     buf[240];
     int             weight;
 
     if (!obj) {
@@ -1102,7 +1100,6 @@ void update_obj_file(void)
     char            buf[200];
 
     int             find_name(char *name);
-    extern int      errno;
 
     if (!(char_file = fopen(PLAYER_FILE, "r+"))) {
         perror("Opening player file for reading. (reception.c, "
@@ -1122,7 +1119,7 @@ void update_obj_file(void)
                 Log(buf);
                 abort();
             } else {
-                sprintf(buf, "   Processing %s[%d].", st.owner, i);
+                sprintf(buf, "   Processing %s[%ld].", st.owner, i);
                 Log(buf);
                 days_passed = (time(0) - st.last_update) / 
                               SECS_PER_REAL_DAY;
@@ -1254,7 +1251,7 @@ void PrintLimitedItems(void)
 
     for (i = 0; i <= top_of_objt; i++) {
         if (obj_index[i].number > 0) {
-            sprintf(buf, "item> %d [%d]", obj_index[i].virtual,
+            sprintf(buf, "item> %ld [%d]", obj_index[i].virtual,
                     obj_index[i].number);
             Log(buf);
         }
@@ -1269,7 +1266,6 @@ void PrintLimitedItems(void)
 int receptionist(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    char            buf[240];
     struct obj_cost cost;
     struct char_data *recep = 0;
     struct char_data *temp_char;
@@ -1416,7 +1412,6 @@ void ZeroRent(char *n)
 int ReadObjs(FILE * fl, struct obj_file_u *st)
 {
     int             i;
-    char            buf[128];
 
     if (feof(fl)) {
         fclose(fl);
@@ -1462,12 +1457,12 @@ int ReadObjs(FILE * fl, struct obj_file_u *st)
     for (i = 0; i < st->number; i++) {
         fread(&st->objects[i], sizeof(struct obj_file_elem), 1, fl);
     }
+    return( TRUE );
 }
 
-int WriteObjs(FILE * fl, struct obj_file_u *st)
+void WriteObjs(FILE * fl, struct obj_file_u *st)
 {
     int             i;
-    char            buf[128];
 
     fwrite(st->owner, sizeof(st->owner), 1, fl);
     fwrite(&st->gold_left, sizeof(st->gold_left), 1, fl);
@@ -1619,7 +1614,6 @@ void write_char_extra(struct char_data *ch)
     FILE           *fp;
     char            buf[80];
     int             i;
-    char           *buf2[150];
 
     sprintf(buf, "rent/%s.aux", GET_NAME(ch));
 

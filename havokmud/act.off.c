@@ -2122,8 +2122,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                     max_range,
                     range,
                     there;
-    int             rm = ch->in_room,
-                    opdir[] = { 2, 3, 0, 1, 5, 4 };
+    int             rm = ch->in_room;
     int             broken = FALSE;
     char            buf[MAX_STRING_LENGTH];
     struct char_data *spud,
@@ -2204,7 +2203,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
             if (clearpath(ch, rm, dir)) {
                 if ((!there) && (rm != ch->in_room)) {
                     sprintf(buf, "%s from %s flies past!\n\r",
-                            o->short_description, dir_name[opdir[dir]]);
+                            o->short_description, dir_name[opdir(dir)]);
                     send_to_room(buf, rm);
                 } else {
                     there = 0;
@@ -2214,7 +2213,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 if (range > 1) {
                     sprintf(buf, "%s flies into the room from %s and hits a "
                                  "wall.\n\r",
-                            o->short_description, dir_name[opdir[dir]]);
+                            o->short_description, dir_name[opdir(dir)]);
                 } else {
                     sprintf(buf, "%s hits a wall.\n\r",
                             o->short_description);
@@ -2311,7 +2310,6 @@ void throw_object(struct obj_data *o, int dir, int from)
 
 int clearpath(struct char_data *ch, long room, int direc)
 {
-    int             opdir[] = { 2, 3, 0, 1, 5, 4 };
     struct room_direction_data *exitdata;
 
     exitdata = (real_roomp(room)->dir_option[direc]);
@@ -2344,15 +2342,15 @@ int clearpath(struct char_data *ch, long room, int direc)
      * One-way windows are allowed... no see through 1-way exits
      */
     if (!real_roomp(real_roomp(room)->dir_option[direc]->to_room)->
-        dir_option[opdir[direc]]) {
+        dir_option[opdir(direc)]) {
         return 0;
     }
     if (real_roomp(real_roomp(room)->dir_option[direc]->to_room)->
-        dir_option[opdir[direc]]->to_room < 1) {
+        dir_option[opdir(direc)]->to_room < 1) {
         return 0;
     }
     if (real_roomp((real_roomp(room)->dir_option[direc]->to_room))->
-        dir_option[opdir[direc]]->to_room != room) {
+        dir_option[opdir(direc)]->to_room != room) {
         return 0;
     }
     return real_roomp(room)->dir_option[direc]->to_room;

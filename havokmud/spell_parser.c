@@ -4,6 +4,9 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "protos.h"
 
@@ -1872,8 +1875,6 @@ int SPELL_LEVEL(struct char_data *ch, int sn)
 int RoomElementalDamage(int flags, struct char_data *ch)
 {
     int             damage = number(25, 50);
-    int             type = 0;
-    int             x;
 
     if (IS_SET(ch->specials.act, PLR_NOOUTDOOR)) {
         return 0;
@@ -2000,7 +2001,9 @@ int GetHitRegen(struct char_data *i)
 {
     char            buf[256];
     int             damagex = 0,
+#if 0
                     trollregen = 0,
+#endif
                     darkpact = 0;
 #if 0
     if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
@@ -2086,11 +2089,8 @@ void affect_update(int pulse)
     struct char_data *next_char;
     struct room_data *rp;
     int             dead = FALSE,
-                    room,
-                    k;
-    int             regenroom = 0,
-                    damagex;
-    char            buf[256];
+                    room;
+    int             regenroom = 0;
 
     for (i = character_list; i; i = next_char) {
         next_char = i->next;
@@ -2456,8 +2456,7 @@ void update_mem(int pulse)
 
 void stop_memorizing(struct char_data *ch)
 {
-    struct char_data *tmp,
-                    tch;
+    struct char_data *tmp;
 
     if (mem_list == ch && !ch->next_memorize) {
         mem_list = 0;
@@ -2895,7 +2894,7 @@ struct syllable syls[] = {
     {"y", "l"}, {"z", "k"}, {"", ""}
 };
 
-say_spell(struct char_data *ch, int si)
+void say_spell(struct char_data *ch, int si)
 {
     char            buf[MAX_STRING_LENGTH],
                     splwd[MAX_BUF_LENGTH];
@@ -2939,7 +2938,7 @@ say_spell(struct char_data *ch, int si)
     }
 }
 
-weave_song(struct char_data *ch, int si)
+void weave_song(struct char_data *ch, int si)
 {
     char            buf[MAX_STRING_LENGTH],
                     splwd[MAX_BUF_LENGTH];
@@ -2995,7 +2994,7 @@ bool saves_spell(struct char_data *ch, sh_int save_type)
 
     if (!IS_NPC(ch)) {
         save += saving_throws[BestMagicClass(ch)][save_type]
-                             [GET_LEVEL(ch, BestMagicClass(ch))];
+                             [(int)GET_LEVEL(ch, BestMagicClass(ch))];
         if (GetMaxLevel(ch) > MAX_MORT) {
             return (TRUE);
         }
@@ -3036,7 +3035,7 @@ bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
 
     if (!IS_NPC(ch)) {
         save += saving_throws[BestMagicClass(ch)][save_type]
-                             [GET_LEVEL(ch, BestMagicClass(ch))];
+                             [(int)GET_LEVEL(ch, BestMagicClass(ch))];
         if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
             return (TRUE);
         }
@@ -3647,7 +3646,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     break;
                 }
 
-                max += int_sf_modifier[GET_INT(ch)].learn;
+                max += int_sf_modifier[(int)GET_INT(ch)].learn;
 
                 if (ch->attackers > 0) {
                     max += spell_info[spl].spellfail;
@@ -5551,8 +5550,8 @@ int check_falling(struct char_data *ch)
         char_from_room(ch);
         char_to_room(ch, 2);
         do_look(ch, "", 0);
-        return (FALSE);
     }
+    return (FALSE);
 }
 
 void check_drowning(struct char_data *ch)
@@ -5589,7 +5588,7 @@ void check_drowning(struct char_data *ch)
 void check_falling_obj(struct obj_data *obj, int room)
 {
     struct room_data *rp,
-                   *targ;
+                   *targ = NULL;
     int             done,
                     count;
 
@@ -5694,7 +5693,7 @@ int check_nature(struct char_data *i)
         return (TRUE);
     }
     check_drowning(i);
-
+    return( FALSE );
 }
 
 /*

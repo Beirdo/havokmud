@@ -123,7 +123,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 sprintf(buf, "Strangeness in sailor (%d)", number);
                 Log(buf);
                 send_to_char("'Ack!  I feel faint!'\n\r", ch);
-                return;
+                return (FALSE);
                 break;
             }
         }
@@ -150,7 +150,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         send_to_char("'We will now begin.'\n\r", ch);
         ch->specials.spells_to_learn--;
 
-        percent = ch->skills[sk_num].learned + int_app[GET_INT(ch)].learn;
+        percent = ch->skills[sk_num].learned + int_app[(int)GET_INT(ch)].learn;
         ch->skills[sk_num].learned = MIN(95, percent);
 
         if (ch->skills[sk_num].learned >= 95) {
@@ -164,16 +164,8 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int loremaster(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
-                    buffer[MAX_STRING_LENGTH],
-                    skillname[254];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0,
-                    charge = 0,
-                    skillnum = 0;
-    struct char_data *guildmaster;
+                    buffer[MAX_STRING_LENGTH];
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
@@ -334,7 +326,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         send_to_char("'We will now begin.'\n\r", ch);
         ch->specials.spells_to_learn--;
 
-        percent = ch->skills[sk_num].learned + int_app[GET_INT(ch)].learn;
+        percent = ch->skills[sk_num].learned + int_app[(int)GET_INT(ch)].learn;
 
         if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
             SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
@@ -354,13 +346,8 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int archer_instructor(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0,
-                    charge = 0;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
@@ -399,12 +386,8 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg,
 int monk_master(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -512,12 +495,8 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
 int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -601,12 +580,8 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -691,12 +666,8 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
 int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch))
@@ -783,12 +754,8 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
 int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
                    struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -872,12 +839,8 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
 int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -963,7 +926,6 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[256];
     int             i,
-                    percent = 0,
                     number = 0;
     struct char_data *guildmaster;
     extern char    *spells[];
@@ -1102,7 +1064,6 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[256];
     int             i,
-                    percent = 0,
                     number = 0;
     struct char_data *guildmaster;
     extern char    *spells[];
@@ -1240,16 +1201,8 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
 int ninja_master(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
-                    buffer[MAX_STRING_LENGTH],
-                    skillname[254];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0,
-                    charge = 0,
-                    skillnum = 0;
-    struct char_data *guildmaster;
+                    buffer[MAX_STRING_LENGTH];
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
@@ -1403,7 +1356,7 @@ int LearnSkill(struct char_data *ch, struct skillset *skills, char *arg,
             }
 
             percent = ch->skills[skills[i].skillnum].learned +
-                      int_app[GET_INT(ch)].learn;
+                      int_app[(int)GET_INT(ch)].learn;
 
             ch->skills[skills[i].skillnum].learned = MIN(95, percent);
             if (ch->skills[skills[i].skillnum].learned >= 95) {
@@ -1682,17 +1635,14 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
             break;
         }
     }
+    return( TRUE );
 }
 
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
                   struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
 
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
@@ -1792,12 +1742,8 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
 int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
                            struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch))
@@ -1888,30 +1834,17 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
 int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type)
 {
-    int             count = 0;
-    char            buf[256],
-                    buffer[MAX_STRING_LENGTH],
-                    classname[120];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0,
-                    class = 0,
-                    level_ind = 0,
-                    level = 0;
-    struct char_data *guildmaster,
+    struct char_data *guildmaster = NULL,
                    *j,
                    *next;
     struct room_data *rp;
-    struct skillset skillz[] = { };
-    long            s_known;
-    int             end = 0;
 
     if (!AWAKE(ch) || IS_NPC(ch) || !ch->in_room ||
         !(rp = real_roomp(ch->in_room))) {
         return (FALSE);
     }
 
-    for (j = rp->people; j; next) {
+    for (j = rp->people; j; j = next) {
         next = j->next_in_room;
         if (j->specials.proc == PROC_GUILDMASTER) {
             guildmaster = j;
@@ -2143,12 +2076,8 @@ int GainLevel(struct char_data *ch, int class)
 int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    int             x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -2235,12 +2164,8 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
 int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
 
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
@@ -2313,12 +2238,8 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
 int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch))
@@ -2404,12 +2325,8 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
 int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -2495,12 +2412,8 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
 int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
     struct char_data *guildmaster;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
@@ -2590,13 +2503,8 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
 int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type)
 {
-    int             count = 0;
     char            buf[256],
-                    buffer[MAX_STRING_LENGTH],
-                    skillname[254];
-    static int      percent = 0;
-    static int      x = 0;
-    int             i = 0;
+                    buffer[MAX_STRING_LENGTH];
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);

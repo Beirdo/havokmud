@@ -4,21 +4,18 @@
 #include <ctype.h>
 #include <time.h>
 #include <sys/file.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "protos.h"
 
 #define NEWHELP_FILE      "ADD_HELP"    /* New help to add */
 #define QUESTLOG_FILE     "quest_log"   /* Log of quest transactions */
 
-/*
- * move to protos.h later 
- */
 
-int             SetDefaultLang(struct char_data *ch);
+int pc_class_num(int clss);
+void load_one_room(FILE * fl, struct room_data *rp);
 
-/*
- * end moves 
- */
 
 void            log_sev(char *s, int i);
 extern char    *exits[];
@@ -362,7 +359,6 @@ int SaveZoneFile(FILE * fp, int start_room, int end_room)
     struct obj_data *o;
     struct room_data *room;
     char            cmd,
-                    c,
                     buf[80];
     int             i,
                     j,
@@ -476,8 +472,7 @@ int LoadZoneFile(FILE * fl, int zon)
                     expand,
                     tmp,
                     cc = 22;
-    char           *check,
-                    buf[81];
+    char            buf[81];
 
     if (zone_table[zon].cmd) {
         free(zone_table[zon].cmd);
@@ -546,8 +541,7 @@ void CleanZone(int zone)
                    *next_v;
     struct obj_data *obj,
                    *next_o;
-    int             room,
-                    start,
+    int             start,
                     end,
                     i;
 
@@ -591,8 +585,7 @@ int ZoneCleanable(int zone)
 {
     struct room_data *rp;
     struct char_data *vict;
-    int             room,
-                    start,
+    int             start,
                     end,
                     i;
 
@@ -793,7 +786,7 @@ int str_cmp(char *arg1, char *arg2)
         return (1);
     }
     for (i = 0; *(arg1 + i) || *(arg2 + i); i++) {
-        if (chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i))) {
+        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
             if (chk < 0) {
                 return (-1);
             } else {
@@ -818,7 +811,7 @@ int strn_cmp(char *arg1, char *arg2, int n)
                     i;
 
     for (i = 0; (*(arg1 + i) || *(arg2 + i)) && (n > 0); i++, n--) {
-        if (chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i))) {
+        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
             if (chk < 0) {
                 return (-1);
             } else {
@@ -1190,7 +1183,7 @@ int getabunch(char *name, char *newname)
     }
     name++;
 
-    for (; *newname = *name; name++, newname++) {
+    for (; (*newname = *name); name++, newname++) {
         /*
          * Empty loop
          */
@@ -1204,7 +1197,6 @@ int DetermineExp(struct char_data *mob, int exp_flags)
     int             base;
     int             phit;
     int             sab;
-    char            buf[200];
 
     if (exp_flags == 0) {
         exp_flags = 1;
@@ -1482,7 +1474,6 @@ int GetExpFlags(struct char_data *mob, int exp)
     int             base;
     int             phit;
     int             sab;
-    char            buf[200];
 
     /*
      * reads in the monster, and adds the flags together for simplicity, 1 
@@ -1840,21 +1831,18 @@ void down_river(int pulse)
 
 void do_WorldSave(struct char_data *ch, char *argument, char cmd)
 {
-    char            fn[80],
-                    temp[2048],
+    char            temp[2048],
                     buf[128];
     long            rstart,
                     rend,
                     i,
                     j,
                     k,
-                    x,
-                    r;
+                    x;
     struct extra_descr_data *exptr;
     FILE           *fp;
     struct room_data *rp;
     struct room_direction_data *rdd;
-    struct descriptor_data *desc;
 
     if (!ch->desc) {
         return;
@@ -1900,15 +1888,16 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
             strcpy(temp, "Empty");
         }
 
-        fprintf(fp, "#%d\n%s~\n%s~\n", rp->number, rp->name, temp);
+        fprintf(fp, "#%ld\n%s~\n%s~\n", rp->number, rp->name, temp);
         if (!rp->tele_targ) {
-            fprintf(fp, "%d %d %d", rp->zone, rp->room_flags, rp->sector_type);
+            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags, 
+                    rp->sector_type);
         } else if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
-            fprintf(fp, "%d %d -1 %d %d %d %d", rp->zone,
+            fprintf(fp, "%ld %ld -1 %d %d %d %ld", rp->zone,
                     rp->room_flags, rp->tele_time, rp->tele_targ,
                     rp->tele_mask, rp->sector_type);
         } else {
-            fprintf(fp, "%d %d -1 %d %d %d %d %d", rp->zone,
+            fprintf(fp, "%ld %ld -1 %d %d %d %d %ld", rp->zone,
                     rp->room_flags, rp->tele_time, rp->tele_targ,
                     rp->tele_mask, rp->tele_cnt, rp->sector_type);
         }
@@ -1926,7 +1915,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
         for (j = 0; j < 6; j++) {
             rdd = rp->dir_option[j];
             if (rdd) {
-                fprintf(fp, "D%d\n", j);
+                fprintf(fp, "D%ld\n", j);
 
                 if (rdd->general_description && *rdd->general_description) {
                     if (strlen(rdd->general_description) > 0) {
@@ -1958,10 +1947,10 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
                     fprintf(fp, "~\n");
                 }
 
-                fprintf(fp, "%d ", rdd->exit_info);
-                fprintf(fp, "%d ", rdd->key);
-                fprintf(fp, "%d ", rdd->to_room);
-                fprintf(fp, "%d", rdd->open_cmd);
+                fprintf(fp, "%ld ", rdd->exit_info);
+                fprintf(fp, "%ld ", rdd->key);
+                fprintf(fp, "%ld ", rdd->to_room);
+                fprintf(fp, "%ld", rdd->open_cmd);
                 fprintf(fp, "\n");
             }
         }
@@ -2009,10 +1998,9 @@ void RoomSave(struct char_data *ch, long start, long end)
                     i,
                     j,
                     k,
-                    x,
-                    r;
+                    x;
     struct extra_descr_data *exptr;
-    FILE           *fp;
+    FILE           *fp = NULL;
     struct room_data *rp;
     struct room_direction_data *rdd;
 
@@ -2065,16 +2053,17 @@ void RoomSave(struct char_data *ch, long start, long end)
             strcpy(temp, "Empty");
         }
 
-        fprintf(fp, "#%d\n%s~\n%s~\n", rp->number, rp->name, temp);
+        fprintf(fp, "#%ld\n%s~\n%s~\n", rp->number, rp->name, temp);
         if (!rp->tele_targ) {
-            fprintf(fp, "%d %d %d", rp->zone, rp->room_flags, rp->sector_type);
+            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags, 
+                    rp->sector_type);
         } else {
             if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
-                fprintf(fp, "%d %d -1 %d %d %d %d", rp->zone,
+                fprintf(fp, "%ld %ld -1 %d %d %d %ld", rp->zone,
                         rp->room_flags, rp->tele_time, rp->tele_targ,
                         rp->tele_mask, rp->sector_type);
             } else {
-                fprintf(fp, "%d %d -1 %d %d %d %d %d", rp->zone,
+                fprintf(fp, "%ld %ld -1 %d %d %d %d %ld", rp->zone,
                         rp->room_flags, rp->tele_time, rp->tele_targ,
                         rp->tele_mask, rp->tele_cnt, rp->sector_type);
             }
@@ -2125,10 +2114,10 @@ void RoomSave(struct char_data *ch, long start, long end)
                     fprintf(fp, "~\n");
                 }
 
-                fprintf(fp, "%d ", rdd->exit_info);
-                fprintf(fp, "%d ", rdd->key);
-                fprintf(fp, "%d ", rdd->to_room);
-                fprintf(fp, "%d", rdd->open_cmd);
+                fprintf(fp, "%ld ", rdd->exit_info);
+                fprintf(fp, "%ld ", rdd->key);
+                fprintf(fp, "%ld ", rdd->to_room);
+                fprintf(fp, "%ld", rdd->open_cmd);
                 fprintf(fp, "\n");
             }
         }
@@ -2164,13 +2153,9 @@ void RoomLoad(struct char_data *ch, int start, int end)
 {
     FILE           *fp;
     int             vnum,
-                    found = TRUE,
-                    x,
-                    r;
-    char            chk[50],
-                    buf[80];
-    struct room_data *rp,
-                    dummy;
+                    found = TRUE;
+    char            buf[80];
+    struct room_data *rp;
 
     send_to_char("Searching and loading rooms\n\r", ch);
 
@@ -2697,6 +2682,7 @@ int IsGodly(struct char_data *ch)
             return (TRUE);
         }
     }
+    return( FALSE );
 }
 
 int IsDragon(struct char_data *ch)
@@ -2729,7 +2715,6 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
 {
     int             persist,
                     dist;
-    char            buf[256];
 
 #if NOTRACK
     return;
@@ -3149,7 +3134,7 @@ void TeleportPulseStuff(int pulse)
                    *tmp,
                    *bk,
                    *n2;
-    int             tick,
+    int             tick = 0,
                     tm;
     struct room_data *rp,
                    *dest;
@@ -3332,8 +3317,7 @@ void AdvicePulseStuff(int pulse)
     int             numberadvice = 37;
     struct descriptor_data *i;
     register struct char_data *ch;
-    char            buf[80],
-                    buffer[150];
+    char            buffer[150];
 
     if (pulse < 0 || number(0, 1)) {
         return;
@@ -3358,8 +3342,6 @@ void DarknessPulseStuff(int pulse)
 {
     struct descriptor_data *i;
     register struct char_data *ch;
-    char            buf[80],
-                    buffer[150];
     int             j = 0;
 
     if (pulse < 0 || number(0, 1)) {
@@ -3429,15 +3411,13 @@ int count_tqp(void)
 
 void traveling_qp(int pulse)
 {
-    char            buf[256],
-                    name[256];
-    struct char_data *ch,
+    char            buf[256];
+    struct char_data *ch = NULL,
                    *newch;
     struct room_data *room;
     struct obj_data *travelqp = 0,
                    *qt;
     extern int      qp_patience;
-    extern struct index_data *mob_index;
     extern int      top_of_world;
     int             to_room = 0;
     int             k,
@@ -3463,7 +3443,7 @@ void traveling_qp(int pulse)
             send_to_char("You found yourself some booty, and are rewarded by"
                          " the gods with a $c000Rq$c000Yu$c000Ge$c000Bs"
                          "$c000Ct$c000w token.\n\r", ch);
-            if (qt = read_object(QUEST_POTION, VIRTUAL)) {
+            if ((qt = read_object(QUEST_POTION, VIRTUAL))) {
                 obj_to_char(qt, ch);
             }
             Log("carried by player, gained a QT");
@@ -3517,9 +3497,8 @@ void traveling_qp(int pulse)
 void ArenaPulseStuff(int pulse)
 {
     struct descriptor_data *i;
-    register struct char_data *ch;
-    char            buf[80],
-                    buffer[150];
+    struct char_data *ch = NULL;
+    char            buf[80];
     int             location = 0;
     extern int      MinArenaLevel,
                     MaxArenaLevel;
@@ -3545,7 +3524,7 @@ void ArenaPulseStuff(int pulse)
                     /*
                      * we have a winner - move and declare 
                      */
-                    if (location = ch->player.hometown) {
+                    if ((location = ch->player.hometown)) {
                         char_from_room(ch);
                         char_to_room(ch, location);
                         send_to_char("You have won the arena, and are sent "
@@ -3587,7 +3566,7 @@ void AuctionPulseStuff(int pulse)
     case 1:
     case 2:
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c.  Minimum bid set at "
-                     "$c000w%d$c000c coins.\n\r",
+                     "$c000w%ld$c000c coins.\n\r",
                 auctionobj->short_description, minbid);
         send_to_all(buf);
         auct_loop++;
@@ -3625,7 +3604,7 @@ void AuctionPulseStuff(int pulse)
 
     case 4:
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c, current bid of "
-                     "$c000w%d$c000c coins, to $c000w%s$c000c.  Going "
+                     "$c000w%ld$c000c coins, to $c000w%s$c000c.  Going "
                      "once..\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
         send_to_all(buf);
@@ -3634,7 +3613,7 @@ void AuctionPulseStuff(int pulse)
 
     case 5:
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c, current bid of "
-                     "$c000w%d$c000c coins, to $c000w%s$c000c.  Going "
+                     "$c000w%ld$c000c coins, to $c000w%s$c000c.  Going "
                      "twice...\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
         send_to_all(buf);
@@ -3643,7 +3622,7 @@ void AuctionPulseStuff(int pulse)
 
     case 6:
         sprintf(buf, "$c000cAuction:  Gone!  $c000w%s$c000c was sold for "
-                     "$c000w%d$c000c coins to $c000w%s$c000c.\n\r",
+                     "$c000w%ld$c000c coins to $c000w%s$c000c.\n\r",
                 auctionobj->short_description, intbid, GET_NAME(bidder));
         send_to_all(buf);
 
@@ -3651,7 +3630,7 @@ void AuctionPulseStuff(int pulse)
          * return money to auctioneer 
          */
         GET_GOLD(auctioneer) += intbid;
-        ch_printf(auctioneer, "You receive %d coins for the item you "
+        ch_printf(auctioneer, "You receive %ld coins for the item you "
                               "auctioned.\n\r", intbid);
         /*
          * return item to bidder 
@@ -3909,13 +3888,13 @@ int MobCountInRoom(struct char_data *list)
 void           *Mymalloc(long size)
 {
     if (size < 1) {
-        fprintf(stderr, "attempt to malloc negative memory - %d\n", size);
+        fprintf(stderr, "attempt to malloc negative memory - %ld\n", size);
         assert(0);
     }
     return (malloc(size));
 }
 
-int SpaceForSkills(struct char_data *ch)
+void SpaceForSkills(struct char_data *ch)
 {
     /*
      * create space for the skills for some mobile or character. 
@@ -4667,9 +4646,6 @@ int HasWBits(struct char_data *ch, int bits)
 
 int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 {
-    char            buf[128];
-    char            buffer[254];
-
     if (!ch->skills) {
         return (0);
     }
@@ -4688,7 +4664,9 @@ int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
         if (ch->skills[sknum].learned >= max && !silent) {
             send_to_char("You are now learned in this skill!\n\r", ch);
         }
+        return( TRUE );
     }
+    return( FALSE );
 }
 
 /*
@@ -4729,9 +4707,8 @@ int too_many_followers(struct char_data *ch)
     struct follow_type *k;
     int             max_followers,
                     actual_fol;
-    char            buf[80];
 
-    max_followers = (int) chr_apply[GET_CHR(ch)].num_fol;
+    max_followers = (int) chr_apply[(int)GET_CHR(ch)].num_fol;
 
     for (k = ch->followers, actual_fol = 0; k; k = k->next) {
         if (IS_AFFECTED(k->follower, AFF_CHARM)) {
@@ -5092,7 +5069,7 @@ int SiteLock(char *site)
 #if SITELOCK
     int             i,
                     length;
-    extern          numberhosts;
+    extern int      numberhosts;
     extern char     hostlist[MAX_BAN_HOSTS][30];
 
     length = strlen(site);
@@ -5280,7 +5257,7 @@ int MEMORIZED(struct char_data *ch, int spl)
     return (FALSE);
 }
 
-int FORGET(struct char_data *ch, int spl)
+void FORGET(struct char_data *ch, int spl)
 {
     if (ch->skills[spl].nummem) {
         ch->skills[spl].nummem -= 1;
@@ -5373,7 +5350,7 @@ int IS_UNDERGROUND(struct char_data *ch)
     return (FALSE);
 }
 
-int SetDefaultLang(struct char_data *ch)
+void SetDefaultLang(struct char_data *ch)
 {
     int             i;
 
@@ -5653,7 +5630,7 @@ int str_cmp2(char *arg1, char *arg2)
         return (1);
     }
     for (i = 0; i < strlen(arg1); i++) {
-        if (chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i))) {
+        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
             if (chk < 0) {
                 return (-1);
             } else {
@@ -5666,7 +5643,6 @@ int str_cmp2(char *arg1, char *arg2)
 
 int CheckSquare(struct char_data *ch, int dir)
 {
-    struct room_data *rm;
     int             room = 0;
 
     if (dir == 0 || dir == 2) { 
@@ -5733,9 +5709,7 @@ int CheckSquare(struct char_data *ch, int dir)
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 {
     int             current = 0;
-    long            l;
-    int             rdir,
-                    x,
+    int             x,
                     sector;
     char            buf[255];
     struct zone_data *zd;
@@ -5973,16 +5947,10 @@ void qlog(char *desc)
 
 void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 {
-    char            fn[80],
-                    temp[2048],
-                    buf[128];
+    char            buf[128];
     long            m_start,
                     m_end,
                     i,
-                    j,
-                    k,
-                    x,
-                    r,
                     nr;
     FILE           *mob_file;
     FILE           *vnum_f;
@@ -6009,7 +5977,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
     send_to_char(buf, ch);
 
     for (i = m_start; i <= WORLD_SIZE; i++) {
-        if (mob = read_mobile(i, VIRTUAL)) {
+        if ((mob = read_mobile(i, VIRTUAL))) {
 
             nr = real_mobile(i);
 
@@ -6048,17 +6016,11 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 
 void do_orebuild(struct char_data *ch, char *argument, char cmd)
 {
-    char            fn[80],
-                    temp[2048],
-                    buf[128],
+    char            buf[128],
                     buf2[511];
     long            rstart,
                     rend,
-                    i,
-                    j,
-                    k,
-                    x,
-                    r;
+                    i;
     FILE           *fp;
     extern int      top_of_objt;
     struct obj_data *obj;
@@ -6080,7 +6042,7 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
     for (i = rstart; i <= WORLD_SIZE; i++) {
         obj = read_object(i, VIRTUAL);
         if (obj) {
-            sprintf(buf, "objects/%d", i);
+            sprintf(buf, "objects/%ld", i);
             if (!(fp = fopen(buf, "w"))) {
                 sprintf(buf2, "Can't open obj file for %s\r\n", buf);
                 send_to_char(buf2, ch);
@@ -6346,7 +6308,7 @@ float arg_to_float(char *arg)
     }
     return (number);
 #else
-    return (strtof(arg, NULL));
+    return ((float)strtod(arg, NULL));
 #endif
 }
 
@@ -6569,6 +6531,46 @@ int MobCastCheck(struct char_data *ch, int psi)
     }
     return (TRUE);
 }
+
+/*
+ * @Name: CountPeople in zone Function @description: This function counts
+ * the number of people in a zone. @Author: Greg Hovey (Banon) @Used: used 
+ * in chestproc and preparationproc 
+ */
+int countPeople(int zonenr)
+{
+    int             count = 0;
+    struct descriptor_data *d;
+    struct char_data *person;
+
+    for (d = descriptor_list; d; d = d->next) {
+        person = (d->original ? d->original : d->character);
+
+        if (person && real_roomp(person->in_room) &&
+            real_roomp(person->in_room)->zone == zonenr) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int count_People_in_room(int room)
+{
+    struct char_data *i;
+    int             count = 0;
+
+    if (real_roomp(room)) {
+        for (i = real_roomp(room)->people; i; i = i->next_in_room) {
+            if (i) {
+                // this counts the number of people in just this room.
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

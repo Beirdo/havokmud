@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -37,7 +38,6 @@ void do_settrap(struct char_data *ch, char *arg, int cmd)
 int CheckForMoveTrap(struct char_data *ch, int dir)
 {
     struct obj_data *i;
-    int             trig = FALSE;
 
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
         if (ITEM_TYPE(i) == ITEM_TRAP && GET_TRAP_CHARGES(i) > 0 &&
@@ -82,9 +82,6 @@ int CheckForGetTrap(struct char_data *ch, struct obj_data *i)
 
 int TriggerTrap(struct char_data *ch, struct obj_data *i)
 {
-    int             adj,
-                    fireperc,
-                    roll;
     struct char_data *v;
 
     if (ITEM_TYPE(i) == ITEM_TRAP && i->obj_flags.value[TRAP_CHARGES]) {

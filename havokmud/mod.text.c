@@ -3,6 +3,8 @@
  * Done by Lennya, Sept 2003
  */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "protos.h"
 
 extern char     motd[MAX_STRING_LENGTH];
@@ -37,7 +39,6 @@ void            ChangeTfdBody(struct char_data *ch, char *arg, int type);
 void do_chtextfile(struct char_data *ch, char *argument, int cmd)
 {
     struct edit_txt_msg *tfd;
-    FILE           *motd_f;
 
     dlog("in do_chtextfile");
 
@@ -199,8 +200,7 @@ void TfdEdit(struct char_data *ch, char *arg)
 
 int write_txt_to_file(struct char_data *ch)
 {
-    char            buf[MAX_STRING_LENGTH * 2],
-                    buffer[MAX_STRING_LENGTH * 2];
+    char            buf[MAX_STRING_LENGTH * 2];
     struct edit_txt_msg *tfd;
     FILE           *fl;
 

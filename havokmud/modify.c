@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "protos.h"
@@ -389,7 +390,7 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
          */
     }
 
-    for (; *string = *arg; arg++, string++) {
+    for (; (*string = *arg); arg++, string++) {
         /* 
          * Empty loop 
          */
@@ -672,7 +673,7 @@ void bisect_arg(char *arg, int *field, char *string)
          */
     }
 
-    for (; *string = *arg; arg++, string++) {
+    for (; (*string = *arg); arg++, string++) {
         /* 
          * Empty loop 
          */
@@ -706,7 +707,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     struct extra_descr_data *ed,
                    *tmp;
     struct room_data *rp,
-                   *temproom;
+                   *temproom = NULL;
     long            maproom;
     extern const char *sector_types[];
 
@@ -841,7 +842,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
          * no cmd by default 
          */
         open_cmd = -1;
-        sscanf(string, "%d %s %d %d %d", &dir, &sdflags, &dkey, &exroom,
+        sscanf(string, "%d %s %d %d %d", &dir, sdflags, &dkey, &exroom,
                &open_cmd);
 
         /*
@@ -1378,7 +1379,7 @@ void check_reboot()
     t_info = localtime(&tc);
 
     if ((t_info->tm_hour + 1) == REBOOT_AT && t_info->tm_min > 30) {
-        if (boot = fopen("./reboot", "r")) {
+        if ((boot = fopen("./reboot", "r"))) {
             if (t_info->tm_min > 50) {
                 Log("Reboot exists.");
                 fread(&dummy, sizeof(dummy), 1, boot);

@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -182,8 +183,8 @@ void shopping_buy(char *arg, struct char_data *ch,
     }
 
     cost = (temp1->obj_flags.cost * shop_index[shop_nr].profit_buy) -
-           ((chr_apply[GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 100) +
-           (int)(mult * temp1->obj_flags.cost);
+           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) /
+            100) + (int)(mult * temp1->obj_flags.cost);
 
     if (GET_GOLD(ch) < num * cost && GetMaxLevel(ch) < DEMIGOD) {
         sprintf(buf, shop_index[shop_nr].missing_cash2, GET_NAME(ch));
@@ -331,8 +332,8 @@ void shopping_sell(char *arg, struct char_data *ch,
     temp1->obj_flags.cost = cost;
 
     cost2 = (temp1->obj_flags.cost * shop_index[shop_nr].profit_sell) +
-            ((chr_apply[GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 100) +
-            (int)(mult * temp1->obj_flags.cost);
+            ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) /
+             100) + (int)(mult * temp1->obj_flags.cost);
 
     if (cost2 < 0) {
         cost2 = 0;
@@ -420,8 +421,8 @@ void shopping_value(char *arg, struct char_data *ch,
     }
 
     cost = (temp1->obj_flags.cost * shop_index[shop_nr].profit_sell) +
-           ((chr_apply[GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 100) +
-           (int) (mult * temp1->obj_flags.cost);
+           ((chr_apply[(int)GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 
+            100) + (int) (mult * temp1->obj_flags.cost);
 
     sprintf(buf, "%s I'll give you %d gold coins for that!",
             GET_NAME(ch), cost);
@@ -474,7 +475,7 @@ void shopping_list(char *arg, struct char_data *ch,
                 found_obj = TRUE;
                 cost = (temp1->obj_flags.cost * 
                         shop_index[shop_nr].profit_buy) -
-                       ((chr_apply[GET_CHR(ch)].reaction *
+                       ((chr_apply[(int)GET_CHR(ch)].reaction *
                          temp1->obj_flags.cost) / 100) +
                        (int)(mult * temp1->obj_flags.cost);
                 if (temp1->obj_flags.type_flag != ITEM_DRINKCON) {
@@ -523,20 +524,19 @@ void shopping_kill(char *arg, struct char_data *ch,
 
 int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
 {
-    char            argm[100],
-                    buf[MAX_STRING_LENGTH];
+    char            argm[100];
     struct char_data *temp_char;
     struct char_data *keeper;
     int             shop_nr;
 
     if (type == EVENT_DWARVES_STRIKE) {
         ch->generic = DWARVES_STRIKE;
-        return;
+        return( FALSE );
     }
 
     if (type == EVENT_FAMINE) {
         ch->generic = FAMINE;
-        return;
+        return( FALSE );
     }
 
     keeper = 0;

@@ -41,7 +41,6 @@ char           *help_edit_menu =
     "    7) Saving Throw?           8) Description\n\r"
     "    9) References             10) Wizard Only?\n\r\n\r"
     "   99) Save file and exit    100) Don't save and exit\n\r\n\r";
-void            UpdateHelpMenu(struct char_data *ch);
 int             is_help_elem(struct help_file_u *hlp, char *arg);
 int             read_help_from_file(struct char_data *ch, char *argument,
                                     int cmd);

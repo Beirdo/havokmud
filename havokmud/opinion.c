@@ -7,6 +7,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -17,7 +18,7 @@
 extern struct index_data *mob_index;
 extern struct room_data *world;
 
-int FreeHates(struct char_data *ch)
+void FreeHates(struct char_data *ch)
 {
     struct char_list *k,
                    *n;
@@ -31,7 +32,7 @@ int FreeHates(struct char_data *ch)
 
 }
 
-int FreeFears(struct char_data *ch)
+void FreeFears(struct char_data *ch)
 {
     struct char_list *k,
                    *n;
@@ -145,6 +146,10 @@ int AddHated(struct char_data *ch, struct char_data *pud)
 
 int AddHatred(struct char_data *ch, int parm_type, int parm)
 {
+    if( !ch ) {
+        return( FALSE );
+    }
+
     switch (parm_type) {
     case OP_SEX:
         if (!IS_SET(ch->hatefield, HATE_SEX)) {
@@ -182,18 +187,26 @@ int AddHatred(struct char_data *ch, int parm_type, int parm)
         }
         ch->hates.vnum = parm;
         break;
+    default:
+        return( FALSE );
     }
     if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_HATEFUL)) {
         SET_BIT(ch->specials.act, ACT_HATEFUL);
     }
+    return( TRUE );
 }
 
 int RemHatred(struct char_data *ch, unsigned short bitv)
 {
+    if( !ch ) {
+        return( FALSE );
+    }
+
     REMOVE_BIT(ch->hatefield, bitv);
     if (IS_NPC(ch) && !ch->hatefield) {
         REMOVE_BIT(ch->specials.act, ACT_HATEFUL);
     }
+    return( TRUE );
 }
 
 int Hates(struct char_data *ch, struct char_data *v)
@@ -257,7 +270,6 @@ int Hates(struct char_data *ch, struct char_data *v)
 int Fears(struct char_data *ch, struct char_data *v)
 {
     struct char_list *i;
-    char            buf[255];
 
     if (IS_AFFECTED(ch, AFF_PARALYSIS)) {
         return (FALSE);
@@ -451,10 +463,14 @@ int AddFears(struct char_data *ch, int parm_type, int parm)
         }
         ch->fears.vnum = parm;
         break;
+    default:
+        return(FALSE);
+        break;
     }
     if (!IS_SET(ch->specials.act, ACT_AFRAID)) {
         SET_BIT(ch->specials.act, ACT_AFRAID);
     }
+    return(TRUE);
 }
 
 /*

@@ -19,7 +19,6 @@
  */
 #define STATUE_ZONE 198
 
-int             SetDefaultLang(struct char_data *ch);
 void            switch_light(byte why);
 void            PulseMobiles(int cmd);
 int             ZoneCleanable(int zone);

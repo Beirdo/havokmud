@@ -44,7 +44,7 @@ void AddCommand(char *name, void (*func), int number, int min_pos,
     n->previous = NULL;
     n->log = 0;
 
-    radix = HashTable[*name];
+    radix = HashTable[(int)*name];
     len = strlen(name);
 
     AddNodeTail(n, len, radix);
@@ -160,7 +160,7 @@ NODE           *FindValidCommand(char *name)
     register int    len;
     register int    radix;
 
-    radix = HashTable[name[0]];
+    radix = HashTable[(int)name[0]];
     len = strlen(name);
 
     if (radix_head[radix].number && len <= radix_head[radix].max_len) {

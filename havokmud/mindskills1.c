@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -143,8 +145,7 @@ void mind_teleport(byte level, struct char_data *ch,
  * astral travel 
  */
 void mind_probability_travel(byte level, struct char_data *ch,
-                             struct char_data *victim,
-                             struct obj_data *obj)
+                             struct char_data *victim, struct obj_data *obj)
 {
     struct char_data *tmp,
                    *tmp2;
@@ -254,8 +255,8 @@ void mind_disintegrate(byte level, struct char_data *ch,
  * then if they fail, treat as bashed and the mobs/pc sits 
  */
 
-void mind_telekinesis(byte level, struct char_data *ch, struct char_data
-                      *victim, int dir_num)
+void mind_telekinesis(byte level, struct char_data *ch,
+                      struct char_data *victim, int dir_num)
 {
     int             percent = 0;
 
@@ -269,8 +270,8 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
         return;
     }
 
-    if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF) &&
-        !HasClass(ch, CLASS_PSI))) {
+    if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
+        !HasClass(ch, CLASS_PSI)) {
         send_to_char("You're no psionist!\n\r", ch);
         return;
     }
@@ -590,8 +591,7 @@ void mind_mindblank(byte level, struct char_data *ch,
  * same as thief disguise 
  */
 void mind_psychic_impersonation(byte level, struct char_data *ch,
-                                struct char_data *victim,
-                                struct obj_data *obj)
+                                struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
     struct char_data *k;
@@ -763,12 +763,10 @@ void mind_kinolock(byte level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
-    char            dir[MAX_INPUT_LENGTH],
-                    buf[MAX_INPUT_LENGTH];
+    char            dir[MAX_INPUT_LENGTH];
     char            otype[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     struct char_data *victim;
-    struct room_direction_data *exitdata;
 
     argument_interpreter(arg, otype, dir);
 
@@ -813,21 +811,18 @@ void mind_kinolock(byte level, struct char_data *ch, char *arg, int type,
 }
 
 void mind_sense_object(byte level, struct char_data *ch,
-                       struct char_data *victim, struct char_data arg)
+                       struct char_data *victim, char *arg)
 {
     char            name[256];
-    char            buf[MAX_STRING_LENGTH],
-                    buf2[256];
-    int             j,
-                    found = 0;
+    char            buf[MAX_STRING_LENGTH];
     int             room = 0;
     int             old_location;
     struct obj_data *i;
-    struct char_data *target;
+    struct char_data *target = NULL;
 
     assert(ch);
     sprintf(name, "%s", arg);
-    sprintf(buf, "");
+    buf[0] = '\0';
 
     if (!ch->skills) {
         return;

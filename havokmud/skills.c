@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "protos.h"
 
@@ -155,8 +157,8 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
      */
     percent = number(1, 101);   
 
-    percent -= dex_app[GET_DEX(ch)].reaction * 10;
-    percent += dex_app[GET_DEX(victim)].reaction * 10;
+    percent -= dex_app[(int)GET_DEX(ch)].reaction * 10;
+    percent += dex_app[(int)GET_DEX(victim)].reaction * 10;
     if (!ch->equipment[WIELD] && !HasClass(ch, CLASS_MONK)) {
         percent += 50;
     }
@@ -603,17 +605,16 @@ int choose_exit_in_zone(int in_room, int tgt_room, int depth)
     return find_path(in_room, is_target_room_p, (void *) tgt_room, depth, 1);
 }
 
-int go_direction(struct char_data *ch, int dir)
+void go_direction(struct char_data *ch, int dir)
 {
     if (ch->specials.fighting) {
-        return 0;
+        return;
     }
     if (!IS_SET(EXIT(ch, dir)->exit_info, EX_CLOSED)) {
         do_move(ch, "", dir + 1);
     } else if (IsHumanoid(ch) && !IS_SET(EXIT(ch, dir)->exit_info, EX_LOCKED) &&
                !IS_SET(EXIT(ch, dir)->exit_info, EX_SECRET)) {
         open_door(ch, dir);
-        return 0;
     }
 }
 
@@ -1159,7 +1160,6 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
     extern char    *dirs[];
 
     char            buf[256],
-                    type[128],
                     direction[128];
 
     if (GET_MOVE(ch) < 10) {
@@ -1527,8 +1527,8 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             break;
         case RACE_DRAGON_RED:
             sprintf(hidetype, "red dragon hide");
-            acapply + 2;
-            acbonus + 3;
+            acapply += 2;
+            acbonus += 3;
             break;
         case RACE_DRAGON_BLACK:
             sprintf(hidetype, "black dragon hide");
@@ -1552,28 +1552,28 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             break;
         case RACE_DRAGON_SILVER:
             sprintf(hidetype, "silver dragon hide");
-            acapply + 2;
-            acbonus + 2;
+            acapply += 2;
+            acbonus += 2;
             break;
         case RACE_DRAGON_GOLD:
             sprintf(hidetype, "gold dragon hide");
-            acapply + 2;
-            acbonus + 3;
+            acapply += 2;
+            acbonus += 3;
             break;
         case RACE_DRAGON_BRONZE:
             sprintf(hidetype, "bronze dragon hide");
             acapply++;
-            acbonus + 2;
+            acbonus += 2;
             break;
         case RACE_DRAGON_COPPER:
             sprintf(hidetype, "copper dragon hide");
             acapply++;
-            acbonus + 2;
+            acbonus += 2;
             break;
         case RACE_DRAGON_BRASS:
             sprintf(hidetype, "brass dragon hide");
             acapply++;
-            acbonus + 2;
+            acbonus += 2;
             break;
         case RACE_GOLEM:
         case RACE_SKEXIE:
@@ -1879,8 +1879,6 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
 
 void do_find_traps(struct char_data *ch, char *arg, int cmd)
 {
-    struct affected_type af;
-
     if (!ch->skills) {
         return;
     }
@@ -2031,7 +2029,6 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
     struct obj_data *food;
     int             i,
                     r_num;
-    struct affected_type af;
 
     if (!ch->skills) {
         return;
@@ -2368,7 +2365,6 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     struct char_data *target;
     int             location;
     struct room_data *rp;
-    struct affected_type af;
 
     if (!ch->skills) {
         return;
@@ -2538,7 +2534,7 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
     long            hit_points,
                     mana_points;
     char            number[80];
-    char            count;
+    int             count;
     bool            num_found = TRUE;
 
     if (!ch->skills) {
@@ -2714,8 +2710,6 @@ void do_flame_shroud(struct char_data *ch, char *argument, int cmd)
 
 void do_aura_sight(struct char_data *ch, char *argument, int cmd)
 {
-    struct affected_type af;
-
     if (!ch->skills) {
         return;
     }
@@ -2770,8 +2764,6 @@ void do_aura_sight(struct char_data *ch, char *argument, int cmd)
 
 void do_great_sight(struct char_data *ch, char *argument, int cmd)
 {
-    struct affected_type af;
-
     if (!ch->skills) {
         return;
     }
@@ -2828,12 +2820,10 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
 void do_blast(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
-    char            name[240],
-                    msg[240],
-                    buf[254];
-    int             potency,
+    char            name[240];
+    int             potency = 0,
                     level,
-                    dam;
+                    dam = 0;
     struct affected_type af;
 
     if (!ch->skills) {
@@ -3364,8 +3354,6 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
 
 void do_invisibililty(struct char_data *ch, char *argument, int cmd)
 {
-    struct affected_type af;
-
     if (!ch->skills) {
         return;
     }
@@ -3657,8 +3645,7 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
 {
     int             rating,
                     factor,
-                    level,
-                    temp;
+                    level;
     struct char_data *test,
                    *dude;
     struct affected_type af;
@@ -4166,12 +4153,10 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 void do_scribe(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
-    char            buf2[MAX_INPUT_LENGTH];
     char            arg[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     int             sn = -1,
                     x,
-                    percent = 0,
                     formula = 0,
                     qend;
 
@@ -4374,12 +4359,8 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
 void do_brew(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
-    char            buf2[MAX_INPUT_LENGTH];
-    char            arg[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     int             sn = -1,
-                    x,
-                    percent = 0,
                     formula = 0,
                     qend;
 
@@ -4564,9 +4545,7 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     char            name[256];
-    byte            percent,
-                    base = 0;
-    char            buff[255];
+    byte            percent;
 
     dlog("in do_charge");
 
@@ -4706,7 +4685,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
             act("$n whistles a lively tune.", FALSE, ch, 0, 0, TO_ROOM);
             LearnFromMistake(ch, SKILL_STEED, 0, 95);
         } else {
-            if (steed = read_mobile(STEED_TEMPLATE, VIRTUAL)) {
+            if ((steed = read_mobile(STEED_TEMPLATE, VIRTUAL))) {
                 act("You whistle loudly.", FALSE, ch, 0, 0, TO_CHAR);
                 act("$n whistles loudly.", FALSE, ch, 0, 0, TO_ROOM);
                 mhit = GET_HIT(ch);
