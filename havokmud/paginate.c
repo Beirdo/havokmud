@@ -9,6 +9,7 @@
  */
 
 #include <stdarg.h>
+#include <string.h>
 
 #include "protos.h"
 #include "utils.h"
@@ -26,6 +27,8 @@
 #ifndef NULL
 #define NULL 0
 #endif
+
+char           *ParseAnsiColors(int UsingAnsi, char *txt);
 
 /*
 * Traverse down the string until the begining of the next page has
