@@ -1,6 +1,6 @@
 
 /*
- * All Cleric skills and spells
+ * HavokMUD - cleric skills and spells
  */
 
 #include "config.h"
@@ -21,9 +21,6 @@ extern struct time_info_data time_info;
 void spell_aid(int level, struct char_data *ch,
                struct char_data *victim, struct obj_data *obj)
 {
-    /*
-     * combo bless, cure light woundsish
-     */
     struct affected_type af;
 
     if (affected_by_spell(victim, SPELL_AID)) {
@@ -72,14 +69,8 @@ void spell_animate_dead(int level, struct char_data *ch,
     struct obj_data *obj_object,
                    *next_obj;
     char            buf[MAX_STRING_LENGTH];
-    /*
-     * virtual # for zombie
-     */
     int             r_num = 100;
 
-    /*
-     * some sort of check for corpse hood
-     */
     if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER ||
         !corpse->obj_flags.value[3]) {
         send_to_char("The magic fails abruptly!\n\r", ch);
@@ -92,9 +83,6 @@ void spell_animate_dead(int level, struct char_data *ch,
     act("With mystic power, $n animates a corpse.", TRUE, ch, 0, 0, TO_ROOM);
     act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_ROOM);
     act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_CHAR);
-    /*
-     * zombie should be charmed and follower ch
-     */
 
     if (too_many_followers(ch)) {
         act("$N takes one look at the size of your posse and just says no!",
@@ -110,31 +98,21 @@ void spell_animate_dead(int level, struct char_data *ch,
     IS_CARRYING_W(mob) = 0;
     IS_CARRYING_N(mob) = 0;
 
-    /*
-     * take all from corpse, and give to zombie
-     */
 
     for (obj_object = corpse->contains; obj_object; obj_object = next_obj) {
         next_obj = obj_object->next_content;
         obj_from_obj(obj_object);
         obj_to_char(obj_object, mob);
     }
-    /*
-     * set up descriptions and such
-     */
     sprintf(buf, "%s is here, slowly animating\n\r", corpse->short_description);
     mob->player.long_descr = (char *) strdup(buf);
-    /*
-     * set up hitpoints
-     */
+    
     mob->points.max_hit = dice(MAX(level / 2, 5), 8);
     mob->points.hit = mob->points.max_hit / 2;
     mob->player.sex = 0;
     GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
     mob->player.class = ch->player.class;
-    /*
-     * get rid of corpse
-     */
+    
     extract_obj(corpse);
 }
 
@@ -407,11 +385,9 @@ void cast_bless(int level, struct char_data *ch, char *arg, int type,
     switch (type) {
     case SPELL_TYPE_SPELL:
         if (tar_obj) {
-            /* It's an object */
             return;
         } 
 
-        /* Then it is a PC | NPC */
         if (affected_by_spell(tar_ch, SPELL_BLESS) ||
             GET_POS(tar_ch) == POSITION_FIGHTING) {
             send_to_char("Nothing seems to happen.\n\r", ch);
@@ -427,11 +403,9 @@ void cast_bless(int level, struct char_data *ch, char *arg, int type,
         break;
     case SPELL_TYPE_SCROLL:
         if (tar_obj) {
-            /* It's an object */
             return;
         } 
         
-        /* Then it is a PC | NPC */
         if (!tar_ch)
             tar_ch = ch;
 
@@ -442,11 +416,9 @@ void cast_bless(int level, struct char_data *ch, char *arg, int type,
         break;
     case SPELL_TYPE_WAND:
         if (tar_obj) {
-            /* It's an object */
             return;
         }
         
-        /* Then it is a PC | NPC */
         if (affected_by_spell(tar_ch, SPELL_BLESS) ||
             (GET_POS(tar_ch) == POSITION_FIGHTING))
             return;
@@ -1029,9 +1001,6 @@ void cast_command(int level, struct char_data *ch, char *arg,
 {
     char           *p;
     char            buf[128];
-    /*
-     * have to parse the argument to get the command 
-     */
 
     switch (type) {
     case SPELL_TYPE_SPELL:
@@ -1087,9 +1056,6 @@ void spell_comp_languages(int level, struct char_data *ch,
                 0, victim, TO_CHAR);
         }
         af.type = SPELL_COMP_LANGUAGES;
-        /*
-         * one tic only!
-         */
         af.duration = (!IS_IMMORTAL(ch) ? level / 2 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
@@ -1135,12 +1101,6 @@ void spell_conjure_elemental(int level, struct char_data *ch,
                              struct obj_data *obj)
 {
     struct affected_type af;
-
-    /*
-     *   victim, in this case, is the elemental
-     *   object could be the sacrificial object
-     */
-
     assert(ch && victim && obj);
 
     /*
@@ -1159,10 +1119,6 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     extract_obj(obj);
     char_to_room(victim, ch->in_room);
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
-
-    /*
-     * charm them for a while
-     */
 
     if (too_many_followers(ch)) {
         act("$N says 'No way I'm hanging with that crowd, but thanks for the"
@@ -1530,10 +1486,6 @@ void spell_create_water(int level, struct char_data *ch,
 	    name_to_drinkcon(obj, LIQ_SLIME);
 	} else {
 	    water = 2 * level * ((weather_info.sky >= SKY_RAINING) ? 2 : 1);
-
-	    /*
-	     * Calculate water it can contain, or water created
-	     */
 	    water = MIN(obj->obj_flags.value[0] - obj->obj_flags.value[1],
 			water);
 
@@ -1843,10 +1795,8 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
     switch (type) {
     case SPELL_TYPE_SPELL:
         if (tar_obj) {
-            /* It is an object */
             spell_curse(level, ch, 0, tar_obj);
         } else {
-            /* Then it is a PC | NPC */
             spell_curse(level, ch, tar_ch, 0);
         }
         break;
@@ -1855,10 +1805,8 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
         break;
     case SPELL_TYPE_SCROLL:
         if (tar_obj) {
-            /* It is an object */
             spell_curse(level, ch, 0, tar_obj);
         } else {
-            /* Then it is a PC | NPC */
             if (!tar_ch) {
                 tar_ch = ch;
             }
@@ -1867,10 +1815,8 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
         break;
     case SPELL_TYPE_WAND:
         if (tar_obj) {
-            /* It is an object */
             spell_curse(level, ch, 0, tar_obj);
         } else {
-            /* Then it is a PC | NPC */
             if (!tar_ch)
                 tar_ch = ch;
             spell_curse(level, ch, tar_ch, 0);
@@ -2297,15 +2243,9 @@ void spell_dispel_magic(int level, struct char_data *ch,
             REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
 
         if (level >= 45) {
-            /*
-             * if level 45> then they can do this
-             */
             if (IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
                 REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
             }
-            /*
-             * strip off everything
-             */
             for (i = 0; i < MAX_OBJ_AFFECT; i++) {
                 obj->affected[i].location = 0;
             }
@@ -2321,9 +2261,6 @@ void spell_dispel_magic(int level, struct char_data *ch,
         return;
     }
 
-    /*
-     * gets rid of infravision, invisibility, detect, etc
-     */
     if (GetMaxLevel(victim) <= level) {
         /* Changed so it's actually using scroll level (GH) */
         yes = TRUE;
@@ -2585,9 +2522,6 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     if (IS_SET(victim->specials.affected_by2, AFF2_HEAT_STUFF)) {
-#if 0
-        if (affected_by_spell(victim, SPELL_HEAT_STUFF)) {
-#endif
         affect_from_char(victim, SPELL_HEAT_STUFF);
         send_to_char("You don't feel so hot anymore\n\r", victim);
     }

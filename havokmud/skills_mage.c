@@ -1,5 +1,5 @@
 /*
- * All Mage skills and spells
+ * HavokMUD - all mage spells and skills
  */
 
 #include "config.h"

@@ -1,3 +1,7 @@
+/*
+ * HavokMUD - dragon breaths
+ */
+
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -134,7 +138,7 @@ void cast_fire_breath(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SPELL:
         /* 
-         * It's a spell.. But people can'c cast it! 
+         * It's a spell.. But people can't cast it! 
          */
         spell_fire_breath(level, ch, tar_ch, 0);
         break;
@@ -193,7 +197,7 @@ void cast_frost_breath(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SPELL:
         /* 
-         * It's a spell.. But people can'c cast it! 
+         * It's a spell.. But people can't cast it! 
          */
         spell_frost_breath(level, ch, tar_ch, 0);
         break;
@@ -253,7 +257,7 @@ void cast_acid_breath(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SPELL:
         /* 
-         * It's a spell.. But people can'c cast it! 
+         * It's a spell.. But people can't cast it! 
          */
         spell_acid_breath(level, ch, tar_ch, 0);
         break; 
@@ -313,9 +317,6 @@ void cast_gas_breath(int level, struct char_data *ch, char *arg, int type,
 {
     switch (type) {
     case SPELL_TYPE_SPELL:
-        /*
-         * THIS ONE HURTS!! 
-         */
         spell_gas_breath(level, ch, tar_ch, 0);
         break;
     default:
@@ -375,7 +376,7 @@ void cast_lightning_breath(int level, struct char_data *ch, char *arg,
     switch (type) {
     case SPELL_TYPE_SPELL:
         /* 
-         * It's a spell.. But people can'c cast it! 
+         * It's a spell.. But people can't cast it! 
          */
         spell_lightning_breath(level, ch, tar_ch, 0);
         break;
@@ -660,14 +661,6 @@ void spell_light_breath(int level, struct char_data *ch,
     MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
     spell_blindness(level, ch, victim, 0);
     spell_blindness(level, ch, victim, 0);
-
-    /*
-     * And now for the damage on inventory
-     */
-
-#if 0
-    DamageStuff(victim, FIRE_DAMAGE);
-#endif
 
     for (burn = victim->carrying;
          burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
@@ -987,14 +980,6 @@ void spell_lozenge_breath(int level, struct char_data *ch,
         dam >>= 1;
     }
     MissileDamage(ch, victim, dam, SPELL_LIGHTNING_BREATH);
-
-    /*
-     * And now for the damage on inventory
-     */
-
-    /*
-     * DamageStuff(victim, FIRE_DAMAGE);
-     */
 
     for (burn = victim->carrying;
          burn && burn->obj_flags.type_flag != ITEM_SCROLL &&

@@ -1,3 +1,6 @@
+/*
+ * HavokMUD - warrior skills
+ */
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -1837,6 +1840,9 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
     }
 }
 
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
 
 
 

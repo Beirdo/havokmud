@@ -1,3 +1,7 @@
+/*
+ * HavokMUD - psionist spells and skills
+ */
+
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -2856,6 +2860,9 @@ void mind_use_wall_of_thought(int level, struct char_data *ch, char *arg,
 
 
 
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
 
 
 

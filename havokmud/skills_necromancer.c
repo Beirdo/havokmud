@@ -1,5 +1,5 @@
 /*
- * All Necromancer skills and spells
+ * HavokMUD - necromancer skills and spells
  */
 
 #include "config.h"

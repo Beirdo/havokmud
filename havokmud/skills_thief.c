@@ -1,3 +1,6 @@
+/*
+ * HavokMUD - thief skills
+ */
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -900,3 +903,6 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
         }
     }
 }
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */

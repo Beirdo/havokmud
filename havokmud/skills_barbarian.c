@@ -1,4 +1,6 @@
-
+/*
+ * HavokMUD - barbarian class skills
+ */
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -108,4 +110,9 @@ void do_berserk(struct char_data *ch, char *arg, int cmd)
 /* skin */
 /* spy */
 /* switch opponents */
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
+
 

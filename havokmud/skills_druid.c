@@ -1,3 +1,6 @@
+/*
+ * HavokMUD - druid skills and spells
+ */
 #include "config.h"
 #include "platform.h"
 #include <stdio.h>
@@ -2613,31 +2616,7 @@ void cast_warp_weapon(int level, struct char_data *ch, char *arg,
 }
 /* water breath */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
 
