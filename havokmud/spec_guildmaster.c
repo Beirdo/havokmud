@@ -558,12 +558,12 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
             page_string(ch->desc, buffer, 1);
         } else {
-            if( LearnSkill(ch, monkskills, arg, GET_LEVEL(ch, DRUID_LEVEL_IND), 
+            if( LearnSkill(ch, druidskills, arg, GET_LEVEL(ch, DRUID_LEVEL_IND), 
                            "The Druid Guildmaster", 0) ) {
                 return( TRUE );
             }
             if (ch->specials.remortclass == DRUID_LEVEL_IND + 1 &&
-                LearnSkill(ch, mainmonkskills, arg, 
+                LearnSkill(ch, maindruidskills, arg, 
                            GET_LEVEL(ch, DRUID_LEVEL_IND), 
                           "The Druid Guildmaster", 0) ) {
                 return( TRUE );
