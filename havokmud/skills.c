@@ -3920,13 +3920,14 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 
 	if((number(1,101) >= formula || ch->skills[SKILL_SCRIBE].learned < 10 ) && !IS_IMMORTAL(ch)) {
 
-		WAIT_STATE(ch,PULSE_VIOLENCE*6);
+		WAIT_STATE(ch,PULSE_VIOLENCE*5);
 		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_CHAR );
 		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_ROOM );
 		GET_HIT(ch) -= 10;
 		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		act("$n yelps in pain.",TRUE,ch,0,NULL,TO_ROOM);
 		act("Ouch!",TRUE,ch,0,NULL,TO_CHAR);
+		LearnFromMistake(ch, SKILL_SCRIBE, 0, 90);
 
 		extract_obj(obj);
 
@@ -3962,7 +3963,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
 		obj_to_char(obj, ch);
-		WAIT_STATE(ch,PULSE_VIOLENCE*4);
+		WAIT_STATE(ch,PULSE_VIOLENCE*3);
 		return;
 	}
     return;
@@ -4023,7 +4024,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if(!ch->skills[sn].learned) {  //do you know that spell?
+	if(!ch->skills[sn+1].learned) {  //do you know that spell?
 		send_to_char("You don't know of this spell.\n\r",ch);
 		return;
 	}
@@ -4052,14 +4053,14 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 
 	if((number(1,101) >= formula || ch->skills[SKILL_BREW].learned < 10 ) && !IS_IMMORTAL(ch)) {
 
-		WAIT_STATE(ch,PULSE_VIOLENCE*10);
+		WAIT_STATE(ch,PULSE_VIOLENCE*5);
 		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_CHAR );
 		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_ROOM );
 		GET_HIT(ch) -= spell_info[sn+1].min_level_magic;
 		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		act("$n screams in pain as $p exploded on $m.",TRUE,ch,obj,NULL,TO_ROOM);
 		act("You scream in pain as $p explodes.",TRUE,ch,obj,NULL,TO_CHAR);
-
+		LearnFromMistake(ch, SKILL_BREW, 0, 90);
 		extract_obj(obj);
 
 		return;
@@ -4093,7 +4094,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
 		obj_to_char(obj, ch);
-		WAIT_STATE(ch,PULSE_VIOLENCE*6);
+		WAIT_STATE(ch,PULSE_VIOLENCE*3);
 		return;
 	}
     return;
