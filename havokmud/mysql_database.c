@@ -9,6 +9,8 @@
 
 static MYSQL *sql;
 
+static char sqlbuf[MAX_STRING_LENGTH];
+
 /* Externally accessible */
 char *mysql_db    = NULL;
 char *mysql_user   = NULL;
@@ -133,7 +135,6 @@ char *db_quote(char *string)
 
 void db_report_entry(int reportId, struct char_data *ch, char *report)
 {
-    char            buf[MAX_STRING_LENGTH];
     char           *string;
 
     if( !report ) {
@@ -142,27 +143,26 @@ void db_report_entry(int reportId, struct char_data *ch, char *report)
 
     string = db_quote(report);
     if( string ) {
-        sprintf( buf, "INSERT INTO `userReports` (`reportId`, `reportTime`, "
-                      "`character`, `roomNum`, `report`) "
-                      "VALUES ( %d, NULL, '%s', %ld, '%s' )", reportId,
-                      GET_NAME(ch), ch->in_room, string );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "INSERT INTO `userReports` (`reportId`, `reportTime`, "
+                         "`character`, `roomNum`, `report`) "
+                         "VALUES ( %d, NULL, '%s', %ld, '%s' )", reportId,
+                         GET_NAME(ch), ch->in_room, string );
+        mysql_query(sql, sqlbuf);
         free( string );
     }
 }
 
 struct user_report *db_get_report(int reportId, struct user_report *report)
 {
-    char                buf[MAX_STRING_LENGTH];
     MYSQL_RES          *res;
     MYSQL_ROW           row;
 
     if( !report ) {
         /* Need to to the query */
-        sprintf( buf, "SELECT `reportTime`, `character`, `roomNum`, `report` "
-                      "FROM `userReports` WHERE `reportId` = %d "
-                      "ORDER BY `reportTime` ASC", reportId );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "SELECT `reportTime`, `character`, `roomNum`, "
+                         "`report` FROM `userReports` WHERE `reportId` = %d "
+                         "ORDER BY `reportTime` ASC", reportId );
+        mysql_query(sql, sqlbuf);
 
         report = (struct user_report *)malloc(sizeof(struct user_report));
         if( !report ) {
@@ -220,10 +220,10 @@ struct user_report *db_get_report(int reportId, struct user_report *report)
 
 void db_clean_report(int reportId)
 {
-    char            buf[MAX_STRING_LENGTH];
 
-    sprintf( buf, "DELETE FROM `userReports` WHERE `reportId` = %d", reportId );
-    mysql_query(sql, buf);
+    sprintf( sqlbuf, "DELETE FROM `userReports` WHERE `reportId` = %d", 
+                     reportId );
+    mysql_query(sql, sqlbuf);
 }
 
 void db_initial_load(void)
@@ -242,7 +242,6 @@ void db_initial_load(void)
 
 void db_load_classes(void)
 {
-    char                buf[MAX_STRING_LENGTH];
     int                 i,
                         j,
                         level;
@@ -254,9 +253,9 @@ void db_load_classes(void)
 
     Log("Loading classes[] from SQL");
 
-    strcpy(buf, "SELECT classId, className, classAbbrev "
-                "FROM classes ORDER BY classId ASC");
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT classId, className, classAbbrev "
+                   "FROM classes ORDER BY classId ASC");
+    mysql_query(sql, sqlbuf);
 
     resClass = mysql_store_result(sql);
     if( !resClass || !(classCount = mysql_num_rows(resClass))) {
@@ -277,13 +276,14 @@ void db_load_classes(void)
         classes[i].name = strdup(row[1]);
         classes[i].abbrev = strdup(row[2]);
 
-        sprintf( buf, "SELECT skills.skillName, skills.skillID, "
-                      "classSkills.minLevel, classSkills.maxTeach "
-                      "FROM skills, classSkills "
-                      "WHERE skills.skillId = classSkills.skillId AND "
-                      "classSkills.classId = %d AND classSkills.mainSkill = 0 "
-                      "ORDER BY skills.skillName ASC", classId );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "SELECT skills.skillName, skills.skillID, "
+                         "classSkills.minLevel, classSkills.maxTeach "
+                         "FROM skills, classSkills "
+                         "WHERE skills.skillId = classSkills.skillId AND "
+                         "classSkills.classId = %d AND "
+                         "classSkills.mainSkill = 0 "
+                         "ORDER BY skills.skillName ASC", classId );
+        mysql_query(sql, sqlbuf);
 
         resSkill = mysql_store_result(sql);
         if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
@@ -311,13 +311,14 @@ void db_load_classes(void)
         }
 
 
-        sprintf( buf, "SELECT skills.skillName, skills.skillID, "
-                      "classSkills.minLevel, classSkills.maxTeach "
-                      "FROM skills, classSkills "
-                      "WHERE skills.skillId = classSkills.skillId AND "
-                      "classSkills.classId = %d AND classSkills.mainSkill = 1 "
-                      "ORDER BY skills.skillName ASC", classId );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "SELECT skills.skillName, skills.skillID, "
+                         "classSkills.minLevel, classSkills.maxTeach "
+                         "FROM skills, classSkills "
+                         "WHERE skills.skillId = classSkills.skillId AND "
+                         "classSkills.classId = %d AND "
+                         "classSkills.mainSkill = 1 "
+                         "ORDER BY skills.skillName ASC", classId );
+        mysql_query(sql, sqlbuf);
 
         resSkill = mysql_store_result(sql);
         if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
@@ -344,10 +345,10 @@ void db_load_classes(void)
         }
         mysql_free_result(resSkill);
 
-        sprintf( buf, "SELECT level, thaco, maleTitle, femaleTitle, minExp "
-                      "FROM classLevels WHERE classId = %d ORDER BY level",
-                      classId );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "SELECT level, thaco, maleTitle, femaleTitle, minExp "
+                         "FROM classLevels WHERE classId = %d ORDER BY level",
+                         classId );
+        mysql_query(sql, sqlbuf);
 
         resSkill = mysql_store_result(sql);
         if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
@@ -387,7 +388,6 @@ void db_load_skills(void)
 {
     int             i,
                     j;
-    char            buf[MAX_STRING_LENGTH];
 
     int             skillId;
     int             err = FALSE;
@@ -396,9 +396,9 @@ void db_load_skills(void)
 
     Log("Loading skills[] from SQL");
 
-    strcpy(buf, "SELECT skillId, skillName, skillType "
-                "FROM skills ORDER BY skillId ASC");
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT skillId, skillName, skillType "
+                   "FROM skills ORDER BY skillId ASC");
+    mysql_query(sql, sqlbuf);
 
     resSkill = mysql_store_result(sql);
     if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
@@ -425,10 +425,10 @@ void db_load_skills(void)
         skills[i].skillType = atoi(row[2]);
 
         for(j = 0; j < SKILL_MSG_COUNT; j++) {
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 1 AND "
-                          "`index` = %d", skillId, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 1 AND "
+                             "`index` = %d", skillId, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -450,7 +450,6 @@ void db_load_skills(void)
 void db_load_structures(void)
 {
     int             i;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
@@ -458,10 +457,10 @@ void db_load_structures(void)
     Log("Loading misc structures from SQL");
 
     /* direction[] */
-    strcpy(buf, "SELECT forward, reverse, trapBits, exit, listExit, "
-                "direction, description "
-                "FROM directions ORDER BY forward ASC");
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT forward, reverse, trapBits, exit, listExit, "
+                   "direction, description "
+                   "FROM directions ORDER BY forward ASC");
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(directionCount = mysql_num_rows(res)) ) {
@@ -490,9 +489,9 @@ void db_load_structures(void)
 
 
     /* clan_list[] */
-    strcpy(buf, "SELECT clanId, clanName, shortName, description, homeRoom "
-                "FROM playerClans ORDER BY clanId ASC");
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT clanId, clanName, shortName, description, homeRoom "
+                   "FROM playerClans ORDER BY clanId ASC");
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(clanCount = mysql_num_rows(res)) ) {
@@ -517,9 +516,9 @@ void db_load_structures(void)
     mysql_free_result(res);
 
     /* sectors[] */
-    strcpy(buf, "SELECT sectorType, mapChar, moveLoss "
-                "FROM sectorType ORDER BY sectorId ASC");
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT sectorType, mapChar, moveLoss "
+                   "FROM sectorType ORDER BY sectorId ASC");
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(sectorCount = mysql_num_rows(res)) ) {
@@ -551,16 +550,15 @@ void db_load_messages(void)
     int             i,
                     j,
                     skill;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res, *resMsg;
     MYSQL_ROW       row;
 
     Log("Loading fight messages from SQL");
 
-    strcpy( buf, "SELECT DISTINCT skillId FROM skillMessages "
-                 "WHERE msgId = 2 ORDER BY skillId" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
+                    "WHERE msgId = 2 ORDER BY skillId" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(fightMessageCount = mysql_num_rows(res)) ) {
@@ -583,10 +581,10 @@ void db_load_messages(void)
         fightMessages[i].a_type = skill;
 
         for( j = 0; j < FIGHT_MSG_COUNT; j++ ) {
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 2 AND "
-                          "`index` = %d", skill, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 2 AND "
+                             "`index` = %d", skill, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -610,7 +608,6 @@ void db_load_bannedUsers(void)
      * 3 - somewhere in string
      */
     int             i;
-    char            buf[MAX_STRING_LENGTH];
     char           *tmp;
 
     MYSQL_RES      *res;
@@ -618,8 +615,8 @@ void db_load_bannedUsers(void)
 
     Log("Loading banned usernames from SQL");
 
-    strcpy( buf, "SELECT name FROM bannedName" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT name FROM bannedName" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(bannedUserCount = mysql_num_rows(res)) ) {
@@ -663,7 +660,6 @@ void db_load_socials(void)
 {
     int             i,
                     j;
-    char            buf[MAX_STRING_LENGTH];
     int             tmp;
 
     MYSQL_RES      *res, *resMsg;
@@ -672,9 +668,9 @@ void db_load_socials(void)
 
     Log("Loading social messages from SQL");
 
-    strcpy( buf, "SELECT socialId, hide, minPosition FROM socials "
-                 "ORDER BY socialId" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT socialId, hide, minPosition FROM socials "
+                    "ORDER BY socialId" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
@@ -700,10 +696,10 @@ void db_load_socials(void)
         socialMessages[i].min_victim_position = atoi(row[2]);
 
         for( j = 0; j < SOCIAL_MSG_COUNT; j++ ) {
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 3 AND "
-                          "`index` = %d", tmp, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 3 AND "
+                             "`index` = %d", tmp, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -722,7 +718,6 @@ void db_load_kick_messages(void)
 {
     int             i,
                     j;
-    char            buf[MAX_STRING_LENGTH];
     int             tmp;
 
     MYSQL_RES      *res, *resMsg;
@@ -730,9 +725,9 @@ void db_load_kick_messages(void)
 
     Log("Loading kick messages from SQL");
 
-    strcpy( buf, "SELECT DISTINCT skillId FROM skillMessages "
-                 "WHERE msgId = 4 ORDER BY skillId" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
+                    "WHERE msgId = 4 ORDER BY skillId" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(kickMessageCount = mysql_num_rows(res)) ) {
@@ -755,10 +750,10 @@ void db_load_kick_messages(void)
         tmp = atoi(row[0]);
 
         for( j = 0; j < KICK_MSG_COUNT; j++ ) {
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 4 AND "
-                          "`index` = %d", tmp, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 4 AND "
+                             "`index` = %d", tmp, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -777,7 +772,6 @@ void db_load_poses(void)
 {
     int             i,
                     j;
-    char            buf[MAX_STRING_LENGTH];
     int             tmp;
 
     MYSQL_RES      *res, *resMsg;
@@ -785,9 +779,9 @@ void db_load_poses(void)
 
     Log("Loading pose messages from SQL");
 
-    strcpy( buf, "SELECT DISTINCT skillId FROM skillMessages "
-                 "WHERE msgId = 5 OR msgId = 6 ORDER BY skillId" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT DISTINCT skillId FROM skillMessages "
+                    "WHERE msgId = 5 OR msgId = 6 ORDER BY skillId" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
@@ -817,10 +811,10 @@ void db_load_poses(void)
         }
 
         for( j = 0; j < classCount; j++ ) {
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 5 AND "
-                          "`index` = %d", tmp, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 5 AND "
+                             "`index` = %d", tmp, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -829,10 +823,10 @@ void db_load_poses(void)
             }
             mysql_free_result(resMsg);
 
-            sprintf( buf, "SELECT text FROM skillMessages "
-                          "WHERE `skillId` = %d AND `msgId` = 6 AND "
-                          "`index` = %d", tmp, j+1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT text FROM skillMessages "
+                             "WHERE `skillId` = %d AND `msgId` = 6 AND "
+                             "`index` = %d", tmp, j+1 );
+            mysql_query(sql, sqlbuf);
 
             resMsg = mysql_store_result(sql);
             if( resMsg && mysql_num_rows(resMsg) ) {
@@ -856,7 +850,6 @@ void assign_mobiles( void )
                     rnum,
                     vnum,
                     count;
-    char            buf[MAX_STRING_LENGTH];
     int_func        func;
 
     MYSQL_RES      *res;
@@ -864,9 +857,9 @@ void assign_mobiles( void )
 
     Log("Loading mobile procs from SQL");
 
-    sprintf( buf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                  "WHERE `procType` = %d ORDER BY `vnum`", PROC_MOBILE );
-    mysql_query(sql, buf);
+    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
+                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_MOBILE );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -906,7 +899,6 @@ void assign_objects( void )
                     rnum,
                     vnum,
                     count;
-    char            buf[MAX_STRING_LENGTH];
     int_func        func;
 
     MYSQL_RES      *res;
@@ -914,9 +906,9 @@ void assign_objects( void )
 
     Log("Loading object procs from SQL");
 
-    sprintf( buf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                  "WHERE `procType` = %d ORDER BY `vnum`", PROC_OBJECT );
-    mysql_query(sql, buf);
+    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
+                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_OBJECT );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -956,7 +948,6 @@ void assign_rooms( void )
                     vnum,
                     count;
     struct room_data *rp;
-    char            buf[MAX_STRING_LENGTH];
     int_func        func;
 
     MYSQL_RES      *res;
@@ -964,9 +955,9 @@ void assign_rooms( void )
 
     Log("Loading room procs from SQL");
 
-    sprintf( buf, "SELECT `vnum`, `procedure` FROM procAssignments "
-                  "WHERE `procType` = %d ORDER BY `vnum`", PROC_ROOM );
-    mysql_query(sql, buf);
+    sprintf( sqlbuf, "SELECT `vnum`, `procedure` FROM procAssignments "
+                     "WHERE `procType` = %d ORDER BY `vnum`", PROC_ROOM );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -1002,18 +993,17 @@ void db_load_races(void)
 {
     int             i,
                     j;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res, *resMax;
     MYSQL_ROW       row;
 
     Log("Loading races[] from SQL");
 
-    strcpy( buf, "SELECT raceId, raceName, description, raceSize, ageStart, "
-                 "ageYoung, ageMature, ageMiddle, ageOld, ageAncient, "
-                 "ageVenerable, nativeLanguage "
-                 "FROM races ORDER BY raceId" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT raceId, raceName, description, raceSize, ageStart, "
+                    "ageYoung, ageMature, ageMiddle, ageOld, ageAncient, "
+                    "ageVenerable, nativeLanguage "
+                    "FROM races ORDER BY raceId" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(raceCount = mysql_num_rows(res)) ) {
@@ -1060,10 +1050,10 @@ void db_load_races(void)
         memset( races[i].racialMax, 0, classCount * sizeof(int) );
 
         for( j = 0; j < classCount; j++ ) {
-            sprintf( buf, "SELECT maxLevel FROM racialMax "
-                          "WHERE raceId = %d AND classId = %d",
-                          races[i].race + 1, j + 1 );
-            mysql_query(sql, buf);
+            sprintf( sqlbuf, "SELECT maxLevel FROM racialMax "
+                             "WHERE raceId = %d AND classId = %d",
+                             races[i].race + 1, j + 1 );
+            mysql_query(sql, sqlbuf);
 
             resMax = mysql_store_result(sql);
             if( resMax && mysql_num_rows(resMax) ) {
@@ -1082,16 +1072,15 @@ void db_load_races(void)
 void db_load_languages(void) 
 {
     int             i;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
     Log("Loading languages[] from SQL");
 
-    strcpy( buf, "SELECT `langId`, `skillId`, `name` FROM languages "
-                 "ORDER BY `langId`" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT `langId`, `skillId`, `name` FROM languages "
+                    "ORDER BY `langId`" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(languageCount = mysql_num_rows(res)) ) {
@@ -1121,8 +1110,6 @@ void db_load_languages(void)
 
 void db_load_textfiles(void)
 {
-    char            buf[MAX_STRING_LENGTH];
-
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
@@ -1132,8 +1119,8 @@ void db_load_textfiles(void)
     if( news ) {
         free( news );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 5" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 5" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1144,8 +1131,8 @@ void db_load_textfiles(void)
     if( credits ) {
         free( credits );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 1" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 1" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1156,8 +1143,8 @@ void db_load_textfiles(void)
     if( motd ) {
         free( motd );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 4" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 4" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1168,8 +1155,8 @@ void db_load_textfiles(void)
     if( wmotd ) {
         free( wmotd );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 6" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 6" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1180,8 +1167,8 @@ void db_load_textfiles(void)
     if( info ) {
         free( info );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 2" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 2" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1192,8 +1179,8 @@ void db_load_textfiles(void)
     if( login ) {
         free( login );
     }
-    strcpy( buf, "SELECT fileContents FROM textFiles WHERE fileId = 3" );
-    mysql_query(sql, buf);
+    strcpy( sqlbuf, "SELECT fileContents FROM textFiles WHERE fileId = 3" );
+    mysql_query(sql, sqlbuf);
     res = mysql_store_result(sql);
     if( res && mysql_num_rows(res) ) {
         row = mysql_fetch_row(res);
@@ -1204,7 +1191,6 @@ void db_load_textfiles(void)
 
 int db_save_textfile(struct char_data *ch)
 {
-    char            buf[MAX_STRING_LENGTH * 2];
     char           *outbuf;
     struct edit_txt_msg *tfd;
     int             fileId;
@@ -1238,45 +1224,45 @@ int db_save_textfile(struct char_data *ch)
         break;
     }
 
-    strcpy(buf, "\n");
+    strcpy(sqlbuf, "\n");
     if (tfd->date) {
-        strcat(buf, tfd->date);
-        while(buf[strlen(buf) - 1] == '~') {
-            buf[strlen(buf) - 1] = '\0';
+        strcat(sqlbuf, tfd->date);
+        while(sqlbuf[strlen(sqlbuf) - 1] == '~') {
+            sqlbuf[strlen(sqlbuf) - 1] = '\0';
         }
-        strcat(buf, "\n");
+        strcat(sqlbuf, "\n");
     }
 
     if (tfd->body) {
-        strcat(buf, "\n");
-        remove_cr(&buf[strlen(buf)], tfd->body);
-        while (buf[strlen(buf) - 1] == '~') {
-            buf[strlen(buf) - 1] = '\0';
+        strcat(sqlbuf, "\n");
+        remove_cr(&sqlbuf[strlen(sqlbuf)], tfd->body);
+        while (sqlbuf[strlen(sqlbuf) - 1] == '~') {
+            sqlbuf[strlen(sqlbuf) - 1] = '\0';
         }
     }
 
     if (tfd->author) {
-        strcat(buf, "\nLast edited by ");
-        strcat(buf, tfd->author);
-        strcat(buf, ".");
+        strcat(sqlbuf, "\nLast edited by ");
+        strcat(sqlbuf, tfd->author);
+        strcat(sqlbuf, ".");
         sprintf( author, "'%s'", tfd->author );
     } else {
         strcpy( author, "NULL" );
     }
 
-    strcat(buf, "\n");
+    strcat(sqlbuf, "\n");
 
-    outbuf = db_quote(buf);
+    outbuf = db_quote(sqlbuf);
 
-    sprintf( buf, "DELETE FROM textFiles WHERE `fileId` = %d", fileId );
-    mysql_query(sql, buf);
+    sprintf( sqlbuf, "DELETE FROM textFiles WHERE `fileId` = %d", fileId );
+    mysql_query(sql, sqlbuf);
 
-    sprintf( buf, "INSERT INTO textFiles (`fileId`, `lastModified`, "
-                  "`lastModBy`, `fileContents`) VALUES (%d, NULL, %s, '%s')",
-                  fileId, author, outbuf );
+    sprintf( sqlbuf, "INSERT INTO textFiles (`fileId`, `lastModified`, "
+                     "`lastModBy`, `fileContents`) VALUES (%d, NULL, %s, '%s')",
+                     fileId, author, outbuf );
     free( outbuf );
 
-    mysql_query(sql, buf);
+    mysql_query(sql, sqlbuf);
 
     return (TRUE);
 }
@@ -1289,7 +1275,6 @@ int db_save_textfile(struct char_data *ch)
  */
 void db_delete_board_message(struct board_def *board, short message_id)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             i,
                     count,
                     msgId;
@@ -1301,10 +1286,10 @@ void db_delete_board_message(struct board_def *board, short message_id)
      * First check to see if we have a reply to this message -- if so
      * axe it
      */
-    sprintf(buf, "SELECT `messageNum` FROM `boardMessages` "
-                 "WHERE `boardId` = %d AND `replyToMessageNum` = %d",
-                 board->boardId, message_id );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `messageNum` FROM `boardMessages` "
+                    "WHERE `boardId` = %d AND `replyToMessageNum` = %d",
+                    board->boardId, message_id );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( res && (count = mysql_num_rows(res)) ) {
@@ -1316,29 +1301,29 @@ void db_delete_board_message(struct board_def *board, short message_id)
     }
     mysql_free_result(res);
 
-    sprintf(buf, "DELETE FROM `boardMessages` where `messageNum` = %d AND "
-                 "`boardId` = %d", message_id, board->boardId );
-    mysql_query(sql, buf);
-    sprintf(buf, "UPDATE `boardMessages` SET `messageNum` = `messageNum` - 1 "
-                 "WHERE `messageNum` > %d AND `boardId` = %d", message_id, 
-                 board->boardId );
-    mysql_query(sql, buf);
-    sprintf(buf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` - 1 "
-                 "WHERE boardId = %d", board->boardId );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "DELETE FROM `boardMessages` where `messageNum` = %d AND "
+                    "`boardId` = %d", message_id, board->boardId );
+    mysql_query(sql, sqlbuf);
+    sprintf(sqlbuf, "UPDATE `boardMessages` "
+                    "SET `messageNum` = `messageNum` - 1 "
+                    "WHERE `messageNum` > %d AND `boardId` = %d", message_id, 
+                    board->boardId );
+    mysql_query(sql, sqlbuf);
+    sprintf(sqlbuf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` - 1 "
+                    "WHERE boardId = %d", board->boardId );
+    mysql_query(sql, sqlbuf);
 }
 
 struct board_def *db_lookup_board(int vnum)
 {
     struct board_def *board;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `boardId`, `maxPostNum`, `minLevel` "
-                 "FROM `boards` WHERE `vnum` = %d", vnum);
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `boardId`, `maxPostNum`, `minLevel` "
+                    "FROM `boards` WHERE `vnum` = %d", vnum);
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -1366,16 +1351,16 @@ struct board_def *db_lookup_board(int vnum)
 struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
 {
     struct bulletin_board_message *msg;
-    char            buf[MAX_STRING_LENGTH];
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `poster`, `topic`, `post`, "
-                 "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
-                 "FROM `boardMessages` "
-                 "WHERE `boardId` = %d AND messageNum = %d", boardId, msgNum );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `poster`, `topic`, `post`, "
+                    "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
+                    "FROM `boardMessages` "
+                    "WHERE `boardId` = %d AND messageNum = %d", boardId,
+                    msgNum );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -1428,19 +1413,18 @@ void db_free_board_message(struct bulletin_board_message *msg)
 int db_get_board_replies(struct board_def *board, int msgId, 
                          struct bulletin_board_message **msg)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             count,
                     i;
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `poster`, `topic`, `post`, `messageNum`, "
-                 "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
-                 "FROM `boardMessages` "
-                 "WHERE `boardId` = %d AND replyToMessageNum = %d "
-                 "ORDER BY `messageNum`", board->boardId, msgId );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `poster`, `topic`, `post`, `messageNum`, "
+                    "UNIX_TIMESTAMP(`postTime`), `replyToMessageNum` "
+                    "FROM `boardMessages` "
+                    "WHERE `boardId` = %d AND replyToMessageNum = %d "
+                    "ORDER BY `messageNum`", board->boardId, msgId );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -1500,56 +1484,54 @@ void db_free_board_replies(struct bulletin_board_message *msg, int count)
 void db_post_message(struct board_def *board, 
                      struct bulletin_board_message *msg)
 {
-    char            buf[MAX_STRING_LENGTH];
     char           *topic,
                    *post;
 
     topic = db_quote(msg->title);
     post  = db_quote(msg->text);
 
-    sprintf(buf, "INSERT INTO `boardMessages` (`boardId`, `messageNum`, "
-                 "`replyToMessageNum`, `topic`, `poster`, `postTime`, "
-                 "`post`) VALUES (%d, %d, %d, '%s', '%s', NULL, '%s')",
-                 board->boardId, board->messageCount + 1, msg->reply_to,
-                 topic, msg->author, post );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "INSERT INTO `boardMessages` (`boardId`, `messageNum`, "
+                    "`replyToMessageNum`, `topic`, `poster`, `postTime`, "
+                    "`post`) VALUES (%d, %d, %d, '%s', '%s', NULL, '%s')",
+                    board->boardId, board->messageCount + 1, msg->reply_to,
+                    topic, msg->author, post );
+    mysql_query(sql, sqlbuf);
     
     free(topic);
     free(post);
 
-    sprintf(buf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` + 1 "
-                 "WHERE `boardId` = %d", board->boardId );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "UPDATE `boards` SET `maxPostNum` = `maxPostNum` + 1 "
+                    "WHERE `boardId` = %d", board->boardId );
+    mysql_query(sql, sqlbuf);
 
     db_free_board_message(msg);
 }
 
 void db_store_mail(char *to, char *from, char *message_pointer)
 {
-    char            buf[MAX_STRING_LENGTH];
     char           *post;
 
     post = db_quote(message_pointer);
 
-    sprintf(buf, "INSERT INTO `mailMessages` (`mailFrom`, `mailTo`, "
-                 "`timestamp`, `message`) VALUES ('%s', '%s', NULL, '%s')",
-                 from, to, post );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "INSERT INTO `mailMessages` (`mailFrom`, `mailTo`, "
+                    "`timestamp`, `message`) VALUES ('%s', '%s', NULL, '%s')",
+                    from, to, post );
+    mysql_query(sql, sqlbuf);
 
     free(post);
 }
 
 int             db_has_mail(char *recipient)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             count;
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT HIGH_PRIORITY COUNT(*) as count FROM `mailMessages` "
-                 "WHERE LOWER(`mailTo`) = LOWER('%s')", recipient );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT HIGH_PRIORITY COUNT(*) as count FROM "
+                    "`mailMessages` WHERE LOWER(`mailTo`) = LOWER('%s')", 
+                    recipient );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -1566,16 +1548,15 @@ int             db_has_mail(char *recipient)
 
 int db_get_mail_ids(char *recipient, int *messageNum, int count)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             i;
 
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `messageNum` FROM `mailMessages` "
-                 "WHERE LOWER(`mailTo`) = LOWER('%s') ORDER BY `timestamp` "
-                 "LIMIT %d", recipient, count );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `messageNum` FROM `mailMessages` "
+                    "WHERE LOWER(`mailTo`) = LOWER('%s') ORDER BY `timestamp` "
+                    "LIMIT %d", recipient, count );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -1594,16 +1575,14 @@ int db_get_mail_ids(char *recipient, int *messageNum, int count)
 
 char *db_get_mail_message(int messageId)
 {
-    char            buf[MAX_STRING_LENGTH];
-
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `mailFrom`, `mailTo`, "
-                 "DATE_FORMAT(`timestamp`, '%%a %%b %%c %%Y  %%H:%%i:%%S'), "
-                 "`message` FROM `mailMessages` WHERE `messageNum` = %d",
-                 messageId );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `mailFrom`, `mailTo`, "
+                    "DATE_FORMAT(`timestamp`, '%%a %%b %%c %%Y  %%H:%%i:%%S'), "
+                    "`message` FROM `mailMessages` WHERE `messageNum` = %d",
+                    messageId );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -1613,34 +1592,30 @@ char *db_get_mail_message(int messageId)
 
     row = mysql_fetch_row(res);
 
-    sprintf(buf, " * * * * Havok Mail System * * * *\n\r"
-                 "Date: %s\n\r"
-                 "  To: %s\n\r"
-                 "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
+    sprintf(sqlbuf, " * * * * Havok Mail System * * * *\n\r"
+                    "Date: %s\n\r"
+                    "  To: %s\n\r"
+                    "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
     mysql_free_result(res);
 
-    return( strdup(buf) );
+    return( strdup(sqlbuf) );
 }
 
 void db_delete_mail_message(int messageId)
 {
-    char            buf[MAX_STRING_LENGTH];
-
-    sprintf(buf, "DELETE FROM `mailMessages` WHERE `messageNum` = %d",
-                 messageId );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "DELETE FROM `mailMessages` WHERE `messageNum` = %d",
+                    messageId );
+    mysql_query(sql, sqlbuf);
 }
 
 int CheckKillFile(long virtual)
 {
-    char            buf[MAX_STRING_LENGTH];
-
     MYSQL_RES      *res;
     int             count;
 
-    sprintf(buf, "SELECT `vnum` FROM `mobKillfile` WHERE `vnum` = %ld", 
-                 virtual );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `vnum` FROM `mobKillfile` WHERE `vnum` = %ld", 
+                    virtual );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
 
@@ -1653,15 +1628,13 @@ int CheckKillFile(long virtual)
 
 char *db_lookup_help( int type, char *keywords )
 {
-    char            buf[MAX_STRING_LENGTH];
-
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `keywords`, `helpText` FROM `helpTopics` "
-                 "WHERE `helpType` = %d AND "
-                 "UPPER(`keywords`) = UPPER('%s')", type, keywords );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `keywords`, `helpText` FROM `helpTopics` "
+                    "WHERE `helpType` = %d AND "
+                    "UPPER(`keywords`) = UPPER('%s')", type, keywords );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -1671,16 +1644,15 @@ char *db_lookup_help( int type, char *keywords )
 
     row = mysql_fetch_row(res);
 
-    sprintf(buf, "\"%s\"\n\r\n\r"
+    sprintf(sqlbuf, "\"%s\"\n\r\n\r"
                  "%s\n\r", row[0], row[1] );
     mysql_free_result(res);
 
-    return( strdup(buf) );
+    return( strdup(sqlbuf) );
 }
 
 char *db_lookup_help_similar( int type, char *keywords )
 {
-    char            buf[MAX_STRING_LENGTH];
     char            line[256];
     int             count,
                     i;
@@ -1688,12 +1660,12 @@ char *db_lookup_help_similar( int type, char *keywords )
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT UPPER(`keywords`), "
-                 "MATCH(`keywords`, `helpText`) AGAINST('%s') AS score "
-                 "FROM  `helpTopics` WHERE `helpType` = %d AND "
-                 "MATCH(keywords, helpText) AGAINST('%s') "
-                 "ORDER BY score DESC LIMIT 10", keywords, type, keywords );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT UPPER(`keywords`), "
+                    "MATCH(`keywords`, `helpText`) AGAINST('%s') AS score "
+                    "FROM  `helpTopics` WHERE `helpType` = %d AND "
+                    "MATCH(keywords, helpText) AGAINST('%s') "
+                    "ORDER BY score DESC LIMIT 10", keywords, type, keywords );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -1701,27 +1673,27 @@ char *db_lookup_help_similar( int type, char *keywords )
         return(NULL);
     }
 
-    sprintf(buf, "No exact matches found for \"%s\".  Top %d relevant topics "
-                 "are:\n\r  %-68s Score\n\r", keywords, count, "Keywords" );
+    sprintf(sqlbuf, "No exact matches found for \"%s\".  Top %d relevant "
+                    "topics are:\n\r  %-68s Score\n\r", keywords, count,
+                    "Keywords" );
 
     for( i = 0; i < count; i++ ) {
         row = mysql_fetch_row(res);
 
         snprintf(line, 255, "    %-66s %6.3f\n\r", row[0],
                             strtod(row[1], NULL));
-        strcat(buf, line);
+        strcat(sqlbuf, line);
     }
 
     mysql_free_result(res);
 
-    strcat(buf, "Please retry help using one of these keywords.\n\r");
+    strcat(sqlbuf, "Please retry help using one of these keywords.\n\r");
 
-    return( strdup(buf) );
+    return( strdup(sqlbuf) );
 }
 
 void db_save_object(struct obj_data *obj, int owner, int ownerItem )
 {
-    char            buf[MAX_STRING_LENGTH];
     char           *name,
                    *shortDesc,
                    *desc,
@@ -1749,23 +1721,24 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         actDesc[0] = '\0';
     }
 
-    sprintf(buf, "REPLACE INTO `objects` (`vnum`, `ownerId`, `ownedItemId`, "
-                 "`shortDescription`, `description`, "
-                 "`actionDescription`, `modBy`, `itemType`, `value0`, "
-                 "`value1`, `value2`, `value3`, `weight`, `cost`, "
-                 "`costPerDay`, `level`, `max`, `modified`, "
-                 "`speed`, `weaponType`, `tweak`) VALUES ( %d, %d, %d, "
-                 "'%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                 "%d, FROM_UNIXTIME(%ld), %d, %d, %d)", vnum, owner, ownerItem,
-                 shortDesc, desc, actDesc, obj->modBy,
-                 obj->obj_flags.type_flag, obj->obj_flags.value[0],
-                 obj->obj_flags.value[1], obj->obj_flags.value[2],
-                 obj->obj_flags.value[3], obj->obj_flags.weight,
-                 obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
-                 obj->max, (long)obj->modified, 
-                 (IS_WEAPON(obj)? obj->speed : 0),
-                 (IS_WEAPON(obj) ? obj->weapontype : 0), obj->tweak );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "REPLACE INTO `objects` (`vnum`, `ownerId`, `ownedItemId`, "
+                    "`shortDescription`, `description`, "
+                    "`actionDescription`, `modBy`, `itemType`, `value0`, "
+                    "`value1`, `value2`, `value3`, `weight`, `cost`, "
+                    "`costPerDay`, `level`, `max`, `modified`, "
+                    "`speed`, `weaponType`, `tweak`) VALUES ( %d, %d, %d, "
+                    "'%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, "
+                    "%d, %d, FROM_UNIXTIME(%ld), %d, %d, %d)", 
+                    vnum, owner, ownerItem,
+                    shortDesc, desc, actDesc, obj->modBy,
+                    obj->obj_flags.type_flag, obj->obj_flags.value[0],
+                    obj->obj_flags.value[1], obj->obj_flags.value[2],
+                    obj->obj_flags.value[3], obj->obj_flags.weight,
+                    obj->obj_flags.cost, obj->obj_flags.cost_per_day, 
+                    obj->level, obj->max, (long)obj->modified, 
+                    (IS_WEAPON(obj)? obj->speed : 0),
+                    (IS_WEAPON(obj) ? obj->weapontype : 0), obj->tweak );
+    mysql_query(sql, sqlbuf);
     free(shortDesc);
     free(desc);
     free(actDesc);
@@ -1774,144 +1747,147 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     i = 0;
     while( (keyword = strsep(&name, " \t\n\r")) ) {
         quoted = db_quote(keyword);
-        sprintf(buf, "REPLACE INTO `objectKeywords` (`vnum`, `ownerId`, "
-                     "`ownedItemId`, `seqNum`, `keyword`) VALUES ( %d, %d, "
-                     "%d, %d, '%s')", vnum, owner, ownerItem, i, quoted);
-        mysql_query(sql, buf);
+        sprintf(sqlbuf, "REPLACE INTO `objectKeywords` (`vnum`, `ownerId`, "
+                        "`ownedItemId`, `seqNum`, `keyword`) VALUES ( %d, %d, "
+                        "%d, %d, '%s')", vnum, owner, ownerItem, i, quoted);
+        mysql_query(sql, sqlbuf);
         free(quoted);
         i++;
     }
     free(name);
 
-    sprintf(buf, "DELETE FROM `objectKeywords` WHERE `vnum` = %d AND "
-                 "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` >= %d",
-                 vnum, owner, ownerItem, i);
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "DELETE FROM `objectKeywords` WHERE `vnum` = %d AND "
+                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` >= %d",
+                    vnum, owner, ownerItem, i);
+    mysql_query(sql, sqlbuf);
 
-    strcpy(buf, "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, "
-                "`ownedItemId`, `takeable`, `wearFinger`, `wearNeck`, "
-                "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, `wearHands`, "
-                "`wearArms`, `wearShield`, `wearAbout`, `wearWaist`, "
-                "`wearWrist`, `wearBack`, `wearEar`, `wearEye`, "
-                "`wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
-                "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, "
-                "`magic`, `cursed`, `brittle`, `resistant`, `immune`, `rare`, "
-                "`uberRare`, `quest`, `antiSun`, `antiGood`, `antiEvil`, ");
-    strcat(buf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
-                "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
-                "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, `onlyPaladin`, "
-                "`onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
-                "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, "
-                "`antiDruid`, `antiMonk`, `antiBarbarian`, `antiSorcerer`, "
-                "`antiPaladin`, `antiRanger`, `antiPsionicist`, "
-                "`antiNecromancer`) VALUES (" );
-    sprintf( &buf[strlen(buf)], "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d)", 
-                                vnum, owner, ownerItem,
-                                WEAR_FLAG(obj, ITEM_TAKE),
-                                WEAR_FLAG(obj, ITEM_WEAR_FINGER),
-                                WEAR_FLAG(obj, ITEM_WEAR_NECK),
-                                WEAR_FLAG(obj, ITEM_WEAR_BODY),
-                                WEAR_FLAG(obj, ITEM_WEAR_HEAD),
-                                WEAR_FLAG(obj, ITEM_WEAR_LEGS),
-                                WEAR_FLAG(obj, ITEM_WEAR_FEET),
-                                WEAR_FLAG(obj, ITEM_WEAR_HANDS),
-                                WEAR_FLAG(obj, ITEM_WEAR_ARMS),
-                                WEAR_FLAG(obj, ITEM_WEAR_SHIELD),
-                                WEAR_FLAG(obj, ITEM_WEAR_ABOUT),
-                                WEAR_FLAG(obj, ITEM_WEAR_WAISTE),
-                                WEAR_FLAG(obj, ITEM_WEAR_WRIST),
-                                WEAR_FLAG(obj, ITEM_WEAR_BACK),
-                                WEAR_FLAG(obj, ITEM_WEAR_EAR),
-                                WEAR_FLAG(obj, ITEM_WEAR_EYE),
-                                WEAR_FLAG(obj, ITEM_LIGHT_SOURCE),
-                                WEAR_FLAG(obj, ITEM_HOLD),
-                                WEAR_FLAG(obj, ITEM_WIELD),
-                                WEAR_FLAG(obj, ITEM_THROW),
-                                EXTRA_FLAG(obj, ITEM_GLOW),
-                                EXTRA_FLAG(obj, ITEM_HUM),
-                                EXTRA_FLAG(obj, ITEM_METAL),
-                                EXTRA_FLAG(obj, ITEM_MINERAL),
-                                EXTRA_FLAG(obj, ITEM_ORGANIC),
-                                EXTRA_FLAG(obj, ITEM_INVISIBLE),
-                                EXTRA_FLAG(obj, ITEM_MAGIC),
-                                EXTRA_FLAG(obj, ITEM_NODROP),
-                                EXTRA_FLAG(obj, ITEM_BRITTLE),
-                                EXTRA_FLAG(obj, ITEM_RESISTANT),
-                                EXTRA_FLAG(obj, ITEM_IMMUNE),
-                                EXTRA_FLAG(obj, ITEM_RARE),
-                                EXTRA_FLAG(obj, ITEM_UNUSED),
-                                EXTRA_FLAG(obj, ITEM_QUEST),
-                                EXTRA_FLAG(obj, ITEM_ANTI_SUN),
-                                EXTRA_FLAG(obj, ITEM_ANTI_GOOD),
-                                EXTRA_FLAG(obj, ITEM_ANTI_EVIL),
-                                EXTRA_FLAG(obj, ITEM_ANTI_NEUTRAL),
-                                EXTRA_FLAG(obj, ITEM_ANTI_MEN),
-                                EXTRA_FLAG(obj, ITEM_ANTI_WOMEN),
-                                ONLY_FLAG(obj, ITEM_ANTI_MAGE),
-                                ONLY_FLAG(obj, ITEM_ANTI_CLERIC),
-                                ONLY_FLAG(obj, ITEM_ANTI_FIGHTER),
-                                ONLY_FLAG(obj, ITEM_ANTI_THIEF),
-                                ONLY_FLAG(obj, ITEM_ANTI_DRUID),
-                                ONLY_FLAG(obj, ITEM_ANTI_MONK),
-                                ONLY_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                                ONLY_FLAG(obj, ITEM_ANTI_MAGE),
-                                ONLY_FLAG(obj, ITEM_ANTI_PALADIN),
-                                ONLY_FLAG(obj, ITEM_ANTI_RANGER),
-                                ONLY_FLAG(obj, ITEM_ANTI_PSI),
-                                ONLY_FLAG(obj, ITEM_ANTI_NECROMANCER),
-                                ANTI_FLAG(obj, ITEM_ANTI_MAGE),
-                                ANTI_FLAG(obj, ITEM_ANTI_CLERIC),
-                                ANTI_FLAG(obj, ITEM_ANTI_FIGHTER),
-                                ANTI_FLAG(obj, ITEM_ANTI_THIEF),
-                                ANTI_FLAG(obj, ITEM_ANTI_DRUID),
-                                ANTI_FLAG(obj, ITEM_ANTI_MONK),
-                                ANTI_FLAG(obj, ITEM_ANTI_BARBARIAN),
-                                ANTI_FLAG(obj, ITEM_ANTI_MAGE),
-                                ANTI_FLAG(obj, ITEM_ANTI_PALADIN),
-                                ANTI_FLAG(obj, ITEM_ANTI_RANGER),
-                                ANTI_FLAG(obj, ITEM_ANTI_PSI),
-                                ANTI_FLAG(obj, ITEM_ANTI_NECROMANCER));
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, "
+                   "`ownedItemId`, `takeable`, `wearFinger`, `wearNeck`, "
+                   "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, "
+                   "`wearHands`, `wearArms`, `wearShield`, `wearAbout`, "
+                   "`wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
+                   "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, "
+                   "`wearThrow`, `glow`, `hum`, `metal`, `mineral`, `organic`, "
+                   "`invisible`, `magic`, `cursed`, `brittle`, `resistant`, "
+                   "`immune`, `rare`, `uberRare`, `quest`, `antiSun`, "
+                   "`antiGood`, `antiEvil`, ");
+    strcat(sqlbuf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
+                   "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
+                   "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
+                   "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, "
+                   "`onlyNecromancer`, `antiMage`, `antiCleric`, "
+                   "`antiWarrior`, `antiThief`, `antiDruid`, `antiMonk`, "
+                   "`antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
+                   "`antiRanger`, `antiPsionicist`, `antiNecromancer`) "
+                   "VALUES (" );
+    sprintf( &sqlbuf[strlen(sqlbuf)], "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                                      "%d, %d, %d, %d, %d, %d, %d)", 
+                                      vnum, owner, ownerItem,
+                                      WEAR_FLAG(obj, ITEM_TAKE),
+                                      WEAR_FLAG(obj, ITEM_WEAR_FINGER),
+                                      WEAR_FLAG(obj, ITEM_WEAR_NECK),
+                                      WEAR_FLAG(obj, ITEM_WEAR_BODY),
+                                      WEAR_FLAG(obj, ITEM_WEAR_HEAD),
+                                      WEAR_FLAG(obj, ITEM_WEAR_LEGS),
+                                      WEAR_FLAG(obj, ITEM_WEAR_FEET),
+                                      WEAR_FLAG(obj, ITEM_WEAR_HANDS),
+                                      WEAR_FLAG(obj, ITEM_WEAR_ARMS),
+                                      WEAR_FLAG(obj, ITEM_WEAR_SHIELD),
+                                      WEAR_FLAG(obj, ITEM_WEAR_ABOUT),
+                                      WEAR_FLAG(obj, ITEM_WEAR_WAISTE),
+                                      WEAR_FLAG(obj, ITEM_WEAR_WRIST),
+                                      WEAR_FLAG(obj, ITEM_WEAR_BACK),
+                                      WEAR_FLAG(obj, ITEM_WEAR_EAR),
+                                      WEAR_FLAG(obj, ITEM_WEAR_EYE),
+                                      WEAR_FLAG(obj, ITEM_LIGHT_SOURCE),
+                                      WEAR_FLAG(obj, ITEM_HOLD),
+                                      WEAR_FLAG(obj, ITEM_WIELD),
+                                      WEAR_FLAG(obj, ITEM_THROW),
+                                      EXTRA_FLAG(obj, ITEM_GLOW),
+                                      EXTRA_FLAG(obj, ITEM_HUM),
+                                      EXTRA_FLAG(obj, ITEM_METAL),
+                                      EXTRA_FLAG(obj, ITEM_MINERAL),
+                                      EXTRA_FLAG(obj, ITEM_ORGANIC),
+                                      EXTRA_FLAG(obj, ITEM_INVISIBLE),
+                                      EXTRA_FLAG(obj, ITEM_MAGIC),
+                                      EXTRA_FLAG(obj, ITEM_NODROP),
+                                      EXTRA_FLAG(obj, ITEM_BRITTLE),
+                                      EXTRA_FLAG(obj, ITEM_RESISTANT),
+                                      EXTRA_FLAG(obj, ITEM_IMMUNE),
+                                      EXTRA_FLAG(obj, ITEM_RARE),
+                                      EXTRA_FLAG(obj, ITEM_UNUSED),
+                                      EXTRA_FLAG(obj, ITEM_QUEST),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_SUN),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_GOOD),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_EVIL),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_NEUTRAL),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_MEN),
+                                      EXTRA_FLAG(obj, ITEM_ANTI_WOMEN),
+                                      ONLY_FLAG(obj, ITEM_ANTI_MAGE),
+                                      ONLY_FLAG(obj, ITEM_ANTI_CLERIC),
+                                      ONLY_FLAG(obj, ITEM_ANTI_FIGHTER),
+                                      ONLY_FLAG(obj, ITEM_ANTI_THIEF),
+                                      ONLY_FLAG(obj, ITEM_ANTI_DRUID),
+                                      ONLY_FLAG(obj, ITEM_ANTI_MONK),
+                                      ONLY_FLAG(obj, ITEM_ANTI_BARBARIAN),
+                                      ONLY_FLAG(obj, ITEM_ANTI_MAGE),
+                                      ONLY_FLAG(obj, ITEM_ANTI_PALADIN),
+                                      ONLY_FLAG(obj, ITEM_ANTI_RANGER),
+                                      ONLY_FLAG(obj, ITEM_ANTI_PSI),
+                                      ONLY_FLAG(obj, ITEM_ANTI_NECROMANCER),
+                                      ANTI_FLAG(obj, ITEM_ANTI_MAGE),
+                                      ANTI_FLAG(obj, ITEM_ANTI_CLERIC),
+                                      ANTI_FLAG(obj, ITEM_ANTI_FIGHTER),
+                                      ANTI_FLAG(obj, ITEM_ANTI_THIEF),
+                                      ANTI_FLAG(obj, ITEM_ANTI_DRUID),
+                                      ANTI_FLAG(obj, ITEM_ANTI_MONK),
+                                      ANTI_FLAG(obj, ITEM_ANTI_BARBARIAN),
+                                      ANTI_FLAG(obj, ITEM_ANTI_MAGE),
+                                      ANTI_FLAG(obj, ITEM_ANTI_PALADIN),
+                                      ANTI_FLAG(obj, ITEM_ANTI_RANGER),
+                                      ANTI_FLAG(obj, ITEM_ANTI_PSI),
+                                      ANTI_FLAG(obj, ITEM_ANTI_NECROMANCER));
+    mysql_query(sql, sqlbuf);
 
     for (descr = obj->ex_description, i = 0; descr; descr = descr->next, i++) {
         desc = db_quote(descr->description);
         name = db_quote(descr->keyword);
-        sprintf(buf, "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, "
-                     "`ownedItemId`, `seqNum`, `keyword`, `description`) "
-                     "VALUES ( %d, %d, %d, %d, '%s', '%s')",
-                     vnum, owner, ownerItem, i, name, desc );
-        mysql_query(sql, buf);
+        sprintf(sqlbuf, "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, "
+                        "`ownedItemId`, `seqNum`, `keyword`, `description`) "
+                        "VALUES ( %d, %d, %d, %d, '%s', '%s')",
+                        vnum, owner, ownerItem, i, name, desc );
+        mysql_query(sql, sqlbuf);
         free(name);
         free(desc);
     }
 
-    sprintf(buf, "DELETE FROM `objectExtraDesc` WHERE `vnum` = %d AND "
-                 "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                 vnum, owner, ownerItem, i );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "DELETE FROM `objectExtraDesc` WHERE `vnum` = %d AND "
+                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
+                    vnum, owner, ownerItem, i );
+    mysql_query(sql, sqlbuf);
 
     for (i = 0, j = 0; i < MAX_OBJ_AFFECT; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
-            sprintf(buf, "REPLACE INTO `objectAffects` (`vnum`, `ownerId`, "
-                         "`ownedItemId`, `seqNum`, `location`, `modifier`) "
-                         "VALUES ( %d, %d, %d, %d, %d, %ld )",
-                         vnum, owner, ownerItem, j, obj->affected[i].location,
-                         obj->affected[i].modifier);
-            mysql_query(sql, buf);
+            sprintf(sqlbuf, "REPLACE INTO `objectAffects` (`vnum`, `ownerId`, "
+                            "`ownedItemId`, `seqNum`, `location`, `modifier`) "
+                            "VALUES ( %d, %d, %d, %d, %d, %ld )",
+                            vnum, owner, ownerItem, j, 
+                            obj->affected[i].location,
+                            obj->affected[i].modifier);
+            mysql_query(sql, sqlbuf);
             j++;
         }
     }
 
-    sprintf(buf, "DELETE FROM `objectAffects` WHERE `vnum` = %d AND "
-                 "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                 vnum, owner, ownerItem, j);
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "DELETE FROM `objectAffects` WHERE `vnum` = %d AND "
+                    "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
+                    vnum, owner, ownerItem, j);
+    mysql_query(sql, sqlbuf);
 }
 
 struct obj_flag_bits {
@@ -1990,7 +1966,6 @@ struct obj_flag_bits obj_flags[] = {
 struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
                                 int ownerItem )
 {
-    char            buf[MAX_STRING_LENGTH];
     unsigned int   *var;
     struct extra_descr_data *descr;
     struct extra_descr_data *prev;
@@ -2001,14 +1976,14 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     MYSQL_RES      *res;
     MYSQL_ROW       row;
 
-    sprintf(buf, "SELECT `shortDescription`, `description`, "
-                 "`actionDescription`, `modBy`, `itemType`, `value0`, "
-                 "`value1`, `value2`, `value3`, `weight`, `cost`, "
-                 "`costPerDay`, `level`, `max`, UNIX_TIMESTAMP(`modified`), "
-                 "`speed`, `weaponType`, `tweak` FROM `objects` "
-                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownedItemId` = %d",
-                 vnum, owner, ownerItem);
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `shortDescription`, `description`, "
+                    "`actionDescription`, `modBy`, `itemType`, `value0`, "
+                    "`value1`, `value2`, `value3`, `weight`, `cost`, "
+                    "`costPerDay`, `level`, `max`, UNIX_TIMESTAMP(`modified`), "
+                    "`speed`, `weaponType`, `tweak` FROM `objects` "
+                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
+                    "`ownedItemId` = %d", vnum, owner, ownerItem);
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -2039,10 +2014,10 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 
     mysql_free_result(res);
 
-    sprintf(buf, "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = %d "
-                 "AND `ownerId` = %d AND `ownedItemId` = %d ORDER BY `seqNum`",
-                 vnum, owner, ownerItem );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = %d "
+                    "AND `ownerId` = %d AND `ownedItemId` = %d ORDER BY "
+                    "`seqNum`", vnum, owner, ownerItem );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -2069,26 +2044,29 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     mysql_free_result(res);
 
 
-    strcpy(buf, "SELECT `takeable`, `wearFinger`, `wearNeck`, "
-                "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, `wearHands`, "
-                "`wearArms`, `wearShield`, `wearAbout`, `wearWaist`, "
-                "`wearWrist`, `wearBack`, `wearEar`, `wearEye`, "
-                "`wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
-                "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, "
-                "`magic`, `cursed`, `brittle`, `resistant`, `immune`, `rare`, "
-                "`uberRare`, `quest`, `antiSun`, `antiGood`, `antiEvil`, ");
-    strcat(buf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
-                "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
-                "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, `onlyPaladin`, "
-                "`onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
-                "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, "
-                "`antiDruid`, `antiMonk`, `antiBarbarian`, `antiSorcerer`, "
-                "`antiPaladin`, `antiRanger`, `antiPsionicist`, "
-                "`antiNecromancer` FROM `objectFlags` ");
+    strcpy(sqlbuf, "SELECT `takeable`, `wearFinger`, `wearNeck`, "
+                   "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, "
+                   "`wearHands`, `wearArms`, `wearShield`, `wearAbout`, "
+                   "`wearWaist`, `wearWrist`, `wearBack`, `wearEar`, "
+                   "`wearEye`, `wearLightSource`, `wearHold`, `wearWield`, "
+                   "`wearThrow`, `glow`, `hum`, `metal`, `mineral`, `organic`, "
+                   "`invisible`, `magic`, `cursed`, `brittle`, `resistant`, "
+                   "`immune`, `rare`, `uberRare`, `quest`, `antiSun`, "
+                   "`antiGood`, `antiEvil`, ");
+    strcat(sqlbuf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
+                   "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
+                   "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, "
+                   "`onlyPaladin`, `onlyRanger`, `onlyPsionicist`, "
+                   "`onlyNecromancer`, `antiMage`, `antiCleric`, "
+                   "`antiWarrior`, `antiThief`, `antiDruid`, `antiMonk`, "
+                   "`antiBarbarian`, `antiSorcerer`, `antiPaladin`, "
+                   "`antiRanger`, `antiPsionicist`, `antiNecromancer` "
+                   "FROM `objectFlags` ");
                 
-    sprintf( &buf[strlen(buf)], "WHERE `vnum` = %d AND `ownerId` = %d AND "
-                                "`ownedItemId` = %d", vnum, owner, ownerItem );
-    mysql_query(sql, buf);
+    sprintf( &sqlbuf[strlen(sqlbuf)], "WHERE `vnum` = %d AND `ownerId` = %d "
+                                      "AND `ownedItemId` = %d", 
+                                      vnum, owner, ownerItem );
+    mysql_query(sql, sqlbuf);
     
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
@@ -2123,10 +2101,11 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
 
     obj->ex_description = NULL;
 
-    sprintf(buf, "SELECT `keyword`, `description` FROM `objectExtraDesc` "
-                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownerItemId` = %d "
-                 "ORDER BY `seqNum`", vnum, owner, ownerItem );
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `keyword`, `description` FROM `objectExtraDesc` "
+                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
+                    "`ownerItemId` = %d ORDER BY `seqNum`", 
+                    vnum, owner, ownerItem );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( res && (count = mysql_num_rows(res)) ) {
@@ -2153,10 +2132,11 @@ struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
     }
     mysql_free_result(res);
 
-    sprintf(buf, "SELECT `location`, `modifier` FROM `objectAffects` "
-                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownedItemId` = %d "
-                 "ORDER BY `seqNum`", vnum, owner, ownerItem);
-    mysql_query(sql, buf);
+    sprintf(sqlbuf, "SELECT `location`, `modifier` FROM `objectAffects` "
+                    "WHERE `vnum` = %d AND `ownerId` = %d AND "
+                    "`ownedItemId` = %d ORDER BY `seqNum`",
+                    vnum, owner, ownerItem);
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( res && (count = mysql_num_rows(res)) ) {
@@ -2180,7 +2160,6 @@ struct keyword_list {
 
 int db_find_object_named(char *string, int owner, int ownerItem)
 {
-    char            buf[MAX_STRING_LENGTH];
     char            tempbuf[256];
     int             count;
     int             i;
@@ -2215,20 +2194,20 @@ int db_find_object_named(char *string, int owner, int ownerItem)
         count++;
     }
 
-    strcpy(buf, "SELECT a1.vnum from " );
+    strcpy(sqlbuf, "SELECT a1.vnum from " );
     for( i = 0; i < count; i++ ) {
         if( i ) {
-            strcat(buf, ", ");
+            strcat(sqlbuf, ", ");
         }
         sprintf(tempbuf, "`objectKeywords` as a%d", i+1);
-        strcat(buf, tempbuf);
+        strcat(sqlbuf, tempbuf);
     }
-    strcat(buf, " WHERE ");
+    strcat(sqlbuf, " WHERE ");
 
     if( count > 1 ) {
         for( i = 1; i < count; i++ ) {
             sprintf(tempbuf, "a%d.vnum = a1.vnum AND ", i+1);
-            strcat(buf, tempbuf);
+            strcat(sqlbuf, tempbuf);
         }
     }
 
@@ -2237,12 +2216,10 @@ int db_find_object_named(char *string, int owner, int ownerItem)
          i++, curr = curr->next ) {
 
         sprintf(tempbuf, "a%d.keyword REGEXP '^%s' AND ", i+1, curr->keyword );
-        strcat(buf, tempbuf);
+        strcat(sqlbuf, tempbuf);
     }
-    strcat(buf, "1 LIMIT 1");
-    mysql_query(sql, buf);
-
-    Log(buf);
+    strcat(sqlbuf, "1 LIMIT 1");
+    mysql_query(sql, sqlbuf);
 
     vnum = -1;
 
@@ -2267,7 +2244,6 @@ int db_find_object_named(char *string, int owner, int ownerItem)
 struct index_data *db_generate_object_index(int *top, int *sort_top,
                                             int *alloc_top)
 {
-    char            buf[MAX_STRING_LENGTH];
     struct index_data *index = NULL;
     int             i,
                     vnum,
@@ -2280,9 +2256,9 @@ struct index_data *db_generate_object_index(int *top, int *sort_top,
                    *resKeywords;
     MYSQL_ROW       row;
 
-    strcpy(buf, "SELECT `vnum` FROM `objects` WHERE `ownerId` = -1 AND "
-                "ownedItemId = -1 ORDER BY `vnum`" );
-    mysql_query(sql, buf);
+    strcpy(sqlbuf, "SELECT `vnum` FROM `objects` WHERE `ownerId` = -1 AND "
+                   "ownedItemId = -1 ORDER BY `vnum`" );
+    mysql_query(sql, sqlbuf);
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
@@ -2306,10 +2282,10 @@ struct index_data *db_generate_object_index(int *top, int *sort_top,
         index[i].data = NULL;
         index[i].func = NULL;
 
-        sprintf( buf, "SELECT `keyword` FROM `objectKeywords` "
-                      "WHERE `vnum` = %d AND `ownerId` = -1 AND "
-                      "`ownedItemId` = -1 ORDER BY `seqNum`", vnum );
-        mysql_query(sql, buf);
+        sprintf( sqlbuf, "SELECT `keyword` FROM `objectKeywords` "
+                         "WHERE `vnum` = %d AND `ownerId` = -1 AND "
+                         "`ownedItemId` = -1 ORDER BY `seqNum`", vnum );
+        mysql_query(sql, sqlbuf);
 
         index[i].name = NULL;
         len = 0;
