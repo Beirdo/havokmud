@@ -3303,8 +3303,8 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 		return;
 
 	if(!IsUndead(victim)) {
-		send_to_char("They seem alive and well.. Why would you??\n\r",ch);
-
+		send_to_char("They seem alive and well.. Why would you?\n\r",ch);
+		return;
 	}
 
 	  healpoints = dice(3,8)+3;
@@ -3456,6 +3456,10 @@ void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim,
 
 	if(victim == ch) {
 		send_to_char("Draw your own life? That could be a bad idea.\n\r",ch);
+		return;
+	}
+	if(victim == ch) {
+		send_to_char("Tap your own life? That could be a bad idea.\n\r",ch);
 		return;
 	}
 
@@ -3914,6 +3918,10 @@ void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim
 
 	if(victim == ch) {
 		send_to_char("Leech your own life? That could be a bad idea.\n\r",ch);
+		return;
+	}
+	if(victim == ch) {
+		send_to_char("Tap your own life? That could be a bad idea.\n\r",ch);
 		return;
 	}
 

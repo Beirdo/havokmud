@@ -3634,7 +3634,7 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       dam /= 2;
     act ("You are attacked by $n who shouts a heroic warcry!",TRUE,ch,0,dude,TO_VICT);
     act ("$n screams a warcry at $N with a tremendous fury!",TRUE,ch,0,dude,TO_ROOM);
-    act ("You fly into battle $N with a holy warcry!",TRUE,ch,0,dude,TO_CHAR);
+    act ("You fly into battle with $N as you emit a holy warcry!",TRUE,ch,0,dude,TO_CHAR);
     if (!damage(ch, dude, dam, SKILL_HOLY_WARCRY)) {
        if (!ch->specials.fighting)
          set_fighting (ch,dude);
