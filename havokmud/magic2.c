@@ -703,10 +703,10 @@ void spell_infravision(byte level, struct char_data *ch,
   if (!IS_AFFECTED(victim, AFF_INFRAVISION) && !IS_AFFECTED(victim, AFF_INFRAVISION)) {
     if (ch != victim) {
        send_to_char("Your eyes glow red.\n\r", victim);
-       act("$n's eyes glow red.\n\r", FALSE, victim, 0, 0, TO_ROOM);
+       act("$n's eyes glow red.", FALSE, victim, 0, 0, TO_ROOM);
     } else {
        send_to_char("Your eyes glow red.\n\r", ch);
-       act("$n's eyes glow red.\n\r", FALSE, ch, 0, 0, TO_ROOM);
+       act("$n's eyes glow red.", FALSE, ch, 0, 0, TO_ROOM);
     }
 
     af.type      = SPELL_INFRAVISION;

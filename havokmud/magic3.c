@@ -4860,7 +4860,7 @@ void song_of_seeing(byte level, struct char_data *ch, struct char_data *victim, 
 
 	if (!IS_AFFECTED(victim, AFF_INFRAVISION)) {
 		send_to_char("Your eyes glow red.\n\r", victim);
-		act("$n's eyes glow red.\n\r", FALSE, victim, 0, 0, TO_ROOM);
+		act("$n's eyes glow red.", FALSE, victim, 0, 0, TO_ROOM);
 
 		af.type      = SONG_OF_SEEING;
 		af.duration  = 24;

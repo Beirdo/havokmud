@@ -2739,52 +2739,54 @@ argument = one_argument(argument,tbuf);
 		person=(d->original?d->original:d->character);
 		if(person) {
 			if(person->in_room) {
-				if(GetMaxLevel(person)) { /* Avoid class reset during who/char_generation   bug fix -Lennya */
-					if(CAN_SEE(ch, person)) {
-						if(cmd==234) { /* whozone */
-							if(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone) {
-								if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
-									ch_printf(ch,"$c000w%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
-									if (GetMaxLevel(ch) >= LOW_IMMORTAL)
-										ch_printf(ch," [%ld]", person->in_room);
-									send_to_char("\n\r",ch);
-									count++;
-								}
-							}
-						} else {
-							/*Get mortal class titles */
-							if(!IS_IMMORTAL(person)) {
-								sprintf(classes,"");
-								for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
-									if(HasClass(person,bit)) {
-										classn++;
-										total+=person->player.level[i];
-										if(strlen(classes)!=0)
-											strcat(classes,"/");
-										sprintf(classes+strlen(classes),"%s",classname[i]);
+				if(real_roomp(person->in_room)) {
+					if(GetMaxLevel(person)) { /* Avoid class reset during who/char_generation   bug fix -Lennya */
+						if(CAN_SEE(ch, person)) {
+							if(cmd==234) { /* whozone */
+								if(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone) {
+									if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
+										ch_printf(ch,"$c000w%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
+										if (GetMaxLevel(ch) >= LOW_IMMORTAL)
+											ch_printf(ch," [%ld]", person->in_room);
+										send_to_char("\n\r",ch);
+										count++;
 									}
 								}
-							}
-							/* Split off into the different groups */
-							if(IS_IMMORTAL(person)) {
-								sprintf(immbuf, "%s",person->specials.immtitle ? person->specials.immtitle: GetLevelTitle(person));
-								sprintf(levelimm, "%34s","");
-								strcpy(levelimm+18-((strlen(immbuf))/2),immbuf);
-								sprintf(buf,"%s%-34s %s:$c000w %s%s\n\r"
-									,"$c000Y", levelimm, color, PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
-
-								if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals */
-									strcat(quest, buf);
-								else
-									strcat(immortals, buf);
-							} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
-								sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
-								strcat(quest, buf);
 							} else {
-								sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
-								strcat(mortals, buf);
+								/*Get mortal class titles */
+								if(!IS_IMMORTAL(person)) {
+									sprintf(classes,"");
+									for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
+										if(HasClass(person,bit)) {
+											classn++;
+											total+=person->player.level[i];
+											if(strlen(classes)!=0)
+												strcat(classes,"/");
+											sprintf(classes+strlen(classes),"%s",classname[i]);
+										}
+									}
+								}
+								/* Split off into the different groups */
+								if(IS_IMMORTAL(person)) {
+									sprintf(immbuf, "%s",person->specials.immtitle ? person->specials.immtitle: GetLevelTitle(person));
+									sprintf(levelimm, "%34s","");
+									strcpy(levelimm+18-((strlen(immbuf))/2),immbuf);
+									sprintf(buf,"%s%-34s %s:$c000w %s%s\n\r"
+										,"$c000Y", levelimm, color, PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
+
+									if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals */
+										strcat(quest, buf);
+									else
+										strcat(immortals, buf);
+								} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
+									sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									strcat(quest, buf);
+								} else {
+									sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									strcat(mortals, buf);
+								}
+								count++;
 							}
-							count++;
 						}
 					}
 				}
