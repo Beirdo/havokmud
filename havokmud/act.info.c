@@ -5277,7 +5277,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 				return;
 			} else {
 				/* valid clan number */
-				ch_printf(ch,"    $c000c-=* $c000w%s %c000wClan info $c000c*=-\n\r",clan_list[clan].name);
+				ch_printf(ch,"    $c000c-=* $c000w%s $c000wClan info $c000c*=-\n\r",clan_list[clan].name);
 
 				/* loop through pfiles, check for saint[clan] */
 //				ch_printf(ch,"\n\r       $c000c- $c000w%s Saints $c000c-\n\r",clan_list[clan].name);
@@ -5288,7 +5288,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 						clear_char(tmp);
 						store_to_char(&player, tmp);
 						if(IS_IMMORTAL(tmp) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s\n\r",(GET_SEX(tmp)?((GET_SEX(ch) != SEX_FEMALE)?"Patron":"Matron"):"Notron"),
+							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s\n\r",(GET_SEX(tmp)?((GET_SEX(tmp) != SEX_FEMALE)?"Patron":"Matron"):"Notron"),
 								tmp->player.title?tmp->player.title:GET_NAME(tmp));
 						}
 						free(tmp);

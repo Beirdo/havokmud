@@ -1073,7 +1073,7 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
 
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max 4-ContainerFullness) --> ", ch);
+ send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max) --> ", ch);
  return;
 
 }
