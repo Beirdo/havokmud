@@ -58,7 +58,7 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg,
     char            buf[255];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
@@ -167,7 +167,7 @@ void UpdateRoomMenu(struct char_data *ch)
 void RoomEdit(struct char_data *ch, char *arg)
 {
     if (ch->specials.edit == MAIN_MENU) {
-        if (!*arg || *arg == '\n') {
+        if (!arg || !*arg || *arg == '\n') {
             ch->desc->connected = CON_PLYNG;
             act("$n has returned from editing.", FALSE, ch, 0, 0, TO_ROOM);
             return;
@@ -257,7 +257,7 @@ void ChangeRoomName(struct room_data *rp, struct char_data *ch, char *arg,
     char            buf[255];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
@@ -320,7 +320,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg,
     char            buf[255];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
@@ -394,7 +394,7 @@ void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg,
     char            buf[1024];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
@@ -494,7 +494,7 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
     }
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             switch (dir) {
             case 0:
                 ch->specials.edit = CHANGE_NUMBER_NORTH;

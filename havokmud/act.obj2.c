@@ -1635,7 +1635,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("What did you want to auction?\n\r", ch);
         return;
     }
@@ -1712,7 +1712,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         /* 
          * show help bid 
          */

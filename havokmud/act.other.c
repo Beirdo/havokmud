@@ -87,7 +87,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
             act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
             send_to_char("You relax.\n\r", ch);
@@ -427,7 +427,7 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM)) {
         return;
     }
-    if (!*argument || strcmp(argument, "now")) {
+    if (!argument || !*argument || strcmp(argument, "now")) {
         do_mobTell(ch, "A Tiny Voice",
                    "Psst. You should really rent at an Inn Keeper.");
         do_mobTell(ch, "A Tiny Voice",
@@ -980,7 +980,7 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
         return;
@@ -1014,7 +1014,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("I beg your pardon?\n\r", ch);
         return;
     }
@@ -1046,7 +1046,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Pardon?\n\r", ch);
         return;
     }
@@ -2078,7 +2078,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
     if (cmd == 260) {
         arg = skip_spaces(arg);
 
-        if (!*arg) {
+        if (!arg) {
             /*
              * print list of current aliases
              */

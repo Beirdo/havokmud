@@ -30,7 +30,7 @@ void do_say(struct char_data *ch, char *argument, int cmd)
         return;
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
     } else {
         sprintf(buf, "$c0015$n says '%s'", argument);
@@ -639,7 +639,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
     dlog("in do_sign");
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Yes, but WHAT do you want to sign?\n\r", ch);
         return;
     }
@@ -794,7 +794,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
         return;
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
         return;
     }
@@ -957,7 +957,7 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
 
     argument = skip_spaces(argument);
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("What do you want to group tell!??\n\r", ch);
         return;
     }
@@ -1120,7 +1120,7 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Pray to a deity, but what?!?! (pray <DeityName> "
                      "<prayer>)\n\r", ch);
         return;
@@ -1293,7 +1293,7 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("Hrm... normally, you should OOC something...\n\r", ch);
         return;
     }
@@ -1395,7 +1395,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
         send_to_char("They seem to have left...", ch);
         return;
     }
-	if (!*argument) {
+	if (!argument || !*argument) {
         send_to_char("Did they leave you speechless?\n\r", ch);
         return;
     } else if (GET_POS(vict) == POSITION_SLEEPING && !IS_IMMORTAL(ch)) {

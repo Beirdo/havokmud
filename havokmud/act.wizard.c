@@ -372,7 +372,7 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg || !*arg) {
         send_to_char("Your current bamfin is:\n\r", ch);
         act(ch->specials.poofin, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfin <bamf definition>\n\r", ch);
@@ -422,7 +422,7 @@ void do_bamfout(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg || !*arg) {
         send_to_char("Your current bamfout is:\n\r", ch);
         act(ch->specials.poofout, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfout <bamf definition>\n\r", ch);
@@ -784,7 +784,7 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("rload <start> [<end>]\n\r", ch);
         return;
     }
@@ -837,7 +837,7 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         start = ch->in_room;
         if (!(start > 0 && start < WORLD_SIZE)) {
             send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
@@ -887,7 +887,7 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
     }
 
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg || !*arg) {
         send_to_char("Yes.. But what?\n\r", ch);
         return;
     }
@@ -913,7 +913,7 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         if (IS_SET(ch->specials.act, PLR_ECHO)) {
             send_to_char("echo off\n\r", ch);
             REMOVE_BIT(ch->specials.act, PLR_ECHO);
@@ -941,7 +941,7 @@ void do_system(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("That must be a mistake...\n\rTry arguments 1-8 (Info, "
                      "Ann, Upd, sys, warn, reb, wel, note)\n\r", ch);
         return;

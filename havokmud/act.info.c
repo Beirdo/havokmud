@@ -3934,7 +3934,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
 
     argument = skip_spaces(argument);
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("You must supply a class!\n\r", ch);
         return;
     }
@@ -5833,7 +5833,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    if (!*arg) {
+    if (!arg || !*arg) {
         /*
          * list the clans
          */

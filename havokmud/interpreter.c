@@ -1286,7 +1286,7 @@ int color_strlen(struct char_data *ch, char *arg, int cmd)
                     rel = 0,
                     i = 0;
 
-    if (!*arg) {
+    if (!arg || !*arg) {
         return (0);
     }
     abs = strlen(arg);
@@ -1684,7 +1684,7 @@ int fill_word(char *argument)
  */
 int is_abbrev(char *arg1, char *arg2)
 {
-    if (!*arg1) {
+    if (!arg1 || !*arg1 || !arg2 || !*arg2) {
         return (0);
     }
     for (; *arg1; arg1++, arg2++) {
@@ -2301,7 +2301,7 @@ void nanny(struct descriptor_data *d, char *arg)
     case CON_QRACE:
         d->character->reroll = 20;
         arg = skip_spaces(arg);
-        if (!*arg) {
+        if (!arg || !*arg) {
             show_race_choice(d);
             SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
             STATE(d) = CON_QRACE;
@@ -2347,7 +2347,7 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         arg = skip_spaces(arg);
-        if (!*arg) {
+        if (!arg || !*arg) {
             close_socket(d);
         } else {
             if (_parse_name(arg, tmp_name)) {
@@ -2440,7 +2440,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!*arg) {
+        if (!arg || !*arg) {
             close_socket(d);
         } else {
             if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
@@ -2588,7 +2588,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!*arg || strlen(arg) > 10) {
+        if (!arg || !*arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Illegal password.\n\r", d);
             SEND_TO_Q("Password: ", d);
@@ -3676,7 +3676,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
-        if (!*arg || strlen(arg) > 10) {
+        if (!arg || !*arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Illegal password.\n\r", d);

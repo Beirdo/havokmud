@@ -213,7 +213,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
      * skip blanks 
      */ 
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg || !*arg) {
         sprintf(buf, "re: %s", msg->title);
 #if 0
         sprintf(buf, "re: %s", strip_ansi(ansi_buf, msg->title, 128) );

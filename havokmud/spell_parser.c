@@ -3050,7 +3050,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     /*
      * If there is no chars in argument 
      */
-    if (!*argument) {
+    if (!argument || !*argument) {
         if (cmd != 600) {
             send_to_char("Cast which what where?\n\r", ch);
         } else {

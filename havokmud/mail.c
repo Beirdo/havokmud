@@ -617,7 +617,7 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
             return;
         }
     }
-    if (!*arg) {
+    if (!arg || !*arg) {
         act("$N tells you, 'Who did you want me to send this to?'",
             FALSE, ch, 0, mailman, TO_CHAR);
         return;

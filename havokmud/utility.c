@@ -6210,7 +6210,7 @@ float arg_to_float(char *arg)
                     x = 0,
                     y = 10;
 
-    if (!*arg)
+    if (!arg || !*arg)
         return (0.0);
 
     abs = strlen(arg);

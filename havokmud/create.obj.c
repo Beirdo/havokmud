@@ -101,7 +101,7 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -156,7 +156,7 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -291,7 +291,7 @@ void UpdateObjMenu(struct char_data *ch)
 void ObjEdit(struct char_data *ch, char *arg)
 {
     if (ch->specials.oedit == OBJ_MAIN_MENU) {
-        if (!*arg || *arg == '\n') {
+        if (!arg || !*arg || *arg == '\n') {
             ch->desc->connected = CON_PLYNG;
             act("$n has returned from editing an object.", FALSE, ch, 0, 0,
                 TO_ROOM);
@@ -450,7 +450,7 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct obj_data *obj;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -480,7 +480,7 @@ void ChangeObjShort(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct obj_data *obj;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -511,7 +511,7 @@ void ChangeObjDesc(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct obj_data *obj;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -543,7 +543,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -595,7 +595,7 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
     struct obj_data *obj;
     long            change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -627,7 +627,7 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
     struct obj_data *obj;
     long            change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -671,7 +671,7 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
     struct obj_data *obj;
     long            change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
@@ -703,7 +703,7 @@ void ChangeObjAffects(struct char_data *ch, char *arg, int type)
     char            buf[1024];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -780,7 +780,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -1032,7 +1032,7 @@ void ChangeObjValues(struct char_data *ch, char *arg, int type)
     char            buf[1024];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -1079,7 +1079,7 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
     char            buf[1024];
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -1131,7 +1131,7 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
     long            update;
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -1256,7 +1256,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (!*arg || (*arg == '\n')) {
+        if (!arg || !*arg || (*arg == '\n')) {
             ch->specials.oedit = OBJ_MAIN_MENU;
             UpdateObjMenu(ch);
             return;
@@ -1636,7 +1636,7 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
         break;
     }
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = CHANGE_OBJ_AFFECTS;
         UpdateObjMenu(ch);
         return;
@@ -1737,7 +1737,7 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
         break;
     }
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.oedit = CHANGE_OBJ_AFFECTS;
         UpdateObjMenu(ch);
         return;

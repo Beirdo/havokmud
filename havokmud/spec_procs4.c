@@ -2128,7 +2128,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     char           *cogname;
 
-    if (!cmd || !ch || cmd != 374 || !ch->in_room || !*arg) {
+    if (!cmd || !ch || cmd != 374 || !ch->in_room || !arg || !*arg) {
         return (FALSE);
     }
 

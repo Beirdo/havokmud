@@ -3238,7 +3238,7 @@ void cast_transport_via_plant(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj)
 {
-    if (!*arg) {
+    if (!arg || !*arg) {
         return;
     }
     switch (type) {
@@ -3256,7 +3256,7 @@ void cast_plant_gate(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
-    if (!*arg) {
+    if (!arg || !*arg) {
         return;
     }
     switch (type) {
@@ -3785,7 +3785,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
          * get the argument, parse it into a direction 
          */
         arg = skip_spaces(arg);
-        if (!*arg) {
+        if (!arg || !*arg) {
             send_to_char("you must supply a direction!\n\r", ch);
             return;
         }
