@@ -2000,7 +2000,68 @@ dlog("in do_set");
     argument = one_argument(argument, name);
     argument = one_argument(argument, parmstr);
 
-    if ((mob = get_char_vis(ch, name)) == NULL)
+/* New @ help - 9-30-01 - Mythos */
+    if (!strcmp(field, "help")) {
+	send_to_char("
+	@\n\r
+	Usage :@ <field> <user name> <value>\r
+	\r
+	align - Sets Alignment\r
+	class - Sets Class\r
+		  1 = Mage	 2 = Cleric  	 4 = Warrior  	  8 = Thief\r
+		 16 = Druid	32 = Monk  	64 = Barbarian	128 = Sorceror\r
+		256 = Paladin  512 = Ranger   1024 = Psionist  2048 = Bard(Not Done)\r
+	For Multi-class characters add the numbers of the required classes together\r
+	ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\r
+	\r
+	exp - Total Experience\r
+	lev - Level (only sets Mage level, use advance for other classes)\r
+	sex - Sex  0 = Neutral   1 = Male   2 = Female\r
+	race - Race of character or mob.  Use 'help allrace' for listing\r
+	hunger - Hunger level of PC\r
+	thirst - Thirst level of PC\r
+	zone - Gives editing access to a zone\r
+	hit - Current Hitpoints\r
+	mhit - Max Hitpoints\r
+	tohit - To hit modifier\r
+	todam - Damange modifier\r
+	ac - Armor Class of PC\r
+	bank - Amount of coins in bank\r
+	gold - Amount of coins on PC\r
+	age - Age of PC.  Postive numbers will add to age.  Negative will subtract.\r
+	prac - Number of Practices\r
+	str - Strength of PC\r
+	add - Strength Modifier (ie 18/75 using this one could change the 75)\r
+	saves - Saving throws (doesn't work)\r
+	skills - how learned a skill is. @ skills <target> <skill number> <level> - See allspells for skill and spell list.\r
+	stadd - Strength Modifier (ie 18/75 using this one could change the 75)\r
+	int - Intelligence\r
+	wis - Wisdom\r
+	dex - Dexterity\r
+	con - Constitution\r
+	chr - Charisma\r
+	pkill - Enable and Disable Player killing\r
+	mana - Set current and max Mana\r
+	start - Set starting room\r
+	murder - Flag PC as murderer\r
+	stole - Flag PC as thief\r
+	known - Make spell or skill known to PC.  @ known <target> <skill number> - See allspells for listing.\r
+	nodelete - Set NODELETE flag on PC.\r
+	specflags - Does nothing.\r
+	racewar - Flag PC as part of race wars\r
+	numatks - Number of attacks PC has.\r
+	objedit - Enable or Disable an Immortals ability to edit objects.\r
+	mobedit - Enable or disable an Immortals ability to edit mobiles.\r
+	remaffect - Remove all affects from target.\r
+	wizreport - Set wizreport flag on target.\r
+	nofly - Flag target as not being able to fly.\r
+	wingsburn - Flag target as not being able to fly.  Burns wings of winged mobiles/PCs.\r
+	move - Set current Movement.\r
+	mmove - Set Max Movement.\r
+
+	Remember, be careful how you use this command!\n\r",ch);
+
+    } else if ((mob = get_char_vis(ch, name)) == NULL)
     {
 send_to_char("
 @\n\r
@@ -2009,11 +2070,12 @@ Usage :@ <field> <user name> <value>\r
 This is a Implementor command and should be used with care as it can\r
 change any ability/skill/attr of a character. Here is a list of fields,\r
 the value types will differ with each (i.e. number/alpha char)\r
+For more help type '@ help'\r
 \r
-align class exp lev sex race hunger thirst one hit mhit tohit todam\r
+align class exp lev sex race hunger thirst zone hit mhit tohit todam\r
 ac bank gold age prac str add saves skills stadd int wis dex con chr\r
 pkill mana start murder stole known zone nodelete specflags racewar \r
-numatks objedit mobedit remaffect wizreport nofly wingsburn\r
+numatks objedit mobedit remaffect wizreport nofly wingsburn move mmove\r
 Remember, be careful how you use this command!\n\r",ch);
       return;
     }
@@ -2144,6 +2206,18 @@ Remember, be careful how you use this command!\n\r",ch);
     } else if (!strcmp(field, "mhit")) {
       sscanf(parmstr,"%d",&parm);
       mob->points.max_hit = parm;
+
+/* new 9-30.01 - Mythos */
+
+    } else if (!strcmp(field, "move")) {
+      sscanf(parmstr,"%d",&parm);
+      GET_MOVE(mob) = parm;
+    } else if (!strcmp(field, "mmove")) {
+      sscanf(parmstr,"%d",&parm);
+      mob->points.max_move = parm;
+
+/**/
+
     } else if (!strcmp(field, "tohit")) {
       sscanf(parmstr,"%d", &parm);
       GET_HITROLL(mob)=parm;

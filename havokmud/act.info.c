@@ -3049,7 +3049,7 @@ dlog("in do_who");
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 'h':
-		  sprintf(ttbuf,"Hit:[%-3d] Mana:[%-3d] Move:[%-3d] ",GET_HIT(person),GET_MANA(person),GET_MOVE(person));
+		  sprintf(ttbuf,"Hit:[%d/%-3d] Mana:[%d/%-3d] Move:[%d/%-3d]",GET_HIT(person),GET_MAX_HIT(person),GET_MANA(person),GET_MAX_MANA(person),GET_MOVE(person),GET_MAX_MOVE(person));
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 's':
