@@ -1493,6 +1493,7 @@ void assign_rooms()
 
     /*Thunder Mountain Keep */
     {45450, Thunder_Fountain},
+    {45409, rope_room},
     {46378, bahamut_home},
 
     {31943, pet_shops },

@@ -6219,3 +6219,50 @@ struct char_data *tar_char;
 
  return(FALSE);
 }
+
+#define MAGE_CAVE 45461
+int rope_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+  char buf[MAX_INPUT_LENGTH];
+
+
+	if (cmd == 5) /*up*/
+	{
+	        act("A magical force blocks your ascent.",FALSE,ch,0,0,TO_CHAR);
+		return(TRUE);
+	}
+
+	if (cmd == 15) /*look*/
+	{
+		only_argument(arg,buf);
+		if(*buf)
+		{
+			if(!(str_cmp("up", buf)) || !(str_cmp("u", buf)) || !(str_cmp("Up", buf)))
+			{
+				send_to_char("All you can see up there is a cliff wall\n\r",ch);
+				return(TRUE);
+			}
+		}
+	}
+
+	if (cmd == 224) /*pull*/
+	{
+    		only_argument(arg,buf);
+  		if(*buf) 
+		{
+    			if(!(str_cmp("rope",buf)) || !(str_cmp("Rope",buf))) 
+			{
+				act("You grab the rope and give it a tug, but can't", FALSE, ch, 0, 0, TO_CHAR);
+				send_to_char("let go.  The rope jerks back and pulls you up\n\r", ch);
+				send_to_char("with it.\n\r", ch);
+				act("$n pulls on a rope and is suddenly pulled up into the sky!", FALSE, ch, 0, 0, TO_ROOM);
+          			char_from_room(ch);
+          			char_to_room(ch,MAGE_CAVE);
+          			act("$n suddenly appears from below.", FALSE, ch, 0, 0, TO_ROOM);
+          			do_look(ch, "", 0);
+          			return(TRUE);
+			}
+		}
+	}
+  return(FALSE);
+}

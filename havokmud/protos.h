@@ -1335,6 +1335,7 @@ int MordGuildGuard(struct char_data *ch, int cmd, char *arg, struct char_data *m
 int CaravanGuildGuard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int rope_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 void ThrowChar(struct char_data *ch, struct char_data *v, int dir);
 int ThrowerMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
