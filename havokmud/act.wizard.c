@@ -2825,7 +2825,7 @@ void do_genstatue(struct char_data *ch, char *argument, int cmd)
 	char name[100], to_flux[100],buf[100];
 	void update_pos( struct char_data *victim );
 
-dlog("in do_stgen");
+dlog("in do_genstatue");
 
 	if (IS_NPC(ch))
 		return;
@@ -2833,20 +2833,7 @@ dlog("in do_stgen");
 	only_argument(argument, buf);
 
 	if (!*buf) {
-		sprintf(buf,"%s just did a genstatue.",GET_NAME(ch)); /* want to keep an eye on how often it's used */
-		log_sev(buf,0);
-		generate_legend_statue(ch, 0, "", victim, 0);
-
-//		send_to_char("You send a warm aura resonating throughout the lands.\n\r", ch);
-//		act("A warm aura emanates from $n.", TRUE, ch, 0, 0, TO_ROOM);
-//		for (i = descriptor_list; i; i = i->next)
-//			if (!i->connected && !IS_IMMORTAL(i->character)) {  /* only connected mortals will be fluxxed */
-//				GET_MANA(victim) = GET_MAX_MANA(victim); /* flux restores hp, ma, mv */
-//				GET_HIT(victim) = GET_MAX_HIT(victim);
-//				GET_MOVE(victim) = GET_MAX_MOVE(victim);
-//				update_pos( victim );
-//				act("The resonance of a higher being surges through your soul, leaving you $c0006r$c0002ef$c0010res$c0002he$c0006d$c0007.",FALSE,victim,0,ch,TO_CHAR);
-//			}
+		generate_legend_statue(ch, "", 584);
 	} else
 		send_to_char("No need to add an argument, Usage: 'genstatue'.\n\r",ch);
 }

@@ -709,128 +709,117 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 #define LEGEND_STATUE 701
 #define LEGEND_PAINTING 703
 #define LEGEND_BIOGRAPHY 702
-int generate_legend_statue(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
-	struct char_data *player;
+	struct char_data *tmp;
+	struct char_file_u player;
 	struct extra_descr_data *ed;
-	char buf[254],name[254],shdesc[254],desc[254],exkey[254],exdesc[500];
-	int itype = 0, rnum = 0, ammt = 0;
-	FILE *fl;
-	struct my_char_data {
-		struct char_file_u grunt;  		/* contained in structs.h */
-//	struct char_file_u dummy;
-//		struct char_file_u_new grunt2;	/* contained here */
-//		short AXE;
-	}**dummy;
+	char buf[254],name[254],shdesc[254],desc[254],exdesc[500];
+	int i = 0, itype = 0, rnum = 0;
+	extern int top_of_p_table;
+	extern struct player_index_element *player_table;
 
-
-	printf("Does this run??");
-
-	log("start proc");
+//	log("indexing pfiles for statue generation");
+	CREATE(tmp, struct char_data,1);
+	clear_char(tmp);
 
 	/* seems easiest to let this place update each time the zone inits */
-	/* cycle through this for every player found in playerfile? */
-	if (!(fl = fopen(PLAYER_FILE, "r"))) {
-		log("Can not open playerfile in statue generation proc.");
-		return(TRUE);
-	}
-
-	log("opened pfile");
-
-	dummy=(struct my_char_data **)malloc(5500 * sizeof(dummy));
-	if(dummy==NULL) {
-		log("empty dummy in statue generation");
-		return(TRUE);
-	}
-
-	log("shaped dummy?");
-
-	for (;!feof(fl);) {
-//		fread(&dummy, sizeof(struct char_file_u), 1, fl);
-
-		sprintf(buf,"ammt: %d",ammt);
-		log(buf);
-
-		dummy[ammt]=(struct my_char_data *)malloc(sizeof(struct my_char_data));
-		log("dummied again");
-		if (!feof(fl)) {
-			if(strcmp(dummy[ammt]->grunt.name,"111111") && strcmp(dummy[ammt]->grunt.name,"")) {
-				/* determine if this player has a 10, 20 or 40k kill count */
-				sprintf(buf,"found dummy: %s",dummy[ammt]->grunt.name);
-				log(buf);
-				if(dummy[ammt]->grunt./*specials.*/m_kills >= 10000) {
-					if(dummy[ammt]->grunt./*specials.*/m_kills >= 40000) {
-						itype = LEGEND_BIOGRAPHY;
-						rnum = number(701,724);
-						sprintf(name,"biography tome %s",dummy[ammt]->grunt.name);
-						sprintf(shdesc,"a biography of %s",dummy[ammt]->grunt.name);
-						sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",dummy[ammt]->grunt.name);
-						sprintf(exkey,"biography tome %s",dummy[ammt]->grunt.name);
-						sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.\n\r",dummy[ammt]->grunt.name);
-					} else if(dummy[ammt]->grunt./*specials.*/m_kills >= 20000) {
-						itype = LEGEND_PAINTING;
-						rnum = number(726,735);
-						sprintf(name,"painting %s",dummy[ammt]->grunt.name);
-						sprintf(shdesc,"a painting of %s",dummy[ammt]->grunt.name);
-						sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",dummy[ammt]->grunt.name);
-						sprintf(exkey,"painting %s",dummy[ammt]->grunt.name);
-						sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greaters of these times.\n\r",dummy[ammt]->grunt.name,dummy[ammt]->grunt.name);
-					} else {
-						itype = LEGEND_STATUE;
-						rnum = number(726,735);
-						sprintf(name,"statue %s",dummy[ammt]->grunt.name);
-						sprintf(shdesc,"a statue of %s",dummy[ammt]->grunt.name);
-						sprintf(desc,"A statue of the legendary %s has been erected here.",dummy[ammt]->grunt.name);
-						sprintf(exkey,"statue %s",dummy[ammt]->grunt.name);
-						sprintf(exdesc,"This is a statue of %s, the legendary slayer.\n\r",dummy[ammt]->grunt.name);
-					}
-					if(type == 0) {
-						log("Oddness in statue generation, no type found");
-						return(TRUE);
-					}
-					if(rnum == 0) {
-						log("Oddness in statue generation, no rnum found");
-						return(TRUE);
-					}
-					/* load the generic item */
-					obj = read_object(itype, REAL);
-					/* and string it up a bit */
-					if(obj->short_description) {
-						free(obj->short_description);
-						obj->short_description = strdup(shdesc);
-					}
-					if(obj->description) {
-						free(obj->description);
-						obj->description = strdup(desc);
-					}
-					if(obj->name) {
-						free(obj->name);
-						obj->name = strdup(name);
-					}
-					if(obj->ex_description) {
-						log("trying to string invalid item in statue generation");
-						return(TRUE);
-					} else {
-						/* create an extra desc structure for the object */
-						CREATE(ed, struct extra_descr_data, 1);
-						obj->ex_description = ed;
-						/* define the keywords */
-						CREATE(ed->keyword, char, strlen(exkey) + 1);
-						strcpy(ed->keyword, exkey);
-						/* define the description */
-						CREATE(ed->description, char, strlen(exdesc) + 1);
-						strcpy(ed->description, exdesc);
-					}
-					/* and finally place it in a room */
-					obj_to_room(obj,rnum);
-				log("dummy had enough kills");
+	for(i=0;i<top_of_p_table;i++) {
+//		sprintf(buf,"i = %d",i);
+//		log(buf);
+//		sprintf(name,"%s",(player_table + i)->name);
+//		log(name);
+//		ch_printf(ch,"loading player number %d.\n\r", (player_table + i)->name);
+		if (load_char((player_table + i)->name, &player) > -1) {
+//			log("player loaded successfully");
+			store_to_char(&player, tmp);
+//			sprintf(buf,"char name is %s", GET_NAME(tmp));
+//			log(buf);
+			if(tmp->specials.m_kills >= 10000) {
+				if(tmp->specials.m_kills >= 40000) {
+					itype = LEGEND_BIOGRAPHY;
+					rnum = number(701,724);
+					sprintf(name,"biography tome %s",GET_NAME(tmp));
+					sprintf(shdesc,"a biography of %s",GET_NAME(tmp));
+					sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",GET_NAME(tmp));
+					sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.",GET_NAME(tmp));
+				} else if(tmp->specials.m_kills >= 20000) {
+					itype = LEGEND_PAINTING;
+					rnum = number(726,735);
+					sprintf(name,"painting %s",GET_NAME(tmp));
+					sprintf(shdesc,"a painting of %s",GET_NAME(tmp));
+					sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",GET_NAME(tmp));
+					sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greatest of these times.",GET_NAME(tmp),GET_NAME(tmp));
+				} else {
+					itype = LEGEND_STATUE;
+					rnum = number(726,735);
+					sprintf(name,"statue %s",GET_NAME(tmp));
+					sprintf(shdesc,"a statue of %s",GET_NAME(tmp));
+					sprintf(desc,"A statue of the legendary %s has been erected here.",GET_NAME(tmp));
+					sprintf(exdesc,"This is a statue of %s, the legendary slayer.",GET_NAME(tmp));
 				}
-				ammt++;
+				if(itype == 0) {
+					log("Oddness in statue generation, no type found");
+					return(TRUE);
+				}
+				if(rnum == 0) {
+					log("Oddness in statue generation, no rnum found");
+					return(TRUE);
+				}
+				/* load the generic item */
+				obj = read_object(itype, VIRTUAL);
+				/* and string it up a bit */
+				if(obj->short_description) {
+					free(obj->short_description);
+					obj->short_description = strdup(shdesc);
+				}
+				if(obj->description) {
+					free(obj->description);
+					obj->description = strdup(desc);
+				}
+				if(obj->name) {
+					free(obj->name);
+					obj->name = strdup(name);
+				}
+				if(obj->ex_description) {
+					log("trying to string invalid item in statue generation");
+					return(TRUE);
+				} else {
+					/* create an extra desc structure for the object */
+					CREATE(ed, struct extra_descr_data, 1);
+					ed->next = obj->ex_description;
+					obj->ex_description = ed;
+					/* define the keywords */
+					CREATE(ed->keyword, char, strlen(name) + 1);
+					strcpy(ed->keyword, name);
+					/* define the description */
+					CREATE(ed->description, char, strlen(exdesc) + 1);
+					strcpy(ed->description, exdesc);
+				}
+				/* and finally place it in a room */
+//				sprintf(buf,"roomnum = %d",rnum);
+//				log(buf);
+//				sprintf(buf,"itemnum = %d",itype);
+//				log(buf);
+				obj_to_room(obj,rnum);
+//				log("char had enough kills, created object");
+//				log(name);
+//				log(shdesc);
+//				log(desc);
+//				log(exdesc);
+			} else {
+				log("char did not have enough kills, no obj");
 			}
+			free(tmp);
+		} else {
+			log("screw up bigtime in load_char");
+			return(TRUE);
 		}
+//		free(&player);
 	}
-	log("end for.. exit func");
+//	sprintf(buf,"top of ptable = %d", top_of_p_table);
+//	log(buf);
 }
 
 #define CLIMB_ROOM 696

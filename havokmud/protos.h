@@ -1561,8 +1561,7 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-int generate_legend_statue(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
+int generate_legend_statue(struct char_data *ch, char *argument, int cmd);
 
 /*Assigns for Thunder Mountain Keep */
 int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
