@@ -1636,6 +1636,25 @@ void db_delete_mail_message(int messageId)
     mysql_query(sql, buf);
 }
 
+int CheckKillFile(long virtual)
+{
+    char            buf[MAX_STRING_LENGTH];
+
+    MYSQL_RES      *res;
+    int             count;
+
+    sprintf(buf, "SELECT `vnum` FROM `mobKillfile` WHERE `vnum` = %ld", 
+                 virtual );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+
+    count = (res ? mysql_num_rows(res) : 0 );
+
+    mysql_free_result(res);
+    return (count);
+}
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

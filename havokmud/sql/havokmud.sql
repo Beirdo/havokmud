@@ -3,7 +3,7 @@
 # http://www.phpmyadmin.net
 #
 # Host: localhost
-# Generation Time: Aug 02, 2004 at 03:49 PM
+# Generation Time: Aug 02, 2004 at 04:19 PM
 # Server version: 3.23.58
 # PHP Version: 4.2.2
 # 
@@ -1745,6 +1745,23 @@ INSERT INTO `messageTypes` VALUES (6, 1, 'poses - to room - mage');
 INSERT INTO `messageTypes` VALUES (6, 2, 'poses - to room - cleric');
 INSERT INTO `messageTypes` VALUES (6, 3, 'poses - to room - warrior');
 INSERT INTO `messageTypes` VALUES (6, 4, 'poses - to room - thief');
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `mobKillfile`
+#
+
+DROP TABLE IF EXISTS `mobKillfile`;
+CREATE TABLE `mobKillfile` (
+  `vnum` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`vnum`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `mobKillfile`
+#
+
 
 # --------------------------------------------------------
 

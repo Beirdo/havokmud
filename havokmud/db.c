@@ -19,8 +19,6 @@
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
 
-#define killfile "killfile"
-
 #define OBJ_DIR "objects"
 #define MOB_DIR "mobiles"
 #define GET_OBJ_NAME(obj)  ((obj)->name)
@@ -6007,28 +6005,6 @@ void InitScripts(void)
     fclose(f1);
 }
 
-int CheckKillFile(long virtual)
-{
-    FILE           *f1;
-    char            buf[255];
-    int             i;
-
-    if (!(f1 = fopen(killfile, "r"))) {
-        Log("Unable to find killfile.");
-        exit(0);
-    }
-
-    while (fgets(buf, 254, f1) != NULL) {
-        sscanf(buf, "%d", &i);
-        if (i == virtual) {
-            fclose(f1);
-            return (1);
-        }
-    }
-
-    fclose(f1);
-    return (0);
-}
 
 void ReloadRooms(void)
 {
