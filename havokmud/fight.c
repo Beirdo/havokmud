@@ -2623,20 +2623,21 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 		}
 
       /* check for the various APPLY_RACE_SLAYER and APPLY_ALIGN_SLAYR here. */
+      // upped the multipliers a wee bit  -Lennya 20040221
 		if(!A_NOSLAY(ch)) {
 			for(j=0; j<MAX_OBJ_AFFECT; j++) {
 				if (wielded->affected[j].location == APPLY_RACE_SLAYER) {
 					if (wielded->affected[j].modifier == GET_RACE(v)) {
-						dam *= 1.5;
+						dam *= 1.7;
 					}
 				}
 				if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
 					if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
-						dam *= 1.5;
+						dam *= 1.6;
 					else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
-						dam *=1.5;
+						dam *=1.6;
 					else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
-						dam *= 1.5;
+						dam *= 1.6;
 				}
 			}
 		}
@@ -4325,7 +4326,16 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 			total = 0;
 			if (!ch->equipment[WIELD] && !HasClass(ch, CLASS_MONK)) {
 				return(0);
+			} else if (!ch->equipment[WIELD] && HasClass(ch, CLASS_MONK)) {
+				total = BarbarianToHitMagicBonus(ch);
+				if (total > Immunity)  {
+					return(dam);
+				} else {
+					act("$N ignores your puny fists.", FALSE, ch, 0, v, TO_CHAR);
+					return(0);
+				}
 			}
+
 			for(j=0; j<MAX_OBJ_AFFECT; j++)
 				if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
 							(ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))  {
@@ -4336,12 +4346,6 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 			if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)  {
 				total = BarbarianToHitMagicBonus(ch);
 			}
-
-
-			if (HasClass(ch,CLASS_MONK) && BarbarianToHitMagicBonus(ch) > total)  {
-				total = BarbarianToHitMagicBonus(ch);
-			}
-
 
 			if (total > Immunity)  {
 				return(dam);
