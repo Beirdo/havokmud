@@ -19,8 +19,8 @@
  */
 #define USE_MANA(ch, sn) \
   ( spell_index[sn] == -1 ? 100 : \
-    MAX((int)spell_info[spell_index[sn]].min_usesmana,100 ) / \
-  MAX(2,(2+GET_LEVEL(ch, BestMagicClass(ch))-SPELL_LEVEL(ch,sn))))
+    MAX((int)spell_info[spell_index[sn]].min_usesmana, \
+        100 / MAX(2,(2+GET_LEVEL(ch, BestMagicClass(ch))-SPELL_LEVEL(ch,sn)))) )
 
 /*
  * Global data 
