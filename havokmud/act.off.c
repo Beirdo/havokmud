@@ -850,7 +850,10 @@ dlog("in do_leg_sweep");
 	} else {
 		if (GET_POS(victim) > POSITION_DEAD) {
 			GET_POS(victim) = POSITION_SITTING;
-			if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
+			/* Start Change Jan 22, 2004 Odin
+			   Increased damage from 2 to 9 on leg sweep. */
+			if (!damage(ch, victim, 9, SKILL_LEG_SWEEP)) {
+			/* End Change Jan 22, 2004 Odin */
 				WAIT_STATE(victim, PULSE_VIOLENCE*2);
 				GET_POS(victim) = POSITION_SITTING;
 				act("$c000CYou do a quick spin and knock $N's legs out from underneath $M.",FALSE, ch, 0, victim,TO_CHAR);
