@@ -7462,8 +7462,8 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg, struct room_data
 	char buf[MAX_STRING_LENGTH +30];
 	struct obj_data *obj;
 
-	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
-		/* wear wield hold grab doorbash run flee */
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151 || 567) {
+		/* wear wield hold grab doorbash run flee draw */
    		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
         act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
         return (TRUE);

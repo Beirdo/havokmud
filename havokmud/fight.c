@@ -4603,7 +4603,7 @@ int FSkillCheck(struct char_data *ch, int fskill)
 		break;
 		case FIGHTING_STYLE_AGGRESSIVE : {
 			if (HasClass(ch, CLASS_THIEF)) {
-				perc += 30;
+				perc += 20;
 			}
 		}
 		break;
@@ -4612,7 +4612,7 @@ int FSkillCheck(struct char_data *ch, int fskill)
 	if (perc > ch->skills[fskill].learned) { /* fail */
 		/* let's see if he learned */
 		if (ch->skills[fskill].learned > 75 && ch->skills[fskill].learned < max) { /* only learn if skill is high enough */
-			if (number(1, 96) > ch->skills[fskill].learned && (number(1,4) == 1)) {
+			if (number(1, 96) > ch->skills[fskill].learned /* && (number(1,4) == 1)*/) {
 				send_to_char("You notice improvement with fighting in your current style.\n\r", ch);
 				ch->skills[fskill].learned += 1;
 				if (ch->skills[fskill].learned >= max) {
