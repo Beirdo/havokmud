@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -6,11 +6,9 @@
 #include <stdlib.h>
 
 #include "protos.h"
-#define NOT !
-#define AND &&
-#define OR ||
 
 #define STATE(d) ((d)->connected)
+
 #define MAX_CMD_LIST 497
 #define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? \
                         "-]>>>>" : ((x >= 7 && x<= 9) ? "-]>>>>>" : \
@@ -20,13 +18,147 @@
                            "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
 #define ASSHOLE_FNAME "asshole.list"
 
+
+char *newbie_note[] = {
+    "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
+    "along better at Havok.\n\r\n\r"
+    "1) We try to get people to role play, but we do not force you. If you "
+    "enjoy\n\r"
+    "   role playing please do so, if you do not please do not interfere with "
+    "those\n\r   that do.\n\r"
+    " 2) Newbie commands are HELP , NEWS and COMMANDS. Use help for solving "
+    "most\n\r"
+    "    of your questions. If you still confused ask about.\n\r"
+    " 3) PLEASE do not curse over public channels. This means "
+    "GOSSIP,SHOUT,AUCTION.\n\r",
+    "    Punishment for doing so begins with removing your ability to use "
+    "public\n\r"
+    "    channels.\n\r"
+    " 4) Not all public channels work WORLD WIDE. GOSSIP and AUCTION and "
+    "TELL\n\r"
+    "    only work in the zone your in. There are special spells and skills "
+    "to\n\r"
+    "    communicate world wide if you need them. SHOUT is WORLD WIDE but it "
+    "does\n\r"
+    "    cost you MANA and VITIALITY points.\n\r"
+    " 5) Please do not use 'funny' or 'wacky' names. We try to encourage "
+    "role-playing\n\r",
+    "    and if you use those type of names it does not help matters. If your "
+    "name\n\r"
+    "    is a name that is used in the Forgotten Realms setting (such as "
+    "Elminster,\n\r"
+    "    Drizzit etc..) please change it. There are NPC's that use these "
+    "names and it\n\r"
+    "    will cause confusion. If you do not abide by these rules an immortal "
+    "might\n\r"
+    "    ask you to change your name.\n\r"
+    " 6) Remember that we try to add a bit of realizem (not to much "
+    "though:)\n\r"
+    "    and things such as starving to death or dieing of thirst CAN "
+    "happen.\n\r"
+    "\n\r\n\r",
+    NULL
+};
+
+char *racehelp[] = {
+    "\n\r"
+    "Dwarves:   Shorter. Less Movement. Infravision. Higher con, Lower dex,\n\r"
+    "           faster hit point gain.  less damage from poison, racial "
+    "hatreds\n\r"
+    "Moon Elf:  More Movement. Faster Mana gain, Higher dex, Lower con\n\r"
+    "           Detect secret doors, racial hatreds, Infra vision\n\r"
+    "Gold Elf:  Same as Moon, except more intellengent and less wisdom.\n\r"
+    "Wild Elf:  Same as Moon except stronger, less intellengent.\n\r"
+    "Sea Elf:   Same as moon except healthier and stronger, less "
+    "dexterious.\n\r",
+    "Dark Elf:  Same as elves, but higher dex, infravision, class limits "
+    "are\n\r"
+    "           different. Minus to hit in lighted rooms.\n\r"
+    "Humans:    Average...Unlimited in all classes only race that is.\n\r"
+    "           Least amount of racial hatreds than all classes.\n\r"
+    "           Most class selections in the multi-class ranges.\n\r"
+    "           Humans can be Barbarians.\n\r",
+    "Halflings: Very short.  Higher dex, Lower str.  Less move, faster hit \n\r"
+    "           point gain, less damage from poison. faster move gain\n\r"
+    "Rock Gnomes:    Short. Higher intel, Lower wis.. Less move, infravision, "
+    "faster\n\r"
+    "           mana gain\n\r\n\r"
+    "Forest Gnomes: Same as Rock Gnome, except High Wis, Dex, Low Int, Str\n\r"
+    "Half-Elves:Infravision, detect secret doors, good move and mana gain, "
+    "large\n\r"
+    "           multi-class selection. Only race that can multi-class\n\r"
+    "           the Druid class.\n\r",
+    "Half-Orcs: Infravision, high con, low charisma Good move point gain.\n\r"
+    "Half-Ogres:Infravision, high strength and con, low dex and intel. Good "
+    "move\n\r"
+    "           and hit point gain. Large size and weight. Cleric, warrior "
+    "classes\n\r"
+    "           only.\n\r"
+    "Half-Giants:Infravision, highest strength bonus, high con, low intel, "
+    "wis and\n\r"
+    "            dex. Good hit point and move gain. Very large. Warrior\n\r"
+    "            and Barbarian class ONLY. Giants get a hit point boost\n\r"
+    "            at level 1.\n\r"
+    "\n\r\n\r",
+    NULL
+};
+
+
+char *class_help[] = {
+    "Cleric:       Good defense.  Healing spells\n\r"
+    "Druid:        Real outdoors types.  Spells, not many items\n\r"
+    "Fighter:      Big, strong and stupid.  Nuff said.\n\r"
+    "Magic-users:  Weak, puny, smart and very powerful at high levels.\n\r"
+    "Thieves:      Quick, agile, sneaky.  Nobody trusts them.\n\r"
+    "Monks:        Masters of the martial arts.  They can only be single "
+    "classed\n\r"
+    "Barbarians:   Strong fighters, trackers and survivers. More move, "
+    "faster\n\r"
+    "              hit point regeneration. Limited magic use. Single class ",
+    "only and\n\r"
+    "              only Humans and Half-Giants can be Barbarians.\n\r"
+    "Paladins:     Holy warriors, defenders of good. Good fighters, some "
+    "cleric\n\r"
+    "              abilities.\n\r"
+    "Rangers:      Woodland hunters. These guys are one with the ways of "
+    "the\n\r"
+    "              the forest life. Some druid type skills and warrior.\n\r"
+    "Psionists:    Mind benders, they use the power of the mind to do\n\r"
+    "              unthought-of things\n\r"
+    "\n\rREMEMBER single class characters have a better hit point ratio than "
+    "multi's.\n\r"
+    "\n\r\n\r",
+    NULL
+};
+
+char *ru_sorcerer[] = {
+    "\n\r"
+    "You have chosen the magic user class, there are two types of mages here "
+    "at\n\r"
+    "Havok. The Standard Mage uses mana for his power, the Sorcerer uses "
+    "his\n\r"
+    "memorization for his powers. Sorcerers will sit and memorize a spell of "
+    "their\n\r"
+    "choice and then after doing so can 'recall' this spell. Sorcerers are "
+    "said\n\r",
+    "to be weaker at lower levels than most classes, but after they attain "
+    "higher\n\r"
+    "experince they can become one of the most powerful.\n\r"
+    "\n\r\n\r"
+    "Enter 'yes' if you want to be a Sorcerer type of mage, hit return if "
+    "you\n\r"
+    "do not want to be a Sorcerer (yes/no) :",
+    NULL
+};
+
+
 extern long     total_connections;
 extern long     total_max_players;
 extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern const char *RaceName[];
 extern const int RacialMax[MAX_RACE + 1][MAX_CLASS];
-extern char     motd[MAX_STRING_LENGTH];
-extern char     wmotd[MAX_STRING_LENGTH];
+extern char     *motd;
+extern char     *wmotd;
 extern struct char_data *character_list;
 extern struct player_index_element *player_table;
 extern int      top_of_p_table;
@@ -63,30 +195,6 @@ int             pc_num_class(int clss);
 /*
  * should be moved to protos.h at in a future release...
  */
-
-void            AddCommand(char *name, void (*func), int number,
-                           int min_pos, int min_lev);
-void            do_wclean(struct char_data *ch, char *argument, int cmd);
-void            do_setobjmax(struct char_data *ch, char *argument,
-                             int cmd);
-void            do_setobjspeed(struct char_data *ch, char *argument,
-                               int cmd);
-void            do_spend(struct char_data *ch, char *argument, int cmd);
-void            bugmail(struct char_data *ch, char *argument, int cmd);
-void            do_see_points(struct char_data *ch, char *argument,
-                              int cmd);
-void            do_reward(struct char_data *ch, char *argument, int cmd);
-void            do_punish(struct char_data *ch, char *argument, int cmd);
-void            do_set_spy(struct char_data *ch, char *argument, int cmd);
-
-void            do_wizset(struct char_data *ch, char *argument, int cmd);
-void            do_home(struct char_data *ch, char *argument, int cmd);
-void            do_lgos(struct char_data *ch, char *argument, int cmd);
-void            show_race_choice(struct descriptor_data *d);
-void            do_glance(struct char_data *ch, char *argument, int cmd);
-void            do_startarena(struct char_data *ch, char *argument, int cmd);
-void            do_arena(struct char_data *ch, char *argument, int cmd);
-void            do_whoarena(struct char_data *ch, char *argument, int cmd);
 
 /*
  * this is how we tell which race gets which class !
@@ -239,6 +347,8 @@ const int       halfling_class_choice[] = {
     CLASS_WARRIOR,
     CLASS_THIEF,
     CLASS_THIEF + CLASS_WARRIOR,
+    CLASS_DRUID,
+    CLASS_MONK,
     /*
      * NEW CLASS SELECTIONS HERE
      */
@@ -543,18 +653,18 @@ int old_search_block(char *argument, int begin, int length, char **list,
      */
 
     if (mode) {
-        while (NOT found AND * (list[guess]) != '\n') {
+        while (!found && *(list[guess]) != '\n') {
             found = (length == strlen(list[guess]));
-            for (search = 0; (search < length AND found); search++) {
+            for (search = 0; (search < length && found); search++) {
                 found = (*(argument + begin + search) ==
                         *(list[guess] + search));
             }
             guess++;
         }
     } else {
-        while (NOT found AND * (list[guess]) != '\n') {
+        while (!found && *(list[guess]) != '\n') {
             found = 1;
-            for (search = 0; (search < length AND found); search++) {
+            for (search = 0; (search < length && found); search++) {
                 found = (*(argument + begin + search) ==
                         *(list[guess] + search));
             }
@@ -941,27 +1051,15 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
 
 int is_number(char *str)
 {
-    /*
-     * int look_at;
-     */
-
     if (*str == '\0') {
-        return (0);
-    } else if (newstrlen(str) > 8) {
-        return (0);
-    } else if ((atoi(str) == 0) && (str[0] != '0')) {
-        return (0);
+        return (FALSE);
+    } else if (strnlen(str, 10) > 8) {
+        return (FALSE);
+    } else if (atoi(str) == 0 && str[0] != '0') {
+        return (FALSE);
     } else {
-        return (1);
+        return (TRUE);
     }
-#if 0
-    for(look_at=0;*(str+look_at) != '\0';look_at++) {
-        if((*(str+look_at)<'0')||(*(str+look_at)>'9')) {
-            return(0);
-        }
-        return(1);
-    }
-#endif
 }
 
 /*
@@ -2150,7 +2248,7 @@ void show_menu(struct descriptor_data *d)
 void nanny(struct descriptor_data *d, char *arg)
 {
     struct descriptor_data *desc;
-    char            buf[256];
+    char            buf[1024];
     char            bufx[1000];
 
     int             player_i,
@@ -2337,7 +2435,9 @@ void nanny(struct descriptor_data *d, char *arg)
             d->pos = create_entry(GET_NAME(d->character));
             save_char(d->character, AUTO_RENT);
 
-            SEND_TO_Q(NEWBIE_NOTE, d);
+            for( i = 0; newbie_note[i]; i++ ) {
+                SEND_TO_Q(newbie_note[i], d);
+            }
 #if 0
             SEND_TO_Q(motd, d);
 #endif
@@ -2452,7 +2552,9 @@ void nanny(struct descriptor_data *d, char *arg)
             SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
             STATE(d) = CON_QRACE;
         } else if (*arg == '?') {
-            SEND_TO_Q(RACEHELP, d);
+            for( i = 0; racehelp[i]; i++ ) {
+                SEND_TO_Q(racehelp[i], d);
+            }
             show_race_choice(d);
             SEND_TO_Q("For help type '?' - will also list level limits. \n\r"
                       " RACE?:  ", d);
@@ -2694,12 +2796,18 @@ void nanny(struct descriptor_data *d, char *arg)
                                 GET_NAME(d->character), d->host);
                         Log(buf);
                     }
+                    
+                    if (d->character->specials.hostip) {
+                        free(d->character->specials.hostip);
+                    }
+                    d->character->specials.hostip = strdup(d->host);
+                    write_char_extra(d->character);
                     return;
                 }
             }
 
             load_char_extra(d->character);
-            if (d->character->specials.hostip == NULL || 1) {
+            if (d->character->specials.hostip == NULL) {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
                     sprintf(buf, "%s[%s] has connected.\n\r",
@@ -2709,7 +2817,7 @@ void nanny(struct descriptor_data *d, char *arg)
             } else {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
-                    sprintf(buf, "%s[%s] has connected.\n\r. Last connected"
+                    sprintf(buf, "%s[%s] has connected - Last connected"
                             " from[%s]",
                             GET_NAME(d->character), d->host,
                             d->character->specials.hostip);
@@ -2717,12 +2825,12 @@ void nanny(struct descriptor_data *d, char *arg)
                 }
                 SEND_TO_Q(buf, d);
             }
-#if 0
+
             if (d->character->specials.hostip) {
                 free(d->character->specials.hostip);
             }
-            d->character->specials.hostip = d->host;
-#endif
+            d->character->specials.hostip = strdup(d->host);
+            write_char_extra(d->character);
 
             send_to_char(motd, d->character);
 #if 0
@@ -3039,7 +3147,9 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * page_string(d,NEWBIE_NOTE,1);
          */
-        SEND_TO_Q(NEWBIE_NOTE, d);
+        for( i = 0; newbie_note[i]; i++ ) {
+            SEND_TO_Q(newbie_note[i], d);
+        }
         STATE(d) = CON_RMOTD;
         send_to_char(motd, d->character);
 #if 0
@@ -3508,7 +3618,9 @@ void nanny(struct descriptor_data *d, char *arg)
             break;
 
         case '?':
-            SEND_TO_Q(CLASS_HELP, d);
+            for( i = 0; class_help[i]; i++ ) {
+                SEND_TO_Q(class_help[i], d);
+            }
             SEND_TO_Q("\n\rSelect your class now.\n\r", d);
             show_class_selection(d, GET_RACE(d->character));
             SEND_TO_Q("Enter ? for help.\n\r", d);
@@ -3524,7 +3636,9 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         if (HasClass(d->character, CLASS_MAGIC_USER)) {
-            SEND_TO_Q(RU_SORCERER, d);
+            for( i = 0; ru_sorcerer[i]; i++ ) {
+                SEND_TO_Q(ru_sorcerer[i], d);
+            }
             STATE(d) = CON_CHECK_MAGE_TYPE;
             break;
         }

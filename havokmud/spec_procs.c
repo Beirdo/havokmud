@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -39,6 +40,7 @@ extern char    *dirs[];
 extern int      drink_aff[][3];
 extern struct weather_data weather_info;
 
+#if 0
 void            name_to_drinkcon(struct obj_data *obj, int type);
 void            name_from_drinkcon(struct obj_data *obj);
 
@@ -67,6 +69,7 @@ void            cast_weakness(byte level, struct char_data *ch,
                               char *arg, int type,
                               struct char_data *tar_ch,
                               struct obj_data *tar_obj);
+#endif
 
 /*
  * Data declarations
@@ -824,11 +827,6 @@ int CarrionCrawler(struct char_data *ch, int cmd, char *arg,
 {
     struct char_data *tar;
     int             i;
-
-    void            cast_paralyze(byte level, struct char_data *ch,
-                                  char *arg, int type,
-                                  struct char_data *tar_ch,
-                                  struct obj_data *tar_obj);
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -2925,17 +2923,35 @@ int kings_hall(struct char_data *ch, int cmd, char *arg)
 int Donation(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
-    char            check[40];
-
+    char            arg1[40];
+    char            arg2[40];
+    struct obj_data *sub_object;
+    
     if ((cmd != 10) && (cmd != 167)) {
         return (FALSE);
     }
+    
+    argument_interpreter(arg, arg1, arg2);
 
-    one_argument(arg, check);
-
-    if (*check && !strncmp(check, "all", 3) && GetMaxLevel(ch) < 51) {
+    if (*arg1 && !strncmp(arg1, "all", 3) && !*arg2) {
+       
+        /* removed check for immortal to test */
         send_to_char("Now now, that would be greedy!\n\r", ch);
         return (TRUE);
+    }
+
+    if (*arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
+        if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+            if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+                return (FALSE);
+            } else {
+                send_to_char("Now now, that would be greedy!\n\r", ch);
+                return (TRUE);
+            }
+        } else {
+            send_to_char("That isnt a container.\n\r", ch);
+            return (TRUE);
+        }
     }
     return (FALSE);
 }

@@ -3,6 +3,7 @@
  * DaleMUD is based on DIKUMUD
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include "protos.h"
@@ -41,25 +42,12 @@ extern struct index_data *mob_index;
 extern const struct clan clan_list[MAX_CLAN];
 extern long     SystemFlags;
 
-#if 0
-void            (*bweapons[]) () = {
-cast_geyser,
-        cast_fire_breath, cast_gas_breath, cast_frost_breath,
-        cast_acid_breath, cast_lightning_breath};
-#else
-void            cast_geyser();
-void            cast_fire_breath();
-void            cast_gas_breath();
-void            cast_frost_breath();
-void            cast_acid_breath();
-void            cast_lightning_breath();
-
 funcp           bweapons[] = {
-    cast_geyser,
-    cast_fire_breath, cast_gas_breath, cast_frost_breath, cast_acid_breath,
+    cast_geyser, cast_fire_breath, cast_gas_breath, 
+    cast_frost_breath, cast_acid_breath, 
     cast_lightning_breath
 };
-#endif
+
 
 
 void do_hit(struct char_data *ch, char *argument, int cmd)
@@ -727,12 +715,17 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 if (ch->specials.fighting->specials.fighting == ch) {
                     stop_fighting(ch->specials.fighting);
                 }
+
                 if (ch->specials.fighting) {
                     stop_fighting(ch);
                 }
+
+#if 0
                 if (ch->attackers) {
                     Log("fleeing dude still being attacked?! Could be bad.");
                 }
+#endif
+
                 if (IS_PC(ch)) {
                     if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) &&
                         !IS_AFFECTED(ch, AFF_HIDE)) {
@@ -1495,6 +1488,7 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
                     manacost;
     funcp           weapon;
     struct breather *scan;
+
 
     dlog("in do_breath");
 
@@ -2443,7 +2437,7 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
         send_to_char("The proper format for fire is: fire <target>\n\r", ch);
         return;
     }
-    (char *) targ = get_char_linear(ch, arg, &rng, &dr);
+    targ = get_char_linear(ch, arg, &rng, &dr);
     if (targ && targ == ch) {
         send_to_char("You can't fire that at yourself!\n\r", ch);
         return;
@@ -2511,7 +2505,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
     /*
      * Check if second argument is a character or direction
      */
-    (char *) targ = get_char_linear(ch, arg2, &rng, &dr);
+    targ = get_char_linear(ch, arg2, &rng, &dr);
     if (targ && targ == ch) {
         send_to_char("You can't throw that at yourself!\n\r", ch);
         return;

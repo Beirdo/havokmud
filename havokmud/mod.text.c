@@ -2,14 +2,17 @@
  * Online textfile editor for motd, wmotd, news.
  * Done by Lennya, Sept 2003
  */
+
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "protos.h"
 
-extern char     motd[MAX_STRING_LENGTH];
-extern char     wmotd[MAX_STRING_LENGTH];
-extern char     news[MAX_STRING_LENGTH];
+extern char    *motd;
+extern char    *wmotd;
+extern char    *news;
 extern const char *tfd_types[];
 
 #define TFD_MAIN_MENU             0
@@ -154,9 +157,20 @@ void TfdEdit(struct char_data *ch, char *arg)
             if (write_txt_to_file(ch)) {
                 send_to_char("File saved successfully.\n\r", ch);
                 send_to_char("Initializing new file into game...\n\r", ch);
-                file_to_string(NEWS_FILE, news);
-                file_to_string(MOTD_FILE, motd);
-                file_to_string(WMOTD_FILE, wmotd);
+                if( news ) {
+                    free( news );
+                }
+                news = file_to_string(NEWS_FILE);
+
+                if( motd ) {
+                    free( motd );
+                }
+                motd = file_to_string(MOTD_FILE);
+
+                if( wmotd ) {
+                    free( wmotd );
+                }
+                wmotd = file_to_string(WMOTD_FILE);
                 send_to_char("Done.\n\r", ch);
             } else {
                 send_to_char("File save unsuccessful. Something went pear "
@@ -308,20 +322,20 @@ void ChangeTfdFile(struct char_data *ch, char *arg, int type)
 void ViewOldTfd(struct char_data *ch, char *arg, int type)
 {
     char            buf[255],
-                    buffer[254],
-                    contents[MAX_STRING_LENGTH];
+                    buffer[254];
+    char           *contents = NULL;
 
     switch (ch->specials.txtedit->file) {
     case 1:
-        file_to_string(NEWS_FILE, contents);
+        contents = file_to_string(NEWS_FILE);
         sprintf(buf, "news");
         break;
     case 2:
-        file_to_string(MOTD_FILE, contents);
+        contents = file_to_string(MOTD_FILE);
         sprintf(buf, "motd");
         break;
     case 3:
-        file_to_string(WMOTD_FILE, contents);
+        contents = file_to_string(WMOTD_FILE);
         sprintf(buf, "wizmotd");
         break;
     default:
@@ -351,6 +365,9 @@ void ViewOldTfd(struct char_data *ch, char *arg, int type)
     send_to_char(buffer, ch);
     send_to_char(contents, ch);
     send_to_char("\n\r\n\r(hit ENTER to return to menu)\n\r", ch);
+    if( contents ) {
+        free( contents );
+    }
 }
 
 void ChangeTfdDate(struct char_data *ch, char *arg, int type)

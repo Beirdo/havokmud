@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -1186,6 +1186,10 @@ long NewExpCap(struct char_data *ch, long total)
     long            temp = 0,
                     temp2 = 0;
     int             x;
+
+    if( !ch || IS_IMMORTAL(ch) ) {
+        return( 0 );
+    }
 
     for (x = 0; x < MAX_CLASS; x++) {
         if (GET_LEVEL(ch, x)) {

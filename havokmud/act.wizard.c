@@ -3,12 +3,14 @@
  * DaleMUD is based on DIKUMUD
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 
 #include "protos.h"
+
 #define NEWHELP_FILE      "ADD_HELP"
 /*
  * New help to add
@@ -29,6 +31,7 @@ int             ZoneCleanable(int zone);
 extern long     TempDis;
 extern long     SystemFlags;
 extern struct weather_data weather_info;
+extern const char *languagelist[];
 extern char    *system_flag_types[];
 extern struct zone_data *zone_table;
 extern int      top_of_zone_table;
@@ -50,6 +53,8 @@ extern struct wis_app_type wis_app[26];
 extern struct player_index_element *player_table;
 extern char    *room_bits[];
 extern struct str_app_type str_app[];
+extern char    *motd;
+extern char    *wmotd;
 
 void           *malloc(size_t size);
 void            free(void *ptr);
@@ -2034,6 +2039,16 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     (int) k->generic);
             strcat(buf, buf2);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
+            /*
+             * language
+             */
+             if (!ch->player.speaks) {
+                 ch->player.speaks = SPEAK_COMMON;
+             }
+             sprintf(buf, "%sCurrently Speaking: %s%s%s", color1, color2,
+                     languagelist[ch->player.speaks], color1);
+             act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
 
             /*
              * Showing the bitvector
@@ -2414,8 +2429,8 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
                      "value  = Item value if sold    | timer  = item timer\n\r"
                      "type   = item type\n\r"
                      "v0     = value[0] of item      | v1     = value[1] of "
-                     "item\n\r"
-                     "v2     = value[2] of item      | v3     = value[3] of "
+                     "item\n\r", ch );
+        send_to_char("v2     = value[2] of item      | v3     = value[3] of "
                      "item\n\r"
                      "aff1   = special affect 1 (requires another value, oedit"
                      " aff1 <modifer> <type>)\n\r"
@@ -2685,8 +2700,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "For Multi-class characters add the numbers of the "
                      "required classes together\n\r"
                      "ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\n\r"
-                     "\n\r"
-                     "clan - Clan number\n\r"
+                     "\n\r", ch );
+        send_to_char("clan - Clan number\n\r"
                      "exp - Total Experience\n\r"
                      "lev - Level (only sets Mage level, use advance for "
                      "other classes)\n\r"
@@ -2699,8 +2714,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "hit - Current Hitpoints\n\r"
                      "mhit - Max Hitpoints\n\r"
                      "tohit - To hit modifier\n\r"
-                     "todam - Damange modifier\n\r"
-                     "ac - Armor Class of PC\n\r"
+                     "todam - Damange modifier\n\r", ch );
+        send_to_char("ac - Armor Class of PC\n\r"
                      "bank - Amount of coins in bank\n\r"
                      "gold - Amount of coins on PC\n\r"
                      "age - Age of PC.  Postive numbers will add to age.  "
@@ -2712,8 +2727,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "saves - Saving throws (doesn't work)\n\r"
                      "skills - how learned a skill is. @ skills <target> "
                      "<skill number> <level> - See allspells for skill and "
-                     "spell list.\n\r"
-                     "stadd - Strength Modifier (ie 18/75 using this one "
+                     "spell list.\n\r", ch );
+        send_to_char("stadd - Strength Modifier (ie 18/75 using this one "
                      "could change the 75)\n\r"
                      "int - Intelligence\n\r"
                      "wis - Wisdom\n\r"
@@ -2728,8 +2743,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "known - Make spell or skill known to PC.  @ known "
                      "<target> <skill number> - See allspells for listing.\n\r"
                      "nodelete - Set NODELETE flag on PC.\n\r"
-                     "specflags - Does nothing.\n\r"
-                     "racewar - Flag PC as part of race wars\n\r"
+                     "specflags - Does nothing.\n\r", ch );
+        send_to_char("racewar - Flag PC as part of race wars\n\r"
                      "numatks - Number of attacks PC has.\n\r"
                      "objedit - Enable or Disable an Immortals ability to "
                      "edit objects.\n\r"
@@ -2741,16 +2756,15 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "wingsburn - Flag target as not being able to fly.  "
                      "Burns wings of winged mobiles/PCs.\n\r"
                      "move - Set current Movement.\n\r"
-                     "mmove - Set Max Movement.\n\r"
-                     "mkills - Set number of mobs killed.\n\r"
+                     "mmove - Set Max Movement.\n\r", ch );
+        send_to_char("mkills - Set number of mobs killed.\n\r"
                      "mdeaths - Set number of deaths by mobiles.\n\r"
                      "akills - Set number of arena kills.\n\r"
                      "adeaths - Set number of arena deaths.\n\r"
                      "remortclass - set the class the char is remorting "
                      "into.\n\r"
                      "\n\r"
-                     "Remember, be careful how you use this command!\n\r",
-                     ch);
+                     "Remember, be careful how you use this command!\n\r", ch);
     } else if ((mob = get_char_vis(ch, name)) == NULL) {
         send_to_char("@\n\r"
                      "Usage :@ <field> <user name> <value>\n\r"
@@ -2762,8 +2776,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "the value types will differ with each (i.e. number/"
                      "alpha char)\n\r"
                      "For more help type '@ help'\n\r"
-                     "\n\r"
-                     "align class exp lev sex race hunger thirst zone hit mhit"
+                     "\n\r", ch);
+        send_to_char("align class exp lev sex race hunger thirst zone hit mhit"
                      " tohit todam\n\r"
                      "ac bank gold age prac str add saves skills stadd int wis"
                      " dex con chr\n\r"
@@ -4065,23 +4079,14 @@ void do_start(struct char_data *ch)
     send_to_all(buf);
 
     ch->specials.start_room = NOWHERE;
-
     StartLevels(ch);
-
     GET_EXP(ch) = 1;
-
     set_title(ch);
-#if 0
-    roll_abilities(ch);
-    /*
-     * This is now done earlier in creation
-     */
-#endif
-
+    
     /*
      *  This is the old style of determining hit points.  I modified it so that
      *  characters get the standard AD&D + 10 hp to start.
-     *    ch->points.max_hit  = 10;
+     *  ch->points.max_hit  = 10;
      */
 
     /*
@@ -4119,8 +4124,9 @@ void do_start(struct char_data *ch)
     if (HasClass(ch,
                  CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
                  CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
-                 CLASS_NECROMANCER))
+                 CLASS_NECROMANCER)) {
         ch->skills[SKILL_READ_MAGIC].learned = 95;
+    }
 
     SetDefaultLang(ch);
 
@@ -4186,56 +4192,37 @@ void do_start(struct char_data *ch)
     send_to_char("Autoexits activated\n\r", ch);
 
     if (IS_SET(ch->player.class, CLASS_THIEF)) {
-        if (GET_RACE(ch) == RACE_HUMAN) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_MOON_ELF ||
-                   GET_RACE(ch) == RACE_GOLD_ELF ||
-                   GET_RACE(ch) == RACE_WILD_ELF ||
-                   GET_RACE(ch) == RACE_SEA_ELF ||
-                   GET_RACE(ch) == RACE_AVARIEL) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_DROW) {
-            ch->skills[SKILL_SNEAK].learned = 20;
-            ch->skills[SKILL_HIDE].learned = 15;
-            ch->skills[SKILL_STEAL].learned = 25;
-            ch->skills[SKILL_BACKSTAB].learned = 20;
-            ch->skills[SKILL_PICK_LOCK].learned = 5;
-        } else if (GET_RACE(ch) == RACE_DWARF) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_HALFLING) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_ROCK_GNOME ||
-                   GET_RACE(ch) == RACE_DEEP_GNOME ||
-                   GET_RACE(ch) == RACE_FOREST_GNOME) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_HALF_ELF) {
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 10;
-        }
-
-        else if (GET_RACE(ch) == RACE_HALF_OGRE) {
-        } else if (GET_RACE(ch) == RACE_HALF_ORC) {
-        } else if (GET_RACE(ch) == RACE_HALF_GIANT) {
+        switch (GET_RACE(ch)) {
+            case RACE_HUMAN:
+            case RACE_MOON_ELF:
+            case RACE_GOLD_ELF:
+            case RACE_WILD_ELF:
+            case RACE_SEA_ELF:
+            case RACE_AVARIEL:
+            case RACE_DWARF:
+            case RACE_HALFLING:
+            case RACE_ROCK_GNOME:
+            case RACE_DEEP_GNOME:
+            case RACE_FOREST_GNOME:
+                ch->skills[SKILL_SNEAK].learned = 10;
+                ch->skills[SKILL_HIDE].learned = 5;
+                ch->skills[SKILL_STEAL].learned = 15;
+                ch->skills[SKILL_BACKSTAB].learned = 10;
+                ch->skills[SKILL_PICK_LOCK].learned = 10;
+                break;
+            case RACE_DROW:
+                ch->skills[SKILL_SNEAK].learned = 20;
+                ch->skills[SKILL_HIDE].learned = 15;
+                ch->skills[SKILL_STEAL].learned = 25;
+                ch->skills[SKILL_BACKSTAB].learned = 20;
+                ch->skills[SKILL_PICK_LOCK].learned = 5;
+                break;
+            case RACE_HALF_ELF:
+                ch->skills[SKILL_HIDE].learned = 5;
+                ch->skills[SKILL_STEAL].learned = 10;
+                break;
+            default:
+                break;
         }
     }
 
@@ -4878,8 +4865,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                                    "                       6   FEET\n\r"
                                    "                       7   HANDS\n\r"
                                    "                       8   ARMS\n\r"
-                                   "                       9   SHIELD\n\r"
-                                   "                      10   ABOUT\n\r"
+                                   "                       9   SHIELD\n\r");
+            append_to_string_block(&sb, "                      10   ABOUT\n\r"
                                    "                      11   WAIST\n\r"
                                    "                      12   WRIST\n\r"
                                    "                      13   WIELD\n\r"
@@ -4933,7 +4920,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                                    "                       9   ARMOR\n\r"
                                    "                      10   POTION\n\r"
                                    "                      11   WORN\n\r"
-                                   "                      12   OTHER\n\r"
+                                   "                      12   OTHER\n\r");
+            append_to_string_block(&sb,
                                    "                      13   THRASH\n\r"
                                    "                      14   TRAP\n\r"
                                    "                      15   CONTAINER\n\r"
@@ -4947,7 +4935,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                                    "                      22   BOAT\n\r"
                                    "                      23   AUDIO\n\r"
                                    "                      24   BOARD\n\r"
-                                   "                      25   TREE\n\r"
+                                   "                      25   TREE\n\r");
+            append_to_string_block(&sb,
                                    "                      26   ROCK\n\r"
                                    "                      27   PORTAL\n\r"
                                    "                      28   INSTRUMENT\n\r");
@@ -6491,9 +6480,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
 void do_viewfile(struct char_data *ch, char *argument, int cmd)
 {
     char            namefile[20];
-    char            bigbuf[32000];
-    extern char     motd[MAX_STRING_LENGTH];
-    extern char     wmotd[MAX_STRING_LENGTH];
+    char           *buf;
 
     /*
      * extern char titlescreen[MAX_STRING_LENGTH];
@@ -6503,53 +6490,39 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
 
     only_argument(argument, namefile);
     if (!strcmp(namefile, "help")) {
-        file_to_string(NEWHELP_FILE, bigbuf);
+        buf = file_to_string(NEWHELP_FILE);
     } else if (!strcmp(namefile, "quest")) {
-        file_to_string(QUESTLOG_FILE, bigbuf);
+        buf = file_to_string(QUESTLOG_FILE);
     } else if (!strcmp(namefile, "bug")) {
-        file_to_string(WIZBUG_FILE, bigbuf);
+        buf = file_to_string(WIZBUG_FILE);
     } else if (!strcmp(namefile, "idea")) {
-        file_to_string(WIZIDEA_FILE, bigbuf);
+        buf = file_to_string(WIZIDEA_FILE);
     } else if (!strcmp(namefile, "typo")) {
-        file_to_string(WIZTYPO_FILE, bigbuf);
+        buf = file_to_string(WIZTYPO_FILE);
     } else if (!strcmp(namefile, "morttypo")) {
-        /*
-         * This is for wizreport...
-         */
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(TYPO_FILE, bigbuf);
+        buf = file_to_string(TYPO_FILE);
     } else if (!strcmp(namefile, "mortbug")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(BUG_FILE, bigbuf);
+        buf = file_to_string(BUG_FILE);
     } else if (!strcmp(namefile, "mortidea")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(IDEA_FILE, bigbuf);
+        buf = file_to_string(IDEA_FILE);
     } else if (!strcmp(namefile, "motd")) {
-#if 0
-        page_string(ch->desc,motd,0);
-#endif
         send_to_char(motd, ch);
         return;
     }
-#if 0
-    else if(!strcmp(namefile,"title")) {
-        page_string(ch->desc,titlescreen,0); return;
-    }
-#endif
     else if (!strcmp(namefile, "wmotd")) {
         send_to_char(wmotd, ch);
-#if 0
-        page_string(ch->desc,wmotd,0);
-#endif
         return;
     } else {
         send_to_char("Commands: view <bug|typo|idea|mortbug|morttypo|"
@@ -6557,7 +6530,8 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    page_string(ch->desc, bigbuf, 1);
+    page_string(ch->desc, buf, 1);
+    free( buf );
 }
 
 void do_msave(struct char_data *ch, char *argument, int cmd)

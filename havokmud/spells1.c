@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 
 #include "protos.h"
@@ -13,7 +14,7 @@ extern struct char_data *character_list;
  * Extern functions 
  */
 
-void cast_burning_hands(byte level, struct char_data *ch, char *arg,
+void cast_burning_hands(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *victim,
                         struct obj_data *tar_obj)
 {
@@ -30,7 +31,7 @@ void cast_burning_hands(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_call_lightning(byte level, struct char_data *ch, char *arg,
+void cast_call_lightning(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *victim,
                          struct obj_data *tar_obj)
 {
@@ -75,7 +76,7 @@ void cast_call_lightning(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_chill_touch(byte level, struct char_data *ch, char *arg,
+void cast_chill_touch(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *victim,
                       struct obj_data *tar_obj)
 {
@@ -90,7 +91,7 @@ void cast_chill_touch(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_shocking_grasp(byte level, struct char_data *ch, char *arg,
+void cast_shocking_grasp(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *victim,
                          struct obj_data *tar_obj)
 {
@@ -106,7 +107,7 @@ void cast_shocking_grasp(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_colour_spray(byte level, struct char_data *ch, char *arg,
+void cast_colour_spray(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {
@@ -132,7 +133,7 @@ void cast_colour_spray(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_earthquake(byte level, struct char_data *ch, char *arg, int type,
+void cast_earthquake(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -147,7 +148,7 @@ void cast_earthquake(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_energy_drain(byte level, struct char_data *ch, char *arg,
+void cast_energy_drain(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {
@@ -184,7 +185,7 @@ void cast_energy_drain(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_energy_restore(byte level, struct char_data *ch, char *arg,
+void cast_energy_restore(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *victim,
                          struct obj_data *tar_obj)
 {
@@ -205,7 +206,7 @@ void cast_energy_restore(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_fireball(byte level, struct char_data *ch, char *arg, int type,
+void cast_fireball(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -221,7 +222,7 @@ void cast_fireball(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_harm(byte level, struct char_data *ch, char *arg, int type,
+void cast_harm(int level, struct char_data *ch, char *arg, int type,
                struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -245,7 +246,7 @@ void cast_harm(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_lightning_bolt(byte level, struct char_data *ch, char *arg,
+void cast_lightning_bolt(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *victim,
                          struct obj_data *tar_obj)
 {
@@ -272,7 +273,7 @@ void cast_lightning_bolt(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_acid_blast(byte level, struct char_data *ch, char *arg, int type,
+void cast_acid_blast(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -297,7 +298,7 @@ void cast_acid_blast(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_cone_of_cold(byte level, struct char_data *ch, char *arg,
+void cast_cone_of_cold(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {
@@ -313,7 +314,7 @@ void cast_cone_of_cold(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_ice_storm(byte level, struct char_data *ch, char *arg, int type,
+void cast_ice_storm(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -328,7 +329,7 @@ void cast_ice_storm(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_meteor_swarm(byte level, struct char_data *ch, char *arg,
+void cast_meteor_swarm(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {
@@ -354,7 +355,7 @@ void cast_meteor_swarm(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_flamestrike(byte level, struct char_data *ch, char *arg,
+void cast_flamestrike(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *victim,
                       struct obj_data *tar_obj)
 {
@@ -380,7 +381,7 @@ void cast_flamestrike(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_magic_missile(byte level, struct char_data *ch, char *arg,
+void cast_magic_missile(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *victim,
                         struct obj_data *tar_obj)
 {
@@ -406,7 +407,7 @@ void cast_magic_missile(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cause_light(byte level, struct char_data *ch, char *arg,
+void cast_cause_light(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *victim,
                       struct obj_data *tar_obj)
 {
@@ -432,7 +433,7 @@ void cast_cause_light(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cause_serious(byte level, struct char_data *ch, char *arg,
+void cast_cause_serious(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *victim,
                         struct obj_data *tar_obj)
 {
@@ -466,7 +467,7 @@ void cast_cause_serious(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cause_critic(byte level, struct char_data *ch, char *arg,
+void cast_cause_critic(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {
@@ -506,7 +507,7 @@ void cast_cause_critic(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_geyser(byte level, struct char_data *ch, char *arg, int type,
+void cast_geyser(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -522,7 +523,7 @@ void cast_geyser(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_green_slime(byte level, struct char_data *ch, char *arg,
+void cast_green_slime(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *victim,
                       struct obj_data *tar_obj)
 {
@@ -548,7 +549,7 @@ void cast_green_slime(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_incendiary_cloud(byte level, struct char_data *ch, char *arg,
+void cast_incendiary_cloud(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *victim,
                            struct obj_data *tar_obj)
 {
@@ -565,7 +566,7 @@ void cast_incendiary_cloud(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_prismatic_spray(byte level, struct char_data *ch, char *arg,
+void cast_prismatic_spray(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *victim,
                           struct obj_data *tar_obj)
 {
@@ -582,7 +583,7 @@ void cast_prismatic_spray(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_wizard_eye(byte level, struct char_data *ch, char *arg, int type,
+void cast_wizard_eye(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -599,7 +600,7 @@ void cast_wizard_eye(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_disintegrate(byte level, struct char_data *ch, char *arg,
+void cast_disintegrate(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj)
 {

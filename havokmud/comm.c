@@ -3,6 +3,7 @@
  **             SillyMUD.
  */
 
+#include "config.h"
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -20,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+
 #include "protos.h"
 #include "utils.h"
 
@@ -68,6 +70,7 @@ extern struct hash_header room_db;      /* In db.c */
 #else
 extern struct room_data *room_db;       /* In db.c */
 #endif
+extern char     *login;
 
 /*
  * extern int top_of_world; In db.c 
@@ -105,6 +108,7 @@ int             numberhosts;
 int             maxdesc,
                 avail_descs;
 int             tics = 0;       /* for extern checkpointing */
+
 
 /*
  *********************************************************************
@@ -349,7 +353,6 @@ int run_the_game(int port)
 
     if (reboot) {
         Log("Rebooting.");
-        assert(52);             /* what's so great about HHGTTG, anyhow? */
     }
 
     Log("Normal termination of game.");
@@ -1173,7 +1176,7 @@ int new_connection(int s)
     getsockname(s, &isa, &i);
 #endif
 
-    if ((t = accept(s, (struct sockaddr *) &isa, &i)) < 0) {
+    if ((t = accept(s, (struct sockaddr *) &isa, (socklen_t *)&i)) < 0) {
         perror("Accept");
         return (-1);
     }
@@ -1203,7 +1206,6 @@ int new_descriptor(int s)
     struct sockaddr_in sock;
     char            buf[200],
                     buf2[200];
-    extern char     login[];
 
     if ((desc = new_connection(s)) < 0) {
         return (-1);
@@ -1263,7 +1265,7 @@ int new_descriptor(int s)
      * find info 
      */
     size = sizeof(sock);
-    if (getpeername(desc, (struct sockaddr *) &sock, &size) < 0) {
+    if (getpeername(desc, (struct sockaddr *) &sock, (socklen_t *)&size) < 0) {
         perror("getpeername");
         *newd->host = '\0';
     } else if (IS_SET(SystemFlags, SYS_SKIPDNS) || 
@@ -3303,7 +3305,8 @@ void identd_test(struct sockaddr_in in_addr)
     }
 
     addrlen = sizeof(addr);
-    if (getsockname(fd, (struct sockaddr *) &addr, &addrlen) == -1) {
+    if (getsockname(fd, (struct sockaddr *) &addr, 
+                    (socklen_t *)&addrlen) == -1) {
         perror("getsockname");
     }
 

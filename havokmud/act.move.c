@@ -3,6 +3,7 @@
   * DaleMUD is based on DIKUMUD 
   */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -1567,88 +1568,71 @@ void do_sit(struct char_data *ch, char *argument, int cmd)
     dlog("in do_sit");
 
     switch (GET_POS(ch)) {
-    case POSITION_STANDING:{
-            act("You sit down.", FALSE, ch, 0, 0, TO_CHAR);
-            act("$n sits down.", FALSE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_SITTING;
-        }
+    case POSITION_STANDING:
+        act("You sit down.", FALSE, ch, 0, 0, TO_CHAR);
+        act("$n sits down.", FALSE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SITTING;
         break;
-    case POSITION_SITTING:{
-            send_to_char("You're sitting already.\n\r", ch);
-        }
+    case POSITION_SITTING:
+        send_to_char("You're sitting already.\n\r", ch);
         break;
-    case POSITION_RESTING:{
-            act("You stop resting, and sit up.", FALSE, ch, 0, 0, TO_CHAR);
-            act("$n stops resting.", TRUE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_SITTING;
-        }
+    case POSITION_RESTING:
+        act("You stop resting, and sit up.", FALSE, ch, 0, 0, TO_CHAR);
+        act("$n stops resting.", TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SITTING;
         break;
-    case POSITION_SLEEPING:{
-            act("You have to wake up first.", FALSE, ch, 0, 0, TO_CHAR);
-        }
+    case POSITION_SLEEPING:
+        act("You have to wake up first.", FALSE, ch, 0, 0, TO_CHAR);
         break;
-    case POSITION_FIGHTING:{
-            act("Sit down while fighting? are you MAD?", FALSE, ch, 0, 0,
-                TO_CHAR);
-        }
+    case POSITION_FIGHTING:
+        act("Sit down while fighting? are you MAD?", FALSE, ch, 0, 0, TO_CHAR);
         break;
-    case POSITION_MOUNTED:{
-            send_to_char("Not while riding you don't!\n\r", ch);
-            break;
-        }
-    default:{
-            act("You stop floating around, and sit down.", FALSE, ch, 0, 0,
-                TO_CHAR);
-            act("$n stops floating around, and sits down.", TRUE, ch, 0, 0,
-                TO_ROOM);
-            GET_POS(ch) = POSITION_SITTING;
-        }
+    case POSITION_MOUNTED:
+        send_to_char("Not while riding you don't!\n\r", ch);
+        break;
+    default:
+        act("You stop floating around, and sit down.", FALSE, ch, 0, 0,
+            TO_CHAR);
+        act("$n stops floating around, and sits down.", TRUE, ch, 0, 0,
+            TO_ROOM);
+        GET_POS(ch) = POSITION_SITTING;
         break;
     }
 }
 
 void do_rest(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_rest");
 
     switch (GET_POS(ch)) {
-    case POSITION_STANDING:{
-            act("You sit down and rest your tired bones.", FALSE, ch, 0, 0,
-                TO_CHAR);
-            act("$n sits down and rests.", TRUE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_RESTING;
-        }
+    case POSITION_STANDING:
+        act("You sit down and rest your tired bones.", FALSE, ch, 0, 0,
+            TO_CHAR);
+        act("$n sits down and rests.", TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_RESTING;
         break;
-    case POSITION_SITTING:{
-            act("You rest your tired bones.", FALSE, ch, 0, 0, TO_CHAR);
-            act("$n rests.", TRUE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_RESTING;
-        }
+    case POSITION_SITTING:
+        act("You rest your tired bones.", FALSE, ch, 0, 0, TO_CHAR);
+        act("$n rests.", TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_RESTING;
         break;
-    case POSITION_RESTING:{
-            act("You are already resting.", FALSE, ch, 0, 0, TO_CHAR);
-        }
+    case POSITION_RESTING:
+        act("You are already resting.", FALSE, ch, 0, 0, TO_CHAR);
         break;
-    case POSITION_SLEEPING:{
-            act("You have to wake up first.", FALSE, ch, 0, 0, TO_CHAR);
-        }
+    case POSITION_SLEEPING:
+        act("You have to wake up first.", FALSE, ch, 0, 0, TO_CHAR);
         break;
-    case POSITION_FIGHTING:{
-            act("Rest while fighting? are you MAD?", FALSE, ch, 0, 0,
-                TO_CHAR);
-        }
+    case POSITION_FIGHTING:
+        act("Rest while fighting? are you MAD?", FALSE, ch, 0, 0, TO_CHAR);
         break;
-    case POSITION_MOUNTED:{
-            send_to_char("Not while riding you don't!\n\r", ch);
-            break;
-        }
-    default:{
-            act("You stop floating around, and stop to rest your tired bones.", FALSE, ch, 0, 0, TO_CHAR);
-            act("$n stops floating around, and rests.", FALSE, ch, 0, 0,
-                TO_ROOM);
-            GET_POS(ch) = POSITION_SITTING;
-        }
+    case POSITION_MOUNTED:
+        send_to_char("Not while riding you don't!\n\r", ch);
+        break;
+    default:
+        act("You stop floating around, and stop to rest your tired bones.",
+            FALSE, ch, 0, 0, TO_CHAR);
+        act("$n stops floating around, and rests.", FALSE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SITTING;
         break;
     }
 }
@@ -1659,31 +1643,26 @@ void do_sleep(struct char_data *ch, char *argument, int cmd)
     switch (GET_POS(ch)) {
     case POSITION_STANDING:
     case POSITION_SITTING:
-    case POSITION_RESTING:{
-            send_to_char("You go to sleep.\n\r", ch);
-            act("$n lies down and falls asleep.", TRUE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_SLEEPING;
-        }
+    case POSITION_RESTING:
+        send_to_char("You go to sleep.\n\r", ch);
+        act("$n lies down and falls asleep.", TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SLEEPING;
         break;
-    case POSITION_SLEEPING:{
-            send_to_char("You are already sound asleep.\n\r", ch);
-        }
+    case POSITION_SLEEPING:
+        send_to_char("You are already sound asleep.\n\r", ch);
         break;
-    case POSITION_FIGHTING:{
-            send_to_char("Sleep while fighting? are you MAD?\n\r", ch);
-        }
+    case POSITION_FIGHTING:
+        send_to_char("Sleep while fighting? are you MAD?\n\r", ch);
         break;
-    case POSITION_MOUNTED:{
-            send_to_char("Not while riding you don't!\n\r", ch);
-            break;
-        }
-    default:{
-            act("You stop floating around, and lie down to sleep.",
-                FALSE, ch, 0, 0, TO_CHAR);
-            act("$n stops floating around, and lie down to sleep.",
-                TRUE, ch, 0, 0, TO_ROOM);
-            GET_POS(ch) = POSITION_SLEEPING;
-        }
+    case POSITION_MOUNTED:
+        send_to_char("Not while riding you don't!\n\r", ch);
+        break;
+    default:
+        act("You stop floating around, and lie down to sleep.",
+            FALSE, ch, 0, 0, TO_CHAR);
+        act("$n stops floating around, and lie down to sleep.",
+            TRUE, ch, 0, 0, TO_ROOM);
+        GET_POS(ch) = POSITION_SLEEPING;
         break;
     }
 }
@@ -1781,9 +1760,6 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
          * victim stronger?? 
          */
 #if 0                           
-                                /* 
-                                 * commented out this bullshit - teb 
-                                 */
         if ((GetMaxLevel(leader) - GetMaxLevel(ch)) > 8) {
             act("$N looks to be too strong to join you.", FALSE, ch, 0,
                 leader, TO_CHAR);

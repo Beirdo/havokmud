@@ -365,7 +365,7 @@ void            do_osave(struct char_data *ch, char *argument, int cmd);
 void            do_finger(struct char_data *ch, char *argument, int cmd);
 
 void            do_WorldSave(struct char_data *ch, char *argument,
-                             char cmd);
+                             int cmd);
 void            do_god_interven(struct char_data *ch, char *argument,
                                 int cmd);
 
@@ -564,7 +564,6 @@ int             compare(struct player_index_element *arg1,
                         struct player_index_element *arg2);
 void            free_char(struct char_data *ch);
 void            free_obj(struct obj_data *obj);
-int             file_to_string(char *name, char *buf);
 void            ClearDeadBit(struct char_data *ch);
 void            reset_char(struct char_data *ch);
 void            clear_char(struct char_data *ch);
@@ -848,189 +847,189 @@ void            check_idling(struct char_data *ch);
  */
 
 void            heat_blind(struct char_data *ch);
-void            spell_magic_missile(byte level, struct char_data *ch,
+void            spell_magic_missile(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_chill_touch(byte level, struct char_data *ch,
+void            spell_chill_touch(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_burning_hands(byte level, struct char_data *ch,
+void            spell_burning_hands(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_shocking_grasp(byte level, struct char_data *ch,
+void            spell_shocking_grasp(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_lightning_bolt(byte level, struct char_data *ch,
+void            spell_lightning_bolt(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_colour_spray(byte level, struct char_data *ch,
+void            spell_colour_spray(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_energy_drain(byte level, struct char_data *ch,
+void            spell_energy_drain(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_fireball(byte level, struct char_data *ch,
+void            spell_fireball(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_earthquake(byte level, struct char_data *ch,
+void            spell_earthquake(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_dispel_evil(byte level, struct char_data *ch,
+void            spell_dispel_evil(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_call_lightning(byte level, struct char_data *ch,
+void            spell_call_lightning(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_harm(byte level, struct char_data *ch,
+void            spell_harm(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_armor(byte level, struct char_data *ch,
+void            spell_armor(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_astral_walk(byte level, struct char_data *ch,
+void            spell_astral_walk(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_teleport(byte level, struct char_data *ch,
+void            spell_teleport(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_bless(byte level, struct char_data *ch,
+void            spell_bless(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_blindness(byte level, struct char_data *ch,
+void            spell_blindness(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_clone(byte level, struct char_data *ch,
+void            spell_clone(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_control_weather(byte level, struct char_data *ch,
+void            spell_control_weather(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_create_food(byte level, struct char_data *ch,
+void            spell_create_food(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_create_water(byte level, struct char_data *ch,
+void            spell_create_water(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_cure_blind(byte level, struct char_data *ch,
+void            spell_cure_blind(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_cure_critic(byte level, struct char_data *ch,
+void            spell_cure_critic(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_cure_light(byte level, struct char_data *ch,
+void            spell_cure_light(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_curse(byte level, struct char_data *ch,
+void            spell_curse(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_detect_evil(byte level, struct char_data *ch,
+void            spell_detect_evil(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_detect_good(byte level, struct char_data *ch,
+void            spell_detect_good(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_detect_invisibility(byte level, struct char_data *ch,
+void            spell_detect_invisibility(int level, struct char_data *ch,
                                           struct char_data *victim,
                                           struct obj_data *obj);
-void            spell_detect_magic(byte level, struct char_data *ch,
+void            spell_detect_magic(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_detect_poison(byte level, struct char_data *ch,
+void            spell_detect_poison(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_enchant_weapon(byte level, struct char_data *ch,
+void            spell_enchant_weapon(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_enchant_armor(byte level, struct char_data *ch,
+void            spell_enchant_armor(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_heal(byte level, struct char_data *ch,
+void            spell_heal(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_invisibility(byte level, struct char_data *ch,
+void            spell_invisibility(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_locate_object(byte level, struct char_data *ch,
+void            spell_locate_object(int level, struct char_data *ch,
                                     struct char_data *victim, char *arg);
-void            spell_poison(byte level, struct char_data *ch,
+void            spell_poison(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_protection_from_evil(byte level,
+void            spell_protection_from_evil(int level,
                                            struct char_data *ch,
                                            struct char_data *victim,
                                            struct obj_data *obj);
-void            spell_remove_curse(byte level, struct char_data *ch,
+void            spell_remove_curse(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_remove_poison(byte level, struct char_data *ch,
+void            spell_remove_poison(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_fireshield(byte level, struct char_data *ch,
+void            spell_fireshield(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_sanctuary(byte level, struct char_data *ch,
+void            spell_sanctuary(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_sleep(byte level, struct char_data *ch,
+void            spell_sleep(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_strength(byte level, struct char_data *ch,
+void            spell_strength(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_ventriloquate(byte level, struct char_data *ch,
+void            spell_ventriloquate(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_word_of_recall(byte level, struct char_data *ch,
+void            spell_word_of_recall(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_summon(byte level, struct char_data *ch,
+void            spell_summon(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
 void            RawSummon(struct char_data *v, struct char_data *c);
-void            spell_charm_person(byte level, struct char_data *ch,
+void            spell_charm_person(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_charm_monster(byte level, struct char_data *ch,
+void            spell_charm_monster(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_sense_life(byte level, struct char_data *ch,
+void            spell_sense_life(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_identify(byte level, struct char_data *ch,
+void            spell_identify(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_fire_breath(byte level, struct char_data *ch,
+void            spell_fire_breath(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_frost_breath(byte level, struct char_data *ch,
+void            spell_frost_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_acid_breath(byte level, struct char_data *ch,
+void            spell_acid_breath(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_gas_breath(byte level, struct char_data *ch,
+void            spell_gas_breath(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_lightning_breath(byte level, struct char_data *ch,
+void            spell_lightning_breath(int level, struct char_data *ch,
                                        struct char_data *victim,
                                        struct obj_data *obj);
-void            spell_dehydration_breath(byte level, struct char_data *ch,
+void            spell_dehydration_breath(int level, struct char_data *ch,
                                          struct char_data *victim,
                                          struct obj_data *obj);
-void            spell_vapor_breath(byte level, struct char_data *ch,
+void            spell_vapor_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_sound_breath(byte level, struct char_data *ch,
+void            spell_sound_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_shard_breath(byte level, struct char_data *ch,
+void            spell_shard_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_sleep_breath(byte level, struct char_data *ch,
+void            spell_sleep_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_light_breath(byte level, struct char_data *ch,
+void            spell_light_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_dark_breath(byte level, struct char_data *ch,
+void            spell_dark_breath(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
 
@@ -1038,160 +1037,160 @@ void            spell_dark_breath(byte level, struct char_data *ch,
  * Fom magic2.c 
  */
 
-void            spell_resurrection(byte level, struct char_data *ch,
+void            spell_resurrection(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_cause_light(byte level, struct char_data *ch,
+void            spell_cause_light(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_cause_critical(byte level, struct char_data *ch,
+void            spell_cause_critical(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_cause_serious(byte level, struct char_data *ch,
+void            spell_cause_serious(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_cure_serious(byte level, struct char_data *ch,
+void            spell_cure_serious(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_mana(byte level, struct char_data *ch,
+void            spell_mana(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_second_wind(byte level, struct char_data *ch,
+void            spell_second_wind(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_flamestrike(byte level, struct char_data *ch,
+void            spell_flamestrike(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_dispel_good(byte level, struct char_data *ch,
+void            spell_dispel_good(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_turn(byte level, struct char_data *ch,
+void            spell_turn(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_remove_paralysis(byte level, struct char_data *ch,
+void            spell_remove_paralysis(int level, struct char_data *ch,
                                        struct char_data *victim,
                                        struct obj_data *obj);
-void            spell_holy_word(byte level, struct char_data *ch,
+void            spell_holy_word(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_unholy_word(byte level, struct char_data *ch,
+void            spell_unholy_word(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_succor(byte level, struct char_data *ch,
+void            spell_succor(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_detect_charm(byte level, struct char_data *ch,
+void            spell_detect_charm(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_true_seeing(byte level, struct char_data *ch,
+void            spell_true_seeing(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_major_track(byte level, struct char_data *ch,
+void            spell_major_track(int level, struct char_data *ch,
                                   struct char_data *targ,
                                   struct obj_data *obj);
-void            spell_minor_track(byte level, struct char_data *ch,
+void            spell_minor_track(int level, struct char_data *ch,
                                   struct char_data *targ,
                                   struct obj_data *obj);
-void            spell_poly_self(byte level, struct char_data *ch,
+void            spell_poly_self(int level, struct char_data *ch,
                                 struct char_data *mob,
                                 struct obj_data *obj);
-void            spell_minor_create(byte level, struct char_data *ch,
+void            spell_minor_create(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_stone_skin(byte level, struct char_data *ch,
+void            spell_stone_skin(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_infravision(byte level, struct char_data *ch,
+void            spell_infravision(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_shield(byte level, struct char_data *ch,
+void            spell_shield(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_weakness(byte level, struct char_data *ch,
+void            spell_weakness(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_invis_group(byte level, struct char_data *ch,
+void            spell_invis_group(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_acid_blast(byte level, struct char_data *ch,
+void            spell_acid_blast(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_cone_of_cold(byte level, struct char_data *ch,
+void            spell_cone_of_cold(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_ice_storm(byte level, struct char_data *ch,
+void            spell_ice_storm(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_poison_cloud(byte level, struct char_data *ch,
+void            spell_poison_cloud(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_major_create(byte level, struct char_data *ch,
+void            spell_major_create(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_sending(byte level, struct char_data *ch,
+void            spell_sending(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_meteor_swarm(byte level, struct char_data *ch,
+void            spell_meteor_swarm(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_Create_Monster(byte level, struct char_data *ch,
+void            spell_Create_Monster(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_light(byte level, struct char_data *ch,
+void            spell_light(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_fly(byte level, struct char_data *ch,
+void            spell_fly(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void            spell_fly_group(byte level, struct char_data *ch,
+void            spell_fly_group(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_refresh(byte level, struct char_data *ch,
+void            spell_refresh(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_water_breath(byte level, struct char_data *ch,
+void            spell_water_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_cont_light(byte level, struct char_data *ch,
+void            spell_cont_light(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_animate_dead(byte level, struct char_data *ch,
+void            spell_animate_dead(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *corpse);
-void            spell_know_alignment(byte level, struct char_data *ch,
+void            spell_know_alignment(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_dispel_magic(byte level, struct char_data *ch,
+void            spell_dispel_magic(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_paralyze(byte level, struct char_data *ch,
+void            spell_paralyze(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_fear(byte level, struct char_data *ch,
+void            spell_fear(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_calm(byte level, struct char_data *ch,
+void            spell_calm(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_web(byte level, struct char_data *ch,
+void            spell_web(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void            spell_heroes_feast(byte level, struct char_data *ch,
+void            spell_heroes_feast(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_conjure_elemental(byte level, struct char_data *ch,
+void            spell_conjure_elemental(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_faerie_fire(byte level, struct char_data *ch,
+void            spell_faerie_fire(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_faerie_fog(byte level, struct char_data *ch,
+void            spell_faerie_fog(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_cacaodemon(byte level, struct char_data *ch,
+void            spell_cacaodemon(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_improved_identify(byte level, struct char_data *ch,
+void            spell_improved_identify(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_geyser(byte level, struct char_data *ch,
+void            spell_geyser(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_green_slime(byte level, struct char_data *ch,
+void            spell_green_slime(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
 
@@ -1199,174 +1198,174 @@ void            spell_green_slime(byte level, struct char_data *ch,
  * From magic3.c 
  */
 
-void            spell_tree_travel(byte level, struct char_data *ch,
+void            spell_tree_travel(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_transport_via_plant(byte level, struct char_data *ch,
+void            spell_transport_via_plant(int level, struct char_data *ch,
                                           struct char_data *victim,
                                           char *arg);
-void            spell_plant_gate(byte level, struct char_data *ch,
+void            spell_plant_gate(int level, struct char_data *ch,
                                  struct char_data *victim, char *arg);
-void            spell_speak_with_plants(byte level, struct char_data *ch,
+void            spell_speak_with_plants(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_changestaff(byte level, struct char_data *ch,
+void            spell_changestaff(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_pword_kill(byte level, struct char_data *ch,
+void            spell_pword_kill(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_pword_blind(byte level, struct char_data *ch,
+void            spell_pword_blind(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_chain_lightn(byte level, struct char_data *ch,
+void            spell_chain_lightn(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_scare(byte level, struct char_data *ch,
+void            spell_scare(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_haste(byte level, struct char_data *ch,
+void            spell_haste(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_slow(byte level, struct char_data *ch,
+void            spell_slow(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_familiar(byte level, struct char_data *ch,
+void            spell_familiar(int level, struct char_data *ch,
                                struct char_data **victim,
                                struct obj_data *obj);
-void            spell_aid(byte level, struct char_data *ch,
+void            spell_aid(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void            spell_holyword(byte level, struct char_data *ch,
+void            spell_holyword(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_golem(byte level, struct char_data *ch,
+void            spell_golem(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_feeblemind(byte level, struct char_data *ch,
+void            spell_feeblemind(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_shillelagh(byte level, struct char_data *ch,
+void            spell_shillelagh(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_goodberry(byte level, struct char_data *ch,
+void            spell_goodberry(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_flame_blade(byte level, struct char_data *ch,
+void            spell_flame_blade(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_animal_growth(byte level, struct char_data *ch,
+void            spell_animal_growth(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_insect_growth(byte level, struct char_data *ch,
+void            spell_insect_growth(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_creeping_death(byte level, struct char_data *ch,
+void            spell_creeping_death(int level, struct char_data *ch,
                                      struct char_data *victim, int dir);
-void            spell_commune(byte level, struct char_data *ch,
+void            spell_commune(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_animal_summon(byte level, struct char_data *ch,
+void            spell_animal_summon(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_elemental_summoning(byte level, struct char_data *ch,
+void            spell_elemental_summoning(int level, struct char_data *ch,
                                           struct char_data *victim,
                                           int spell);
-void            spell_reincarnate(byte level, struct char_data *ch,
+void            spell_reincarnate(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_charm_veggie(byte level, struct char_data *ch,
+void            spell_charm_veggie(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_veggie_growth(byte level, struct char_data *ch,
+void            spell_veggie_growth(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_tree(byte level, struct char_data *ch,
+void            spell_tree(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void            spell_animate_rock(byte level, struct char_data *ch,
+void            spell_animate_rock(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_travelling(byte level, struct char_data *ch,
+void            spell_travelling(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_animal_friendship(byte level, struct char_data *ch,
+void            spell_animal_friendship(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_invis_to_animals(byte level, struct char_data *ch,
+void            spell_invis_to_animals(int level, struct char_data *ch,
                                        struct char_data *victim,
                                        struct obj_data *obj);
-void            spell_slow_poison(byte level, struct char_data *ch,
+void            spell_slow_poison(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_snare(byte level, struct char_data *ch,
+void            spell_snare(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_entangle(byte level, struct char_data *ch,
+void            spell_entangle(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_barkskin(byte level, struct char_data *ch,
+void            spell_barkskin(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_gust_of_wind(byte level, struct char_data *ch,
+void            spell_gust_of_wind(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_silence(byte level, struct char_data *ch,
+void            spell_silence(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_warp_weapon(byte level, struct char_data *ch,
+void            spell_warp_weapon(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_heat_stuff(byte level, struct char_data *ch,
+void            spell_heat_stuff(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_dust_devil(byte level, struct char_data *ch,
+void            spell_dust_devil(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_sunray(byte level, struct char_data *ch,
+void            spell_sunray(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_know_monster(byte level, struct char_data *ch,
+void            spell_know_monster(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_find_traps(byte level, struct char_data *ch,
+void            spell_find_traps(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_firestorm(byte level, struct char_data *ch,
+void            spell_firestorm(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_teleport_wo_error(byte level, struct char_data *ch,
+void            spell_teleport_wo_error(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_portal(byte level, struct char_data *ch,
+void            spell_portal(int level, struct char_data *ch,
                              struct char_data *tmp_ch,
                              struct obj_data *obj);
-void            spell_mount(byte level, struct char_data *ch,
+void            spell_mount(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_dragon_ride(byte level, struct char_data *ch,
+void            spell_dragon_ride(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
 
 /*
  * New Paladin spells 
  */
-void            spell_holy_strength(byte level, struct char_data *ch,
+void            spell_holy_strength(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_enlightenment(byte level, struct char_data *ch,
+void            spell_enlightenment(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_circle_protection(byte level, struct char_data *ch,
+void            spell_circle_protection(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_wrath_god(byte level, struct char_data *ch,
+void            spell_wrath_god(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_pacifism(byte level, struct char_data *ch,
+void            spell_pacifism(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_aura_power(byte level, struct char_data *ch,
+void            spell_aura_power(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_holy_armor(byte level, struct char_data *ch,
+void            spell_holy_armor(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
 
@@ -1402,7 +1401,7 @@ int             MobFriend(struct char_data *ch, struct char_data *f);
 void            PulseMobiles(int type);
 void            DoScript(struct char_data *ch);
 int             CommandSearch(char *arg);
-void            CommandAssign(char *arg, void (*p));
+void CommandAssign(char *arg, void (*p)());
 void            CommandSetup(void);
 void            noop(char *arg, struct char_data *ch);
 void            end2(char *arg, struct char_data *ch);
@@ -2256,7 +2255,7 @@ int             Tysha(struct char_data *ch, int cmd, char *arg,
  */
 void            spello(int nr, byte beat, byte pos, byte mlev, byte clev,
                        byte dlev, byte slev, byte plev, byte rlev,
-                       byte ilev, ubyte mana, sh_int tar, void *func,
+                       byte ilev, ubyte mana, int tar, void (*func)(),
                        sh_int sf, byte brewable, byte blev, byte nlev);
 
 int             SPELL_LEVEL(struct char_data *ch, int sn);
@@ -2289,83 +2288,83 @@ int             check_nature(struct char_data *i);
  * From spells1.c 
  */
 
-void            cast_burning_hands(byte level, struct char_data *ch,
+void            cast_burning_hands(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *victim,
                                    struct obj_data *tar_obj);
-void            cast_call_lightning(byte level, struct char_data *ch,
+void            cast_call_lightning(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *victim,
                                     struct obj_data *tar_obj);
-void            cast_chill_touch(byte level, struct char_data *ch,
+void            cast_chill_touch(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *victim,
                                  struct obj_data *tar_obj);
-void            cast_shocking_grasp(byte level, struct char_data *ch,
+void            cast_shocking_grasp(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *victim,
                                     struct obj_data *tar_obj);
-void            cast_colour_spray(byte level, struct char_data *ch,
+void            cast_colour_spray(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,
                                   struct obj_data *tar_obj);
-void            cast_earthquake(byte level, struct char_data *ch,
+void            cast_earthquake(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *victim,
                                 struct obj_data *tar_obj);
-void            cast_energy_drain(byte level, struct char_data *ch,
+void            cast_energy_drain(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,
                                   struct obj_data *tar_obj);
-void            cast_fireball(byte level, struct char_data *ch, char *arg,
+void            cast_fireball(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *victim,
                               struct obj_data *tar_obj);
-void            cast_harm(byte level, struct char_data *ch, char *arg,
+void            cast_harm(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *victim,
                           struct obj_data *tar_obj);
-void            cast_lightning_bolt(byte level, struct char_data *ch,
+void            cast_lightning_bolt(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *victim,
                                     struct obj_data *tar_obj);
-void            cast_acid_blast(byte level, struct char_data *ch,
+void            cast_acid_blast(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *victim,
                                 struct obj_data *tar_obj);
-void            cast_cone_of_cold(byte level, struct char_data *ch,
+void            cast_cone_of_cold(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,
                                   struct obj_data *tar_obj);
-void            cast_ice_storm(byte level, struct char_data *ch, char *arg,
+void            cast_ice_storm(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *victim,
                                struct obj_data *tar_obj);
-void            cast_meteor_swarm(byte level, struct char_data *ch,
+void            cast_meteor_swarm(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,
                                   struct obj_data *tar_obj);
-void            cast_flamestrike(byte level, struct char_data *ch,
+void            cast_flamestrike(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *victim,
                                  struct obj_data *tar_obj);
-void            cast_magic_missile(byte level, struct char_data *ch,
+void            cast_magic_missile(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *victim,
                                    struct obj_data *tar_obj);
-void            cast_cause_light(byte level, struct char_data *ch,
+void            cast_cause_light(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *victim,
                                  struct obj_data *tar_obj);
-void            cast_cause_serious(byte level, struct char_data *ch,
+void            cast_cause_serious(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *victim,
                                    struct obj_data *tar_obj);
-void            cast_cause_critic(byte level, struct char_data *ch,
+void            cast_cause_critic(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,
                                   struct obj_data *tar_obj);
-void            cast_geyser(byte level, struct char_data *ch, char *arg,
+void            cast_geyser(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *victim,
                             struct obj_data *tar_obj);
-void            cast_green_slime(byte level, struct char_data *ch,
+void            cast_green_slime(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *victim,
                                  struct obj_data *tar_obj);
@@ -2374,533 +2373,533 @@ void            cast_green_slime(byte level, struct char_data *ch,
  * From spells2.c 
  */
 
-void            cast_resurrection(byte level, struct char_data *ch,
+void            cast_resurrection(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_major_track(byte level, struct char_data *ch,
+void            cast_major_track(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_minor_track(byte level, struct char_data *ch,
+void            cast_minor_track(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_mana(byte level, struct char_data *ch, char *arg,
+void            cast_mana(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_armor(byte level, struct char_data *ch, char *arg,
+void            cast_armor(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_stone_skin(byte level, struct char_data *ch,
+void            cast_stone_skin(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_astral_walk(byte level, struct char_data *ch,
+void            cast_astral_walk(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_teleport(byte level, struct char_data *ch, char *arg,
+void            cast_teleport(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_bless(byte level, struct char_data *ch, char *arg,
+void            cast_bless(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_infravision(byte level, struct char_data *ch,
+void            cast_infravision(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_true_seeing(byte level, struct char_data *ch,
+void            cast_true_seeing(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_blindness(byte level, struct char_data *ch, char *arg,
+void            cast_blindness(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_light(byte level, struct char_data *ch, char *arg,
+void            cast_light(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_cont_light(byte level, struct char_data *ch,
+void            cast_cont_light(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_web(byte level, struct char_data *ch, char *arg,
+void            cast_web(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj);
-void            cast_clone(byte level, struct char_data *ch, char *arg,
+void            cast_clone(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_control_weather(byte level, struct char_data *ch,
+void            cast_control_weather(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
-void            cast_create_food(byte level, struct char_data *ch,
+void            cast_create_food(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_create_water(byte level, struct char_data *ch,
+void            cast_create_water(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_water_breath(byte level, struct char_data *ch,
+void            cast_water_breath(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_flying(byte level, struct char_data *ch, char *arg,
+void            cast_flying(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_fly_group(byte level, struct char_data *ch, char *arg,
+void            cast_fly_group(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_heroes_feast(byte level, struct char_data *ch,
+void            cast_heroes_feast(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_cure_blind(byte level, struct char_data *ch,
+void            cast_cure_blind(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_cure_critic(byte level, struct char_data *ch,
+void            cast_cure_critic(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_cure_light(byte level, struct char_data *ch,
+void            cast_cure_light(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_cure_serious(byte level, struct char_data *ch,
+void            cast_cure_serious(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_refresh(byte level, struct char_data *ch, char *arg,
+void            cast_refresh(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj);
-void            cast_second_wind(byte level, struct char_data *ch,
+void            cast_second_wind(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_shield(byte level, struct char_data *ch, char *arg,
+void            cast_shield(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_curse(byte level, struct char_data *ch, char *arg,
+void            cast_curse(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_detect_evil(byte level, struct char_data *ch,
+void            cast_detect_evil(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_detect_good(byte level, struct char_data *ch,
+void            cast_detect_good(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_detect_invisibility(byte level, struct char_data *ch,
+void            cast_detect_invisibility(int level, struct char_data *ch,
                                          char *arg, int type,
                                          struct char_data *tar_ch,
                                          struct obj_data *tar_obj);
-void            cast_detect_magic(byte level, struct char_data *ch,
+void            cast_detect_magic(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_detect_poison(byte level, struct char_data *ch,
+void            cast_detect_poison(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_dispel_evil(byte level, struct char_data *ch,
+void            cast_dispel_evil(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_dispel_good(byte level, struct char_data *ch,
+void            cast_dispel_good(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_faerie_fire(byte level, struct char_data *ch,
+void            cast_faerie_fire(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_enchant_weapon(byte level, struct char_data *ch,
+void            cast_enchant_weapon(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *tar_ch,
                                     struct obj_data *tar_obj);
-void            cast_enchant_armor(byte level, struct char_data *ch,
+void            cast_enchant_armor(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_heal(byte level, struct char_data *ch, char *arg,
+void            cast_heal(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_invisibility(byte level, struct char_data *ch,
+void            cast_invisibility(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_locate_object(byte level, struct char_data *ch,
+void            cast_locate_object(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_poison(byte level, struct char_data *ch, char *arg,
+void            cast_poison(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_protection_from_evil(byte level, struct char_data *ch,
+void            cast_protection_from_evil(int level, struct char_data *ch,
                                           char *arg, int type,
                                           struct char_data *tar_ch,
                                           struct obj_data *tar_obj);
-void            cast_remove_curse(byte level, struct char_data *ch,
+void            cast_remove_curse(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_remove_poison(byte level, struct char_data *ch,
+void            cast_remove_poison(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_remove_paralysis(byte level, struct char_data *ch,
+void            cast_remove_paralysis(int level, struct char_data *ch,
                                       char *arg, int type,
                                       struct char_data *tar_ch,
                                       struct obj_data *tar_obj);
-void            cast_sanctuary(byte level, struct char_data *ch, char *arg,
+void            cast_sanctuary(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_fireshield(byte level, struct char_data *ch,
+void            cast_fireshield(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_sleep(byte level, struct char_data *ch, char *arg,
+void            cast_sleep(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_strength(byte level, struct char_data *ch, char *arg,
+void            cast_strength(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_ventriloquate(byte level, struct char_data *ch,
+void            cast_ventriloquate(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_word_of_recall(byte level, struct char_data *ch,
+void            cast_word_of_recall(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *tar_ch,
                                     struct obj_data *tar_obj);
-void            cast_summon(byte level, struct char_data *ch, char *arg,
+void            cast_summon(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_charm_person(byte level, struct char_data *ch,
+void            cast_charm_person(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_charm_monster(byte level, struct char_data *ch,
+void            cast_charm_monster(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_sense_life(byte level, struct char_data *ch,
+void            cast_sense_life(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_identify(byte level, struct char_data *ch, char *arg,
+void            cast_identify(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_dragon_breath(byte level, struct char_data *ch,
+void            cast_dragon_breath(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *potion);
-void            cast_fire_breath(byte level, struct char_data *ch,
+void            cast_fire_breath(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_frost_breath(byte level, struct char_data *ch,
+void            cast_frost_breath(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_acid_breath(byte level, struct char_data *ch,
+void            cast_acid_breath(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_gas_breath(byte level, struct char_data *ch,
+void            cast_gas_breath(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_lightning_breath(byte level, struct char_data *ch,
+void            cast_lightning_breath(int level, struct char_data *ch,
                                       char *arg, int type,
                                       struct char_data *tar_ch,
                                       struct obj_data *tar_obj);
-void            cast_knock(byte level, struct char_data *ch, char *arg,
+void            cast_knock(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_know_alignment(byte level, struct char_data *ch,
+void            cast_know_alignment(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *tar_ch,
                                     struct obj_data *tar_obj);
-void            cast_weakness(byte level, struct char_data *ch, char *arg,
+void            cast_weakness(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_dispel_magic(byte level, struct char_data *ch,
+void            cast_dispel_magic(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_animate_dead(byte level, struct char_data *ch,
+void            cast_animate_dead(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_succor(byte level, struct char_data *ch, char *arg,
+void            cast_succor(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_paralyze(byte level, struct char_data *ch, char *arg,
+void            cast_paralyze(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_fear(byte level, struct char_data *ch, char *arg,
+void            cast_fear(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_turn(byte level, struct char_data *ch, char *arg,
+void            cast_turn(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_faerie_fog(byte level, struct char_data *ch,
+void            cast_faerie_fog(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *victim,
                                 struct obj_data *tar_obj);
-void            cast_poly_self(byte level, struct char_data *ch, char *arg,
+void            cast_poly_self(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_minor_creation(byte level, struct char_data *ch,
+void            cast_minor_creation(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *tar_ch,
                                     struct obj_data *tar_obj);
-void            cast_conjure_elemental(byte level, struct char_data *ch,
+void            cast_conjure_elemental(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
-void            cast_cacaodemon(byte level, struct char_data *ch,
+void            cast_cacaodemon(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_mon_sum1(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum1(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum2(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum2(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum3(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum3(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum4(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum4(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum5(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum5(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum6(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum6(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_mon_sum7(byte level, struct char_data *ch, char *arg,
+void            cast_mon_sum7(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_tree_travel(byte level, struct char_data *ch,
+void            cast_tree_travel(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_speak_with_plants(byte level, struct char_data *ch,
+void            cast_speak_with_plants(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
-void            cast_transport_via_plant(byte level, struct char_data *ch,
+void            cast_transport_via_plant(int level, struct char_data *ch,
                                          char *arg, int type,
                                          struct char_data *tar_ch,
                                          struct obj_data *tar_obj);
-void            cast_plant_gate(byte level, struct char_data *ch,
+void            cast_plant_gate(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_haste(byte level, struct char_data *ch, char *arg,
+void            cast_haste(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_slow(byte level, struct char_data *ch, char *arg,
+void            cast_slow(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_reincarnate(byte level, struct char_data *ch,
+void            cast_reincarnate(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_changestaff(byte level, struct char_data *ch,
+void            cast_changestaff(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_pword_kill(byte level, struct char_data *ch,
+void            cast_pword_kill(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_pword_blind(byte level, struct char_data *ch,
+void            cast_pword_blind(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_chain_lightn(byte level, struct char_data *ch,
+void            cast_chain_lightn(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_scare(byte level, struct char_data *ch, char *arg,
+void            cast_scare(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_familiar(byte level, struct char_data *ch, char *arg,
+void            cast_familiar(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_aid(byte level, struct char_data *ch, char *arg,
+void            cast_aid(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj);
-void            cast_holyword(byte level, struct char_data *ch, char *arg,
+void            cast_holyword(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_unholyword(byte level, struct char_data *ch,
+void            cast_unholyword(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_golem(byte level, struct char_data *ch, char *arg,
+void            cast_golem(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_command(byte level, struct char_data *ch, char *arg,
+void            cast_command(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj);
-void            cast_change_form(byte level, struct char_data *ch,
+void            cast_change_form(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_shillelagh(byte level, struct char_data *ch,
+void            cast_shillelagh(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_goodberry(byte level, struct char_data *ch, char *arg,
+void            cast_goodberry(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_flame_blade(byte level, struct char_data *ch,
+void            cast_flame_blade(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_animal_growth(byte level, struct char_data *ch,
+void            cast_animal_growth(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_insect_growth(byte level, struct char_data *ch,
+void            cast_insect_growth(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_creeping_death(byte level, struct char_data *ch,
+void            cast_creeping_death(int level, struct char_data *ch,
                                     char *arg, int type,
                                     struct char_data *tar_ch,
                                     struct obj_data *tar_obj);
-void            cast_commune(byte level, struct char_data *ch, char *arg,
+void            cast_commune(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj);
-void            cast_feeblemind(byte level, struct char_data *ch,
+void            cast_feeblemind(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_animal_summon_1(byte level, struct char_data *ch,
+void            cast_animal_summon_1(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
-void            cast_animal_summon_2(byte level, struct char_data *ch,
+void            cast_animal_summon_2(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
-void            cast_animal_summon_3(byte level, struct char_data *ch,
+void            cast_animal_summon_3(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
-void            cast_fire_servant(byte level, struct char_data *ch,
+void            cast_fire_servant(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_earth_servant(byte level, struct char_data *ch,
+void            cast_earth_servant(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_water_servant(byte level, struct char_data *ch,
+void            cast_water_servant(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_wind_servant(byte level, struct char_data *ch,
+void            cast_wind_servant(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_veggie_growth(byte level, struct char_data *ch,
+void            cast_veggie_growth(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_charm_veggie(byte level, struct char_data *ch,
+void            cast_charm_veggie(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_tree(byte level, struct char_data *ch, char *arg,
+void            cast_tree(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_animate_rock(byte level, struct char_data *ch,
+void            cast_animate_rock(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_travelling(byte level, struct char_data *ch,
+void            cast_travelling(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_animal_friendship(byte level, struct char_data *ch,
+void            cast_animal_friendship(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
-void            cast_invis_to_animals(byte level, struct char_data *ch,
+void            cast_invis_to_animals(int level, struct char_data *ch,
                                       char *arg, int type,
                                       struct char_data *tar_ch,
                                       struct obj_data *tar_obj);
-void            cast_slow_poison(byte level, struct char_data *ch,
+void            cast_slow_poison(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_entangle(byte level, struct char_data *ch, char *arg,
+void            cast_entangle(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_snare(byte level, struct char_data *ch, char *arg,
+void            cast_snare(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_gust_of_wind(byte level, struct char_data *ch,
+void            cast_gust_of_wind(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_barkskin(byte level, struct char_data *ch, char *arg,
+void            cast_barkskin(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_warp_weapon(byte level, struct char_data *ch,
+void            cast_warp_weapon(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_heat_stuff(byte level, struct char_data *ch,
+void            cast_heat_stuff(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_sunray(byte level, struct char_data *ch, char *arg,
+void            cast_sunray(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_find_traps(byte level, struct char_data *ch,
+void            cast_find_traps(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_firestorm(byte level, struct char_data *ch, char *arg,
+void            cast_firestorm(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_dust_devil(byte level, struct char_data *ch,
+void            cast_dust_devil(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_know_monster(byte level, struct char_data *ch,
+void            cast_know_monster(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj);
-void            cast_silence(byte level, struct char_data *ch, char *arg,
+void            cast_silence(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj);
-void            cast_dragon_ride(byte level, struct char_data *ch,
+void            cast_dragon_ride(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj);
-void            cast_mount(byte level, struct char_data *ch, char *arg,
+void            cast_mount(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_sending(byte level, struct char_data *ch, char *arg,
+void            cast_sending(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj);
-void            cast_portal(byte level, struct char_data *ch, char *arg,
+void            cast_portal(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
-void            cast_teleport_wo_error(byte level, struct char_data *ch,
+void            cast_teleport_wo_error(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
@@ -2908,30 +2907,30 @@ void            cast_teleport_wo_error(byte level, struct char_data *ch,
 /*
  * New Paladin Spells (GH) 
  */
-void            cast_holy_armor(byte level, struct char_data *ch,
+void            cast_holy_armor(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_holy_strength(byte level, struct char_data *ch,
+void            cast_holy_strength(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
-void            cast_enlightenment(byte level, struct char_data *ch,
+void            cast_enlightenment(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
 
-void            cast_circle_protection(byte level, struct char_data *ch,
+void            cast_circle_protection(int level, struct char_data *ch,
                                        char *arg, int type,
                                        struct char_data *tar_ch,
                                        struct obj_data *tar_obj);
-void            cast_wrath_god(byte level, struct char_data *ch, char *arg,
+void            cast_wrath_god(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void            cast_pacifism(byte level, struct char_data *ch, char *arg,
+void            cast_pacifism(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj);
-void            cast_aura_power(byte level, struct char_data *ch,
+void            cast_aura_power(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
@@ -3273,9 +3272,9 @@ void            do_mobTell(struct char_data *ch, char *mob,
  */
 void            qlog(char *desc);
 void            do_orebuild(struct char_data *ch, char *argument,
-                            char cmd);
+                            int cmd);
 void            do_mrebuild(struct char_data *ch, char *argument,
-                            char cmd);
+                            int cmd);
 
 /*
  * Leaves of Silver 
@@ -3424,117 +3423,117 @@ void            do_chat(struct char_data *ch, char *argument, int cmd);
 void            do_qchat(struct char_data *ch, char *argument, int cmd);
 void            do_clanlist(struct char_data *ch, char *arg, int cmd);
 
-void            spell_wall_of_thought(byte level, struct char_data *ch,
+void            spell_wall_of_thought(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            cast_wall_of_thought(byte level, struct char_data *ch,
+void            cast_wall_of_thought(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
 
-void            spell_cold_light(byte level, struct char_data *ch,
+void            spell_cold_light(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_disease(byte level, struct char_data *ch,
+void            spell_disease(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_invis_to_undead(byte level, struct char_data *ch,
+void            spell_invis_to_undead(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_life_tap(byte level, struct char_data *ch,
+void            spell_life_tap(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_suit_of_bone(byte level, struct char_data *ch,
+void            spell_suit_of_bone(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_spectral_shield(byte level, struct char_data *ch,
+void            spell_spectral_shield(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_clinging_darkness(byte level, struct char_data *ch,
+void            spell_clinging_darkness(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
-void            spell_dominate_undead(byte level, struct char_data *ch,
+void            spell_dominate_undead(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_unsummon(byte level, struct char_data *ch,
+void            spell_unsummon(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_siphon_strength(byte level, struct char_data *ch,
+void            spell_siphon_strength(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_gather_shadows(byte level, struct char_data *ch,
+void            spell_gather_shadows(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
-void            spell_mend_bones(byte level, struct char_data *ch,
+void            spell_mend_bones(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_trace_corpse(byte level, struct char_data *ch,
+void            spell_trace_corpse(int level, struct char_data *ch,
                                    struct char_data *victim, char *arg);
-void            spell_endure_cold(byte level, struct char_data *ch,
+void            spell_endure_cold(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_life_draw(byte level, struct char_data *ch,
+void            spell_life_draw(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_numb_dead(byte level, struct char_data *ch,
+void            spell_numb_dead(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_binding(byte level, struct char_data *ch,
+void            spell_binding(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_decay(byte level, struct char_data *ch,
+void            spell_decay(int level, struct char_data *ch,
                             struct char_data *victim,
                             struct obj_data *obj);
-void            spell_shadow_step(byte level, struct char_data *ch,
+void            spell_shadow_step(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_cavorting_bones(byte level, struct char_data *ch,
+void            spell_cavorting_bones(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_mist_of_death(byte level, struct char_data *ch,
+void            spell_mist_of_death(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_nullify(byte level, struct char_data *ch,
+void            spell_nullify(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void            spell_dark_empathy(byte level, struct char_data *ch,
+void            spell_dark_empathy(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void            spell_eye_of_the_dead(byte level, struct char_data *ch,
+void            spell_eye_of_the_dead(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_soul_steal(byte level, struct char_data *ch,
+void            spell_soul_steal(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_life_leech(byte level, struct char_data *ch,
+void            spell_life_leech(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_dark_pact(byte level, struct char_data *ch,
+void            spell_dark_pact(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_darktravel(byte level, struct char_data *ch,
+void            spell_darktravel(int level, struct char_data *ch,
                                  struct char_data *tmp_ch,
                                  struct obj_data *obj);
-void            spell_vampiric_embrace(byte level, struct char_data *ch,
+void            spell_vampiric_embrace(int level, struct char_data *ch,
                                        struct char_data *victim,
                                        struct obj_data *obj);
-void            spell_bind_affinity(byte level, struct char_data *ch,
+void            spell_bind_affinity(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_scourge_warlock(byte level, struct char_data *ch,
+void            spell_scourge_warlock(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_finger_of_death(byte level, struct char_data *ch,
+void            spell_finger_of_death(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            spell_flesh_golem(byte level, struct char_data *ch,
+void            spell_flesh_golem(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void            spell_chillshield(byte level, struct char_data *ch,
+void            spell_chillshield(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
 
-void            spell_blade_barrier(byte level, struct char_data *ch,
+void            spell_blade_barrier(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
 
@@ -3590,61 +3589,63 @@ char           *ArmorSize(int a);
 int             eval(struct obj_data *object);
 void FailPoison(struct char_data *victim, struct char_data *ch);
 int IS_FOLLOWING(struct char_data *tch, struct char_data *person);
-void mind_sense_object(byte level, struct char_data *ch,
+void mind_sense_object(int level, struct char_data *ch,
                        struct char_data *victim, char *arg);
-void spell_disintegrate(byte level, struct char_data *ch,
+void spell_disintegrate(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj);
 void raw_lock_door(struct char_data *ch,
                    struct room_direction_data *exitp, int door);
 void raw_unlock_door(struct char_data *ch,
                      struct room_direction_data *exitp, int door);
-void mind_burn(byte level, struct char_data *ch,
+void mind_burn(int level, struct char_data *ch,
                struct char_data *victim, struct obj_data *obj);
-void mind_teleport(byte level, struct char_data *ch,
+void mind_teleport(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj);
-void mind_probability_travel(byte level, struct char_data *ch,
+void mind_probability_travel(int level, struct char_data *ch,
                              struct char_data *victim, struct obj_data *obj);
-void mind_danger_sense(byte level, struct char_data *ch,
+void mind_danger_sense(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void mind_clairvoyance(byte level, struct char_data *ch,
+void mind_clairvoyance(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void mind_disintegrate(byte level, struct char_data *ch,
+void mind_disintegrate(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void mind_telekinesis(byte level, struct char_data *ch, 
+void mind_telekinesis(int level, struct char_data *ch, 
                       struct char_data *victim, int dir_num);
-void mind_levitation(byte level, struct char_data *ch,
+void mind_levitation(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void mind_cell_adjustment(byte level, struct char_data *ch,
+void mind_cell_adjustment(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void mind_chameleon(byte level, struct char_data *ch,
+void mind_chameleon(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj);
-void mind_psi_strength(byte level, struct char_data *ch,
+void mind_psi_strength(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void mind_mind_over_body(byte level, struct char_data *ch,
+void mind_mind_over_body(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj);
-void mind_domination(byte level, struct char_data *ch,
+void mind_domination(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void mind_mind_wipe(byte level, struct char_data *ch,
+void mind_mind_wipe(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj);
-void mind_psychic_crush(byte level, struct char_data *ch,
+void mind_psychic_crush(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj);
-void mind_tower_iron_will(byte level, struct char_data *ch,
+void mind_tower_iron_will(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void mind_mindblank(byte level, struct char_data *ch,
+void mind_mindblank(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj);
-void mind_psychic_impersonation(byte level, struct char_data *ch,
+void mind_psychic_impersonation(int level, struct char_data *ch,
                                 struct char_data *victim, struct obj_data *obj);
-void mind_ultra_blast(byte level, struct char_data *ch,
+void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
-void mind_intensify(byte level, struct char_data *ch,
+void mind_intensify(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj);
-void mind_mind_tap(byte level, struct char_data *ch,
+void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj);
-void mind_kinolock(byte level, struct char_data *ch, char *arg, int type,
+void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_globe_darkness(byte level, struct char_data *ch, char *arg,
+#if 0
+void cast_globe_darkness(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj);
+#endif
 void save_board(struct bulletin_board *bd, int vnum);
 void            UpdateHelpMenu(struct char_data *ch);
 int open_door(struct char_data *ch, int dir);
@@ -3653,158 +3654,160 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total);
 void go_direction(struct char_data *ch, int dir);
 int pc_num_class(int clss);
 
-void cast_globe_minor_inv(byte level, struct char_data *ch, char *arg,
+#if 0
+void cast_globe_minor_inv(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_globe_major_inv(byte level, struct char_data *ch, char *arg,
+void cast_globe_major_inv(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_incendiary_cloud(byte level, struct char_data *ch, char *arg,
+void cast_incendiary_cloud(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *victim,
                            struct obj_data *tar_obj);
-void cast_disintegrate(byte level, struct char_data *ch, char *arg,
+void cast_disintegrate(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
                        struct obj_data *tar_obj);
-void cast_suit_of_bone(byte level, struct char_data *ch, char *arg,
+void cast_suit_of_bone(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj);
-void cast_protection_from_good(byte level, struct char_data *ch, char
+void cast_protection_from_good(int level, struct char_data *ch, char
                                *arg, int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);
-void cast_spectral_shield(byte level, struct char_data *ch, char *arg,
+void cast_spectral_shield(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_eye_of_the_dead(byte level, struct char_data *ch, char *arg,
+void cast_eye_of_the_dead(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_endure_cold(byte level, struct char_data *ch, char *arg,
+void cast_endure_cold(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj);
-void cast_vampiric_embrace(byte level, struct char_data *ch, char *arg,
+void cast_vampiric_embrace(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void cast_chillshield(byte level, struct char_data *ch, char *arg,
+void cast_chillshield(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj);
-void cast_nullify(byte level, struct char_data *ch, char *arg,
+void cast_nullify(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj);
-void cast_life_tap(byte level, struct char_data *ch, char *arg,
+void cast_life_tap(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj);
-void cast_disease(byte level, struct char_data *ch, char *arg,
+void cast_disease(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj);
-void cast_siphon_strength(byte level, struct char_data *ch, char *arg,
+void cast_siphon_strength(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_life_draw(byte level, struct char_data *ch, char *arg,
+void cast_life_draw(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj);
-void cast_decay(byte level, struct char_data *ch, char *arg,
+void cast_decay(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj);
-void cast_soul_steal(byte level, struct char_data *ch, char *arg,
+void cast_soul_steal(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj);
-void cast_life_leech(byte level, struct char_data *ch, char *arg,
+void cast_life_leech(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj);
-void cast_finger_of_death(byte level, struct char_data *ch, char *arg,
+void cast_finger_of_death(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_mist_of_death(byte level, struct char_data *ch, char *arg,
+void cast_mist_of_death(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj);
-void cast_shadow_step(byte level, struct char_data *ch, char *arg,
+void cast_shadow_step(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj);
-void cast_scourge_warlock(byte level, struct char_data *ch, char *arg,
+void cast_scourge_warlock(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void cast_prot_fire(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_fire(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_cold(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_cold(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_elec(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_elec(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_energy(byte level, struct char_data *ch, char *arg,
+void cast_prot_energy(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj);
-void cast_blade_barrier(byte level, struct char_data *ch, char *arg,
+void cast_blade_barrier(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj);
-void cast_giant_growth(byte level, struct char_data *ch, char *arg,
+void cast_giant_growth(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj);
-void cast_protection_from_evil_group(byte level, struct char_data *ch,
+void cast_protection_from_evil_group(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
+#endif
 int ValidMove(struct char_data *ch, int cmd);
-void spell_wizard_eye(byte level, struct char_data *ch,
+void spell_wizard_eye(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
-void spell_prismatic_spray(byte level, struct char_data *ch,
+void spell_prismatic_spray(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void spell_incendiary_cloud(byte level, struct char_data *ch,
+void spell_incendiary_cloud(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj);
-void spell_energy_restore(byte level, struct char_data *ch,
+void spell_energy_restore(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void spell_protection_from_evil_group(byte level, struct char_data *ch,
+void spell_protection_from_evil_group(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void spell_protection_from_good(byte level, struct char_data *ch,
+void spell_protection_from_good(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void spell_protection_from_good_group(byte level, struct char_data *ch,
+void spell_protection_from_good_group(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void spell_globe_darkness(byte level, struct char_data *ch,
+void spell_globe_darkness(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void spell_globe_minor_inv(byte level, struct char_data *ch,
+void spell_globe_minor_inv(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void spell_globe_major_inv(byte level, struct char_data *ch,
+void spell_globe_major_inv(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj);
-void spell_prot_energy_drain(byte level, struct char_data *ch,
+void spell_prot_energy_drain(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void spell_prot_dragon_breath(byte level, struct char_data *ch,
+void spell_prot_dragon_breath(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj);
-void spell_anti_magic_shell(byte level, struct char_data *ch,
+void spell_anti_magic_shell(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj);
-void spell_comp_languages(byte level, struct char_data *ch,
+void spell_comp_languages(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj);
-void spell_prot_fire(byte level, struct char_data *ch,
+void spell_prot_fire(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void spell_prot_cold(byte level, struct char_data *ch,
+void spell_prot_cold(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void spell_prot_energy(byte level, struct char_data *ch,
+void spell_prot_energy(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void spell_prot_elec(byte level, struct char_data *ch,
+void spell_prot_elec(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
-void spell_prot_dragon_breath_fire(byte level, struct char_data *ch,
+void spell_prot_dragon_breath_fire(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void spell_prot_dragon_breath_frost(byte level, struct char_data *ch,
+void spell_prot_dragon_breath_frost(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void spell_prot_dragon_breath_elec(byte level, struct char_data *ch,
+void spell_prot_dragon_breath_elec(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void spell_prot_dragon_breath_acid(byte level, struct char_data *ch,
+void spell_prot_dragon_breath_acid(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
-void spell_prot_dragon_breath_gas(byte level, struct char_data *ch,
+void spell_prot_dragon_breath_gas(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-void spell_giant_growth(byte level, struct char_data *ch,
+void spell_giant_growth(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj);
-void spell_mana_shield(byte level, struct char_data *ch,
+void spell_mana_shield(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void spell_group_heal(byte level, struct char_data *ch,
+void spell_group_heal(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
-void spell_iron_skins(byte level, struct char_data *ch,
+void spell_iron_skins(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
 void SetDefaultLang(struct char_data *ch);
 void insert_mobile(struct char_data *obj, long vnum);
@@ -3813,13 +3816,413 @@ int countPeople(int zonenr);
 int count_People_in_room(int room);
 void FORGET(struct char_data *ch, int spl);
 void SpaceForSkills(struct char_data *ch);
+void            AddCommand(char *name, void (*func)(), int number,
+                           int min_pos, int min_lev);
+
+void            do_wclean(struct char_data *ch, char *argument, int cmd);
+void            do_setobjmax(struct char_data *ch, char *argument,
+                             int cmd);
+void            do_setobjspeed(struct char_data *ch, char *argument,
+                               int cmd);
+void            do_spend(struct char_data *ch, char *argument, int cmd);
+void            bugmail(struct char_data *ch, char *argument, int cmd);
+void            do_see_points(struct char_data *ch, char *argument,
+                              int cmd);
+void            do_reward(struct char_data *ch, char *argument, int cmd);
+void            do_punish(struct char_data *ch, char *argument, int cmd);
+void            do_set_spy(struct char_data *ch, char *argument, int cmd);
+
+void            do_wizset(struct char_data *ch, char *argument, int cmd);
+void            do_home(struct char_data *ch, char *argument, int cmd);
+void            do_lgos(struct char_data *ch, char *argument, int cmd);
+void            show_race_choice(struct descriptor_data *d);
+void            do_glance(struct char_data *ch, char *argument, int cmd);
+void            do_startarena(struct char_data *ch, char *argument, int cmd);
+void            do_arena(struct char_data *ch, char *argument, int cmd);
+void            do_whoarena(struct char_data *ch, char *argument, int cmd);
+
+void            update_char_objects(struct char_data *ch);
+void            do_save(struct char_data *ch, char *arg, int cmd);
+
+void            NailThisSucker(struct char_data *ch);
+void            do_look(struct char_data *ch, char *arg, int cmd);
+void            DamageAllStuff(struct char_data *ch, int dam_type);
+
+void            cast_calm(int level, struct char_data *ch, char *arg,
+                          int si, struct char_data *tar_ch,
+                          struct obj_data *tar_obj);
+void            cast_energy_restore(int level, struct char_data *ch, 
+                                    char *arg, int type, 
+                                    struct char_data *victim, 
+                                    struct obj_data *tar_obj);
+void            cast_protection_from_good(int level, struct char_data *ch, char
+                                          *arg, int si,
+                                          struct char_data *tar_ch,
+                                          struct obj_data *tar_obj);
+void            cast_protection_from_good_group(int level,
+                                                struct char_data *ch,
+                                                char *arg, int type,
+                                                struct char_data *tar_ch,
+                                                struct obj_data *tar_obj);
+void            cast_giant_growth(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *tar_ch,
+                                  struct obj_data *tar_obj);
+void            cast_globe_darkness(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *tar_ch,
+                                    struct obj_data *tar_obj);
+void            cast_globe_minor_inv(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_globe_major_inv(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_prot_energy_drain(int level, struct char_data *ch,
+                                       char *arg, int type,
+                                       struct char_data *tar_ch,
+                                       struct obj_data *tar_obj);
+void            cast_prot_dragon_breath(int level, struct char_data *ch,
+                                        char *arg, int type,
+                                        struct char_data *tar_ch,
+                                        struct obj_data *tar_obj);
+void            cast_anti_magic_shell(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *tar_ch,
+                                      struct obj_data *tar_obj);
+void            cast_protection_from_evil(int level, struct char_data *ch,
+                                          char *arg, int si,
+                                          struct char_data *tar_ch,
+                                          struct obj_data *tar_obj);
+void            cast_protection_from_evil_group(int level,
+                                                struct char_data *ch,
+                                                char *arg, int type,
+                                                struct char_data *tar_ch,
+                                                struct obj_data *tar_obj);
+void            cast_incendiary_cloud(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *victim,
+                                      struct obj_data *tar_obj);
+void cast_prismatic_spray(int level, struct char_data *ch, char *arg,
+                          int type, struct char_data *victim,
+                          struct obj_data *tar_obj);
+void            cast_prot_dragon_breath_fire(int level,
+                                             struct char_data *ch,
+                                             char *arg, int type,
+                                             struct char_data *tar_ch,
+                                             struct obj_data *tar_obj);
+void            cast_prot_dragon_breath_frost(int level,
+                                              struct char_data *ch,
+                                              char *arg, int type,
+                                              struct char_data *tar_ch,
+                                              struct obj_data *tar_obj);
+void            cast_prot_dragon_breath_elec(int level,
+                                             struct char_data *ch,
+                                             char *arg, int type,
+                                             struct char_data *tar_ch,
+                                             struct obj_data *tar_obj);
+void            cast_prot_dragon_breath_acid(int level,
+                                             struct char_data *ch,
+                                             char *arg, int type,
+                                             struct char_data *tar_ch,
+                                             struct obj_data *tar_obj);
+void            cast_prot_dragon_breath_gas(int level,
+                                            struct char_data *ch,
+                                            char *arg, int type,
+                                            struct char_data *tar_ch,
+                                            struct obj_data *tar_obj);
 
 
+void            cast_comp_languages(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *tar_ch,
+                                    struct obj_data *tar_obj);
+void            cast_prot_fire(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+void            cast_prot_cold(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+void            cast_prot_energy(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+void            cast_prot_elec(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+
+void            cast_disintegrate(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *victim,
+                                  struct obj_data *tar_obj);
+void            cast_wizard_eye(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *victim,
+                                struct obj_data *tar_obj);
+void            mind_use_burn(int level, struct char_data *ch, char *arg,
+                              int type, struct char_data *victim,
+                              struct obj_data *tar_obj);
+void            mind_use_danger_sense(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *victim,
+                                      struct obj_data *tar_obj);
+void            mind_use_clairvoyance(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *victim,
+                                      struct obj_data *tar_obj);
+void            mind_use_disintegrate(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *victim,
+                                      struct obj_data *tar_obj);
+void            mind_use_telekinesis(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *victim,
+                                     struct obj_data *tar_obj);
+void            mind_use_levitation(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *victim,
+                                    struct obj_data *tar_obj);
+void            mind_use_cell_adjustment(int level, struct char_data *ch,
+                                         char *arg, int type,
+                                         struct char_data *victim,
+                                         struct obj_data *tar_obj);
+void            mind_use_chameleon(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *victim,
+                                   struct obj_data *tar_obj);
+void            mind_use_psi_strength(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *victim,
+                                      struct obj_data *tar_obj);
+void            mind_use_mind_over_body(int level, struct char_data *ch,
+                                        char *arg, int type,
+                                        struct char_data *victim,
+                                        struct obj_data *tar_obj);
+void            mind_use_teleport(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *victim,
+                                  struct obj_data *tar_obj);
+void            mind_use_probability_travel(int level,
+                                            struct char_data *ch,
+                                            char *arg, int type,
+                                            struct char_data *victim,
+                                            struct obj_data *tar_obj);
+void            mind_use_domination(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *victim,
+                                    struct obj_data *tar_obj);
+void            mind_use_mind_wipe(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *victim,
+                                   struct obj_data *tar_obj);
+void            mind_use_psychic_crush(int level, struct char_data *ch,
+                                       char *arg, int type,
+                                       struct char_data *victim,
+                                       struct obj_data *tar_obj);
+void            mind_use_tower_iron_will(int level, struct char_data *ch,
+                                         char *arg, int type,
+                                         struct char_data *victim,
+                                         struct obj_data *tar_obj);
+void            mind_use_mindblank(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *victim,
+                                   struct obj_data *tar_obj);
+void            mind_use_psychic_impersonation(int level,
+                                               struct char_data *ch,
+                                               char *arg, int type,
+                                               struct char_data *victim,
+                                               struct obj_data *tar_obj);
+void            mind_use_ultra_blast(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *victim,
+                                     struct obj_data *tar_obj);
+void            mind_use_intensify(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *victim,
+                                   struct obj_data *tar_obj);
+void            mind_use_mind_tap(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *victim,
+                                  struct obj_data *tar_obj);
+
+void            cast_cold_light(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+
+void            cast_disease(int level, struct char_data *ch, char *arg,
+                             int type, struct char_data *tar_ch,
+                             struct obj_data *tar_obj);
+
+void            cast_invis_to_undead(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+
+void            cast_suit_of_bone(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *tar_ch,
+                                  struct obj_data *tar_obj);
+
+void            cast_spectral_shield(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+
+void            cast_clinging_darkness(int level, struct char_data *ch,
+                                       char *arg, int type,
+                                       struct char_data *tar_ch,
+                                       struct obj_data *tar_obj);
+void            cast_life_tap(int level, struct char_data *ch, char *arg,
+                              int type, struct char_data *tar_ch,
+                              struct obj_data *tar_obj);
+
+void            cast_dominate_undead(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+
+void            cast_unsummon(int level, struct char_data *ch, char *arg,
+                              int type, struct char_data *tar_ch,
+                              struct obj_data *tar_obj);
+
+void            cast_siphon_strength(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+
+void            cast_gather_shadows(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *tar_ch,
+                                    struct obj_data *tar_obj);
+
+void            cast_mend_bones(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+void            cast_trace_corpse(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *tar_ch,
+                                  struct obj_data *tar_obj);
+
+void            cast_endure_cold(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+
+void            cast_life_draw(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+
+void            cast_numb_dead(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+void            cast_binding(int level, struct char_data *ch, char *arg,
+                             int type, struct char_data *tar_ch,
+                             struct obj_data *tar_obj);
+void            cast_decay(int level, struct char_data *ch, char *arg,
+                           int type, struct char_data *tar_ch,
+                           struct obj_data *tar_obj);
+void            cast_shadow_step(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+void            cast_cavorting_bones(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_mist_of_death(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *tar_ch,
+                                   struct obj_data *tar_obj);
+void            cast_nullify(int level, struct char_data *ch, char *arg,
+                             int type, struct char_data *tar_ch,
+                             struct obj_data *tar_obj);
+void            cast_dark_empathy(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *tar_ch,
+                                  struct obj_data *tar_obj);
+void            cast_eye_of_the_dead(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_soul_steal(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+void            cast_life_leech(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+void            cast_dark_pact(int level, struct char_data *ch, char *arg,
+                               int type, struct char_data *tar_ch,
+                               struct obj_data *tar_obj);
+void            cast_darktravel(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+void            cast_vampiric_embrace(int level, struct char_data *ch,
+                                      char *arg, int type,
+                                      struct char_data *tar_ch,
+                                      struct obj_data *tar_obj);
+void            cast_bind_affinity(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *tar_ch,
+                                   struct obj_data *tar_obj);
+void            cast_scourge_warlock(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_finger_of_death(int level, struct char_data *ch,
+                                     char *arg, int type,
+                                     struct char_data *tar_ch,
+                                     struct obj_data *tar_obj);
+void            cast_flesh_golem(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+void            cast_chillshield(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+
+void            cast_blade_barrier(int level, struct char_data *ch,
+                                   char *arg, int type,
+                                   struct char_data *tar_ch,
+                                   struct obj_data *tar_obj);
+
+void            cast_mana_shield(int level, struct char_data *ch,
+                                 char *arg, int type,
+                                 struct char_data *tar_ch,
+                                 struct obj_data *tar_obj);
+void            cast_iron_skins(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+
+void            cast_group_heal(int level, struct char_data *ch,
+                                char *arg, int type,
+                                struct char_data *tar_ch,
+                                struct obj_data *tar_obj);
+void            mind_use_kinolock(int level, struct char_data *ch,
+                                  char *arg, int type,
+                                  struct char_data *tar_ch,
+                                  struct obj_data *tar_obj);
+
+void mind_use_sense_object(int level, struct char_data *ch, char *arg,
+                           int si, int type, struct char_data *tar_ch,
+                           struct obj_data *tar_obj);
+
+
+char *file_to_string(char *name);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()
  */
 #define log(x) use_Log error
+
 
 #endif
 

@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1431,7 +1431,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("\n\rValue2 is the number of sides on the damage die.",
                          ch);
         } else if (value == 2) {
-            send_to_char("\n\rValue3 is the number of sides the damage die is "
+            send_to_char("\n\rValue3 is the number of times the damage die is "
                          "rolled.", ch);
         } else {
             send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r",

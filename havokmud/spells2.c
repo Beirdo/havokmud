@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -122,7 +123,7 @@ struct PolyType DruidList[MAX_DRUID_POLY] = {
 
 #define LAST_DRUID_MOB 16       /* last level you get a new poly type */
 
-void cast_resurrection(byte level, struct char_data *ch, char *arg,
+void cast_resurrection(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -147,7 +148,7 @@ void cast_resurrection(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_major_track(byte level, struct char_data *ch, char *arg,
+void cast_major_track(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -187,7 +188,7 @@ void cast_major_track(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_minor_track(byte level, struct char_data *ch, char *arg,
+void cast_minor_track(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -227,7 +228,7 @@ void cast_minor_track(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_mana(byte level, struct char_data *ch, char *arg, int type,
+void cast_mana(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -253,7 +254,7 @@ void cast_mana(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_armor(byte level, struct char_data *ch, char *arg, int type,
+void cast_armor(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -300,7 +301,7 @@ void cast_armor(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_stone_skin(byte level, struct char_data *ch, char *arg, int type,
+void cast_stone_skin(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -342,7 +343,7 @@ void cast_stone_skin(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_astral_walk(byte level, struct char_data *ch, char *arg,
+void cast_astral_walk(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -370,7 +371,7 @@ void cast_astral_walk(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_teleport(byte level, struct char_data *ch, char *arg, int type,
+void cast_teleport(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -404,7 +405,7 @@ void cast_teleport(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_bless(byte level, struct char_data *ch, char *arg, int type,
+void cast_bless(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
 
@@ -462,7 +463,7 @@ void cast_bless(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_infravision(byte level, struct char_data *ch, char *arg,
+void cast_infravision(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -515,7 +516,7 @@ void cast_infravision(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_true_seeing(byte level, struct char_data *ch, char *arg,
+void cast_true_seeing(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -565,7 +566,7 @@ void cast_true_seeing(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_blindness(byte level, struct char_data *ch, char *arg, int type,
+void cast_blindness(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -620,7 +621,7 @@ void cast_blindness(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_light(byte level, struct char_data *ch, char *arg, int type,
+void cast_light(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -645,7 +646,7 @@ void cast_light(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_cont_light(byte level, struct char_data *ch, char *arg, int type,
+void cast_cont_light(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -670,7 +671,7 @@ void cast_cont_light(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_calm(byte level, struct char_data *ch, char *arg, int type,
+void cast_calm(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -707,7 +708,7 @@ void cast_calm(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_web(byte level, struct char_data *ch, char *arg, int type,
+void cast_web(int level, struct char_data *ch, char *arg, int type,
               struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -746,14 +747,14 @@ void cast_web(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_clone(byte level, struct char_data *ch, char *arg, int type,
+void cast_clone(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     send_to_char("Not *YET* implemented.", ch);
     return;
 }
 
-void cast_control_weather(byte level, struct char_data *ch, char *arg,
+void cast_control_weather(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -832,7 +833,7 @@ void cast_control_weather(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_create_food(byte level, struct char_data *ch, char *arg,
+void cast_create_food(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -856,7 +857,7 @@ void cast_create_food(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_create_water(byte level, struct char_data *ch, char *arg,
+void cast_create_water(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -875,7 +876,7 @@ void cast_create_water(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_water_breath(byte level, struct char_data *ch, char *arg,
+void cast_water_breath(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -897,7 +898,7 @@ void cast_water_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_flying(byte level, struct char_data *ch, char *arg, int type,
+void cast_flying(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -918,7 +919,7 @@ void cast_flying(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_fly_group(byte level, struct char_data *ch, char *arg, int type,
+void cast_fly_group(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -937,7 +938,7 @@ void cast_fly_group(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_heroes_feast(byte level, struct char_data *ch, char *arg,
+void cast_heroes_feast(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -954,7 +955,7 @@ void cast_heroes_feast(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cure_blind(byte level, struct char_data *ch, char *arg, int type,
+void cast_cure_blind(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -979,7 +980,7 @@ void cast_cure_blind(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_cure_critic(byte level, struct char_data *ch, char *arg,
+void cast_cure_critic(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1013,7 +1014,7 @@ void cast_cure_critic(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cure_light(byte level, struct char_data *ch, char *arg, int type,
+void cast_cure_light(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1044,7 +1045,7 @@ void cast_cure_light(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_cure_serious(byte level, struct char_data *ch, char *arg,
+void cast_cure_serious(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -1076,7 +1077,7 @@ void cast_cure_serious(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_refresh(byte level, struct char_data *ch, char *arg, int type,
+void cast_refresh(int level, struct char_data *ch, char *arg, int type,
                   struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1107,7 +1108,7 @@ void cast_refresh(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_second_wind(byte level, struct char_data *ch, char *arg,
+void cast_second_wind(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1135,7 +1136,7 @@ void cast_second_wind(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_shield(byte level, struct char_data *ch, char *arg, int type,
+void cast_shield(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1166,7 +1167,7 @@ void cast_shield(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_curse(byte level, struct char_data *ch, char *arg, int type,
+void cast_curse(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     char            buf[255];
@@ -1222,7 +1223,7 @@ void cast_curse(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_detect_evil(byte level, struct char_data *ch, char *arg,
+void cast_detect_evil(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1255,7 +1256,7 @@ void cast_detect_evil(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_detect_good(byte level, struct char_data *ch, char *arg,
+void cast_detect_good(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1288,7 +1289,7 @@ void cast_detect_good(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_detect_invisibility(byte level, struct char_data *ch, char *arg,
+void cast_detect_invisibility(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj)
 {
@@ -1322,7 +1323,7 @@ void cast_detect_invisibility(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_detect_magic(byte level, struct char_data *ch, char *arg,
+void cast_detect_magic(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -1355,7 +1356,7 @@ void cast_detect_magic(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_detect_poison(byte level, struct char_data *ch, char *arg,
+void cast_detect_poison(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -1382,7 +1383,7 @@ void cast_detect_poison(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dispel_evil(byte level, struct char_data *ch, char *arg,
+void cast_dispel_evil(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1422,7 +1423,7 @@ void cast_dispel_evil(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dispel_good(byte level, struct char_data *ch, char *arg,
+void cast_dispel_good(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1462,7 +1463,7 @@ void cast_dispel_good(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_faerie_fire(byte level, struct char_data *ch, char *arg,
+void cast_faerie_fire(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -1502,7 +1503,7 @@ void cast_faerie_fire(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_enchant_weapon(byte level, struct char_data *ch, char *arg,
+void cast_enchant_weapon(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -1523,7 +1524,7 @@ void cast_enchant_weapon(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_heal(byte level, struct char_data *ch, char *arg, int type,
+void cast_heal(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1558,7 +1559,7 @@ void cast_heal(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_invisibility(byte level, struct char_data *ch, char *arg,
+void cast_invisibility(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -1623,7 +1624,7 @@ void cast_invisibility(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_locate_object(byte level, struct char_data *ch, char *arg,
+void cast_locate_object(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -1637,7 +1638,7 @@ void cast_locate_object(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_poison(byte level, struct char_data *ch, char *arg, int type,
+void cast_poison(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1662,7 +1663,7 @@ void cast_poison(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_protection_from_evil(byte level, struct char_data *ch, char *arg,
+void cast_protection_from_evil(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj)
 {
@@ -1696,7 +1697,7 @@ void cast_protection_from_evil(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_protection_from_evil_group(byte level, struct char_data *ch,
+void cast_protection_from_evil_group(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj)
@@ -1731,7 +1732,7 @@ void cast_protection_from_evil_group(byte level, struct char_data *ch,
     }
 }
 
-void cast_protection_from_good(byte level, struct char_data *ch, char
+void cast_protection_from_good(int level, struct char_data *ch, char
                                *arg, int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj)
 {
@@ -1765,7 +1766,7 @@ void cast_protection_from_good(byte level, struct char_data *ch, char
     }
 }
 
-void cast_protection_from_good_group(byte level, struct char_data *ch,
+void cast_protection_from_good_group(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj)
@@ -1800,7 +1801,7 @@ void cast_protection_from_good_group(byte level, struct char_data *ch,
     }
 }
 
-void cast_remove_curse(byte level, struct char_data *ch, char *arg,
+void cast_remove_curse(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -1835,7 +1836,7 @@ void cast_remove_curse(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_remove_poison(byte level, struct char_data *ch, char *arg,
+void cast_remove_poison(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -1860,7 +1861,7 @@ void cast_remove_poison(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_remove_paralysis(byte level, struct char_data *ch, char *arg,
+void cast_remove_paralysis(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
@@ -1891,7 +1892,7 @@ void cast_remove_paralysis(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_sanctuary(byte level, struct char_data *ch, char *arg, int type,
+void cast_sanctuary(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1926,7 +1927,7 @@ void cast_sanctuary(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_fireshield(byte level, struct char_data *ch, char *arg, int type,
+void cast_fireshield(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -1961,7 +1962,7 @@ void cast_fireshield(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_sleep(byte level, struct char_data *ch, char *arg, int type,
+void cast_sleep(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2000,7 +2001,7 @@ void cast_sleep(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_strength(byte level, struct char_data *ch, char *arg, int type,
+void cast_strength(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2034,7 +2035,7 @@ void cast_strength(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_ventriloquate(byte level, struct char_data *ch, char *arg,
+void cast_ventriloquate(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -2074,7 +2075,7 @@ void cast_ventriloquate(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_word_of_recall(byte level, struct char_data *ch, char *arg,
+void cast_word_of_recall(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -2114,7 +2115,7 @@ void cast_word_of_recall(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_summon(byte level, struct char_data *ch, char *arg, int type,
+void cast_summon(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2129,7 +2130,7 @@ void cast_summon(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_charm_person(byte level, struct char_data *ch, char *arg,
+void cast_charm_person(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -2157,7 +2158,7 @@ void cast_charm_person(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_charm_monster(byte level, struct char_data *ch, char *arg,
+void cast_charm_monster(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -2185,7 +2186,7 @@ void cast_charm_monster(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_sense_life(byte level, struct char_data *ch, char *arg, int type,
+void cast_sense_life(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2210,7 +2211,7 @@ void cast_sense_life(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_identify(byte level, struct char_data *ch, char *arg, int type,
+void cast_identify(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2248,7 +2249,7 @@ struct pbreath breath_potions[] = {
     {0}
 };
 
-void cast_dragon_breath(byte level, struct char_data *ch, char *arg,
+void cast_dragon_breath(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *potion)
 {
@@ -2306,7 +2307,7 @@ void cast_dragon_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_fire_breath(byte level, struct char_data *ch, char *arg,
+void cast_fire_breath(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -2323,7 +2324,7 @@ void cast_fire_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_frost_breath(byte level, struct char_data *ch, char *arg,
+void cast_frost_breath(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -2340,7 +2341,7 @@ void cast_frost_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_acid_breath(byte level, struct char_data *ch, char *arg,
+void cast_acid_breath(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -2357,7 +2358,7 @@ void cast_acid_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_gas_breath(byte level, struct char_data *ch, char *arg, int type,
+void cast_gas_breath(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2373,7 +2374,7 @@ void cast_gas_breath(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_lightning_breath(byte level, struct char_data *ch, char *arg,
+void cast_lightning_breath(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
@@ -2390,7 +2391,7 @@ void cast_lightning_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_knock(byte level, struct char_data *ch, char *arg, int type,
+void cast_knock(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
@@ -2464,7 +2465,7 @@ void cast_knock(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_know_alignment(byte level, struct char_data *ch, char *arg,
+void cast_know_alignment(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -2487,7 +2488,7 @@ void cast_know_alignment(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_weakness(byte level, struct char_data *ch, char *arg, int type,
+void cast_weakness(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2521,7 +2522,7 @@ void cast_weakness(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_dispel_magic(byte level, struct char_data *ch, char *arg,
+void cast_dispel_magic(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -2558,7 +2559,7 @@ void cast_dispel_magic(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animate_dead(byte level, struct char_data *ch, char *arg,
+void cast_animate_dead(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -2602,7 +2603,7 @@ void cast_animate_dead(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_succor(byte level, struct char_data *ch, char *arg, int type,
+void cast_succor(int level, struct char_data *ch, char *arg, int type,
                  struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2614,7 +2615,7 @@ void cast_succor(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_paralyze(byte level, struct char_data *ch, char *arg, int type,
+void cast_paralyze(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2653,7 +2654,7 @@ void cast_paralyze(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_fear(byte level, struct char_data *ch, char *arg, int type,
+void cast_fear(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2695,7 +2696,7 @@ void cast_fear(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_turn(byte level, struct char_data *ch, char *arg, int type,
+void cast_turn(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2734,7 +2735,7 @@ void cast_turn(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_faerie_fog(byte level, struct char_data *ch, char *arg, int type,
+void cast_faerie_fog(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *victim, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -2749,7 +2750,7 @@ void cast_faerie_fog(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_poly_self(byte level, struct char_data *ch, char *arg, int type,
+void cast_poly_self(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     char            buffer[40];
@@ -2810,7 +2811,7 @@ void cast_poly_self(byte level, struct char_data *ch, char *arg, int type,
 #define WATER_BARREL 6013
 #define BREAD        3010
 
-void cast_minor_creation(byte level, struct char_data *ch, char *arg,
+void cast_minor_creation(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -2864,7 +2865,7 @@ void cast_minor_creation(byte level, struct char_data *ch, char *arg,
 #define GREY_STONE      5239
 #define CLEAR_STONE     5243
 
-void cast_conjure_elemental(byte level, struct char_data *ch, char *arg,
+void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -2946,7 +2947,7 @@ void cast_conjure_elemental(byte level, struct char_data *ch, char *arg,
 #define TYPE_II_ITEM     21014
 #define TYPE_I_ITEM      5105
 
-void cast_cacaodemon(byte level, struct char_data *ch, char *arg, int type,
+void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     char            buffer[40];
@@ -3052,7 +3053,7 @@ void cast_cacaodemon(byte level, struct char_data *ch, char *arg, int type,
 }
 
 
-void cast_mon_sum1(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum1(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3071,7 +3072,7 @@ void cast_mon_sum1(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum2(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum2(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3090,7 +3091,7 @@ void cast_mon_sum2(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum3(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum3(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3109,7 +3110,7 @@ void cast_mon_sum3(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum4(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum4(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3128,7 +3129,7 @@ void cast_mon_sum4(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum5(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum5(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3147,7 +3148,7 @@ void cast_mon_sum5(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum6(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum6(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3166,7 +3167,7 @@ void cast_mon_sum6(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_mon_sum7(byte level, struct char_data *ch, char *arg, int type,
+void cast_mon_sum7(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -3185,7 +3186,7 @@ void cast_mon_sum7(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_tree_travel(byte level, struct char_data *ch, char *arg,
+void cast_tree_travel(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3202,7 +3203,7 @@ void cast_tree_travel(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_speak_with_plants(byte level, struct char_data *ch, char *arg,
+void cast_speak_with_plants(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -3221,7 +3222,7 @@ void cast_speak_with_plants(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_transport_via_plant(byte level, struct char_data *ch, char *arg,
+void cast_transport_via_plant(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj)
 {
@@ -3239,7 +3240,7 @@ void cast_transport_via_plant(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_plant_gate(byte level, struct char_data *ch, char *arg,
+void cast_plant_gate(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -3257,7 +3258,7 @@ void cast_plant_gate(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_haste(byte level, struct char_data *ch, char *arg,
+void cast_haste(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -3298,7 +3299,7 @@ void cast_haste(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_slow(byte level, struct char_data *ch, char *arg,
+void cast_slow(int level, struct char_data *ch, char *arg,
                int type, struct char_data *tar_ch,
                struct obj_data *tar_obj)
 {
@@ -3338,7 +3339,7 @@ void cast_slow(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_reincarnate(byte level, struct char_data *ch, char *arg,
+void cast_reincarnate(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3364,7 +3365,7 @@ void cast_reincarnate(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_changestaff(byte level, struct char_data *ch, char *arg,
+void cast_changestaff(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3392,7 +3393,7 @@ void cast_changestaff(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_pword_kill(byte level, struct char_data *ch, char *arg,
+void cast_pword_kill(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -3410,7 +3411,7 @@ void cast_pword_kill(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_pword_blind(byte level, struct char_data *ch, char *arg,
+void cast_pword_blind(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3428,7 +3429,7 @@ void cast_pword_blind(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_chain_lightn(byte level, struct char_data *ch, char *arg,
+void cast_chain_lightn(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -3448,7 +3449,7 @@ void cast_chain_lightn(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_scare(byte level, struct char_data *ch, char *arg,
+void cast_scare(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -3468,7 +3469,7 @@ void cast_scare(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_familiar(byte level, struct char_data *ch, char *arg,
+void cast_familiar(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -3497,7 +3498,7 @@ void cast_familiar(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_aid(byte level, struct char_data *ch, char *arg,
+void cast_aid(int level, struct char_data *ch, char *arg,
               int type, struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (!tar_ch) {
@@ -3516,7 +3517,7 @@ void cast_aid(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_holyword(byte level, struct char_data *ch, char *arg,
+void cast_holyword(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -3531,7 +3532,7 @@ void cast_holyword(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_unholyword(byte level, struct char_data *ch, char *arg,
+void cast_unholyword(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -3546,7 +3547,7 @@ void cast_unholyword(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_golem(byte level, struct char_data *ch, char *arg,
+void cast_golem(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -3564,7 +3565,7 @@ void cast_golem(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_command(byte level, struct char_data *ch, char *arg,
+void cast_command(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -3611,7 +3612,7 @@ void cast_command(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_change_form(byte level, struct char_data *ch, char *arg,
+void cast_change_form(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3680,7 +3681,7 @@ void cast_change_form(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_shillelagh(byte level, struct char_data *ch, char *arg,
+void cast_shillelagh(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -3695,7 +3696,7 @@ void cast_shillelagh(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_goodberry(byte level, struct char_data *ch, char *arg,
+void cast_goodberry(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -3710,7 +3711,7 @@ void cast_goodberry(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_flame_blade(byte level, struct char_data *ch, char *arg,
+void cast_flame_blade(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -3725,7 +3726,7 @@ void cast_flame_blade(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animal_growth(byte level, struct char_data *ch, char *arg,
+void cast_animal_growth(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -3741,7 +3742,7 @@ void cast_animal_growth(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_insect_growth(byte level, struct char_data *ch, char *arg,
+void cast_insect_growth(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -3757,7 +3758,7 @@ void cast_insect_growth(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_creeping_death(byte level, struct char_data *ch, char *arg,
+void cast_creeping_death(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -3800,7 +3801,7 @@ void cast_creeping_death(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_commune(byte level, struct char_data *ch, char *arg,
+void cast_commune(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -3815,7 +3816,7 @@ void cast_commune(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_feeblemind(byte level, struct char_data *ch, char *arg,
+void cast_feeblemind(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -3836,7 +3837,7 @@ void cast_feeblemind(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animal_summon_1(byte level, struct char_data *ch, char *arg,
+void cast_animal_summon_1(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -3854,7 +3855,7 @@ void cast_animal_summon_1(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animal_summon_2(byte level, struct char_data *ch, char *arg,
+void cast_animal_summon_2(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -3872,7 +3873,7 @@ void cast_animal_summon_2(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animal_summon_3(byte level, struct char_data *ch, char *arg,
+void cast_animal_summon_3(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -3890,7 +3891,7 @@ void cast_animal_summon_3(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_fire_servant(byte level, struct char_data *ch, char *arg,
+void cast_fire_servant(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -3906,7 +3907,7 @@ void cast_fire_servant(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_earth_servant(byte level, struct char_data *ch, char *arg,
+void cast_earth_servant(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -3922,7 +3923,7 @@ void cast_earth_servant(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_water_servant(byte level, struct char_data *ch, char *arg,
+void cast_water_servant(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -3938,7 +3939,7 @@ void cast_water_servant(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_wind_servant(byte level, struct char_data *ch, char *arg,
+void cast_wind_servant(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -3954,7 +3955,7 @@ void cast_wind_servant(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_veggie_growth(byte level, struct char_data *ch, char *arg,
+void cast_veggie_growth(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -3970,7 +3971,7 @@ void cast_veggie_growth(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_charm_veggie(byte level, struct char_data *ch, char *arg,
+void cast_charm_veggie(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -3998,7 +3999,7 @@ void cast_charm_veggie(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_tree(byte level, struct char_data *ch, char *arg, int type,
+void cast_tree(int level, struct char_data *ch, char *arg, int type,
                struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     if (NoSummon(ch)) {
@@ -4020,7 +4021,7 @@ void cast_tree(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_animate_rock(byte level, struct char_data *ch, char *arg,
+void cast_animate_rock(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -4039,7 +4040,7 @@ void cast_animate_rock(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_travelling(byte level, struct char_data *ch, char *arg,
+void cast_travelling(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -4057,7 +4058,7 @@ void cast_travelling(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_animal_friendship(byte level, struct char_data *ch, char *arg,
+void cast_animal_friendship(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -4073,7 +4074,7 @@ void cast_animal_friendship(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_invis_to_animals(byte level, struct char_data *ch, char *arg,
+void cast_invis_to_animals(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
@@ -4089,7 +4090,7 @@ void cast_invis_to_animals(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_slow_poison(byte level, struct char_data *ch, char *arg,
+void cast_slow_poison(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -4109,7 +4110,7 @@ void cast_slow_poison(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_entangle(byte level, struct char_data *ch, char *arg,
+void cast_entangle(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -4136,7 +4137,7 @@ void cast_entangle(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_snare(byte level, struct char_data *ch, char *arg,
+void cast_snare(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -4163,7 +4164,7 @@ void cast_snare(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_gust_of_wind(byte level, struct char_data *ch, char *arg,
+void cast_gust_of_wind(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -4180,7 +4181,7 @@ void cast_gust_of_wind(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_barkskin(byte level, struct char_data *ch, char *arg,
+void cast_barkskin(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -4207,7 +4208,7 @@ void cast_barkskin(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_warp_weapon(byte level, struct char_data *ch, char *arg,
+void cast_warp_weapon(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -4226,7 +4227,7 @@ void cast_warp_weapon(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_heat_stuff(byte level, struct char_data *ch, char *arg,
+void cast_heat_stuff(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -4245,7 +4246,7 @@ void cast_heat_stuff(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_sunray(byte level, struct char_data *ch, char *arg,
+void cast_sunray(int level, struct char_data *ch, char *arg,
                  int type, struct char_data *tar_ch,
                  struct obj_data *tar_obj)
 {
@@ -4264,7 +4265,7 @@ void cast_sunray(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_find_traps(byte level, struct char_data *ch, char *arg,
+void cast_find_traps(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -4284,7 +4285,7 @@ void cast_find_traps(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_firestorm(byte level, struct char_data *ch, char *arg,
+void cast_firestorm(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -4300,7 +4301,7 @@ void cast_firestorm(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dust_devil(byte level, struct char_data *ch, char *arg,
+void cast_dust_devil(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -4316,7 +4317,7 @@ void cast_dust_devil(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_know_monster(byte level, struct char_data *ch, char *arg,
+void cast_know_monster(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -4335,7 +4336,7 @@ void cast_know_monster(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_silence(byte level, struct char_data *ch, char *arg,
+void cast_silence(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -4364,7 +4365,7 @@ void cast_silence(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dragon_ride(byte level, struct char_data *ch, char *arg,
+void cast_dragon_ride(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -4382,7 +4383,7 @@ void cast_dragon_ride(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_mount(byte level, struct char_data *ch, char *arg,
+void cast_mount(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -4398,13 +4399,13 @@ void cast_mount(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_sending(byte level, struct char_data *ch, char *arg,
+void cast_sending(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
 }
 
-void cast_portal(byte level, struct char_data *ch, char *arg,
+void cast_portal(int level, struct char_data *ch, char *arg,
                  int type, struct char_data *tar_ch,
                  struct obj_data *tar_obj)
 {
@@ -4423,7 +4424,7 @@ void cast_portal(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_teleport_wo_error(byte level, struct char_data *ch, char *arg,
+void cast_teleport_wo_error(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -4445,7 +4446,7 @@ void cast_teleport_wo_error(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_globe_darkness(byte level, struct char_data *ch, char *arg,
+void cast_globe_darkness(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -4463,7 +4464,7 @@ void cast_globe_darkness(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_globe_minor_inv(byte level, struct char_data *ch, char *arg,
+void cast_globe_minor_inv(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -4480,7 +4481,7 @@ void cast_globe_minor_inv(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_globe_major_inv(byte level, struct char_data *ch, char *arg,
+void cast_globe_major_inv(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -4497,7 +4498,7 @@ void cast_globe_major_inv(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_prot_energy_drain(byte level, struct char_data *ch, char *arg,
+void cast_prot_energy_drain(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -4514,7 +4515,7 @@ void cast_prot_energy_drain(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_prot_dragon_breath(byte level, struct char_data *ch, char *arg,
+void cast_prot_dragon_breath(int level, struct char_data *ch, char *arg,
                              int type, struct char_data *tar_ch,
                              struct obj_data *tar_obj)
 {
@@ -4531,7 +4532,7 @@ void cast_prot_dragon_breath(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_anti_magic_shell(byte level, struct char_data *ch, char *arg,
+void cast_anti_magic_shell(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
@@ -4558,7 +4559,7 @@ void cast_anti_magic_shell(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_comp_languages(byte level, struct char_data *ch, char *arg,
+void cast_comp_languages(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -4587,7 +4588,7 @@ void cast_comp_languages(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_prot_fire(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_fire(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -4613,7 +4614,7 @@ void cast_prot_fire(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_prot_cold(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_cold(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -4639,7 +4640,7 @@ void cast_prot_cold(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_prot_energy(byte level, struct char_data *ch, char *arg,
+void cast_prot_energy(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -4666,7 +4667,7 @@ void cast_prot_energy(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_prot_elec(byte level, struct char_data *ch, char *arg, int type,
+void cast_prot_elec(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -4692,7 +4693,7 @@ void cast_prot_elec(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_enchant_armor(byte level, struct char_data *ch, char *arg,
+void cast_enchant_armor(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -4712,13 +4713,13 @@ void cast_enchant_armor(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_messenger(byte level, struct char_data *ch, char *arg,
+void cast_messenger(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
 }
 
-void cast_prot_dragon_breath_fire(byte level, struct char_data *ch,
+void cast_prot_dragon_breath_fire(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj)
@@ -4736,7 +4737,7 @@ void cast_prot_dragon_breath_fire(byte level, struct char_data *ch,
     }
 }
 
-void cast_prot_dragon_breath_frost(byte level, struct char_data *ch,
+void cast_prot_dragon_breath_frost(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj)
@@ -4754,7 +4755,7 @@ void cast_prot_dragon_breath_frost(byte level, struct char_data *ch,
     }
 }
 
-void cast_prot_dragon_breath_elec(byte level, struct char_data *ch,
+void cast_prot_dragon_breath_elec(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj)
@@ -4772,7 +4773,7 @@ void cast_prot_dragon_breath_elec(byte level, struct char_data *ch,
     }
 }
 
-void cast_prot_dragon_breath_acid(byte level, struct char_data *ch,
+void cast_prot_dragon_breath_acid(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *tar_ch,
                                   struct obj_data *tar_obj)
@@ -4790,7 +4791,7 @@ void cast_prot_dragon_breath_acid(byte level, struct char_data *ch,
     }
 }
 
-void cast_prot_dragon_breath_gas(byte level, struct char_data *ch,
+void cast_prot_dragon_breath_gas(int level, struct char_data *ch,
                                  char *arg, int type,
                                  struct char_data *tar_ch,
                                  struct obj_data *tar_obj)
@@ -4808,7 +4809,7 @@ void cast_prot_dragon_breath_gas(byte level, struct char_data *ch,
     }
 }
 
-void cast_holy_strength(byte level, struct char_data *ch, char *arg,
+void cast_holy_strength(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -4843,7 +4844,7 @@ void cast_holy_strength(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_holy_armor(byte level, struct char_data *ch, char *arg, int type,
+void cast_holy_armor(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     switch (type) {
@@ -4892,7 +4893,7 @@ void cast_holy_armor(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void cast_aura_power(byte level, struct char_data *ch, char *arg,
+void cast_aura_power(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -4909,7 +4910,7 @@ void cast_aura_power(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_pacifism(byte level, struct char_data *ch, char *arg,
+void cast_pacifism(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -4941,7 +4942,7 @@ void cast_pacifism(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_wrath_god(byte level, struct char_data *ch, char *arg,
+void cast_wrath_god(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -4971,7 +4972,7 @@ void cast_wrath_god(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_circle_protection(byte level, struct char_data *ch, char *arg,
+void cast_circle_protection(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -4988,7 +4989,7 @@ void cast_circle_protection(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_enlightenment(byte level, struct char_data *ch, char *arg,
+void cast_enlightenment(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -5005,7 +5006,7 @@ void cast_enlightenment(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_giant_growth(byte level, struct char_data *ch, char *arg,
+void cast_giant_growth(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -5029,7 +5030,7 @@ void cast_giant_growth(byte level, struct char_data *ch, char *arg,
 /*
  * Necromancer Spells 
  */
-void cast_numb_dead(byte level, struct char_data *ch, char *arg,
+void cast_numb_dead(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -5046,7 +5047,7 @@ void cast_numb_dead(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_binding(byte level, struct char_data *ch, char *arg,
+void cast_binding(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -5068,7 +5069,7 @@ void cast_binding(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_decay(byte level, struct char_data *ch, char *arg,
+void cast_decay(int level, struct char_data *ch, char *arg,
                 int type, struct char_data *tar_ch,
                 struct obj_data *tar_obj)
 {
@@ -5086,7 +5087,7 @@ void cast_decay(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_shadow_step(byte level, struct char_data *ch, char *arg,
+void cast_shadow_step(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -5103,7 +5104,7 @@ void cast_shadow_step(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_cavorting_bones(byte level, struct char_data *ch, char *arg,
+void cast_cavorting_bones(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5120,7 +5121,7 @@ void cast_cavorting_bones(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_mist_of_death(byte level, struct char_data *ch, char *arg,
+void cast_mist_of_death(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -5137,7 +5138,7 @@ void cast_mist_of_death(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_nullify(byte level, struct char_data *ch, char *arg,
+void cast_nullify(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -5155,7 +5156,7 @@ void cast_nullify(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dark_empathy(byte level, struct char_data *ch, char *arg,
+void cast_dark_empathy(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -5172,7 +5173,7 @@ void cast_dark_empathy(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_eye_of_the_dead(byte level, struct char_data *ch, char *arg,
+void cast_eye_of_the_dead(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5190,7 +5191,7 @@ void cast_eye_of_the_dead(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_soul_steal(byte level, struct char_data *ch, char *arg,
+void cast_soul_steal(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5207,7 +5208,7 @@ void cast_soul_steal(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_life_leech(byte level, struct char_data *ch, char *arg,
+void cast_life_leech(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5224,7 +5225,7 @@ void cast_life_leech(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dark_pact(byte level, struct char_data *ch, char *arg,
+void cast_dark_pact(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -5242,7 +5243,7 @@ void cast_dark_pact(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_darktravel(byte level, struct char_data *ch, char *arg,
+void cast_darktravel(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5262,7 +5263,7 @@ void cast_darktravel(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_vampiric_embrace(byte level, struct char_data *ch, char *arg,
+void cast_vampiric_embrace(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
@@ -5280,7 +5281,7 @@ void cast_vampiric_embrace(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_bind_affinity(byte level, struct char_data *ch, char *arg,
+void cast_bind_affinity(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -5298,7 +5299,7 @@ void cast_bind_affinity(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_scourge_warlock(byte level, struct char_data *ch, char *arg,
+void cast_scourge_warlock(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5315,7 +5316,7 @@ void cast_scourge_warlock(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_finger_of_death(byte level, struct char_data *ch, char *arg,
+void cast_finger_of_death(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5332,7 +5333,7 @@ void cast_finger_of_death(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_flesh_golem(byte level, struct char_data *ch, char *arg,
+void cast_flesh_golem(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -5349,7 +5350,7 @@ void cast_flesh_golem(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_chillshield(byte level, struct char_data *ch, char *arg,
+void cast_chillshield(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -5367,7 +5368,7 @@ void cast_chillshield(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_wall_of_thought(byte level, struct char_data *ch, char *arg,
+void cast_wall_of_thought(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5398,12 +5399,12 @@ void cast_wall_of_thought(byte level, struct char_data *ch, char *arg,
         spell_wall_of_thought(level, ch, ch, 0);
         break;
     default:
-        Log("Serious screw-up in stone_skin!");
+        Log("Serious screw-up in wall_of_thought!");
         break;
     }
 }
 
-void cast_cold_light(byte level, struct char_data *ch, char *arg,
+void cast_cold_light(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5423,7 +5424,7 @@ void cast_cold_light(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_disease(byte level, struct char_data *ch, char *arg,
+void cast_disease(int level, struct char_data *ch, char *arg,
                   int type, struct char_data *tar_ch,
                   struct obj_data *tar_obj)
 {
@@ -5444,7 +5445,7 @@ void cast_disease(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_invis_to_undead(byte level, struct char_data *ch, char *arg,
+void cast_invis_to_undead(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5465,7 +5466,7 @@ void cast_invis_to_undead(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_life_tap(byte level, struct char_data *ch, char *arg,
+void cast_life_tap(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -5485,7 +5486,7 @@ void cast_life_tap(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_suit_of_bone(byte level, struct char_data *ch, char *arg,
+void cast_suit_of_bone(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -5506,7 +5507,7 @@ void cast_suit_of_bone(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_spectral_shield(byte level, struct char_data *ch, char *arg,
+void cast_spectral_shield(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5527,7 +5528,7 @@ void cast_spectral_shield(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_clinging_darkness(byte level, struct char_data *ch, char *arg,
+void cast_clinging_darkness(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
@@ -5547,7 +5548,7 @@ void cast_clinging_darkness(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_dominate_undead(byte level, struct char_data *ch, char *arg,
+void cast_dominate_undead(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5567,7 +5568,7 @@ void cast_dominate_undead(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_unsummon(byte level, struct char_data *ch, char *arg,
+void cast_unsummon(int level, struct char_data *ch, char *arg,
                    int type, struct char_data *tar_ch,
                    struct obj_data *tar_obj)
 {
@@ -5587,7 +5588,7 @@ void cast_unsummon(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_siphon_strength(byte level, struct char_data *ch, char *arg,
+void cast_siphon_strength(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
@@ -5607,7 +5608,7 @@ void cast_siphon_strength(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_gather_shadows(byte level, struct char_data *ch, char *arg,
+void cast_gather_shadows(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
@@ -5628,7 +5629,7 @@ void cast_gather_shadows(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_mend_bones(byte level, struct char_data *ch, char *arg,
+void cast_mend_bones(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5648,7 +5649,7 @@ void cast_mend_bones(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_trace_corpse(byte level, struct char_data *ch, char *arg,
+void cast_trace_corpse(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *tar_ch,
                        struct obj_data *tar_obj)
 {
@@ -5665,7 +5666,7 @@ void cast_trace_corpse(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_endure_cold(byte level, struct char_data *ch, char *arg,
+void cast_endure_cold(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -5686,7 +5687,7 @@ void cast_endure_cold(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_life_draw(byte level, struct char_data *ch, char *arg,
+void cast_life_draw(int level, struct char_data *ch, char *arg,
                     int type, struct char_data *tar_ch,
                     struct obj_data *tar_obj)
 {
@@ -5706,7 +5707,7 @@ void cast_life_draw(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_blade_barrier(byte level, struct char_data *ch, char *arg,
+void cast_blade_barrier(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
 {
@@ -5724,7 +5725,7 @@ void cast_blade_barrier(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_mana_shield(byte level, struct char_data *ch, char *arg,
+void cast_mana_shield(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
@@ -5741,7 +5742,7 @@ void cast_mana_shield(byte level, struct char_data *ch, char *arg,
         break;
     }
 }
-void cast_group_heal(byte level, struct char_data *ch, char *arg,
+void cast_group_heal(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
@@ -5759,7 +5760,7 @@ void cast_group_heal(byte level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_iron_skins(byte level, struct char_data *ch, char *arg,
+void cast_iron_skins(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {

@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -162,313 +162,302 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     }
 
     switch (type) {
+    case 0:
         /*
          * get
          */
-    case 0:{
-            send_to_char("Get what?\n\r", ch);
-        }
+        send_to_char("Get what?\n\r", ch);
         break;
+    case 1:
         /*
          * get all
          */
-    case 1:{
-            sub_object = 0;
-            found = FALSE;
-            fail = FALSE;
-            for (obj_object = real_roomp(ch->in_room)->contents;
-                 obj_object; obj_object = next_obj) {
-                next_obj = obj_object->next_content;
-                /*
-                 * check for a trap (traps fire often)
-                 */
-                if (CheckForAnyTrap(ch, obj_object)) {
-                    return;
-                }
-                if (CAN_SEE_OBJ(ch, obj_object)) {
-                    if ((IS_CARRYING_N(ch) + 1) <= CAN_CARRY_N(ch)) {
-                        if ((IS_CARRYING_W(ch) +
-                             obj_object->obj_flags.weight) <= CAN_CARRY_W(ch)) {
-                            if (CAN_WEAR(obj_object, ITEM_TAKE)) {
-                                get(ch, obj_object, sub_object);
-                                found = TRUE;
-                            } else {
-                                send_to_char("You can't take that.\n\r", ch);
-                                fail = TRUE;
-                            }
+        sub_object = 0;
+        found = FALSE;
+        fail = FALSE;
+        for (obj_object = real_roomp(ch->in_room)->contents;
+             obj_object; obj_object = next_obj) {
+            next_obj = obj_object->next_content;
+            /*
+             * check for a trap (traps fire often)
+             */
+            if (CheckForAnyTrap(ch, obj_object)) {
+                return;
+            }
+            if (CAN_SEE_OBJ(ch, obj_object)) {
+                if (IS_CARRYING_N(ch) + 1 <= CAN_CARRY_N(ch)) {
+                    if (IS_CARRYING_W(ch) + obj_object->obj_flags.weight <=
+                        CAN_CARRY_W(ch)) {
+                        if (CAN_WEAR(obj_object, ITEM_TAKE)) {
+                            get(ch, obj_object, sub_object);
+                            found = TRUE;
                         } else {
-                            sprintf(buffer, "%s : You can't carry that much "
-                                            "weight.\n\r",
-                                    obj_object->short_description);
-                            send_to_char(buffer, ch);
+                            send_to_char("You can't take that.\n\r", ch);
                             fail = TRUE;
                         }
                     } else {
-                        sprintf(buffer, "%s : You can't carry that many "
-                                        "items.\n\r",
+                        sprintf(buffer, "%s : You can't carry that much "
+                                        "weight.\n\r",
                                 obj_object->short_description);
                         send_to_char(buffer, ch);
                         fail = TRUE;
                     }
+                } else {
+                    sprintf(buffer, "%s : You can't carry that many "
+                                    "items.\n\r",
+                            obj_object->short_description);
+                    send_to_char(buffer, ch);
+                    fail = TRUE;
                 }
             }
-            if (found) {
-                send_to_char("OK.\n\r", ch);
-            } else if (!fail) {
-                send_to_char("You see nothing here.\n\r", ch);
-            }
+        }
+
+        if (found) {
+            send_to_char("OK.\n\r", ch);
+        } else if (!fail) {
+            send_to_char("You see nothing here.\n\r", ch);
         }
         break;
+    case 2:
         /*
          * get ??? (something)
          */
-    case 2:{
-            sub_object = 0;
-            found = FALSE;
-            fail = FALSE;
-            if (getall(arg1, newarg) == TRUE) {
-                strcpy(arg1, newarg);
-                num = -1;
-            } else if ((p = getabunch(arg1, newarg)) != '\0') {
-                strcpy(arg1, newarg);
-                num = p;
-            } else {
-                num = 1;
-            }
+        sub_object = 0;
+        found = FALSE;
+        fail = FALSE;
+        if (getall(arg1, newarg) == TRUE) {
+            strcpy(arg1, newarg);
+            num = -1;
+        } else if ((p = getabunch(arg1, newarg)) != '\0') {
+            strcpy(arg1, newarg);
+            num = p;
+        } else {
+            num = 1;
+        }
 
-            while (num != 0) {
-                obj_object =
-                    get_obj_in_list_vis(ch, arg1,
-                                        real_roomp(ch->in_room)->contents);
-                if (obj_object) {
-                    if (IS_CORPSE(obj_object) && num != 1) {
-                        send_to_char("You can only get one corpse at a "
-                                     "time.\n\r", ch);
-                        fail = TRUE;
-                        num = 0;
-                        /* no need for num and fail above I guess */
-                        return;
-                    }
+        while (num != 0) {
+            obj_object =
+                get_obj_in_list_vis(ch, arg1,
+                                    real_roomp(ch->in_room)->contents);
+            if (obj_object) {
+                if (IS_CORPSE(obj_object) && num != 1) {
+                    send_to_char("You can only get one corpse at a "
+                                 "time.\n\r", ch);
+                    fail = TRUE;
+                    num = 0;
+                    /* no need for num and fail above I guess */
+                    return;
+                }
 
-                    if (CheckForGetTrap(ch, obj_object)) {
-                        return;
-                    }
+                if (CheckForGetTrap(ch, obj_object)) {
+                    return;
+                }
 
-                    if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                        if ((IS_CARRYING_W(ch) +
-                             obj_object->obj_flags.weight) < CAN_CARRY_W(ch)) {
-                            if (CAN_WEAR(obj_object, ITEM_TAKE)) {
-                                get(ch, obj_object, sub_object);
-                                found = TRUE;
-                            } else {
-                                send_to_char("You can't take that.\n\r", ch);
-                                fail = TRUE;
-                                num = 0;
-                            }
+                if (IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)) {
+                    if (IS_CARRYING_W(ch) + obj_object->obj_flags.weight <
+                        CAN_CARRY_W(ch)) {
+                        if (CAN_WEAR(obj_object, ITEM_TAKE)) {
+                            get(ch, obj_object, sub_object);
+                            found = TRUE;
                         } else {
-                            sprintf(buffer, "%s : You can't carry that much "
-                                            "weight.\n\r",
-                                    obj_object->short_description);
-                            send_to_char(buffer, ch);
+                            send_to_char("You can't take that.\n\r", ch);
                             fail = TRUE;
                             num = 0;
                         }
                     } else {
-                        sprintf(buffer, "%s : You can't carry that many "
-                                        "items.\n\r",
+                        sprintf(buffer, "%s : You can't carry that much "
+                                        "weight.\n\r",
                                 obj_object->short_description);
                         send_to_char(buffer, ch);
                         fail = TRUE;
                         num = 0;
                     }
                 } else {
-                    if (num > 0) {
-                        sprintf(buffer, "You do not see a %s here.\n\r", arg1);
-                        send_to_char(buffer, ch);
-                    }
-                    num = 0;
+                    sprintf(buffer, "%s : You can't carry that many "
+                                    "items.\n\r",
+                            obj_object->short_description);
+                    send_to_char(buffer, ch);
                     fail = TRUE;
+                    num = 0;
                 }
+            } else {
                 if (num > 0) {
-                    num--;
+                    sprintf(buffer, "You do not see a %s here.\n\r", arg1);
+                    send_to_char(buffer, ch);
                 }
+                num = 0;
+                fail = TRUE;
+            }
+            if (num > 0) {
+                num--;
             }
         }
         break;
+    case 3:
         /*
          * get all all
          */
-
-    case 3:{
-            send_to_char("You must be joking?!\n\r", ch);
-        }
+        send_to_char("You must be joking?!\n\r", ch);
         break;
+    case 4:
         /*
          * get all ???
          */
-    case 4:{
-            found = FALSE;
-            fail = FALSE;
-            has = FALSE;
-            sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
-            if (sub_object) {
-                if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
-                    if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
-                        has = TRUE;
+        found = FALSE;
+        fail = FALSE;
+        has = FALSE;
+        sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
+        if (sub_object) {
+            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+                if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+                    has = TRUE;
+                }
+
+                for (obj_object = sub_object->contains;
+                     obj_object; obj_object = next_obj) {
+                    /*
+                     * check for trap (jdb - 11/9)
+                     */
+                    if (CheckForGetTrap(ch, obj_object)) {
+                        return;
                     }
-                    for (obj_object = sub_object->contains;
-                         obj_object; obj_object = next_obj) {
-                        /*
-                         * check for trap (jdb - 11/9)
-                         */
-                        if (CheckForGetTrap(ch, obj_object)) {
-                            return;
-                        }
-                        next_obj = obj_object->next_content;
-                        if (CAN_SEE_OBJ(ch, obj_object)) {
-                            if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                                if (has ||
-                                    (IS_CARRYING_W(ch) +
-                                     obj_object->obj_flags.weight) <
-                                     CAN_CARRY_W(ch)) {
-                                    if (CAN_WEAR(obj_object, ITEM_TAKE)) {
-                                        get(ch, obj_object, sub_object);
-                                        found = TRUE;
-                                    } else {
-                                        send_to_char("You can't take that\n\r",
-                                                     ch);
-                                        fail = TRUE;
-                                    }
+                    next_obj = obj_object->next_content;
+                    if (CAN_SEE_OBJ(ch, obj_object)) {
+                        if (IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)) {
+                            if (has || IS_CARRYING_W(ch) + 
+                                       obj_object->obj_flags.weight <
+                                       CAN_CARRY_W(ch)) {
+                                if (CAN_WEAR(obj_object, ITEM_TAKE)) {
+                                    get(ch, obj_object, sub_object);
+                                    found = TRUE;
                                 } else {
-                                    sprintf(buffer, "%s : You can't carry "
-                                                    "that much weight.\n\r",
-                                            obj_object->short_description);
-                                    send_to_char(buffer, ch);
+                                    send_to_char("You can't take that\n\r", ch);
                                     fail = TRUE;
                                 }
                             } else {
-                                sprintf(buffer, "%s : You can't carry that "
-                                                "many items.\n\r",
+                                sprintf(buffer, "%s : You can't carry "
+                                                "that much weight.\n\r",
                                         obj_object->short_description);
                                 send_to_char(buffer, ch);
                                 fail = TRUE;
                             }
+                        } else {
+                            sprintf(buffer, "%s : You can't carry that "
+                                            "many items.\n\r",
+                                    obj_object->short_description);
+                            send_to_char(buffer, ch);
+                            fail = TRUE;
                         }
                     }
-                    if (!found && !fail) {
-                        sprintf(buffer, "You do not see anything in %s.\n\r",
-                                sub_object->short_description);
-                        send_to_char(buffer, ch);
-                        fail = TRUE;
-                    }
-                } else {
-                    sprintf(buffer, "%s is not a container.\n\r",
+                }
+
+                if (!found && !fail) {
+                    sprintf(buffer, "You do not see anything in %s.\n\r",
                             sub_object->short_description);
                     send_to_char(buffer, ch);
                     fail = TRUE;
                 }
             } else {
-                sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
+                sprintf(buffer, "%s is not a container.\n\r",
+                        sub_object->short_description);
                 send_to_char(buffer, ch);
                 fail = TRUE;
             }
+        } else {
+            sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
+            send_to_char(buffer, ch);
+            fail = TRUE;
         }
         break;
-    case 5:{
-            send_to_char("You can't take a thing from more than one "
-                         "container.\n\r", ch);
-        }
+    case 5:
+        /*
+         * get all all
+         */
+        send_to_char("You can't take a thing from more than one "
+                     "container.\n\r", ch);
         break;
+    case 6:
         /*
          * take ??? from ??? (is it??)
          */
+        found = FALSE;
+        fail = FALSE;
+        has = FALSE;
+        sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
+        if (sub_object) {
+            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+                if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying)))
+                    has = TRUE;
+                if (getall(arg1, newarg) == TRUE) {
+                    num = -1;
+                    strcpy(arg1, newarg);
+                } else if ((p = getabunch(arg1, newarg)) != '\0') {
+                    num = p;
+                    strcpy(arg1, newarg);
+                } else {
+                    num = 1;
+                }
 
-    case 6:{
-            found = FALSE;
-            fail = FALSE;
-            has = FALSE;
-            sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
-            if (sub_object) {
-                if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
-                    if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying)))
-                        has = TRUE;
-                    if (getall(arg1, newarg) == TRUE) {
-                        num = -1;
-                        strcpy(arg1, newarg);
-                    } else if ((p = getabunch(arg1, newarg)) != '\0') {
-                        num = p;
-                        strcpy(arg1, newarg);
-                    } else {
-                        num = 1;
-                    }
+                while (num != 0) {
+                    obj_object =
+                        get_obj_in_list_vis(ch, arg1, sub_object->contains);
+                    if (obj_object) {
+                        if (CheckForInsideTrap(ch, sub_object)) {
+                            return;
+                        }
 
-                    while (num != 0) {
-
-                        obj_object =
-                            get_obj_in_list_vis(ch, arg1, sub_object->contains);
-                        if (obj_object) {
-                            /*
-                             * check for trap (jdb - 11/9)
-                             */
-                            if (CheckForInsideTrap(ch, sub_object)) {
-                                return;
-                            }
-                            if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                                if (has ||
-                                    (IS_CARRYING_W(ch) +
-                                     obj_object->obj_flags.weight) <
-                                     CAN_CARRY_W(ch)) {
-                                    if (CAN_WEAR(obj_object, ITEM_TAKE)) {
-                                        get(ch, obj_object, sub_object);
-                                        found = TRUE;
-                                    } else {
-                                        send_to_char("You can't take that\n\r",
-                                                     ch);
-                                        fail = TRUE;
-                                        num = 0;
-                                    }
+                        if (IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)) {
+                            if (has || IS_CARRYING_W(ch) + 
+                                       obj_object->obj_flags.weight <
+                                       CAN_CARRY_W(ch)) {
+                                if (CAN_WEAR(obj_object, ITEM_TAKE)) {
+                                    get(ch, obj_object, sub_object);
+                                    found = TRUE;
                                 } else {
-                                    sprintf(buffer, "%s : You can't carry that"
-                                                    " much weight.\n\r",
-                                            obj_object->short_description);
-                                    send_to_char(buffer, ch);
+                                    send_to_char("You can't take that\n\r", ch);
                                     fail = TRUE;
                                     num = 0;
                                 }
                             } else {
-                                sprintf(buffer, "%s : You can't carry that "
-                                                "many items.\n\r",
+                                sprintf(buffer, "%s : You can't carry that"
+                                                " much weight.\n\r",
                                         obj_object->short_description);
                                 send_to_char(buffer, ch);
                                 fail = TRUE;
                                 num = 0;
                             }
                         } else {
-                            if (num > 0) {
-                                sprintf(buffer,
-                                        "%s does not contain the %s.\n\r",
-                                        sub_object->short_description, arg1);
-                                send_to_char(buffer, ch);
-                            }
-                            num = 0;
+                            sprintf(buffer, "%s : You can't carry that "
+                                            "many items.\n\r",
+                                    obj_object->short_description);
+                            send_to_char(buffer, ch);
                             fail = TRUE;
+                            num = 0;
                         }
-
+                    } else {
                         if (num > 0) {
-                            num--;
+                            sprintf(buffer, "%s does not contain the %s.\n\r",
+                                    sub_object->short_description, arg1);
+                            send_to_char(buffer, ch);
                         }
+                        num = 0;
+                        fail = TRUE;
                     }
-                } else {
-                    sprintf(buffer, "%s is not a container.\n\r",
-                            sub_object->short_description);
-                    send_to_char(buffer, ch);
-                    fail = TRUE;
+
+                    if (num > 0) {
+                        num--;
+                    }
                 }
             } else {
-                sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
+                sprintf(buffer, "%s is not a container.\n\r",
+                        sub_object->short_description);
                 send_to_char(buffer, ch);
                 fail = TRUE;
             }
+        } else {
+            sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
+            send_to_char(buffer, ch);
+            fail = TRUE;
         }
         break;
     }
@@ -813,6 +802,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+#if 0
 int newstrlen(char *p)
 {
     int             i;
@@ -820,6 +810,7 @@ int newstrlen(char *p)
     for (i = 0; i < 10 && *p; i++, p++);
     return (i);
 }
+#endif
 
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
@@ -843,7 +834,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
      * sprintf(buf,"obj_name: %s",obj_name);
      */
     if (!obj && is_number(obj_name)) {
-        if (newstrlen(obj_name) >= 10) {
+        if (strnlen(obj_name, 10) == 10) {
             obj_name[10] = '\0';
         }
         amount = advatoi(obj_name);

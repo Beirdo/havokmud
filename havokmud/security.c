@@ -1,8 +1,9 @@
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 
-void            Log(char *);
+#include "protos.h"
 
 int SecCheck(char *arg, char *site)
 {

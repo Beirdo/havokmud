@@ -3,6 +3,7 @@
  * DaleMUD is based on DIKUMUD
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -2561,23 +2562,23 @@ void do_group(struct char_data *ch, char *argument, int cmd)
             /*
              * victim stronger??
              */
-#if 0
+
             if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
                 act("$N looks to be too strong to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
                 return;
             }
-#endif
+
             /*
              * your stronger??
              */
-#if 0
+
             if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
                 act("$N looks to be too puny and week to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
                 return;
             }
-#endif
+
             if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
                 /*
                  * Do not let imms group mortals
@@ -4407,6 +4408,17 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "email")) {
+        if (strstr(field, "disable")) {
+            if (ch->specials.email) {
+                free(ch->specials.email);
+            }
+            ch->specials.email = strdup("None");
+            if (cmd) {
+                write_char_extra(ch);
+                send_to_char("Email address disabled.\n\r", ch);
+            }
+            return;
+        }
         if (*field) {
             /*
              * set email to field
@@ -4414,6 +4426,15 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             if (ch->specials.email) {
                 free(ch->specials.email);
             }
+
+            while( strchr( field, '\n' ) ) {
+                *(strchr( field, '\n' )) = '\0';
+            }
+
+            while( strchr( field, '\r' ) ) {
+                *(strchr( field, '\r' )) = '\0';
+            }
+
             ch->specials.email = strdup(field);
             if (cmd) {
                 write_char_extra(ch);
@@ -4509,6 +4530,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
             sprintf(buf, "$c000BLast time sited       : $c0007Currently "
                     "Playing\n\r");
         } else {
+            /* NOTE: asctime includes a \n\r at the end of the string */
             sprintf(buf, "$c000BLast time sited       : $c0007%s",
                     asctime(localtime(&tmp_store.last_logon)));
         }
@@ -4520,7 +4542,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
         if (finger->specials.email == NULL) {
             sprintf(buf, "$c000BKnown message drop    : $c0007None\n\r");
         } else {
-            sprintf(buf, "$c000BKnown message drop    : $c0007%-60s\n\r",
+            sprintf(buf, "$c000BKnown message drop    : $c0007%s\n\r",
                     finger->specials.email);
         }
         send_to_char(buf, ch);
@@ -4529,35 +4551,29 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          * Display clan info
          */
         if (finger->specials.clan == NULL) {
-            sprintf(buf, "$c000BClan info             : $c0007None");
+            sprintf(buf, "$c000BClan info             : $c0007None\n\r");
         } else {
-            sprintf(buf, "$c000BClan info             : $c0007%s",
+            sprintf(buf, "$c000BClan info             : $c0007%s\n\r",
                     CAP(finger->specials.clan));
         }
-        strcat(buf, "\n\r");
         send_to_char(buf, ch);
 
         if (IS_IMMORTAL(ch)) {
             if (finger->specials.hostip == NULL) {
-                sprintf(buf, "$c000BHostIP                : $c0007None");
+                sprintf(buf, "$c000BHostIP                : $c0007None\n\r");
             } else {
-                sprintf(buf, "$c000BHostIP                : $c0007%s", "None");
-#if 0
-                ,finger->specials.hostip,
-                strlen(finger->specials.hostip));
-#endif
+                sprintf(buf, "$c000BHostIP                : $c0007%s\n\r",
+                        finger->specials.hostip);
             }
-            strcat(buf, "\n\r");
             send_to_char(buf, ch);
         }
 
         if (finger->specials.rumor == NULL) {
-            sprintf(buf, "$c000BRumored info          : $c0007None");
+            sprintf(buf, "$c000BRumored info          : $c0007None\n\r");
         } else {
-            sprintf(buf, "$c000BRumored info           : $c0007%s",
+            sprintf(buf, "$c000BRumored info           : $c0007%s\n\r",
                     finger->specials.rumor);
         }
-        strcat(buf, "\n\r");
         send_to_char(buf, ch);
 
         ch_printf(ch, "$c000BArena stats           : $c0007%d kills$c000B/"

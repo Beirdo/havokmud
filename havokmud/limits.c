@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -6,9 +6,6 @@
 
 #include "protos.h"
 
-#if 0
-struct room_data *real_roomp(int); 
-#endif 
 extern struct index_data *obj_index;
 extern struct char_data *character_list;
 extern struct obj_data *object_list;
@@ -1014,7 +1011,8 @@ void gain_exp(struct char_data *ch, int gain)
             chrace = GET_RACE(ch);
         }
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i]) {
+            if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i] &&
+                (GET_LEVEL(ch, i) < 50)) {
                 if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch, i) + 2].exp - 1) {
                     /* 
                      * is already maxxed 

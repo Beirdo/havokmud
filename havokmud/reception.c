@@ -6,11 +6,13 @@
  , computeminuteslast, computehourslast
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "protos.h"
 
@@ -1512,7 +1514,23 @@ void load_char_extra(struct char_data *ch)
 
         if (chk) {
             p = (char *) strtok(line, ":");
-            s = (char *) strtok(0, "\0");
+            s = (char *) strtok(NULL, "\0");
+
+            /* eat leading spaces and trailing carriage return/linefeed */
+            for (; isspace(*s); s++) {
+                /*
+                 * Empty loop
+                 */
+            }
+
+            while(strchr(s, '\n')) {
+                *(strchr(s, '\n')) = '\0';
+            }
+
+            while(strchr(s, '\r')) {
+                *(strchr(s, '\r')) = '\0';
+            }
+
             if (p) {
                 if (!strcmp(p, "out")) {
                     /* 
@@ -1551,15 +1569,7 @@ void load_char_extra(struct char_data *ch)
                     /* 
                      * hostIP 
                      */
-#if 0                    
-                    for (; isspace(*s); s++) {
-                        /*
-                         * Empty loop
-                         */
-                    }
-                    ch->specials.hostip = s;
-                    strdup(s);
-#endif                
+                    ch->specials.hostip = strdup(s);
                 } else if (!strcmp(p, "rumored")) {
                     /* 
                      * Clan info 
@@ -1664,9 +1674,7 @@ void write_char_extra(struct char_data *ch)
         fprintf(fp, "clan: %s\n", ch->specials.clan);
     }
     if (ch->specials.hostip) {
-#if 0        
-        fprintf(fp, "hostip: %s\n",ch->specials.hostip);
-#endif        
+        fprintf(fp, "hostip: %s\n", ch->specials.hostip);
     }
 
     if (ch->specials.rumor) {

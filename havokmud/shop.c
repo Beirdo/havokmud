@@ -1,4 +1,5 @@
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -126,6 +127,7 @@ void shopping_buy(char *arg, struct char_data *ch,
                     buf[MAX_STRING_LENGTH],
                     newarg[100];
     int             num = 1;
+    int             count;
     struct obj_data *temp1;
     int             i;
     float           mult = 0;
@@ -175,6 +177,8 @@ void shopping_buy(char *arg, struct char_data *ch,
         return;
     }
 
+    strcpy(newarg, temp1->name);
+
     if (temp1->obj_flags.cost <= 0) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
@@ -219,35 +223,28 @@ void shopping_buy(char *arg, struct char_data *ch,
 
     act("$n buys $p.", FALSE, ch, temp1, 0, TO_ROOM);
 
-    sprintf(buf, shop_index[shop_nr].message_buy, GET_NAME(ch), cost);
-    do_tell(keeper, buf, 19);
-
-    sprintf(buf, "You now have %s (*%d).\n\r", temp1->short_description, num);
-    send_to_char(buf, ch);
-
-    while (num-- > 0) {
-        if (GetMaxLevel(ch) < DEMIGOD) {
-            GET_GOLD(ch) -= cost;
-        }
-
-        GET_GOLD(keeper) += cost;
-
-        /*
-         * Test if producing shop ! 
-         */
+    for( count = 0; num > 0; num--, count++ ) {
         if (shop_producing(temp1, shop_nr)) {
             temp1 = read_object(temp1->item_number, REAL);
         } else {
-            obj_from_char(temp1);
-            if (temp1 == NULL) {
+            if (!(temp1 = get_obj_in_list_vis(ch, newarg, keeper->carrying))) {
                 send_to_char("Sorry, I just ran out of those.\n\r", ch);
-                GET_GOLD(ch) += cost;
-                return;
+                break;
             }
+            obj_from_char(temp1);
         }
-
         obj_to_char(temp1, ch);
     }
+
+    if (GetMaxLevel(ch) < DEMIGOD) {
+        GET_GOLD(ch) -= cost * count;
+        GET_GOLD(keeper) += cost * count;
+    }
+
+    sprintf(buf, shop_index[shop_nr].message_buy, GET_NAME(ch), cost * count);
+    do_tell(keeper, buf, 19);
+    sprintf(buf, "You now have %s (*%d).\n\r", argm, count);
+    send_to_char(buf, ch);
 }
 
 void shopping_sell(char *arg, struct char_data *ch,

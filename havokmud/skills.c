@@ -2,6 +2,7 @@
  ***  DaleMUD
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -1331,7 +1332,18 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         send_to_char("Where did that carcass go?\n\r", ch);
         return;
     }
-
+    if ((strcmp(itemtype, "shield")) &&
+        (strcmp(itemtype, "jacket")) &&
+        (strcmp(itemtype, "boots")) &&
+        (strcmp(itemtype, "gloves")) &&
+        (strcmp(itemtype, "leggings")) &&
+        (strcmp(itemtype, "sleeves")) &&
+        (strcmp(itemtype, "helmet")) &&
+        (strcmp(itemtype, "bag"))) {
+        send_to_char("You can't make that.\n\rTry shield, jacket, boots, "
+                     "gloves, leggings, sleeves, helmet, or bag.\n\r", ch);
+        return;
+    }
     /*
      * affect[0] == race of corpse, affect[1] == level of corpse 
      */
@@ -2825,6 +2837,7 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                     level,
                     dam = 0;
     struct affected_type af;
+    char            buf[256];
 
     if (!ch->skills) {
         return;
@@ -3133,11 +3146,19 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
             af.bitvector = AFF_PARALYSIS;
             affect_join(victim, &af, FALSE, FALSE);
             send_to_char("Your brain is turned to jelly!\n\r", victim);
+
             act("You turn $N's brain to jelly!", FALSE, ch, 0, victim,
                 TO_CHAR);
             break;
         }
     }
+
+    if (GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) ||
+        IS_SET(ch->specials.act, PLR_LEGEND)) {
+        sprintf(buf, "You do $c0015%d$c0007 damage", dam);
+        act(buf, FALSE, ch, NULL, NULL, TO_CHAR);
+    }
+
     if (!damage(ch, victim, dam, SKILL_PSIONIC_BLAST)) {
 #if 0
         if (GET_POS(victim) == POSITION_DEAD)   /* never get here */

@@ -7,7 +7,7 @@
  * portion of this source code.
  *****************************************************************************/
      
-    
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>

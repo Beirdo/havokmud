@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -1445,22 +1445,17 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         /*
          * no checks on super ego items, they do it already 
          */
-        if (obj_index[obj->item_number].func == EvilBlade ||
-            obj_index[obj->item_number].func == NeutralBlade ||
-            obj_index[obj->item_number].func == GoodBlade) {
-            /*
-             * do nothing 
-             */
-        } else {
-            if (!CheckEgo(ch, obj)) {
-                if (ch->in_room != NOWHERE) {
-                    obj_to_room(obj, ch->in_room);
-                    do_save(ch, "", 0);
-                } else {
-                    Log("Ch->in_room = NOWHERE on anti-ego item!");
-                }
-                return;
+        if (obj_index[obj->item_number].func != EvilBlade &&
+            obj_index[obj->item_number].func != NeutralBlade &&
+            obj_index[obj->item_number].func != GoodBlade &&
+            !CheckEgo(ch, obj)) {
+            if (ch->in_room != NOWHERE) {
+                obj_to_room(obj, ch->in_room);
+                do_save(ch, "", 0);
+            } else {
+                Log("Ch->in_room = NOWHERE on anti-ego item!");
             }
+            return;
         }
 
         if (!CheckGetBarbarianOK(ch, obj)) {
@@ -1581,7 +1576,7 @@ int get_number(char **name)
 
     number[0] = 0;
 
-    if ((ppos = (char *) index(*name, '.')) && ppos[1]) {
+    if ((ppos = strchr(*name, '.')) && ppos[1]) {
         *ppos++ = '\0';
         strcpy(number, *name);
         strcpy(*name, ppos);
@@ -1710,13 +1705,18 @@ struct char_data *get_char_room(char *name, int room)
                     number;
     char            tmpname[MAX_INPUT_LENGTH + 40];
     char           *tmp;
+    struct room_data *rp;
+
+    if( !name || !(rp = real_roomp(room)) ) {
+        return( NULL );
+    }
 
     strcpy(tmpname, name);
     tmp = tmpname;
     if (!(number = get_number(&tmp))) {
-        return (0);
+        return (NULL);
     }
-    for (i = real_roomp(room)->people, j = 1; i && (j <= number);
+    for (i = rp->people, j = 1; i && (j <= number);
          i = i->next_in_room) {
         if (isname(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1725,7 +1725,8 @@ struct char_data *get_char_room(char *name, int room)
             j++;
         }
     }
-    for (i = real_roomp(room)->people, j = 1; i && (j <= number);
+
+    for (i = rp->people, j = 1; i && (j <= number);
          i = i->next_in_room) {
         if (isname2(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1734,7 +1735,8 @@ struct char_data *get_char_room(char *name, int room)
             j++;
         }
     }
-    return (0);
+
+    return (NULL);
 }
 
 /*

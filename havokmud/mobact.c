@@ -1,4 +1,5 @@
 
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -908,43 +909,46 @@ void PulseMobiles(int type)
 void DoScript(struct char_data *ch)
 {
     int             i,
-                    check = 0;
+                    check;
     char            buf[255],
                     buf2[255],
                    *s;
 
-    strcpy(buf, script_data[ch->script].script[ch->commandp].line);
-
-    if (buf[strlen(buf) - 1] == '\\') {
-        check = 1;
-        buf[strlen(buf) - 1] = '\0';
-    }
-
-    strcpy(buf2, buf);
-    strtok(buf2, " ");
-    s = strtok(NULL, " ");
-
-    i = CommandSearch(buf2);
-
-    if (i == -1) {
-        command_interpreter(ch, buf);
-        ch->commandp++;
+    if( !ch || !ch->script || !ch->commandp ) {
         return;
     }
 
-    if (s) {
-        (*comp[i].p) (s, ch);
-    } else {
-        (*comp[i].p) ("\0", ch);
-    }
+    do {
+        check = 0;
+        strcpy(buf, script_data[ch->script].script[ch->commandp].line);
 
-    if (*script_data[ch->script].script[ch->commandp].line == '_') {
-        ch->commandp++;
-    }
+        if (buf[strlen(buf) - 1] == '\\') {
+            check = 1;
+            buf[strlen(buf) - 1] = '\0';
+        }
 
-    if (check) {
-        DoScript(ch);
-    }
+        strcpy(buf2, buf);
+        strtok(buf2, " ");
+        s = strtok(NULL, " ");
+
+        i = CommandSearch(buf2);
+
+        if (i == -1) {
+            command_interpreter(ch, buf);
+            ch->commandp++;
+            return;
+        }
+
+        if (s) {
+            (*comp[i].p) (s, ch);
+        } else {
+            (*comp[i].p) ("\0", ch);
+        }
+
+        if (*script_data[ch->script].script[ch->commandp].line == '_') {
+            ch->commandp++;
+        }
+    } while (check);
 }
 
 int CommandSearch(char *arg)
@@ -960,7 +964,7 @@ int CommandSearch(char *arg)
     return (-1);
 }
 
-void CommandAssign(char *arg, void (*p))
+void CommandAssign(char *arg, void (*p)())
 {
     if (top_of_comp == 0) {
         comp = (struct script_com *) malloc(sizeof(struct script_com));

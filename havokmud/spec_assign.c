@@ -1,4 +1,5 @@
 
+#include "config.h"
 #include <stdio.h>
 
 #include "protos.h"

@@ -3,6 +3,7 @@
  **  0 = Mage, 1 = cleric, 3 = thief, 2 = fighter
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 

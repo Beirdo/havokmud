@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,7 +27,7 @@ byte            HashTable[256];
 /*
  * Adds a command to the Command List radix. 
  */
-void AddCommand(char *name, void (*func), int number, int min_pos,
+void AddCommand(char *name, void (*func)(), int number, int min_pos,
                 int min_lev)
 {
     NODE           *n;

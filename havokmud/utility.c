@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -1829,7 +1830,7 @@ void down_river(int pulse)
     }
 }
 
-void do_WorldSave(struct char_data *ch, char *argument, char cmd)
+void do_WorldSave(struct char_data *ch, char *argument, int cmd)
 {
     char            temp[2048],
                     buf[128];
@@ -4835,7 +4836,7 @@ int IsDarkOutside(struct room_data *rp)
     if (rp->sector_type == SECT_FOREST && gLightLevel <= 1) {
         return (TRUE);
     } else if (gLightLevel == 0) {
-        return (FALSE);
+        return (TRUE);
     }
     return (FALSE);
 }
@@ -4942,7 +4943,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
         }
         return (FALSE);
     }
-    return (FALSE);
+    return (TRUE);
 #endif
 }
 
@@ -5946,7 +5947,7 @@ void qlog(char *desc)
     }
 }
 
-void do_mrebuild(struct char_data *ch, char *argument, char cmd)
+void do_mrebuild(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[128];
     long            m_start,
@@ -6015,7 +6016,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
     send_to_char(buf, ch);
 }
 
-void do_orebuild(struct char_data *ch, char *argument, char cmd)
+void do_orebuild(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[128],
                     buf2[511];
@@ -6573,6 +6574,29 @@ int count_People_in_room(int room)
     }
     return count;
 }
+
+#if 0
+/*
+ * put in support for GNU-specific system calls that are missing in Cygwin
+ */
+#if defined(__CYGWIN__)
+
+size_t strnlen(const char *s, size_t maxlen)
+{
+    int             i;
+
+    for (i = 0; *s && i < maxlen; s++, i++) {
+        /*
+         * Empty loop 
+         */
+    }
+
+    return (i);
+}
+
+#endif
+#endif
+
 
 
 /*

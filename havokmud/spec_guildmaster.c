@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -1267,9 +1268,8 @@ void PrintSkills(struct char_data *ch, int level, struct skillset *skills,
     /*
      * list by level, so new skills show at top of list 
      */
-    i = 0;
-
     while (level != 0) {
+        i = 0;
         while (skills[i].level != -1) {
             if (level == -1 || skills[i].level == level) {
                 sprintf(buf, "[%-2d] %-30s %-15s",
@@ -1377,15 +1377,22 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                     stat = 0,
                     cost = 3;
 
-    const struct skillset traininglist[] = {
-        {"constitution", 4, (GET_RCON(ch) - 3)},
-        {"strength", 5, (GET_RSTR(ch) - 3)},
-        {"dexterity", 6, (GET_RDEX(ch) - 3)},
-        {"charisma", 7, (GET_RCHR(ch) - 3)},
-        {"intelligence", 8, (GET_RINT(ch) - 3)},
-        {"wisdom", 9, (GET_RWIS(ch) - 3)},
+    struct skillset traininglist[] = {
+        {"constitution", 4, 0},
+        {"strength", 5, 0},
+        {"dexterity", 6, 0},
+        {"charisma", 7, 0},
+        {"intelligence", 8, 0},
+        {"wisdom", 9, 0},
         {"None", -1, -1}
     };
+
+    traininglist[0].maxlearn = GET_RCON(ch) - 3;
+    traininglist[1].maxlearn = GET_RSTR(ch) - 3;
+    traininglist[2].maxlearn = GET_RDEX(ch) - 3;
+    traininglist[3].maxlearn = GET_RCHR(ch) - 3;
+    traininglist[4].maxlearn = GET_RINT(ch) - 3;
+    traininglist[5].maxlearn = GET_RWIS(ch) - 3;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
@@ -1667,7 +1674,7 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice any of these weapon "
                          "styles:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, 50, weaponskills, buf);
+            PrintSkills(ch, 50, weaponskills, buffer);
             page_string(ch->desc, buffer, 1);
             return (TRUE);
         } 
@@ -1798,14 +1805,14 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
                          "skills:\n\r\n\r");
             strcat(buffer, buf);
             PrintSkills(ch, GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
-                        necroskills, buf);
+                        necroskills, buffer);
 
             if (ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked necromancer as your main "
                              "class, you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
-                            mainnecroskills, buf);
+                            mainnecroskills, buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
@@ -2130,14 +2137,14 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, GET_LEVEL(ch, MAGE_LEVEL_IND), mageskills, buf);
+            PrintSkills(ch, GET_LEVEL(ch, MAGE_LEVEL_IND), mageskills, buffer);
 
             if (ch->specials.remortclass == MAGE_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked mage as your main class, "
                              "you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, MAGE_LEVEL_IND), mainmageskills,
-                            buf);
+                            buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
@@ -2203,14 +2210,15 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, GET_LEVEL(ch, SORCERER_LEVEL_IND), sorcskills, buf);
+            PrintSkills(ch, GET_LEVEL(ch, SORCERER_LEVEL_IND), sorcskills, 
+                        buffer);
 
             if (ch->specials.remortclass == SORCERER_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked sorcerer as your main class,"
                              " you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, SORCERER_LEVEL_IND), 
-                            mainsorcskills, buf);
+                            mainsorcskills, buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
@@ -2290,14 +2298,15 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, GET_LEVEL(ch, CLERIC_LEVEL_IND), clericskills, buf);
+            PrintSkills(ch, GET_LEVEL(ch, CLERIC_LEVEL_IND), clericskills, 
+                        buffer);
 
             if (ch->specials.remortclass == CLERIC_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked cleric as your main class, "
                              "you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, CLERIC_LEVEL_IND), clericskills,
-                            buf);
+                            buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
@@ -2378,14 +2387,15 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these skills:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, GET_LEVEL(ch, THIEF_LEVEL_IND), thiefskills, buf);
+            PrintSkills(ch, GET_LEVEL(ch, THIEF_LEVEL_IND), thiefskills,
+                        buffer);
 
             if (ch->specials.remortclass == THIEF_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked thief as your main class, "
                              "you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, THIEF_LEVEL_IND), 
-                            mainthiefskills, buf);
+                            mainthiefskills, buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
@@ -2466,14 +2476,14 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice any of these skills:\n\r\n\r");
             strcat(buffer, buf);
             PrintSkills(ch, GET_LEVEL(ch, WARRIOR_LEVEL_IND), warriorskills,
-                        buf);
+                        buffer);
 
             if (ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked warrior as your main class,"
                              " you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, WARRIOR_LEVEL_IND), 
-                            mainwarriorskills, buf);
+                            mainwarriorskills, buffer);
 
             }
             page_string(ch->desc, buffer, 1);
@@ -2527,7 +2537,7 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
                          "Bear in mind.. training here costs two practice "
                          "points!\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, 50, styleskillset, buf);
+            PrintSkills(ch, 50, styleskillset, buffer);
             page_string(ch->desc, buffer, 1);
             return (TRUE);
         } 

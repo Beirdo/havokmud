@@ -5,6 +5,7 @@
  *************************************************************************
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -35,9 +36,9 @@ extern int      top_of_objt;
 extern int      top_of_p_table;
 
 extern char    *exits[];
-extern char     credits[MAX_STRING_LENGTH];
-extern char     news[MAX_STRING_LENGTH];
-extern char     info[MAX_STRING_LENGTH];
+extern char    *credits;
+extern char    *news;
+extern char    *info;
 
 extern char     wizlist[MAX_STRING_LENGTH];
 extern char     iwizlist[MAX_STRING_LENGTH];
@@ -7220,9 +7221,6 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
 
                     case 60:
                         sprintf(levels, "Supreme Being");
-                    }
-                    if (!str_cmp(GET_NAME(person), "Meckyl")) {
-                        *levels = '\0';
                     }
 
                     sprintf(tbuf, "%s", levels);

@@ -1,3 +1,4 @@
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -5,8 +6,13 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <limits.h>
 
 #include "protos.h"
+
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
 
@@ -63,15 +69,15 @@ int             map[7][7];
  **  distributed monster stuff
  */
 int             mob_tick_count = 0;
-char            wmotd[MAX_STRING_LENGTH];
-char            credits[MAX_STRING_LENGTH];     /* the Credits List */
-char            news[MAX_STRING_LENGTH];        /* the news */
-char            motd[MAX_STRING_LENGTH];        /* the messages of today */
-char            help[MAX_STRING_LENGTH];        /* the main help page */
-char            info[MAX_STRING_LENGTH];        /* the info text */
-char            wizlist[MAX_STRING_LENGTH * 2]; /* the wizlist */
-char            iwizlist[MAX_STRING_LENGTH * 2];        /* the wizlist */
-char            login[MAX_STRING_LENGTH];
+char           *wmotd = NULL;
+char           *credits = NULL;     /* the Credits List */
+char           *news = NULL;        /* the news */
+char           *motd = NULL;        /* the messages of today */
+char           *help = NULL;        /* the main help page */
+char           *info = NULL;        /* the info text */
+char           wizlist[MAX_STRING_LENGTH * 2];     /* the wizlist */
+char           iwizlist[MAX_STRING_LENGTH * 2];    /* the wizlist */
+char           *login = NULL;
 
 FILE           *mob_f,          /* file containing mob prototypes */
                *obj_f,          /* obj prototypes */
@@ -145,14 +151,40 @@ void boot_db()
 
     Log("Reading newsfile, credits, help-page, info and motd.");
 
-    file_to_string(NEWS_FILE, news);
-    file_to_string(CREDITS_FILE, credits);
-    file_to_string(MOTD_FILE, motd);
-    file_to_string("wizmotd", wmotd);
-    file_to_string(HELP_PAGE_FILE, help);
-    file_to_string(INFO_FILE, info);
-    file_to_string(WIZLIST_FILE, wizlist);
-    file_to_string("login", login);
+    if( news ) {
+        free( news );
+    }
+    news = file_to_string(NEWS_FILE);
+
+    if( credits ) {
+        free( credits );
+    }
+    credits = file_to_string(CREDITS_FILE);
+
+    if( motd ) {
+        free( motd );
+    }
+    motd = file_to_string(MOTD_FILE);
+
+    if( wmotd ) {
+        free( wmotd );
+    }
+    wmotd = file_to_string("wizmotd");
+
+    if( help ) {
+        free( help );
+    }
+    help = file_to_string(HELP_PAGE_FILE);
+
+    if( info ) {
+        free( info );
+    }
+    info = file_to_string(INFO_FILE);
+
+    if( login ) {
+        free( login );
+    }
+    login = file_to_string("login");
 
     Log("Initializing Script Files.");
 
@@ -1169,7 +1201,7 @@ void load_one_room(FILE * fl, struct room_data *rp)
 {
     char            chk[50];
     int             bc = 0;
-    unsigned long int tmp;
+    long int tmp;
 
     struct extra_descr_data *new_descr;
 
@@ -1924,6 +1956,13 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     char            letter;
 
     extern int      mob_tick_count;
+
+    if( !mob ) {
+        return( -1 );
+    }
+    
+    memset( mob, 0, sizeof(struct char_data) );
+
 #if 0
     HpBonus=0;
 #endif
@@ -5115,41 +5154,51 @@ void free_obj(struct obj_data *obj)
 /*
  * read contents of a text file, and place in buf
  */
-int file_to_string(char *name, char *buf)
+char *file_to_string(char *name)
 {
-    FILE           *fl;
-    char            tmp[128];
+    int             fd;
+    char           *buf;
+    char           *curr;
+    struct stat     stat;
+    int             size;
+    int             rd;
+    char            tmp[256];
 
-    *buf = '\0';
-
-    if (!(fl = fopen(name, "r"))) {
+    if ((fd = open(name, O_RDONLY, 0666)) < 0) {
         sprintf(tmp, "[%s] file-to-string", name);
         perror(tmp);
-        *buf = '\0';
-        return (-1);
+        return (NULL);
     }
 
-    do {
-        fgets(tmp, 99, fl);
+    if( fstat(fd, &stat) == -1 ) {
+        sprintf(tmp, "[%s] file-to-string", name);
+        perror(tmp);
+        return( NULL );
+    }
 
-        if (!feof(fl)) {
-            if (strlen(buf) + strlen(tmp) + 2 > MAX_STRING_LENGTH) {
-                Log("fl->strng: string too big (db.c, file_to_string)");
-                *buf = '\0';
-                fclose(fl);
-                return (-1);
-            }
+    /* Give us some wiggle room */
+    size = (int)stat.st_size;
+    buf = (char *)malloc( size + 10 );
+    if( !buf ) {
+        return( NULL );
+    }
 
-            strcat(buf, tmp);
-            *(buf + strlen(buf) + 1) = '\0';
-            *(buf + strlen(buf)) = '\r';
+    curr = buf;
+
+    while ( size ) {
+        rd = read( fd, curr, (size > SSIZE_MAX ? SSIZE_MAX : size ));
+        if( rd < 0 ) {
+            /* We got an error, assume EOF */
+            break;
         }
+        curr += rd;
+        size -= rd;
     }
-    while (!feof(fl));
 
-    fclose(fl);
+    close( fd );
+    *curr = '\0';
 
-    return (0);
+    return ( buf );
 }
 
 void ClearDeadBit(struct char_data *ch)
@@ -5797,10 +5846,26 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
     }
     Log("Rebooting Essential Text Files.");
 
-    file_to_string(NEWS_FILE, news);
-    file_to_string(CREDITS_FILE, credits);
-    file_to_string(MOTD_FILE, motd);
-    file_to_string("wizmotd", wmotd);
+    if( news ) {
+        free( news );
+    }
+    news = file_to_string(NEWS_FILE);
+
+    if( credits ) {
+        free( credits );
+    }
+    credits = file_to_string(CREDITS_FILE);
+
+    if( motd ) {
+        free( motd );
+    }
+    motd = file_to_string(MOTD_FILE);
+
+    if( wmotd ) {
+        free( wmotd );
+    }
+    wmotd = file_to_string("wizmotd");
+
     Log("Initializing Scripts.");
     InitScripts();
 
@@ -6470,10 +6535,9 @@ void clean_playerfile(void)
     Log(buf);
     sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
     Log(buf);
-    sprintf(buf, "mv %s %s.bak", PLAYER_FILE, PLAYER_FILE);
-    system(buf);
-    sprintf(buf, "mv temp %s", PLAYER_FILE);
-    system(buf);
+    sprintf(buf, "%s.bak", PLAYER_FILE);
+    rename(PLAYER_FILE, buf);
+    rename("temp", PLAYER_FILE);
     Log("Cleaning done.");
 }
 #else
@@ -6557,10 +6621,10 @@ void clean_playerfile(void)
                         sprintf(buf, "Purging rent file for %s, inactive for "
                                 "%d month.", uname, RENT_INACTIVE);
                         Log(buf);
-                        sprintf(buf, "rm rent/%s", uname);
-                        system(buf);
-                        sprintf(buf, "rm rent/%s.aux", grunt.dummy.name);
-                        system(buf);
+                        sprintf(buf, "rent/%s", uname);
+                        unlink(buf);
+                        sprintf(buf, "rent/%s.aux", grunt.dummy.name);
+                        unlink(buf);
                     }
 #endif
 
@@ -6637,10 +6701,9 @@ void clean_playerfile(void)
     Log(buf);
     sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
     Log(buf);
-    sprintf(buf, "mv %s %s.bak", PLAYER_FILE, PLAYER_FILE);
-    system(buf);
-    sprintf(buf, "mv temp %s", PLAYER_FILE);
-    system(buf);
+    sprintf(buf, "%s.bak", PLAYER_FILE);
+    rename(PLAYER_FILE, buf);
+    rename("temp", PLAYER_FILE);
     Log("Cleaning done.");
 }
 #endif
