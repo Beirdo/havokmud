@@ -1505,16 +1505,14 @@ dlog("in do_quaff");
     return;
   }
 
-#if 0
   if (IS_AFFECTED(ch, AFF_BLIND)) {
-      if (number(1,50) > ch->abilities.dex) {
+      if (number(1,40) > ch->abilities.dex) {
 	   act("$n blindly fumbles $p to the ground!  It shatters!", TRUE, ch, temp, 0, TO_ROOM);
 	   act("You blindly fumble $p to the ground!  It shatters!", TRUE, ch, temp, 0, TO_CHAR);
 	   extract_obj(temp);
 	   return;
       }
   }
-#endif
 
   /*  my stuff */
   if (ch->specials.fighting) {
@@ -1554,7 +1552,7 @@ dlog("in do_quaff");
 
   extract_obj(temp);
 
-  GET_COND(ch, FULL)+=1;
+  if (!IS_IMMORTAL(ch)) GET_COND(ch, FULL)+=1;
 
   WAIT_STATE(ch, PULSE_VIOLENCE);
 

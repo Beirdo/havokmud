@@ -3857,7 +3857,7 @@ int Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
 
 
-    GET_COND(ch,THIRST) = 24;
+    if (!IS_IMMORTAL(ch)) GET_COND(ch,THIRST) = 24;
 
     if(GET_COND(ch,THIRST)>20)
 	act("You do not feel thirsty.",FALSE,ch,0,0,TO_CHAR);

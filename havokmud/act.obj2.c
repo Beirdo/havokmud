@@ -136,6 +136,8 @@ dlog("in do_drink");
           (temp->obj_flags.value[0] > 20))
         weight_change_object(temp, -amount);
 
+	if (!IS_IMMORTAL(ch)) {
+
       gain_condition(ch,DRUNK,(int)((int)drink_aff
                  [temp->obj_flags.value[2]][DRUNK]*amount)/4);
 
@@ -144,6 +146,8 @@ dlog("in do_drink");
 
       gain_condition(ch,THIRST,(int)((int)drink_aff
                      [temp->obj_flags.value[2]][THIRST]*amount)/4);
+
+	}
 
       if(GET_COND(ch,DRUNK)>10)
         act("You feel drunk.",FALSE,ch,0,0,TO_CHAR);
@@ -221,7 +225,9 @@ dlog("in do_eat");
         act("$n eats $p",TRUE,ch,temp,0,TO_ROOM);
         act("You eat the $o.",FALSE,ch,temp,0,TO_CHAR);
 
+	if(!IS_IMMORTAL(ch)) {
         gain_condition(ch,FULL,temp->obj_flags.value[0]);
+	}
 
         if(GET_COND(ch,FULL)>20)
                 act("You are full.",FALSE,ch,0,0,TO_CHAR);
