@@ -1385,6 +1385,8 @@ void assign_mobiles()
  {51822, trinketlooter },
  {51823, trinketlooter },
  {51824, trinketlooter },
+ {51805, lust_sinner },
+ {51806, lust_sinner },
 
 #endif
 
@@ -1442,6 +1444,8 @@ void assign_objects()
    {45492, thunder_black_pill},
    {45493, thunder_blue_pill},
    {45494, grayswandir},
+
+/* Temple of Sin */
    {51831, altarofsin },
    {51827, chestproc }, //appliepie },
    {51832, trinketcount },
@@ -1509,6 +1513,17 @@ void assign_rooms()
 	{40053, arena_fireball_trap},
 	{39954, arena_arrow_dispel_trap},
 	{40017, arena_dispel_trap},
+
+/* Temple of Sin */
+	{51936, pride_remover_one},
+	{51935, pride_remover_two},
+	{51934, pride_remover_three},
+	{51933, pride_remover_four},
+	{51932, pride_remover_five},
+	{51931, pride_remover_six},
+	{51930, pride_remover_seven},
+	{51836, pride_disabler},
+	{51835, pride_disabler},
 
    /* Cthol (Xenon) */
    {40233, dispel_room},

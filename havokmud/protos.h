@@ -1522,7 +1522,15 @@ int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj
 int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int guardian_sin(struct char_data *ch, struct char_data *vict);
-
+int pride_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_three(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_four(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_five(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_six(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pride_remover_seven(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int lust_sinner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);

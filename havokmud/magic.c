@@ -2076,6 +2076,12 @@ void spell_charm_monster(byte level, struct char_data *ch,
     return;
   }
 
+  if (IsPerson(victim)) {
+    send_to_char("You can't charm people! Try charm person for that!\n\r", ch);
+    return;
+  }
+
+
   if (GetMaxLevel(victim) > GetMaxLevel(ch)+3) {
     FailCharm(victim, ch);
     return;

@@ -4535,7 +4535,7 @@ void specdamage(struct char_data *ch, struct char_data *v)
   }
   if (ch->equipment[WIELD]) {
   	object = ch->equipment[WIELD];
-    	if (obj_index[object->item_number].virtual == GUARDIAN_SIN) guardian_sin(ch, v);
+  	if (obj_index[object->item_number].virtual == GUARDIAN_SIN) guardian_sin(ch, v);
   }
 return;
 }

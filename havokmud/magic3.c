@@ -1869,8 +1869,7 @@ void spell_barkskin(byte level, struct char_data *ch,
   assert(victim);
   assert((level >= 0) && (level <= ABS_MAX_LVL));
 
-  if (!affected_by_spell(victim, SPELL_BARKSKIN) &&
-      !affected_by_spell(victim, SPELL_ARMOR)) {
+  if (!affected_by_spell(victim, SPELL_BARKSKIN)) {
 
     af.type      = SPELL_BARKSKIN;
     af.duration  = 24;

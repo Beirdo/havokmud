@@ -6963,7 +6963,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data 
   if(cmd != 67) //rub alter
     return(FALSE);
 
-   dlog("in altar");
+   dlog("in your stash");
 
 	do_put(ch,argument,67);
 
@@ -6976,7 +6976,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data 
     }
 	/*Check to see if all stones are present*/
 	if(count < 10)
-		return(FALSE);
+		return(TRUE);
 
 
 	do_system(ch, "A large gong sound echoes through-out the lands.", 1);
@@ -7043,44 +7043,64 @@ if (ch->master) {
 
 
 
+#define ROBBER 51823
+#define MUGGER 51822
+#define NABBER 51821
+#define FILCHER 51824
+int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	int toRoom=0;
+	struct obj_data *trinket, *obj;
 
-int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
-  	int toRoom=0;
-
-        if (cmd)
-            return FALSE;
-
+	if (cmd)
+		return FALSE;
 
 	if(mob->in_room!=51837)
 		return(FALSE);
 
+	obj = get_obj_in_list_vis(ch, "stash", real_roomp(ch->in_room)->contents);
 
+	if (!obj)
+		return(FALSE);
+
+	trinket = get_obj_in_list_vis(ch, "trinket", obj->contains);
+
+	if (!trinket) {
+		/* hm no trinket? better bide our time then */
+		do_say(mob,"Oooh, no more pretty shinies? I'll be back!",1);
+		return(FALSE);
+	}
+
+	/* yay, there's a trinket to be had */
 	send_to_room("The greedy sinner looks around the tent, and doesn't fail to notice the chest standing\n\r", mob->in_room);
 	send_to_room("in the center. It sneaks up to the chest, quickly grabs a trinket, and cackles gleefully.\n\r", mob->in_room);
 	send_to_room("Still laughing like a madman, it quaffs a misty potion and fades out of existence.\n\r", mob->in_room);
 
+	obj_from_obj(trinket);
+	obj_to_char(trinket,mob);
+	char_from_room(mob);
 
-  	do_get(mob, "trinket chest",0);
-  	char_from_room(mob);
+	if (mob_index[ch->nr].virtual == ROBBER)
+		toRoom=51848;
 
-	switch(number(0,3)) {
-		case 0:
-		 toRoom=51874;
-		case 1:
-	     toRoom=51858;
-		case 2:
-	     toRoom=51848;
-		case 3:
-		 toRoom=51868;
+	if (mob_index[ch->nr].virtual == NABBER)
+		toRoom=51874;
+
+	if (mob_index[ch->nr].virtual == MUGGER)
+		toRoom=51858;
+
+	if (mob_index[ch->nr].virtual == FILCHER)
+		toRoom=51868;
+
+	if (toRoom == 0) {
+		log("Screwup in finding the right room to transport to, trinketlooter");
+		return(FALSE);
 	}
 
-
 	char_to_room(mob, toRoom);
-
-  	do_put(mob,"trinket stash",0);
-
-
-
+	act("$n appears in the middle of the room, giggling.",FALSE, mob, 0, 0, TO_ROOM);
+	act("$n gets a shiny trinket from $s pocket and smiles gleefully.",FALSE, ch, 0, 0, TO_ROOM);
+	do_put(mob,"trinket stash",0);
 }
 
 int guardian_sin(struct char_data *ch, struct char_data *vict)
@@ -7229,7 +7249,497 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
 return(FALSE);
 }
 
+#define COMFY_ROBE 51840
+int lust_sinner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *i, *next;
+	struct affected_type af;
+	struct obj_data *obj, *obj2;
+	int r_num = 0;
+	char buf[128];
 
+
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
+
+	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
+      StandUp(ch);
+      return(TRUE);
+    }
+
+    if (check_soundproof(ch))
+    	return(FALSE);
+
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
+
+	/*if ch is fighting, don't fire */
+	if (ch->specials.fighting)
+		return(FALSE);
+
+	/* if ch already has a follower, don't fire */
+	if (ch->followers)
+		return(FALSE);
+
+	/* ch not fighting, let's look for a victim */
+	if (ch->in_room > -1) {
+		/* there's victims, let's see if we can harrass one */
+	    for (i = real_roomp(ch->in_room)->people; i; i = next) {
+			next = i->next_in_room;
+			if (!IS_NPC(i) && !IS_LINKDEAD(i) && !IS_IMMORTAL(i)) { /* victim connected mortal, wehee! */
+				if (!IsImmune(i, IMM_CHARM)) {
+					if (!affected_by_spell(i,SPELL_CHARM_PERSON) && !affected_by_spell(i,SPELL_CHARM_MONSTER)) {
+						/* oh look, we can abuse this dude! */
+
+						if (IsResist(i, IMM_CHARM)) { /* resistant gets a save */
+							if (!saves_spell(i, SAVING_PARA)) { /* didn't make his save, his ass is mine! */
+								act("$n winks slyly at you, and you instantly realize you should follow $m.",FALSE,ch,0,i,TO_VICT);
+								act("$n winks slyly at $N.",TRUE,ch,0,i,TO_NOTVICT);
+								if (i->master)
+								      stop_follower(i);
+								add_follower(i, ch);
+
+								af.type      = SPELL_CHARM_PERSON;
+								af.duration  = 24;
+								af.modifier  = 0;
+								af.location  = 0;
+								af.bitvector = AFF_CHARM;
+								affect_to_char(i, &af);
+
+								/* Hmm, let's give victim a cute robe */
+								act("$n hands you a comfortable looking robe.",FALSE,ch,0,i,TO_VICT);
+								act("$n hands $N a nice comfortable robe.", FALSE, ch, 0, i, TO_NOTVICT);
+								if ((r_num = real_object(COMFY_ROBE)) >= 0) {
+									obj = read_object(r_num, REAL);
+									obj_to_char(obj, i);
+								}
+								/* and let's make him remove his bodywear.. */
+								if (i->equipment[WEAR_BODY]) {
+									obj2=i->equipment[WEAR_BODY];
+									if ((obj2 = unequip_char(i,WEAR_BODY))!=NULL)   {
+										obj_to_char(obj2, i);
+										act("Smiling happily, you stop wearing your current body armor.",FALSE,ch,0,i,TO_VICT);
+										act("Smiling happily, $n stops using $s body armor.", FALSE, i, 0, 0, TO_NOTVICT);
+									}
+								}
+								/* and replace it by something more comfy */
+								sprintf(buf, "comfortable-robe");
+								do_wear(i, buf, "body");
+								return(TRUE);
+							} else {
+								/* made his save, give him some notice */
+								act("$n winks slyly at you, but you're not so easily fooled.",FALSE,ch,0,i,TO_VICT);
+							}
+						} else {
+							/* Yum, not resistant, easy meat! */
+							act("$n winks slyly at you, and you instantly realize you should follow $m.",FALSE,ch,0,i,TO_VICT);
+							act("$n winks slyly at $N.",TRUE,ch,0,i,TO_NOTVICT);
+							if (i->master)
+							      stop_follower(i);
+							add_follower(i, ch);
+
+							af.type      = SPELL_CHARM_PERSON;
+							af.duration  = 24;
+							af.modifier  = 0;
+							af.location  = 0;
+							af.bitvector = AFF_CHARM;
+							affect_to_char(i, &af);
+
+							/* Hmm, let's give victim a cute robe */
+							act("$n hands you a comfortable looking robe.",FALSE,ch,0,i,TO_VICT);
+							act("$n hands $N a nice comfortable robe.", FALSE, ch, 0, i, TO_NOTVICT);
+							if ((r_num = real_object(COMFY_ROBE)) >= 0) {
+								obj = read_object(r_num, REAL);
+								obj_to_char(obj, i);
+							}
+							/* and let's make him remove his bodywear.. */
+							if (i->equipment[WEAR_BODY]) {
+								obj2=i->equipment[WEAR_BODY];
+								if ((obj2 = unequip_char(i,WEAR_BODY))!=NULL)   {
+									obj_to_char(obj2, i);
+									act("Smiling happily, you stop wearing your current body armor.",FALSE,ch,0,i,TO_VICT);
+									act("Smiling happily, $n stops using $s body armor.", FALSE, i, 0, 0, TO_NOTVICT);
+								}
+							}
+							/* and replace it by something more comfy */
+							sprintf(buf, "comfortable-robe");
+							do_wear(i, buf, "body");
+							return(TRUE);
+						}
+					} /* victim already charmed, boo, someone was quicker than I was */
+				} else {
+					/* victim imm:charm, bummer, can't bug this one */
+					act("$n tries to lure you away, but you're immune to $s charms.",FALSE,ch,0,i,TO_VICT);
+				}
+			} /* victim disconnected PC, or an immort, shame, can't touch them */
+		} /* no more victims, don't fire */
+	} /* feh, noone here to harass */
+} /* end lust_sinner */
+
+int pride_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 91 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {  /* wear wield hold follow grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 3) {  /* south */
+			/* remove weapon */
+			if (ch->equipment[WIELD]) {
+				obj=ch->equipment[WIELD];
+				if ((obj = unequip_char(ch,WIELD))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove held */
+			if (ch->equipment[HOLD]) {
+				obj=ch->equipment[HOLD];
+				if ((obj = unequip_char(ch,HOLD))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove light */
+			if (ch->equipment[WEAR_LIGHT]) {
+				obj=ch->equipment[WEAR_LIGHT];
+				if ((obj = unequip_char(ch,WEAR_LIGHT))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove about */
+			if (ch->equipment[WEAR_ABOUT]) {
+				obj=ch->equipment[WEAR_ABOUT];
+				if ((obj = unequip_char(ch,WEAR_ABOUT))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides south, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51935); /* move char to room two */
+			act("$n strides in from the north.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 4) {  /* west */
+			/* remove headwear */
+			if (ch->equipment[WEAR_HEAD]) {
+				obj=ch->equipment[WEAR_HEAD];
+				if ((obj = unequip_char(ch,WEAR_HEAD))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove shield */
+			if (ch->equipment[WEAR_SHIELD]) {
+				obj=ch->equipment[WEAR_SHIELD];
+				if ((obj = unequip_char(ch,WEAR_SHIELD))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides west, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51934); /* move char to room three */
+			act("$n strides in from the east.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_three(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 3) {  /* south */
+			/* remove bag */
+			if (ch->equipment[WEAR_BACK]) {
+				obj=ch->equipment[WEAR_BACK];
+				if ((obj = unequip_char(ch,WEAR_BACK))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove hands */
+			if (ch->equipment[WEAR_HANDS]) {
+				obj=ch->equipment[WEAR_HANDS];
+				if ((obj = unequip_char(ch,WEAR_HANDS))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides south, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51933); /* move char to room four */
+			act("$n strides in from the north.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_four(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 6) {  /* down */
+			/* remove eyewear */
+			if (ch->equipment[WEAR_EYES]) {
+				obj=ch->equipment[WEAR_EYES];
+				if ((obj = unequip_char(ch,WEAR_EYES))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove armwear */
+			if (ch->equipment[WEAR_ARMS]) {
+				obj=ch->equipment[WEAR_ARMS];
+				if ((obj = unequip_char(ch,WEAR_ARMS))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides down, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51932); /* move char to room five */
+			act("$n strides in from above.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_five(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 1) {  /* north */
+			/* remove rings */
+			if (ch->equipment[WEAR_FINGER_R]) {
+				obj=ch->equipment[WEAR_FINGER_R];
+				if ((obj = unequip_char(ch,WEAR_FINGER_R))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			if (ch->equipment[WEAR_FINGER_L]) {
+				obj=ch->equipment[WEAR_FINGER_L];
+				if ((obj = unequip_char(ch,WEAR_FINGER_L))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove necklaces */
+			if (ch->equipment[WEAR_NECK_1]) {
+				obj=ch->equipment[WEAR_NECK_1];
+				if ((obj = unequip_char(ch,WEAR_NECK_1))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			if (ch->equipment[WEAR_NECK_2]) {
+				obj=ch->equipment[WEAR_NECK_2];
+				if ((obj = unequip_char(ch,WEAR_NECK_2))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove bracelets */
+			if (ch->equipment[WEAR_WRIST_R]) {
+				obj=ch->equipment[WEAR_WRIST_R];
+				if ((obj = unequip_char(ch,WEAR_WRIST_R))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			if (ch->equipment[WEAR_WRIST_L]) {
+				obj=ch->equipment[WEAR_WRIST_L];
+				if ((obj = unequip_char(ch,WEAR_WRIST_L))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove earrings */
+			if (ch->equipment[WEAR_EAR_R]) {
+				obj=ch->equipment[WEAR_EAR_R];
+				if ((obj = unequip_char(ch,WEAR_EAR_R))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			if (ch->equipment[WEAR_EAR_L]) {
+				obj=ch->equipment[WEAR_EAR_L];
+				if ((obj = unequip_char(ch,WEAR_EAR_L))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides north, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51931); /* move char to room six */
+			act("$n strides in from the south.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_six(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 2) {  /* east */
+			/* remove bodywear */
+			if (ch->equipment[WEAR_BODY]) {
+				obj=ch->equipment[WEAR_BODY];
+				if ((obj = unequip_char(ch,WEAR_BODY))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove footwear */
+			if (ch->equipment[WEAR_FEET]) {
+				obj=ch->equipment[WEAR_FEET];
+				if ((obj = unequip_char(ch,WEAR_FEET))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides east, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51930); /* move char to room seven */
+			act("$n strides in from the west.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
+
+int pride_remover_seven(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+	struct obj_data *obj;
+
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {
+		/* wear wield hold grab doorbash run flee */
+   		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
+        act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+
+
+	if (cmd == 1) {  /* north */
+			/* remove legwear */
+			if (ch->equipment[WEAR_LEGS]) {
+				obj=ch->equipment[WEAR_LEGS];
+				if ((obj = unequip_char(ch,WEAR_LEGS))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+			/* remove waistwear */
+			if (ch->equipment[WEAR_WAISTE]) {
+				obj=ch->equipment[WEAR_WAISTE];
+				if ((obj = unequip_char(ch,WEAR_WAISTE))!=NULL)   {
+					obj_to_char(obj, ch);
+				}
+			}
+
+			act("Smirking, $n stops using some equipment.", FALSE, ch, 0, 0, TO_ROOM);
+			act("$n strides north, proceeding on the Path of Pride.", FALSE, ch, 0, 0, TO_ROOM);
+			act("Feeling you don't need it, you decide to remove some stuff.",FALSE,ch,0,0,TO_CHAR);
+			act("You then proceed along the Path of Pride.\n\r",FALSE,ch,0,0,TO_CHAR);
+			char_from_room(ch);
+			char_to_room(ch, 51836); /* move char to The Naked Truth */
+			act("$n strides in from the south.",FALSE,ch,0,0,TO_ROOM);
+			do_look(ch, "", 0);
+        	return(TRUE);
+	}
+	return(FALSE);
+}
 
 /* part of royal rumble proc */
 int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
