@@ -1987,7 +1987,9 @@ void assign_command_pointers(void)
     AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
     AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
     AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
+#ifdef HEDIT_WORKS
     AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
+#endif
     AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
 
     AddCommand("retreat", do_flee, 616, POSITION_SITTING, 1);

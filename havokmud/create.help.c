@@ -73,10 +73,7 @@ void do_hedit(struct char_data *ch, char *argument, int cmd)
     char            name[30];
     struct help_file_u *hlp;
 
-    if (IS_NPC(ch)) {
-        return;
-    }
-    if ((IS_NPC(ch)) || !IS_IMMORTAL(ch)) {
+    if (IS_NPC(ch) || !IS_IMMORTAL(ch)) {
         return;
     }
 
@@ -743,7 +740,7 @@ void HelpEdit(struct char_data *ch, char *arg)
                 help_index = build_help_index(help_fl, &top_of_helpt);
                 send_to_char("Done.\n\r", ch);
             }
-            ch->specials.help = 0;
+            ch->specials.help = NULL;
             break;
         case 100:
             ch->desc->connected = CON_PLYNG;
@@ -751,7 +748,7 @@ void HelpEdit(struct char_data *ch, char *arg)
                 0, TO_ROOM);
             send_to_char("Exiting help editor, file not saved.\n\r", ch);
             GET_POS(ch) = POSITION_STANDING;
-            ch->specials.help = 0;
+            ch->specials.help = NULL;
             break;
         default:
             UpdateHelpMenu(ch);
@@ -963,9 +960,9 @@ int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
         /*
          * now move cursor to where the next help element starts 
          */
-        do
+        do {
             fgets(buf, 81, f);
-        while (*buf != '#');
+        } while (*buf != '#');
 
         /*
          * write edited file 
