@@ -24,6 +24,7 @@
 
 #include "protos.h"
 
+
 void dimd_loop(void);
 void str2ansi(char *p2, char *p1, int start, int stop);
 char *ParseAnsiColors(int UsingAnsi, char *txt);
@@ -2430,7 +2431,9 @@ int _affected_by_s(struct char_data *ch, int skill)
 
 int construct_prompt(char *outbuf, struct char_data *ch)
 {
-    struct room_data *rm;
+
+    struct zone_date 	*zd;
+    struct room_data *rm=0;
     extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
     char tbuf[255],*pr_scan,*mask;
     long l,exp,texp;
@@ -2593,6 +2596,18 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 			*tbuf=0;
 		    }
 		    break;
+		case 'z': /*zone number for immortals*/
+			if(IS_IMMORTAL(ch)){
+				rm = real_roomp(ch->in_room);
+				if (!rm){
+					char_to_room(ch,0);
+					rm = real_roomp(ch->in_room);
+				}
+			sprintf(tbuf,"%ld",rm->zone);
+			} else {
+			*tbuf=0;
+			}
+			break;
 		case 'i':   /* immortal stuff going */
 		    pr_scan++;
 		    if(!IS_IMMORTAL(ch)) {
