@@ -102,7 +102,7 @@ void do_kill(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_kill");
 
-  if ((GetMaxLevel(ch) < SILLYLORD) || IS_NPC(ch)) {
+  if ((GetMaxLevel(ch) < GREATER_GOD) || IS_NPC(ch)) {
     do_hit(ch, argument, 0);
     return;
   }
