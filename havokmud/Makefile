@@ -18,7 +18,8 @@ LD=$(CC)
 ##
 ##  these are architecture dependent flags
 TITANFLAGS = -g -43 -vector_c -safe=ptrs -DTITAN
-MYFLAGS = -ggdb3 -m486 -mno-fp-ret-in-387 
+#MYFLAGS = -ggdb3 -m486 -mno-fp-ret-in-387 
+MYFLAGS = -g -O6 #-Wall #-Werror
 ##
 CFLAGS = $(MYFLAGS) $(CPPFLAGS)
 ##
