@@ -2870,7 +2870,8 @@ void perform_violence(int pulse)
             rec = ch->specials.fighting;
             if(!IS_PC(ch->specials.fighting))
             {
-               while(rec->master)
+//               while(rec->master)
+				for(i = 0; i<4;i++) // do it 4 times, should catch all the legal follower/master sequences
                {
                   if(rec->master->in_room == ch->in_room)
                   {
