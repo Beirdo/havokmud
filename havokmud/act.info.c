@@ -58,6 +58,8 @@ extern char *exits[];
   extern long room_count;
   extern long mob_count;
   extern long obj_count;
+  extern long total_connections;
+  extern long total_max_players;
 extern long SystemFlags;
   extern char *spells[];
   extern int spell_status[];
@@ -2958,6 +2960,10 @@ dlog("in do_who");
       sprintf(tbuf, "\n\r$c0005Total visible gods: $c0015%d\n\r", count);
     else
       sprintf(tbuf, "\n\r$c0005Total visible players: $c0015%d\n\r", count);
+
+    sprintf(tbuf+strlen(tbuf), "$c0005Max connects since last reboot: $c0015%d\n\r", total_connections);
+    sprintf(tbuf+strlen(tbuf), "$c0005Max players online since last reboot: $c0015%d\n\r", total_max_players);
+
     if (strlen(buffer)+strlen(tbuf) < MAX_STRING_LENGTH*2-512)
       strcat(buffer,tbuf);
   } else {                                  /* GOD WHO */
@@ -3808,6 +3814,15 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
   sprintf(buf, "$c0005Total number of objects in game: $c0015%d", obj_count);
   act(buf, FALSE,ch,0,0,TO_CHAR);
 
+  sprintf(buf, "$c0005Total number of connections since last reboot: $c0015%d",
+  			total_connections );
+  act(buf, FALSE,ch,0,0,TO_CHAR);
+
+  sprintf(buf, "$c0005Max. # of players online since last reboot: $c0015%d",
+  			total_max_players );
+  act(buf, FALSE,ch,0,0,TO_CHAR);
+
+
 }
 
 
@@ -3841,7 +3856,7 @@ $c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.\n\r", my_age.year, my_age.
    sprintf(buf,"$c0005You are$c0014 %s\n\r",ArmorDesc(ch->points.armor));
    send_to_char(buf,ch);
 
-   if(GetMaxLevel(ch) > 15)
+   if(GetMaxLevel(ch) > 5)
    {
       sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, \
 $c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR\n\r",

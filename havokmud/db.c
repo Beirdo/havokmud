@@ -44,7 +44,8 @@ long mob_count=0;
 long obj_count=0;
 long total_mbc=0;
 long total_obc=0;
-
+long total_connections=0;
+long total_max_players=0;
 /*
 **  distributed monster stuff
 */
@@ -435,9 +436,9 @@ void build_player_index()
 	     strlen(dummy.name) + 1);
       for (i = 0; *(player_table[nr].name + i) =
 	   LOWER(*(dummy.name + i)); i++);
-      
 
-	
+
+
       for (j=0;j<ABS_MAX_CLASS;j++)
 	   if (dummy.level[j] > 60)
 	      dummy.level[j] = 0;
@@ -459,7 +460,7 @@ void build_player_index()
 	     max = dummy.level[j];
 	    }
 
-	 
+
 	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].name =
 	  (char *)strdup(dummy.name);
 	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].title =
@@ -2410,7 +2411,7 @@ int does_Load(int num, int max ) {
   int temp;
   int temp2;
   char buff[200];
-  
+
   return (TRUE);
 #if 0
   sprintf(buff,"num=%d  max=%d", num, max);
@@ -2421,7 +2422,7 @@ int does_Load(int num, int max ) {
   if (num > max) { /* Maxxed.. but there is a slight chance of loading (GH)*/
     temp = (max / 2) + 1;  /* 20/2 would be a 10% chance of loading..*/
   }else
-    temp = 100 - (num / 2*max) * 100;   
+    temp = 100 - (num / 2*max) * 100;
   temp2 = number(1,101);
   if (temp2 <= temp)
     return TRUE;
@@ -2561,7 +2562,7 @@ void reset_zone(int zone)
 	break;
 
       case 'O': /* read an object */ /*On ground load (GH) */
-	
+
 	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE) {
 	  if (ZCMD.arg3 >= 0 && ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
 	    if((ZCMD.if_flag>0&&ObjRoomCount(ZCMD.arg1,rp)<ZCMD.if_flag) ||
@@ -3336,7 +3337,7 @@ void save_char(struct char_data *ch, sh_int load_room)
       }
     tmp = 0;
   }
-  GET_LEVEL(ch,BARD_LEVEL_IND) = 0; 
+  GET_LEVEL(ch,BARD_LEVEL_IND) = 0;
   //ch->levels[11] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
   if (expand = (ch->desc->pos > top_of_p_file)) {
     strcpy(mode, "a");
@@ -3610,7 +3611,7 @@ void reset_char(struct char_data *ch)
   ch->M_immune = 0;
   ch->susc = 0;
   ch->mult_att = 1.0;
-  
+
   if (!GET_RACE(ch))
     GET_RACE(ch) = RACE_HUMAN;
 
@@ -3624,10 +3625,10 @@ void reset_char(struct char_data *ch)
       GET_LEVEL(ch,i) = 51;
     }
   }
-  
+
   /* Setting Bard level (GH) */
   GET_LEVEL(ch, 11) = 0;
-  
+
   SET_BIT(ch->specials.act, PLR_ECHO);
 
   ch->hunt_dist = 0;
@@ -3744,10 +3745,10 @@ void reset_char(struct char_data *ch)
 
 	if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER))
 	  REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
-	
+
 	if (IS_AFFECTED2(ch,AFF2_AFK))
 	  REMOVE_BIT(ch->specials.affected_by2,AFF2_AFK);
-	
+
 /*
 	Remove bogus flags on mortals
 */

@@ -1203,7 +1203,8 @@ static char *rand_groupname[] = {
            "The God Squad",
            "The Vampire Slayers",
            "The Nobody Crew",         /* 5 */
-           "The Dragon Hunters"       /* 6 */
+           "The Dragon Hunters",       /* 6 */
+           "The Lightning Catchers"
            };
 
 #define MAX_GNAME           5
@@ -1283,6 +1284,19 @@ dlog("in do_group");
 	  act("You really don't want $N in your group.", FALSE, ch, 0, victim, TO_CHAR);
 	  return;
 	}
+	 /* victim stronger?? */
+	 if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
+		 act("$N looks to be too strong to join you.", FALSE, ch, 0, victim, TO_CHAR);
+		 return;
+	 }
+
+	 /* your stronger?? */
+	 if ((GetMaxLevel(ch) - GetMaxLevel(victim))  > 8) {
+		act("$N looks to be too puny and week to join you.", FALSE, ch, 0, victim, TO_CHAR);
+		return;
+	 }
+
+
 	if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) { //Do not let morts group immorts
 	  act("Now now.  That would be CHEATING!",FALSE,ch,0,0,TO_CHAR);
 	  return;
@@ -1353,6 +1367,19 @@ dlog("in do_group");
 	  return;
 
 	}
+	/* victim stronger?? */
+	if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
+	 act("$N looks to be too strong to join you.", FALSE, ch, 0, victim, TO_CHAR);
+	 return;
+	}
+
+	/* your stronger?? */
+	if ((GetMaxLevel(ch) - GetMaxLevel(victim))  > 8) {
+	  act("$N looks to be too puny and week to join you.", FALSE, ch, 0, victim, TO_CHAR);
+	  return;
+	}
+
+
 	if (victim==ch) {
 	act("$n is now a member of $s own group!", FALSE, victim, 0, ch, TO_ROOM);
 	act("You are now a member of your own group!", FALSE, victim, 0, ch, TO_CHAR);
@@ -1763,7 +1790,7 @@ void do_plr_nogossip(struct char_data *ch, char *argument, int cmd)
 {
   char buf[128];
 
-dlog("in do_plr_nogossip");
+dlog("in do_plr_no_yell_gossip");
 
   if (IS_NPC(ch))
     return;
@@ -1772,14 +1799,14 @@ dlog("in do_plr_nogossip");
 
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_NOGOSSIP)) {
-      send_to_char("You can now hear gossips again.\n\r", ch);
+      send_to_char("You can now hear yells again.\n\r", ch);
       REMOVE_BIT(ch->specials.act, PLR_NOGOSSIP);
     } else {
-      send_to_char("From now on, you won't hear gossips.\n\r", ch);
+      send_to_char("From now on, you won't hear yell.\n\r", ch);
       SET_BIT(ch->specials.act, PLR_NOGOSSIP);
     }
   } else {
-    send_to_char("Only the gods can no gossip someone else. \n\r",ch);
+    send_to_char("Only the gods can no yell someone else. \n\r",ch);
   }
 
 }

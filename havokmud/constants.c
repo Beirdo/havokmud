@@ -2867,7 +2867,7 @@ const char *affected_bits[] =
 };
 
 const char *affected_bits2[] =
-{	
+{
 	"Invisible to animals",
 	"Heat Stuff",
 	"Logging",
@@ -3075,7 +3075,7 @@ const char *player_bits[] = {
 	"HUNTING",
 	"DEAF",
 	"ECHO",
-	"NOGOSSIP",
+	"NOYELL",
 	"NOAUCTION",
 	"NONE1",        /*Old NODIMD flag it seems*/
 	"NO-OOC",

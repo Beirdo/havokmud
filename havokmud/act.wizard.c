@@ -5572,10 +5572,10 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
   struct descriptor_data *i;
   extern int Silence;
 
-dlog("in do_gossip");
+dlog("in do_lyell");
 
   if (!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) {
-    send_to_char("You can't shout, gossip or auction.\n\r", ch);
+    send_to_char("You can't shout, yell or auction.\n\r", ch);
     return;
   }
 
@@ -5583,7 +5583,7 @@ dlog("in do_gossip");
       (Silence == 1) &&
       (IS_SET(ch->specials.act, ACT_POLYSELF)))
   {
-    send_to_char("Polymorphed gossiping has been banned.\n\r", ch);
+    send_to_char("Polymorphed yelling has been banned.\n\r", ch);
     send_to_char("It may return after a bit.\n\r", ch);
     return;
   }
@@ -5601,10 +5601,10 @@ dlog("in do_gossip");
   }
 
   if (!(*argument))
-    send_to_char("Gossip? Yes! but what!\n\r", ch);
+    send_to_char("yell? Yes! but what!\n\r", ch);
   else  {
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-      sprintf(buf1,"$c0011You gossip '%s'", argument);
+      sprintf(buf1,"$c0011You yell '%s'", argument);
       act(buf1,FALSE, ch,0,0,TO_CHAR);
     }
 
@@ -5620,7 +5620,7 @@ if (strstr(argument,"lag") || strstr(argument,"LAG") || strstr(argument,"Lag") |
 	/* end lag checks */
 
   {
-    sprintf(buf1, "$c0011[$c0015$n$c0011] gossips '%s'", argument);
+    sprintf(buf1, "$c0011[$c0015$n$c0011] yells '%s'", argument);
     for (i = descriptor_list; i; i = i->next)
       if (i->character != ch && !i->connected &&
 	  (IS_NPC(i->character) ||
@@ -5637,7 +5637,7 @@ if (strstr(argument,"lag") || strstr(argument,"LAG") || strstr(argument,"Lag") |
 		 act(buf1, 0, ch, 0, i->character, TO_VICT);
 	    } else if (GetMaxLevel(i->character) >= LOW_IMMORTAL)
 		  {
-		     sprintf(buf2, "$c0011[$c0015$n$c0011] gossips from zone %d '%s'",
+		     sprintf(buf2, "$c0011[$c0015$n$c0011] yells from zone %d '%s'",
 		     real_roomp(ch->in_room)->zone, argument);
 		     act(buf2, 0, ch, 0, i->character, TO_VICT);
 		  }

@@ -1606,6 +1606,17 @@ dlog("in do_follow");
 	FALSE, ch, 0, ch->master, TO_CHAR);
 
   } else { /* Not Charmed follow person */
+/* victim stronger?? */
+	 if ((GetMaxLevel(leader) - GetMaxLevel(ch)) > 8) {
+		 act("$N looks to be too strong to join you.", FALSE, ch, 0, leader, TO_CHAR);
+		 return;
+	 }
+
+	 /* your stronger?? */
+	 if ((GetMaxLevel(ch) - GetMaxLevel(leader))  > 8) {
+		act("$N looks to be too puny and week to join you.", FALSE, ch, 0, leader, TO_CHAR);
+		return;
+	 }
 
     if (leader == ch) {
       if (!ch->master) {

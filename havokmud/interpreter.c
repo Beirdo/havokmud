@@ -13,7 +13,8 @@
 #define STATE(d) ((d)->connected)
 #define MAX_CMD_LIST 497
 #define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? "-]>>>>" : ((x >= 7 && x<= 9) ? "-]>>>>>" : ((x >= 10 && x<= 12) ? "-]>>>>>>" : ((x >= 13 && x<= 15) ? "-]>>>>>>>" : ((x >= 16 && x<18) ? "-]>>>>>>>>" : ((x >= 18) ? "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
-
+extern long total_connections;
+extern long total_max_players;
 extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern const char  *RaceName[];
 extern const int RacialMax[MAX_RACE+1][MAX_CLASS];
@@ -1249,8 +1250,8 @@ void assign_command_pointers ()
 
   AddCommand("auth", do_auth, 299, POSITION_SLEEPING, LOW_IMMORTAL);
 
-  AddCommand("nogossip",do_plr_nogossip,301,POSITION_RESTING,0);
-  AddCommand("gossip",do_gossip,302,POSITION_RESTING,0);
+  AddCommand("noyell",do_plr_nogossip,301,POSITION_RESTING,0);
+  AddCommand("gossip",do_yell,302,POSITION_RESTING,0);
   AddCommand("noauction",do_plr_noauction,303,POSITION_RESTING,0);
   AddCommand("auction",do_auction,304,POSITION_RESTING,0);
   AddCommand("discon",do_disconnect,305,POSITION_RESTING,LOW_IMMORTAL);
@@ -1448,7 +1449,7 @@ AddCommand("msave",do_msave,494,POSITION_DEAD,53);
 AddCommand("?",do_help,495,POSITION_DEAD,0);
 AddCommand("home",do_home,496,POSITION_DEAD,51);
 AddCommand("wizset",do_wizset,497,POSITION_DEAD,51);
-AddCommand("ooc",do_ooc,497,POSITION_RESTING,51);
+AddCommand("ooc",do_ooc,497,POSITION_RESTING,2);
 AddCommand("noooc",do_plr_noooc,498,POSITION_SLEEPING,2);
 AddCommand("wiznoooc",do_wiznoooc,499,POSITION_SLEEPING,54);
 
@@ -1524,6 +1525,8 @@ AddCommand("beat",do_action,555,POSITION_RESTING,0);
  /* New command for editing gossiping scribe's messages -bwise */
  AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
 
+/* Changing gossip to yell  (GH) */
+AddCommand("yell",do_yell,563,POSITION_RESTING,0);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince
   tag trip grunt imitate hickey torture addict adjust anti  bbl beam
@@ -1669,6 +1672,7 @@ if(strlen(name) > MAX_NAME_LENGTH)
 /* deal with newcomers and other non-playing sockets */
 void nanny(struct descriptor_data *d, char *arg)
 {
+  struct descriptor_data *i;
   char buf[100];
   int player_i, count=0, oops=FALSE, index=0;
   char tmp_name[20];
@@ -1678,12 +1682,13 @@ void nanny(struct descriptor_data *d, char *arg)
   extern struct descriptor_data *descriptor_list;
   extern long SystemFlags;
   extern int plr_tick_count;
-
+  extern long total_connections;
+  extern long total_max_players;
   void do_look(struct char_data *ch, char *argument, int cmd);
   void load_char_objs(struct char_data *ch);
   int load_char(char *name, struct char_file_u *char_element);
   void show_class_selection(struct descriptor_data *d, int r);
-
+  int count_players;
   write(d->descriptor, echo_on, 6);
 
   switch (STATE(d))     {
@@ -3122,6 +3127,16 @@ if ((player_table+i)->name)
     case '1':
       reset_char(d->character);
       sprintf(buf, "Loading %s's equipment", d->character->player.name);
+    total_connections++;
+
+      count_players=1;
+      for (i = descriptor_list; i; i = i->next)
+	        if (!i->connected)
+	  			count_players++;
+
+      if(total_max_players < count_players)
+      	total_max_players = count_players;
+
       log(buf);
       load_char_objs(d->character);
 

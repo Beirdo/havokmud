@@ -80,7 +80,7 @@ void do_report(struct char_data *ch, char *argument, int cmd);
 void do_say(struct char_data *ch, char *argument, int cmd);
 void do_shout(struct char_data *ch, char *argument, int cmd);
 void do_auction(struct char_data *ch, char *argument, int cmd);
-void do_gossip(struct char_data *ch, char *argument, int cmd);
+void do_yell(struct char_data *ch, char *argument, int cmd);
 void do_commune(struct char_data *ch, char *argument, int cmd);
 void do_tell(struct char_data *ch, char *argument, int cmd);
 void do_gtell(struct char_data *ch, char *argument, int cmd);
