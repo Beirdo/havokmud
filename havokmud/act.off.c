@@ -1295,12 +1295,13 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     int             percent;
     char            buf[256];
 
-    if (strcmp(argument, "-skill") == 0) {
+    if (argument && strcmp(argument, "-skill") == 0) {
         sprintf(buf, "Disengage Skill----->%s.\n\r",
                 how_good(ch->skills[SKILL_DISENGAGE].learned));
         send_to_char(buf, ch);
         return;
     }
+
     if ((GET_POS(ch) == POSITION_FIGHTING) && !ch->specials.fighting) {
         stop_fighting(ch);
         send_to_char("You realize you look silly fighting nothing, and "
@@ -1310,6 +1311,7 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
         WAIT_STATE(ch, PULSE_VIOLENCE);
         return;
     }
+
     if (!ch->specials.fighting) {
         send_to_char("You are not fighting.\n\r", ch);
         return;
@@ -1322,11 +1324,13 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
         ch->skills[SKILL_DISENGAGE].learned = 50;
 #endif
     }
+
     percent = number(1, 101);
     percent += (GET_DEX(ch) - GET_DEX(ch->specials.fighting));
     if (IS_AFFECTED(ch->specials.fighting, AFF_PARALYSIS)) {
         percent = 0;
     }
+
     if (percent > ch->skills[SKILL_DISENGAGE].learned) {
         send_to_char("You can't seem to get away.\n\r", ch);
         act("$n tries to back out of combat with $N, but seems to stumble.",
