@@ -4948,16 +4948,12 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
          * then scraps (-1) if fails them all
          */
         } else if (ItemSave(i, dam_type)) {
-            Log("save 1");
             return (0);
         } else if (ItemSave(i, dam_type)) {
-            Log("save 2");
             return (0);
         } else if (ItemSave(i, dam_type)) {
-            Log("save 3");
             return (0);
         } else if (ItemSave(i, dam_type)) {
-            Log("save 4");
             return (0);
         } else {
             return (-1);
