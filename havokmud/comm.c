@@ -71,7 +71,8 @@ extern struct hash_header room_db;      /* In db.c */
 extern struct room_data *room_db;       /* In db.c */
 #endif
 extern char     *login;
-
+extern char     *sector_types[];
+extern char     *room_bits[];
 /*
  * extern int top_of_world; In db.c 
  */
@@ -2792,7 +2793,7 @@ int _affected_by_s(struct char_data *ch, int skill)
 
 void construct_prompt(char *outbuf, struct char_data *ch)
 {
-    struct room_data *rm;
+    struct room_data *rm = 0;
     extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
     char            tbuf[255],
                    *pr_scan,
@@ -3074,6 +3075,23 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                          */
                         strcpy(tbuf, IS_SET(ch->specials.act, PLR_STEALTH) ? 
                                      "On" : "Off");
+                        break;
+                    case 's':
+                        rm = real_roomp(ch->in_room);
+                        if( !rm ) {
+                            strcpy( tbuf, "UNKNOWN" );
+                        } else {
+                            sprinttype(rm->sector_type, sector_types, tbuf);
+                        }
+                        break;
+                    case 'F':
+                        rm = real_roomp(ch->in_room);
+                        if(!rm) {
+                            strcpy(tbuf, "UNKNOWN");
+                        } else {
+                            sprintbit((unsigned long) rm->room_flags,
+                                      room_bits, tbuf);
+                        }
                         break;
                     case 'N':
                         /* 
