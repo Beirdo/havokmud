@@ -5272,7 +5272,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 			return;
 		} else {
 			clan = atoi(arg);
-			if(clan_list[clan].number < 1) {
+			if(clan < 1 || clan > MAX_CLAN) {
 				send_to_char("Unknown clan number.\n\r", ch);
 				return;
 			} else {
