@@ -3873,7 +3873,8 @@ int archer_sub(struct char_data *ch)
              */
             r = range_estimate(ch, missile, 0);
             if (pick_archer_target(ch, r, &td, &a, &b)) {
-                do_fire(ch, td->player.name, 0);
+                sprintf( buf, "fire %s", td->player.name );
+                command_interpreter(ch, buf);
                 return TRUE;
             } else {
                 return FALSE;

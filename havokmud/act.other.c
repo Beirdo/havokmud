@@ -2867,54 +2867,54 @@ void do_auto(struct char_data *ch, char *argument, int cmd)
     switch (cmd) {
     case 576:
         if (IS_SET(ch->specials.act, PLR_AUTOASSIST)) {
-            do_set_flags(ch, "autoassist disable", 0);
+            command_interpreter(ch, "set autoassist disable");
         } else {
-            do_set_flags(ch, "autoassist enable", 0);
+            command_interpreter(ch, "set autoassist enable");
         }
         break;
 
     case 577:
         if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
-            do_set_flags(ch, "autoloot disable", 0);
+            command_interpreter(ch, "set autoloot disable");
         } else {
-            do_set_flags(ch, "autoloot enable", 0);
+            command_interpreter(ch, "set autoloot enable");
         }
         break;
 
     case 578:
         if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
-            do_set_flags(ch, "autogold disable", 0);
+            command_interpreter(ch, "set autogold disable");
         } else {
-            do_set_flags(ch, "autogold enable", 0);
+            command_interpreter(ch, "set autogold enable");
         }
         break;
 
     case 579:
         if (IS_SET(ch->specials.act, PLR_AUTOSPLIT)) {
-            do_set_flags(ch, "autosplit disable", 0);
+            command_interpreter(ch, "set autosplit disable");
         } else {
-            do_set_flags(ch, "autosplit enable", 0);
+            command_interpreter(ch, "set autosplit enable");
         }
         break;
 
     case 580:
         if (IS_SET(ch->specials.act, PLR_AUTOSAC)) {
-            do_set_flags(ch, "autosac disable", 0);
+            command_interpreter(ch, "set autosac disable");
         } else {
-            do_set_flags(ch, "autosac enable", 0);
+            command_interpreter(ch, "set autosac enable");
         }
         break;
 
     case 581:
         if (IS_SET(ch->specials.act, PLR_AUTOEXIT)) {
-            do_set_flags(ch, "autoexits disable", 0);
+            command_interpreter(ch, "set autoexits disable");
         } else {
-            do_set_flags(ch, "autoexits enable", 0);
+            command_interpreter(ch, "set autoexits enable");
         }
         break;
 
     default:
-        do_set_flags(ch, "", 0);
+        command_interpreter(ch, "set");
 
         break;
     }
