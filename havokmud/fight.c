@@ -3655,7 +3655,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   }
 
   	if((Our_Bit == IMM_PIERCE) && (ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1))
-		dam = dam - (int) (dam*GET_LEVEL(ch))/200; // 25% discount on damage taken.
+		dam = dam - (int) (dam*GET_LEVEL(ch,BARBARIAN_LEVEL_IND))/200; // 25% discount on damage taken.
 
 	if (IS_SET(ch->M_immune, Our_Bit)) /* immune overrides boths suspect and resist */
 		dam = -1;
