@@ -1184,27 +1184,30 @@ void load_char_extra(struct char_data *ch)
 	if (!strcmp(p, "in")) { /* setup bamfin */
 	  do_bamfin(ch, s, 0);
 	} else
-	  if (!strcmp(p, "zone")) { /* set zone permisions */
+	if (!strcmp(p, "zone")) { /* set zone permisions */
 	    GET_ZONE(ch) = atoi(s);
 	  } else
-	    if (!strcmp(p, "email")) {  /* set up email finger info */
+	if (!strcmp(p, "email")) {  /* set up email finger info */
 	      char tmp[256];
 	      sprintf(tmp,"email %s",s);
 	      do_set_flags(ch,tmp,0);
 	    } else
-	      if(!strcmp(p,"clan")) { /* Clan info*/
+	if(!strcmp(p,"clan")) { /* Clan info*/
 			char tmp2[256];
 			sprintf(tmp2,"clan %s", s);
 			do_set_flags(ch,tmp2,0);
-			} else
-			   if(!strcmp(p,"hostip")) { /* hostIP*/
-				 ch->specials.hostip = strdup(s);
-	      } else
-	      	      if(!strcmp(p,"rumored")) { /* Clan info*/
-		  			ch->specials.rumor = strdup(s);
-		  			} else
+			}
+        if(!strcmp(p,"hostip")) { /* hostIP*/
+/*           if(*s) {
+       	      if(ch->specials.hostip) free(ch->specials.hostip);
+              ch->specials.hostip = (char *)strdup(s);
+              } */
+	   } else
+	if(!strcmp(p,"rumored")) {
+	//	 ch->specials.rumor = s;
+              } else
 
-		if (!strcmp(p,"setsev")) {      /* setup severity level */
+	if (!strcmp(p,"setsev")) {      /* setup severity level */
 		do_setsev(ch,s,0);
 	} else
 	if (!strcmp(p,"invislev") && GetMaxLevel(ch) > MAX_MORT) {
@@ -1280,16 +1283,16 @@ void write_char_extra( struct char_data *ch)
     fprintf(fp, "clan: %s\n",ch->specials.clan);
   }
   if (ch->specials.hostip) {
-    fprintf(fp, "hostip: %s\n",ch->specials.hostip);
+    fprintf(fp, "hostip:%s\n",ch->specials.hostip);
   }
 
   if (ch->specials.A_list) {
     for (i=0;i<10;i++) {
-      if (GET_ALIAS(ch, i)) {
+      if (GET_ALIAS(ch, i)){ 
 	fprintf(fp, "%d: %s\n", i, GET_ALIAS(ch, i));
       }
     }
-  }
+  }  
   fclose(fp);
 }
 

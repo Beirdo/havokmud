@@ -109,6 +109,9 @@ char *ArmorDesc(int a);
 char *AlignDesc(int a);
 char *DescAttacks(float a);
 
+long CalcPowerLevel(struct char_data *ch);
+char *PowerLevelDesc(long a);
+
 int singular( struct obj_data *o)
 {
 
@@ -1018,7 +1021,7 @@ if (IS_LINKDEAD(i))
       }
 
       if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-      	if (IS_EVIL(i))
+      	if (IS_GOOD(i))
          	strcat(buffer, "$c0015 (White Aura)");
       }
 

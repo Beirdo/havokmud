@@ -2138,13 +2138,11 @@ the\n\r",d);
 
 	load_char_extra(d->character); /*Load extra fromfile*/
 	if(d->character->specials.hostip==NULL)
-
-      sprintf(buf, "%s[%s] has connected."
-      	, GET_NAME(d->character), d->host);
+          sprintf(buf, "%s[%s] has connected."
+                  , GET_NAME(d->character), d->host);
 	else
 	  sprintf(buf, "%s[%s] has connected.\n\rLast connected from[%s]"
       	, GET_NAME(d->character), d->host, d->character->specials.hostip);
-
 
 		if (d->character->specials.hostip)
 		   free(d->character->specials.hostip);

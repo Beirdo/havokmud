@@ -2695,9 +2695,9 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 
     if(IS_IMMORTAL(ch)) {
 		if(finger->specials.hostip==NULL)
-		   sprintf(buf,"$c0005HostIP          : $c0014None");
+		   sprintf(buf,"$c0005HostIP             : $c0014None");
 		 else
-		   sprintf(buf,"$c0005HostIP          : $c0014%-50s",finger->specials.hostip);
+		   sprintf(buf,"$c0005HostIP             : $c0014%-50s",finger->specials.hostip);
 		 strcat(buf,"\n\r");
          send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 	}

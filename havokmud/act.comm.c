@@ -2,7 +2,6 @@
   DaleMUD v2.0	Released 2/1994
   See license.doc for distribution terms.   DaleMUD is based on DIKUMUD
 */
-
 #include <stdio.h>
 #include <string.h>
 
@@ -342,13 +341,14 @@ dlog("in do_commune,think");
 	act(buf1, 0, ch, 0, i->character, TO_VICT);
   }
 }
+#if 0
 void doTell(struct char_data *ch, struct char_data *mob, struct obj_data *obj,char *sentence) {
   char buf[256];
   sprintf(buf,"$c0013[$c0015%s$c0013] tells you '%s'",mob, sentence);
 
-  act(buf,FALSE, ch,mob,obj,TO_CHAR);
+  act(buf,FALSE, ch,0,obj,mob,TO_CHAR);
 }
-
+#endif
 void do_mobTell(struct char_data *ch,char *mob, char *sentence) {
   char buf[256];
   sprintf(buf,"$c0013[$c0015%s$c0013] tells you '%s'",mob, sentence);
