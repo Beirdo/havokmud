@@ -17,9 +17,6 @@ typedef unsigned short int ush_int;
 typedef char    bool;
 typedef char    byte;
 
-/*
- * my new stuff
- */
 #define MAX_CLAN   10
 
 #define ALL_DARK        1

@@ -7070,7 +7070,7 @@ const struct clan clan_list[MAX_CLAN] = {
     {6, "NewClan2", "N2", "No Clan description", 3005},
     {7, "NewClan3", "N3", "No Clan description", 3005},
     {8, "NewClan4", "N4", "No clan description set", 3005},
-    {-1, "Null", "Null", "Null", 3003}
+    {9, "NewClan5", "N5", "No clan description set", 3005},
 };
 
 const char     *languagelist[] = {
