@@ -1260,10 +1260,10 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             vicwait = 0;
             chwait = 2;
             act("$c000RYou attempt to slam $N to the ground, but miss "
-                "$c000Wbadly $c000R, which puts you on the ground instead.",
+                "$c000Wbadly$c000R, which puts you on the ground instead.",
                 FALSE, ch, 0, victim, TO_CHAR);
             act("$c000R$n attempts to ram $s shoulder into you, "
-                "but $e misjudges $c000Wbadly $c000R and ends up sprawled on "
+                "but $e misjudges $c000Wbadly $c000Rand ends up sprawled on "
                 "the ground.",
                 FALSE, ch, 0, victim, TO_VICT);
             act("$c000R$n attempts to slam into $N, but misses $c000Wbadly "
@@ -1282,7 +1282,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 "$c000Wgood position $c000Yto recover",
                 FALSE, ch, 0, victim, TO_VICT);
             act("$c000Y$n attempt to slam into $N, but misses and ends up "
-                "on the ground instead, but in $c000Wgood position"
+                "on the ground instead, but in $c000Wgood position "
                 "$c000Yto scramble and recover.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         } else if(goodbash <= -2) {
