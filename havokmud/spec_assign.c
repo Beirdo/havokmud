@@ -1312,7 +1312,8 @@ void assign_mobiles()
   {45440, starving_man},
   {45443, goblin_chuirgeon},
   {45463, cronus_pool},
-  {45564, GasBreather},		/*Cronus gold dragon*/
+  {45564, FireBreather},	/*Cronus gold dragon*/
+  {45464, cleric_specialist_guildmaster },
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */

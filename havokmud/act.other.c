@@ -219,17 +219,20 @@ dlog("in do_set_prompt");
 
 }
 
-
+/*  New title system.. Can have name as second word in title
+ * @author - Greg Hovey (GH)
+ * @date - May 28, 2002
+ **/
 
 void do_title(struct char_data *ch, char *argument, int cmd)
 {
-   char buf[512], buf2[512];
+   char buf[512];
+	char buf2[512];
 
-
-dlog("in do_title");
+	char temp[512];
+   dlog("in do_title");
 
 /*   char *strdup(char *source); */
-
 
    if (IS_NPC(ch) || !ch->desc)
        return;
@@ -241,39 +244,38 @@ dlog("in do_title");
     if (strlen(argument) > 150) {
       send_to_char("Line too long, truncated\n", ch);
       *(argument + 151) = '\0';
+      //sprintf(buf2,"%s %s", GET_NAME(ch), argument);
+
     }
-	sprintf(buf,"$c0007%s",GET_NAME(ch));
-    if (!strstr(argument,buf)) {
 
-	  sprintf(buf,"%s %s",GET_NAME(ch),argument);
+	sprintf(temp,"%s",argument);
 
-		    if (strlen(buf) > 150) {
-		      send_to_char("Line too long, truncated\n", ch);
-		      *(buf + 151) = '\0';
-		    }
+      argument = one_argument(argument, buf);
+		  argument = one_argument(argument, buf2);
+		send_to_char(CAP(buf2),ch);
+		send_to_char(GET_NAME(ch),ch);
 
-			sprintf(buf2, "Your title has been set to : <%s>\n\r", buf);
-	      send_to_char(buf2, ch);
-
-	  	if (ch->player.title)
-	  	    free(ch->player.title);
-	  	    ch->player.title = strdup(buf);
+		if(strstr(CAP(buf2),GET_NAME(ch))) {  //!strcmp(CAP(buf2),GET_NAME(ch))) {
+			sprintf(buf2, "%s",temp);
+		}  else  {
+			sprintf(buf2, "%s %s",GET_NAME(ch),temp);
+		   }
 
 
-	}  else  {
 
 
-    sprintf(buf2, "Your title has been set to : <%s>\n\r", argument);
-    send_to_char(buf2, ch);
+    sprintf(buf, "Your title has been set to : <%s>\n\r", buf2);//GET_NAME(ch), argument);
+    send_to_char(buf, ch);
 
-	if (ch->player.title)
-	    free(ch->player.title);
-	    ch->player.title = strdup(argument);
-	  }
 
-	}
+
+if (ch->player.title)
+    free(ch->player.title);
+    ch->player.title = strdup(buf2);//strdup(argument);
+  }
 
 }
+
 
 void do_quit(struct char_data *ch, char *argument, int cmd)
 {
@@ -1309,18 +1311,19 @@ dlog("in do_group");
 	  return;
 	}
 	 /* victim stronger?? */
+/*
 	 if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
 		 act("$N looks to be too strong to join you.", FALSE, ch, 0, victim, TO_CHAR);
 		 return;
 	 }
-
+*/
 	 /* your stronger?? */
-	 if ((GetMaxLevel(ch) - GetMaxLevel(victim))  > 8) {
+	 /* if ((GetMaxLevel(ch) - GetMaxLevel(victim))  > 8) {
 		act("$N looks to be too puny and week to join you.", FALSE, ch, 0, victim, TO_CHAR);
-		return;
+	 	return;
 	 }
 
-
+*/
 	if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) { //Do not let morts group immorts
 	  act("Now now.  That would be CHEATING!",FALSE,ch,0,0,TO_CHAR);
 	  return;
@@ -2688,7 +2691,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     if(finger->specials.clan==NULL)
       sprintf(buf,"$c0005Clan info          : $c0014None");
     else
-      sprintf(buf,"$c0005Clan info          : $c0014%-50s",finger->specials.clan);
+      sprintf(buf,"$c0005Clan info          : $c0014%s",CAP(finger->specials.clan));
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
@@ -2696,8 +2699,9 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     if(IS_IMMORTAL(ch)) {
 		if(finger->specials.hostip==NULL)
 		   sprintf(buf,"$c0005HostIP             : $c0014None");
-		 else
-		   sprintf(buf,"$c0005HostIP             : $c0014%-50s",finger->specials.hostip);
+		 else {
+			sprintf(buf,"$c0005HostIP             : $c0014%s","None");//,finger->specials.hostip, strlen(finger->specials.hostip));
+	 	}
 		 strcat(buf,"\n\r");
          send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 	}
@@ -2706,7 +2710,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     if(finger->specials.rumor == NULL)
       sprintf(buf, "$c0005Rumored info       : $c0014None");
     else
-      sprintf(buf,"$c0005Rumored info        : $c0014%-50s",
+      sprintf(buf,"$c0005Rumored info        : $c0014%s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
@@ -2718,6 +2722,25 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 
 }
 /* My own add-ons ;) -Manwe Windmaster */
+char *trim (char *str)
+{
+      char *ibuf, *obuf;
+
+      if (str)
+      {
+            for (ibuf = obuf = str; *ibuf; )
+            {
+                  while (*ibuf && (isspace (*ibuf)))
+                        ibuf++;
+                  if (*ibuf && (obuf != str))
+                        *(obuf++) = ' ';
+                  while (*ibuf && (!isspace (*ibuf)))
+                        *(obuf++) = *(ibuf++);
+            }
+            *obuf = '\0';
+      }
+      return (str);
+}
 
 void do_plr_noooc(struct char_data *ch, char *argument, int cmd)
 {

@@ -2872,7 +2872,7 @@ dlog("in do_who");
               sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
               sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 	    }
 	      else {
 	      switch(GetMaxLevel(person)) {
@@ -2952,17 +2952,17 @@ dlog("in do_who");
               if(!strcmp(GET_NAME(person), "Banon")) {
                 strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
               sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
-	                      person->player.title?person->player.title:"(Null)");
+	                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
     		} else {
                 strcpy(levels+10-(strlen(tbuf)/2),tbuf);
               sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 			  }
 	    }
 #else
 	    sprintf(tbuf, "$c100%d%s", color_cnt,
-		      person->player.title?person->player.title:"(Null)");
+		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
 	  }
 	    if(IS_AFFECTED2(person,AFF2_AFK))
@@ -3092,7 +3092,7 @@ dlog("in do_who");
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 't':
-		  sprintf(ttbuf," %-16s ",(person->player.title?person->player.title:"(null)"));
+		  sprintf(ttbuf," %-16s ",(person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
 		  strcat(tbuf,ttbuf);
 		  break;
 		case 'v':
@@ -4590,6 +4590,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
    char arg1[MAX_STRING_LENGTH], arg2[MAX_STRING_LENGTH];
    int sd, smin, smax, swt, i, max_range = 6, range, rm, nfnd;
    struct char_data *spud;
+	//char *PowerLevelDesc(long a);
 
 dlog("in do_scan");
 
@@ -4712,7 +4713,8 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
    char arg1[MAX_STRING_LENGTH], arg2[MAX_STRING_LENGTH];
    int sd, smin, smax, swt, i, max_range = 6, range, rm, nfnd;
    struct char_data *spud;
-
+	long CalcPowerLevel(struct char_data *ch);
+	char *PowerLevelDesc(long a);
 dlog("in do_scan");
 
 /*
@@ -4753,7 +4755,7 @@ dlog("in do_scan");
      if ((spud = get_char_room_vis(ch, arg1))) {
 
   		sprintf(buf,"$n peers intently at $N.");
-  		sprintf(buf2,"You peer intently at $N.  You sense an aura power of %d",CalcPowerLevel(spud));
+  		sprintf(buf2,"You peer intently at $N.  You sense an aura power of %l",CalcPowerLevel(spud));
   		act(buf, FALSE, ch,0, spud, TO_ROOM);
   		act(buf2, FALSE, ch,0, spud, TO_CHAR);
 
@@ -4808,7 +4810,7 @@ dlog("in do_scan");
 		  	//	sprintf(buf,"[%s]->%s",buf,spud->player.short_descr);
 		   } else {
 		     sprintf(buf,"You sense a %s aura %s %s.\n\r"
-		     ,PowerLevelDesc(CalcPowerLevel(spud)),rng_desc[range],dir_desc[i]);
+		     ,PowerLevelDesc(CalcPowerLevel(spud)), rng_desc[range], dir_desc[i]);
 
 		     //if (IS_IMMORTAL(ch))
 		  	//	sprintf(buf,"[%s]->%s",buf,GET_NAME(spud));
@@ -5095,7 +5097,7 @@ dlog("in do_whoarena");
               sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
               sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 	    }
 	    else {
 	       switch(GetMaxLevel(person)) {
@@ -5166,7 +5168,7 @@ dlog("in do_whoarena");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
               if(real_roomp(ch->in_room)->zone == 124) {
                 sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 	  		  } else {
                  sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,GET_NAME(person)
                       );
@@ -5217,7 +5219,7 @@ dlog("in do_whoarena");
 	    }
 #else
 	    sprintf(tbuf, "$c100%d%s", color_cnt,
-		      person->player.title?person->player.title:"(Null)");
+		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
 	  }
 	    if(IS_AFFECTED2(person,AFF2_AFK))

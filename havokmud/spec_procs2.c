@@ -6382,7 +6382,10 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct
     do_say(guildmaster,"I do not teach heathens!",0);
     return(TRUE);
     }
-
+  if (HasFightingClass(ch)==TRUE) {
+ 	do_say(guildmaster,"Your warrior instincts are rather scary.. Begone...",0);
+    return(FALSE);
+  }
   if (IS_NPC(ch)) {
 	do_say(guildmaster,"What do I look like? An animal trainer?",0);
    return(FALSE);
@@ -6461,6 +6464,126 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct
     return(TRUE);
   }
    return(magic_user(ch, cmd, arg, ch, 0));
+}
+
+int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  char buf[256];
+  int i,percent=0, number=0;
+  struct char_data *guildmaster;
+  extern char *spells[];
+  extern struct spell_info_type spell_info[MAX_SPL_LIST];
+
+
+  if (!AWAKE(ch))
+    return(FALSE);
+
+  if (!cmd) {
+    if (ch->specials.fighting) {
+      return(cleric(ch, cmd, arg, ch, 0));
+    }
+    return(FALSE);
+  }
+
+  if (!ch->skills) return(FALSE);
+
+  if (check_soundproof(ch)) return(FALSE);
+
+  guildmaster =
+    FindMobInRoomWithFunction(ch->in_room, cleric_specialist_guildmaster);
+
+  if (!guildmaster) return(FALSE);
+
+  for(; *arg==' '; arg++); /* ditch spaces */
+
+  if ((cmd==164)||(cmd==170)||cmd==243)
+{
+  if (!HasClass(ch, CLASS_CLERIC)) {
+    do_say(guildmaster,"I do not teach heathens!",0);
+    return(TRUE);
+    }
+  if (HasFightingClass(ch)==TRUE) {
+ 	do_say(guildmaster,"Your warrior instincts are rather scary.. Begone...",0);
+    return(FALSE);
+  }
+  if (IS_NPC(ch)) {
+	do_say(guildmaster,"What do I look like? An animal trainer?",0);
+   return(FALSE);
+  }
+
+     if (!*arg) {
+      sprintf(buf,"You have got %d practice sessions left.\n\r",
+	      ch->specials.spells_to_learn);
+      send_to_char(buf, ch);
+      send_to_char("You can practise any of these spells:\n\r", ch);
+      for(i=0; *spells[i] != '\n'; i++)
+	if (spell_info[i+1].spell_pointer &&
+	    (spell_info[i+1].min_level_cleric<=
+	     GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
+	    (spell_info[i+1].min_level_cleric <=
+	     GetMaxLevel(guildmaster)-10)) {
+
+	    sprintf(buf,"[%d] %-15s %s \n\r",
+		    spell_info[i+1].min_level_cleric,
+		    spells[i],how_good(ch->skills[i+1].learned));
+	  send_to_char(buf, ch);
+	}
+
+      return(TRUE);
+
+    }
+    for (;isspace(*arg);arg++);
+    number = old_search_block(arg,0,strlen(arg),spells,FALSE);
+    if(number == -1) {
+    do_say(guildmaster,"You do not know of this spell.",0);
+      return(TRUE);
+    }
+    if (GET_LEVEL(ch,CLERIC_LEVEL_IND) < spell_info[number].min_level_cleric) {
+	do_say(guildmaster,"You do not know of this spell.",0);
+      return(TRUE);
+    }
+    if (GetMaxLevel(guildmaster)-10 < spell_info[number].min_level_cleric) {
+      do_say(guildmaster, "I don't know of this spell.", 0);
+      return(TRUE);
+    }
+
+    if (GET_GOLD(ch) < SPELL_SPECIAL_COST){
+      do_say(guildmaster,
+	"Ah, but you do not have enough money to pay.",0);
+      return(TRUE);
+    }
+
+    if (ch->specials.spells_to_learn < 4) {
+	do_say(guildmaster,
+	"You do not seem to be able to practice at the moment.",0);
+      return(TRUE);
+    }
+	if (IsSpecialized(ch->skills[number].special)) {
+	do_say(guildmaster,
+	  "You are already proficient in this spell!",0);
+	  return(TRUE);
+	}
+
+   if (HowManySpecials(ch) > MAX_SPECIALS(ch)) {
+      do_say(guildmaster,
+       "You are already specialized in several skills.",0);
+      return(TRUE);
+     }
+
+  if (ch->skills[number].learned < 95) {
+   do_say(guildmaster,
+    "You must fully learn this spell first.",0);
+      return(TRUE);
+    }
+
+
+    do_say(guildmaster,"Here is how you do that...",0);
+    ch->specials.spells_to_learn-=4;
+    GET_GOLD(ch) -=SPELL_SPECIAL_COST;
+    SET_BIT(ch->skills[number].special, SKILL_SPECIALIZED);
+    return(TRUE);
+  }
+   return(cleric(ch, cmd, arg, ch, 0));
 }
 
 int arena_prep_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)  {

@@ -1093,6 +1093,7 @@ int OnlyClass( struct char_data *ch, int class);
 int HasClass(struct char_data *ch, int class);
 int HowManyClasses(struct char_data *ch);
 int BestFightingClass(struct char_data *ch);
+int HasFightingClass(struct char_data *ch);
 int BestThiefClass(struct char_data *ch);
 int BestMagicClass(struct char_data *ch);
 int GetSecMaxLev(struct char_data *ch);
@@ -1398,6 +1399,7 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int RepairGuy( struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int Samah( struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int BitterBlade(struct char_data *ch, int cmd, char *arg,struct obj_data *tobj, int type);

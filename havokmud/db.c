@@ -1082,7 +1082,8 @@ rp = real_roomp(virtual_nr);
 	/* lets see what this does, old style allocations msw */
 #if 0
     if (rp)
-      bzero(rp, sizeof(*rp));
+      bzero(rp, sizeof(struct room_data)
+      //bzero(rp, sizeof(*rp));
     else {
       fprintf(stderr, "Error, room %d not in database!(%d)\n",
 	      virtual_nr, last);
@@ -2989,7 +2990,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 {
   int i;
   int max;
-
+	char buf[100];
 
   GET_SEX(ch) = st->sex;
   ch->player.class = st->class;
@@ -3008,12 +3009,19 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 
   ch->player.short_descr = 0;
   ch->player.long_descr = 0;
-
+//printf(GET_NAME(ch));
+//printf(st->title);
   if (*st->title)       {
     CREATE(ch->player.title, char, strlen(st->title) + 1);
     strcpy(ch->player.title, st->title);
-  }  else
-    GET_TITLE(ch) = 0;
+  }  else {
+	CREATE(ch->player.title, char, strlen(st->name) + 1);
+    strcpy(ch->player.title, st->name);
+  }
+	/*some little fixxes for new title (GH) may28/2002 */
+    if (!strstr(buf,st->name)) {
+		sprintf(ch->player.title,"%s",st->name);
+	}
 
   if (*st->description) {
     CREATE(ch->player.description, char,

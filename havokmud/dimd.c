@@ -1622,7 +1622,7 @@ void construct_who_list(char *buf, int cmd,
               sprintf(levels,"%30s","");
               strcpy(levels+8-((strlen(tbuf)-12)/2),tbuf);
               sprintf(tbuf, "%-28s : %s",levels,
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
             }
             else {
               switch(GetMaxLevel(person)) {
@@ -1641,7 +1641,7 @@ void construct_who_list(char *buf, int cmd,
               sprintf(levels,"%30s","");
               strcpy(levels+8-(strlen(tbuf)/2),tbuf);
               sprintf(tbuf, "%-16s : %s %s",levels,GET_NAME(person),
-                      person->player.title?person->player.title:"(Null)");
+                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
             }
             if(IS_SET(person->specials.affected_by2,AFF2_AFK))
               sprintf(tbuf+strlen(tbuf)," [AFK] ");

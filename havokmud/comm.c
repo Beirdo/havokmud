@@ -633,7 +633,7 @@ memory_check("end 5, begin 6");
     memory_check("BEfore Zone update");
       zone_update();
       if (lawful)
-	gr(s);
+		gr(s);
     }
 
 

@@ -173,13 +173,39 @@ int BestFightingClass(struct char_data *ch)
    return(MAGE_LEVEL_IND);
  if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
    return(SORCERER_LEVEL_IND);
- if (GET_LEVEL(ch, BARD_LEVEL_IND))
-   return (BARD_LEVEL_IND);
   log("Massive error.. character has no recognized class.");
   log(GET_NAME(ch));
   assert(0);
 
   return(1);
+}
+
+/* If the char has a fighting type of class.. return TRUE (GH) */
+int HasFightingClass(struct char_data *ch)
+{
+
+
+ if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
+   return(TRUE);
+ if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+   return(TRUE);
+
+ if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+   return(TRUE);
+ if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+   return(TRUE);
+
+ if (GET_LEVEL(ch, DRUID_LEVEL_IND))
+   return(TRUE);
+ if (GET_LEVEL(ch, MONK_LEVEL_IND))
+   return(TRUE);
+ if (GET_LEVEL(ch, THIEF_LEVEL_IND))
+   return(TRUE);
+ if (GET_LEVEL(ch, BARD_LEVEL_IND))
+   return(TRUE);
+
+
+  return(FALSE);
 }
 
 int BestThiefClass(struct char_data *ch)

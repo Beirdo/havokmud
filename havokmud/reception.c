@@ -1196,16 +1196,16 @@ void load_char_extra(struct char_data *ch)
 			char tmp2[256];
 			sprintf(tmp2,"clan %s", s);
 			do_set_flags(ch,tmp2,0);
-			}
-        if(!strcmp(p,"hostip")) { /* hostIP*/
-/*           if(*s) {
-       	      if(ch->specials.hostip) free(ch->specials.hostip);
-              ch->specials.hostip = (char *)strdup(s);
-              } */
-	   } else
-	if(!strcmp(p,"rumored")) {
-	//	 ch->specials.rumor = s;
-              } else
+
+			} else
+			   if(!strcmp(p,"hostip")) { /* hostIP*/
+				  //for (; isspace(*s); s++);
+				 //ch->specials.hostip = s;//strdup(s);
+	      } else
+	      	      if(!strcmp(p,"rumored")) { /* Clan info*/
+		  			//ch->specials.rumor = s;
+		  			//strdup(s);
+		  			} else
 
 	if (!strcmp(p,"setsev")) {      /* setup severity level */
 		do_setsev(ch,s,0);
@@ -1240,7 +1240,7 @@ void write_char_extra( struct char_data *ch)
   FILE *fp;
   char buf[80];
   int i;
-
+  char *buf2[150];
   sprintf(buf, "rent/%s.aux", GET_NAME(ch));
 
   /*
@@ -1283,16 +1283,21 @@ void write_char_extra( struct char_data *ch)
     fprintf(fp, "clan: %s\n",ch->specials.clan);
   }
   if (ch->specials.hostip) {
-    fprintf(fp, "hostip:%s\n",ch->specials.hostip);
+
+    //fprintf(fp, "hostip: %s\n",ch->specials.hostip);
+  }
+
+	if (ch->specials.rumor) {
+    //fprintf(fp, "hostip: %s\n",ch->specials.hostip);
   }
 
   if (ch->specials.A_list) {
     for (i=0;i<10;i++) {
-      if (GET_ALIAS(ch, i)){ 
+      if (GET_ALIAS(ch, i)){
 	fprintf(fp, "%d: %s\n", i, GET_ALIAS(ch, i));
       }
     }
-  }  
+  }
   fclose(fp);
 }
 

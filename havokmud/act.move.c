@@ -1,4 +1,4 @@
-/*
+ /*
   DaleMUD v2.0	Released 2/1994
   See license.doc for distribution terms.   DaleMUD is based on DIKUMUD
 */

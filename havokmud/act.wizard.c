@@ -129,7 +129,8 @@ dlog("in do_passwd");
    /*
     *  sets the specified user's password.
     */
-
+	if (IS_NPC(ch))
+	  return;
    /*
     *  get user's name:
     */
@@ -4111,8 +4112,8 @@ void CreateOneRoom( int loc_nr)
 
   allocate_room(loc_nr);
   rp = real_roomp(loc_nr);
-  bzero(rp, sizeof(*rp));
-
+  bzero(rp, sizeof(*rp));// changed this to below (GH) may242002
+  //bzero(rp, sizeof(struct room_data));
   rp->number = loc_nr;
   if (top_of_zone_table >= 0) {
     int zone;
@@ -4469,6 +4470,8 @@ void do_drainlevel(struct char_data *ch, char *argument , int cmd)
 
 dlog("in do_drainlevel");
 
+if (IS_NPC(ch))
+	  return;
  argument = one_argument( argument, arg );       /* victim name */
  sscanf(argument,"%d",&numtolose);  /* levels to drain */
 
@@ -4539,7 +4542,8 @@ void do_god_interven(struct char_data *ch, char *argument , int cmd)
 dlog("in do_god_interven");
 
  argument= one_argument(argument,arg);
-
+if (IS_NPC(ch))
+	  return;
  if (!*arg) {
   char buf[255];
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
@@ -4805,7 +4809,8 @@ void do_force_rent(struct char_data *ch, char *argument , int cmd)
 
 
 dlog("in do_forcerent");
-
+if (IS_NPC(ch))
+	  return;
     one_argument( argument, arg );
 
     if ( arg[0] == '\0' )    {
@@ -4897,7 +4902,8 @@ void do_ghost(struct char_data *ch, char *argument , int cmd)
 
 
 dlog("in do_ghost");
-
+if (IS_NPC(ch))
+	  return;
     one_argument( argument, find_name );
 
     if ( find_name[0] == '\0' )    {
