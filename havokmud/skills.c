@@ -3855,7 +3855,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (!(ch->skills[SKILL_BREW].learned)) {
+	if (!(ch->skills[SKILL_SCRIBE].learned)) {
 		send_to_char("You cannot seem to comprehend the intricacies of scribing.\n\r",ch);
 		return;
 	}
