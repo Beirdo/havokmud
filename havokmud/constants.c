@@ -2953,7 +2953,7 @@ const char *extra_bits[] = {
         "ANTI-MONK",
         "ANTI-DRUID",
         "ONLY-CLASS",
-    "unused"
+    "unused",
 	"RARE",
 	"QUEST",
 	"UNIQUE",
