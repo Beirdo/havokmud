@@ -4102,6 +4102,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 {
     char           *buf1;
     char           *buf2;
+    char           *orig;
     int             ventobjrnum = -1;
     struct obj_data *ventobj;
     struct room_data *ventroom;
@@ -4132,25 +4133,26 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
             SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
         }
     }
-
+    orig = strdup(arg);
+    arg = orig;
     arg = get_argument(arg, &buf1);
     arg = get_argument(arg, &buf2);
 
     if (!buf1 || !buf2 || (strcmp(buf1, "vent") && strcmp(buf2, "vent"))) {
+        free( orig );
         return (FALSE);
     }
 
-    if (cmd == 99) {
+    switch(cmd) {
+    case 99:
         /* 
          * open (only with 19 strength)
+         * go to room, do command
          */
         if (GET_STR(ch) == 19) {
-            /* 
-             * go to room, do command
-             */
             char_from_room(ch);
             char_to_room(ch, VENTROOMVNUM);
-            do_open(ch, arg, -1);
+            do_open(ch, orig, -1);
             char_from_room(ch);
             char_to_room(ch, CLOSETROOMVNUM);
             rp->special = 1;
@@ -4159,19 +4161,21 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
                 FALSE, ch, 0, 0, TO_CHAR);
             act("$n attempts to pull open the vent, but fails, chest "
                 "heaving from the exertion.", FALSE, ch, 0, 0, TO_ROOM);
-            return (TRUE);
         }
-    } else if (cmd == 15) {
+        break;
+    case 15:
         /* 
          * look
          * go to room, do command
          */
         char_from_room(ch);
         char_to_room(ch, VENTROOMVNUM);
-        do_look(ch, arg, -1);
+        do_look(ch, orig, -1);
         char_from_room(ch);
         char_to_room(ch, CLOSETROOMVNUM);
-    } else if (cmd == 10 || cmd == 167) {
+        break;
+    case 10:
+    case 167:
         /* 
          * get, take
          * go to room, do command (NO TAKE FLAG on VENT OBJECT)
@@ -4183,7 +4187,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         } else {
             char_from_room(ch);
             char_to_room(ch, VENTROOMVNUM);
-            do_get(ch, arg, -1);
+            do_get(ch, orig, -1);
             char_from_room(ch);
             char_to_room(ch, CLOSETROOMVNUM);
             rp->special = 0;
@@ -4197,24 +4201,25 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
                 SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
             }
         }
-    } else if (cmd == 67) {
+        break;
+    case 67:
         /* 
          * put
          */
         char_from_room(ch);
         char_to_room(ch, VENTROOMVNUM);
-        do_put(ch, arg, -1);
+        do_put(ch, orig, -1);
         char_from_room(ch);
         char_to_room(ch, CLOSETROOMVNUM);
-    } else if (cmd == 100) {
+        break;
+    case 100:
         /*
          * close
          */
         if (IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
             act("Oh, it looks like the vent is already closed.", FALSE,
                 ch, 0, 0, TO_CHAR);
-        }
-        else {
+        } else {
             act("You manage to accidently slam the vent closed, you will "
                 "have to open it again to get back into it.", FALSE, ch, 0,
                 0, TO_CHAR);
@@ -4225,7 +4230,9 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
                 SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
             }
         }
+        break;
     }
+    free(orig);
     return (TRUE);
 }
 
