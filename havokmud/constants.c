@@ -5784,15 +5784,15 @@ const int zoneloc[171] = {1792,
 
 const struct clan clan_list[MAX_CLAN] = {
   {0, "None","None","No description", 3005  },
-  {1, "Exiled", "$c000xe$c000RX$c000xiled", "Exiled from a clan", 3005 },
+  {1, "Exiles", "$c000xe$c000RX$c000xiles", "Exiled from a clan", 3005 },
   {2, "StormCloak","{$c000BS$c000xC}","No clan description set", 3005 },
   {3, "Brothers of Eternal Light","$c000WBoEL$c000w","No clan description set", 3005 },
-  {4, "The Order", "{$c000WO$c000w}", "No clan description set", 3005 },
+  {4, "Order", "{$c000WO$c000w}", "No clan description set", 3005 },
   {5, "Brood", "Brood", "No clan description set", 3005 },
   { 6, "Cult of the Dragon", "CotD", "No clan description set", 3005 },
-  { 7, "Dragon's Dawn", "{DD}", "No clan description set", 3005 },
-  { 8, "The Returners", "Returners", "No clan description set", 3005 },
+  { 7, "Dragon's Dawn", "DD", "No clan description set", 3005 },
+  { 8, "Returners", "Returners", "No clan description set", 3005 },
   {-1, "Null", "Null", "Null", 3003 }
 };
 
-//NOne, exiled, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Dragon's dawn, Returns
+//NOne, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Dragon's Dawn, Returns

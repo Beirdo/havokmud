@@ -11,7 +11,9 @@
 
 
 /* extern variables */
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
 extern struct dex_skill_type dex_app_skill[];
@@ -1701,6 +1703,11 @@ static char *rand_groupname[] = {
 
 dlog("in do_group");
 
+	if(A_NOGROUP(ch)) {
+		send_to_char("The arena rules do not allow groups!\n\r", ch);
+		return;
+	}
+
   only_argument(argument, name);
 
   if (!*name) {
@@ -2041,6 +2048,11 @@ dlog("in do_recite");
   if (!ch->skills)
     return;
 
+	if(A_NOMAGIC(ch)) {
+		send_to_char("The arena rules do not allow you to use spells!\n\r", ch);
+		return;
+	}
+
   three_arg(argument,buf,buf2,buf3);
 
   argument = one_argument(argument,buf);
@@ -2159,6 +2171,12 @@ void do_use(struct char_data *ch, char *argument, int cmd)
   int bits;
 
 dlog("in do_use");
+
+	if(A_NOMAGIC(ch)) {
+		send_to_char("The arena rules do not allow the use of magic!\n\r", ch);
+		return;
+	}
+
 
   three_arg(argument,buf,buf2,buf3);
 
@@ -3430,22 +3448,22 @@ void do_arena(struct char_data *ch, char *argument, int cmd)
 char buf[MAX_STRING_LENGTH];
 
 if (real_roomp(ch->in_room)->zone == 124){
-   send_to_char("You ARE in Arena", ch);
+   send_to_char("You ARE in Arena.", ch);
    return;
    }
 
 if (!MaxArenaLevel){
-   send_to_char("The Arena is closed", ch);
+   send_to_char("The Arena is closed.", ch);
    return;
    }
 
 if (GetMaxLevel(ch) < MinArenaLevel){
-   send_to_char("You're not strong enough to enter this Arena", ch);
+   send_to_char("You're not strong enough to enter this arena.", ch);
    return;
    }
 
 if (GetMaxLevel(ch) > MaxArenaLevel){
-   send_to_char("You're too strong to enter this Arena", ch);
+   send_to_char("You're too strong to enter this arena.", ch);
    return;
    }
   sprintf(buf, "%s just entered the ARENA!\n\r", GET_NAME(ch));
@@ -3455,7 +3473,7 @@ if (GetMaxLevel(ch) > MaxArenaLevel){
   GET_MANA(ch) = GET_MAX_MANA(ch);
   GET_HIT(ch) = GET_MAX_HIT(ch);
   GET_MOVE(ch) = GET_MAX_MOVE(ch);
-  sprintf(buf, "%s dissapears suddently!", GET_NAME(ch));
+  sprintf(buf, "%s disappears suddently!", GET_NAME(ch));
   send_to_room_except(buf, ch->in_room, ch);
   char_from_room(ch);
   char_to_room(ch, ARENA_ENTRANCE);

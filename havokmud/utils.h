@@ -58,12 +58,11 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 #define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || (!IS_SET(real_roomp(room)->room_flags, DARK) || !real_roomp(room)->dark))
 #else
 
-#define IS_DARK(room) (real_roomp(room)->light <= 0 && \
-	(!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || ((IS_SET(real_roomp(room)->room_flags, DARK)) ||  \
-	 IsDarkOutside(real_roomp(room)))))
+#define IS_DARK(room) (!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) && (real_roomp(room)->light <= 0 && \
+		(IS_SET(real_roomp(room)->room_flags, DARK) || IsDarkOutside(real_roomp(room)))))
 
 #define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || \
-	 (!IS_SET(real_roomp(room)->room_flags, DARK) || \
+	 (!IS_SET(real_roomp(room)->room_flags, DARK) && \
 	  !IsDarkOutside(real_roomp(room))))
 
 #endif
@@ -298,6 +297,20 @@ int exit_ok(struct room_direction_data *, struct room_data **);
 
 #define MOUNTED(ch) ((ch)->specials.mounted_on)
 #define RIDDEN(ch) ((ch)->specials.ridden_by)
+
+/* Arena flags */
+#define A_NOGROUP(ch)   ((ArenaNoGroup == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOASSIST(ch,vict)  ((ArenaNoAssist == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) \
+								&& (vict->specials.fighting ? (vict->specials.fighting != ch) : 0))
+#define A_NODISPEL(ch)  ((ArenaNoDispel == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOMAGIC(ch)   ((ArenaNoMagic == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOWSPELLS(ch) ((ArenaNoWSpells == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOSLAY(ch)    ((ArenaNoSlay == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOFLEE(ch)    ((ArenaNoFlee == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOHASTE(ch)   ((ArenaNoHaste == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOPETS(ch)    ((ArenaNoPets == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOTRAVEL(ch)  ((ArenaNoTravel == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+#define A_NOBASH(ch)    ((ArenaNoBash == 1) && (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 
 #if 0
 #define isdigit(ch) (ch >= '0' && ch <= '9')

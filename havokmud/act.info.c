@@ -2282,8 +2282,13 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
 	      ch->specials.spells_to_learn);
   send_to_char(buf, ch);
 
+	if(GET_CLAN(ch) == 0) {
+		send_to_char("$c000pYou do not belong to a clan.\n\r",ch);
+	} else {
+		ch_printf(ch,"$c000pYou belong to the $c000W%s$c000p.\n\r", clan_list[GET_CLAN(ch)].name);
+	}
 
-ch_printf(ch,"$c000pYou belong to the clan $c000W%s.\n\r", clan_list[GET_CLAN(ch)].name);
+
   switch(GET_POS(ch)) {
   case POSITION_DEAD :
     send_to_char("$c0009You are DEAD!\n\r", ch); break;
@@ -2742,24 +2747,36 @@ dlog("in do_who");
 		sprintf(levels,"%32s","");
 		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
 
+		sprintf(tbuf, "%-32s $c0005: $c0007%s",
+				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+/* commented this out becuz %-10s uses up its space for color codes as well,
+ * thus making it necessary to use the same amount of colors for each clan, too
+ * much of a bother imo.   -Lennya
+ */
+
+//		strcpy(levels,tbuf);
+//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//		else if(GET_CLAN(person)>0)
+//			sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//		else
+//			sprintf(bufx, " ");
+//
+//		sprintf(tbuf, "%-32s %50s$c0005: $c0007%s",levels, bufx,
+//					person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+//		sprintf(levels,"%32s","");
+//		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
 
 
-		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-			  sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
-		 else if(GET_CLAN(person)>0)
-			sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-		else
-		 	sprintf(bufx, "");
-		sprintf(tbuf, "%-32s %-6s$c0005: $c0007%s",levels, bufx,
-			person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 	} else {
 		switch(GetMaxLevel(person)) {
 		case 51: sprintf(levels, "Lesser Deity"); break;
 		case 52: sprintf(levels,"Deity"); break;
 		case 53: sprintf(levels, "Greater Deity"); break;
-		case 54:  if (GET_SEX(person) == SEX_MALE){       //if loop checks if the person
-				sprintf(levels, "Lesser God");     //is female or men
-				break;                             //modified by Thyrza 20/06/97
+		case 54:  if (GET_SEX(person) == SEX_MALE){       // if loop checks if the person
+				sprintf(levels, "Lesser God");            // is female or men
+				break;                                    // modified by Thyrza 20/06/97
 				}
 			  else if (GET_SEX(person) == SEX_FEMALE){
 				sprintf(levels, "Lesser Goddess");
@@ -2802,78 +2819,88 @@ dlog("in do_who");
 				sprintf(levels, "Lady");
 				break;
 				}
+		case 59:  if (GET_SEX(person) == SEX_FEMALE){
+				sprintf(levels, "Supreme Lady");
+				break;
+				}
+			  else if (GET_SEX(person) == SEX_MALE) {
+				sprintf(levels,"Supreme Lord");
+				break;
+				}
+			  else {
+				sprintf(levels,"Supreme Thing");
+				break;
+				}
 
-	      case 59:   if (GET_SEX(person) == SEX_FEMALE){
-		sprintf(levels, "Supreme Lady");
-		break;
-	      } else if (GET_SEX(person) == SEX_MALE) {
-		sprintf(levels,"Supreme Lord");
-		break;
-	      } else {
-		sprintf(levels,"Supreme Thing");
-		break;
-	      }
+		case 60: sprintf(levels, "Supreme Being");
+		}
 
-	      case 60: sprintf(levels, "Supreme Being");
-	      }
+		if(!strcmp(GET_NAME(person), "Tsaron"))       // Hardcoded the names of the current
+			sprintf(levels, "Supreme Dictator");      // High council members, this should be
+		else if(!strcmp(GET_NAME(person), "Banon"))   // fixxed with new immortal system code
+			sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
+		else if(!strcmp(GET_NAME(person), "Keirstad"))
+			sprintf(levels, "Lord of Building");
+		else if(!str_cmp(GET_NAME(person), "Ignatius"))
+			sprintf(levels, "Dragon Lord");
+		else if(!str_cmp(GET_NAME(person), "Pentak"))
+			sprintf(levels, "Creator");
 
-	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
-		sprintf(levels, "Supreme Dictator");      // High council members, this should be
-	      else if(!strcmp(GET_NAME(person), "Banon"))    // fixxed with new immortal system code
-		sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
-	      else if(!strcmp(GET_NAME(person), "Keirstad"))
-		sprintf(levels, "Lord of Building");
-	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
-      		sprintf(levels, "Dragon Lord");
-              else if(!str_cmp(GET_NAME(person), "Pentak"))
-                sprintf(levels, "Creator");
-              sprintf(tbuf, "%s",levels);
-              sprintf(levels,"%30s","");
-              if(!strcmp(GET_NAME(person), "Banon")) {
-                strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
+		sprintf(tbuf, "%s",levels);
+		sprintf(levels,"%30s","");
+		if(!strcmp(GET_NAME(person), "Banon")) {
+			strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
+			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
+						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
+//			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//			else if(GET_CLAN(person)>0)
+//				sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//			else
+//				sprintf(bufx, "");
 
-              	if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-			  	   sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
-		  		 else if(GET_CLAN(person)>0)
-			  		sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-			  	else
-			  		sprintf(bufx, "");
+//			sprintf(tbuf, " $c0011%-32s %-12s$c0005: $c0007%s",levels,
+//	                      bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
-              	sprintf(tbuf, " $c0011%-20s $c000w      %-6s$c0005: $c0007%s",levels,
-	                      bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+		} else {
+			strcpy(levels+10-(strlen(tbuf)/2),tbuf);
+			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
+							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+//				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//			else if(GET_CLAN(person)>0)
+//				sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+//			else
+//				sprintf(bufx, "");
 
-    		} else {
-                strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-
-
-				if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-					  sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
-				 else if(GET_CLAN(person)>0)
-						sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-					else
-			  	sprintf(bufx, "");
-
-              sprintf(tbuf, "$c0011%-20s $c000w%-6s$c0005: $c0007%s",levels, bufx,
-                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-			  }
-	    }
+//			sprintf(tbuf, "$c0011%-32s %-12s$c0005: $c0007%s",levels, bufx,
+//					person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+		}
+	}
 #else
-	    sprintf(tbuf, "$c100%d%s", color_cnt,
-		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+	sprintf(tbuf, "$c100%d%s", color_cnt, person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
-	  }
+	}
 
-	  if (IS_SET(person->player.user_flags, NEW_USER))
-	  	    sprintf(tbuf+strlen(tbuf),"$c000G [$c000WNEW$c000G] $c0007");
+	if (IS_SET(person->specials.act, PLR_CLAN_LEADER)) {
+		sprintf(buf," $c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+		sprintf(tbuf+strlen(tbuf),buf);
+	} else if(GET_CLAN(person)>0) {
+		sprintf(buf," $c000W[$c000w%s$c000W]$c000w", clan_list[GET_CLAN(person)].shortname);
+		sprintf(tbuf+strlen(tbuf),buf);
+	}
+
+	if (IS_SET(person->player.user_flags, NEW_USER))
+		sprintf(tbuf+strlen(tbuf),"$c000G [$c000WNEW$c000G]$c0007");
 	    if(IS_AFFECTED2(person,AFF2_AFK))
-	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
+	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK]$c0007");
 	    if(IS_AFFECTED2(person,AFF2_QUEST))
-	      sprintf(tbuf+strlen(tbuf),"$c0008 [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008] $c0007");
+	      sprintf(tbuf+strlen(tbuf),"$c0008 [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008]$c0007");
 
 		if (IS_SET(ch->specials.act, NEW_USER))
 	if (IS_LINKDEAD(person))
-		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD] $c0007");
+		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD]$c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)
 		sprintf(tbuf+strlen(tbuf), "(invis %d)",person->invis_level);
 	    sprintf(tbuf+strlen(tbuf),"\n\r");

@@ -46,7 +46,9 @@ extern struct wis_app_type wis_app[26];
 extern char *room_bits[];
 extern int thaco[MAX_CLASS][ABS_MAX_LVL];
 int can_see_linear(struct char_data *ch, struct char_data *targ, int *rng, int *dr) ;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 int BarbarianToHitMagicBonus ( struct char_data *ch);
 int berserkthaco ( struct char_data *ch);
 int berserkdambonus ( struct char_data *ch, int dam);
@@ -281,6 +283,12 @@ char buf[128];
   } else {
     log("more than 6 people attacking one target");
   }
+	if (A_NOASSIST(ch,vict)) {
+		act("$N is already engaged with someone else!",FALSE,ch,0,vict,TO_CHAR);
+//		stop_fighting(ch);
+		return;
+	}
+
   ch->next_fighting = combat_list;
   combat_list = ch;
 
@@ -1415,6 +1423,8 @@ int SetCharFighting(struct char_data *ch, struct char_data *v)
     if (!(ch->specials.fighting)) {
        set_fighting(ch, v);
        GET_POS(ch) = POSITION_FIGHTING;
+       if(!(ch->specials.fighting))
+			GET_POS(ch) = POSITION_STANDING;
     } else {
        return(FALSE);
     }
@@ -2296,19 +2306,21 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 		}
 
       /* check for the various APPLY_RACE_SLAYER and APPLY_ALIGN_SLAYR here. */
-		for(j=0; j<MAX_OBJ_AFFECT; j++) {
-			if (wielded->affected[j].location == APPLY_RACE_SLAYER) {
-				if (wielded->affected[j].modifier == GET_RACE(v)) {
-					dam *= 2;
+		if(!A_NOSLAY(ch)) {
+			for(j=0; j<MAX_OBJ_AFFECT; j++) {
+				if (wielded->affected[j].location == APPLY_RACE_SLAYER) {
+					if (wielded->affected[j].modifier == GET_RACE(v)) {
+						dam *= 2;
+					}
 				}
-			}
-			if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
-				if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
-					dam *= 2;
-				else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
-					dam *=2;
-				else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
-					dam *= 2;
+				if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
+					if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
+						dam *= 2;
+					else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
+						dam *=2;
+					else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
+						dam *= 2;
+				}
 			}
 		}
 	}
@@ -2418,7 +2430,9 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 	}
 	/* if the victim survives, lets hit him with a weapon spell */
 	if (!dead) {
-		WeaponSpell(ch,v,0,w_type);
+		if(!A_NOWSPELLS(ch)) {
+			WeaponSpell(ch,v,0,w_type);
+		}
 	}
 }
 
@@ -2466,6 +2480,10 @@ void MissileHit(struct char_data *ch, struct char_data *victim, int type)
 
 void hit(struct char_data *ch, struct char_data *victim, int type)
 {
+  if (A_NOASSIST(ch,victim)) {
+	  act("$N is already engaged with someone else!",FALSE,ch,0,victim,TO_CHAR);
+	  return;
+  }
   root_hit(ch, victim, type, damage,FALSE);
 }
 
@@ -2570,11 +2588,13 @@ void perform_violence(int pulse)
                   x /= 2.0;
                }
 
-			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
-				x = x * 2;
+			if(!A_NOHASTE(ch)) {
+				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
+					x = x * 2;
 
-			if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
-				x = x / 2;
+				if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
+					x = x / 2;
+			}
 
 			if(ch->equipment[WIELD]) {
 				//send_to_char("Wielding a weapon",ch);

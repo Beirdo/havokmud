@@ -46,6 +46,9 @@ extern struct str_app_type str_app[];
 
 char EasySummon = 1;
 int MinArenaLevel, MaxArenaLevel, Quadrant = 0;
+int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 
 void do_auth(struct char_data *ch, char *argument, int cmd)
 {
@@ -1483,7 +1486,7 @@ sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%s$c0005], 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
 
-sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0014%s$c0005)]",
+sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0014%s$c0005]",
 	      GET_LEADERSHIP_EXP(k),  clan_list[GET_CLAN(k)].name  );
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
@@ -2458,19 +2461,19 @@ Remember, be careful how you use this command!\n\r",ch);
        } else if (!strcmp(field, "clanleader")) {
              if (!IS_SET(mob->specials.act, PLR_CLAN_LEADER)) {
              	SET_BIT(mob->specials.act, PLR_CLAN_LEADER);
-             	send_to_char("Setting clan leader flag.",ch);
+             	send_to_char("Setting clan leader flag.\n\r",ch);
               } else {
              	REMOVE_BIT(mob->specials.act, PLR_CLAN_LEADER);
-            	send_to_char("Removing clan leader flag",ch);
+            	send_to_char("Removing clan leader flag\n\r",ch);
 			  }
 
        }else if (!strcmp(field, "legend")) {
              if (!IS_SET(mob->specials.act, PLR_LEGEND)) {
              	SET_BIT(mob->specials.act, PLR_LEGEND);
-             	send_to_char("Setting legend flag.",ch);
+             	send_to_char("Setting legend flag.\n\r",ch);
               } else {
              	REMOVE_BIT(mob->specials.act, PLR_CLAN_LEADER);
-            	send_to_char("Removing legend leader flag",ch);
+            	send_to_char("Removing legend leader flag.\n\r",ch);
 			  }
 		  } else if (!strcmp(field, "race")) {
       if (is_number(parmstr)) {
@@ -6779,10 +6782,12 @@ dlog("in do_wclean");
  send_to_char("The Time has stopped while Roger Wilco has swept the world cleaner !\r\n",ch);
 }
 
+/* Arena flags, makes it possible to set conditions in arena  -Lennya 200306009 */
 void do_startarena(struct char_data *ch, char *argument, int cmd)
 {
   char arg1[MAX_INPUT_LENGTH+30], arg2[MAX_INPUT_LENGTH+30], arg3[MAX_INPUT_LENGTH+30];
   int tmp1, tmp2, tmp3;
+  char flag[254], rest[254];
   char buf[MAX_STRING_LENGTH];
 
   dlog("startarena");
@@ -6794,8 +6799,21 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
   argument = one_argument(argument, arg2);
   argument = one_argument(argument, arg3);
 
-  if ((!arg1) || (!arg2) || (!arg3)){
-     send_to_char("Usage: startarena minlevel maxlevel quadrant", ch);
+	if(!strcmp(arg1,"help")) {
+	 send_to_char("Usage: startarena <minlevel> <maxlevel> <quadrant> <flags>\n\r", ch);
+     send_to_char("       flags are optional, divide by spaces:\n\r", ch);
+     send_to_char("       -g  no grouping allowed\n\r", ch);
+     send_to_char("       -a  no assisting in ongoing fights\n\r", ch);
+     send_to_char("       -d  no dispel magic\n\r", ch);
+     send_to_char("       -m  no magic\n\r", ch);
+     send_to_char("       -w  no weapon spells\n\r", ch);
+     send_to_char("       -s  no slay weapons\n\r", ch);
+     send_to_char("       -f  no fleeing\n\r", ch);
+     send_to_char("       -h  no haste\n\r", ch);
+     send_to_char("       -p  no pets\n\r", ch);
+     send_to_char("       -t  no travelling spells\n\r", ch);
+//     send_to_char("       -b  no bash", ch);
+	 send_to_char("Example: startarena 1 50 3 -s -w -f\n\r", ch);
      return;
     }
 
@@ -6804,27 +6822,108 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
    tmp3 = atoi(arg3);
 
    if ((tmp1 > tmp2) || tmp1 < 0 || tmp1 > 60 || tmp2 <0 || tmp2 > 60 || tmp3 > 4 || tmp3 < 0) {
-     send_to_char("Usage: startarena minlevel maxlevel quadrant", ch);
+     send_to_char("Type 'startarena help' for more info.", ch);
      return;
     }
+
+	/* set flags to be FALSE */
+	ArenaNoGroup = ArenaNoAssist = ArenaNoDispel = ArenaNoMagic = 0;
+	ArenaNoWSpells = ArenaNoSlay = ArenaNoFlee = ArenaNoHaste = 0;
+	ArenaNoPets = ArenaNoTravel = ArenaNoBash = 0;
+
+	while (*argument) {
+		argument = one_argument(argument, flag);
+		if (!strcmp(flag, "-g")) {
+			ArenaNoGroup = 1;
+		} else if (!strcmp(flag, "-a")) {
+			ArenaNoAssist = 1;
+			ArenaNoGroup = 1; /* no point in grouping if you can't assist */
+		} else if (!strcmp(flag, "-d")) {
+			ArenaNoDispel = 1;
+		} else if (!strcmp(flag, "-m")) {
+			ArenaNoMagic = 1;
+		} else if (!strcmp(flag, "-w")) {
+			ArenaNoWSpells = 1;
+		} else if (!strcmp(flag, "-s")) {
+			ArenaNoSlay = 1;
+		} else if (!strcmp(flag, "-f")) {
+			ArenaNoFlee = 1;
+		} else if (!strcmp(flag, "-h")) {
+			ArenaNoHaste = 1;
+		} else if (!strcmp(flag, "-p")) {
+			ArenaNoPets = 1;
+		} else if (!strcmp(flag, "-t")) {
+			ArenaNoTravel = 1;
+//		} else if (!strcmp(flag, "-b")) {
+//			ArenaNoBash = 1;
+		} else {
+			send_to_char("Invalid flag entered. Type 'startarena help' for complete listing.\n\r", ch);
+			return;
+		}
+	}
 
    if ((tmp1 == 0 && tmp2 == 0)){
 
        MinArenaLevel = tmp1;
        MaxArenaLevel = tmp2;
 
-       sprintf(buf, "$c0009The Arena is now closed!\n\r");
+       sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
        send_to_all(buf);
-       sprintf(buf, "%s had closed the arena!\n\r", GET_NAME(ch));
+       sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
        log(buf);
        return;
    } else {
        MinArenaLevel = tmp1;
        MaxArenaLevel = tmp2;
        Quadrant = tmp3;
-       sprintf(buf, "$c0009Arena is now open for level %d to %d\n\r", MinArenaLevel, MaxArenaLevel);
+       sprintf(buf, "$c000cThe $c000CArena $c000cis now open for level $c000C%d $c000cto $c000C%d$c000c.\n\r", MinArenaLevel, MaxArenaLevel);
        send_to_all(buf);
-       sprintf(buf, "$c0009Type $c0014Arena$c0009 to enter\n\r");
+			if (ArenaNoGroup == 1) {
+				ArenaNoGroup = 1;
+				sprintf(buf, "$c000cNo groups allowed.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoAssist == 1) {
+				sprintf(buf, "$c000cNo assisting of players.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoDispel == 1) {
+				sprintf(buf, "$c000cDispel magic will not work.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoMagic == 1) {
+				sprintf(buf, "$c000cUse of magic is not allowed.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoWSpells == 1) {
+				sprintf(buf, "$c000cWeapon spells will have no effect.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoSlay == 1) {
+				sprintf(buf, "$c000cSlay weapons will have no effect.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoFlee == 1) {
+				sprintf(buf, "$c000cFleeing from fights is not possible.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoHaste == 1) {
+				sprintf(buf, "$c000cHaste will have no effect.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoPets == 1) {
+				sprintf(buf, "$c000cSummoning pets is not possible.\n\r");
+				send_to_all(buf);
+			}
+			if (ArenaNoTravel == 1) {
+				sprintf(buf, "$c000cTravelling spells are disabled.\n\r");
+				send_to_all(buf);
+			}
+//			if (ArenaNoBash == 1) {
+//				sprintf(buf, "$c000cGrouping in the arena is not allowed.\n\r");
+//				send_to_all(buf);
+//			}
+       sprintf(buf, "$c000cType $c000CArena$c000c to enter\n\r");
        send_to_all(buf);
        sprintf(buf, "%s opened an arena for level %d to %d in quadrant %d", GET_NAME(ch), MinArenaLevel, MaxArenaLevel, Quadrant);
        log (buf);

@@ -18,6 +18,9 @@ void do_find_food( struct char_data *ch, char *arg, int cmd);
 void do_find_water( struct char_data *ch, char *arg, int cmd);
 
 struct spell_info_type spell_info[MAX_SPL_LIST];
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 extern char *dirs[];
 extern struct char_data *character_list;
 extern struct room_data *world;
@@ -1993,6 +1996,10 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
 
    location = target->in_room;
    rp = real_roomp(location);
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
 
    if (GetMaxLevel(target) > MAX_MORT || !rp ||
        IS_SET(rp->room_flags,  PRIVATE | NO_SUM | NO_MAGIC)) {
@@ -2090,6 +2097,10 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      send_to_char ("You can't sense that person anywhere.\n\r",ch);
      return;
    }
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
 
    location = target->in_room;   rp = real_roomp(location);
    if (GetMaxLevel(target) > MAX_MORT ||       !rp ||
@@ -2238,6 +2249,10 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      send_to_char ("You can't sense that person anywhere.\n\r",ch);
      return;
    }
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
    if (target==ch)   {
      send_to_char ("You're already in the room with yourself!\n\r",ch);
      return;
@@ -2676,6 +2691,11 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
 
    if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
      return;
+
+	if (A_NOASSIST(ch,victim)) {
+		act("$N is already engaged with someone else!",FALSE,ch,0,victim,TO_CHAR);
+		return;
+	}
 
     if ((GetMaxLevel(victim) >= LOW_IMMORTAL || IS_IMMORTAL(victim)) &&
          !IS_NPC(victim)) {

@@ -33,7 +33,9 @@ extern char *spell_wear_off_soon_room_msg[];
 extern struct obj_data *object_list;
 extern struct index_data *obj_index;
 extern struct char_data *mem_list;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 /*  internal procedures */
 void SpellWearOffSoon(int s, struct char_data *ch);
 void check_drowning( struct char_data *ch);
@@ -1935,6 +1937,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		}
 	}
 
+	if(A_NOMAGIC(ch)) {
+		send_to_char("The arena rules do not allow the use of magic!\n\r", ch);
+		return;
+	}
+
 	if (cmd!=370 && apply_soundproof(ch))
 		return;
 
@@ -2176,7 +2183,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
 					send_to_char("You are afraid that it could harm your master.\n\r", ch);
 					return;
+				} else if (A_NOASSIST(ch,tar_char)) {
+					act("$N is engaged with someone else, no can do.",FALSE,ch,0,tar_char,TO_CHAR);
+					return;
 				}
+
 			}
 
 			if (cmd == 283) { /* recall */

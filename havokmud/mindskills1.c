@@ -13,7 +13,9 @@
 
 extern struct char_data *character_list;
 extern long SystemFlags;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 void mind_burn(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {

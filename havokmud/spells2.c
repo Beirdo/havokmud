@@ -3531,7 +3531,7 @@ void cast_animal_summon_1( byte level, struct char_data *ch, char *arg,
 void cast_animal_summon_2( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  switch(type) {
+	switch(type) {
   case SPELL_TYPE_POTION:
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:

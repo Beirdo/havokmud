@@ -13,7 +13,9 @@ extern struct room_data *room_db;
 extern struct obj_data  *object_list;
 extern struct char_data *character_list;
 extern long SystemFlags;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 /* For future use in blinding those with infravision who are fireballed
    or otherwise subjected to lotsa heat quickly in dark rooms. */
 
@@ -1803,6 +1805,10 @@ void spell_summon(byte level, struct char_data *ch,
   if ((rp = real_roomp(ch->in_room)) == NULL)
     return;
 
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
   if (IS_SET(rp->room_flags, NO_SUM) || IS_SET(rp->room_flags, NO_MAGIC)) {
     send_to_char("Eldritch wizardry obstructs thee.\n\r", ch);
     return;

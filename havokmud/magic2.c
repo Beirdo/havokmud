@@ -9,7 +9,9 @@ extern struct room_data *world;
 extern struct obj_data  *object_list;
 extern struct char_data *character_list;
 extern long SystemFlags;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 /*
   cleric spells
 */
@@ -928,7 +930,10 @@ void spell_Create_Monster(byte level, struct char_data *ch,
      send_to_char("There isn't enough room in here to summon that.\n\r", ch);
      return;
    }
-
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to summon pets!\n\r", ch);
+		return;
+	}
    if (level <= 5) {
 	mob = read_mobile(16034, VIRTUAL);
 #if 0
@@ -1400,6 +1405,10 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	int check_falling( struct char_data *ch);
 
 	assert(ch && (victim || obj));
+	if(A_NODISPEL(ch)) {
+		send_to_char("The arena rules do not allow the use of dispel magic!\n\r", ch);
+		return;
+	}
 
 	if (obj) {
 		if ( IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE) )
@@ -2218,6 +2227,11 @@ void spell_cacaodemon(byte level, struct char_data *ch,
   struct affected_type af;
 
   assert(ch && victim && obj);
+
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to summon pets!\n\r", ch);
+		return;
+	}
 
    act("$n gestures, and a black cloud of smoke appears", TRUE, ch, 0, 0, TO_ROOM);
    act("$n gestures, and a black cloud of smoke appears", TRUE, ch, 0, 0, TO_CHAR);

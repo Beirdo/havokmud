@@ -23,6 +23,9 @@ extern char *att_kick_kill_victim[];
 extern  char *att_kick_kill_ch[];
 extern struct char_data *character_list;
 extern const char *fight_styles[];
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 
 void do_hit(struct char_data *ch, char *argument, int cmd)
 
@@ -173,6 +176,10 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 
 	if (ch->attackers) {
 		send_to_char("There's no way to reach that back while you're fighting!\n\r", ch);
+		return;
+	}
+	if (A_NOASSIST(ch,victim)) {
+		act("$N is already engaged with someone else!",FALSE,ch,0,victim,TO_CHAR);
 		return;
 	}
 
@@ -439,6 +446,11 @@ dlog("in do_flee");
 		return;
 	}
 
+	if(A_NOFLEE(ch)) {
+		send_to_char("The arena rules do not permit you to flee!\n\r", ch);
+		return;
+	}
+
 	if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK) || IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK) ) {
 		send_to_char("You can think of nothing but the battle!\n\r",ch);
 		return;
@@ -647,6 +659,11 @@ dlog("in do_bash");
 		}
 	}
 
+	if(A_NOBASH(ch)) {
+		send_to_char("The arena rules do not permit you to bash!\n\r", ch);
+		return;
+	}
+
 	only_argument(argument, name);
 
 	if (!(victim = get_char_room_vis(ch, name))) {
@@ -656,6 +673,10 @@ dlog("in do_bash");
 			send_to_char("Bash who?\n\r", ch);
 			return;
 		}
+	}
+	if (A_NOASSIST(ch,victim)) {
+		act("$N is already engaged with someone else!",FALSE,ch,0,victim,TO_CHAR);
+		return;
 	}
 
 	if (victim == ch) {
@@ -2552,10 +2573,10 @@ void do_chat(struct char_data *ch, char *argument, int cmd) {
 	    send_to_char("Hrm... normally, you should CHAT something...\n\r", ch);
 	  else	{
 	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-	      sprintf(buf1,"$c000WYou Chat '$c000r%s$c000W'", argument);
+	      sprintf(buf1,"$c000cYou chat '$c0008%s$c000c'", argument);
 	      act(buf1,FALSE, ch,0,0,TO_CHAR);
 	    }
-	    sprintf(buf1, "$c000W-=$c000r%s$c000W=- chats to the clan '$c000r%s$c000W'",GET_NAME(ch), argument);
+	    sprintf(buf1, "$c000c-=$c0008%s$c000c=- clan chats '$c0008%s$c000c'\n\r",GET_NAME(ch), argument);
 		    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
 		        GET_MOVE(ch) -= 5;
 		        GET_MANA(ch) -= 5;

@@ -11,7 +11,9 @@ extern struct obj_data  *object_list;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern long SystemFlags;
-
+extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
+	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
+	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
 #define STATE(d) ((d)->connected)
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
 
@@ -1045,7 +1047,10 @@ void spell_animal_summon(byte level, struct char_data *ch,
      send_to_char("There isn't enough room in here to summon that.\n\r", ch);
      return;
    }
-
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to summon pets!\n\r", ch);
+		return;
+	}
   if (IS_SET(rp->room_flags, INDOORS)) {
     send_to_char("You can only do this outdoors\n", ch);
     return;
@@ -1140,6 +1145,11 @@ void spell_elemental_summoning(byte level, struct char_data *ch,
   int vnum;
   struct char_data *mob;
   struct affected_type af;
+
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to summon pets!\n\r", ch);
+		return;
+	}
 
   if (affected_by_spell(ch, spell)) {
     send_to_char("You can only do this once per 24 hours\n\r", ch);
@@ -2360,6 +2370,11 @@ void spell_teleport_wo_error(byte level, struct char_data *ch,
   location = victim->in_room;
   rp = real_roomp(location);
 
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
+
   if (GetMaxLevel(victim) > MAX_MORT ||
       !rp ||
       IS_SET(rp->room_flags,  PRIVATE) ||
@@ -2428,6 +2443,10 @@ void spell_portal(byte level, struct char_data *ch,
     send_to_char("The magic fails\n\r", ch);
     return;
   }
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
 
   if (IS_SET(rp->room_flags, NO_SUM) || IS_SET(rp->room_flags, NO_MAGIC)) {
     send_to_char("Eldritch wizardry obstructs thee.\n\r", ch);
