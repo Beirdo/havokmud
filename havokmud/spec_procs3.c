@@ -21,7 +21,6 @@ extern struct weather_data weather_info;
 extern int      top_of_world;
 extern struct int_app_type int_app[26];
 extern char    *pc_class_types[];
-extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern char    *dirs[];
 extern struct QuestItem QuestList[4][IMMORTAL];
 extern int      gSeason;        /* what season is it ? */

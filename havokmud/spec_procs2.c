@@ -22,7 +22,7 @@ extern struct weather_data weather_info;
 extern int      top_of_world;
 extern struct int_app_type int_app[26];
 
-extern struct title_type titles[4][ABS_MAX_LVL];
+extern const struct class_def classes[MAX_CLASS];
 extern char    *dirs[];
 
 extern int      gSeason;
@@ -2887,7 +2887,8 @@ int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
         }
 
     } else if (cmd == GAIN) {
-        if (GET_EXP(ch) < titles[Class][GET_LEVEL(ch, Class) + 1].exp) {
+        if (GET_EXP(ch) < classes[Class].titles[[GET_LEVEL(ch, Class) + 1].exp)
+        {
             send_to_char("You are not yet ready to gain\n\r", ch);
             return (FALSE);
         }
@@ -4504,8 +4505,9 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (GET_EXP(ch) <= titles[DRUID_LEVEL_IND]
-            [GET_LEVEL(ch, DRUID_LEVEL_IND) + 1].exp - 100) {
+        if (GET_EXP(ch) <= 
+            classes[DRUID_LEVEL_IND].
+                titles[GET_LEVEL(ch, DRUID_LEVEL_IND) + 1].exp - 100) {
             send_to_char("You cannot advance now.\n\r", ch);
             return (TRUE);
         } else if (GET_LEVEL(ch, DRUID_LEVEL_IND) == 50) {
@@ -4589,9 +4591,10 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
             if (IS_NPC(ch)) {
                 do_return(ch, "", 0);
             }
-            GET_EXP(ch) = MIN(titles[DRUID_LEVEL_IND]
-                              [(int)GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
-                              GET_EXP(ch));
+            GET_EXP(ch) = 
+                MIN(classes[DRUID_LEVEL_IND].
+                        titles[(int)GET_LEVEL(ch, DRUID_LEVEL_IND)].exp,
+                    GET_EXP(ch));
             send_to_char("Go home\n\r", ch);
             char_from_room(ch);
             char_to_room(ch, rm - 1);
@@ -4612,9 +4615,10 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
                         if (IS_NPC(i)) {
                             do_return(i, "", 0);
                         }
-                        GET_EXP(i) = MAX(titles[DRUID_LEVEL_IND]
-                                         [GET_LEVEL(i, DRUID_LEVEL_IND) +
-                                          1].exp + 1, GET_EXP(i));
+                        GET_EXP(i) = 
+                            MAX(classes[DRUID_LEVEL_IND].
+                                  titles[GET_LEVEL(i, DRUID_LEVEL_IND) + 
+                                         1].exp + 1, GET_EXP(i));
                         GainLevel(i, DRUID_LEVEL_IND);
                         char_from_room(i);
                         char_to_room(i, druidpreproom);
@@ -4675,9 +4679,10 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
             if (IS_NPC(ch)) {
                 do_return(ch, "", 0);
             }
-            GET_EXP(ch) = MIN(titles[MONK_LEVEL_IND]
-                              [(int)GET_LEVEL(ch, MONK_LEVEL_IND)].exp,
-                              GET_EXP(ch));
+            GET_EXP(ch) = 
+                MIN(classes[MONK_LEVEL_IND].
+                       titles[(int)GET_LEVEL(ch, MONK_LEVEL_IND)].exp,
+                    GET_EXP(ch));
             send_to_char("Go home.\n\r", ch);
             char_from_room(ch);
             char_to_room(ch, rm - 1);
@@ -4695,8 +4700,9 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                         if (IS_NPC(i)) {
                             do_return(i, "", 0);
                         }
-                        GET_EXP(i) = MAX(titles[MONK_LEVEL_IND]
-                                         [GET_LEVEL(i, MONK_LEVEL_IND) +
+                        GET_EXP(i) = 
+                            MAX(classes[MONK_LEVEL_IND].
+                                   titles[GET_LEVEL(i, MONK_LEVEL_IND) + 
                                           1].exp + 1, GET_EXP(i));
                         GainLevel(i, MONK_LEVEL_IND);
                         char_from_room(i);
@@ -4754,8 +4760,9 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (GET_EXP(ch) <= titles[MONK_LEVEL_IND]
-                            [GET_LEVEL(ch, MONK_LEVEL_IND) + 1].exp - 100) {
+        if (GET_EXP(ch) <= 
+            classes[MONK_LEVEL_IND].
+                titles[GET_LEVEL(ch, MONK_LEVEL_IND) + 1].exp - 100) {
             send_to_char("You cannot advance now\n\r", ch);
             return (TRUE);
         }

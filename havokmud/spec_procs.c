@@ -33,7 +33,6 @@ extern int      top_of_world;
 extern struct int_app_type int_app[26];
 extern int      RacialMax[][MAX_CLASS];
 
-extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct spell_info_type spell_info[];
 extern int      spell_index[MAX_SPL_LIST];
 extern char    *dirs[];

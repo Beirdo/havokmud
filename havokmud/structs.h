@@ -2241,6 +2241,21 @@ struct spec_proc {
     proc_type       type;
 };
 
+struct title_type {
+    char           *title_m;
+    char           *title_f;
+    long            exp;
+};
+
+struct class_def {
+    char           *abbrev;
+    char           *name;
+    int             thaco[ABS_MAX_LVL];
+    struct skillset skills[256];
+    struct skillset mainskills[64];
+    struct title_type titles[ABS_MAX_LVL];
+};
+
 #endif
 
 /*

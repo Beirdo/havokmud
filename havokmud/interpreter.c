@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <arpa/telnet.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "protos.h"
 
@@ -21,32 +22,32 @@
 
 char *newbie_note[] = {
     "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
-    "along better.\n\r\n\r"
+    "along better at Havok.\n\r\n\r",
     " 1) The immortals of Havok have put alot of time into making Havok as\n\r"
     "    fun as possible, as well as ensuring that Havok is a stable and\n\r"
     "    reliable place to play.  They deserve your respect and courtesy\n\r"
     "    and by playing Havok you agree to show them both.\n\r",
-    " 2) We try to get people to role play, but we do not force you. If\n\r"
-    "    you enjoy role playing please do so, if you do not please do not\n\r"
+    " 2) We try to get people to role play, but we do not force you. If\n\r" 
+    "    you enjoy role playing please do so, if you do not please do not\n\r" 
     "    interfere with those that do.\n\r",
     " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r" 
     "    for solving most of your questions. If you are still confused feel\n\r"
     "    free to ask.\n\r",
-    " 4) Please do not curse over public channels including GOSSIP, SHOUT,\n\r"
-    "    AUCTION, etc.  Punishment for doing so begins with removing your\n\r" 
+    " 3) PLEASE do not curse over public channels including GOSSIP, SHOUT\n\r"
+    "    AUCTION, etc.  Punishment for doing so begins with removing your\n\r"
     "    ability to use public channels.\n\r",
-    " 5) Not all public channels work world wide. YELL and TELL for example\n\r"
-    "    only work in the zone you're in.  There are spells and skills to\n\r"
-    "    communicate world wide if you need them. SHOUT, and OOC are world\n\r"
+    " 4) Not all public channels work world wide. YELL and TELL for example\n\r"
+    "    only work in the zone you're in. There are spells and skills to\n\r"
+    "    communicate world wide if you need them. SHOUT and OOC are world\n\r"
     "    wide and cost you MANA and VITIALITY points.\n\r",
-    " 6) Please do not use 'funny' or 'wacky' names. We try to encourage\n\r" 
-    "    playing, and if you use those type of names it does not help\n\r" 
+    " 5) Please do not use 'funny' or 'wacky' names. We try to encourage\n\r "
+    "    role-playing and if you use those type of names it does not help\n\r" 
     "    matters. Do not use a name that is used in the Forgotten Realms\n\r"
     "    setting (such as Elminster, Drizzit etc..).  There are NPC's that\n\r"
-    "    use these names and it will cause confusion. If you do not abide\n\r" 
+    "    use these names and it will cause confusion. If you do not abide\n\r"
     "    by these rules an immortal might ask you to change your name.\n\r",
-    " 7) Remember that we try to add a bit of realism and things such as\n\r"
-    "    starving to death or dieing of thirst CAN happen.\n\r",
+    " 6) Remember that we try to add a bit of realism and things such as\n\r"
+    "    starving to death or dying of thirst CAN happen.\n\r",
     "\n\r\n\r",
     NULL
 };
@@ -55,15 +56,15 @@ char *racehelp[] = {
     "\n\r"
     "Dwarves:   Shorter. Less Movement. Infravision. Higher con, Lower dex,\n\r"
     "           faster hit point gain.  less damage from poison, racial "
-    "hatreds\n\r"
+        "hatreds\n\r"
     "Moon Elf:  More Movement. Faster Mana gain, Higher dex, Lower con\n\r"
     "           Detect secret doors, racial hatreds, Infra vision\n\r"
     "Gold Elf:  Same as Moon, except more intellengent and less wisdom.\n\r"
     "Wild Elf:  Same as Moon except stronger, less intellengent.\n\r"
     "Sea Elf:   Same as moon except healthier and stronger, less "
-    "dexterious.\n\r",
+        "dexterious.\n\r",
     "Dark Elf:  Same as elves, but higher dex, infravision, class limits "
-    "are\n\r"
+        "are\n\r"
     "           different. Minus to hit in lighted rooms.\n\r"
     "Humans:    Average...Unlimited in all classes only race that is.\n\r"
     "           Least amount of racial hatreds than all classes.\n\r"
@@ -72,21 +73,21 @@ char *racehelp[] = {
     "Halflings: Very short.  Higher dex, Lower str.  Less move, faster hit \n\r"
     "           point gain, less damage from poison. faster move gain\n\r"
     "Rock Gnomes:    Short. Higher intel, Lower wis.. Less move, infravision, "
-    "faster\n\r"
+        "faster\n\r"
     "           mana gain\n\r\n\r"
     "Forest Gnomes: Same as Rock Gnome, except High Wis, Dex, Low Int, Str\n\r"
     "Half-Elves:Infravision, detect secret doors, good move and mana gain, "
-    "large\n\r"
+        "large\n\r"
     "           multi-class selection. Only race that can multi-class\n\r"
     "           the Druid class.\n\r",
     "Half-Orcs: Infravision, high con, low charisma Good move point gain.\n\r"
     "Half-Ogres:Infravision, high strength and con, low dex and intel. Good "
-    "move\n\r"
+        "move\n\r"
     "           and hit point gain. Large size and weight. Cleric, warrior "
-    "classes\n\r"
+        "classes\n\r"
     "           only.\n\r"
     "Half-Giants:Infravision, highest strength bonus, high con, low intel, "
-    "wis and\n\r"
+        "wis and\n\r"
     "            dex. Good hit point and move gain. Very large. Warrior\n\r"
     "            and Barbarian class ONLY. Giants get a hit point boost\n\r"
     "            at level 1.\n\r"
@@ -867,7 +868,6 @@ int commandCount = NELEMS(commandList);
 
 extern long     total_connections;
 extern long     total_max_players;
-extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern const char *RaceName[];
 extern const int RacialMax[MAX_RACE + 1][MAX_CLASS];
 extern char     *motd;
@@ -885,26 +885,19 @@ extern struct room_data *room_db;
 #endif
 extern long     SystemFlags;
 extern long     TempDis;
+extern struct descriptor_data *descriptor_list;
+extern const struct class_def classes[MAX_CLASS];
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
 int             Silence = 0;
 int             plr_tick_count = 0;
 int             MAX_NAME_LENGTH = 11;
-extern char    *classname[];
 char           *Sex[] = { "Neutral", "Male", "Female" };
 
-/*
- * C Functions
- */
-char           *crypt(const char *key, const char *salt);
-ssize_t         write(int fildes, const void *buf, size_t nbyte);
 
 int             pc_num_class(int clss);
-
-/*
- * should be moved to protos.h at in a future release...
- */
+void show_class_selection(struct descriptor_data *d, int r);
 
 /*
  * this is how we tell which race gets which class !
@@ -2159,25 +2152,26 @@ void show_menu(struct descriptor_data *d)
     int             bit;
     char            buf[100];
     char            bufx[1000];
-    char            classes[50];
+    char            cls[50];
     char            mainclass[50];
 
-    sprintf(classes, "%s", "");
+    cls[0] = '\0';
 
     for (bit = 0; bit <= NECROMANCER_LEVEL_IND; bit++) {
         if (HasClass(d->character, pc_num_class(bit))) {
-            strcat(classes, classname[bit]);
+            strcat(cls, classes[bit].abbrev);
         }
     }
-    if (!(strcmp(classes, ""))) {
-        sprintf(classes, "None Selected");
+    if (!(strcmp(cls, ""))) {
+        sprintf(cls, "None Selected");
     }
     sprintf(mainclass, "%s", "");
     if (d->character->specials.remortclass) {
        /*
         * remort == 0 means none picked
         */
-        strcat(mainclass, classname[(d->character->specials.remortclass - 1)]);
+        strcat(mainclass, 
+               classes[(d->character->specials.remortclass - 1)].abbrev);
     }
     if (!(strcmp(mainclass, ""))) {
         sprintf(mainclass, "None Selected");
@@ -2206,7 +2200,7 @@ void show_menu(struct descriptor_data *d)
         strcat(bufx, buf);
     }
 
-    sprintf(buf, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", classes);
+    sprintf(buf, "$c00154) $c0012Class.[$c0015%s$c0012]\n\r", cls);
     strcat(bufx, buf);
 
     sprintf(buf, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", mainclass);
@@ -2244,17 +2238,6 @@ void nanny(struct descriptor_data *d, char *arg)
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
     struct descriptor_data *k;
-    extern struct descriptor_data *descriptor_list;
-    extern long     SystemFlags;
-    extern int      plr_tick_count;
-    extern long     total_connections;
-    extern long     total_max_players;
-    extern const char *class_names[];
-    void            do_look(struct char_data *ch, char *argument, int cmd);
-    void            load_char_objs(struct char_data *ch);
-    int             load_char(char *name,
-                              struct char_file_u *char_element);
-    void            show_class_selection(struct descriptor_data *d, int r);
     int             count_players = 0,
                     bit = 0;
     int             i = 0,
@@ -2312,7 +2295,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
                     if (HasClass(d->character, pc_num_class(chosen))) {
                         sprintf(bufx, "[%2d] %s\n\r", chosen,
-                                class_names[chosen]);
+                                classes[chosen].name);
                         send_to_char(bufx, d->character);
                     }
                 }
@@ -3165,7 +3148,7 @@ void nanny(struct descriptor_data *d, char *arg)
                       d);
             for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
                 if (HasClass(d->character, pc_num_class(chosen))) {
-                    sprintf(bufx, "[%2d] %s\n\r", chosen, class_names[chosen]);
+                    sprintf(bufx, "[%2d] %s\n\r", chosen, classes[chosen].name);
                     send_to_char(bufx, d->character);
                 }
             }

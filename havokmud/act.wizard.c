@@ -42,7 +42,6 @@ extern struct room_data *room_db[];
 #endif
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
-extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct index_data *mob_index;
 extern struct index_data *obj_index;
 extern int      top_of_p_table;
@@ -55,6 +54,7 @@ extern char    *room_bits[];
 extern struct str_app_type str_app[];
 extern char    *motd;
 extern char    *wmotd;
+extern const struct class_def classes[MAX_CLASS];
 
 void           *malloc(size_t size);
 void            free(void *ptr);
@@ -125,7 +125,6 @@ extern char    *player_bits[];
 extern char    *position_types[];
 extern char    *connected_types[];
 extern char    *RaceName[];
-extern const char *class_names[];
 extern struct str_app_type str_app[];
 extern const struct clan clan_list[MAX_CLAN];
 
@@ -1844,7 +1843,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
             ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
-                      class_names[k->specials.remortclass - 1], color1);
+                      classes[k->specials.remortclass - 1].name, color1);
 
             sprintf(buf, "%sBirth : [%s%ld%s]secs, Logon[%s%ld%s]secs, "
                          "Played[%s%d%s]secs",
@@ -4130,7 +4129,6 @@ void do_start(struct char_data *ch)
     }
 
     ch->skills[STYLE_STANDARD].learned = 95;
-    
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         do_group(ch, "all", 202);
     }
@@ -4425,7 +4423,8 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
     } else {
         if (GET_LEVEL(victim, lin_class) < IMPLEMENTOR) {
             gain_exp_regardless(victim,
-                  (titles[lin_class][GET_LEVEL(victim, lin_class) + adv].exp) -
+                  (classes[lin_class].titles[GET_LEVEL(victim, lin_class) + 
+                                             adv].exp) -
                    GET_EXP(victim), lin_class);
 
             send_to_char("Character is now advanced.\n\r", ch);

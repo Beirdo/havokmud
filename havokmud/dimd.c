@@ -61,6 +61,7 @@ extern struct descriptor_data *descriptor_list,
                *next_to_process;
 extern int      maxdesc,
                 avail_descs;
+extern const struct class_def classes[MAX_CLASS];
 
 /*
  * DIMD internally used VARS 
@@ -1629,8 +1630,7 @@ void construct_who_list(char *buf, int cmd,
     struct char_data *person;
     struct descriptor_data *d;
     char            levels[40] = "",
-                    classes[20] = "";
-    extern char    *classname[];
+                    cls[20] = "";
     char            buffer[MAX_STRING_LENGTH],
                     tbuf[MAX_STRING_LENGTH];
     int             i,
@@ -1660,10 +1660,9 @@ void construct_who_list(char *buf, int cmd,
                         if (HasClass(person, bit)) {
                             classn++;
                             total += person->player.level[i];
-                            if (strlen(classes) != 0)
-                                strcat(classes, "/");
-                            sprintf(classes + strlen(classes), "%s",
-                                    classname[i]);
+                            if (strlen(cls) != 0)
+                                strcat(cls, "/");
+                            strcat( cls, classes[i].abbrev);
                         }
                     }
                     if (total <= 0)
@@ -1681,7 +1680,7 @@ void construct_who_list(char *buf, int cmd,
                         strcpy(levels, "Expert");
                     else if (total < 51)
                         strcpy(levels, "Adept");
-                    sprintf(tbuf, "%s %s", levels, classes);
+                    sprintf(tbuf, "%s %s", levels, cls);
                     sprintf(levels, "%30s", "");
                     strcpy(levels + 8 - ((strlen(tbuf) - 12) / 2), tbuf);
                     sprintf(tbuf, "%-28s : %s", levels, 

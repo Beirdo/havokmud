@@ -9,7 +9,6 @@
 #include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
-#include "limits.h"
 #include "poly.h"
 #include "race.h"
 #include "script.h"
@@ -4169,6 +4168,14 @@ char *file_to_string(char *name);
 
 int_func procGetFuncByName( char *name, proc_type type );
 char *procGetNameByFunc( int_func func, proc_type type );
+
+void show_class_skills(struct char_data *ch, char *buffer, int classnum,
+                       int skills);
+void show_skills(struct char_data *ch, char *buffer, 
+                 const struct skillset *skills);
+
+void            do_mobTell2(struct char_data *ch,
+                            struct char_data *mob, char *sentence);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()

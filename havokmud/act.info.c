@@ -71,7 +71,6 @@ extern long     total_max_players;
 extern long     SystemFlags;
 extern char    *spells[];
 extern int      spell_status[];
-extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern const char *connected_types[];
 extern struct radix_list radix_head[];
 extern int      top_of_wizhelpt;
@@ -86,37 +85,15 @@ extern struct weather_data weather_info;
 extern struct time_info_data time_info;
 extern const char *weekdays[];
 extern const char *month_name[];
-extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern char    *RaceNames[];
 extern const char *fight_styles[];
-extern struct skillset warriorskills[];
-extern struct skillset thiefskills[];
-extern struct skillset barbskills[];
-extern struct skillset necroskills[];
-extern struct skillset monkskills[];
-extern struct skillset mageskills[];
-extern struct skillset sorcskills[];
-extern struct skillset clericskills[];
-extern struct skillset druidskills[];
-extern struct skillset paladinskills[];
-extern struct skillset rangerskills[];
-extern struct skillset psiskills[];
 extern struct skillset warninjaskills[];
 extern struct skillset thfninjaskills[];
 extern struct skillset allninjaskills[];
 extern struct skillset loreskills[];
-extern struct skillset mainwarriorskills[];
-extern struct skillset mainthiefskills[];
-extern struct skillset mainbarbskills[];
-extern struct skillset mainnecroskills[];
-extern struct skillset mainmonkskills[];
-extern struct skillset mainmageskills[];
-extern struct skillset mainsorcskills[];
-extern struct skillset mainclericskills[];
-extern struct skillset maindruidskills[];
-extern struct skillset mainpaladinskills[];
-extern struct skillset mainrangerskills[];
-extern struct skillset mainpsiskills[];
+extern const struct clan clan_list[MAX_CLAN];
+extern const char *languagelist[];
+extern const struct class_def classes[MAX_CLASS];
 
 /*
  * extern functions
@@ -171,6 +148,9 @@ char           *DescAttacks(float a);
 
 long            CalcPowerLevel(struct char_data *ch);
 char           *PowerLevelDesc(long a);
+
+
+
 
 int singular(struct obj_data *o)
 {
@@ -2569,10 +2549,6 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
  * Score
  */
 
-extern const struct clan clan_list[MAX_CLAN];
-extern const char *languagelist[];
-extern char    *classname[];
-extern const char *class_names[];
 void do_score(struct char_data *ch, char *argument, int cmd)
 {
     struct time_info_data playing_time;
@@ -2647,10 +2623,10 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         for (x = 0; x < MAX_CLASS; x++) {
             if (HasClass(ch, pc_num_class(x))) {
                 sprintf(buf2, "%s     Level: %s%2d  %-15s%s", color,
-                        color2, GET_LEVEL(ch, x), class_names[x], color);
+                        color2, GET_LEVEL(ch, x), classes[x].name, color);
                 strcat(buf, buf2);
                 sprintf(buf2, "Exp needed: %s%s\n\r", color2,
-                        formatNum((titles[x][GET_LEVEL(ch, x) + 1].exp) -
+                        formatNum((classes[x].titles[GET_LEVEL(ch, x) + 1].exp) -
                                   GET_EXP(ch)));
                 strcat(buf, buf2);
             }
@@ -2664,7 +2640,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     }
 
     ch_printf(ch, "%sYour main character class is a %s%s%s.\n\r", color,
-              color2, class_names[ch->specials.remortclass - 1], color);
+              color2, classes[ch->specials.remortclass - 1].name, color);
 
     ch_printf(ch, "%sYou have killed %s%d%s monsters, and have died %s%d%s "
                   "times. Arena: %s%d%s/%s%d%s\n\r",
@@ -3405,8 +3381,8 @@ char           *GetLevelTitle(struct char_data *ch)
 
         for (i = 0; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i)) {
-                if (titles[i][(int) GET_LEVEL(ch, i)].exp > high) {
-                    high = titles[i][(int) GET_LEVEL(ch, i)].exp;
+                if (classes[i].titles[(int) GET_LEVEL(ch, i)].exp > high) {
+                    high = classes[i].titles[(int) GET_LEVEL(ch, i)].exp;
                     class = i;
                 }
             }
@@ -3419,11 +3395,11 @@ char           *GetLevelTitle(struct char_data *ch)
 #endif
         if (GET_SEX(ch) == SEX_FEMALE) {
             sprintf(buf, "%s%s", color,
-                    titles[class][(int) GET_LEVEL(ch, class)].title_f);
+                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_f);
             return buf;
         } else {
             sprintf(buf, "%s%s", color,
-                    titles[class][(int) GET_LEVEL(ch, class)].title_m);
+                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_m);
             return buf;
         }
     }
@@ -3485,7 +3461,7 @@ char           *PrintTitle(struct char_data *person, char type)
 
         for( i = 0; i < MAX_CLASS; i++ ) {
             sprintf( buffer, "%s$c000B%s%s$c000W%-2d", buffer, 
-                     ( i != 0 ? "." : "" ), classname[i],
+                     ( i != 0 ? "." : "" ), classes[i].abbrev,
                      person->player.level[i] );
         }
 
@@ -3583,8 +3559,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
     char            levelimm[127],
                     immbuf[127];
 
-    char            classes[20] = "";
-    extern char    *classname[];
+    char            cls[20] = "";
     int             i,
                     total,
                     classn;
@@ -3703,18 +3678,17 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                  * Get mortal class titles
                  */
                 if (!IS_IMMORTAL(person)) {
-                    sprintf(classes, "%s", "");
+                    sprintf(cls, "%s", "");
                     for (bit = 1, i = total = classn = 0;
                          i <= CLASS_COUNT;
                          i++, bit <<= 1) {
                         if (HasClass(person, bit)) {
                             classn++;
                             total += person->player.level[i];
-                            if (strlen(classes) != 0) {
-                                strcat(classes, "/");
+                            if (strlen(cls) != 0) {
+                                strcat(cls, "/");
 							}
-                            sprintf(classes + strlen(classes), "%s",
-                                    classname[i]);
+                            strcat( cls, classes[i].abbrev );
                         }
                     }
                 }
@@ -3744,12 +3718,12 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                     if (GET_EXP(person) > 200000000 ||
                         IS_SET(person->specials.act, PLR_LEGEND)) {
                         sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
-                                GetLevelTitle(person), classes, color,
+                                GetLevelTitle(person), cls, color,
                                 PrintTitle(person, type),
                                 SPECIAL_FLAGS(ch, person));
                     } else {
                         sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
-                                GetLevelTitle(person), classes, color,
+                                GetLevelTitle(person), cls, color,
                                 PrintTitle(person, type),
                                 SPECIAL_FLAGS(ch, person));
                     }
@@ -3758,12 +3732,12 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                     if (GET_EXP(person) > 200000000 ||
                         IS_SET(person->specials.act, PLR_LEGEND)) {
                         sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
-                                GetLevelTitle(person), classes, color,
+                                GetLevelTitle(person), cls, color,
                                 PrintTitle(person, type),
                                 SPECIAL_FLAGS(ch, person));
                     } else {
                         sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
-                                GetLevelTitle(person), classes, color,
+                                GetLevelTitle(person), cls, color,
                                 PrintTitle(person, type),
                                 SPECIAL_FLAGS(ch, person));
                     }
@@ -4240,9 +4214,10 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
          * 8/24/94
          */
         sprintf(buf2, "[%2d] %9ld-%-9ld : %s\n\r", i,
-                titles[class][i].exp, titles[class][i + 1].exp,
+                classes[class].titles[i].exp, classes[class].titles[i + 1].exp,
                 (GET_SEX(ch) == SEX_FEMALE ?
-                 titles[class][i].title_f : titles[class][i].title_m));
+                 classes[class].titles[i].title_f : 
+                 classes[class].titles[i].title_m));
         /*
          * send_to_char(buf, ch);
          */
@@ -5200,15 +5175,94 @@ int MobLevBonus(struct char_data *ch)
     return (t);
 }
 
+void show_class_skills(struct char_data *ch, char *buffer, int classnum,
+                       int skills)
+{
+    char            buf[254];
+
+    if( classnum > MAX_CLASS ) {
+        send_to_char( "I'm confused, I don't recognize that class.", ch );
+        return;
+    }
+
+    if (!HasClass(ch, 1 << classnum)) {
+        sprintf( buf, "I bet you think you're a %s.\n\r", 
+                 classes[classnum].name );
+        send_to_char(buf, ch);
+        return;
+    }
+
+    if( classnum == SORCERER_LEVEL_IND ) {
+        sprintf(buf, "You can memorize one spell %d times, with a total "
+                     "of %d spells memorized.\n\r"
+                     "You currently have %d spells memorized.\n\r"
+                     "Your spellbook holds these spells:\n\r",
+                MaxCanMemorize(ch, 0), TotalMaxCanMem(ch),
+                TotalMemorized(ch));
+    } else if( skills ) {
+        sprintf( buf, "You can learn these %s skills:\n\r", 
+                 classes[classnum].name );
+    } else {
+        strcpy( buf, "You have knowledge of these skills:\n\r" );
+    }
+    strcat( buffer, buf );
+
+    show_skills( ch, buffer, classes[classnum].skills );
+
+    if (ch->specials.remortclass == classnum + 1) {
+        if( skills ) {
+            sprintf( buf, "\n\rSince you picked %s as your main class, you get"
+                          "these bonus skills:\n\r", classes[classnum].name );
+            strcat(buffer, buf);
+        }
+
+        show_skills( ch, buffer, classes[classnum].mainskills );
+    }
+}
+
+void show_skills(struct char_data *ch, char *buffer, 
+                 const struct skillset *skills)
+{
+    int             i;
+    char            buf[254],
+                    temp[20];
+    int             sorc;
+
+    if( skills == classes[SORCERER_LEVEL_IND].skills ) {
+        sorc = TRUE;
+    } else {
+        sorc = FALSE;
+    }
+
+    for( i = 0; skills[i].level != -1; i++ ) {
+        sprintf(buf, "[%-2d] %-30s %-15s", skills[i].level, skills[i].name,
+                how_good(ch->skills[skills[i].skillnum].learned));
+
+        if (IsSpecialized(ch->skills[skills[i].skillnum].special)) {
+            strcat(buf, " (special)");
+        }
+
+        if (sorc && MEMORIZED(ch, skills[i].skillnum)) {
+            sprintf(temp, " [x%d]", ch->skills[skills[i].skillnum].nummem);
+            strcat(buf, temp);
+        }
+
+        strcat(buf, " \n\r");
+        if (strlen(buf) + strlen(buffer) > (MAX_STRING_LENGTH * 2) - 2) {
+            break;
+        }
+        strcat(buffer, buf);
+    }
+}
+
 void do_show_skill(struct char_data *ch, char *arg, int cmd)
 {
-    char            buf[254],
-                    buffer[MAX_STRING_LENGTH];
-    int             i = 0;
-
-    dlog("in do_show_skill");
+    char buffer[MAX_STRING_LENGTH*2];
+    int  index;
 
     buffer[0] = '\0';
+
+    dlog("in do_show_skill");
 
     if (!ch->skills) {
         return;
@@ -5229,671 +5283,71 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     case 'W':
     case 'f':
     case 'F':
-        {
-            if (!HasClass(ch, CLASS_WARRIOR)) {
-                send_to_char("I bet you think you're a fighter.\n\r", ch);
-                return;
-            }
-            send_to_char("You can learn these warrior skills:\n\r", ch);
-            while (warriorskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", warriorskills[i].level,
-                      warriorskills[i].name,
-                      how_good(ch->skills[warriorskills[i].skillnum].learned));
-                if (IsSpecialized
-                    (ch->skills[warriorskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked warrior as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainwarriorskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainwarriorskills[i].level,
-                            mainwarriorskills[i].name,
-                           how_good(
-                            ch->skills[mainwarriorskills[i].skillnum].learned));
-                    if (IsSpecialized(
-                            ch->skills[mainwarriorskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = WARRIOR_LEVEL_IND;
         break;
 
     case 't':
-    case 'T':{
-            if (!HasClass(ch, CLASS_THIEF)) {
-                send_to_char("I bet you think you're a thief.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r\n\r", ch);
-            while (thiefskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", thiefskills[i].level,
-                        thiefskills[i].name,
-                        ((IS_SET(ch->skills[thiefskills[i].skillnum].flags,
-                                 SKILL_KNOWN)) ||
-                         (!strcmp(thiefskills[i].name, "steal"))) ?
-                         (how_good(
-                                ch->skills[thiefskills[i].skillnum].learned)) :
-                         " (not learned)");
-                if (IsSpecialized
-                    (ch->skills[thiefskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == THIEF_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked thief as your main class,"
-                               " you get these bonus skills:\n\r");
-                while (mainthiefskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainthiefskills[i].level,
-                            mainthiefskills[i].name,
-                           how_good(
-                             ch->skills[mainthiefskills[i].skillnum].learned));
-                    if (IsSpecialized
-                        (ch->skills[mainthiefskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'T':
+        index = THIEF_LEVEL_IND;
         break;
+
     case 'M':
-    case 'm':{
-            if (!HasClass(ch, CLASS_MAGIC_USER)) {
-                send_to_char("I bet you think you're a magic-user.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (mageskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", mageskills[i].level,
-                        mageskills[i].name,
-                        how_good(ch->skills[mageskills[i].skillnum].learned));
-                if (IsSpecialized(ch->skills[mageskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == MAGE_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked mage as your main class, "
-                               "you get these bonus skills:\n\r");
-                while (mainmageskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainmageskills[i].level,
-                            mainmageskills[i].name,
-                            how_good(ch->skills[mainmageskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainmageskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'm':
+        index = MAGE_LEVEL_IND;
         break;
+
     case 'C':
     case 'c':
-        {
-            if (!HasClass(ch, CLASS_CLERIC)) {
-                send_to_char("I bet you think you're a cleric.\n\r", ch);
-                return;
-            }
-            while (clericskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", clericskills[i].level,
-                        clericskills[i].name,
-                        how_good(ch->skills[clericskills[i].skillnum].learned));
-                if (IsSpecialized
-                    (ch->skills[clericskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == CLERIC_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked cleric as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainclericskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainclericskills[i].level,
-                            mainclericskills[i].name,
-                            how_good(ch->skills[mainclericskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainclericskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = CLERIC_LEVEL_IND;
         break;
 
     case 'D':
     case 'd':
-        {
-            if (!HasClass(ch, CLASS_DRUID)) {
-                send_to_char("I bet you think you're a druid.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (druidskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", druidskills[i].level,
-                        druidskills[i].name,
-                        how_good(ch->skills[druidskills[i].skillnum].
-                                 learned));
-                if (IsSpecialized
-                    (ch->skills[druidskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == DRUID_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked druid as your main class, "
-                               "you get these bonus skills:\n\r");
-                while (maindruidskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            maindruidskills[i].level,
-                            maindruidskills[i].name,
-                            how_good(ch->skills[maindruidskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[maindruidskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = DRUID_LEVEL_IND;
         break;
 
     case 'K':
-    case 'k':{
-            if (!HasClass(ch, CLASS_MONK)) {
-                send_to_char("I bet you think you're a monk.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (monkskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", monkskills[i].level,
-                        monkskills[i].name,
-                        /*
-                         * kludged a bit to get rid of the dex bonus to
-                         * five skills
-                         */
-                        (IS_SET
-                         (ch->skills[monkskills[i].skillnum].flags,
-                          SKILL_KNOWN)) ? (how_good(ch->
-                                                    skills[monkskills[i].
-                                                           skillnum].
-                                                    learned)) :
-                        " (not learned)");
-                if (IsSpecialized
-                    (ch->skills[monkskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == MONK_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked monk as your main class, "
-                               "you get these bonus skills:\n\r");
-                while (mainmonkskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainmonkskills[i].level,
-                            mainmonkskills[i].name,
-                            how_good(ch->skills[mainmonkskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainmonkskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'k':
+        index = MONK_LEVEL_IND;
         break;
 
     case 'b':
     case 'B':
-        {
-            if (!HasClass(ch, CLASS_BARBARIAN)) {
-                send_to_char("I bet you think you're a Barbarian.\n\r",
-                             ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (barbskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", barbskills[i].level,
-                        barbskills[i].name,
-                        how_good(ch->skills[barbskills[i].skillnum].learned));
-                if (IsSpecialized
-                    (ch->skills[barbskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked barbarian as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainbarbskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainbarbskills[i].level,
-                            mainbarbskills[i].name,
-                            how_good(ch->skills[mainbarbskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainbarbskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = BARBARIAN_LEVEL_IND;
         break;
 
     case 'n':
     case 'N':
-        {
-            if (!HasClass(ch, CLASS_NECROMANCER)) {
-                send_to_char("I bet you think you're a necromancer.\n\r",
-                             ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (necroskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", necroskills[i].level,
-                        necroskills[i].name,
-                        how_good(ch->skills[necroskills[i].skillnum].learned));
-                if (IsSpecialized
-                    (ch->skills[necroskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-				}
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-				}
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked necromancer as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainnecroskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainnecroskills[i].level,
-                            mainnecroskills[i].name,
-                            how_good(ch->skills[mainnecroskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainnecroskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-					}
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-                    }
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = NECROMANCER_LEVEL_IND;
         break;
 
     case 'S':
     case 's':
-        {
-            if (!HasClass(ch, CLASS_SORCERER)) {
-                send_to_char("I bet you think you're a sorcerer.\n\r", ch);
-                return;
-            }
-            while (sorcskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", sorcskills[i].level,
-                        sorcskills[i].name,
-                        how_good(ch->skills[sorcskills[i].skillnum].
-                                 learned));
-                if (IsSpecialized
-                    (ch->skills[sorcskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-                }
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-                }
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == SORCERER_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked sorcerer as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainsorcskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainsorcskills[i].level,
-                            mainsorcskills[i].name,
-                            how_good(ch->
-                                     skills[mainsorcskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainsorcskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-                    }
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-                    }
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+        index = SORCERER_LEVEL_IND;
         break;
 
     case 'p':
-    case 'P':{
-            if (!HasClass(ch, CLASS_PALADIN)) {
-                send_to_char("I bet you think you're a paladin.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these skills:\n\r", ch);
-            while (paladinskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", paladinskills[i].level,
-                        paladinskills[i].name,
-                        how_good(ch->skills[paladinskills[i].skillnum].
-                                 learned));
-                if (IsSpecialized
-                    (ch->skills[paladinskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-                }
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-                }
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked paladin as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainpaladinskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainpaladinskills[i].level,
-                            mainpaladinskills[i].name,
-                            how_good(ch->
-                                     skills[mainpaladinskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainpaladinskills[i].skillnum].
-                         special)) {
-                        strcat(buf, " (special)");
-                    }
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-                    }
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'P':
+        index = PALADIN_LEVEL_IND;
         break;
 
     case 'R':
-    case 'r':{
-            if (!HasClass(ch, CLASS_RANGER)) {
-                send_to_char("I bet you think you're a ranger.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these spells:\n\r", ch);
-            while (rangerskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", rangerskills[i].level,
-                        rangerskills[i].name,
-                        how_good(ch->skills[rangerskills[i].skillnum].
-                                 learned));
-                if (IsSpecialized
-                    (ch->skills[rangerskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-                }
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-                }
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked ranger as your main "
-                               "class, you get these bonus skills:\n\r");
-                while (mainrangerskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainrangerskills[i].level,
-                            mainrangerskills[i].name,
-                            how_good(ch->
-                                     skills[mainrangerskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainrangerskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-                    }
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-                    }
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'r':
+        index = RANGER_LEVEL_IND;
         break;
 
     case 'i':
-    case 'I':{
-            if (!HasClass(ch, CLASS_PSI)) {
-                send_to_char("I bet you think you're a psionist.\n\r", ch);
-                return;
-            }
-            send_to_char("Your class can learn these spells:\n\r", ch);
-            while (psiskills[i].level != -1) {
-                sprintf(buf, "[%-2d] %-30s %-15s", psiskills[i].level,
-                        psiskills[i].name,
-                        how_good(ch->skills[psiskills[i].skillnum].
-                                 learned));
-                if (IsSpecialized
-                    (ch->skills[psiskills[i].skillnum].special)) {
-                    strcat(buf, " (special)");
-                }
-                strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) >
-                    (MAX_STRING_LENGTH * 2) - 2) {
-                    break;
-                }
-                strcat(buffer, buf);
-                strcat(buffer, "\r");
-                i++;
-            }
-            i = 0;
-            if (ch->specials.remortclass == PSI_LEVEL_IND + 1) {
-                strcat(buffer, "\n\rSince you picked psi as your main class, "
-                               "you get these bonus skills:\n\r");
-                while (mainpsiskills[i].level != -1) {
-                    sprintf(buf, "[%-2d] %-30s %-15s",
-                            mainpsiskills[i].level, mainpsiskills[i].name,
-                            how_good(ch->skills[mainpsiskills[i].skillnum].
-                                     learned));
-                    if (IsSpecialized
-                        (ch->skills[mainpsiskills[i].skillnum].special)) {
-                        strcat(buf, " (special)");
-                    }
-                    strcat(buf, " \n\r");
-                    if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
-                        break;
-                    }
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                    i++;
-                }
-            }
-            page_string(ch->desc, buffer, 1);
-            return;
-        }
+    case 'I':
+        index = PSI_LEVEL_IND;
         break;
 
     default:
-        send_to_char("Which class? (skill [m s c w t d r p k i n])\n\r",
-                     ch);
+        send_to_char("Which class? (skill [m s c w t d r p k i n])\n\r", ch);
+        return;
     }
 
+    show_class_skills( ch, buffer, index, TRUE );
+    page_string(ch->desc, buffer, 1);
 }
 
 /*
@@ -6512,7 +5966,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
     char            tmpname1[80],
                     tmpname2[80];
     char            levels[40] = "";
-    extern char    *classname[];
+    char            cls[256];
     int             i,
                     total,
                     classn;
@@ -6535,24 +5989,16 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                 /*
                  * range 1 to 9
                  */
-#if 1
                 if (!IS_IMMORTAL(person)) {
-                    char            classes[20] = "";
                     for (bit = 1, i = total = classn = 0;
                          i < CLASS_COUNT + 1; i++, bit <<= 1) {
 
                         if (HasClass(person, bit)) {
-                            /*
-                             * if(strlen(levels)!=0) strcat(levels,"/");
-                             * sprintf(levels+strlen(levels),"%d",person->player.level[i]);
-                             */
-                            classn++;
                             total += person->player.level[i];
-                            if (strlen(classes) != 0) {
-                                strcat(classes, "/");
+                            if (strlen(cls) != 0) {
+                                strcat(cls, "/");
                             }
-                            sprintf(classes + strlen(classes), "%s",
-                                    classname[i]);
+                            strcat(cls, classes[i].abbrev);
                         }
                     }
                     if (total <= 0) {
@@ -6575,7 +6021,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                     } else if (total < 51) {
                         strcpy(levels, "$c0015Mystical");
                     }
-                    sprintf(tbuf, "%s $c0012%s", levels, classes);
+                    sprintf(tbuf, "%s $c0012%s", levels, cls);
                     sprintf(levels, "%32s", "");
                     strcpy(levels + 10 - ((strlen(tbuf) - 12) / 2), tbuf);
                     sprintf(tbuf, "%-32s $c0005: $c0007%s", levels,
@@ -6706,11 +6152,6 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                                  (int) GET_MAX_MOVE(person)) * 100.0 + 0.5);
                     }
                 }
-#else
-                sprintf(tbuf, "$c100%d%s", color_cnt,
-                        person->player.title ?
-                        person->player.title : GET_NAME(person));
-#endif
             }
             if (IS_AFFECTED2(person, AFF2_AFK)) {
                 sprintf(tbuf + strlen(tbuf), "$c0008 [AFK] $c0007");

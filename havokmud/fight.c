@@ -72,12 +72,12 @@ extern int      ItemSaveThrows[22][5];
 extern struct dex_app_type dex_app[];
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
-extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct int_app_type int_app[26];
 extern struct wis_app_type wis_app[26];
 extern const struct skillset weaponskills[];
 extern char    *room_bits[];
-extern int      thaco[MAX_CLASS][ABS_MAX_LVL];
+extern const struct class_def classes[MAX_CLASS];
+
 int             can_see_linear(struct char_data *ch,
                                struct char_data *targ, int *rng, int *dr);
 extern int      ArenaNoGroup,
@@ -1030,7 +1030,8 @@ void die(struct char_data *ch, int killedbytype)
                     break;
                 }
                 if (GET_EXP(ch) <
-                    (titles[i][(int) GET_LEVEL(ch, i)].exp / fraction)) {
+                    (classes[i].titles[(int) GET_LEVEL(ch, i)].exp / 
+                     fraction)) {
                     tmp = (ch->points.max_hit) / GetMaxLevel(ch);
                     ch->points.max_hit -= tmp;
                     GET_LEVEL(ch, i) -= 1;
@@ -1066,13 +1067,14 @@ void die(struct char_data *ch, int killedbytype)
         for (i = 0; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) > 1 &&
                 GET_EXP(ch) <
-                    (titles[i][(int) GET_LEVEL(ch, i)].exp / fraction)) {
+                    (classes[i].titles[(int) GET_LEVEL(ch, i)].exp /
+                     fraction)) {
                 send_to_char("\n\r\n\rWARNING WARNING WARNING WARNING "
                              "WARNING WARNING\n\r", ch);
                 send_to_char("Your next death will result in the loss of a"
                              " level,\n\r", ch);
                 sprintf(buf, "unless you get at least %ld more exp points.\n\r",
-                        (titles[i][(int) GET_LEVEL(ch, i)].exp /
+                        (classes[i].titles[(int) GET_LEVEL(ch, i)].exp /
                          fraction) - GET_EXP(ch));
                 send_to_char(buf, ch);
             }
@@ -1193,8 +1195,8 @@ long NewExpCap(struct char_data *ch, long total)
 
     for (x = 0; x < MAX_CLASS; x++) {
         if (GET_LEVEL(ch, x)) {
-            temp += titles[x][(int)GET_LEVEL(ch, x) + 1].exp -
-                    titles[x][(int)GET_LEVEL(ch, x)].exp;
+            temp += classes[x].titles[(int)GET_LEVEL(ch, x) + 1].exp -
+                    classes[x].titles[(int)GET_LEVEL(ch, x)].exp;
         }
     }
 
@@ -2843,7 +2845,7 @@ int CalcThaco(struct char_data *ch)
 
     if (!IS_NPC(ch)) {
         bestclass = BestFightingClass(ch);
-        calc_thaco = thaco[bestclass][(int)GET_LEVEL(ch, bestclass)];
+        calc_thaco = classes[bestclass].thaco[(int)GET_LEVEL(ch, bestclass)];
     } else {
         /*
          * THAC0 for monsters is set in the HitRoll
@@ -5921,8 +5923,8 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
     if (!IS_NPC(ch)) {
         calc_thaco = 20;
         for (i = 1; i < 5; i++) {
-            if (thaco[i - 1][GetMaxLevel(ch)] < calc_thaco) {
-                calc_thaco = thaco[i - 1][GetMaxLevel(ch)];
+            if (classes[i - 1].thaco[GetMaxLevel(ch)] < calc_thaco) {
+                calc_thaco = classes[i - 1].thaco[GetMaxLevel(ch)];
             }
         }
     } else {
