@@ -1152,6 +1152,8 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        send_to_char("\n\rValue1 is the Armor Class Apply.",ch);
      else if(value==1)
        send_to_char("\n\rValue2 is the Full Strengh of the armor.",ch);
+     else if(value==2)
+     	send_to_char("\n\rValue3 is the size of the armor.",ch);
      else
        send_to_char("\n\rValue is not used for this item type.",ch);
      break;

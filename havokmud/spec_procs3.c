@@ -6188,6 +6188,10 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 return(FALSE);
 }
 
+
+
+
+
 int DehydBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
@@ -6587,3 +6591,465 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
  			/* make Vaelhar say something like "please bring my grand-daughter back!" */
 
  /*}*/
+
+
+
+
+ /*Lennyas proc to portal somewhere */
+
+ int sinpool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+ {
+   char buf[50];
+   struct char_data *portal;
+
+   if(cmd!=7) return(FALSE);     /* enter */
+   one_argument(arg,buf);
+
+  if(*buf) {
+     if(!(str_cmp("pool",buf)) || !(str_cmp("gate",buf)) ||
+        !(str_cmp("gate pool",buf))) {
+       if(portal=get_char_room("pool",ch->in_room)) {
+           send_to_char("\n\r",ch);
+           send_to_char("You seen enough of this path, you enter the Gate of Sin.\n\r",ch);
+           send_to_char("\n\r",ch);
+           act("$n enters the gate of Sin and dissapears from your vicinity!", FALSE , ch, 0, 0, TO_ROOM);
+           char_from_room(ch);
+           char_to_room(ch,51804);
+           act("Proven a true sinner, $n materializes from one of the altar's seven sides!", FALSE, ch, 0, 0, TO_ROOM);
+           do_look(ch, "", 0);
+           return(TRUE);
+       }
+     } else return(FALSE);
+   }
+ return(FALSE);
+}
+
+
+int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  struct char_data *mobtmp;
+  static struct char_data *tmp;
+  struct obj_data  *target_obj ;
+  char buf[80];
+
+	/* first time he dies load another strahd at second location */
+	/* and force it to hate the person that he was fighting      */
+
+  if (type == EVENT_DEATH)    {
+	mobtmp = read_mobile(real_mobile(51803),REAL);
+    char_to_room(mobtmp, 51817);
+    act("$n falls to the ground and crumbles.  You then hear a weird scream in a distance.", FALSE, ch, 0, 0, TO_ROOM);
+	return(TRUE);
+  }
+
+
+
+  if (cmd==329) { //berserk
+
+  	if(ch->specials.fighting) {
+
+           send_to_char("\n\r",ch);
+           send_to_char("$c0012The Rage overtakes you quickly!$c0007.\n\r",ch);
+           send_to_char("\n\r",ch);
+           act("$c00012$n seems to have found the rage, and is whisked away from the fight.$c0007!", FALSE , ch, 0, 0, TO_ROOM);
+           char_from_room(ch);
+           char_to_room(ch,51823);
+           act("$n madly rages about, then calms down when there's no more quarries about.", FALSE, ch, 0, 0, TO_ROOM);
+           do_look(ch, "", 0);
+
+	}
+	else
+		return (FALSE);
+
+  }  else
+  	return(FALSE);
+  if (!AWAKE(mob)) return(FALSE);
+
+  return(magic_user(mob,cmd,arg,mob,type));
+}
+
+
+
+
+#define DRINK	11
+int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	if (cmd==DRINK)
+ {
+	char buf[128];
+  arg=one_argument(arg,buf); /* buf == object */
+
+  if(!strcmp("mead",buf)) {
+         send_to_char("\n\r",ch);
+
+	            send_to_char("Out of options, you finally decide to succumb to the tantalizing toxins of the mead \n\rand take a long draught. You must have quite a tummy!\n\r",ch);
+	            send_to_char("\n\r",ch);
+	            act("$n meditates a moment, takes a long draught of the mead and disappears!", FALSE , ch, 0, 0, TO_ROOM);
+	            send_to_char("You feel a bit dizzy from so much mead.",ch);
+	            GET_COND(ch,DRUNK)=25;
+	            GET_COND(ch,FULL)=25;
+	            GET_COND(ch,THIRST)=20;
+	            char_from_room(ch);
+	            char_to_room(ch,51804);
+	            act("$n climbs out of the barrel, swaying slightly.", FALSE, ch, 0, 0, TO_ROOM);
+	            do_look(ch, "", 0);
+
+	return(TRUE);
+    } /* end strcmpi() */
+   return(FALSE);
+ } /* end pull */
+
+ return(FALSE);
+}
+
+/* Proc for lennyas new zone.. If all stones are in altar, award prize */
+int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
+{
+	struct obj_data *i, *win;
+	int virtual,x;
+     char buf[MAX_INPUT_LENGTH+80];
+	int hasStones[7]= { 0,0,0,0,0,0,0 };
+
+  if(cmd != 438) //rub alter
+    return(FALSE);
+
+   dlog("in altar");
+
+	for(i=obj->contains;i;i=i->next_content) {
+     	 virtual = (i->item_number >= 0) ? obj_index[i->item_number].virtual : 0;
+
+		if(virtual < 51809 && virtual > 51801) {
+			hasStones[virtual-51802]=1;
+		 	//ch_printf(ch,"!%d",virtual-51802);
+
+		}
+    }
+	/*Check to see if all stones are present*/
+	for (x = 0; x < 7;x++ ) {
+		if(hasStones[x]==0)
+			return(FALSE);
+	}
+
+	send_to_room("\n\rThe Altar of Sin briefly glows, and a faint clicking sound can be heard within.\n\r",ch->in_room);
+	send_to_room("The Wisdom of Sin intones 'The prowess proven, the mind excelled, the dice rolled.'\n\r",ch->in_room);
+	send_to_room("The Wisdom of Sin intones 'Thus the reward may be claimed.'\n\r",ch->in_room);
+
+
+	/*purge everything in altar*/
+
+		obj_from_room(obj);
+		extract_obj(obj);
+
+		obj = read_object(51831, VIRTUAL);
+		obj_to_room(obj, ch->in_room);
+
+	/*Load up the prize */
+	win = read_object(randomitem(), VIRTUAL);
+	if(!win) {
+		log("Invalid item in lennyas altar proc");
+		return(FALSE);
+
+	}
+	obj_to_obj(win, obj);
+	return(TRUE);
+}
+
+int randomitem(void) {
+  switch(number(0, 116)) {
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+	case 9:
+	case 10:
+	case 11:
+		return 51809;
+	case 12:
+	case 13:
+	case 14:
+	case 15:
+	case 16:
+	case 17:
+	case 18:
+	case 19:
+	case 20:
+	case 21:
+	case 22:
+	case 23:
+		return 51810;
+	case 24:
+	case 25:
+	case 26:
+	case 27:
+		return 51811;
+	case 28:
+	case 29:
+	case 30:
+	case 31:
+	case 32:
+	case 33:
+		return 51812;
+	case 34:
+	case 35:
+	case 36:
+	case 37:
+	case 38:
+	case 39:
+		return 51813;
+	case 40:
+	case 41:
+	case 42:
+	case 43:
+	case 44:
+	case 45:
+		return 51814;
+	case 46:
+	case 47:
+	case 48:
+	case 49:
+	case 50:
+	case 51:
+		return 51815;
+	case 52:
+	case 53:
+	case 54:
+	case 55:
+	case 56:
+	case 57:
+		return 51816;
+	case 58:
+	case 59:
+	case 60:
+	case 61:
+	case 62:
+		return 51817;
+	case 63:
+	case 64:
+	case 65:
+	case 66:
+	case 67:
+		return 51818;
+	case 68:
+	case 69:
+	case 70:
+	case 71:
+	case 72:
+
+	case 73:
+		return 51819;
+	case 74:
+	case 75:
+	case 76:
+	case 77:
+	case 78:
+	case 79:
+	case 80:
+	case 81:
+	case 82:
+	case 83:
+	case 84:
+	case 85:
+		return 51820;
+	case 86:
+		return 51821;
+	case 87:
+	case 88:
+	case 89:
+	case 90:
+	case 91:
+	case 92:
+		return 51822;
+	case 93:
+	case 94:
+	case 95:
+	case 96:
+	case 97:
+	case 98:
+		return 51823;
+	case 99:
+	case 100:
+	case 101:
+	case 102:
+	case 103:
+	case 104:
+	case 105:
+	case 106:
+	case 107:
+	case 108:
+	case 109:
+	case 110:
+		return 51824;
+	case 111:
+	case 112:
+	case 113:
+	case 114:
+	case 115:
+	case 116:
+		return 51825;
+	default:
+		return 51825;
+	}
+
+}
+
+
+int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
+
+
+	if (cmd == 67) 	{ /* put */
+	  do_put(ch, argument, 67);
+	  if(((obj->contains->item_number >= 0) ? obj_index[obj->contains->item_number].virtual : 0 )==51828) {
+   		send_to_room("\n\rA small army of servants enters the anteroom and lifts up the apple pie.\n\r",ch->in_room);
+   		send_to_room("The servants groan under the pie's weight, yet persevere and carry it through\n\r",ch->in_room);
+   		send_to_room("the eastern door. A few moments later, sounds of a feeding frenzy drift can be\n\r",ch->in_room);
+   		send_to_room("heard, followed by some coughing. Some more coughing.\n\r",ch->in_room);
+	    do_at(ch, "hambre slay hambre", 1);
+
+	    /*purge pie*/
+	    obj_from_room(obj);
+	    extract_obj(obj);
+
+	  }
+    	return(TRUE);
+    }
+    return (FALSE);
+}
+
+
+/* Proc for lennyas new zone.. If all stones are in altar, award prize */
+int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
+{
+	 struct follow_type *f;
+	struct char_data *k;
+	struct obj_data *i, *win;
+	int virtual,x;
+	int count=0;
+     char buf[MAX_INPUT_LENGTH+80];
+
+
+  if(cmd != 67) //rub alter
+    return(FALSE);
+
+   dlog("in altar");
+
+	do_put(ch,argument,67);
+
+	for(i=obj->contains;i;i=i->next_content) {
+     	 virtual = (i->item_number >= 0) ? obj_index[i->item_number].virtual : 0;
+
+		if(virtual == 51833) {
+			count ++;
+		}
+    }
+	/*Check to see if all stones are present*/
+	if(count < 10)
+		return(FALSE);
+
+
+	do_system(ch, "A large gong sound echoes through-out the lands.\n\r", 1);
+
+	/*Send all in group too room 51878 */
+
+	/*No group.. just you.. tyhen move them*/
+	if (!IS_AFFECTED(ch, AFF_GROUP)) {
+		char_from_room(ch);
+	  char_to_room(ch, 51878);
+	  do_look(ch, "", 0);
+	  return(TRUE);
+
+    } else {
+      if (ch->master)
+		k = ch->master;
+      else
+		k = ch;
+
+
+ for(f=k->followers; f; f=f->next)
+ {
+  if (IS_AFFECTED(f->follower, AFF_GROUP))
+    if (!f->follower->desc) {
+      /* link dead */
+   } else
+  	if (ch == f->follower) {
+
+    } else  {
+	  /* Move the followers */
+	  char_from_room(f->follower);
+	  char_to_room(f->follower, 51878);
+	  do_look(f->follower, "", 0);
+	}
+ } /* end for loop */
+
+		/* send to master now */
+if (ch->master) {
+  if (IS_AFFECTED(ch->master, AFF_GROUP))
+    if (!ch->master->desc) {
+      /* link dead */
+   } else
+  if (ch == ch->master) {
+
+    } else  {
+	  /* move the master */
+	 char_from_room(ch->master);
+	  char_to_room(ch->master, 51878);
+	  do_look(ch->master, "", 0);
+
+ 	}
+  } 	/* end master*/
+
+  if (1) {
+	/*Move you*/
+	   char_from_room(ch);
+	  char_to_room(ch, 51878);
+	  do_look(ch, "", 0);
+    }
+
+  } /* they where grouped... */
+	return(TRUE);
+}
+
+
+
+
+int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+  	int toRoom=0;
+
+        if (cmd)
+            return FALSE;
+
+
+	if(mob->in_room!=51837)
+		return(FALSE);
+
+
+	send_to_room("\n\rThe greedy sinner looks around the tent, and doesn't fail to notice the chest standing\n\r", mob->in_room);
+	send_to_room("in the center. It sneaks up to the chest, quickly grabs a trinket, and cackles gleefully.\n\r", mob->in_room);
+	send_to_room("Still laughing like a madman, it quaffs a misty potion and fades out of existence.\n\r", mob->in_room);
+
+
+  	do_get(mob, "trinket chest",0);
+  	char_from_room(mob);
+
+	switch(number(0,3)) {
+		case 0:
+		 toRoom=51874;
+		case 1:
+	     toRoom=51858;
+		case 2:
+	     toRoom=51848;
+		case 3:
+		 toRoom=51868;
+	}
+
+
+	char_to_room(mob, toRoom);
+
+  	do_put(mob,"trinket stash",0);
+
+
+}

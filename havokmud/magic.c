@@ -2587,8 +2587,14 @@ strcat(buf,"\n\r");
       break;
 
     case ITEM_ARMOR :
-      sprintf(buf, "$c0005AC-apply is $c0014%d\n\r",
+      sprintf(buf, "$c0005AC-apply is: $c0014%d,   ",
 	      obj->obj_flags.value[0]);
+
+      send_to_char(buf, ch);
+
+      sprintf(buf, "$c0005Size of armor is: $c0014%d\n\r",
+	  	      obj->obj_flags.value[2]);
+
       send_to_char(buf, ch);
       break;
 

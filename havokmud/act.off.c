@@ -118,9 +118,11 @@ dlog("in do_kill");
       	act("Thou shalt not slay your superiors!", FALSE, ch, 0, victim, TO_CHAR);
          return;
       }
-      act("You chop $M to pieces! Ah! The blood!", FALSE, ch, 0, victim, TO_CHAR);
-      act("$N chops you to pieces!", FALSE, victim, 0, ch, TO_CHAR);
-      act("$n brutally slays $N", FALSE, ch, 0, victim, TO_NOTVICT);
+      if(cmd!=1) {
+        act("You chop $M to pieces! Ah! The blood!", FALSE, ch, 0, victim, TO_CHAR);
+        act("$N chops you to pieces!", FALSE, victim, 0, ch, TO_CHAR);
+        act("$n brutally slays $N", FALSE, ch, 0, victim, TO_NOTVICT);
+  	  }
       raw_kill(victim,0);
     }
   }

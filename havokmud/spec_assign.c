@@ -1378,6 +1378,12 @@ void assign_mobiles()
 {32034, CorsairPush },
 {33188, Tyrannosaurus_swallower },
  {23200, FightingGuildMaster },
+ {51826, sinpool } , /* Lennyas pool proc*/
+ {51803, sin_spawner },
+ {51821, trinketlooter },
+ {51822, trinketlooter },
+ {51823, trinketlooter },
+ {51824, trinketlooter },
 
 #endif
 
@@ -1435,9 +1441,11 @@ void assign_objects()
    {45492, thunder_black_pill},
    {45493, thunder_blue_pill},
    {45494, grayswandir},
+   {51831, altarofsin },
+   {51827, applepie },
+   {51832, trinketcount },
 /*End Thunder Mountain Keep Objects*/
-
-    { -1, NULL },
+	{ -1, NULL },
   };
 
   int   i, rnum;
@@ -1521,7 +1529,7 @@ void assign_rooms()
     */
 { 44129,  Magic_Pool},//  in proc_assign and add to protos
 { 44114,  Read_Room},// in proc_assign and add to protos..
-
+{ 51827, sinbarrel },
     { -1, NULL},
   };
   int i;

@@ -1511,6 +1511,15 @@ int medusa(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 int GoodBlade(struct char_data *ch, int cmd, char *arg,struct obj_data *tobj, int type);
 int NeutralBlade(struct char_data *ch, int cmd, char *arg,struct obj_data *tobj, int type);
 
+/* Procs for lennyas sin zone */
+int sinpool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
+int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
+int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
+int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
 /* Assigns for the Town of Sundhaven  */
 int sund_earl(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 #if 1

@@ -610,10 +610,9 @@ struct obj_data
 	int is_corpse;                 /* For Behead                     */
 	int beheaded_corpse ;          /* For Behead                     */
 	/*New fields (GH) */
-	int level;
-	int max;
-
-	int speed;
+	int level;  /* Level ego of the item */
+	int max;    /* max of the object */
+	int speed;  /* Speed of the weapon*/
 	int weapontype;
 
 	char *modBy;
