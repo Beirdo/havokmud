@@ -2880,7 +2880,7 @@ int troll_regen(struct char_data *ch)
 	if(number(0,2))
 		return;
 
-	GET_HIT(ch)++;
+	GET_HIT(ch) += number(1,3);
 	act("$n's wounds seem to close of their own.",FALSE, ch, 0, 0, TO_ROOM);
 	act("Your wounds close of their own accord.",FALSE, ch, 0, 0, TO_CHAR);
 }
