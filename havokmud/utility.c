@@ -4907,60 +4907,64 @@ int str_cmp2(char *arg1, char *arg2)
 */
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 {
-  int current = 0;
-  long l;
-  int rdir,x;
-  char buf[255];
-  struct zone_data *zd;
-  struct room_data *rm=0;
+	int current = 0;
+	long l;
+	int rdir,x,sector;
+	char buf[255];
+	struct zone_data *zd;
+	struct room_data *rm=0, *new_rm= 0;
 
-  if (GetMaxLevel(ch) < 53 || !rpp || !ch->desc ||
-      !IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
-    return(FALSE);
+	if (GetMaxLevel(ch) < 53 || !rpp || !ch->desc ||
+			!IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
+		return(FALSE);
 
-  current = ch->in_room;
-  rm = real_roomp(ch->in_room);
-  //lets find valid room..
-  zd = zone_table+(rm->zone-1);
+	current = ch->in_room;
+	rm = real_roomp(ch->in_room);
+	//lets find valid room..
+	zd = zone_table+(rm->zone-1);
+	sector = rm->sector_type;
 
+	if(GetMaxLevel(ch) < 57 &&  rm->zone != GET_ZONE(ch)) {
+		send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
+		return(TRUE);
+	}
 
-  if(GetMaxLevel(ch) < 57 &&  rm->zone != GET_ZONE(ch))  {
-    send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
-    return(TRUE);
-  }
+	x = zd->top;
+	zd = zone_table+rm->zone;
 
+	for(x=x+1;x < zd->top;x++) {
+		if (real_roomp(x)==NULL) {
+			CreateOneRoom(x);
+			sprintf(buf,"$c0001Room exit created from room %d to %d.\n\r",current,x);
+			send_to_char(buf,ch);
 
-  x = zd->top;
-  zd = zone_table+rm->zone;
+			sprintf(buf,"exit %d 0 0 %d",dir,x);
+			do_edit(ch,buf,0);  //make exit in desired direction..
+			//move char to that room..
+			char_from_room(ch);
+			char_to_room(ch,x);
+			dir = opdir(dir); //opposite direction..
+			if (real_roomp(current)==NULL) {
+				CreateOneRoom(current);
+			}
+			new_rm = real_roomp(ch->in_room);
+			/* let's set the sector to match the room we came from */
+			new_rm->sector_type = sector;
 
-  for(x=x+1;x < zd->top;x++) {
-    if (real_roomp(x)==NULL) {
-      CreateOneRoom(x);
-      sprintf(buf,"$c0001Room exit created from room %d to %d.\n\r",current,x);
-      send_to_char(buf,ch);
+			sprintf(buf,"exit %d 0 0 %d",dir,current);
+			do_edit(ch,buf,0);
+/* If wizset map is enabled, set the roomflag MAP_ROOM   -Lennya */
+			if (IS_SET(ch->player.user_flags,FAST_MAP_EDIT)) {
+				new_rm = real_roomp(ch->in_room);
+				new_rm->room_flags = ROOM_WILDERNESS;
+			}
+			do_look(ch,"",15);
+			return(TRUE);
+		}
 
-      sprintf(buf,"exit %d 0 0 %d",dir,x);
-      do_edit(ch,buf,0);  //make exit in disired direction..
-      //move char to that room..
-      sprintf(buf,"%s",exits[dir]);
-      do_move(ch,buf,dir+1);
-      dir = opdir(dir); //opposite direction..
-
-      if (real_roomp(current)==NULL) {
-	CreateOneRoom(current);
-      }
-
-      sprintf(buf,"exit %d 0 0 %d",dir,current);
-      do_edit(ch,buf,0);
-      do_look(ch,"",15);
-      return(TRUE);
-      //break;
-    }
-
-  }
-  send_to_char("No more empty rooms in your assigned zone!!\n\r",ch);
-
-  return(TRUE);
+	}
+	send_to_char("No more empty rooms in your assigned zone!!\n\r",ch);
+	return(TRUE);
 }
 
 /*finds oposite direction of a direction.. ex. south->north.. 0->2*/

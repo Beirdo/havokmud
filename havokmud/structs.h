@@ -228,7 +228,7 @@ struct QuestItem {
 #define NEW_USER       BV20
 #define HERO_STATUS    BV21
 #define GHOST          BV22
-
+#define FAST_MAP_EDIT  BV23
 
 
 /* end user flags */

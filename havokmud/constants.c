@@ -2977,13 +2977,16 @@ const char *special_user_flags[] =
 	"PAGE-PAUSE",
 	"OBJECT-EDITOR-OK",
 	"MOBILE-EDITOR-OK",
-	"FAST-MAP",
+	"FAST-EDIT",
 	"PKILLING",
 	"CLOAKED",
 	"ZONE-SOUNDS",
 	"CHAR-PRIVATE",
 	"CLAN-LEADER",
 	"NEW-USER",
+	"HERO-STATUS",
+	"GHOST",
+	"FAST-MAP",
 	"\n"
 };
 const char *immunity_names[] =

@@ -3313,52 +3313,43 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
       return;
     }
     /* Display Character information */
-      sprintf(buf,"$c0005Adventurer information:\n\r");
+      sprintf(buf,"        $c0008-=* $c000BAdventurer information $c0008*=-\n\r");
       send_to_char(buf,ch);
-      sprintf(buf,"$c000pName                  : %s\n\r",finger->player.title);
+      sprintf(buf,"$c000BName                  : $c0007%s\n\r",finger->player.title);
 	  send_to_char(buf, ch);
-
-/* prefix */
-
-
-
-
-
-
-
 	 i = get_char(name); /* used for last time sited */
     /* Last time sited?? */
     if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
-      sprintf(buf,"$c0005Last time sited       : $c0014Unknown\n\r");
+      sprintf(buf,"$c000BLast time sited       : $c0007Unknown\n\r");
     else if(i && i->desc)  /* if there is a name, and a file descriptor */
-      sprintf(buf,"$c0005Last time sited       : $c0014Currently Playing\n\r");
+      sprintf(buf,"$c000BLast time sited       : $c0007Currently Playing\n\r");
     else
-      sprintf(buf,"$c0005Last time sited       : $c0014%s"
+      sprintf(buf,"$c000BLast time sited       : $c0007%s"
 	      ,asctime(localtime(&tmp_store.last_logon)));
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
 
     /* Display char email addy */
     if(finger->specials.email==NULL)
-      sprintf(buf,"$c0005Known message drop    : $c0014None\n\r");
+      sprintf(buf,"$c000BKnown message drop    : $c0007None\n\r");
     else
-      sprintf(buf,"$c0005Known message drop    : $c0014%-60s\n\r"
+      sprintf(buf,"$c000BKnown message drop    : $c0007%-60s\n\r"
 	      , finger->specials.email);
     send_to_char(buf,ch);
 
     /*Display clan info*/
     if(finger->specials.clan==NULL)
-      sprintf(buf,"$c0005Clan info             : $c0014None");
+      sprintf(buf,"$c000BClan info             : $c0007None");
     else
-      sprintf(buf,"$c0005Clan info             : $c0014%s",CAP(finger->specials.clan));
+      sprintf(buf,"$c000BClan info             : $c0007%s",CAP(finger->specials.clan));
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
 
     if(IS_IMMORTAL(ch)) {
 		if(finger->specials.hostip==NULL)
-		   sprintf(buf,"$c0005HostIP                : $c0014None");
+		   sprintf(buf,"$c000BHostIP                : $c0007None");
 		 else {
-			sprintf(buf,"$c0005HostIP                : $c0014%s","None");//,finger->specials.hostip, strlen(finger->specials.hostip));
+			sprintf(buf,"$c000BHostIP                : $c0007%s","None");//,finger->specials.hostip, strlen(finger->specials.hostip));
 	 	}
 		 strcat(buf,"\n\r");
          send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
@@ -3366,19 +3357,19 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 
 
     if(finger->specials.rumor == NULL)
-      sprintf(buf, "$c0005Rumored info          : $c0014None");
+      sprintf(buf, "$c000BRumored info          : $c0007None");
     else
-      sprintf(buf,"$c0005Rumored info           : $c0014%s",
+      sprintf(buf,"$c000BRumored info           : $c0007%s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
 
-    ch_printf(ch, "$c000pArena stats           : $c000C%d kills$c000p/$c000C%d deaths$c000p\n\r",
+    ch_printf(ch, "$c000BArena stats           : $c0007%d kills$c000B/$c0007%d deaths\n\r",
     	finger->specials.a_kills, finger->specials.a_deaths);
     /* let's give em a ratio to keep working on */
     akills = finger->specials.a_kills;
     adeaths = finger->specials.a_deaths;
-    ch_printf(ch, "$c000pArena ratio           : $c000C%2.0f%s\n\r",
+    ch_printf(ch, "$c000BArena ratio           : $c0007%2.0f%s\n\r",
     ((akills+adeaths) == 0) ? 0 : ( ((float)akills  / ((int) (akills+adeaths)))  * 100.0 + 0.5),"%");
 
   } /* end found finger'e*/

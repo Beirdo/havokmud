@@ -1648,12 +1648,13 @@ struct char_data *read_mobile(int nr, int type)
    mob_count++;
 	/*assign Quest flag (GH) */
 	if (IS_SET(mob->specials.act,ACT_QUEST)) {
-		log("Has the proc");
+//		log("Has the proc");
 		    if(mob_index[mob->nr].func != QuestMobProc){
 		       mob_index[mob->nr].func = *QuestMobProc;//(*QuestMobProc)();
 				log("assigning proc");
-			}else
-				log("Already has proc");
+			} else {
+//				log("Already has proc");
+			}
     }
    return(mob);
  }
@@ -4086,6 +4087,9 @@ void reset_char(struct char_data *ch)
 		REMOVE_BIT(ch->player.user_flags,CAN_OBJ_EDIT);
 	if (IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
 		REMOVE_BIT(ch->player.user_flags,FAST_AREA_EDIT);
+	if (IS_SET(ch->player.user_flags,FAST_MAP_EDIT))
+		REMOVE_BIT(ch->player.user_flags,FAST_MAP_EDIT);
+
 /*
   Clear out order/AFK flags
 */

@@ -471,9 +471,9 @@ struct char_data *FindAHatee( struct char_data *ch)
   while(tmp_ch) {
        if (Hates(ch, tmp_ch) && (CAN_SEE(ch, tmp_ch))) {
     	  if (ch->in_room == tmp_ch->in_room) {
-	    	if (ch != tmp_ch) {
+	    	if ((ch != tmp_ch) || (IS_PC(tmp_ch) && IS_IMMORTAL(tmp_ch))) {
 	    	   return(tmp_ch);
-	    	} else {
+			} else {
 	       		RemHated(ch,tmp_ch);
 	       		return(0);
 	     	}

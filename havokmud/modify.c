@@ -428,12 +428,14 @@ void bisect_arg(char *arg, int *field, char *string)
 void do_edit(struct char_data *ch, char *arg, int cmd)
 {
   int field, dflags, dir, exroom, dkey, rspeed, rdir, open_cmd,
-  tele_room, tele_time, tele_mask, moblim, tele_cnt;
+  tele_room, tele_time, tele_mask, moblim, tele_cnt, r_start, r_end;
   unsigned r_flags;
   int s_type,i;
   char name[MAX_INPUT_LENGTH], string[512], buf[132],sdflags[30];
   struct extra_descr_data *ed, *tmp;
-  struct room_data	*rp;
+  struct room_data	*rp, *temproom;
+  long maproom;
+  extern const char *sector_types[];
 
   rp = real_roomp(ch->in_room);
 
@@ -459,28 +461,77 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 
   r_flags = -1;
   s_type = -1;
+  r_start = -1;
+  r_end = -1;
 
   switch(field) {
 
   case 1: ch->desc->str = &rp->name; break;
   case 2: ch->desc->str = &rp->description; break;
-  case 3: sscanf(string,"%u %d ",&r_flags,&s_type);
-    if ((r_flags < 0)  || (s_type < 0) || (s_type > 22)) {
-      send_to_char("didn't quite get those, please try again.\n\r",ch);
-      send_to_char("flags must be 0 or positive, and sectors must be from 0 to 11\n\r",ch);
-      send_to_char("edit fs <flags> <sector_type>\n\r",ch);
-      return;
-    }
-    rp->room_flags = r_flags;
-    rp->sector_type = s_type;
+  case 3: sscanf(string,"%d %d %u %d ", &r_start, &r_end, &r_flags, &s_type);
+    if ((r_start < 0) || (r_end < 0) || (r_flags < 0)  || (s_type < 0) || (s_type > 22)) {
+      send_to_char("Didn't quite get those, please try again.\n\r",ch);
+      send_to_char("Flags must be 0 or positive, and sectors must be from 0 (inside) to 22 (empty).\n\r",ch);
+      send_to_char("  edit fs <startroom> <endroom> <flags> <sector_type>\n\r",ch);
+      send_to_char("For current room only, use\n\r",ch);
+      send_to_char("  edit fs 0 0 <flags> <sector_type>\n\r",ch);
+      maproom = 1024*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2; // damn that's a big number. mebbe move it up a bit?
+      ch_printf(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+      send_to_char("If room is unnamed, the default sector name will be assigned.\n\r",ch);
 
-    if (rp->sector_type == SECT_WATER_NOSWIM) {
-      send_to_char("P.S. you need to do speed and flow\n\r",ch);
-      send_to_char("For this river. (set to 0 as default)\n\r",ch);
-      rp->river_speed = 0;
-      rp->river_dir = 0;
       return;
     }
+
+/* Did some work to make it easier to change flags on a range of rooms  -Lennya */
+
+	if ((r_start == 0) || (r_end == 0)) {
+		rp->room_flags = r_flags;
+		rp->sector_type = s_type;
+		sprintf(name,"%s", temproom->name);
+		if (isdigit(*name)) {
+			free(temproom->name);
+			sprintf(buf, "Default name: ");
+			strcat(buf,sector_types[s_type]);
+			temproom->name = buf;
+		}
+		send_to_char("Setting current room and sector flags.\n\r",ch);
+		if (rp->sector_type == SECT_WATER_NOSWIM) {
+			rp->river_speed = 0;
+			rp->river_dir = 0;
+			send_to_char("\n\rP.S. You need to set speed and flow direction for this river (set to 0 as default).\n\r",ch);
+    	}
+	} else if(r_start > r_end) {
+		send_to_char("Please make startroom <= endroom.\n\r",ch);
+		return;
+	} else {
+		for (i = r_start; i <= r_end; i++) {
+			if (real_roomp(i) != NULL) {
+				temproom = real_roomp(i);
+				temproom->room_flags = r_flags;
+				temproom->sector_type = s_type;
+				ch_printf(ch, "Room and sector flags set for room %d\n\r", i);
+				if (temproom->name) {
+					sprintf(name,"%s", temproom->name);
+					if (isdigit(*name)) {
+						free(temproom->name);
+						sprintf(buf, "Default name: ");
+						strcat(buf,sector_types[s_type]);
+						temproom->name = buf;
+					}
+				}
+				if (temproom->sector_type == SECT_WATER_NOSWIM) {
+					temproom->river_speed = 0;
+					temproom->river_dir = 0;
+				}
+			} else {
+				ch_printf(ch, "Room %d is not a valid room. Use create to create rooms.\n\r", i);
+			}
+		}
+		ch_printf(ch, "\n\rFinished setting flags for rooms %d to %d.\n\r", r_start, r_end);
+		if (temproom->sector_type == SECT_WATER_NOSWIM) {
+			send_to_char("\n\rP.S. You need to do speed and flow direction for this river (set to 0 as default).\n\r",ch);
+    	}
+	}
     return;
     break;
 

@@ -1518,7 +1518,7 @@ act(buf,FALSE,ch,0,0,TO_CHAR);
       }
 
       if (IS_NPC(k)) {
-	sprintf(buf, "$c0005 NPC Bare Hand Damage $c0014%dd$c0015%d$c0005.",
+	sprintf(buf, "$c0005 NPC Bare Hand Damage $c0015%d$c0014d$c0015%d$c0005.",
 		k->specials.damnodice, k->specials.damsizedice);
 
 	act(buf,FALSE,ch,0,0,TO_CHAR);
@@ -5972,7 +5972,7 @@ dlog("in do_wizset");
  argument=one_argument(argument,name);
 
  if (!*flag) {
-	send_to_char("Set what wizard flag?\n\r",ch);
+	send_to_char("Set what wizard flag? (fast/map/home)\n\r",ch);
 	return;
  }
 
@@ -5981,10 +5981,20 @@ dlog("in do_wizset");
      send_to_char("Fast edit disabled.\n\r",ch);
      REMOVE_BIT(ch->player.user_flags,FAST_AREA_EDIT);
    } else{
-     send_to_char("$c0001Fast edit Enabled.\n\r",ch);
+     send_to_char("$c0001Fast edit enabled.\n\r",ch);
      SET_BIT(ch->player.user_flags,FAST_AREA_EDIT);
    }
- } else
+	} else if (!strcmp("map",flag)) {
+		if (IS_SET(ch->player.user_flags,FAST_MAP_EDIT)){
+			send_to_char("Map edit disabled.\n\r",ch);
+			REMOVE_BIT(ch->player.user_flags,FAST_MAP_EDIT);
+		} else {
+			send_to_char("$c000GFast mapping mode edit enabled.\n\r",ch);
+			if (!IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
+				SET_BIT(ch->player.user_flags,FAST_AREA_EDIT); /* can only do map with fast enabled */
+			SET_BIT(ch->player.user_flags,FAST_MAP_EDIT);
+		}
+	} else
 
  if (!strcmp("home",flag)) {
 	/* if (!*name) {
@@ -6641,6 +6651,55 @@ dlog("in do_setsound");
 	} else {
 		send_to_char("Which item was that?\n\r",ch);
 	}
+}
+
+#define GOODIE_START 701
+#define GOODIE_BAG   720
+void do_goodiebag(struct char_data *ch, char *argument, int cmd)
+{
+	struct obj_data *obj;
+	struct obj_data *bag;
+	char buf[254];
+	int i = 0,j = 0;
+
+	if(!ch)
+		return;
+
+	if(!IS_IMMORTAL(ch))
+		return;
+
+	/* load the bag */
+	if(bag = read_object(GOODIE_BAG, VIRTUAL))
+		obj_to_char(bag, ch);
+	if(GET_ITEM_TYPE(bag) != ITEM_CONTAINER) {
+		log("Bag item in goodiebag is not a container!");
+		return;
+	}
+	/* string it up */
+	sprintf(buf,"%s's Goodiebag",GET_NAME(ch));
+	if(bag->short_description)
+		free(bag->short_description);
+	bag->short_description = strdup(buf);
+	sprintf(buf,"%s's Goodiebag is so lonely, now that it can't rest on %s's back.",GET_NAME(ch), GET_NAME(ch));
+	if(bag->description)
+		free(bag->description);
+	bag->description = strdup(buf);
+	sprintf(buf,"bag goodiebag %s",GET_NAME(ch));
+	if(bag->name)
+		free(bag->name);
+	bag->name = strdup(buf);
+
+	/* loop start -> end */
+	for (i = GOODIE_START;i < GOODIE_BAG; i++) {
+		/* if item, load & place item, 5x */
+		for(j = 0; j < 5; j++) {
+			if(obj = read_object(i, VIRTUAL)) {
+				obj_to_obj(obj, bag);
+			}
+		}
+	}
+	sprintf(buf,"%s just loaded a Goodiebag",GET_NAME(ch));
+	log(buf);
 }
 
 int ZoneCleanable (int zone);

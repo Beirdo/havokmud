@@ -208,7 +208,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv, bool add
 	} else if (loc == APPLY_WEAPON_SPELL) {
 		return;
 	} else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
-		ch_printf(ch,"bitv?%d   mod?%d\n\r",bitv,mod);
+//		ch_printf(ch,"bitv?%d   mod?%d\n\r",bitv,mod);
 		if (add) {
 			/* do em both? this creates odd combinations, may not be the solution */
 			SET_BIT(ch->specials.affected_by2, bitv);//mod); /* bitv takes care of the spells from cast */

@@ -278,9 +278,6 @@ int lag_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 
 	char buf[MAX_STRING_LENGTH +30];
 
-//	if (IS_NPC(ch) || IS_IMMORTAL(ch))
-//		return(FALSE);
-
 	if (cmd) { /* if a player enters ANY command, they'll experience two rounds of lag */
 		if (IS_NPC(ch) || IS_IMMORTAL(ch))
 			return(FALSE);
@@ -1092,6 +1089,61 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 		return(TRUE);
 	}
 	return(FALSE);
+}
+
+/* Rocky's Zone Stuff */
+int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
+{
+	struct room_direction_data *exitp, *back;
+	char doorname[MAX_STRING_LENGTH +30], buf[MAX_STRING_LENGTH +30];
+	char buffer[MAX_STRING_LENGTH +30];
+	int doordir = 0;
+	char *dir_name[] = {
+       "to the north",
+       "to the east",
+       "to the south",
+       "to the west",
+       "above",
+       "below"};
+
+	/* initialize info for different rooms here */
+	/* use (0,1,2,3,4,5) for dirs (north,east,south,west,up,down) */
+			if (ch->in_room == 17429) {
+		sprintf(doorname,"door");
+		doordir = 3;
+	} else 	if (ch->in_room == 17430) {
+		sprintf(doorname,"door");
+		doordir = 3;
+	} else 	if (ch->in_room == 17431) {
+		sprintf(doorname,"door");
+		doordir = 3;
+	} else 	if (ch->in_room == 17432) {
+		sprintf(doorname,"door");
+		doordir = 3;
+	}
+
+	rp = real_roomp(ch->in_room);
+	exitp = rp->dir_option[doordir];
+
+	if (IS_SET(exitp->exit_info, EX_CLOSED)) /* already closed, no need to run */
+		return(FALSE);
+
+	if (cmd) { /* when command is given, boom, door closed  and locked on this side */
+		SET_BIT(exitp->exit_info, EX_CLOSED);
+		SET_BIT(exitp->exit_info, EX_LOCKED);
+		sprintf(buf,"The %s %s slams shut.\n\r\n\r",doorname, dir_name[doordir]);
+		send_to_room(buf,ch->in_room);
+
+		/* other side closes too, but not locked */
+		if (exit_ok(exitp, &rp) && (back = rp->dir_option[rev_dir[doordir]]) && (back->to_room == ch->in_room)) {
+			SET_BIT(back->exit_info, EX_CLOSED);
+			sprintf(buf,"The %s %s slams shut.\n\r",doorname, dir_name[rev_dir[doordir]]);
+			send_to_room(buf, exitp->to_room);
+		}
+
+		return(FALSE);
+
+	}
 }
 
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)

@@ -1607,6 +1607,13 @@ void assign_rooms()
    { 706, climb_room },
    { 717, legendfountain },
    { 721, pick_berries },
+
+/* Rocky's Zone */
+	{17429, close_doors},
+	{17430, close_doors},
+	{17431, close_doors},
+	{17432, close_doors},
+
    /* Cthol (Xenon) */
    {40233, dispel_room},
    //{40285, fiery_alley},

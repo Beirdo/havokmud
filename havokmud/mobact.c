@@ -722,11 +722,11 @@ FindABetterWeapon(struct char_data *mob)
   for (o = real_roomp(mob->in_room)->contents; o; o = o->next_content) {
     if (best && IS_WEAPON(o)) {
       if (GetDamage(o,mob) > GetDamage(best,mob)) {
-	best = o;
+		best = o;
       }
     } else {
       if (IS_WEAPON(o)) {
-	best = o;
+		best = o;
       }
     }
   }
@@ -734,11 +734,11 @@ FindABetterWeapon(struct char_data *mob)
   for (o = mob->carrying; o; o=o->next_content) {
     if (best && IS_WEAPON(o)) {
       if (GetDamage(o,mob) > GetDamage(best,mob)) {
-	best = o;
+		best = o;
       }
     } else {
       if (IS_WEAPON(o)) {
-	best = o;
+		best = o;
       }
     }
   }
@@ -761,26 +761,24 @@ FindABetterWeapon(struct char_data *mob)
     return(FALSE);  /* nothing to choose from */
   }
 
-  if (best) {
-      /*
-	out with the old, in with the new
-      */
-      if (best->carried_by == mob) {
-	 if (mob->equipment[WIELD]) {
-            do_remove(mob, mob->equipment[WIELD]->name, 0);
-	 }
-         do_wield(mob, best->name, 0);
-      } else if (best->equipped_by == mob) {
-	/* do nothing */
-	return(TRUE);
-      } else {
-         do_get(mob, best->name, 0);
-      }
-  } else {
-    if (mob->equipment[WIELD]) {
-      do_remove(mob, mob->equipment[WIELD]->name, 0);
-    }
-  }
+	if (best) {
+      /* out with the old, in with the new */
+		if (best->carried_by == mob) {
+			if (mob->equipment[WIELD]) {
+				do_remove(mob, mob->equipment[WIELD]->name, 0);
+			}
+			do_wield(mob, best->name, 0);
+		} else if (best->equipped_by == mob) {
+			/* do nothing */
+			return(TRUE);
+		} else {
+			do_get(mob, best->name, 0);
+		}
+	} else {
+		if (mob->equipment[WIELD]) {
+			do_remove(mob, mob->equipment[WIELD]->name, 0);
+		}
+	}
 }
 
 int GetDamage(struct obj_data *w, struct char_data *ch)

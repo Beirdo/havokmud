@@ -782,7 +782,7 @@ void spell_flame_blade(byte level, struct char_data *ch,
 
   tmp_obj->name = strdup("blade flame");
   tmp_obj->short_description = strdup("a flame blade");
-  tmp_obj->description = strdup("A flame blade burns brightly here");
+  tmp_obj->description = strdup("A flame blade burns brightly here.");
 
   tmp_obj->obj_flags.type_flag = ITEM_WEAPON;
   tmp_obj->obj_flags.wear_flags = ITEM_TAKE | ITEM_WIELD;
@@ -1984,11 +1984,47 @@ void spell_heat_stuff(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {
   struct affected_type af;
+	int j = 0;
 
   assert(victim);
 
   if (affected_by_spell(victim, SPELL_HEAT_STUFF)) {
-    send_to_char("Already affected\n\r", victim);
+    send_to_char("Already affected\n\r", ch);
+    return;
+  }
+  if (IS_IMMORTAL(victim) && IS_PC(victim)) {
+    act("Your magic rebounds from the divine aura surrounding $N!", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n sends a heat spell towards $N, but it rebounds off $S divine aura!", FALSE, ch, 0, victim, TO_NOTVICT);
+    send_to_char("The heat spell aimed at you is rebounded by your divine aura.\n\r", victim);
+    af.type = SPELL_HEAT_STUFF;
+    af.duration = level;
+    af.modifier = -2;
+    af.location = APPLY_DEX;
+    af.bitvector = 0;
+
+    affect_to_char(ch, &af);
+
+    af.type = SPELL_HEAT_STUFF;
+    af.duration = level;
+    af.modifier = 0;
+    af.location = APPLY_BV2;
+    af.bitvector = AFF2_HEAT_STUFF;
+
+    affect_to_char(ch, &af);
+
+    /* all metal flagged equips zap off! */
+    for (j = 0; j< MAX_WEAR; j++) {
+	    if (ch->equipment[j]) {
+			obj = ch->equipment[j];
+			if (IS_OBJ_STAT(obj,ITEM_METAL)) {
+    			act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, ch, obj, 0, TO_CHAR);
+  				act("$p turns so hot that $n is forced to let go of it!", FALSE, ch, obj, 0, TO_ROOM);
+  				if ((obj = unequip_char(ch,j))!=NULL) {
+					obj_to_room(obj, ch->in_room);
+				}
+			}
+		}
+	}
     return;
   }
 
@@ -2007,9 +2043,23 @@ void spell_heat_stuff(byte level, struct char_data *ch,
     af.bitvector = AFF2_HEAT_STUFF;
 
     affect_to_char(victim, &af);
-    send_to_char("Your armor starts to sizzle and smoke\n\r", victim);
-    act("$N's armor starts to sizzle", FALSE, ch, 0, victim, TO_CHAR);
-    act("$N's armor starts to sizzle", FALSE, ch, 0, victim, TO_NOTVICT);
+    send_to_char("Your armor starts to sizzle and smoke.\n\r", victim);
+    act("$N's armor starts to sizzle.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$N's armor starts to sizzle.", FALSE, ch, 0, victim, TO_NOTVICT);
+
+    /* all metal flagged equips zap off! */
+    for (j = 0; j< MAX_WEAR; j++) {
+	    if (victim->equipment[j]) {
+			obj = victim->equipment[j];
+			if (IS_OBJ_STAT(obj,ITEM_METAL)) {
+    			act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, victim, obj, 0, TO_CHAR);
+  				act("$p turns so hot that $n is forced to let go of it!", FALSE, victim, obj, 0, TO_ROOM);
+  				if ((obj = unequip_char(victim,j))!=NULL) {
+					obj_to_room(obj, victim->in_room);
+				}
+			}
+		}
+	}
 
     if (!IS_PC(victim))
       if (!victim->specials.fighting)

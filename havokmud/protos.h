@@ -370,6 +370,7 @@ void do_permission(struct char_data *ch, char *argument , int cmd);
 void do_qtrans(struct char_data *ch, char *argument, int cmd);
 void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd);
 void do_setsound(struct char_data *ch, char *argument, int cmd);
+void do_goodiebag(struct char_data *ch, char *argument, int cmd);
 /* From board.c */
 
 void board_write_msg(struct char_data *ch, char *arg, int bnum);
@@ -2284,6 +2285,7 @@ int ValidRoom(struct char_data *ch );
 /* Spec_procs4.c */
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int qp_potion(struct char_data *ch, int cmd, char *arg);
+int close_doors(struct char_data *ch, struct room_data *rp, int cmd);
 
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
