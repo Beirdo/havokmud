@@ -17,7 +17,8 @@
 #include "protos.h"
 #include "utils.h"
     
-#define MAX_MESSAGE_LENGTH 2048     /* that should be enough */
+#define MAX_MESSAGE_LENGTH 2048     
+
 struct bulletin_board *bboards = NULL;
 extern struct index_data *obj_index;
 
@@ -64,10 +65,11 @@ void new_board_message(struct char_data *ch, struct bulletin_board *bd,
     CREATE(ch->desc->msg, struct bulletin_board_message, 1);
     ch->desc->msg->author = strdup(GET_NAME(ch));
     if (IS_IMMORTAL(ch)) {
-        if (reply_to == -1)
+        if (reply_to == -1) {
             sprintf(buf, "%s", (title && *title) ? title : "Untitled");
-        else
+        } else {
             sprintf(buf, "%s", (title && *title) ? title : "Untitled");
+        }
     } else if (reply_to == -1) {
         sprintf(buf, "%s", (title && *title) ? title : "Untitled");
     } else {
@@ -96,7 +98,9 @@ void new_board_message(struct char_data *ch, struct bulletin_board *bd,
     ch->desc->str = &ch->desc->msg->text;
     ch->desc->max_str = MAX_MESSAGE_LENGTH;
     SET_BIT(ch->specials.act, PLR_NODIMD);
-    // should be plr_posting
+    /*
+     * should be plr_posting
+     */
 }
 
 
@@ -123,9 +127,11 @@ void write_board_message(struct char_data *ch, char *arg,
     }
 
     if (bd == NULL) {
-        // sprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0
+        sprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+                "Bugginess in board %ld", 
+                obj_index[board->item_number].virtual);
+#endif    
         log("SOmething is wrong in a board");
         return;
     }
@@ -134,7 +140,9 @@ void write_board_message(struct char_data *ch, char *arg,
      * skip blanks 
      */ 
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
     new_board_message(ch, bd, arg, -1);
 }
@@ -150,8 +158,9 @@ bool reply_board_message(struct char_data *ch, char *arg,
     char           a1[MAX_INPUT_LENGTH];
 
     arg = one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1)))
+    if (!*a1 || !(tmessage = atoi(a1))) {
         return FALSE;
+    }
 
     if (GetMaxLevel(ch) < board->obj_flags.value[1]) {
         act("You start to write a message upon $p but quickly pull away as "
@@ -171,9 +180,11 @@ bool reply_board_message(struct char_data *ch, char *arg,
     }
 
     if (bd == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0  
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, 
+                "Bugginess in board %ld", 
+                obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in reply_board_message - bd = 0");
         return TRUE;
     }
@@ -193,10 +204,11 @@ bool reply_board_message(struct char_data *ch, char *arg,
     }
 
     if (msg == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0  
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, 
+                "Bugginess in board %ld", 
+                obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in reply_board_message - msg = 0");
         return TRUE;
     }
@@ -205,7 +217,9 @@ bool reply_board_message(struct char_data *ch, char *arg,
      * skip blanks 
      */ 
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     if (!*arg) {
@@ -221,7 +235,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
 }
 
 /*
- *  Step through the messages and renumber them after one has been
+ * Step through the messages and renumber them after one has been
  * removed. 
  */ 
 void renumber_board(struct bulletin_board *bd, short message_id) 
@@ -229,10 +243,12 @@ void renumber_board(struct bulletin_board *bd, short message_id)
     struct bulletin_board_message *msg;
 
     for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id > message_id)
+        if (msg->message_id > message_id) {
             msg->message_id--;
-        if (msg->reply_to > message_id)
+        }
+        if (msg->reply_to > message_id) {
             msg->reply_to--;
+        }
     }
     bd->num_posts--;
 }
@@ -251,7 +267,9 @@ void delete_board_message(struct bulletin_board *bd, short message_id)
      */ 
     for (msg = bd->messages; msg; msg = msg->next) {
         if (msg->reply_to == message_id) {
-            /* we do, delete it as well */
+            /* 
+             * we do, delete it as well 
+             */
             delete_board_message(bd, msg->message_id);
         }
     }
@@ -266,8 +284,10 @@ void delete_board_message(struct bulletin_board *bd, short message_id)
     }
 
     if (msg == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld", bd->board_num);
+#if 0
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, 
+                "Bugginess in board %ld", bd->board_num);
+#endif 
         log("Something went wrong in delete_board_message - msg = 0");
     return;
     }
@@ -279,10 +299,12 @@ void delete_board_message(struct bulletin_board *bd, short message_id)
         bd->messages = msg->next;
     } else {
         temp = bd->messages;
-        while (temp && (temp->next != msg))
+        while (temp && (temp->next != msg)) {
             temp = temp->next;
-        if (temp)
+        }
+        if (temp) {
             temp->next = msg->next;
+        }
     }
     free(msg->author);
     free(msg->title);
@@ -301,8 +323,9 @@ bool remove_board_message(struct char_data *ch, char *arg,
                    buf[MAX_STRING_LENGTH];
 
     one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1)))
+    if (!*a1 || !(tmessage = atoi(a1))) {
         return FALSE;
+    }
     
     /*
      * Find the board we're dealing with 
@@ -314,9 +337,11 @@ bool remove_board_message(struct char_data *ch, char *arg,
     }
 
     if (bd == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+            "Bugginess in board %ld",
+            obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in remove_board_message - bd = 0");
         return TRUE;
     }
@@ -333,9 +358,11 @@ bool remove_board_message(struct char_data *ch, char *arg,
     }
 
     if (msg == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+            "Bugginess in board %ld",
+            obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in reply_board_message - msg = 0");
         return TRUE;
     }
@@ -353,11 +380,10 @@ bool remove_board_message(struct char_data *ch, char *arg,
     send_to_char("Message removed.\r\n", ch);
     sprintf(buf, "$n just removed message %d.", tmessage);
     act(buf, FALSE, ch, NULL, NULL, TO_ROOM);
-    
-    // mprintf(line_log, 0, SEV_LOW, "%s just removed message %d from
-    // board %ld",
-    // GET_NAME(ch), tmessage,
-    // obj_index[board->item_number].virtual);
+#if 0   
+    mprintf(line_log, 0, SEV_LOW, "%s just removed message %d from board %ld",
+        GET_NAME(ch), tmessage, obj_index[board->item_number].virtual);
+#endif
     sprintf(buf, "%s just removed message %d from board %ld",
             GET_NAME(ch), tmessage,
             obj_index[board->item_number].virtual);
@@ -375,8 +401,9 @@ bool display_board_message(struct char_data * ch, char *arg,
     int            tmessage;
     char           a1[MAX_INPUT_LENGTH];
     one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1)))
+    if (!*a1 || !(tmessage = atoi(a1))) {
         return FALSE;
+    }
     if (GetMaxLevel(ch) < board->obj_flags.value[0]) {
         act("You simply cannot comprehend the alien markings upon $p.",
             TRUE, ch, board, NULL, TO_CHAR);
@@ -395,9 +422,10 @@ bool display_board_message(struct char_data * ch, char *arg,
     }
 
     if (bd == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess "
+                "in board %ld", obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in display_board_message - bd = 0");
         return TRUE;
     }
@@ -418,9 +446,10 @@ bool display_board_message(struct char_data * ch, char *arg,
     }
 
     if (msg == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0 
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
+                "board %ld", obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in display_board_message - msg = 0");
         return TRUE;
     }
@@ -453,17 +482,17 @@ void list_board_replies(struct bulletin_board *bd,
 
     for (msg = bd->messages; msg; msg = msg->next) {
         if (msg->reply_to == message_id) {
-            /* found a reply to an upper post */
-            
-            /*
+            /* 
+             * found a reply to an upper post 
+             * 
              * indent the reply according to depth 
              */ 
-            for (i = 0; i < depth; i++)
-            list_append(d, " ");
-        
+            for (i = 0; i < depth; i++) {
+                list_append(d, " ");
+            }
             /*
              *  asctime has to be difficult and return a newline in
-             * it's output, we need to get rid of it 
+             *  it's output, we need to get rid of it 
              */ 
             strncpy(buf, asctime(localtime(&msg->date)), 128);
 
@@ -487,9 +516,11 @@ void list_board_replies(struct bulletin_board *bd,
                            "[$c000c%s$c000w]\r\n",
                        msg->message_id, buf2, msg->author, buf);
             
-            // list_append(d, "$c000W%3d$c000w : %-10s
-            // [$c000R%s$c000w] -- %s\r\n", msg->message_id,
-            // msg->author, buf, msg->title);
+#if 0
+            list_append(d, "$c000W%3d$c000w : %-10s [$c000R%s$c000w] "
+                    "-- %s\r\n", msg->message_id, msg->author, buf, 
+                    msg->title);
+#endif
             list_board_replies(bd, d, msg->message_id, depth + 1);
         }
     }
@@ -497,8 +528,8 @@ void list_board_replies(struct bulletin_board *bd,
 
 /*
  *  This function lists the top-level posts and farms out to
- * list_board_replies for a recursive listing of the replies to these 
- * posts. 
+ *  list_board_replies for a recursive listing of the replies to these 
+ *  posts. 
  */ 
 void list_board_messages(struct bulletin_board *bd,
                          struct descriptor_data *d) 
@@ -509,11 +540,11 @@ void list_board_messages(struct bulletin_board *bd,
 
     for (msg = bd->messages; msg; msg = msg->next) {
         if (msg->reply_to == -1) {
-            /* top-level post */
-            
-            /*
+            /* 
+             *  top-level post 
+             *
              *  asctime has to be difficult and return a newline in
-             * it's output, we need to get rid of it 
+             *  it's output, we need to get rid of it 
              */ 
             strncpy(buf, asctime(localtime(&msg->date)), 128);
 
@@ -542,9 +573,9 @@ bool show_board(struct char_data *ch, char *arg, struct obj_data *board)
     char           a1[MAX_INPUT_LENGTH];
 
     one_argument(arg, a1);
-    if (!*a1 || !isname(a1, "board bulletin"))
+    if (!*a1 || !isname(a1, "board bulletin")) {
         return FALSE;
-    
+    }
     /*
      * See if character's level is high enough to read board 
      */ 
@@ -566,9 +597,10 @@ bool show_board(struct char_data *ch, char *arg, struct obj_data *board)
     }
 
     if (bd == NULL) {
-        // mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        // "Bugginess in board %ld",
-        // obj_index[board->item_number].virtual);
+#if 0
+        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
+                "board %ld", obj_index[board->item_number].virtual);
+#endif
         log("Something went wrong in show_board - bd = 0");
         return TRUE;
     }
@@ -611,9 +643,10 @@ void free_board(int board_num)
     }
 
     if (bd == NULL) {
-        // mprintf(line_log, LOG_BEEP, SEV_ALL,
-        // "Bulletin board #%d is non-existant according to
-        // free_board", board_num);
+#if 0
+        mprintf(line_log, LOG_BEEP, SEV_ALL, "Bulletin board #%d is "
+                "non-existant according to free_board", board_num);
+#endif
         log("Something went wrong in free_board - bd = 0");
         return;
     }
@@ -637,10 +670,12 @@ void free_board(int board_num)
         bboards = bd->next;
     } else {
         tmp = bboards;
-        while (tmp && (tmp->next != bd))
+        while (tmp && (tmp->next != bd)) {
             tmp = tmp->next;
-        if (tmp != NULL)
+        }
+        if (tmp != NULL) {
             tmp->next = bd->next;
+        }
     }
 }
 
@@ -687,8 +722,9 @@ struct bulletin_board *board_from_file(FILE * fl)
             bd->messages = msg;
         } else {
             tmp = bd->messages;
-            while (tmp->next != NULL)
+            while (tmp->next != NULL) {
                 tmp = tmp->next;
+            }
             tmp->next = msg;
         }
     }
@@ -706,7 +742,9 @@ void check_board(int board_num)
 
     for (bd = bboards; bd; bd = bd->next) {
         if (bd->board_num == board_num) {
-            /* Already in the list, just leave */
+            /* 
+             * Already in the list, just leave 
+             */
             return;
         }
     }
@@ -741,8 +779,9 @@ int board(struct char_data *ch, int cmd, char *arg,
 {
     char           a1[MAX_INPUT_LENGTH];
 
-    if ((type != PULSE_COMMAND) || (ch->desc == NULL))
+    if ((type != PULSE_COMMAND) || (ch->desc == NULL)) {
         return FALSE;
+    }
     
     /*
      *  Call me paranoid but I just want to make sure the check_board 
@@ -750,21 +789,28 @@ int board(struct char_data *ch, int cmd, char *arg,
      * boards and busy board rooms. 
      */ 
     if ((cmd != cmd_look) && (cmd != cmd_write) && (cmd != cmd_read) && 
-        (cmd != cmd_remove) && (cmd != cmd_reply) && (cmd != cmd_reload))
-    return FALSE;
+        (cmd != cmd_remove) && (cmd != cmd_reply) && (cmd != cmd_reload)) {
+        return FALSE;
+    }
+    
 
     check_board(obj_index[obj->item_number].virtual);
-    if (cmd == cmd_look)
+    if (cmd == cmd_look) {
         return show_board(ch, arg, obj);
-    if (cmd == cmd_read)
+    }
+    if (cmd == cmd_read) {
         return display_board_message(ch, arg, obj);
-    if (cmd == cmd_remove)
+    }
+    if (cmd == cmd_remove) {
         return remove_board_message(ch, arg, obj);
-    if (cmd == cmd_reply)
+    }
+    if (cmd == cmd_reply) {
         return reply_board_message(ch, arg, obj);
+    }
     if (cmd == cmd_reload) {
-        if (!IS_IMMORTAL(ch))
+        if (!IS_IMMORTAL(ch)) {
             return FALSE;
+        }
         arg = one_argument(arg, a1);
         
         /*
@@ -774,10 +820,10 @@ int board(struct char_data *ch, int cmd, char *arg,
          */ 
         if (!strcmp("board", a1)) {
             free_board(obj_index[obj->item_number].virtual);
-            
-            // mprintf(line_log, 0, SEV_LOW, "%s just reset bulletin
-            // board #%ld",
-            // GET_NAME(ch), obj_index[obj->item_number].virtual);
+#if 0 
+            mprintf(line_log, 0, SEV_LOW, "%s just reset bulletin board #%ld", 
+                    GET_NAME(ch), obj_index[obj->item_number].virtual);
+#endif
             log("Someone just reset a board");
             return TRUE;
         }

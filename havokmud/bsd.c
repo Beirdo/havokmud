@@ -319,8 +319,9 @@ void free(void *cp)
     register int    size;
     register union overhead *op;
 
-    if (cp == NULL)
+    if (cp == NULL) {
         return;
+    }
     op = (union overhead *) ((caddr_t) cp - sizeof(union overhead));
 #ifdef DEBUG
     ASSERT(op->ov_magic == MAGIC);      /* make sure it was in use */
@@ -474,7 +475,9 @@ void mstats(char *s)
     fprintf(stderr, "Memory allocation statistics %s\nfree:\t", s);
     for (i = 0; i < NBUCKETS; i++) {
         for (j = 0, p = nextf[i]; p; p = p->ov_next, j++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
         fprintf(stderr, " %d", j);
         totfree += j * (1 << (i + 3));
