@@ -6833,7 +6833,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
         /*
          * look
          */
-        if (!(strcmp(lower(arg), "ball"))) {
+        if (arg && !(strcmp(lower(arg), "ball"))) {
             send_to_char("You look deep into the crystal ball..\n\r\n\r", ch);
             if ((obj = find_tqp(1))) {
                 send_to_char("A slight glint, deep inside the crystal tells "
@@ -6854,11 +6854,11 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
          * ask 
          */
         arg = get_argument(arg, &vict_name);
-        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
+        if (!arg || !vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
             return(FALSE);
         }
 
-        if (!(strcasecmp(arg, " what is the quest?"))) {
+        if (!(strcasecmp(arg, "what is the quest?"))) {
             send_to_char("$c0006You ask him 'What is the quest?'\n\r", ch);
             do_say(vict, "Solve my quest and you shall be rewarded!", 0);
             do_say(vict, QuestList[questNumber2][questNumber].where, 0);
@@ -7078,8 +7078,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 obj2 = read_object(itemgranted, VIRTUAL);
 
                 if (!obj2) {
-                    Log("/* Error in questor mob.. Please report or make "
-                        "the items.*/");
+                    Log("Error in questor mob.. Please report or make "
+                        "the items.");
                     do_say(vict, "Blah.. Guess i don't have that.. Take this "
                                  "instead.", 0);
                     itemgranted = 4050;

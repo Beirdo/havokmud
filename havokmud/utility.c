@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define NEWHELP_FILE      "ADD_HELP"    /* New help to add */
 #define QUESTLOG_FILE     "quest_log"   /* Log of quest transactions */
@@ -5035,8 +5036,6 @@ int SiteLock(char *site)
 #ifdef SITELOCK
     int             i,
                     length;
-    extern int      numberhosts;
-    extern char     hostlist[MAX_BAN_HOSTS][256];
 
     length = strlen(site);
 

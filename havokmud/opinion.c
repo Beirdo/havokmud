@@ -18,6 +18,8 @@
 
 extern struct index_data *mob_index;
 extern struct room_data *world;
+extern char    *pc_class_types[];
+extern char    *RaceName[];
 
 void FreeHates(struct char_data *ch)
 {
@@ -268,6 +270,78 @@ int Hates(struct char_data *ch, struct char_data *v)
     return (FALSE);
 }
 
+void ShowHates(struct char_data *ch, char *buffer)
+{
+    char buf[MAX_STRING_LENGTH];
+    char buf2[MAX_STRING_LENGTH];
+    struct char_list *i;
+    struct char_data *mob;
+
+    if( !ch || !buffer ) {
+        return;
+    }
+
+    buf[0] = '\0';
+
+    if (IS_SET(ch->hatefield, HATE_CHAR)) {
+        strcat(buf, "Char: ");
+        if (ch->hates.clist) {
+            for (i = ch->hates.clist; i; i = i->next) {
+                if( i->name ) {
+                    strcat(buf, i->name);
+                    if( i->next ) {
+                        strcat( buf, ", " );
+                    }
+                }
+            }
+        } else {
+            strcat(buf, "None");
+        }
+        strcat(buf, "  ");
+    }
+
+    if (IS_SET(ch->hatefield, HATE_RACE) && ch->hates.race != -1) {
+        sprinttype(ch->hates.race, RaceName, buf2);
+        sprintf( buf, "%sRace: %s  ", buf, buf2 );
+    }
+
+    if (IS_SET(ch->hatefield, HATE_SEX)) {
+        sprintf( buf, "%sSex: %s  ", buf, 
+                (ch->hates.sex ? (ch->hates.sex == 1 ? "Male" : "Female") : 
+                 "Neutral") );
+    }
+
+    if (IS_SET(ch->hatefield, HATE_GOOD)) {
+        strcat( buf, "Align: Good  " );
+    }
+
+    if (IS_SET(ch->hatefield, HATE_EVIL)) {
+        strcat( buf, "Align: Evil  " );
+    }
+
+    if (IS_SET(ch->hatefield, HATE_CLASS)) {
+        sprintbit((unsigned) ch->hates.class, pc_class_types, buf2);
+        sprintf( buf, "%sClass: %s  ", buf, buf2 );
+    }
+
+    if (IS_SET(ch->hatefield, HATE_VNUM)) {
+        mob = read_mobile( ch->hates.vnum, VIRTUAL );
+        if( mob ) {
+            strcpy( buf2, GET_NAME(mob) );
+            extract_char(mob);
+        } else {
+            strcpy( buf2, "Unknown" );
+        }
+        sprintf( buf, "%sMob: %s (%d)  ", buf, buf2, ch->hates.vnum );
+    }
+
+    if( !buf[0] ) {
+        strcpy( buf, "None" );
+    }
+
+    strcat( buffer, buf );
+}
+
 int Fears(struct char_data *ch, struct char_data *v)
 {
     struct char_list *i;
@@ -330,6 +404,78 @@ int Fears(struct char_data *ch, struct char_data *v)
     }
 
     return (FALSE);
+}
+
+void ShowFears(struct char_data *ch, char *buffer)
+{
+    char buf[MAX_STRING_LENGTH];
+    char buf2[MAX_STRING_LENGTH];
+    struct char_list *i;
+    struct char_data *mob;
+
+    if( !ch || !buffer ) {
+        return;
+    }
+
+    buf[0] = '\0';
+
+    if (IS_SET(ch->fearfield, HATE_CHAR)) {
+        strcat(buf, "Char: ");
+        if (ch->fears.clist) {
+            for (i = ch->fears.clist; i; i = i->next) {
+                if( i->name ) {
+                    strcat(buf, i->name);
+                    if( i->next ) {
+                        strcat( buf, ", " );
+                    }
+                }
+            }
+        } else {
+            strcat(buf, "None");
+        }
+        strcat(buf, "  ");
+    }
+
+    if (IS_SET(ch->fearfield, HATE_RACE) && ch->fears.race != -1) {
+        sprinttype(ch->fears.race, RaceName, buf2);
+        sprintf( buf, "%sRace: %s  ", buf, buf2 );
+    }
+
+    if (IS_SET(ch->fearfield, HATE_SEX)) {
+        sprintf( buf, "%sSex: %s  ", buf, 
+                (ch->fears.sex ? (ch->fears.sex == 1 ? "Male" : "Female") : 
+                 "Neutral") );
+    }
+
+    if (IS_SET(ch->fearfield, HATE_GOOD)) {
+        strcat( buf, "Align: Good  " );
+    }
+
+    if (IS_SET(ch->fearfield, HATE_EVIL)) {
+        strcat( buf, "Align: Evil  " );
+    }
+
+    if (IS_SET(ch->fearfield, HATE_CLASS)) {
+        sprintbit((unsigned) ch->fears.class, pc_class_types, buf2);
+        sprintf( buf, "%sClass: %s  ", buf, buf2 );
+    }
+
+    if (IS_SET(ch->fearfield, HATE_VNUM)) {
+        mob = read_mobile( ch->fears.vnum, VIRTUAL );
+        if( mob ) {
+            strcpy( buf2, GET_NAME(mob) );
+            extract_char(mob);
+        } else {
+            strcpy( buf2, "Unknown" );
+        }
+        sprintf( buf, "%sMob: %s (%d)  ", buf, buf2, ch->fears.vnum );
+    }
+
+    if( !buf[0] ) {
+        strcpy( buf, "None" );
+    }
+
+    strcat( buffer, buf );
 }
 
 int RemFeared(struct char_data *ch, struct char_data *pud)
@@ -477,7 +623,6 @@ int AddFears(struct char_data *ch, int parm_type, int parm)
 /*
  * FindAHatee crashes alot.. fix it!! 
  */
-#if 1
 struct char_data *FindAHatee(struct char_data *ch)
 {
     struct char_data *tmp_ch;
@@ -509,7 +654,10 @@ struct char_data *FindAHatee(struct char_data *ch)
     while (tmp_ch) {
         if (Hates(ch, tmp_ch) && CAN_SEE(ch, tmp_ch) &&
             ch->in_room == tmp_ch->in_room) {
+#if 0
             if (ch != tmp_ch || (IS_PC(tmp_ch) && IS_IMMORTAL(tmp_ch))) {
+#endif
+            if (ch != tmp_ch) {
                 return (tmp_ch);
             } else {
                 RemHated(ch, tmp_ch);
@@ -520,7 +668,8 @@ struct char_data *FindAHatee(struct char_data *ch)
     }
     return (0);
 }
-#else
+
+#if 0
 /*
  * Stock muds FindAHatee 
  */

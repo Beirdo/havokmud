@@ -3160,11 +3160,6 @@ void            do_land(struct char_data *ch);
 void            do_launch(struct char_data *ch);
 int             HasFlyItem(struct char_data *ch);
 
-#if 0
-/* What the hell is this here for???!?!? - Beirdo */
-#define random() rand()
-#define srandom(seed) srand(seed)
-#endif
 
 void            stop_follower_quiet(struct char_data *ch);
 /*
@@ -3582,11 +3577,6 @@ void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj);
 void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj);
-#if 0
-void cast_globe_darkness(int level, struct char_data *ch, char *arg,
-                         int type, struct char_data *tar_ch,
-                         struct obj_data *tar_obj);
-#endif
 void save_board(struct bulletin_board *bd, int vnum);
 void            UpdateHelpMenu(struct char_data *ch);
 int open_door(struct char_data *ch, int dir);
@@ -3595,96 +3585,6 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total);
 void go_direction(struct char_data *ch, int dir);
 int pc_num_class(int clss);
 
-#if 0
-void cast_globe_minor_inv(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_globe_major_inv(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_incendiary_cloud(int level, struct char_data *ch, char *arg,
-                           int type, struct char_data *victim,
-                           struct obj_data *tar_obj);
-void cast_disintegrate(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *victim,
-                       struct obj_data *tar_obj);
-void cast_suit_of_bone(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj);
-void cast_protection_from_good(int level, struct char_data *ch, char
-                               *arg, int type, struct char_data *tar_ch,
-                               struct obj_data *tar_obj);
-void cast_spectral_shield(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_eye_of_the_dead(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_endure_cold(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj);
-void cast_vampiric_embrace(int level, struct char_data *ch, char *arg,
-                           int type, struct char_data *tar_ch,
-                           struct obj_data *tar_obj);
-void cast_chillshield(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj);
-void cast_nullify(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj);
-void cast_life_tap(int level, struct char_data *ch, char *arg,
-                   int type, struct char_data *tar_ch,
-                   struct obj_data *tar_obj);
-void cast_disease(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj);
-void cast_siphon_strength(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_life_draw(int level, struct char_data *ch, char *arg,
-                    int type, struct char_data *tar_ch,
-                    struct obj_data *tar_obj);
-void cast_decay(int level, struct char_data *ch, char *arg,
-                int type, struct char_data *tar_ch,
-                struct obj_data *tar_obj);
-void cast_soul_steal(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj);
-void cast_life_leech(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj);
-void cast_finger_of_death(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_mist_of_death(int level, struct char_data *ch, char *arg,
-                        int type, struct char_data *tar_ch,
-                        struct obj_data *tar_obj);
-void cast_shadow_step(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj);
-void cast_scourge_warlock(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj);
-void cast_prot_fire(int level, struct char_data *ch, char *arg, int type,
-                    struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_cold(int level, struct char_data *ch, char *arg, int type,
-                    struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_elec(int level, struct char_data *ch, char *arg, int type,
-                    struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_prot_energy(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj);
-void cast_blade_barrier(int level, struct char_data *ch, char *arg,
-                        int type, struct char_data *tar_ch,
-                        struct obj_data *tar_obj);
-void cast_giant_growth(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj);
-void cast_protection_from_evil_group(int level, struct char_data *ch,
-                                     char *arg, int type,
-                                     struct char_data *tar_ch,
-                                     struct obj_data *tar_obj);
-#endif
 int ValidMove(struct char_data *ch, int cmd);
 void spell_wizard_eye(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
@@ -4167,6 +4067,9 @@ int             SaveZoneFile(FILE * fp, int start_room, int end_room);
 FILE           *OpenZoneFile(struct char_data *c, int zone);
 void            insert_object(struct obj_data *obj, long vnum);
 void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
+
+void ShowHates(struct char_data *ch, char *buffer);
+void ShowFears(struct char_data *ch, char *buffer);
 
 #if defined( __CYGWIN__ )
 /* Since stupid cygwin doesn't define this in the standard place */

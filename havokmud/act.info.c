@@ -2417,10 +2417,9 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
 void do_score(struct char_data *ch, char *argument, int cmd)
 {
     struct time_info_data playing_time;
-    static char     buf[1000],
-                    buf2[1000];
+    char            buf[MAX_STRING_LENGTH];
     struct time_info_data my_age;
-    char            buff[50];
+    char            buff[MAX_STRING_LENGTH];
     struct time_info_data real_time_passed(time_t t2, time_t t1);
     int             x;
     char            color[10],
@@ -2429,12 +2428,13 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     dlog("in do_score");
 
     if (IS_SET(ch->player.user_flags, OLD_COLORS)) {
-        sprintf(color, "$c000p");
-        sprintf(color2, "$c000C");
+        strcpy(color, "$c000p");
+        strcpy(color2, "$c000C");
     } else {
-        sprintf(color, "$c000B");
-        sprintf(color2, "$c000w");
+        strcpy(color, "$c000B");
+        strcpy(color2, "$c000w");
     }
+
     age2(ch, &my_age);
 
     if (GET_TITLE(ch)) {
@@ -2450,7 +2450,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
               DescAge(my_age.year, GET_RACE(ch)), color, color2,
               playing_time.day, color, color2, playing_time.hours, color,
               color2,
-              (((my_age.month == 0) && (my_age.year == 0)) ?
+              (my_age.month == 0 && my_age.year == 0 ?
                "$c000w It's your birthday today.\n\r" : ""));
 
     if (!ch->player.speaks) {
@@ -2476,24 +2476,21 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     ch_printf(ch, "%sYour alignment is: %s%s\n\r", color, color2,
               AlignDesc(GET_ALIGNMENT(ch)), color);
 
-    if (!(GetMaxLevel(ch) > MAX_MORT ||
-          (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF)))) {
-        buf[0] = '\0';
-        sprintf(buff, "%s", formatNum(GET_LEADERSHIP_EXP(ch)));
+    if (!IS_IMMORTAL(ch) && IS_PC(ch)) {
+        strcpy(buff, formatNum(GET_LEADERSHIP_EXP(ch)));
         ch_printf(ch, "%sCombat experience:%s %s %s    Leadership experience: "
                       "%s%s%s\n\r",
                   color, color2, formatNum(GET_EXP(ch)), color, color2,
                   buff, color);
 
+        buf[0] = '\0';
         for (x = 0; x < MAX_CLASS; x++) {
             if (HasClass(ch, pc_num_class(x))) {
-                sprintf(buf2, "%s     Level: %s%2d  %-15s%s", color,
+                sprintf(buf, "%s%s     Level: %s%2d  %-15s%s", buf, color,
                         color2, GET_LEVEL(ch, x), classes[x].name, color);
-                strcat(buf, buf2);
-                sprintf(buf2, "Exp needed: %s%s\n\r", color2,
-                        formatNum((classes[x].titles[GET_LEVEL(ch, x) + 1].exp) -
+                sprintf(buf, "%sExp needed: %s%s\n\r", buf, color2,
+                        formatNum((classes[x].titles[GET_LEVEL(ch, x)+1].exp) -
                                   GET_EXP(ch)));
-                strcat(buf, buf2);
             }
         }
         send_to_char(buf, ch);
@@ -2512,12 +2509,6 @@ void do_score(struct char_data *ch, char *argument, int cmd)
               color, color2, ch->specials.m_kills, color, color2,
               ch->specials.m_deaths, color, color2, ch->specials.a_kills,
               color, color2, ch->specials.a_deaths, color);
-    /*
-     * ch_printf(ch,"%sKills: %s%d%s Deaths: %s%d%s Arena Kills: %s%d%s
-     * Arena Deaths: %s%d%s\n\r" ,ch->specials.m_kills,
-     * ch->specials.m_deaths, ch->specials.a_kills,
-     * ch->specials.a_deaths);
-     */
 
     /*
      * Drow fight -4 in lighted rooms!
@@ -2527,10 +2518,12 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         ch_printf(ch, "$c0015The light is the area causes you great "
                       "pain!\n\r");
     }
+
     if IS_AFFECTED2(ch, AFF2_WINGSBURNED) {
         send_to_char("$c0009Your burned and tattered wings are a source of "
                      "great pain.\n\r", ch);
     }
+
     if (IS_SET(ch->specials.act, PLR_NOFLY)) {
         ch_printf(ch, "%sYou are on the ground in spite of your fly item.\n\r",
                   color2);
@@ -2615,10 +2608,6 @@ void do_score(struct char_data *ch, char *argument, int cmd)
             send_to_char("$c000BYou are $c000wthirsty$c000B...\n\r", ch);
 		}
     }
-    /*
-     * send_to_char("\n\r\n\r$c000BType '$c000wpinfo$c000B' to see list of
-     * current character flags.\n\r",ch);
-     */
 }
 
 void do_time(struct char_data *ch, char *argument, int cmd)

@@ -1440,7 +1440,7 @@ void command_interpreter(struct char_data *ch, char *argument)
         }
     }
 
-    if (!argument || !*argument || *argument == '\n') {
+    if (!argument || *argument == '\n') {
         return;
     } 
     
@@ -1536,6 +1536,7 @@ void command_interpreter(struct char_data *ch, char *argument)
         case POSITION_STANDING:
             send_to_char("Fraid you can't do that\n\r", ch);
             break;
+
         }
         free(tmparg);
         return;

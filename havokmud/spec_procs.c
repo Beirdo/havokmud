@@ -1691,7 +1691,8 @@ int janitor(struct char_data *ch, int cmd, char *arg,
 int tormentor(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob, int type)
 {
-    if (!cmd && IS_IMMORTAL(ch) && !IS_PC(ch)) {
+    /* Is in hell, blocks all commands except if the char is an immortal */
+    if (!cmd || IS_IMMORTAL(ch) || !IS_PC(ch)) {
         return (FALSE);
     }
 

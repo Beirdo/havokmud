@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define NEWHELP_FILE      "ADD_HELP"
 /*
@@ -30,38 +31,10 @@ int             ZoneCleanable(int zone);
 /*
  * external vars
  */
-extern long     TempDis;
-extern long     SystemFlags;
-extern struct weather_data weather_info;
-extern const char *languagelist[];
-extern char    *system_flag_types[];
-extern struct zone_data *zone_table;
-extern int      top_of_zone_table;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db[];
-#endif
-extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
-extern struct index_data *mob_index;
-extern struct index_data *obj_index;
-extern int      top_of_p_table;
-extern int      top_of_mobt;
-extern int      top_of_objt;
-extern struct int_app_type int_app[26];
-extern struct wis_app_type wis_app[26];
-extern struct player_index_element *player_table;
-extern char    *room_bits[];
-extern struct str_app_type str_app[];
-extern char    *motd;
-extern char    *wmotd;
-extern const struct class_def classes[MAX_CLASS];
-
 
 char            EasySummon = 1;
-int             MinArenaLevel,
-                MaxArenaLevel,
+int             MinArenaLevel = 0,
+                MaxArenaLevel = 0,
                 Quadrant = 0;
 int             ArenaNoGroup,
                 ArenaNoAssist,
@@ -682,10 +655,6 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
     char            buf[255];
     char           *arg1;
     char           *arg2;
-
-    extern int      numberhosts;
-    extern char     hostlist[MAX_BAN_HOSTS][256];
-
 #endif
 
     dlog("in do_wizlock");
@@ -1801,10 +1770,30 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
             sprintf(buf, "%sFollowers are:", color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
-            for (fol = k->followers; fol; fol = fol->next) {
-                sprintf(buf, "%s    %s", color2, fol->follower->player.name);
+            if( k->followers ) {
+                for (fol = k->followers; fol; fol = fol->next) {
+                    sprintf(buf, "%s    %s", color2, 
+                                             fol->follower->player.name);
+                    act(buf, FALSE, ch, 0, 0, TO_CHAR);
+                }
+            } else {
+                sprintf(buf, "%s  None", color2 );
                 act(buf, FALSE, ch, 0, 0, TO_CHAR);
             }
+
+            /*
+             * Hates
+             */
+            sprintf(buf, "%sHates:  %s", color1, color2);
+            ShowHates(k, buf);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+            /*
+             * Fears
+             */
+            sprintf(buf, "%sFears:  %s", color1, color2);
+            ShowFears(k, buf);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
             /*
              * immunities
@@ -3680,73 +3669,87 @@ void roll_abilities(struct char_data *ch)
         ch->abilities.chr = 8;
     }
     ch->abilities.str_add = 0;
-    if (GET_RACE(ch) == RACE_MOON_ELF) {
-        ch->abilities.dex++;
-        ch->abilities.con--;
-    }
-    if (GET_RACE(ch) == RACE_AVARIEL) {
-        ch->abilities.dex += 2;
-        ch->abilities.con -= 2;
-    }
-    if (GET_RACE(ch) == RACE_SEA_ELF) {
-        ch->abilities.str++;
-        ch->abilities.con--;
-    }
-    if (GET_RACE(ch) == RACE_WILD_ELF) {
-        ch->abilities.str++;
-        ch->abilities.intel--;
-        ch->abilities.dex++;
-        ch->abilities.wis--;
-    }
-    if (GET_RACE(ch) == RACE_GOLD_ELF) {
-        ch->abilities.intel++;
-        ch->abilities.wis--;
-        ch->abilities.dex++;
-        ch->abilities.con--;
-    } else if (GET_RACE(ch) == RACE_DWARF || GET_RACE(ch) == RACE_DARK_DWARF) {
-        ch->abilities.con++;
-        ch->abilities.dex--;
-    } else if (GET_RACE(ch) == RACE_ROCK_GNOME) {
-        ch->abilities.intel++;
-        ch->abilities.wis--;
-    } else if (GET_RACE(ch) == RACE_DEEP_GNOME) {
-        ch->abilities.intel--;
-        ch->abilities.wis++;
-        ch->abilities.dex++;
-        ch->abilities.chr -= 2;
-    } else if (GET_RACE(ch) == RACE_FOREST_GNOME) {
-        ch->abilities.intel--;
-        ch->abilities.wis++;
-        ch->abilities.dex++;
-        ch->abilities.str--;
-    } else if (GET_RACE(ch) == RACE_HALFLING || GET_RACE(ch) == RACE_GOBLIN) {
-        ch->abilities.dex++;
-        ch->abilities.str--;
-    } else if (GET_RACE(ch) == RACE_DROW) {
-        ch->abilities.dex += 2;
-        ch->abilities.con--;
-        ch->abilities.chr--;
-    } else if (GET_RACE(ch) == RACE_HALF_OGRE) {
-        ch->abilities.str++;
-        ch->abilities.con++;
-        ch->abilities.dex--;
-        ch->abilities.intel--;
-    } else if (GET_RACE(ch) == RACE_ORC) {
-        ch->abilities.str++;
-        ch->abilities.con++;
-        ch->abilities.chr -= 2;
-        ch->abilities.intel -= 2;
-    } else if (GET_RACE(ch) == RACE_HALF_ORC) {
-        ch->abilities.con++;
-        ch->abilities.chr--;
-    } else if (GET_RACE(ch) == RACE_HALF_GIANT || GET_RACE(ch) == RACE_TROLL) {
-        ch->abilities.str += 2;
-        ch->abilities.con++;
-        ch->abilities.dex--;
-        ch->abilities.wis--;
-        ch->abilities.intel--;
-    }
 
+    switch (GET_RACE(ch)) {
+        case RACE_MOON_ELF:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_AVARIEL:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_SEA_ELF:
+            ch->abilities.dex += 2;
+            ch->abilities.con -= 2;
+        case RACE_WILD_ELF:
+            ch->abilities.str++;
+            ch->abilities.intel--;
+            ch->abilities.dex++;
+            ch->abilities.wis--;
+            break;
+        case RACE_GOLD_ELF:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_DWARF:
+        case RACE_DARK_DWARF:
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            break;
+        case RACE_ROCK_GNOME:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+        case RACE_DEEP_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.chr -= 2;
+            break;
+        case RACE_FOREST_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_HALFLING:
+        case RACE_GOBLIN:
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_DROW:
+            ch->abilities.dex += 2;
+            ch->abilities.con--;
+            ch->abilities.chr--;
+            break;
+        case RACE_HALF_OGRE:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.intel--;
+            break;
+        case RACE_ORC:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.chr -= 2;
+            ch->abilities.intel -= 2;
+            break;
+        case RACE_HALF_ORC:
+            ch->abilities.con++;
+            ch->abilities.chr--;
+        case RACE_HALF_GIANT:
+        case RACE_TROLL:
+            ch->abilities.str += 2;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.wis--;
+            ch->abilities.intel--;
+            break;
+        default:
+            break;
+    }
     ch->points.max_hit = HowManyClasses(ch) * 10;
 
     /*
@@ -3756,25 +3759,30 @@ void roll_abilities(struct char_data *ch)
         ch->points.max_hit += 15;
     }
 
+    
     /*
      * class specific hps stuff
      */
-    if (HasClass(ch, CLASS_BARBARIAN)) {
-        ch->points.max_hit += 10;
-    }
-
-    if (HasClass(ch, CLASS_MAGIC_USER)) {
+    if (HasClass(ch, CLASS_MAGIC_USER) || 
+        HasClass(ch, CLASS_SORCERER) ||
+        HasClass(ch, CLASS_NECROMANCER)) {
         ch->points.max_hit += number(1, 4);
     }
-    if (HasClass(ch, CLASS_SORCERER)) {
-        ch->points.max_hit += number(1, 4);
+    if (HasClass(ch, CLASS_THIEF) || 
+        HasClass(ch, CLASS_PSI) ||
+        HasClass(ch, CLASS_MONK)) {
+        ch->points.max_hit += number(1, 6);
     }
-    if (HasClass(ch, CLASS_CLERIC)) {
+    if (HasClass(ch, CLASS_CLERIC) ||
+        HasClass(ch, CLASS_DRUID)) {
         ch->points.max_hit += number(1, 8);
     }
-    if (HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN |
-                     CLASS_PALADIN | CLASS_RANGER)) {
+    if (HasClass(ch, CLASS_WARRIOR) || 
+        HasClass(ch, CLASS_BARBARIAN) ||
+        HasClass(ch, CLASS_PALADIN) || 
+        HasClass(ch, CLASS_RANGER)) {
         ch->points.max_hit += number(1, 10);
+        
         if (ch->abilities.str == 18) {
             ch->abilities.str_add = number(0, 100);
         }
@@ -3792,18 +3800,7 @@ void roll_abilities(struct char_data *ch)
         }
     }
 
-    if (HasClass(ch, CLASS_THIEF | CLASS_PSI)) {
-        ch->points.max_hit += number(1, 6);
-    }
-    if (HasClass(ch, CLASS_MONK)) {
-        ch->points.max_hit += number(1, 6);
-    }
-    if (HasClass(ch, CLASS_DRUID)) {
-        ch->points.max_hit += number(1, 8);
-    }
-
     ch->points.max_hit /= HowManyClasses(ch);
-
     ch->tmpabilities = ch->abilities;
 }
 
@@ -5261,7 +5258,7 @@ void do_beep(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!generic_find(argument, FIND_CHAR_WORLD, ch, &victim, &dummy)) {
+    if (!generic_find(name, FIND_CHAR_WORLD, ch, &victim, &dummy)) {
         send_to_char("No such person in the world.\n\r", ch);
         return;
     }
@@ -7497,7 +7494,22 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg2);
     argument = get_argument(argument, &arg3);
 
-    if (!arg1 || !arg2 || !arg3 || !strcmp(arg1, "help")) {
+    if( !arg1 ) {
+        if( MinArenaLevel != 0 && MaxArenaLevel != 0 ) {
+            MinArenaLevel = 0;
+            MaxArenaLevel = 0;
+
+            sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
+            send_to_all(buf);
+            sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
+            Log(buf);
+        } else {
+            send_to_char("The arena isn't open, numbskull!\n\r", ch);
+        }
+        return;
+    }
+
+    if (!arg2 || !arg3 || !strcmp(arg1, "help")) {
         send_to_char("Usage: startarena <minlevel> <maxlevel> <quadrant> "
                      "<flags>\n\r", ch);
         send_to_char("       flags are optional, divide by spaces:\n\r", ch);
@@ -7529,8 +7541,8 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
     }
 
     if ((tmp1 == 0 && tmp2 == 0)) {
-        MinArenaLevel = tmp1;
-        MaxArenaLevel = tmp2;
+        MinArenaLevel = 0;
+        MaxArenaLevel = 0;
 
         sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
         send_to_all(buf);
@@ -7540,9 +7552,17 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
         /*
          * first set flags to be FALSE
          */
-        ArenaNoGroup = ArenaNoAssist = ArenaNoDispel = ArenaNoMagic = 0;
-        ArenaNoWSpells = ArenaNoSlay = ArenaNoFlee = ArenaNoHaste = 0;
-        ArenaNoPets = ArenaNoTravel = ArenaNoBash = 0;
+        ArenaNoGroup = 0;
+        ArenaNoAssist = 0;
+        ArenaNoDispel = 0;
+        ArenaNoMagic = 0;
+        ArenaNoWSpells = 0;
+        ArenaNoSlay = 0;
+        ArenaNoFlee = 0;
+        ArenaNoHaste = 0;
+        ArenaNoPets = 0;
+        ArenaNoTravel = 0;
+        ArenaNoBash = 0;
 
         while (argument) {
             argument = get_argument(argument, &flag);
