@@ -2876,6 +2876,17 @@ void spell_disease(byte level, struct char_data *ch, struct char_data *victim, s
 
 	assert(victim && ch);
 
+	if(victim == ch) {
+		send_to_char("Disease yourself? Sick mind!\n\r",ch);
+		return;
+	}
+
+	if(IS_PC(victim) && !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+		send_to_char("Sorry. No can do.\n\r",ch);
+		return;
+	}
+
+
 	if (IS_SET(victim->M_immune,IMM_POISON)) {
 		send_to_char("Unknown forces prevent your body from the disease!\n\r",victim);
 		send_to_char("Your quarry seems to resist your attempt to disease it!\n\r",ch);
@@ -2915,7 +2926,8 @@ void spell_disease(byte level, struct char_data *ch, struct char_data *victim, s
 
 void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-	int dam;
+	int dam, dicen = 1;
+	char buf[100];
 
 	assert(victim && ch);
 
@@ -2927,12 +2939,23 @@ void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, 
 		return;
 	}
 
+	if(IS_PC(victim) && !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+		send_to_char("I think not. Go pester monsters instead.\n\r",ch);
+		return;
+	}
+
 	if(IsUndead(victim)) {
 		act("But $N doesn't have any life in $M!",FALSE, ch, 0, victim, TO_CHAR);
 		return;
 	}
 
-	dam = dice(3,6) + 2; /* avg 12.5 | max 20 | min 5 */
+
+	dicen = (int)level/10 + 2;
+//sprintf(buf,"dice = %d",dicen);
+//log(buf);
+	dam = dice(dicen,5) + 1; /* avg 12.5 | max 20 | min 5 */
+//sprintf(buf,"dam = %dD5 + 3 = %d",dicen,dam);
+//log(buf);
 	damage(ch, victim, dam, SPELL_LIFE_TAP);
 
 	if(IsResist(victim, IMM_DRAIN))
@@ -2974,6 +2997,11 @@ void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *vict
 	if (level <0 || level >ABS_MAX_LVL)
 		return;
 
+	if(victim != ch) {
+		send_to_char("You can only cast this spell upon yourself.\n\r",ch);
+		return;
+	}
+
 	  if (!affected_by_spell(victim, SPELL_SUIT_OF_BONE)) {
 	    af.type      = SPELL_SUIT_OF_BONE;
 	    af.duration  = 24;
@@ -2993,6 +3021,11 @@ void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *v
 	struct affected_type af;
 
 	assert(victim && ch);
+
+	if(victim != ch) {
+		send_to_char("You can only cast this spell upon yourself.\n\r",ch);
+		return;
+	}
 
 	if (!affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
 		act("A suit of battlescarred armor surrounds $N.",TRUE, ch, 0, victim, TO_NOTVICT);
@@ -3022,10 +3055,26 @@ void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data 
 	if (level <0 || level >ABS_MAX_LVL)
 		return;
 
+	if (victim == ch) {
+		send_to_char("That won't help much.\n\r", ch);
+		return;
+	}
 
-	  if (saves_spell(victim, SAVING_SPELL) ||
-		   affected_by_spell(victim, SPELL_BLINDNESS))
-			return;
+	if(IS_PC(victim) && !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+		send_to_char("I think not. Go pester monsters instead.\n\r",ch);
+		return;
+	}
+
+	if (IS_AFFECTED(victim, SPELL_BLINDNESS)) {
+		send_to_char("Nothing new seems to happen.\n\r", ch);
+		return;
+	}
+
+	if (saves_spell(victim, SAVING_SPELL)) {
+		act("$n's eyes briefly turn dark, then return to normal.", FALSE, victim, 0, 0, TO_ROOM);
+		send_to_char("A gulf of darkness threatens do blind you, but you withstand the spell.\n\r", victim);
+		return;
+	}
 
 	  act("Darkness seems to overcome $n's eyes!", TRUE, victim, 0, 0, TO_ROOM);
 	  send_to_char("The darkness blinds you!!\n\r", victim);
@@ -3065,12 +3114,6 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	    send_to_char("That's not an undead creature!\n\r", ch);
 	    return;
 	  }
-
-//	  if (IsPerson(victim)) {
-//	    send_to_char("You can't charm people! Try charm person for that!\n\r", ch);
-//	    return;
-//	  }
-
 
 	  if (GetMaxLevel(victim) > GetMaxLevel(ch)+3) {
 	    FailCharm(victim, ch);
@@ -3149,7 +3192,7 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	int healpoints;
 
-	if ( (victim->master==ch) && IsUndead(victim) ) {
+	if ( (victim->master==ch) && IsUndead(victim) && IS_NPC(victim)) {
 
 		act("$n points at $N who then crumbles to the ground.", FALSE, ch, 0,victim, TO_ROOM);
 		send_to_char("You point at the undead creature, and then it suddenly crumbles to the ground.\n\r", ch);
@@ -3250,7 +3293,7 @@ void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *vi
 	if (obj) {
 		send_to_char("The shadows start to encase it, but nothing happens.",ch);
 	} else {
-		if (!affected_by_spell(victim, SPELL_INVISIBLE)) {
+		if (!affected_by_spell(victim, SPELL_INVISIBLE) && !affected_by_spell(victim, SPELL_GATHER_SHADOWS)) {
 
 			act("$n gathers the shadows around $m and slowly fades from view.", TRUE, victim,0,0,TO_ROOM);
 			send_to_char("You gather shadows around you and blend with them.\n\r", victim);
@@ -3261,6 +3304,8 @@ void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *vi
 			af.location  = APPLY_AC;
 			af.bitvector = AFF_INVISIBLE;
 			affect_to_char(victim, &af);
+		} else {
+			send_to_char("Nothing seems to happen.\n\r", victim);
 		}
 	}
 }
@@ -3320,7 +3365,7 @@ void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victi
     af.modifier  = IMM_COLD;
     af.location  = APPLY_IMMUNE; /* res */
     af.bitvector = 0;
-    af.duration  = (int)level/10;
+    af.duration  = (int)level/5;
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
@@ -3335,7 +3380,7 @@ void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victi
 
 void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-	int dam;
+	int dam, dicen = 1;
 
 	assert(victim && ch);
 
@@ -3352,7 +3397,8 @@ void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim,
 		return;
 	}
 
-	dam = dice(5,6) + 5; /* avg 22.5 | max 35 | min 10 */
+	dicen = (int)level/10 + 3;
+	dam = dice(dicen,6) + 3; /* avg 22.5 | max 35 | min 10 */
 	damage(ch, victim, dam, SPELL_LIFE_DRAW);
 
 	if(IsResist(victim, IMM_DRAIN))
@@ -3794,7 +3840,7 @@ void spell_soul_steal(byte level, struct char_data *ch, struct char_data *victim
 
 void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-	int dam;
+	int dam, dicen = 1;
 
 	assert(victim && ch);
 
@@ -3811,7 +3857,8 @@ void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim
 		return;
 	}
 
-	dam = dice(8,6) + 7; /* avg 35 | max 55 | min 15 */
+	dicen = (int)level/10 + 4;
+	dam = dice(dicen,7) + 3; /* avg 35 | max 55 | min 15 */
 	damage(ch, victim, dam, SPELL_LIFE_LEECH);
 
 	if(IsResist(victim, IMM_DRAIN))
