@@ -7,7 +7,7 @@
 #include "protos.h"
 
 /*
- * Global data 
+ * Global data
  */
 
 extern struct room_data *world;
@@ -20,8 +20,10 @@ extern struct weather_data weather_info;
 extern struct time_info_data time_info;
 extern struct index_data *obj_index;
 
+extern int      ArenaNoPets;
+
 /*
- * Extern procedures 
+ * Extern procedures
  */
 
 void            update_pos(struct char_data *victim);
@@ -29,329 +31,180 @@ void            clone_char(struct char_data *ch);
 bool            saves_spell(struct char_data *ch, sh_int spell);
 void            add_follower(struct char_data *ch,
                              struct char_data *victim);
+
 void            ChangeWeather(int change);
 void            raw_unlock_door(struct char_data *ch,
                                 struct room_direction_data *exitp,
                                 int door);
 int             NoSummon(struct char_data *ch);
 
-void cast_unholyword(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-        spell_holyword(-level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in unholy word.");
-        break;
-    }
-}
+/*
+ * I think this is the highest level you get a new poly, but I ain't sure..
+ */
 
-void cast_numb_dead(int level, struct char_data *ch, char *arg,
-                    int type, struct char_data *tar_ch,
-                    struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        spell_numb_dead(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("Serious screw-up in cast_numb_dead");
-        break;
-    }
-}
+#define MAX_DRUID_POLY 16       /* max number of Druid polies */
+#define FG_TEMPLATE 6
 
-void cast_binding(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-        spell_binding(level, ch, 0, 0);
-        break;
-    case SPELL_TYPE_SCROLL:
-        if (tar_obj)
-            return;
-        spell_binding(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("Serious screw-up in cast_binding");
-        break;
-    }
-}
+struct PolyType DruidList[MAX_DRUID_POLY] = {
+    {"bear", 10, 9024},
+    {"spider", 10, 20010},
+    {"lamia", 10, 3648},
+    {"lizard", 10, 6822},
+    {"bear", 12, 9056},
+    {"gator", 12, 9054},
+    {"basilisk", 13, 7043},
+#if 0
+    {"snog", 14, 27008},
+#endif
+    {"snake", 15, 6517},
+    {"spider", 15, 6113},
+    {"lizard", 16, 6505},
+    {"allosaurus", 18, 21801},
+    {"tiger", 28, 9027},
+    {"mulichort", 30, 15830},
+    {"tiger", 35, 9055},
+    {"lion", 35, 13718},
+    {"salamander", 35, 25506}
+};
 
-void cast_decay(int level, struct char_data *ch, char *arg,
-                int type, struct char_data *tar_ch,
-                struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        spell_decay(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("Serious screw-up in cast_decay");
-        break;
-    }
-}
+#define LAST_DRUID_MOB 16       /* last level you get a new poly type */
 
-void cast_shadow_step(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        spell_shadow_step(level, ch, 0, 0);
-        break;
-    default:
-        Log("Serious screw-up in cast_shadow_step");
-        break;
-    }
-}
 
-void cast_cavorting_bones(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        spell_cavorting_bones(level, ch, 0, tar_obj);
-        break;
-    default:
-        Log("Serious screw-up in cast_cavorting_bones");
-        break;
-    }
-}
 
-void cast_mist_of_death(int level, struct char_data *ch, char *arg,
-                        int type, struct char_data *tar_ch,
-                        struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_mist_of_death(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_mist_of_death");
-        break;
-    }
-}
 
-void cast_nullify(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj)
+void spell_flesh_golem(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
 {
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_nullify(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_nullify");
-        break;
-    }
-}
+    struct affected_type af;
+    struct room_data *rp;
+    struct char_data *mob;
+    int             lev = 1,
+                    mlev,
+                    mhps,
+                    mtohit;
 
-void cast_dark_empathy(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_dark_empathy(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_dark_empathy");
-        break;
+    if ((rp = real_roomp(ch->in_room)) == NULL) {
+        return;
     }
-}
-
-void cast_eye_of_the_dead(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_eye_of_the_dead(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_eye_of_the_dead");
-        break;
+    if (!ch) {
+        Log("screw up in flesh golem, no caster found");
+        return;
     }
-}
 
-void cast_soul_steal(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_soul_steal(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_soul_steal");
-        break;
+    if (!obj) {
+        send_to_char("What would you use for a component?\n\r", ch);
+        return;
     }
-}
 
-void cast_life_leech(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_life_leech(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_life_leech");
-        break;
+    if (!IS_CORPSE(obj)) {
+        send_to_char("That's not a corpse.\n\r", ch);
+        return;
     }
-}
 
-void cast_dark_pact(int level, struct char_data *ch, char *arg,
-                    int type, struct char_data *tar_ch,
-                    struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_dark_pact(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_dark_pact");
-        break;
+    if (affected_by_spell(ch, SPELL_FLESH_GOLEM)) {
+        send_to_char("You do not yet have the mental reserves to create "
+                     "another flesh golem.\n\r", ch);
+        return;
     }
-}
 
-void cast_darktravel(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        if (!tar_ch) {
-            tar_ch = ch;
+    if (IS_SET(rp->room_flags, TUNNEL)) {
+        send_to_char("There's no room to create a flesh golem.\n\r", ch);
+        return;
+    }
+
+    if (A_NOPETS(ch)) {
+        send_to_char("The arena rules do not permit you to animate "
+                     "corpses!\n\r", ch);
+        return;
+    }
+
+    act("$n stares at $p while phrasing some arcane incantations.", TRUE,
+        ch, obj, 0, TO_ROOM);
+    act("You stare at $p while mumbling some arcane incantations.", TRUE,
+        ch, obj, 0, TO_CHAR);
+    lev = GetMaxLevel(ch);
+
+    mob = read_mobile(FG_TEMPLATE, VIRTUAL);
+    if (!mob) {
+        Log("No template found for flesh golem spell (no mobile with vnum 6)");
+        send_to_char("Screw up in this spell, no flesh golem template "
+                     "found\n\r", ch);
+        return;
+    }
+
+    if (lev > 45) {
+        mlev = number(30, 40);
+        mhps = number(140, 200);
+        mtohit = 8;
+    } else if (lev > 37) {
+        mlev = number(25, 35);
+        mhps = number(90, 120);
+        mtohit = 6;
+    } else if (lev > 29) {
+        mlev = number(20, 29);
+        mhps = number(30, 60);
+        mtohit = 4;
+    } else if (lev > 21) {
+        mlev = number(14, 20);
+        mhps = number(10, 40);
+        mtohit = 2;
+    } else {
+        mlev = number(4, 6);
+        mhps = number(0, 20);
+        mtohit = 0;
+    }
+
+    mob->player.level[2] = mlev;
+    mob->points.max_hit = mob->points.max_hit + mhps;
+    mob->points.hit = mob->points.max_hit;
+    mob->points.hitroll = mob->points.hitroll + mtohit;
+    char_to_room(mob, ch->in_room);
+    extract_obj(obj);
+
+    act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0,
+        TO_ROOM);
+
+    if (too_many_followers(ch)) {
+        act("$N takes one look at the size of your posse and just says no!",
+            TRUE, ch, 0, mob, TO_CHAR);
+        act("$N takes one look at the size of $n's posse and just says no!",
+            TRUE, ch, 0, mob, TO_NOTVICT);
+        act("You take one look at the size of $n's posse and just say no!",
+            TRUE, ch, 0, mob, TO_VICT);
+    } else {
+        /*
+         * charm it for a while
+         */
+        if (mob->master) {
+            stop_follower(mob);
         }
-        spell_darktravel(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_darktravel");
-        break;
+        add_follower(mob, ch);
+        af.type = SPELL_CHARM_PERSON;
+        if (IS_PC(ch) || ch->master) {
+            af.duration = GET_CHR(ch);
+            af.modifier = 0;
+            af.location = 0;
+            af.bitvector = AFF_CHARM;
+            affect_to_char(mob, &af);
+        } else {
+            SET_BIT(mob->specials.affected_by, AFF_CHARM);
+        }
     }
+    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+        REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+    }
+    if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+        SET_BIT(mob->specials.act, ACT_SENTINEL);
+    }
+
+    af.type = SPELL_FLESH_GOLEM;
+    af.duration = 12;
+    af.modifier = 0;
+    af.location = 0;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
 }
 
-void cast_vampiric_embrace(int level, struct char_data *ch, char *arg,
-                           int type, struct char_data *tar_ch,
-                           struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_vampiric_embrace(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_vampiric_embrace");
-        break;
-    }
-}
-
-void cast_bind_affinity(int level, struct char_data *ch, char *arg,
-                        int type, struct char_data *tar_ch,
-                        struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_bind_affinity(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_bind_affinity");
-        break;
-    }
-}
-
-void cast_scourge_warlock(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_scourge_warlock(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_scourge_warlock");
-        break;
-    }
-}
-
-void cast_finger_of_death(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_finger_of_death(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_finger_of_death");
-        break;
-    }
-}
 
 void cast_flesh_golem(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
@@ -370,327 +223,10 @@ void cast_flesh_golem(int level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_chillshield(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_chillshield(level, ch, 0, 0);
-        break;
-    default:
-        Log("serious screw-up in cast_chillshield");
-        break;
-    }
-}
 
-void cast_cold_light(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_cold_light(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in cold light.");
-        break;
-    }
-}
-
-void cast_disease(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_disease(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in disease.");
-        break;
-    }
-}
-
-void cast_invis_to_undead(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_invis_to_undead(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in invis_to_undead.");
-        break;
-    }
-}
-
-void cast_life_tap(int level, struct char_data *ch, char *arg,
-                   int type, struct char_data *tar_ch,
-                   struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_life_tap(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in _life_tap.");
-        break;
-    }
-}
-
-void cast_suit_of_bone(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_suit_of_bone(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in suit_of_bone.");
-        break;
-    }
-}
-
-void cast_spectral_shield(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_spectral_shield(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in spectral_shield.");
-        break;
-    }
-}
-
-void cast_clinging_darkness(int level, struct char_data *ch, char *arg,
-                            int type, struct char_data *tar_ch,
-                            struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_clinging_darkness(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in clinging_darkness.");
-        break;
-    }
-}
-
-void cast_dominate_undead(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_dominate_undead(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in dominate_undead.");
-        break;
-    }
-}
-
-void cast_unsummon(int level, struct char_data *ch, char *arg,
-                   int type, struct char_data *tar_ch,
-                   struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_unsummon(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in unsummon.");
-        break;
-    }
-}
-
-void cast_siphon_strength(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_siphon_strength(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in siphon_strength.");
-        break;
-    }
-}
-
-void cast_gather_shadows(int level, struct char_data *ch, char *arg,
-                         int type, struct char_data *tar_ch,
-                         struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_gather_shadows(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in gather_shadows.");
-        break;
-    }
-}
-
-void cast_mend_bones(int level, struct char_data *ch, char *arg,
-                     int type, struct char_data *tar_ch,
-                     struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_mend_bones(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in mend_bones.");
-        break;
-    }
-}
-
-void cast_trace_corpse(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_trace_corpse(level, ch, 0, arg);
-        break;
-    default:
-        Log("serious screw-up in trace_corpse.");
-        break;
-    }
-}
-
-void cast_endure_cold(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_endure_cold(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in endure_cold.");
-        break;
-    }
-}
-
-void cast_life_draw(int level, struct char_data *ch, char *arg,
-                    int type, struct char_data *tar_ch,
-                    struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_life_draw(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in life_draw.");
-        break;
-    }
-}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
+
+
