@@ -7375,8 +7375,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
                     x, name, clan_list[x].shortname);
 #endif
             sprintf(buf, "$c000c[$c000w%2d%s] $c000w%s   $c000c"
-                         "[$c000w %s $c000c]\n\r", 
-                    x, "$c000c", name, clan_list[x].shortname);
+                         "[$c000w%s%s]\n\r", 
+                    x, "$c000c", name, clan_list[x].shortname, "$c000c");
             send_to_char(buf, ch);
             x++;
         }
