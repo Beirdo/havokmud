@@ -350,16 +350,18 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
   if (!(fl = fopen(buf, "w")))  {
        perror("saving PC's objects");
        assert(0);
-  }
+       //.. rent directory not made temporary for cygwin. Change back before port...(GH)
+       //printf("Error accessing pc objects");
+  } else {
 
-  rewind(fl);
+	  rewind(fl);
 
-  strcpy(st->owner, GET_NAME(ch));
+	  strcpy(st->owner, GET_NAME(ch));
 
-  WriteObjs(fl, st);
+	  WriteObjs(fl, st);
 
-  fclose(fl);
-
+	  fclose(fl);
+	}
 }
 
 
