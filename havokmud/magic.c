@@ -643,37 +643,27 @@ void spell_teleport(byte level, struct char_data *ch,
 void spell_bless(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj)
 {
-  struct affected_type af;
+	struct affected_type af;
 
-  assert(ch && (victim || obj));
-if (level <0 || level >ABS_MAX_LVL)
-	return;
+	assert(ch && (victim || obj));
 
-  if (obj) {
-    if ( (5*GET_LEVEL(ch,CLERIC_LEVEL_IND) > GET_OBJ_WEIGHT(obj)) &&
-	(GET_POS(ch) != POSITION_FIGHTING) &&
-	!IS_OBJ_STAT(obj, ITEM_ANTI_GOOD)) {
-      SET_BIT(obj->obj_flags.extra_flags, ITEM_BLESS);
-      act("$p briefly glows.",FALSE,ch,obj,0,TO_CHAR);
-    }
-  } else {
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
 
-    if ((GET_POS(victim) != POSITION_FIGHTING) &&
-	(!affected_by_spell(victim, SPELL_BLESS))) {
+	if ((GET_POS(victim) != POSITION_FIGHTING) && (!affected_by_spell(victim, SPELL_BLESS))) {
 
-      send_to_char("You feel righteous.\n\r", victim);
-      af.type      = SPELL_BLESS;
-      af.duration  = 6;
-      af.modifier  = 1;
-      af.location  = APPLY_HITROLL;
-      af.bitvector = 0;
-      affect_to_char(victim, &af);
+		send_to_char("You feel righteous.\n\r", victim);
+		af.type      = SPELL_BLESS;
+		af.duration  = 6;
+		af.modifier  = 1;
+		af.location  = APPLY_HITROLL;
+		af.bitvector = 0;
+		affect_to_char(victim, &af);
 
-      af.location = APPLY_SAVING_SPELL;
-      af.modifier = -1;                 /* Make better */
-      affect_to_char(victim, &af);
-    }
-  }
+		af.location = APPLY_SAVING_SPELL;
+		af.modifier = -1;                 /* Make better */
+		affect_to_char(victim, &af);
+	}
 }
 
 

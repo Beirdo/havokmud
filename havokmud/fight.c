@@ -704,28 +704,29 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
 
   GET_ALIGNMENT(ch) -= change;
 
-  if (HasClass(ch, CLASS_DRUID)  && (GetMaxLevel(ch)<LOW_IMMORTAL) ) {
-    if (GET_ALIGNMENT(ch) > 600 || GET_ALIGNMENT(ch) < -600) {
-      send_to_char("Pentak, Patron of Druids and Rangers, has excommunicated you for your heresies.\n\r", ch);
-      send_to_char("You are forever more a mere cleric!\n\r", ch);
-      REMOVE_BIT(ch->player.class, CLASS_DRUID);
-      if (!HasClass(ch, CLASS_CLERIC)) {
-	GET_LEVEL(ch, CLERIC_LEVEL_IND) = GET_LEVEL(ch, DRUID_LEVEL_IND);
-      }
-      GET_LEVEL(ch, DRUID_LEVEL_IND) = 0;
-      SET_BIT(ch->player.class, CLASS_CLERIC);
-      /* Used for the Dr/Ra Multiclass */
-      if(HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch)<LOW_IMMORTAL) ) {
-      	send_to_char("Pentak, Patron of Druids and Rangers, has excommunicated you for you heresies.\n\r", ch);
-         send_to_char("You are forever more a mere warrior!\n\r", ch);
-         REMOVE_BIT(ch->player.class, CLASS_RANGER);
-         if (!HasClass(ch, CLASS_WARRIOR))
-      		GET_LEVEL(ch, WARRIOR_LEVEL_IND) = GET_LEVEL(ch, RANGER_LEVEL_IND);
-         GET_LEVEL(ch, RANGER_LEVEL_IND) = 0;
-         SET_BIT(ch->player.class, CLASS_WARRIOR);
-      }
-    }
-  }
+	if (HasClass(ch, CLASS_DRUID)  && (GetMaxLevel(ch)<LOW_IMMORTAL) ) {
+		if (GET_ALIGNMENT(ch) > 350 || GET_ALIGNMENT(ch) < -350) {
+			send_to_char("Pentak, Patron of Druids and Rangers, has excommunicated you for your heresies.\n\r", ch);
+			send_to_char("You are forever more a mere cleric!\n\r", ch);
+			REMOVE_BIT(ch->player.class, CLASS_DRUID);
+			if (!HasClass(ch, CLASS_CLERIC)) {
+				GET_LEVEL(ch, CLERIC_LEVEL_IND) = GET_LEVEL(ch, DRUID_LEVEL_IND);
+			}
+			GET_LEVEL(ch, DRUID_LEVEL_IND) = 0;
+			SET_BIT(ch->player.class, CLASS_CLERIC);
+
+			/* Used for the Dr/Ra Multiclass */
+			if(HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch)<LOW_IMMORTAL) ) {
+				send_to_char("Pentak, Patron of Druids and Rangers, has excommunicated you for your heresies.\n\r", ch);
+				send_to_char("You are forever more a mere warrior!\n\r", ch);
+				REMOVE_BIT(ch->player.class, CLASS_RANGER);
+				if (!HasClass(ch, CLASS_WARRIOR))
+					GET_LEVEL(ch, WARRIOR_LEVEL_IND) = GET_LEVEL(ch, RANGER_LEVEL_IND);
+				GET_LEVEL(ch, RANGER_LEVEL_IND) = 0;
+				SET_BIT(ch->player.class, CLASS_WARRIOR);
+			}
+		}
+	}
 
 
   if (HasClass(ch, CLASS_PALADIN)  && (GetMaxLevel(ch)<LOW_IMMORTAL) ) {

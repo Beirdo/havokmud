@@ -533,7 +533,6 @@ typedef struct {
 #define ITEM_MAGIC          BV06//64
 #define ITEM_NODROP         BV07//128
 
-#define ITEM_BLESS         BV08//256
 #define ITEM_ANTI_NECROMANCER    BV08   /*New necro class.. uses old bless field */
 
 #define ITEM_ANTI_GOOD     BV09//512 /* not usable by good people    */

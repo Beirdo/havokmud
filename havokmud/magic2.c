@@ -1436,9 +1436,6 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		if ( IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE) )
 			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
 
-		if ( IS_SET(obj->obj_flags.extra_flags, ITEM_BLESS))
-			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_BLESS);
-
 		if (level >= 45) {              /* if level 45> then they can do this */
 			if ( IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC))
 				REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);

@@ -361,12 +361,7 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
   switch (type) {
   case SPELL_TYPE_SPELL:
     if (tar_obj) {        /* It's an object */
-      if ( IS_SET(tar_obj->obj_flags.extra_flags, ITEM_BLESS) ) {
-	send_to_char("Nothing seems to happen.\n\r", ch);
-	return;
-      }
-      spell_bless(level,ch,0,tar_obj);
-
+		return;
     } else {              /* Then it is a PC | NPC */
 
       if ( affected_by_spell(tar_ch, SPELL_BLESS) ||
@@ -385,10 +380,7 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
     break;
   case SPELL_TYPE_SCROLL:
     if (tar_obj) {        /* It's an object */
-      if ( IS_SET(tar_obj->obj_flags.extra_flags, ITEM_BLESS) )
 	return;
-      spell_bless(level,ch,0,tar_obj);
-
     } else {              /* Then it is a PC | NPC */
 
       if (!tar_ch) tar_ch = ch;
@@ -401,10 +393,7 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
     break;
   case SPELL_TYPE_WAND:
     if (tar_obj) {        /* It's an object */
-      if ( IS_SET(tar_obj->obj_flags.extra_flags, ITEM_BLESS) )
 	return;
-      spell_bless(level,ch,0,tar_obj);
-
     } else {              /* Then it is a PC | NPC */
 
       if ( affected_by_spell(tar_ch, SPELL_BLESS) ||

@@ -4540,7 +4540,7 @@ int IsDarkOutside(struct room_data *rp)
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
 if ((IS_OBJ_STAT(obj_object,ITEM_GLOW))  || (IS_OBJ_STAT(obj_object,ITEM_HUM)) ||
-   (IS_OBJ_STAT(obj_object,ITEM_MAGIC)) || (IS_OBJ_STAT(obj_object,ITEM_BLESS)) ||
+   (IS_OBJ_STAT(obj_object,ITEM_MAGIC)) ||
    (IS_OBJ_STAT(obj_object,ITEM_NODROP)) )
     return(TRUE); else
     return(FALSE);
