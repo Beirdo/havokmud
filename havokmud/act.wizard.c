@@ -1228,461 +1228,433 @@ dlog("in do_goto");
 
 void do_stat(struct char_data *ch, char *argument, int cmd)
 {
-  extern char *spells[];
-  struct affected_type *aff;
-  char arg1[MAX_STRING_LENGTH];
-  char buf[MAX_STRING_LENGTH];
-  char buf2[MAX_STRING_LENGTH];
-  struct room_data *rm=0;
-  struct char_data *k=0;
-  struct obj_data  *j=0;
-  struct obj_data  *j2=0;
-  struct extra_descr_data *desc;
-  struct follow_type *fol;
-  int i, virtual;
-  int i2, count;
-  bool found;
-  char buff[50];
-  /* for objects */
-  extern char *item_types[];
-  extern char *wear_bits[];
-  extern char *extra_bits[];
-  extern char *drinks[];
+	extern char *spells[];
+	struct affected_type *aff;
+	char arg1[MAX_STRING_LENGTH];
+	char buf[MAX_STRING_LENGTH];
+	char buf2[MAX_STRING_LENGTH];
+	struct room_data *rm=0;
+	struct char_data *k=0;
+	struct obj_data  *j=0;
+	struct obj_data  *j2=0;
+	struct extra_descr_data *desc;
+	struct follow_type *fol;
+	int i, virtual;
+	int i2, count;
+	bool found;
+	char buff[50];
+	/* for objects */
+	extern char *item_types[];
+	extern char *wear_bits[];
+	extern char *extra_bits[];
+	extern char *drinks[];
+	/* for rooms */
+	extern char *dirs[];
+	extern char *exit_bits[];
+	extern char *sector_types[];
+	/* for chars */
+	extern char *equipment_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *special_user_flags[];
+	extern char *apply_types[];
+	extern char *pc_class_types[];
+	extern char *npc_class_types[];
+	extern char *action_bits[];
+	extern char *procedure_bits[];
+	extern char *player_bits[];
+	extern char *position_types[];
+	extern char *connected_types[];
+	extern char *RaceName[];
+	extern const char *class_names[];
+	extern struct str_app_type str_app[];
+	extern const struct clan clan_list[MAX_CLAN];
 
-  /* for rooms */
-  extern char *dirs[];
+	char color1[10], color2[10], color3[10];
 
-  extern char *exit_bits[];
-  extern char *sector_types[];
-
-  /* for chars */
-  extern char *equipment_types[];
-  extern char *affected_bits[];
-  extern char *affected_bits2[];
-  extern char *immunity_names[];
-  extern char *special_user_flags[];
-  extern char *apply_types[];
-  extern char *pc_class_types[];
-  extern char *npc_class_types[];
-  extern char *action_bits[];
-  extern char *procedure_bits[];
-  extern char *player_bits[];
-  extern char *position_types[];
-  extern char *connected_types[];
-  extern char *RaceName[];
-  extern const char *class_names[];
-  extern struct str_app_type str_app[];
-  extern const struct clan clan_list[MAX_CLAN];
 dlog("in do_stat");
 
-
-  if (IS_NPC(ch))
-    return;
-
-  only_argument(argument, arg1);
-
-  /* no argument */
-  if (!*arg1) {
-    send_to_char("Stats on who or what?\n\r",ch);
-    return;
-  } else {
-    /* stats on room */
-    if (!str_cmp("room", arg1)) {
-      rm = real_roomp(ch->in_room);
-      sprintf(buf, "Room name: %s, Of zone : %ld. V-Number : %ld, R-number : %ld (%d)\n\r",
-	      rm->name, rm->zone, rm->number, ch->in_room, rm->special);
-      send_to_char(buf, ch);
-
-      sprinttype(rm->sector_type,sector_types,buf2);
-      sprintf(buf, "Sector type : %s ", buf2);
-      send_to_char(buf, ch);
-
-      strcpy(buf,"Special procedure : ");
-      strcat(buf,(rm->funct) ? "Exists\n\r" : "No\n\r");
-      send_to_char(buf, ch);
-
-      send_to_char("Room flags: ", ch);
-      sprintbit((unsigned long) rm->room_flags,room_bits,buf);
-      strcat(buf,"\n\r");
-      send_to_char(buf,ch);
-
-      send_to_char("Description:\n\r", ch);
-      send_to_char(rm->description, ch);
-
-      strcpy(buf, "Extra description keywords(s): ");
-      if(rm->ex_description) {
-	strcat(buf, "\n\r");
-	for (desc = rm->ex_description; desc; desc = desc->next) {
-	  strcat(buf, desc->keyword);
-	  strcat(buf, "\n\r");
-	}
-	strcat(buf, "\n\r");
-	send_to_char(buf, ch);
-      } else {
-	strcat(buf, "None\n\r");
-	send_to_char(buf, ch);
-      }
-
-      strcpy(buf, "------- Chars present -------\n\r");
-      for (k = rm->people; k; k = k->next_in_room)
-	{
-	  if (CAN_SEE(ch,k)) {
-	  strcat(buf, GET_NAME(k));
-	  strcat(buf,(!IS_NPC(k) ? "(PC)\n\r" : (!IS_MOB(k) ? "(NPC)\n\r" : "(MOB)\n\r")));
-	  }
-	}
-      strcat(buf, "\n\r");
-      send_to_char(buf, ch);
-
-      strcpy(buf, "--------- Contents ---------\n\r");
-      for (j = rm->contents; j; j = j->next_content)
-	{
-	  strcat(buf, j->name);
-	  strcat(buf, "\n\r");
-	}
-      strcat(buf, "\n\r");
-      send_to_char(buf, ch);
-
-	  if(rm->tele_time > 0) {
-	      send_to_char("--------- Teleport ---------\n\r",ch);
-
-		  ch_printf(ch," Teleport to room %d after %d seconds.(%d)\n\r",
-	  	  	rm->tele_targ,
-	  		rm->tele_time/10,
-	  		rm->tele_cnt);
-
-	 }
-
-      send_to_char("------- Exits defined -------\n\r", ch);
-      for (i = 0; i <= 5; i++) {
-	if (rm->dir_option[i]) {
-	  if (rm->dir_option[i]->keyword) {
-	    sprintf(buf,"Direction %s . Keyword : %s\n\r",
-		    dirs[i], rm->dir_option[i]->keyword);
-	    send_to_char(buf, ch);
-	  } else {
-	    sprintf(buf,"Direction %s \n\r",   dirs[i]);
-	    send_to_char(buf, ch);
-	  }
-	  strcpy(buf, "Description:\n\r  ");
-	  if(rm->dir_option[i]->general_description)
-	    strcat(buf, rm->dir_option[i]->general_description);
-	  else
-	    strcat(buf,"UNDEFINED\n\r");
-	  send_to_char(buf, ch);
-	  sprintbit((unsigned) rm->dir_option[i]->exit_info,exit_bits,buf2);
-	  sprintf(buf, "Exit flag: %s \n\rKey no: %ld\n\rTo room (R-Number): %ld",
-		  buf2, rm->dir_option[i]->key,
-		  rm->dir_option[i]->to_room);
-	  send_to_char(buf, ch);
-	  sprintf(buf,"\r\n");
-	  if(rm->dir_option[i]->open_cmd!=-1)
-	    sprintf(buf," OpenCommand: %ld\r\n",rm->dir_option[i]->open_cmd);
-	  send_to_char(buf, ch);
-	}
-      }
-      return;
-    }
-
-    count = 1;
-
-    /* mobile in world  PERSON! */
-    if ((k = get_char_vis_world(ch, arg1, &count))!=NULL){
-
-      struct time_info_data ma;
-
-      switch(k->player.sex) {
-      case SEX_NEUTRAL :
-	strcpy(buf,"$c0015NEUTRAL-SEX");
-	break;
-      case SEX_MALE :
-	strcpy(buf,"$c0015MALE");
-	break;
-      case SEX_FEMALE :
-	strcpy(buf,"$c0015FEMALE");
-	break;
-	default :
-	  strcpy(buf,"$c0015ILLEGAL-SEX!!");
-	break;
-      }
-
-      sprintf(buf2, " $c0014%s $c0005- Name : $c0015%s $c0005[R-Number $c0015%ld$c0005], In room [$c0015%ld$c0005]",
-	      (!IS_NPC(k) ? "PC" : (!IS_MOB(k) ? "NPC" : "MOB")),
-	      GET_NAME(k), k->nr, k->in_room);
-      strcat(buf, buf2);
-      act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      if (IS_MOB(k)) {
-	sprintf(buf, "$c0005V-Number [$c0015%ld$c0005]", mob_index[k->nr].virtual);
-       act(buf,FALSE,ch,0,0,TO_CHAR);
-      }
-
-      strcpy(buf,"$c0005Short description: $c0015");
-      strcat(buf, (k->player.short_descr ? k->player.short_descr : "None"));
-      act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      strcpy(buf,"$c0005Title:$c0015 ");
-      strcat(buf, (k->player.title ? k->player.title : "None"));
-      act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf,"$c0005Long description: $c0015%s",k->player.long_descr?k->player.long_descr:"None");
-      act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      if (IS_NPC(k)) {
-	strcpy(buf,"$c0005Monster Class:$c0015 ");
-	sprinttype(k->player.class,npc_class_types,buf2);
-      } else {
-	strcpy(buf,"$c0005Class:$c0015 ");
-	sprintbit((unsigned)k->player.class,pc_class_types, buf2);
-      }
-      strcat(buf, buf2);
-      act(buf,FALSE,ch,0,0,TO_CHAR);
-
-sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0014%d$c0005/$c0014%d$c0005] Alignment[$c0014%d$c0005]",
-	      k->player.level[0], k->player.level[1],
-	      k->player.level[2], k->player.level[3],
-	      k->player.level[4], k->player.level[5],
-	      k->player.level[6], k->player.level[7],
-	      k->player.level[8], k->player.level[9],
-	      k->player.level[10],k->player.level[11],
-	      k->player.level[12],GET_ALIGNMENT(k));
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-ch_printf(ch,"$c0005Remort Class: $c000W%s$c000P.\n\r", class_names[k->specials.remortclass]);
-
-sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%d$c0005]secs",
-	      k->player.time.birth,
-	      k->player.time.logon,
-	      k->player.time.played);
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      age2(k, &ma);
-
-sprintf(buf,"$c0005Age: [$c0014%d$c0005] Y, [$c0014%d$c0005] M, [$c0014%d$c0005] D, [$c0014%d$c0005] H. ",
-	      ma.year, ma.month, ma.day, ma.hours);
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-
-      sprintf(buf,"$c0005 Height [$c0014%d$c0005]cm, Wgt [$c0014%d$c0005]pounds NumAtks[$c0014%.1f$c000p+($c000C%.2f$c000p)$c0005]"
-      	, GET_HEIGHT(k), GET_WEIGHT(k),k->mult_att,
-			 ch->equipment[WIELD]?(float)ch->equipment[WIELD]->speed/100:0);
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf,"$c0005Str:[$c0014%d$c0005/$c0015%d$c0005] Int:[$c0014%d$c0005] Ws:[$c0014%d$c0005] Dex:[$c0014%d$c0005] Con:[$c0014%d$c0005] Ch:[$c0014%d$c0005]",
-	      GET_STR(k), GET_ADD(k),
-	      GET_INT(k),
-	      GET_WIS(k),
-	      GET_DEX(k),
-	      GET_CON(k),
-	      GET_CHR(k));
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf,"$c0005Mana:[$c0014%d$c0005/$c0015%d$c0005+$c0011%d$c0005] Hit:[$c0014%d$c0005/$c0015%d$c0005+$c0011%d$c0005] Move:[$c0014%d$c0005/$c0015%d$c0005+$c0011%d$c0005]",
-	      GET_MANA(k),mana_limit(k),mana_gain(k),
-	      GET_HIT(k),hit_limit(k),hit_gain(k),
-	      GET_MOVE(k),move_limit(k),move_gain(k) );
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-sprintf(buff,"%s",formatNum(GET_EXP(k)));
-sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%s$c0005], Exp: [$c0014%s$c0005], Hitroll: [$c0014%d$c0005+($c0015%d$c0005)], Damroll: [$c0014%d$c0005+($c0015%d$c0005)] sf[$c0014%d$c0005]",
-	      GET_AC(k),
-	      formatNum(GET_GOLD(k)),
-	      buff,
-	      k->points.hitroll,str_app[STRENGTH_APPLY_INDEX(k)].tohit,
-	      k->points.damroll,str_app[STRENGTH_APPLY_INDEX(k)].todam,
-	      k->specials.spellfail);
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-
-if(!IS_NPC(k)) {
-sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0007%s$c0005]",
-	      formatNum(GET_LEADERSHIP_EXP(k)),  clan_list[GET_CLAN(k)].name  );
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-}
-
-
-      sprinttype(GET_POS(k),position_types,buf2);
-      sprintf(buf,"$c0005Position: $c0014%s$c0005, Fighting: $c0014%s",buf2,
-	      ((k->specials.fighting) ? GET_NAME(k->specials.fighting) : "Nobody") );
-      if (k->desc) {
-	sprinttype(k->desc->connected,connected_types,buf2);
-	strcat(buf,", $c0005Connected: ");
-	strcat(buf,buf2);
-      }
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-      strcpy(buf,"$c0005Default position:$c0014 ");
-      sprinttype((k->specials.default_pos),position_types,buf2);
-      strcat(buf, buf2);
-      if (IS_NPC(k))    {
-	strcat(buf,"$c0005, NPC Action flags:$c0014 ");
-	sprintbit(k->specials.act,action_bits,buf2);
-      }  else   {
-	strcat(buf,"$c0005, PC flags:$c0014 ");
-	sprintbit(k->specials.act,player_bits,buf2);
-      }
-
-strcat(buf, buf2);
-
-sprintf(buf2,"$c0005, Timer [$c0014%d$c0005]", k->specials.timer);
-strcat(buf, buf2);
-
-act(buf,FALSE,ch,0,0,TO_CHAR);
-	if (IS_NPC(k))    {
-		sprintf(buf,"$c0005Mobile common procedure:  $c0014%s$c0005.", procedure_bits[k->specials.proc]);
-		act(buf,FALSE,ch,0,0,TO_CHAR);
-	}
-      if (IS_MOB(k)) {
-	    strcpy(buf, "$c0005Mobile special procedure: $c0014");
-	strcat(buf, (mob_index[k->nr].func ? "Exists " : "None "));
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-      }
-
-      if (IS_NPC(k)) {
-	sprintf(buf, "$c0005NPC Bare Hand Damage $c0015%d$c0014d$c0015%d$c0005.",
-		k->specials.damnodice, k->specials.damsizedice);
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-      }
-
-      sprintf(buf,"$c0005Carried weight: $c0014%d$c0005   Carried items: $c0014%d ",
-	      IS_CARRYING_W(k),
-	      IS_CARRYING_N(k) );
-
-      for(i=0,i2=0;i<MAX_WEAR;i++)
-	if (k->equipment[i]) i2++;
-      sprintf(buf2,"$c0005Items in equipment: $c0014%d", i2);
-      strcat(buf,buf2);
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf,"$c0005Apply saving throws: [$c0014%d$c0005] [$c0014%d$c0005] [$c0014%d$c0005] [$c0014%d$c0005] [$c0014%d$c0005] ",
-	      k->specials.apply_saving_throw[0],
-	      k->specials.apply_saving_throw[1],
-	      k->specials.apply_saving_throw[2],
-	      k->specials.apply_saving_throw[3],
-	      k->specials.apply_saving_throw[4]);
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf, "$c0005Thirst: $c0014%d$c0005, Hunger: $c0014%d$c0005, Drunk: $c0014%d",
-	      k->specials.conditions[THIRST],
-	      k->specials.conditions[FULL],
-	      k->specials.conditions[DRUNK]);
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-
-      sprintf(buf, "$c0005Master is '$c0014%s$c0005'    ",
-	      ((k->master) ? GET_NAME(k->master) : "NOBODY"));
-
-	act(buf,FALSE,ch,0,0,TO_CHAR);
-
-     sprintf(buf, "$c0005Followers are:");
-     act(buf, FALSE, ch,0,0,TO_CHAR);
-      for(fol=k->followers; fol; fol = fol->next) {
-	sprintf(buf, "$c0014    %s", fol->follower->player.name);
-	act(buf, FALSE, ch, 0, 0, TO_CHAR);
-     }
-
-      /* immunities */
-    if (k->M_immune) {
-       send_to_char("Immune to:",ch);
-       sprintbit(k->M_immune, immunity_names, buf);
-       strcat(buf,"\n\r");
-       send_to_char(buf,ch);
-      }
-
-      /* resistances */
-if (k->immune) {
-      send_to_char("Resistant to:",ch);
-      sprintbit(k->immune, immunity_names, buf);
-      strcat(buf,"\n\r");
-      send_to_char(buf,ch);
-    }
-
-      /* Susceptible */
-if (k->susc) {
-      send_to_char("Susceptible to:",ch);
-      sprintbit(k->susc, immunity_names, buf);
-      strcat(buf,"\n\r");
-      send_to_char(buf,ch);
-    }
-
-
-if (k->player.user_flags) {
-	send_to_char("SPECIAL FLAGS:",ch);
-	sprintbit(k->player.user_flags,special_user_flags,buf);
-	strcat(buf,"\n\r");
-	send_to_char(buf,ch);
-   }
-
-      /*  race, action pointer */
-     send_to_char("Race: ",ch);
-     sprinttype((k->race),RaceName,buf2);
-     send_to_char(buf2, ch);
-     sprintf(buf, "  Generic pointer: %d\n\r", (int)k->generic);
-     send_to_char(buf, ch);
-
-      /* Showing the bitvector */
-      sprintf(buf,"A1:%ld    A2:%ld\n\r", k->specials.affected_by, k->specials.affected_by2);
-		send_to_char(buf,ch);
-	if (k->specials.affected_by) {
-       sprintbit((unsigned)k->specials.affected_by,affected_bits,buf);
-       send_to_char("Affected by: ", ch);
-       strcat(buf,"\n\r");
-       send_to_char(buf, ch);
-      }
-
-    if (k->specials.affected_by2 || 1) {
-       sprintbit((unsigned)k->specials.affected_by2,affected_bits2,buf);
-       send_to_char("Affected by2: ", ch);
-       strcat(buf,"\n\r");
-       send_to_char(buf, ch);
-      }
-
-      /* Routine to show what spells a char is affected by */
-      if (k->affected) {
-	sprintf(buf, "\n\r$c0005Affecting Spells:\n\r$c0015--------------");
-       act(buf, FALSE, ch,0,0,TO_CHAR);
-	for(aff = k->affected; aff; aff = aff->next) {
-if (aff->type <=MAX_EXIST_SPELL) {
-	  sprintf(buf, "$c0005Spell : '$c0014%s $c0005($c0014%d$c0005)'"
-		  ,spells[aff->type-1],(aff->type));
-	  act(buf,FALSE, ch,0,0,TO_CHAR);
-
-	  sprintf(buf,"     $c0005Modifies $c0014%s $c0005by $c0015%ld$c0005 points",
-		  apply_types[aff->location], aff->modifier);
-	  act(buf,FALSE, ch,0,0,TO_CHAR);
-
-
-	  sprintf(buf,"     Expires in %3d hours, Bits set ",
-		  aff->duration);
-	  send_to_char(buf,ch);
-	  if (aff->location == APPLY_BV2 || aff->location == APPLY_SPELL2)
-	    sprintbit((unsigned)aff->bitvector,affected_bits2,buf);
-	  else
-	    sprintbit((unsigned)aff->bitvector,affected_bits,buf);
-
-	  strcat(buf,"\n\r");
-	  send_to_char(buf, ch);
+	if (IS_NPC(ch))
+		return;
+
+	if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+		sprintf(color1,"$c000p");
+		sprintf(color2,"$c000C");
+		sprintf(color3,"$c000W");
 	} else {
-		/* max spl */
-		sprintf(buf,"<%s> had a bogus aff->type act.wizard, do_stat",
-			GET_NAME(k));
-		log(buf);
-		/* log bogus aff->type */
+		sprintf(color1,"$c000B");
+		sprintf(color2,"$c000w");
+		sprintf(color3,"$c000Y");
 	}
-      } /* for aff */
 
-     }
-      return;
-    }
+	only_argument(argument, arg1);
+
+	/* no argument */
+	if (!*arg1) {
+		send_to_char("Stats on who or what?\n\r",ch);
+		return;
+	} else {
+		if (!str_cmp("room", arg1)) { /* stats on room */
+			rm = real_roomp(ch->in_room);
+			sprintf(buf, "Room name: %s, Of zone : %ld. V-Number : %ld, R-number : %ld (%d)\n\r"
+				, rm->name, rm->zone, rm->number, ch->in_room, rm->special);
+			send_to_char(buf, ch);
+
+			sprinttype(rm->sector_type,sector_types,buf2);
+			sprintf(buf, "Sector type : %s ", buf2);
+			send_to_char(buf, ch);
+
+			strcpy(buf,"Special procedure : ");
+			strcat(buf,(rm->funct) ? "Exists\n\r" : "No\n\r");
+			send_to_char(buf, ch);
+
+			send_to_char("Room flags: ", ch);
+			sprintbit((unsigned long) rm->room_flags,room_bits,buf);
+			strcat(buf,"\n\r");
+			send_to_char(buf,ch);
+
+			send_to_char("Description:\n\r", ch);
+			send_to_char(rm->description, ch);
+
+			strcpy(buf, "Extra description keywords(s): ");
+			if(rm->ex_description) {
+				strcat(buf, "\n\r");
+				for (desc = rm->ex_description; desc; desc = desc->next) {
+					strcat(buf, desc->keyword);
+					strcat(buf, "\n\r");
+				}
+				strcat(buf, "\n\r");
+			} else
+				strcat(buf, "None\n\r");
+			send_to_char(buf, ch);
+
+			strcpy(buf, "------- Chars present -------\n\r");
+			for (k = rm->people; k; k = k->next_in_room) {
+				if (CAN_SEE(ch,k)) {
+					strcat(buf, GET_NAME(k));
+					strcat(buf,(!IS_NPC(k) ? "(PC)\n\r" : (!IS_MOB(k) ? "(NPC)\n\r" : "(MOB)\n\r")));
+				}
+			}
+			strcat(buf, "\n\r");
+			send_to_char(buf, ch);
+
+			strcpy(buf, "--------- Contents ---------\n\r");
+			for (j = rm->contents; j; j = j->next_content) {
+				strcat(buf, j->name);
+				strcat(buf, "\n\r");
+			}
+			strcat(buf, "\n\r");
+			send_to_char(buf, ch);
+
+			if(rm->tele_time > 0) {
+				send_to_char("--------- Teleport ---------\n\r",ch);
+				ch_printf(ch," Teleport to room %d after %d seconds.(%d)\n\r",
+				rm->tele_targ,
+				rm->tele_time/10,
+				rm->tele_cnt);
+			}
+
+			send_to_char("------- Exits defined -------\n\r", ch);
+			for (i = 0; i <= 5; i++) {
+				if (rm->dir_option[i]) {
+					if (rm->dir_option[i]->keyword) {
+						sprintf(buf,"Direction %s . Keyword : %s\n\r", dirs[i], rm->dir_option[i]->keyword);
+						send_to_char(buf, ch);
+					} else {
+						sprintf(buf,"Direction %s \n\r",   dirs[i]);
+						send_to_char(buf, ch);
+					}
+					strcpy(buf, "Description:\n\r  ");
+					if(rm->dir_option[i]->general_description)
+						strcat(buf, rm->dir_option[i]->general_description);
+					else
+						strcat(buf,"UNDEFINED\n\r");
+					send_to_char(buf, ch);
+
+					sprintbit((unsigned) rm->dir_option[i]->exit_info,exit_bits,buf2);
+					sprintf(buf, "Exit flag: %s \n\rKey no: %ld\n\rTo room (R-Number): %ld",
+										buf2, rm->dir_option[i]->key, rm->dir_option[i]->to_room);
+					send_to_char(buf, ch);
+					sprintf(buf,"\r\n");
+					if(rm->dir_option[i]->open_cmd!=-1)
+						sprintf(buf," OpenCommand: %ld\r\n",rm->dir_option[i]->open_cmd);
+					send_to_char(buf, ch);
+					send_to_char("\n\r",ch);
+				}
+			}
+			return;
+		} /* end room */
+
+		count = 1;
+		/* mobile in world  PERSON! */
+		if ((k = get_char_vis_world(ch, arg1, &count))!=NULL){
+			struct time_info_data ma;
+
+			switch(k->player.sex) {
+				case SEX_NEUTRAL :	strcpy(buf2,"NEUTRAL");	break;
+				case SEX_MALE :		strcpy(buf2,"MALE");		break;
+				case SEX_FEMALE :	strcpy(buf2,"FEMALE");	break;
+
+				default :			strcpy(buf2,"INVALID");	break;
+			}
+			sprintf(buf,"%s%s%s %s %s- Name : %s%s%s [R-Number %s%ld%s], In room [%s%ld%s]"
+				, color2, buf2, color3, (!IS_NPC(k) ? "PC" : (!IS_MOB(k) ? "NPC" : "MOB"))
+				, color1, color2, GET_NAME(k), color1, color2, k->nr, color1, color2, k->in_room, color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			if (IS_MOB(k)) {
+				sprintf(buf, "%sV-Number [%s%ld%s]", color1, color2, mob_index[k->nr].virtual, color1);
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			}
+
+      		sprintf(buf,"%sShort description: %s%s", color1, color2, (k->player.short_descr ? k->player.short_descr : "None"));
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sTitle: %s%s", color1, color2, (k->player.title ? k->player.title : "None"));
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sLong description: %s%s",color1, color2, k->player.long_descr?k->player.long_descr:"None");
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			if (IS_NPC(k)) {
+				sprinttype(k->player.class,npc_class_types,buf2);
+				sprintf(buf,"%sMonster Class: %s%s", color1, color2, buf2);
+			} else {
+				sprintbit((unsigned)k->player.class,pc_class_types, buf2);
+				sprintf(buf,"%sClass: %s%s", color1, color2, buf2);
+			}
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sLevel [%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s] Alignment[%s%d%s]",
+				color1, color2, k->player.level[0], color1, color3, k->player.level[1],
+				color1, color2, k->player.level[2], color1, color3, k->player.level[3],
+				color1, color2, k->player.level[4], color1, color3, k->player.level[5],
+				color1, color2, k->player.level[6], color1, color3, k->player.level[7],
+				color1, color2, k->player.level[8], color1, color3, k->player.level[9],
+				color1, color2, k->player.level[10], color1, color3, k->player.level[11],
+				color1, color2, k->player.level[12], color1, color3, GET_ALIGNMENT(k), color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			ch_printf(ch,"%sRemort Class: %s%s%s.\n\r", color1, color2, class_names[k->specials.remortclass], color1);
+
+			sprintf(buf,"%sBirth : [%s%ld%s]secs, Logon[%s%ld%s]secs, Played[%s%d%s]secs",
+				color1, color2, k->player.time.birth,
+				color1, color2, k->player.time.logon,
+				color1, color2, k->player.time.played, color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			age2(k, &ma);
+			sprintf(buf,"%sAge: [%s%d%s] Y, [%s%d%s] M, [%s%d%s] D, [%s%d%s] H.",
+				color1, color2, ma.year, color1, color2, ma.month, color1, color2, ma.day, color1, color2, ma.hours, color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+
+			sprintf(buf,"%sHeight [%s%d%s]cm, Wgt [%s%d%s]pounds NumAtks[%s%.1f%s+(%s%.2f%s)]"
+				, color1, color2, GET_HEIGHT(k), color1, color2, GET_WEIGHT(k), color1, color2, k->mult_att
+				, color1, color2, (ch->equipment[WIELD] ? (float)ch->equipment[WIELD]->speed/100 : 0), color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sStr:[%s%d%s/%s%d%s] Int:[%s%d%s] Ws:[%s%d%s] Dex:[%s%d%s] Con:[%s%d%s] Ch:[%s%d%s]",
+				color1, color3, GET_STR(k), color1, color3, GET_ADD(k),
+				color1, color3, GET_INT(k),
+				color1, color3, GET_WIS(k),
+				color1, color3, GET_DEX(k),
+				color1, color3, GET_CON(k),
+				color1, color3, GET_CHR(k), color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sMana:[%s%d%s/%s%d%s+%s%d%s] Hit:[%s%d%s/%s%d%s+%s%d%s] Move:[%s%d%s/%s%d%s+%s%d%s]",
+				color1, color2, GET_MANA(k), color1, color2, mana_limit(k), color1, color3, mana_gain(k),
+				color1, color2, GET_HIT(k), color1, color2, hit_limit(k), color1, color3, hit_gain(k),
+				color1, color2, GET_MOVE(k), color1, color2, move_limit(k), color1, color3, move_gain(k), color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buff,"%s",formatNum(GET_EXP(k)));
+			sprintf(buf,"%sAC:[%s%d%s/%s10%s], Coins: [%s%s%s], Exp: [%s%s%s], Hitroll: [%s%d%s+(%s%d%s)], Damroll: [%s%d%s+(%s%d%s)] sf[%s%d%s]",
+				color1, color2, GET_AC(k), color1, color2,
+				color1, color2, formatNum(GET_GOLD(k)),
+				color1, color2, buff,
+				color1, color2, k->points.hitroll, color1, color3, str_app[STRENGTH_APPLY_INDEX(k)].tohit,
+				color1, color2, k->points.damroll, color1, color3, str_app[STRENGTH_APPLY_INDEX(k)].todam,
+				color1, color2, k->specials.spellfail, color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			if(!IS_NPC(k)) {
+				sprintf(buf,"%sLeadership Exp: [%s%s%s],  Clan[$c0007%s%s]",
+					color1, color2, formatNum(GET_LEADERSHIP_EXP(k)),  color1, clan_list[GET_CLAN(k)].name, color1);
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			}
+
+			sprinttype(GET_POS(k),position_types,buf2);
+			sprintf(buf,"%sPosition: %s%s%s, Fighting: %s%s"
+				, color1, color2, buf2
+				, color1, color2, ((k->specials.fighting) ? GET_NAME(k->specials.fighting) : "Nobody") );
+			if (k->desc) {
+				sprintf(buf2,", %sConnected: %s", color1, color2);
+				strcat(buf,buf2);
+				sprinttype(k->desc->connected,connected_types,buf2);
+				strcat(buf,buf2);
+			}
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sDefault position: %s", color1, color2);
+			sprinttype((k->specials.default_pos),position_types,buf2);
+			strcat(buf, buf2);
+			if (IS_NPC(k)) {
+				sprintf(buf2,"%s, NPC Action flags: %s",color1, color2);
+				strcat(buf,buf2);
+				sprintbit(k->specials.act,action_bits,buf2);
+			} else {
+				sprintf(buf2,"%s, PC flags: %s",color1, color2);
+				strcat(buf,buf2);
+				sprintbit(k->specials.act,player_bits,buf2);
+			}
+			strcat(buf, buf2);
+			sprintf(buf2,"%s, Timer [%s%d%s]", color1, color2, k->specials.timer, color1);
+			strcat(buf, buf2);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			if (IS_NPC(k))    {
+				sprintf(buf,"%sMobile common procedure:  %s%s%s.", color1, color2, procedure_bits[k->specials.proc], color1);
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			}
+
+			if (IS_MOB(k)) {
+				sprintf(buf, "%sMobile special procedure: %s", color1, color2);
+				strcat(buf, (mob_index[k->nr].func ? "Exists " : "None "));
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			}
+
+			if (IS_NPC(k)) {
+				sprintf(buf, "%sNPC Bare Hand Damage %s%d%sd%s%d%s.",
+					color1, color3, k->specials.damnodice, color2, color3, k->specials.damsizedice, color1);
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			}
+
+			sprintf(buf,"%sCarried weight: %s%d%s   Carried items: %s%d ",
+				color1, color2, IS_CARRYING_W(k),
+				color1, color2, IS_CARRYING_N(k) );
+			for(i=0,i2=0;i<MAX_WEAR;i++)
+			if (k->equipment[i]) i2++;
+			sprintf(buf2,"%sItems in equipment: %s%d", color1, color2, i2);
+			strcat(buf,buf2);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf,"%sApply saving throws: [%s%d%s] [%s%d%s] [%s%d%s] [%s%d%s] [%s%d%s]",
+				color1, color2, k->specials.apply_saving_throw[0],
+				color1, color2, k->specials.apply_saving_throw[1],
+				color1, color2, k->specials.apply_saving_throw[2],
+				color1, color2, k->specials.apply_saving_throw[3],
+				color1, color2, k->specials.apply_saving_throw[4], color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf, "%sThirst: %s%d%s, Hunger: %s%d%s, Drunk: %s%d",
+				color1, color2, k->specials.conditions[THIRST],
+				color1, color2, k->specials.conditions[FULL],
+				color1, color2, k->specials.conditions[DRUNK]);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf, "%sMaster is '%s%s%s'", color1, color2, ((k->master) ? GET_NAME(k->master) : "none"), color1);
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+
+			sprintf(buf, "%sFollowers are:", color1);
+			act(buf, FALSE, ch,0,0,TO_CHAR);
+			for(fol=k->followers; fol; fol = fol->next) {
+				sprintf(buf, "%s    %s", color2, fol->follower->player.name);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			/* immunities */
+			if (k->M_immune) {
+				sprintf(buf,"%sImmune to: %s",color1, color2);
+				sprintbit(k->M_immune, immunity_names, buf2);
+				strcat(buf,buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			/* resistances */
+			if (k->immune) {
+				sprintf(buf,"%sResistant to: %s",color1, color2);
+				sprintbit(k->immune, immunity_names, buf2);
+				strcat(buf,buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			/* Susceptible */
+			if (k->susc) {
+				sprintf(buf,"%sSusceptible to: %s",color1, color2);
+				sprintbit(k->susc, immunity_names, buf2);
+				strcat(buf,buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			if (k->player.user_flags) {
+				sprintf(buf,"%sSpecial Flags: %s",color1, color2);
+				sprintbit(k->player.user_flags,special_user_flags, buf2);
+				strcat(buf,buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			/*  race, action pointer */
+			sprintf(buf,"%sRace: %s",color1, color3);
+			sprinttype((k->race),RaceName, buf2);
+			strcat(buf,buf2);
+			sprintf(buf2, "%s  Generic pointer: %s%d", color1, color2, (int)k->generic);
+			strcat(buf,buf2);
+			act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+			/* Showing the bitvector */
+			sprintf(buf,"%sA1: %s%ld    %sA2: %s%ld"
+				, color1, color2, k->specials.affected_by
+				, color1, color2, k->specials.affected_by2);
+			act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+			if (k->specials.affected_by) {
+				sprintbit((unsigned)k->specials.affected_by,affected_bits, buf2);
+				sprintf(buf, "%sAffected by : %s%s", color1, color2, buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+			if (k->specials.affected_by2) {
+				sprintbit((unsigned)k->specials.affected_by2,affected_bits2, buf2);
+				sprintf(buf, "%sAffected by2: %s%s", color1, color2, buf2);
+				act(buf, FALSE, ch, 0, 0, TO_CHAR);
+			}
+
+			/* Routine to show what spells a char is affected by */
+			if (k->affected) {
+				sprintf(buf, "\n\r%sAffecting Spells:\n\r%s---------------------------------", color1, color2);
+				act(buf, FALSE, ch,0,0,TO_CHAR);
+
+			for(aff = k->affected; aff; aff = aff->next) {
+				if (aff->type <= MAX_EXIST_SPELL) {
+					sprintf(buf, "%sSpell : '%s%s%s (spell number %s%d%s)'"
+						, color1, color2, spells[aff->type-1]
+						, color1, color2, (aff->type), color1);
+					act(buf,FALSE, ch,0,0,TO_CHAR);
+
+					sprintf(buf,"     %sModifies %s%s%s by %s%ld%s points"
+						, color1, color2, apply_types[aff->location]
+						, color1, color2, aff->modifier, color1);
+					act(buf,FALSE, ch,0,0,TO_CHAR);
+
+					if (aff->location == APPLY_BV2 || aff->location == APPLY_SPELL2)
+						sprintbit((unsigned)aff->bitvector,affected_bits2,buf2);
+					else
+						sprintbit((unsigned)aff->bitvector,affected_bits,buf2);
+					sprintf(buf,"     %sExpires in %s%3d%s hours, Bits set %s%s",
+						color1, color2, aff->duration, color1, color2, buf2);
+					act(buf,FALSE, ch,0,0,TO_CHAR);
+				} else {
+					/* max spl */
+					sprintf(buf,"<%s> had a bogus aff->type act.wizard, do_stat", GET_NAME(k));
+					log(buf);
+					/* log bogus aff->type */
+				}
+			} /* for aff */
+		}
+		return;
+	} /* end mob */
 
     /* stat on object */
     if ((j=(struct obj_data *)get_obj_vis_world(ch, arg1, &count)) !=NULL) {
@@ -1742,19 +1714,19 @@ if (aff->type <=MAX_EXIST_SPELL) {
 
 
    		if(j->level==0)
-    		sprintf(buf,"$c0005Ego: $c0014None$c0005 ,");
+    		sprintf(buf,"Ego: None ,");
     	else
-    	    sprintf(buf,"$c0005Ego: $c0014Level %d$c0005 ,",j->level);
+    	    sprintf(buf,"Ego: Level %d ,",j->level);
     	send_to_char(buf,ch);
 
 		if(j->max==0)
-		    sprintf(buf,"$c0005Max: $c0014None$c0005 ,");
+		    sprintf(buf,"Max: None$c0005 ,");
 		else
-		   sprintf(buf,"$c0005Max: $c0014Level %d$c0005 ,",j->max);
+		   sprintf(buf,"Max: Level %d ,",j->max);
 
 		send_to_char(buf,ch);
 
-    	sprintf(buf,"$c0005Last modified by $c0014(%s) $c0005on $c0014%s",j->modBy,asctime(localtime(&j->modified)));
+    	sprintf(buf,"Last modified by (%s) on %s", j->modBy, asctime(localtime(&j->modified)));
     	send_to_char(buf,ch);
 
 

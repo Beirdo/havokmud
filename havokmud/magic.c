@@ -2460,7 +2460,7 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 {
 	char buf[256], buf2[256];
 	int i;
-	bool found;
+	bool found, auct = FALSE;
 	extern const struct skillset weaponskills[];
 	struct time_info_data age(struct char_data *ch);
 	extern char *spells[];
@@ -2481,24 +2481,15 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 	assert(ch && (obj || victim));
 
 	if (obj) {
-		if(auctioneer) {
-			if(auctioneer->specials.auction) {
-				if(obj == auctioneer->specials.auction) {
-					sprintf(color1,"$c000c");
-					sprintf(color2,"$c000w");
-					send_to_char("$c000cThe item currently on auction has the following stats:\n\r", ch);
-				} else if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
-					sprintf(color1,"$c000p");
-					sprintf(color2,"$c000C");
-					sprintf(buf,"%sYou feel informed:\n\r",color1);
-					send_to_char(buf, ch);
-				} else {
-					sprintf(color1,"$c000B");
-					sprintf(color2,"$c000w");
-					sprintf(buf,"%sYou feel informed:\n\r",color1);
-					send_to_char(buf, ch);
-				}
-			}
+		if(auctioneer)
+			if(auctioneer->specials.auction)
+				if(obj == auctioneer->specials.auction)
+					auct = TRUE;
+
+		if(auct) {
+			sprintf(color1,"$c000c");
+			sprintf(color2,"$c000w");
+			send_to_char("$c000cThe item currently on auction has the following stats:\n\r", ch);
 		} else if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
 			sprintf(color1,"$c000p");
 			sprintf(color2,"$c000C");
@@ -2530,8 +2521,8 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 		/* alittle more info for immortals -bcw */
 		if (GetMaxLevel(ch)>LOW_IMMORTAL) {
 			sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%d%s]"
-			, color1, color2, obj->item_number, color1, color2
-			, (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0, color1);
+				, color1, color2, obj->item_number, color1, color2
+				, (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0, color1);
 			if (obj->max==0)
 				sprintf(buf2,"%s","unlimited");
 			else
@@ -2657,9 +2648,6 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 					case APPLY_IMMUNE:
 					case APPLY_SUSC:
 						sprintbit(obj->affected[i].modifier,immunity_names,buf2);
-//						sprintf(buf,"%s", color2);
-//						strcat(buf,buf2);
-//						sprintf(buf2,buf);
 						strcat(buf2,"\n\r");
 						break;
 
@@ -2674,17 +2662,11 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 
 					case APPLY_SPELL:
 						sprintbit(obj->affected[i].modifier,affected_bits, buf2);
-//	   sprintf(buf,"$c0015");
-//	   strcat(buf,buf2);
-//	   sprintf(buf2,buf);
 						strcat(buf2,"\n\r");
 						break;
 
 					case APPLY_SPELL2:
 						sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
-//	   sprintf(buf,"$c0015");
-//	   strcat(buf,buf2);
-//	   sprintf(buf2,buf);
 						strcat(buf2,"\n\r");
 						break;
 
