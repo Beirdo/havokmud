@@ -1558,7 +1558,12 @@ AddCommand("fight",do_style, 572, POSITION_STANDING,0);
 AddCommand("flux",do_flux,574,POSITION_STANDING,53);
 AddCommand("bs",do_backstab,575,POSITION_STANDING,1);
 
-
+AddCommand("autoassist",do_auto, 576, POSITION_RESTING,1);
+AddCommand("autoloot",do_auto, 577, POSITION_RESTING,1);
+AddCommand("autogold",do_auto, 578, POSITION_RESTING,1);
+AddCommand("autosplit",do_auto, 579, POSITION_RESTING,1);
+//AddCommand("autosac",do_auto, 580, POSITION_RESTING,1);
+AddCommand("autoexits",do_auto, 581, POSITION_RESTING,1);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

@@ -2604,6 +2604,71 @@ void do_flag_status(struct char_data *ch,char *argument,int cmd) {
 
 
 #define RACE_WAR_MIN_LEVEL 10	/* this is the level a user can turn race war ON */
+
+
+
+void do_auto(struct char_data *ch, char *argument, int cmd) {
+
+
+
+	switch(cmd)  {
+		case 576:
+			if(IS_SET(ch->specials.act, PLR_AUTOASSIST))
+				do_set_flags(ch,"autoassist disable",0);
+			else
+				do_set_flags(ch,"autoassist enable",0);
+			return;
+		case 577:
+			if(IS_SET(ch->specials.act, PLR_AUTOLOOT))
+				do_set_flags(ch,"autoloot disable",0);
+			else
+				do_set_flags(ch,"autoloot enable",0);
+
+			return;
+		case 578:
+			if(IS_SET(ch->specials.act, PLR_AUTOGOLD))
+				do_set_flags(ch,"autogold disable",0);
+			else
+				do_set_flags(ch,"autogold enable",0);
+
+			return;
+		case 579:
+			if(IS_SET(ch->specials.act, PLR_AUTOSPLIT))
+				do_set_flags(ch,"autosplit disable",0);
+			else
+				do_set_flags(ch,"autosplit enable",0);
+
+			return;
+		case 580:
+			if(IS_SET(ch->specials.act, PLR_AUTOSAC))
+				do_set_flags(ch,"autosac disable",0);
+			else
+				do_set_flags(ch,"autosac enable",0);
+
+			return;
+		case 581:
+			if(IS_SET(ch->specials.act, PLR_AUTOEXIT))
+				do_set_flags(ch,"autoexits disable",0);
+			else
+				do_set_flags(ch,"autoexits enable",0);
+
+			return;
+
+		default:
+			do_set_flags(ch,"",0);
+
+			return;
+	}
+	//AddCommand("autoassist",do_auto, 576, POSITION_RESTING,1);
+	//AddCommand("autoloot",do_auto, 577, POSITION_RESTING,1);
+	//AddCommand("autogold",do_auto, 578, POSITION_RESTING,1);
+	//AddCommand("autosplit",do_auto, 579, POSITION_RESTING,1);
+	//AddCommand("autosac",do_auto, 580, POSITION_RESTING,1);
+    //AddCommand("autoexit",do_auto, 581, POSITION_RESTING,1);
+
+
+
+}
 void do_set_flags(struct char_data *ch, char *argument, int cmd)
 {
  char type[255],field[255];

@@ -244,6 +244,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd);
 
 void do_set_prompt(struct char_data *ch, char *argument, int cmd);
 void do_set_flags(struct char_data *ch, char *argument, int cmd);
+void do_auto(struct char_data *ch, char *argument, int cmd);
 void do_set_afk(struct char_data *ch, char *argument, int cmd);
 void do_set_consent(struct char_data *ch, char *argument, int cmd);
 void do_gain(struct char_data *ch, char *argument, int cmd);
