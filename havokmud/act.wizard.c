@@ -712,10 +712,15 @@ dlog("in do_rsave");
 
    for (i = 0; *(argument + i) == ' '; i++);
    if (!*(argument + i)) {
-      send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
-      return;
+
+      start = ch->in_room;
+      if(!(start > 0 && start < WORLD_SIZE)) {
+        send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
+        return;
+  	  }
+    } else {
+        sscanf(argument,"%ld %ld", &start, &end);
     }
-    sscanf(argument,"%ld %ld", &start, &end);
 
    if(start==-1)
      return;

@@ -1747,6 +1747,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
 
 void RoomSave(struct char_data *ch, long start, long end)
 {
+   int countrooms = 0;
    char fn[80], temp[2048], dots[500];
    int rstart, rend, i, j, k, x, r;
    struct extra_descr_data *exptr;
@@ -1780,7 +1781,7 @@ void RoomSave(struct char_data *ch, long start, long end)
        send_to_char("Can't write to disk now..try later \n\r",ch);
        return;
      }
-
+	 countrooms++;
      strcat(dots, ".");
 
 /*
@@ -1895,7 +1896,8 @@ void RoomSave(struct char_data *ch, long start, long end)
    }
 
    send_to_char(dots, ch);
-   send_to_char("\n\rDone\n\r",ch);
+   sprintf(dots,"\n\rDone: %d rooms saved\n\r",countrooms);
+   send_to_char(dots,ch);
 }
 
 
