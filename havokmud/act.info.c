@@ -3837,47 +3837,47 @@ if (GetMaxLevel(ch)>=LOW_IMMORTAL) {
 
 void do_spells(struct char_data *ch, char *argument, int cmd)
 {
-  int spl, i;   /* 16384 */
-  char buf[MAX_STRING_LENGTH],tbuf[255];
+	int spl, i;   /* 16384 */
+	char buf[MAX_STRING_LENGTH],tbuf[255];
 
 dlog("in do_spells");
 
-  if (IS_NPC(ch))    {
-    send_to_char("You ain't nothin' but a hound-dog.\n\r", ch);
-    return;
-  }
-
-  *buf=0;
-
- sprintf(buf + strlen(buf),
- "[# ] %-20s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, Ne\n\r",
- "SPELL/SKILL\0");
-
-  for (i = 1, spl = 0; i <= MAX_EXIST_SPELL; i++, spl++) {
-    if (GetMaxLevel(ch) > LOW_IMMORTAL ||
-	spell_info[i].min_level_cleric < ABS_MAX_LVL) {
-if (!spells[spl]) {
-	sprintf(tbuf,"!spells[spl] on %d, do_spells in act.info.c",i);
-	log(tbuf);
-} else
-      sprintf(buf + strlen(buf),
-"[%2d] %-20s  <%3d> %2d %3d %3d %3d %3d %3d %3d %3d\n\r",
-	      i, spells[spl],
-	      spell_info[i].min_usesmana,
-	      spell_info[i].min_level_cleric,
-	      spell_info[i].min_level_magic,
-	      spell_info[i].min_level_druid,
-	      spell_info[i].min_level_sorcerer,
-	      spell_info[i].min_level_paladin,
-	      spell_info[i].min_level_ranger,
-	      spell_info[i].min_level_psi,
-	      spell_info[i].min_level_necromancer
-	      );
+	if (IS_NPC(ch)) {
+		send_to_char("You ain't nothin' but a hound-dog.\n\r", ch);
+		return;
 	}
 
-  }
-  strcat(buf, "\n\r");
-  page_string(ch->desc, buf, 1);
+	*buf=0;
+
+	sprintf(buf + strlen(buf),
+	"[# ] %-20s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, Bd, Ne\n\r",
+	"SPELL/SKILL\0");
+
+	for (i = 1, spl = 0; i <= MAX_EXIST_SPELL; i++, spl++) {
+		if (GetMaxLevel(ch) > LOW_IMMORTAL ||
+			spell_info[i].min_level_cleric < ABS_MAX_LVL) {
+			if (!spells[spl]) {
+				sprintf(tbuf,"!spells[spl] on %d, do_spells in act.info.c",i);
+				log(tbuf);
+			} else
+				sprintf(buf + strlen(buf),
+				"[%2d] %-20s  <%3d> %2d %3d %3d %3d %3d %3d %3d %3d %3d\n\r",
+				i, spells[spl],
+				spell_info[i].min_usesmana,
+				spell_info[i].min_level_cleric,
+				spell_info[i].min_level_magic,
+				spell_info[i].min_level_druid,
+				spell_info[i].min_level_sorcerer,
+				spell_info[i].min_level_paladin,
+				spell_info[i].min_level_ranger,
+				spell_info[i].min_level_psi,
+				spell_info[i].min_level_bard,
+				spell_info[i].min_level_necromancer
+				);
+		}
+	}
+	strcat(buf, "\n\r");
+	page_string(ch->desc, buf, 1);
 }
 
 void do_world(struct char_data *ch, char *argument, int cmd)

@@ -1432,11 +1432,11 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        send_to_char("\n\rValue not used for this item type.\n\r",ch);
 	 break;
 	case ITEM_TREE:
-     if(value==0)
-       send_to_char("\n\rTrees are found by name search, make sure to set name before tree keyword.
-       				 \n\rExample: 'Rufus tree'.  Don't do: 'tree Rufus'.
-       				 \n\rValue not used for this item type.\n\r",ch);
-     else
+     if(value==0) {
+       send_to_char("\n\rTrees are found by name search, make sure to set name before tree keyword.\n\r",ch);
+       send_to_char("Example: 'Rufus tree'.  Don't do: 'tree Rufus'.\n\r",ch);
+       send_to_char("Value not used for this item type.\n\r",ch);
+     }else
        send_to_char("\n\rValue not used for this item type.\n\r",ch);
 	 break;
 	case ITEM_INSTRUMENT:

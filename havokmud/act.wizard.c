@@ -7152,11 +7152,11 @@ int eval(struct obj_data *object) {
 
 					/* anti stuff */
 					if(IS_OBJ_STAT(object,ITEM_BRITTLE))
-						total+= -10;
+						total+= -15;
 					if(IS_OBJ_STAT(object,ITEM_RESISTANT))
-						total+= 5;
+						total+= 7;
 					if(IS_OBJ_STAT(object,ITEM_IMMUNE))
-						total+= 10;
+						total+= 15;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
 						total+= -5;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_EVIL))
@@ -7170,7 +7170,7 @@ int eval(struct obj_data *object) {
 					if(IS_OBJ_STAT(object,ITEM_ONLY_CLASS))
 						total+= -7;
 					if(IS_OBJ_STAT(object,ITEM_RARE))
-						total+= -7;
+						total+= -5;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_SUN))
 						total+= -3;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
@@ -7178,34 +7178,36 @@ int eval(struct obj_data *object) {
 					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
 						total+= -5;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_BARBARIAN))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_PALADIN))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_MONK))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_FIGHTER))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_CLERIC))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_MAGE))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_NECROMANCER))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_BARD))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_PSI))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_RANGER))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_DRUID))
-						total+= -2;
+						total+= -1;
 					if(IS_OBJ_STAT(object,ITEM_ANTI_THIEF))
-						total+= -2;
+						total+= -1;
 
 
 
 		if( object->obj_flags.cost_per_day > 10000 )
-			total-= object->obj_flags.cost_per_day/1000;
+			total-= (int)(object->obj_flags.cost_per_day/1000);
+		else if(object->obj_flags.cost_per_day < 0 ) // unrentable
+			total -= 20;
 
 			switch (GET_ITEM_TYPE(object)) {
 				case ITEM_SCROLL :
@@ -7218,6 +7220,7 @@ int eval(struct obj_data *object) {
 				case ITEM_PEN:
 				case ITEM_TRASH:
 				case ITEM_MONEY:
+				case ITEM_KEY:
 					total -= 20;
 					break;
 				case ITEM_CONTAINER:
@@ -7225,13 +7228,37 @@ int eval(struct obj_data *object) {
 					total +=5;
 					break;
 				case ITEM_ARMOR:
-					total -= 5;
 					total += object->obj_flags.value[0]; //armor class
 					break;
 				case ITEM_WEAPON:
-					total -= 16;
+					total -= 43;
 					total += object->obj_flags.value[1] * 2; //damage of sword.
 					total += object->obj_flags.value[2] * 2;
+
+					switch(object->obj_flags.value[3]) {
+						case 0  :
+						//TYPE_SMITE
+						case 1  :
+						//TYPE_STAB
+						case 2  :
+						//TYPE_WHIP
+						case 5  :
+						//TYPE_CLEAVE
+						case 9  :
+						//TYPE_BITE
+						case 10 :
+						//YPE_STING
+						case 12 :
+						//TYPE_BLAST
+						case 13 :
+						//TYPE_IMPALE
+							total += 6;
+							break;
+
+						default :
+							//scrappy types, no bonus
+							break;
+					}
 
 					break;
 
@@ -7244,22 +7271,15 @@ int eval(struct obj_data *object) {
 			switch(object->affected[i].location) {
 
 				case APPLY_STR               :
-					total += object->affected[i].modifier*6;
-					break;
 				case APPLY_DEX               :
-					total += object->affected[i].modifier*6;
-					break;
 				case APPLY_INT               :
-					total += object->affected[i].modifier*6;
-					break;
 				case APPLY_WIS               :
-					total += object->affected[i].modifier*6;
-					break;
 				case APPLY_CON               :
-					total += object->affected[i].modifier*6;
-					break;
 				case APPLY_CHR               :
-					total += object->affected[i].modifier*6;
+					if(object->affected[i].modifier < 0)
+						total += object->affected[i].modifier*2;
+					else
+						total += object->affected[i].modifier*6;
 					break;
 				case APPLY_SEX               :
 					total += 1;
@@ -7283,7 +7303,7 @@ int eval(struct obj_data *object) {
 					total += object->affected[i].modifier;
 					break;
 				case APPLY_MOVE              :
-					total += object->affected[i].modifier;
+					total += (int)object->affected[i].modifier/3;
 					break;
 				case APPLY_GOLD             :
 					total += 1;
@@ -7291,105 +7311,192 @@ int eval(struct obj_data *object) {
 				case APPLY_SPELL2           :
 					total += 10;
 					break;
-				case APPLY_ARMOR            :
+				case APPLY_ARMOR:
 					total -= object->affected[i].modifier;
 					break;
-				case APPLY_HITROLL          :
-					total += object->affected[i].modifier*4;
+				case APPLY_HITROLL:
+					if(GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+						if(object->affected[i].modifier > 4)
+							total += 26;
+						else if(object->affected[i].modifier > 3)
+							total += 18;
+						else
+							total += object->affected[i].modifier*4;
+					} else {
+						total += object->affected[i].modifier*4;
+					}
 					break;
 				case APPLY_DAMROLL          :
-					total += object->affected[i].modifier*6;
+					if(GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+						if(object->affected[i].modifier > 4)
+							total += 36;
+						else if(object->affected[i].modifier > 3)
+							total += 26;
+						else
+							total += object->affected[i].modifier*6;
+					} else {
+						if(object->affected[i].modifier > 2)
+							total += 24;
+						else if(object->affected[i].modifier > 1)
+							total += 14;
+						else
+							total += object->affected[i].modifier*6;
+					}
+
 					break;
 				case APPLY_SAVING_PARA      :
-					total -= object->affected[i].modifier;
-					break;
 				case APPLY_SAVING_ROD       :
-					total -= object->affected[i].modifier;
-					break;
 				case APPLY_SAVING_PETRI     :
-					total -= object->affected[i].modifier;
-					break;
 				case APPLY_SAVING_BREATH    :
-					total -= object->affected[i].modifier;
-					break;
 				case APPLY_SAVING_SPELL     :
 					total -= object->affected[i].modifier;
 					break;
 				case APPLY_SAVE_ALL         :
 					total -= object->affected[i].modifier*3;
 					break;
-				case APPLY_IMMUNE           :
 
-
-					total += 10;
+				case APPLY_M_IMMUNE:
+					log("true immunity");
+					if (IS_SET(object->affected[i].modifier, IMM_POISON))
+						total += 6;
+					if (IS_SET(object->affected[i].modifier, IMM_CHARM))
+						total += 6;
+					if (IS_SET(object->affected[i].modifier, IMM_SLEEP))
+						total += 6;
+					if (IS_SET(object->affected[i].modifier, IMM_HOLD))
+						total += 12;
+					if (IS_SET(object->affected[i].modifier, IMM_DRAIN))
+						total += 12;
+					if (IS_SET(object->affected[i].modifier, IMM_ACID))
+						total += 20;
+					if (IS_SET(object->affected[i].modifier, IMM_ELEC))
+						total += 20;
+					if (IS_SET(object->affected[i].modifier, IMM_COLD))
+						total += 20;
+					if (IS_SET(object->affected[i].modifier, IMM_FIRE))
+						total += 24;
+					if (IS_SET(object->affected[i].modifier, IMM_ENERGY))
+						total += 24;
+					if (IS_SET(object->affected[i].modifier, IMM_PIERCE))
+						total += 24;
+					if (IS_SET(object->affected[i].modifier, IMM_SLASH))
+						total += 30;
+					if (IS_SET(object->affected[i].modifier, IMM_BLUNT))
+						total += 30;
 					break;
-				case APPLY_SUSC             :
-
-					total -= 10;
+				case APPLY_IMMUNE:
+					if (IS_SET(object->affected[i].modifier, IMM_POISON))
+						total += 3;
+					if (IS_SET(object->affected[i].modifier, IMM_CHARM))
+						total += 3;
+					if (IS_SET(object->affected[i].modifier, IMM_SLEEP))
+						total += 3;
+					if (IS_SET(object->affected[i].modifier, IMM_HOLD))
+						total += 6;
+					if (IS_SET(object->affected[i].modifier, IMM_DRAIN))
+						total += 6;
+					if (IS_SET(object->affected[i].modifier, IMM_ACID))
+						total += 10;
+					if (IS_SET(object->affected[i].modifier, IMM_ELEC))
+						total += 10;
+					if (IS_SET(object->affected[i].modifier, IMM_COLD))
+						total += 10;
+					if (IS_SET(object->affected[i].modifier, IMM_FIRE))
+						total += 12;
+					if (IS_SET(object->affected[i].modifier, IMM_ENERGY))
+						total += 12;
+					if (IS_SET(object->affected[i].modifier, IMM_PIERCE))
+						total += 12;
+					if (IS_SET(object->affected[i].modifier, IMM_SLASH))
+						total += 15;
+					if (IS_SET(object->affected[i].modifier, IMM_BLUNT))
+						total += 15;
 					break;
-
-				case APPLY_M_IMMUNE         :
-
-					total += 20;
+				case APPLY_SUSC:
+					if (IS_SET(object->affected[i].modifier, IMM_POISON))
+						total += -3;
+					if (IS_SET(object->affected[i].modifier, IMM_CHARM))
+						total += -3;
+					if (IS_SET(object->affected[i].modifier, IMM_SLEEP))
+						total += -3;
+					if (IS_SET(object->affected[i].modifier, IMM_HOLD))
+						total += -6;
+					if (IS_SET(object->affected[i].modifier, IMM_DRAIN))
+						total += -6;
+					if (IS_SET(object->affected[i].modifier, IMM_ACID))
+						total += -10;
+					if (IS_SET(object->affected[i].modifier, IMM_ELEC))
+						total += -10;
+					if (IS_SET(object->affected[i].modifier, IMM_COLD))
+						total += -10;
+					if (IS_SET(object->affected[i].modifier, IMM_FIRE))
+						total += -12;
+					if (IS_SET(object->affected[i].modifier, IMM_ENERGY))
+						total += -12;
+					if (IS_SET(object->affected[i].modifier, IMM_PIERCE))
+						total += -12;
+					if (IS_SET(object->affected[i].modifier, IMM_SLASH))
+						total += -15;
+					if (IS_SET(object->affected[i].modifier, IMM_BLUNT))
+						total += -15;
 					break;
-
 				case APPLY_SPELL            :
-					//+6     per spell affect (sense life, hide, water breath, telepathy, pfe, all detects, darkness)
-					total += 10;
-					break;
-					/*
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_SENSE_LIFE))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_HIDE))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_WATERBREATH))
-					    total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-					    total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-						total += 6;
-					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
-						total += 6;
-
 					if(IS_SET(object->affected[i].modifier,  AFF_BLIND          ))//   BV00//0x00000001
+						total += -10;
 					if(IS_SET(object->affected[i].modifier,  AFF_INVISIBLE       ))//  BV01//0x00000002
+						total += 8;
 					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_EVIL     ))//  BV02//0x00000004
+						total += 2;
 					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_INVISIBLE))//  BV03//0x00000008
+						total += 3;
 					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_MAGIC    ))//  BV04//0x00000010
+						total += 2;
 					if(IS_SET(object->affected[i].modifier,  AFF_SENSE_LIFE      ))//  BV05//0x00000020
-					if(IS_SET(object->affected[i].modifier,  AFF_LIFE_PROT       ))//  BV06//0x00000040
+						total += 6;
 					if(IS_SET(object->affected[i].modifier,  AFF_SANCTUARY       ))//  BV07//0x00000080
-					if(IS_SET(object->affected[i].modifier,  AFF_DRAGON_RIDE     ))//  BV08//0x00000100
+						total += 30;
 					if(IS_SET(object->affected[i].modifier,  AFF_GROWTH          ))//  BV09//0x00000200
+						total += 1;
 					if(IS_SET(object->affected[i].modifier,  AFF_CURSE           ))//  BV10//0x00000400
+						total += -6;
 					if(IS_SET(object->affected[i].modifier,  AFF_FLYING          ))//  BV11//0x00000800
+						total += 10;
 					if(IS_SET(object->affected[i].modifier,  AFF_POISON          ))//  BV12//0x00001000
+						total += -8;
 					if(IS_SET(object->affected[i].modifier,  AFF_TREE_TRAVEL     ))//  BV13//0x00002000
+						total += 3;
 					if(IS_SET(object->affected[i].modifier,  AFF_PARALYSIS       ))//  BV14//0x00004000
+						total += 10;
 					if(IS_SET(object->affected[i].modifier,  AFF_INFRAVISION     ))//  BV15//0x00008000
+						total += 2;
 					if(IS_SET(object->affected[i].modifier,  AFF_WATERBREATH     ))//  BV16//0x00010000
+						total += 5;
 					if(IS_SET(object->affected[i].modifier,  AFF_SLEEP           ))//  BV17//0x00020000
+						total += 5;
 					if(IS_SET(object->affected[i].modifier,  AFF_TRAVELLING      ))//  BV18//0x00040000
+						total += 4;
 					if(IS_SET(object->affected[i].modifier,  AFF_SNEAK           ))//  BV19//0x00080000
+						total += 10;
 					if(IS_SET(object->affected[i].modifier,  AFF_HIDE            ))//  BV20//0x00100000
+						total += 6;
 					if(IS_SET(object->affected[i].modifier,  AFF_SILENCE         ))//  BV21//0x00200000
-					if(IS_SET(object->affected[i].modifier,  AFF_CHARM           ))//  BV22//0x00400000
+						total += -8;
 					if(IS_SET(object->affected[i].modifier,  AFF_DARKNESS	     ))//  BV23
+						total += 4;
 					if(IS_SET(object->affected[i].modifier,  AFF_PROTECT_FROM_EVIL ))// BV24//0x01000000
+						total += 6;
 					if(IS_SET(object->affected[i].modifier,  AFF_TRUE_SIGHT       ))// BV25//0x02000000
+						total += 10;
 					if(IS_SET(object->affected[i].modifier,  AFF_SCRYING          ))// BV26//0x04000000
+						total += 10;
 					if(IS_SET(object->affected[i].modifier,  AFF_FIRESHIELD       ))// BV27//0x08000000
-					if(IS_SET(object->affected[i].modifier,  AFF_GROUP            ))// BV28//0x10000000
+						total += 30;
 					if(IS_SET(object->affected[i].modifier,  AFF_TELEPATHY        ))// BV29//0x20000000
+						total += 3;
 					if(IS_SET(object->affected[i].modifier,  AFF_CHILLSHIELD      ))//  BV30// 0x40000000
+						total += 30;
 					if(IS_SET(object->affected[i].modifier,  AFF_BLADE_BARRIER    ))//   BV31// 0x80000000
-					*/
+						total += 30;
 					break;
 				case APPLY_WEAPON_SPELL     :
 					total += 30;
@@ -7422,7 +7529,21 @@ int eval(struct obj_data *object) {
 					total += 1;
 					break;
 				case APPLY_HITNDAM          :
-					total += object->affected[i].modifier*10;
+					if(GET_ITEM_TYPE(object) == ITEM_WEAPON) {
+						if(object->affected[i].modifier > 4)
+							total += 62;
+						else if(object->affected[i].modifier > 3)
+							total += 44;
+						else
+							total += object->affected[i].modifier*10;
+					} else {
+						if(object->affected[i].modifier > 2)
+							total += 34;
+						else if(object->affected[i].modifier > 1)
+							total += 22;
+						else
+							total += object->affected[i].modifier*10;
+					}
 					break;
 				case APPLY_SPELLFAIL        :
 					total -= object->affected[i].modifier;
@@ -7458,9 +7579,8 @@ int eval(struct obj_data *object) {
 					total += object->affected[i].modifier;
 					break;
 				case APPLY_MOVE_REGEN       :
-					total += object->affected[i].modifier;
+					total += (int)object->affected[i].modifier/3;
 					break;
-						/* Set thirst/hunger/drunk to MOD */
 				case APPLY_MOD_THIRST	:
 					total += 1;
 					break;
@@ -7474,46 +7594,11 @@ int eval(struct obj_data *object) {
 					break;
 			}
 		}
-
-
-
-
+	if(!IS_SET(object->obj_flags.wear_flags, ITEM_TAKE))
+		total = -100;
 	return total;
 }
 /*
-+5     if weapontype = NO-SCRAP
-
-+1     per 3 points of MAX-MOVE
-+1     per 3 points of MOVE-REGEN
-+1     per point of -ARMOR
-
-+3     per point of -SAVE_ALL
-+1     per point of -SAVE-other
-
-
-+6     per spell affect (sense life, hide, water breath, telepathy, pfe, all detects, darkness)
-+8     per spell affect (invis)
-+10     per spell affect (fly, true sight, spy, sneak)
-+30     per spell affect (sanc, fireshield, chillshield, bladebarrier, haste)
-
--3     per suscept (poison, charm, sleep)
--6     per suscept (hold, drain)
--10     per suscept (acid, elec, cold)
--12     per suscept (fire, energy, pierce)
--15     per suscept (slash, blunt)
-
-+3     per resist (poison, charm, sleep)
-+6     per resist (hold, drain)
-+10     per resist (acid, elec, cold)
-+12     per resist (fire, energy, pierce)
-+15     per resist (slash, blunt)
-
-
-+6     per immunity (poison, charm, sleep)
-+12     per immunity (hold, drain)
-+20     per immunity (acid, elec, cold)
-+24     per immunity (fire, energy, pierce)
-+30     per immunity (slash, blunt)
 
 total = 0 if item is NO-TAKE
 
