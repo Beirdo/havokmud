@@ -1485,6 +1485,8 @@ void WeaponSkillCheck(struct char_data *ch)
 	int specialist = 0;
 	int lowest = 0;
 
+	log("entering");
+
 	if(!(obj = ch->equipment[WIELD]))
 		return;
 
@@ -1493,6 +1495,8 @@ void WeaponSkillCheck(struct char_data *ch)
 
 	if(!(weapontype = obj->weapontype))
 		return;
+
+log("survived main checks");
 
 	if(ch->weaponskills.slot1 == weapontype)
 		found = 1;
@@ -1525,6 +1529,7 @@ void WeaponSkillCheck(struct char_data *ch)
 
 
 	if(!found) {
+		log("not found");
 		// assign the lowest available slot to this type
 				if(found != 1 && lowest > ch->weaponskills.grade1)
 					lowest = ch->weaponskills.grade1;
@@ -1570,8 +1575,10 @@ void WeaponSkillCheck(struct char_data *ch)
 				}
 
 	} else {
+		log("found");
 		// 3% chance of skill increase
 		if(number(1,100)<40) { // should be 4
+		log("gain percent");
 			switch(found)
 			{
 				case 1: ch->weaponskills.grade1++; break;
@@ -1592,6 +1599,7 @@ void WeaponSkillCheck(struct char_data *ch)
 						ch->weaponskills.grade7 + ch->weaponskills.grade8;
 
 			if(totpoints > maxpoints) { // let's lower all the others a point
+			log("lowering others");
 				if(found != 1 && ch->weaponskills.grade1 > 0)
 					ch->weaponskills.grade1--;
 				if(found != 2 && ch->weaponskills.grade2 > 0)
