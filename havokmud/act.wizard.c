@@ -2795,7 +2795,18 @@ dlog("in do_snoop");
   only_argument(argument, arg);
 
   if(!*arg)     {
-    send_to_char("Snoop who ?\n\r",ch);
+    send_to_char("Ok, you just snoop yourself.\n\r",ch);
+	    if(ch->desc->snoop.snooping) {
+	      if (ch->desc->snoop.snooping->desc)
+		    ch->desc->snoop.snooping->desc->snoop.snoop_by = 0;
+	      else {
+		    char buf[MAX_STRING_LENGTH];
+		    sprintf(buf, "caught %s snooping %s who didn't have a descriptor!",
+			ch->player.name, ch->desc->snoop.snooping->player.name);
+	        log(buf);
+          }
+        ch->desc->snoop.snooping = 0;
+       }
     return;
   }
 
