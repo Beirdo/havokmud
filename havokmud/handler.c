@@ -1710,13 +1710,18 @@ struct char_data *get_char_room(char *name, int room)
                     number;
     char            tmpname[MAX_INPUT_LENGTH + 40];
     char           *tmp;
+    struct room_data *rp;
+
+    if( !name || !(rp = real_roomp(room)) ) {
+        return( NULL );
+    }
 
     strcpy(tmpname, name);
     tmp = tmpname;
     if (!(number = get_number(&tmp))) {
-        return (0);
+        return (NULL);
     }
-    for (i = real_roomp(room)->people, j = 1; i && (j <= number);
+    for (i = rp->people, j = 1; i && (j <= number);
          i = i->next_in_room) {
         if (isname(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1725,7 +1730,8 @@ struct char_data *get_char_room(char *name, int room)
             j++;
         }
     }
-    for (i = real_roomp(room)->people, j = 1; i && (j <= number);
+
+    for (i = rp->people, j = 1; i && (j <= number);
          i = i->next_in_room) {
         if (isname2(tmp, GET_NAME(i))) {
             if (j == number) {
@@ -1734,7 +1740,8 @@ struct char_data *get_char_room(char *name, int room)
             j++;
         }
     }
-    return (0);
+
+    return (NULL);
 }
 
 /*
