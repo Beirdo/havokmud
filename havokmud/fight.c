@@ -1036,172 +1036,160 @@ long NewExpCap(struct char_data *ch, long total)  {
 
 
 void group_gain(struct char_data *ch,struct char_data *victim) {
-  char buf[256];
-  int no_members, share;
-  struct char_data *k;
-  struct follow_type *f;
-  int total, pc, group_count=0,
-  	group_max_level=1; /* the highest level number the group has */
+	char buf[256];
+	int no_members, share;
+	struct char_data *k;
+	struct follow_type *f;
+	int total, pc, group_count=0, group_max_level=1; /* the highest level number the group has */
 
+log("1");
+	if (!(k=ch->master)) {
+		k = ch;
+log("2");
+	}
+	/* can't get exp for killing players */
 
-  if (!(k=ch->master))
-    k = ch;
+	if (!IS_NPC(victim)) {
+		return;
+log("3");
+	}
 
-  /* can't get exp for killing players */
+	if (IS_AFFECTED(k, AFF_GROUP) && (k->in_room == ch->in_room))
+		no_members = GET_AVE_LEVEL(k);
+	else {
+		no_members = 0;
+log("4");
+	}
 
-  if (!IS_NPC(victim)) {
-    return;
-  }
+	pc = FALSE;
 
-  if (IS_AFFECTED(k, AFF_GROUP) &&
-      (k->in_room == ch->in_room))
-    no_members = GET_AVE_LEVEL(k);
-  else
-    no_members = 0;
+	group_max_level=GetMaxLevel(k);
 
-  pc = FALSE;
-
-   group_max_level=GetMaxLevel(k);
-
-  for (f=k->followers; f; f=f->next)
-    if (IS_AFFECTED(f->follower, AFF_GROUP) &&
-	(f->follower->in_room == ch->in_room)) {
-      	no_members+=GET_AVE_LEVEL(f->follower);
-      if (IS_PC(f->follower))
-          pc++;
-	if (IS_PC(f->follower) || IS_SET(f->follower->specials.act,ACT_POLYSELF)
-		&& f->follower->in_room==k->in_room) {
-		if (group_max_level<GetMaxLevel(f->follower))
-		    group_max_level=GetMaxLevel(f->follower);
-		 group_count++;
+	for (f=k->followers; f; f=f->next) {
+		if (IS_AFFECTED(f->follower, AFF_GROUP) && (f->follower->in_room == ch->in_room)) {
+			no_members+=GET_AVE_LEVEL(f->follower);
+			if (IS_PC(f->follower))
+				pc++;
+			if (IS_PC(f->follower) || IS_SET(f->follower->specials.act,ACT_POLYSELF) && f->follower->in_room==k->in_room) {
+				if (group_max_level < GetMaxLevel(f->follower))
+					group_max_level=GetMaxLevel(f->follower);
+				group_count++;
+			}
 		}
-    }
-
-  if (pc > 10)
-    pc = 10;
-
-  if (no_members >= 1) {
-    share = (GET_EXP(victim)/no_members);
-    share = MAX(share, GET_MAX_HIT(victim)*GetMaxLevel(victim)); /* this is a test to get rid of 0 xp mobs */
-  }
-  else
-    share = 0;
-
-  if (IS_AFFECTED(k, AFF_GROUP) &&
-      (k->in_room == ch->in_room)) {
-
-      total = share*GET_AVE_LEVEL(k);
-
-      if (pc) {
-	total *= (100 + (3*pc));
-	total /= 100;
-      }
-
-	RatioExp(k, victim, total);
-	total= GroupLevelRatioExp(k,group_max_level,total);
-	total= ExpCaps(group_count,total);	/* figure EXP MAXES */
-
-	if (!IS_IMMORTAL(k))
-		total= NewExpCap(k, total);
-
-
-	if (!ch->master && ch->followers) {  //Leadership experience
- 		GET_LEADERSHIP_EXP(ch)+=total;
-		ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
-	}
- 	else if(!ch->master && !ch->followers) {
- 		GET_LEADERSHIP_EXP(ch)+=total*3/5;
- 		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
 	}
 
+	if (pc > 10)
+		pc = 10;
 
-      sprintf(buf,"You receive your share of %d experience.", total);
-      act(buf, FALSE, k, 0, 0, TO_CHAR);
-      gain_exp(k,total);
-      change_alignment(k, victim);
-  }
-
-  for (f=k->followers; f; f=f->next) {
-    if (IS_AFFECTED(f->follower, AFF_GROUP) &&
-	(f->follower->in_room == ch->in_room)) {
-
-        total = share*GET_AVE_LEVEL(f->follower);
-
-	if (IS_PC(f->follower)) {
-	  total *= (100 + (1*pc));
-	  total /= 100;
+	if (no_members >= 1) {
+		share = (GET_EXP(victim)/no_members);
 	} else
-	  total /= 2;
+		share = 0;
+
+	if (IS_AFFECTED(k, AFF_GROUP) && (k->in_room == ch->in_room)) {
+		total = share*GET_AVE_LEVEL(k);
+		if (pc) {
+			total *= (100 + (3*pc));
+			total /= 100;
+		}
+
+		RatioExp(k, victim, total);
+		total= GroupLevelRatioExp(k,group_max_level,total);
+		total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+
+		if (!IS_IMMORTAL(k))
+			total= NewExpCap(k, total);
 
 
-	if (IS_PC(f->follower)) {
-	  total = RatioExp(f->follower, victim, total);
-	total= GroupLevelRatioExp(f->follower,group_max_level,total);
-	  total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+		if (!ch->master && ch->followers) {  //Leadership experience
+			GET_LEADERSHIP_EXP(ch)+=total;
+			ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+		} else if(!ch->master && !ch->followers) {
+			GET_LEADERSHIP_EXP(ch)+=total*3/5;
+			ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+		}
 
-		if (!IS_IMMORTAL(f->follower))
-			total= NewExpCap(f->follower, total);
-
-
-	  	if (!ch->master && ch->followers) {  //Leadership experience
-	   		GET_LEADERSHIP_EXP(ch)+=total;
-	  		ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
-	  	}
-	   	else if(!ch->master && !ch->followers) {
-	   		GET_LEADERSHIP_EXP(ch)+=total*3/5;
-	   		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
-	   }
-
-	  sprintf(buf,"You receive your share of %d experience.", total);
-	  act(buf, FALSE, f->follower,0,0,TO_CHAR);
-	  gain_exp(f->follower,  total);
-
-	  change_alignment(f->follower, victim);
-	} else {
-	  if (f->follower->master && IS_AFFECTED(f->follower, AFF_CHARM)) {
-	    total = RatioExp(f->follower->master, victim, total);
-	total= GroupLevelRatioExp(f->follower,group_max_level,total);
-
-            total= ExpCaps(group_count,total);	/* figure EXP MAXES */
-
-
-		if (!IS_IMMORTAL(f->follower->master))
-		  total= NewExpCap(f->follower->master, total);
-
-	    if (f->follower->master->in_room == f->follower->in_room) {
-	      sprintf(buf,"You receive $N's share of %d experience.", total);
-	      act(buf, FALSE, f->follower->master,0,f->follower,TO_CHAR);
-	      gain_exp(f->follower->master,  total);
-	      change_alignment(f->follower, victim);
-	    }
-	  } else {
-	    total = RatioExp(f->follower, victim, total);
-		total= GroupLevelRatioExp(f->follower,group_max_level,total);
-
-	    total= ExpCaps(group_count,total);	/* figure EXP MAXES */
-		if (!IS_IMMORTAL(f->follower))
-		  total= NewExpCap(f->follower, total);
-
-
-
-
-			if (!ch->master && ch->followers) {  //Leadership experience
-		 		GET_LEADERSHIP_EXP(ch)+=total;
-				ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
-			}
-		 	else if(!ch->master && !ch->followers) {
-		 		GET_LEADERSHIP_EXP(ch)+=total*3/5;
-		 		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
-			}
-	    sprintf(buf,"You receive your share of %d experience.", total);
-	    act(buf, FALSE, f->follower,0,0,TO_CHAR);
-	    gain_exp(f->follower,  total);
-
-	    change_alignment(f->follower, victim);
-	  }
+		sprintf(buf,"You receive your share of %d experience.", total);
+		act(buf, FALSE, k, 0, 0, TO_CHAR);
+		gain_exp(k,total);
+		change_alignment(k, victim);
+log("5");
 	}
-    }
-  }
+
+	for (f=k->followers; f; f=f->next) {
+		if (IS_AFFECTED(f->follower, AFF_GROUP) && (f->follower->in_room == ch->in_room)) {
+			total = share*GET_AVE_LEVEL(f->follower);
+			if (IS_PC(f->follower)) {
+				total *= (100 + (1*pc));
+				total /= 100;
+			} else
+				total /= 2;
+
+			if (IS_PC(f->follower)) {
+				total = RatioExp(f->follower, victim, total);
+				total= GroupLevelRatioExp(f->follower,group_max_level,total);
+				total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+
+				if (!IS_IMMORTAL(f->follower))
+					total= NewExpCap(f->follower, total);
+
+
+				if (!ch->master && ch->followers) {  //Leadership experience
+					GET_LEADERSHIP_EXP(ch)+=total;
+					ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+				} else if(!ch->master && !ch->followers) {
+					GET_LEADERSHIP_EXP(ch)+=total*3/5;
+					ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+				}
+
+				sprintf(buf,"You receive your share of %d experience.", total);
+				act(buf, FALSE, f->follower,0,0,TO_CHAR);
+				gain_exp(f->follower,  total);
+				change_alignment(f->follower, victim);
+log("6");
+			} else {
+				if (f->follower->master && IS_AFFECTED(f->follower, AFF_CHARM)) {
+					total = RatioExp(f->follower->master, victim, total);
+					total= GroupLevelRatioExp(f->follower,group_max_level,total);
+
+					total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+
+
+					if (!IS_IMMORTAL(f->follower->master))
+						total= NewExpCap(f->follower->master, total);
+
+					if (f->follower->master->in_room == f->follower->in_room) {
+						sprintf(buf,"You receive $N's share of %d experience.", total);
+						act(buf, FALSE, f->follower->master,0,f->follower,TO_CHAR);
+						gain_exp(f->follower->master,  total);
+						change_alignment(f->follower, victim);
+log("7");
+					}
+				} else {
+					total = RatioExp(f->follower, victim, total);
+					total= GroupLevelRatioExp(f->follower,group_max_level,total);
+
+					total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+					if (!IS_IMMORTAL(f->follower))
+						total= NewExpCap(f->follower, total);
+
+					if (!ch->master && ch->followers) {  //Leadership experience
+						GET_LEADERSHIP_EXP(ch)+=total;
+						ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+					} else if(!ch->master && !ch->followers) {
+						GET_LEADERSHIP_EXP(ch)+=total*3/5;
+						ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+					}
+					sprintf(buf,"You receive your share of %d experience.", total);
+					act(buf, FALSE, f->follower,0,0,TO_CHAR);
+					gain_exp(f->follower,  total);
+
+					change_alignment(f->follower, victim);
+log("8");
+				}
+			}
+		}
+	}
 }
 
 char *replace_string(char *str, char *weapon, char *weapon_s,
@@ -1865,9 +1853,10 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim, int killedbytyp
   	    } else {
 			/* Calculate level-difference bonus */
 			exp = GET_EXP(victim);
-			exp = MAX(exp, GET_MAX_HIT(victim)*GetMaxLevel(victim)); /* test to get rid of 0 xp mobs */
+
 			if (!IS_PC(victim)) {
 				exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
+
 			if (!IS_IMMORTAL(ch))
 				exp= NewExpCap(ch, exp);
 
