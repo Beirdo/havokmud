@@ -41,6 +41,7 @@ char *room_fields[] =
 	"riv",    /* 7 */
 	"tele",   /* 8 */
 	"tunn",   /* 9 */
+	"delete", /* 10 to delete an extra desc */
 	"\n"
 };
 
@@ -619,7 +620,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
       }
     } else {
       send_to_char("Illegal direction\n\r",ch);
-      send_to_char("Must enter 0-5.I will ask for text.\n\r",ch);
+      send_to_char("Must enter 0-5. I will ask for text.\n\r",ch);
       return;
     }
     break;
@@ -716,36 +717,36 @@ if (ed->description)
     /*
       deletion
       */
-      if (!*string)  	{
-	send_to_char("You must supply a field name.\n\r", ch);
-	return;
-      }
-      /* try to locate field */
-      for (ed = rp->ex_description; ; ed = ed->next)
-	if (!ed) {
-	  send_to_char("No field with that keyword.\n\r", ch);
-	  return;
-	} else if (!str_cmp(ed->keyword, string)) {
-	if (ed->keyword)
-	  free(ed->keyword);
-	  if (ed->description)
-	    free(ed->description);
-
-	  /* delete the entry in the desr list */
-	  if (ed == rp->ex_description)
-	    rp->ex_description = ed->next;
-	  else {
-	    for(tmp = rp->ex_description; tmp->next != ed;
-		tmp = tmp->next);
-	    tmp->next = ed->next;
-	  }
-	if (ed)
-	  free(ed);
-
-	  send_to_char("Field deleted.\n\r", ch);
-	  return;
+	if (!*string)  	{
+		send_to_char("You must supply the name of an extra description.\n\r", ch);
+		return;
 	}
-      break;
+	/* try to locate field */
+	for (ed = rp->ex_description; ; ed = ed->next) {
+		if (!ed) {
+			send_to_char("No field with that keyword. Make sure to use the exact keywords.\n\r", ch);
+			return;
+		} else if (!str_cmp(ed->keyword, string)) {
+			if (ed->keyword)
+				free(ed->keyword);
+			if (ed->description)
+				free(ed->description);
+
+			/* delete the entry in the descr list */
+			if (ed == rp->ex_description)
+				rp->ex_description = ed->next;
+			else {
+				for(tmp = rp->ex_description; tmp->next != ed; tmp = tmp->next);
+					tmp->next = ed->next;
+			}
+			if (ed)
+				free(ed);
+
+			send_to_char("Field deleted.\n\r", ch);
+			return;
+		}
+	}
+	break;
 
   default:
     send_to_char("I'm so confused :-)\n\r",ch);
