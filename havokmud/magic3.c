@@ -4245,7 +4245,7 @@ void spell_iron_skins(int level, struct char_data *ch,
      */
     struct affected_type af;
 
-    if (!affected_by_spell(ch, SPELL_MANA_SHIELD)) {
+    if (!affected_by_spell(ch, SPELL_IRON_SKINS)) {
         act("$n invokes the earthen forces, and surrounds $mself with iron "
             "skins.", TRUE, ch, 0, 0, TO_ROOM);
         act("You invoke the earthen forces, and surround yourself with iron "

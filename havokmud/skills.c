@@ -11,20 +11,6 @@
 #include "protos.h"
 #include "externs.h"
 
-#if 0
-int             choose_exit(int in_room, int tgt_room, int dvar);
-
-/*
- * struct room_data *real_roomp(int); 
- */
-
-int             remove_trap(struct char_data *ch, struct obj_data *trap);
-
-void            do_find_traps(struct char_data *ch, char *arg, int cmd);
-void            do_find_food(struct char_data *ch, char *arg, int cmd);
-void            do_find_water(struct char_data *ch, char *arg, int cmd);
-#endif
-
 
 struct hunting_data {
     char           *name;

@@ -120,6 +120,9 @@ void mind_use_telekinesis(int level, struct char_data *ch, char *arg,
 {
     char           *p;
     int             i = -1;
+    int             found;
+
+    found = 0;
 
     switch (type) {
     case SPELL_TYPE_WAND:
@@ -137,14 +140,16 @@ void mind_use_telekinesis(int level, struct char_data *ch, char *arg,
             }
 
             p = fname(arg);
-            for (i = 0; i < 6; i++) {
+            for (i = 0; i < 6 && !found; i++) {
                 if (strncmp(p, dirs[i], strlen(p)) == 0) {
-                    i++;
-                    break;
+                    found = 1;
                 }
             }
 
-            if (i == 6) {
+            /* The array direction (0-5) will now match
+               the direction number (1-6) */
+
+            if (!found) {
                 send_to_char("You must supply a direction!\n\r", ch);
                 return;
             }
