@@ -2344,33 +2344,47 @@ if (level <0 || level >ABS_MAX_LVL)
 	      switch(number(1,7)) {
 	         case 1:dam=40;
 	               if (!saves_spell(tmp_victim, SAVING_SPELL)) {
-	                act("$N is hit by a red shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	                act("$N is hit by a red shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	                act("You hit $N with a red shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	                act("$n hits you with a red shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	                MissileDamage(ch,tmp_victim,dam,SPELL_PRISMATIC_SPRAY);
 	               }
 	               break;
 	         case 2:dam=80;
 	               if (!saves_spell(tmp_victim, SAVING_SPELL)) {
-	                act("$N is hit by a orange shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	                act("$N is hit by an orange shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+     		        act("You hit $N with an orange shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+     		        act("$n hits you with an orange shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
      		        MissileDamage(ch,tmp_victim,dam,SPELL_PRISMATIC_SPRAY);
      		        }
 	               	break;
 	         case 3:dam=100;
 	               if (!saves_spell(tmp_victim, SAVING_SPELL)) {
-	                act("$N is hit by a yellow shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	                act("$N is hit by a yellow shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	                act("You hit $N with a yellow shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	                act("$n hits you with a yellow shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	         	MissileDamage(ch,tmp_victim,dam,SPELL_PRISMATIC_SPRAY);
 	         	}
 	               	break;
 					/* these have internal saves already */
-	         case 4:act("$N is hit by a green shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	         case 4:act("$N is hit by a green shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	         		act("You hit $N with a green shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	         		act("$n hits you with a yellow shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	         	cast_poison(level,ch,"",SPELL_TYPE_SPELL,tmp_victim,NULL);
 	         	break;
-	         case 5:act("$N is hit by a blue shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	         case 5:act("$N is hit by a blue shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	         		act("You hit $N with a blue shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	         		act("$n hits you with a blue shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	         	cast_paralyze(level,ch,"",SPELL_TYPE_SPELL,tmp_victim,NULL);
 	         	break;
-	         case 6:act("$N is hit by a indigo shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	         case 6:act("$N is hit by an indigo shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	         		act("You hit $N with an indigo shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	         		act("$n hits you with an indigo shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	                cast_feeblemind(level,ch,"",SPELL_TYPE_SPELL,tmp_victim,NULL);
 	         	break;
-	         case 7:act("$N is hit by a violet shaft of light!",FALSE,ch,0,tmp_victim,TO_ROOM);
+	         case 7:act("$N is hit by a violet shaft of light!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+	         		act("You hit $N with a violet shaft of light!",FALSE,ch,0,tmp_victim,TO_CHAR);
+	         		act("$n hits you with a violet shaft of light!",FALSE,ch,0,tmp_victim,TO_VICT);
 	         	cast_teleport(level,ch,"",SPELL_TYPE_SPELL,tmp_victim,NULL);
 	         	break;
 	          default:	/* should never get here */
@@ -2383,7 +2397,9 @@ if (level <0 || level >ABS_MAX_LVL)
 		     set_fighting(ch,tmp_victim);
 	        }
            } else
-            act("You avoid the colorful spray!\n\r",FALSE, ch, 0, tmp_victim, TO_VICT);
+            act("You avoid the colorful spray!",FALSE,ch,0,tmp_victim,TO_VICT);
+            act("$N avoids the colorful spray!",FALSE,ch,0,tmp_victim,TO_NOTVICT);
+            act("$N avoids your colorful spray!",FALSE,ch,0,tmp_victim,TO_CHAR);
 	}
 
 } /* end pris */
