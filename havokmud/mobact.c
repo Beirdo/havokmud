@@ -30,18 +30,20 @@ void mobile_guardian(struct char_data *ch)
                     found = FALSE;
 
     if (ch->in_room > -1) {
-        if ((!ch->master) || (!IS_AFFECTED(ch, AFF_CHARM)))
+        if ((!ch->master) || (!IS_AFFECTED(ch, AFF_CHARM))) {
             return;
+        }
         if (ch->master->specials.fighting) {
             for (i = 0; i < 10 && !found; i++) {
                 targ = FindAnAttacker(ch->master);
-                if (targ)
+                if (targ) {
                     found = TRUE;
+                }
             }
 
-            if (!found)
+            if (!found) {
                 return;
-
+            }
             if (!SameRace(targ, ch)) {
                 if (IsHumanoid(ch)) {
                     act("$n screams 'I must protect my master!'",
@@ -66,31 +68,32 @@ void mobile_wander(struct char_data *ch)
     char            buf[100];
     extern int      rev_dir[];
 
-    if (GET_POS(ch) != POSITION_STANDING)
+    if (GET_POS(ch) != POSITION_STANDING) {
         return;
-
+    }
     or = ch->in_room;
 
     while (1) {
         door = number(0, 8);
-        if (door > 5)
+        if (door > 5) {
             return;
-
-        if (door == ch->specials.last_direction)
+        }
+        if (door == ch->specials.last_direction) {
             ch->specials.last_direction = -1;
-
-        /*
-         * if (door == ch->specials.last_direction) continue; 
-         */
-
+        }
+#if 0
+        if (door == ch->specials.last_direction) {
+            continue; 
+        }
+#endif
         exitp = EXIT(ch, door);
 
-        if (!exit_ok(exitp, &rp))
+        if (!exit_ok(exitp, &rp)) {
             continue;
-
-        if (IS_SET(rp->room_flags, NO_MOB | DEATH))
+        }
+        if (IS_SET(rp->room_flags, NO_MOB | DEATH)) {
             continue;
-
+        }
         if (GET_RACE(ch) == RACE_FISH) {
             rp = real_roomp(EXIT(ch, door)->to_room);
 
@@ -159,9 +162,9 @@ void MobHunt(struct char_data *ch)
             ch->hunt_dist = 0;
         }
     } else if (ch->specials.hunting) {
-        if (ch->hunt_dist <= 50)
+        if (ch->hunt_dist <= 50) {
             ch->hunt_dist = 100;
-
+        }
 #if FAST_TRACK
         for (k = 1; k <= 3 && ch->specials.hunting; k++) {
             ch->persist -= 1;
@@ -203,7 +206,9 @@ void MobScavenge(struct char_data *ch)
 
     rp = real_roomp(ch->in_room);
     if (!rp) {
-        // log("No room data in MobScavenge ??Crash???");
+#if 0
+        log("No room data in MobScavenge ??Crash???");
+#endif        
         return;
     } else if ((real_roomp(ch->in_room))->contents && number(0, 4)) {
         for (max = 1, best_obj = 0, obj = (real_roomp(ch->in_room))->contents;
@@ -288,7 +293,9 @@ void mobile_activity(struct char_data *ch)
         log("/----- Char not in correct room.  moving to 50");
         log(GET_NAME(ch));
 
-        /* if they are in a - room, assume an error */
+        /* 
+         * if they are in a - room, assume an error 
+         */
         assert(ch->in_room >= 0);
         char_from_room(ch);
         char_to_room(ch, 50);
@@ -334,7 +341,9 @@ void mobile_activity(struct char_data *ch)
     }
 
     if (!no_specials) {
-        /* do not run these if disabled */
+        /* 
+         * do not run these if disabled 
+         */
         if (IS_SET(ch->specials.act, ACT_NECROMANCER) &&
             necromancer(ch, 0, "", ch, PULSE_TICK)) {
             return;
@@ -376,7 +385,9 @@ void mobile_activity(struct char_data *ch)
         }
 
 #if 0
-        /* Paladin special proc not completed */
+        /* 
+         * Paladin special proc not completed 
+         */
         if (IS_SET(ch->specials.act, ACT_PALADIN) &&
             Paladin(ch, 0, "", ch, PULSE_TICK))
 #else
@@ -564,7 +575,9 @@ int UseViolentHeldItem(struct char_data *ch)
         obj = ch->equipment[HOLD];
         if (!obj->obj_flags.value[2] <= 0 &&
             IS_SET(spell_info[obj->obj_flags.value[3]].targets, TAR_VIOLENT)) {
-            /* item has charges */
+            /* 
+             * item has charges 
+             */
             one_argument(obj->name, tmp);
 
             if (isname(GET_NAME(ch), GET_NAME(ch->specials.fighting))) {
@@ -612,15 +625,15 @@ int UseViolentHeldItem(struct char_data *ch)
 
 int SameRace(struct char_data *ch1, struct char_data *ch2)
 {
-    if ((!ch1) || (!ch2))
+    if ((!ch1) || (!ch2)) {
         return (FALSE);
-
-    if (ch1 == ch2)
+    }
+    if (ch1 == ch2) {
         return (TRUE);
-
-    if (in_group(ch1, ch2))
+    }
+    if (in_group(ch1, ch2)) {
         return (TRUE);
-
+    }
     if (GET_RACE(ch1) == GET_RACE(ch2)) {
         return (TRUE);
     }
@@ -641,15 +654,18 @@ int AssistFriend(struct char_data *ch)
 
     rp = real_roomp(ch->in_room);
     if (!rp) {
-        // log("No room data in AssistFriend ??Crash???");
+#if 0        
+        log("No room data in AssistFriend ??Crash???");
+#endif        
         return (0);
     }
 
     damsel = 0;
     targ = 0;
 
-    if (check_peaceful(ch, ""))
+    if (check_peaceful(ch, "")) {
         return;
+    }
 #if 0
     assert(ch->in_room >= 0);
 #else
@@ -662,9 +678,9 @@ int AssistFriend(struct char_data *ch)
     }
 #endif
 
-    if (ch->in_room == 0)
+    if (ch->in_room == 0) {
         return (0);
-
+    }
     /*
      * find the people who are fighting 
      */
@@ -709,12 +725,12 @@ FindABetterWeapon(struct char_data * mob)
     /*
      * check whether this mob can wield 
      */
-    if (!HasHands(mob))
+    if (!HasHands(mob)) {
         return (FALSE);
-
-    if (!real_roomp(mob->in_room))
+    }
+    if (!real_roomp(mob->in_room)) {
         return (FALSE);
-
+    }
     /*
      * check room 
      */
@@ -757,7 +773,10 @@ FindABetterWeapon(struct char_data * mob)
             best = 0;
         }
     } else {
-        return (FALSE);         /* nothing to choose from */
+        return (FALSE);         
+        /* 
+         * nothing to choose from 
+         */
     }
 
     if (best) {
@@ -1012,7 +1031,9 @@ void sgoto(char *arg, struct char_data *ch)
 
     if (arg) {
         if (*arg == '$') {
-            /* this is a creature name to follow */
+            /* 
+             * this is a creature name to follow 
+             */
             arg++;
             p = strtok(arg, " ");
             if ((mob = get_char_vis(ch, p)) == NULL) {
@@ -1045,8 +1066,9 @@ void sgoto(char *arg, struct char_data *ch)
             return;
         }
         go_direction(ch, dir);
-        if (ch->in_room == room)
+        if (ch->in_room == room) {
             ch->commandp++;
+        }
         return;
     }
     ch->commandp++;
@@ -1059,10 +1081,12 @@ void do_act(char *arg, struct char_data *ch)
     if (arg) {
         bits = atoi(arg);
         ch->specials.act = bits;
-        if (!IS_SET(ch->specials.act, ACT_SCRIPT))
+        if (!IS_SET(ch->specials.act, ACT_SCRIPT)) {
             SET_BIT(ch->specials.act, ACT_SCRIPT);
-        if (!IS_SET(ch->specials.act, ACT_ISNPC))
+        }
+        if (!IS_SET(ch->specials.act, ACT_ISNPC)) {
             SET_BIT(ch->specials.act, ACT_ISNPC);
+        }
     }
     ch->commandp++;
 }
@@ -1074,9 +1098,9 @@ void do_jmp(char *arg, struct char_data *ch)
 
     for (i = 0; strcmp(script_data[ch->script].script[i].line, "end\n"); i++) {
         strcpy(buf, script_data[ch->script].script[i].line);
-        if (buf[strlen(buf) - 1] == '\n')
+        if (buf[strlen(buf) - 1] == '\n') {
             buf[strlen(buf) - 1] = '\0';
-
+        }
         if (!strncmp(buf, arg, strlen(arg))) {
             ch->commandp = i;
             return;
@@ -1097,9 +1121,9 @@ void do_jsr(char *arg, struct char_data *ch)
 
     for (i = 0; strcmp(script_data[ch->script].script[i].line, "end\n"); i++) {
         strcpy(buf, script_data[ch->script].script[i].line);
-        if (buf[strlen(buf) - 1] == '\n')
+        if (buf[strlen(buf) - 1] == '\n') {
             buf[strlen(buf) - 1] = '\0';
-
+        }
         if (!strncmp(buf, arg, strlen(arg))) {
             ch->commandp2 = ch->commandp + 1;
             ch->commandp = i;
