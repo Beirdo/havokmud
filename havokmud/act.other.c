@@ -2551,41 +2551,42 @@ void do_group(struct char_data *ch, char *argument, int cmd)
 
         for (found = FALSE, f = ch->followers; f; f = f->next) {
             victim = f->follower;
-            if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
+            if (!IS_NPC(victim)) {
+                if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
+                    /*
+                     * Do not let mortals group imms
+                     */
+                    act("You really don't want $N in your group.", FALSE, ch,
+                        0, victim, TO_CHAR);
+                    return;
+                }
                 /*
-                 * Do not let mortals group imms
+                 * victim stronger??
                  */
-                act("You really don't want $N in your group.", FALSE, ch,
-                    0, victim, TO_CHAR);
-                return;
-            }
-            /*
-             * victim stronger??
-             */
-
-            if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
-                act("$N looks to be too strong to join you.",
+                if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
+                    act("$N looks to be too strong to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
-                return;
-            }
+                    return;
+                }
 
-            /*
-             * your stronger??
-             */
-
-            if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
-                act("$N looks to be too puny and week to join you.",
-                        FALSE, ch, 0, victim, TO_CHAR);
-                return;
-            }
-
-            if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
                 /*
-                 * Do not let imms group mortals
+                 * your stronger??
                  */
-                act("Now now.  That would be CHEATING!", FALSE, ch, 0, 0,
-                    TO_CHAR);
-                return;
+
+                if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
+                    act("$N looks to be too puny and week to join you.",
+                        FALSE, ch, 0, victim, TO_CHAR);
+                    return;
+                }
+                
+                if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
+                    /*
+                     * Do not let imms group mortals
+                     */
+                    act("Now now.  That would be CHEATING!", FALSE, ch, 0, 0,
+                        TO_CHAR);
+                    return;
+                }
             }
 
             if (!IS_AFFECTED(victim, AFF_GROUP)) {
@@ -2660,33 +2661,35 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 REMOVE_BIT(victim->specials.affected_by, AFF_GROUP);
                 REMOVE_BIT(victim->specials.affected_by2, AFF2_CON_ORDER);
             } else {
-                if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
-                    act("You really don't want $N in your group.", FALSE,
-                        ch, 0, victim, TO_CHAR);
-                    return;
-                }
-                if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
-                    act("Now now.  That would be CHEATING!", FALSE, ch, 0,
-                        0, TO_CHAR);
-                    return;
-                }
+                if (!IS_NPC(victim)) {
+                    if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
+                        act("You really don't want $N in your group.", FALSE,
+                            ch, 0, victim, TO_CHAR);
+                        return;
+                    }
+                    if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
+                        act("Now now.  That would be CHEATING!", FALSE, ch, 0,
+                            0, TO_CHAR);
+                        return;
+                    }
 
-                /*
-                 * victim stronger??
-                 */
-                if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
-                    act("$N looks to be too strong to join you.", FALSE,
-                        ch, 0, victim, TO_CHAR);
-                    return;
-                }
+                    /*
+                    * victim stronger??
+                    */
+                    if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
+                        act("$N looks to be too strong to join you.", FALSE,
+                            ch, 0, victim, TO_CHAR);
+                        return;
+                    }
 
-                /*
-                 * your stronger??
-                 */
-                if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
-                    act("$N looks to be too puny and week to join you.",
-                        FALSE, ch, 0, victim, TO_CHAR);
-                    return;
+                    /*
+                     * your stronger??
+                     */
+                    if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
+                        act("$N looks to be too puny and week to join you.",
+                            FALSE, ch, 0, victim, TO_CHAR);
+                        return;
+                    }
                 }
 
                 if (victim == ch) {
