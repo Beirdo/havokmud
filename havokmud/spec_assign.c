@@ -1289,10 +1289,30 @@ void assign_mobiles()
   {45409, nadia},
   {45410, mime_jerry},
   {45413, zork},
+  {45414, LightningBreather},	/*Mairden bronze dragon*/
+  {45415, FrostBreather},     /* Gavmorak silver dragon */
+  {45416, FireBreather},      /* Tarius gold dragon */
   {45417, elamin},
+  {45421, FrostBreather},	/*gavmorak silver dragon*/
+  {45422, FireBreather},	/*Viska mist dragon*/
+  {45423, GasBreather},		/*Korack topaz dragon*/
+  {45424, GasBreather},		/*Katsulas emerald dragon*/
+  {45425, AcidBreather},	/*Skaer black dragon*/
+  {45426, FireBreather},	/*Barack crystal dragon*/
+  {45427, FireBreather},	/*Nevarock brass dragon*/
+  {45429, AcidBreather},	/*Rhyder copper dragon*/
+  {45430, LightningBreather},	/*Irie blue dragon*/
+  {45431, FrostBreather},	/*Symon silver dragon*/
+  {45432, AcidBreather},	/*Ragnorak black dragon*/
+  {45433, GasBreather},		/*Sleigh green dragon*/
+  {45434, FrostBreather},	/*Tegellen cloud dragon*/
+  {45435, LightningBreather},	/*Haddox blue dragon*/
+  {45437, FireBreather},	/*Tynan red dragon*/
+  {45439, AcidBreather},	/*Rank black dragon*/
   {45440, starving_man},
   {45443, goblin_chuirgeon},
   {45463, cronus_pool},
+  {45564, FireBreather},	/*Cronus gold dragon*/
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */
