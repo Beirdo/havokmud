@@ -21,41 +21,32 @@
 
 char *newbie_note[] = {
     "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
-    "along better at Havok.\n\r\n\r"
-    "1) We try to get people to role play, but we do not force you. If you "
-    "enjoy\n\r"
-    "   role playing please do so, if you do not please do not interfere with "
-    "those\n\r   that do.\n\r"
-    " 2) Newbie commands are HELP , NEWS and COMMANDS. Use help for solving "
-    "most\n\r"
-    "    of your questions. If you still confused ask about.\n\r"
-    " 3) PLEASE do not curse over public channels. This means "
-    "GOSSIP,SHOUT,AUCTION.\n\r",
-    "    Punishment for doing so begins with removing your ability to use "
-    "public\n\r"
-    "    channels.\n\r"
-    " 4) Not all public channels work WORLD WIDE. GOSSIP and AUCTION and "
-    "TELL\n\r"
-    "    only work in the zone your in. There are special spells and skills "
-    "to\n\r"
-    "    communicate world wide if you need them. SHOUT is WORLD WIDE but it "
-    "does\n\r"
-    "    cost you MANA and VITIALITY points.\n\r"
-    " 5) Please do not use 'funny' or 'wacky' names. We try to encourage "
-    "role-playing\n\r",
-    "    and if you use those type of names it does not help matters. If your "
-    "name\n\r"
-    "    is a name that is used in the Forgotten Realms setting (such as "
-    "Elminster,\n\r"
-    "    Drizzit etc..) please change it. There are NPC's that use these "
-    "names and it\n\r"
-    "    will cause confusion. If you do not abide by these rules an immortal "
-    "might\n\r"
-    "    ask you to change your name.\n\r"
-    " 6) Remember that we try to add a bit of realizem (not to much "
-    "though:)\n\r"
-    "    and things such as starving to death or dieing of thirst CAN "
-    "happen.\n\r"
+    "along better.\n\r\n\r"
+    " 1) The immortals of Havok have put alot of time into making Havok as\n\r"
+    "    fun as possible, as well as ensuring that Havok is a stable and\n\r"
+    "    reliable place to play.  They deserve your respect and courtesy\n\r"
+    "    and by playing Havok you agree to show them both.\n\r",
+    " 2) We try to get people to role play, but we do not force you. If\n\r"
+    "    you enjoy role playing please do so, if you do not please do not\n\r"
+    "    interfere with those that do.\n\r",
+    " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r" 
+    "    for solving most of your questions. If you are still confused feel\n\r"
+    "    free to ask.\n\r",
+    " 4) Please do not curse over public channels including GOSSIP, SHOUT,\n\r"
+    "    AUCTION, etc.  Punishment for doing so begins with removing your\n\r" 
+    "    ability to use public channels.\n\r",
+    " 5) Not all public channels work world wide. YELL and TELL for example\n\r"
+    "    only work in the zone you're in.  There are spells and skills to\n\r"
+    "    communicate world wide if you need them. SHOUT, and OOC are world\n\r"
+    "    wide and cost you MANA and VITIALITY points.\n\r",
+    " 6) Please do not use 'funny' or 'wacky' names. We try to encourage\n\r" 
+    "    playing, and if you use those type of names it does not help\n\r" 
+    "    matters. Do not use a name that is used in the Forgotten Realms\n\r"
+    "    setting (such as Elminster, Drizzit etc..).  There are NPC's that\n\r"
+    "    use these names and it will cause confusion. If you do not abide\n\r" 
+    "    by these rules an immortal might ask you to change your name.\n\r",
+    " 7) Remember that we try to add a bit of realism and things such as\n\r"
+    "    starving to death or dieing of thirst CAN happen.\n\r",
     "\n\r\n\r",
     NULL
 };
