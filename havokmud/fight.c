@@ -4446,7 +4446,7 @@ struct char_data *AttackRandomChar(struct char_data *mob)
 {
     struct char_data *tempchar;
     int             i = 0;
-    int             pctoattack = number(1, i);
+    int             pctoattack;
     int             k = 1;
 
     for (tempchar = real_roomp(mob->in_room)->people; tempchar;
@@ -4455,8 +4455,8 @@ struct char_data *AttackRandomChar(struct char_data *mob)
             i++;
         }
     }
-
     if (i > 0) {
+        pctoattack = number(1, i);
         for (tempchar = real_roomp(mob->in_room)->people;
              tempchar; tempchar = tempchar->next_in_room) {
             if (IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
@@ -4475,7 +4475,10 @@ struct char_data *AttackRandomChar(struct char_data *mob)
  * @Name:        doroomdamage
  * @description: A helper function, to handle the odd damage
  *               things that happen in the various rooms and
- *               mobiles
+ *               mobiles.  Add a damage type and the messages
+ *               you want to use.  Use this for self-damaging
+ *               effects, or individualized messages for odd
+ *               situations.
  * @Author:      Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: N/A
  */
@@ -4485,6 +4488,7 @@ int doroomdamage(struct char_data *tempchar, int dam, int attacktype)
     if (DamCheckDeny(tempchar, tempchar, attacktype)) {
         return (FALSE);
     }
+
     dam = SkipImmortals(tempchar, dam, attacktype);
 
     dam = PreProcDam(tempchar, attacktype, dam);
@@ -4503,7 +4507,7 @@ int doroomdamage(struct char_data *tempchar, int dam, int attacktype)
         return (FALSE);
     } else if (attacktype == SPELL_INCENDIARY_CLOUD) {
         act("You are blasted by the fire, it burns unnaturally hot, like "
-            "demonfire!.", FALSE, tempchar, 0, 0, TO_CHAR);
+            "demonfire!", FALSE, tempchar, 0, 0, TO_CHAR);
     } else if (attacktype == SPELL_BLADE_BARRIER) {
         act("The jaws clamp down on you, cutting through skin, muscle, "
             "and bone!", FALSE, tempchar, 0, 0, TO_CHAR);

@@ -3140,10 +3140,10 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     int             k = 1;
     struct obj_data *remobj;
     struct obj_data *parentobj;
-    int             GoodItemReal;
+    int             GoodItemReal = -1;
     int             whatundead = 1;
-    int             realcorpseid;
-    int             ventobjrnum = 0;
+    int             realcorpseid = -1;
+    int             ventobjrnum = -1;
 
     if (cmd) {
         return (FALSE);
@@ -3152,16 +3152,17 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     /* 
      * For the corpse that we toss around
      */
+    GoodItemReal = real_object(PHYLOBJVNUM);
     realcorpseid = real_object(CORPSEOBJVNUM);
     ventroom = real_roomp(VENTROOMVNUM);
     ventobjrnum = real_object(VENTOBJVNUM);
     ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
-    if (ventobj == NULL) {
+    if(ventobjrnum == -1 || realcorpseid == -1 || GoodItemReal == -1) {
         /*
-         * no ventobj = no tome, no tome = no mob, kill him
+        * There are objects missing, which probably means all the
+        * objects for the zone are bad.  Remove the mob.
          */
-        act("$n suddenly screams in agony and falls into a pile of dust.",
-            FALSE, mob, 0, 0, TO_ROOM);
+        Log("spec_procs4.c: sageactions() - could not find necessary object");
         for (j = 0; j < MAX_WEAR; j++) {
             if ((tempobj = mob->equipment[j])) {
                 if (tempobj->contains) {
@@ -3182,10 +3183,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
             }
         }
-
-        GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
-        damage(mob, mob, GET_MAX_HIT(mob) * 2, TYPE_SUFFERING);
-        return (TRUE);
+        extract_char(mob);
+        return (FALSE);
     }
 
     if (mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
@@ -3354,7 +3353,6 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         return (necromancer(mob, cmd, arg, mob, type));
     }
 
-    GoodItemReal = real_object(PHYLOBJVNUM);
     for (curritem = object_list; curritem; curritem = curritem->next) {
         if (curritem->item_number == GoodItemReal) {
             theitem = curritem;
@@ -3480,6 +3478,31 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                  * go to room, send item to storage, wait a pulse, 
                  * set ch->generic to go home again
                  */
+                temp = 0;
+                for (tempobj = real_roomp(theitem->in_room)->contents;
+                     tempobj; tempobj = tempobj->next) {
+                    if (tempobj->item_number == realcorpseid) {
+                        temp = 1;
+                    }
+                }
+                /* Even though the generic and in_room match, there is no corpse
+                 * so we need to drop one, and that will be our action this time.
+                 * If the corpse is there, then we will take the next step.
+                 */
+                if(!temp) {
+                    corpse = read_object(CORPSEOBJVNUM, VIRTUAL);
+                    obj_to_room(corpse, theitem->in_room);
+                    currroomnum = mob->in_room;
+                    char_from_room(mob);
+                    char_to_room(mob, mob->generic);
+                    act("An old rotted corpse suddenly appears ten feet "
+                        "above the ground and falls to the ground with a "
+                        "sickening thud.", FALSE, mob, 0, 0, TO_ROOM);
+                    char_from_room(mob);
+                    char_to_room(mob, currroomnum);
+                    return(TRUE);
+                }
+                if(theitem->in_room != mob->in_room) {
                 act("$n waves $s hands, and a pair of rotted hands "
                     "reaches up through the ground and drags $m under.",
                     TRUE, mob, 0, 0, TO_ROOM);
@@ -3488,6 +3511,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 act("The rotting corpse suddenly sits up, it reaches "
                     "down into the ground like it was water, and pulls "
                     "up another being.", FALSE, mob, 0, 0, TO_ROOM);
+                }
 
                 if (theitem->in_room == mob->in_room) {
                     act("$n gestures and a bauble disappears from the "
@@ -3557,6 +3581,31 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
                 return (FALSE);
             }
+            if (mob->in_room == tempchar->in_room &&
+                mob->generic != INPEACEROOM) {
+
+                if (!IS_SET(real_roomp(mob->in_room)->room_flags,
+                            PEACEFUL)) {
+                    act("$n glares at you, and launches to the attack!",
+                        TRUE, mob, 0, tempchar, TO_VICT);
+                    act("$n suddenly launches $mself at $N!", TRUE, mob,
+                        0, tempchar, TO_NOTVICT);
+                    MobHit(mob, tempchar, 0);
+                    mob->generic = WAITTOGOHOME;
+                    return (FALSE);
+                }
+            }
+            if(mob->in_room == tempchar->in_room &&
+                mob->generic == INPEACEROOM) {
+
+                if(!number(0,2)) {
+                    act("$n glares at you!",
+                        TRUE, mob, 0, tempchar, TO_VICT);
+                    act("$n glares at $N!", TRUE, mob,
+                        0, tempchar, TO_NOTVICT);
+                }
+                return(FALSE);
+            }
 
             if (mob->generic != tempchar->in_room) {
                 /* 
@@ -3584,11 +3633,23 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 return (TRUE);
             } 
             
+            if(mob->generic == tempchar->in_room) {
             /* 
              * mob dropped corpse in room, and char is still there 
              * so use corpse to transfer mob, then attack if not 
              * peace room
              */
+                temp = 0;
+                for (tempobj = real_roomp(tempchar->in_room)->contents;
+                     tempobj; tempobj = tempobj->next) {
+                    if (tempobj->item_number == realcorpseid) {
+                        temp = 1;
+                    }
+                }
+                if(!temp) {
+                    mob->generic = -1;
+                    return(FALSE);
+                }
             act("$n waves $s hands, and a pair of rotted hands reaches "
                 "up through the ground and drags $m under.", TRUE, mob,
                 0, 0, TO_ROOM);
@@ -3625,6 +3686,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 return (TRUE);
             }
             return (FALSE);
+        }
         }
         
         /* 
@@ -3712,6 +3774,9 @@ int traproom(struct char_data *ch, int cmd, char *arg,
     if (cmd != 15) {
         return (FALSE);
     }
+    if (rp->special == 1) {
+        return (FALSE);
+    }
 
     only_argument(arg, buf);
 
@@ -3724,9 +3789,6 @@ int traproom(struct char_data *ch, int cmd, char *arg,
     }
     if (!str_cmp("green", buf) || !strcmp("powder", buf) || 
         !strcmp("powder-green", buf) || !strcmp("green-powder", buf)) {
-        if (rp->special == 1) {
-            return (FALSE);
-        }
 
         act("As you lean over to look at the strange powder, a drop of your "
             "sweat falls.", FALSE, ch, 0, 0, TO_CHAR);
@@ -3734,7 +3796,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
             " powder.", FALSE, ch, 0, 0, TO_CHAR);
         act("$c000RSuddenly, the whole room bursts into flame!", FALSE,
             ch, 0, 0, TO_CHAR);
-        act("As $N leans over to look at the strange powder, $E jerks back "
+        act("As $n leans over to look at the strange powder, $e jerks back "
             "suddenly!", FALSE, ch, 0, 0, TO_ROOM);
         act("$c000RThere is a flash, and the room bursts into flames!",
             FALSE, ch, 0, 0, TO_ROOM);
@@ -3812,6 +3874,10 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
     int             j = 0;
     int             numbertocreate = 1;
 
+    if(IS_IMMORTAL(ch)) {
+        return(FALSE);
+    }
+
     if (cmd == 1 && rp->special < 1) {
         for (tempchar = rp->people; tempchar;
              tempchar = tempchar->next_in_room) {
@@ -3824,7 +3890,7 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
                        "One of the reliefs on the walls jumps out and attacks "
                        "you!");
             CreateAMob(ch, GUARDIANMOBVNUM, 4,
-                       "One of the reliefs on the walls jumps out and attacks i"
+                       "One of the reliefs on the walls jumps out and attacks "
                        "you!");
         } else {
             for (; i > 0; i--) {
@@ -3857,6 +3923,9 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
                                "Another relief jumps off the wall, becoming "
                                "real and deadly!");
                 }
+                if(cmd == 1) {
+                    return(TRUE);
+                }
             }
             rp->special = rp->special + 1;
         }
@@ -3882,11 +3951,15 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     struct char_data *next_v;
 
-    if (ch->in_room != GUARDIANHOMEROOMVNUM) {
+    if(cmd) {
         return (FALSE);
     }
 
-    rp = real_roomp(ch->in_room);
+    if (mob->in_room != GUARDIANHOMEROOMVNUM) {
+        return (FALSE);
+    }
+
+    rp = real_roomp(mob->in_room);
 
     for (tempchar = rp->people; tempchar;
          tempchar = tempchar->next_in_room) {
@@ -3899,7 +3972,8 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
         for (tempchar = rp->people; tempchar; tempchar = next_v) {
             next_v = tempchar->next_in_room;
             if (IS_NPC(tempchar) && 
-                !IS_SET(tempchar->specials.act, ACT_POLYSELF)) {
+                !IS_SET(tempchar->specials.act, ACT_POLYSELF) &&
+                mob_index[tempchar->nr].virtual == GUARDIANMOBVNUM) {
                 extract_char(tempchar);
             }
         }
@@ -4053,11 +4127,15 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
     int             makethemflee = 1;
     int             currroomnum = 0;
 
+    if(cmd) {
+        return(FALSE);
+    }
+
     if ((tempchar = mob->specials.fighting)) {
         if (number(0, 4) > 0) {
-            if (dice(4, 6) < GET_CHR(tempchar) &&
-                dice(4, 6) < GET_INT(tempchar) &&
-                dice(4, 6) < GET_WIS(tempchar)) {
+            if (dice(3, 7) < GET_CHR(tempchar) &&
+                dice(3, 7) < GET_INT(tempchar) &&
+                dice(3, 7) < GET_WIS(tempchar)) {
                 /* 
                  * three saves to avoid it fail any of the three, and it's 
                  * time to flee, this one is charisma
@@ -4066,6 +4144,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                  * understand what it is trying to do
                  * final save to avoid it, this one wisdom, to show 
                  * strength of will to avoid fleeing
+                 * 3d7 = 12 average
                  */
                         
                 /*
@@ -4144,6 +4223,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 {
     char            buf1[MAX_INPUT_LENGTH];
     char            buf2[MAX_INPUT_LENGTH];
+    int             ventobjrnum = -1;
     struct obj_data *ventobj;
     struct room_data *ventroom;
 
@@ -4151,18 +4231,26 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (cmd != 99 && cmd != 15 && cmd != 10 && cmd != 167 && cmd != 67) {
+    if (cmd != 99 && cmd != 15 && cmd != 10 && cmd != 167 && cmd != 67 && cmd != 100) {
         /* 
-         * open, look, get, take, put
+         * open, look, get, take, put, close
          */
         return (FALSE);
     }
 
     ventroom = real_roomp(VENTROOMVNUM);
-    ventobj = get_obj_in_list_num(VENTOBJVNUM, ventroom->contents);
+    ventobjrnum = real_object(VENTOBJVNUM);
+    ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
 
     if (!ventobj) {
         return (FALSE);
+    }
+
+    if(rp->special == 0) {
+        /* This verifies the ventobject is actually closed when it should be */
+        if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
+            SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+        }
     }
 
     argument_interpreter(arg, buf1, buf2);
@@ -4237,6 +4325,25 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         do_put(ch, arg, -1);
         char_from_room(ch);
         char_to_room(ch, CLOSETROOMVNUM);
+    } else if (cmd == 100) {
+        /*
+         * close
+         */
+        if (IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
+            act("Oh, it looks like the vent is already closed.", FALSE,
+                ch, 0, 0, TO_CHAR);
+        }
+        else {
+            act("You manage to accidently slam the vent closed, you will "
+                "have to open it again to get back into it.", FALSE, ch, 0,
+                0, TO_CHAR);
+            act("With a 'BANG!' $n accidently slams the vent closed, you "
+                "will have to open it again to get back into it.", FALSE,
+                ch, 0, 0, TO_ROOM);
+            if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
+                SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+            }
+        }
     }
     return (TRUE);
 }
@@ -4262,11 +4369,11 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg,
     struct affected_type af;
     struct room_data *rp;
 
-    if (GET_POS(mob) < POSITION_FIGHTING) {
+    if(!mob) {
         return (FALSE);
     }
 
-    if (cmd && !number(0, 1)) {
+    if (!number(0, 1)) {
         return (FALSE);
     }
 
@@ -4282,12 +4389,12 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg,
         for (tempchar = rp->people; tempchar;
              tempchar = tempchar->next_in_room) {
             if (!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
-                act("A wave of stench rolls out from $n, if a"
-                    " skunk's spray is like a dagger, \n\r"
-                    "this is like a claymore.  You immediately"
-                    " feel incredibly sick.", TRUE, mob, 0,
-                    tempchar, TO_VICT);
+                act("A wave of stench rolls out from $n, "
+                    "if a skunk's spray is like a dagger, \n\rthis is "
+                    "like a claymore.", TRUE, mob, 0, tempchar, TO_VICT);
                 if (!saves_spell(tempchar, SAVING_BREATH)) {
+                    act("You immediately feel incredibly sick.", TRUE, mob, 0,
+                        tempchar, TO_VICT);
                     affect_join(tempchar, &af, TRUE, FALSE);
                 }
             }
@@ -4328,6 +4435,7 @@ int ghoultouch(struct char_data *ch, int cmd, char *arg,
         act("$n reaches out and sends $N reeling, falling to the ground!",
             FALSE, mob, 0, opponent, TO_NOTVICT);
         GET_POS(opponent) = POSITION_STUNNED;
+        stop_fighting(opponent);
         WAIT_STATE(opponent, PULSE_VIOLENCE);
     }
 
@@ -4349,9 +4457,10 @@ int ghoultouch(struct char_data *ch, int cmd, char *arg,
 int shadowtouch(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
+
     struct char_data *opponent;
     struct affected_type af;
-    int             oppstr = 4;
+    int             oppstr = 0;
     int             mod = 0;
 
     if( !mob ) {
@@ -4367,7 +4476,10 @@ int shadowtouch(struct char_data *ch, int cmd, char *arg,
             FALSE, mob, 0, opponent, TO_NOTVICT);
 
         if (!affected_by_spell(opponent, SPELL_WEAKNESS)) {
-            oppstr = GET_RSTR(opponent);
+            if(GET_RADD(opponent) > 0) {
+                oppstr += GET_RADD(opponent) / 10;
+            }
+            oppstr += GET_RSTR(opponent);
             /* 
              * basically take their natural strength and 
              * subtract enough to leave them with 3, 
@@ -4597,7 +4709,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     mob->points.mana = GET_MAX_MANA(ch);
     mob->points.move = GET_MAX_MOVE(ch);
     mob->mult_att = ch->mult_att;
-    GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
+    GET_ALIGNMENT(mob) = GET_ALIGNMENT(ch);
 
     for (af = ch->affected; af; af = af->next) {
         affect_to_char(mob, af);
@@ -4635,13 +4747,15 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
         if (mob->equipment[i])
             extract_obj(unequip_char(mob, i));
     }
-    while (mob->carrying)
+    while (mob->carrying) {
         extract_obj(mob->carrying);
+    }
 
     obj_store_to_char(mob, &st);
 
-    while (mob->carrying)
+    while (mob->carrying) {
         extract_obj(mob->carrying);
+    }
 
     /*
      * set all equipment to useless somehow (anti_everything? anti_gne?
@@ -4652,13 +4766,66 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
     total_equip_cost = 0;
     for (i = 0; i < MAX_WEAR; i++) {
         if (mob->equipment[i]) {
+
             total_equip_cost += mob->equipment[i]->obj_flags.cost;
-            mob->equipment[i]->obj_flags.timer = 500;
+            mob->equipment[i]->obj_flags.timer = 20;
             if (GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
                 while ((tempobj = mob->equipment[i]->contains)) {
                     extract_obj(tempobj);
                 }
             }
+            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_GOOD)) {
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_GOOD);
+            }
+            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_EVIL)) {
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_EVIL);
+            }
+            if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_NEUTRAL)) {
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_NEUTRAL);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_NECROMANCER)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_CLERIC)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_CLERIC);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MAGE)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_MAGE);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_THIEF)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_THIEF);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_FIGHTER)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_FIGHTER);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MEN)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_MEN);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_WOMEN)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_WOMEN);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_SUN)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_SUN);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_BARBARIAN)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_BARBARIAN);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_RANGER)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_RANGER);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PALADIN)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_PALADIN);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_PSI)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_PSI);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_MONK)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_MONK);
+            }
+            if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_DRUID)) {
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, ITEM_ANTI_DRUID);
+            }
+
         }
     }
 
@@ -4667,7 +4834,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
      * (like casting, not by setting perma-flag)
      */
     if (IS_SET(mob->player.class, CLASS_NECROMANCER) &&
-    !affected_by_spell(mob, SPELL_CHILLSHIELD)) {
+        !affected_by_spell(mob, SPELL_CHILLSHIELD) &&
+        GET_LEVEL(ch,NECROMANCER_LEVEL_IND) > 39) {
         af2.type = SPELL_CHILLSHIELD;
         af2.duration = 3;
         af2.modifier = 0;
@@ -4678,7 +4846,9 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
 
     if (IS_SET(mob->player.class, CLASS_MAGIC_USER | CLASS_PSI) && 
         !IS_SET(mob->player.class, CLASS_CLERIC) &&
-        !affected_by_spell(mob, SPELL_FIRESHIELD)) {
+        !affected_by_spell(mob, SPELL_FIRESHIELD) &&
+        (GET_LEVEL(ch,PSI_LEVEL_IND) > 14 ||
+        GET_LEVEL(ch,MAGE_LEVEL_IND) > 39)) {
         af2.type = SPELL_FIRESHIELD;
         af2.duration = 3;
         af2.modifier = 0;
@@ -4697,7 +4867,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
             affect_to_char(mob, &af2);
         }
 
-        if (!affected_by_spell(mob, SPELL_BLADE_BARRIER)) {
+        if (!affected_by_spell(mob, SPELL_BLADE_BARRIER) &&
+            GET_LEVEL(ch,CLERIC_LEVEL_IND) > 44) {
             af2.type = SPELL_BLADE_BARRIER;
             af2.duration = 3;
             af2.modifier = 0;
@@ -4762,6 +4933,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
      * set experience, figure .005 of players total exp + equipment cost?
      */
     mob->points.exp = GET_EXP(ch) * .005 + total_equip_cost;
+    GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
+
     /* 
      * have him go to town on character
      */
