@@ -954,7 +954,7 @@ void do_system(struct char_data *ch, char *argument, int cmd)
          * Remove the number..
          */
         argument++;
-        sprintf(buf, "$c000Y-=$c000RINFO$c000Y=-$c000w %s\n\r$c000w", 
+        sprintf(buf, "$c000Y-=$c000RINFO$c000Y=-$c000w %s\n\r$c000w",
                 argument);
         break;
     case '2':
@@ -1202,7 +1202,7 @@ void do_at(struct char_data *ch, char *argument, int cmd)
                      "command.\n\r", ch);
         return;
     }
-    
+
     if (isdigit((int)*loc_str)) {
         loc_nr = atoi(loc_str);
         if (NULL == real_roomp(loc_nr)) {
@@ -1773,7 +1773,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
             if( k->followers ) {
                 for (fol = k->followers; fol; fol = fol->next) {
-                    sprintf(buf, "%s    %s", color2, 
+                    sprintf(buf, "%s    %s", color2,
                                              fol->follower->player.name);
                     act(buf, FALSE, ch, 0, 0, TO_CHAR);
                 }
@@ -2541,8 +2541,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                      "\n\r"
                      "Remember, be careful how you use this command!\n\r", ch);
         return;
-    } 
-    
+    }
+
     if (!name || !(mob = get_char_vis(ch, name))) {
         send_to_char("@\n\r"
                      "Usage :@ <field> <user name> <value>\n\r"
@@ -2716,7 +2716,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
         Log(buf);
     /* Require one argument */
     } else if( !parmstr ) {
-        send_to_char( "You need an argument for that, go read the help\n\r", 
+        send_to_char( "You need an argument for that, go read the help\n\r",
                       ch);
         return;
     } else if (!strcmp(field, "align")) {
@@ -2838,7 +2838,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
         mob->specials.start_room = atoi(parmstr);
     /* Require two parameters */
     } else if( !parmstr2 ) {
-        send_to_char( "You need twp arguments for that, go read the help\n\r", 
+        send_to_char( "You need twp arguments for that, go read the help\n\r",
                       ch);
         return;
     } else if (!strcmp(field, "lev")) {
@@ -3758,16 +3758,16 @@ void roll_abilities(struct char_data *ch)
         ch->points.max_hit += 15;
     }
 
-    
+
     /*
      * class specific hps stuff
      */
-    if (HasClass(ch, CLASS_MAGIC_USER) || 
+    if (HasClass(ch, CLASS_MAGIC_USER) ||
         HasClass(ch, CLASS_SORCERER) ||
         HasClass(ch, CLASS_NECROMANCER)) {
         ch->points.max_hit += number(1, 4);
     }
-    if (HasClass(ch, CLASS_THIEF) || 
+    if (HasClass(ch, CLASS_THIEF) ||
         HasClass(ch, CLASS_PSI) ||
         HasClass(ch, CLASS_MONK)) {
         ch->points.max_hit += number(1, 6);
@@ -3776,12 +3776,12 @@ void roll_abilities(struct char_data *ch)
         HasClass(ch, CLASS_DRUID)) {
         ch->points.max_hit += number(1, 8);
     }
-    if (HasClass(ch, CLASS_WARRIOR) || 
+    if (HasClass(ch, CLASS_WARRIOR) ||
         HasClass(ch, CLASS_BARBARIAN) ||
-        HasClass(ch, CLASS_PALADIN) || 
+        HasClass(ch, CLASS_PALADIN) ||
         HasClass(ch, CLASS_RANGER)) {
         ch->points.max_hit += number(1, 10);
-        
+
         if (ch->abilities.str == 18) {
             ch->abilities.str_add = number(0, 100);
         }
@@ -3865,7 +3865,7 @@ void do_start(struct char_data *ch)
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         command_interpreter(ch, "group all");
     }
-    
+
     if (HasClass(ch,
                  CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
                  CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
@@ -4156,8 +4156,8 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
         do_start(victim);
     } else if (GET_LEVEL(victim, lin_class) < IMPLEMENTOR) {
         gain_exp_regardless(victim,
-              (classes[lin_class].titles[GET_LEVEL(victim, lin_class) + 
-                                         adv].exp) - 
+              (classes[lin_class].titles[GET_LEVEL(victim, lin_class) +
+                                         adv].exp) -
                GET_EXP(victim), lin_class);
 
         send_to_char("Character is now advanced.\n\r", ch);
@@ -4554,7 +4554,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             bottom = zd->top + 1;
         }
     } else if (is_abbrev(arg1, "objects")) {
-        which_i = obj_index; 
+        which_i = obj_index;
         topi = top_of_objt;
 
         zonenum = skip_spaces(argument);
@@ -4723,11 +4723,10 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 
         if( zonenum && isdigit((int)*zonenum) ) {
             zone = atoi(zonenum);
-        }
-
-        if (!zonenum || zone < 0 || zone > top_of_zone_table) {
-            append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-            return;
+            if (!zonenum || zone < 0 || zone > top_of_zone_table) {
+                send_to_char("That is not a valid zone_number\n\r",ch);
+                return;
+		    }
         }
 
         if (zone >= 0) {
@@ -6708,7 +6707,7 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd)
         send_to_char("Why would you Wiznooc a Mob??.\n\r", ch);
     } else if (GetMaxLevel(vict) >= GetMaxLevel(ch)) {
         act("$E might object to that.. better not.", 0, ch, 0, vict, TO_CHAR);
-    } else if (IS_SET(vict->specials.act, PLR_WIZNOOOC) && 
+    } else if (IS_SET(vict->specials.act, PLR_WIZNOOOC) &&
                (GetMaxLevel(ch) >= 55)) {
         send_to_char("Your ability to use the OOC channel is back :).\n\r",
                      vict);
@@ -7690,8 +7689,8 @@ void do_tweak(struct char_data *ch, char *arg, int cmd)
     if (!name) {
         send_to_char("Tweak what?\n\r", ch);
         return;
-    } 
-    
+    }
+
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
         if (obj) {
             if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) {
@@ -7800,8 +7799,8 @@ void do_eval(struct char_data *ch, char *arg, int cmd)
     if (!name) {
         send_to_char("Eval what?\n\r", ch);
         return;
-    } 
-    
+    }
+
     if (generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
         if (obj) {
             total = eval(obj);
