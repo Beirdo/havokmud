@@ -164,54 +164,6 @@ int singular(struct obj_data *o)
     return (TRUE);
 }
 
-/*
- * Procedures related to 'look'
- */
-
-void argument_split_2(char *argument, char *first_arg, char *second_arg)
-{
-    int             look_at,
-                    begin;
-    begin = 0;
-
-    /*
-     * Find first non blank
-     */
-    while (isspace(argument[begin])) {
-        begin++;
-	}
-
-    /*
-     * Find length of first word
-     */
-    for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-        /*
-         * Make all letters lower case, AND copy them to first_arg
-         */
-        first_arg[look_at] = LOWER(argument[begin + look_at]);
-    }
-    first_arg[look_at] = '\0';
-    begin += look_at;
-
-    /*
-     * Find first non blank
-     */
-    while (isspace(argument[begin])) {
-        begin++;
-	}
-
-    /*
-     * Find length of second word
-     */
-    for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-        /*
-         * Make all letters lower case, AND copy them to second_arg
-         */
-        second_arg[look_at] = LOWER(argument[begin + look_at]);
-    }
-    second_arg[look_at] = '\0';
-    begin += look_at;
-}
 
 struct obj_data *get_object_in_equip_vis(struct char_data *ch,
                                          char *arg,
@@ -5069,8 +5021,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
     };
     char            buf[MAX_STRING_LENGTH],
                     buf2[MAX_STRING_LENGTH];
-    char            arg1[MAX_STRING_LENGTH],
-                    arg2[MAX_STRING_LENGTH];
+    char           *arg1;
     int             sd,
                     smin,
                     smax,
@@ -5087,10 +5038,6 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_scan");
 
-    /*
-     * sprintf(buf,"In scan - Room #%d, %s scanning.",
-     * ch->in_room,GET_NAME(ch)); slog(buf);
-     */
     /*
      * Check mortals spot skill, and give THEM a max scan of 2 rooms.
      */
@@ -5119,9 +5066,9 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
     /*
      * was mortal
      */
-    argument_split_2(argument, arg1, arg2);
-    sd = search_block(arg1, keywords, FALSE);
-    if (sd == -1) {
+    argument = get_argument(argument, &arg1);
+
+    if( !arg1 || (sd = search_block(arg1, keywords, FALSE)) == -1) {
         smin = 0;
         smax = 5;
         swt = 3;
@@ -5145,8 +5092,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
          spud = spud->next_in_room) {
         if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
-                sprintf(buf, "%30s : right here\n\r",
-                        spud->player.short_descr);
+                sprintf(buf, "%30s : right here\n\r", spud->player.short_descr);
             } else {
                 sprintf(buf, "%30s : right here\n\r", GET_NAME(spud));
             }
@@ -5154,6 +5100,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
             nfnd++;
         }
     }
+
     for (i = smin; i <= smax; i++) {
         rm = ch->in_room;
         range = 0;
@@ -5182,9 +5129,11 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
             }
         }
     }
+
     if (nfnd == 0) {
         send_to_char("Absolutely no-one anywhere.\n\r", ch);
     }
+
     WAIT_STATE(ch, swt);
 }
 

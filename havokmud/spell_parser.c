@@ -3342,7 +3342,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             }
 
             if (!target_ok) {
-                if (*name) {
+                if (name) {
                     if (IS_SET(spell_info[index].targets, TAR_CHAR_WORLD)) {
                         send_to_char("Nobody playing by that name.\n\r", ch);
                     } else if (IS_SET(spell_info[index].targets, 

@@ -135,8 +135,6 @@ void            do_resize(struct char_data *ch, char *arg, int cmd);
 void            ScreenOff(struct char_data *ch);
 void            do_display(struct char_data *ch, char *arg, int cmd);
 int             singular(struct obj_data *o);
-void            argument_split_2(char *argument, char *first_arg,
-                                 char *second_arg);
 struct obj_data *get_object_in_equip_vis(struct char_data *ch, char *arg,
                                          struct obj_data *equipment[],
                                          int *j);
