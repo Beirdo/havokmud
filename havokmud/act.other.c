@@ -3511,19 +3511,12 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
     k->next = ch2->followers;
     ch2->followers = k;
 
-    /*
-     * dont know if this is very efficient but anyway..
+    /* the new leader shouldn't be following anyone at all, needs to be a 
+     * leader
      */
-
-    /*
-     * tell leader to follow themself
-     */
-    do_follow(ch2, GET_NAME(ch2), 91);
-
-    /*
-     * and group all
-     */
-    do_group(ch2, "all", 202);
+    stop_follower_quiet(ch2);
+    SET_BIT(ch2->specials.affected_by, AFF_GROUP);
+    REMOVE_BIT(ch2->specials.affected_by2, AFF2_CON_ORDER);
 }
 
 void do_behead(struct char_data *ch, char *argument, int cmd)
