@@ -6,6 +6,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -753,7 +754,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
     struct room_direction_data *exitp;
 
     /* a direction was specified */
-    if (*dir) {
+    if (dir && *dir) {
         /* Partial Match */
         if ((door = search_block(dir, dirs, FALSE)) == -1) {    
             send_to_char("That's not a direction.\n\r", ch);
@@ -991,12 +992,19 @@ void do_open(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
     char           *type,
+                   *arg,
                    *dir;
     struct obj_data *obj;
     struct char_data *victim;
     struct room_direction_data *exitp;
 
     dlog("in do_open");
+
+    arg = strdup(argument);
+    if( !arg ) {
+        Log( "Serious buggerup in open" );
+        return;
+    }
 
     argument = get_argument(argument, &type);
     argument = get_argument(argument, &dir);
@@ -1006,7 +1014,7 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+    if (generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
                      &obj)) {
         /*
          * this is an object 
@@ -1043,6 +1051,7 @@ void do_open(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can't OPEN that.\r\n", ch);
         }
     }
+    free(arg);
 }
 
 void do_close(struct char_data *ch, char *argument, int cmd)
