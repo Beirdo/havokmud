@@ -2476,46 +2476,83 @@ else
      }
 	
 }
-
+/* Whois command code.
+ * By: Greg Hovey
+ * Last updated: Feb 12, 2001
+ */
 void do_finger(struct char_data *ch, char *argument, int cmd)
 {
- char name[128],buf[254];
- struct char_data *finger;
-
-dlog("in do_finger");
-
- argument= one_argument(argument,name);
-
- if (!*name) {
-  send_to_char("Whois whom?!?!\n\r",ch);
-  return;
+  char name[128],buf[254];
+  struct char_data *temp = 0;
+  struct char_data *finger = 0;
+  struct char_file_u tmp_store;
+  
+  dlog("in do_finger");
+  
+  argument= one_argument(argument,name);
+  //skip_spaces(&argument);
+  
+  if (!*name) {
+    send_to_char("Whois whom?!?!\n\r",ch);
+    return;
   }
-
-if (! (finger=get_char(name)) )  {
-	send_to_char("No person by that name\n\r",ch);
- } else {
-    
-    if (!CAN_SEE(ch,finger)) {
-	send_to_char("No person by that name\n\r",ch);
-        return;
-        }   
-    
+  
+  CREATE(finger, struct char_data,1);
+  clear_char(finger);
+  
+  if(load_char(name, &tmp_store) > -1) { /*load actual char*/
+    temp = finger;
+    store_to_char(&tmp_store, finger);
+    load_char_extra(finger); /*Load Clan and email fields*/
+      
     if (IS_NPC(finger)) {
- 	send_to_char("No person by that name\n\r",ch);
- 	return;
- 	}
- 	
-    act("\n\r$N's adventurer information:",FALSE,ch,0,finger,TO_CHAR);
-    sprintf(buf,"Known message drop: %-50s",finger->specials.email);
-    act(buf,FALSE,ch,0,0,TO_CHAR);
-    sprintf(buf,"Last time sited	: Unknown");
-    act(buf,FALSE,ch,0,0,TO_CHAR); 
-    sprintf(buf,"Rumored Info	: Unknown");
-    act(buf,FALSE,ch,0,0,TO_CHAR);	
-    } /* end found finger'e */
-   
+      send_to_char("No person by that name\n\r",ch);
+      return;
+    }
+    /*Display Character information*/
+    sprintf(buf,"\n\r$c0015%s$c0012's adventurer information:\n\r",
+	    GET_NAME(finger));
+    send_to_char(buf,ch);
+    /*Last time sited??*/
+    if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
+      sprintf(buf,"$c0012Last time sited    : $c0015Unknown\n\r");
+    else if(get_char(name))
+      sprintf(buf,"$c0012Last time sited    : $c0015Currently Playing\n\r");
+    else
+      sprintf(buf,"$c0012Last time sited    : $c0015%s"
+	      ,asctime(localtime(&tmp_store.last_logon)));
+    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR); 
+    /*Display char Email addy*/
+    if(finger->specials.email==NULL)
+      sprintf(buf, "$c0012Known message drop : $c0015None\n\r");
+    else
+      sprintf(buf, "$c0012Known message drop : $c0015%-60s\n\r"
+	      , finger->specials.clan);//GET_EMAIL(finger));
+    //strcat(buf,GET_EMAIL(ch));
+    send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
+ 
+    /*Display clan info*/
+    if(finger->specials.clan==NULL)
+      sprintf(buf,"$c0012Clan info          : $c0015None");
+    else
+      sprintf(buf,"$c0012Clan info            : $c0015%-50s",finger->specials.clan);
+    strcat(buf,"\n\r");
+    send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
+    
+    if(finger->specials.rumor == NULL)
+      sprintf(buf, "$c0012Rumored Info       : $c0015None");
+    else
+      sprintf(buf,"$c0012Rumored Info        : $c0015 %-50s",
+	      finger->specials.rumor);
+    strcat(buf,"\n\r");
+    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);	
+  } /* end found finger'e*/
+  else  /*Else there is no character in char DB*/
+    send_to_char("Character not found!!\n\r",ch);
+  
+  free(finger); /*Ack.. dont' forget to free teh char data of Finger.*/
+    
 }
-
 /* My own add-ons ;) -Manwe Windmaster */
 
 void do_plr_noooc(struct char_data *ch, char *argument, int cmd)
@@ -2681,3 +2718,114 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 
   return;
 }
+
+
+#define SEVERED_HEAD    30 
+/* Behead corpse code
+   By: Greg Hovey Feb. 2001 (GH)
+   This method will allow you to behead a corpse with a slash or cleave weapon.
+*/
+void do_behead(struct char_data *ch, char *argument, int cmd) {
+  struct obj_data *j=0;
+  struct obj_data *head;
+  char temp[256],itemname[80],buf[MAX_STRING_LENGTH];
+  int r_num=0;
+
+  if (IS_NPC(ch))
+    return;
+  
+  if (!ch->skills)
+    return;
+  
+  if (MOUNTED(ch)) {
+    send_to_char("Not from this mount you cannot!\n\r",ch);
+    return;
+  }
+  
+  if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+    argument = one_argument(argument,itemname);
+  
+ 
+  if (!*itemname) {
+    send_to_char("Behead what?\n\r",ch);
+    return;
+  }
+  /* Find Corpse*/
+  if (!(j= get_obj_in_list_vis(ch, itemname,real_roomp(ch->in_room)->contents))) {
+    send_to_char("Where did that bloody corpse go?\n\r",ch);
+    return;
+  } else {
+    /* affect[0] == race of corpse, affect[1] == level of corpse */     
+    if (j->affected[0].modifier !=0 && j->affected[1].modifier !=0) {
+      /* item not a corpse if v3 = 0 */
+      if (!j->obj_flags.value[3])     {
+	send_to_char("Sorry, this is not a carcass.\n\r",ch);
+	return;
+      }
+        
+      if (!ch->equipment[WIELD]) {
+	send_to_char("You need to wield a weapon, to make it a success.\n\r",ch);
+	return;
+      }
+      
+
+      /* need to do weapon check.. */
+      //obj_flags.value[value]
+      if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
+	    Getw_type(ch->equipment[WIELD]) == TYPE_CLEAVE)) {
+	send_to_char("Your weapon isn't really a good for that type of thing.\n\r",ch);
+	return;
+      }
+      
+      argument = one_argument(j->short_description, temp);
+      
+      sprintf(buf,"%s",argument);
+      /*load up the head object*/
+      if ((r_num = real_object( SEVERED_HEAD )) >= 0) {
+	head = read_object(r_num, REAL);
+	obj_to_room(head,ch->in_room);  //to room perhaps? 
+      }	
+      /*CHange name of head*/
+      if (head->name)
+	free(head->name);
+      sprintf(temp,"head%s",buf);
+      head->name=strdup(temp);    
+      
+      if (head->short_description)
+	free(head->short_description);
+      sprintf(temp,"The head%s",buf);
+      head->short_description=strdup(temp);  
+      
+      if (head->description)
+	free(head->description);
+      sprintf(temp,"The head%s lies here.",buf);
+      head->description=strdup(temp);
+     
+      j->affected[1].modifier=0; /* make corpse unusable for another behead */
+      if (j->description){
+	argument = one_argument(j->description, temp);
+	
+	sprintf(buf,"The beheaded %s%s",temp,argument);
+	free(j->description);
+      }
+      j->description=strdup(buf);
+
+      sprintf(buf,"You behead %s.\n\r",
+	      j->short_description);
+      send_to_char(buf,ch);
+      
+      sprintf(buf,"%s beheads %s.",GET_NAME(ch),
+	      j->short_description);
+      act(buf,TRUE, ch, 0, 0, TO_ROOM);     
+      WAIT_STATE(ch, PULSE_VIOLENCE*1); 
+      return;
+    } 
+    else {
+      send_to_char("Sorry, the corpse is to mangled up to behead.\n\r",ch);
+      return;
+    }
+  }
+  return;
+  
+}//End of behead    
+

@@ -1348,18 +1348,18 @@ AddCommand("view" ,do_viewfile ,388, POSITION_DEAD,51);
 AddCommand("afk" ,do_set_afk,389, POSITION_DEAD,1);
 
 /* lots of Socials */
-AddCommand("adore",do_action,400,POSITION_RESTING,0);
-AddCommand("agree",do_action,401,POSITION_RESTING,0);
-AddCommand("bleed",do_action,402,POSITION_RESTING,0);
-AddCommand("blink",do_action,403,POSITION_RESTING,0);
-AddCommand("blow",do_action,404,POSITION_RESTING,0);
-AddCommand("blame",do_action,405,POSITION_RESTING,0);
-AddCommand("bark",do_action,406,POSITION_RESTING,0);
-AddCommand("bhug",do_action,407,POSITION_RESTING,0);
-AddCommand("bcheck",do_action,408,POSITION_RESTING,0);
-AddCommand("boast",do_action,409,POSITION_RESTING,0);
-AddCommand("chide",do_action,410,POSITION_RESTING,0);
-AddCommand("compliment",do_action,411,POSITION_RESTING,0);
+ AddCommand("adore",do_action,400,POSITION_RESTING,0);
+ AddCommand("agree",do_action,401,POSITION_RESTING,0);
+ AddCommand("bleed",do_action,402,POSITION_RESTING,0);
+ AddCommand("blink",do_action,403,POSITION_RESTING,0);
+ AddCommand("blow",do_action,404,POSITION_RESTING,0);
+ AddCommand("blame",do_action,405,POSITION_RESTING,0);
+ AddCommand("bark",do_action,406,POSITION_RESTING,0);
+ AddCommand("bhug",do_action,407,POSITION_RESTING,0);
+ AddCommand("bcheck",do_action,408,POSITION_RESTING,0);
+ AddCommand("boast",do_action,409,POSITION_RESTING,0);
+ AddCommand("chide",do_action,410,POSITION_RESTING,0);
+ AddCommand("compliment",do_action,411,POSITION_RESTING,0);
 AddCommand("ceyes",do_action,412,POSITION_RESTING,0);
 AddCommand("cears",do_action,413,POSITION_RESTING,0);
 AddCommand("cross",do_action,414,POSITION_RESTING,0);
@@ -1480,9 +1480,44 @@ AddCommand("whoarena", do_whoarena, 525, POSITION_RESTING,0);
 AddCommand("frolic",do_action,526,POSITION_STANDING,0);
 AddCommand("land",do_land,527,POSITION_STANDING,0);
 AddCommand("launch",do_launch,528,POSITION_STANDING,0);
-AddCommand("disengage",do_disengage,529,POSITION_FIGHTING,1);
-AddCommand("prompt", do_set_prompt,530,POSITION_RESTING,0);
+ AddCommand("disengage",do_disengage,529,POSITION_FIGHTING,1);
+ AddCommand("prompt", do_set_prompt,530,POSITION_RESTING,0);
 
+ /*New stuff 2001 (GH)*/
+AddCommand("talk",do_action,531,POSITION_RESTING,1);
+AddCommand("disagree",do_action,532,POSITION_RESTING,0); 
+AddCommand("beckon",do_action,533,POSITION_RESTING,0); 
+AddCommand("pounce",do_action,534,POSITION_STANDING,0); 
+AddCommand("amaze",do_action,535,POSITION_RESTING,0); 
+AddCommand("tank",do_action,536,POSITION_STANDING,0); 
+AddCommand("hshake",do_action,537,POSITION_STANDING,0); 
+AddCommand("backhand",do_action,538,POSITION_STANDING,0); 
+AddCommand("surrender",do_action,539,POSITION_RESTING,0); 
+AddCommand("collapse",do_action,540,POSITION_STANDING,0); 
+AddCommand("wince",do_action,541,POSITION_RESTING,0); 
+AddCommand("tag",do_action,542,POSITION_RESTING,0); 
+AddCommand("trip",do_action,543,POSITION_RESTING,0); 
+AddCommand("grunt",do_action,544,POSITION_RESTING,0); 
+AddCommand("imitate",do_action,545,POSITION_RESTING,0);
+AddCommand("hickey",do_action,546,POSITION_RESTING,0); 
+AddCommand("torture",do_action,547,POSITION_RESTING,0); 
+AddCommand("addict",do_action,548,POSITION_RESTING,0); 
+AddCommand("adjust",do_action,549,POSITION_RESTING,0); 
+AddCommand("anti",do_action,550,POSITION_RESTING,0); 
+AddCommand("bbl",do_action,551,POSITION_RESTING,0); 
+AddCommand("beam",do_action,552,POSITION_RESTING,0); 
+AddCommand("challenge",do_action,553,POSITION_RESTING,0); 
+AddCommand("mutter",do_action,554,POSITION_RESTING,0); 
+AddCommand("beat",do_action,555,POSITION_RESTING,0); 
+AddCommand("moon",do_action,556,POSITION_RESTING,0); 
+AddCommand("dream",do_action,557,POSITION_RESTING,0); 
+AddCommand("behead",do_behead,558,POSITION_STANDING,0);
+
+/*
+  talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince
+  tag trip grunt imitate hickey torture addict adjust anti  bbl beam
+  challenge mutter beat moon dream
+*/
 }
 
 

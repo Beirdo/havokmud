@@ -4662,15 +4662,15 @@ int IsGoodSide(struct char_data *ch)
 int IsBadSide(struct char_data *ch)
 {
 	
-	switch(GET_RACE(ch))  {
-	 case RACE_GOBLIN:
-	 case RACE_DARK_DWARF:
-	 case RACE_ORC:
-	 case RACE_TROLL:
-	 case RACE_MFLAYER:
- 			return(TRUE);
-	} /* */
-	
+  switch(GET_RACE(ch))  {
+  case RACE_GOBLIN:
+  case RACE_DARK_DWARF:
+  case RACE_ORC:
+  case RACE_TROLL:
+  case RACE_MFLAYER:
+    return(TRUE);
+  } /* */
+  
   return(FALSE);
 }
 
@@ -4844,4 +4844,24 @@ void dlog(char *s)
 #if DEBUG_LOG
 	slog(s);
 #endif
+}
+
+/*added 2001 (GH) */
+int pc_class_num(int clss) {
+		 
+  switch(clss) { 
+    case 1: return 0; 
+    case 2: return 1;
+    case 4: return 2;
+    case 8: return 3;
+    case 16: return 4;
+    case 32: return 5;
+    case 64: return 6;
+    case 128: return 7;
+    case 256: return 8;
+    case 512: return 9;
+    case 1024: return 10;
+    case 2048: return 11;
+      
+  }
 }

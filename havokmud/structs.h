@@ -1112,7 +1112,9 @@ struct char_special_data
   char *poofout;
   char *prompt;
   char *email;			/* email address in aux */
-  
+  char *clan;
+  int *clanNum;
+  char *rumor;
   char *group_name; /* current group name if any... */  
   
   Alias   *A_list;

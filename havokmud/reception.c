@@ -1129,14 +1129,14 @@ void load_char_extra(struct char_data *ch)
 	if (!strcmp(p, "in")) { /* setup bamfin */
 	  do_bamfin(ch, s, 0);
 	} else 
-	if (!strcmp(p, "zone")) { /* set zone permisions */
-	  GET_ZONE(ch) = atoi(s);
-	} else
-	if (!strcmp(p, "email")) {  /* set up email finger info */
-	 char tmp[256];
-	 sprintf(tmp,"email %s",s);
-	 do_set_flags(ch,tmp,0);      
-	} else 
+	  if (!strcmp(p, "zone")) { /* set zone permisions */
+	    GET_ZONE(ch) = atoi(s);
+	  } else
+	    if (!strcmp(p, "email")) {  /* set up email finger info */
+	      char tmp[256];
+	      sprintf(tmp,"email %s",s);
+	      do_set_flags(ch,tmp,0);
+	    } else 
 	if (!strcmp(p,"setsev")) {      /* setup severity level */
 		do_setsev(ch,s,0);
 	} else

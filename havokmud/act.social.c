@@ -13,28 +13,34 @@
 extern struct descriptor_data *descriptor_list;
 
 
-
+int rand(void);
+void *realloc(void *ptr, size_t size);
 struct social_messg
 {
-	int act_nr;
-	int hide;
-	int min_victim_position; /* Position of victim */
+  int act_nr;
+  int hide;
+  int min_victim_position; /* Position of victim */
 
-	/* No argument was supplied */
-	char *char_no_arg;
-	char *others_no_arg;
-
-	/* An argument was there, and a victim was found */
-	char *char_found;		/* if NULL, read no further, ignore args */
-	char *others_found;
-	char *vict_found;
-
-	/* An argument was there, but no victim was found */
-	char *not_found;
-
-	/* The victim turned out to be the character */
-	char *char_auto;
-	char *others_auto;
+  /* No argument was supplied */
+  char *char_no_arg;
+  char *others_no_arg;
+  
+  /* An argument was there, and a victim was found */
+  char *char_found;		/* if NULL, read no further, ignore args */
+  char *others_found;
+  char *vict_found;
+  
+  /* An argument was there, but no victim was found */
+  char *not_found;
+  
+  /* The victim turned out to be the character */
+  char *char_auto;
+  char *others_auto;
+  
+  /* For objects */
+  char *obj_you;
+  char *obj_other;
+  
 } *soc_mess_list = 0;
 
 
@@ -115,6 +121,14 @@ void boot_social_messages()
       soc_mess_list[list_top].others_no_arg = fread_action(fl);
       
       soc_mess_list[list_top].char_found = fread_action(fl);
+      /*     
+	     if(!soc_mess_list[list_top].char_found) {
+	     soc_mess_list[list_top].obj_you = fread_action(fl);
+	     
+	     soc_mess_list[list_top].obj_other = fread_action(fl);
+	     
+	     }
+      */
       
       /* if no char_found, the rest is to be ignored */
       if (!soc_mess_list[list_top].char_found)
@@ -128,7 +142,12 @@ void boot_social_messages()
       soc_mess_list[list_top].char_auto = fread_action(fl);
       
       soc_mess_list[list_top].others_auto = fread_action(fl);
-    }
+      
+      soc_mess_list[list_top].obj_you = fread_action(fl);
+      
+      soc_mess_list[list_top].obj_other = fread_action(fl);
+    
+  }
   fclose(fl);
 }
 
@@ -167,15 +186,16 @@ int find_action(int cmd)
 void do_action(struct char_data *ch, char *argument, int cmd)
 {
   int act_nr;
-  char buf[MAX_INPUT_LENGTH], tmp[MAX_STRING_LENGTH];
+  char buf[MAX_INPUT_LENGTH];
   struct social_messg *action;
   struct char_data *vict;
+  struct obj_data *objx = 0;
 
-dlog("in do_action");
+  dlog("in do_action");
 
   if ((act_nr = find_action(cmd)) < 0)   {
-      send_to_char("That action is not supported.\n\r", ch);
-      return;
+    send_to_char("That action is not supported.\n\r", ch);
+    return;
     }
   
   action = &soc_mess_list[act_nr];
@@ -193,7 +213,12 @@ dlog("in do_action");
     }
   
   if (!(vict = get_char_room_vis(ch, buf)))    {
-      send_to_char(action->not_found, ch);
+     if ((objx = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+       act(action->obj_you, action->hide, ch, objx, objx, TO_CHAR);
+       act(action->obj_other, action->hide, ch, objx, objx, TO_ROOM);
+       return;
+     }
+       send_to_char(action->not_found, ch);
       send_to_char("\n\r", ch);
     }  else if (vict == ch)    {
       send_to_char(action->char_auto, ch);
@@ -221,53 +246,51 @@ void do_insult(struct char_data *ch, char *argument, int cmd)
 	struct char_data *victim;
 
 dlog("in do_insult");
-
-	only_argument(argument, arg);
-
-	if(*arg) {
-		if(!(victim = get_char_room_vis(ch, arg))) {
-			send_to_char("Can't hear you!\n\r", ch);
-		} else {
-			if(victim != ch) { 
-				sprintf(buf, "You insult %s.\n\r",GET_NAME(victim) );
-				send_to_char(buf,ch);
-
-				switch(random()%3) {
-					case 0 : {
-						if (GET_SEX(ch) == SEX_MALE) {
-							if (GET_SEX(victim) == SEX_MALE)
-								act(
-								"$n accuses you of fighting like a woman!", FALSE,
-								ch, 0, victim, TO_VICT);
-				  		else
-								act("$n says that women can't fight.",
-								  FALSE, ch, 0, victim, TO_VICT);
-						} else { /* Ch == Woman */
-							if (GET_SEX(victim) == SEX_MALE)
-								act("$n accuses you of having the smallest.... (brain?)",
-								FALSE, ch, 0, victim, TO_VICT );
-				  		else
-								act("$n tells you that you'd loose a beautycontest against a troll.",
-								FALSE, ch, 0, victim, TO_VICT );
-						}
-					} break;
-					case 1 : {
-						act("$n calls your mother a bitch!",
-						FALSE, ch, 0, victim, TO_VICT );
-					} break;
-					default : {
-						act("$n tells you to get lost!",FALSE,ch,0,victim,TO_VICT);
-					} break;
-				} /* end switch */
-
-				act("$n insults $N.", TRUE, ch, 0, victim, TO_NOTVICT);
-			} else { /* ch == victim */
-				send_to_char("You feel insulted.\n\r", ch);
-			}
-		}
-	} else send_to_char("Sure you don't want to insult everybody.\n\r", ch);
+ 
+ only_argument(argument, arg);
+ 
+ if(*arg) {
+   if(!(victim = get_char_room_vis(ch, arg))) {
+     send_to_char("Can't hear you!\n\r", ch);
+   } else {
+     if(victim != ch) { 
+       sprintf(buf, "You insult %s.\n\r",GET_NAME(victim) );
+       send_to_char(buf,ch);
+       
+       switch(random()%3) {
+       case 0 : {
+	 if (GET_SEX(ch) == SEX_MALE) {
+	   if (GET_SEX(victim) == SEX_MALE)
+	     act(
+		 "$n accuses you of fighting like a woman!", FALSE,
+		 ch, 0, victim, TO_VICT);
+	   else
+	     act("$n says that women can't fight.",
+		 FALSE, ch, 0, victim, TO_VICT);
+	 } else { /* Ch == Woman */
+	   if (GET_SEX(victim) == SEX_MALE)
+	     act("$n accuses you of having the smallest.... (brain?)",
+		 FALSE, ch, 0, victim, TO_VICT );
+	   else
+	     act("$n tells you that you'd loose a beautycontest against a troll.", FALSE, ch, 0, victim, TO_VICT );
+	 }
+       } break;
+       case 1 : {
+	 act("$n calls your mother a bitch!",
+	     FALSE, ch, 0, victim, TO_VICT );
+       } break;
+       default : {
+	 act("$n tells you to get lost!",FALSE,ch,0,victim,TO_VICT);
+       } break;
+       } /* end switch */
+       
+       act("$n insults $N.", TRUE, ch, 0, victim, TO_NOTVICT);
+     } else { /* ch == victim */
+       send_to_char("You feel insulted.\n\r", ch);
+     }
+   }
+ } else send_to_char("Sure you don't want to insult everybody.\n\r", ch);
 }
-
 
 
 void boot_pose_messages()

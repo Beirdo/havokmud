@@ -2061,7 +2061,12 @@ void do_launch(struct char_data *ch);
 int HasFlyItem(struct char_data *ch);
 #define random() rand()
 #define srandom(seed) srand(seed)
-
+/*New stuff*/
 
 //In spell_parser.c
 void stop_follower_quiet(struct char_data *ch);
+/*act.other.c*/
+void do_behead(struct char_data *ch, char *argument, int cmd);
+
+/*Spec_procs.c*/
+int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

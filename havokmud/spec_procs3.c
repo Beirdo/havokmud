@@ -16,7 +16,7 @@ extern struct index_data *mob_index;
 extern struct weather_data weather_info;
 	extern int top_of_world;
 	extern struct int_app_type int_app[26];
-
+extern char *pc_class_types[];
 extern struct title_type titles[4][ABS_MAX_LVL];
 extern char *dirs[]; 
 
@@ -4020,3 +4020,84 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 }
 
 #endif
+
+
+
+/* (GH)2001STill under Construction...*/
+int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+  struct obj_data *obj;
+  char buf[256];
+  int x,temp=0;
+  
+  int questitems[5][3] = { 
+    {27146,CLASS_CLERIC,     1},
+    {123,CLASS_MAGIC_USER, 2},
+    {123,CLASS_DRUID,      3},
+    {30750,CLASS_WARRIOR,    4},
+    {27146,CLASS_RANGER,       5}
+    
+  };
+  //*pc_class_types[]  
+  if (cmd==59) { //list 
+    send_to_char("Quest Point Items:\n\r", ch);
+    
+    sprintf(buf,"$c0011%-25s %-15s %-10s\n\r","Name","Class","QPs");
+    send_to_char(buf,ch);
+    
+    sprintf(buf,"%-25s %-15s %-10s\n\r","----","-----","---");
+    send_to_char(buf,ch);
+    
+    for(x = 0;x < 5;x ++) {
+      
+      if(HasClass(ch,questitems[x][1])) {
+	temp = questitems[x][0];
+	obj = read_object(temp, VIRTUAL);
+	
+	if(obj) {
+	  sprintf(buf,"$c0012%-25s $c0014%-16s $c0015%-10d$c0007\n\r"
+		  ,obj->short_description
+		  ,pc_class_types[pc_class_num(questitems[x][1])]
+		  ,questitems[x][2]);
+	  send_to_char(buf,ch);
+	}
+      }
+      
+    }
+    return(TRUE);
+  } else 
+    
+    if(cmd == 56) {
+
+    
+      temp = 5;//ch->player.q_points;
+      //lets search for item..
+      for (x = 0;x < 5;x++) {
+	temp = questitems[x][0];
+	obj = read_object(temp, VIRTUAL);
+	
+	if(isname(arg,obj->name)) {
+	  temp = questitems[x][2];
+	  if (temp <= ch->player.q_points) {
+	    ch->player.q_points = ch->player.q_points - temp; 
+	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
+		" 'I hope you enjoy.'",FALSE,ch,0,0,TO_CHAR); 
+	    sprintf(buf,"The QPSalesman gives you %s\n\r",obj->short_description);
+	    send_to_char(buf,ch);
+	    obj_to_char(obj,ch);
+	  } else 
+	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
+		" 'You don't have enought QPoints for that item'"
+		,FALSE,ch,0,0,TO_CHAR);
+	  
+	  return TRUE;
+	}
+      }
+      act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
+	  " 'I don't have that item.'",FALSE,ch,0,0,TO_CHAR); 
+      return TRUE; 
+    } 
+  return FALSE;
+}
+
+
+
