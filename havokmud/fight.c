@@ -1143,6 +1143,8 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
 {
   struct obj_data *wield;
   char *buf;
+  char buf2[MAX_STRING_LENGTH];
+
   int snum,hitloc;
 
   static struct dam_weapon_type {
@@ -1251,7 +1253,17 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
 
   buf = replace_string(dam_weapons[snum].to_char, attack_hit_text[w_type].plural, attack_hit_text[w_type].singular,
   	  location_hit_text[hitloc].plural,   location_hit_text[hitloc].singular);
-  act(buf, FALSE, ch, wield, victim, TO_CHAR);
+
+
+  /* @Desc Says how much damage your hitting after 200milxp
+     @Author Greg Hovey (GH)
+     @Date April 2002
+  */
+  if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+	  sprintf(buf2,"%s $c0011($c0015%d$c0011)$c0007",buf,dam);
+	  	act(buf2, FALSE, ch, wield, victim, TO_CHAR);
+  } else
+	act(buf, FALSE, ch, wield, victim, TO_CHAR);
 
   buf = replace_string(dam_weapons[snum].to_victim, attack_hit_text[w_type].plural, attack_hit_text[w_type].singular,
 	  location_hit_text[hitloc].plural,   location_hit_text[hitloc].singular);
