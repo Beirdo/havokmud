@@ -507,3 +507,98 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 	} /* feh, noone here to harass */
 }
 
+
+
+
+
+int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	extern const struct skillset weaponskills[];
+ 	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH];
+	static int percent = 0;
+	static int x=0; //for loop
+	int i = 0; //while loop
+
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
+
+	//170->Practice,164->Practise, 243->gain
+	if (cmd==164 || cmd == 170) {
+
+
+
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
+			strcat(buffer,buf);
+			x = 50;
+			/* list by level, so new skills show at top of list */
+				i=0;
+				while(weaponskills[i].level != -1) {
+					if (weaponskills[i].level <= x) {
+						sprintf(buf,"[%-2d] %-30s %-15s",weaponskills[i].level,
+								weaponskills[i].name,
+								ch->skills[weaponskills[i].skillnum].learned >0? "(Practiced)":"(Unknown)");
+						if (IsSpecialized(ch->skills[weaponskills[i].skillnum].special))
+							strcat(buf," (special)");
+						strcat(buf," \n\r");
+						if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+							break;
+						strcat(buffer, buf);
+						strcat(buffer, "\r");
+					}
+					i++;
+				}
+
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
+		} else {
+			x=0;
+			while (weaponskills[x].level != -1) {
+				if(is_abbrev(arg,weaponskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+					if(weaponskills[x].level > 51) {
+						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
+
+					if(ch->skills[weaponskills[x].skillnum].learned > 45) {
+						//check if skill already practiced
+						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+									 " 'You must learn from experience and practice to get"
+									 " any better at that skill.'\n\r",ch);
+						return(TRUE);
+					}
+
+					if(ch->specials.spells_to_learn <=0) {
+						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
+
+					sprintf(buf,"You practice %s for a while.\n\r",weaponskills[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn--;
+
+					if(!IS_SET(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN);
+						SET_BIT(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN_BARD);
+					}
+					percent=ch->skills[weaponskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[weaponskills[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[weaponskills[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
+			send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+			return(TRUE);
+		}
+	}
+#endif
+	return (FALSE);
+}

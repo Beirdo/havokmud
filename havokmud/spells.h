@@ -402,6 +402,75 @@
 #define TYPE_STRIKE              328
 
 
+
+
+
+/* all new weapons to practice (GH) */
+#define WEAPON_SHORT_SWORD         350
+#define WEAPON_LONG_SWORD          351
+#define WEAPON_BROADSWORD          352
+#define WEAPON_BASTARD_SWORD       353
+#define WEAPON_TWO_HANDED_SWORD    354
+#define WEAPON_SICKLE              355
+#define WEAPON_SCYTHE			   356
+#define WEAPON_SCIMITAR			   357
+#define WEAPON_RAPIER              358
+#define WEAPON_SABRE			   359
+#define WEAPON_KATANA			   360
+#define WEAPON_WAKIZASHI			361
+#define WEAPON_DAGGER				362
+#define WEAPON_KNIFE				363
+#define WEAPON_STILETTO				364
+#define WEAPON_SPEAR				365
+#define WEAPON_PIKE					366
+#define WEAPON_RANSEUR				367
+#define WEAPON_NAGINATA				368
+#define WEAPON_HALBERD				369
+#define WEAPON_LUCERN_HAMMER		370
+#define WEAPON_TRIDENT				371
+#define WEAPON_FORK					372
+#define WEAPON_AXE					373
+#define WEAPON_HAND_AXE				374
+#define WEAPON_TWO_HANDED_AXE		375
+#define WEAPON_PICK					376
+#define WEAPON_HAMMER				377
+#define WEAPON_CLUB					378
+#define WEAPON_GREAT_CLUB			379
+#define WEAPON_MACE					380
+#define WEAPON_MAUL					381
+#define WEAPON_MORNINGSTAR			382
+#define WEAPON_FLAIL				383
+#define WEAPON_NUNCHAKU				384
+#define WEAPON_CHAIN				385
+#define WEAPON_BOSTICK				386
+#define WEAPON_STAFF				387
+#define WEAPON_SAI					388
+#define WEAPON_SAP					389
+#define WEAPON_BOLAS				390
+#define WEAPON_CESTUS				391
+#define WEAPON_SCOURGE				392
+#define WEAPON_WHIP					393
+#define WEAPON_BOOMERANG			394
+#define WEAPON_SHURIKEN				395
+#define WEAPON_THROWING_KNIFE		396
+#define WEAPON_DART					397
+#define WEAPON_JAVELIN				398
+#define WEAPON_HARPOON				399
+#define WEAPON_SLING				400
+#define WEAPON_STAFF_SLING			401
+#define WEAPON_SHORT_BOW			402
+#define WEAPON_LONG_BOW				403
+#define WEAPON_HAND_CROSSBOW		404
+#define WEAPON_LIGHT_CROSSBOW		405
+#define WEAPON_HEAVY_CROSSBOW 		406
+#define WEAPON_BLOWGUN				407
+#define WEAPON_TETSUBO				408
+
+
+
+
+
+
 	/* This one needs to be after all real damage skills, might wanna */
 	/* alter messages if you move it */
 #define TYPE_SUFFERING               330
