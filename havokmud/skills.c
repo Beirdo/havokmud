@@ -3835,7 +3835,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 	char buf2[MAX_INPUT_LENGTH];
 	char arg[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
-	int sn = -1, x, slot = 0, percent = 0, formula=0;
+	int sn = -1, x, percent = 0, formula=0;
 
 	if(!MainClass(ch, CLERIC_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of scribing scrolls.\n\r",ch);
@@ -3906,7 +3906,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 	act("$n holds up a scroll and binds it with enchantments.",TRUE,ch, obj, NULL, TO_ROOM );
 	act("You bind an empty scroll with enchantments.",TRUE,ch,obj,NULL,TO_CHAR);
 
-	formula = (ch->skills[SKILL_SCRIBE].learned)/slot + GET_INT(ch)/3+ GET_WIS(ch)/3;
+	formula = (ch->skills[SKILL_SCRIBE].learned) + GET_INT(ch)/3+ GET_WIS(ch)/3;
 	if(formula > 98)
 		formula = 98;
 
@@ -3965,7 +3965,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 	char buf2[MAX_INPUT_LENGTH];
 	char arg[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
-	int sn = -1, x, slot = 0, percent = 0, formula=0;
+	int sn = -1, x, percent = 0, formula=0;
 
 	if(!MainClass(ch, MAGE_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of brewing your own potions.\n\r",ch);
@@ -4037,7 +4037,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 	act("$n begins preparing a potion.",TRUE,ch, obj, NULL, TO_ROOM );
 	act("You start preparing a potion.",TRUE,ch,obj,NULL,TO_CHAR);
 
-	formula = (ch->skills[SKILL_BREW].learned)/slot + GET_INT(ch)/3+ GET_WIS(ch)/3;
+	formula = (ch->skills[SKILL_BREW].learned) + GET_INT(ch)/3+ GET_WIS(ch)/3;
 	if(formula > 98)
 		formula = 98;
 
