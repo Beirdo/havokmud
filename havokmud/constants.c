@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include "structs.h"
 #include "trap.h"
 #include "race.h"

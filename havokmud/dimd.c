@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>

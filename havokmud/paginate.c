@@ -9,6 +9,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>

@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>

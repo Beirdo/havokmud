@@ -3,6 +3,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
