@@ -1267,13 +1267,13 @@ dlog("in do_stat");
       strcat(buf, buf2);
       act(buf,FALSE,ch,0,0,TO_CHAR);
 
-sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005] Alignment[$c0014%d$c0005]",
+sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0014%d$c0005] Alignment[$c0014%d$c0005]",
 	      k->player.level[0], k->player.level[1],
 	      k->player.level[2], k->player.level[3],
 	      k->player.level[4], k->player.level[5],
 	      k->player.level[6], k->player.level[7],
 	      k->player.level[8], k->player.level[9],
-	      k->player.level[10],GET_ALIGNMENT(k));
+	      k->player.level[10],k->player.level[11],GET_ALIGNMENT(k));
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
 sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%ld$c0005]secs",
@@ -1311,7 +1311,7 @@ act(buf,FALSE,ch,0,0,TO_CHAR);
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
-sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%d$c0005], Exp: [$c0014%d$c0005], Hitroll: [$c0014%d$c0005+($c0015%d$c0005)], Damroll: [$c0014%d$c0005+($c0015%d$c0005)] sf[%d]",
+sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%d$c0005], Exp: [$c0014%d$c0005], Hitroll: [$c0014%d$c0005+($c0015%d$c0005)], Damroll: [$c0014%d$c0005+($c0015%d$c0005)] sf[$c0014%d$c0005]",
 	      GET_AC(k),
 	      GET_GOLD(k),
 	      GET_EXP(k),

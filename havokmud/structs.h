@@ -183,7 +183,8 @@ struct QuestItem {
 #define FAST_AREA_EDIT  16384	/* immort is using fast online mapping */
 #define PKILLING        32768
 #define CLOAKED         65536   /* Used for mortal cloaking of there eq */
-
+#define ZONE_SOUNDS    131072
+#define CHAR_PRIVATE   262144
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */

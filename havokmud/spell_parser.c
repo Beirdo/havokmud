@@ -1853,12 +1853,39 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
       if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
 
 	argument = one_argument(argument, name);
-
+	
+	//(GH)  if name argument == self then target == Casters name..
+	if (str_cmp(name,"self")==0){
+	  sprintf(name,"%s",GET_NAME(ch));
+	}
+#if 0
 	if (*name) {
 	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
-	    if (tar_char = get_char_room_vis(ch, name)) {
+	    if (tar_char = get_char_room_vis(ch, name))
+	      ||(str_cmp(GET_NAME(ch),name)==0)) {
+	    if (str_cmp(GET_NAME(ch),name)==0)
+	      tar_char = ch;
+	    if (tar_char == ch || tar_char == ch->specials.fighting ||
+		tar_char->attackers < 6 ||
+		tar_char->specials.fighting == ch)
+	      target_ok = TRUE;
+	    else {
+	      send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
+	      target_ok = FALSE;
+	    }
+	  } else {
+	    target_ok = FALSE;
+	  }
+	}
+#endif
+	if (*name) {
+	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
+	    if ((tar_char = get_char_room_vis(ch, name)) 
+		||(str_cmp(GET_NAME(ch),name)==0)) {
+	      if (str_cmp(GET_NAME(ch),name)==0)
+		tar_char = ch;
 	      if (tar_char == ch || tar_char == ch->specials.fighting ||
-		  tar_char->attackers < 6 ||
+		  tar_char->attackers < 6 || 
 		  tar_char->specials.fighting == ch)
 		target_ok = TRUE;
 	      else {
@@ -1869,18 +1896,19 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	      target_ok = FALSE;
 	    }
 	  }
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
-	    if (tar_char = get_char_vis(ch, name))
-	      target_ok = TRUE;
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
-	    if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
-	      target_ok = TRUE;
-
-	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
-	    if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
-	      target_ok = TRUE;
-
+	  
+	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+	  if (tar_char = get_char_vis(ch, name))
+	    target_ok = TRUE;
+	
+	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+	  if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
+	    target_ok = TRUE;
+	
+	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+	  if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
+	    target_ok = TRUE;
+	
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 	    if (tar_obj = get_obj_vis(ch, name))
 	      target_ok = TRUE;
@@ -2038,30 +2066,34 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	          max+=10;
 		break;
 	default:if (EqWBits(ch,ITEM_ANTI_MAGE))
-			max+=10; /* 20% harder to cast spells */
-			break;
-		} /* end switch */
-
-
-/* end EQ check				    */
+	  max+=10; /* 20% harder to cast spells */
+		break;
+	} /* end switch */
+	
+	
+	/* end EQ check				    */
 	if (ch->attackers > 0)
 	  max += spell_info[spl].spellfail;
 	else if (ch->specials.fighting)
 	  max += spell_info[spl].spellfail/2;
-
-if (cmd == 283)  /* recall:  less chance of spell fail ... */
-  max = max/2;
-
-/* memorized spells don't fail ... bcw */
-if (number(1,max) > ch->skills[spl].learned &&
-     !IsSpecialized(ch->skills[spl].special) &&
-     cmd != 283 )      {
+	
+	if (cmd == 283)  /* recall:  less chance of spell fail ... */
+	  max = max/2;
+	
+	/* memorized spells don't fail ... bcw */
+	if (number(1,max) > ch->skills[spl].learned &&
+	    !IsSpecialized(ch->skills[spl].special) &&
+	    cmd != 283 )      {
+	  if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
+	    send_to_char("You have no knowledge of this spell.\n\r",ch);
+	    return;
+	  }
 	  send_to_char("You lost your concentration!\n\r", ch);
 	  cost = (int)USE_MANA(ch, (int)spl);
 	  GET_MANA(ch) -= (cost>>1);
 	  LearnFromMistake(ch, spl, 0, 95);
 	  return;
-     }
+	}
 
         if (tar_char) {
 

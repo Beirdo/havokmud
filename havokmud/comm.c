@@ -601,7 +601,11 @@ memory_check("end 5, begin 6");
 	       } else {
 	       construct_prompt(promptbuf,point->character);
 	     } 
-	    if (has_mail((char *)GET_NAME(point->character)))
+	    /* Will this slow things down?? Having to run has_mail every second*/
+	    /* I may just add something into the char structure that says if */
+	    /* the person has mail..   Anyway..  .. Greg Hovey  March 30/2001*/
+	    
+	    if (point->character->player.has_mail)
 	    write_to_descriptor(point->descriptor,ParseAnsiColors( \
 			      IS_SET(point->character->player.user_flags,USE_ANSI), \
 			      "$c0003[MAIL] "));

@@ -504,7 +504,8 @@ void load_char_objs(struct char_data *ch)
       }
     if (has_mail((char *)GET_NAME(ch))){
 	send_to_char("$c0013[$c0015The scribe$c0013] bespeaks you: 'You have mail waiting!'", ch);
-    /*tack a little [MAIL] onto their prompt...*/
+	ch->player.has_mail = TRUE;
+	/*tack a little [MAIL] onto their prompt...*/
     /*	 strcpy(buf,"$c0009[MAIL]$c0007 ");
 	 strcat(buf, ch->specials.prompt);
    	 ch->specials.prompt = buf; */

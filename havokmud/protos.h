@@ -2084,6 +2084,7 @@ int HasFlyItem(struct char_data *ch);
 void stop_follower_quiet(struct char_data *ch);
 /*act.other.c*/
 void do_behead(struct char_data *ch, char *argument, int cmd);
+void do_flag_status(struct char_data *ch,char *argument,int cmd);
 
 /*Spec_procs.c*/
 int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2098,3 +2099,4 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 /* act.comm.c - used for mobs to tell people stuff */
 void do_mobTell(struct char_data *ch,char *mob, char *sentence);
+

@@ -689,7 +689,10 @@ void	postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
 
       act("$n gives you a piece of mail.", FALSE, mailman, 0, ch, TO_VICT);
       act("$N gives $n a piece of mail.", FALSE, ch, 0, mailman, TO_ROOM);
+      ch->player.has_mail = FALSE;
    }
 }
+
+
 
 

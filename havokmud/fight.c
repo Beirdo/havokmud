@@ -1188,21 +1188,21 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
     },
 
     {
-      "$n #W $N extremely well #l.",                          /* 15..20  */
-      "You #w $N extremely well #l.",
-      "$n #W you extremely well on your #L."
+      "$n #W $N $c0011extremely well$c0007 #l.",                /* 15..20  */
+      "You #w $N $c0011extremely well$c0007 #l.",
+      "$n #W you $c0011extremely well$c0007 on your #L."
     },
 
     {
-      "$n massacres $N with $s #w #l.",     /* > 20    */
-      "You massacre $N with your #w #l.",
-      "$n massacres you with $s #w on your #L."
+      "$n $c0010massacres$c0007 $N with $s #w #l.",     /* > 20    */
+      "You$c0010 massacre$c0007 $N with your #w #l.",
+      "$n $c0010massacres$c0007 you with $s #w on your #L."
     },
 
     {
-     "$n devastates $N with $s #w #l.",
-     "You devastate $N with your #w #l.",
-     "$n devastates you with $s #w on your #L."
+     "$n $c0009devastates$c0007 $N with $s #w #l.",
+     "You $c0009devastate$c0007 $N with your #w #l.",
+     "$n $c0009devastates$c0007 you with $s #w on your #L."
     }
 
   };

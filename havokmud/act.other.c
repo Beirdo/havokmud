@@ -2373,14 +2373,35 @@ dlog("in do_set_afk");
   }
 }
 void do_flag_status(struct char_data *ch,char *argument,int cmd) {
-  send_to_char("Flag Status: ",ch);
+  send_to_char("Flag Status: \n\r",ch);
   
   if(IS_AFFECTED2(ch,AFF2_AFK))
-    send_to_char("AFK [X]",ch);
+    send_to_char("AFK [X]         ",ch);
   else
-    send_to_char("AFK [ ]",ch);
+    send_to_char("AFK [ ]         ",ch);
+ 
+  if(IS_SET(ch->player.user_flags, USE_ANSI))
+    send_to_char("ANSI [x] \n\r",ch);
+  else
+    send_to_char("ANSI [ ] \n\r",ch);
+ 
+  if (IS_SET(ch->specials.act, PLR_WIMPY)) 
+    send_to_char("Wimpy [x]       ",ch);
+  else
+    send_to_char("Wimpy [ ]       ",ch);
+  if (IS_SET(ch->specials.act, ZONE_SOUNDS))
+    send_to_char("Zone Sounds [x]\n\r",ch);
+  else
+    send_to_char("Zone Sounds [ ]\n\r",ch);
 
-
+ if (IS_SET(ch->specials.act, CLOAKED)) 
+    send_to_char("Cloaked [x]       ",ch);
+  else
+    send_to_char("Cloaked [ ]       ",ch);
+  if (IS_SET(ch->specials.act, CHAR_PRIVATE))
+    send_to_char("Private [x]\n\r",ch);
+  else
+    send_to_char("Private [ ]\n\r",ch);
 }
 
 
@@ -2443,16 +2464,28 @@ dlog("in do_set_flags");
    return;
  }
 
- if (!strcmp(type,"war") && GetMaxLevel(ch)>=RACE_WAR_MIN_LEVEL) {
-   if (!strcmp("enable",field)) {
-    SET_BIT(ch->player.user_flags,RACE_WAR);
-    send_to_char("YOU CAN BE ATTACKED BY YOUR RACIAL ENEMIES!\n\r",ch);
-    return;
-   } else
-     send_to_char("READ HELP on RACE WAR.\n\r",ch);
-   return;
- }
-
+ if (!strcmp(type,"sound")) {		/* turn ansi stuff ON/OFF */
+   if (is_abbrev(field,"enable")) {
+         send_to_char("Sound and Music enabled.\n\r",ch);
+         SET_BIT(ch->player.user_flags,ZONE_SOUNDS);
+   } else {
+     act("Sound and Music disabled.",FALSE,ch,0,0,TO_CHAR);
+     if (IS_SET(ch->player.user_flags,ZONE_SOUNDS))
+       REMOVE_BIT(ch->player.user_flags, ZONE_SOUNDS);
+   }
+ } /* private */
+ else
+ if (!strcmp(type,"private")) {		/* turn ansi stuff ON/OFF */
+   if (is_abbrev(field,"enable")) {
+         send_to_char("Private flag enabled.\n\r",ch);
+         SET_BIT(ch->player.user_flags,CHAR_PRIVATE);
+   } else {
+     act("Private flag disabled.",FALSE,ch,0,0,TO_CHAR);
+     if (IS_SET(ch->player.user_flags,CHAR_PRIVATE))
+       REMOVE_BIT(ch->player.user_flags,CHAR_PRIVATE);
+   }
+ } /* private */
+ else
  if (!strcmp(type,"ansi")) {		/* turn ansi stuff ON/OFF */
    if (is_abbrev(field,"enable")) {
          send_to_char("Setting ansi colors enabled.\n\r",ch);
@@ -2487,31 +2520,12 @@ dlog("in do_set_flags");
 	   if (argument)
 	     do_group_name(ch,argument,0);
 	 }
-#if 0
-	 else
-	   if (!strcmp(field,"order")) {
-	     if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER)) {
-	       act("You no longer recieve orders from your leader.",FALSE,ch,0,0,TO_CHAR);
-	       act("$n stops accepting orders from $s group leader.",FALSE,ch,0,0,TO_ROOM);
-	       REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
-	     } else
-	       if(!ch->master) {
-		 act("You already can accept orders from YOURSELF",FALSE,ch,0,0,TO_CHAR);
-	       } else {
-		 act("You now can receive orders from your group leader",FALSE,ch,0,0,TO_CHAR);
-		 act("$N just give you permission to order $m", FALSE,ch->master,0,ch,TO_CHAR);
-		 SET_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
-	       }
-	   }  /* end order */
-	 /* i disabled for not, allows people to order followers to bash 50 times */
-	 /* with no lag, as well as cast 50 times with no lag */
-#endif
 
-	   else {
-	     send_to_char("Unknown set group command\n",ch);
-	   }
+	 else {
+	   send_to_char("Unknown set group command\n",ch);
+	 }
        } /* end was a group command */
-
+ 
        else
 	 if (!strcmp(type,"autoexits")) {
 	   if (strstr(field,"enable")) {
@@ -2558,7 +2572,7 @@ dlog("in do_set_flags");
 
 }
 /* Whois command code.
- * By: Greg Hovey
+ * Revised: Greg Hovey
  * Last updated: Feb 12, 2001
  */
 void do_finger(struct char_data *ch, char *argument, int cmd)

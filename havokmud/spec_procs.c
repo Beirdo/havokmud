@@ -222,17 +222,23 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
       send_to_char(buf, ch);
       send_to_char("You can practise any of these spells:\n\r", ch);
       for(i=0; *spells[i] != '\n'; i++)
-		if (HasClass(ch,CLASS_MAGIC_USER)) {
-		if (spell_info[i+1].spell_pointer &&
-		    (spell_info[i+1].min_level_magic<=
-		     GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
-		    (spell_info[i+1].min_level_magic <=
-		     GetMaxLevel(guildmaster)-10)) {
-
-		    sprintf(buf,"[%d] %-25s %s \n\r",
+	if (HasClass(ch,CLASS_MAGIC_USER)) {
+	  if (spell_info[i+1].spell_pointer &&
+	      (spell_info[i+1].min_level_magic<=
+	       GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
+	      (spell_info[i+1].min_level_magic <=
+	       GetMaxLevel(guildmaster)-10)) {
+	    
+	    sprintf(buf,"[%-2d] %-25s %-15s ",
 		    spell_info[i+1].min_level_magic,
 		    spells[i],how_good(ch->skills[i+1].learned));
-		  send_to_char(buf, ch);
+	    
+	    
+	    if (spell_info[i+1].min_level_magic == GET_LEVEL(ch,MAGE_LEVEL_IND))
+	      sprintf(buf,"%s [New Spell] \n\r",buf);
+	    else 
+	      sprintf(buf,"%s \n\r",buf);
+	    send_to_char(buf, ch);
 	}
 	} else
 	if (HasClass(ch,CLASS_SORCERER))
@@ -241,13 +247,18 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	     GET_LEVEL(ch,SORCERER_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_magic <=
 	     GetMaxLevel(guildmaster)-10)) {
-	    sprintf(buf,"[%d] %-25s %s \n\r",
+	    sprintf(buf,"[%-2d] %-25s %-15s ",
 		    spell_info[i+1].min_level_magic,
 		    spells[i],how_good(ch->skills[i+1].learned));
-	  send_to_char(buf, ch);
+	  
+	    if (spell_info[i+1].min_level_magic == GET_LEVEL(ch,MAGE_LEVEL_IND))
+	      sprintf(buf,"%s [New Spell] \n\r",buf);
+	    else 
+	      sprintf(buf,"%s \n\r",buf);
+	    send_to_char(buf, ch);
 	}
 	/*Ugly fix but quick*/
-	sprintf(buf,"[%d] %-25s %s \n\r",1,"sending",how_good(ch->skills[SPELL_SENDING].learned));
+	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"sending",how_good(ch->skills[SPELL_SENDING].learned));
 	send_to_char(buf,ch);
       return(TRUE);
 
@@ -382,18 +393,25 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
       send_to_char(buf, ch);
       send_to_char("You can practise any of these spells:\n\r", ch);
       for(i=0; *spells[i] != '\n'; i++)
-		if (spell_info[i+1].spell_pointer &&
-	   (spell_info[i+1].min_level_cleric <=
-	    GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
+	if (spell_info[i+1].spell_pointer &&
+	    (spell_info[i+1].min_level_cleric <=
+	     GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_cleric <=
 	     GetMaxLevel(guildmaster)-10)) {
-	  sprintf(buf,"[%d] %-25s %s \n\r",
+	 
+	  
+	    sprintf(buf,"[%-2d] %-25s %-15s",
 		  spell_info[i+1].min_level_cleric,spells[i],
 		  how_good(ch->skills[i+1].learned));
+	   
+	    if (spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
+	      sprintf(buf,"%s [New Spell] \n\r",buf);
+	    else 
+	      sprintf(buf,"%s \n\r",buf);
 	  send_to_char(buf, ch);
 	}
 	/*Ugly fix but quick*/
-	sprintf(buf,"[%d] %-25s %s \n\r",1,"Messenger",how_good(ch->skills[SPELL_MESSENGER].learned));
+	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"messenger",how_good(ch->skills[SPELL_MESSENGER].learned));
 	send_to_char(buf,ch);
 
       return(TRUE);
@@ -6924,7 +6942,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
   struct string_block sb;
   //skill             level..
 
-#if 0
+#if 1
   if(!AWAKE(ch) || IS_NPC(ch))
     return(FALSE);
   //170->Practice,164->Practise, 243->gain
@@ -6965,6 +6983,12 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 		    ,bardskills[x].name,
 		    how_good(ch->skills[bardskills[x].skillnum].learned),
 		    bardskills[x].level); 
+	    /* Display New Spell.. not done..
+	      if(spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
+	      sprintf(buf,"%s [New Spell] \n\r",buf);
+	      else 
+	      sprintf(buf,"%s \n\r",buf);
+	    */
 	    append_to_string_block(&sb,buf);
 	  }
 	}
