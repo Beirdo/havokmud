@@ -2130,19 +2130,19 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
 	 }
 
 
-   if ((GET_MANA(ch) < 75) && GetMaxLevel(ch) < LOW_IMMORTAL)    {
+   if ((GET_MANA(ch) < 50) && GetMaxLevel(ch) < LOW_IMMORTAL)    {
       send_to_char ("You have a headache. Better rest before you try this again.\n\r",ch);
       return;
    }   else
       if (dice(1,101) > ch->skills[SKILL_PORTAL].learned)      {
         send_to_char("You fail to open a portal at this time.\n\r", ch);
         act("$n briefly summons a portal, then curses as it disappears.",FALSE,ch,0,0,TO_ROOM);
-        GET_MANA(ch)-=37;
+        GET_MANA(ch)-=25;
         LearnFromMistake(ch, SKILL_PORTAL, 0, 95);
         WAIT_STATE(ch, PULSE_VIOLENCE*2);
         return;
       }    else     {
-     GET_MANA(ch)-=75;
+     GET_MANA(ch)-=50;
      send_to_char("You close your eyes and open a portal and quickly step through.\n\r",ch);
      act("$n closes their eyes and a shimmering portal appears!",FALSE,ch,0,0,TO_ROOM);
      act("A portal appears before you!",FALSE,target,0,0,TO_ROOM);

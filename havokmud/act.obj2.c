@@ -142,7 +142,7 @@ dlog("in do_drink");
     return;
   }
 
-  if((GET_COND(ch,FULL)>20)&&(GET_COND(ch,THIRST)>0)) /* Stomach full */ {
+  if((GET_COND(ch,FULL)>20)&&(GET_COND(ch,THIRST)>0) && !affected_by_spell(ch, SKILL_MIND_OVER_BODY)) {
       act("Your stomach can't contain anymore!",FALSE,ch,0,0,TO_CHAR);
       return;
     }
@@ -177,6 +177,11 @@ dlog("in do_drink");
       gain_condition(ch,THIRST,(int)((int)drink_aff
                      [temp->obj_flags.value[2]][THIRST]*amount)/4);
 
+	}
+	if(affected_by_spell(ch, SKILL_MIND_OVER_BODY)) {
+		act("Your body suddenly realizes that it's been fooled into believing itself quenched.",FALSE,ch,0,0,TO_CHAR);
+		affect_from_char(ch, SKILL_MIND_OVER_BODY);
+		WAIT_STATE(ch, PULSE_VIOLENCE);
 	}
 
       if(GET_COND(ch,DRUNK)>10)
@@ -229,63 +234,66 @@ dlog("in do_drink");
 
 void do_eat(struct char_data *ch, char *argument, int cmd)
 {
-        char buf[100];
-        int j, num;
-        struct obj_data *temp;
-        struct affected_type af;
+	char buf[100];
+	int j, num;
+	struct obj_data *temp;
+	struct affected_type af;
+
 dlog("in do_eat");
-        one_argument(argument,buf);
 
-        if(!(temp = get_obj_in_list_vis(ch,buf,ch->carrying)))  {
-                act("You can't find it!",FALSE,ch,0,0,TO_CHAR);
-                return;
-        }
+	one_argument(argument,buf);
 
-        if((temp->obj_flags.type_flag != ITEM_FOOD) &&
-           (GetMaxLevel(ch) < DEMIGOD)) {
-            act("Your stomach refuses to eat that!?!",FALSE,ch,0,0,TO_CHAR);
-                return;
-        }
-
-        if(GET_COND(ch,FULL)>20) /* Stomach full */     {
-                act("You are to full to eat more!",FALSE,ch,0,0,TO_CHAR);
-                return;
-        }
-
-        act("$n eats $p",TRUE,ch,temp,0,TO_ROOM);
-        act("You eat $p.",FALSE,ch,temp,0,TO_CHAR);
-
-	if(!IS_IMMORTAL(ch)) {
-        gain_condition(ch,FULL,temp->obj_flags.value[0]);
+	if(!(temp = get_obj_in_list_vis(ch,buf,ch->carrying)))  {
+		act("You can't find it!",FALSE,ch,0,0,TO_CHAR);
+		return;
 	}
 
-        if(GET_COND(ch,FULL)>20)
-                act("You are full.",FALSE,ch,0,0,TO_CHAR);
+	if((temp->obj_flags.type_flag != ITEM_FOOD) && (GetMaxLevel(ch) < DEMIGOD)) {
+		act("Your stomach refuses to eat that!?!",FALSE,ch,0,0,TO_CHAR);
+		return;
+	}
 
-        for(j=0; j<MAX_OBJ_AFFECT; j++)
-            if (temp->affected[j].location == APPLY_EAT_SPELL) {
-                   num = temp->affected[j].modifier;
+	// can we even eat?
+	if(GET_COND(ch,FULL) > 20 && !affected_by_spell(ch, SKILL_MIND_OVER_BODY)){
+		act("You are to full to eat more!",FALSE,ch,0,0,TO_CHAR);
+		return;
+	}
 
-/* hit 'em with the spell */
+	act("$n eats $p",TRUE,ch,temp,0,TO_ROOM);
+	act("You eat $p.",FALSE,ch,temp,0,TO_CHAR);
 
-                   ((*spell_info[num].spell_pointer)
-                         (6, ch, "", SPELL_TYPE_POTION, ch, 0));
-                 }
+	if(affected_by_spell(ch, SKILL_MIND_OVER_BODY)) {
+		act("Your body suddenly realizes that it's been fooled into believing itself fed.",FALSE,ch,0,0,TO_CHAR);
+		affect_from_char(ch, SKILL_MIND_OVER_BODY);
+		WAIT_STATE(ch, PULSE_VIOLENCE);
+	}
 
-        if(temp->obj_flags.value[3] && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
-           act("That tasted rather strange !!",FALSE,ch,0,0,TO_CHAR);
-           act("$n coughs and utters some strange sounds.",
-               FALSE,ch,0,0,TO_ROOM);
+	if(!IS_IMMORTAL(ch)) {
+		gain_condition(ch,FULL,temp->obj_flags.value[0]);
+	}
 
-                af.type = SPELL_POISON;
-                af.duration = temp->obj_flags.value[0]*2;
-                af.modifier = 0;
-                af.location = APPLY_NONE;
-                af.bitvector = AFF_POISON;
-                affect_join(ch,&af, FALSE, FALSE);
-        }
-	//obj_index[temp->item_number].number--;
-        extract_obj(temp);
+	if(GET_COND(ch,FULL)>20)
+		act("You are full.",FALSE,ch,0,0,TO_CHAR);
+
+	for(j=0; j<MAX_OBJ_AFFECT; j++)
+		if (temp->affected[j].location == APPLY_EAT_SPELL) {
+			num = temp->affected[j].modifier;
+			/* hit 'em with the spell */
+			((*spell_info[num].spell_pointer)(6, ch, "", SPELL_TYPE_POTION, ch, 0));
+		}
+
+	if(temp->obj_flags.value[3] && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+		act("That tasted rather strange !!",FALSE,ch,0,0,TO_CHAR);
+		act("$n coughs and utters some strange sounds.", FALSE,ch,0,0,TO_ROOM);
+
+		af.type = SPELL_POISON;
+		af.duration = temp->obj_flags.value[0]*2;
+		af.modifier = 0;
+		af.location = APPLY_NONE;
+		af.bitvector = AFF_POISON;
+		affect_join(ch,&af, FALSE, FALSE);
+	}
+	extract_obj(temp);
 }
 
 
