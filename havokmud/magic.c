@@ -712,33 +712,6 @@ void spell_blindness(int level, struct char_data *ch,
     }
 }
 
-void spell_clone(int level, struct char_data *ch,
-                 struct char_data *victim, struct obj_data *obj)
-{
-
-    assert(ch && (victim || obj));
-    if (level < 0 || level > ABS_MAX_LVL) {
-        return;
-    }
-    send_to_char("Clone is not ready yet.", ch);
-
-    if (obj) {
-
-    } else {
-#if 0
-        clone_char(victim);
-#endif
-    }
-}
-
-void spell_control_weather(int level, struct char_data *ch,
-                           struct char_data *victim, struct obj_data *obj)
-{
-    /*
-     * Control Weather is not possible here!!!
-     * Better/Worse can not be transferred
-     */
-}
 
 void spell_create_food(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
@@ -1819,14 +1792,6 @@ void spell_strength(int level, struct char_data *ch,
     } else {
         act("Nothing seems to happen.", FALSE, ch, 0, 0, TO_CHAR);
     }
-}
-
-void spell_ventriloquate(int level, struct char_data *ch,
-                         struct char_data *victim, struct obj_data *obj)
-{
-    /*
-     * Not possible!! No argument!
-     */
 }
 
 void spell_word_of_recall(int level, struct char_data *ch,

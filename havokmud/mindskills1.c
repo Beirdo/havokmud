@@ -730,22 +730,6 @@ void mind_psychic_crush(int level, struct char_data *ch,
     MissileDamage(ch, victim, dam, SKILL_PSYCHIC_CRUSH);
 }
 
-/*
- * increate int,wis or con, reduce the unselected attribs the same 
- */
-void mind_intensify(int level, struct char_data *ch,
-                    struct char_data *victim, struct obj_data *obj)
-{
-}
-
-/*
- * same as cleric COMMAND spell 
- */
-void mind_domination(int level, struct char_data *ch,
-                     struct char_data *victim, struct obj_data *obj)
-{
-}
-
 void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj)
 {

@@ -131,7 +131,6 @@ void            do_talk(struct char_data *ch, char *argument, int cmd);
 void            do_sea_commands(struct char_data *ch, char *argument,
                                 int cmd);
 
-void            do_map(struct char_data *ch, char *argument, int cmd);
 void            list_groups(struct char_data *ch);
 void            do_command_list(struct char_data *ch, char *arg, int cmd);
 void            do_show_skill(struct char_data *ch, char *arg, int cmd);
@@ -897,12 +896,6 @@ void            spell_bless(int level, struct char_data *ch,
 void            spell_blindness(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_clone(int level, struct char_data *ch,
-                            struct char_data *victim,
-                            struct obj_data *obj);
-void            spell_control_weather(int level, struct char_data *ch,
-                                      struct char_data *victim,
-                                      struct obj_data *obj);
 void            spell_create_food(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
@@ -974,9 +967,6 @@ void            spell_sleep(int level, struct char_data *ch,
 void            spell_strength(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_ventriloquate(int level, struct char_data *ch,
-                                    struct char_data *victim,
-                                    struct obj_data *obj);
 void            spell_word_of_recall(int level, struct char_data *ch,
                                      struct char_data *victim,
                                      struct obj_data *obj);
@@ -1077,9 +1067,6 @@ void            spell_unholy_word(int level, struct char_data *ch,
 void            spell_succor(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
-void            spell_detect_charm(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
 void            spell_true_seeing(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
@@ -1119,15 +1106,6 @@ void            spell_cone_of_cold(int level, struct char_data *ch,
 void            spell_ice_storm(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
-void            spell_poison_cloud(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
-void            spell_major_create(int level, struct char_data *ch,
-                                   struct char_data *victim,
-                                   struct obj_data *obj);
-void            spell_sending(int level, struct char_data *ch,
-                              struct char_data *victim,
-                              struct obj_data *obj);
 void            spell_meteor_swarm(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
@@ -1184,9 +1162,6 @@ void            spell_faerie_fog(int level, struct char_data *ch,
 void            spell_cacaodemon(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-void            spell_improved_identify(int level, struct char_data *ch,
-                                        struct char_data *victim,
-                                        struct obj_data *obj);
 void            spell_geyser(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj);
@@ -1686,8 +1661,6 @@ int             DracoLich(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type);
 int             Drow(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type);
-int             Leader(struct char_data *ch, int cmd, char *arg,
-                       struct char_data *mob, int type);
 int             thief(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type);
 int             guild_guard(struct char_data *ch, int cmd, char *arg,
@@ -1772,10 +1745,6 @@ int             Keftab(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob, int type);
 int             StormGiant(struct char_data *ch, int cmd, char *arg,
                            struct char_data *mob, int type);
-int             Manticore(struct char_data *ch, int cmd, char *arg,
-                          struct char_data *mob, int type);
-int             Kraken(struct char_data *ch, int cmd, char *arg,
-                       struct char_data *mob, int type);
 int             fighter(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type);
 int             NewThalosMayor(struct char_data *ch, int cmd, char *arg,
@@ -3614,8 +3583,6 @@ void mind_psi_strength(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
 void mind_mind_over_body(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj);
-void mind_domination(int level, struct char_data *ch,
-                     struct char_data *victim, struct obj_data *obj);
 void mind_mind_wipe(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj);
 void mind_psychic_crush(int level, struct char_data *ch,
@@ -3628,8 +3595,6 @@ void mind_psychic_impersonation(int level, struct char_data *ch,
                                 struct char_data *victim, struct obj_data *obj);
 void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj);
-void mind_intensify(int level, struct char_data *ch,
-                    struct char_data *victim, struct obj_data *obj);
 void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj);
 void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
@@ -4002,10 +3967,6 @@ void            mind_use_probability_travel(int level,
                                             char *arg, int type,
                                             struct char_data *victim,
                                             struct obj_data *tar_obj);
-void            mind_use_domination(int level, struct char_data *ch,
-                                    char *arg, int type,
-                                    struct char_data *victim,
-                                    struct obj_data *tar_obj);
 void            mind_use_mind_wipe(int level, struct char_data *ch,
                                    char *arg, int type,
                                    struct char_data *victim,
@@ -4031,10 +3992,6 @@ void            mind_use_ultra_blast(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *victim,
                                      struct obj_data *tar_obj);
-void            mind_use_intensify(int level, struct char_data *ch,
-                                   char *arg, int type,
-                                   struct char_data *victim,
-                                   struct obj_data *tar_obj);
 void            mind_use_mind_tap(int level, struct char_data *ch,
                                   char *arg, int type,
                                   struct char_data *victim,

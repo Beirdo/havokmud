@@ -6720,11 +6720,6 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
     page_string(ch->desc, buffer, TRUE);
 }
 
-void do_map(struct char_data *ch, char *argument, int cmd)
-{
-    send_to_char("DO_MAP", ch);
-}
-
 /*
  * clanlist command, shows which clans exist, or who is in what in which
  * clan Lennya 20030611

@@ -1041,12 +1041,6 @@ int Drow(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     return (archer(ch, cmd, arg, mob, type));
 }
 
-int Leader(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
-           int type)
-{
-    return( FALSE );
-}
-
 int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
@@ -3526,18 +3520,6 @@ int StormGiant(struct char_data *ch, int cmd, char *arg,
             }
         }
     }
-    return (FALSE);
-}
-
-int Manticore(struct char_data *ch, int cmd, char *arg,
-              struct char_data *mob, int type)
-{
-    return (FALSE);
-}
-
-int Kraken(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
-           int type)
-{
     return (FALSE);
 }
 

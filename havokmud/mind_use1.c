@@ -247,22 +247,6 @@ void mind_use_mind_over_body(int level, struct char_data *ch, char *arg,
     }
 }
 
-void mind_use_domination(int level, struct char_data *ch, char *arg,
-                         int type, struct char_data *victim,
-                         struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        mind_domination(level, ch, victim, 0);
-        break;
-    default:
-        Log("Serious screw-up in mind_domination");
-        break;
-    }
-}
 
 void mind_use_mind_wipe(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *victim,
@@ -367,22 +351,6 @@ void mind_use_ultra_blast(int level, struct char_data *ch, char *arg,
     }
 }
 
-void mind_use_intensify(int level, struct char_data *ch, char *arg,
-                        int type, struct char_data *victim,
-                        struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-    case SPELL_TYPE_SCROLL:
-        mind_intensify(level, ch, victim, 0);
-        break;
-    default:
-        Log("Serious screw-up in mind_intensify");
-        break;
-    }
-}
 
 void mind_use_mind_tap(int level, struct char_data *ch, char *arg,
                        int type, struct char_data *victim,
