@@ -5,7 +5,7 @@ AC_INIT(havokmud, [1.10/1.11], [gjhurlbu@users.sourceforge.net])
 AC_CONFIG_SRCDIR([act.comm.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([scripts])
-AC_REVISION($Revision: 1.1.2.2 $)
+AC_REVISION($Revision: 1.1.2.3 $)
 
 AC_ARG_VAR(AWK, [location of the awk command])
 AC_PROG_AWK
@@ -61,6 +61,8 @@ AC_C_CONST
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
+
+AC_CHECK_TYPES(socklen_t)
 
 # Checks for library functions.
 AC_FUNC_MALLOC
