@@ -5819,21 +5819,6 @@ int str_len(char *buf)
     return (i);
 }
 
-int load()
-{
-    return (0);
-}
-
-void gr()
-{
-    return;
-}
-
-int workhours()
-{
-    return (0);
-}
-
 void reboot_text(struct char_data *ch, char *arg, int cmd)
 {
     char            buffer[100];

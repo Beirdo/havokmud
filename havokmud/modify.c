@@ -1552,7 +1552,24 @@ void gr(int s)
     }
 }
 
+#else
+
+int load()
+{
+    return (0);
+}
+
+void gr(int s)
+{
+    (void)s;
+}
+
+int workhours()
+{
+    return (0);
+}
 #endif
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
