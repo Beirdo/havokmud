@@ -1440,7 +1440,7 @@ void command_interpreter(struct char_data *ch, char *argument)
         }
     }
 
-    if (!argument || *argument == '\n') {
+    if (!argument || !*argument || *argument == '\n' || *argument == '\r' ) {
         return;
     } 
     
@@ -1478,20 +1478,26 @@ void command_interpreter(struct char_data *ch, char *argument)
      */
     if (!n || GetMaxLevel(ch) < n->min_level) {
         send_to_char("Pardon?\n\r", ch);
-        free(tmparg);
+        if( tmparg ) {
+            free(tmparg);
+        }
         return;
     }
 
     if (!n->func) {
         send_to_char("Sorry, but that command has yet to be implemented...\n\r",
                      ch);
-        free(tmparg);
+        if( tmparg ) {
+            free(tmparg);
+        }
         return;
     }
 
     if (IS_AFFECTED(ch, AFF_PARALYSIS) && n->min_pos > POSITION_STUNNED) {
         send_to_char(" You are paralyzed, you can't do much!\n\r", ch);
-        free(tmparg);
+        if( tmparg ) {
+            free(tmparg);
+        }
         return;
     }
 
@@ -1502,7 +1508,9 @@ void command_interpreter(struct char_data *ch, char *argument)
          */
         send_to_char("You have been frozen in your steps, you cannot do a "
                      "thing!\n\r", ch);
-        free(tmparg);
+        if( tmparg ) {
+            free(tmparg);
+        }
         return;
     }
 
@@ -1538,7 +1546,9 @@ void command_interpreter(struct char_data *ch, char *argument)
             break;
 
         }
-        free(tmparg);
+        if( tmparg ) {
+            free(tmparg);
+        }
         return;
     } 
     
@@ -1587,7 +1597,9 @@ void command_interpreter(struct char_data *ch, char *argument)
     if (no_specials || !special(ch, n->number, arg2)) {
         (*n->func)(ch, arg2, n->number);
     }
-    free(tmparg);
+    if( tmparg ) {
+        free(tmparg);
+    }
 }
 
 char *get_argument(char *line_in, char **arg_out)
