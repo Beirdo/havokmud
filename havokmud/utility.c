@@ -4468,6 +4468,7 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 
  if (strstr(obj->name,"scroll") ||  strstr(obj->name,"potion") ||
      strstr(obj->name,"bag") ||
+     strstr(obj->name,"tongue") || // dark lord tongue fix kludge, should pretty this up  -Lennya
      strstr(obj->name,"key"   ) ) {
       return(0);
      }

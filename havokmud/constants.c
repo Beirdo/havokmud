@@ -5165,7 +5165,7 @@ const struct skillset psiskills[] = {
 	{"probability travel",		SKILL_PROBABILITY_TRAVEL	,21},
 	{"psi invisibility",		SKILL_INVIS					,1},
 	{"psi portal",				SKILL_PORTAL				,32},
-	("psi shield",				SKILL_PSI_SHIELD			,1),
+	{"psi shield",				SKILL_PSI_SHIELD			,1},
 	{"psi summon",				SKILL_SUMMON				,15},
 	{"psionic blast",			SKILL_PSIONIC_BLAST			,1},
 	{"psionic danger sense",	SKILL_DANGER_SENSE			,23},

@@ -4243,14 +4243,16 @@ void spell_scourge_warlock(byte level, struct char_data *ch, struct char_data *v
 		}
 	}
 
+	if (!affected_by_spell(victim,SPELL_POISON)) {
+		spell_poison(level, ch, victim,0);
+	}
+
+	/* now that we poisoned the bugger, let's do the real damage
+	   Bug fix to prevent from poisoning already dead victims, Lennya 20031106 */
 	dam = dice(level,9); /* level*9 */
 	if (saves_spell(victim, SAVING_SPELL)) /* save for half damage */
 		dam >>= 1;
 	damage(ch, victim, dam, SPELL_SCOURGE_WARLOCK);
-	/* now that we hurt the bugger, let's see if he wants some poison as well */
-	if (!affected_by_spell(victim,SPELL_POISON)) {
-		spell_poison(level, ch, victim,0);
-	}
 }
 
 void spell_finger_of_death(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
