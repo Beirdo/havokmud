@@ -1482,10 +1482,17 @@ dlog("in do_auction");
 		return;
 	}
 
+	if(GET_GOLD(ch) < 2000) {
+		send_to_char("Sorry, you don't have the enough to pay the auctioneer's fee.\n\r",ch);
+		minbid = 0;
+		return;
+	}
+
+
 	if(!(minbid=atoi(bid)))
 		minbid=1; /* min bid is 1 coin, and we got an auction runnin. */
 	else if(minbid > 50000000) {
-		send_to_char("Sorry, maximum starting bid is 50,000,000 coins.",ch);
+		send_to_char("Sorry, maximum starting bid is 50,000,000 coins.\n\r",ch);
 		minbid = 0;
 		return;
 	}
@@ -1496,6 +1503,8 @@ dlog("in do_auction");
 	send_to_all(buf);
 
 	send_to_char("Your item is taken away from you.\n\r",ch);
+	send_to_char("You are charged 2000 coins for this auction.\n\r",ch);
+	GET_GOLD(ch)-=2000;
 
 	auct_loop = 1;
 

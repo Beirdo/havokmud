@@ -2328,6 +2328,8 @@ void do_list_zones(struct char_data *ch, char *argument, int cmd) {
 	do_help(ch,"areas",0);
 }
 
+#if 0
+
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
   FILE *fl;
@@ -2414,20 +2416,26 @@ dlog("in do_help");
 	}
 	send_to_char(help, ch);
 }
-void do_newhelp(struct char_data *ch, char *argument, int cmd)
+
+#else
+
+/* A new way for looking at helpfiles. Lennya 20040207
+*/
+
+void do_help(struct char_data *ch, char *argument, int cmd)
 {
-  FILE *fl;
-  int i, possible, found;
-  char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
+	FILE *fl;
+	int i, possible, found, spellcheck;
+	char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH], keyword[256];
 
-
-dlog("in do_newhelp");
+dlog("in do_help");
 
 	if (!ch->desc)
 		return;
 
 	possible = 0;
 	found = 0;
+	spellcheck = 0;
 
 	for(;isspace(*argument); argument++)  ;
 
@@ -2466,8 +2474,22 @@ dlog("in do_newhelp");
 					return;
 				}
 				possible++;
-				sprintf(buf, "newhelp %s\n\r",help_index[i].keyword);
+				sprintf(buf, "help %s\n\r",help_index[i].keyword);
 				send_to_char(buf, ch);
+			} else if (is_abbrev(help_index[i].keyword, argument)) {
+				sprintf(keyword,help_index[i].keyword);
+				if(keyword[strlen(keyword-1)] == argument[strlen(keyword-1)]) {
+					if(!possible) {
+						send_to_char("No exact match found. Possible matches are:\n\r\n\r",ch);
+					}
+					if(possible > 10) {
+						send_to_char("Too many matches found. Please be more specific.\n\r",ch);
+						return;
+					}
+					possible++;
+					sprintf(buf, "help %s\n\r",help_index[i].keyword);
+					send_to_char(buf, ch);
+				}
 			}
 
 		}
@@ -2475,8 +2497,46 @@ dlog("in do_newhelp");
 			send_to_char("\n\rPlease specify. Only exact matches will work.\n\r",ch);
 			return;
 		} else if(!found) {
+			// see if dude already did spell/skill in his query
+			if(strlen(argument) > 3 && cmd == 38) {
+				if(argument[0] == 's' && argument[3] == 'l' && argument[4] == 'l') { // s..ll  likely to be in order
+					send_to_char("No remote or exact matches found.\n\r",ch);
+					sprintf(buf, "%s is looking for a help on \"%s\". Can someone help %s?",GET_NAME(ch), argument, (GET_SEX(ch)==SEX_MALE?"him":(GET_SEX(ch)==SEX_FEMALE?"her":"it")));
+					log(buf);
+					return;
+				}
+			}
+			// Banon's gizmo, added a bit to it
+			if(cmd==38) {
+				sprintf(buf,"spell %s",argument);
+				do_help(ch, buf, 1);
+				return;
+			} else if(cmd==1) {
+				half_chop(argument,buf,buffer); // remove spell
+				sprintf(buf,"skill %s",buffer); // add skill
+				do_help(ch, buf, 0);
+				return;
+			} else if(cmd == 0) {
+				half_chop(argument,buf,argument); // remove skill
+				send_to_char("No remote or exact matches found.\n\r",ch);
+				send_to_char("Try a different query.\n\r",ch);
+				sprintf(buf, "%s is looking for a help on \"%s\". Can someone help %s?",GET_NAME(ch), argument, (GET_SEX(ch)==SEX_MALE?"him":(GET_SEX(ch)==SEX_FEMALE?"her":"it")));
+				log(buf);
+				// add query to ADD_HELP
+				if (!(fl = fopen(NEWHELP_FILE, "a")))	{
+					log("Could not open the ADD_HELP-file.\n\r");
+					return;
+				}
+				sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
+				fputs(buf, fl);
+				fclose(fl);
+				return;
+			} else {
+				log("got to bad spot in do_help");
+				return;
+			}
+		} else {
 			send_to_char("No remote or exact matches found.\n\r",ch);
-			send_to_char("Possibly try 'help skill <skill> or help spell <spell>'.\n\r",ch);
 			return;
 		}
 		return;
@@ -2484,6 +2544,7 @@ dlog("in do_newhelp");
 	send_to_char(help, ch);
 }
 
+#endif
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {

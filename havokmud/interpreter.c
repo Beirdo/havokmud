@@ -1610,8 +1610,6 @@ AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
 
 AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
 
-AddCommand("newhelp", do_newhelp, 606, POSITION_SLEEPING, 1);
-
 // room here
 
 AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
