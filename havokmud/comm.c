@@ -103,7 +103,7 @@ long            TempDis = 0;
 int             pulse;
 
 #ifdef SITELOCK
-char            hostlist[MAX_BAN_HOSTS][30];    /* list of sites to ban */
+char            hostlist[MAX_BAN_HOSTS][256];    /* list of sites to ban */
 int             numberhosts;
 #endif
 

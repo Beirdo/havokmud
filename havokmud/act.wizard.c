@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define NEWHELP_FILE      "ADD_HELP"
 /*
@@ -30,34 +31,6 @@ int             ZoneCleanable(int zone);
 /*
  * external vars
  */
-extern long     TempDis;
-extern long     SystemFlags;
-extern struct weather_data weather_info;
-extern const char *languagelist[];
-extern char    *system_flag_types[];
-extern struct zone_data *zone_table;
-extern int      top_of_zone_table;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db[];
-#endif
-extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
-extern struct index_data *mob_index;
-extern struct index_data *obj_index;
-extern int      top_of_p_table;
-extern int      top_of_mobt;
-extern int      top_of_objt;
-extern struct int_app_type int_app[26];
-extern struct wis_app_type wis_app[26];
-extern struct player_index_element *player_table;
-extern char    *room_bits[];
-extern struct str_app_type str_app[];
-extern char    *motd;
-extern char    *wmotd;
-extern const struct class_def classes[MAX_CLASS];
-
 
 char            EasySummon = 1;
 int             MinArenaLevel,
@@ -683,9 +656,6 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
     char           *arg1;
     char           *arg2;
 
-    extern int      numberhosts;
-    extern char     hostlist[MAX_BAN_HOSTS][30];
-
 #endif
 
     dlog("in do_wizlock");
@@ -762,7 +732,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
             }
         }
         send_to_char("Host is not in database\n\r", ch);
-    } else if (strcasecmp(buf, "list") == 0) {
+    } else if (strcasecmp(arg1, "list") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
