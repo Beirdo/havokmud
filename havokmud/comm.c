@@ -1284,8 +1284,8 @@ int new_descriptor(int s)
                 (i & 0x0000FF00) >> 8, (i & 0x00FF0000) >> 16,
                 (i & 0xFF000000) >> 24);
     } else {
-        strncpy(newd->host, from->h_name, 49);
-        *(newd->host + 49) = '\0';
+        strncpy(newd->host, from->h_name, 255);
+        newd->host[255] = '\0';
     }
 
 #if 0
