@@ -447,6 +447,7 @@ void CleanZone(int zone)
     
     for (obj = rp->contents; obj; obj = next_o) {
       next_o=obj->next_content;
+      obj_index[obj->item_number].number--; /* object maxxing.(GH) */
       extract_obj(obj);
     }
   }

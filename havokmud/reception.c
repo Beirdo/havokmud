@@ -868,7 +868,7 @@ void CountLimitedItems(struct obj_file_u *st)
 	    */
 	    if (cost_per_day > LIM_ITEM_COST_MIN) {
 	      if(obj->item_number<0) abort();
-	      obj_index[obj->item_number].number++;  
+	      //obj_index[obj->item_number].number++;  
 	    } else {
 #if 0    /* NEW_RENT, he used this to make almost all items rare */
 	      if (IS_OBJ_STAT(obj, ITEM_MAGIC) ||
