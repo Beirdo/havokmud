@@ -4323,7 +4323,7 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 
 		} else {
 			total = 0;
-			if (!ch->equipment[WIELD]) {
+			if (!ch->equipment[WIELD] && !HasClass(ch, CLASS_MONK)) {
 				return(0);
 			}
 			for(j=0; j<MAX_OBJ_AFFECT; j++)
