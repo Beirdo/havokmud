@@ -1359,10 +1359,13 @@ void cast_heal( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_POTION:
          spell_heal(level, ch, ch, 0);
          break;
+    case SPELL_TYPE_SCROLL:
+	 spell_heal(level, ch, tar_ch, 0);
+	 break;
     case SPELL_TYPE_STAFF:
          for (tar_ch = real_roomp(ch->in_room)->people ; 
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (in_group(ch, tar_ch)) 
               spell_heal(level,ch,tar_ch,0);
          break;
     default : 

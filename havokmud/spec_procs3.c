@@ -4157,6 +4157,7 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
 #define BLUE_PILL 45493
 #define GRAYSWANDIR 45494
 #define BAHAMUT_SKIN 45495
+#define WEST_WING_KEY 45500
 
 #define BAHAMUT 45400
 #define TMK_GUARD_ONE 45401
@@ -4201,7 +4202,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
 	   return(TRUE);
 	}	
     if(GET_COND(ch,FULL)>20) {
-           act("You do are full.",FALSE,ch,0,0,TO_CHAR);
+           act("You are full.",FALSE,ch,0,0,TO_CHAR);
 	   return(TRUE);
 	}
 
@@ -4575,13 +4576,19 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 			if (has_pill == 0) 
 			{
-			act("$n says, 'I don't know anything about a sceptre or any dragons, but I'", FALSE, vict, 0, 0, TO_ROOM); 
-			act("$n says, 'do know who might be able to help you.  Elamin, a great magician'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'used to work for the king is imprisoned in the keep tower.'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'If you do me a favor and kill that dastardly Mime Jerry, I will'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM); 
-			act("$n says, 'to pay the consequences when he doesn't come to see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
-			return(TRUE);
+				act("$n says, 'I don't know anything about a sceptre or any dragons, but I'", FALSE, vict, 0, 0, TO_ROOM); 
+				act("$n says, 'do know who might be able to help you.  Elamin, a great magician'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'used to work for the king is imprisoned in the keep tower.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'If you do me a favor and kill that dastardly Mime Jerry, I will'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM); 
+				act("$n says, 'to pay the consequences when he doesn't come to see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
+				return(TRUE);
+				if (get_obj_in_list_vis(vict, "green key", vict->carrying)) {
+	      				sprintf(buf,"green-key %s",GET_NAME(ch));
+      					do_give(vict,buf,0);
+					act("$n says, 'Here is the key to the west wing.  You'll need it.'", FALSE, vict, 0, 0, TO_ROOM);
+				}
+
 			}
 		}
 		
@@ -5162,8 +5169,8 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_da
 	{
 	      	argument_interpreter(arg, arg1, arg2);
 
-		if ((!*obj_name1) || (!(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying)))) return(FALSE);
-		if ((!*obj_name2) || (!(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying)))) return(FALSE);
+		if ((!*arg1) || (!(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying)))) return(FALSE);
+		if ((!*arg2) || (!(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying)))) return(FALSE);
 
       		if ((obj_index[obj1->item_number].virtual != EYE_DRAGON)) return(FALSE);
 		if ((obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_ONE)) return(FALSE);
@@ -5659,6 +5666,8 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
 		if (bahamut != object) return(FALSE);
 
+		if (strcmp(itemtype,"jacket")) return(FALSE);
+         
         	if (object->affected[0].modifier != 0 && object->affected[1].modifier != 0) 
 		{
 	

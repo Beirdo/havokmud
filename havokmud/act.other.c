@@ -1442,9 +1442,8 @@ dlog("in do_quaff");
     if (GET_COND(ch,FULL)>23) {
       act("Your stomach can't contain anymore!",FALSE,ch,0,0,TO_CHAR);
       return;
-    } else {
-      GET_COND(ch, FULL)+=1;
     }
+ 
   }
 
   if (temp->obj_flags.type_flag!=ITEM_POTION) {
@@ -1452,8 +1451,14 @@ dlog("in do_quaff");
     return;
   }
 
-  act("$n quaffs $p.", TRUE, ch, temp, 0, TO_ROOM);
-  act("You quaff $p which dissolves.",FALSE, ch, temp,0, TO_CHAR);
+  if (IS_AFFECTED(ch, AFF_BLIND)) {
+      if (number(1,30) > ch->abilities.dex) {
+	   act("$n blindly fumbles $p to the ground!  It shatters!", TRUE, ch, temp, 0, TO_ROOM);
+	   act("You blindly fumble $p to the ground!  It shatters!", TRUE, ch, temp, 0, TO_CHAR);
+	   extract_obj(temp);
+	   return;
+      }
+  }
 
   /*  my stuff */
   if (ch->specials.fighting) {
@@ -1480,6 +1485,9 @@ dlog("in do_quaff");
     }
   }
 
+  act("$n quaffs $p.", TRUE, ch, temp, 0, TO_ROOM);
+  act("You quaff $p which dissolves.",FALSE, ch, temp,0, TO_CHAR);
+
   for (i=1; i<4; i++)
     if (temp->obj_flags.value[i] >= 1)
       ((*spell_info[temp->obj_flags.value[i]].spell_pointer)
@@ -1489,6 +1497,8 @@ dlog("in do_quaff");
     temp = unequip_char(ch, HOLD);
 
   extract_obj(temp);
+
+  GET_COND(ch, FULL)+=1;
 
   WAIT_STATE(ch, PULSE_VIOLENCE);
 

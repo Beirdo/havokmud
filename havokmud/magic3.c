@@ -1798,8 +1798,7 @@ void spell_snare(byte level, struct char_data *ch,
   }
 }
 
-void spell_entangle(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_entangle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
   struct affected_type af;
 
@@ -1813,8 +1812,34 @@ void spell_entangle(byte level, struct char_data *ch,
     return;
   }
 
+  if (IsImmune(victim, IMM_HOLD)) {
+    FailSnare(victim, ch);
+    return;
+  }
+  if (IsResist(victim, IMM_HOLD)) {
+      if (saves_spell(victim, SAVING_PARA)) {
+      	   FailSnare(victim, ch);
+           return;
+      }
+  } 
+
   /* if victim fails save, paralyzed for a very short time */
-  if (!saves_spell(victim, SAVING_SPELL)) {
+  if (saves_spell(victim, SAVING_PARA)) {
+
+	if (IsSusc(victim, IMM_HOLD)) 
+	{
+       		if (saves_spell(victim, SAVING_PARA)) {
+  			FailSnare(victim, ch);
+       			return;
+      		}
+	}
+	else {
+		FailSnare(victim,ch);
+		return;
+	}
+  }
+  else {
+
     act("Roots and vines entwine around you!", FALSE, victim, 0,0, TO_CHAR);
     act("Roots and vines surround $n!", FALSE, victim, 0,0, TO_ROOM);
 
@@ -1825,9 +1850,8 @@ void spell_entangle(byte level, struct char_data *ch,
     af.bitvector = AFF_PARALYSIS;
     affect_to_char(victim, &af);
 
-  } else {
-    FailSnare(victim, ch);
   }
+
 }
 
 void spell_barkskin(byte level, struct char_data *ch,
