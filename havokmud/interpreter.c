@@ -869,8 +869,11 @@ struct command_def commandList[] = {
     /*
      * new commands for skills sort
      */
-    { "stalk", do_stalk, 626, POSITION_STANDING, 1 },
+    { "stalk", do_stalk, 626, POSITION_STANDING, 1 }
+#if 0
+    /* Do not add new commands to CVS until they are ready */
     { "zonesummary", do_zonesummary, 627, POSITION_STANDING, 51 },
+#endif
 };
 int commandCount = NELEMS(commandList);
 
