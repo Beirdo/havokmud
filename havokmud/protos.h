@@ -2951,8 +2951,12 @@ int             CheckGiveBarbarianOK(struct char_data *ch,
                                      struct char_data *vict,
                                      struct obj_data *obj);
 int             EgoBladeSave(struct char_data *ch);
+#ifndef MIN
 int             MIN(int a, int b);
+#endif
+#ifndef MAX
 int             MAX(int a, int b);
+#endif
 int             GetItemClassRestrictions(struct obj_data *obj);
 int             OnlyClassItemValid(struct char_data *ch,
                                    struct obj_data *obj);

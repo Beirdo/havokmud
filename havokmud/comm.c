@@ -29,6 +29,11 @@
 
 void            identd_test(struct sockaddr_in in_addr);
 
+/* Make OSX work */
+#ifndef socklen_t
+#define socklen_t int
+#endif 
+
 #define MAX_CONNECTS 256        
 /* 
  * max number of descriptors (connections) 
