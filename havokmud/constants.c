@@ -2825,7 +2825,7 @@ const char *equipment_types[] = {
         "Worn on back",
 	"Worn in right ear",
 	"Worn in left ear",
-	"Worn on eyes",
+	"Worn on face",
 	"Load in weapon",
 	"\n"
 };

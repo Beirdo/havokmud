@@ -5988,19 +5988,21 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
          	return(TRUE);
       	} else {
 
-
+			/*
 			if(!(strcmp(questwinner,GET_NAME(ch)))) {
 				questwon++;
+				ch->specials.questwon = ch->specials.questwon + 1;
 			} else {
 				sprintf(questwinner,"%s",GET_NAME(ch));
 				questwon = 0;
-			}
-
+		    }
+			*/
+			ch->specials.questwon = ch->specials.questwon + 1;
 
 			//do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
 
 #if 1  /* Lets reward them!!! */
-		     switch(number(0,20+questwon)) {
+		     switch(number(0,20+ch->specials.questwon)) {
 				 case 0:
 				 case 1:
 				 case 2:
@@ -6087,17 +6089,19 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 			   			return(FALSE);
 			   }
 
-				sprintf(buf,"%s just won a quest.. Received item %s\n\r",GET_NAME(ch), obj2->name);
-				qlog(buf);
-
+				if (itemgranted == 1002 || itemgranted == 1003 || itemgranted == 1004) {
+					ch->specials.questwon = 0;
+					sprintf(buf,"%s just won a token.. Received item %s\n\r",GET_NAME(ch), obj2->name);
+					qlog(buf);
+				}
     		   obj_to_char(obj2, ch);
 
 		 	   act("$N gives you $p.",TRUE,ch,obj2,vict,TO_CHAR);
     		   act("$N gives $p to $n.",TRUE,ch,obj2,vict,TO_ROOM);
 #endif
 				do_say(vict, "Hey.. I got something else for you to get too.",0);
-				act("$N waves $s hands and makes $p disappear.",TRUE,ch,obj,vict,TO_ROOM);
-				act("$N waves $s hands and makes $p disappear.",TRUE,ch,obj,vict,TO_CHAR);
+				act("$N waves $s hands and makes something disappear.",TRUE,ch,obj,vict,TO_ROOM);
+				act("$N waves $s hands and makes something disappear.",TRUE,ch,obj,vict,TO_CHAR);
 				obj_from_char(obj);
 				//obj_index[tmp_object->item_number].number--;
 			    extract_obj(obj);

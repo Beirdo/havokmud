@@ -1243,10 +1243,10 @@ IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
     send_to_char("Hrm... normally, you should OOC something...\n\r", ch);
   else	{
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-      sprintf(buf1,"$c0004You $c0015OOC$c0004 '$c0009%s$c0004'", argument);
+      sprintf(buf1,"$c0012You $c0015OOC$c0012 '$c0015%s$c0012'", argument);
       act(buf1,FALSE, ch,0,0,TO_CHAR);
     }
-    sprintf(buf1, "$c0004-=$c0015$n$c0004=- OOCs '$c0009%s$c0004'", argument);
+    sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'", argument);
 
     for (i = descriptor_list; i; i = i->next)
       if (i->character != ch && !i->connected &&

@@ -2497,10 +2497,6 @@ void perform_violence(int pulse)
 
 			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
 				x = x * 2;
-#if 0
-     /* heavy woundage = fewer attacks */
-     x -= WoundWearyness(ch);
-#endif
 
                /* work through all of their attacks, until there is not
                 * a full attack left */
@@ -2532,24 +2528,21 @@ void perform_violence(int pulse)
                   }
                   x -= 1.0;
                }
-#if 0
-     if(GET_RACE(ch) == RACE_MFLAYER && ch->specials.fighting)
-       MindflayerAttack(ch, ch->specials.fighting);
-#endif
                if(x > .01)
                {
-#if 0
-    /* check to see if the chance to make the last attack
-       is successful           */
-       perc = number(1,100);
-       if (perc <= (int)(x*100.0)) {
-         if (ch->specials.fighting)
-      hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-       }
-#endif
-             /* lets give them the hit */
-                  if (ch->specials.fighting)
-                     hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+					#if 1
+    					/* check to see if the chance to make the last attack
+    					   is successful           */
+    				   perc = number(1,100);
+    				   if (perc <= (int)(x*100.0)) {
+    				     if (ch->specials.fighting)
+    				  		hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+    				   }
+					#else
+             			/* lets give them the hit */
+                  		if (ch->specials.fighting)
+                  		   hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+               		#endif
                }
 
                if(tmp)

@@ -876,7 +876,7 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
 	send_to_char("You must first remove something from one of your hands.\n\r"
 		     , ch);
       } else {
-	
+
         if (GET_OBJ_WEIGHT(obj_object) >
             str_app[STRENGTH_APPLY_INDEX(ch)].wield_w)
 	  {
@@ -889,12 +889,12 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
 		  {
 		    send_to_char("If you removed your shield\n\r", ch);
 		  } /* wearing shield */
-		
+
 		else if (ch->equipment[HOLD] || ch->equipment[WEAR_LIGHT])
 		  {
 		    send_to_char("If you removed what was in your hands\n\r", ch);
 		  } /* holding light type */
-		
+
 		else
 		  {
 		    perform_wear(ch,obj_object,keyword);
@@ -906,9 +906,9 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
 	      {
 		send_to_char("You are to weak to wield it two handed also.\n\r",ch);
 	      } /* to weak to wield two handed */
-	    
-	  } else { 
-	    sprintf(buffer," Ok\n\r");//,obj_object->short_description);
+
+	  } else {
+	    sprintf(buffer,"You wield %s\n\r", obj_object->short_description);
 	    send_to_char(buffer, ch);
 	    perform_wear(ch,obj_object,keyword);
 	    obj_from_char(obj_object);
@@ -1197,6 +1197,45 @@ dlog("in do_wield");
   }
 }
 
+void do_draw(struct char_data *ch, char *argument, int cmd)
+{
+  char arg1[MAX_INPUT_LENGTH+80];
+  char arg2[MAX_INPUT_LENGTH+80];
+  char buffer[MAX_INPUT_LENGTH+80];
+  struct obj_data *obj_object, *obj2;
+  int keyword = 12;
+
+
+dlog("in do_draw");
+
+  argument_interpreter(argument, arg1, arg2);
+  if (*arg1) {
+    obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
+    if (obj_object) {
+	  if(ch->equipment[WIELD]) {
+		if (IS_OBJ_STAT(ch->equipment[WIELD], ITEM_NODROP)) {
+			send_to_char("You can't draw your weapon.. Your existing one must be cursed!!.",ch);
+			return;
+		}
+
+		if ((obj2 = unequip_char(ch,WIELD))!=NULL) {
+           obj_to_char(obj2, ch);
+           act("You stop using $p and attempt to draw another weapon.",FALSE,ch,obj2,0,TO_CHAR);
+           act("$n stops using $p and attempts to draw another weapon.",TRUE,ch,obj2,0,TO_ROOM);
+		}
+	  }
+
+      wear(ch, obj_object, keyword);
+
+
+    } else {
+      sprintf(buffer, "You do not seem to have the '%s'.\n\r",arg1);
+      send_to_char(buffer,ch);
+    }
+  } else {
+    send_to_char("Wield what?\n\r", ch);
+  }
+}
 
 void do_grab(struct char_data *ch, char *argument, int cmd)
 {

@@ -2225,8 +2225,8 @@ dlog("in do_score");
   sprintf(buf, "$c0005Your alignment is: $c0015%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
   send_to_char(buf,ch);
 
-  sprintf(buf,"$c0005You have scored $c0015%d$c0005 exp and you have $c0015%d$c0005 gold coins, and $c0015%d$c0005 Quest points.\n\r",
-	  GET_EXP(ch),GET_GOLD(ch),ch->player.q_points);
+  sprintf(buf,"$c0005You have scored $c0015%d$c0005 exp and you have $c0015%d$c0005 gold coins, and $c0015%d$c0005 Quest points ($c0015%d$c0005).\n\r",
+	  GET_EXP(ch),GET_GOLD(ch),ch->player.q_points, ch->specials.questwon);
   send_to_char(buf,ch);
 
 	/* the mud will crash without this check! */

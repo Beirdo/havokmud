@@ -1065,7 +1065,6 @@ struct char_point_data
   int true_exp;        /* gonna be used for dual class		  */
   int extra_dual;      /* case I need an extra duall class bit    */
 
-
   sbyte hitroll;       /* Any bonus or penalty to the hit roll    */
   sbyte damroll;       /* Any bonus or penalty to the damage roll */
 
@@ -1132,6 +1131,7 @@ struct char_special_data
   char *rumor;
   char *group_name; /* current group name if any... */
   char *hostip;     /* (GH)  keep track of IP */
+
   Alias   *A_list;
   struct char_data *misc;
   struct char_data *fighting; /* Opponent                          */
@@ -1151,6 +1151,7 @@ struct char_special_data
 
   sh_int apply_saving_throw[MAX_SAVES]; /* Saving throw (Bonuses)  */
 
+  int questwon;
 };
 
 /* skill_data flags */
@@ -1273,6 +1274,8 @@ struct char_data
 	char last_tell[80];          /* Who last telled something to
 	                                         the char */
         int old_exp;                  /* For energe restore -MW */
+
+
 };
 
 
