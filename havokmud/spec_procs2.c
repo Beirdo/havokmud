@@ -1328,7 +1328,7 @@ int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 /* for DRUID flagged mobs, -Lennya 20030604 */
 int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-	struct char_data *vict;
+	struct char_data *vict = 0;
 	struct follow_type *fol;
 	byte lspell, healperc=0;
 	int to_room, num = 2, try = 0, avgbare = 0, size = 0, nr = 0;
@@ -1546,6 +1546,8 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 		} /* it was a NPC */
 #endif
 	} /* end spellup */
+
+	free(vict);
 
 	/* Find a dude to to evil things upon ! */
 //	if ((vict = FindAHatee(ch))==NULL) {
