@@ -4943,7 +4943,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
         }
         return (FALSE);
     }
-    return (FALSE);
+    return (TRUE);
 #endif
 }
 

@@ -1445,22 +1445,17 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos)
         /*
          * no checks on super ego items, they do it already 
          */
-        if (obj_index[obj->item_number].func == EvilBlade ||
-            obj_index[obj->item_number].func == NeutralBlade ||
-            obj_index[obj->item_number].func == GoodBlade) {
-            /*
-             * do nothing 
-             */
-        } else {
-            if (!CheckEgo(ch, obj)) {
-                if (ch->in_room != NOWHERE) {
-                    obj_to_room(obj, ch->in_room);
-                    do_save(ch, "", 0);
-                } else {
-                    Log("Ch->in_room = NOWHERE on anti-ego item!");
-                }
-                return;
+        if (obj_index[obj->item_number].func != EvilBlade &&
+            obj_index[obj->item_number].func != NeutralBlade &&
+            obj_index[obj->item_number].func != GoodBlade &&
+            !CheckEgo(ch, obj)) {
+            if (ch->in_room != NOWHERE) {
+                obj_to_room(obj, ch->in_room);
+                do_save(ch, "", 0);
+            } else {
+                Log("Ch->in_room = NOWHERE on anti-ego item!");
             }
+            return;
         }
 
         if (!CheckGetBarbarianOK(ch, obj)) {
