@@ -41,6 +41,7 @@ void identd_test(struct sockaddr_in in_addr) ;
 int mud_port;
 
 extern int errno;
+extern struct time_info_data time_info;
 
 /* extern struct char_data *character_list; */
 #if HASH
@@ -2221,7 +2222,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     char tbuf[255],*pr_scan,*mask;
     long l,exp,texp;
     int i,s_flag=0;
-
+    long curr_time=0;
     *outbuf=0;
 
     if(ch->specials.prompt==NULL) { /* use default prompts */
@@ -2344,7 +2345,15 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 		    else if(s_flag)
 			strcat(tbuf,"-");
 		    break;
-		case 'T':   /* did't implemented.. yet */
+                case 't':   /* Mud time */
+                    sprintf(tbuf,"%d%s",
+                    ((time_info.hours % 12 == 0) ? 12 : ((time_info.hours) % 12)),
+                    ((time_info.hours >= 12) ? "pm" : "am") );
+                    break;
+		case 'T':   /* System Time*/
+                    curr_time = time(NULL);
+             sprintf(tbuf,"%02d:%02d",
+             localtime(&curr_time)->tm_hour,localtime(&curr_time)->tm_min);
 		    break;
 		case 'R': /* room number for immortals */
 		    if(IS_IMMORTAL(ch)) {

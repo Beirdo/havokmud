@@ -170,7 +170,9 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
     {7, "H:%h M:%m V:%v C:%C> "},
     {8, "H:%h V:%v C:%C %S> "},
     {9, "H:%h M:%m V:%v C:%C %S> "},
-    {10, "H:%h M:%m V:%v %C/%c %S> "},
+    {10, "H:%h M:%m V:%v %c/%C %S> "},
+    {11, "%h/%H %m/%M %v/%V %g %c/%C> "},
+    {12, "H:%h/%H M:%m/%M V:%v/%V %g %c/%C> "},
     {40,"H:%h R:%R> "},
     {41,"H:%h R:%R i%iI+> "},
     {0,NULL}};
