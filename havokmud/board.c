@@ -502,15 +502,10 @@ void list_board_replies(struct bulletin_board *bd,
                 buf2[strlen(buf2) - 1] = '\0';
             }
 
-            list_append(d, "$c000w%3d$c000w : $c000w%s$c000w %-12s  "
-                           "[$c000w%s$c000w]\r\n",
+            list_append(d, "$c000x%3d$c000w : $c000w%s$c000x %-12s  "
+                           "$c000x-$c000w%s$c000x-\r\n",
                        msg->message_id, buf2, msg->author, buf);
 
-#if 0
-            list_append(d, "$c000W%3d$c000w : %-10s [$c000R%s$c000w] "
-                    "-- %s\r\n", msg->message_id, msg->author, buf,
-                    msg->title);
-#endif
             list_board_replies(bd, d, msg->message_id, depth + 1);
         }
     }
@@ -545,8 +540,8 @@ void list_board_messages(struct bulletin_board *bd,
                 }
             }
 
-            list_append(d, "$c000W%3d$c000w : $c000C%-33s$c000w %-12s  "
-                           "[$c000C%s$c000w]\r\n",
+            list_append(d, "$c000w%3d$c000w : $c000w%-33s$c000w %-12s  "
+                           "$c000x[$c000w%s$c000x]\r\n",
                         msg->message_id, msg->title, msg->author, buf);
 
             list_board_replies(bd, d, msg->message_id, 1);
@@ -606,7 +601,8 @@ bool show_board(struct char_data *ch, char *arg, struct obj_data *board)
                      CAP(OBJS(board, ch)));
     } else {
         list_append(ch->desc, "There are %d messages on %s.\r\n\r\n"
-                              " Current Discussions:\r\n"
+                              " $c000W-=$c000RCurrent Discussions$c000W=-$c000w"
+                              "\r\n"
                               "---------------------------------------------"
                               "-----------------------------------\r\n",
                     bd->num_posts, OBJS(board, ch));
@@ -781,9 +777,9 @@ int board(struct char_data *ch, int cmd, char *arg,
     /*
      *  Call me paranoid but I just want to make sure the check_board
      * procedure isn't hit all the time on a big MUD with lots of
-     * boards and busy board rooms. 
-     */ 
-    if (cmd != CMD_LOOK && cmd != CMD_WRITE && cmd != CMD_READ && 
+     * boards and busy board rooms.
+     */
+    if (cmd != CMD_LOOK && cmd != CMD_WRITE && cmd != CMD_READ &&
         cmd != CMD_REMOVE && cmd != CMD_REPLY && cmd != CMD_RELOAD) {
         return FALSE;
     }
@@ -818,7 +814,7 @@ int board(struct char_data *ch, int cmd, char *arg,
         ret = FALSE;
         if (IS_IMMORTAL(ch)) {
             arg = get_argument(arg, &a1);
-            
+
             if (a1 && !strcmp("board", a1)) {
                 free_board(obj_index[obj->item_number].virtual);
                 Log("Someone just reset a board");
@@ -831,7 +827,7 @@ int board(struct char_data *ch, int cmd, char *arg,
         ret = TRUE;
         break;
     }
-    
+
     /* Get rid of our local argument */
     free( argument );
     return( ret );
