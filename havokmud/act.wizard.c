@@ -8372,10 +8372,10 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
 }
 
 
-/*
- * vim:ts=4:sw=4:ai:et:si:sts=4
+#if 0
+/* This code does not at ALL conform to the stated formatting requirements
+ * and will remain removed until it does
  */
-
 
 void do_zonesummary(struct char_data *ch, char *argument, int cmd)
 {
@@ -8422,11 +8422,22 @@ int linker(struct char_data *ch, int room) {
            if(!tmp)
              return 0;
            if(rm->zone!=tmp->zone) {
-              ch_printf(ch,"%d links to room %d (zone:%d).\n\r"
-                    ,rm->zone, rm->number, tmp->number, tmp->zone);
+              ch_printf(ch,"%d links to room %d (zone:%d).\n\r",rm->zone,
+			 rm->number, tmp->number, tmp->zone);
               count++;
            }
        }
     }
     return count;
 }
+
+/* Also, leave the vim comment at the bottom of the file, it's there for a 
+ * reason.
+ */
+
+#endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
+
