@@ -437,30 +437,33 @@ return 1;
 
 void CleanZone(int zone)
 {
-  struct room_data *rp;
-  struct char_data *vict, *next_v;
-  struct obj_data *obj, *next_o;
-  int room,start,end,i;
+	struct room_data *rp;
+	struct char_data *vict, *next_v;
+	struct obj_data *obj, *next_o;
+	int room,start,end,i;
 
-  start=zone?(zone_table[zone-1].top+1):0;
-  end=zone_table[zone].top;
+	start=zone?(zone_table[zone-1].top+1):0;
+	end=zone_table[zone].top;
 
-  for(i=start;i<=end;i++) {
-    rp=real_roomp(i);
-    if(!rp) continue;
+	for(i=start;i<=end;i++) {
+		rp=real_roomp(i);
+		if(!rp) continue;
 
-    for (vict = rp->people; vict; vict=next_v) {
-      next_v=vict->next_in_room;
-      if (IS_NPC(vict) && (!IS_SET(vict->specials.act, ACT_POLYSELF)))
-        extract_char(vict);
-    }
+		for (vict = rp->people; vict; vict=next_v) {
+			next_v=vict->next_in_room;
+			if (IS_NPC(vict) && (!IS_SET(vict->specials.act, ACT_POLYSELF)))
+				extract_char(vict);
+		}
 
-    for (obj = rp->contents; obj; obj = next_o) {
-      next_o=obj->next_content;
-      //obj_index[obj->item_number].number--; /* object maxxing.(GH) */
-      extract_obj(obj);
-    }
-  }
+		for (obj = rp->contents; obj; obj = next_o) {
+			next_o=obj->next_content;
+			//obj_index[obj->item_number].number--; /* object maxxing.(GH) */
+			/* Do not clean out corpses   -Lennya */
+			if(!IS_CORPSE(obj)) {
+				extract_obj(obj);
+			}
+		}
+	}
 }
 
 int ZoneCleanable(int zone)
