@@ -82,7 +82,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
 bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
 		 struct obj_cost *cost, int forcerent)
 {
-  int discount,nbdays,i,ii,limited_items=0;
+  int discount = 0,nbdays,i,ii,limited_items=0;
   char buf[MAX_INPUT_LENGTH];
   struct obj_data *tmp, *tmp_next_obj;
 
@@ -208,6 +208,7 @@ if (!receptionist && forcerent) {
 
   if (receptionist) {
 #if 1
+	discount = 0;
     //(GH)  discounts for same race and same alignment. and charisma..
 
     if(GET_RACE(ch) == GET_RACE(receptionist))
@@ -904,7 +905,7 @@ void CountLimitedItems(struct obj_file_u *st)
 	      if(obj->item_number<0) abort();
 	      obj_index[obj->item_number].number++;
 	    }
-	    obj_index[obj->item_number].number++;
+	    //obj_index[obj->item_number].number++;
 	    extract_obj(obj);
 	}
     }
