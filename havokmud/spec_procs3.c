@@ -4203,3 +4203,121 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
   return(FALSE);
 }
 
+#define MARBLES 45475
+#define BRAXIS 45406
+/* Braxis the Swamp Dragon */
+int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
+	struct char_data *vict;
+	struct obj_data *obj;
+	int test=0;
+	int has_marbles = 0;
+        int marblesrnum = 0;
+	struct obj_data *i;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	/*TALK TO ME!!!*/
+
+	if (cmd == 531)	/*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+		
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+	      if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+	      if (mob_index[vict->nr].virtual != BRAXIS) return(FALSE);
+
+		marblesrnum = real_object(MARBLES);
+		for (i = vict->carrying; i; i = i->next_content) {
+			if (has_marbles != 1) {
+				if (i->item_number == marblesrnum) has_marbles = 1;
+				else has_marbles = 0;
+	                }
+		}
+   
+		/*Quest Text*/
+		if (has_marbles == 0)
+		{			
+			act("$n says, 'Kind warriors, I seem to have misplaced my marbles.'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'How I so long to play with them again. If you can'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'return my marbles, I will tell you of a great land'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'of riches and powerful items.'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n shivers in anticipation.", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'Ignatius will fall to my master marble skills if I'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'can ever find them.'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+
+		else
+		{
+			act("$n says, 'Please leave me alone while I practice my game.'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'Ignatius will fall to my wrath.'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+	}
+
+	else if (cmd == 72)
+	{
+		arg=one_argument(arg, obj_name);
+		if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))) return(FALSE);
+
+		arg=one_argument(arg, vict_name);
+		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
+		
+		if (vict->specials.fighting)
+		{
+			send_to_char("Not while they are fighting!\n\r", ch);
+			return(TRUE);
+		}
+		
+		/*If mob is not Braxis*/
+		if (mob_index[vict->nr].virtual != BRAXIS) return(FALSE);
+
+		/*If object is not Marbles*/
+        	if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+      		if ((obj_index[obj->item_number].virtual != MARBLES)) 
+			{
+      		sprintf(buf, "%s That is not the item I seek.",GET_NAME(vict));
+    			do_tell(ch,buf,19);
+         		return(TRUE);
+			}
+		}
+   		else 
+		{
+			sprintf(buf,"%s %s",obj_name,vict_name);
+      		do_give(ch,buf,0);
+			if(obj_index[obj->item_number].virtual == MARBLES) test=1;
+			else return(TRUE);
+		}
+ 		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+			test=1;
+	  		do_give(ch,"bag-marbles braxis-swamp-dragon",0);
+ 		}
+	}
+   
+	else return(FALSE);
+
+	if (test==1) /* It is the Braxis, and the marbles */
+	{  
+		act("$n says, 'There is a mighty power in the sceptre that rests in'", FALSE, vict, 0, 0, TO_ROOM); 
+		act("$n says, 'the Great King's throne room. However, this power has'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'been split into three separate pieces that must be united.'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'You must reunite the head of the sceptre with its severed'", FALSE, vict, 0, 0, TO_ROOM); 
+		act("$n says, 'eyes.  Once you do so you will be transported to a wondrous'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'world of monsters and danger.  You must be brave as well as'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'strong to survive, but if you do, the rewards will be great.'", FALSE, vict, 0, 0, TO_ROOM);
+		return(TRUE);
+	}
+	
+	return(FALSE);
+
+}

@@ -1465,6 +1465,8 @@ int stu(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int typ
 int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 #endif
 
+/*Assigns for Thunder Mountain Keep */
+int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,

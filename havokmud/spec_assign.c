@@ -1280,6 +1280,9 @@ void assign_mobiles()
 /* End of Cthol (Xenon) */
   {45108, DispellerIncMob },  /* Heximals Dispeller/Incernary cloud proc */
 
+/*Beginning of Thunder Mountain Keep*/
+
+  {45406, braxis_swamp_dragon},
 
 /*End of Thunder Mountain Keep*/
 
