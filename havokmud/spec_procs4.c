@@ -610,18 +610,18 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 			switch(stat) {
 /*			 	case 1:
-			 		GET_PRAC(ch) -= traininglist[stat-1].level;
+			 		GET_PRAC(ch) -= cost;
 			 		ch->points.max_hit ++; //GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
 			 		ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of this! Its good for ya!!'\n\r$c000w%s hands you a foul looking health drink and you swig it down. (+1 HP)\n\r",name,name);
 			 		break;
 			 	case 2:
-				 	GET_PRAC(ch)-= traininglist[stat-1].level;
+				 	GET_PRAC(ch)-= cost;
 					ch->points.max_move++;//GET_MAX_MOVE(ch) = GET_MAX_MOVE(ch) + 1;
 
 				 	ch_printf(ch,"$c000P%s tells you 'Hey, take a swig of this!!!'\n\r$c000w%s hands you a high protein energy drink and you drink it down.(+1 Move)\n\r",name,name);
 				 	break;
 			 	case 3:
-				 	GET_PRAC(ch)-= traininglist[stat-1].level;
+				 	GET_PRAC(ch)-= cost;
 					ch->points.max_mana ++;//GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
 
 				 	ch_printf(ch,"$c000P%s tells you 'This mystical drink should do it!!!'\n\r$c000wHe hands you a mystical potion and you chug it down.(+1 Mana)\n\r",name);
@@ -639,7 +639,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						GET_RCON(ch) = GET_RCON(ch)+1;
 						GET_CON(ch)= GET_CON(ch)+1;
 
-						GET_PRAC(ch) -= traininglist[stat-1].level;
+						GET_PRAC(ch) -= cost;
 					 	ch_printf(ch,"$c000P%s tells you 'Lets train your con!!!'\n\r$c000wYou heed his advice and go for a jog around the room.(+1 Con)\n\r",name);
 					}
 				 	break;
@@ -653,7 +653,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						break;
 					}
 					else {
-						GET_PRAC(ch) -= traininglist[stat-1].level;
+						GET_PRAC(ch) -= cost;
 						GET_RSTR(ch) = GET_RSTR(ch)+1;
 						GET_STR(ch)  = GET_STR(ch)+1;
 
@@ -670,7 +670,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						break;
 					}
 					else {
-					 	GET_PRAC(ch) -= traininglist[stat-1].level;
+					 	GET_PRAC(ch) -= cost;
 					 	GET_RDEX(ch)= GET_RDEX(ch)+1;;
 					 	GET_DEX(ch)= GET_DEX(ch)+1;
 					 	ch_printf(ch,"%s shows you some stretches.  You mimic them!!! (+1 Dex)\n\r",name);
@@ -686,7 +686,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						break;
 					}
 					else {
-					 	GET_PRAC(ch) -= traininglist[stat-1].level;
+					 	GET_PRAC(ch) -= cost;
 					 	GET_RCHR(ch) = GET_RCHR(ch)+1;
 					 	GET_CHR(ch)= GET_CHR(ch)+1;
 					 	ch_printf(ch,"%s gives you some lessons in manners!!(+1 Chr)\n\r",name);
@@ -702,7 +702,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
 						break;
 					}else {
-			 			GET_PRAC(ch) -= traininglist[stat-1].level;
+			 			GET_PRAC(ch) -= cost;
 			 			GET_RINT(ch) =GET_RINT(ch)+1;
 			 			GET_INT(ch)= GET_INT(ch)+1;
 			 			ch_printf(ch,"%s gives you a strange old book to read. You read it!!(+1 Int)\n\r",name);
@@ -718,7 +718,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						break;
 
 					}else {
-						GET_PRAC(ch) -= traininglist[stat-1].level;
+						GET_PRAC(ch) -= cost;
 						GET_RWIS(ch) = GET_RWIS(ch)+1;
 						GET_WIS(ch)= GET_WIS(ch)+1;
 					 	ch_printf(ch,"%s sits down and brings out the old chess board!!\n\rYou and him have a chat and play a few games.(+1 Wis)'\n\r",name);
