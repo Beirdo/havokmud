@@ -1564,7 +1564,7 @@ AddCommand("orebuild",do_orebuild,566,POSITION_STANDING,59);
 AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
-AddCommand("bid",do_bid,570,POSITION_STANDING,0);
+AddCommand("bid",do_bid,570,POSITION_RESTING,0);
 AddCommand("resist",do_resistances,571,POSITION_RESTING,0);
 AddCommand("style",do_style, 572, POSITION_STANDING,0);
 AddCommand("fight",do_style, 572, POSITION_STANDING,0);

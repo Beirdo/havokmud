@@ -1639,11 +1639,11 @@ void assign_rooms()
 	{50964, riddle_exit },
 
 /* The King's Grove */
-	{ 2897, gnome_home },
-	{ 2906, climb_room },
-	{ 2908, pick_acorns },
-	{ 2917, legendfountain },
-	{ 2921, pick_berries },
+	{ 52857, gnome_home },
+	{ 52866, climb_room },
+	{ 52868, pick_acorns },
+	{ 52877, legendfountain },
+	{ 52881, pick_berries },
 
 /* Sentinel's Zone */
 	{ 51195, cog_room },
