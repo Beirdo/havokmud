@@ -286,6 +286,13 @@ void do_mobTell(struct char_data *ch,char *mob, char *sentence) {
   act(buf,FALSE, ch,0,0,TO_CHAR);
 }
 
+void do_mobTell2(struct char_data *ch,struct char_data *mob, char *sentence) {
+  char buf[256];
+  sprintf(buf,"$c0013[$c0015$N$c0013] tells you '%s'", sentence);
+
+  act(buf,FALSE, ch,0,mob,TO_CHAR);
+}
+
 void do_tell(struct char_data *ch, char *argument, int cmd)
 {
   struct char_data *vict;

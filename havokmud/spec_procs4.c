@@ -2869,3 +2869,101 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_da
 	}
 	return(TRUE);
 }
+
+
+
+int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	void do_mobTell2(struct char_data *ch,struct char_data *mob, char *sentence);
+	int classcombos[] = {
+		CLASS_MAGIC_USER+CLASS_CLERIC+CLASS_WARRIOR+CLASS_THIEF,
+	    CLASS_DRUID+CLASS_RANGER+CLASS_WARRIOR,
+		CLASS_SORCERER+CLASS_CLERIC+CLASS_WARRIOR+CLASS_THIEF,
+		CLASS_RANGER+CLASS_DRUID,
+		CLASS_PSI+CLASS_WARRIOR+CLASS_THIEF,
+		CLASS_NECROMANCER+CLASS_WARRIOR+CLASS_THIEF,
+		-1
+	};
+	int x, hasclass=0, num=0, choose=-1, avg=0;
+	extern const char *class_names[];
+
+	char classname[128];
+
+
+	if(cmd!=605)
+		return(FALSE);
+
+	only_argument(arg, classname);
+
+	if(!*classname) {
+		do_mobTell2(ch, mob, "A class you must chooose!");
+		return(TRUE);
+	}
+
+
+
+	/*lets count what classes ch has now */
+
+	for (x=0; x < MAX_CLASS; x++) {
+	 	if (HasClass(ch, pc_num_class(x))) {
+			hasclass+=pc_num_class(x);
+			num+=1;
+			avg+=ch->player.level[x];
+	 	}
+		if(is_abbrev(classname, class_names[x])) {
+			choose=x;
+			//ch_printf(ch,"You choose class# x%d as a new class.pc%d.\n\r",x,pc_num_class(x));
+		}
+	}
+
+	if(avg/num<50 || GET_LEADERSHIP_EXP(ch)< 50000000) { /* Average level is 50?? they maxxed out?? */
+		do_mobTell2(ch,mob,"You don't look strong enough or worthy enough to be in my presences.");
+		return (TRUE);
+	}
+	/*didn't find a class argument */
+	if(choose==-1) {
+		do_mobTell2(ch, mob, "That profession is unknown to me!");
+		return(TRUE);
+	}
+	/* Check to see if they have that class */
+	if(HasClass(ch, pc_num_class(choose))) {
+		do_mobTell2(ch, mob, "You already know enough about that class!");
+		return(TRUE);
+	}
+	/*See if they have too many classes*/
+	if(num>2) {
+		do_mobTell2(ch, mob, "I'm afraid you already have too many professions!");
+		return(TRUE);
+	}
+
+	hasclass+=pc_num_class(choose);
+
+	x=0;
+	while(classcombos[x] !=-1) {
+		if(IS_SET(classcombos[x], hasclass)) {
+			do_mobTell2(ch, mob, "You may now know the art of this class!");
+			ch_printf(ch,"You just obtained a new class!!! %d",pc_num_class(choose));
+			ch->player.class=hasclass;
+			do_restore(ch, GET_NAME(ch), 0);
+
+
+
+			/*reset the char */
+			for (x=0; x < MAX_CLASS; x++) {
+	 			if (HasClass(ch, pc_num_class(x))) { //set all classes to level 1
+					ch->player.level[x]=1;
+
+				}
+			}
+			GET_EXP(ch)=1;
+			GET_LEADERSHIP_EXP(ch)=1;
+			return(TRUE);
+		}
+		x++;
+	}
+	/* No class combos found */
+	do_mobTell2(ch, mob, "You can't multi-class with that class!");
+	return(TRUE);
+
+}
+
