@@ -3843,7 +3843,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 	char buf2[MAX_INPUT_LENGTH];
 	char arg[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
-	int sn = -1, x, percent = 0, formula=0;
+	int sn = -1, x, percent = 0, formula=0, qend;
 
 	if(!MainClass(ch, CLERIC_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of scribing scrolls.\n\r",ch);
@@ -3870,13 +3870,32 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	argument = one_argument( argument, arg );
-
 	if(!(obj = read_object(EMPTY_SCROLL, VIRTUAL))) {
 		log("no default scroll could be found for scribe");
 		send_to_char("woops, something's wrong.\n\r",ch);
 		return;
 	}
+	//Addition by Odin 1/21/2004
+		//Added checks to allow ' ' on scribe commands.
+		argument = skip_spaces(argument);
+
+		/* Check for beginning qoute */
+		if (*argument != '\'') {
+		  send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		  return;
+		}
+
+		/* Locate the last quote && lowercase the magic words (if any) */
+		for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
+			*(argument+qend) = LOWER(*(argument+qend));
+		if (*(argument+qend) != '\'') {
+		  send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		  return;
+		}
+
+		sn = old_search_block(argument, 1, qend-1,spells, 0);
+		sn = sn - 1;
+		//End Addition by Odin 1/21/2004
 
 //find spell number..
 	for(x = 0; x < 250; x++) {
@@ -3981,7 +4000,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 	char buf2[MAX_INPUT_LENGTH];
 	char arg[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
-	int sn = -1, x, percent = 0, formula=0;
+	int sn = -1, x, percent = 0, formula=0, qend;
 
 	if(!MainClass(ch, MAGE_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of brewing your own potions.\n\r",ch);
@@ -4008,22 +4027,42 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	argument = one_argument( argument, arg );
-
-
 	if(!(obj = read_object(EMPTY_POTION, VIRTUAL))) {
 		log("no default potion could be found for brew");
 		send_to_char("woops, something's wrong.\n\r",ch);
 		return;
 	}
+	//Addition by Odin 1/21/2004
+		//Added checks to allow ' ' on brew commands.
+		argument = skip_spaces(argument);
 
-//find spell number..
-	for(x = 0; x < 250; x++) {
-		if(is_abbrev(arg, spells[x])) {
-			sn = x;
-			break;
+		/* Check for beginning qoute */
+		if (*argument != '\'') {
+		  send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		  return;
 		}
-	}
+
+		/* Locate the last quote && lowercase the magic words (if any) */
+		for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
+			*(argument+qend) = LOWER(*(argument+qend));
+		if (*(argument+qend) != '\'') {
+		  send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
+		  return;
+		}
+
+		sn = old_search_block(argument, 1, qend-1,spells, 0);
+		sn = sn - 1;
+		//End Addition by Odin 1/21/2004
+
+	//find spell number..
+		//		for(x = 0; x < 250; x++) {
+		//	  if(is_abbrev(arg, spells[x])) {
+		//	    sn = x;
+		//	    break;
+		//	  }
+	//	  }
+
+
 
 	if(sn == -1) {  //no spell found?
 		send_to_char("Brew what??.\n\r",ch);

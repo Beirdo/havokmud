@@ -4117,19 +4117,19 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   int x=0,temp=0;
   char mobname[128];
   int questitems[14][3] = {
-    {871,CLASS_CLERIC,     6},
-    {872,CLASS_MAGIC_USER, 7},
-    {873,CLASS_DRUID,      6},
-    {874,CLASS_WARRIOR,    7},
-    {875,CLASS_RANGER,     8},
-	{876,CLASS_CLERIC,     11},
-    {877,CLASS_MAGIC_USER, 9},
-    {878,CLASS_DRUID,      7},
-    {879,CLASS_WARRIOR,    7},
-    {880,CLASS_RANGER,     7},
-    {881,CLASS_BARBARIAN,  7},
-	{882,CLASS_MAGIC_USER, 6},
-	{883,CLASS_DRUID,      7},
+    {871,CLASS_CLERIC,     1},
+    {872,CLASS_MAGIC_USER, 1},
+    {873,CLASS_DRUID,      1},
+    {874,CLASS_WARRIOR,    1},
+    {875,CLASS_RANGER,     1},
+	{876,CLASS_CLERIC,     1},
+    {877,CLASS_MAGIC_USER, 1},
+    {878,CLASS_DRUID,      1},
+    {879,CLASS_WARRIOR,    1},
+    {880,CLASS_RANGER,     1},
+    {881,CLASS_BARBARIAN,  1},
+	{882,CLASS_MAGIC_USER, 1},
+	{883,CLASS_DRUID,      1},
 	{ -1, -1, -1 }
 
   };
