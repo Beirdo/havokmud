@@ -542,9 +542,9 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 	char name[32];
 	const struct skillset traininglist[] = {
-	  { "hitpoints",    1,      2},
-	  { "movement",  	2,      1},
-	  { "mana",         3,      2},
+//	  { "hitpoints",    1,      2},
+//	  { "movement",  	2,      1},
+//	  { "mana",         3,      2},
 	  { "constitution",	4,		 10},
 	  { "strength",     5,      10},
 	  { "dexterity",    6,      10},
@@ -594,7 +594,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 
 			switch(stat) {
-			 	case 1:
+/*			 	case 1:
 			 		GET_PRAC(ch) -= traininglist[stat-1].level;
 			 		ch->points.max_hit ++; //GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
 			 		ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of this! Its good for ya!!'\n\r$c000w%s hands you a foul looking health drink and you swig it down. (+1 HP)\n\r",name,name);
@@ -610,9 +610,9 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					ch->points.max_mana ++;//GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
 
 				 	ch_printf(ch,"$c000P%s tells you 'This mystical drink should do it!!!'\n\r$c000wHe hands you a mystical potion and you chug it down.(+1 Mana)\n\r",name);
-				 	break;
-			 	case 4:
-				 	if(GET_RCON(ch) >= 18) {
+				 	break; */
+			 	case 1://4:
+				 	if(GET_RCON(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
 						GET_RCON(ch) = GET_RCON(ch)+1;
@@ -622,7 +622,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					 	ch_printf(ch,"$c000P%s tells you 'Lets train your con!!!'\n\r$c000wYou heed his advice and go for a jog around the room.(+1 Con)\n\r",name);
 					}
 				 	break;
-			 	case 5:
+			 	case 2://5:
 				 	if(GET_RSTR(ch) >= 18) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name ,traininglist[stat-1].name,name);
 					} else {
@@ -633,8 +633,8 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 				 		ch_printf(ch,"You start lifting some weights.  You feel stronger!!!(+1 Str)'\n\r",name);
 					}
 				 	break;
-			 	case 6:
-				 	if(GET_RDEX(ch) >= 18) {
+			 	case 3://6:
+				 	if(GET_RDEX(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
 					 	GET_PRAC(ch) -= traininglist[stat-1].level;
@@ -643,8 +643,8 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					 	ch_printf(ch,"%s shows you some stretches.  You mimic them!!! (+1 Dex)\n\r",name);
 					}
 					break;
-			 	case 7:
-					if(GET_RCHR(ch) >= 18) {
+			 	case 4://7:
+					if(GET_RCHR(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
 					 	GET_PRAC(ch) -= traininglist[stat-1].level;
@@ -654,8 +654,8 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					}
 					break;
 
-			 	case 8:
-			 		if(GET_RINT(ch) >= 18) {
+			 	case 5://8:
+			 		if(GET_RINT(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.\n\r",name, traininglist[stat-1].name,name);
 					} else {
 			 			GET_PRAC(ch) -= traininglist[stat-1].level;
@@ -664,8 +664,8 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 			ch_printf(ch,"%s gives you a strange old book to read. You read it!!(+1 Int)\n\r",name);
 					}
 				 	break;
-			 	case 9:
-			 		if(GET_RWIS(ch) >= 18) {
+			 	case 6://9:
+			 		if(GET_RWIS(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
 						GET_PRAC(ch) -= traininglist[stat-1].level;

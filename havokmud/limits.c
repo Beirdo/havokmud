@@ -301,6 +301,13 @@ if (HasClass(ch, CLASS_BARBARIAN))
 if (affected_by_spell(ch,SKILL_MEDITATE))
   	gain +=3;
 
+	/* main class stuff here */
+	if(ch->specials.remortclass == MAGE_LEVEL_IND + 1)
+		gain += 10;
+	else if(ch->specials.remortclass == DRUID_LEVEL_IND + 1)
+		gain +=  5;
+	else if(ch->specials.remortclass == PSI_LEVEL_IND + 1)
+		gain +=  5;
 
   return (gain);
 }
@@ -432,6 +439,12 @@ if (!HasClass(ch,CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
   }
 
     /* Skill/Spell calculations */
+	if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1)
+		gain += 8;
+	else if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1)
+		gain += 5;
+	else if(ch->specials.remortclass == PSI_LEVEL_IND + 1)
+		gain += 5;
 
   return (gain);
 }
@@ -503,6 +516,13 @@ if (!HasClass(ch,CLASS_THIEF|CLASS_MONK))
   gain-=2;
 
   gain += 15;  //They were regenning too slowly... added that for now -MW
+
+
+	if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1)
+		gain += 5;
+	else if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1)
+		gain += 8;
+
   return (gain);
 }
 

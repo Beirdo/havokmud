@@ -1966,20 +1966,20 @@ struct class_titles {
 /* Changes to be made for the remort bonusses, decided upon by Gordon and Lennya, 20040111
 
 Mage
-	brew, create potions of mage spells										//done by Lennya
+//	brew, create potions of mage spells
 	mana shield, lets mana soak up damage (ignoring resist, suscept, sanc) before hps
-	+10 mana regen
+//	+10 mana regen
 
 Cleric
 	+1 tick on blade barrier and sanctuary durations
 	group heal
-	scribe, creates scrolls with cleric spells
+//	scribe, creates scrolls with cleric spells
 
 Warrior
 	more weapon proficiencies
 	bellow becomes an area affect bash
-	+8 hitpoint regen
-	+5 move regen
+//	+8 hitpoint regen
+//	+5 move regen
 	mend, skill to repair damage armor/weaponry
 
 Thief
@@ -1989,7 +1989,7 @@ Thief
 Druid
 	iron skin, duration level*2, takes off one tick per damage point taken. damage soaker, ignores resist/suscept/sanc
 	creeping death becomes a primary druid spell.
-	+5 mana regen
+//	+5 mana regen
 
 Monk
 	restrict dodge bonusses from fighting styles to this part only
@@ -2001,8 +2001,8 @@ Monk
 Barbarian
 	immunity to poison from level 20
 	1% harder skin per level. at level 50, barbs get a pierce damage reduction of 75% added to any damage modifiers
-	+8 move regen
-	+5 hitpoint regen
+//	+8 move regen
+//	+5 hitpoint regen
 
 Ranger
 	when hasted, offhand does an extra attack
@@ -2018,8 +2018,8 @@ Paladin
 Psi
 	immune sleep
 	immune charm
-	+5 hitpoint regen
-	+5 mana regen
+//	+5 hitpoint regen
+//	+5 mana regen
 	object scry
 	telekinetic knock spell
 
