@@ -2488,7 +2488,7 @@ dlog("in do_set_flags");
    }
  } /* private */
  else
- if (!strcmp(type,"ansi")) {		/* turn ansi stuff ON/OFF */
+ if (!strcmp(type,"ansi") || !strcmp(type, "color")) {		/* turn ansi stuff ON/OFF */
    if (is_abbrev(field,"enable")) {
          send_to_char("Setting ansi colors enabled.\n\r",ch);
          SET_BIT(ch->player.user_flags,USE_ANSI);
@@ -2498,12 +2498,6 @@ dlog("in do_set_flags");
        REMOVE_BIT(ch->player.user_flags,USE_ANSI);
    }
  } /* was ansi */
- else
-   if (!strcmp(type,"color")) {	/* set current screen color */
-     char buf[128];
-     sprintf(buf,"%sChanging screen colors!",ansi_parse(field));
-     act(buf,FALSE,ch,0,0,TO_CHAR);
-   }		/* was color*/
    else
      if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
        if (strstr(field,"enable")) {

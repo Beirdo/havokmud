@@ -2186,7 +2186,7 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
     STATE(d)= CON_RMOTD;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
       STATE(d) = CON_AUTH;
-      SEND_TO_Q("***PRESS ENTER**", d);
+      SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
      } else {
 	sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
 	log(buf);
@@ -2245,7 +2245,7 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
     STATE(d)= CON_RMOTD;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
       STATE(d) = CON_AUTH;
-      SEND_TO_Q("***PRESS ENTER**", d);
+      SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
      } else {
 	sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
 	log(buf);
@@ -2262,6 +2262,8 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
          break;
       }
   }
+  break;
+
 case CON_PRESS_ENTER:
        /*   page_string(d,NEWBIE_NOTE,1); */
 	 SEND_TO_Q(NEWBIE_NOTE, d);
@@ -2754,7 +2756,7 @@ them from highest to lowest\n\r",d);
 	STATE(d) = CON_RMOTD;
      } else if (d->character->generic >= NEWBIE_REQUEST) {
        sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
-       log_sev(buf, 7);
+       log_sev(buf, 1);
        if (!strncmp(d->host,"128.197.152",11))
 	   d->character->generic=1;
   /* I decided to give them another chance.  -Steppenwolf  */
@@ -2764,9 +2766,9 @@ them from highest to lowest\n\r",d);
 	 d->character->generic=1;
        } else {
 	 if (top_of_p_table > 0) {
-	   sprintf(buf,"Type Authorize %s to allow into game.", GET_NAME(d->character));
-	   log_sev(buf, 6);
-	   log_sev("type 'Wizhelp Authorize' for other commands", 2);
+	   sprintf(buf,"Type Authorize %s [Yes | No | Message]", GET_NAME(d->character));
+	   log_sev(buf, 1);
+	   log_sev("type 'Wizhelp Authorize' for other commands", 1);
 	 } else {
 	   log("Initial character.  Authorized Automatically");
 	   d->character->generic = NEWBIE_START+5;

@@ -2,7 +2,7 @@
 /* data files used by the game system */
 
 #define RLIMIT_OFILE      99999 
-#define DFLT_DIR          "lib"           /* default data directory     */
+#define DFLT_DIR          "../lib"           /* default data directory     */
 
 #define WORLD_FILE        "tinyworld.wld" /* room definitions           */
 #define MOB_FILE          "tinyworld.mob" /* monster prototypes         */

@@ -32,49 +32,54 @@ int     cur_depth=0;
 ************************************************************************* */
 
 void add_obj_cost(struct char_data *ch, struct char_data *re,
-		  struct obj_data *obj, struct obj_cost *cost)
+                  struct obj_data *obj, struct obj_cost *cost)
 {
-  char buf[MAX_INPUT_LENGTH], buf2[MAX_INPUT_LENGTH];
-  int  temp;
+   char buf[MAX_INPUT_LENGTH], buf2[MAX_INPUT_LENGTH];
+   int temp;
   
-  /* Add cost for an item and it's contents, and next->contents */
+   /* Add cost for an item and it's contents, and next->contents */
 
-  if (obj) {
-    if ((obj->item_number > -1) &&
-	(cost->ok) && ItemEgoClash(ch,obj,0) > -5) {
+   if(obj)
+   {
+      if((obj->item_number > -1) && (cost->ok) && ItemEgoClash(ch,obj,0) > -5)
+      {
+         temp = MAX(0, obj->obj_flags.cost_per_day)/2;     /* 1/2 price rent */
 
-      temp = MAX(0, obj->obj_flags.cost_per_day)/2;     /* 1/2 price rent */
+         if(temp <= LIM_ITEM_COST_MIN)      /* Let's not charge for normal items */
+            temp=0;
 
-      if (temp <= LIM_ITEM_COST_MIN)      /* Let's not charge for normal items */
-	  temp=0;
+         cost->total_cost += temp;
 
-      cost->total_cost += temp;
-
-      if (re) {
-        if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
-          sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", obj->short_description, temp);
-        else
-	  sprintf(buf, "%30s : %d coins/day\n\r", obj->short_description, temp);
-	send_to_char(buf, ch);
+         if(re)
+         {
+            if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+               sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", obj->short_description, temp);
+            else
+               sprintf(buf, "%30s : %d coins/day\n\r", obj->short_description, temp);
+            send_to_char(buf, ch);
+         }
+         cost->no_carried++;
+         add_obj_cost(ch, re, obj->contains, cost);
+         add_obj_cost(ch, re, obj->next_content, cost);
       }
-      cost->no_carried++;
-      add_obj_cost(ch, re, obj->contains, cost);
-      add_obj_cost(ch, re, obj->next_content, cost);
-    } else
-      if (cost->ok) {
-	if (re) {
-	  act("$c0013[$c0015$n$c0013] tells you 'I refuse storing $p'",FALSE,re,obj,ch,TO_VICT);
-	  cost->ok = FALSE;
-	} else {
+      else if(cost->ok)
+      {
+         if(re)
+         {
+            act("$c0013[$c0015$n$c0013] tells you 'I refuse storing $p'",FALSE,re,obj,ch,TO_VICT);
+            cost->ok = FALSE;
+         }
+         else
+         {
 #if NODUPLICATES
 #else
-	  act("Sorry, but $p don't keep in storage.",FALSE,ch,obj,0,TO_CHAR);
+            act("Sorry, but $p don't keep in storage.",FALSE,ch,obj,0,TO_CHAR);
 #endif
-	  cost->ok = FALSE;
+            cost->ok = FALSE;
 
-	}
+         }
       }
-  }
+   }
 }
 
 

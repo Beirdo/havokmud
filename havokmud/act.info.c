@@ -3813,105 +3813,114 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 
 void do_attribute(struct char_data *ch, char *argument, int cmd)
 {
-  char buf[MAX_STRING_LENGTH];
-  struct affected_type *aff;
-  struct time_info_data my_age;
-  int i = 0, j2 = 0, Worn_Index = 0;
-  char buf2[MAX_STRING_LENGTH];
-  char buf3[MAX_STRING_LENGTH];
-  struct obj_data *j=0, *p=0;
-  extern char *apply_types[];
-  extern char *affected_bits[];
+   char buf[MAX_STRING_LENGTH];
+   struct affected_type *aff;
+   struct time_info_data my_age;
+   int i = 0, j2 = 0, Worn_Index = 0;
+   short last_type;
+   char buf2[MAX_STRING_LENGTH];
+   char buf3[MAX_STRING_LENGTH];
+   struct obj_data *j=0, *p=0;
+   extern char *apply_types[];
+   extern char *affected_bits[];
 
-dlog("in do_attrib");
+   dlog("in do_attrib");
 
- age2(ch, &my_age);
+   age2(ch, &my_age);
 
- sprintf(buf,
-	 "$c0005You are $c0014%d$c0005 years and $c0014%d$c0005 months, $c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.\n\r",
-	  my_age.year, my_age.month,
-	  ch->player.height,
-	  ch->player.weight);
+   sprintf(buf, "$c0005You are $c0014%d$c0005 years and $c0014%d$c0005 months, \
+$c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.\n\r", my_age.year, my_age.month,
+           ch->player.height, ch->player.weight);
 
-  send_to_char(buf,ch);
-  //,FALSE, ch,0,0,TO_CHAR);
-
-  sprintf(buf, "$c0005You are carrying $c0014%d$c0005 lbs of equipment.\n\r",
-	  IS_CARRYING_W(ch));
-  send_to_char(buf,ch);
-
-  sprintf(buf,"$c0005You are$c0014 %s\n\r",ArmorDesc(ch->points.armor));
-  send_to_char(buf,ch);
-
-  if (GetMaxLevel(ch) > 15) {
-    sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, $c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR\n\r",
-	    GET_STR(ch), GET_ADD(ch), GET_INT(ch), GET_WIS(ch), GET_DEX(ch),
-	    GET_CON(ch), GET_CHR(ch));
-    send_to_char(buf,ch);
-   }
-
-  sprintf(buf, "$c0005Your hit bonus and damage bonus are $c0014%s$c0005 and $c0014%s$c0005 respectively.\n\r",
-	  HitRollDesc(GET_HITROLL(ch)), DamRollDesc(GET_DAMROLL(ch)));
    send_to_char(buf,ch);
 
-  /*
-  **   by popular demand -- affected stuff
-  */
-  send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
+   sprintf(buf, "$c0005You are carrying $c0014%d$c0005 lbs of equipment.\n\r",
+           IS_CARRYING_W(ch));
+   send_to_char(buf,ch);
+
+   sprintf(buf,"$c0005You are$c0014 %s\n\r",ArmorDesc(ch->points.armor));
+   send_to_char(buf,ch);
+
+   if(GetMaxLevel(ch) > 15)
+   {
+      sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, \
+$c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR\n\r",
+              GET_STR(ch), GET_ADD(ch), GET_INT(ch), GET_WIS(ch), GET_DEX(ch),
+              GET_CON(ch), GET_CHR(ch));
+      send_to_char(buf,ch);
+   }
+
+   sprintf(buf, "$c0005Your hit bonus and damage bonus are $c0014%s$c0005 and \
+$c0014%s$c0005 respectively.\n\r",
+           HitRollDesc(GET_HITROLL(ch)), DamRollDesc(GET_DAMROLL(ch)));
+   send_to_char(buf,ch);
+
+   /*
+   **   by popular demand -- affected stuff
+   */
+   send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
 
 
-  if (ch->affected) {
-    for(aff = ch->affected; aff; aff = aff->next) {
-      if (aff->type <= MAX_EXIST_SPELL) {
-	switch(aff->type) {
-	case SKILL_SNEAK:
-	case SPELL_PRAYER:
-	case SKILL_HIDE:
-	case SKILL_QUIV_PALM:
-	case SKILL_HUNT:
-	case SKILL_DISGUISE:
-	case SKILL_SWIM:
-	case SKILL_SPY:
-	case SKILL_FIRST_AID:
-	case SKILL_LAY_ON_HANDS:
-	case SKILL_MEDITATE:
-	  break;
-	case SKILL_MEMORIZE:
-	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.\n\r",spells[aff->modifier-1], (aff->duration*4));
-	  send_to_char(buf,ch);
-	  break;
+   if(ch->affected)
+   {
+      for(aff = ch->affected; aff; aff = aff->next)
+      {
+         if (aff->type <= MAX_EXIST_SPELL)
+         {
+            switch(aff->type)
+            {
+               case SKILL_SNEAK:
+               case SPELL_PRAYER:
+               case SKILL_HIDE:
+               case SKILL_QUIV_PALM:
+               case SKILL_HUNT:
+               case SKILL_DISGUISE:
+               case SKILL_SWIM:
+               case SKILL_SPY:
+               case SKILL_FIRST_AID:
+               case SKILL_LAY_ON_HANDS:
+               case SKILL_MEDITATE:
+                  break;
+               case SKILL_MEMORIZE:
+                  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete \
+in $c0014%d $c0005minutes.\n\r", spells[aff->modifier-1], (aff->duration*4));
+                  send_to_char(buf,ch);
+                  break;
 
-	default:
-	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
-	  send_to_char(buf,ch);
-	  break;
-	}
+               default:
+                  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in \
+$c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
+                  if(aff->type != last_type)
+                     send_to_char(buf,ch);
+                  break;
+            }
+            last_type = aff->type;
+         }
       }
-    }
-  }
+   }
 
-  	for (Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++) {
-    		if (ch->equipment[j2]){
-			j = ch->equipment[j2];
-      			for (i=0;i<MAX_OBJ_AFFECT;i++) {
-        			switch(j->affected[i].location) {
-					case APPLY_SPELL:
-						sprintbit(j->affected[i].modifier,affected_bits,buf2);
-						if (strcmp(buf2, "NOBITS")==0) break;
-        					sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
-        					send_to_char(buf, ch);
-           					break;
-					default:
-					break;
-				}
-			}
-    		}
-
-  	}
-
-
-
-
+   for(Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++)
+   {
+      if(ch->equipment[j2])
+      {
+         j = ch->equipment[j2];
+         for (i=0;i<MAX_OBJ_AFFECT;i++)
+         {
+            switch(j->affected[i].location)
+            {
+               case APPLY_SPELL:
+                  sprintbit(j->affected[i].modifier,affected_bits,buf2);
+                  if(strcmp(buf2, "NOBITS")==0)
+                     break;
+                  sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
+                  send_to_char(buf, ch);
+                  break;
+               default:
+                  break;
+            }
+         }
+      }
+   }
 }
 
 void do_value(struct char_data *ch, char *argument, int cmd)

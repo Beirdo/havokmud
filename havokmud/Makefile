@@ -146,7 +146,10 @@ dmserver : ${OBJS}
 depend :
 	makedepend ${SRCS}
 
+.PHONY: clean cleanall
 
+clean:
+	rm -f $(OBJS)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -2532,6 +2532,10 @@ if (!ch->specials.fighting) {	/* rather this than assert, msw 8/31/94*/
 		equip_char(ch, tmp, HOLD);
 		equip_char(ch, weapon, WIELD);
 	      }
+			else
+			{
+				equip_char(ch, weapon, WIELD);
+			}
 	    } else {
     if (!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch)) {
 		tmp = unequip_char(ch, HOLD);
