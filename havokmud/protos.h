@@ -2070,6 +2070,7 @@ int IsExtraPlanar( struct char_data *ch);
 int IsOther( struct char_data *ch);
 int IsDragon( struct char_data *ch);
 int IsGodly( struct char_data *ch);
+int IsDarkrace( struct char_data *ch);
 void SetHunting( struct char_data *ch, struct char_data *tch);
 void CallForGuard
   ( struct char_data *ch, struct char_data *vict, int lev, int area);
@@ -2282,6 +2283,8 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int generate_legend_statue(struct char_data *ch, char *argument, int cmd);
+int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 				/* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

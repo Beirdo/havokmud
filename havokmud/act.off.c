@@ -747,44 +747,24 @@ dlog("in do_leg_sweep");
 
 	percent=number(1,101); /* 101% is a complete failure */
 
-sprintf(buffer,"1. percent = %d",percent);
-log(buffer);
-
 	/* some modifications to account for dexterity, and level */
 	percent -= dex_app[GET_DEX(ch)].reaction*10;
 	percent += dex_app[GET_DEX(victim)].reaction*10;
-
-sprintf(buffer,"2. percent = %d",percent);
-log(buffer);
 
 	if (GetMaxLevel(victim) > 12) {
 		percent += ((GetMaxLevel(victim)-10) * 5);
 	}
 
-sprintf(buffer,"3. percent = %d",percent);
-log(buffer);
-
-sprintf(buffer,"4. skill = %d",ch->skills[SKILL_LEG_SWEEP].learned);
-log(buffer);
-
 	if (percent > ch->skills[SKILL_LEG_SWEEP].learned) {
-sprintf(buffer,"5. failure");
-log(buffer);
 		if (GET_POS(victim) > POSITION_DEAD) {
 			damage(ch, victim, 0, SKILL_LEG_SWEEP);
 			GET_POS(ch) = POSITION_SITTING;
 		}
 		act("$c000CYou try to do quick spin and knock $N's legs out, but miss.",FALSE, ch, 0, victim,TO_CHAR);
 		act("$c000C$n tries to do a quick spin and knock $N's legs out, but misses $M.",FALSE, ch,0,victim,TO_ROOM);
-sprintf(buffer,"6. attempting learnmistake");
-log(buffer);
 		LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
-sprintf(buffer,"7. attempted learnmistake");
-log(buffer);
 		WAIT_STATE(ch, PULSE_VIOLENCE*3);
 	} else {
-sprintf(buffer,"5. success");
-log(buffer);
 		if (GET_POS(victim) > POSITION_DEAD) {
 			GET_POS(victim) = POSITION_SITTING;
 			if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {

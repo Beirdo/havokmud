@@ -95,7 +95,7 @@ int totalActionFlags = 33;
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
-    if(update < 0 || update > 31)
+    if(update < 0 || update > 32)
       return;
     i = 1<<update;
 

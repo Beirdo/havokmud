@@ -2236,6 +2236,8 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
 #if NEWSETUP
 	fscanf(f, " %d \n", &tmp);
     obj->speed = tmp;
+//	fscanf(f, " %d \n", &tmp);
+//    obj->fullness = tmp;
 
 	fscanf(f, " %d \n", &tmp);
 	obj->weapontype = tmp;
@@ -2447,9 +2449,11 @@ int write_obj_to_file(struct obj_data *obj, FILE *f)
 		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
-  fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
+
+	fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
 		obj->obj_flags.cost, obj->obj_flags.cost_per_day,obj->level,obj->max
 		,obj->modified, obj->speed, obj->weapontype);
+
 
   /* *** extra descriptions *** */
   if(obj->ex_description)

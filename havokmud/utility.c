@@ -2407,6 +2407,22 @@ if (!ch)
   }
 }
 
+int IsDarkrace( struct char_data *ch)
+{
+if (!ch)
+	return(FALSE);
+
+  switch(GET_RACE(ch)) {
+  case RACE_DROW:
+  case RACE_DARK_DWARF:
+    return(TRUE);
+    break;
+  default:
+    return(FALSE);
+    break;
+  }
+}
+
 int IsGodly( struct char_data *ch)
 {
 
@@ -3909,29 +3925,16 @@ int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 	char buf[128];
 	char buffer [254];
 
-sprintf(buffer,"6a. entered learnmistake");
-log(buffer);
 	if (!ch->skills) {
-sprintf(buffer,"6b. !ch->skills");
-log(buffer);
 		return(0);
 	}
 
 	if (!IS_SET(ch->skills[sknum].flags, SKILL_KNOWN)) {
-sprintf(buffer,"6b. skill not known!");
-log(buffer);
 		return(0);
 	}
 
-sprintf(buffer,"6b. sknum: %d   silent: %d   max: %d",sknum, silent, max);
-log(buffer);
-
 	if (ch->skills[sknum].learned < max && ch->skills[sknum].learned > 0) {
-sprintf(buffer,"6c. 0 < skill < max");
-log(buffer);
 		if (number(1, 101) > ch->skills[sknum].learned/2) {
-sprintf(buffer,"6d. random > skill/2");
-log(buffer);
 			if (!silent)
 				send_to_char("You learn from your mistake\n\r", ch);
 			ch->skills[sknum].learned+=1;

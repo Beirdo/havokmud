@@ -719,40 +719,34 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 	extern int top_of_p_table;
 	extern struct player_index_element *player_table;
 
-//	log("indexing pfiles for statue generation");
-	CREATE(tmp, struct char_data,1);
-	clear_char(tmp);
-
-	/* seems easiest to let this place update each time the zone inits */
+	/* determine number of pfiles */
 	for(i=0;i<top_of_p_table;i++) {
-//		sprintf(buf,"i = %d",i);
-//		log(buf);
-//		sprintf(name,"%s",(player_table + i)->name);
-//		log(name);
-//		ch_printf(ch,"loading player number %d.\n\r", (player_table + i)->name);
+		/* load up each of them */
 		if (load_char((player_table + i)->name, &player) > -1) {
-//			log("player loaded successfully");
+			/* store to a tmp char that we can deal with */
+			CREATE(tmp, struct char_data,1);
+			clear_char(tmp);
 			store_to_char(&player, tmp);
-//			sprintf(buf,"char name is %s", GET_NAME(tmp));
-//			log(buf);
+			/* are they entitled to an item? */
 			if(tmp->specials.m_kills >= 10000) {
+				/* coolness, the are! Determine the item. */
 				if(tmp->specials.m_kills >= 40000) {
 					itype = LEGEND_BIOGRAPHY;
-					rnum = number(701,724);
+					rnum = number(732,734);
 					sprintf(name,"biography tome %s",GET_NAME(tmp));
 					sprintf(shdesc,"a biography of %s",GET_NAME(tmp));
 					sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",GET_NAME(tmp));
 					sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.",GET_NAME(tmp));
 				} else if(tmp->specials.m_kills >= 20000) {
 					itype = LEGEND_PAINTING;
-					rnum = number(726,735);
+					rnum = number(726,731);
 					sprintf(name,"painting %s",GET_NAME(tmp));
 					sprintf(shdesc,"a painting of %s",GET_NAME(tmp));
 					sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",GET_NAME(tmp));
 					sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greatest of these times.",GET_NAME(tmp),GET_NAME(tmp));
 				} else {
 					itype = LEGEND_STATUE;
-					rnum = number(726,735);
+					rnum = number(701,724);
 					sprintf(name,"statue %s",GET_NAME(tmp));
 					sprintf(shdesc,"a statue of %s",GET_NAME(tmp));
 					sprintf(desc,"A statue of the legendary %s has been erected here.",GET_NAME(tmp));
@@ -767,60 +761,506 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 					return(TRUE);
 				}
 				/* load the generic item */
-				if (obj = read_object(itype, VIRTUAL))
-{
-				/* and string it up a bit */
-				if(obj->short_description) {
-					free(obj->short_description);
-					obj->short_description = strdup(shdesc);
+				if (obj = read_object(itype, VIRTUAL)) {
+					/* and string it up a bit */
+					if(obj->short_description) {
+						free(obj->short_description);
+						obj->short_description = strdup(shdesc);
+					}
+					if(obj->description) {
+						free(obj->description);
+						obj->description = strdup(desc);
+					}
+					if(obj->name) {
+						free(obj->name);
+						obj->name = strdup(name);
+					}
+					if(obj->ex_description) {
+						log("trying to string invalid item in statue generation");
+						return(TRUE);
+					} else {
+						/* create an extra desc structure for the object */
+						CREATE(ed, struct extra_descr_data, 1);
+						ed->next = obj->ex_description;
+						obj->ex_description = ed;
+						/* define the keywords */
+						CREATE(ed->keyword, char, strlen(name) + 1);
+						strcpy(ed->keyword, name);
+						/* define the description */
+						CREATE(ed->description, char, strlen(exdesc) + 1);
+						strcpy(ed->description, exdesc);
+					}
+					/* and finally place it in a room */
+					obj_to_room(obj,rnum);
 				}
-				if(obj->description) {
-					free(obj->description);
-					obj->description = strdup(desc);
-				}
-				if(obj->name) {
-					free(obj->name);
-					obj->name = strdup(name);
-				}
-				if(obj->ex_description) {
-					log("trying to string invalid item in statue generation");
-					return(TRUE);
-				} else {
-					/* create an extra desc structure for the object */
-					CREATE(ed, struct extra_descr_data, 1);
-					ed->next = obj->ex_description;
-					obj->ex_description = ed;
-					/* define the keywords */
-					CREATE(ed->keyword, char, strlen(name) + 1);
-					strcpy(ed->keyword, name);
-					/* define the description */
-					CREATE(ed->description, char, strlen(exdesc) + 1);
-					strcpy(ed->description, exdesc);
-				}
-				/* and finally place it in a room */
-//				sprintf(buf,"roomnum = %d",rnum);
-//				log(buf);
-//				sprintf(buf,"itemnum = %d",itype);
-//				log(buf);
-				obj_to_room(obj,rnum);
-//				log("char had enough kills, created object");
-//				log(name);
-//				log(shdesc);
-//				log(desc);
-//				log(exdesc);
-}
-			} else {
-				log("char did not have enough kills, no obj");
 			}
 			free(tmp);
 		} else {
 			log("screw up bigtime in load_char");
 			return(TRUE);
 		}
-//		free(&player);
 	}
-//	sprintf(buf,"top of ptable = %d", top_of_p_table);
-//	log(buf);
+	sprintf(buf,"processed %d pfiles for legend statue check", top_of_p_table);
+	log(buf);
+}
+
+int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[MAX_INPUT_LENGTH];
+	int level = 50;
+
+
+	if (cmd != 11) /* drink */
+		return(FALSE);
+
+	else if (cmd==11) { /* drink */
+		if(GET_COND(ch,THIRST)>18) {
+			send_to_char("You don't feel thirsty, and decide against it.\n\r", ch);
+			return(TRUE);
+		}
+		if(GET_COND(ch,FULL)>18) {
+			send_to_char("You're too full to drink.\n\r", ch);
+			return(TRUE);
+		}
+
+		send_to_char("You drink from the Fountain of Legends.\n\r", ch);
+		act("$n drinks from the Fountain of Legends.", FALSE, ch, 0, 0, TO_ROOM);
+//		GET_COND(ch,THIRST) = 24;
+		GET_COND(ch,FULL)+=1;
+		if(GET_COND(ch,FULL)>18) {
+			act("Too much water has sated your appetite.",FALSE,ch,0,0,TO_CHAR);
+			return(TRUE);
+		}
+
+		/* now for the magic spellup bonus */
+		switch (number(0, 30)) {
+			case 1:
+				cast_refresh(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 2:
+				cast_stone_skin(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 3:
+				cast_cure_serious(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 4:
+				cast_cure_light(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 5:
+				cast_armor(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 6:
+				cast_bless(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 7:
+				cast_invisibility(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 8:
+				cast_strength(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 9:
+				cast_remove_poison(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 10:
+				cast_true_seeing(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 11:
+				cast_flying(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 12:
+				cast_fly_group(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 13:
+				cast_cure_critic(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 14:
+				cast_heal(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 15:
+				cast_second_wind(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 16:
+				cast_water_breath(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 17:
+				cast_shield(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 18:
+				cast_find_traps(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 19:
+				cast_protection_from_evil_group(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 20:
+				cast_protection_from_evil(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 21:
+				cast_sanctuary(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 22:
+				cast_sense_life(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 23:
+				cast_aid(level, ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			default:
+				send_to_char("Tasty stuff, no?\n\r", ch);
+				break;
+		}
+		return(TRUE);
+	}
+}
+
+/* for DRUID flagged mobs, -Lennya 20030604 */
+int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *vict;
+	struct follow_type *fol;
+	byte lspell, healperc=0;
+	int to_room, try = 0;
+	extern int top_of_world;
+	struct room_data *room;
+
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
+	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
+		StandUp(ch);
+		return(TRUE);
+	}
+	if (check_soundproof(ch))
+		return(FALSE);
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
+
+	if (!ch->specials.fighting) {
+		if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
+			if ((lspell = GetMaxLevel(ch)) >= 20) {
+				act("$n utters the words 'May the Myrrhal shine upon me!'.", 1, ch,0,0,TO_ROOM);
+				cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else if (lspell > 12) {
+				act("$n utters the words 'Woah! I feel GOOD! Heh.'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else if (lspell > 8) {
+				act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else {
+				act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			}
+		}
+
+#ifdef PREP_SPELLS
+
+		if (!ch->desc) { /* is it a mob? */
+			/* low level spellup */
+			if (!ch->equipment[WIELD]) { /* does dr00d have a weapon equipped? */
+				act("$n utters the words 'Gimmie a light!'.",FALSE,ch,0,0,TO_ROOM);
+				cast_flame_blade(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_BARKSKIN)) {
+				act("$n utters the words 'oakey dokey'.",FALSE,ch,0,0,TO_ROOM);
+				cast_barkskin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
+				act("$n utters the words 'anti evil'.",FALSE,ch,0,0,TO_ROOM);
+				cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_GOOD) && !IS_GOOD(ch)) {
+				act("$n utters the words 'anti good'.",FALSE,ch,0,0,TO_ROOM);
+				cast_protection_from_good(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+
+			/* mid level spellup */
+			if (GetMaxLevel(ch)>24) {
+				if (!affected_by_spell(ch,SPELL_PROT_FIRE)) {
+					act("$n utters the words 'resist fire'.",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_fire(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_COLD)) {
+					act("$n utters the words 'resist cold'.",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_cold(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_ENERGY)) {
+					act("$n utters the words 'resist energy'.",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_energy(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_ELEC)) {
+					act("$n utters the words 'resist electricity'.",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_elec(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+
+				/* let's give dr00d some pets */
+				if (!affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && OUTSIDE(ch) && !ch->followers
+								&& !IS_SET(real_roomp((ch)->in_room)->room_flags,PEACEFUL)
+								&& !IS_SET(real_roomp((ch)->in_room)->room_flags,TUNNEL)) {
+					act("$n whistles loudly.",FALSE,ch,0,0,TO_ROOM);
+					cast_animal_summon_3(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					if (affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && ch->followers) {
+						do_order(ch, "followers guard on", 0);
+						do_group(ch, "all",0);
+						act("$n utters the words 'instant growth'.",FALSE,ch,0,0,TO_ROOM);
+						for (fol = ch->followers ; fol ;fol = fol->next) {
+							if (!affected_by_spell(fol->follower, SPELL_ANIMAL_GROWTH)) {
+								cast_animal_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,fol->follower,0);
+								WAIT_STATE(ch, PULSE_VIOLENCE);
+							}
+						}
+					}
+					return(TRUE);
+				}
+			}
+
+			/* high level spellup */
+			if (GetMaxLevel(ch)>47) {
+				if (!IS_AFFECTED(ch, AFF_FIRESHIELD)) {
+					act("$n utters the words 'Might of the Phoenix'.",FALSE,ch,0,0,TO_ROOM);
+					cast_fireshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			/* let's mask these spells and look real cool */
+			if ((IS_AFFECTED(ch, AFF_FIRESHIELD) || IS_AFFECTED(ch, AFF_SANCTUARY)) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+				act("$n utters the words 'Shadow of the Ravens'.",FALSE,ch,0,0,TO_ROOM);
+				cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+
+			/* low level removes */
+			if (affected_by_spell(ch,SPELL_POISON)) {
+				act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
+				cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (affected_by_spell(ch,SPELL_BLINDNESS)) {
+				act("$n utters the words 'see the light'.",FALSE,ch,0,0,TO_ROOM);
+				cast_cure_blind(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+
+			/* hi level removes */
+			if (GetMaxLevel(ch) >24) {
+				if (affected_by_spell(ch,SPELL_CURSE)) {
+					act("$n utters the words 'neutralize'.",FALSE,ch,0,0,TO_ROOM);
+					cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (affected_by_spell(ch,SPELL_WEB)) {
+					act("$n utters the words 'glib my feet'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n doesn't look so webby anymore.'.",FALSE,ch,0,0,TO_ROOM);
+					affect_from_char(ch,SPELL_WEB);
+					return(TRUE);
+				}
+			}
+
+			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
+				act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
+				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+		} /* it was a NPC */
+#endif
+	} /* end spellup */
+	/* Find a dude to to evil things upon ! */
+	if ((vict = FindAHatee(ch))==NULL)
+		vict = FindVictim(ch);
+	if (!vict)
+		vict = ch->specials.fighting;
+	if (!vict)
+		return(FALSE);
+
+	/* random number from 0 to level */
+	lspell  = number(0,GetMaxLevel(ch));
+	lspell += GetMaxLevel(ch)/5;
+	lspell  = MIN(GetMaxLevel(ch), lspell);
+
+	if (lspell < 1)
+		lspell = 1;
+
+	if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 7) && (!IS_SET(ch->specials.act, ACT_AGGRESSIVE))) {
+		while (!room) {
+			to_room = number(0, top_of_world);
+			room = real_roomp(to_room);
+			if (room) {
+				if ((IS_SET(room->room_flags, INDOORS)) ||	(IS_SET(room->room_flags, NO_MAGIC)) ||	!IsOnPmp(to_room))
+					room = 0;
+			} else {
+				log("Oddness in druid teleport proc");
+				return(FALSE);
+			}
+		}
+		act("$n utters the words 'plant aid'", 1, ch, 0, 0, TO_ROOM);
+		act("$n touches a nearby plant, and disappears!", 1, ch, 0, 0, TO_ROOM);
+		char_from_room(ch);
+		char_to_room(ch, to_room);
+		cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+		return(FALSE);
+	}
+
+	/* hit a foe or help yourself? */
+/*	if (ch->points.hit < (ch->points.max_hit / 2))
+		healperc = 7;
+	else if (ch->points.hit < (ch->points.max_hit / 4))
+		healperc = 5;
+	else if (ch->points.hit < (ch->points.max_hit / 8))
+		healperc=3;
+*/
+	if (number(1,9)>3) {
+		/* pester them */
+		if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) && (number(0,4)==0)) {
+			act("$n whistles.",1,ch,0,0,TO_ROOM);
+			act("$n utters the words 'Here Lightning!'.",1,ch,0,0,TO_ROOM);
+			cast_call_lightning(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return(TRUE);
+		}
+
+		switch(lspell) {
+			case 1:
+			case 2:
+			case 3:
+				act("$n utters the words 'Muhahaha!'.",1,ch,0,0,TO_ROOM);
+				cast_cause_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 4:
+			case 5:
+			case 6:
+				act("$n utters the words 'Frizzle sizzle!'.",1,ch,0,0,TO_ROOM);
+				cast_heat_stuff(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 7:
+				act("$n utters the words 'Breach!'.",1,ch,0,0,TO_ROOM);
+				cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 8:
+				act("$n utters the words 'Wrath of the Serpent Lady!'.",1,ch,0,0,TO_ROOM);
+				cast_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 9:
+			case 10:
+				act("$n utters the words 'Pain? It helps clear the mind.'.",1,ch,0,0,TO_ROOM);
+				cast_cause_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 11:
+				act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+				cast_firestorm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 12:
+			case 13:
+			case 14:
+				if (vict->equipment[WIELD]) {
+					act("$n utters the words 'frogemoth'", 1, ch, 0, 0, TO_ROOM);
+					cast_warp_weapon(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				} else {
+					act("$n utters the words 'Frizzle sizzle!'.",1,ch,0,0,TO_ROOM);
+					cast_heat_stuff(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				}
+				break;
+			case 15:
+				act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+				cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 16:
+				{
+					if (!IS_SET(vict->M_immune, IMM_FIRE)) {
+						act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+						cast_firestorm(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else if (IS_AFFECTED(vict, AFF_SANCTUARY) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
+						act("$n utters the words 'instant-away magic remover!'.",1,ch,0,0,TO_ROOM);
+						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else if (IS_AFFECTED(vict, AFF_FIRESHIELD) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
+						act("$n utters the words 'instant-away magic remover!'.",1,ch,0,0,TO_ROOM);
+						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else {
+						act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+						cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+					}
+					break;
+				}
+			case 17:
+				act("$n utters the words 'Here boy!'", FALSE, ch, 0,0, TO_ROOM);
+				cast_fire_servant(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL,0, 0);
+				do_order(ch, "followers guard on", 0);
+				break;
+			case 18:
+			case 19:
+			default:
+				if (GetMaxLevel(ch) >= 20 && (!IS_AFFECTED(vict, AFF_SILENCE)) && !number(0,2)) {
+					act("$n utters the words 'Hush honey'", 1, ch, 0, 0, TO_ROOM);
+					cast_silence(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				} else {
+					act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+					cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+				}
+				break;
+		}
+		return(TRUE);
+	} else {
+	/* do heal */
+		if (IS_AFFECTED(ch, AFF_BLIND) && (lspell >= 4) & (number(0,3)==0)) {
+			act("$n utters the words 'Praise Pentak, I can see!'.", 1, ch,0,0,TO_ROOM);
+			cast_cure_blind( GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
+
+		if (IS_AFFECTED(ch, AFF_CURSE) && (lspell >= 6) && (number(0,6)==0)) {
+			act("$n utters the words 'I'm rubber, you're glue.", 1, ch,0,0,TO_ROOM);
+			cast_remove_curse(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
+
+		if (IS_AFFECTED(ch, AFF_POISON) && (lspell >= 5) && (number(0,6)==0)) {
+			act("$n utters the words 'Praise Xenon, I don't feel sick no more!'.", 1, ch,0,0,TO_ROOM);
+			cast_remove_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
+
+		switch(lspell) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+				act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+				act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			case 11:
+			case 12:
+			case 13:
+			case 14:
+			case 15:
+			case 16:
+			case 18:
+			case 19:
+			case 20:
+			case 21:
+			case 22:
+			case 23:
+				act("$n utters the words 'Woah, I feel good! Heh.'.", 1, ch,0,0,TO_ROOM);
+				cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+			default:
+				act("$n utters the words 'Praise Banon, I'm good to go another round!'.", 1, ch,0,0,TO_ROOM);
+				cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+				break;
+		}
+		return(TRUE);
+	}
 }
 
 #define CLIMB_ROOM 696

@@ -619,10 +619,10 @@ void spell_teleport(byte level, struct char_data *ch,
     return;
   }
 
-  act("$n slowly fade out of existence.", FALSE, ch,0,0,TO_ROOM);
+  act("$n slowly fades out of existence.", FALSE, ch,0,0,TO_ROOM);
   char_from_room(ch);
   char_to_room(ch, to_room);
-  act("$n slowly fade in to existence.", FALSE, ch,0,0,TO_ROOM);
+  act("$n slowly fades in to existence.", FALSE, ch,0,0,TO_ROOM);
 
   do_look(ch, "", 0);
 

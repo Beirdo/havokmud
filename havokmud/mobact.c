@@ -302,6 +302,13 @@ void mobile_activity(struct char_data *ch)
       char_to_room(ch, 50);
   }
 
+	/* darkraces have autodarkness */
+	if (IsDarkrace(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+		act("$n uses $s innate powers of darkness.",FALSE,ch,0,0,TO_ROOM);
+		cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+	}
+
+
   /* Execute a script if there is one */
 
   if(IS_SET(ch->specials.act, ACT_SCRIPT) && !IS_PC(ch))
@@ -351,7 +358,7 @@ if (!no_specials) {		/* do not run these if disabled */
         }
     }
  if (IS_SET(ch->specials.act,ACT_DRUID)) {
-    if (cleric(ch,0,"",ch,PULSE_TICK)) {
+    if (druid(ch,0,"",ch,PULSE_TICK)) {
         return;
         }
     }

@@ -2671,183 +2671,165 @@ int TreeThrowerMob(struct char_data *ch, int cmd, char *arg, struct char_data *m
 
 */
 
-int Paladin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+int Paladin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *vict, *tch;
+	char buf[255];
 
-struct char_data *vict, *tch;
-char    buf[255];
+	if (!ch->skills || GET_LEVEL(ch,PALADIN_LEVEL_IND)<=0) {  /* init skills */
+		SET_BIT(ch->player.class, CLASS_PALADIN);
+		if(!ch->skills)
+			SpaceForSkills(ch);
+		GET_LEVEL(ch,PALADIN_LEVEL_IND) = GetMaxLevel(ch); /* needed in do_ */
+		/* set skill levels */
+		ch->skills[SKILL_RESCUE].learned = GetMaxLevel(ch)+40;
+		ch->skills[SKILL_HOLY_WARCRY].learned = GetMaxLevel(ch)+40;
+		ch->skills[SKILL_LAY_ON_HANDS].learned = GetMaxLevel(ch)+40;
+		ch->skills[SKILL_BASH].learned = GetMaxLevel(ch)+40;
+		ch->skills[SKILL_KICK].learned = GetMaxLevel(ch)+40;
+		ch->skills[SKILL_BLESSING].learned = GetMaxLevel(ch)+40;
+	} /* done with setting skills */
 
-if (!ch->skills || GET_LEVEL(ch,PALADIN_LEVEL_IND)<=0) {  /* init skills */
-    SET_BIT(ch->player.class, CLASS_PALADIN);
-    if(!ch->skills) SpaceForSkills(ch);
-    GET_LEVEL(ch,PALADIN_LEVEL_IND) = GetMaxLevel(ch); /* needed in do_ */
+	if(cmd) {
+		/*  we will not give free blesses or lay on hands..
+			we will just ignore all commands.. yah. */
+		return(FALSE);
+	}
 
-        /* set skill levels */
+	if (affected_by_spell(ch,SPELL_PARALYSIS)) /* poor guy.. */
+		return(FALSE);
 
-       ch->skills[SKILL_RESCUE].learned = GetMaxLevel(ch)+40;
-       ch->skills[SKILL_HOLY_WARCRY].learned = GetMaxLevel(ch)+40;
-       ch->skills[SKILL_LAY_ON_HANDS].learned = GetMaxLevel(ch)+40;
-       ch->skills[SKILL_BASH].learned = GetMaxLevel(ch)+40;
-       ch->skills[SKILL_KICK].learned = GetMaxLevel(ch)+40;
-       ch->skills[SKILL_BLESSING].learned = GetMaxLevel(ch)+40;
+	if (!AWAKE(mob) && !affected_by_spell(mob,SPELL_SLEEP)) {
+		/* hey, why you sleeping guy?  STAND AND FIGHT! */
+		command_interpreter(mob,"wak");
+		command_interpreter(mob,"stand");
+		return(TRUE);
+	}
 
-  }     /* done with setting skills */
-
-if(cmd) {
-   /* we will not give free blesses or lay on hands..
-       we will just ignore all commands.. yah. */
-
-   return(FALSE);
-}
-
-if (affected_by_spell(ch,SPELL_PARALYSIS))                /* poor guy.. */
-        return(FALSE);
-
-if (!AWAKE(mob) && !affected_by_spell(mob,SPELL_SLEEP)) {
-     /* hey, why you sleeping guy?  STAND AND FIGHT! */
-     command_interpreter(mob,"wak");
-     command_interpreter(mob,"stand");
-     return(TRUE);
- }
-
-if (ch->specials.fighting && ch->specials.fighting != ch)       {
-
-        if (GET_POS(ch) == POSITION_SITTING || GET_POS(ch) == POSITION_RESTING) {
-                do_stand(ch,"",0);
-                return(TRUE);
-        }
+	if (ch->specials.fighting && ch->specials.fighting != ch) {
+		if (GET_POS(ch) == POSITION_SITTING || GET_POS(ch) == POSITION_RESTING) {
+			do_stand(ch,"",0);
+			return(TRUE);
+		}
 
         vict = ch->specials.fighting;
-
-        if (!vict) {
-             log("!vict in paladin");
-             return(FALSE);
-        }
-
+		if (!vict) {
+			log("!vict in paladin");
+			return(FALSE);
+		}
 
         /* well, if we in battle, do some nice things on ourself..      */
         if (!affected_by_spell(ch,SKILL_BLESSING)) {
-                sprintf(buf,"%s",GET_NAME(ch)); /* bless myself */
-                do_blessing(ch,buf,0);
-                return(TRUE);
-        }
+			sprintf(buf,"%s",GET_NAME(ch)); /* bless myself */
+			do_blessing(ch,buf,0);
+			return(TRUE);
+		}
 
-        if (!affected_by_spell(ch,SKILL_LAY_ON_HANDS) && (GET_HIT(ch) < GET_MAX_HIT(ch)/2)) {
-                sprintf(buf,"%s",GET_NAME(ch));
-                do_lay_on_hands(ch,buf,0);
-                return(TRUE);
-        }
+		if (!affected_by_spell(ch,SKILL_LAY_ON_HANDS) && (GET_HIT(ch) < GET_MAX_HIT(ch)/2)) {
+			sprintf(buf,"%s",GET_NAME(ch));
+			do_lay_on_hands(ch,buf,0);
+			return(TRUE);
+		}
 
-        switch(number(1,6)) {
-                case 1: /* intellegent kick/bash.. hmm  */
-                        if( HasClass(vict, CLASS_SORCERER|CLASS_MAGIC_USER) ||
-                            HasClass(vict, CLASS_CLERIC|CLASS_PSI)) {
-                                do_bash(ch,"",0);
-                                return(TRUE);
-                                break;
-                        } else {
-                                do_kick(ch,"",0);
-                                return(TRUE);
-                                break;
-                        }
-			break;
-                case 2: do_bash(ch,"",0);
-                        return(TRUE);
-                        break;
-                case 3: do_kick(ch,"",0);
-                        return(TRUE);
-                        break;
-                case 4: do_holy_warcry(ch,"",0);
-                        return(TRUE);
-                        break;
-                default:
-			return(fighter(ch,cmd,arg,mob,type));
-                        break;
-        } /* end switch */
+		switch(number(1,6)) {
+			case 1: /* intellegent kick/bash.. hmm  */
+				if(HasClass(vict,CLASS_SORCERER|CLASS_MAGIC_USER) || HasClass(vict,CLASS_CLERIC|CLASS_PSI)) {
+					do_bash(ch,"",0);
+					return(TRUE);
+				} else {
+					do_kick(ch,"",0);
+					return(TRUE);
+				}
+				break;
+			case 2:
+				do_bash(ch,"",0);
+				return(TRUE);
+				break;
+			case 3:
+				do_kick(ch,"",0);
+				return(TRUE);
+				break;
+			case 4:
+				do_holy_warcry(ch,"",0);
+				return(TRUE);
+				break;
+			default:
+				return(fighter(ch,cmd,arg,mob,type));
+				break;
+		} /* end switch */
+	} else { /* not fighting */
+		/* check our hps */
+		if (GET_HIT(ch) < GET_MAX_HIT(ch)/2 && !affected_by_spell(ch,SKILL_LAY_ON_HANDS)) {
+			sprintf(buf,"%s",GET_NAME(ch));
+			do_lay_on_hands(ch,buf,0);
+			return(TRUE);
+		}
+		if (GET_HIT(ch) < GET_MAX_HIT(ch)/2 && GET_MANA(ch)>GET_MANA(ch)/2 && number(1,6)>4) {
+			cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
+		/* lets check some spells on us.. */
+		if (IS_AFFECTED(ch, AFF_POISON) && (number(0,6)==0) && GET_LEVEL(ch,PALADIN_LEVEL_IND)>10) {
+			act("$n asks $s deity to remove poison from $s blood!", 1, ch,0,0,TO_ROOM);
+			if(GET_LEVEL(ch,PALADIN_LEVEL_IND)<40)
+				cast_slow_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			else
+				cast_remove_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
 
- } /* end fighting */
- else {         /* not FIGHTING */
+		if (!IS_AFFECTED(ch, AFF_PROTECT_FROM_EVIL) && number(0,6)==0) {
+			act("$n prays to $s deity to protect $m from evil.", 1,ch,0,0,TO_ROOM);
+				cast_protection_from_evil(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
 
-   /* check our hps */
-   if (GET_HIT(ch) < GET_MAX_HIT(ch)/2 && !affected_by_spell(ch,SKILL_LAY_ON_HANDS)) {
-      sprintf(buf,"%s",GET_NAME(ch));
-      do_lay_on_hands(ch,buf,0);
-      return(TRUE);
-   }
-   if (GET_HIT(ch) < GET_MAX_HIT(ch)/2 && GET_MANA(ch)>GET_MANA(ch)/2 && number(1,6)>4) {
-      cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-	return(TRUE);
-   }
-
-   /* lets check some spells on us.. */
-   if (IS_AFFECTED(ch, AFF_POISON) && (number(0,6)==0) && GET_LEVEL(ch,PALADIN_LEVEL_IND)>10) {
-      act("$n asks $s deity to remove poison from $s blood!", 1, ch,0,0,TO_ROOM);
-      if(GET_LEVEL(ch,PALADIN_LEVEL_IND)<40)
-         cast_slow_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      else
-         cast_remove_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      return(TRUE);
-   }
-
-   if (!IS_AFFECTED(ch, AFF_PROTECT_FROM_EVIL) && number(0,6)==0) {
-      act("$n prayed to $s deity to protect $m from evil.", 1,ch,0,0,TO_ROOM);
-      cast_protection_from_evil(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-	return(TRUE);
-   }
-
-  /* i dont like GreetPeople behaivor.. lets make it this way */
-
-  if (IS_SET(ch->specials.act, ACT_GREET)) {
-     for (tch=real_roomp(ch->in_room)->people; tch; tch = tch->next_in_room) {
-log("paladin trying greet someone..\n");
-        if (!IS_NPC(tch) && !number(0,4) ) {
-           if (GetMaxLevel(tch) > 5 && CAN_SEE(ch,tch)) {
-              if(GET_ALIGNMENT(tch) >= 900) {
-                 sprintf(buf, "bow %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 if(tch->player.sex == SEX_FEMALE)
-                    do_say(ch, "Greetings, noble m'lady!",0);
-                 else
-                    do_say(ch, "Greetings, noble sir!",0);
-              }
-              else if(GET_ALIGNMENT(tch) >= 350) {
-                 sprintf(buf, "smile %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 do_say(ch, "Greetings, adventurer",0);
-              }
-              else if(GET_ALIGNMENT(tch) >= -350) {
-                 sprintf(buf, "wink %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 do_say(ch, "Your doing well on your path of Neutrality",0);
-              }
-              else if(GET_ALIGNMENT(tch) >= -750) {
-                 sprintf(buf, "nod %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 do_say(ch, "May the prophet smile upon you",0);
-              }
-              else if(GET_ALIGNMENT(tch) >= -900) {
-                 sprintf(buf, "wink %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 do_say(ch, "You falling in hands of evil, beware!", 0);
-              }
-	      else {
-   	         /* hmm, not nice guy.. */
-                 sprintf(buf, "glare %s", GET_NAME(tch));
-                 command_interpreter(ch, buf);
-                 do_say(ch, "I sense great evil here!", 0);
-              }
-              SET_BIT(ch->specials.act, ACT_GREET);
-	      break;
-           } /* endif of can_see */
-        }
-     }
-  }
-  else if (!number(0,50)) {
-       REMOVE_BIT(ch->specials.act, ACT_GREET);
-  }
-}       /* end not fighting */
- return(FALSE);
+		for (tch=real_roomp(ch->in_room)->people; tch; tch = tch->next_in_room) {
+			if (!IS_NPC(tch) && !number(0,4) ) {
+				if (IS_SET(ch->specials.act, ACT_GREET)) {
+					if (GetMaxLevel(tch) > 5 && CAN_SEE(ch,tch)) {
+						if(GET_ALIGNMENT(tch) >= 900) {
+							sprintf(buf, "bow %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							if(tch->player.sex == SEX_FEMALE)
+								do_say(ch, "Greetings, noble lady!",0);
+							else
+								do_say(ch, "Greetings, noble sir!",0);
+						} else if(GET_ALIGNMENT(tch) >= 350) {
+							sprintf(buf, "smile %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							do_say(ch, "Greetings, adventurer.",0);
+						} else if(GET_ALIGNMENT(tch) >= -350) {
+							sprintf(buf, "wink %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							do_say(ch, "You're doing well on your path of Neutrality",0);
+						} else if(GET_ALIGNMENT(tch) >= -750) {
+							sprintf(buf, "nod %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							do_say(ch, "May the prophet smile upon you",0);
+						} else if(GET_ALIGNMENT(tch) >= -900) {
+							sprintf(buf, "frown %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							do_say(ch, "You're falling in hands of evil, beware!", 0);
+						} else {
+							/* hmm, not nice guy.. */
+							sprintf(buf, "glare %s", GET_NAME(tch));
+							command_interpreter(ch, buf);
+							do_say(ch, "I sense great evil here!", 0);
+						}
+						 SET_BIT(ch->specials.act, ACT_GREET);
+						break;
+					} /* endif of can_see */
+				}/* end greet */
+			} else if (IsUndead(tch) || IsDiabolic(tch)) {
+				do_say(ch, "Praise the Light, meet thine maker!", 0);
+				sprintf(buf, "%s", GET_NAME(tch));
+				do_holy_warcry(ch,buf,0);
+			}
+		}
+	} /* end not fighting */
+	return(FALSE);
 }
-
 
 /* psi stuff here */
 
@@ -3524,7 +3506,101 @@ int cleric_mage(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
- return(fighter(ch,cmd,arg,mob,type));
+ 	struct char_data *vict;
+ 	struct follow_type *fol;
+ 	byte lspell, healperc=0;
+ 	int to_room, try = 0;
+ 	extern int top_of_world;
+ 	struct room_data *room;
+
+ 	if (cmd || !AWAKE(ch))
+ 		return(FALSE);
+ 	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
+ 		StandUp(ch);
+ 		return(TRUE);
+ 	}
+ 	if (check_soundproof(ch))
+ 		return(fighter(ch,cmd,arg,mob,type));
+ 	if (check_nomagic(ch, 0, 0))
+ 		return(fighter(ch,cmd,arg,mob,type));
+
+ 	if (!ch->specials.fighting) {
+ 		if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
+			act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+			cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+ 		}
+
+ #ifdef PREP_SPELLS
+
+ 		if (!ch->desc) { /* is it a mob? */
+ 			/* low level spellup */
+ 			if (!affected_by_spell(ch,SPELL_BARKSKIN)) {
+ 				act("$n utters the words 'oakey dokey'.",FALSE,ch,0,0,TO_ROOM);
+ 				cast_barkskin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 				return(TRUE);
+ 			}
+ 			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
+ 				act("$n utters the words 'anti evil'.",FALSE,ch,0,0,TO_ROOM);
+ 				cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 				return(TRUE);
+ 			}
+
+ 			/* mid level spellup */
+ 			if (GetMaxLevel(ch)>19) {
+ 				if (!affected_by_spell(ch,SPELL_GIANT_GROWTH)) {
+ 					act("$n utters the words 'The Blessings of Kane'.",FALSE,ch,0,0,TO_ROOM);
+ 					cast_giant_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 					return(TRUE);
+ 				}
+ 			}
+
+ 			/* high level spellup */
+ 			if (GetMaxLevel(ch)>29) {
+ 				/* let's give ranger some pets */
+ 				if (!affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && OUTSIDE(ch) && !ch->followers && !IS_SET(real_roomp((ch)->in_room)->room_flags,TUNNEL)) {
+ 					act("$n whistles loudly.",FALSE,ch,0,0,TO_ROOM);
+ 					cast_animal_summon_3(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 					if (affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && ch->followers) {
+ 						do_order(ch, "followers guard on", 0);
+ 						do_group(ch, "all",0);
+ 						act("$n utters the words 'instant growth'.",FALSE,ch,0,0,TO_ROOM);
+ 						for (fol = ch->followers ; fol ;fol = fol->next) {
+ 							if (!affected_by_spell(fol->follower, SPELL_ANIMAL_GROWTH)) {
+ 								cast_animal_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,fol->follower,0);
+ 								WAIT_STATE(ch, PULSE_VIOLENCE);
+ 							}
+ 						}
+ 					}
+ 					return(TRUE);
+ 				}
+ 			}
+
+ 			/* low level removes */
+ 			if (affected_by_spell(ch,SPELL_POISON)) {
+ 				act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
+ 				cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 				return(TRUE);
+ 			}
+
+ 			/* hi level removes */
+ 			if (GetMaxLevel(ch) >24) {
+ 				if (affected_by_spell(ch,SPELL_CURSE)) {
+ 					act("$n utters the words 'neutralize'.",FALSE,ch,0,0,TO_ROOM);
+ 					cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 					return(TRUE);
+ 				}
+			}
+
+ 			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
+ 				act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
+ 				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+ 				return(TRUE);
+ 			}
+ 		} /* it was a NPC */
+ #endif
+ 	} else { /* char is fighting */
+		return(fighter(ch,cmd,arg,mob,type));
+ 	}
 }
 
 int Barbarian(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)

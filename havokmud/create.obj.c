@@ -46,6 +46,7 @@
 #define CHANGE_OBJ_EGO       38
 #define CHANGE_OBJ_SPEED     39
 #define CHANGE_OBJ_MAX       40
+//#define CHANGE_OBJ_FULLNESS	 41
 
 #define ENTER_CHECK        1
 
@@ -397,6 +398,7 @@ case CHANGE_OBJ_SPECIAL:
 case CHANGE_OBJ_EGO:
 case CHANGE_OBJ_MAX:
 case CHANGE_OBJ_SPEED:
+//case CHANGE_OBJ_FULLNESS:
 	ChangeObjSpecials(ch,arg,0);
 	return;
  default: log("Got to bad spot in ObjEdit");
@@ -1029,6 +1031,10 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
                    ChangeObjSpecials(ch, "", ENTER_CHECK);
                    return;
                    break;
+//           case 4: ch->specials.oedit = CHANGE_OBJ_FULLNESS;
+//                   ChangeObjSpecials(ch, "", ENTER_CHECK);
+//                   return;
+//                   break;
            default: ChangeObjSpecial(ch, "", ENTER_CHECK);
                     return;
     }
@@ -1038,7 +1044,7 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
 
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max) --> ", ch);
+ send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max 4-ContainerFullness) --> ", ch);
  return;
 
 }
@@ -1090,6 +1096,13 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 			}
 
             break;
+//        case CHANGE_OBJ_FULLNESS:
+//        	if(update < 2 && update >= 0)
+//			  ch->specials.objedit->max=update;
+//			else {
+//				temp=1;
+//			}
+//          break;
         default:
 
         	break;
@@ -1116,6 +1129,9 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
         case CHANGE_OBJ_MAX:
 			ch_printf(ch,"Please enter max of item: Param(0-100)    Current(%d)",ch->specials.objedit->max);
 			break;
+//		case CHANGE_OBJ_FULLNESS:
+//			ch_printf(ch,"Should container show fullness? 0=Yes 1=No    Current(%d)",ch->specials.objedit->fullness);
+//			break;
     	default:
 			//send_to_char("Bad value",ch);
         	break;

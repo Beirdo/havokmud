@@ -1799,11 +1799,12 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		j->obj_flags.value[3]);
 	break;
       case ITEM_CONTAINER :
-	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rKey to unlock: %d\n\rCorpse : %s",
+	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rKey to unlock: %d\n\rCorpse : %s\n\r",
 		j->obj_flags.value[0],
 		j->obj_flags.value[1],
-		(j->obj_flags.value[2]/*? "No" : "Yes" commented out for key value*/),
-		j->obj_flags.value[3]?"Yes":"No");
+		j->obj_flags.value[2],
+		(j->obj_flags.value[3]?"Yes":"No")/*,
+		(j->fullness ? "No" : "Yes")*/);
 	break;
       case ITEM_DRINKCON :
 	sprinttype(j->obj_flags.value[2],drinks,buf2);
@@ -1973,7 +1974,7 @@ aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\
 aff2   = special affect 2      | aff3   = special affect 3\r
 aff4   = special affect 4      | aff5   = special affect 5\r
 speed  = speed of weapon       | ego    = level of item \r
-max    = max of item\r
+max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\r
 \rNote: NI = Not implemented.\n\r",ch);
   return;
  } /* End Help! */
@@ -2099,6 +2100,12 @@ if (!*argument)
 		 j->max=atol(parmstr);
 		 return;
 	}
+//	if (!strcmp(field,"fullness"))
+//		{
+//		 argument = one_argument(argument,parmstr);
+//		 j->fullness=atol(parmstr);
+//		 return;
+//	}
 	if (!strcmp(field,"rent"))
 		{
 		 argument = one_argument(argument,parmstr);

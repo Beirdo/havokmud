@@ -615,6 +615,7 @@ struct obj_data
 	int level;  /* Level ego of the item */
 	int max;    /* max of the object */
 	int speed;  /* Speed of the weapon*/
+//	int fullness; hrmm, can't quite get this to work smoothly here, mebbe somewhere else  -Lennya
 	int weapontype;
 
 	char *modBy;

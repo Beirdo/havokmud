@@ -1399,6 +1399,8 @@ void assign_mobiles()
 	{50998, Deshima },
 	{23201    , TrainingGuild },
 	{ 23202 , WeaponsMaster },
+/* King's Grove */
+	{702, DruidGuildMaster },
 #endif
 
     { -1, NULL },
@@ -1601,6 +1603,7 @@ void assign_rooms()
 
 /* The King's Grove */
  { 706, climb_room },
+ { 717, legendfountain },
 
    /* Cthol (Xenon) */
    {40233, dispel_room},

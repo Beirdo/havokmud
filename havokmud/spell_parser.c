@@ -1020,13 +1020,13 @@ if(IS_SET(flags,WIND_ROOM)) {
    	return 0;
 
   if(IsResist(ch, IMM_PIERCE)) {
-	  send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+	  send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 	  return damage/2;
    }  else if(IsSusc(ch, IMM_PIERCE)) {
-		send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 		return damage*2;
 	} else {
-		send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 		return damage;
 	}
 
@@ -1202,9 +1202,13 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 					regenroom=20;
 
 
-				if(GET_HIT(i)!=hit_limit(i) || GET_MANA(i)!=mana_limit(i) || GET_MOVE(i)!=move_limit(i))
-					send_to_char("Your wounds seem to heal over.",i);
-				 }
+				if(GET_HIT(i)!=GET_MAX_HIT(i))
+					send_to_char("Your wounds seem to heal exceptionally quick.\n\r",i);
+				else if(GET_MANA(i)!=GET_MAX_MANA(i))
+					send_to_char("You feel your mystical abilities increase.\n\r",i);
+				else if(GET_MOVE(i)!=GET_MAX_MOVE(i))
+					send_to_char("Your stamina seems to increase rather quick.\n\r",i);
+			}
 		}
 
 
