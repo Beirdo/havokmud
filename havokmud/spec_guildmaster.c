@@ -149,7 +149,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg,
      * 170->Practice,164->Practise,
      */
     if (cmd == 164 || cmd == 170 || cmd == 582) {
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these lores:\n\r\n\r");
@@ -336,7 +336,7 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice this skill:\n\r\n\r");
@@ -403,7 +403,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     } else if (cmd == 164 || cmd == 170 || cmd == 582) {
         if (HasClass(ch, CLASS_MONK)) {
-            if (!*arg) {
+            if (!arg || !*arg) {
                 sprintf(buffer, "You have got %d practice sessions "
                                 "left.\n\r\n\r", ch->specials.spells_to_learn);
                 sprintf(buf, "You can practice any of these skills:\n\r\n\r");
@@ -437,7 +437,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
             }
             return (TRUE);
         } else if (HasClass(ch, CLASS_WARRIOR)) {
-            if (!*arg) {
+            if (!arg || !*arg) {
                 sprintf(buffer, "You have got %d practice sessions "
                                 "left.\n\r\n\r", ch->specials.spells_to_learn);
                 sprintf(buf, "You can practice these skills:\n\r\n\r");
@@ -513,7 +513,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -600,7 +600,7 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -686,7 +686,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells and "
@@ -774,7 +774,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -861,7 +861,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells and "
@@ -951,7 +951,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buf, "You have got %d practice sessions left.\n\r",
                     ch->specials.spells_to_learn);
             send_to_char(buf, ch);
@@ -1086,7 +1086,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buf, "You have got %d practice sessions left.\n\r",
                     ch->specials.spells_to_learn);
             send_to_char(buf, ch);
@@ -1184,7 +1184,7 @@ int ninja_master(struct char_data *ch, int cmd, char *arg,
      * 170->Practice,164->Practise,
      */
     if (cmd == 164 || cmd == 170 || cmd == 582) {
-        if (!*arg) {
+        if (!arg || !*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these skills:\n\r\n\r");
@@ -1259,7 +1259,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
     if (cmd != 582 && cmd != 59) {
         return (FALSE);
     }
-    if (cmd == 582 && !*arg) {
+    if (cmd == 582 && (!arg || !*arg)) {
         /* 
          * list if no argument
          */
@@ -1490,7 +1490,7 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -1563,7 +1563,7 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -1899,7 +1899,7 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -1976,7 +1976,7 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument
              */
@@ -2066,7 +2066,7 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -2157,7 +2157,7 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -2248,7 +2248,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
@@ -2308,7 +2308,7 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (!*arg) {
+        if (!arg || !*arg) {
             /* 
              * practice||practise, without argument 
              */
