@@ -2326,24 +2326,9 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_IMMORTAL(ch)) {
-        if (BestMagicClass(ch) == WARRIOR_LEVEL_IND ||
-            BestMagicClass(ch) == BARBARIAN_LEVEL_IND) {
-            send_to_char("Think you had better stick to fighting...\n\r", ch);
-            return;
-        } else if (BestMagicClass(ch) == THIEF_LEVEL_IND) {
-            send_to_char("Think you should stick to stealing...\n\r", ch);
-            return;
-        } else if (BestMagicClass(ch) == MONK_LEVEL_IND) {
-            send_to_char("Think you should stick to meditating...\n\r", ch);
-            return;
-        } else if (BestMagicClass(ch) == MAGE_LEVEL_IND ||
-                   BestMagicClass(ch) == DRUID_LEVEL_IND ||
-                   BestMagicClass(ch) == CLERIC_LEVEL_IND) {
-            send_to_char("Think you better stick to your way of magic....\n\r",
-                         ch);
-            return;
-        }
+    if (!IS_IMMORTAL(ch) && !HasClass(ch, SORCERER_LEVEL_IND)) {
+        send_to_char("What, do you think you're a sorcerer?\n\r", ch);
+        return;
     }
 
     if (affected_by_spell(ch, SKILL_MEMORIZE)) {
