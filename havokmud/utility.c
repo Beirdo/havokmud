@@ -863,13 +863,11 @@ void sprintclasses(unsigned long vektor, char *result)
 
     for( nr = 0; vektor && nr < MAX_CLASS; vektor >>=1, nr++ ) {
         if( vektor & 1 ) {
-            strcat( result, classes[nr].abbrev );
-        } else {
-            strcat( result, "  " );
-        }
+            strcat( result, classes[nr].name );
 
-        if( vektor & (~1) ) {
-            strcat( result, "/" );
+            if( vektor & (~1) ) {
+                strcat( result, "/" );
+            }
         }
     }
 

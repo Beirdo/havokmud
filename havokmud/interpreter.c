@@ -1678,10 +1678,8 @@ void show_menu(struct descriptor_data *d)
 
 void EnterState(struct descriptor_data *d, int newstate)
 {
-    char            buf[1024];
-    char            bufx[1000];
+    char            buf[MAX_STRING_LENGTH];
     int             chosen = 0;
-    char            tmp_name[20];
     int             i;
 
     if( !d ) {
@@ -1714,9 +1712,8 @@ void EnterState(struct descriptor_data *d, int newstate)
 
         for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
             if (HasClass(d->character, pc_num_class(chosen))) {
-                sprintf(bufx, "[%2d] %s\n\r", chosen + 1,
-                        classes[chosen].name);
-                send_to_char(bufx, d->character);
+                ch_printf(d->character, "[%2d] %s\n\r", chosen + 1,
+                          classes[chosen].name);
             }
         }
         SEND_TO_Q("\n\rMain Class :", d);
@@ -1732,37 +1729,35 @@ void EnterState(struct descriptor_data *d, int newstate)
         SEND_TO_Q("Your choices? ", d);
         break;
     case CON_ALIGNMENT:
-        sprintf(bufx,
-                "Your alignment is an indication of how well or badly you"
-                " have morally\n\r"
-                "conducted yourself in the game. It ranges numerically, "
-                "from -1000\n\r"
-                "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good"
-                "$c000w), 0 being neutral. Generally, if you kill\n\r"
-                "'Good' mobs, you will gravitate towards Evil, and "
-                "vice-versa. Some spells\n\r"
-                "and skills also affect your alignment. ie Backstab makes"
-                " you evil, and\n\r"
-                "the spell heal makes you good\n\r");
-        send_to_char(bufx, d->character);
+        ch_printf(d->character,
+                  "Your alignment is an indication of how well or badly you"
+                  " have morally\n\r"
+                  "conducted yourself in the game. It ranges numerically, "
+                  "from -1000\n\r"
+                  "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good"
+                  "$c000w), 0 being neutral. Generally, if you kill\n\r"
+                  "'Good' mobs, you will gravitate towards Evil, and "
+                  "vice-versa. Some spells\n\r"
+                  "and skills also affect your alignment. ie Backstab makes"
+                  " you evil, and\n\r"
+                  "the spell heal makes you good\n\r");
 
         if (HasClass(d->character, CLASS_PALADIN)) {
-            sprintf(bufx, "Please select your alignment "
-                          "($c000WGood$c000w)");
+            ch_printf(d->character, "Please select your alignment "
+                                    "($c000WGood$c000w)");
         } else if (HasClass(d->character, CLASS_DRUID)) {
-            sprintf(bufx, "Please select your alignment (Neutral)");
+            ch_printf(d->character, "Please select your alignment (Neutral)");
         } else if (HasClass(d->character, CLASS_NECROMANCER)) {
-            sprintf(bufx, "Please select your alignment "
-                          "($c000REvil$c000w)");
+            ch_printf(d->character, "Please select your alignment "
+                                    "($c000REvil$c000w)");
         } else if (HasClass(d->character, CLASS_RANGER)) {
-            sprintf(bufx, "Please select your alignment "
-                          "($c000WGood$c000w/Neutral$c000w)");
+            ch_printf(d->character, "Please select your alignment "
+                                    "($c000WGood$c000w/Neutral$c000w)");
         } else {
-            sprintf(bufx, "Please select your alignment "
-                          "($c000WGood$c000w/Neutral$c000w/"
-                          "$c000REvil$c000w)");
+            ch_printf(d->character, "Please select your alignment "
+                                    "($c000WGood$c000w/Neutral$c000w/"
+                                    "$c000REvil$c000w)");
         }
-        send_to_char(bufx, d->character);
         break;
 
     case CON_RMOTD:
@@ -1779,7 +1774,8 @@ void EnterState(struct descriptor_data *d, int newstate)
         write(d->descriptor, echo_off, 4);
         break;
     case CON_NMECNF:
-        sprintf(buf, "Did I get that right, %s (Y/N)? ", tmp_name);
+        sprintf(buf, "Did I get that right, %s (Y/N)? ",
+                GET_NAME(d->character));
         SEND_TO_Q(buf, d);
         break;
     case CON_PWDGET:
