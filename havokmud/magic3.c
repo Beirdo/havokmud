@@ -619,8 +619,9 @@ void spell_holyword(int level, struct char_data *ch,
         next = t->next_in_room;
         
         if (!IS_IMMORTAL(t)) {
+            lev = GetMaxLevel(t);
             if (GET_ALIGNMENT(t) <= t_align) {
-                if ((lev = GetMaxLevel(t)) <= 4) {
+                if (lev <= 4) {
                     damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_HOLY_WORD);
                 } else if (lev <= 8) {
                     damage(ch, t, 1, SPELL_HOLY_WORD);
@@ -633,7 +634,7 @@ void spell_holyword(int level, struct char_data *ch,
                     GET_POS(t) = POSITION_STUNNED;
                 }
             } else if (GET_ALIGNMENT(t) > t_align) {
-                if ((lev = GetMaxLevel(t)) <= 4) {
+                if (lev <= 4) {
                     damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_UNHOLY_WORD);
                 } else if (lev <= 8) {
                     damage(ch, t, 1, SPELL_UNHOLY_WORD);
