@@ -335,7 +335,8 @@ void mobile_activity(struct char_data *ch)
         !no_specials) {
         if (!mob_index[ch->nr].func) {
             sprintf(buf, "Attempting to call a non-existing mob func on %s "
-                         "(%ld)", GET_NAME(ch), ch->nr);
+                         "(VNUM %ld)", 
+                         GET_NAME(ch), mob_index[ch->nr].virtual);
             Log(buf);
             REMOVE_BIT(ch->specials.act, ACT_SPEC);
         } else if ((*mob_index[ch->nr].func) (ch, 0, "", ch, PULSE_TICK)) {
