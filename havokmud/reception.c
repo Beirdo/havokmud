@@ -46,21 +46,27 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
         if (obj->item_number > -1 && cost->ok && 
             ItemEgoClash(ch, obj, 0) > -5) {
             if (obj->obj_flags.cost_per_day > 9000) {
-                /* 1/2 price rent */
+                /* 
+                 * 1/2 price rent 
+                 */
                 temp = MAX(0, obj->obj_flags.cost_per_day);
             } else {
                 temp = 0;
             }
 
             if (!IS_RARE(obj) || obj->obj_flags.cost_per_day <= 10000) {
-                /* Let's not charge for normal items */
+                /* 
+                 * Let's not charge for normal items 
+                 */
                 temp = 0;
             }
 
             cost->total_cost += temp;
 
             if (re) {
-                /* set up starting position */
+                /* 
+                 * set up starting position 
+                 */
                 str_pos = tmp_str;
                 for (i = obj->short_description; *i; i++) {
                     /*
@@ -159,9 +165,9 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         limited_items += CountLims(ch->equipment[i]);
     }
 
-    if (!cost->ok)
+    if (!cost->ok) {
         return (FALSE);
-
+    }
     if (cost->no_carried == 0) {
         if (receptionist) {
             act("$c0013[$c0015$n$c0013] tells you 'But you are not carrying "
@@ -206,11 +212,15 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             if (rare) {
                                 if (rare != tmp) {
                                     obj_from_char(rare);
-                                    // obj_index[rare->item_number].number++;
+#if 0                                    
+                                    obj_index[rare->item_number].number++;
+#endif
                                     extract_obj(rare);
                                 } else {
                                     obj_from_char(tmp);
-                                    // obj_index[tmp->item_number].number++;
+#if 0                                    
+                                    obj_index[tmp->item_number].number++;
+#endif
                                     extract_obj(tmp);
                                     tmp = 0;
                                 }
@@ -240,11 +250,15 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             if (rare) {
                                 if (rare != tmp) {
                                     obj_from_char(rare);
-                                    // obj_index[rare->item_number].number++;
+#if 0                                    
+                                    obj_index[rare->item_number].number++;
+#endif
                                     extract_obj(rare);
                                 } else {
                                     obj_from_char(tmp);
-                                    // obj_index[tmp->item_number].number++;
+#if 0                                    
+                                    obj_index[tmp->item_number].number++;
+#endif
                                     extract_obj(tmp);
                                     tmp = 0;
                                 }
@@ -274,13 +288,14 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         }
         return (FALSE);
     }
-
-    /*
-     * if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_MONK)) { if
-     * (cost->no_carried > 20) { send_to_char("Your vows forbid you to
-     * carry more than 20 items\n\r", ch); return(FALSE); } } 
-     */
-
+#if 0
+    if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_MONK) && 
+        cost->no_carried > 20) { 
+        send_to_char("Your vows forbid you to carry more"
+                         " than 20 items\n\r", ch); return(FALSE); 
+    } 
+#endif
+     
 #if NEW_RENT
     /*
      * RENTAL COST ADJUSTMENT 
@@ -292,31 +307,38 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
     if (receptionist) {
 #if 1
         discount = 0;
-        // (GH) discounts for same race and same alignment. and charisma..
+        /* 
+         * (GH) discounts for same race and 
+         * same alignment. and charisma..
+         */
 
-        if (GET_RACE(ch) == GET_RACE(receptionist))
+        if (GET_RACE(ch) == GET_RACE(receptionist)) {
             discount = discount + 5;
-
-        if (IS_GOOD(receptionist) && IS_GOOD(ch))
+        }
+        if (IS_GOOD(receptionist) && IS_GOOD(ch)) {
             discount = discount + 5;
-        else if (IS_EVIL(receptionist) && IS_EVIL(ch))
+        } else if (IS_EVIL(receptionist) && IS_EVIL(ch)) {
             discount = discount + 5;
-        else if (IS_NEUTRAL(receptionist) && IS_NEUTRAL(ch))
+        } else if (IS_NEUTRAL(receptionist) && IS_NEUTRAL(ch)) {
             discount = discount + 5;
-
+        }
         if (ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
-            // 15% discount for paladins
+            /* 
+             * 15% discount for paladins
+             */
             discount += 15;
         }
 
-        if (GET_CLAN(ch) > 1)
+        if (GET_CLAN(ch) > 1) {
             discount = discount + 5;
-
-        if (GET_CHR(ch) > GET_CHR(receptionist))
+        }
+        if (GET_CHR(ch) > GET_CHR(receptionist)) {
             discount = discount + (1 + GET_CHR(ch) - GET_CHR(receptionist));
-
+        }
         if (IS_SET(ch->specials.act, PLR_CLAN_LEADER)) {
-            // 10% discount for clan leaders..
+            /* 
+             * 10% discount for clan leaders..
+             */
             discount += 10;
         }
 
@@ -352,27 +374,27 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
             act(buf, FALSE, receptionist, 0, ch, TO_VICT);
         }
 
-        if (limited_items <= 5)
+        if (limited_items <= 5) {
             sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'You carry %d rare"
                          " item%s.'", 
                     limited_items, limited_items != 1 ? "s" : "");
-        else if (limited_items <= 12)
+        } else if (limited_items <= 12) {
             sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'Hum, You carry %d "
                          "rare items, nice.'", limited_items);
-        else if (limited_items < 18)
+        } else if (limited_items < 18) {
             sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'You've got %d rare "
                          "items, great job.'", limited_items);
-        else if (limited_items >= 18)
+        } else if (limited_items >= 18) {
             sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'WOW! You carry %d "
                          "rare items, super job!'", limited_items);
-
+        }
         act(buf, FALSE, receptionist, 0, ch, TO_VICT);
 
         if (cost->total_cost > GET_GOLD(ch)) {
-            if (GetMaxLevel(ch) < LOW_IMMORTAL)
+            if (GetMaxLevel(ch) < LOW_IMMORTAL) {
                 act("$c0013[$c0015$n$c0013] tells you 'Which I can see you "
                     "can't afford'", FALSE, receptionist, 0, ch, TO_VICT);
-            else if (GetMaxLevel(ch) > LOW_IMMORTAL) {
+            } else if (GetMaxLevel(ch) > LOW_IMMORTAL) {
                 act("$c0013[$c0015$n$c0013] tells you 'Well, since you're a "
                     "God, I guess it's okay'", FALSE, receptionist, 0, ch, 
                     TO_VICT);
@@ -424,9 +446,11 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
     if (!(fl = fopen(buf, "w"))) {
         perror("saving PC's objects");
         assert(0);
-        // .. rent directory not made temporary for cygwin. Change back
-        // before port...(GH)
-        // printf("Error accessing pc objects");
+        /* 
+         * .. rent directory not made temporary for cygwin. Change back
+         * before port...(GH)
+         * printf("Error accessing pc objects");
+         */
     } else {
         rewind(fl);
         strcpy(st->owner, GET_NAME(ch));
@@ -482,9 +506,9 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
         if (st->objects[i].item_number > -1
             && real_object(st->objects[i].item_number) > -1) {
             obj = read_object(st->objects[i].item_number, VIRTUAL);
-            if (IS_RARE(obj))
+            if (IS_RARE(obj)) {
                 obj_index[obj->item_number].number--;
-
+            }
             obj->obj_flags.value[0] = st->objects[i].value[0];
             obj->obj_flags.value[1] = st->objects[i].value[1];
             obj->obj_flags.value[2] = st->objects[i].value[2];
@@ -497,13 +521,15 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
             /*
              * new, saving names and descrips stuff o_s_t_c
              */
-            if (obj->name)
+            if (obj->name) {
                 free(obj->name);
-            if (obj->short_description)
+            }
+            if (obj->short_description) {
                 free(obj->short_description);
-            if (obj->description)
+            }
+            if (obj->description) {
                 free(obj->description);
-
+            }
             obj->name = (char *) malloc(strlen(st->objects[i].name) + 1);
             obj->short_description =
                 (char *) malloc(strlen(st->objects[i].sd) + 1);
@@ -517,9 +543,9 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
              * end of new, possibly buggy stuff 
              */
 
-            for (j = 0; j < MAX_OBJ_AFFECT; j++)
+            for (j = 0; j < MAX_OBJ_AFFECT; j++) {
                 obj->affected[j] = st->objects[i].affected[j];
-
+            }
             /*
              * item restoring 
              */
@@ -546,9 +572,9 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
                 tmp_cur_depth--;
             }
 
-            if (st->objects[i].wearpos)
+            if (st->objects[i].wearpos) {
                 equip_char(ch, obj, st->objects[i].wearpos - 1);
-
+            }
             if (tmp_cur_depth && !st->objects[i].wearpos) {
                 obj_to_obj(obj, in_obj[tmp_cur_depth - 1]);
             } else if (st->objects[i].wearpos == 0) {
@@ -603,12 +629,12 @@ void load_char_objs(struct char_data *ch)
      * healed upon re-entry.  if they stay out for 24 full hours, all
      * affects are removed, including bad ones. 
      */
-    if (st.last_update + 12 * SECS_PER_REAL_HOUR < time(0))
+    if (st.last_update + 12 * SECS_PER_REAL_HOUR < time(0)) {
         RestoreChar(ch);
-
-    if (st.last_update + 24 * SECS_PER_REAL_HOUR < time(0))
+    }
+    if (st.last_update + 24 * SECS_PER_REAL_HOUR < time(0)) {
         RemAllAffects(ch);
-
+    }
     if (ch->in_room == NOWHERE && 
         st.last_update + 1 * SECS_PER_REAL_HOUR > time(0)) {
         /*
@@ -660,9 +686,9 @@ void load_char_objs(struct char_data *ch)
                 GET_BANK(ch) = GET_BANK(ch) + GET_GOLD(ch) + 
                                0.05 * GET_GOLD(ch);
 
-                if (GET_BANK(ch) < 0)
+                if (GET_BANK(ch) < 0) {
                     GET_BANK(ch) = 0;
-
+                }
                 GET_GOLD(ch) = 0;
                 found = TRUE;
             }
@@ -677,9 +703,9 @@ void load_char_objs(struct char_data *ch)
 
     fclose(fl);
 
-    if (found)
+    if (found) {
         obj_store_to_char(ch, &st);
-    else {
+    } else {
         ZeroRent(GET_NAME(ch));
     }
 
@@ -702,8 +728,9 @@ int reimb_char_objs(struct char_data *ch)
     /*
      * load in aliases and poofs first 
      */
-    // load_char_extra(ch);
-
+#if 0    
+    load_char_extra(ch);
+#endif
     sprintf(tbuf, "reimb/%s", lower(ch->player.name));
 
     /*
@@ -807,31 +834,31 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
     /*
      * new, saving names and descrips stuff 
      */
-    if (obj->name)
+    if (obj->name) {
         strcpy(oe->name, obj->name);
-    else {
+    } else {
         sprintf(buf, "object %d has no name!",
                 obj_index[obj->item_number].virtual);
         log(buf);
     }
 
-    if (obj->short_description)
+    if (obj->short_description) {
         strcpy(oe->sd, obj->short_description);
-    else
+    } else {
         *oe->sd = '\0';
-
-    if (obj->description)
+    }
+    if (obj->description) {
         strcpy(oe->desc, obj->description);
-    else
+    } else {
         *oe->desc = '\0';
-
+    }
     /*
      * end of new, possibly buggy stuff 
      */
 
-    for (j = 0; j < MAX_OBJ_AFFECT; j++)
+    for (j = 0; j < MAX_OBJ_AFFECT; j++) {
         oe->affected[j] = obj->affected[j];
-
+    }
     oe->depth = cur_depth;
     st->number++;
 }
@@ -841,9 +868,9 @@ int contained_weight(struct obj_data *container)
     struct obj_data *tmp;
     int             rval = 0;
 
-    for (tmp = container->contains; tmp; tmp = tmp->next_content)
+    for (tmp = container->contains; tmp; tmp = tmp->next_content) {
         rval += GET_OBJ_WEIGHT(tmp);
-
+    }
     return rval;
 }
 
@@ -898,12 +925,12 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
      * and now we can destroy object 
      */
     if (delete) {
-        if (obj->in_obj)
+        if (obj->in_obj) {
             obj_from_obj(obj);
-
-        if (IS_RARE(obj))
+        }
+        if (IS_RARE(obj)) {
             obj_index[obj->item_number].number++;
-
+        }
         extract_obj(obj);
     }
 }
@@ -915,9 +942,9 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     static char     buf[240];
     int             weight;
 
-    if (!obj)
+    if (!obj) {
         return;
-
+    }
     obj_to_store(obj->contains, st, ch, delete);
     obj_to_store(obj->next_content, st, ch, delete);
 
@@ -1010,9 +1037,9 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
     }
 
     obj_to_store(ch->carrying, &st, ch, delete);
-    if (delete)
+    if (delete) {
         ch->carrying = 0;
-
+    }
     update_file(ch, &st);
 }
 
@@ -1029,9 +1056,15 @@ void save_obj_reimb(struct char_data *ch)
             GET_GOLD(ch));
     slog(buf);
 
-    st.total_cost = 0;          // cost->total_cost;
+    st.total_cost = 0;          
+#if 0    
+    cost->total_cost;
+#endif    
     st.last_update = time(0);
-    st.minimum_stay = 0;        /* where does this belong? */
+    st.minimum_stay = 0;        
+    /* 
+     * where does this belong? 
+     */
 
     cur_depth = 0;
 
@@ -1101,10 +1134,14 @@ void update_obj_file(void)
                 fread(&ch_st, sizeof(struct char_file_u), 1, char_file);
 
                 if (ch_st.load_room == AUTO_RENT) {
-                    /* this person was autorented */
+                    /* 
+                     * this person was autorented 
+                     */
                     ch_st.load_room = NOWHERE;
 
-                    /* one hour grace period */
+                    /* 
+                     * one hour grace period 
+                     */
                     st.last_update = time(0) + 3600;
 
                     sprintf(buf, "   Deautorenting %s", st.owner);
@@ -1176,7 +1213,9 @@ void CountLimitedItems(struct obj_file_u *st)
     struct obj_data *obj;
 
     if (!st->owner[0]) {
-         /* don't count empty rent units */
+         /* 
+          * don't count empty rent units 
+          */
         return;
     }
 
@@ -1184,14 +1223,15 @@ void CountLimitedItems(struct obj_file_u *st)
         if (st->objects[i].item_number > -1 &&
             real_object(st->objects[i].item_number) > -1) {
             /*
-             ** eek.. read in the object, and then extract it.
-             ** (all this just to find rent cost.)  *sigh*
+             * eek.. read in the object, and then extract it.
+             * (all this just to find rent cost.)  *sigh*
              */
             obj = read_object(st->objects[i].item_number, VIRTUAL);
             cost_per_day = obj->obj_flags.cost_per_day;
 
             /*
-             **  if the cost is > LIM_ITEM_COST_MIN, then mark before extractin
+             * if the cost is > LIM_ITEM_COST_MIN, 
+             * then mark before extractin
              */
             if (IS_RARE(obj)) {
                 if (obj->item_number < 0) {
@@ -1199,7 +1239,9 @@ void CountLimitedItems(struct obj_file_u *st)
                 }
                 obj_index[obj->item_number].number++;
             }
-            // obj_index[obj->item_number].number++;
+#if 0            
+            obj_index[obj->item_number].number++;
+#endif            
             extract_obj(obj);
         }
     }
@@ -1236,7 +1278,9 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     short int       action_table[9];
 
     if (!ch->desc) {
-        /* You've forgot FALSE - NPC couldn't leave */
+        /* 
+         * You've forgot FALSE - NPC couldn't leave 
+         */
         return (FALSE);
     }
 
@@ -1268,14 +1312,15 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (!IS_SET(rp->room_flags, PEACEFUL))
+    if (!IS_SET(rp->room_flags, PEACEFUL)) {
         SET_BIT(rp->room_flags, PEACEFUL);
-    if (!IS_SET(rp->room_flags, NO_SUM))
+    }
+    if (!IS_SET(rp->room_flags, NO_SUM)) {
         SET_BIT(rp->room_flags, NO_SUM);
-
-    if (IS_NPC(ch))
+    }
+    if (IS_NPC(ch)) {
         return (FALSE);
-
+    }
     if ((cmd != 92) && (cmd != 93)) {
         if (!cmd && recep->specials.fighting) {
             return (citizen(recep, 0, "", mob, type));
@@ -1300,7 +1345,9 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 92) {
-        /* Rent */
+        /* 
+         * Rent 
+         */
         if (recep_offer(ch, recep, &cost, FALSE)) {
             act("$n stores your stuff in the safe, and helps you into your "
                 "chamber.", FALSE, recep, 0, ch, TO_VICT);
@@ -1313,17 +1360,24 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
 
             if (ch->specials.start_room != 2 && 
                 !IS_SET(ch->specials.act, PLR_HAVEROOM)) {
-                /* hell */
+                /* 
+                 * hell 
+                 */
                 ch->specials.start_room = save_room;
             }
 
-            /* you don't delete CHARACTERS when you extract them */
+            /* 
+             * you don't delete CHARACTERS 
+             * when you extract them 
+             */
             extract_char(ch);
             save_char(ch, save_room);
             ch->in_room = save_room;
         }
     } else {
-        /* Offer */
+        /* 
+         * Offer 
+         */
         recep_offer(ch, recep, &cost, FALSE);
         act("$N gives $n an offer.", FALSE, ch, 0, recep, TO_ROOM);
     }
@@ -1337,9 +1391,9 @@ int receptionist(struct char_data *ch, int cmd, char *arg,
 
 void zero_rent(struct char_data *ch)
 {
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
+    }
     ZeroRent(GET_NAME(ch));
 }
 
@@ -1452,7 +1506,9 @@ void load_char_extra(struct char_data *ch)
      */
 
     if ((fp = fopen(buf, "r")) == '\0') {
-        /* nothing to look at */
+        /* 
+         * nothing to look at 
+         */
         return;
     }
 
@@ -1464,55 +1520,90 @@ void load_char_extra(struct char_data *ch)
             s = (char *) strtok(0, "\0");
             if (p) {
                 if (!strcmp(p, "out")) {
-                    /* setup bamfout */
+                    /* 
+                     * setup bamfout 
+                     */
                     do_bamfout(ch, s, 0);
                 } else if (!strcmp(p, "in")) {
-                    /* setup bamfin */
+                    /* 
+                     * setup bamfin 
+                     */
                     do_bamfin(ch, s, 0);
                 } else if (!strcmp(p, "zone")) {
-                    /* set zone permisions */
+                    /* 
+                     * set zone permisions 
+                     */
                     GET_ZONE(ch) = atoi(s);
                 } else if (!strcmp(p, "bprompt")) {
-                    /* set upbattleprompt */
+                    /* 
+                     * set upbattleprompt 
+                     */
                     sprintf(tmp2, "%s", s);
                     do_set_bprompt(ch, tmp2, 0);
                 } else if (!strcmp(p, "email")) {
-                    /* set up email finger info */
+                    /* 
+                     * set up email finger info 
+                     */
                     sprintf(tmp, "email %s", s);
                     do_set_flags(ch, tmp, 0);
                 } else if (!strcmp(p, "clan")) {
-                    /* Clan info */
+                    /* 
+                     * Clan info 
+                     */
                     sprintf(tmp2, "clan %s", s);
                     do_set_flags(ch, tmp2, 0);
                 } else if (!strcmp(p, "hostip")) {
-                    /* hostIP */
-                    // for (; isspace(*s); s++);
-                    // ch->specials.hostip = s;//strdup(s);
+                    /* 
+                     * hostIP 
+                     */
+#if 0                    
+                    for (; isspace(*s); s++) {
+                        /*
+                         * Empty loop
+                         */
+                    }
+                    ch->specials.hostip = s;
+                    strdup(s);
+#endif                
                 } else if (!strcmp(p, "rumored")) {
-                    /* Clan info */
-                    // ch->specials.rumor = s;
-                    // strdup(s);
+                    /* 
+                     * Clan info 
+                     */
+#if 0                    
+                    ch->specials.rumor = s;
+                    strdup(s);
+#endif                
                 } else
                  if (!strcmp(p, "setsev")) {
-                     /* setup severity level */
+                     /* 
+                      * setup severity level 
+                      */
                     do_setsev(ch, s, 0);
                 } else
                     if (!strcmp(p, "invislev") && GetMaxLevel(ch) > MAX_MORT) {
-                    /* setup wizinvis level */
+                    /* 
+                     * setup wizinvis level 
+                     */
                     do_invis(ch, s, 242);       
                 } else if (!strcmp(p, "prompt")) {
-                    /* setup prompt */
-                    if (strchr(s, '\n') != '\0')
+                    /* 
+                     * setup prompt 
+                     */
+                    if (strchr(s, '\n') != '\0') {
                         *((char *) strchr(s, '\n')) = 0;
-                    if (strchr(s, '\r') != '\0')
+                    }
+                    if (strchr(s, '\r') != '\0') {
                         *((char *) strchr(s, '\r')) = 0;
+                    }
                     do_set_prompt(ch, s, 0);
                 } else if (s) {
                     s[strlen(s)] = '\0';
                     n = atoi(p);
 
                     if (n >= 0 && n <= 9) { 
-                        /* set up alias */
+                        /* 
+                         * set up alias 
+                         */
                         sprintf(tmp, "%d %s", n, s + 1);
                         do_alias(ch, tmp, 260);
                     }
@@ -1543,7 +1634,10 @@ void write_char_extra(struct char_data *ch)
      */
 
     if ((fp = fopen(buf, "w")) == NULL) {
-        return;                 /* nothing to write */
+        return;                 
+        /* 
+         * nothing to write 
+         */
     }
 
     if (IS_IMMORTAL(ch)) {
@@ -1576,11 +1670,15 @@ void write_char_extra(struct char_data *ch)
         fprintf(fp, "clan: %s\n", ch->specials.clan);
     }
     if (ch->specials.hostip) {
-        // fprintf(fp, "hostip: %s\n",ch->specials.hostip);
+#if 0        
+        fprintf(fp, "hostip: %s\n",ch->specials.hostip);
+#endif        
     }
 
     if (ch->specials.rumor) {
-        // fprintf(fp, "rumor: %s\n",ch->specials.rumor);
+#if 0        
+        fprintf(fp, "rumor: %s\n",ch->specials.rumor);
+#endif    
     }
 
     if (ch->specials.A_list) {
@@ -1604,9 +1702,9 @@ void obj_store_to_room(int room, struct obj_file_u *st)
             real_object(st->objects[i].item_number) > -1) {
 
             obj = read_object(st->objects[i].item_number, VIRTUAL);
-            if (IS_RARE(obj))
+            if (IS_RARE(obj)) {
                 obj_index[obj->item_number].number--;
-
+            }
             obj->obj_flags.value[0] = st->objects[i].value[0];
             obj->obj_flags.value[1] = st->objects[i].value[1];
             obj->obj_flags.value[2] = st->objects[i].value[2];
@@ -1619,13 +1717,15 @@ void obj_store_to_room(int room, struct obj_file_u *st)
             /*
              * new, saving names and descrips stuff o_s_t_r 
              */
-            if (obj->name)
+            if (obj->name) {
                 free(obj->name);
-            if (obj->short_description)
+            }
+            if (obj->short_description) {
                 free(obj->short_description);
-            if (obj->description)
+            }
+            if (obj->description) {
                 free(obj->description);
-
+            }
             obj->name = (char *) malloc(strlen(st->objects[i].name) + 1);
             obj->short_description =
                 (char *) malloc(strlen(st->objects[i].sd) + 1);
@@ -1639,9 +1739,9 @@ void obj_store_to_room(int room, struct obj_file_u *st)
              * end of new, possibly buggy stuff 
              */
 
-            for (j = 0; j < MAX_OBJ_AFFECT; j++)
+            for (j = 0; j < MAX_OBJ_AFFECT; j++) {
                 obj->affected[j] = st->objects[i].affected[j];
-
+            }
             obj_to_room2(obj, room);
         }
     }
@@ -1697,14 +1797,15 @@ void save_room(int room)
 
     if (obj) {
         if (room != last_room) {
-            if (f1)
+            if (f1) {
                 fclose(f1);
+            }
             f1 = fopen(buf, "w");
         }
 
-        if (!f1)
+        if (!f1) {
             return;
-
+        }
         rewind(f1);
         obj_to_store(obj, &st, NULL, 0);
         sprintf(buf, "Room %d", room);

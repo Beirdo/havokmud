@@ -27,9 +27,9 @@ int SecCheck(char *arg, char *site)
         return (-1);
     }
 
-    if (buf2[strlen(buf2) - 1] == '\n')
+    if (buf2[strlen(buf2) - 1] == '\n') {
         buf2[strlen(buf2) - 1] = '\0';
-
+    }
     if (!(strncmp(site, buf2, strlen(buf2)))) {
         return (1);
     }
