@@ -1040,6 +1040,12 @@ int ClassSpecificStuff( struct char_data *ch)
 {
 int i;
 
+  //This fix the haste bug -MW 2001/03/12  
+  if(affected_by_spell(ch, SPELL_HASTE))
+  	ch->mult_att/=2;
+  else if(affected_by_spell(ch, SPELL_SLOW))
+  	ch->mult_att*=2;
+  
   if ( HasClass(ch, CLASS_WARRIOR)  || HasClass(ch, CLASS_MONK) ||
        HasClass(ch,CLASS_BARBARIAN) || HasClass(ch, CLASS_PALADIN) ||
        HasClass(ch,CLASS_RANGER))   {
@@ -1069,7 +1075,10 @@ if (HasClass(ch, CLASS_PALADIN))     {
 	ch->mult_att+= (GET_LEVEL(ch, MONK_LEVEL_IND)/16.0);
       }
 
-     
+    if(affected_by_spell(ch, SPELL_HASTE))
+    	ch->mult_att*=2;
+    else if(affected_by_spell(ch, SPELL_SLOW))
+    	ch->mult_att/=2;     
   
     /* fix up damage stuff */
       switch(GET_LEVEL(ch, MONK_LEVEL_IND)) {
