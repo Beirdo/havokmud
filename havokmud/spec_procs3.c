@@ -4186,6 +4186,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
 	case 1:
 		send_to_char("You see something glistening in the water.\n\r",ch);
 		send_to_char("As you reach to touch it, some magical force pulls you under.\n\r",ch);
+		act("$n is suddenly sucked into the fountain!",FALSE, ch, 0, 0, TO_ROOM);
 		char_from_room(ch);
 		char_to_room(ch,46201);
 		do_look(ch, "", 0);
