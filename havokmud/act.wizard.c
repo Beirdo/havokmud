@@ -88,6 +88,11 @@ extern const struct clan clan_list[MAX_CLAN];
 extern char    *AttackType[];
 
 void            update_pos(struct char_data *victim);
+/* Function declaration for the zonesummary commands */
+int linker(struct char_data *ch, int room);
+int mobstats(struct char_data *ch, int room);
+long CalcPowerLevel(struct char_data *ch);
+
 
 void do_auth(struct char_data *ch, char *argument, int cmd)
 {
@@ -8372,66 +8377,106 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
 }
 
 
-#if 0
-/* This code does not at ALL conform to the stated formatting requirements
- * and will remain removed until it does
- */
+#if 1
 
+/**
+ ** zonesummary command will list the number of adjacent zones to a zone
+ ** plus the average powerlevel to the mobs in the zone. (GH)
+ **/
 void do_zonesummary(struct char_data *ch, char *argument, int cmd)
 {
-     struct zone_data *zd;
-     struct room_data *rm = 0;
-     int linker(struct char_data *ch, int room);
-     int zone=0, start=0, end=0;
-     int counter=0, x=0;
-     rm = real_roomp(ch->in_room);
+    struct zone_data *zd;
+    struct room_data *rm = 0;
+    int zone=0, start=0, end=0;
+    int counter=0,counter2=0, x=0;
+    int avg=0, temp=0;
+
+    rm = real_roomp(ch->in_room);
     zone=rm->zone;
 
-            zd = zone_table + (zone - 1);
-            start= zd->top + 1;
+    zd = zone_table + (zone - 1);
+    start= zd->top + 1;
 
-            zd=zone_table + zone;
-            end=zd->top;
-
-    ch_printf(ch,"\n\rZone: %d (%d-%d) %s\n\r",rm->zone, start,end, zd->name);
-
+    zd=zone_table + zone;
+    end=zd->top;
+    ch_printf(ch,"\n\rZone Summary:");
+    ch_printf(ch,"\n\r$c000BZone: $c000W%d $c000w($c000B%d-%d$c000w) %s\n\r"
+                ,rm->zone, start,end, zd->name);
 
     for (x=start;x <=end;x++) {
-      counter=counter+linker(ch, x);
-
+        counter=counter+linker(ch, x);
+        temp=mobstats(ch,x);
+        counter2=counter2+temp;
+        if(temp!=0)
+            avg++;
     }
 
+    ch_printf(ch,"$c000BAverage Powerlevel of the Mobs: $c000W%d$c000w\n\r"
+                ,counter2/avg);
     if (counter==0)
-      ch_printf(ch,"No linker rooms found.\n\r");
-
-
+        ch_printf(ch,"No linker rooms found.\n\r");
 }
 
+/**
+ ** List the exits of a room if it links to another zone (GH)
+ **/
 int linker(struct char_data *ch, int room) {
-    /*char buf[MAX_STRING_LENGTH];*/
     struct room_data *rm = 0, *tmp = 0;
-    int i, count = 0;
+    struct char_data *t;
+    int i, count = 0, mobcount = 0;
 
     rm = real_roomp(room);
     if(!rm)
-      return 0;
+        return 0;
 
     for (i = 0; i <= 5; i++) {
-       if (rm->dir_option[i]) {
-           tmp = real_roomp(rm->dir_option[i]->to_room);
-           if(!tmp)
-             return 0;
-           if(rm->zone!=tmp->zone) {
-              ch_printf(ch,"%d links to room %d (zone:%d).\n\r",rm->zone,
-			 rm->number, tmp->number, tmp->zone);
-              count++;
-           }
-       }
+        if (rm->dir_option[i]) {
+            tmp = real_roomp(rm->dir_option[i]->to_room);
+            if(!tmp)
+                return 0;
+            if(rm->zone!=tmp->zone) {
+                ch_printf(ch,"$c000W- $c000w%d links to room %d"
+                             " (zone: %d).$c000w\n\r"
+                             ,rm->number, tmp->number, tmp->zone);
+                count++;
+            }
+        }
+    }
+
+    for (t = rm->people; t; t = t->next_in_room) {
+
+    }
+    if(rm->people) {
+        mobcount++;
     }
     return count;
 }
 
-/* Also, leave the vim comment at the bottom of the file, it's there for a 
+/**
+ **  Returns the average powerlevel of a mob in a certain room.(GH)
+ **/
+int mobstats(struct char_data *ch, int room) {
+    struct room_data *rm = 0;
+    struct char_data *t;
+    int pwrlevel = 0, count=0;
+
+    rm = real_roomp(room);
+    if(!rm)
+        return 0;
+
+    for (t = rm->people; t; t = t->next_in_room) {
+        pwrlevel=pwrlevel+CalcPowerLevel(t);
+        count++;
+    }
+
+
+    if(count!=0) {
+        return pwrlevel/count;
+    } else {
+        return 0;
+    }
+}
+/* Also, leave the vim comment at the bottom of the file, it's there for a
  * reason.
  */
 
