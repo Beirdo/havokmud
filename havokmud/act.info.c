@@ -3890,7 +3890,7 @@ dlog("in do_spells");
   *buf=0;
 
  sprintf(buf + strlen(buf),
- "[# ] %-20s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps\n\r",
+ "[# ] %-20s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, Ne\n\r",
  "SPELL/SKILL\0");
 
   for (i = 1, spl = 0; i <= MAX_EXIST_SPELL; i++, spl++) {
@@ -3901,7 +3901,7 @@ if (!spells[spl]) {
 	log(tbuf);
 } else
       sprintf(buf + strlen(buf),
-"[%2d] %-20s  <%3d> %2d %3d %3d %3d %3d %3d %3d\n\r",
+"[%2d] %-20s  <%3d> %2d %3d %3d %3d %3d %3d %3d %3d\n\r",
 	      i, spells[spl],
 	      spell_info[i].min_usesmana,
 	      spell_info[i].min_level_cleric,
@@ -3910,7 +3910,8 @@ if (!spells[spl]) {
 	      spell_info[i].min_level_sorcerer,
 	      spell_info[i].min_level_paladin,
 	      spell_info[i].min_level_ranger,
-	      spell_info[i].min_level_psi
+	      spell_info[i].min_level_psi,
+	      spell_info[i].min_level_necromancer
 	      );
 	}
 
