@@ -285,8 +285,8 @@ dlog("in do_quit");
   if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM))
     return;
   if (!*argument || strcmp(argument,"now")) {
-    do_mobTell(ch,"A tiny Voice","Psst. You should really rent at an Inn Keeper.");
-    do_mobTell(ch,"A tiny Voice","But if you wanna loose your stuff.. Type 'quit now'");
+    do_mobTell(ch,"A Tiny Voice","Psst. You should really rent at an Inn Keeper.");
+    do_mobTell(ch,"A Tiny Voice","But if you wanna loose your stuff.. Type 'quit now'");
 
     return;
   }
