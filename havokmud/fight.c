@@ -2780,71 +2780,141 @@ void perform_violence(int pulse)
 #if 1
                /* check for the second attack */
                if(DUAL_WIELD(ch) && ch->skills)
-               {
-                  struct obj_data *weapon;
-                  int perc;
+			   	{
+			   		struct obj_data *weapon;
+			   		int perc;
 
-                  /* check the skill */
-                  if((perc = number(1,101)) < ch->skills[SKILL_DUAL_WIELD].learned)
-                  {
-                     /* if a success, remove the weapon in the wielded hand,
-                        place the weapon in the off hand in the wielded hand. */
-                     weapon = unequip_char(ch, WIELD);
-                     tmp = unequip_char(ch, HOLD);
-                     equip_char(ch, tmp, WIELD);
+			   		x = 1.0;
 
-                     /* adjust to_hit based on dex */
-                     if(ch->specials.fighting)
-                     {
-                        hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-                     }
+			   		if(!A_NOHASTE(ch)) {
+			   			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
+			   				x = x + 0.75;
+			   			if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
+			   				x = x / 2;
+			   		}
 
-                     /* get rid of the to_hit adjustment */
-                     /* put the weapons back, checking for destroyed items */
-                     if(ch->equipment[WIELD])
-                     {
-                        tmp = unequip_char(ch, WIELD);
-                        equip_char(ch, tmp, HOLD);
-                        equip_char(ch, weapon, WIELD);
-                     }
-                     else
-                     {
-                        equip_char(ch, weapon, WIELD);
-                     }
-                  }
-                  else
-                  {
-                     if(!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch))
-                     {
-                        tmp = unequip_char(ch, HOLD);
-                        obj_to_room(tmp, ch->in_room);
-                        act("$c0014You fumble and drop $p", 0, ch, tmp, tmp, TO_CHAR);
-                        act("$c0014$n fumbles and drops $p", 0, ch, tmp, tmp, TO_ROOM);
 
-                        /* Moved this here. -bwise */
-                        if(HasClass(ch,CLASS_RANGER))
-                        {
-                           LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
-                        }
+			   		while(x > 0.999)
+			   		{
+			   			if(ch->specials.fighting) {
+			   				if((perc = number(1,101)) < ch->skills[SKILL_DUAL_WIELD].learned)
+			   				{
+			   					weapon = unequip_char(ch, WIELD);
+			   					tmp = unequip_char(ch, HOLD);
+			   					equip_char(ch, tmp, WIELD);
 
-                        if(number(1,20) > GET_DEX(ch))
-                        {
-                           tmp = unequip_char(ch, WIELD);
-                           obj_to_room(tmp, ch->in_room);
-                           act("$c0015and you fumble and drop $p too!",
-                               0, ch, tmp, tmp, TO_CHAR);
-                           act("$c0015and then fumbles and drops $p as well!",
-                               0, ch, tmp, tmp, TO_ROOM);
-			/* readded so dual wield has a chance to be learned no matter what you drop -Mythos 10-30-01 */
-			if(HasClass(ch,CLASS_RANGER))
-                        {
-                           LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
-                        }
+			   					if(ch->specials.fighting)
+			   					{
+			   						hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+			   					}
 
-                        }
-                     }
-                  }
-               }
+			   					if(ch->equipment[WIELD])
+			   					{
+			   						tmp = unequip_char(ch, WIELD);
+			   						equip_char(ch, tmp, HOLD);
+
+			   					}
+			   					equip_char(ch, weapon, WIELD);
+			   				}
+			   				else
+			   				{ // we failed, gotta stop attacking after the fumble messages and learnage
+			   					if(!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch))
+			   					{
+			   						tmp = unequip_char(ch, HOLD);
+			   						obj_to_room(tmp, ch->in_room);
+			   						act("$c0014You fumble and drop $p", 0, ch, tmp, tmp, TO_CHAR);
+			   						act("$c0014$n fumbles and drops $p", 0, ch, tmp, tmp, TO_ROOM);
+
+			   						if(HasClass(ch,CLASS_RANGER))
+			   						{
+			   							LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+			   						}
+
+			   						if(number(1,20) > GET_DEX(ch))
+			   						{
+			   							tmp = unequip_char(ch, WIELD);
+			   							obj_to_room(tmp, ch->in_room);
+			   							act("$c0015and you fumble and drop $p too!",0, ch, tmp, tmp, TO_CHAR);
+			   							act("$c0015and then fumbles and drops $p as well!",0, ch, tmp, tmp, TO_ROOM);
+
+			   							if(HasClass(ch,CLASS_RANGER))
+			   							{
+			   								LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+			   							}
+
+			   						}
+			   						// which is here
+			   						x = 0.0;
+			   					}
+			   				}
+			   			}
+			   			else
+			   			{
+			   				x = 0.0;
+			   				break;
+			   			}
+			   			x -= 1.0;
+			   		}
+
+			   		if(x > .01)
+			   		{
+			   			/* check to see if the chance to make the last attack is successful */
+			   			perc = number(1,100);
+			   			if (perc <= (int)(x*100.0)) {
+			   				if (ch->specials.fighting) {
+			   					if((perc = number(1,101)) < ch->skills[SKILL_DUAL_WIELD].learned)
+			   					{
+			   						weapon = unequip_char(ch, WIELD);
+			   						tmp = unequip_char(ch, HOLD);
+			   						equip_char(ch, tmp, WIELD);
+
+			   						if(ch->specials.fighting)
+			   						{
+			   							hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+			   						}
+
+			   						if(ch->equipment[WIELD])
+			   						{
+			   							tmp = unequip_char(ch, WIELD);
+			   							equip_char(ch, tmp, HOLD);
+
+			   						}
+			   						equip_char(ch, weapon, WIELD);
+			   					}
+			   					else
+			   					{
+			   						if(!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch))
+			   						{
+			   							tmp = unequip_char(ch, HOLD);
+			   							obj_to_room(tmp, ch->in_room);
+			   							act("$c0014You fumble and drop $p", 0, ch, tmp, tmp, TO_CHAR);
+			   							act("$c0014$n fumbles and drops $p", 0, ch, tmp, tmp, TO_ROOM);
+
+			   							if(HasClass(ch,CLASS_RANGER))
+			   							{
+			   								LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+			   							}
+
+			   							if(number(1,20) > GET_DEX(ch))
+			   							{
+			   								tmp = unequip_char(ch, WIELD);
+			   								obj_to_room(tmp, ch->in_room);
+			   								act("$c0015and you fumble and drop $p too!",0, ch, tmp, tmp, TO_CHAR);
+			   								act("$c0015and then fumbles and drops $p as well!",0, ch, tmp, tmp, TO_ROOM);
+
+			   								if(HasClass(ch,CLASS_RANGER))
+			   								{
+			   									LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+			   								}
+
+			   							}
+			   						}
+			   					}
+			   				}
+			   			}
+			   		}
+			    }
+
 #endif
             } /* End of if !IS_NPC(ch) */
             else
