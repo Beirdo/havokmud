@@ -2576,6 +2576,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
   char name[128],buf[254];
   struct char_data *temp = 0;
   struct char_data *finger = 0;
+  struct char_data *i;
   struct char_file_u tmp_store;
 
   dlog("in do_finger");
@@ -2604,15 +2605,18 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     sprintf(buf,"\n\r$c0015%s's$c0005 adventurer information:\n\r",
 	    GET_NAME(finger));
     send_to_char(buf,ch);
+
+	 i = get_char(name); /* used for last time sighted */
     /*Last time sited??*/
     if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
       sprintf(buf,"$c0005Last time sited    : $c0014Unknown\n\r");
-    else if(get_char(name))
+    else if(i && i->desc)  /* if there is a name, and a file descriptor */
       sprintf(buf,"$c0005Last time sited    : $c0014Currently Playing\n\r");
     else
       sprintf(buf,"$c0005Last time sited    : $c0014%s"
 	      ,asctime(localtime(&tmp_store.last_logon)));
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
+
     /*Display char Email addy*/
     if(finger->specials.email==NULL)
       sprintf(buf, "$c0005Known message drop : $c0014None\n\r");
@@ -2631,9 +2635,9 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
     if(finger->specials.rumor == NULL)
-      sprintf(buf, "$c0005Rumored Info       : $c0014None");
+      sprintf(buf, "$c0005Rumored info       : $c0014None");
     else
-      sprintf(buf,"$c0005Rumored Info        : $c0014%-50s",
+      sprintf(buf,"$c0005Rumored info        : $c0014%-50s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
@@ -2641,7 +2645,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
   else  /*Else there is no character in char DB*/
     send_to_char("Character not found!!\n\r",ch);
 
-  free(finger); /*Ack.. dont' forget to free teh char data of Finger.*/
+  free(finger); /*Ack.. dont' forget to free the char data of finger.*/
 
 }
 /* My own add-ons ;) -Manwe Windmaster */
