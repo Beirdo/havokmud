@@ -1373,7 +1373,7 @@ int old_search_block(char *argument, int begin, int length, char **list,
 
 void command_interpreter(struct char_data *ch, char *argument)
 {
-    char            buf[200];
+    char            buf[MAX_STRING_LENGTH];
     extern int      no_specials;
     NODE           *n;
     char           *arg,
@@ -1761,7 +1761,7 @@ int special(struct char_data *ch, int cmd, char *arg)
      * special in mobile present?
      */
     for (k = real_roomp(ch->in_room)->people; k; k = k->next_in_room) {
-        if (IS_MOB(k) && mob_index[k->nr].func &&
+        if (IS_MOB(k) && k != ch && mob_index[k->nr].func &&
             (*mob_index[k->nr].func) (ch, cmd, arg, k, PULSE_COMMAND)) {
             return (1);
         }
