@@ -4810,27 +4810,24 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             append_to_string_block(&sb, buf);
             bottom = zd->top + 1;
         }
-    } else if (is_abbrev(buf, "objects") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    } else if (is_abbrev(buf, "objects")) {
+        which_i = obj_index; 
+        topi = top_of_objt;
+
         only_argument(argument, zonenum);
-        zone = -1;
-        if (sscanf(zonenum, "%i", &zone) == 1 &&
-            (zone < 0 || zone > top_of_zone_table)) {
-            append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+        zone = atoi( zonenum );
+        if (zone <= 0 || zone > top_of_zone_table) {
+            send_to_char("That is not a valid zone_number\n\r", ch);
             return;
         }
-        if (zone >= 0) {
-            bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-            top = zone_table[zone].top;
-        }
+
+        bottom = zone_table[zone - 1].top + 1;
+        top = zone_table[zone].top;
+
         append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
         for (objn = 0; objn < topi; objn++) {
             oi = which_i + objn;
-            /*
-             * optimize later
-             */
-            if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
+            if (oi->virtual < bottom || oi->virtual > top) {
                 continue;
             }
             obj = read_object(oi->virtual, VIRTUAL);
@@ -4841,12 +4838,13 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     sprintf(color, "%s", "");
                 } else {
                     sprintf(color, "%s", "$c000W");
+                }
+
                 sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
                         oi->virtual, objn, (oi->number - 1), color,
                         eval(obj), oi->name);
                 append_to_string_block(&sb, buf);
                 extract_obj(obj);
-                }
             }
         }
     } else if (is_abbrev(buf, "wearslot") &&
@@ -5034,9 +5032,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
              (which_i = mob_index, topi = top_of_mobt))) {
 
         if (GetMaxLevel(ch) < 56) {
-            send_to_char
-                ("Alas, the report option is only viewable for level 56 and "
-                 "higher.\n\r", ch);
+            send_to_char("Alas, the report option is only viewable for level "
+                         "56 and higher.\n\r", ch);
             return;
         }
 
