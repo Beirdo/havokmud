@@ -1253,10 +1253,10 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd) {
 	argument[0]=' ';
 
 	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-	      sprintf(buf1,"%s $n%s.",command,argument);
+	      sprintf(buf1,"%s $n%s",command,argument);
 	      act(buf1,FALSE, ch,0,0,TO_CHAR);
 	    }
-	    sprintf(buf1, "%s $n%s$c0012.", command, argument);
+	    sprintf(buf1, "%s $n%s$c0012", command, argument);
 		    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
 		        GET_MOVE(ch) -= 5;
 		        GET_MANA(ch) -= 5;

@@ -419,8 +419,8 @@ if(!*buf) {
  if (!*name)    { /* No arguments */
 
     	if(action->others_no_arg) {
-    	    sprintf(buf2,"%s %s",command,action->char_no_arg);
-			act(buf2, action->hide, ch, 0, 0, TO_CHAR);
+    			sprintf(buf2, "%s %s",command, action->others_no_arg);
+		 		act(buf2, action->hide, ch, 0, 0, TO_CHAR);
     		for (i = descriptor_list; i; i = i->next)
     	 	 if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
 	   			(!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
@@ -441,16 +441,15 @@ if(!*buf) {
 #if 1
   if (!(vict = get_char_vis_world(ch, name, NULL)))    {
      if ((objx = get_obj_in_list_vis(ch, name, ch->carrying))) {
-	   	sprintf(buf2, "%s %s",command, action->obj_you);
+	   	sprintf(buf2, "%s %s\n\r",command, action->obj_other );
        	act(buf2, action->hide, ch, objx, objx, TO_CHAR);
-
 
        	for (i = descriptor_list; i; i = i->next)
 	         if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
 	   	   		(!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
 	   	    	!IS_SET(i->character->specials.act, PLR_NOOOC) &&
 	               !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && !check_soundproof(i->character)) {
-	   		sprintf(buf2, "%s\n\r",command, action->obj_other );
+	   		sprintf(buf2, "%s %s\n\r",command, action->obj_other );
        		act2(buf2, action->hide, ch, objx, objx, i->character, TO_CHAR);
      }
        return;
@@ -459,8 +458,9 @@ if(!*buf) {
        send_to_char("\n\r", ch);
     }  else if (vict == ch)    {
 
-		sprintf(buf2, "%s %s", command,action->char_auto);
-	       act(buf2, action->hide, ch, 0,0, TO_CHAR);
+
+		sprintf(buf2, "%s %s",command, action->others_auto );
+    	act(buf2, action->hide, ch, 0, 0, TO_CHAR);
 
        for (i = descriptor_list; i; i = i->next)
 	  	         if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
@@ -477,8 +477,8 @@ if(!*buf) {
 		act("$N is not in a proper position for that.",FALSE,ch,0,vict,TO_CHAR);
       } else {
 
-		sprintf(buf2, "%s %s", command, action->char_found );
-		act(buf2, 0, ch, 0, vict, TO_CHAR);
+		sprintf(buf2, "%s %s", command, action->others_found );
+		act(buf2, action->hide, ch, 0, vict, TO_CHAR);
 
 		//act(action->others_found, action->hide, ch, 0, vict, TO_NOTVICT);
 		for (i = descriptor_list; i; i = i->next)

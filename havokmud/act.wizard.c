@@ -1044,35 +1044,35 @@ dlog("in do_system");
 
 			case '1':
 				argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RINFO$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RINFO$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '2':
 				argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RANNOUNCEMENT$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RANNOUNCEMENT$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '3':
 		    	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RUPDATE$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RUPDATE$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '4':
 		    	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RSYSTEM$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RSYSTEM$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '5':
 		    	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RWARNING$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RWARNING$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '6':
 		    	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RREBOOT$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RREBOOT$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 	    	case '7':
 			   	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RWELCOME$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RWELCOME$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 			case '8':
 			   	argument++;//Remove the number..
-				sprintf(buf,"$c000Y-=$c000RNOTE$c000Y=-$c000C %s\n\r$c000w", argument);
+				sprintf(buf,"$c000Y-=$c000RNOTE$c000Y=-$c000w %s\n\r$c000w", argument);
 				break;
 
 	    	default:
