@@ -223,7 +223,7 @@ void mind_disintegrate(byte level, struct char_data *ch,
 	/* if not fighting, shove the mob/pc out'a the room if suffcient */
 	/* level and they do not save, otherwise set fighting. If fighting */
 	/* then if they fail, treat as bashed and the mobs/pc sits */
-#if 1	
+#if 0	
 void mind_telekinesis(byte level, struct char_data *ch,
   struct char_data *victim, int dir_num)
 {
@@ -284,7 +284,7 @@ void mind_telekinesis(byte level, struct char_data *ch,
  
 }
 #endif
-#if 0
+#if 1
 void mind_telekinesis(byte level, struct char_data *ch, struct char_data
 *victim, int dir_num)
 {
@@ -350,6 +350,7 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
   		GET_POS(victim) = POSITION_SITTING;
 		if (!victim->specials.fighting) 
      			set_fighting(victim,ch);
+		WAIT_STATE(victim, PULSE_VIOLENCE*3);		
     	}
  } /* end was fighting */
      

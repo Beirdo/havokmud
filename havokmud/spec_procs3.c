@@ -4947,8 +4947,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 		}
 	}
 
-  if(IS_PC(ch))
-    return(0);
+  if(cmd) { return(0);}
 
   temp_ch = FindAnyVictim(ch);
 	if (temp_ch && IS_PC(temp_ch)) {
