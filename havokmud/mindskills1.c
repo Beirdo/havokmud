@@ -735,10 +735,11 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 	int j, found = 0;
 	int room = 0;
 	int old_location;
+	struct obj_data *i;
+
 	assert(ch);
 	sprintf(name,"%s",arg);
 	sprintf(buf,"");
-	struct obj_data *i;
 
 	if (!ch->skills)
 		return;
