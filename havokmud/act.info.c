@@ -92,6 +92,9 @@ extern struct skillset warninjaskills[];
 extern struct skillset thfninjaskills[];
 extern struct skillset allninjaskills[];
 extern struct skillset loreskills[];
+extern struct skillset hunterskills[];
+extern struct skillset warmonkskills[];
+extern struct skillset archerskills[];
 extern const struct clan clan_list[MAX_CLAN];
 extern const char *languagelist[];
 extern const struct class_def classes[MAX_CLASS];
@@ -180,6 +183,22 @@ struct obj_data *get_object_in_equip_vis(struct char_data *ch,
     for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
         if (equipment[(*j)] && CAN_SEE_OBJ(ch, equipment[(*j)]) &&
             isname2(arg, equipment[(*j)]->name)) {
+            return (equipment[(*j)]);
+        }
+    }
+    return (NULL);
+}
+
+struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
+                                     struct obj_data *equipment[], int *j)
+{
+    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
+        if (equipment[(*j)] && isname(arg, equipment[(*j)]->name)) {
+            return (equipment[(*j)]);
+        }
+    }
+    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
+        if (equipment[(*j)] && isname2(arg, equipment[(*j)]->name)) {
             return (equipment[(*j)]);
         }
     }
@@ -2425,6 +2444,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     int             x;
     char            color[10],
                     color2[10];
+    int             level;
 
     dlog("in do_score");
 
@@ -2450,9 +2470,8 @@ void do_score(struct char_data *ch, char *argument, int cmd)
               color, color2, my_age.year, color, color2,
               DescAge(my_age.year, GET_RACE(ch)), color, color2,
               playing_time.day, color, color2, playing_time.hours, color,
-              color2,
-              (my_age.month == 0 && my_age.year == 0 ?
-               "$c000w It's your birthday today.\n\r" : ""));
+              color2, (my_age.month == 0 && my_age.year == 0 ?
+                       "$c000w It's your birthday today.\n\r" : ""));
 
     if (!ch->player.speaks) {
         ch->player.speaks = SPEAK_COMMON;
@@ -2487,10 +2506,11 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         buf[0] = '\0';
         for (x = 0; x < MAX_CLASS; x++) {
             if (HasClass(ch, pc_num_class(x))) {
+                level = GET_LEVEL(ch, x);
                 sprintf(buf, "%s%s     Level: %s%2d  %-15s%s", buf, color,
-                        color2, GET_LEVEL(ch, x), classes[x].name, color);
+                        color2, level, classes[x].name, color);
                 sprintf(buf, "%sExp needed: %s%s\n\r", buf, color2,
-                        formatNum((classes[x].titles[GET_LEVEL(ch, x)+1].exp) -
+                        formatNum((classes[x].levels[level+1].exp) -
                                   GET_EXP(ch)));
             }
         }
@@ -2983,11 +3003,6 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
                                 strncmp(strcpy(tmpname1,lower(GET_NAME(name))),\
                                         strcpy(tmpname2,lower(mask)),\
                                         strlen(mask))==0)
-/*
- * int OK_NAME(struct char_data *name, char *mask) { char n1[80],n2[80];
- * if(!*mask) return 1; strcpy(n1,lower(GET_NAME(name)));
- * strcpy(n2,lower(mask)); return(strncmp(n1,n2,strlen(mask))==0); }
- */
 
 char           *GetLevelTitle(struct char_data *ch)
 {
@@ -3071,35 +3086,21 @@ char           *GetLevelTitle(struct char_data *ch)
         return buf;
     } else {
         /*
-         * determine the highest xp value gained level
-         */
-#if 0
-        /*
          * Now that we have a working main class, we may as welluse the
          * main class for title
          */
-
-        for (i = 0; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i)) {
-                if (classes[i].titles[(int) GET_LEVEL(ch, i)].exp > high) {
-                    high = classes[i].titles[(int) GET_LEVEL(ch, i)].exp;
-                    class = i;
-                }
-            }
-        }
-#else
         class = ch->specials.remortclass - 1;
         if (class < 0) {
             class = 0;
 		}
-#endif
+
         if (GET_SEX(ch) == SEX_FEMALE) {
             sprintf(buf, "%s%s", color,
-                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_f);
+                    classes[class].levels[(int) GET_LEVEL(ch, class)].title_f);
             return buf;
         } else {
             sprintf(buf, "%s%s", color,
-                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_m);
+                    classes[class].levels[(int) GET_LEVEL(ch, class)].title_m);
             return buf;
         }
     }
@@ -3920,10 +3921,10 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
          * 8/24/94
          */
         sprintf(buf2, "[%2d] %9ld-%-9ld : %s\n\r", i,
-                classes[class].titles[i].exp, classes[class].titles[i + 1].exp,
+                classes[class].levels[i].exp, classes[class].levels[i + 1].exp,
                 (GET_SEX(ch) == SEX_FEMALE ?
-                 classes[class].titles[i].title_f : 
-                 classes[class].titles[i].title_m));
+                 classes[class].levels[i].title_f : 
+                 classes[class].levels[i].title_m));
         /*
          * send_to_char(buf, ch);
          */
@@ -4812,10 +4813,118 @@ void show_skills(struct char_data *ch, char *buffer,
     }
 }
 
+
+struct skill_basics
+{
+    int  skillnum;
+    char *name;
+};
+
+int skillsort(const void *s1, const void *s2) {
+    const struct skill_basics *s1_1 = (struct skill_basics *)s1;
+    const struct skill_basics *s2_2 = (struct skill_basics *)s2;
+    return(strcmp(s1_1->name, s2_2->name));
+}
+
+char *list_knowns(struct char_data *ch, int index) {
+    char buf[256];
+    char *output;
+    int skillflags = ch->skills[index].flags;
+    int foundskills = 0;
+    buf[0] = '\0';
+
+    if(IS_SET(skillflags, SKILL_KNOWN_BARBARIAN)) {
+        strcat(buf, "Barbarian ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_CLERIC)) {
+        strcat(buf, "Cleric ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_DRUID)) {
+        strcat(buf, "Druid ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_MAGE)) {
+        strcat(buf, "Mage ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_MONK)) {
+        strcat(buf, "Monk ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_NECROMANCER)) {
+        strcat(buf, "Necromancer ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_PALADIN)) {
+        strcat(buf, "Paladin ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_PSI)) {
+        strcat(buf, "Psionist ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_RANGER)) {
+        strcat(buf, "Ranger ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_SORCERER)) {
+        strcat(buf, "Sorcerer ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_THIEF)) {
+        strcat(buf, "Thief ");
+        foundskills = 1;
+    }
+    if(IS_SET(skillflags, SKILL_KNOWN_WARRIOR)) {
+        strcat(buf, "Warrior ");
+        foundskills = 1;
+    }
+    if(!foundskills) {
+        return "Miscellaneous";
+    }
+    else {
+        output = buf;
+        return output;
+    }
+}
+
+int lookthroughskillset(struct char_data *ch,
+                        struct skill_basics foundskills[],
+                        const struct skillset blah[],
+                        int currentcount) {
+
+    int j, k, alreadythere, currskillindex;
+
+    for(j = 0; blah[j].skillnum != -1; j++) {
+        currskillindex = blah[j].skillnum;
+        if(IS_SET(ch->skills[currskillindex].flags, SKILL_KNOWN)) {
+            alreadythere = 0;
+            for(k = 0;foundskills[k].skillnum != -1 && !alreadythere;k++) {
+                if(currskillindex == foundskills[k].skillnum) {
+                    alreadythere = 1;
+                }
+            }
+            if(!alreadythere) {
+                currentcount++;
+                foundskills[k].skillnum = currskillindex;
+                foundskills[k].name = blah[j].name;
+            }
+        }
+    }
+    return currentcount;
+}
+
+
 void do_show_skill(struct char_data *ch, char *arg, int cmd)
 {
     char buffer[MAX_STRING_LENGTH*2];
+    char buf[256];
     int  index;
+    int  i;
+    int  finalcount = 0;
+    struct skill_basics foundskills[MAX_SKILLS];
 
     buffer[0] = '\0';
 
@@ -4826,7 +4935,46 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
 	}
 
     if (!arg) {
-        send_to_char("You need to supply a class for that.", ch);
+        send_to_char("Your skills currently are:\n\r", ch);
+        for(i = 0;i < MAX_SKILLS;i++) {
+            foundskills[i].skillnum = -1;
+        }
+        for(i = 0;i < MAX_CLASS;i++) {
+            if(HasClass(ch, 1 << i)) {
+                finalcount = lookthroughskillset(ch, foundskills,
+                                                 classes[i].skills,
+                                                 finalcount);
+                if(ch->specials.remortclass == i + 1) {
+                    finalcount = lookthroughskillset(ch, foundskills,
+                                                     classes[i].mainskills,
+                                                     finalcount);
+                }
+            }
+        }
+
+        finalcount = lookthroughskillset(ch, foundskills, loreskills,
+                                         finalcount);
+        finalcount = lookthroughskillset(ch, foundskills, archerskills,
+                                         finalcount);
+        finalcount = lookthroughskillset(ch, foundskills, warninjaskills,
+                                         finalcount);
+        finalcount = lookthroughskillset(ch, foundskills, allninjaskills,
+                                         finalcount);
+        finalcount = lookthroughskillset(ch, foundskills, warmonkskills,
+                                         finalcount);
+
+        qsort(foundskills, finalcount, sizeof (struct skill_basics),
+              skillsort);
+        for(i = 0;i < finalcount;i++) {
+            if((strlen(buffer) + strlen(foundskills[i].name) + 2)
+                < MAX_STRING_LENGTH*2) {
+                sprintf(buf, "%-20s %-20s %-40s\n\r", foundskills[i].name,
+                        how_good(ch->skills[foundskills[i].skillnum].learned),
+                        list_knowns(ch, foundskills[i].skillnum));
+                strcat(buffer, buf);
+            }
+        }
+        page_string(ch->desc, buffer, 1);
         return;
     }
 

@@ -1786,6 +1786,7 @@ void EnterState(struct descriptor_data *d, int newstate)
     case CON_NME:
         if (GET_NAME(d->character)) {
             free(GET_NAME(d->character));
+            GET_NAME(d->character) = NULL;
         }
         break;
     case CON_PLYNG:

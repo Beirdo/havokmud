@@ -1825,9 +1825,15 @@ void close_socket(struct descriptor_data *d)
                 0, 0, TO_ROOM);
 
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
-                sprintf(buf, "Closing link to: %s.", GET_NAME(d->character));
-                Log(buf);
-            }
+                if (!GET_NAME(d->character)) {
+                    sprintf(buf, "Closing link to: %s.", 
+                            GET_NAME(d->character));
+                    Log(buf);
+                } else {
+                    sprintf(buf, "Closing link to: NULL.");
+                    Log(buf);
+                }
+            }   
 
             /* 
              * poly, or switched god 
@@ -2825,7 +2831,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                     for (l = 1, i = 0, exp = 999999999;
                          i <= NECROMANCER_LEVEL_IND; i++, l <<= 1) {
                         if (HasClass(ch, l)) {
-                            texp = classes[i].titles[GET_LEVEL(ch, i) + 1].exp -
+                            texp = classes[i].levels[GET_LEVEL(ch, i) + 1].exp -
                                    GET_EXP(ch);
                             if (texp < exp) {
                                 exp = texp;

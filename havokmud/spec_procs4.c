@@ -31,6 +31,15 @@ extern struct zone_data *zone_table;
 
 extern const struct class_def classes[MAX_CLASS];
 
+struct riddle_answer {
+    char   *answer;
+    int     reward;
+    char   *rewardText;
+};
+    
+int mazekeeper_riddle_common(struct char_data *ch, char *arg,
+                             struct char_data *mob, struct riddle_answer *rid,
+                             int ridCount, int exp, int portal);
 
 void            printmap(struct char_data *ch, int x, int y, int sizex,
                          int sizey);
@@ -5110,7 +5119,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        ch_printf(ch, "Alas, you don't seem to have any %ss to sell.\n\r",
+        ch_printf(ch, "Alas, you don't seem to have the %s to sell.\n\r",
                   itemname);
         break;
     case 93:
@@ -5708,6 +5717,375 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
     return( TRUE );
 }
 
+/* procs for zone 39 */
+int mazekeeper(struct char_data *ch, int cmd, char *arg,
+               struct char_data *mob)
+{
+    char    buf[MAX_STRING_LENGTH];
+    struct  obj_data *o;    
+    int     objnum;
+    struct  char_data *i;
+    
+    if (cmd != 17 || ch == mob || !arg || !ch || !mob) {
+            return( FALSE );
+    }
+
+    objnum = real_object(6575);
+    
+    for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
+        if( o->item_number == objnum ) {
+            return( FALSE );
+        }
+    }
+
+    if (!strcasecmp(arg, "yes")) {
+        for (i = real_roomp(ch->in_room)->people; i;
+             i = i->next_in_room) {
+            if (IS_FOLLOWING(ch, i) && GetMaxLevel(i) >= 41) {
+                strcpy( buf, "say Your group is far too powerfull to enter!");
+                command_interpreter(mob, buf);
+                return( TRUE );
+            }
+        }
+        strcpy(buf, "say Wonderful!! Let us begin!");
+        command_interpreter(mob, buf);
+        act("$c000WThe mazekeeper utters strange words and traces arcane"
+            " symbols in the air.$c000w", FALSE, mob, 0, 0, TO_ROOM);
+        act("$c000WSuddenly a large portal opens!$c000w",
+            FALSE, mob, 0, 0, TO_ROOM);
+        o = read_object(6575, VIRTUAL);
+        obj_to_room(o, ch->in_room);
+        return(TRUE);
+    } 
+    
+    if (!strcasecmp(arg, "no")) {
+        strcpy(buf, "say Fine, if you don't want to play, you can die now!");
+        command_interpreter(mob, buf);
+        sprintf(buf, "kill %s", GET_NAME(ch));
+        command_interpreter(mob, buf);
+        return(TRUE);
+    }
+    return(FALSE);
+}
+
+
+int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
+                             struct char_data *mob)
+{
+    char    buf[MAX_STRING_LENGTH];
+    char    *argument = NULL,
+            *arg1,
+            *arg2;
+    struct  obj_data *o;
+    int     ret = FALSE;
+    int     objnum;
+    
+    if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
+        return(FALSE);
+    }
+
+    objnum = real_object(6580);
+
+    for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
+        if( o->item_number == objnum ) {
+            return( FALSE );
+        }
+    }
+
+
+    /* Keep the original arg for the caller in case we don't return TRUE */
+    argument = strdup(arg);
+    arg = argument;
+
+    arg = get_argument(arg, &arg1);
+    arg = get_argument(arg, &arg2);
+    
+    if (arg2 && !strcasecmp(arg2, "tomorrow")) {
+        strcpy(buf, "say That is correct!");
+        command_interpreter(mob, buf);
+        strcpy(buf, "say I must say, I am impressed.");
+        command_interpreter(mob, buf);
+        strcpy(buf, "say It has been a very long time since the last "
+                     "adventurer made it this far.");
+        command_interpreter(mob, buf);
+        strcpy(buf, "say Your reward is this armor crafted from special "
+                     "ore found deep in our mines many years ago.");
+        command_interpreter(mob, buf);
+        strcpy(buf, "say Use it wisely, friend.  So long, and fare thee "
+                     "well");
+        command_interpreter(mob, buf);
+        
+        o = read_object(6593, VIRTUAL);
+        obj_to_char(o, ch);
+        gain_exp(ch, 150000);
+        
+        act("The riddle master waves his hand and a shimmering portal "
+            "appears.", FALSE, mob, NULL, NULL, TO_ROOM);
+        act("Somehow you know that your journey has come to an end, and"
+            "the portal is the way home.", FALSE, mob, NULL, NULL, TO_ROOM);
+
+        o = read_object(6580, VIRTUAL);
+        obj_to_room(o, ch->in_room);
+        ret = TRUE;
+    }
+
+    free(argument);
+    return(ret);
+}
+
+    
+int mazekeeper_riddle_common(struct char_data *ch, char *arg,
+                             struct char_data *mob, struct riddle_answer *rid,
+                             int ridCount, int exp, int portal)
+{
+    char    buf[MAX_STRING_LENGTH];
+    char    *argument = NULL,
+            *arg1,
+            *arg2;
+    struct  obj_data *o;
+    int     ret = FALSE;
+    int     i;
+    
+    /* Keep the original arg for the caller in case we don't return TRUE */
+    argument = strdup(arg);
+    arg = argument;
+
+    arg = get_argument(arg, &arg1);
+    arg = get_argument(arg, &arg2);
+        
+    if (!arg2) {
+        free( argument );
+        return( FALSE );
+    }
+
+    for( i = 0; i < ridCount && !ret; i++ ) {
+        if( !strcasecmp(arg2, rid[i].answer ) ) {
+            strcpy(buf, "say Excellent, you are correct!");
+            command_interpreter(mob, buf);
+            sprintf(buf, "say Take this %s as a reward.", rid[i].rewardText);
+            command_interpreter(mob, buf);
+            strcpy(buf, "say You may now move on to the next challenge, good "
+                         "luck!");
+            command_interpreter(mob, buf);
+            
+            o = read_object(rid[i].reward, VIRTUAL);
+            obj_to_char(o, ch);
+            gain_exp(ch, exp);
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience!$c000w", 
+                    exp);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+            GET_GOLD(ch) = (GET_GOLD(ch) + exp);
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bgold coins!$c000w", 
+                    exp);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+            act("The riddler speaks in a strange language and traces an "
+                "arcane symbol in the air.", FALSE, mob, 0, 0, TO_ROOM);
+            act("A large portal opens in front of you!",
+                FALSE, mob, 0, 0, TO_ROOM);
+
+            o = read_object(portal, VIRTUAL);
+            obj_to_room(o, ch->in_room);
+
+            act("The riddler disapears in a puff of smoke!", 
+                FALSE, mob, NULL, NULL, TO_ROOM);
+            char_from_room(mob);
+            extract_char(mob);
+            ret = TRUE;
+        }
+    } 
+    
+    if( !ret ) {
+        strcpy(buf, "say HAH! Wrong answer, now you will die!");
+        command_interpreter(mob, buf);
+        sprintf(buf, "kill %s", GET_NAME(ch));
+        command_interpreter(mob, buf);
+        ret = TRUE;
+    }
+
+    free( argument );
+    return(ret);
+}
+
+
+int mazekeeper_riddle_one(struct char_data *ch, int cmd, char *arg,
+                          struct char_data *mob)
+{
+    static struct riddle_answer rid[] = {
+        { "doll",   6581, "earring" },
+        { "needle", 6582, "earring" },
+        { "storm",  6583, "earring" }
+    };
+    
+    if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
+        return(FALSE);
+    }
+    
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+                                     10000, 6576) );
+}
+
+int mazekeeper_riddle_two(struct char_data *ch, int cmd, char *arg,
+                          struct char_data *mob)
+{
+    static struct riddle_answer rid[] = {
+        { "breath", 6584, "ring" },
+        { "tongue", 6585, "ring" },
+        { "temper", 6586, "ring" }
+    };
+    
+    if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
+        return(FALSE);
+    }
+
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+                                     25000, 6577) );
+}
+    
+int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
+                            struct char_data *mob)
+{
+    static struct riddle_answer rid[] = {
+        { "time",        6587, "necklace" },
+        { "temperature", 6588, "necklace" },
+        { "pressure",    6589, "necklace" }
+    };
+    
+    if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
+        return(FALSE);
+    }
+
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+                                     50000, 6578) );
+}
+ 
+int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
+                            struct char_data *mob)
+{
+    static struct riddle_answer rid[] = {
+        { "star",  6590, "bracelet" },
+        { "sleep", 6591, "bracelet" },
+        { "dream", 6592, "bracelet" }
+    };
+    
+    if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
+        return(FALSE);
+    }
+
+    return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
+                                     100000, 6579) );
+}
+
+int level_limiter(struct char_data *ch, int cmd, char *argument,
+                  struct obj_data *obj, int type)
+{   
+    char    buf[MAX_STRING_LENGTH];
+    int     dam = 0,
+            i;
+    char    *arg, *arg1;
+    int     zapit = FALSE;
+    int     inroom = FALSE;
+    struct obj_data *tmp_obj;
+    
+    if( !ch || !obj ) {
+        return( FALSE );
+    }
+
+    if( (!obj->carried_by && !obj->equipped_by && !obj->in_obj)) {
+        /* Zap this bitch, it's in a room not on a char */
+        zapit = TRUE;
+        inroom = TRUE;
+    }
+    
+    switch( cmd ) {
+    case 72:    /* give */
+    case 304:   /* auction */
+    case 514:   /* donate */
+    case 57:    /* sell */
+    case 67:    /* put */
+        arg = strdup(argument);
+        argument = arg;
+
+        argument = get_argument(argument, &arg1);
+        if( arg1 ) {
+            tmp_obj = get_obj_in_list(arg1, ch->carrying);
+            if( obj != tmp_obj && strncasecmp(arg1, "all", 3)) {
+                free(arg);
+                return(FALSE);
+            }
+
+            zapit = TRUE;
+            inroom = TRUE;
+        }
+        free(arg);
+        break;
+    default:
+        break;
+    }
+
+    if( IS_IMMORTAL(ch) ) {
+        return( FALSE );
+    }
+
+    if (GetMaxLevel(ch) >= 41) {
+        strcpy(buf, "The $p takes an intense disliking to you and explodes, "
+                    "burning you severely!");
+        act(buf, FALSE, ch, obj, NULL, TO_CHAR);
+
+        dam = 5 * (GetMaxLevel(ch) - 41);
+        dam = MIN( dam, GET_HIT(ch) / 2 );
+        dam = MAX( dam, 0 );
+
+        DoDamage(ch, ch, dam, SPELL_FIRESHIELD);
+        
+        zapit = TRUE;
+    }
+
+    if( zapit ) {
+        strcpy(buf, "The $p explodes in a large ball of flame and a loud "
+                    "BANG!" );
+        act(buf, FALSE, ch, obj, NULL, TO_ROOM);
+        if( inroom ) {
+            act(buf, FALSE, ch, obj, NULL, TO_CHAR);
+        }
+
+        sprintf( buf, "%s exploded %s and took %d damage", GET_NAME(ch),
+                      obj->name, dam );
+        Log( buf );
+
+        if( obj->carried_by ) {
+            obj_from_char(obj);
+        } else if( obj->equipped_by ) {
+            tmp_obj = get_object_in_equip(ch, obj->name, 
+                                          obj->equipped_by->equipment, &i );
+            unequip_char(obj->equipped_by, i);
+        } else if( obj->in_obj ) {
+            obj_from_obj(obj);
+        }
+        extract_obj(obj);
+    }
+
+    return(zapit);
+}
+
+int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
+                      struct obj_data *obj, int type)
+{
+
+    if (!cmd || cmd != 7 || !ch || !argument) {
+        return( FALSE );
+    }
+    if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
+        obj_from_room(obj);
+        extract_obj(obj);
+        act("The ring of blazing white light suddenly vanishes!", 
+            FALSE, ch, obj, NULL, TO_ROOM);
+        act("The ring of blazing white light suddenly vanishes!",
+            FALSE, ch, obj, NULL, TO_CHAR);
+        return( TRUE );
+    }
+    return( FALSE );
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

@@ -1708,7 +1708,12 @@ void spell_dispel_magic(int level, struct char_data *ch,
         affect_from_char(victim, SPELL_SENSE_LIFE);
         send_to_char("You feel less in touch with living things.\n\r", victim);
     }
-
+    
+    if (affected_by_spell(victim, SPELL_ENTANGLE)) {
+        affect_from_char(victim, SPELL_ENTANGLE);
+        send_to_char("The magical vines holding you wither away.\n\r", victim);
+    }
+    
     if (IS_AFFECTED(victim, AFF_SANCTUARY)) {
         if (yes || !saves_spell(victim, SAVING_SPELL)) {
             REMOVE_BIT(victim->specials.affected_by, AFF_SANCTUARY);
@@ -2517,7 +2522,7 @@ void spell_energy_drain(int level, struct char_data *ch,
             damage(ch, victim, dam, SPELL_ENERGY_DRAIN);
             if (!IS_NPC(victim)) {
                 victim->old_exp = GET_EXP(victim);
-                drop_level(victim, BestClassBIT(victim), FALSE);
+                drop_level(victim, BestClassIND(victim), FALSE);
                 set_title(victim);
             } else {
                 tmp = GET_MAX_HIT(victim) / GetMaxLevel(victim);
@@ -2536,7 +2541,7 @@ void spell_energy_drain(int level, struct char_data *ch,
             damage(ch, victim, dam, SPELL_ENERGY_DRAIN);
             if (!IS_NPC(ch)) {
                 ch->old_exp = GET_EXP(ch);
-                drop_level(ch, BestClassBIT(ch), FALSE);
+                drop_level(ch, BestClassIND(ch), FALSE);
                 set_title(ch);
             } else {
                 tmp = GET_MAX_HIT(victim) / GetMaxLevel(victim);

@@ -548,21 +548,16 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             GET_DEX(ch) += mod;
             temp2 = GET_DEX(ch);
 
-#if 0
             if(temp > MaxDexForRace(ch)) {
                 temp=MaxDexForRace(ch);
             }
             if(GET_DEX(ch) > MaxDexForRace(ch)) {
                 GET_DEX(ch)=MaxDexForRace(ch);
             }
-            GET_AC(ch) -= dex_app[temp].defensive; GET_AC(ch) +=
-            dex_app[GET_DEX(ch)].defensive; 
-#endif            
+            GET_AC(ch) -= dex_app[temp].defensive;
+            GET_AC(ch) += dex_app[(int)GET_DEX(ch)].defensive; 
+
 #if 0
-            /*
-             * this I think worked, wanna test it without and see what
-             * happens 
-             */
             /*
              * I think dex items cause this to wack peoples AC out... msw 
              */

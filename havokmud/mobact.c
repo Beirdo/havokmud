@@ -109,14 +109,19 @@ void mobile_wander(struct char_data *ch)
             }
         }
 
-        if (IsHumanoid(ch) ? CAN_GO_HUMAN(ch, door) : CAN_GO(ch, door) && 
+        if ((IsHumanoid(ch) ? CAN_GO_HUMAN(ch, door) : CAN_GO(ch, door)) && 
             (!IS_SET(ch->specials.act, ACT_STAY_ZONE) || 
-             rp->zone == real_roomp(ch->in_room)->zone)) {
+             rp->zone == real_roomp(or)->zone)) {
             ch->specials.last_direction = rev_dir[door];
             go_direction(ch, door);
             if (ch->in_room == 0 && or != 0) {
                 sprintf(buf, "%s just entered void from %d", GET_NAME(ch), or);
                 log_sev(buf, 5);
+            }
+            if( rp->zone != real_roomp(or)->zone ) {
+                sprintf(buf, "%s wandered from zone %ld to %ld",
+                             GET_NAME(ch), real_roomp(or)->zone, rp->zone );
+                Log(buf);
             }
             return;
         }
@@ -798,7 +803,8 @@ int FindABetterWeapon(struct char_data * mob)
          */
         if (best->carried_by == mob) {
             if (mob->equipment[WIELD]) {
-                do_remove(mob, mob->equipment[WIELD]->name, 0);
+                sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+                command_interpreter(mob, buf);
             }
             do_wield(mob, best->name, 0);
         } else if (best->equipped_by == mob) {
@@ -811,7 +817,8 @@ int FindABetterWeapon(struct char_data * mob)
             command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
-        do_remove(mob, mob->equipment[WIELD]->name, 0);
+        sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+        command_interpreter(mob, buf);
     }
     return (FALSE);
 }

@@ -207,6 +207,12 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( winger, PROC_MOBILE ),
     REGISTER_PROC( wraith, PROC_MOBILE ),
     REGISTER_PROC( zork, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_master, PROC_MOBILE),
+    REGISTER_PROC( mazekeeper_riddle_one, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_two, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_three, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_four, PROC_MOBILE),
 
     REGISTER_PROC( altarofsin, PROC_OBJECT ),
     REGISTER_PROC( applepie, PROC_OBJECT ),
@@ -227,6 +233,8 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( thunder_sceptre_one, PROC_OBJECT ),
     REGISTER_PROC( thunder_sceptre_two, PROC_OBJECT ),
     REGISTER_PROC( trinketcount, PROC_OBJECT ),
+    REGISTER_PROC( level_limiter, PROC_OBJECT ),
+    REGISTER_PROC( mazekeeper_portal, PROC_OBJECT ),
 
     REGISTER_PROC( arena_arrow_dispel_trap, PROC_ROOM ),
     REGISTER_PROC( arena_dispel_trap, PROC_ROOM ),
@@ -1669,7 +1677,15 @@ struct special_proc_entry mobSpecials[] = {
     /*
      * Sentinel's The Estate 
      */
-    {51300, janaurius}
+    {51300, janaurius},
+
+    /* mob procs zone 39 */
+    {6516, mazekeeper},
+    {6599, mazekeeper_riddle_master},
+    {6595, mazekeeper_riddle_one},
+    {6596, mazekeeper_riddle_two},
+    {6597, mazekeeper_riddle_three},
+    {6598, mazekeeper_riddle_four}
 };
 int mobSpecialCount = NELEMS(mobSpecials);
 
@@ -1719,6 +1735,20 @@ struct special_proc_entry objSpecials[] = {
     
     /* Talesian object procedures */
     {37821, mirrorofopposition},
+    /* zone 39 obj procs */
+    {6581, level_limiter},
+    {6583, level_limiter},
+    {6584, level_limiter},
+    {6585, level_limiter},
+    {6586, level_limiter},
+    {6587, level_limiter},
+    {6588, level_limiter},
+    {6589, level_limiter},
+    {6590, level_limiter},
+    {6591, level_limiter},
+    {6592, level_limiter},
+    {6593, level_limiter},
+    {6575, mazekeeper_portal},
 
     {51152, chestproc}     /* royal rumble proc */
 };
@@ -1915,6 +1945,7 @@ struct special_proc_entry roomSpecials[] = {
     {37839, ventroom},
 
     {11353, knockproc}
+
 };
 int roomSpecialCount = NELEMS(roomSpecials);
 

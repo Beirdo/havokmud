@@ -779,7 +779,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
                     if (d2 > 425) {
                         send_to_char("Your unfaithfullness demands "
                                      "punishment!\n\r", ch);
-                        drop_level(ch, CLASS_DRUID, FALSE);
+                        drop_level(ch, DRUID_LEVEL_IND, FALSE);
                     }
                 }
             }
@@ -806,7 +806,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
                     if (d2 < 350) {
                         send_to_char("Your unfaithfullness demands "
                                      "punishment!\n\r", ch);
-                        drop_level(ch, CLASS_PALADIN, FALSE);
+                        drop_level(ch, PALADIN_LEVEL_IND, FALSE);
                     }
                 }
             }
@@ -832,7 +832,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
                     if (d2 < -350) {
                         send_to_char("Your unfaithfullness demands "
                                      "punishment!\n\r", ch);
-                        drop_level(ch, CLASS_RANGER, FALSE);
+                        drop_level(ch, RANGER_LEVEL_IND, FALSE);
                     }
                 }
             }
@@ -991,10 +991,10 @@ void raw_kill(struct char_data *ch, int killedbytype)
 void die(struct char_data *ch, int killedbytype)
 {
     struct char_data *pers;
-    int             i,
-                    tmp;
+    int             i;
     char            buf[80];
     int             fraction;
+    int             level;
 
     if (ValidRoom(ch) == FALSE) {
         return;
@@ -1029,16 +1029,13 @@ void die(struct char_data *ch, int killedbytype)
         }
 #ifdef LEVEL_LOSS
         
-        for (i = 0; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) > 1) {
-                if (IS_IMMORTAL(ch)) {
-                    break;
-                }
-                if (GET_EXP(ch) <
-                    (classes[i].titles[(int) GET_LEVEL(ch, i)].exp / 
-                     fraction)) {
-                    tmp = (ch->points.max_hit) / GetMaxLevel(ch);
-                    ch->points.max_hit -= tmp;
+        if( !IS_IMMORTAL(ch) ) {
+            for (i = 0; i < MAX_CLASS; i++) {
+                level = GET_LEVEL(ch, i);
+                if (level > 1 &&
+                    GET_EXP(ch) < classes[i].levels[level].exp / fraction) {
+                    ch->points.max_hit -= (ch->points.max_hit / 
+                                           GetMaxLevel(ch));
                     GET_LEVEL(ch, i) -= 1;
                     ch->specials.spells_to_learn -=
                         MAX(1, MAX(2, wis_app[(int)GET_RWIS(ch)].bonus) /
@@ -1047,17 +1044,6 @@ void die(struct char_data *ch, int killedbytype)
                                  " level.\n\r", ch);
                 }
             }
-        }
-#endif
-#if 0
-        if (GetMaxLevel(ch) > 20) {
-            gain_exp(ch, -GET_EXP(ch)*0.25);
-        } else if (GetMaxLevel(ch) > 15) {
-            gain_exp(ch, -GET_EXP(ch)*0.20);
-        } else if (GetMaxLevel(ch) > 5) {
-            gain_exp(ch, -GET_EXP(ch)*0.15);
-        } else {
-            gain_exp(ch, -GET_EXP(ch)*0.10);
         }
 #endif
         gain_exp(ch, -GET_EXP(ch) * (GetMaxLevel(ch) / 100.0));
@@ -1070,17 +1056,16 @@ void die(struct char_data *ch, int killedbytype)
          * warn people if their next death will result in a level loss
          */
         for (i = 0; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) > 1 &&
-                GET_EXP(ch) <
-                    (classes[i].titles[(int) GET_LEVEL(ch, i)].exp /
-                     fraction)) {
+            level = GET_LEVEL(ch, i);
+            if (level > 1 &&
+                GET_EXP(ch) < (classes[i].levels[level].exp / fraction)) {
                 send_to_char("\n\r\n\rWARNING WARNING WARNING WARNING "
                              "WARNING WARNING\n\r", ch);
                 send_to_char("Your next death will result in the loss of a"
                              " level,\n\r", ch);
                 sprintf(buf, "unless you get at least %ld more exp points.\n\r",
-                        (classes[i].titles[(int) GET_LEVEL(ch, i)].exp /
-                         fraction) - GET_EXP(ch));
+                        ((classes[i].levels[level].exp / fraction) - 
+                         GET_EXP(ch)));
                 send_to_char(buf, ch);
             }
         }
@@ -1193,30 +1178,24 @@ long NewExpCap(struct char_data *ch, long total)
     long            temp = 0,
                     temp2 = 0;
     int             x;
+    int             level;
 
     if( !ch || IS_IMMORTAL(ch) ) {
         return( 0 );
     }
 
     for (x = 0; x < MAX_CLASS; x++) {
-        if (GET_LEVEL(ch, x)) {
-            temp += classes[x].titles[(int)GET_LEVEL(ch, x) + 1].exp -
-                    classes[x].titles[(int)GET_LEVEL(ch, x)].exp;
+        level = GET_LEVEL(ch, x);
+        if (level) {
+            temp += classes[x].levels[level + 1].exp -
+                    classes[x].levels[level].exp;
         }
     }
 
     temp2 = temp * 0.10;
     if (total > temp2) {
-#if 0
-        sprintf(buf,"Capping at 10Percent: %dXXX%d",temp, temp2);
-        send_to_char(buf,ch);
-#endif
         return (temp * 0.10);
     } else {
-#if 0
-        sprintf(buf,"Using actual XP %d",total);
-        send_to_char(buf,ch);
-#endif
         return total;
     }
 }
@@ -2840,7 +2819,8 @@ int CalcThaco(struct char_data *ch)
 {
     int             calc_thaco;
     extern struct str_app_type str_app[];
-    int              bestclass;
+    int             bestclass;
+    int             level;
 
     /*
      * Calculate the raw armor including magic armor
@@ -2849,7 +2829,8 @@ int CalcThaco(struct char_data *ch)
 
     if (!IS_NPC(ch)) {
         bestclass = BestFightingClass(ch);
-        calc_thaco = classes[bestclass].thaco[(int)GET_LEVEL(ch, bestclass)];
+        level = GET_LEVEL(ch, bestclass);
+        calc_thaco = classes[bestclass].levels[level].thaco;
     } else {
         /*
          * THAC0 for monsters is set in the HitRoll
@@ -5881,7 +5862,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
               obj_data *missile, int tdir, int max_rng)
 {
     int             calc_thaco,
-                    i,
                     dam = 0,
                     diceroll,
                     victim_ac;
@@ -5895,6 +5875,8 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
     };
     int             rmod, cdir, rang, cdr;
     char            buf[MAX_STRING_LENGTH];
+    int             bestclass;
+    int             level;
 
     /*
      * Returns 1 on a hit, 0 otherwise
@@ -5902,12 +5884,9 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
      */
 
     if (!IS_NPC(ch)) {
-        calc_thaco = 20;
-        for (i = 1; i < 5; i++) {
-            if (classes[i - 1].thaco[GetMaxLevel(ch)] < calc_thaco) {
-                calc_thaco = classes[i - 1].thaco[GetMaxLevel(ch)];
-            }
-        }
+        bestclass = BestFightingClass(ch);
+        level = GET_LEVEL(ch, bestclass);
+        calc_thaco = classes[bestclass].levels[level].thaco;
     } else {
         /*
          * THAC0 for monsters is set in the HitRoll

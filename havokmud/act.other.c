@@ -228,6 +228,8 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
         12, "H:%h/%H M:%m/%M V:%v/%V %g %c/%C> "}, {
         40, "H:%h R:%R> "}, {
         41, "H:%h R:%R i%iI+> "}, {
+        42, "$c000BR:$c000W%R $c000BZ:$c000W%z $c000BFlags:$c000W%iF"
+            " $c000BSect:$c000W%is $c000BI:$c000W%iI$c000B>"}, {
     0, NULL}};
     char            buf[512];
     int             i,

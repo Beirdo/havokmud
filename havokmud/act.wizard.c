@@ -3977,11 +3977,12 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     char           *name,
-                   *level,
+                   *levelarg,
                    *class;
     int             adv,
                     newlevel,
-                    lin_class;
+                    lin_class,
+                    level;
 
     void            gain_exp(struct char_data *ch, int gain);
 
@@ -4009,68 +4010,56 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &class);
     if (!class) {
-        send_to_char("Supply a class: M C W T D K B P R I S A\n\r", ch);
+        send_to_char("Must supply a class (M C W T D K B P R I S N)\n\r", ch);
         return;
     }
 
-    switch (*class) {
-    case 'M':
+    switch (tolower(*class)) {
     case 'm':
         lin_class = MAGE_LEVEL_IND;
         break;
 
-    case 'T':
     case 't':
         lin_class = THIEF_LEVEL_IND;
         break;
 
-    case 'W':
     case 'w':
-    case 'F':
     case 'f':
         lin_class = WARRIOR_LEVEL_IND;
         break;
 
-    case 'C':
     case 'c':
         lin_class = CLERIC_LEVEL_IND;
         break;
 
-    case 'D':
     case 'd':
         lin_class = DRUID_LEVEL_IND;
         break;
 
-    case 'K':
     case 'k':
         lin_class = MONK_LEVEL_IND;
         break;
 
-    case 'b':
     case 'B':
         lin_class = BARBARIAN_LEVEL_IND;
         break;
 
-    case 'P':
     case 'p':
         lin_class = PALADIN_LEVEL_IND;
         break;
 
-    case 'R':
     case 'r':
         lin_class = RANGER_LEVEL_IND;
         break;
 
-    case 'I':
     case 'i':
         lin_class = PSI_LEVEL_IND;
         break;
 
-    case 'S':
     case 's':
         lin_class = SORCERER_LEVEL_IND;
         break;
-    case 'N':
+
     case 'n':
         lin_class = NECROMANCER_LEVEL_IND;
         break;
@@ -4081,38 +4070,41 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
         break;
     }
 
-    argument = get_argument(argument, &level);
+    argument = get_argument(argument, &levelarg);
 
-    if (GET_LEVEL(victim, lin_class) == 0) {
+    level = GET_LEVEL(victim, lin_class);
+
+    if (level == 0) {
         adv = 1;
-    } else if (!level) {
+    } else if (!levelarg) {
         send_to_char("You must supply a level number.\n\r", ch);
         return;
     } else {
-        if (!isdigit((int)*level)) {
+        if (!isdigit((int)*levelarg)) {
             send_to_char("Third argument must be a positive integer.\n\r", ch);
             return;
         }
 
-        if ((newlevel = atoi(level)) < GET_LEVEL(victim, lin_class)) {
+        newlevel = atoi(levelarg);
+        if (newlevel < level) {
             send_to_char("Can't dimish a players status.\n\r", ch);
             return;
         }
-        adv = newlevel - GET_LEVEL(victim, lin_class);
+        adv = newlevel - level;
     }
 
-    if ((adv + GET_LEVEL(victim, lin_class)) > 1 &&
-        GetMaxLevel(ch) < IMPLEMENTOR) {
+    newlevel = level + adv;
+    if (newlevel > 1 && GetMaxLevel(ch) < IMPLEMENTOR) {
         send_to_char("Thou art not godly enough.\n\r", ch);
         return;
     }
 
-    if ((adv + GET_LEVEL(victim, lin_class)) > IMPLEMENTOR) {
+    if (newlevel > IMPLEMENTOR) {
         send_to_char("Implementor is the highest possible level.\n\r", ch);
         return;
     }
 
-    if ((adv + GET_LEVEL(victim, lin_class)) < 1) {
+    if (newlevel < 1) {
         send_to_char("1 is the lowest possible level.\n\r", ch);
         return;
     }
@@ -4130,13 +4122,13 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
         "explosion of light snaps you back to reality. You feel slightly "
         "different.", FALSE, ch, 0, victim, TO_VICT);
 
-    if (GET_LEVEL(victim, lin_class) == 0) {
+    if (level == 0) {
         do_start(victim);
-    } else if (GET_LEVEL(victim, lin_class) < IMPLEMENTOR) {
-        gain_exp_regardless(victim,
-              (classes[lin_class].titles[GET_LEVEL(victim, lin_class) +
-                                         adv].exp) -
-               GET_EXP(victim), lin_class);
+    } else if (level < IMPLEMENTOR) {
+        gain_exp_regardless(victim, 
+                            (classes[lin_class].levels[newlevel].exp -
+                             GET_EXP(victim)),
+                            lin_class);
 
         send_to_char("Character is now advanced.\n\r", ch);
     } else {
@@ -5525,7 +5517,7 @@ void do_drainlevel(struct char_data *ch, char *argument, int cmd)
             send_to_char("\n\rTried to lower them below 1, can't do "
                          "that.\n\r", ch);
         } else {
-            drop_level(victim, BestClassBIT(victim), TRUE);
+            drop_level(victim, BestClassIND(victim), TRUE);
             send_to_char(".", ch);
         }
     }
