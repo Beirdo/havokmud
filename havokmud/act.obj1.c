@@ -850,10 +850,18 @@ if (!CheckEgoGive(ch,vict,obj)) {
 }
 
 
-
+/* Made it so objects get split up into 2 donation rooms instead of one.
+ * @ date : May 30, 2002
+ * @ Altered by : Greg Hovey
+ * ((number(0,1)==1)) ? donations1 : donations2)
+ **/
 
 void do_donate(struct char_data *ch, char *argument, int cmd)
 {
+
+  const int donations1 = 13510;
+  const int donations2 = 99;
+
   char arg[MAX_INPUT_LENGTH+80];
   int amount, value;
   char buffer[MAX_STRING_LENGTH];
@@ -877,7 +885,7 @@ dlog("in do_donate");
 	next_obj = tmp_object->next_content;
 	if (! IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
 	  obj_from_char(tmp_object);
-	  obj_to_room(tmp_object,99);
+	  obj_to_room(tmp_object,((number(0,1)==1)) ? donations1 : donations2);//99);
 	  value +=((tmp_object->obj_flags.cost)*10/100);
 	  test = TRUE;
 	} else {
@@ -922,7 +930,7 @@ dlog("in do_donate");
      	 send_to_char(buffer,ch);
 	    act("$p dissapears from $n's hands!.", 1, ch, tmp_object, 0, TO_ROOM);
 	    obj_from_char(tmp_object);
-	    obj_to_room(tmp_object,99);
+	    obj_to_room(tmp_object,((number(0,1)==1)) ? donations1 : donations2);//);
 	    value +=((tmp_object->obj_flags.cost)*10/100);
 	  } else {
 	    if (singular(tmp_object))

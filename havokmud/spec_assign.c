@@ -1448,6 +1448,7 @@ void assign_rooms()
   static struct special_proc_entry specials[] = {
 
     {   99,  Donation},
+    {   13510,  Donation},
     { 500,   druid_challenge_prep_room},
     { 501,   druid_challenge_room},
     { 550,   monk_challenge_prep_room},
@@ -1507,7 +1508,7 @@ void assign_rooms()
        { 551,   monk_challenge_room},
     */
 { 44129,  Magic_Pool},//  in proc_assign and add to protos
-{ 44115,  Read_Room},// in proc_assign and add to protos..
+{ 44114,  Read_Room},// in proc_assign and add to protos..
 
     { -1, NULL},
   };

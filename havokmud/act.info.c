@@ -2176,7 +2176,8 @@ const char *languagelist[] = {
   "Giantish",
   "Ogre",
   "Gnomish",
-  "All"};
+  "All",
+  "GodLike"};
 
 
 
