@@ -410,7 +410,7 @@ struct command_def commandList[] = {
 
     { "rsave", do_rsave, 228, POSITION_DEAD, 53 },
     { "rload", do_rload, 229, POSITION_DEAD, 53 },
-    { "track", do_track, 230, POSITION_DEAD, 1 },
+    { "track", do_track, 230, POSITION_STANDING, 1 },
     { "siteban", do_wizlock, 231, POSITION_DEAD, 54 },
     { "highfive", do_highfive, 232, POSITION_DEAD, 0 },
     { "title", do_title, 233, POSITION_DEAD, 20 },
