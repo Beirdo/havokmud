@@ -5227,7 +5227,9 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 {
 	struct char_data *tmp;
 	struct char_file_u player;
-	char buf[254], name[MAX_STRING_LENGTH], tmp_name[254], tmp_short[254];
+	char buf[254], name[MAX_STRING_LENGTH];
+	char saintbuf[MAX_STRING_LENGTH], leaderbuf[MAX_STRING_LENGTH], memberbuf[MAX_STRING_LENGTH];
+	char saints[MAX_STRING_LENGTH], leaders[MAX_STRING_LENGTH], members[MAX_STRING_LENGTH];
 	int x = 0, j = 0, i = 0, clan = 0, length = 35, clength =0;
 	extern int top_of_p_table;
 	extern struct player_index_element *player_table;
@@ -5250,8 +5252,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 				strcat(name, " ");
 			}
 			sprintf(buf,"$c000c[$c000w%2d$c000c] $c000w%s   $c000c[$c000w%s$c000c]\n\r",
-				x, name, clan_list[x].shortname);
-
+					x, name, clan_list[x].shortname);
 			send_to_char(buf,ch);
 			x++;
 		}
@@ -5269,19 +5270,31 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 			} else {
 				/* valid clan number */
 				ch_printf(ch,"    $c000c-=* $c000w%s $c000wClan info $c000c*=-\n\r",clan_list[clan].name);
-
-				/* loop through pfiles, check for saint[clan] */
-//				ch_printf(ch,"\n\r       $c000c- $c000w%s Saints $c000c-\n\r",clan_list[clan].name);
+				sprintf(saints,"");
+				sprintf(leaders,"");
+				sprintf(members,"");
+				/* loop through pfiles, check for [clan] */
 				for(i=0;i<top_of_p_table+1;i++) {
 					if (load_char((player_table + i)->name, &player) > -1) {
 						/* store to a tmp char that we can deal with */
 						CREATE(tmp, struct char_data,1);
 						clear_char(tmp);
 						store_to_char(&player, tmp);
-						if(IS_IMMORTAL(tmp) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s %ld\n\r",(GET_SEX(tmp)?((GET_SEX(tmp) != SEX_FEMALE)?"Patron":"Matron"):"Notron",
-									CalcPowerLevel(tmp)),
-								tmp->player.title?tmp->player.title:GET_NAME(tmp));
+						if(GET_CLAN(tmp) == clan) {
+							if(IS_IMMORTAL(tmp)) {
+								sprintf(saintbuf, "$c000c[$c0008%s$c000c] $c000w%s\n\r",
+										(GET_SEX(tmp)?((GET_SEX(tmp) != SEX_FEMALE)?"Patron":"Matron"):"Notron"),
+										tmp->player.title?tmp->player.title:GET_NAME(tmp));
+								strcat(saints,saintbuf);
+							} else if (IS_SET(tmp->specials.act, PLR_CLAN_LEADER)) {
+								sprintf(leaderbuf, "$c000c[$c0008Leader$c000c] $c000w%s $c000w[%ld]\n\r",
+										tmp->player.title?tmp->player.title:GET_NAME(tmp), CalcPowerLevel(tmp));
+								strcat(leaders,leaderbuf);
+							} else { /* just a member, apparently */
+								sprintf(memberbuf, "$c000c[$c0008Member$c000c] $c000w%s\n\r",
+										tmp->player.title?tmp->player.title:GET_NAME(tmp));
+								strcat(members,memberbuf);
+							}
 						}
 						free(tmp);
 					} else {
@@ -5289,44 +5302,10 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 						return;
 					}
 				}
-				i=0;
-				/* loop through pfiles, check for leader[clan] */
-//				ch_printf(ch,"\n\r       $c000c- $c000w%s Leaders $c000c-\n\r",clan_list[clan].name);
-				for(i=0;i<top_of_p_table+1;i++) {
-					if (load_char((player_table + i)->name, &player) > -1) {
-						/* store to a tmp char that we can deal with */
-						CREATE(tmp, struct char_data,1);
-						clear_char(tmp);
-						store_to_char(&player, tmp);
-						if(!IS_IMMORTAL(tmp) && IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008Leader$c000c] $c000w%s %ld\n\r",
-								tmp->player.title?tmp->player.title:GET_NAME(tmp),CalcPowerLevel(tmp));
-						}
-						free(tmp);
-					} else {
-						log("screw up bigtime in load_char, leader part, in clanlist");
-						return;
-					}
-				}
-				i=0;
-				/* now loop through pfiles, check for member[clan] */
-//				ch_printf(ch,"\n\r       $c000c- $c000w%s Members $c000c-\n\r",clan_list[clan].name);
-				for(i=0;i<top_of_p_table+1;i++) {
-					if (load_char((player_table + i)->name, &player) > -1) {
-						/* store to a tmp char that we can deal with */
-						CREATE(tmp, struct char_data,1);
-						clear_char(tmp);
-						store_to_char(&player, tmp);
-						if(!IS_IMMORTAL(tmp) && !IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008Member$c000c] $c000w%s\n\r",
-								tmp->player.title?tmp->player.title:GET_NAME(tmp));
-						}
-						free(tmp);
-					} else {
-						log("screw up bigtime in load_char, member part, in clanlist");
-						return;
-					}
-				}
+				/* may have to append these to string blocks, if clans (or titles!?) get real big */
+				send_to_char(saints,ch);
+				send_to_char(leaders,ch);
+				send_to_char(members,ch);
 			}
 		}
 	}
