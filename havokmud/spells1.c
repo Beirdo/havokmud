@@ -123,6 +123,7 @@ void cast_colour_spray(int level, struct char_data *ch, char *arg,
         }
         break;
     case SPELL_TYPE_WAND:
+    case SPELL_TYPE_STAFF:
         if (victim) {
             spell_colour_spray(level, ch, victim, 0);
         }
