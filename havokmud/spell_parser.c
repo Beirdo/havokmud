@@ -3195,8 +3195,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                      */
                     if (IS_SET(spell_info[index].targets, TAR_CHAR_ROOM)) {
                         if ((tar_char = get_char_room_vis(ch, name)) || 
-                            !str_cmp(GET_NAME(ch), name)) {
-                            if (!str_cmp(GET_NAME(ch), name)) {
+                            !strcasecmp(GET_NAME(ch), name)) {
+                            if (!strcasecmp(GET_NAME(ch), name)) {
                                 tar_char = ch;
                             }
 
@@ -3261,7 +3261,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                                              TAR_OBJ_EQUIP)) {
                         for (i = 0; i < MAX_WEAR && !target_ok; i++) {
                             if (ch->equipment[i] && 
-                                !str_cmp(name, ch->equipment[i]->name)) {
+                                !strcasecmp(name, ch->equipment[i]->name)) {
                                 tar_obj = ch->equipment[i];
                                 target_ok = TRUE;
                             }
@@ -3273,7 +3273,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                      */
                     if (!target_ok && 
                         IS_SET(spell_info[index].targets, TAR_SELF_ONLY) &&
-                        !str_cmp(GET_NAME(ch), name)) {
+                        !strcasecmp(GET_NAME(ch), name)) {
                         tar_char = ch;
                         target_ok = TRUE;
                     }

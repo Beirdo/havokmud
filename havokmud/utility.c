@@ -770,61 +770,7 @@ char           *strip_cr(char *newbuf, const char *orig, size_t maxlen)
     return newbuf;
 }
 
-/*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
- */
-/*
- * scan 'till found different or end of both
- */
-int str_cmp(char *arg1, char *arg2)
-{
-#if 1
-    int             chk,
-                    i;
 
-    if ((!arg2) || (!arg1)) {
-        return (1);
-    }
-    for (i = 0; *(arg1 + i) || *(arg2 + i); i++) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-#else
-    return (strcmp(arg1, arg2));
-#endif
-}
-
-/*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
- * scan 'till found different, end of both, or n reached
- */
-int strn_cmp(char *arg1, char *arg2, int n)
-{
-#if 1
-    int             chk,
-                    i;
-
-    for (i = 0; (*(arg1 + i) || *(arg2 + i)) && (n > 0); i++, n--) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-#else
-    return (strncmp(arg1, arg2, n));
-#endif
-
-}
 
 /*
  * writes a string to the log
@@ -5622,25 +5568,6 @@ int fighting_in_room(int room_n)
     return FALSE;
 }
 
-int str_cmp2(char *arg1, char *arg2)
-{
-    int             chk,
-                    i;
-
-    if (!arg2 || !arg1 || !strlen(arg1)) {
-        return (1);
-    }
-    for (i = 0; i < strlen(arg1); i++) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-}
 
 int CheckSquare(struct char_data *ch, int dir)
 {
@@ -6189,128 +6116,6 @@ int advatoi(const char *s)
     }
 
     return (number);
-}
-
-/*
- * Lennya 20030730 A little gadget to convert a string to a floating
- * number. Maybe it already exists, but I couldn't find it. It works,
- * anyway.
- */
-float arg_to_float(char *arg)
-{
-#if 0
-    /* There is a system call to do exactly this! */
-    char            buf[120];   /* a buffer to hold a copy of the argument */
-    float           number = 0.0;       /* number to be returned */
-    int             multiplier = 1;     /* multiplier used to get the
-                                         * extra digits right */
-    int             abs = 0,
-                    i = 0,
-                    tmp = 0,
-                    x = 0,
-                    y = 10;
-
-    if (!arg || !*arg)
-        return (0.0);
-
-    abs = strlen(arg);
-
-    while (isdigit(arg[i])) {
-        switch (arg[i]) {
-        case '1':
-            tmp = 1;
-            break;
-        case '2':
-            tmp = 2;
-            break;
-        case '3':
-            tmp = 3;
-            break;
-        case '4':
-            tmp = 4;
-            break;
-        case '5':
-            tmp = 5;
-            break;
-        case '6':
-            tmp = 6;
-            break;
-        case '7':
-            tmp = 7;
-            break;
-        case '8':
-            tmp = 8;
-            break;
-        case '9':
-            tmp = 9;
-            break;
-        case '0':
-            tmp = 0;
-            break;
-        default:
-            tmp = 0;
-            break;
-        }
-        number = (number * 10) + tmp;
-        i++;
-    }
-    if (arg[i]) {
-        if (arg[i] == '\0') {   /* just an integer, not a float */
-            return (number);
-        }
-        if (arg[i] != '.') {    /* this aint no float, mate! */
-            return (0.0);
-        }
-    }
-    i++;
-    while (isdigit(arg[i])) {
-        switch (arg[i]) {
-        case '1':
-            tmp = 1;
-            break;
-        case '2':
-            tmp = 2;
-            break;
-        case '3':
-            tmp = 3;
-            break;
-        case '4':
-            tmp = 4;
-            break;
-        case '5':
-            tmp = 5;
-            break;
-        case '6':
-            tmp = 6;
-            break;
-        case '7':
-            tmp = 7;
-            break;
-        case '8':
-            tmp = 8;
-            break;
-        case '9':
-            tmp = 9;
-            break;
-        case '0':
-            tmp = 0;
-            break;
-        default:
-            tmp = 0;
-            break;
-        }
-        y = 1;
-        for (x = 1; x <= multiplier; x++) {
-            y *= 10;
-        }
-        number = number + (float) tmp / y;
-        multiplier++;
-        i++;
-    }
-    return (number);
-#else
-    return ((float)strtod(arg, NULL));
-#endif
 }
 
 /**********************************************************************

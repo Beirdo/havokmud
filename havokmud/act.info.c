@@ -2772,7 +2772,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         }
 
         for (i = 0; i <= top_of_helpt; i++) {
-            if (!str_cmp(argument, help_index[i].keyword)) {
+            if (!strcasecmp(argument, help_index[i].keyword)) {
                 rewind(help_fl);
                 fseek(help_fl, help_index[i].pos, 0);
                 *buffer = '\0';
@@ -2985,7 +2985,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 	}
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument && *argument) {
         if (!wizhelp_index) {
             send_to_char("No wizhelp available.\n\r", ch);
             return;
@@ -2998,7 +2998,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
             minlen = strlen(argument);
 
             if (!(chk =
-                  strn_cmp(argument, wizhelp_index[mid].keyword, minlen))) {
+                  strncasecmp(argument, wizhelp_index[mid].keyword, minlen))) {
                 rewind(wizhelp_fl);
                 fseek(wizhelp_fl, wizhelp_index[mid].pos, 0);
                 *buffer = '\0';
@@ -4919,6 +4919,9 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     }
 
     arg = skip_spaces(arg);
+    if( !arg ) {
+        send_to_char("Which class? (skill [m s c w t d r p k i n])\n\r", ch);
+    }
 
     switch (*arg) {
     case 'w':

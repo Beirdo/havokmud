@@ -150,7 +150,7 @@ char           *one_lc_dimd_argument(char *argument, char *first_arg)
     do {
         argument = skip_spaces(argument);
         scan = first_arg;
-        while (*argument && *argument != '^') {
+        while (argument && *argument && *argument != '^') {
             *scan++ = LOWER(*argument), argument++;
         }
         *scan = 0;
@@ -172,7 +172,7 @@ char           *one_dimd_argument(char *argument, char *first_arg)
 
     argument = skip_spaces(argument);
     scan = first_arg;
-    while (*argument && *argument != '^') {
+    while (argument && *argument && *argument != '^') {
         *scan++ = *argument++;
     }
     *scan = 0;
@@ -490,7 +490,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
     argument = skip_spaces(argument);
 
-    if (!str_cmp(argument, "on")) {
+    if (!strcasecmp(argument, "on")) {
         if (dimd_on) {
             msg("The server was already activated.", ch);
             return;
@@ -501,7 +501,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "off")) {
+    if (!strcasecmp(argument, "off")) {
         if (!dimd_on) {
             msg("The server was already deactivated.", ch);
             return;
@@ -512,7 +512,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "gossip")) {
+    if (!strcasecmp(argument, "gossip")) {
         if (dimd_gossip) {
             msg("Dimensional gossips will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rg\n\r");
@@ -525,7 +525,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "muse")) {
+    if (!strcasecmp(argument, "muse")) {
         if (dimd_muse) {
             msg("Dimensional muses will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rm\n\r");
@@ -538,7 +538,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "think")) {
+    if (!strcasecmp(argument, "think")) {
         if (dimd_think) {
             msg("Dimensional thinking will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rt\n\r");
@@ -846,7 +846,7 @@ bool answer_a_mud(void)
         printhost(&sock.sin_addr, host);
     }
     for (mud = 0; muds[mud].address; mud++) {
-        if (!str_cmp(host, muds[mud].address) && mud != dimd_local_mud) {
+        if (!strcasecmp(host, muds[mud].address) && mud != dimd_local_mud) {
             break;
         }
     }
@@ -1026,7 +1026,7 @@ void dimd_loop(void)
             if (IS_SET(muds[i].flags, DD_CONNECTED)) {
                 while (get_from_q(&muds[i].input, comm)) {
                     if (!IS_SET(muds[i].flags, DD_VERIFIED)) {
-                        if (str_cmp(comm, DIMD_PASSWORD)) {
+                        if (strcasecmp(comm, DIMD_PASSWORD)) {
                             sprintf(buf, "The mud is located at port %d.\n\r",
                                     dimd_port - 2);
                             write_to_descriptor(muds[i].desc, buf);
@@ -1568,7 +1568,7 @@ bool isname_iter(const char *namelist)
 
     for (i = 0; i < is_argc; i++) {
         for (j = 0; j < is_xargc; j++) {
-            if (!str_cmp(is_argv[i], is_xargv[j])) {
+            if (!strcasecmp(is_argv[i], is_xargv[j])) {
                 is_xargv[j] = NULL;
                 break;
             }

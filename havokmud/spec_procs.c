@@ -2584,7 +2584,7 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
 
         arg1 = skip_spaces(arg);
 
-        if (arg1 && str_cmp(arg1, container) && str_cmp(arg1, "water")) {
+        if (arg1 && strcasecmp(arg1, container) && strcasecmp(arg1, "water")) {
             return (FALSE);
         }
 
@@ -2734,7 +2734,7 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
     for (tmp_obj = real_roomp(key_room)->contents; tmp_obj;
          tmp_obj = tmp_obj->next_content) {
         for (ext = tmp_obj->ex_description; ext; ext = ext->next) {
-            if (str_cmp(buf, ext->keyword) == 0) {
+            if (strcasecmp(buf, ext->keyword) == 0) {
                 if (gold == 0) {
                     gold = 1;
                     act("$n kneels and at the altar and chants a prayer to "
@@ -2832,8 +2832,8 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         arg = get_argument(arg, &buf1);
         arg = get_argument(arg, &buf2);
 
-        if (buf1 && buf2 && !str_cmp(buf1, "chalice") && 
-            !str_cmp(buf2, "altar")) {
+        if (buf1 && buf2 && !strcasecmp(buf1, "chalice") && 
+            !strcasecmp(buf2, "altar")) {
             extract_obj(chalice);
             chalice = read_object(achl, VIRTUAL);
             obj_to_room(chalice, ch->in_room);

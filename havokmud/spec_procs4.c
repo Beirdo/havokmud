@@ -626,7 +626,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &buffer);
         if (buffer) {
-            if (str_cmp(buffer, doorname)) {
+            if (strcasecmp(buffer, doorname)) {
                 return (FALSE);
             } else {
                 /* 
@@ -653,7 +653,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
          * say 
          */
         arg = get_argument(arg, &guess);
-        if (guess && !str_cmp(guess, answer)) {
+        if (guess && !strcasecmp(guess, answer)) {
             /*
              * open the exit in this room 
              */
@@ -1307,7 +1307,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && (!str_cmp("berry", buf) || !str_cmp("berries", buf))) {
+    if (buf && (!strcasecmp("berry", buf) || !strcasecmp("berries", buf))) {
         if (number(0, 4)) {
             switch (GET_WIS(ch) + number(0, 10)) {
             case 1:
@@ -1373,7 +1373,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && (!str_cmp("acorn", buf) || !str_cmp("acorns", buf))) {
+    if (buf && (!strcasecmp("acorn", buf) || !strcasecmp("acorns", buf))) {
         if (number(0, 2)) {
             act("You pick a delicious looking acorn.", FALSE, ch,
                 0, 0, TO_CHAR);
@@ -1532,8 +1532,8 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
     }
     arg = get_argument(arg, &buf);
 
-    if (buf && (!str_cmp("door", buf) || !str_cmp("Door", buf) || 
-                !str_cmp("DOOR", buf))) {
+    if (buf && (!strcasecmp("door", buf) || !strcasecmp("Door", buf) || 
+                !strcasecmp("DOOR", buf))) {
         /* 
          * knock door 
          */
@@ -1859,8 +1859,8 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
          * look 
          */
         arg = get_argument(arg, &buf);
-        if (buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
-                    !str_cmp("Up", buf))) {
+        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) || 
+                    !strcasecmp("Up", buf))) {
             send_to_char("One would have a marvelous view when high up in the"
                          " canopy.\n\r", ch);
             return (TRUE);
@@ -1873,7 +1873,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &buf);
         if (buf) {
-            if (!str_cmp("tree", buf) || !str_cmp("Tree", buf)) {
+            if (!strcasecmp("tree", buf) || !strcasecmp("Tree", buf)) {
                 /* 
                  * climb tree 
                  */
@@ -3789,7 +3789,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &buf);
     }
 
-    if (buf && (!str_cmp("green", buf) || !strcmp("powder", buf) || 
+    if (buf && (!strcasecmp("green", buf) || !strcmp("powder", buf) || 
                 !strcmp("powder-green", buf) || !strcmp("green-powder", buf))) {
         act("As you lean over to look at the strange powder, a drop of your "
             "sweat falls.", FALSE, ch, 0, 0, TO_CHAR);
@@ -5722,7 +5722,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && !str_cmp("ship", buf) &&
+    if (buf && !strcasecmp("ship", buf) &&
         (ship = get_char_room("", ch->in_room))) {
         j = mob_index[ship->nr].virtual;
 

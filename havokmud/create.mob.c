@@ -829,7 +829,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
          * #s -Lennya 
          */
 #endif       
-        change = arg_to_float(arg);
+        change = (float)strtod(arg, NULL);
         if (change < 0.0) {
             change = 0.0;
         }

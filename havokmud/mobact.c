@@ -1021,7 +1021,7 @@ void noop(char *arg, struct char_data *ch)
         return;
     }
 
-    if (*arg) {
+    if (arg && *arg) {
         i = atoi(arg);
 
         if (i <= 0) {

@@ -23,8 +23,6 @@ extern struct zone_data *zone_table;
 
 extern long     SystemFlags;
 
-int             str_cmp2(char *arg1, char *arg2);
-
 int             GoodBlade(struct char_data *ch, int cmd, char *arg,
                           struct obj_data *tobj, int type);
 int             NeutralBlade(struct char_data *ch, int cmd, char *arg,
@@ -109,7 +107,7 @@ int isname(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (0 == str_cmp(argv[i], xargv[j])) {
+            if (0 == strcasecmp(argv[i], xargv[j])) {
                 xargv[j] = NULL;
                 break;
             }
@@ -161,7 +159,7 @@ int isname2(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (0 == str_cmp2(argv[i], xargv[j])) {
+            if (!strcasecmp(argv[i], xargv[j])) {
                 xargv[j] = NULL;
                 break;
             }
@@ -2745,7 +2743,7 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     if (IS_SET(bitvector, FIND_OBJ_EQUIP)) {
         for (found = FALSE, i = 0; i < MAX_WEAR && !found; i++) {
             if (ch->equipment[i] && 
-                str_cmp(name, ch->equipment[i]->name) == 0) {
+                strcasecmp(name, ch->equipment[i]->name) == 0) {
                 *tar_obj = ch->equipment[i];
                 found = TRUE;
             }

@@ -147,7 +147,7 @@ int Magic_Fountain(struct char_data *ch, int cmd, char *arg,
 
         arg = get_argument(arg, &buf);
 
-        if (!buf || (str_cmp(buf, "fountain") && str_cmp(buf, "water"))) {
+        if (!buf || (strcasecmp(buf, "fountain") && strcasecmp(buf, "water"))) {
             return (FALSE);
         }
 
@@ -2693,13 +2693,8 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         Sammy = (struct char_data *) FindMobInRoomWithFunction(ch->in_room,
                                                                Samah);
 
-        for (; *arg == ' '; arg++) {
-            /* 
-             * skip whitespace 
-             */
-        }
-
-        strcpy(buf, arg);
+        arg = skip_spaces(arg);
+        strcpy(buf, (arg ? arg : ""));
 
         if (cmd == 207) {
             /* 
@@ -3167,10 +3162,8 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
             PGuard = (struct char_data *) 
                       FindMobInRoomWithFunction(ch->in_room, PrisonGuard);
 
-            for (; *arg == ' '; arg++) {
-                /* skip whitespace */
-            }
-            strcpy(buf, arg);
+            arg = skip_spaces(arg);
+            strcpy(buf, (arg ? arg : 0));
 
             if (cmd == 302) {   /* gos */
                 act("$n glares at you", FALSE, PGuard, 0, ch, TO_VICT);
@@ -5410,8 +5403,8 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &arg1);
     if (arg1) {
-        if (!str_cmp("post", arg1) || !str_cmp("ethereal", arg1) ||
-            !str_cmp("ethereal post", arg1)) {
+        if (!strcasecmp("post", arg1) || !strcasecmp("ethereal", arg1) ||
+            !strcasecmp("ethereal post", arg1)) {
             if ((post = get_char_room("ethereal post", ch->in_room))) {
                 /*
                  * Check to see where the post is going 
@@ -5470,8 +5463,8 @@ int board_ship(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &arg1);
     if (arg1) {
-        if ((!str_cmp("ship", arg1) || !str_cmp("corsair", arg1) || 
-             !str_cmp("corsair ship", arg1)) &&  
+        if ((!strcasecmp("ship", arg1) || !strcasecmp("corsair", arg1) || 
+             !strcasecmp("corsair ship", arg1)) &&  
             (ship = get_char_room("corsair ship", ch->in_room))) {
             j = 32033;
 
@@ -5703,9 +5696,11 @@ int antioch_grenade(struct char_data *ch, int cmd, char *arg,
         return (0);
     }
     if (cmd == CMD_SAY || cmd == CMD_ASAY) {
-        while (*arg == ' ') {
-            arg++;
+        arg = skip_spaces(arg);
+        if( !arg ) {
+            return( 0 );
         }
+
         if (!strcmp(arg, "one")) {
             obj->obj_flags.value[0] = 4;
         } else if (!strcmp(arg, "two") && obj->obj_flags.value[0] >= 3 && 

@@ -124,7 +124,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     }
 
     if (arg1 && !arg2) {
-        if (!str_cmp(arg1, "all")) {
+        if (!strcasecmp(arg1, "all")) {
             /*
              * plain "get all"
              */
@@ -138,8 +138,8 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     }
 
     if (arg1 && arg2) {
-        if (!str_cmp(arg1, "all")) {
-            if (!str_cmp(arg2, "all")) {
+        if (!strcasecmp(arg1, "all")) {
+            if (!strcasecmp(arg2, "all")) {
                 /*
                  * "get all all"
                  */
@@ -151,7 +151,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                 type = 4;
             }
         } else {
-            if (!str_cmp(arg2, "all")) {
+            if (!strcasecmp(arg2, "all")) {
                 /*
                  * "get object all"
                  */
@@ -483,7 +483,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         amount = advatoi(arg);
         argument = get_argument(argument, &arg);
 
-        if (arg && str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0) {
+        if (arg && strcasecmp("coins", arg) != 0 && strcasecmp("coin", arg) != 0) {
             send_to_char("Do you mean 'drop <number> coins' ?\n\r", ch);
             return;
         }
@@ -818,8 +818,8 @@ void do_give(struct char_data *ch, char *argument, int cmd)
         amount = advatoi(obj_name);
         argument = get_argument(argument, &arg);
 
-        if (arg && str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 &&
-            str_cmp("gold", arg) != 0) {
+        if (arg && strcasecmp("coins", arg) != 0 && strcasecmp("coin", arg) != 0 &&
+            strcasecmp("gold", arg) != 0) {
             send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r",
                          ch);
             return;
@@ -983,7 +983,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg);
 
     if (arg) {
-        if (!str_cmp(arg, "all")) {
+        if (!strcasecmp(arg, "all")) {
             value = 0;
             for (tmp_object = ch->carrying;
                  tmp_object; tmp_object = next_obj) {

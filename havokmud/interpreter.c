@@ -1813,7 +1813,7 @@ int find_name(char *name)
     int             i;
 
     for (i = 0; i <= top_of_p_table; i++) {
-        if (!str_cmp((player_table + i)->name, name)) {
+        if (!strcasecmp((player_table + i)->name, name)) {
             return (i);
         }
     }
@@ -1829,6 +1829,9 @@ int _parse_name(char *arg, char *name)
      * skip whitespaces
      */
     arg = skip_spaces(arg);
+    if( !arg ) {
+        return( 0 );
+    }
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
         if ((*arg < 0) || !isalpha(*arg) || i > MAX_NAME_LENGTH) {
@@ -1921,12 +1924,12 @@ int _check_ass_name(char *name)
     for (j = 0; *shitlist[j].name; j++) {
         switch (shitlist[j].how) {
         case 0:
-            if (!str_cmp(name, shitlist[j].name)) {
+            if (!strcasecmp(name, shitlist[j].name)) {
                 return 1;
             }
             break;
         case 1:
-            if (!strn_cmp(name, shitlist[j].name, strlen(shitlist[j].name))) {
+            if (!strncasecmp(name, shitlist[j].name, strlen(shitlist[j].name))) {
                 return 1;
             }
             break;
@@ -1934,7 +1937,7 @@ int _check_ass_name(char *name)
             if (strlen(name) < strlen(shitlist[j].name)) {
                 break;
             }
-            if (!str_cmp(name + (strlen(name) - strlen(shitlist[j].name)),
+            if (!strcasecmp(name + (strlen(name) - strlen(shitlist[j].name)),
                          shitlist[j].name)) {
                 return 1;
             }
@@ -1944,7 +1947,7 @@ int _check_ass_name(char *name)
                 break;
             }
             for (k = 0; k <= strlen(name) - strlen(shitlist[j].name); k++) {
-                if (!strn_cmp(name + k, shitlist[j].name,
+                if (!strncasecmp(name + k, shitlist[j].name,
                               strlen(shitlist[j].name))) {
                     return 1;
                 }
@@ -2485,7 +2488,7 @@ void nanny(struct descriptor_data *d, char *arg)
                      */
                     if (k->original) {
                         if (GET_NAME(k->original) &&
-                            str_cmp(GET_NAME(k->original),
+                            strcasecmp(GET_NAME(k->original),
                                     GET_NAME(d->character)) == 0) {
                             already_p = 1;
                         }
@@ -2494,7 +2497,7 @@ void nanny(struct descriptor_data *d, char *arg)
                          * No switch has been made
                          */
                         if (GET_NAME(k->character) &&
-                            str_cmp(GET_NAME(k->character),
+                            strcasecmp(GET_NAME(k->character),
                                     GET_NAME(d->character)) == 0) {
                             already_p = 1;
                         }
@@ -2511,10 +2514,10 @@ void nanny(struct descriptor_data *d, char *arg)
              * Check if disconnected ...
              */
             for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
-                if ((!str_cmp(GET_NAME(d->character), GET_NAME(tmp_ch)) &&
+                if ((!strcasecmp(GET_NAME(d->character), GET_NAME(tmp_ch)) &&
                      !tmp_ch->desc && !IS_NPC(tmp_ch)) ||
                     (IS_NPC(tmp_ch) && tmp_ch->orig &&
-                     !str_cmp(GET_NAME(d->character),
+                     !strcasecmp(GET_NAME(d->character),
                               GET_NAME(tmp_ch->orig)))) {
 
                     write(d->descriptor, echo_on, 6);
@@ -3479,7 +3482,7 @@ void nanny(struct descriptor_data *d, char *arg)
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
             Log(buf);
             for (i = 0; i <= top_of_p_table; i++) {
-                if (!str_cmp((player_table + i)->name,
+                if (!strcasecmp((player_table + i)->name,
                              GET_NAME(d->character))) {
                     if ((player_table + i)->name) {
                         free((player_table + i)->name);
@@ -3530,6 +3533,11 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
         arg = skip_spaces(arg);
+        if(!arg) {
+            SEND_TO_Q("Wrong option.\n\r", d);
+            send_to_char(MENU, d->character);
+            break;
+        }
         switch (*arg) {
         case '0':
             close_socket(d);

@@ -1478,7 +1478,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
         } else {
             for (door = 0; door <= 5; door++) {
                 if (exit_ok(exitp = EXIT(ch, door), NULL) && exitp->keyword && 
-                    !str_cmp(exitp->keyword, buf)) {
+                    !strcasecmp(exitp->keyword, buf)) {
                     do_move(ch, "", ++door);
                     return;
                 }
@@ -1755,7 +1755,7 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &name);
     if (name) {
-        if (str_cmp(name, "self") == 0) {
+        if (strcasecmp(name, "self") == 0) {
             sprintf(name, "%s", GET_NAME(ch));
         }
 

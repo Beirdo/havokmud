@@ -140,7 +140,7 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -160,13 +160,13 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
         /*
          * get response (rest of argument)
          */
-        if (str_cmp(argument, "yes") == 0) {
+        if (strcasecmp(argument, "yes") == 0) {
             d->character->generic = NEWBIE_START;
             sprintf(buf2, "%s has just accepted %s into the game.",
                     ch->player.name, name);
             Log(buf2);
             SEND_TO_Q("You have been accepted.  Press enter\n\r", d);
-        } else if (str_cmp(argument, "no") == 0) {
+        } else if (strcasecmp(argument, "no") == 0) {
             SEND_TO_Q("You have been denied.  Press enter\n\r", d);
             sprintf(buf2, "%s has just denied %s from the game.",
                     ch->player.name, name);
@@ -708,7 +708,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (str_cmp(arg1, "add") == 0) {
+    if (strcasecmp(arg1, "add") == 0) {
         if (!arg2) {
             send_to_char("Siteban add <host_name>\n\r", ch);
             return;
@@ -732,7 +732,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
                 GET_NAME(ch), hostlist[numberhosts]);
         Log(buf);
         numberhosts++;
-    } else if (str_cmp(arg1, "rem") == 0) {
+    } else if (strcasecmp(arg1, "rem") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
@@ -763,7 +763,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
             }
         }
         send_to_char("Host is not in database\n\r", ch);
-    } else if (str_cmp(buf, "list") == 0) {
+    } else if (strcasecmp(buf, "list") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
@@ -1069,7 +1069,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &buf);
     if (!buf) {
         send_to_char("Who do you wich to transfer?\n\r", ch);
-    } else if (str_cmp("all", buf)) {
+    } else if (strcasecmp("all", buf)) {
         if (!(victim = get_char_vis_world(ch, buf, NULL))) {
             send_to_char("No-one by that name around.\n\r", ch);
         } else {
@@ -1127,7 +1127,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &buf);
     if (!buf) {
         send_to_char("Usage: qtrans <name/all>\n\r", ch);
-    } else if (str_cmp("all", buf)) {
+    } else if (strcasecmp("all", buf)) {
         if (!(victim = get_char_vis_world(ch, buf, NULL))) {
             send_to_char("No-one by that name around.\n\r", ch);
         } else {
@@ -1465,7 +1465,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char("Stats on who or what?\n\r", ch);
         return;
     } else {
-        if (!str_cmp("room", arg1)) {
+        if (!strcasecmp("room", arg1)) {
             /*
              * stats on room
              */
@@ -1644,8 +1644,10 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-            ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
-                      classes[k->specials.remortclass - 1].name, color1);
+            if( IS_PC(k) ) {
+                ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
+                          classes[k->specials.remortclass - 1].name, color1);
+            }
 
             sprintf(buf, "%sBirth : [%s%ld%s]secs, Logon[%s%ld%s]secs, "
                          "Played[%s%d%s]secs",
@@ -2934,7 +2936,7 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
         send_to_all(buf);
         Log(buf);
         mudshutdown = 1;
-    } else if (!str_cmp(arg, "reboot")) {
+    } else if (!strcasecmp(arg, "reboot")) {
         sprintf(buf, "Reboot by %s.", GET_NAME(ch));
         send_to_all(buf);
         Log(buf);
@@ -3217,7 +3219,7 @@ void do_force(struct char_data *ch, char *argument, int cmd)
     to_force = skip_spaces(argument);
     if (!name || !to_force) {
         send_to_char("Who do you wish to force to do what?\n\r", ch);
-    } else if (str_cmp("all", name)) {
+    } else if (strcasecmp("all", name)) {
         if (!(vict = get_char_vis(ch, name))) {
             send_to_char("No-one by that name here..\n\r", ch);
         } else if (GetMaxLevel(ch) <= GetMaxLevel(vict) && !IS_NPC(vict)) {
@@ -3514,7 +3516,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             obj_index[obj->item_number].number--;
 #endif
             extract_obj(obj);
-        } else if (!str_cmp("room", name)) {
+        } else if (!strcasecmp("room", name)) {
             if (GetMaxLevel(ch) < IMPLEMENTOR) {
                 send_to_char("I'm sorry, I can't let you do that.\n\r", ch);
                 return;
@@ -5421,7 +5423,7 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
         victim = d->character;
         if (d->character) {
             if (GET_NAME(d->character) &&
-                (str_cmp(GET_NAME(d->character), arg) == 0)) {
+                (strcasecmp(GET_NAME(d->character), arg) == 0)) {
 
                 if ((GetMaxLevel(victim) > 51) && !(ch == victim)) {
                     sprintf(buf, "%s just disconnected %s!", GET_NAME(ch),
@@ -5833,7 +5835,7 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
         act("You rip the heart and soul from $N condeming $M to instant "
             "death.", FALSE, ch, 0, victim, TO_CHAR);
         for (i = 0; i <= top_of_p_table; i++) {
-            if (!str_cmp(player_table[i].name, GET_NAME(victim))) {
+            if (!strcasecmp(player_table[i].name, GET_NAME(victim))) {
                 if (player_table[i].name) {
                     free(player_table[i].name);
                 }
@@ -6037,7 +6039,7 @@ void do_mforce(struct char_data *ch, char *argument, int cmd)
 
     if (!name || !to_force) {
         send_to_char("Who do you wish to force to do what?\n\r", ch);
-    } else if (str_cmp("all", name)) {
+    } else if (strcasecmp("all", name)) {
         if (!(vict = get_char_room_vis(ch, name))) {
             send_to_char("No-one by that name here..\n\r", ch);
         } else if (IS_PC(vict)) {
@@ -6969,7 +6971,7 @@ void do_reward(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7059,7 +7061,7 @@ void do_punish(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7149,7 +7151,7 @@ void do_spend(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7235,7 +7237,7 @@ void do_see_points(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }

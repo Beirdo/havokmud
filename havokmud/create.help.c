@@ -221,7 +221,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
     }
     
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument && *argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return (FALSE);
@@ -232,7 +232,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
          */
         for (i = 0; i <= top_of_helpt; i++) {
             minlen = strlen(argument);
-            if (!(strn_cmp(argument, help_index[i].keyword, minlen))) {
+            if (!(strncasecmp(argument, help_index[i].keyword, minlen))) {
                 if (!(hlp = ch->specials.help)) {
                     return (FALSE);
                 }
@@ -290,7 +290,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         }
         for (i = 0; i <= top_of_wizhelpt; i++) {
             minlen = strlen(argument);
-            if (!(strn_cmp(argument, wizhelp_index[i].keyword, minlen))) {
+            if (!(strncasecmp(argument, wizhelp_index[i].keyword, minlen))) {
                 if (!(hlp = ch->specials.help)) {
                     return (FALSE);
                 }

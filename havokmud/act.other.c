@@ -100,7 +100,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
             send_to_char("You snap to attention\n\r", ch);
         }
     } else {
-        if (!str_cmp(argument, "on")) {
+        if (!strcasecmp(argument, "on")) {
             if (!IS_SET(ch->specials.act, ACT_GUARDIAN)) {
                 SET_BIT(ch->specials.act, ACT_GUARDIAN);
                 act("$n alertly watches you.", FALSE, ch, 0, ch->master,
@@ -109,7 +109,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
                     TO_NOTVICT);
                 send_to_char("You snap to attention\n\r", ch);
             }
-        } else if (!str_cmp(argument, "off")) {
+        } else if (!strcasecmp(argument, "off")) {
             if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
                 act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
                 send_to_char("You relax.\n\r", ch);
@@ -241,7 +241,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument && *argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -320,7 +320,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument && *argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -823,7 +823,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
          */
     }
 
-    if (str_cmp(obj_name, "coins") && str_cmp(obj_name, "gold")) {
+    if (strcasecmp(obj_name, "coins") && strcasecmp(obj_name, "gold")) {
         if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
             for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
                 if (victim->equipment[eq_pos] &&
@@ -1232,7 +1232,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
     /*
      * ----- Start of the group all functions -----
      */
-    if (str_cmp(name, "self") == 0) {
+    if (strcasecmp(name, "self") == 0) {
         sprintf(name, "%s", GET_NAME(ch));
     }
 
@@ -1458,7 +1458,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     dlog("in do_quaff");
 
     argument = get_argument(argument, &buf);
-    if( buf ) {
+    if( !buf ) {
         send_to_char( "Quaff whar?\n\r", ch );
         return;
     }
@@ -1596,7 +1596,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     }
 
     if (buf2) {
-        if (str_cmp(buf2, "self") == 0) {
+        if (strcasecmp(buf2, "self") == 0) {
             buf2 = GET_NAME(ch);
         }
 
@@ -1606,8 +1606,8 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
          */
         if (IS_SET(spell_info[index].targets, TAR_CHAR_ROOM)) {
             if ((victim = get_char_room_vis(ch, buf2)) ||
-                str_cmp(GET_NAME(ch), buf2) == 0) {
-                if (str_cmp(GET_NAME(ch), buf2) == 0) {
+                strcasecmp(GET_NAME(ch), buf2) == 0) {
+                if (strcasecmp(GET_NAME(ch), buf2) == 0) {
                     victim = ch;
                 }
                 if (victim == ch || victim == ch->specials.fighting ||
@@ -1655,7 +1655,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_EQUIP)) {
             for (i = 0; i < MAX_WEAR && !target_ok; i++) {
                 if (ch->equipment[i] && 
-                    str_cmp(buf2, ch->equipment[i]->name) == 0) {
+                    strcasecmp(buf2, ch->equipment[i]->name) == 0) {
                     obj = ch->equipment[i];
                     target_ok = TRUE;
                     target = TAR_OBJ_EQUIP;
@@ -1664,7 +1664,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_SELF_ONLY)) {
-            if (str_cmp(GET_NAME(ch), buf2) == 0) {
+            if (strcasecmp(GET_NAME(ch), buf2) == 0) {
                 victim = ch;
                 target_ok = TRUE;
                 target = TAR_SELF_ONLY;

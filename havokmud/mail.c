@@ -146,7 +146,7 @@ mail_index_type *find_char_in_index(char *searchee)
     }
 
     for (temp_rec = mail_index;
-         temp_rec && str_cmp(temp_rec->recipient, searchee);
+         temp_rec && strcasecmp(temp_rec->recipient, searchee);
          temp_rec = temp_rec->next) {
         /*
          * Empty loop

@@ -118,7 +118,7 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(*argument)) {
+    if (!argument || !*argument) {
         send_to_char("Shout? Yes! Fine! Shout we must, but WHAT??\n\r",
                      ch);
     } else {
@@ -193,7 +193,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (!(*argument)) {
+    if (!argument || !*argument) {
         send_to_char("Yell? Yes! but what!\n\r", ch);
     } else {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
@@ -262,7 +262,7 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
     dlog("in do_commune,think");
 
     argument = skip_spaces(argument);
-    if (!(*argument)) {
+    if (!argument || !*argument) {
         send_to_char("Communing among the gods is fine, but WHAT?\n\r", ch);
 	} else {
         if (argument[0] == '%') {

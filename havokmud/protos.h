@@ -2850,9 +2850,6 @@ void            cast_dragon_ride(int level, struct char_data *ch,
 void            cast_mount(int level, struct char_data *ch, char *arg,
                            int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
-void            cast_sending(int level, struct char_data *ch, char *arg,
-                             int type, struct char_data *tar_ch,
-                             struct obj_data *tar_obj);
 void            cast_portal(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj);
@@ -2902,7 +2899,6 @@ void            do_ventriloquate(struct char_data *ch, char *argument, int cmd);
  */
 void            Log(char *s);
 int             advatoi(const char *s);
-float           arg_to_float(char *arg);
 int             fighting_in_room(int room_n);
 void            do_open_exit(struct char_data *ch, char *argument, int cmd);
 int             IsGoodSide(struct char_data *ch);
@@ -2954,8 +2950,6 @@ unsigned        IsSusc(struct char_data *ch, int bit);
 int             number(int from, int to);
 int             dice(int number, int size);
 int             scan_number(char *text, int *rval);
-int             str_cmp(char *arg1, char *arg2);
-int             strn_cmp(char *arg1, char *arg2, int n);
 void            log_sev(char *str, int sev);
 void            slog(char *str);
 void            sprintbit(unsigned long vektor, char *names[],

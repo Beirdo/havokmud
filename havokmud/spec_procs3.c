@@ -4937,7 +4937,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
 
         arg = get_argument(arg, &buf);
 #if 0
-        if (str_cmp(buf, "fountain") && str_cmp(buf, "water")) {
+        if (strcasecmp(buf, "fountain") && strcasecmp(buf, "water")) {
             return(FALSE); 
         }
 #endif         
@@ -7147,8 +7147,8 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
     if (buf) {
-        if (!str_cmp("pool", buf) || !str_cmp("color", buf) ||
-            !str_cmp("color pool", buf)) {
+        if (!strcasecmp("pool", buf) || !strcasecmp("color", buf) ||
+            !strcasecmp("color pool", buf)) {
             if ((portal = get_char_room("pool", ch->in_room))) {
                 send_to_char("\n\r", ch);
                 send_to_char("You attempt to enter the pool, and it "
@@ -7365,8 +7365,8 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
          * look 
          */
         arg = get_argument(arg, &buf);
-        if (buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
-                    !str_cmp("Up", buf))) {
+        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) || 
+                    !strcasecmp("Up", buf))) {
             send_to_char("All you can see up there is a cliff wall.\n\r", ch);
             return (TRUE);
         }
@@ -7377,7 +7377,7 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
          * pull 
          */
         buf = get_argument(arg, &buf);
-        if (buf && (!str_cmp("rope", buf) || !str_cmp("Rope", buf))) {
+        if (buf && (!strcasecmp("rope", buf) || !strcasecmp("Rope", buf))) {
             act("You grab the rope and give it a tug, but can't",
                 FALSE, ch, 0, 0, TO_CHAR);
             send_to_char("let go.  The rope jerks back and pulls you up\n\r",
@@ -7837,8 +7837,8 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
 
-    if (buf && (!str_cmp("portal", buf) || !str_cmp("gate", buf) ||
-                 !str_cmp("gate portal", buf)) && 
+    if (buf && (!strcasecmp("portal", buf) || !strcasecmp("gate", buf) ||
+                 !strcasecmp("gate portal", buf)) && 
         (portal = get_char_room("portal", ch->in_room))) {
 
         send_to_char("\n\r", ch);
@@ -7872,7 +7872,7 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
 
-    if (buf && !str_cmp("mirror", buf) && 
+    if (buf && !strcasecmp("mirror", buf) && 
         (portal = get_char_room("mirror", ch->in_room))) {
 
         send_to_char("\n\r", ch);
@@ -7998,8 +7998,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
     dlog("in altar");
 
     argument = get_argument(argument, &buf);
-    if (buf && (!str_cmp("altar", buf) || !str_cmp("Altar", buf) || 
-                !str_cmp("ALTAR", buf))) {
+    if (buf && !strcasecmp("altar", buf)) {
         /*
          * rub altar 
          */

@@ -69,11 +69,8 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (check_soundproof(ch)) {
         return (FALSE);
     }
-    for (; *arg == ' '; arg++) {
-        /* 
-         * ditch spaces 
-         */
-    }
+
+    arg = skip_spaces(arg);
 
     if ((cmd == 164) || (cmd == 170)) {
         if (!arg || (strlen(arg) == 0)) {
@@ -928,11 +925,8 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     if (!guildmaster) {
         return (FALSE);
     }
-    for (; *arg == ' '; arg++) {
-        /* 
-         * ditch spaces 
-         */
-    }
+
+    arg = skip_spaces(arg);
 
     if ((cmd == 164) || (cmd == 170) || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_MAGIC_USER)) {
