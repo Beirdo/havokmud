@@ -1220,12 +1220,25 @@
 #
 "COMM OOC"
     Usable by   :  All 2
-    Usage       :  ooc <message>
+    Usage       :  ooc <# <message> | % social | <message>>
     Positions   :  mounted, standing, fighting, sitting, resting
 
     This command is used to communicate globally with every person
     about Out Of Character information, such as movies, code,
-    what city you are in, or what's on TV.
+    what city you are in, or what's on TV.  In addition, there are 
+    two special characters you can use, "%" and "#".  Using the "%" 
+    preface allows you to do a worldwide "social", and using the "#" 
+    preface allows you to 'emote' a message.
+
+    (Situation, what you type at the prompt, the message you should see):
+    Situation: You wish to tell everybody about this new video game you got.
+    H:50/50 M:120/120 V:100/100> ooc # thinks that Terminal Power 3 rocks!
+    Havok> [OOC] Joe thinks that Terminal Power 3 rocks!
+
+    (Situation, what you type at the prompt, the message you should see):
+    Situation: You wish to tell everybody about this new video game you got.
+    H:50/50 M:120/120 V:100/100> ooc % jam
+    Havok> [OOC] Joe whips out his air guitar and jams.
 
     (Situation, what you type at the prompt, the message you should see):
     Situation: You wish to tell everybody about this new video game you got.
@@ -1300,20 +1313,32 @@
 #
 "COMM SHOUT"
     Usable by   :  All 2
-    Usage       :  shout <message>
+    Usage       :  shout <# <message> | % social | <message>>
     Positions   :  mounted, standing, fighting, sitting, resting
 
     This command sends a message across a global channel.  Every
     person on the mud will hear the message, provided they are
     not ignoring shouts.  Used for in character communication, if
     you wish to globally communicate a message that is not character
-    based, use 'ooc'.
+    based, use 'ooc'.  In addition, there are two special characters
+    you can use, "%" and "#".  Using the "%" preface allows you to
+    do a worldwide "social", and using the "#" preface allows you to
+    'emote' a message.
+
+    (Situation, what you type at the prompt, the message you should see):
+    Situation: You wish to let everybody know you just killed the dracolich.
+    H:50/50 M:120/120 V:100/100> shout # just killed the dracolich.
+    Havok> [SHOUT] Joe just killed the dracolich.
+
+    (Situation, what you type at the prompt, the message you should see):
+    Situation: You wish to let everybody know you just killed the dracolich.
+    H:50/50 M:120/120 V:100/100> shout % evilgrin
+    Havok> [SHOUT] Joe grins evilly.
 
     (Situation, what you type at the prompt, the message you should see):
     Situation: You wish to let everybody know you just killed the dracolich.
     H:50/50 M:120/120 V:100/100> shout The dracolich is dead! R.I.P.
     Havok> You shout 'The dracolich is dead! R.I.P.'
-
 
 #
 "COMM SIGN"
@@ -1322,7 +1347,7 @@
     Positions   :  mounted, standing, fighting, sitting, resting
 
     This command is used to attempt to communicate via a universal
-    sign language.  Both the signer and the watcher must be
+    'sign language'.  Both the signer and the watcher must be
     conversant in sign or else the message is gibberish.  Very useful
     in rooms that are magically silent, or underwater.
 
@@ -5140,108 +5165,106 @@ Here is a listing of most of the zones that can be found
 on the mud.
 
 Current Areas:
-Doom                         -- Sarge                     (1 - 10)
-Cueballian Dreamland         -- Cueball                   (2 - 10)
-Shire                        -- Stock                     (3 - 15+)
-Karsinya Farmlands           -- Banon                     (1 - 10)
-The High Tower of Sorcerery  -- Stock                     (15 - 50)
-The monk monastary           -- Stock                     (10 - 30)
-Jungles of Chult             -- Celestian                 (10 - 25)
-Jungle Pyramid               -- Celestian                 (28 - 50)
-Geldor                       -- Coal/Stics                (1 - 50)
-Astral Plane                 -- Celestian                 (15 - 30)
-Karsinya                     -- Stock                     (All)
-South Karsinya               -- Xenon                     (1-20)
-Altar of Ator                -- Ator                      (20 - 50+)
+Abyss                        -- Stock                     (40 - 50)
+Altar of Ator                -- Ator                      (20 - 50)
+Arachnos                     -- Duke                      (5 - 40)
 Arena                        -- Felix                     (10 - 30)
-Moria                        -- Stock                     (3 - 20)
-The Great Eastern Desert     -- Stock                     (10 - 50)
-Drow City                    -- Stock                     (20 - 40)
-Old Thalos                   -- Stock                     (10 - 20)
-The Pyramid                  -- Conner                    (15 - 30)
-The forest of Haon-Dor       -- Stock                     (All)
-QuickLand                    -- Stock                     (5 - 10)
-Rhyiana                      -- Alun                      (30 - 50)
-Dwarven Kingdom              -- Stock                     (10 - 30)
-Prydain                      -- Haag/Mario                (10 - 40)
+Arena (player vs player)     -- Tsaron/Keirstad           (All)
 Artica                       -- Duke                      (5 - 20)
-Sewers                       -- Stock                     (5 - 20+)
-Paladin's Keep               -- Xenon                     (40 - 50)
-Hill giants                  -- Marist                    (15-30)
-Frost giant Rift             -- Stock                     (5 - 20)
-Spider Haunt                 -- Celestian                 (1 - 25)
-Menzoberanzan                -- Celestian                 (30 - 50)
-The Temple Maze              -- Stock                     (5+)
-Castle Python                -- Melkor                    (5 - 30)
-Sundhaven                    -- Banon & Radan             (1 - 40)
-New Thalos                   -- Conner                    (All)
-Graecia                      -- Gambreezzi                (20 - 50)
-Labors of Hercules           -- Stock                     (20 - 30)
-Hades                        -- Stock                     (20 - 40)
-Mount Olympus                -- Stock                     (40 - 50)
-Forest of Rhowyn             -- Stock                     (All)
-Skexies                      -- Rugrat                    (5 - 15)
-Gelfling                     -- Stock                     (5 - 20)
-Eastern Mountains            -- Stock                     (5 - 40)
-Gypsy village                -- Stock                     (15 - 25)
-Undercaves                   -- Stock                     (25 - 50)
-The Heour                    -- Stock                     (10 - 40)
-Lycanthropia                 -- Duke                      (1 - 20)
-White Plume                  -- Dem                       (10 - 15)
-Mordilnia                    -- Dalamar                   (1 - 30)
-Torture Keep                 -- Alien                     (20 - 50)
-Castle Mistamere             -- Stock                     (5 - 10)
-Arachnos                     -- Duke                      (5 - 50)
-Ershteep City                -- Stock                     (5 - 15)
-Mage Valley                  -- Stock                     (5 - 10)
-Troglodyte Caves             -- Stock                     (5 - 20)
-Sauria                       -- Stock                     (5 - 15)
-Elven Forest                 -- Sunsor                    (1 - 9)
-Chaos Mountain               -- Coal                      (10 - 20)
-DeadHamme                    -- Haag/Mario                (1 - 5)
-The Abyss                    -- Stock                     (40 - 50+)
-Baator                       -- Taniwha                   (30+)
-Jaggonath                    -- Ashamael                  (40 - 50+)
-Darkenwood                   -- Tyr                       (1 - 50)
-The Land down under          -- Stock                     (10 - 20)
-The Realms of Delbrandor     -- Coal                      (50+)
-Ravenloft                    -- Celestian                 (45+)
+Astral Plane                 -- Celestian                 (15 - 30)
 Athabasca                    -- Thikhanus                 (40 - 50)
-Wickett Village              -- Biddibibi                 (1 - 15)
-Shatterwood Forest           -- Xenon                     (5 - 20)
-Idlewylde                    -- Crystera                  (1 - 10)
-The Evermoors                -- Tsaron/Aries              (10 - 40)
-Diablo's Curse               -- Ashamael                  (50+)
-Valley of Karashka           -- Coal                      (20 - 50)
-Arena                        -- Tsaron/Keirstad           (All)
-The Silverwood               -- Radan                     (1 - 25)
-Cthol                        -- Xenon                     (50+)
-Newbie Training Zone         -- Radan/Pentak              (1)
-Jester's Court               -- Abagor                    (50+)
-Solomon's Mines              -- Kane                      (50+)
-Maze of Thendor              -- Teapo                     (25 - 40)
-Knight and Day               -- Banon                     (45 - 50+)
-Dragon's Tooth               -- Gabriel                   (50+)
-Tower of Durin               -- Heximal                   (45 - 50+)
-Moria Extention              -- Gomez/Banon               (25 - 40)
-Groves of discontent         -- Banon                     (+50)
-Ice Caverns                  -- Banon                     (20 - 35)
+Baator                       -- Taniwha                   (30 - 40)
+Castle Mistamere             -- Stock                     (5 - 10)
+Castle Python                -- Melkor                    (5 - 20)
+Chaos Mountain               -- Coal                      (10 - 20)
+Cthol                        -- Xenon                     (50)
+Cueballian Dreamland         -- Cueball                   (2 - 10)
 Dark Cathedral               -- Heximal                   (45 - 50)
-Oblivion                     -- Morrigan                  Apprentice & Pilgrim
-Thunder Mountain Keep        -- Ignatius/Lennya           Hero
-Thunder Mountain Keep2       -- Ignatius/Lennya/Chakan    Hero
-The Seiged Fortress -        -- Delight/Gordon            Adventurer+
-Leaves of Silver             -- Lennya                    Mystical
-Mermaid's Lagoon             -- Crystera/Lennya           Explorer & Adventurer
-Winterfell                   -- Ashamael                  Hero
-Ether Plane                  -- Ashamael                  Hero
-Sewers Under Winterfell      -- Ashamael                  Hero
-The Great Northern Keep      -- Ashamael                  Hero
-Desolate Caves               -- Ashamael                  Hero
-Eastern Forest               -- Ashamael                  Hero
-Northern Ice Floes           -- Ashamael                  Hero
-Western Desert               -- Ashamael                  Hero
-unknown                      -- Fist                      ????
+Darkenwood                   -- Tyr                       (1 - 50)
+Deadhame                     -- Haag/Mario                (1 - 5)
+Desolate Caves               -- Ashamael                  (50)
+Diablo's Curse               -- Ashamael                  (50)
+Doom                         -- Sarge                     (1 - 10)
+Dragon's Tooth               -- Gabriel                   (50)
+Drow City                    -- Stock                     (20 - 40)
+Dwarven Kingdom              -- Stock                     (10 - 30)
+Eastern Forest               -- Ashamael                  (50)
+Eastern Mountains            -- Stock                     (5 - 40)
+Elven Forest                 -- Sunsor                    (1 - 9)
+Ershteep City                -- Stock                     (5 - 15)
+Ether Plane                  -- Ashamael                  (50)
+Evermoors                    -- Tsaron/Aries              (10 - 40)
+Forest of Haon-Dor           -- Stock                     (All)
+Forest of Rhowyn             -- Stock                     (All)
+Frost Giant Rift             -- Stock                     (5 - 20)
+Geldor                       -- Coal/Stics                (1 - 50)
+Gelfling Caves               -- Stock                     (5 - 20)
+Graecia                      -- Gambreezzi                (15 - 50)
+Great Eastern Desert         -- Stock                     (10 - 50)
+Great Northern Keep          -- Ashamael                  (50)
+Groves of discontent         -- Banon                     (50)
+Gypsy Village                -- Stock                     (15 - 25)
+Hades                        -- Stock                     (20 - 40)
+Heour                        -- Stock                     (10 - 40)
+High Tower of Sorcerery      -- Stock                     (15 - 50)
+Hill Giant Smial             -- Marist                    (15 - 30)
+Ice Caverns                  -- Banon                     (20 - 40)
+Idlewylde                    -- Crystera                  (1 - 10)
+Jaggonath                    -- Ashamael                  (40 - 50)
+Jester's Court               -- Abagor                    (50)
+Jungle Pyramid               -- Celestian                 (35 - 50)
+Jungles of Chult             -- Celestian                 (10 - 25)
+Karsinya                     -- Stock                     (All)
+Karsinya Farmlands           -- Banon                     (1 - 10)
+Knight and Day               -- Banon                     (50)
+Labors of Hercules           -- Stock                     (20 - 30)
+Land Down Under              -- Stock                     (10 - 25)
+Leaves of Silver             -- Lennya                    (50)
+Lycanthropia                 -- Duke                      (10 - 25)
+Mage Valley                  -- Stock                     (5 - 10)
+Menzoberanzan                -- Celestian                 (30 - 50)
+Mermaid's Lagoon             -- Crystera/Lennya           (30 - 50)
+Monk Monastary               -- Stock                     (10 - 40)
+Mordilnia                    -- Dalamar                   (1 - 30)
+Moria                        -- Stock                     (3 - 20)
+Moria Extention              -- Gomez/Banon               (25 - 40)
+Mount Olympus                -- Stock                     (35 - 50)
+New Thalos                   -- Conner                    (All)
+Newbie Training Zone         -- Radan/Pentak              (1)
+Northern Ice Floes           -- Ashamael                  (50)
+Oblivion                     -- Morrigan                  (10 - 20)
+Old Thalos                   -- Stock                     (10 - 40)
+Paladin's Keep               -- Xenon                     (40 - 50)
+Prydain                      -- Haag/Mario                (10 - 40)
+Pyramid                      -- Conner                    (15 - 30)
+Quickland                    -- Stock                     (5 - 10)
+Ravenloft                    -- Celestian                 (50)
+Realms of Delbrandor         -- Coal                      (50)
+Rhyiana                      -- Alun                      (30 - 50)
+Rivan Kingdom                -- Fist                      (50)
+Sauria                       -- Stock                     (5 - 15)
+Sewers                       -- Stock                     (5 - 20)
+Sewers Under Winterfell      -- Ashamael                  (50)
+Shatterwood Forest           -- Xenon                     (5 - 20)
+Shire                        -- Stock                     (3 - 20)
+Silverwood                   -- Radan                     (1 - 25)
+Skexie Palace                -- Rugrat                    (5 - 15)
+Solomon's Mines              -- Kane                      (50)
+South Karsinya               -- Xenon                     (1 - 20)
+Spider Haunt                 -- Celestian                 (1 - 25)
+Sundhaven                    -- Banon & Radan             (1 - 40)
+Temple Maze                  -- Stock                     (5+)
+The Seiged Fortress          -- Delight/Gordon            (40 - 50)
+Thunder Mountain Keep        -- Ignatius/Lennya           (40 - 50)
+Torture Keep                 -- Alien                     (20 - 50)
+Tower of Durin               -- Heximal                   (45 - 50)
+Troglodyte Caves             -- Stock                     (10 - 25)
+Undercaves                   -- Stock                     (25 - 50)
+Valley of Karashka           -- Coal                      (40 - 50)
+Western Desert               -- Ashamael                  (50)
+White Plume                  -- Dem                       (10 - 15)
+Wickett Village              -- Biddibibi                 (1 - 15)
+Winterfell                   -- Ashamael                  (50)
 
 
    PLEASE NOTE!!!
@@ -5699,6 +5722,15 @@ unknown                      -- Fist                      ????
     Havok>  Ok.
 
 #
+"OBJ POTION"
+
+    This refers to the any item that can be injested using the 'quaff'
+    command.  Most potions are found in bottles or vials, and disappear
+    when they are used.  Potions can have many effects, from healing wounds
+    to restoring mana, to poisoning the imbiber.  You might be too full
+    to 'quaff' potions if you have recently had something to drink.
+
+#
 "OBJ POUR"
     Usable by   :  All 1
     Usage       :  pour <liquid container obj> <liquid container obj | out>
@@ -5761,7 +5793,8 @@ unknown                      -- Fist                      ????
     effects they might bestow.  Care should be given before quaffing
     unknown potions.  While it is possible to quaff potions while
     fighting, it is more likely that the potion bottle breaks before you
-    can drink from it.
+    can drink from it.  Eventually you can become too full to drink
+    any more potions.
 
     (Situation, what you type at the prompt, the message you should see):
     Situation: You want to drink a potion of healing.
@@ -5807,6 +5840,14 @@ unknown                      -- Fist                      ????
             You stop using a Cubs hat
             You stop using khaki pants
             You stop using sandals
+
+#
+"OBJ SCROLL"
+
+    A scroll is a piece of paper, which can be utilized using the 'recite'
+    command.  On that paper is one or more spells which can have positive
+    or negative effects on the target.  You can not 'recite' a scroll while
+    engaged in combat.  Once a scroll has been used, it is destroyed.
 
 #
 "OBJ SIP"
@@ -7249,6 +7290,19 @@ unknown                      -- Fist                      ????
     would normally attack you by being 'aggressive'.
 
 #
+"SKILL DODGE"
+    Usable by   :  barb 1, monk 1, paladin 1, ranger 1
+    Usage       :  automatic
+    Positions   :  fighting
+    Speed       :  automatic
+    Mana        :  0
+
+    This skill gives the adventurer the ability to lessen the damage
+    done by attackers slightly.  Monks are the best at it, their
+    preternatural quickness allowing them to avoid some attacks
+    entirely.
+
+#
 "SKILL DOORBASH"
     Usable by   :  warrior 1, ranger 1, barb 1
     Usage       :  doorbash <door name> [<north | east | south | west |
@@ -7279,6 +7333,22 @@ unknown                      -- Fist                      ????
     to another creature.  The travel is cheap, fast, and comes at a very
     low level.  It is the first step to the powerful transportation magics
     available to a psionist.
+
+#
+"SKILL DUAL WIELD"
+    Usable by   :  ranger 1
+    Usage       :  automatic
+    Positions   :  fighting
+    Speed       :  Instant
+    Mana        :  0
+
+    This skill is what rangers use to proficiently use a weapon in their
+    off hand.  While wielding a primary weapon, some weapons are of a
+    size that allows them to be held in the other hand, providing an
+    extra attack.  There is no command associated with this skill, if
+    a weapon is held, it is called in combat.  Failing the skill will
+    result in fumbling and dropping the held weapon, perhaps even
+    fumbling your primary weapon as well.
 
 #
 "SKILL ESP"
@@ -7647,6 +7717,42 @@ unknown                      -- Fist                      ????
     target's location.
 
 #
+"SKILL PSI SHIELD"
+    Usable by   :  psi 1
+    Usage       :  shield
+    Positions   :  mounted, standing
+    Speed       :  Slow
+    Mana        :  10
+
+    This skill is a simple piece of unconscious telekinesis that provides
+    a barrier between the psionist and harm.  It can only push away
+    physical threats, so it protects against the psionist in combat.  The
+    barrier grows stronger as the psionist gets stronger, eventually
+    protecting better than any armor ever crafted.
+
+#
+"SKILL PSI SUMMON"
+    Usable by   :  psi 15
+    Usage       :  summon <mob>
+    Positions   :  mounted, standing
+    Speed       :  Medium
+    Mana        :  30
+
+    This skill is very useful to the psionist.  By focussing on the target,
+    the psionist can create a portal wherever the target is, and move the
+    portal around the creature.  This is the opposite of how the psionist
+    uses the 'doorway' skill.  Instead of making a portal from him or
+    herself to the target, the psionist makes a portal at the target and
+    brings the target to him or her.  The target is not prepared for this
+    and will likely be disoriented by the trip.  You can not summon
+    creatures who are more powerful than you, and this portal can only
+    work on the same plane of existence.  Sometimes the target will be
+    protected from this type of ability through magic.  This skill is
+    different from the 'summon' spell that mages, sorcerers, and clerics
+    receive.  Sometimes the spell will be blocked, while this ability
+    can reach the target.
+
+#
 "SKILL PSIONIC INVISIBILITY"
     Usable by   :  psi 1
     Usage       :  psionic invisibility
@@ -7683,6 +7789,21 @@ unknown                      -- Fist                      ????
     then this skill will be ineffectual against them.  This
     devastating ability is so draining that it can only be
     performed once a week.
+
+#
+"SKILL READ MAGIC"
+    Usable by   :  All 1
+    Usage       :  automatic
+    Positions   :  
+    Speed       :  automatic
+    Mana        :  0
+
+    This skill is what allows adventurers to make use of scrolls
+    via the 'recite' command.  Magic casters, such as mages, clerics,
+    and so on have this skill automatically.  Other classes must
+    learn it, same as any other skill.  When you 'recite' a scroll
+    it checks against this skill, failing this skill results in a
+    failed scroll.
 
 #
 "SKILL RECALL"
@@ -7776,6 +7897,20 @@ unknown                      -- Fist                      ????
     back of your mount.
 
 #
+"SKILL SAFE FALL"
+
+    Usable by   :  monk 1
+    Usage       :  automatic
+    Positions   :  falling
+    Speed       :  Instant
+    Mana        :  0
+
+    This skill is an automatic one, that only will be used if
+    the adventurer falls from a dangerous height.  By
+    controlling the fall and landing, a normally fatal fall
+    will be merely incredibly painful.
+
+#
 "SKILL SCRIBE"
     Usable by   :  cleric 1
     Usage       :  scribe '<spell>'
@@ -7819,18 +7954,16 @@ unknown                      -- Fist                      ????
     is similar to a global 'tell' command.
 
 #
-"SKILL PSI SHIELD"
-    Usable by   :  psi 1
-    Usage       :  shield
-    Positions   :  mounted, standing
-    Speed       :  Slow
-    Mana        :  10
+"SKILL SIGN LANGUAGE"
+    Usable by   :  All 1
+    Usage       :  automatic
+    Positions   :  
+    Speed       :  automatic
+    Mana        :  0
 
-    This skill is a simple piece of unconscious telekinesis that provides
-    a barrier between the psionist and harm.  It can only push away
-    physical threats, so it protects against the psionist in combat.  The
-    barrier grows stronger as the psionist gets stronger, eventually
-    protecting better than any armor ever crafted.
+    This skill provides you with the vocabulary to speak sign language
+    using the 'sign' command.  Learning this can be very useful in
+    places where regular speech isn't possible.
 
 #
 "SKILL SNEAK"
@@ -7911,28 +8044,6 @@ unknown                      -- Fist                      ????
     thieves will take.
 
 #
-"SKILL PSI SUMMON"
-    Usable by   :  psi 15
-    Usage       :  summon <mob>
-    Positions   :  mounted, standing
-    Speed       :  Medium
-    Mana        :  30
-
-    This skill is very useful to the psionist.  By focussing on the target,
-    the psionist can create a portal wherever the target is, and move the
-    portal around the creature.  This is the opposite of how the psionist
-    uses the 'doorway' skill.  Instead of making a portal from him or
-    herself to the target, the psionist makes a portal at the target and
-    brings the target to him or her.  The target is not prepared for this
-    and will likely be disoriented by the trip.  You can not summon
-    creatures who are more powerful than you, and this portal can only
-    work on the same plane of existence.  Sometimes the target will be
-    protected from this type of ability through magic.  This skill is
-    different from the 'summon' spell that mages, sorcerers, and clerics
-    receive.  Sometimes the spell will be blocked, while this ability
-    can reach the target.
-
-#
 "SKILL SWIM"
     Usable by   :  All 1
     Usage       :  swim
@@ -7943,6 +8054,21 @@ unknown                      -- Fist                      ????
     This skill can be used to temporarily allow yourself to swim underwater.
     For a short duration, you will be able to be underwater, but when you
     can't hold your breath any longer, you better be in an air filled room.
+
+#
+"SKILL SWITCH OPPONENTS"
+    Usable by   :  barb 1, monk 1, ranger 1, paladin 1
+    Usage       :  automatic
+    Positions   :  fighting
+    Speed       :  Medium
+    Mana        :  0
+
+    This skill allows an adventurer to change targets in the middle
+    of combat.  This is accomplished using the 'kill' or 'hit' command
+    during combat.  By typing the name of a different opponent than
+    the one you are currently hitting, you will attempt to switch
+    over and begin beating on the new opponent.  If you fail to switch
+    you will be temporarily confused and stop attacking anybody.
 
 #
 "SKILL TAN"
@@ -8000,7 +8126,7 @@ unknown                      -- Fist                      ????
     paladin is much more powerful.
 
 #
-"SOCIAL LIST"
+"SOCIALS LIST"
 
 A social is a command which performs no technical function.
 It is a communication aid, to provide shortcuts to common
@@ -14308,6 +14434,16 @@ yodel                   yodel           [<mob | obj>]   resting
     for gross, unforgivable offenses against the mud.
 
 #
+"TERM BANK"
+
+    This term refers to the fact that there are rooms where you
+    can store money safely.  Most of the major towns have a
+    bank, which can be accessed using the 'balance', 'withdraw',
+    and 'deposit' commands.  It is easy to lose the money you
+    carry with you, thieves, dying, etc, so storing the bulk
+    of your fortune in the bank is usually a smart thing to do.
+
+#
 "TERM BB"
 
     This term refers to the spell 'blade barrier'.  If you hear
@@ -14548,6 +14684,15 @@ yodel                   yodel           [<mob | obj>]   resting
     They will still have all of their experience, and all of
     their gold, but the equipment will be lost.  Some consider
     this a fate worse than death.
+
+#
+"TERM DESCRIPTION"
+
+    This term refers to the fact that you can input a short
+    description of your character at the main menu screen.
+    This can help to let people know what your character
+    looks like, or how they walk, anything to help describe
+    you to other players.
 
 #
 "TERM DEX"
