@@ -2353,7 +2353,7 @@ void  SayHello(struct char_data *ch, struct char_data *t)
     else strcpy(buf2, "evening");
 
     switch(weather_info.sky) {
-    case SKY_CLOUDLESS:
+		    case SKY_CLOUDLESS:
       sprintf(buf, "Lovely weather we're having this %s, isn't it, %s.",
 	      buf2, GET_NAME(t));
     case SKY_CLOUDY:

@@ -317,7 +317,7 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 */
 
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
-
+	char name[32];
 	const struct skillset traininglist[] = {
 	  { "hitpoints",    1,      2},
 	  { "movement",  	2,      1},
@@ -343,22 +343,23 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 
 	if(cmd==582 && !*arg) { //list if no argument
-		ch_printf(ch,"$c000B%-15s        %-3s\n\r------------------------\n\r","Stat","Cost");
+		ch_printf(ch,"$c000B%-15s     %-3s\n\r------------------------\n\r","Stat","Cost");
 		while(traininglist[x].level!=-1) {
 		   ch_printf(ch,"$c000W %-15s     %-3d\n\r",traininglist[x].name, traininglist[x].level);
 			x++;
 		}
-
+		return;
 	} else
+		sprintf(name,"%s",GET_NAME(mob));
 		if(cmd==582) { //train
 
-			ch_printf(ch," Lets train your stats\n\r");
+			//ch_printf(ch," Lets train your stats\n\r");
 
 			while(traininglist[x].level!=-1) {
 				if(is_abbrev(arg,traininglist[x].name)) {
 					stat= x+1;
 						if(GET_PRAC(ch) - traininglist[x].level < 0) {
-							ch_printf(ch,"You don't have enough practice sessions to learn %s.\n\r",traininglist[x].name);
+							ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
 							return (TRUE);
 						}
 
@@ -373,66 +374,86 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			switch(stat) {
 			 	case 1:
 			 		GET_PRAC(ch) -= traininglist[stat-1].level;
-			 		//GET_MAX_HIT(ch) +=1;
-			 		ch_printf(ch,"Lets train your hitpoints!!!\n\r");
+			 		ch->points.max_hit ++; //GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
+			 		ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of this! Its good for ya!!'\n\r$c000w%s hands you a foul looking health drink and you swig it down. (+1 HP)\n\r",name,name);
 			 		break;
 			 	case 2:
 				 	GET_PRAC(ch)-= traininglist[stat-1].level;
-					//GET_MAX_MOVE(ch) +=1;
+					ch->points.max_move++;//GET_MAX_MOVE(ch) = GET_MAX_MOVE(ch) + 1;
 
-				 	ch_printf(ch,"Lets train your movement!!!\n\r");
+				 	ch_printf(ch,"$c000P%s tells you 'Hey, take a swig of this!!!'\n\r$c000w%s hands you a high protein energy drink and you drink it down.(+1 Move)\n\r",name,name);
 				 	break;
 			 	case 3:
 				 	GET_PRAC(ch)-= traininglist[stat-1].level;
-					//GET_MAX_MANA(ch) +=1;
+					ch->points.max_mana ++;//GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
 
-				 	ch_printf(ch,"Lets train your mana!!!\n\r");
+				 	ch_printf(ch,"$c000P%s tells you 'This mystical drink should do it!!!'\n\r$c000wHe hands you a mystical potion and you chug it down.(+1 Mana)\n\r",name);
 				 	break;
 			 	case 4:
-				 	if(GET_RCON(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+				 	if(GET_RCON(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
-					 	ch_printf(ch,"Lets train your con!!!\n\r");
+						GET_RCON(ch) = GET_RCON(ch)+1;
+						GET_CON(ch)= GET_CON(ch)+1;
+
+						GET_PRAC(ch) -= traininglist[stat-1].level;
+					 	ch_printf(ch,"$c000P%s tells you 'Lets train your con!!!'\n\r$c000wYou heed his advice and go for a jog around the room.(+1 Con)\n\r",name);
 					}
 				 	break;
 			 	case 5:
-				 	if(GET_RSTR(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+				 	if(GET_RSTR(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name ,traininglist[stat-1].name,name);
 					} else {
-				 		ch_printf(ch,"Lets train your strength!!!\n\r");
+						GET_PRAC(ch) -= traininglist[stat-1].level;
+						GET_RSTR(ch) = GET_RSTR(ch)+1;
+						GET_STR(ch)  = GET_STR(ch)+1;
+
+				 		ch_printf(ch,"You start lifting some weights.  You feel stronger!!!(+1 Str)'\n\r",name);
 					}
 				 	break;
 			 	case 6:
-				 	if(GET_RDEX(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+				 	if(GET_RDEX(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
-					 	ch_printf(ch,"Lets train your dex!!!\n\r");
+					 	GET_PRAC(ch) -= traininglist[stat-1].level;
+					 	GET_RDEX(ch)= GET_RDEX(ch)+1;;
+					 	GET_DEX(ch)= GET_DEX(ch)+1;
+					 	ch_printf(ch,"%s shows you some stretches.  You mimic them!!! (+1 Dex)\n\r",name);
 					}
 					break;
 			 	case 7:
-					if(GET_RCHR(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					if(GET_RCHR(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
-					 	ch_printf(ch,"Lets train your Char!!!\n\r");
+					 	GET_PRAC(ch) -= traininglist[stat-1].level;
+					 	GET_RCHR(ch) = GET_RCHR(ch)+1;
+					 	GET_CHR(ch)= GET_CHR(ch)+1;
+					 	ch_printf(ch,"%s gives you some lessons in manners!!(+1 Chr)\n\r",name);
 					}
 					break;
 
 			 	case 8:
-			 		if(GET_RINT(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+			 		if(GET_RINT(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.\n\r",name, traininglist[stat-1].name,name);
 					} else {
-			 			ch_printf(ch,"Lets train your int!!\n\r");
+			 			GET_PRAC(ch) -= traininglist[stat-1].level;
+			 			GET_RINT(ch) =GET_RINT(ch)+1;
+			 			GET_INT(ch)= GET_INT(ch)+1;
+			 			ch_printf(ch,"%s gives you a strange old book to read. You read it!!(+1 Int)\n\r",name);
 					}
 				 	break;
 			 	case 9:
-			 		if(GET_RWIS(ch) > 18) {
-						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+			 		if(GET_RWIS(ch) >= 18) {
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 					} else {
-					 	ch_printf(ch,"Lets train your wis!!\n\r");
+						GET_PRAC(ch) -= traininglist[stat-1].level;
+						GET_RWIS(ch) = GET_RWIS(ch)+1;
+						GET_WIS(ch)= GET_WIS(ch)+1;
+					 	ch_printf(ch,"%s sits down and brings out the old chess board!!\n\rYou and him have a chat and play a few games.(+1 Wis)'\n\r",name);
 					}
 				 	break;
 			 	default:
-					ch_printf(ch,"Invalid stat!!\n\r");
+					ch_printf(ch,"$c000P%s tells you 'I'm not quite sure how to train that.'\n\r",name);
 					break;
 			}
 
