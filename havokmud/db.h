@@ -6,11 +6,7 @@
 
 #define WORLD_FILE        "tinyworld.wld" /* room definitions           */
 
-#if NEWMOBSTRUCTURE
-	#define MOB_FILE          "tinyworld.mob.new" /* monster prototypes         */
-#else
-	#define MOB_FILE          "tinyworld.mob" /* monster prototypes         */
-#endif
+#define MOB_FILE          "tinyworld.mob.new" /* monster prototypes         */
 
 #define OBJ_FILE          "tinyworld.obj" /* object prototypes          */
 #define ZONE_FILE         "tinyworld.zon" /* zone defs & command tables */

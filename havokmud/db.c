@@ -38,7 +38,7 @@ struct message_list fight_messages[MAX_MESSAGES]; /* fighting messages   */
 struct player_index_element *player_table = 0; /* index to player file   */
 int top_of_p_table = 0;               /* ref to top of table             */
 int top_of_p_file = 0;
-int HpBonus;						/* used for the mob file conversion, mrebuild */
+//int HpBonus;						/* used for the mob file conversion, mrebuild */
 int cog_sequence = 0;
 
 long total_bc = 0;
@@ -1647,21 +1647,12 @@ struct char_data *read_mobile(int nr, int type)
 		}
 		fscanf(f, "#%*ld\n");
 
-#if NEWMOBSTRUCTURE
 		bc += read_mob_from_new_file(mob,f);
 		fclose(f);
 	} else {
 		rewind(mob_f);
 		fseek(mob_f, mob_index[nr].pos, 0);
 		bc += read_mob_from_new_file(mob, mob_f);
-#else
-		bc += read_mob_from_file(mob,f);
-		fclose(f);
-	} else {
-		rewind(mob_f);
-		fseek(mob_f, mob_index[nr].pos, 0);
-		bc += read_mob_from_file(mob, mob_f);
-#endif
 
     }
 
@@ -1781,7 +1772,7 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
   extern int mob_tick_count;
   extern long mob_count;
 
-  HpBonus=0;
+//  HpBonus=0;
 
   nr = mob->nr;
   mob->player.name = fread_string(mob_fi);
@@ -1958,10 +1949,9 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 		mob->points.armor = 10*tmp;
 
 		fscanf(mob_fi, " %d ", &tmp);
-//		HpBonus = tmp;
 		mob->points.max_hit = dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8)+tmp;
 		mob->points.hit = mob->points.max_hit;
-HpBonus = mob->points.max_hit;
+//HpBonus = mob->points.max_hit;
 
 		fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
 		mob->points.damroll = tmp3;
@@ -2245,13 +2235,13 @@ int read_mob_from_new_file(struct char_data *mob, FILE *mob_fi)
   long tmp, tmp2, tmp3, bc = 0;
   char buf[100], buffer[255];
   char letter;
-  int HpBonus;
+//  int HpBonus;
   float att;
 
   extern int mob_tick_count;
   extern long mob_count;
 
-  HpBonus=0;
+//  HpBonus=0;
 
   nr = mob->nr;
 
@@ -2675,7 +2665,6 @@ void remove_cr(char *output, char *input)
 
 void write_mob_to_file(struct char_data *mob, FILE *mob_fi)//,int hpB)
 {
-#if NEWMOBSTRUCTURE
 	long    bc,ltmp;
 	int i, xpflag;
 	long tmp, tmp2, tmp3;
@@ -2775,119 +2764,6 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi)//,int hpB)
 	} else {
 		fwrite_string(mob_fi,"");
 	}
-
-
-#else
-
-  int i;
-  long tmp, tmp2, tmp3;
-  float tmpexp;
-  char letter;
-  char buff[MAX_STRING_LENGTH];
-  /***** String data *** */
-
-  fwrite_string(mob_fi,mob->player.name);
-  fwrite_string(mob_fi,mob->player.short_descr);
-  remove_cr(buff,mob->player.long_descr);  // remove carriage return
-  fwrite_string(mob_fi,buff);
-  remove_cr(buff,mob->player.description);
-  fwrite_string(mob_fi,buff);
-
-  /* *** Numeric data *** */
-
-  tmp = mob->specials.act;    // get actions flags
-  REMOVE_BIT(tmp, ACT_ISNPC);   // remove flag IS NPC
-  REMOVE_BIT(tmp, ACT_HATEFUL);   // remove flag  HATEFUL
-  REMOVE_BIT(tmp, ACT_GUARDIAN);   // remove flag  GUARDIAN
-  REMOVE_BIT(tmp, ACT_HUNTING);   // remove flag HUMTING
-  REMOVE_BIT(tmp, ACT_AFRAID);   // remove flag AFRAID
-  if (IS_SET(mob->specials.act, ACT_HUGE)) REMOVE_BIT(tmp, ACT_HUGE);
-
-  fprintf(mob_fi, "%d ", tmp);    // write actions flaf
-
-  fprintf(mob_fi, " %d ", mob->specials.affected_by);
-
-  fprintf(mob_fi, " %d ",mob->specials.alignment );
-
-  letter= 'N';
-  if ((mob->player.sounds != 0) && (mob->player.distant_snds != 0)) letter= 'L';
-  if (mob->mult_att > 1) letter = 'A';
-  if (IS_SET(mob->specials.act, ACT_HUGE)) letter = 'B';
-  fprintf(mob_fi,"%c",letter);
-
-  if ((letter == 'A') || (letter == 'B') || (letter == 'L')) {
-      tmp = (int) mob->mult_att;
-      fprintf(mob_fi, " %d ",tmp );
-
-	}
-    fprintf(mob_fi, "\n");
-
-    fprintf(mob_fi, " %d ",GET_LEVEL(mob, WARRIOR_LEVEL_IND) );
-
-
-    fprintf(mob_fi, " %d ",(mob->points.hitroll-20)*-1 );
-
-    fprintf(mob_fi, " %d ",mob->points.armor/10 );
-    fprintf(mob_fi, " %d ", 0); /* set hp bonus to 0.. should never pass this code anymore anyway */
-
-    fprintf(mob_fi, " %dd%d+%d \n",mob->specials.damnodice
-				  ,mob->specials.damsizedice
-				  , mob->points.damroll);
-
-
-    tmpexp = GET_EXP(mob);    // convert Exp to float for calculation
-    /* revert exp for agressive mobs (lower) */
-    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
-      /* big bonus for fully aggressive mobs for now */
-      if (!IS_SET(mob->specials.act, ACT_WIMPY)||
-	  IS_SET(mob->specials.act, ACT_META_AGG))
-	tmpexp = tmpexp / 1.5;
-       tmpexp = tmpexp / 1.1;
-
-      }
-
-    /* revert exp for wimpy mobs (higher) */
-    if (IS_SET(mob->specials.act, ACT_WIMPY))
-       tmpexp = tmpexp/ 0.9;
-    i = (int) tmpexp;   // reconvert to long after calculation
-
-    if GET_RACE(mob) {
-      fprintf(mob_fi, " %d ", -1);
-      fprintf(mob_fi, " %d ", 5 * mob->points.gold); /* fix that odd money thing */
-      fprintf(mob_fi, " %d ",GetExpFlags(mob, i) );
-      fprintf(mob_fi, " %d \n", GET_RACE(mob));
-    } else {
-      fprintf(mob_fi, " %d ", mob->points.gold);
-
-      /*
-	this is where the new exp  fLAGS will come into play
-	*/
-      fprintf(mob_fi, " %d \n",GetExpFlags(mob, i) );
-    }
-
-    fprintf(mob_fi, " %d ",mob->specials.position );
-
-    fprintf(mob_fi, " %d ", mob->specials.default_pos);
-
-    if ((mob->immune) || (mob->M_immune) || (mob->susc)){
-      fprintf(mob_fi, " %d ",mob->player.sex+3 );
-      fprintf(mob_fi, " %d ",mob->immune);
-      fprintf(mob_fi, " %d ",mob->M_immune);
-      fprintf(mob_fi, " %d \n", mob->susc);
-    } else {
-      fprintf(mob_fi, " %d \n",mob->player.sex );
-    }
-
-    /*
-     *   write in the sound string for a mobile
-     */
-    if (letter == 'L') {
-		remove_cr(buff,mob->player.sounds);  // remove carriage return
-		fwrite_string(mob_fi,buff);
-		remove_cr(buff,mob->player.distant_snds);  // remove carriage return
-		fwrite_string(mob_fi,buff);
-	}
-#endif
 }
 
 int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi)//, int hpB)
@@ -2920,18 +2796,6 @@ int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi)//, int hpB)
 	}
 
 	/* *** Numeric data *** */
-
-#if NEWMOBSTRUCTURE
-
-	/* do nothing */
-
-#else
-	if(IS_SET(mob->specials.act,ACT_NECROMANCER)) {
-		REMOVE_BIT(mob->specials.act, ACT_NECROMANCER); // replace old quest flag to new quest flag location
-		mob->specials.proc = PROC_QUEST;
-	}  /* this was a one time only action */
-#endif
-
 	tmp = mob->specials.act;    	// get actions flags
 	REMOVE_BIT(tmp, ACT_ISNPC);   	// remove flag IS NPC
 	REMOVE_BIT(tmp, ACT_HATEFUL);   // remove flag HATEFUL

@@ -5664,17 +5664,6 @@ char buf[256];
 
 void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 {
-	/* First create a tinyworld.mob.new file in the world/lib/ directory.
-	   Next, compile the code from scratch with NEWMOBSTRUCTURE set as 0
-	   Boot the mud, and do a mrebuild (this is some heavy processing stuff)
-	   After that, shutdown the mud, #define NEWMOBSTRUCTURE 1
-	   Recompile from scratch, and boot the mud.
-	   It should now use the loading and msaving functions that can interpret
-	   the new mobile structure in the MOB_FILE (or the loose mob files).
-	   Once this works without any big fuckups, I'll get rid of some deprecated
-	   stuff in the code.                                   -Lennya 20030805
-	 */
-
 	char fn[80], temp[2048], buf[128];
 	long m_start, m_end, i, j, k, x, r, nr;
 	FILE *mob_file;
@@ -5683,7 +5672,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 	struct char_data *mob;
 	int count = 0;
 
-	extern int HpBonus;
+//	extern int HpBonus;
 
 	if(!ch->desc)
 		return;
@@ -5742,36 +5731,32 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 }
 
 
-
+#if 0
 void do_orebuild(struct char_data *ch, char *argument, char cmd)
 {
-   char fn[80], temp[2048], buf[128];
-   long rstart, rend, i, j, k, x, r;
-   //struct extra_descr_data *exptr;
-   FILE *fp;
-   //struct room_data     *rp;
-   //struct room_direction_data   *rdd;
-   //struct descriptor_data *desc;
+	char fn[80], temp[2048], buf[128];
+	long rstart, rend, i, j, k, x, r;
+	FILE *fp;
 	extern int top_of_objt;
-   struct obj_data *obj;
- 	int count = 0;
+	struct obj_data *obj;
+	int count = 0;
 
-   if(!ch->desc)
-     return;
+	if(!ch->desc)
+		return;
 
-   rstart = 0;
-   rend = top_of_objt;
+	rstart = 0;
+	rend = top_of_objt;
 
-   if((fp=fopen("tinyworld.obj.new","w")) == NULL) {
-     send_to_char("Can't create .obj file\r\n",ch);
-     return;
-   }
+	if((fp=fopen("tinyworld.obj.new","w")) == NULL) {
+		send_to_char("Can't create .obj file\r\n",ch);
+		return;
+	}
 
-   sprintf(buf,"%s resorts the objects (The game will pause for a few moments).\r\n", ch->player.name);
-   send_to_all(buf);
+	sprintf(buf,"%s resorts the objects (The game will pause for a few moments).\r\n", ch->player.name);
+	send_to_all(buf);
 
-   sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
-   send_to_char(buf,ch);
+	sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
+	send_to_char(buf,ch);
 
 	for (i=rstart;i<=WORLD_SIZE;i++) {
 		obj = read_object(i, VIRTUAL);
@@ -5785,18 +5770,70 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
 	}
 
 
-  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 0\n\r%");
+	fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 0\n\r%");
 
-   fclose(fp);
+	fclose(fp);
 
-   sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
-   send_to_all(buf);
-   send_to_char("\n\rDone\n\r",ch);
+	sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
+	send_to_all(buf);
+	send_to_char("\n\rDone\n\r",ch);
 	sprintf(buf,"(%d) Objects saved!\n\r",count);
 	send_to_char(buf,ch);
- return;
+	return;
 }
+#else
+void do_orebuild(struct char_data *ch, char *argument, char cmd)
+{
+	char fn[80], temp[2048], buf[128], buf2[511];
+	long rstart, rend, i, j, k, x, r;
+	FILE *fp;
+	extern int top_of_objt;
+	struct obj_data *obj;
+	int count = 0;
 
+	if(!ch->desc)
+		return;
+
+	rstart = 0;
+	rend = top_of_objt;
+
+	sprintf(buf,"%s resorts the objects (The game will pause for a few moments).\r\n", ch->player.name);
+	send_to_all(buf);
+
+	sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
+	send_to_char(buf,ch);
+
+	for (i=rstart;i<=WORLD_SIZE;i++) {
+		obj = read_object(i, VIRTUAL);
+		if (obj) {
+			sprintf(buf, "objects/%d", i);
+			if((fp=fopen(buf,"w")) == NULL) {
+				sprintf(buf2,"Can't open obj file for %s\r\n",buf);
+				send_to_char(buf2, ch);
+//				return;
+			} else {
+				fprintf(fp,"#%ld\n",i);
+				save_new_object_structure(obj,fp);
+				//write_obj_to_file(obj,fp);
+				count++;
+				extract_obj(obj);
+				fclose(fp);
+			}
+		}
+	}
+
+
+//	fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 0\n\r%");
+
+
+	sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
+	send_to_all(buf);
+	send_to_char("\n\rDone\n\r",ch);
+	sprintf(buf,"(%d) Objects saved!\n\r",count);
+	send_to_char(buf,ch);
+	return;
+}
+#endif
 
 
 
