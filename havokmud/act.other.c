@@ -3256,15 +3256,12 @@ dlog("in do_set_flags");
 		return;
 
 	half_chop(argument, type, field);
-//	argument = one_argument(argument,type);
 
 	if (!*type) {
 		send_to_char("Set, but set what?!?!? type help set for further details on\n\r",ch);
-		send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak oldcolors\n\r",ch);
+		send_to_char("email, answer, autoexits, groupname, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak oldcolors\n\r",ch);
 		return;
 	}
-
-//	argument = one_argument(argument,field);
 
 	if (!strcmp("war",type) &&  (!*field)) {
 		send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU CANNOT REMOVE IT!\n\r",ch);
@@ -3286,7 +3283,6 @@ dlog("in do_set_flags");
 			SET_BIT(ch->player.user_flags,CLOAKED);
 			act("You pull $p down over your body, cloaking your equipment from view.", FALSE,ch,ch->equipment[12],0,TO_CHAR);
 			act("$n pulls $p down over $s body, cloaking $s equipment from view.",FALSE,ch, ch->equipment[12],0,TO_NOTVICT);
-			//send_to_char("You pull your cloak over your body!\n\r",ch);
 			return;
 		} else {
 			REMOVE_BIT(ch->player.user_flags, CLOAKED);
@@ -3294,7 +3290,6 @@ dlog("in do_set_flags");
 				send_to_char("You don't even have a cloak on.",ch);
 				return;
 			}
-			//send_to_char("You pull back your cloak.\n\r",ch);
 			act("You pull $p back away from your body.", FALSE, ch, ch->equipment[12],0,TO_CHAR);
 			act("$n pulls back $p away from $s body.", FALSE, ch, ch->equipment[12], 0, TO_NOTVICT);
 		}
@@ -3356,15 +3351,9 @@ dlog("in do_set_flags");
 			if (IS_SET(ch->player.user_flags,USE_PAGING))
 				REMOVE_BIT(ch->player.user_flags,USE_PAGING);
 		}
-	} else if (!strcmp(type,"group")) {
-//		only_argument(field, name);
-		argument_split_2(field,name,gname);
-		if (!strcmp(name,"name")) {
-			if (gname)
-				do_group_name(ch,gname,0);
-		} else {
-			send_to_char("Unknown set group command.\n\r",ch);
-		}
+	} else if (!strcmp(type,"groupname")) {
+		only_argument(field, name);
+		do_group_name(ch,name,0);
 	} else if (!strcmp(type,"autoexits")) {
 	   if (strstr(field,"enable")) {
 	     act("Setting autodisplay exits on.",FALSE,ch,0,0,TO_CHAR);

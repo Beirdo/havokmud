@@ -1413,6 +1413,7 @@ void assign_mobiles()
 /* King's Grove */
 	{702, DruidGuildMaster },
 	{703, shopkeeper },
+	{705, gnome_collector },
 
 
 
@@ -1638,6 +1639,7 @@ void assign_rooms()
 	{50964, riddle_exit },
 
 /* The King's Grove */
+	{ 697, gnome_home },
 	{ 706, climb_room },
 	{ 717, legendfountain },
 	{ 721, pick_berries },

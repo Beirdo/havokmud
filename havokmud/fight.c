@@ -1080,8 +1080,10 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
   if (pc > 10)
     pc = 10;
 
-  if (no_members >= 1)
+  if (no_members >= 1) {
     share = (GET_EXP(victim)/no_members);
+    share = MAX(share, GET_MAX_HIT(victim)*GetMaxLevel(victim)); /* this is a test to get rid of 0 xp mobs */
+  }
   else
     share = 0;
 
@@ -1846,7 +1848,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim, int killedbytyp
   	    } else {
 			/* Calculate level-difference bonus */
 			exp = GET_EXP(victim);
-			exp = MAX(exp, 1);
+			exp = MAX(exp, GET_MAX_HIT(victim)*GetMaxLevel(victim)); /* test to get rid of 0 xp mobs */
 			if (!IS_PC(victim)) {
 				exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
 			if (!IS_IMMORTAL(ch))
@@ -2632,11 +2634,13 @@ void perform_violence(int pulse)
                   }
                }
 
-               if (MOUNTED(ch))
+/*  No clue why this should be in effect. Mounted fighting is a bother rather than a bonus, no need to make
+	it even worse.  -Lennya 20030108
+				if (MOUNTED(ch))
                {
                   x /= 2.0;
                }
-
+*/
 			if(!A_NOHASTE(ch)) {
 				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
 					x = x * 2;

@@ -722,7 +722,7 @@ if (!ch->desc) 	{		/* make sure it is a mob not a pc */
 		}
 
 if ((IS_AFFECTED(ch,AFF_FIRESHIELD) || IS_AFFECTED(ch,AFF_SANCTUARY)) &&
-		(!affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) ) {
+		(!affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)) ) {
 	      act("$n utters the words 'darkness'.", 1, ch, 0, 0, TO_ROOM);
 		 cast_globe_darkness(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
 		 return(TRUE);
@@ -1307,7 +1307,8 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			}
 
 			/* let's mask these spells and look real cool */
-			if ((IS_AFFECTED(ch, AFF_FIRESHIELD) || IS_AFFECTED(ch, AFF_SANCTUARY)) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+			if ((IS_AFFECTED(ch, AFF_FIRESHIELD) || IS_AFFECTED(ch, AFF_SANCTUARY)) &&
+					!affected_by_spell(ch,SPELL_GLOBE_DARKNESS)&& !IS_AFFECTED(ch,AFF_DARKNESS)) {
 				act("$n utters the words 'Shadow of the Raven'.",FALSE,ch,0,0,TO_ROOM);
 				cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);

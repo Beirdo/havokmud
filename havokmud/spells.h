@@ -364,39 +364,39 @@
 #define SKILL_STEED		 304
 
 /* Necromancer/Death mage stuff */
-#define SPELL_COLD_LIGHT		305 // DONE - checked
-#define SPELL_DISEASE			306 // done - checked
-#define SPELL_INVIS_TO_UNDEAD	307	// DONE - checked
-#define SPELL_LIFE_TAP			308 // done - checked
-#define SPELL_SUIT_OF_BONE		309	// DONE - checked
-#define SPELL_SPECTRAL_SHIELD	310 // DONE - checked
+#define SPELL_COLD_LIGHT		305 //
+#define SPELL_DISEASE			306 //
+#define SPELL_INVIS_TO_UNDEAD	307	//
+#define SPELL_LIFE_TAP			308 //
+#define SPELL_SUIT_OF_BONE		309	//
+#define SPELL_SPECTRAL_SHIELD	310 //
 #define SPELL_CLINGING_DARKNESS	311 //
-#define SPELL_DOMINATE_UNDEAD	312 // DONE - can't seem to cast this one?
+#define SPELL_DOMINATE_UNDEAD	312 //
 #define SPELL_UNSUMMON			313 //
 #define SPELL_SIPHON_STRENGTH	314 //
-#define SPELL_GATHER_SHADOWS	315 // DONE - checked.. make this a self only spell?
-#define SPELL_MEND_BONES		316 // DONE - checked.. no message for caster yet.
+#define SPELL_GATHER_SHADOWS	315 //
+#define SPELL_MEND_BONES		316 //
 #define SPELL_TRACE_CORPSE		317 //
-#define	SPELL_ENDURE_COLD		318 // DONE - checked
-#define SPELL_LIFE_DRAW			319 // done - checked
-#define SPELL_NUMB_DEAD		    320 // done - checked
-#define SPELL_BINDING			321 // done - checked
-#define SPELL_DECAY				322 // done - checked
-#define SPELL_SHADOW_STEP		323 // done - fixed & checked
-#define SPELL_CAVORTING_BONES	324 // done - checked
-#define SPELL_MIST_OF_DEATH		325 // done - checked
-#define SPELL_NULLIFY			326 // done - checked
-#define SPELL_DARK_EMPATHY		327 // done - checked
-#define SPELL_EYE_OF_THE_DEAD	328 // done - checked - needs some works still
-#define SPELL_SOUL_STEAL		329 // done - checked
-#define SPELL_LIFE_LEECH		330 // done - checked
-#define SPELL_DARK_PACT			331 // done - checked
-#define SPELL_DARKTRAVEL		332 // done - checked - mislocate not quite workin yet
-#define SPELL_VAMPIRIC_EMBRACE	333 // done - checked
-#define SPELL_BIND_AFFINITY		334 // done - checked
-#define SPELL_SCOURGE_WARLOCK	335 // done - **bugged** can't cast it twice due to eye comparison? Am I usin the wrong struct?
-#define SPELL_FINGER_OF_DEATH	336 // done - checked
-#define SPELL_FLESH_GOLEM		337 // done - checked
+#define	SPELL_ENDURE_COLD		318 //
+#define SPELL_LIFE_DRAW			319 //
+#define SPELL_NUMB_DEAD		    320 //
+#define SPELL_BINDING			321 //
+#define SPELL_DECAY				322 //
+#define SPELL_SHADOW_STEP		323 //
+#define SPELL_CAVORTING_BONES	324 //
+#define SPELL_MIST_OF_DEATH		325 //
+#define SPELL_NULLIFY			326 //
+#define SPELL_DARK_EMPATHY		327 //
+#define SPELL_EYE_OF_THE_DEAD	328 //
+#define SPELL_SOUL_STEAL		329 //
+#define SPELL_LIFE_LEECH		330 //
+#define SPELL_DARK_PACT			331 //
+#define SPELL_DARKTRAVEL		332 //
+#define SPELL_VAMPIRIC_EMBRACE	333 //
+#define SPELL_BIND_AFFINITY		334 //
+#define SPELL_SCOURGE_WARLOCK	335 //
+#define SPELL_FINGER_OF_DEATH	336 //
+#define SPELL_FLESH_GOLEM		337 //
 #define SPELL_CHILLSHIELD		338 //
 
 /*PSI Spells */
@@ -405,16 +405,7 @@
 
 #define SPELL_BLADE_BARRIER		341
 
-
-
 #define MAX_EXIST_SPELL         341   /* max number of skills/spells */
-
-
-
-
-
-
-
 
 
 #define FIRST_BREATH_WEAPON	     356 /*	201 */ //306
@@ -442,11 +433,11 @@
 #define TYPE_BLUDGEON                372
 #define TYPE_PIERCE                  373
 #define TYPE_SLASH                   374
-#define TYPE_WHIP                    375  /* EXAMPLE */
-#define TYPE_CLAW                    376  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_BITE                    377  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_STING                   378  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_CRUSH                   379  /* NO MESSAGES WRITTEN YET! */
+#define TYPE_WHIP                    375
+#define TYPE_CLAW                    376
+#define TYPE_BITE                    377
+#define TYPE_STING                   378
+#define TYPE_CRUSH                   379
 #define TYPE_CLEAVE                  380
 #define TYPE_STAB                    381
 #define TYPE_SMASH                   382
@@ -459,10 +450,8 @@
 #define TYPE_STRIKE                  389
 
 
-
-
 /* all new weapons to practice (GH) */
-#define WEAPON_FIRST 340
+#define WEAPON_FIRST             340
 #define WEAPON_SLING				340
 #define WEAPON_STAFF_SLING			341
 #define WEAPON_SHORT_BOW			342
@@ -473,17 +462,17 @@
 #define WEAPON_BLOWGUN				347
 #define WEAPON_TETSUBO				348
 #define WEAPON_GENERIC              349
-#define WEAPON_SHORT_SWORD         350
-#define WEAPON_LONG_SWORD          351
-#define WEAPON_BROADSWORD          352
-#define WEAPON_BASTARD_SWORD       353
-#define WEAPON_TWO_HANDED_SWORD    354
-#define WEAPON_SICKLE              355
-#define WEAPON_SCYTHE			   356
-#define WEAPON_SCIMITAR			   357
-#define WEAPON_RAPIER              358
-#define WEAPON_SABRE			   359
-#define WEAPON_KATANA			   360
+#define WEAPON_SHORT_SWORD          350
+#define WEAPON_LONG_SWORD           351
+#define WEAPON_BROADSWORD           352
+#define WEAPON_BASTARD_SWORD        353
+#define WEAPON_TWO_HANDED_SWORD     354
+#define WEAPON_SICKLE               355
+#define WEAPON_SCYTHE			    356
+#define WEAPON_SCIMITAR			    357
+#define WEAPON_RAPIER               358
+#define WEAPON_SABRE			    359
+#define WEAPON_KATANA			    360
 #define WEAPON_WAKIZASHI			361
 #define WEAPON_DAGGER				362
 #define WEAPON_KNIFE				363
@@ -523,9 +512,7 @@
 #define WEAPON_DART					397
 #define WEAPON_JAVELIN				398
 #define WEAPON_HARPOON				399
-#define WEAPON_LAST                399
-
-
+#define WEAPON_LAST              399
 
 
 	/* This one needs to be after all real damage skills, might wanna */

@@ -1031,6 +1031,230 @@ int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *r
 	}
 }
 
+#define GNOME_HOME 697
+#define GNOME_MOB  705
+int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[254];
+	struct char_data *gnome;
+
+	if(cmd != 429) { /* knock */
+		return(FALSE);
+	}
+
+	if(!ch)
+		return(FALSE);
+
+	if(!ch->in_room)
+		return(FALSE);
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp)
+		return(FALSE);
+
+	only_argument(arg, buf);
+
+	if(*buf) {
+		if(!(str_cmp("door",buf)) || !(str_cmp("Door", buf)) || !(str_cmp("DOOR", buf))) { /* knock door */
+			if(get_char_vis_world(ch,"gnome female collector",NULL)) {
+				send_to_char("But it's already open!\n\r",ch);
+				return(TRUE);
+			} else if(gnome = read_mobile(GNOME_MOB, VIRTUAL)) {
+				send_to_char("You courteously knock on the little door, and it opens.\n\r",ch);
+				char_to_room(gnome, ch->in_room);
+				send_to_char("Out comes a tiny gnomish woman, who peeps up at you.\n\r",ch);
+				send_to_char("She says, 'You got anything for me? I'm getting desperate.'\n\r",ch);
+				send_to_char("She looks at you in a meaningful way, obviously expecting something.\n\r",ch);
+				return(TRUE);
+			} else {
+				log("could not find GNOME_MOB in gnome_home proc");
+			}
+		}
+	}
+	return(FALSE);
+}
+
+#define COLLECTIBLE_1 3998
+#define COLLECTIBLE_2 47961
+#define COLLECTIBLE_3 51838
+#define COLLECTIBLE_4 51839
+#define REWARD_GNOME    720
+int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[254], obj_name[120], vict_name[120];
+	struct char_data *gnome, *tmp_ch, *j, *receiver;
+	struct obj_data *obj, *i, *reward, *next;
+	int obj_num = 0, x = 0;
+	int HasCollectibles[4] = {0,0,0,0};
+	int winner = 0, found = 0;
+
+	if(!ch)
+		return(FALSE);
+
+	if(!AWAKE(ch))
+		return(FALSE);
+
+	if(ch->in_room)
+		rp = real_roomp(ch->in_room);
+	else {
+		log("weirdness in gnome_collector, char not in a room");
+		return(FALSE);
+	}
+
+	if(!rp) {
+		log("weirdness in gnome_collector, char's room does not exist");
+		return(FALSE);
+	}
+
+	/* let's make sure gnome doesn't get killed or robbed */
+	if(!IS_SET(rp->room_flags,PEACEFUL))
+		SET_BIT(rp->room_flags, PEACEFUL);
+
+	if(!(gnome = get_char_room("gnome female collector",ch->in_room))) {
+		sprintf(buf,"gnome_collector proc is attached to a mob without proper name, in room %d",ch->in_room);
+		log(buf);
+		return(FALSE);
+	}
+
+	if(!gnome) {
+		log("weirdness in gnome_collector, gnome found but not assigned");
+		return(FALSE);
+	}
+
+	if(!IS_NPC(gnome)) {
+		log("weirdness in gnome_collector, gnome is not a mob");
+		return(FALSE);
+	}
+
+	/* if there's no pcs present in room, I'm gonna get going, get some work done mate! */
+
+	j = rp->people;
+	found = 0;
+
+	while(j && !found) {
+		if(IS_PC(j)) {
+			/* first PC in room (should be only cuz it's tunnel 1) receives prize, if winner */
+			receiver = j;
+			found = 1;
+		}
+		j = j->next_in_room;
+	}
+
+	if(!found) { /* no pcs in room! what am I doin here?! let's get lost */
+		act("$n steps into $s little door, and it seals shut behind $s.",FALSE, gnome,0,0, TO_ROOM);
+		while(gnome->carrying)
+			extract_obj(gnome->carrying);
+		extract_char(gnome);
+		return(TRUE);
+	}
+
+	if(!IS_SET(gnome->specials.act, ACT_SENTINEL))
+		SET_BIT(gnome->specials.act, ACT_SENTINEL);
+
+	if(i = gnome->carrying) {
+		for(i; i; i = i->next_content) {
+			if(obj_index[i->item_number].virtual == COLLECTIBLE_1) {
+				HasCollectibles[0] = 1;
+			} else if(obj_index[i->item_number].virtual == COLLECTIBLE_2) {
+				HasCollectibles[1] = 1;
+			} else if(obj_index[i->item_number].virtual == COLLECTIBLE_3) {
+				HasCollectibles[2] = 1;
+			} else if(obj_index[i->item_number].virtual == COLLECTIBLE_4) {
+				HasCollectibles[3] = 1;
+			}
+		}
+		winner = 1;
+		for (x = 0; x < 4; x++) {
+			if(HasCollectibles[x]==0) {
+				winner = 0;
+			}
+		}
+		if(winner) {
+			act("$n says, 'Woop, I got everyhitng i need now! Thank you ever so much.",FALSE, gnome,0,0, TO_ROOM);
+			if(reward = read_object(REWARD_GNOME, VIRTUAL)) {
+				act("I would express my gratitude by presenting you with this magical ring.",FALSE, gnome,0,0, TO_ROOM);
+				act("I came across it in an ancient traveller's corpse, back in the day when",FALSE, gnome,0,0, TO_ROOM);
+				act("I still got around. I never quite figured out its use, but I'm sure it's",FALSE, gnome,0,0, TO_ROOM);
+				act("more than it seems. I hope you will make good use of it.'\n\r",FALSE, gnome,0,0, TO_ROOM);
+				act("$N gives $p to $n.\n\r",FALSE, receiver, reward, gnome, TO_ROOM);
+				act("$N gives $p to you.\n\r",FALSE, receiver, reward, gnome, TO_CHAR);
+
+				obj_to_char(reward, receiver);
+			}
+			act("$n says, 'Right, gotta get going now, I'm impatient to start my experiments.",FALSE, gnome,0,0, TO_ROOM);
+			act("$n steps into $s little door, and it seals shut behind $s.",FALSE, gnome,0,0, TO_ROOM);
+			/* extract carried items if any */
+			while(gnome->carrying)
+				extract_obj(gnome->carrying);
+			extract_char(gnome);
+			return(TRUE);
+		}
+	}
+
+	/* talk does nothing, she's silent */
+	if(cmd == 531) {
+		only_argument(arg,buf);
+		if(*buf) {
+			if(tmp_ch = get_char_room_vis(ch, buf)) {
+				if(tmp_ch == gnome) { /* talk gnome */
+					ch_printf(ch,"%s looks at you in a meaningful way, but stays silent.\n\r",gnome->player.short_descr);
+					return(TRUE);
+				}
+			}
+		}
+		return(FALSE);
+	}
+	/* give */
+	if (cmd == 72) {
+		/* determine the correct obj */
+		arg=one_argument(arg,obj_name);
+		if (!*obj_name)
+			return(FALSE);
+
+		if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))
+			return(FALSE);
+
+		obj_num = obj_index[obj->item_number].virtual;
+
+		arg=one_argument(arg, vict_name);
+
+		if(!*vict_name)
+			return(FALSE);
+
+		if (!(tmp_ch = get_char_room_vis(ch, vict_name)))
+			return(FALSE);
+
+		if(tmp_ch != gnome)
+			return(FALSE);
+
+		/* found an object, and the correct person to give it to */
+
+		if (gnome->specials.fighting) {
+			send_to_char("Not while she is fighting!\n\r",ch);
+			return(TRUE);
+		}
+
+		/* correct object? */
+		if (obj_num != COLLECTIBLE_1 &&
+			obj_num != COLLECTIBLE_2 &&
+			obj_num != COLLECTIBLE_3 &&
+			obj_num != COLLECTIBLE_4) {
+			/* nope */
+			ch_printf(ch,"%s doesn't seem to be interested in that sort of junk.\n\r",gnome->player.short_descr);
+			return(TRUE);
+		} else {
+			act("$n says, 'Woah, good stuff! I've been looking for this thing for ages.'",FALSE, gnome,0,0, TO_ROOM);
+			act("You give $p to $N.",FALSE, ch,obj,gnome, TO_CHAR);
+			act("$n gives $p to $N.",FALSE, ch,obj,gnome, TO_ROOM);
+			obj_from_char(obj);
+			obj_to_char(obj, gnome);
+			return(TRUE);
+		}
+	}
+	return(FALSE);
+}
+
 #define QUEST_POTION 718
 int qp_potion(struct char_data *ch, int cmd, char *arg)
 {
@@ -1468,8 +1692,8 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 	if(!ch)
 		return(FALSE);
 
-	if(!cmd)
-		return(FALSE);
+//	if(!cmd)
+//		return(FALSE);
 
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
@@ -1486,6 +1710,10 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		log("weirdness in shopkeeper, char's room does not exist");
 		return(FALSE);
 	}
+
+	/* let's make sure shopkeepers don't get killed or robbed */
+	if(!IS_SET(rp->room_flags,PEACEFUL))
+		SET_BIT(rp->room_flags, PEACEFUL);
 
 	if (cmd !=  59 &&	/* list */
 		cmd !=  56 &&	/* buy */
@@ -1504,15 +1732,13 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		return(FALSE);
 	}
 
-	/* let's make sure shopkeepers don't get killed or robbed */
-	if(!IS_SET(real_roomp(shopkeeper->in_room)->room_flags,PEACEFUL))
-		SET_BIT(real_roomp(shopkeeper->in_room)->room_flags, i);
-
-
 	if(!IS_NPC(shopkeeper)) {
 		log("weirdness in shopkeeper, shopkeeper is not a mob");
 		return(FALSE);
 	}
+
+	if(!IS_SET(shopkeeper->specials.act, ACT_SENTINEL))
+		SET_BIT(shopkeeper->specials.act, ACT_SENTINEL);
 
 	/* players with 14 chr pay avg price */
 	chr = GET_CHR(ch);
@@ -1611,6 +1837,10 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 						stop = 1;
 					} else if ((IS_CARRYING_W(ch) + (obj->obj_flags.weight)) > CAN_CARRY_W(ch)) {
 						ch_printf(ch,"%s : You can't carry that much weight.\n\r", obj->short_description);
+						stop = 1;
+					} else if (GET_LEVEL(ch,BARBARIAN_LEVEL_IND) !=0 &&
+										anti_barbarian_stuff(obj) && GetMaxLevel(ch)<LOW_IMMORTAL) {
+						send_to_char("You sense magic on the object and think better of buying it.\n\r",ch);
 						stop = 1;
 					} else {
 						obj_from_char(obj);

@@ -125,6 +125,7 @@ void spell_resurrection(byte level, struct char_data *ch,
       if (!get_char(st.name) && st.abilities.con > 3) {
 #endif
 	st.points.exp *= 2;
+	st.points.leadership_exp *= 2;
 	st.talks[2] = TRUE;
 	st.abilities.con -= 1;
 	act("A clear bell rings throughout the heavens",

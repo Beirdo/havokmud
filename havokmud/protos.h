@@ -2304,6 +2304,8 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 int generate_legend_statue();
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

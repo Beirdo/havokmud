@@ -3043,7 +3043,7 @@ char *advicelist[] = {
 
 void AdvicePulseStuff(int pulse)
 {
-	int numberadvice = 38;
+	int numberadvice = 37;
   struct descriptor_data *i;
   register struct char_data *ch;
   char buf[80], buffer[150];
@@ -3087,7 +3087,6 @@ void DarknessPulseStuff(int pulse)
 	for (i = descriptor_list; i; i=i->next) {
 		if (!i->connected) {
 			ch = i->character;
-log("running darknesspulsestuff");
 			for (j = 0; j <= (MAX_WEAR - 1); j++) { /* scrap antisun before doing the darkness check */
 				if (ch->equipment[j] && ch->equipment[j]->item_number>=0)  {
 					if (IS_SET(ch->equipment[j]->obj_flags.extra_flags,ITEM_ANTI_SUN)) {

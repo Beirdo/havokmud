@@ -1316,6 +1316,7 @@ void spell_reincarnate(byte level, struct char_data *ch,
   if (st.talks[2] && st.abilities.con > 3)
   {
 	st.points.exp *= 2;
+	st.points.leadership_exp *= 2; /* test */
 	st.talks[2] = TRUE;
 	st.abilities.con -= 1;
 
@@ -3488,7 +3489,7 @@ void spell_binding(byte level, struct char_data *ch, struct char_data *victim, s
 	}
 
 	if (!IsOnPmp(ch->in_room)) {
-		send_to_char("Your binding spot seems to be on a different place.\n\r", ch);
+		send_to_char("Your binding spot seems to be on a different plane.\n\r", ch);
 		return;
 	}
 
@@ -3800,7 +3801,7 @@ void spell_eye_of_the_dead(byte level, struct char_data *ch, struct char_data *v
 
 	if (!affected_by_spell(ch, SPELL_EYE_OF_THE_DEAD) && !IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
 		act("One of $n's eyes pulses with an eerie blue light.",FALSE, ch, 0, 0, TO_ROOM);
-		send_to_char("You summon the eye of the dead, which increases your sight considerably.",ch);
+		send_to_char("You summon the eye of the dead, which increases your sight considerably.\n\r",ch);
 
 		af.type      = SPELL_EYE_OF_THE_DEAD;
 	    af.duration  = 20;
@@ -4040,7 +4041,7 @@ void spell_bind_affinity(byte level, struct char_data *ch, struct char_data *vic
 	}
 
 	if(IS_SET(rp->room_flags,  PRIVATE | NO_SUM | NO_MAGIC)) {
-		send_to_char("Arcane magics  prevent you from creating a lasting connection to this place.\n\r",ch);
+		send_to_char("Arcane magics prevent you from creating a lasting connection to this place.\n\r",ch);
 		return;
 	}
 
@@ -4384,22 +4385,22 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 	if (!affected_by_spell(ch, SPELL_BLADE_BARRIER)) {
 		if (affected_by_spell(ch, SPELL_FIRESHIELD)) {
 			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
-			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			act("Your blades rip away the last vistiges of the fireshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_FIRESHIELD);
 		}
 		if (IS_AFFECTED(ch, AFF_FIRESHIELD)) {
 			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
-			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			act("our blades rip away the last vistiges of the fireshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			REMOVE_BIT(ch->specials.affected_by, AFF_FIRESHIELD);
 		}
 		if (affected_by_spell(ch, SPELL_CHILLSHIELD)) {
 			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
-			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			act("our blades rip away the last vistiges of the chillshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_CHILLSHIELD);
 		}
 		if (IS_AFFECTED2(ch, AFF_CHILLSHIELD)) {
 			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
-			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			act("our blades rip away the last vistiges of the chillshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			REMOVE_BIT(ch->specials.affected_by, AFF_CHILLSHIELD);
 		}
 
