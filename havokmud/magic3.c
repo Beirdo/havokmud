@@ -2840,3 +2840,39 @@ void spell_giant_growth(byte level, struct char_data *ch,
 
 
 }
+
+/* Necromancer Spells */
+void spell_shadow_step(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj)
+{
+	int attempt = 0, i = 0;
+
+	/* gotta have someone fightin ya */
+	if(!ch->specials.fighting) {
+		send_to_char("The shadows will only aid you in battle.\n\r", ch);
+		return;
+	}
+
+	for(i = 0; i <= 5; i++) { /* give em lots of tries */
+		attempt = number(0, 5);
+		if (CAN_GO(ch, attempt) &&
+					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, DEATH) &&
+					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, NO_FLEE)) {
+			act("$n steps into a nearby shadow and seems to dissipate.", FALSE, ch, 0, 0, TO_ROOM);
+			send_to_char("You shift into a nearby shadow, and let it carry you away.\n\r\n\r", victim);
+
+			char_from_room(ch);
+			char_to_room(ch, EXIT(ch, attempt)->to_room);
+
+			if (ch->specials.fighting->specials.fighting == ch)
+				stop_fighting(ch->specials.fighting);
+			if (ch->specials.fighting)
+				stop_fighting(ch);
+
+			do_look(ch, "\0",15);
+			return;
+		}
+	} /* end for, no exits found. too bad, kiddo! */
+	send_to_char("The shadows in the vicinity didn't serve your purpose.\n\r", ch);
+}
+

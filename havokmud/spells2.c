@@ -4623,6 +4623,23 @@ void cast_giant_growth( byte level, struct char_data *ch, char *arg,
   }
 }
 
+/* Necromancer Spells */
+void cast_shadow_step( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+	switch (type) {
+		case SPELL_TYPE_WAND:
+		case SPELL_TYPE_SPELL:
+		case SPELL_TYPE_STAFF:
+		case SPELL_TYPE_SCROLL:
+			spell_wizard_eye(level, ch,victim, 0);
+			break;
+		default :
+			log("Serious screw-up in cast_wizard_eye!");
+			break;
+	}
+}
+
 
 void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type,
 		     struct char_data *tar_ch, struct obj_data *tar_obj )
