@@ -1462,7 +1462,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 	return(FALSE);
 }
 
-#define SHARPENING_STONE 52881
+#define SHARPENING_STONE 52887
 void do_sharpen(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj, *cmp, *stone;

@@ -1082,7 +1082,8 @@ void spell_creeping_death(byte level, struct char_data *ch, struct char_data *vi
 	struct affected_type af;
 	struct char_data *cd;
 
-	if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+	if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)
+		|| IS_SET(real_roomp(ch->in_room)->sector_type == SECT_INSIDE)) {
 		send_to_char("You can't cast this spell indoors!\n\r",ch);
 		return;
 	}

@@ -859,18 +859,18 @@ dlog("in do_emote");
 	}
 #if 1
 
-		for (i = 0; *(arg + i) == ' '; i++);
+	for (i = 0; *(arg + i) == ' '; i++);
 
-		if (!*(arg + i))
-			send_to_char("Yes.. But what?\n\r", ch);
-		else {
-			sprintf(buf,"$n %s", arg + i);
-			act(buf,FALSE,ch,0,0,TO_ROOM);
-			if (IS_SET(ch->specials.act,PLR_ECHO))
-				act(buf,FALSE,ch,0,0,TO_CHAR);
-			else
-				send_to_char("Ok.\n\r",ch);
-		}
+	if (!*(arg + i))
+		send_to_char("Yes.. But what?\n\r", ch);
+	else {
+		sprintf(buf,"$n %s", arg + i);
+		act(buf,FALSE,ch,0,0,TO_ROOM);
+		if (IS_SET(ch->specials.act,PLR_ECHO))
+			act(buf,FALSE,ch,0,0,TO_CHAR);
+		else
+			send_to_char("Ok.\n\r",ch);
+	}
 #endif
 /*
 #if 1
