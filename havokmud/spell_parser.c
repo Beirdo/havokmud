@@ -922,12 +922,13 @@ char *spells[]=
    "mind tap",
 	"blade barrier", /* 341 - blade barrier */
 	"mana shield",
-	"iron skin",
+	"iron skins",
 	"sense item",
 	"kinolock",
 	"flower fist",
 	"flurry of blows",
 	"scribe", //348
+	"group heal",
   "\n"
 };
 
