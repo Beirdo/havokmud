@@ -4927,9 +4927,8 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
     if (dam_type == FIRESHIELD || dam_type == CHILLSHIELD ||
         dam_type == BLADE_BARRIER) {
         /*
-         * shields should scrap less -Lennya
+         * shields should scrap less
          */
-        Log("In fs, cs, bb, item saves");
         if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
             while (!ItemSave(i, dam_type)) {
                 /*
