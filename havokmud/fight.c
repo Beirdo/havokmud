@@ -1501,7 +1501,7 @@ char buf[255];
      dam = berserkdambonus(ch,dam);     /* More damage if berserked */
    }
 
-	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK))
+	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK) && type >= TYPE_HIT) // berserker bash fix
 		dam = (int)(berserkdambonus(ch,dam) *0.75);
   dam = PreProcDam(v,type,dam);
 

@@ -4841,7 +4841,7 @@ if (!strcmp(GET_NAME(ch),"Banon")) {
 	GET_LEVEL(ch,0) = 60;
 	}
 
-if (!(strcmp(GET_NAME(ch),"Pentak")) || !(strcmp(GET_NAME(ch), "Tsaron"))) {
+if (!(strcmp(GET_NAME(ch),"Lennya")) || !(strcmp(GET_NAME(ch), "Tsaron"))) {
 	GET_LEVEL(ch,0)=59;
 	}
 //End of this modif... -Manwe Windmaster 260697 */

@@ -155,7 +155,7 @@ int mana_limit(struct char_data *ch)
 
  /*
   * Add class mana maximums here...
- */
+  */
 
  if (OnlyClass(ch,CLASS_BARBARIAN)) /* 100 mana max for barbs */
  {

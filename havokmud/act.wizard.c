@@ -2450,12 +2450,12 @@ send_to_char("@\n\r"
             	send_to_char("Removing clan leader flag\n\r",ch);
 			  }
 
-       }else if (!strcmp(field, "legend")) {
+       } else if (!strcmp(field, "legend")) {
              if (!IS_SET(mob->specials.act, PLR_LEGEND)) {
              	SET_BIT(mob->specials.act, PLR_LEGEND);
              	send_to_char("Setting legend flag.\n\r",ch);
               } else {
-             	REMOVE_BIT(mob->specials.act, PLR_CLAN_LEADER);
+             	REMOVE_BIT(mob->specials.act, PLR_LEGEND);
             	send_to_char("Removing legend leader flag.\n\r",ch);
 			  }
 		  } else if (!strcmp(field, "race")) {
