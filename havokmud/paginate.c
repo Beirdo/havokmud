@@ -185,8 +185,9 @@ void paginate_string(char *str, struct descriptor_data *d)
  */
 void page_string(struct descriptor_data *d, char *str, int keep_internal)
 {
-    if (!d)
+    if (!d) {
         return;
+    }
     if (!str || !*str) {
         SEND_TO_Q("", d);
         return;

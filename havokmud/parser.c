@@ -58,13 +58,15 @@ void GenerateHash()
 {
     register int    i;
 
-    for (i = 0; i <= 255; i++)
-        if ((i >= 'a') && (i <= 'z'))
+    for (i = 0; i <= 255; i++) {
+        if ((i >= 'a') && (i <= 'z')) {
             HashTable[i] = i - MAGIC;
-        else if ((i >= 'A') && (i <= 'Z'))
+        } else if ((i >= 'A') && (i <= 'Z')) {
             HashTable[i] = i - (MAGIC - 32);
-        else
+        } else {
             HashTable[i] = 0;
+        }
+    }
 }
 
 /*
@@ -89,7 +91,9 @@ void AddNodeTail(NODE * n, int length, int radix)
      * Traverse the list until we find the end, when we find it, add to it 
      */
     for (i = radix_head[radix].next; i->next; i = i->next) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     i->next = n;
@@ -97,8 +101,9 @@ void AddNodeTail(NODE * n, int length, int radix)
     radix_head[radix].number++;
     n->next = NULL;
 
-    if (radix_head[radix].max_len < length)
+    if (radix_head[radix].max_len < length) {
         radix_head[radix].max_len = length;
+    }
 }
 
 /*
