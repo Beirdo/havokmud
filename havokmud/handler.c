@@ -1663,7 +1663,8 @@ void extract_char_smarter(struct char_data *ch, long save_room)
   struct obj_data *i;
   struct char_data *k, *next_char;
   struct descriptor_data *t_desc;
-  int l, was_in, j;
+  int l, was_in, j, amount;
+  struct obj_data *tmp_object;
 
   extern long mob_count;
   extern struct char_data *combat_list;
@@ -1707,17 +1708,22 @@ void extract_char_smarter(struct char_data *ch, long save_room)
     ch->desc->snoop.snooping = ch->desc->snoop.snoop_by = 0;
   }
 
-  if (ch->carrying)	{
+  if (ch->carrying || ch->points.gold>0)	{
     /* transfer ch's objects to room */
 
     if (!IS_IMMORTAL(ch)) {
-
+      amount = ch->points.gold;
+      if(amount > 0){
+	tmp_object = create_money(amount);
+	obj_to_room(tmp_object,ch->in_room);
+	GET_GOLD(ch)-=amount;
+      }
+      
       while(ch->carrying) {
 	i=ch->carrying;
 	obj_from_char(i);
 	obj_to_room(i, ch->in_room);
 	check_falling_obj(i, ch->in_room);
-
       }
     } else {
 
