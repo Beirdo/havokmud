@@ -2544,8 +2544,8 @@ char *GetLevelTitle(struct char_data *ch) {
 						else
 							sprintf(color,"$c000Y");
 
-	if(GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND)) {
-		sprintf(buf,"%s","$c0008L$c000we$c000Wge$c000wn$c0008d$c000B");
+	if(!IS_IMMORTAL(ch) && (GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND))) {
+		sprintf(buf,"%s","$c0008L$c000we$c000Wge$c000wn$c0008d");
 		return buf;
 	} else if(GET_SEX(ch)==SEX_FEMALE) {
 		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_f);
@@ -2763,10 +2763,16 @@ argument = one_argument(argument,tbuf);
 									else
 										strcat(immortals, buf);
 								} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
-									sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									if(GET_EXP(person) > 200000000 || IS_SET(person->specials.act, PLR_LEGEND))
+										sprintf(buf,"%49s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									else
+										sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
 									strcat(quest, buf);
 								} else {
-									sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									if(GET_EXP(person) > 200000000 || IS_SET(person->specials.act, PLR_LEGEND))
+										sprintf(buf,"%49s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+									else
+										sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
 									strcat(mortals, buf);
 								}
 								count++;
