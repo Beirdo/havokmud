@@ -533,6 +533,8 @@ int game_loop(int s)
 	    MobEdit(point->character,comm);
 	  else if(point->connected == CON_HELP_EDITING)
 	    HelpEdit(point->character,comm);
+	  else if(point->connected == CON_TFD_EDITING)
+	    TfdEdit(point->character,comm);
 	  else
 	    nanny(point, comm);
 	}

@@ -784,34 +784,35 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     /*
       extra descriptions
       */
-    if (!*string)  	{
-      send_to_char("You have to supply a keyword.\n\r", ch);
-      return;
-    }
-    /* try to locate extra description */
-    for (ed = rp->ex_description; ; ed = ed->next)
-      if (!ed) {
-	CREATE(ed , struct extra_descr_data, 1);
-	ed->next = rp->ex_description;
-	rp->ex_description = ed;
-	CREATE(ed->keyword, char, strlen(string) + 1);
-	strcpy(ed->keyword, string);
-	ed->description = 0;
-	ch->desc->str = &ed->description;
-	send_to_char("New field.\n\r", ch);
+	if (!*string)  	{
+		send_to_char("You have to supply a keyword.\n\r", ch);
+		return;
+	}
+	/* try to locate extra description */
+	for (ed = rp->ex_description; ; ed = ed->next) {
+		if (!ed) {
+			CREATE(ed , struct extra_descr_data, 1);
+			ed->next = rp->ex_description;
+			rp->ex_description = ed;
+			CREATE(ed->keyword, char, strlen(string) + 1);
+			strcpy(ed->keyword, string);
+			ed->description = 0;
+			ch->desc->str = &ed->description;
+			send_to_char("New field.\n\r", ch);
+			break;
+		} else if (!str_cmp(ed->keyword, string)) {
+			/* the field exists */
+			if (ed->description)
+				free(ed->description);
+			ed->description = 0;
+			ch->desc->str = &ed->description;
+			send_to_char( "Modifying description.\n\r", ch);
+			break;
+		}
+		ch->desc->max_str = MAX_STRING_LENGTH;
+		return;
+	}
 	break;
-      }  else if (!str_cmp(ed->keyword, string)) {
-	/* the field exists */
-if (ed->description)
-	free(ed->description);
-	ed->description = 0;
-	ch->desc->str = &ed->description;
-	send_to_char( "Modifying description.\n\r", ch);
-	break;
-      }
-    ch->desc->max_str = MAX_STRING_LENGTH;
-    return;
-    break;
 
   case 7:
     /*  this is where the river stuff will go */

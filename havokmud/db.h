@@ -17,6 +17,7 @@
 #define CREDITS_FILE      "credits"       /* for the 'credits' command  */
 #define NEWS_FILE         "news"          /* for the 'news' command     */
 #define MOTD_FILE         "motd"          /* messages of today          */
+#define WMOTD_FILE        "wizmotd"		  /* wizard's motd */
 #define PLAYER_FILE       "players"       /* the player database        */
 #define TIME_FILE         "time"          /* game calendar information  */
 #define IDEA_FILE         "ideas"         /* for the 'idea'-command     */

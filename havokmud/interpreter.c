@@ -1622,6 +1622,7 @@ AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
 AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
 AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
+AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
 }
 
 

@@ -3639,6 +3639,13 @@ const char *fight_styles[] = {
 
 };
 
+const char *tfd_types[] = {
+	"None Selected",
+	"News",
+	"Message of the Day",
+	"Wizard's Mesasge of the Day",
+	"\n"
+};
 
 const char *connected_types[]	=	{
 	"Playing",
@@ -3677,6 +3684,8 @@ const char *connected_types[]	=	{
         "Creation Menu",
         "Picking Alignment",
         "Help File Editing",
+        "_e-mail reg",
+        "Text File Editing",
 	"\n"
 };
 

@@ -1309,11 +1309,13 @@ struct char_special_data
         byte medit;                           /*  mob edit menu at */
         struct char_data *mobedit;            /*  mob editing */
 
-        byte oedit;                            /*  obj editing menu at */
+        byte oedit;                           /*  obj editing menu at */
         struct obj_data *objedit;             /*  object editing */
 
         byte hedit;
         struct help_file_u *help;             /*  helpfile editing */
+        byte tfd;
+        struct edit_txt_msg *txtedit;		  /*  motd/wmotd/news editing */
 
   int tick_to_lag;
 
@@ -1747,6 +1749,7 @@ struct txt_q
 #define CON_ALIGNMENT       34
 #define CON_HELP_EDITING    35
 #define CON_EMAILREG            36
+#define CON_TFD_EDITING    37
 
 struct snoop_data
 {
@@ -1940,7 +1943,12 @@ struct clan {
 
 };
 
-
+struct edit_txt_msg {
+	int file;		// 0 = none, 1 = news, 2 = motd, 3 = wmotd
+	char *date;
+	char *author;
+	char *body;
+};
 
 struct class_titles {
 	char *male;

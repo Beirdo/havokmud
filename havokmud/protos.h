@@ -2426,5 +2426,7 @@ void heros_chant(byte level, struct char_data *ch, struct char_data *victim, str
 
 void do_eval(struct char_data *ch, char *arg, int cmd);
 void do_reimb(struct char_data *ch, char *argument, int cmd);
+void do_chtextfile(struct char_data *ch, char *argument, int cmd);
+void TfdEdit(struct char_data *ch, char *arg);
 
 int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
