@@ -4128,8 +4128,8 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.ridden_by=0;
 	ch->specials.mounted_on=0;
 	ch->specials.charging=0;
-	ch->specials.auction=0;
-	ch->specials.minbid=0;
+	ch->specials.auction = 0;//st->auction;
+	ch->specials.minbid = 0;//st->minbid;
 	ch->style=0;
 	       /* new stuff added 1-26-95 msw */
 	       /* need to malloc the space for the pc struct */
@@ -4231,6 +4231,8 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 	st->m_deaths = ch->specials.m_deaths;
 	st->m_kills  = ch->specials.m_kills;
 
+//	 st->auction = ch->specials.auction;
+//	 st->minbid = ch->specials.minbid;
 
      st->speaks = ch->player.speaks;
 	st->user_flags = ch->player.user_flags;
@@ -4359,8 +4361,6 @@ void save_char(struct char_data *ch, sh_int load_room)
       }
     tmp = 0;
   }
-  //GET_LEVEL(ch,NECROMANCER_LEVEL_IND) = 0;
-  //ch->level[12] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
   if (expand = (ch->desc->pos > top_of_p_file)) {
     strcpy(mode, "a");
     top_of_p_file++;

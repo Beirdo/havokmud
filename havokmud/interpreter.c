@@ -3551,6 +3551,24 @@ if ((player_table+i)->name)
       if (!GetMaxLevel(d->character))
 	 do_start(d->character);
       do_look(d->character, "",15);
+      /* do an auction check, grant reimbs as needed */
+		if(d->character->specials.auction) {
+			struct obj_data *obj;
+			obj = d->character->specials.auction;
+			d->character->specials.auction = 0;
+			obj->equipped_by = 0;
+			obj->eq_pos = -1;
+
+			obj_to_char(obj, d->character);
+			send_to_char("Your item is returned to you.\n\r",d->character);
+			do_save(d->character, "", 0);
+		}
+		if(d->character->specials.minbid) {
+			GET_GOLD(d->character) += d->character->specials.minbid;
+			d->character->specials.minbid = 0;
+			send_to_char("You are returned your deposit for this auction.\n\r",d->character);
+			do_save(d->character, "", 0);
+		}
       d->prompt_mode = 1;
       break;
 

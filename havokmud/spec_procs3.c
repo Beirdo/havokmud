@@ -5175,7 +5175,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data
 			if (obj->item_number != pillrnum) return(FALSE);
 
 	        	act("$n eats $p",TRUE,ch,obj,0,TO_ROOM);
-			act("You eat the $p.",FALSE,ch,obj,0,TO_CHAR);
+			act("You eat $p.",FALSE,ch,obj,0,TO_CHAR);
 			extract_obj(obj);
 
 			if (time_info.hours > 6)
@@ -5245,7 +5245,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_dat
 			if (obj->item_number != pillrnum) return(FALSE);
 
 	        	act("$n eats $p",TRUE,ch,obj,0,TO_ROOM);
-			act("You eat the $p.",FALSE,ch,obj,0,TO_CHAR);
+			act("You eat $p.",FALSE,ch,obj,0,TO_CHAR);
 			extract_obj(obj);
 
 			if (time_info.hours < 7)

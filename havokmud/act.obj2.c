@@ -31,7 +31,7 @@ extern struct spell_info_type spell_info[];
 	long minbid = 0;
 	struct char_data *auctioneer; /* who is auctioning junk? */
 	struct char_data *bidder; /* who currently has the highest bid? */
-	struct obj_data *auctionobj; /* the item itself */
+//	struct obj_data *auctionobj; /* the item itself */
 	extern const struct skillset weaponskills[];
 	struct time_info_data age(struct char_data *ch);
 	/* Spell Names */
@@ -253,7 +253,7 @@ dlog("in do_eat");
         }
 
         act("$n eats $p",TRUE,ch,temp,0,TO_ROOM);
-        act("You eat the $p.",FALSE,ch,temp,0,TO_CHAR);
+        act("You eat $p.",FALSE,ch,temp,0,TO_CHAR);
 
 	if(!IS_IMMORTAL(ch)) {
         gain_condition(ch,FULL,temp->obj_flags.value[0]);
@@ -1445,12 +1445,9 @@ dlog("in do_remove");
 
 void do_auction(struct char_data *ch, char *argument, int cmd)
 {
-#if 1
-
-//	struct auction_data *auctioneditem;
 	char item[50], bid[20], buf[MAX_INPUT_LENGTH];
 	extern int Silence;
-//	struct obj_data *auctionobj;
+	struct obj_data *auctionobj;
 
 dlog("in do_auction");
 
@@ -1489,7 +1486,7 @@ dlog("in do_auction");
 
 
 	sprintf(buf,"$c000cAuction:  $c000w%s$c000c auctions $c000w%s$c000c. Minimum bid set at $c000w%d$c000c coins.\n\r"
-			,GET_NAME(ch), auctionobj->short_description, intbid);
+			,GET_NAME(ch), auctionobj->short_description, minbid);
 	send_to_all(buf);
 
 	send_to_char("Your item is taken away from you.\n\r",ch);
@@ -1497,34 +1494,30 @@ dlog("in do_auction");
 	auct_loop = 1;
 
 	auctioneer = ch;
-//	ch->specials.auction=auctionobj;
-	obj_from_char(auctionobj);
-	obj_to_room(auctionobj,4);
-//	ch->specials.minbid=intbid;
 
-#endif
+	obj_from_char(auctionobj);
+	ch->specials.auction=auctionobj;
+	do_save(ch,"",0);
+
 }
 
 
 
 void do_bid(struct char_data *ch, char *argument, int cmd)
 {
-#if 1
-
-//	struct auction_data *auctioneditem;
 	char item[50], buf[MAX_INPUT_LENGTH], arg[254];
-//	struct descriptor_data *i;
 	long bid = 0;
 	long newminbid = 0;
 	float fnewminbid = 0;
-
-//	struct obj_data *auctionobj;
+	struct obj_data *auctionobj;
 
 dlog("in do_bid");
 
+	if(IS_NPC(ch))
+		return;
 
 	if(!*argument) {  /* show help bid */
-		send_to_char("Usage:   bid ?            to see stats on item currently up for auction..\n\r",ch);
+		send_to_char("Usage:   bid ?            to see stats on item currently up for auction.\n\r",ch);
 		send_to_char("         bid <amount>     to place a bid on the item currently up for auction.\n\r",ch);
 		if(IS_IMMORTAL(ch))
 			send_to_char("         bid cancel       to cancel an auction.\n\r",ch);
@@ -1536,8 +1529,7 @@ dlog("in do_bid");
 		return;
 	}
 
-//	if(!(auctionobj = auctioneer->specials.auction)) {
-	if(!auctionobj) {
+	if(!(auctionobj = auctioneer->specials.auction)) {
 		log("auctionobj not found in do_bid");
 		return;
 	}
@@ -1575,14 +1567,28 @@ dlog("in do_bid");
 			return;
 		}
 		/* does player have the coin on hand? */
-		if(GET_GOLD(ch)<bid) {
+		if(GET_GOLD(ch)<bid && !IS_IMMORTAL(ch)) {
 			send_to_char("You don't have that many coins in your pocket.\n\r",ch);
 			return;
 		}
-		/* bid seems to be okay. take his coin as a precaution (in case he dies or something), make him bidder */
-		GET_GOLD(ch)-=bid;
+		/* bid seems to be okay */
+
+		/* reset previous bidder, if any */
+		if(bidder) {
+			if(bidder->specials.minbid > 0)
+				GET_GOLD(bidder) += bidder->specials.minbid;
+			else
+				log("previous bidder had a bid of less than 1 coin?!");
+			bidder->specials.minbid = 0;
+			do_save(bidder, "", 0);
+		}
+
+		/* take coin as a precaution and put it in specials.minbid, make him bidder */
+		GET_GOLD(ch) -= bid;
+		ch->specials.minbid = bid;
 		intbid = bid;
 		bidder = ch;
+		do_save(ch, "", 0);
 
 		sprintf(buf,"$c000cAuction:  $c000w%s$c000c places a bid of $c000w%d$c000c coins for $c000w%s$c000c.\n\r"
 				,GET_NAME(ch), intbid, auctionobj->short_description);
@@ -1600,24 +1606,36 @@ dlog("in do_bid");
 		if(IS_IMMORTAL(ch) && !strcmp(arg,"cancel")) {
 			/* cancel this auction */
 			send_to_all("$c000cAuction: the auction has been cancelled.\n\r");
+
+			/* reset previous bidder, if any */
 			if(bidder) {
-				GET_GOLD(bidder) += intbid;
-				send_to_char("You are returned your deposit for this auction.\n\r",ch);
+				if(bidder->specials.minbid > 0)
+					GET_GOLD(bidder) += bidder->specials.minbid;
+				else
+					log("previous bidder had a bid of less than 1 coin?!");
+				bidder->specials.minbid = 0;
+				send_to_char("You are returned your deposit for this auction.\n\r",bidder);
+				do_save(bidder, "", 0);
 			}
 			intbid = 0;
 			minbid = 0;
-			if(auctionobj) {
-				obj_from_room(auctionobj);
-				obj_to_char(auctionobj, auctioneer);
-//				free(auctioneer->specials.auction);
-				send_to_char("Your item is returned to you.\n\r",ch);
-			}
+
+			auctioneer->specials.auction = 0;
+				assert(!auctionobj->in_obj);
+				assert(auctionobj->in_room == NOWHERE);
+				assert(!auctionobj->carried_by);
+
+			auctionobj->equipped_by = 0;
+			auctionobj->eq_pos = -1;
+
+			obj_to_char(auctionobj, auctioneer);
+			send_to_char("Your item is returned to you.\n\r",auctioneer);
+			do_save(auctioneer, "", 0);
 			auct_loop = 0;
 			return;
 		}
 		send_to_char("That is not a valid argument. Type bid without arguments for help.\n\r",ch);
 	}
-#endif
 }
 
 void auction_id(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
@@ -1662,7 +1680,7 @@ void auction_id(byte level, struct char_data *ch, struct char_data *victim, stru
 	send_to_char(buf, ch);
 
 	if (GetMaxLevel(ch)>LOW_IMMORTAL) {
-		sprintf(buf, "$c000cR-number: [$c00w%d$c000c], V-number: [$c000w%d$c000c]",
+		sprintf(buf, "$c000cR-number: [$c000w%d$c000c], V-number: [$c000w%d$c000c]",
 			obj->item_number, (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0);
 		if (obj->max==0)
 			sprintf(buf2,"$c000w%s","unlimited");

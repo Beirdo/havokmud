@@ -125,12 +125,12 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
    log_sev(buf,3);
   }
 
-	if(ch == auctioneer) {
-		send_to_char("But you are currently auctioning an item!\n\r",ch);
+	if(ch->specials.auction) {
+		send_to_char("You are currently auctioning an item.\n\r",ch);
 		return(FALSE);
 	}
-	if(ch == bidder) {
-		send_to_char("But you are currently bidding on an item!\n\r",ch);
+	if(ch->specials.minbid) {
+		send_to_char("You are currently bidding on an item.\n\r",ch);
 		return(FALSE);
 	}
 

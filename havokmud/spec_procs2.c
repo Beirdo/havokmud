@@ -1141,6 +1141,326 @@ if ((IS_AFFECTED(ch,AFF_FIRESHIELD) || IS_AFFECTED(ch,AFF_SANCTUARY)) &&
   return TRUE;
 }
 
+/* for NECROMANCER flagged mobs, -Lennya 20030808 */
+#define TONGUE_ITEM 22
+int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *vict;
+	struct follow_type *fol;
+	byte lspell, healperc=0;
+	int to_room, num = 2, try = 0, avgbare = 0, size = 0, nr = 0;
+	extern int top_of_world;
+	struct room_data *room;
+
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
+	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
+		StandUp(ch);
+		return(TRUE);
+	}
+	if (check_soundproof(ch))
+		return(FALSE);
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
+
+	/* random number from 0 to level */
+	lspell  = number(0,GetMaxLevel(ch));
+	lspell += GetMaxLevel(ch)/5;
+	lspell  = MIN(GetMaxLevel(ch), lspell);
+
+	if (lspell < 1)
+		lspell = 1;
+
+	/* are we hurting so bad? */
+	if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && ch->specials.fighting) {
+		/* ouch, we are.. let's see if we can get outta here */
+			if(!number(0,2)) { /* cool, we're outtie! */
+				act("$n utters the words 'I see a shadow!'", 1, ch,0,0,TO_ROOM);
+				spell_shadow_step(GetMaxLevel(ch), ch, 0, 0);
+			}
+	}
+
+	if (!ch->specials.fighting) {
+		if((GET_HIT(ch) < GET_MAX_HIT(ch)-10) && (GetMaxLevel(ch) >= 10)) {
+			/* timer to heal up! */
+			act("$n utters the words 'mend my bones'", 1, ch,0,0,TO_ROOM);
+			cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(TRUE);
+		}
+
+#ifdef PREP_SPELLS
+		if (!ch->desc) { /* is it a mob? */
+			/* low level spellup */
+			if (!affected_by_spell(ch,SPELL_SUIT_OF_BONE)) {
+				act("$n utters the words 'bones of the dead'",FALSE,ch,0,0,TO_ROOM);
+				cast_suit_of_bone(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_GOOD) && IS_EVIL(ch)) {
+				act("$n traces a protective rune in the air.",FALSE,ch,0,0,TO_ROOM);
+				cast_protection_from_good(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_SPECTRAL_SHIELD)) {
+				act("$n utters the words 'steel of the legions'",FALSE,ch,0,0,TO_ROOM);
+				cast_spectral_shield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)) {
+				act("$n utters the words 'home sweet home'",FALSE,ch,0,0,TO_ROOM);
+				cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+
+			/* mid level spellup */
+			if (GetMaxLevel(ch)>23) {
+				if (!IS_AFFECTED(ch, AFF_INVISIBLE)) {
+					act("$n utters the words 'now you see me, now you don't'",FALSE,ch,0,0,TO_ROOM);
+					cast_gather_shadows(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
+					act("$n utters the words 'something in my eye'",FALSE,ch,0,0,TO_ROOM);
+					cast_eye_of_the_dead(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_ENDURE_COLD)) {
+					act("$n utters the words 'no more arthritis'",FALSE,ch,0,0,TO_ROOM);
+					cast_endure_cold(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_GLOBE_MINOR_INV)) {
+					act("$n utters the words 'protect'",FALSE,ch,0,0,TO_ROOM);
+					cast_globe_minor_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			if (GetMaxLevel(ch)>31) {
+				if (!affected_by_spell(ch,SPELL_GLOBE_MAJOR_INV)) {
+					act("$n utters the words 'protect, I said!'",FALSE,ch,0,0,TO_ROOM);
+					cast_globe_major_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_STONE_SKIN)) {
+					act("$n utters the words 'tomb stone'",FALSE,ch,0,0,TO_ROOM);
+					cast_stone_skin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			if (GetMaxLevel(ch)>40) {
+				if (!affected_by_spell(ch,SPELL_VAMPIRIC_EMBRACE)) {
+					act("$n utters the words 'kiss of death'",FALSE,ch,0,0,TO_ROOM);
+					cast_vampiric_embrace(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			if (GetMaxLevel(ch)>44) {
+				if (!IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
+					act("$n utters the words 'shroud of the dark lord'",FALSE,ch,0,0,TO_ROOM);
+					cast_chillshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			/* low level removes */
+			if (GetMaxLevel(ch) > 20) {
+				if (affected_by_spell(ch,SPELL_POISON) || affected_by_spell(ch,SPELL_DISEASE) || affected_by_spell(ch,SPELL_DECAY)) {
+					act("$n utters the words 'nullify'",FALSE,ch,0,0,TO_ROOM);
+					cast_nullify(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
+
+			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
+				act("$n utters the words 'feet of the wight'",FALSE,ch,0,0,TO_ROOM);
+				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+		} /* it was a NPC */
+#endif
+	} /* end spellup */
+
+	/* Find a dude to to evil things upon ! */
+	if ((vict = FindAHatee(ch))==NULL) {
+		if (IS_SET(ch->specials.act, ACT_AGGRESSIVE))
+			vict = FindVictim(ch);
+	}
+	if (!vict)
+		vict = ch->specials.fighting;
+	if (!vict)
+		return(FALSE);
+
+	{
+		/* pester them */
+		switch(lspell) {
+			case 1:
+			case 2:
+			case 3:
+				act("$n utters the words 'quench my thirst'",1,ch,0,0,TO_ROOM);
+				cast_life_tap(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 4:
+				act("$n utters the words 'wimp'",1,ch,0,0,TO_ROOM);
+				cast_weakness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 5:
+			case 6:
+				act("$n utters the words 'puke'",1,ch,0,0,TO_ROOM);
+				cast_disease(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 7:
+				act("$n utters the words 'drop'",1,ch,0,0,TO_ROOM);
+				cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 8:
+				act("$n utters the words 'serpent's bite'",1,ch,0,0,TO_ROOM);
+				cast_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 9:
+			case 10:
+				act("$n utters the words 'quench my thirst'",1,ch,0,0,TO_ROOM);
+				cast_life_tap(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 11:
+				act("$n utters the words 'I'll take that, gov'nor'",1,ch,0,0,TO_ROOM);
+				cast_siphon_strength(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 12:
+			case 13:
+				act("$n utters the words 'tasty'",1,ch,0,0,TO_ROOM);
+				cast_life_draw(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 14:
+			case 15:
+			case 16:
+			case 17:
+			case 18:
+				act("$n utters the words 'what a shame'",1,ch,0,0,TO_ROOM);
+				cast_energy_drain(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 19:
+			case 20:
+			case 21:
+			case 22:
+			case 23:
+			case 24:
+				if(!affected_by_spell(vict,SPELL_DECAY) && !IS_SET(vict->M_immune, IMM_POISON)) {
+					act("$n utters the words 'rot'",1,ch,0,0,TO_ROOM);
+					cast_decay(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				} else if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+					act("$n utters the words 'tasty'",1,ch,0,0,TO_ROOM);
+					cast_life_draw(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				} else {
+					act("$n utters the words 'bliss'",1,ch,0,0,TO_ROOM);
+					cast_soul_steal(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				}
+				break;
+			case 25:
+			case 26:
+			case 27:
+				if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+					act("$n utters the words 'very tasty'",1,ch,0,0,TO_ROOM);
+					cast_life_leech(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				} else {
+					act("$n utters the words 'bliss'",1,ch,0,0,TO_ROOM);
+					cast_soul_steal(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				}
+				break;
+			case 28:
+			case 29:
+			case 30:
+			case 31:
+				if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+					act("$n utters the words 'touched by the lord'",1,ch,0,0,TO_ROOM);
+					cast_finger_of_death(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				} else {
+					act("$n utters the words 'bliss'",1,ch,0,0,TO_ROOM);
+					cast_soul_steal(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				}
+				break;
+			case 32:
+			case 33:
+			case 34:
+				act("$n utters the words 'oh lordie'",1,ch,0,0,TO_ROOM);
+				cast_mist_of_death(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 35:
+				if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+					act("$n utters the words 'what a shame'",1,ch,0,0,TO_ROOM);
+					cast_energy_drain(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				} else {
+					act("$n utters the words 'bliss'",1,ch,0,0,TO_ROOM);
+					cast_soul_steal(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				}
+				break;
+			case 36:
+				act("$n utters the words 'bliss'",1,ch,0,0,TO_ROOM);
+				cast_soul_steal(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				break;
+			case 37:
+			case 38:
+			case 39:
+			case 40:
+				{
+					if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+						act("$n utters the words 'very tasty'",1,ch,0,0,TO_ROOM);
+						cast_life_leech(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else if (IS_AFFECTED(vict, AFF_SANCTUARY) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
+						act("$n utters the words 'no cheating'",1,ch,0,0,TO_ROOM);
+						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else if (IS_AFFECTED(vict, AFF_FIRESHIELD) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
+						act("$n utters the words 'I hate spellups'",1,ch,0,0,TO_ROOM);
+						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+					} else if(!IS_SET(vict->M_immune, IMM_POISON)) {
+						act("$n utters the words 'rot'",1,ch,0,0,TO_ROOM);
+						cast_decay(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+						break;
+					} else {
+						act("$n utters the words 'oh dearie me'",1,ch,0,0,TO_ROOM);
+						cast_shadow_step(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, 0, 0);
+					}
+					break;
+				}
+			default:
+				if (!IS_SET(vict->M_immune, IMM_POISON)) {
+					if (!(ch->equipment[WEAR_EYES])) {
+						act("$n utters the words 'oh golly'",1,ch,0,0,TO_ROOM);
+						cast_scourge_warlock(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+					} else if(obj_index[(ch->equipment[WEAR_EYES])->item_number].virtual == TONGUE_ITEM) {
+						act("$n utters the words 'oh golly'",1,ch,0,0,TO_ROOM);
+						cast_scourge_warlock(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+					} else {
+						obj_to_char(unequip_char(ch, WEAR_EYES), ch);
+						act("$n utters the words 'oh golly'",1,ch,0,0,TO_ROOM);
+						cast_scourge_warlock(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
+					}
+				} else if (!IS_SET(vict->M_immune, IMM_DRAIN)) {
+					act("$n utters the words 'touched by the lord'",1,ch,0,0,TO_ROOM);
+					cast_finger_of_death(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
+				} else { /* can't touch them, better get outta here */
+					while (!room) {
+						to_room = number(0, top_of_world);
+						room = real_roomp(to_room);
+						if (room) {
+							if ((IS_SET(room->room_flags, INDOORS)) || (IS_SET(room->room_flags, NO_MAGIC)) || !IsOnPmp(to_room))
+								room = 0;
+						}
+					}
+					act("$n utters the words 'can't touch this'",1,ch,0,0,TO_ROOM);
+					act("$c0008$n closes $s eyes and steps into the shadows.",FALSE,ch,0,0,TO_ROOM);
+					char_from_room(ch);
+					char_to_room(ch, to_room);
+					/* Tataa! come chase me, you bastard! I'm gonna heal up a bit in the mean time */
+				}
+				break;
+		}
+		return(TRUE);
+	}
+}
+
 /* for DRUID flagged mobs, -Lennya 20030604 */
 int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -1203,19 +1523,19 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 			switch(number(0,num)) {
 				case 1:
-					act("$n utters the words 'Woah! I feel GOOD! Heh.'.", 1, ch,0,0,TO_ROOM);
+					act("$n utters the words 'Woah! I feel GOOD! Heh.'", 1, ch,0,0,TO_ROOM);
 					cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 					break;
 				case 2:
-					act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
+					act("$n utters the words 'I feel much better now!'", 1, ch,0,0,TO_ROOM);
 					cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 					break;
 				case 3:
-					act("$n utters the words 'The Myrrhal shine upon me!'.", 1, ch,0,0,TO_ROOM);
+					act("$n utters the words 'The Myrrhal shine upon me!'", 1, ch,0,0,TO_ROOM);
 					cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 					break;
 				default:
-					act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+					act("$n utters the words 'I feel good!'", 1, ch,0,0,TO_ROOM);
 					cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 					break;
 			}
@@ -1225,12 +1545,12 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 		if (!ch->desc) { /* is it a mob? */
 			/* low level spellup */
 			if (!ch->equipment[WIELD] && GetMaxLevel(ch) < 11) {
-				act("$n utters the words 'Gimmie a light!'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'Gimmie a light!'",FALSE,ch,0,0,TO_ROOM);
 				cast_flame_blade(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
 			if (!affected_by_spell(ch,SPELL_BARKSKIN)) {
-				act("$n utters the words 'oakey dokey'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'oakey dokey'",FALSE,ch,0,0,TO_ROOM);
 				cast_barkskin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
@@ -1240,7 +1560,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				return(TRUE);
 			}
 			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_GOOD) && !IS_GOOD(ch)) {
-				act("$n utters the words 'Hide from white'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'hide from white'",FALSE,ch,0,0,TO_ROOM);
 				cast_protection_from_good(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
@@ -1248,32 +1568,32 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			/* mid level spellup */
 			if (GetMaxLevel(ch)>23) {
 				if (!IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
-					act("$n utters the words 'View of the Condor'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'view of the condor'",FALSE,ch,0,0,TO_ROOM);
 					cast_true_seeing(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (!affected_by_spell(ch,SPELL_PROT_FIRE)) {
-					act("$n utters the words 'Feathers of the Phoenix'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'feathers of the phoenix'",FALSE,ch,0,0,TO_ROOM);
 					cast_prot_fire(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (!affected_by_spell(ch,SPELL_PROT_COLD)) {
-					act("$n utters the words 'Pelt of the Winter Wolf'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'pelt of the winter wolf'",FALSE,ch,0,0,TO_ROOM);
 					cast_prot_cold(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (!affected_by_spell(ch,SPELL_PROT_ENERGY)) {
-					act("$n utters the words 'Hide of the Toad'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'hide of the Toad'",FALSE,ch,0,0,TO_ROOM);
 					cast_prot_energy(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (!affected_by_spell(ch,SPELL_PROT_ELEC)) {
-					act("$n utters the words 'Scales of the Moray'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'scales of the moray'",FALSE,ch,0,0,TO_ROOM);
 					cast_prot_elec(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (!affected_by_spell(ch,SPELL_WATER_BREATH)) {
-					act("$n utters the words 'Gills of the Amphibian'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'gills of the amphibian'",FALSE,ch,0,0,TO_ROOM);
 					cast_water_breath(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
@@ -1291,7 +1611,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 						do_order(ch, "followers guard on", 0);
 						act("",FALSE,ch,0,0,TO_ROOM);
 						do_group(ch, "all",0);
-						act("\n\r$n utters the words 'Size of the Behemoth Lord'.",FALSE,ch,0,0,TO_ROOM);
+						act("\n\r$n utters the words 'size of the behemoth lord'",FALSE,ch,0,0,TO_ROOM);
 						for (fol = ch->followers ; fol ;fol = fol->next) {
 							if (!affected_by_spell(fol->follower, SPELL_ANIMAL_GROWTH)) {
 								cast_animal_growth(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,fol->follower,0);
@@ -1306,7 +1626,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			/* high level spellup, whoopie, this will be a killer */
 			if (GetMaxLevel(ch)>47) {
 				if (!IS_AFFECTED(ch, AFF_FIRESHIELD)) {
-					act("$n utters the words 'Shroud of the Phoenix'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'shroud of the phoenix'",FALSE,ch,0,0,TO_ROOM);
 					cast_fireshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
@@ -1315,19 +1635,19 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			/* let's mask these spells and look real cool */
 			if ((IS_AFFECTED(ch, AFF_FIRESHIELD) || IS_AFFECTED(ch, AFF_SANCTUARY)) &&
 					!affected_by_spell(ch,SPELL_GLOBE_DARKNESS)&& !IS_AFFECTED(ch,AFF_DARKNESS)) {
-				act("$n utters the words 'Shadow of the Raven'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'shadow of the raven'",FALSE,ch,0,0,TO_ROOM);
 				cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
 
 			/* low level removes */
 			if (affected_by_spell(ch,SPELL_POISON)) {
-				act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'remove poison'",FALSE,ch,0,0,TO_ROOM);
 				cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
 			if (affected_by_spell(ch,SPELL_BLINDNESS)) {
-				act("$n utters the words 'See the light'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'see the light'",FALSE,ch,0,0,TO_ROOM);
 				cast_cure_blind(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
@@ -1335,12 +1655,12 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			/* hi level removes */
 			if (GetMaxLevel(ch) >24) {
 				if (affected_by_spell(ch,SPELL_CURSE)) {
-					act("$n utters the words 'Neutralize'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'neutralize'",FALSE,ch,0,0,TO_ROOM);
 					cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
 				if (affected_by_spell(ch,SPELL_WEB)) {
-					act("$n utters the words 'Glib my feet'.",FALSE,ch,0,0,TO_ROOM);
+					act("$n utters the words 'glib my feet'",FALSE,ch,0,0,TO_ROOM);
 					act("$n doesn't look so webby anymore.'.",FALSE,ch,0,0,TO_ROOM);
 					affect_from_char(ch,SPELL_WEB);
 					return(TRUE);
@@ -1348,7 +1668,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			}
 
 			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
-				act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
+				act("$n utters the words 'lemon aid'",FALSE,ch,0,0,TO_ROOM);
 				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 				return(TRUE);
 			}
@@ -1370,7 +1690,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 		/* pester them */
 		if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) && (number(0,4)==0)) {
 			act("$n whistles.",1,ch,0,0,TO_ROOM);
-			act("$n utters the words 'Here Lightning!'.",1,ch,0,0,TO_ROOM);
+			act("$n utters the words 'Here Lightning!'",1,ch,0,0,TO_ROOM);
 			cast_call_lightning(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 			return(TRUE);
 		}
@@ -1379,30 +1699,30 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			case 1:
 			case 2:
 			case 3:
-				act("$n utters the words 'Muhahaha!'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'muhahaha'",1,ch,0,0,TO_ROOM);
 				cast_cause_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 4:
 			case 5:
 			case 6:
-				act("$n utters the words 'Frizzle sizzle!'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'frizzle sizzle'",1,ch,0,0,TO_ROOM);
 				cast_heat_stuff(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 7:
-				act("$n utters the words 'Breach!'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'breach'",1,ch,0,0,TO_ROOM);
 				cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 8:
-				act("$n utters the words 'Wrath of the Serpent Lady!'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'wrath of the serpent'",1,ch,0,0,TO_ROOM);
 				cast_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 9:
 			case 10:
-				act("$n utters the words 'Pain? It helps clear the mind.'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'Pain? It helps clear the mind.'",1,ch,0,0,TO_ROOM);
 				cast_cause_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 11:
-				act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'burn baby burn'",1,ch,0,0,TO_ROOM);
 				cast_firestorm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 12:
@@ -1412,33 +1732,33 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 					act("$n utters the words 'frogemoth'", 1, ch, 0, 0, TO_ROOM);
 					cast_warp_weapon(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				} else {
-					act("$n utters the words 'Frizzle sizzle!'.",1,ch,0,0,TO_ROOM);
+					act("$n utters the words 'frizzle sizzle'",1,ch,0,0,TO_ROOM);
 					cast_heat_stuff(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				}
 				break;
 			case 15:
-				act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+				act("$n utters the words 'kazappapapappaa!'",1,ch,0,0,TO_ROOM);
 				cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
 				break;
 			case 16:
 				{
 					if (!IS_SET(vict->M_immune, IMM_FIRE)) {
-						act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+						act("$n utters the words 'burn baby burn'",1,ch,0,0,TO_ROOM);
 						cast_firestorm(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
 					} else if (IS_AFFECTED(vict, AFF_SANCTUARY) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
-						act("$n utters the words 'instant-away magic remover!'.",1,ch,0,0,TO_ROOM);
+						act("$n utters the words 'instant-away magic remover!'",1,ch,0,0,TO_ROOM);
 						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
 					} else if (IS_AFFECTED(vict, AFF_FIRESHIELD) && ( GetMaxLevel(ch) >= GetMaxLevel(vict))) {
-						act("$n utters the words 'instant-away magic remover!'.",1,ch,0,0,TO_ROOM);
+						act("$n utters the words 'instant-away magic remover!'",1,ch,0,0,TO_ROOM);
 						cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
 					} else {
-						act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+						act("$n utters the words 'kazappapapappaa!'",1,ch,0,0,TO_ROOM);
 						cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
 					}
 					break;
 				}
 			case 17:
-				act("$n utters the words 'Here boy!'", FALSE, ch, 0,0, TO_ROOM);
+				act("$n utters the words 'here boy'", FALSE, ch, 0,0, TO_ROOM);
 				cast_fire_servant(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL,0, 0);
 				do_order(ch, "followers guard on", 0);
 				break;
@@ -1446,10 +1766,10 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			case 19:
 			default:
 				if (GetMaxLevel(ch) >= 20 && (!IS_AFFECTED(vict, AFF_SILENCE)) && !number(0,2)) {
-					act("$n utters the words 'Hush honey'", 1, ch, 0, 0, TO_ROOM);
+					act("$n utters the words 'hush honey'", 1, ch, 0, 0, TO_ROOM);
 					cast_silence(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
 				} else {
-					act("$n utters the words 'kazappapapappaa!'.",1,ch,0,0,TO_ROOM);
+					act("$n utters the words 'kazappapapappaa!'",1,ch,0,0,TO_ROOM);
 					cast_chain_lightn(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
 				}
 				break;
@@ -1458,19 +1778,19 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	} else {
 	/* do heal */
 		if (IS_AFFECTED(ch, AFF_BLIND) && (lspell >= 4) & (number(0,3)==0)) {
-			act("$n utters the words 'Praise Pentak, I can see!'.", 1, ch,0,0,TO_ROOM);
+			act("$n utters the words 'Praise Pentak, I can see!'", 1, ch,0,0,TO_ROOM);
 			cast_cure_blind( GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 			return(TRUE);
 		}
 
 		if (IS_AFFECTED(ch, AFF_CURSE) && (lspell >= 6) && (number(0,6)==0)) {
-			act("$n utters the words 'I'm rubber, you're glue.", 1, ch,0,0,TO_ROOM);
+			act("$n utters the words 'I'm rubber, you're glue'", 1, ch,0,0,TO_ROOM);
 			cast_remove_curse(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 			return(TRUE);
 		}
 
 		if (IS_AFFECTED(ch, AFF_POISON) && (lspell >= 5) && (number(0,6)==0)) {
-			act("$n utters the words 'Praise Xenon, I don't feel sick no more!'.", 1, ch,0,0,TO_ROOM);
+			act("$n utters the words 'Praise Xenon, I don't feel sick no more!'", 1, ch,0,0,TO_ROOM);
 			cast_remove_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 			return(TRUE);
 		}
@@ -1481,7 +1801,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			case 3:
 			case 4:
 			case 5:
-				act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+				act("$n utters the words 'I feel good!'", 1, ch,0,0,TO_ROOM);
 				cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 				break;
 			case 6:
@@ -1489,7 +1809,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			case 8:
 			case 9:
 			case 10:
-				act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
+				act("$n utters the words 'I feel much better now!'", 1, ch,0,0,TO_ROOM);
 				cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 				break;
 			case 11:
@@ -1509,17 +1829,18 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			case 26:
 			case 27:
 			case 28:
-				act("$n utters the words 'Woah, I feel good! Heh.'.", 1, ch,0,0,TO_ROOM);
+				act("$n utters the words 'Woah, I feel good! Heh.'", 1, ch,0,0,TO_ROOM);
 				cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 				break;
 			default:
-				act("$n utters the words 'Praise the Lord of Balance, I'm good to go another round!'.", 1, ch,0,0,TO_ROOM);
+				act("$n utters the words 'Praise the Lord of Balance, I'm good to go another round!'", 1, ch,0,0,TO_ROOM);
 				cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 				break;
 		}
 		return(TRUE);
 	}
 }
+
 
 int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {

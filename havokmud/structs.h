@@ -855,6 +855,7 @@ struct room_data
 #define WEAR_EAR_L     20
 #define WEAR_EYES      21
 #define LOADED_WEAPON  22
+//#define AUCTION_SLOT   23
 #define MAX_WEAR_POS   23
 
 /* For 'char_payer_data' */
@@ -1341,7 +1342,7 @@ struct char_special_data
   sh_int apply_saving_throw[MAX_SAVES]; /* Saving throw (Bonuses)  */
 
   int questwon;
-  struct auction_data *auctionx;
+  struct auction_data *auctionx; /* not used */
   struct obj_data *auction;
   long minbid;
 

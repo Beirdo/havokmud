@@ -1086,7 +1086,7 @@ if ( obj_index[obj->item_number].func == EvilBlade ||
     if (ch->in_room != NOWHERE)     {
       act("You are zapped by $p and instantly drop it.",
 	  FALSE, ch, obj, 0, TO_CHAR);
-      act("$n is zapped by $p and instantly drop it.",
+      act("$n is zapped by $p and instantly drops it.",
 	  FALSE, ch, obj, 0, TO_ROOM);
       obj_to_room(obj, ch->in_room);
       do_save(ch,"",0);

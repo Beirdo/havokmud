@@ -1402,6 +1402,7 @@ void assign_mobiles()
 
 /* City State of Tarantis */
 	{49600, nightwalker },
+	{49635, master_smith},
 	{49702, portal_regulator }, /* mob to stick the portal proc on */
     {49611, receptionist },
 

@@ -1950,6 +1950,297 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
 }
 #endif
 
+#define ING_1	720
+#define ING_2	728
+#define ING_3	729
+#define ING_4	730
+#define ING_5	44180
+
+#define SMITH_SHIELD 727
+
+int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char buf[254];
+	struct char_data *yeelorn;
+	struct room_data *rp;
+	struct obj_data *obj, *i, *obj1, *obj2, *obj3, *obj4, *obj5;
+	int found = 0;
+	int found1  = 0;
+	int found2  = 0;
+	int found3  = 0;
+	int found4  = 0;
+	int found5  = 0;
+	char name1[254], name2[254], name3[254], name4[254], name5[254];
+
+	extern struct obj_data  *object_list;
+
+	if(!ch)
+		return(FALSE);
+
+	if(!cmd)
+		return(FALSE);
+
+	if (IS_NPC(ch))
+		return(FALSE);
+
+	if(ch->in_room)
+		rp = real_roomp(ch->in_room);
+
+	if(!rp)
+		return(FALSE);
+
+	if(!(yeelorn = FindMobInRoomWithFunction(ch->in_room, master_smith))) {
+		log("proc assigned to a mob that cannot be found?!");
+		return(FALSE);
+	}
+
+	if(cmd == 86) { /* ask */
+		send_to_char("Yeelorn says, 'Aye, yer curious if yev got summat that I could use, eh? Right, lemme\n\r",ch);
+		send_to_char("rummage through yer packs and see if there's aught I kin use fer raw material.'\n\r",ch);
+		send_to_char("\n\r",ch);
+		send_to_char("Yeelorn searches through your bags, mumbling to himself about people toting along\n\r",ch);
+		send_to_char("all kinds of useless junk, and should they not put a little more thought to what\n\r",ch);
+		send_to_char("they're packing and what a tasty looking loaf of pipeweed is that.'\n\r",ch);
+		send_to_char("\n\r",ch);
+
+		/* check items */
+		for (i = object_list; i; i = i->next) {
+			if (obj_index[i->item_number].virtual == ING_1) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch)
+					found1 = 1;
+			}
+			if (obj_index[i->item_number].virtual == ING_2) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch)
+					found2 = 1;
+			}
+			if (obj_index[i->item_number].virtual == ING_3) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch)
+					found3 = 1;
+			}
+			if (obj_index[i->item_number].virtual == ING_4) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch)
+					found4 = 1;
+			}
+			if (obj_index[i->item_number].virtual == ING_5) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch)
+					found5 = 1;
+			}
+		}
+
+		if(!found1 && !found2 && !found3 && !found4 && !found5) {
+				/* nothing found */
+				send_to_char("When he's finished, Yeelorn says, 'Hmm, no, ye gots nothin of interest to me, matey.\n\r",ch);
+				send_to_char("Come back when ya got some. Quit wasting me time now, there's work to do.'\n\r",ch);
+				return(TRUE);
+		} else if(found1 && found2 && found3 && found4 && found5) {
+				/* has everything, tell him the price */
+				send_to_char("When he's finished, Yeelorn exclaims, 'Woah mate, I see ye'ns got everything I be needin.\n\r",ch);
+				send_to_char("to fix you up with a pretty shield. The shield of thought, to start out with. Then we\n\r",ch);
+				send_to_char("gots to reinforce it with a dragon bone and a shield spell, enamel it with the silver\n\r",ch);
+				send_to_char("from the sheet, and finally, we bring it to life with the runes from the ring. Aye, that\n\r",ch);
+				send_to_char("Will be a nice piece of work. Course, I'll have to charge ye a builder's fee. I'd think\n\r",ch);
+				send_to_char("a million coins would do nicely. So. Whatcha think? You wanna buy this service from me?'\n\r",ch);
+				return(TRUE);
+		} else if(found1 || found2 || found3 || found4 || found5) { /* has at least one item */
+			send_to_char("When he's finished, Yeelorn says, 'Hmm, I see ye've got yerself some pretty items.\n\r",ch);
+			if(found1 == 1) {
+				/* got the ring */
+				send_to_char("This runed ring here, for instance. With the aid of them runes, I may be able to embue\n\r",ch);
+				send_to_char("a creation of mine with some powerful magicks.  Aye, sure looks promisin.'\n\r",ch);
+			}
+			if(found2 == 1) {
+				/* got the bone */
+				send_to_char("This here dragon bone looks like the right kind to reinforce a certain piece of armor\n\r",ch);
+				send_to_char("with.  Oh golly, I bet I could do somethin funky with that.'\n\r",ch);
+			}
+			if(found3 == 1) {
+				/* got the sheet */
+				send_to_char("What a pretty silver sheet ye've got there, mate.  Could put that to some good use\n\r",ch);
+				send_to_char("if I were to have to pretty up a little summat or another.'\n\r",ch);
+			}
+			if(found4 == 1) {
+				/* got the spell */
+				send_to_char("Hmmm, a scroll of shield.. I could use that when hammering some crafty bit of armor.'\n\r",ch);
+			}
+			if(found5 == 1) {
+				/* got the shield */
+				send_to_char("A shield with a mind of its own, eh? That looks int'resting. Bet I could sharpen up\n\r",ch);
+				send_to_char("that mind a wee bit. Aye, but I'd need some more materials to do so..'\n\r",ch);
+			}
+			/* maybe they'll get a hint */
+			switch(number(1,20)) {
+				case 1:
+					if(!found1) {
+						/* hint for ring */
+						send_to_char("\n\rThe other day, I heard there's this tiny gnome who's nicked herself a useful ring.\n\r",ch);
+					}
+					break;
+				case 2:
+					if(!found2) {
+						/* hint for bone */
+						send_to_char("\n\rYa know, dragonbone is ever a useful ingredient for crafty pieces of armor.\n\r",ch);
+					}
+					break;
+				case 3:
+					if(!found3) {
+						/* hint for sheet */
+						send_to_char("\n\rI just ran out of silver filigree too. Maybe ye kin find me a sheet or two?\n\r",ch);
+					}
+					break;
+				case 4:
+					if(!found4) {
+						/* hint for spell */
+						send_to_char("\n\rAye, iffen ye want to imbue the metal with real power, ye'd need a scroll of spell too.\n\r",ch);
+					}
+					break;
+				case 5:
+					if(!found5) {
+						/* hint for shield */
+						send_to_char("\n\rHeard there's a shield with a mind of its own. Wouldn't that be something to see, eh?\n\r",ch);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		return(TRUE);
+	} // end ask
+
+	if(cmd == 56) { /* buy */
+		for (i = object_list; i; i = i->next) {
+			if (obj_index[i->item_number].virtual == ING_1) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch){
+					obj1 = i;
+					found = 1;
+				}
+			}
+			if (obj_index[i->item_number].virtual == ING_2) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch) {
+					obj2 = i;
+					found = 1;
+				}
+			}
+			if (obj_index[i->item_number].virtual == ING_3) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch) {
+					obj3 = i;
+					found = 1;
+				}
+			}
+			if (obj_index[i->item_number].virtual == ING_4) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch) {
+					obj4 = i;
+					found = 1;
+				}
+			}
+			if (obj_index[i->item_number].virtual == ING_5) {
+				obj = i;
+				while(obj->in_obj)
+					obj = obj->in_obj;
+				if(obj->carried_by == ch || obj->equipped_by == ch) {
+					obj5 = i;
+					found = 1;
+				}
+			}
+			if(found) { /* transfer items to inventory for easy work later */
+				if(i->equipped_by) {
+					obj = unequip_char(ch, i->eq_pos);
+					obj_to_char(obj, ch);
+				} else if(i->carried_by) {
+					/* is okay */
+				} else if(i->in_obj) {
+					obj_from_obj(i);
+					obj_to_char(i, ch);
+				} else {
+					log("where is this item!?! bad spot in master_smith");
+					send_to_char("Ugh, something wrong with this proc, sorry.\n\r",ch);
+					return(TRUE);
+				}
+			}
+		}
+
+		if(obj1 && obj2 && obj3 && obj && obj5) {
+			/* got all the items.. how about a million coins? */
+			if(GET_GOLD(ch) < 1000000) {
+				send_to_char("Yeelorn says, 'Aye laddie, ye've got yerself the items, but yer still some money short.'\n\r",ch);
+				return(TRUE);
+			} else {
+				GET_GOLD(ch) -= 1000000;
+				if(obj1->carried_by) {
+					obj_from_char(obj1);
+					extract_obj(obj1);
+				}
+				if(obj2->carried_by) {
+					obj_from_char(obj2);
+					extract_obj(obj2);
+				}
+				if(obj3->carried_by) {
+					obj_from_char(obj3);
+					extract_obj(obj3);
+				}
+				if(obj4->carried_by) {
+					obj_from_char(obj4);
+					extract_obj(obj4);
+				}
+				if(obj5->carried_by) {
+					obj_from_char(obj5);
+					extract_obj(obj5);
+				}
+
+				if (obj = read_object(SMITH_SHIELD, VIRTUAL)) {
+					obj_to_char(obj, ch);
+					send_to_char("You give your items to Yeelorn, along with an incredible heap of coins.\n\r",ch);
+					send_to_char("Yeelorn pokes up his forge, and starts heating the shield. Once it's red hot,\n\r",ch);
+					send_to_char("he bends a few edges, abngs a few times, and the dragonbone collar is firmly\n\r",ch);
+					send_to_char("attached. He then proceeds with folding the silver sheet over the shield, and\n\r",ch);
+					send_to_char("heats it some more. More hammering melds the silver with the shield and bone,\n\r",ch);
+					send_to_char("making it look rather impressive. Then, Yeelorn places it in a barrel ot brine,\n\r",ch);
+					send_to_char("causing great clouds of noxious fumes to fill the air. Next he orates the prayer\n\r",ch);
+					send_to_char("from the scroll, which bursts into flame while the spell is sucked into the\n\r",ch);
+					send_to_char("shield. Once more he heats it up, and when it's about to go to pieces from the\n\r",ch);
+					send_to_char("heat, he takes it out and presses the runed ring in the center of it. The shield\n\r",ch);
+					send_to_char("seems to shudder. That must have been your imagination. Shields are not alive.\n\r",ch);
+					send_to_char("Or are they?\n\r",ch);
+					send_to_char("Once the shield has cooled down, Yeelorn takes a rag, and polishes it til it\n\r",ch);
+					send_to_char("shines ar bright as full moon. He giggles as he hands it over.\n\r",ch);
+					send_to_char("'Bout time yeh got on with yer adventuring' he says, as he winks at you.\n\r",ch);
+				} else {
+					log("could not load up prize for master_smith proc");
+					send_to_char("Ugh, something wrong with this proc, sorry..\n\r",ch);
+				}
+			}
+			return(TRUE);
+		}
+	}
+	return(FALSE);
+}
+
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	char buf[254];

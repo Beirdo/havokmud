@@ -1429,6 +1429,7 @@ int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int
 int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2320,6 +2321,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int timed_door(struct char_data *ch, struct room_data *rp, int cmd);
+int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd);
 
 /* Heximal's zone */

@@ -344,6 +344,11 @@ void mobile_activity(struct char_data *ch)
 
 if (!no_specials) {		/* do not run these if disabled */
 
+ if (IS_SET(ch->specials.act,ACT_NECROMANCER)) {
+    if (necromancer(ch,0,"",ch,PULSE_TICK)) {
+        return;
+        }
+    }
  if (IS_SET(ch->specials.act,ACT_MAGIC_USER)) {
     if (magic_user(ch,0,"",ch,PULSE_TICK)) {
          return;

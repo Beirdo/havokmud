@@ -3155,10 +3155,16 @@ void AuctionPulseStuff(int pulse)
 	extern long intbid;
 	extern struct char_data *auctioneer;
 	extern struct char_data *bidder;
-	extern struct obj_data *auctionobj;
+	struct obj_data *auctionobj;
 	char buf[MAX_STRING_LENGTH];
 
 	if (pulse < 0)
+		return;
+
+	if(!auctioneer)
+		return;
+
+	if(!(auctionobj = auctioneer->specials.auction))
 		return;
 
 	switch(auct_loop) {
@@ -3175,9 +3181,18 @@ void AuctionPulseStuff(int pulse)
 			intbid = 0;
 			minbid = 0;
 			/* return item to auctioneer */
-			obj_from_room(auctionobj);
+			auctioneer->specials.auction = 0;
+
+				assert(!auctionobj->in_obj);
+				assert(auctionobj->in_room == NOWHERE);
+				assert(!auctionobj->carried_by);
+
+			auctionobj->equipped_by = 0;
+			auctionobj->eq_pos = -1;
+
 			obj_to_char(auctionobj, auctioneer);
 			send_to_char("Your item is returned to you.\n\r.",auctioneer);
+			do_save(auctioneer, "", 0);
 
 			break;
 
@@ -3196,21 +3211,31 @@ void AuctionPulseStuff(int pulse)
 			break;
 
 		case 6:
-			sprintf(buf,"$c000cAuction:  Gone!  $c000w%s$c000c was sold to $c000w%d$c000c coins to $c000w%s$c000c.\n\r", auctionobj->short_description, intbid, GET_NAME(bidder));
+			sprintf(buf,"$c000cAuction:  Gone!  $c000w%s$c000c was sold for $c000w%d$c000c coins to $c000w%s$c000c.\n\r", auctionobj->short_description, intbid, GET_NAME(bidder));
 			send_to_all(buf);
 			/* return money to auctioneer */
 			GET_GOLD(auctioneer) += intbid;
-			ch_printf(auctioneer, "You receive %d coins for the item you auctioned.\n\r.",intbid);
+			ch_printf(auctioneer, "You receive %d coins for the item you auctioned.\n\r",intbid);
 			/* return item to bidder */
 			ch_printf(bidder, "You receive %s.\n\r",auctionobj->short_description);
-			obj_from_room(auctionobj);
+			auctioneer->specials.auction = 0;
+				assert(!auctionobj->in_obj);
+				assert(auctionobj->in_room == NOWHERE);
+				assert(!auctionobj->carried_by);
+
+			auctionobj->equipped_by = 0;
+			auctionobj->eq_pos = -1;
+
 			obj_to_char(auctionobj, bidder);
+
+			bidder->specials.minbid = 0;
+
+			do_save(bidder,"",0);
+			do_save(auctioneer,"",0);
 
 			auct_loop = 0;
 			intbid = 0;
 			minbid = 0;
-
-			auctionobj = 0;
 			bidder = 0;
 			auctioneer = 0;
 			break;
