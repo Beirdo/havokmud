@@ -19,12 +19,8 @@ extern struct descriptor_data *descriptor_list;
 extern char    *drinks[];
 extern int      drink_aff[][3];
 extern struct spell_info_type spell_info[];
-
 /*
- * auction stuff 
- */
-
-/*
+ * Auction stuff
  * if 0, nothing up for sale 
  * if 1, something up for auction, no bids received 
  * if 1, something up for auction, still no bids received 
@@ -33,21 +29,16 @@ extern struct spell_info_type spell_info[];
  * if 5, going twice, about to be gone. 
  */
 int             auct_loop = 0;
-long            intbid = 0;     /* if intbid == 0, there's nothing up for
-                                 * auction */
+long            intbid = 0;     
 long            minbid = 0;
-struct char_data *auctioneer;   /* who is auctioning junk? */
-struct char_data *bidder;       /* who currently has the highest bid? */
-// struct obj_data *auctionobj; /* the item itself */
+struct char_data *auctioneer;   
+struct char_data *bidder;       
+/* 
+ * struct obj_data *auctionobj;
+ */
 extern const struct skillset weaponskills[];
 struct time_info_data age(struct char_data *ch);
-        /*
-         * Spell Names 
-         */
 extern char    *spells[];
-        /*
-         * For Objects 
-         */
 extern char    *AttackType[];
 extern struct index_data *obj_index;
 extern char    *item_types[];
@@ -101,8 +92,9 @@ void name_from_drinkcon(struct obj_data *obj)
 
     if (*((obj->name) + i) == ' ') {
         new_name = strdup((obj->name) + i + 1);
-        if (obj->name)
+        if (obj->name) {
             free(obj->name);
+        }
         obj->name = new_name;
     }
 }
@@ -114,8 +106,9 @@ void name_to_drinkcon(struct obj_data *obj, int type)
 
     CREATE(new_name, char, strlen(obj->name) + strlen(drinknames[type]) + 2);
     sprintf(new_name, "%s %s", drinknames[type], obj->name);
-    if (obj->name)
+    if (obj->name) {
         free(obj->name);
+    }
     obj->name = new_name;
 }
 
@@ -141,9 +134,6 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
     }
 
     if ((GET_COND(ch, DRUNK) > 15) && (GET_COND(ch, THIRST) > 0)) {
-        /*
-         * The pig is drunk 
-         */
         act("You're just sloshed.", FALSE, ch, 0, 0, TO_CHAR);
         act("$n is looks really drunk.", TRUE, ch, 0, 0, TO_ROOM);
         return;
@@ -173,9 +163,6 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
 
             amount = MIN(amount, temp->obj_flags.value[1]);
 
-            /*
-             * Subtract amount, if not a never-emptying container 
-             */
             if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM) &&
                 (temp->obj_flags.value[0] > 20)) {
                 weight_change_object(temp, -amount);
@@ -202,18 +189,16 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
                 WAIT_STATE(ch, PULSE_VIOLENCE);
             }
 
-            if (GET_COND(ch, DRUNK) > 10)
+            if (GET_COND(ch, DRUNK) > 10) {
                 act("You feel drunk.", FALSE, ch, 0, 0, TO_CHAR);
-
-            if (GET_COND(ch, THIRST) > 20)
+            }
+            if (GET_COND(ch, THIRST) > 20) {
                 act("You do not feel thirsty.", FALSE, ch, 0, 0, TO_CHAR);
-
-            if (GET_COND(ch, FULL) > 20)
+            }
+            if (GET_COND(ch, FULL) > 20) {
                 act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
-
-            /*
-             * The shit was poisoned ! 
-             */
+            }
+            
             if (IS_SET(temp->obj_flags.value[3], DRINK_POISON)) {
                 act("Oops, it tasted rather strange ?!!?", FALSE, ch, 0, 0,
                     TO_CHAR);
@@ -230,16 +215,26 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
             /*
              * empty the container, and no longer poison. 
              */
-            if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM))
+            if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM)) {
                 temp->obj_flags.value[1] -= amount;
-            if (!temp->obj_flags.value[1]) {    /* The last bit */
+            }
+            if (!temp->obj_flags.value[1]) {    
+                /* 
+                 * The last bit 
+                 */
                 temp->obj_flags.value[2] = 0;
                 temp->obj_flags.value[3] = 0;
                 name_from_drinkcon(temp);
             }
-            if (temp->obj_flags.value[1] < 1) { /* its empty */
+            if (temp->obj_flags.value[1] < 1) { 
+                /* 
+                 * its empty 
+                 */
                 if (temp->obj_flags.value[0] < 20) {
-                    extract_obj(temp);  /* get rid of it */
+                    extract_obj(temp);  
+                    /* 
+                     * get rid of it 
+                     */
                 }
             }
             return;
@@ -271,9 +266,6 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     
-    /* 
-     * can we even eat?
-     */
     if (GET_COND(ch, FULL) > 20 && 
         !affected_by_spell(ch, SKILL_MIND_OVER_BODY)) {
         act("You are to full to eat more!", FALSE, ch, 0, 0, TO_CHAR);
@@ -294,10 +286,10 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         gain_condition(ch, FULL, temp->obj_flags.value[0]);
     }
 
-    if (GET_COND(ch, FULL) > 20)
+    if (GET_COND(ch, FULL) > 20) {
         act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
-
-    for (j = 0; j < MAX_OBJ_AFFECT; j++)
+    }
+    for (j = 0; j < MAX_OBJ_AFFECT; j++) {
         if (temp->affected[j].location == APPLY_EAT_SPELL) {
             num = temp->affected[j].modifier;
             /*
@@ -306,6 +298,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
             ((*spell_info[num].spell_pointer) (6, ch, "", SPELL_TYPE_POTION, 
                                                ch, 0));
         }
+    }
 
     if (temp->obj_flags.value[3] && GetMaxLevel(ch) < LOW_IMMORTAL) {
         act("That tasted rather strange !!", FALSE, ch, 0, 0, TO_CHAR);
@@ -335,8 +328,8 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
 
     argument_interpreter(argument, arg1, arg2);
 
-    if (!*arg1) {               /* No arguments */
-        act("What do you want to pour from?", FALSE, ch, 0, 0, TO_CHAR);
+    if (!*arg1) {               
+         act("What do you want to pour from?", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
 
@@ -460,7 +453,6 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
     }
 
     if (GET_COND(ch, DRUNK) > 10) {
-        /* The pig is drunk ! */
         act("You simply fail to reach your mouth!", FALSE, ch, 0, 0, TO_CHAR);
         act("$n tries to sip, but fails!", TRUE, ch, 0, 0, TO_ROOM);
         return;
@@ -487,22 +479,25 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
 #if 0
     if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM) ||
         (temp->obj_flags.value[0] > 19))
-        weight_change_object(temp, -1); /* Subtract one unit, unless
-                                         * permanent */
+        weight_change_object(temp, -1); 
+    /* 
+     * Subtract one unit, unless
+     * permanent 
+     */
 #endif
 
-    if (GET_COND(ch, DRUNK) > 10)
+    if (GET_COND(ch, DRUNK) > 10) {
         act("You feel drunk.", FALSE, ch, 0, 0, TO_CHAR);
-
-    if (GET_COND(ch, THIRST) > 20)
+    }
+    if (GET_COND(ch, THIRST) > 20) {
         act("You do not feel thirsty.", FALSE, ch, 0, 0, TO_CHAR);
-
-    if (GET_COND(ch, FULL) > 20)
+    }
+    if (GET_COND(ch, FULL) > 20) {
         act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
-
+    }
     if (IS_SET(temp->obj_flags.value[3], DRINK_POISON) && 
         !IS_AFFECTED(ch, AFF_POISON)) {      
-        /* The shit was poisoned ! */
+        /* It was poisoned ! */
         act("But it also had a strange taste!", FALSE, ch, 0, 0, TO_CHAR);
 
         af.type = SPELL_POISON;
@@ -513,11 +508,13 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
         affect_to_char(ch, &af);
     }
 
-    if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM))
+    if (!IS_SET(temp->obj_flags.value[3], DRINK_PERM)) {
         temp->obj_flags.value[1]--;
-
+    }
     if (!temp->obj_flags.value[1]) {    
-        /* The last bit */
+        /* 
+         * The last bit 
+         */
         temp->obj_flags.value[2] = 0;
         temp->obj_flags.value[3] = 0;
         name_from_drinkcon(temp);
@@ -554,9 +551,9 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
 
     gain_condition(ch, FULL, 1);
 
-    if (GET_COND(ch, FULL) > 20)
+    if (GET_COND(ch, FULL) > 20) {
         act("You are full.", FALSE, ch, 0, 0, TO_CHAR);
-
+    }
     if (temp->obj_flags.value[3] && !IS_AFFECTED(ch, AFF_POISON)) {
         act("Ooups, it did not taste good at all!", FALSE, ch, 0, 0, TO_CHAR);
 
@@ -570,7 +567,10 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
 
     temp->obj_flags.value[0]--;
 
-    if (!temp->obj_flags.value[0]) {    /* Nothing left */
+    if (!temp->obj_flags.value[0]) {    
+        /* 
+         * Nothing left 
+         */
         act("There is nothing left now.", FALSE, ch, 0, 0, TO_CHAR);
         extract_obj(temp);
     }
@@ -652,9 +652,9 @@ int IsRestricted(int Mask, int Class)
         }
     }
 
-    if (Mask == Class)
+    if (Mask == Class) {
         return (TRUE);
-
+    }
     return (FALSE);
 }
 
@@ -681,10 +681,11 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
     if (GET_ITEM_TYPE(obj_object) == ITEM_ARMOR) {
 
-        // 0=all
-
-        // obj->obj_flags.value[2] size of armor
-        // race_list[race].size
+#if 0        
+        0=all
+        obj->obj_flags.value[2] size of armor
+        race_list[race].size
+#endif        
         if (obj_object->obj_flags.value[2] == 0) {
 
         } else
@@ -698,15 +699,18 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("It doesnt' seem to fit", ch);
             return;
         }
-
-        // ::Tsaron:: '0=General size,1=tiny, 2=small, 3=medium, 4=large,
-        // 5=huge, 6=gargantuan '
-        // You think 'then slowly introduce the sizes with new zones.'
-        // ::Tsaron:: 'medium covers everything human, elf, half-orc'
-        // ::Tsaron:: 'small is dwarf, gnome, and halfling'
-        // ::Tsaron:: 'ogre and troll would be large'
-        // ::Tsaron:: 'giant would be huge'
-
+/* 0 = general Size
+ * 1 = tiny
+ * 2 = small
+ * 3 = medium
+ * 4 = large
+ * 5 = huge
+ * 6 = gargantuan
+ * medium - human, elf, half-orc
+ * small  - dwarf, gnome, halfling
+ * large  - ogre, troll
+ * huge   - giants
+ */
     }
 
     if (anti_barbarian_stuff(obj_object) && 
@@ -740,7 +744,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     rp = real_roomp(ch->in_room);
 
     switch (keyword) {
-    case 0:{                    /* LIGHT SOURCE */
+    case 0:{                    
             if (ch->equipment[WEAR_LIGHT]) {
                 send_to_char("You are already holding a light source.\n\r",
                              ch);
@@ -1000,19 +1004,12 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
                         send_to_char("But, you can use it two handed\n\r", ch);
                         if (ch->equipment[WEAR_SHIELD]) {
                             send_to_char("If you removed your shield\n\r", ch);
-                        }
-                        /*
-                         * wearing shield 
-                         */
-                        else if (ch->equipment[HOLD] || 
+                        } else if (ch->equipment[HOLD] || 
                                  ch->equipment[WEAR_LIGHT]) {
                             send_to_char("If you removed what was in your "
                                          "hands\n\r", ch);
                         } else {
-                            /*
-                             * holding light type 
-                             */
-                            perform_wear(ch, obj_object, keyword);
+                             perform_wear(ch, obj_object, keyword);
                             obj_from_char(obj_object);
                             equip_char(ch, obj_object, WIELD);
                         }
@@ -1038,8 +1035,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         if (CAN_WEAR(obj_object, ITEM_HOLD)) {
             if (ch->equipment[HOLD]) {
                 send_to_char("You are already holding something.\n\r", ch);
-            } else
-                if (ch->equipment[WIELD]
+            } else if (ch->equipment[WIELD]
                     && ch->equipment[WIELD]->obj_flags.weight >
                     str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
                 send_to_char("You cannot wield a two handed weapon and hold "
@@ -1084,8 +1080,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD)) {
                 if ((ch->equipment[WEAR_SHIELD])) {
                     send_to_char("You are already using a shield\n\r", ch);
-                } else
-                    if (ch->equipment[WIELD]
+                } else if (ch->equipment[WIELD]
                         && ch->equipment[WIELD]->obj_flags.weight >
                         str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
                     send_to_char("You cannot wield a two handed weapon and "
@@ -1221,42 +1216,58 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                 next_obj = obj_object->next_content;
                 keyword = -2;
 
-                if (CAN_WEAR(obj_object, ITEM_HOLD))
+                if (CAN_WEAR(obj_object, ITEM_HOLD)) {
                     keyword = 13;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD)) {
                     keyword = 14;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER)) {
                     keyword = 1;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_NECK))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_NECK)) {
                     keyword = 2;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
                     keyword = 11;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
                     keyword = 10;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
                     keyword = 8;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS)) {
                     keyword = 7;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_FEET))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_FEET)) {
                     keyword = 6;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS)) {
                     keyword = 5;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT)) {
                     keyword = 9;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD)) {
                     keyword = 4;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_BODY))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_BODY)) {
                     keyword = 3;
-                if (CAN_WEAR(obj_object, ITEM_WIELD))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WIELD)) {
                     keyword = 12;
+                }
                 if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                    obj_object->obj_flags.type_flag == ITEM_CONTAINER)
+                    obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
                     keyword = 15;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_EYE))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {                    
                     keyword = 17;
-                if (CAN_WEAR(obj_object, ITEM_WEAR_EAR))
+                }
+                if (CAN_WEAR(obj_object, ITEM_WEAR_EAR)) {
                     keyword = 16;
-
+                }
                 if (keyword != -2) {
                     sprintf(buf, "%s :", obj_object->short_description);
                     send_to_char(buf, ch);
@@ -1267,7 +1278,9 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
             obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
             if (obj_object) {
                 if (*arg2) {
-                    /* Partial Match */
+                    /* 
+                     * Partial Match 
+                     */
                     keyword = search_block(arg2, keywords, FALSE);
                     if (keyword == -1) {
                         sprintf(buf, "%s is an unknown body location.\n\r",
@@ -1280,39 +1293,55 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
                     }
                 } else {
                     keyword = -2;
-                    if (CAN_WEAR(obj_object, ITEM_HOLD))
+                    if (CAN_WEAR(obj_object, ITEM_HOLD)) {
                         keyword = 13;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD)) {
                         keyword = 14;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER)) {
                         keyword = 1;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_NECK))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_NECK)) {
                         keyword = 2;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
                         keyword = 11;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
                         keyword = 10;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
                         keyword = 8;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS)) {
                         keyword = 7;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_FEET))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_FEET)) {
                         keyword = 6;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS)) {
                         keyword = 5;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT)) {
                         keyword = 9;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD)) {
                         keyword = 4;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_BODY))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_BODY)) {
                         keyword = 3;
+                    }
                     if (CAN_WEAR(obj_object, ITEM_WEAR_BACK) &&
-                        obj_object->obj_flags.type_flag == ITEM_CONTAINER)
+                        obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
                         keyword = 15;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_EYE))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {
                         keyword = 17;
-                    if (CAN_WEAR(obj_object, ITEM_WEAR_EAR))
+                    }
+                    if (CAN_WEAR(obj_object, ITEM_WEAR_EAR)) {
                         keyword = 16;
+                    }
 
                     sprintf(buf, "%s :", obj_object->short_description);
                     send_to_char(buf, ch);
@@ -1406,10 +1435,11 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
     if (*arg1) {
         obj_object = get_obj_in_list(arg1, ch->carrying);
         if (obj_object) {
-            if (obj_object->obj_flags.type_flag == ITEM_LIGHT)
+            if (obj_object->obj_flags.type_flag == ITEM_LIGHT) {
                 wear(ch, obj_object, WEAR_LIGHT);
-            else
+            } else {
                 wear(ch, obj_object, 13);
+            }
         } else {
             sprintf(buffer, "You do not seem to have the '%s'.\n\r", arg1);
             send_to_char(buffer, ch);
@@ -1513,10 +1543,11 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
                     sprintf(buffer, "You dont seem to have the %s\n\r", T);
                     send_to_char(buffer, ch);
                 }
-                if (T != P)
+                if (T != P) {
                     T = P + 1;
-                else
+                } else {
                     *T = '\0';
+                }
             }
         } else {
             obj_object = get_object_in_equip_vis(ch, arg1, ch->equipment, &j);
@@ -1610,14 +1641,21 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    /*
-     * if(GET_GOLD(ch) < 2000) { send_to_char("Sorry, you don't have the
-     * enough to pay the auctioneer's fee.\n\r",ch); minbid = 0; return; } 
-     */
+#if 0
+    if(GET_GOLD(ch) < 2000) { 
+        send_to_char
+            ("Sorry, you don't have the enough to "
+             "pay the auctioneer's fee.\n\r",ch); 
+        minbid = 0; 
+        return; 
+    } 
+#endif     
 
     if (!(minbid = atoi(bid))) {
         minbid = 1;             
-        /* min bid is 1 coin, and we got an auction runnin. */
+        /* 
+         * min bid is 1 coin, and we got an auction runnin. 
+         */
     } else if (minbid > 50000000) {
         send_to_char("Sorry, maximum starting bid is 50,000,000 coins.\n\r", 
                      ch);
@@ -1631,14 +1669,14 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     send_to_all(buf);
 
     send_to_char("Your item is taken away from you.\n\r", ch);
-    /*
-     * send_to_char("You are charged 2000 coins for this
-     * auction.\n\r",ch); GET_GOLD(ch)-=2000; 
-     */
+
+#if 0
+    send_to_char("You are charged 2000 coins for this "
+            "auction.\n\r",ch); GET_GOLD(ch)-=2000; 
+#endif
+
     auct_loop = 1;
-
     auctioneer = ch;
-
     obj_from_char(auctionobj);
     ch->specials.auction = auctionobj;
     do_save(ch, "", 0);
@@ -1656,11 +1694,14 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_bid");
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
+    }
 
     if (!*argument) {
-        /* show help bid */
+        /* 
+         * show help bid 
+         */
         send_to_char("Usage:   bid ?            to see stats on item "
                      "currently up for auction.\n\r", ch);
         send_to_char("         bid <amount>     to place a bid on the item "
@@ -1731,8 +1772,9 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
          */
         fnewminbid = 1.05 * intbid;
         newminbid = (int) fnewminbid;
-        if (newminbid == intbid)
+        if (newminbid == intbid) {
             newminbid++;
+        }
         if (bid < newminbid) {
             sprintf(buf, "Sorry, your bid has to be at least 5%% higher "
                          "(min. %d).\n\r", newminbid);
