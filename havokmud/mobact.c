@@ -118,6 +118,11 @@ void mobile_wander(struct char_data *ch)
                 sprintf(buf, "%s just entered void from %d", GET_NAME(ch), or);
                 log_sev(buf, 5);
             }
+            if( rp->zone != real_roomp(or)->zone ) {
+                sprintf(buf, "%s wandered from zone %ld to %ld", GET_NAME(ch),
+                             real_roomp(or)->zone, rp->zone );
+                Log(buf);
+            }
             return;
         }
     }
