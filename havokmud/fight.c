@@ -1039,7 +1039,7 @@ long NewExpCap(struct char_data *ch, long total)  {
 	for(x = 0;x < MAX_CLASS;x++) {
 
 		if(GET_LEVEL(ch, x)) {
-			temp += titles[x][GET_LEVEL(ch, x)+2].exp - titles[x][GET_LEVEL(ch, x)+1].exp;
+			temp += titles[x][GET_LEVEL(ch, x)+1].exp - titles[x][GET_LEVEL(ch, x)].exp;
   		}
 	}
 
