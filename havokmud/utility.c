@@ -5036,7 +5036,7 @@ int SiteLock(char *site)
     int             i,
                     length;
     extern int      numberhosts;
-    extern char     hostlist[MAX_BAN_HOSTS][30];
+    extern char     hostlist[MAX_BAN_HOSTS][256];
 
     length = strlen(site);
 

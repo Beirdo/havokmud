@@ -684,7 +684,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
     char           *arg2;
 
     extern int      numberhosts;
-    extern char     hostlist[MAX_BAN_HOSTS][30];
+    extern char     hostlist[MAX_BAN_HOSTS][256];
 
 #endif
 
@@ -762,7 +762,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
             }
         }
         send_to_char("Host is not in database\n\r", ch);
-    } else if (strcasecmp(buf, "list") == 0) {
+    } else if (strcasecmp(arg1, "list") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
