@@ -167,6 +167,8 @@ if (!(trap =
 	  TRUE, ch, 0, 0, TO_ROOM);
       act("You send $p flying from $N's grasp.", TRUE, ch, w, victim,
 	  TO_CHAR);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
       act("$p flies from your grasp.", TRUE, ch, w, victim, TO_VICT);
 /*
   send the object to a nearby room, instead
@@ -175,6 +177,8 @@ if (!(trap =
     } else {
       act("You try to disarm $N, but $E doesn't have a weapon.",
 	  TRUE, ch, 0, victim, TO_CHAR);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
       act("$n makes an impressive fighting move, but does little more.",
 	  TRUE, ch, 0, 0, TO_ROOM);
     }
@@ -695,6 +699,8 @@ void do_doorbash( struct char_data *ch, char *arg, int cmd)
 	sprintf(buf, "$n slams into the %s, and it bursts open!",
 		fname(exitp->keyword));
 	act(buf, FALSE, ch, 0, 0, TO_ROOM);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 	sprintf(buf, "You slam into the %s, and it bursts open!\n\r",
 		fname(exitp->keyword));
 	send_to_char(buf, ch);
@@ -882,6 +888,8 @@ if (ITEM_TYPE(trap)  == ITEM_CONTAINER) {
   if (num < ch->skills[SKILL_REMOVE_TRAP].learned) {
     send_to_char("<Click>\n\r", ch);
     act("$n disarms $p", FALSE, ch, trap, 0, TO_ROOM);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
     GET_TRAP_CHARGES(trap) = 0;
     WAIT_STATE(ch, PULSE_VIOLENCE*3);
     return(TRUE);
@@ -928,7 +936,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
   act("$n is dead! R.I.P.", FALSE, ch, 0, 0, TO_ROOM);
 
   if (number(1,101) < ch->skills[SKILL_FEIGN_DEATH].learned) {
-    stop_fighting(ch);
+ 	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+   stop_fighting(ch);
     for (t = rp->people;t;t=t->next_in_room) {
       if (t->specials.fighting == ch) {
 	stop_fighting(t);
@@ -974,6 +984,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 
   if (number(1,101) < ch->skills[SKILL_FIRST_AID].learned)
   {
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
     GET_HIT(ch)+= number(1,4)+exp_level;
     if(GET_HIT(ch) > GET_MAX_HIT(ch))
        GET_HIT(ch) = GET_MAX_HIT(ch);
@@ -1599,6 +1611,8 @@ else  if (!strcmp(itemtype,"bag"))
 sprintf(buf,"You hack at the %s and finally make the %s.\n\r",
 	j->short_description,itemtype);
 send_to_char(buf,ch);
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
 
 sprintf(buf,"%s skins %s for it's hide.",GET_NAME(ch),
   		j->short_description);
@@ -1663,7 +1677,9 @@ if (!ch->skills[SKILL_FIND_FOOD].learned >0) {
   	  {
     	    obj = read_object(r_num, REAL);
     	    obj_to_char(obj,ch);
-   	  }
+ 			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+  	  }
        }
      WAIT_STATE(ch, PULSE_VIOLENCE*3);
     } /* ^ had the skill */
@@ -1722,6 +1738,8 @@ if (!ch->skills[SKILL_FIND_WATER].learned >0) {
   	  {
     	    obj = read_object(r_num, REAL);
     	    obj_to_char(obj,ch);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
    	  }
        }
      WAIT_STATE(ch, PULSE_VIOLENCE*3);
@@ -1816,6 +1834,8 @@ if (GET_MANA(ch) < 15)  {
    GET_MANA(ch)-=15;
    send_to_char("You let out a bellow that rattles your bones!\n\r",ch);
    act("$n lets out a bellow that rattles your bones.",FALSE,ch,0,0,TO_ROOM);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
 for (vict=character_list;vict;vict= tmp) {
      tmp=vict->next;
@@ -2027,6 +2047,8 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
         char_to_room(ch, location);
         act("A portal appears before you and $n steps through!",FALSE,ch,0,0,TO_ROOM);
         do_look(ch, "",15);
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
         WAIT_STATE(ch, PULSE_VIOLENCE);
       }
  }
@@ -2171,7 +2193,8 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
      char_to_room(ch,location);
      do_look (ch, "",15);
      act("$n appears out of the portal as it disappears!",FALSE,ch,0,0,TO_ROOM);
-
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
     WAIT_STATE(ch, PULSE_VIOLENCE);
    }
 
@@ -2330,6 +2353,8 @@ if (!IS_SET(target->specials.act,ACT_POLYSELF) && !IS_PC(target))  {
         act("$N is lying on the ground stunned!",TRUE,ch,0,target,TO_ROOM);
         target->specials.position = POSITION_STUNNED;
        }
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
    WAIT_STATE(ch, PULSE_VIOLENCE);
  }
@@ -2428,6 +2453,8 @@ if ((hit_points <1) || (hit_points > 65535)) {		/* bug fix? */
     update_pos(ch);
     if(GET_POS(ch)==POSITION_DEAD)
       die(ch,SKILL_CANIBALIZE);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
    WAIT_STATE(ch, PULSE_VIOLENCE*2);
   }
@@ -2490,6 +2517,8 @@ yourself.\n\r",ch);
    af.location   = 0;
    af.bitvector  = AFF_FIRESHIELD;
    affect_to_char (ch,&af);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
   WAIT_STATE(ch, PULSE_VIOLENCE*2);
  }
@@ -2545,6 +2574,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    spell_detect_evil(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
    spell_detect_magic(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
    spell_detect_good(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
   WAIT_STATE(ch, PULSE_VIOLENCE*2);
  }
@@ -2599,6 +2630,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
   spell_sense_life(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
   spell_true_seeing(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
   send_to_char ("You succeed in enhancing your vision.\n\rThere's so much you've missed.\n\r",ch);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
  WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }
@@ -2667,6 +2700,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      act("$n focuses $s mind on $N's mind.", TRUE, ch, 0, victim, TO_ROOM);
      act("$n scrambles your brains like eggs.", TRUE, ch, 0, victim, TO_VICT);
      act("You blast $n's mind with a psionic blast of energy!", FALSE, victim, 0, ch, TO_VICT);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
      GET_MANA(ch)-=25;
      level=GET_LEVEL(ch,PSI_LEVEL_IND);
      if (level>0)       potency=1;
@@ -2891,15 +2926,20 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      return;
    }
 
+
 /* Steve's easy level check addition */
    if (GetMaxLevel (victim) > GetMaxLevel (ch) )   {
      send_to_char ("You'd probably just get your head smashed in.\n\r",ch);
      GET_MANA(ch) -=12;
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
      return;
    }
 
    if (IS_IMMORTAL(victim)) {
       send_to_char ("You could not hypnotize this person.\n\r",ch);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
      return;
    }
 
@@ -2908,6 +2948,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      send_to_char ("You could not hypnotize this person.\n\r",ch);
      GET_MANA(ch) -= 25;
      FailCharm (victim,ch);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
      return;
    }
 
@@ -2930,6 +2972,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    af.location  = 0;
    af.bitvector = AFF_CHARM;
    affect_to_char (victim,&af);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
    WAIT_STATE(ch, PULSE_VIOLENCE*3);
  }
@@ -3000,6 +3044,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
      do_look(ch, "",15);
      char_from_room(ch);
      char_to_room(ch, old_location);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
      WAIT_STATE(ch, PULSE_VIOLENCE);
    }
  }
@@ -3053,6 +3099,8 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
 
    GET_MANA(ch) -=10;
    spell_invisibility(GET_LEVEL(ch,PSI_LEVEL_IND),ch,ch,0);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
    WAIT_STATE(ch,PULSE_VIOLENCE);
  }
 
@@ -3135,7 +3183,9 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    act ("$n touches $N lightly on the forehead.",TRUE,ch,0,target,TO_NOTVICT);
    act ("$N suddenly gets a wild look in $m eyes!",TRUE,ch,0,target,TO_NOTVICT);
    act ("$n touches you on the forehead lightly, you feel energy ulimited!",TRUE,ch,0,target,TO_VICT);
- }
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+}
 
 void do_meditate( struct char_data *ch, char *argument, int cmd)
 {
@@ -3267,6 +3317,8 @@ if (dude->specials.fighting)
          GET_ALIGNMENT(ch) +=10;
        if (GET_ALIGNMENT(dude)>=950)
          GET_ALIGNMENT(ch) +=10;
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
        WAIT_STATE (dude,2*PULSE_VIOLENCE);
 	return;
@@ -3400,6 +3452,8 @@ if (affected_by_spell(ch,SKILL_BLESSING)) {
    af.duration  = 24*3;    /* once every three days */
    affect_to_char(ch, &af);
    WAIT_STATE(ch,PULSE_VIOLENCE*2);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 }
 
 
@@ -3472,7 +3526,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
    af.duration  = 24;
    affect_to_char(ch, &af);
    WAIT_STATE(ch,PULSE_VIOLENCE);
- }
+ 	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+}
 
 
 void do_holy_warcry (struct char_data *ch, char *argument, int cmd)
@@ -3552,6 +3608,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
        if (!ch->specials.fighting)
          set_fighting (ch,dude);
      }
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
    WAIT_STATE(ch, PULSE_VIOLENCE*3);
   }
 
@@ -3609,7 +3667,10 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    af.duration   = GetMaxLevel(ch);
    af.bitvector  = 0;
    affect_to_char (ch,&af);
-   WAIT_STATE(ch,PULSE_VIOLENCE*2);
+
+ 	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+  WAIT_STATE(ch,PULSE_VIOLENCE*2);
 
 }
 
@@ -3886,11 +3947,13 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
       obj->name = buf;
       if(obj->description)
 	free(obj->description);
-      sprintf(buf,"%s","A wierd coloured potion is on the ground.");
+      sprintf(buf,"%s","A weird coloured potion is on the ground.");
 
       obj->description = buf;
       obj->obj_flags.value[slot] = sn+1;  //set spell in slot..
-      WAIT_STATE(ch,PULSE_VIOLENCE*12);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+     WAIT_STATE(ch,PULSE_VIOLENCE*12);
 
       return;
     }
@@ -3992,6 +4055,8 @@ if (!ch->skills)
         //AddHated(victim, ch);
 		damage(ch,victim,GET_DAMROLL(ch)*3, SKILL_CHARGE);
         //hit(ch,victim,SKILL_CHARGE);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
 
         GET_HITROLL(ch) -= 100;
 

@@ -135,12 +135,12 @@ struct help_index_element
 };
 
 
-#define ZONE_NEVER  	 0
-#define ZONE_EMPTY  	 1
-#define ZONE_ALWAYS 	 2
+#define ZONE_NEVER  	 0	/* never deinit, never reset 			Asgard, Scratch Zone For Static Game */
+#define ZONE_EMPTY  	 1	/* deinit ifempty, reset ifempty 		TMK, Ravenloft, mostly proc zones */
+#define ZONE_ALWAYS 	 2	/* deinit ifempty, reset always 		The new deinit, reinit cycle */
 #define ZONE_ASTRAL 	 4
 #define ZONE_DESERT 	 8
 #define ZONE_ARCTIC      16
 #define ZONE_UNDER_GROUND 32
 #define ZONE_CLOSED       64
-
+#define ZONE_NODEINIT	128	/* deinit never, reset always 			For the old farts that don't like change */

@@ -2654,8 +2654,12 @@ void zone_update()
 			(IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_EMPTY) &&
 			is_empty(update_u->zone_to_reset))) {
 
-			/* ALWAYS but occupied should just reset, not clean */
-			if (!is_empty(update_u->zone_to_reset)) {
+/* Lennya's deinit of zones stuff */
+			if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT)) {
+				/* this should never deinit, or set back to 0 */
+				reset_zone(update_u->zone_to_reset);
+			} else if (!is_empty(update_u->zone_to_reset)) {
+				/* ALWAYS should just reset, not cleaned when there's people in it */
 				reset_zone(update_u->zone_to_reset);
 			} else {
 				CleanZone(update_u->zone_to_reset);

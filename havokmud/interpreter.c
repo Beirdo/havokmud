@@ -1708,7 +1708,7 @@ if(strlen(name) > MAX_NAME_LENGTH)
 	    return 1;
 	break;
      default:
-	log("Grr! invalid value in shitlist, interpereter.c _parse_name");
+	log("Grr! invalid value in shitlist, interpreter.c _parse_name");
 	return 1;
    }
 #undef NAME
@@ -1971,7 +1971,7 @@ d->host);
 		    case 'N':
 		    	if(!HasClass(d->character, CLASS_PALADIN)) {
 			  	GET_ALIGNMENT(d->character)=1;
-			  	send_to_char("You have choosen to be Neutral in alignment.\n\r\n\r",d->character);
+			  	send_to_char("You have chosen to be Neutral in alignment.\n\r\n\r",d->character);
 			  	STATE(d) = CON_CREATION_MENU;
 			  	show_menu(d);
 			  	return;
@@ -1983,7 +1983,7 @@ d->host);
 
 		   if(!HasClass(d->character,CLASS_DRUID)) {
 			GET_ALIGNMENT(d->character)=1000;
-			send_to_char("You have choosen to be a follower of light.\n\r\n\r",d->character);
+			send_to_char("You have chosen to be a follower of light.\n\r\n\r",d->character);
 			show_menu(d);
 			STATE(d) = CON_CREATION_MENU;
 			return;
@@ -1994,7 +1994,7 @@ d->host);
 
 			if(!HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
 				GET_ALIGNMENT(d->character)=-1000;
-				send_to_char("You have choosen the dark side.\n\r\n\r",d->character);
+				send_to_char("You have chosen the dark side.\n\r\n\r",d->character);
 				STATE(d) = CON_CREATION_MENU;
 				show_menu(d);
 				return;

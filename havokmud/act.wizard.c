@@ -1174,13 +1174,11 @@ dlog("in do_goto");
     }
   } else {
     if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) || !ch->specials.poofout)
-	act("$n disappears in a cloud of mushrooms.",
-	    FALSE, ch, 0, 0, TO_ROOM);
-    else
-      if (*ch->specials.poofout != '!')
-	act(ch->specials.poofout, FALSE, ch, 0, 0, TO_ROOM);
-      else
-	command_interpreter(ch, (ch->specials.poofout+1));
+		act("$n disappears in a cloud of mushrooms.", FALSE, ch, 0, 0, TO_ROOM);
+	else if (*ch->specials.poofout != '!')
+			act(ch->specials.poofout, FALSE, ch, 0, 0, TO_ROOM);
+	else
+		command_interpreter(ch, (ch->specials.poofout+1));
   }
 
   if (ch->specials.fighting)
@@ -3575,10 +3573,10 @@ if (HasClass(ch,
  CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID))
  ch->skills[SKILL_READ_MAGIC].learned = 95;
 
-if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
- { /* set rangers and pals to good */
-   GET_ALIGNMENT(ch) = 1000;
- }else GET_ALIGNMENT(ch) = 0;
+//if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
+// { /* set rangers and pals to good */
+//   GET_ALIGNMENT(ch) = 1000;
+// }else GET_ALIGNMENT(ch) = 0;
 
 	SetDefaultLang(ch);  /* the skill */
 
@@ -4203,27 +4201,30 @@ dlog("in do_show");
 	if (is_abbrev(buf, "zones")) {
 		struct zone_data    *zd;
 		int bottom=0;
-		append_to_string_block(&sb, "# Zone   name                                lifespan age     rooms     reset\n\r");
+		append_to_string_block(&sb, "# Zone   name                                lifespan age     rooms     deinit   reset\n\r");
 
 		for(zone=0; zone<=top_of_zone_table; zone++) {
 			char      *mode;
 
 			zd = zone_table+zone;
 			switch(zd->reset_mode) {
-			case 0: mode = "never";      break;
-			case 1: mode = "ifempty";    break;
-			case 2: mode = "always";     break;
-			case 3: mode = "closed";     break;
+				case 0:   mode = "never    never";      break;
+				case 1:   mode = "ifempty  ifempty";    break;
+				case 2:   mode = "ifempty  always";     break;
+				case 3:   mode = "closed   closed";     break;
+				case 128: mode = "never    always";		break;
 			default:
 				if (zd->reset_mode > 2) {
 					if (IS_SET(zd->reset_mode, ZONE_ALWAYS))
-						mode = "#always";
+						mode =   "*never   *never";
 					else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
-						mode = "#empty";
+						mode =   "*ifempty *ifempty";
 					else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
-						mode = "#closed";
+						mode =   "*closed  *closed";
+					else if (IS_SET(zd->reset_mode, ZONE_NODEINIT))
+						mode =   "*never   *always";
 					else
-						mode = "#never";
+						mode =   "*never   *never";
 				} else {
 					mode = "!unknown!";
 				}
@@ -5884,17 +5885,69 @@ dlog("in do_osave");
 }
 
 void do_home(struct char_data *ch, char *argument, int cmd)
-
 {
+	struct char_data *v;
 
 dlog("in do_home");
 
  if (ch->player.hometown > 0) {
-	act("You think of your home plane, and send yourself home.",FALSE,ch,0,0,TO_CHAR);
-	act("A whirling vortex envelopes $n and $e is gone.",FALSE,ch,0,0,TO_ROOM);
-	char_from_room(ch);
-	char_to_room(ch,ch->specials.start_room);
-	act("A whirling vortex appears and $n arrives.",FALSE,ch,0,0,TO_ROOM);
+	   if (IS_SET(ch->specials.act, PLR_STEALTH)) {
+	     for (v = real_roomp(ch->in_room)->people; v; v= v->next_in_room) {
+	       if ( (ch != v) && (CAN_SEE(v,ch)) ) {
+	 	if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) || !ch->specials.poofout)
+	 	  act("A whirling vortex envelopes $n and $e is gone.",
+	 	      FALSE, ch, 0, v, TO_VICT);
+	 	else {
+	 	  act(ch->specials.poofout, FALSE, ch, 0, v, TO_VICT);
+	 	}
+	       }
+	     }
+	   } else {
+	     if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) || !ch->specials.poofout)
+	 		act("A whirling vortex envelopes $n and $e is gone.", FALSE, ch, 0, 0, TO_ROOM);
+	 	else if (*ch->specials.poofout != '!')
+	 			act(ch->specials.poofout, FALSE, ch, 0, 0, TO_ROOM);
+	 	else
+	 		command_interpreter(ch, (ch->specials.poofout+1));
+	   }
+
+	   if (ch->specials.fighting)
+	     stop_fighting(ch);
+	   char_from_room(ch);
+	   char_to_room(ch, ch->specials.start_room);
+
+	   if (IS_SET(ch->specials.act, PLR_STEALTH)) {
+	     for (v = real_roomp(ch->in_room)->people; v; v= v->next_in_room) {
+	       if ((ch != v) && (CAN_SEE(v,ch))) {
+
+	 	if (!IS_SET(ch->specials.pmask, BIT_POOF_IN)|| !ch->specials.poofin)
+	 	  act("A whirling vortex appears and $n arrives.",
+	 	      FALSE, ch, 0,v,TO_VICT);
+	 	else
+	 	  act(ch->specials.poofin, FALSE, ch, 0, v, TO_VICT);
+	       }
+	     }
+	   } else {
+
+	     if (!IS_SET(ch->specials.pmask, BIT_POOF_IN)|| !ch->specials.poofin)
+	       act("A whirling vortex appears and $n arrives.",
+	 	  FALSE, ch, 0,v,TO_ROOM);
+	     else
+	       if (*ch->specials.poofin != '!')
+	 	act(ch->specials.poofin, FALSE, ch, 0, v, TO_ROOM);
+	       else
+	 	command_interpreter(ch, (ch->specials.poofin+1));
+  }
+//	act("You think of your home plane, and send yourself home.",FALSE,ch,0,0,TO_CHAR);
+//    if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) || !ch->specials.poofout)
+//		act("$n disappears in a cloud of mushrooms.", FALSE, ch, 0, 0, TO_ROOM);
+//	else if (*ch->specials.poofout != '!')
+//			act(ch->specials.poofout, FALSE, ch, 0, 0, TO_ROOM);
+//	else
+//		command_interpreter(ch, (ch->specials.poofout+1));
+//	char_from_room(ch);
+//	char_to_room(ch,ch->specials.start_room);
+//	act("A whirling vortex appears and $n arrives.",FALSE,ch,0,0,TO_ROOM);
 	do_look(ch,"",15);
 	} else {
 		send_to_char("You ain't got a home buddy!\n\r",ch);

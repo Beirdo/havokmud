@@ -855,43 +855,47 @@ void gain_exp(struct char_data *ch, int gain)
     return;
   }
 
+	if (!IS_IMMORTAL(ch)) {
+		if (gain > 0) {
+			gain /= HowManyClasses(ch);
 
+		if (GetMaxLevel(ch) == 1) {
+			gain *= 2;
+		}
 
-  if (!IS_IMMORTAL(ch)) {
-    if (gain > 0) {
-      gain /= HowManyClasses(ch);
+		if (IS_PC(ch)) {
+			if (ch->desc && ch->desc->original)
+				chrace = ch->desc->original->race;
+			else
+				chrace = GET_RACE(ch);
 
-      if (GetMaxLevel(ch) == 1) {
-	gain *= 2;
-      }
-
-      if (IS_PC(ch)) {
-	if (ch->desc && ch->desc->original)
-	  chrace = ch->desc->original->race;
-	else
-	  chrace = GET_RACE(ch);
-	for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
-	  if (GET_LEVEL(ch,i)&&(GET_LEVEL(ch,i))<RacialMax[chrace][i])
-	  {
-   	    if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+2].exp)
-   	    {
-	      send_to_char("You must practice at a guild before you can gain any more experience\n\r", ch);
-	      GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1;
-	      return;
-	    } else if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+1].exp) {
-	      /* do nothing..this is cool */
-	    } else if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+1].exp) {
-	      sprintf(buf, "You have gained enough to be a(n) %s\n\r", GET_CLASS_TITLE(ch, i, GET_LEVEL(ch, i)+1));
-	      send_to_char(buf, ch);
-	      send_to_char("You must return to a guild to earn the level\n\r",ch);
-	      if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+2].exp) {
-		GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1;
-		return;
-	      }
-	    }
-	  }
-	}
-      }
+			for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
+				if (GET_LEVEL(ch,i)&&(GET_LEVEL(ch,i))<RacialMax[chrace][i]) {
+					if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+2].exp - 1) { /* is already maxxed */
+						send_to_char("You must gain at your guild before you can acquire more experience.\n\r", ch);
+//						GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1; /* so doesn't need more xps. */
+						return;
+					} else if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch,i)+1].exp) { /* char was levelled, not maxxed */
+						if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+2].exp -1) { /* but hits max with this one */
+							GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1;     /* Let's tell him then.       */
+							send_to_char("You must gain at your guild before you can acquire more experience.\n\r", ch);
+							return;
+						} else {
+							/* but doesn't max with this gain, so we're gunna be cool, continue this func */
+						}
+					} else if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+1].exp) { /* this is the levelling stroke */
+						sprintf(buf, "You have gained enough to be a(n) %s.\n\r", GET_CLASS_TITLE(ch, i, GET_LEVEL(ch, i)+1));
+						send_to_char(buf, ch);
+						send_to_char("You must return to a guild to earn the level.\n\r",ch);
+						if (GET_EXP(ch)+gain >= titles[i][GET_LEVEL(ch,i)+2].exp) { /* this is the maxxing stroke */
+							GET_EXP(ch) = titles[i][GET_LEVEL(ch,i)+2].exp - 1;		/* let's notify them          */
+							send_to_char("You must gain at your guild before you can acquire more experience.\n\r", ch);
+							return;
+						}
+					}
+				}
+			}
+		}
 
       GET_EXP(ch)+=gain;
       if (IS_PC(ch)) {

@@ -252,6 +252,8 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 				GET_ALIGNMENT(ch)-=50;
 			hit(ch,victim,SKILL_BACKSTAB);
 			GET_HITROLL(ch) -= base;
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
 		}
 	} else {
 		char buff[256];
@@ -594,6 +596,8 @@ dlog("in do_flee");
 					send_to_char("You flee head over heels.\n\r", ch);
 				} else {
 					send_to_char("You retreat skillfully\n\r", ch);
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);
 				}
 
 				if (ch->specials.fighting->specials.fighting == ch)
@@ -719,7 +723,7 @@ dlog("in do_bash");
 			if (!damage(ch, victim, 2, SKILL_BASH)) {
 				WAIT_STATE(victim, PULSE_VIOLENCE*2);
 				GET_POS(victim) = POSITION_SITTING;
-				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your bashing abilites.$c0007\n\r",ch);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
 				send_to_char(buf,ch);
 				gain_exp(ch, 100);
 				WAIT_STATE(ch, PULSE_VIOLENCE*2);
@@ -822,7 +826,7 @@ dlog("in do_leg_sweep");
 				GET_POS(victim) = POSITION_SITTING;
 				act("$c000CYou do a quick spin and knock $N's legs out from underneath $M.",FALSE, ch, 0, victim,TO_CHAR);
 				act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M.",FALSE, ch,0,victim,TO_ROOM);
-				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your sweeping abilites.$c0007\n\r",ch);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
 				send_to_char(buf,ch);
 				gain_exp(ch, 100);
 				WAIT_STATE(ch, PULSE_VIOLENCE*2);
@@ -900,6 +904,8 @@ dlog("in do_mend");
 					act(buf,FALSE,ch,0,0,TO_ROOM);
 					sprintf(buf,"You expertly mend %s.\n\r",obj->short_description);
 					send_to_char(buf,ch);
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);
 					WAIT_STATE(ch, PULSE_VIOLENCE*1);
 					return;
 				}
@@ -947,6 +953,8 @@ dlog("in do_mend");
 					act(buf,FALSE,ch,0,0,TO_ROOM);
 					sprintf(buf,"You expertly mend %s.\n\r",obj->short_description);
 					send_to_char(buf,ch);
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);
 					extract_obj(cmp);
 					WAIT_STATE(ch, PULSE_VIOLENCE*1);
 					return;
@@ -1036,6 +1044,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
   }
 
   send_to_char("Banzai! To the rescue...\n\r", ch);
+  send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+  gain_exp(ch, 100);
   act("You are rescued by $N, you are confused!", FALSE, victim,0,ch, TO_CHAR);
   act("$n heroically rescues $N.", FALSE, ch, 0, victim, TO_NOTVICT);
   if (IS_PC(ch) && IS_PC(victim))
@@ -1110,6 +1120,9 @@ void do_disengage(struct char_data *ch, char *argument,int cmd)
     act("$n tries to back out of combat with you in an attempt to disengage."
 	,TRUE, ch, 0, ch->specials.fighting, TO_VICT);
     stop_fighting(ch);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+				send_to_char(buf,ch);
+				gain_exp(ch, 100);
     WAIT_STATE(ch,PULSE_VIOLENCE*2);
     return;
   }
@@ -1266,6 +1279,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 	dam=dam>>1;
       kick_messages(ch,victim,dam);
       damage(ch, victim, dam, SKILL_KICK);
+				send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+				gain_exp(ch, 100);
     }
     WAIT_STATE(victim, PULSE_VIOLENCE);
   }
@@ -1377,7 +1392,8 @@ dlog("in do_breath");
   }
 
   breath_weapon(ch, victim, manacost, weapon);
-
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your breathing abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);
   WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }
 
@@ -1498,7 +1514,8 @@ if (victim) {
       }
 
 	shoot(ch, victim);
-	WAIT_STATE(ch, PULSE_VIOLENCE);
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your shooting abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);	WAIT_STATE(ch, PULSE_VIOLENCE);
       }
     } else {
       send_to_char("They aren't here.\n\r", ch);
@@ -1593,7 +1610,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
     } else {
 	kick_messages(ch, victim, 0);
 	damage(ch, victim, 0, SKILL_KICK);
-    }
+					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+					gain_exp(ch, 100);
+	}
     WAIT_STATE(victim, PULSE_VIOLENCE);
   }
   WAIT_STATE(ch, PULSE_VIOLENCE*1);
@@ -1676,6 +1695,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
     if (HitOrMiss(ch, victim, CalcThaco(ch))) {
       if (GET_POS(victim) > POSITION_DEAD)
 	damage(ch, victim, GET_MAX_HIT(victim)*20,SKILL_QUIV_PALM);
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
     }
   }
 
@@ -1930,6 +1951,8 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
      SET_BIT(ch->specials.affected_by2,AFF2_BERSERK);
      act("$c1012$n growls at $mself, and whirls into a killing frenzy!", FALSE, ch, 0, victim, TO_ROOM);
      act("$c1012The madness overtakes you quickly!",FALSE,ch,0,0,TO_CHAR);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
     }
     WAIT_STATE(victim, PULSE_VIOLENCE);
   }

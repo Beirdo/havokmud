@@ -549,6 +549,10 @@ if (!ch || !i) {
 
   if (mode == 0) {
 
+	/* Don't show linkdead imms to mortals, messy stuff   -Lennya */
+	if(!IS_NPC(i) && IS_IMMORTAL(i) && IS_LINKDEAD(i) && !IS_IMMORTAL(ch))
+		return;
+
     if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) && !IS_IMMORTAL(ch)) {
       if (IS_AFFECTED(ch, AFF_SENSE_LIFE) && !IS_IMMORTAL(i)) {
 		send_to_char("You sense a hidden life form in the room.\n\r", ch);
@@ -800,17 +804,17 @@ if (!ch || !i) {
       }
     }
     if (found) {
-      if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[12]) {
-	act("$p covers much of $n's body.",FALSE,i,i->equipment[12],ch,TO_VICT);
+      if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[WEAR_ABOUT]) {
+	act("$p covers much of $n's body.",FALSE,i,i->equipment[WEAR_ABOUT],ch,TO_VICT);
       }
       act("\n\r$n is using:", FALSE, i, 0, ch, TO_VICT);
 
       for (j=0; j< MAX_WEAR; j++) {
 	if (i->equipment[j]) {
-	  if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[12] &&
+	  if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[WEAR_ABOUT] &&
 	      !(j==WEAR_LIGHT || j==WEAR_HEAD || j==WEAR_HANDS ||
 		j==WEAR_SHIELD || j==WEAR_ABOUT || j==WEAR_EAR_R || j==WEAR_EAR_L ||
-		j==WEAR_EYES)
+		j==WEAR_EYES) && !IS_OBJ_STAT(ch->equipment[WEAR_ABOUT],ITEM_INVISIBLE) /* see through cloak  -Lennya */
 	      && !IS_IMMORTAL(ch) && (i!=ch) ) {
 	    /* Do nothing */
 	  } else
@@ -921,17 +925,21 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
   int j, found, percent;
   struct obj_data *tmp_obj;
 
+	/* Don't show linkdead imms to mortals. Should never be multiple, but hey..   -Lennya */
+	if(!IS_NPC(i) && IS_IMMORTAL(i) && IS_LINKDEAD(i) && !IS_IMMORTAL(ch))
+		return;
+
   if (mode == 0) {
     if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) && !IS_IMMORTAL(ch)) {
       if (IS_AFFECTED(ch, AFF_SENSE_LIFE) && !IS_IMMORTAL(i)) {
-	if (num==1)
-	  act("$c0002You sense a hidden life form in the room.",FALSE, ch,0,0,TO_CHAR);
-	else
-	  act("$c0002You sense a hidden life form in the room.",FALSE, ch,0,0,TO_CHAR);
-      return;
+	    if (num==1) /* yer alone, what you doin in this func boy?  -Lennya */
+	      act("You sense a hidden life form in the room.",FALSE, ch,0,0,TO_CHAR);
+	    else
+	      act("$c0002You sense a hidden life form in the room.",FALSE, ch,0,0,TO_CHAR);
+        return;
       } else {
-       /* no see nothing */
-       return;
+        /* no see nothing */
+        return;
       }
     }
 	sprintf(buffer,"");
