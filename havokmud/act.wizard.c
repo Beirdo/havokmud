@@ -643,7 +643,7 @@ if (str_cmp(buf, "add")==0) {
        return;
      }
      length = strlen(buf);
-     if ((length <= 3) || (length >= 30)) {
+     if ((length <= 3) || (length >= 80)) {
 	 send_to_char("Host is too long or short, please try again\n\r", ch);
 	 return;
       }
