@@ -768,7 +768,8 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 					return(TRUE);
 				}
 				/* load the generic item */
-				obj = read_object(itype, VIRTUAL);
+				if (obj = read_object(itype, VIRTUAL))
+{
 				/* and string it up a bit */
 				if(obj->short_description) {
 					free(obj->short_description);
@@ -808,6 +809,7 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 //				log(shdesc);
 //				log(desc);
 //				log(exdesc);
+}
 			} else {
 				log("char did not have enough kills, no obj");
 			}

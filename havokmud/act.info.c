@@ -647,6 +647,10 @@ if (!ch || !i) {
 	if (IS_AFFECTED2(i,AFF2_AFK))
 		strcat(buffer,"$c0006 (AFK)$c0007");
 
+//  this may lag a bit, commented out for now  -Lennya
+//	if (IS_AFFECTED2(i,AFF2_QUEST))
+//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
+
 	if (IS_LINKDEAD(i))
 		strcat(buffer,"$c0015 (Linkdead)$c0007");
 
@@ -1012,6 +1016,10 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
 if (IS_AFFECTED2(i,AFF2_AFK))
 	strcat(buffer,"$c0006 (AFK)$c0007");
 
+//  this may lag a bit, commented out for now  -Lennya
+//	if (IS_AFFECTED2(i,AFF2_QUEST))
+//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
+
 if (IS_LINKDEAD(i))
 	strcat(buffer,"$c0015 (Linkdead)$c0007");
 
@@ -1039,6 +1047,9 @@ if (IS_LINKDEAD(i))
 		}
 		if (IS_AFFECTED2(i,AFF2_AFK))
 			strcat(buffer,"$c0006 (AFK)$c0007");
+//  this may lag a bit, commented out for now  -Lennya
+//	if (IS_AFFECTED2(i,AFF2_QUEST))
+//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
 		if (IS_LINKDEAD(i))
 			strcat(buffer,"$c0015 (Linkdead)$c0007");
       /* this gets a little annoying */
@@ -1313,7 +1324,7 @@ dlog("in do_look");
     send_to_char("You can't see a damn thing, you're blinded!\n\r", ch);
   else if  ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) &&
 	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
-    send_to_char("It is very dark in here...\n\r", ch);
+    send_to_char("It is very dark in here.. Find a lightsource to see.\n\r", ch);
     if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
     }
@@ -1695,7 +1706,7 @@ dlog("in do_look");
     send_to_char("You can't see a damn thing, you're blinded!\n\r", ch);
   else if  ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) &&
 	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
-    send_to_char("It is very dark in here...\n\r", ch);
+    send_to_char("It is very dark in here.. Find a lightsource to see.\n\r", ch);
     if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
     }
@@ -3014,6 +3025,9 @@ dlog("in do_who");
 	  	    sprintf(tbuf+strlen(tbuf),"$c000G [$c000WNEW$c000G] $c0007");
 	    if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
+	    if(IS_AFFECTED2(person,AFF2_QUEST))
+	      sprintf(tbuf+strlen(tbuf),"$c0008 [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008] $c0007");
+
 		if (IS_SET(ch->specials.act, NEW_USER))
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD] $c0007");
@@ -5463,6 +5477,8 @@ dlog("in do_whoarena");
 	  }
 	    if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
+	    if(IS_AFFECTED2(person,AFF2_QUEST))
+	      sprintf(tbuf+strlen(tbuf),"$c0008 [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008]$c0007");
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD] $c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)

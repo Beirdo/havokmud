@@ -4081,6 +4081,9 @@ void reset_char(struct char_data *ch)
 	if (IS_AFFECTED2(ch,AFF2_AFK))
 	  REMOVE_BIT(ch->specials.affected_by2,AFF2_AFK);
 
+	if (IS_AFFECTED2(ch,AFF2_QUEST))
+	  REMOVE_BIT(ch->specials.affected_by2,AFF2_QUEST);
+
 /*
 	Remove bogus flags on mortals
 */

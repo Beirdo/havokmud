@@ -246,6 +246,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd);
 void do_set_flags(struct char_data *ch, char *argument, int cmd);
 void do_auto(struct char_data *ch, char *argument, int cmd);
 void do_set_afk(struct char_data *ch, char *argument, int cmd);
+void do_set_quest(struct char_data *ch, char *argument, int cmd);
 void do_set_consent(struct char_data *ch, char *argument, int cmd);
 void do_gain(struct char_data *ch, char *argument, int cmd);
 void do_guard(struct char_data *ch, char *argument, int cmd);
@@ -364,6 +365,8 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd ) ;
 void do_freeze(struct char_data *ch, char *argument , int cmd);
 void do_drainlevel(struct char_data *ch, char *argument , int cmd);
 void do_permission(struct char_data *ch, char *argument , int cmd);
+void do_qtrans(struct char_data *ch, char *argument, int cmd);
+void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd);
 
 /* From board.c */
 
@@ -1559,10 +1562,6 @@ int stu(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int typ
 int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 #endif
 
-/* King's Grove */
-int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-int generate_legend_statue(struct char_data *ch, char *argument, int cmd);
-
 /*Assigns for Thunder Mountain Keep */
 int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int bahamut_prayer(struct char_data *ch, struct char_data *vict);
@@ -2279,6 +2278,10 @@ int ValidRoom(struct char_data *ch );
 
 /* Spec_procs4.c */
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+/* King's Grove */
+int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int generate_legend_statue(struct char_data *ch, char *argument, int cmd);
 
 				/* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

@@ -1645,6 +1645,9 @@ void construct_who_list(char *buf, int cmd,
             }
             if(IS_SET(person->specials.affected_by2,AFF2_AFK))
               sprintf(tbuf+strlen(tbuf)," [AFK] ");
+            if(IS_SET(person->specials.affected_by2,AFF2_QUEST))
+		       sprintf(tbuf+strlen(tbuf)," [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008] ");
+
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf)," [LINKDEAD] ");
             sprintf(tbuf+strlen(tbuf),"\n\r");

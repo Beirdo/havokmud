@@ -2172,92 +2172,89 @@ dlog("in do_use");
 
   stick = ch->equipment[HOLD];
 
-  if (stick->obj_flags.type_flag == ITEM_STAFF)  {
-    act("$n taps $p three times on the ground.",TRUE, ch, stick, 0,TO_ROOM);
-    act("You tap $p three times on the ground.",FALSE,ch, stick, 0,TO_CHAR);
-    if (stick->obj_flags.value[2] > 0) {  /* Is there any charges left? */
-      stick->obj_flags.value[2]--;
+	if (stick->obj_flags.type_flag == ITEM_STAFF)  {
+		act("$n taps $p three times on the ground.",TRUE, ch, stick, 0,TO_ROOM);
+		act("You tap $p three times on the ground.",FALSE,ch, stick, 0,TO_CHAR);
+		if (stick->obj_flags.value[2] > 0) {  /* Is there any charges left? */
+			stick->obj_flags.value[2]--;
+			if (check_nomagic(ch,"The magic is blocked by unknown forces.",
+								"The magic is blocked by unknown forces."))
+				return;
+			((*spell_info[stick->obj_flags.value[3]].spell_pointer)
+					((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_STAFF, 0, 0));
+					WAIT_STATE(ch, PULSE_VIOLENCE);
+		} else {
+			send_to_char("The staff seems powerless.\n\r", ch);
+		}
+	} else if (stick->obj_flags.type_flag == ITEM_WAND) {
+		bits = generic_find(argument, FIND_CHAR_ROOM | FIND_OBJ_INV |
+					FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
+		if (bits) {
+			struct spell_info_type	*spellp;
 
-      if (check_nomagic(ch,"The magic is blocked by unknown forces.",
-			"The magic is blocked by unknown forces."))
-	return;
+			spellp = spell_info + (stick->obj_flags.value[3]);
 
-      ((*spell_info[stick->obj_flags.value[3]].spell_pointer)
-       ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_STAFF, 0, 0));
-      WAIT_STATE(ch, PULSE_VIOLENCE);
-    } else {
-      send_to_char("The staff seems powerless.\n\r", ch);
-    }
+			if (bits == FIND_CHAR_ROOM) {
+				act("$n point $p at $N.", TRUE, ch, stick, tmp_char, TO_ROOM);
+				act("You point $p at $N.",FALSE,ch, stick, tmp_char, TO_CHAR);
+			} else {
+				act("$n point $p at $P.", TRUE, ch, stick, tmp_object, TO_ROOM);
+				act("You point $p at $P.",FALSE,ch, stick, tmp_object, TO_CHAR);
+			}
 
-  } else if (stick->obj_flags.type_flag == ITEM_WAND) {
-    bits = generic_find(argument, FIND_CHAR_ROOM | FIND_OBJ_INV |
-			FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
-    if (bits) {
-      struct spell_info_type	*spellp;
+			if (IS_SET(spellp->targets, TAR_VIOLENT) &&
+							check_peaceful(ch, "Impolite magic is banned here."))
+				return;
 
-      spellp = spell_info + (stick->obj_flags.value[3]);
+			if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
+				stick->obj_flags.value[2]--;
 
-      if (bits == FIND_CHAR_ROOM) {
-	act("$n point $p at $N.", TRUE, ch, stick, tmp_char, TO_ROOM);
-	act("You point $p at $N.",FALSE,ch, stick, tmp_char, TO_CHAR);
-      } else {
-	act("$n point $p at $P.", TRUE, ch, stick, tmp_object, TO_ROOM);
-	act("You point $p at $P.",FALSE,ch, stick, tmp_object, TO_CHAR);
-      }
+				if (check_nomagic(ch,"The magic is blocked by unknown forces.",
+									"The magic is blocked by unknown forces."))
+					return;
 
-      if (IS_SET(spellp->targets, TAR_VIOLENT) &&
-	  check_peaceful(ch, "Impolite magic is banned here."))
-	return;
-
-      if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
-	stick->obj_flags.value[2]--;
-
-      if (check_nomagic(ch,"The magic is blocked by unknown forces.",
-			"The magic is blocked by unknown forces."))
-	return;
-
-	((*spellp->spell_pointer)
-	 ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_WAND,
-	  tmp_char, tmp_object));
-	WAIT_STATE(ch, PULSE_VIOLENCE);
-      } else {
-	send_to_char("The wand seems powerless.\n\r", ch);
-      }
-    } else if((find_door(ch, buf2, buf3)) >= 0) { /*For when the arg
+				((*spellp->spell_pointer)
+						((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_WAND,
+						tmp_char, tmp_object));
+				WAIT_STATE(ch, PULSE_VIOLENCE);
+			} else {
+				send_to_char("The wand seems powerless.\n\r", ch);
+			}
+		} else if((find_door(ch, buf2, buf3)) >= 0) { /*For when the arg
                                                    is a door*/
 
-      struct spell_info_type	*spellp;
+			struct spell_info_type	*spellp;
 
-      spellp = spell_info + (stick->obj_flags.value[3]);
+			spellp = spell_info + (stick->obj_flags.value[3]);
 
 
-       if(stick->obj_flags.value[3] != SPELL_KNOCK) {
-        send_to_char("That spell is useless on doors.\n\r", ch);
-         /*Spell is not knock, error and return*/
-        return;
-        }
-     if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
-	stick->obj_flags.value[2]--;
+			if(stick->obj_flags.value[3] != SPELL_KNOCK) {
+				send_to_char("That spell is useless on doors.\n\r", ch);
+				/*Spell is not knock, error and return*/
+				return;
+			}
+			if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
+				stick->obj_flags.value[2]--;
 
-        if (check_nomagic(ch,"The magic is blocked by unknown forces.",
-			"The magic is blocked by unknown forces."))
-          return;
+				if (check_nomagic(ch,"The magic is blocked by unknown forces.",
+									"The magic is blocked by unknown forces."))
+					return;
 
-         argument = strcat(strcat(buf2, " "), buf3);
+				argument = strcat(strcat(buf2, " "), buf3);
 
-	((*spellp->spell_pointer)
-	 ((byte) stick->obj_flags.value[0], ch, argument, SPELL_TYPE_WAND,
-	  tmp_char, tmp_object));
-	WAIT_STATE(ch, PULSE_VIOLENCE);
-      } else {
-	send_to_char("The wand seems powerless.\n\r", ch);
-        }
-     } else {
-         send_to_char("What should the wand be pointed at?\n\r", ch);
-        }
-   } else {
-    send_to_char("Use is normally only for wand's and staff's.\n\r", ch);
-  }
+				((*spellp->spell_pointer)
+						((byte) stick->obj_flags.value[0], ch, argument, SPELL_TYPE_WAND,
+						tmp_char, tmp_object));
+				WAIT_STATE(ch, PULSE_VIOLENCE);
+			} else {
+				send_to_char("The wand seems powerless.\n\r", ch);
+			}
+		} else {
+			send_to_char("What should the wand be pointed at?\n\r", ch);
+		}
+	} else {
+		send_to_char("Use is normally only for wands and staves.\n\r", ch);
+	}
 }
 
 void do_plr_noshout(struct char_data *ch, char *argument, int cmd)
@@ -2902,6 +2899,55 @@ dlog("in do_set_afk");
       SET_BIT(ch->pc->comm,COMM_AFK);
   }
 }
+
+void do_set_quest(struct char_data *ch, char *argument, int cmd)
+{
+	int qcheck = 0;
+	struct descriptor_data *i;
+	char buf[254];
+
+
+dlog("in do_set_quest");
+
+  if (!ch)
+    return;
+  if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
+    return;
+
+  if(IS_AFFECTED2(ch,AFF2_QUEST)) {
+    act("$c0008$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
+    act("$c0008You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
+    REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
+	} else {
+		/*imms can always go into questy mode */
+		if (IS_IMMORTAL(ch)) {
+			act("$c0007$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
+			act("$c0007The need to run a quest courses through your veins!", TRUE, ch, 0, 0, TO_CHAR);
+			SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
+		} else {
+			/* see if there's a connected, questy imm */
+			for (i = descriptor_list; i; i = i->next) {
+				if (CAN_SEE(ch, i->character)) {
+					if (!i->connected) {
+						if (IS_IMMORTAL(i->character)) {
+							if (IS_AFFECTED2(i->character, AFF2_QUEST)) {
+								qcheck = 1;
+							}
+						}
+					}
+				}
+			}
+			if (qcheck == 1) { /* there is */
+				act("$c0007$n joins the quest!", TRUE, ch, 0, 0, TO_ROOM);
+				act("$c0007Okay, you're now part of the quest!", TRUE, ch, 0, 0, TO_CHAR);
+				SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
+			} else { /* there isn't */
+				act("$c0007You cannot embark on a quest without Divine Guidance.", TRUE, ch, 0, 0, TO_CHAR);
+			}
+		}
+	}
+}
+
 void do_flag_status(struct char_data *ch,char *argument,int cmd) {
   send_to_char("Flag Status: \n\r",ch);
 /*

@@ -4223,7 +4223,7 @@ int GetFormType(struct char_data *ch)
   case RACE_GIANT_FIRE   :
   case RACE_GIANT_CLOUD  :
   case RACE_GIANT_STORM  :
-    case RACE_GIANT_STONE  :
+  case RACE_GIANT_STONE  :
   case RACE_GOLEM:
     return(TYPE_BLUDGEON);
     break;
@@ -4282,7 +4282,7 @@ int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 	int x=0, scheck = 0;
   if(v->style==FIGHTING_STYLE_DEFENSIVE) {
 	  if (FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE))
-	  	x = v->skills[SKILL_DODGE].learned*1.5;
+	  	x = v->skills[SKILL_DODGE].learned*2.5;
   }
 
   if (number(1, 20000) < (x==0 ? v->skills[SKILL_DODGE].learned : x)*

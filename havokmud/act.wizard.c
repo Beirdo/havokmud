@@ -927,7 +927,82 @@ dlog("in do_trans");
 	}
 }
 
+void do_qtrans(struct char_data *ch, char *argument, int cmd)
+{
+  struct descriptor_data *i;
+	struct char_data *victim;
+	char buf[100];
+	long target;
 
+dlog("in do_qtrans");
+
+	if (IS_NPC(ch))
+		return;
+
+	if (!IS_AFFECTED2(ch,AFF2_QUEST)) {
+		send_to_char("Alas, you cannot qtrans without sporting a quest flag.\n\r",ch);
+		return;
+	}
+
+	only_argument(argument,buf);
+	if (!*buf)
+		send_to_char("Usage: qtrans <name/all>\n\r",ch);
+	else if (str_cmp("all", buf)) {
+		if (!(victim = get_char_vis_world(ch,buf, NULL))) {
+			send_to_char("No-one by that name around.\n\r",ch);
+		} else {
+			if (IS_AFFECTED2(victim,AFF2_QUEST)) {
+				act("$n has gone off to help out an immortal.", FALSE, victim, 0, 0, TO_ROOM);
+				target = ch->in_room;
+				char_from_room(victim);
+				char_to_room(victim,target);
+				act("$n suddenly materializes, ready to embark on the quest.", FALSE, victim, 0, 0, TO_ROOM);
+				act("$n has called upon your help, you're unable to resist!",FALSE,ch,0,victim,TO_VICT);
+				do_look(victim,"",15);
+				send_to_char("Ok.\n\r",ch);
+			} else {
+				send_to_char("Alas, this person does not wish to aid you in your quest.\n\r",ch);
+			}
+		}
+	} else { /* qtrans all */
+ 	   for (i = descriptor_list; i; i = i->next) {
+			if (i->character != ch && !i->connected) {
+				if (IS_AFFECTED2(i->character, AFF2_QUEST)) {
+					victim = i->character;
+					act("$n has gone off to help out an immortal.", FALSE, victim, 0, 0, TO_ROOM);
+					target = ch->in_room;
+					char_from_room(victim);
+					char_to_room(victim,target);
+					act("$n suddenly materializes, ready to embark on the quest.", FALSE, victim, 0, 0, TO_ROOM);
+					act("$n has called upon your help, you're unable to resist!",FALSE,ch,0,victim,TO_VICT);
+					do_look(victim,"",15);
+				}
+			}
+		}
+		send_to_char("Ok.\n\r",ch);
+	}
+}
+
+void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd)
+{
+	char buf[254];
+
+dlog("in do_set_nooutdoor");
+
+	if (!ch)
+		return;
+	if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
+		return;
+
+	if(IS_AFFECTED2(ch,AFF2_NO_OUTDOOR)) {
+		act("You open your senses to time and weather conditions in the realm.", TRUE, ch, 0, 0, TO_CHAR);
+		REMOVE_BIT(ch->specials.affected_by2, AFF2_NO_OUTDOOR);
+	} else {
+		/*imms can go into nooutdoor mode */
+		act("You decide to ignore time and weather.", TRUE, ch, 0, 0, TO_CHAR);
+		SET_BIT(ch->specials.affected_by2, AFF2_NO_OUTDOOR);
+	}
+}
 
 void do_at(struct char_data *ch, char *argument, int cmd)
 {

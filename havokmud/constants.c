@@ -2891,6 +2891,8 @@ const char *affected_bits2[] =
 	"Slow",
 	"Blade-Barrier",
 	"style-berserked",
+	"Quest",
+	"NoOutdoorLogs",
 	"\n"
 };
 

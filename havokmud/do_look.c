@@ -9,7 +9,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
   struct obj_data *tmp_object, *found_object;
   struct char_data *tmp_char;
   char *tmp_desc;
-  static char *keywords[]= { 
+  static char *keywords[]= {
     "north",
     "east",
     "south",
@@ -21,10 +21,10 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     "",  /* Look at '' case */
     "room",
     "\n" };
-  
+
   if (!ch->desc)
     return;
-  
+
   if (GET_POS(ch) < POSITION_SLEEPING)
     send_to_char("You can't see anything but stars!\n\r", ch);
   else if (GET_POS(ch) == POSITION_SLEEPING)
@@ -33,7 +33,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     send_to_char("You can't see a damn thing, you're blinded!\n\r", ch);
   else if  ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) &&
 	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
-    send_to_char("It is very dark in here...\n\r", ch);
+    send_to_char("It is very dark in here.. Find a lightsource to see.\n\r", ch);
     if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
     }
@@ -55,21 +55,21 @@ void do_look(struct char_data *ch, char *argument, int cmd)
       keyword_no = 7;
       only_argument(argument, arg2);
     }
-    
+
 
     found = FALSE;
     tmp_object = 0;
     tmp_char	 = 0;
     tmp_desc	 = 0;
-    
+
     switch(keyword_no) {
       /* look <dir> */
     case 0 :
     case 1 :
-    case 2 : 
-    case 3 : 
+    case 2 :
+    case 3 :
     case 4 :
-    case 5 : {   
+    case 5 : {
       struct room_direction_data	*exitp;
       exitp = EXIT(ch, keyword_no);
       if (exitp) {
@@ -78,15 +78,15 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	} else {
 	  send_to_char("You see nothing special.\n\r", ch);
 	}
-	
-	if (IS_SET(exitp->exit_info, EX_CLOSED) && 
+
+	if (IS_SET(exitp->exit_info, EX_CLOSED) &&
 	    (exitp->keyword)) {
 	   if ((strcmp(fname(exitp->keyword), "secret")) &&
 	      (!IS_SET(exitp->exit_info, EX_SECRET))) {
-	      sprintf(buffer, "The %s is closed.\n\r", 
+	      sprintf(buffer, "The %s is closed.\n\r",
 		    fname(exitp->keyword));
 	      send_to_char(buffer, ch);
-	    } 
+	    }
 	 } else {
 	   if (IS_SET(exitp->exit_info, EX_ISDOOR) &&
 	      exitp->keyword) {
@@ -121,14 +121,14 @@ void do_look(struct char_data *ch, char *argument, int cmd)
       }
     }
       break;
-      
+
       /* look 'in'	*/
     case 6: {
       if (*arg2) {
 	/* Item carried */
 	bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
 			    FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
-	
+
 	if (bits) { /* Found something */
 	  if (GET_ITEM_TYPE(tmp_object)== ITEM_DRINKCON) 	{
 	    if (tmp_object->obj_flags.value[1] <= 0) {
@@ -167,7 +167,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
       }
     }
       break;
-      
+
       /* look 'at'	*/
     case 7 : {
       if (*arg2) {
@@ -181,28 +181,28 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	  }
 	  return;
 	}
-	/* 
-	  Search for Extra Descriptions in room and items 
+	/*
+	  Search for Extra Descriptions in room and items
 	  */
-	
+
 	/* Extra description in room?? */
 	if (!found) {
-	  tmp_desc = find_ex_description(arg2, 
+	  tmp_desc = find_ex_description(arg2,
 					 real_roomp(ch->in_room)->ex_description);
 	  if (tmp_desc) {
 	    page_string(ch->desc, tmp_desc, 0);
-	    return; 
+	    return;
 	  }
 	}
-	
+
 	/* extra descriptions in items */
-	
+
 	/* Equipment Used */
 	if (!found) {
 	  for (j = 0; j< MAX_WEAR && !found; j++) {
 	    if (ch->equipment[j]) {
 	      if (CAN_SEE_OBJ(ch,ch->equipment[j])) {
-		tmp_desc = find_ex_description(arg2, 
+		tmp_desc = find_ex_description(arg2,
 					       ch->equipment[j]->ex_description);
 		if (tmp_desc) {
 		  page_string(ch->desc, tmp_desc, 1);
@@ -214,11 +214,11 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	}
 	/* In inventory */
 	if (!found) {
-	  for(tmp_object = ch->carrying; 
-	      tmp_object && !found; 
+	  for(tmp_object = ch->carrying;
+	      tmp_object && !found;
 	      tmp_object = tmp_object->next_content) {
 	    if CAN_SEE_OBJ(ch, tmp_object) {
-	      tmp_desc = find_ex_description(arg2, 
+	      tmp_desc = find_ex_description(arg2,
 					     tmp_object->ex_description);
 	      if (tmp_desc) {
 		page_string(ch->desc, tmp_desc, 1);
@@ -228,13 +228,13 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	  }
 	}
 	/* Object In room */
-	
+
 	if (!found) {
-	  for(tmp_object = real_roomp(ch->in_room)->contents; 
-	      tmp_object && !found; 
+	  for(tmp_object = real_roomp(ch->in_room)->contents;
+	      tmp_object && !found;
 	      tmp_object = tmp_object->next_content) {
 	    if CAN_SEE_OBJ(ch, tmp_object) {
-	      tmp_desc = find_ex_description(arg2, 
+	      tmp_desc = find_ex_description(arg2,
 					     tmp_object->ex_description);
 	      if (tmp_desc) {
 		page_string(ch->desc, tmp_desc, 1);
@@ -246,29 +246,29 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	/* wrong argument */
 	if (bits) { /* If an object was found */
 	  if (!found)
-	    show_obj_to_char(found_object, ch, 5); 
+	    show_obj_to_char(found_object, ch, 5);
 	  /* Show no-description */
 	  else
-	    show_obj_to_char(found_object, ch, 6); 
+	    show_obj_to_char(found_object, ch, 6);
 	  /* Find hum, glow etc */
 	} else if (!found) {
 	  send_to_char("You do not see that here.\n\r", ch);
 	}
       } else {
-	/* no argument */	
+	/* no argument */
 	send_to_char("Look at what?\n\r", ch);
       }
     }
       break;
-      
-      /* look ''		*/ 
+
+      /* look ''		*/
     case 8 : {
       send_to_char(real_roomp(ch->in_room)->name, ch);
       send_to_char("\n\r", ch);
     /*  if (!IS_SET(ch->specials.act, PLR_BRIEF)) */
         if (FALSE)
 	send_to_char(real_roomp(ch->in_room)->description, ch);
-      
+
       if (!IS_NPC(ch)) {
 	if (IS_SET(ch->specials.act, PLR_HUNTING)) {
 	  if (ch->specials.hunting) {
@@ -291,32 +291,32 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	      ch->specials.hunting = 0;
 	      ch->hunt_dist = 0;
 	      REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-	    }  
+	    }
 	  } else {
 	    ch->hunt_dist = 0;
 	    REMOVE_BIT(ch->specials.act, ACT_HUNTING);
 	  }
 	}
       }
-      
+
       list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
-      
+
     }
       break;
-      
+
       /* wrong arg	*/
-    case -1 : 
+    case -1 :
       send_to_char("Sorry, I didn't understand that!\n\r", ch);
       break;
-      
+
       /* look 'room' */
     case 9 : {
-      
+
       send_to_char(real_roomp(ch->in_room)->name, ch);
       send_to_char("\n\r", ch);
       send_to_char(real_roomp(ch->in_room)->description, ch);
-      
+
       if (!IS_NPC(ch)) {
 	if (IS_SET(ch->specials.act, PLR_HUNTING)) {
 	  if (ch->specials.hunting) {
@@ -339,17 +339,17 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	      ch->specials.hunting = 0;
 	      ch->hunt_dist = 0;
 	      REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-	    }  
+	    }
 	  } else {
 	    ch->hunt_dist = 0;
 	    REMOVE_BIT(ch->specials.act, ACT_HUNTING);
 	  }
 	}
       }
-      
+
       list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
       list_char_in_room(real_roomp(ch->in_room)->people, ch);
-      
+
     }
       break;
     }
