@@ -326,7 +326,8 @@ char buf[128];
   for(i=0; i<st->number; i++) {
     if (st->objects[i].item_number > -1 &&        real_object(st->objects[i].item_number) > -1) {
       obj = read_object(st->objects[i].item_number, VIRTUAL);
-      obj_index[obj->item_number].number--;
+      if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+      	obj_index[obj->item_number].number--;
       obj->obj_flags.value[0] = st->objects[i].value[0];
       obj->obj_flags.value[1] = st->objects[i].value[1];
       obj->obj_flags.value[2] = st->objects[i].value[2];
@@ -1243,7 +1244,9 @@ void obj_store_to_room(int room, struct obj_file_u *st)
   for(i=0; i<st->number; i++) {
     if (st->objects[i].item_number > -1 &&
 	real_object(st->objects[i].item_number) > -1) {
+      if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
       obj = read_object(st->objects[i].item_number, VIRTUAL);
+
       obj_index[obj->item_number].number--;
       obj->obj_flags.value[0] = st->objects[i].value[0];
       obj->obj_flags.value[1] = st->objects[i].value[1];
