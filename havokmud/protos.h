@@ -649,7 +649,7 @@ int command_search( char *arg, int len, struct command_info *cmd_info,
 /* From limits.c */
 
 char *ClassTitles(struct char_data *ch);
-int graf(int age, int p0, int p1, int p2, int p3, int p4, int p5, int p6);
+int graf(int age, int race, int p0, int p1, int p2, int p3, int p4, int p5, int p6);
 int mana_limit(struct char_data *ch);
 int hit_limit(struct char_data *ch);
 int move_limit(struct char_data *ch);

@@ -5193,8 +5193,7 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_da
 	return(FALSE);
 }
 
-int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct
-room_data *rp, int type)
+int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
   char buf[256], obj_name1[180], obj_name2[180];
   char arg1[128];
@@ -5531,6 +5530,8 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 			v_num1 = obj_index[object->item_number].virtual;
 		}
 		
+		if (!ch->equipment[HOLD]) return(FALSE);
+ 
 		object =  ch->equipment[HOLD];
 		
 		v_num2 = obj_index[object->item_number].virtual;

@@ -3882,8 +3882,6 @@ dlog("in do_attrib");
       if (aff->type <= MAX_EXIST_SPELL) {
 	switch(aff->type) {
 	case SKILL_SNEAK:
-	case SPELL_POISON:
-	case SPELL_CURSE:
 	case SPELL_PRAYER:
 	case SKILL_SWIM:
 	case SKILL_SPY:

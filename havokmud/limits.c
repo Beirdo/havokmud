@@ -44,21 +44,26 @@ char *ClassTitles(struct char_data *ch)
 /* When age in 45..59 calculate the line between p3 & p4 */
 /* When age in 60..79 calculate the line between p4 & p5 */
 /* When age >= 80 return the value p6 */
-int graf(int age, int p0, int p1, int p2, int p3, int p4, int p5, int p6)
+int graf(int age, int race, int p0, int p1, int p2, int p3, int p4, int
+p5, int p6)
 {
-  
-  if (age < 15)
-    return(p0);                               /* < 15   */
-  else if (age <= 29) 
-    return (int) (p1+(((age-15)*(p2-p1))/15));  /* 15..29 */
-  else if (age <= 44)
-    return (int) (p2+(((age-30)*(p3-p2))/15));  /* 30..44 */
-  else if (age <= 59)
-    return (int) (p3+(((age-45)*(p4-p3))/15));  /* 45..59 */
-  else if (age <= 79)
-    return (int) (p4+(((age-60)*(p5-p4))/20));  /* 60..79 */
+  extern const struct race_type race_list[];
+
+  if (age < race_list[race].start)
+    return(p0);
+  else if (age <= race_list[race].mature) 
+    return (int) (p1+(((age-race_list[race].start)*(p2-p1))/(race_list[race].mature-race_list[race].start)));
+  else if (age <= race_list[race].middle)
+    return (int) (p2+(((age-race_list[race].mature)*(p3-p2))/(race_list[race].middle-race_list[race].mature)));
+  else if (age <= race_list[race].old)
+    return (int) (p3+(((age-race_list[race].middle)*(p4-p3))/(race_list[race].old-race_list[race].middle)));
+  else if (age <= race_list[race].ancient)
+    return (int) (p4+(((age-race_list[race].old)*(p5-p4))/(race_list[race].ancient-race_list[race].old)));
+  else if (age <= race_list[race].venerable)
+    return (int) (p5+(((age-race_list[race].ancient)*(p6-p5))/(race_list[race].venerable-race_list[race].ancient)));
   else
-    return(p6);                               /* >= 80 */
+    return (int) (p6+(((age-race_list[race].ancient)*(p6-p6-p5))/(race_list[race].venerable-race_list[race].ancient)));
+
 }
 
 
@@ -156,12 +161,14 @@ int mana_limit(struct char_data *ch)
 int hit_limit(struct char_data *ch)
 {
   int max;
+  int race;
   
   if (IS_PC(ch)) {
       struct time_info_data ma;
       age2(ch, &ma);
+      race = GET_RACE(ch);
       max = (ch->points.max_hit) +
-	(graf(ma.year, 2,4,17,14,8,0,-10));
+	(graf(ma.year, race, 2,4,17,14,8,0,-10));
   } else 
     max = (ch->points.max_hit);
   
@@ -219,6 +226,7 @@ int move_limit(struct char_data *ch)
 int mana_gain(struct char_data *ch)
 {
   int gain;
+  int race;
   
   if((IS_NPC(ch)) && (!IS_SET(ch->specials.act, ACT_POLYSELF))) {
     /* Neat and fast */
@@ -226,10 +234,11 @@ int mana_gain(struct char_data *ch)
   } else {
     struct time_info_data ma;
     age2(ch, &ma);
+    race = GET_RACE(ch);
 #ifdef NEWGAIN
-    gain = graf(ma.year, 3,9,12,16,20,16,2);
+    gain = graf(ma.year, race, 3,9,12,16,20,16,2);
 #else
-    gain = graf(ma.year, 2,4,6,8,10,16,2);
+    gain = graf(ma.year, race, 2,4,6,8,10,16,2);
 #endif    
   }    
     
@@ -297,7 +306,7 @@ int hit_gain(struct char_data *ch)
      /* Hitpoint gain pr. game hour */
 {
 
-  int gain, dam, i;
+  int gain, dam, i, race;
 
  
   if(IS_NPC(ch)) {
@@ -310,11 +319,12 @@ int hit_gain(struct char_data *ch)
     } else {
       struct time_info_data ma;
       age2(ch, &ma);
+      race = GET_RACE(ch);
 #ifdef NEWGAIN
 
-       gain = graf(ma.year, 3,9,12,16,12,6,1);
+       gain = graf(ma.year, race, 3,9,12,16,12,6,1);
 #else      
-      gain = graf(ma.year, 2,4,6,8,6,3,1);
+      gain = graf(ma.year, race, 2,4,6,8,6,3,1);
 #endif      
     }
   }    
@@ -405,7 +415,7 @@ if (!HasClass(ch,CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
 int move_gain(struct char_data *ch)
      /* move gain pr. game hour */
 {
-  int gain;
+  int gain, race;
   
   if(IS_NPC(ch)) {
     gain = 22;
@@ -416,11 +426,12 @@ int move_gain(struct char_data *ch)
   } else {
       struct time_info_data ma;
       age2(ch, &ma);
+      race = GET_RACE(ch);
     if (GET_POS(ch) != POSITION_FIGHTING)
 #ifdef NEWGAIN
-      gain = graf(ma.year, 15,21,25,28,20,10,3);
+      gain = graf(ma.year, race, 15,21,25,28,20,10,3);
 #else
-      gain = graf(ma.year, 10,15,20,22,15,7,1);
+      gain = graf(ma.year, race, 10,15,20,22,15,7,1);
 #endif      
 
     else
