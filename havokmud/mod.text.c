@@ -41,13 +41,16 @@ void do_chtextfile(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_chtextfile");
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
-    /* someone is forced to do something. can be bad! */
-    if (!ch->desc)
+    }
+    /* 
+     * someone is forced to do something. 
+     * can be bad! 
+     */
+    if (!ch->desc) {
         return;
-
+    }
     CREATE(tfd, struct edit_txt_msg, 1);
     ch->specials.txtedit = tfd;
     ch->specials.txtedit->author = (char *) strdup(GET_NAME(ch));
@@ -201,14 +204,14 @@ int write_txt_to_file(struct char_data *ch)
     struct edit_txt_msg *tfd;
     FILE           *fl;
 
-    if (!ch)
+    if (!ch) {
         return (FALSE);
-
+    }
     tfd = ch->specials.txtedit;
 
-    if (!tfd)
+    if (!tfd) {
         return (FALSE);
-
+    }
     switch (tfd->file) {
     case 1:
         sprintf(buf, "%s", NEWS_FILE);
@@ -244,8 +247,9 @@ int write_txt_to_file(struct char_data *ch)
     if (tfd->body) {
         fputs("\n", fl);
         remove_cr(buf, tfd->body);
-        if (buf[strlen(buf) - 1] == '~')
+        if (buf[strlen(buf) - 1] == '~') {
             buf[strlen(buf) - 1] = '\0';
+        }
         fputs(buf, fl);
     }
 
@@ -278,9 +282,9 @@ void ChangeTfdFile(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.tfd) {
         case CHANGE_TFD_FILE:
-            if (update < 1 || update > 3)
+            if (update < 1 || update > 3) {
                 return;
-            else {
+            } else {
                 tfd->file = update;
                 ch->specials.tfd = TFD_MAIN_MENU;
                 UpdateTfdMenu(ch);
@@ -363,8 +367,9 @@ void ChangeTfdDate(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (tfd->date)
+        if (tfd->date) {
             free(tfd->date);
+        }
         switch (tfd->file) {
         case 1:
             sprintf(buf, "$c000W[$c000BNews for %s$c000W]$c000w", arg);
@@ -422,8 +427,9 @@ void ChangeTfdBody(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew body of textfile: \n\r", ch);
     send_to_char("(Terminate with a /w. Press <C/R> again to continue. Use /? "
                  "for more info on editing strings.)\n\r", ch);
-    if (tfd->body)
+    if (tfd->body) {
         free(tfd->body);
+    }
     tfd->body = NULL;
     ch->desc->str = &tfd->body;
     ch->desc->max_str = MAX_STRING_LENGTH;
