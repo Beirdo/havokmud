@@ -606,8 +606,8 @@ struct spell_info_type {
     byte            beats;              /* Heartbeats until ready for next */
     byte            minimum_position;   /* Position for caster */
 
-    byte            min_level_cleric;   /* Level required for cleric */
     byte            min_level_magic;    /* Level required for magic user */
+    byte            min_level_cleric;   /* Level required for cleric */
     byte            min_level_druid;    /* Level required for druids */
     byte            min_level_sorcerer;
     byte            min_level_paladin;
