@@ -2408,6 +2408,9 @@ int does_Load(int num, int max ) {
   int temp;
   int temp2;
   char buff[200];
+  
+  return (TRUE);
+#if 0
   sprintf(buff,"num=%d  max=%d", num, max);
   log(buff);
   if (max == 0)
@@ -2424,6 +2427,7 @@ int does_Load(int num, int max ) {
     log("ITEM NEVER LOADED");
     return FALSE;
   }
+#endif
 }
 
 #define ZCMD zone_table[zone].cmd[cmd_no]

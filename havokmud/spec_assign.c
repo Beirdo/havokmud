@@ -1298,7 +1298,7 @@ void assign_mobiles()
     
     {31811,  MageGuildMaster },       /* Maeister gm guildmaster mage */
     {31825,  PsiGuildmaster },       /* Psikill psionist gm guildmaster */
-      // {31816,  BardGuildMaster },       /* Alvantil bard gm guildmaster*/
+    {31816,  BardGuildMaster },       /* Alvantil bard gm guildmaster*/
     {31827,  ThiefGuildMaster },      /* Littlefinger thief gm guildmaster*/
     {31814,  ClericGuildMaster },     /* Cirelic cleric gm guildmaster*/
     {31815,  PaladinGuildmaster },    /* Justiciar paladin gm guildmaster*/

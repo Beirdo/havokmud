@@ -2926,8 +2926,8 @@ dlog("in do_who");
 		sprintf(levels, "Lady of Communication");// -MW 02/20/2001
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
-	       else if(!str_cmp(GET_NAME(person), "Banon"))
-      		sprintf(levels, "Realm Creator");
+	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
+      		sprintf(levels, "Lesser Deity");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
