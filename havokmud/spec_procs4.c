@@ -624,9 +624,15 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 				 	ch_printf(ch,"$c000P%s tells you 'This mystical drink should do it!!!'\n\r$c000wHe hands you a mystical potion and you chug it down.(+1 Mana)\n\r",name);
 				 	break; */
 			 	case 1://4:
-				 	if(GET_RCON(ch) >= 17) {
+				 	if(GET_RCON(ch) >= 17){
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RCON(ch) >=  MaxConForRace(ch)){
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum con for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+
+					}else{
 						GET_RCON(ch) = GET_RCON(ch)+1;
 						GET_CON(ch)= GET_CON(ch)+1;
 
@@ -637,7 +643,13 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 	case 2://5:
 				 	if(GET_RSTR(ch) >= 18) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name ,traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RSTR(ch) >=  MaxStrForRace(ch)){
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+					}
+					else {
 						GET_PRAC(ch) -= traininglist[stat-1].level;
 						GET_RSTR(ch) = GET_RSTR(ch)+1;
 						GET_STR(ch)  = GET_STR(ch)+1;
@@ -648,7 +660,13 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 	case 3://6:
 				 	if(GET_RDEX(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RDEX(ch) >=  MaxDexForRace(ch)){
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+					}
+					else {
 					 	GET_PRAC(ch) -= traininglist[stat-1].level;
 					 	GET_RDEX(ch)= GET_RDEX(ch)+1;;
 					 	GET_DEX(ch)= GET_DEX(ch)+1;
@@ -658,7 +676,13 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 	case 4://7:
 					if(GET_RCHR(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RCHR(ch) >=  MaxChrForRace(ch)){
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+					}
+					else {
 					 	GET_PRAC(ch) -= traininglist[stat-1].level;
 					 	GET_RCHR(ch) = GET_RCHR(ch)+1;
 					 	GET_CHR(ch)= GET_CHR(ch)+1;
@@ -669,7 +693,12 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 	case 5://8:
 			 		if(GET_RINT(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.\n\r",name, traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RINT(ch) >=  MaxIntForRace(ch)){
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+					}else {
 			 			GET_PRAC(ch) -= traininglist[stat-1].level;
 			 			GET_RINT(ch) =GET_RINT(ch)+1;
 			 			GET_INT(ch)= GET_INT(ch)+1;
@@ -679,7 +708,13 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			 	case 6://9:
 			 		if(GET_RWIS(ch) >= 17) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
-					} else {
+						break;
+					}
+					if(GET_RWIS(ch) >=  MaxWisForRace(ch)){
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						break;
+
+					}else {
 						GET_PRAC(ch) -= traininglist[stat-1].level;
 						GET_RWIS(ch) = GET_RWIS(ch)+1;
 						GET_WIS(ch)= GET_WIS(ch)+1;
