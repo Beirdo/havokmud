@@ -1340,6 +1340,12 @@ void assign_mobiles()
 {31886, RepairGuy },
 {33185, board_ship },   /* note.. Not sure which corsair does waht */
 {32034, CorsairPush },
+
+
+{ 44129,  Magic_Pool},//  in proc_assign and add to protos
+{ 44115,  Read_Room},// in proc_assign and add to protos..
+
+
 #endif
 
     { -1, NULL },
@@ -1465,7 +1471,7 @@ void assign_rooms()
     {45450, Thunder_Fountain},
     {46378, bahamut_home},
 
-    {31860, pet_shops },
+    {31943, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
     /* Ash's Monk and Druid challenge rooms
        { 500,   druid_challenge_prep_room},

@@ -2092,6 +2092,8 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 
 /*Spec_procs3*/
 int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 
 /*Spec_procs2*/

@@ -5772,3 +5772,63 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 return(FALSE);
 }
 
+//{ 44129,  Magic_Pool}  in proc_assign and add to protos
+
+int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+  char buf[MAX_INPUT_LENGTH];
+  if (cmd==11) { /*11 = drink */
+    only_argument(arg,buf);
+
+    if (!str_cmp(buf, "pool")) {
+      return(FALSE);
+    }
+
+  	if(GET_COND(ch,THIRST)>21 || GET_COND(ch,FULL)>21) {
+		act("Ohhh.. Your stomach can't handle anymore.",FALSE,ch,0,0,TO_CHAR);
+		return(TRUE);
+	}
+    send_to_char("You drink from the pool\n\r", ch);
+    act("$n drinks from the pool", FALSE, ch, 0, 0, TO_ROOM);
+
+    GET_COND(ch,THIRST) = 24;
+    GET_COND(ch,FULL)+=1;
+
+    act("You suddently feel much better.",FALSE,ch,0,0,TO_CHAR);
+    cast_heal(50, ch, "", SPELL_TYPE_SPELL, ch, 0);
+    return(TRUE);
+  }
+}
+
+
+//{ 44115,  Read_Room} in proc_assign and add to protos..
+
+int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+  int key_room;
+  char buf[MAX_INPUT_LENGTH];
+  struct obj_data *obj;
+
+  if (cmd==63)  /*63 = read */
+    return FALSE;
+  if (!HasClass(ch, CLASS_PSI))
+	return FALSE;
+
+  only_argument(arg,buf);
+  if (!str_cmp(buf, "book")) {
+    return(FALSE);
+  }
+
+  obj = get_obj_in_list_vis(ch,buf,ch->carrying);
+
+  if(obj->item_number == ch->in_room)  {
+  	key_room = 1+ch->in_room;
+  	act("$n reads the book then disappears.", FALSE, ch, 0, 0, TO_ROOM);
+  	char_from_room(ch);
+  	char_to_room(ch, key_room);
+  	act("$n suddently appears.", FALSE, ch, 0, 0, TO_ROOM);
+  	return TRUE;
+  }
+
+  return FALSE;
+}

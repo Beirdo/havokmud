@@ -2289,6 +2289,30 @@ case CON_PRESS_ENTER:
     count=0;
     oops=FALSE;
 
+SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest.\n\r",d);
+SEND_TO_Q("Seperated by spaces.. don't duplicate\n\n\r", d);
+SEND_TO_Q("Stat. Description.\n\n",d);
+SEND_TO_Q("Strength(S). Strength is a measure of muscle, endurance and stamina combined.\n",d);
+SEND_TO_Q("Strength determines how much damage you do when you hit an opponent, as well\n",d);
+SEND_TO_Q("as how much weight you can carry.\n\n",d);
+
+SEND_TO_Q("Intelligence(I). Intelligence determines how well you can cast a spell, the higher\n",d);
+SEND_TO_Q("your intelligence the lower your chance of getting spell fail.\n\n",d);
+
+SEND_TO_Q("Wisdom(W).  Wisdom is a composite term for a characters judgement, will power\n",d);
+SEND_TO_Q("and intuitiveness. Wisdom has an effect on saving throws against magical\n",d);
+SEND_TO_Q("attacks made against you.\n\n",d);
+
+SEND_TO_Q("Dexterity(D).  Dexterity covers things such as agility, precision and hand-eye\n",d);
+SEND_TO_Q("coordination. It helps to determine whether you will be able to pick that stubborn\n",d);
+SEND_TO_Q("lock or manage to bash your opponent to the ground.\n\n",d);
+
+SEND_TO_Q("Constitution(C).  Constitution covers things such as a characters health, endurance\n",d);
+SEND_TO_Q("and resistances. The higher your constitution the more hit points you will gain\n",d);
+SEND_TO_Q("at each level.\n\n",d);
+
+SEND_TO_Q("Charisma(Ch).  Charisma is a measure of a characters persuasiveness and personal\n",d);
+SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents.\n\n",d);
 
    switch (*arg) {
 	case '0':
