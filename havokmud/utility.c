@@ -16,9 +16,6 @@
 #include "protos.h"
 #include "externs.h"
 
-#define NEWHELP_FILE      "ADD_HELP"    /* New help to add */
-#define QUESTLOG_FILE     "quest_log"   /* Log of quest transactions */
-
 
 void load_one_room(FILE * fl, struct room_data *rp);
 int pc_class_num(int clss);
@@ -3431,7 +3428,6 @@ int count_tqp(void)
 
 void traveling_qp(int pulse)
 {
-    char            buf[256];
     struct char_data *ch = NULL,
                    *newch;
     struct room_data *room;
@@ -3465,8 +3461,7 @@ void traveling_qp(int pulse)
                 obj_to_char(qt, ch);
             }
             Log("carried by player, gained a QT");
-            sprintf(buf, "%s just found a quest token.\n\r", GET_NAME(ch));
-            qlog(buf);
+            qlog(ch, "found a quest token.");
             extract_obj(travelqp);
             f = 0;
         } else if (qp_patience < 8) {
@@ -5960,29 +5955,9 @@ char           *DescAge(int age, int race)
     }
 }
 
-/*
- * Quest Log - Basically responsible for keeping a log of all quest
- * transactions. param desc - This is the data to be entered into the log.
- * By: Greg Hovey.
- */
-void qlog(char *desc)
+void qlog(struct char_data *ch, char *text)
 {
-    FILE           *fl;
-    char            buf[256];
-    time_t            ct;
-    char           *tmstr;
-
-    ct = time(0);
-    tmstr = asctime(localtime(&ct));
-    *(tmstr + strlen(tmstr) - 1) = '\0';
-
-    if (!(fl = fopen(QUESTLOG_FILE, "a"))) {
-        Log("Could not open the QuestLog-file.\n\r");
-    } else {
-        sprintf(buf, "**:%s-> %s", tmstr, desc);
-        fputs(buf, fl);
-        fclose(fl);
-    }
+    db_report_entry(REPORT_QUEST, ch, text );
 }
 
 void do_mrebuild(struct char_data *ch, char *argument, int cmd)

@@ -2537,6 +2537,7 @@ struct lang_def {
 #define REPORT_WIZBUG       5
 #define REPORT_WIZIDEA      6
 #define REPORT_WIZTYPO      7
+#define REPORT_QUEST        8
 
 struct user_report {
     void               *res;

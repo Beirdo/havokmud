@@ -2629,7 +2629,6 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
     int             qcheck = 0;
     struct descriptor_data *i;
     struct char_data *tmp;
-    char            buf[254];
 
     dlog("in do_set_quest");
 
@@ -2703,12 +2702,7 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
          */
         if (IS_IMMORTAL(ch)) {
             act("$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
-            sprintf(buf, "%s started a quest.\n\r", GET_NAME(ch));
-
-            /*
-             * quest log this
-             */
-            qlog(buf);
+            qlog(ch, "started a quest!");
             act("The need to run a quest courses through your veins!",
                 TRUE, ch, 0, 0, TO_CHAR);
             SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
@@ -2729,8 +2723,7 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
                  * there is
                  */
                 act("$n joins the quest!", TRUE, ch, 0, 0, TO_ROOM);
-                sprintf(buf, "%s just joined the quest.\n\r", GET_NAME(ch));
-                qlog(buf);
+                qlog(ch, "joined the quest.");
                 act("Okay, you're now part of the quest!", TRUE, ch, 0, 0,
                     TO_CHAR);
                 SET_BIT(ch->specials.affected_by2, AFF2_QUEST);

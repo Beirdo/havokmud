@@ -4793,9 +4793,8 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg,
                     ch_printf(ch, "%s gives you %s\n\r", mobname,
                               obj->short_description);
                     obj_to_char(obj, ch);
-                    sprintf(buf, "%s just bought %s\n\r",
-                            GET_NAME(ch), obj->short_description);
-                    qlog(buf);
+                    sprintf(buf, "bought %s", obj->short_description);
+                    qlog(ch, buf);
                 } else {
                     ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'You don't"
                                   " have enought QPoints for that item'\n\r",
@@ -7079,9 +7078,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 if (itemgranted == 1002 || itemgranted == 1003 || 
                     itemgranted == 1004) {
                     ch->specials.questwon = 0;
-                    sprintf(buf, "%s just won a token.. Received item %s\n\r",
-                            GET_NAME(ch), obj2->name);
-                    qlog(buf);
+                    sprintf(buf, "won a token.. Received item %s", obj2->name);
+                    qlog(ch, buf);
                 }
                 obj_to_char(obj2, ch);
 

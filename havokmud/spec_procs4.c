@@ -1780,7 +1780,6 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
 
 int qp_potion(struct char_data *ch, int cmd, char *arg)
 {
-    char            buf[254];
     char           *arg1;
     struct obj_data *found;
     struct obj_data *obj;
@@ -1819,8 +1818,8 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
         act("$n quaffs $p.", TRUE, ch, obj, 0, TO_ROOM);
         act("You quaff $p which dissolves.", FALSE, ch, obj, 0, TO_CHAR);
         act("You have claimed your quest point!", FALSE, ch, obj, 0, TO_CHAR);
-        sprintf(buf, "%s just quaffed a quest potion.\n\r", GET_NAME(ch));
-        qlog(buf);
+        qlog(ch, "quaffed a quest potion.");
+
         ch->player.q_points++;
         do_save(ch, NULL, 0);
         extract_obj(obj);

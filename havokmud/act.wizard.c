@@ -6994,9 +6994,8 @@ void do_reward(struct char_data *ch, char *argument, int cmd)
             GET_NAME(d->character));
     send_to_char(buf, ch);
 
-    sprintf(buf, "%s just awarded %d quest points to %s\n\r", GET_NAME(ch),
-            amount, GET_NAME(d->character));
-    qlog(buf);
+    sprintf(buf, "awarded %d quest points to %s", amount, GET_NAME(ch));
+    qlog(d->character, buf);
 
     sprintf(buf, "You were just awarded %d Quest points. You now have %d "
                  "Quest points\n\r", amount, d->character->player.q_points);
@@ -7084,9 +7083,10 @@ void do_punish(struct char_data *ch, char *argument, int cmd)
     sprintf(buf, "You just punished %s of  %u Quest points\n\r",
             GET_NAME(d->character), amount);
     send_to_char(buf, ch);
-    sprintf(buf, "%s just punished %d quest points from %s\n\r",
-            GET_NAME(ch), amount, GET_NAME(d->character));
-    qlog(buf);
+
+    sprintf(buf, "punished %d quest points by %s", amount, GET_NAME(ch));
+    qlog(d->character, buf);
+
     sprintf(buf, "You were just punished of  %u Quest points. You now have %u "
                  "Quest points\n\r", amount, d->character->player.q_points);
     send_to_char(buf, d->character);
@@ -7173,9 +7173,8 @@ void do_spend(struct char_data *ch, char *argument, int cmd)
             GET_NAME(d->character), amount);
     send_to_char(buf, ch);
 
-    sprintf(buf, "%s just spent %d of %s quest points.\n\r", GET_NAME(ch),
-            amount, GET_NAME(d->character));
-    qlog(buf);
+    sprintf(buf, "spent %d quest points (by %s)", amount, GET_NAME(ch));
+    qlog(d->character, buf);
 
     sprintf(buf, "You just spent %u Quest points. You now have %u Quest "
                  "points\n\r", amount, d->character->player.q_points);

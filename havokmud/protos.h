@@ -3231,7 +3231,7 @@ void            do_mobTell(struct char_data *ch, char *mob,
 /*
  * Utilities 
  */
-void            qlog(char *desc);
+void qlog(struct char_data *ch, char *text);
 void            do_orebuild(struct char_data *ch, char *argument,
                             int cmd);
 void            do_mrebuild(struct char_data *ch, char *argument,
