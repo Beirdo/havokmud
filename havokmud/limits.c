@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "protos.h"
 
@@ -1073,7 +1074,11 @@ void gain_exp(struct char_data *ch, int gain)
             }
         }
 
+        /* Hard limit so we don't overflow */
+        gain = MIN( gain, INT_MAX - GET_EXP(ch) );
+
         GET_EXP(ch) += gain;
+
         if (!IS_SET(ch->specials.act, PLR_LEGEND)) {
             CheckLegendStatus(ch);
         }
@@ -1088,6 +1093,7 @@ void gain_exp(struct char_data *ch, int gain)
                 GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
             }
         }
+
     } else {
         /* 
          * Negative gain 
