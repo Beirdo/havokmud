@@ -151,12 +151,13 @@ int get_int(int min, int max, int zero_ok)
         buff[strlen(buff) - 1] = '\0';
         i = atoi(buff);
 
-        if (i > max || i < min)
+        if (i > max || i < min) {
             printf("Hey bozo, you can't do that.\n");
-        else if (i == 0 && !zero_ok)
+        } else if (i == 0 && !zero_ok) {
             printf("Sorry peanut-head, that was unacceptable.\n");
-        else
+        } else {
             isok = TRUE;
+        }
     } while (!isok);
 
     return i;
@@ -169,10 +170,11 @@ get_string(char *s, int len)
         printf(" =>");
         fgets(s, len, stdin);
         s[strlen(s) - 1] = '\0';
-        if (*s == '\0')
+        if (*s == '\0') {
             printf("There was nothing there!\n");
-        else if (*s == ' ')
+        } else if (*s == ' ') {
             printf("Please do not start with a blank.\n");
+        }
     } while (*s == '\0' || *s == ' ');
 }
 
@@ -200,9 +202,9 @@ main(int argc, char *argv[])
     orig_ammt = load_playerfile(argv);
     CURRENT_TIME = time(0);
 
-    for (i = 0; i < orig_ammt; i++)
+    for (i = 0; i < orig_ammt; i++) {
         dummy[i]->AXE = FALSE;
-
+    }
     printf("\nStructures initialized.");
     printf("\nCurrent time: %s\n", time_print(CURRENT_TIME));
 
@@ -321,10 +323,11 @@ void muck(int orig_ammt, char name[80])
     printf("Do you wish to search from the beginning? (Y/N) ");
     get_string(buffer, 255);
 
-    if ((buffer[0] == 'y') || (buffer[0] == 'Y'))
+    if ((buffer[0] == 'y') || (buffer[0] == 'Y')) {
         f = 0;
-    else
+    } else {
         f = our_pos;
+    }
 
     printf("\nf:%d:our_pos:%d\n", f, our_pos);
 
@@ -373,8 +376,9 @@ void muck(int orig_ammt, char name[80])
                         printf("New Level [%d]: ",
                                dummy[i]->grunt.level[count]);
                         f = get_int(0, 60, TRUE);
-                        if (f)
+                        if (f) {
                             dummy[i]->grunt.level[count] = f;
+                        }
                     }
 
                     printf("Levels: M:%d C:%d W:%d T:%d D:%d B:%d S:%d P:%d "
@@ -494,8 +498,9 @@ void specific_axe(int orig_ammt, char *name)
         }
     }
 
-    if (!j)
+    if (!j) {
         printf("%s's head could not be found.", name);
+    }
 }
 
 void inactive_god_axe(int orig_ammt, time_t CURRENT_TIME)
@@ -654,25 +659,27 @@ int convert_playerfile(char *argv[])
     }
 
     for (ammt = 0; ammt < orig_ammt; ammt++) {
-        /* NEW Class */
+        /* 
+         * NEW Class 
+         */
         dummy[ammt]->grunt2.class = dummy[ammt]->grunt.class;
         dummy[ammt]->grunt2.sex = dummy[ammt]->grunt.sex;
 
         for (tmpi = 0; tmpi <= ABS_MAX_CLASS; tmpi++) {
             dummy[ammt]->grunt2.level[tmpi] = dummy[ammt]->grunt.level[tmpi];
         }
-        for (tmpi = ABS_MAX_CLASS; tmpi <= NEW_ABS_MAX_CLASS; tmpi++)
+        for (tmpi = ABS_MAX_CLASS; tmpi <= NEW_ABS_MAX_CLASS; tmpi++) {
             dummy[ammt]->grunt2.level[tmpi] = 0;
-
+        }
         dummy[ammt]->grunt2.birth = dummy[ammt]->grunt.birth;
         dummy[ammt]->grunt2.played = dummy[ammt]->grunt.played;
         dummy[ammt]->grunt2.race = dummy[ammt]->grunt.race;
         dummy[ammt]->grunt2.weight = dummy[ammt]->grunt.weight;
         dummy[ammt]->grunt2.height = dummy[ammt]->grunt.height;
 
-        for (tmpi = 0; tmpi <= strlen(dummy[ammt]->grunt.title); tmpi++)
+        for (tmpi = 0; tmpi <= strlen(dummy[ammt]->grunt.title); tmpi++) {
             dummy[ammt]->grunt2.title[tmpi] = dummy[ammt]->grunt.title[tmpi];
-
+        }
         for (tmpi = 0; tmpi <= strlen(dummy[ammt]->grunt.extra_str); tmpi++) {
             dummy[ammt]->grunt2.extra_str[tmpi] = 
                 dummy[ammt]->grunt.extra_str[tmpi];
@@ -813,37 +820,60 @@ char           *time_print(long et)
     *(buff + strlen(buff) - 1) = '\0';
     return (buff);
 }
-
-/*
- * int SearchForNameFromPos(char *arg, int pos) { register int i;
- * 
- * if(pos > orig_amnt) return(-1);
- * 
- * for(i = pos; i < orig_amnt; i++) if(!strcasecmp(dummy[i]->grunt.name,
- * arg)) return(i);
- * 
- * return(-1); } 
- */
+#if 0
+int SearchForNameFromPos(char *arg, int pos) 
+{   
+    register int i;
+    
+    if(pos > orig_amnt) {
+        return(-1);
+    }
+    for(i = pos; i < orig_amnt; i++) {
+        if(!strcasecmp(dummy[i]->grunt.name, arg)) {
+            return(i);
+        }
+    }
+    return(-1); 
+} 
+#endif
 
 void access_rent_files(int number, int ITEM, char buf[40])
 {
-    /*
-     * int ReadObjs(FILE *fl, struct obj_file_u *st);
-     * 
-     * char buff2[80]; FILE *fl; int i,j,tried,succeed; struct obj_file_u
-     * muck;
-     * 
-     * for(i=0;i<number;i++) { j=tried=succeed=0; while(buf[j] != '\0' &&
-     * j<30) { buf[j]=tolower(buf[j]); j++; } buf[j]='\0'; if(buf[0]=='e')
-     * printf("\nAtteming to open %s's rent file.",buf); if(strlen(buff) >
-     * sprintf) { (,"rent/%s",lower(buff)); if((fl=fopen(buf,"r")) != NULL
-     * ) { if(ReadObjs(fl,&muck)) { succeed++; printf("\nReading the %d
-     * objects in %s's rent file.", muck.number,buff);
-     * for(j=0;j<muck.number && j< 250;j++) {
-     * if(muck.objects[j].item_number == (sh_int) ITEM) { printf("\n%s has
-     * it!",buff); } } } } } } printf("\nAttempted to read %d files, read
-     * %d in actuality.",i,succeed); 
-     */
+#if 0
+    int ReadObjs(FILE *fl, struct obj_file_u *st);
+    char buff2[80]; 
+    FILE *fl; 
+    int i,j,tried,succeed; 
+    struct obj_file_umuck;
+      
+    for (i=0;i<number;i++) { 
+        j=tried=succeed=0; 
+        while (buf[j] != '\0' && j<30) { 
+            buf[j]=tolower(buf[j]); 
+            j++; 
+        } 
+        buf[j]='\0'; 
+        if (buf[0]=='e') {
+            printf("\nAtteming to open %s's rent file.",buf); 
+        }
+        if (strlen(buff) > sprintf) { 
+            (,"rent/%s",lower(buff)); 
+            if ((fl=fopen(buf,"r")) != NULL) { 
+                if (ReadObjs(fl,&muck)) { 
+                    succeed++; 
+                    printf("\nReading the %d objects in %s's rent file.", 
+                           muck.number,buff);
+                    for (j=0;j<muck.number && j< 250;j++) {
+                        if (muck.objects[j].item_number == (sh_int) ITEM) { 
+                            printf("\n%s has it!",buff); 
+                        } 
+                    } 
+                } 
+            } 
+        } 
+    } 
+    printf("\nAttempted to read %d files, read %d in actuality.",i,succeed); 
+#endif     
 }
 
 int ReadObjs(FILE * fl, struct obj_file_u *st)
