@@ -4549,7 +4549,11 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 			 [GET_LEVEL(ch, DRUID_LEVEL_IND)+1].exp-100) {
       send_to_char("You cannot advance now\n\r", ch);
       return(TRUE);
-    }
+    } else if(GET_LEVEL(ch, WARRIOR_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful to be trained here... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
 
     if (chal->river_speed != 0) {
       send_to_char("The challenge room is busy.. please wait\n\r", ch);
@@ -5583,8 +5587,12 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+        } else if(GET_LEVEL(ch, BARBARIAN_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,BARBARIAN_LEVEL_IND);
 	  return(TRUE);
          }
@@ -5786,8 +5794,12 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+         } else if(GET_LEVEL(ch, RANGER_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,RANGER_LEVEL_IND);
 	  return(TRUE);
          }
@@ -5913,10 +5925,14 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+         } else if(GET_LEVEL(ch, PSI_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,PSI_LEVEL_IND);
-	  return(TRUE);
+		  return(TRUE);
          }
 	} else {
 	  send_to_char("I cannot train you.. You must find another.\n\r",ch);
@@ -6028,8 +6044,12 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+		} else if(GET_LEVEL(ch, PALADIN_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,PALADIN_LEVEL_IND);
 	  return(TRUE);
          }

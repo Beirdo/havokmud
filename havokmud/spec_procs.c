@@ -183,7 +183,12 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	 titles[MAGE_LEVEL_IND][GET_LEVEL(ch, MAGE_LEVEL_IND)+1].exp) {
           send_to_char("You are not yet ready to gain\n\r", ch);
           return(FALSE);
-         } else {
+        } else if(GET_LEVEL(ch, MAGE_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,MAGE_LEVEL_IND);
 	  return(TRUE);
          }
@@ -352,8 +357,12 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+       } else if(GET_LEVEL(ch, CLERIC_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,CLERIC_LEVEL_IND);
 	  return(TRUE);
          }
@@ -492,8 +501,12 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
+         } else if(GET_LEVEL(ch, THIEF_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
           GainLevel(ch,THIEF_LEVEL_IND);
 	  return(TRUE);
          }
@@ -788,10 +801,15 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	 {
           send_to_char("You are not yet ready to gain.\n\r", ch);
           return(FALSE);
-         } else
-         {
-          GainLevel(ch,WARRIOR_LEVEL_IND);
-	  return(TRUE);
+         } else if(GET_LEVEL(ch, WARRIOR_LEVEL_IND)==50)
+	     {
+	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
+			return(FALSE);
+	     }
+         else {
+
+	  	  GainLevel(ch,WARRIOR_LEVEL_IND);
+	  	  return(TRUE);
          }
      } /* end gain */
 
