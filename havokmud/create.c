@@ -1,8 +1,8 @@
 
 #include <stdio.h>
- 
+
 #include "protos.h"
- 
+
 #define MAIN_MENU           0
 #define CHANGE_NAME         1
 #define CHANGE_DESC         2
@@ -30,56 +30,56 @@
 #define CHANGE_KEY_WEST     24
 #define CHANGE_KEY_UP       25
 #define CHANGE_KEY_DOWN     26
- 
+
 #define ENTER_CHECK        1
- 
+
 extern const char *room_bits[];
 extern const char *exit_bits[];
 extern const char *sector_types[];
- 
- 
+
+
 char *edit_menu = "    1) Name                       2) Description\n\r"
                   "    3) Flags                      4) Sector Type\n\r"
                   "    5) Exits\n\r\n\r";
- 
+
 char *exit_menu = "    1) North                      2) East\n\r"
                   "    3) South                      4) West\n\r"
                   "    5) Up                         6) Down\n\r"
                   "\n\r";
- 
- 
+
+
 void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int i, row, update;
  char buf[255];
- 
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.edit = MAIN_MENU;
         UpdateRoomMenu(ch);
         return;
     }
- 
+
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
-    if(update < 0 || update > 14)
+    if(update < 0 || update > 16)
        return;
     i = 1<<update;
- 
+
     if(IS_SET(rp->room_flags, i))
        REMOVE_BIT(rp->room_flags, i);
     else
        SET_BIT(rp->room_flags, i);
   }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  sprintf(buf, "Room Flags:");
  send_to_char(buf, ch);
- 
+
  row = 0;
- for(i = 0; i < 15; i++) {
+ for(i = 0; i < 17; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -87,13 +87,13 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg, int 
     sprintf(buf, "%-2d [%s] %s", i + 1, ((rp->room_flags & (1<<i)) ? "X" : " "), room_bits[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);
 }
- 
- 
+
+
 void do_redit(struct char_data *ch, char *arg, int cmd)
 {
  struct room_data *rp;
@@ -102,36 +102,36 @@ void do_redit(struct char_data *ch, char *arg, int cmd)
 
  if(IS_NPC(ch))
     return;
- 
+
   if ((IS_NPC(ch)) || (GetMaxLevel(ch)<LOW_IMMORTAL))
     return;
- 
+
   if (!ch->desc) /* someone is forced to do something. can be bad! */
     return;      /* the ch->desc->str field will cause problems... */
- 
- 
+
+
  if( (GetMaxLevel(ch) < 56) &&  (rp->zone != GET_ZONE(ch)) )  {
     send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
     return;
   }
- 
- 
+
+
  ch->specials.edit = MAIN_MENU;
  ch->desc->connected = CON_EDITING;
- 
+
  act("$n has begun editing.", FALSE, ch, 0, 0, TO_ROOM);
- 
+
  UpdateRoomMenu(ch);
 }
- 
- 
+
+
 void UpdateRoomMenu(struct char_data *ch)
 {
  char buf[255];
  struct room_data *rp;
- 
+
  rp = real_roomp(ch->in_room);
- 
+
  send_to_char(VT_HOMECLR, ch);
  sprintf(buf, VT_CURSPOS, 1, 1);
  send_to_char(buf, ch);
@@ -151,8 +151,8 @@ void UpdateRoomMenu(struct char_data *ch)
  send_to_char(edit_menu, ch);
  send_to_char("--> ", ch);
 }
- 
- 
+
+
 void RoomEdit(struct char_data *ch, char *arg)
 {
  if(ch->specials.edit == MAIN_MENU) {
@@ -183,7 +183,7 @@ void RoomEdit(struct char_data *ch, char *arg)
                    return;
     }
   }
- 
+
  switch(ch->specials.edit) {
  case CHANGE_NAME: ChangeRoomName(real_roomp(ch->in_room), ch, arg, 0);
          return;
@@ -222,19 +222,19 @@ void RoomEdit(struct char_data *ch, char *arg)
           return;
  }
 }
- 
- 
+
+
 void ChangeRoomName(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- 
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.edit = MAIN_MENU;
         UpdateRoomMenu(ch);
         return;
     }
- 
+
  if(type != ENTER_CHECK) {
     if(rp->name)
        free(rp->name);
@@ -243,31 +243,31 @@ void ChangeRoomName(struct room_data *rp, struct char_data *ch, char *arg, int t
     UpdateRoomMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Room Name: %s", rp->name);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Room Name: ", ch);
- 
+
  return;
-} 
- 
- 
+}
+
+
 void ChangeRoomDesc(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- 
+
  if(type != ENTER_CHECK) {
     ch->specials.edit = MAIN_MENU;
     UpdateRoomMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Room Description:\n\r");
  send_to_char(buf, ch);
  send_to_char(rp->description, ch);
@@ -279,24 +279,24 @@ if (rp->description)
  ch->desc->str = &rp->description;
  ch->desc->max_str = MAX_STRING_LENGTH;
  return;
-} 
- 
- 
+}
+
+
 void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int i, row, update;
  char buf[255];
- 
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.edit = MAIN_MENU;
         UpdateRoomMenu(ch);
         return;
     }
- 
+
  update = atoi(arg);
  update--;
- 
+
  if(type != ENTER_CHECK) {
     switch(ch->specials.edit) {
     case CHANGE_TYPE: if(update < 0 || update > 11)
@@ -317,7 +317,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
                        send_to_char("\n\rRiver Direction (0 - 5): ", ch);
                        ch->specials.edit = CHANGE_TYPE3;
                        return;
-    case CHANGE_TYPE3: update++; 
+    case CHANGE_TYPE3: update++;
                        if(update < 0 || update > 5) {
                           send_to_char("Direction must be between 0 and 5.\n\r", ch);
                           return;
@@ -328,12 +328,12 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
                        return;
     }
    }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  sprintf(buf, "Sector Type: %s", sector_types[rp->sector_type]);
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 12; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
@@ -343,31 +343,31 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
     sprintf(buf, "%-2d %s", i + 1, sector_types[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to set to, <C/R> to return to main menu.\n\r--> ", ch);
 }
- 
- 
+
+
 void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int update;
  char buf[1024];
- 
+
  if(type != ENTER_CHECK) {
     if(!*arg || (*arg == '\n')) {
         ch->specials.edit = MAIN_MENU;
         UpdateRoomMenu(ch);
         return;
     }
- 
+
     update = atoi(arg) - 1;
     if(update == -1) {
        ChangeExitDir(rp, ch, "", ENTER_CHECK);
        return;
     }
- 
+
     switch(update) {
            case 0: ch->specials.edit = CHANGE_EXIT_NORTH;
                    AddExitToRoom(rp, ch, "", ENTER_CHECK);
@@ -400,10 +400,10 @@ void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg, int ty
            default: ChangeExitDir(rp, ch, "", ENTER_CHECK);
                     return;
     }
- 
+
  }
- 
- 
+
+
  send_to_char(VT_HOMECLR, ch);
  sprintf(buf, "Room Name: %s", rp->name);
  send_to_char(buf, ch);
@@ -417,17 +417,17 @@ void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg, int ty
  send_to_char("--> ", ch);
  return;
 }
- 
- 
+
+
 void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int update, dir, row, i = 0;
  char buf[255];
- 
+
 #if 0
  extern char *exit_bits[];
-#endif 
- 
+#endif
+
  switch(ch->specials.edit) {
         case CHANGE_EXIT_NORTH: dir = 0;
                                 break;
@@ -442,7 +442,7 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg, int ty
         case CHANGE_EXIT_DOWN:  dir = 5;
                                 break;
  }
- 
+
  if(type != ENTER_CHECK) {
     if(!*arg || (*arg == '\n')) {
         switch(dir) {
@@ -463,51 +463,51 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg, int ty
         ChangeExitNumber(rp, ch, "", ENTER_CHECK);
         return;
     }
- 
+
     update = atoi(arg) - 1;
- 
+
     if(update < 0 || update > 6)
        return;
     i = 1<<update;
- 
+
     if(IS_SET(rp->dir_option[dir]->exit_info, i))
        REMOVE_BIT(rp->dir_option[dir]->exit_info, i);
     else
        SET_BIT(rp->dir_option[dir]->exit_info, i);
  }
- 
+
  else if(!rp->dir_option[dir]) {
     CREATE(rp->dir_option[dir], struct room_direction_data, 1);
     rp->dir_option[dir]->exit_info = 0;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  sprintf(buf, "Exit Flags:");
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 7; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
     send_to_char(buf, ch);
-    sprintf(buf, "%-2d [%s] %s", i + 1, ((rp->dir_option[dir]->exit_info & (1<<i)) ? "X" : " "), 
+    sprintf(buf, "%-2d [%s] %s", i + 1, ((rp->dir_option[dir]->exit_info & (1<<i)) ? "X" : " "),
             exit_bits[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to continue.\n\r--> ", ch);
 }
- 
- 
+
+
 void ChangeExitNumber(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int dir, update;
  char buf[255];
- 
+
  switch(ch->specials.edit) {
         case CHANGE_NUMBER_NORTH: dir = 0;
                                   break;
@@ -522,21 +522,21 @@ void ChangeExitNumber(struct room_data *rp, struct char_data *ch, char *arg, int
         case CHANGE_NUMBER_DOWN:  dir = 5;
                                   break;
  }
- 
+
  if(type == ENTER_CHECK)
     return;
- 
+
  update = atoi(arg);
- 
+
  if(update < 0 || update > WORLD_SIZE) {
   sprintf(buf,"\n\rRoom number must be between 0 and %d.\n\r",WORLD_SIZE);
     send_to_char(buf, ch);
     send_to_char("\n\rExit to Room: ", ch);
     return;
  }
- 
+
  rp->dir_option[dir]->to_room = update;
- 
+
  switch(dir) {
         case 0: ch->specials.edit = CHANGE_KEY_NORTH;
                 break;
@@ -551,18 +551,18 @@ void ChangeExitNumber(struct room_data *rp, struct char_data *ch, char *arg, int
         case 5: ch->specials.edit = CHANGE_KEY_DOWN;
                 break;
  }
- 
+
  send_to_char("\n\rKey Number (0 for none): ", ch);
- 
+
  ChangeKeyNumber(rp, ch, "", ENTER_CHECK);
 }
- 
- 
+
+
 void ChangeKeyNumber(struct room_data *rp, struct char_data *ch, char *arg, int type)
 {
  int dir, update;
  char buf[255];
- 
+
  switch(ch->specials.edit) {
         case CHANGE_KEY_NORTH: dir = 0;
                                break;
@@ -577,12 +577,12 @@ void ChangeKeyNumber(struct room_data *rp, struct char_data *ch, char *arg, int 
         case CHANGE_KEY_DOWN:  dir = 5;
                                break;
  }
- 
+
  if(type == ENTER_CHECK)
     return;
- 
+
  update = atoi(arg);
- 
+
  if(!rp->dir_option[dir]->keyword)
     rp->dir_option[dir]->keyword = (char *)strdup("door");
 
@@ -591,7 +591,7 @@ void ChangeKeyNumber(struct room_data *rp, struct char_data *ch, char *arg, int 
     send_to_char("\n\rKey Number (0 for none): ", ch);
     return;
  }
- 
+
  rp->dir_option[dir]->key = update;
 
  ch->specials.edit =  CHANGE_EXIT;

@@ -262,7 +262,7 @@ if (!ch->skills)
 
         AddHated(victim, ch);
         if (IS_PC(ch) && IS_PC(victim))
-	GET_ALIGNMENT(ch)-=50;
+			GET_ALIGNMENT(ch)-=50;
 
         hit(ch,victim,SKILL_BACKSTAB);
 

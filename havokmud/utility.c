@@ -3014,6 +3014,9 @@ void AdvicePulseStuff(int pulse)
   if (pulse < 0)
     return;
 
+  if(number(0,1)==1)
+  	return;
+
   for (i = descriptor_list; i; i=i->next) {
     if (!i->connected) {
       ch = i->character;
@@ -3022,7 +3025,8 @@ void AdvicePulseStuff(int pulse)
 		if (ch->in_room != NOWHERE) {
 			if (IS_SET(ch->player.user_flags, NEW_USER)) {
 				sprintf(buffer,"$c000GAdvice: '$c000w%s$c000G'",advicelist[number(0,numberadvice)]);
-				send_to_char(buffer,ch);
+				if(AWAKE(ch))
+					send_to_char(buffer,ch);
 			}
       	}
       }

@@ -401,6 +401,7 @@ void coma(int s);
 void send_to_char(char *messg, struct char_data *ch);
 void save_all();
 void send_to_all(char *messg);
+void send_to_all_awake(char *messg);
 void send_to_outdoor(char *messg);
 void send_to_desert(char *messg);
 void send_to_out_other(char *messg);

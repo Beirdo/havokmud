@@ -82,12 +82,12 @@ const int race_choice[]= {
   RACE_HALF_OGRE,
   RACE_HALF_GIANT,
   RACE_DROW,            /* bad guys here */
-/*
+
   RACE_ORC,
   RACE_GOBLIN,
   RACE_TROLL,
   RACE_DARK_DWARF,
-*/
+
   -1
   };
 
@@ -1843,7 +1843,7 @@ void nanny(struct descriptor_data *d, char *arg)
       	  	d->character->reroll=20;
 			if (d->character->player.class !=0) {
 			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-	     	SEND_TO_Q("Seperated y spaces.. don't duplicate\n\r", d);
+	     	SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
             SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
             SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
             SEND_TO_Q("Your choices? ",d);
@@ -1855,7 +1855,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
 			sprintf(bufx,"Your alignment is an indication of how well or badly you have morally\n\r"
 					"conducted yourself in the game. It ranges numerically, from -1000\n\r"
-					"(Chaotic Evil) to 1000 (Lawful Good), 0 being neutral. Generally, if you kill\n\r"
+					"($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good$c000w), 0 being neutral. Generally, if you kill\n\r"
 					"'Good' mobs, you will gravitate towards Evil, and vice-versa. Some spells\n\r"
 					"and skills also affect your alignment. ie Backstab makes you evil, and\n\r"
 					"the spell heal makes you good\n\r");
@@ -1864,15 +1864,15 @@ void nanny(struct descriptor_data *d, char *arg)
 
 
 			if(HasClass(d->character,CLASS_PALADIN))
-				sprintf(bufx,"Please select your alignment (Good)");
+				sprintf(bufx,"Please select your alignment ($c000WGood$c000w)");
 			else
 				if (HasClass(d->character, CLASS_DRUID))
 					sprintf(bufx,"Please select your alignment (Neutral)");
 				else
 					if (HasClass(d->character, CLASS_RANGER))
-						sprintf(bufx,"Please select your alignment (Good/Neutral)");
+						sprintf(bufx,"Please select your alignment ($c000WGood$c000w/Neutral$c000w)");
 					else
-						sprintf(bufx,"Please select your alignment (Good/Neutral/Evil)");
+						sprintf(bufx,"Please select your alignment ($c000WGood$c000w	/Neutral$c000w/$c000REvil$c000w)");
 
 			send_to_char(bufx,d->character);
        	    STATE(d) = CON_ALIGNMENT;
@@ -3817,17 +3817,22 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %
 
 	  /* show level limits */
 	   for (ii=0;ii<MAX_CLASS;ii++) {
+
+
 	      sprintf(buf2," %-3d",RacialMax[race_choice[i]][ii]);
 	      strcat(buf,buf2);
 	     } /* end for */
 
 	  strcat(buf,"\n\r");
-	  SEND_TO_Q(buf,d);
+	  if(i==13)
+		strcat(buf,"$c000WThe Races Listed below may have some racials hatreds. Advanced players only.\n\r");
+
+	  send_to_char(buf,d->character);//SEND_TO_Q(buf,d);
 	  i++;
 	 }
 
-SEND_TO_Q("ma=magic user, cl=cleric, wa=warrior,th=thief,dr=druid,mk=monk\n\r",d);
-SEND_TO_Q("ba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d);
+send_to_char("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,dr=druid,mk=monk\n\r",d->character);
+send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d->character);
 }
 
 

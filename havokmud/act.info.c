@@ -2639,7 +2639,7 @@ dlog("in do_help");
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
- char buf[2000];
+ char buf[MAX_STRING_LENGTH];
  char buf2[20];
  int i, j = 1;
  NODE *n;
@@ -2967,7 +2967,7 @@ dlog("in do_who");
 	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
 		sprintf(levels, "Supreme Dictator");      // High council members, this should be
 	      else if(!strcmp(GET_NAME(person), "Banon"))    // fixxed with new immortal system code
-		sprintf(levels, "$c0011C$c0003r$c0011e$c0003a$c0011t$c0003o$c0011r");// -MW 02/20/2001
+		sprintf(levels, "$c000RC$c000rr$c000Re$c000ra$c000Rt$c000ro$c000Rr");// -MW 02/20/2001
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
@@ -2993,7 +2993,7 @@ dlog("in do_who");
 #endif
 	  }
 
-	  if (IS_SET(ch->player.user_flags, NEW_USER))
+	  if (IS_SET(person->player.user_flags, NEW_USER))
 	  	    sprintf(tbuf+strlen(tbuf),"$c000G [$c000WNEW$c000G] $c0007");
 	    if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");

@@ -2773,6 +2773,8 @@ const char *room_bits[] = {
         "NO_DEATH",
         "SAVE_ROOM",
         "ARENA_ROOM",
+        "NO_FLY",
+        "REGEN_ROOM",
 	"\n"
 };
 

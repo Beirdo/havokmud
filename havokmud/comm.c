@@ -1853,6 +1853,21 @@ void send_to_all(char *messg)
 }
 
 
+void send_to_all_awake(char *messg)
+{
+  struct descriptor_data *i;
+
+  if (messg)
+    for (i = descriptor_list; i; i = i->next)
+      if (!i->connected){
+/*      SEND_TO_Q(messg, &i->output); */
+
+	if (AWAKE(i->character)) {
+		SEND_TO_Q(ParseAnsiColors(IS_SET(i->character->player.user_flags, USE_ANSI),messg), i);
+	}
+  }
+}
+
 void send_to_outdoor(char *messg)
 {
   struct descriptor_data *i;

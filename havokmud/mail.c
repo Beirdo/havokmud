@@ -140,7 +140,7 @@ mail_index_type *find_char_in_index(char *searchee)
 {
    mail_index_type * temp_rec;
 
-   if (!*searchee) {  /*this crashed i think (GH) */
+   if (!searchee) { //Lets try this!*searchee) {  /*this crashed i think (GH) */
       log("SYSERR: Mail system -- non fatal error #1.");
       return 0;
    }
@@ -606,7 +606,7 @@ void bugmail(struct char_data *ch,  char *arg, int cmd)
   char temp_arg[] = " Pentak";
   int tmp_cmd = 0;
 
-  postmaster_send_mail(ch, cmd,"Manwe") ;
+  postmaster_send_mail(ch, cmd,"Banon") ;
 
 
  }

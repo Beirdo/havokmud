@@ -125,7 +125,7 @@ struct QuestItem {
   char *where;
 };
 
-#define VERSION "1.9.0 (GH)June 1st, 2002"
+#define VERSION "1.9.2 (GH)Aug. 12th, 2002"
 /*
   tailoring stuff
 */
@@ -611,22 +611,24 @@ struct obj_data
 
 /* Bitvector For 'room_flags' */
 
-#define DARK           1
-#define DEATH          2
-#define NO_MOB         4
-#define INDOORS        8
-#define PEACEFUL      16  /* No fighting */
-#define NOSTEAL       32  /* No Thieving */
-#define NO_SUM        64  /* no summoning */
-#define NO_MAGIC     128
-#define TUNNEL       256 /* Limited #s of people in room */
-#define PRIVATE      512
-#define SILENCE      1024
-#define LARGE        2048
-#define NO_DEATH     4096
-#define SAVE_ROOM    8192 /* room will save eq and load at reboot */
-#define ARENA_ROOM   16384 /* For Arena */
-#define NO_FLY       32768 /* no flying here -bcw */
+#define DARK           BV00//1
+#define DEATH          BV01//2
+#define NO_MOB         BV02//4
+#define INDOORS        BV03//8
+#define PEACEFUL      BV04//16  /* No fighting */
+#define NOSTEAL       BV05//32  /* No Thieving */
+#define NO_SUM        BV06//64  /* no summoning */
+#define NO_MAGIC     BV07//128
+#define TUNNEL       BV08//256 /* Limited #s of people in room */
+#define PRIVATE      BV09//512
+#define SILENCE      BV10//1024
+#define LARGE        BV11//2048
+#define NO_DEATH     BV12//4096
+#define SAVE_ROOM    BV13//8192 /* room will save eq and load at reboot */
+#define ARENA_ROOM   BV14//16384 /* For Arena */
+#define NO_FLY       BV15//32768 /* no flying here -bcw */
+#define REGEN_ROOM   BV16
+
 /* For 'dir_option' */
 
 #define NORTH          0

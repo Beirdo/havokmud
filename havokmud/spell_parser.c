@@ -938,7 +938,7 @@ void affect_update( int pulse )
   struct char_data  *next_char;
   struct room_data *rp;
   int dead=FALSE, room, k;
-
+  int regenroom=0;
   extern struct time_info_data time_info;
 
 
@@ -1011,9 +1011,24 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
            the hps after poison are lower, but No one cares!
 	   and that is why the gain is added to the hits, not vice versa
 	   */
-        GET_HIT(i)  = MIN(hit_gain(i) + GET_HIT(i),  hit_limit(i));
-        GET_MANA(i) = MIN(GET_MANA(i) + mana_gain(i), mana_limit(i));
-        GET_MOVE(i) = MIN(GET_MOVE(i) + move_gain(i), move_limit(i));
+
+		if(IS_SET(real_roomp(i->in_room)->room_flags, REGEN_ROOM)) {
+			regenroom=10;
+			if(GET_POS(i) > POSITION_SITTING) /*Standing, fighting etc*/
+				regenroom=15;
+			else if (GET_POS(i) > POSITION_SLEEPING) /*Resting and sitting*/
+				regenroom=20;
+			else if (GET_POS(i) > POSITION_STUNNED) /*sleeping*/
+				regenroom=25;
+			else
+				regenroom=20;
+			send_to_char("Your wounds seem to heal over.",i);
+		}
+
+
+        GET_HIT(i)  = MIN((hit_gain(i) + GET_HIT(i)) + regenroom,  hit_limit(i));
+        GET_MANA(i) = MIN((GET_MANA(i) + mana_gain(i)) + regenroom, mana_limit(i));
+        GET_MOVE(i) = MIN((GET_MOVE(i) + move_gain(i)) + regenroom, move_limit(i));
 #if 0
 if (i->pc)
    GET_DIMD(i) +=2;
@@ -2160,9 +2175,9 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
 	} else {
 	  GET_MANA(ch) -= cost;
 	}
-	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",1000);
+	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",cost*50);
 	send_to_char(buf,ch);
-	gain_exp(ch, 1000);
+	gain_exp(ch, cost*50);
       }
 
     }	/* if GET_POS < min_pos */

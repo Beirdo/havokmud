@@ -107,27 +107,65 @@ dlog("in do_auth");
   }
   return;
 }
-
+extern int top_of_helpt;
+  extern struct help_index_element *help_index;
 void do_imptest(struct char_data *ch, char *arg, int cmd)
 {
+	int bot, top, x;
+	char buf[100], buf2[200];
+
+	bot = 0;
+    top = top_of_helpt;
+
+	for(x=17;x < top; x++) {
+		sprintf(buf,"%s",help_index[x].keyword);
+
+
+	  if(1) { //strstr(buf,"SPELL")) {
+
+		sprintf(buf2,"[<a href=\"#%s\"><strong>%s</strong></a>]",buf,buf);
+		send_to_char(buf2,ch);
+		if(x%1==0)
+			send_to_char("\n\r",ch);
+	  }
+
+	}
+
+
+	for(x=17;x < top; x++) {
+		sprintf(buf,"%s",help_index[x].keyword);
+
+
+	  if(1) { //strstr(buf,"SPELL")) {
+
+
+		sprintf(buf2,"<h2><a name=\"%s\">%s</a></h2>",buf,buf);
+		send_to_char(buf2,ch);
+
+		send_to_char("<P>",ch);
+		do_help(ch, buf, 1);
+		send_to_char("</P>",ch);
+
+		if(x%1==0)
+			send_to_char("\n\r",ch);
+	  }
+
+	}
+
+
+
+#if 0
 	int x;
 char *tmp;
 char buff[256];
-//dlog("in do_imptest");
-	//tmp= (char *) malloc(10);
-	//strcpy(tmp,"AAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaHHHHHHHHHH!");
-	//log(tmp);
-	//if (tmp)
-	//	free(tmp);
 	log("loading all zoens");
-	//sprintf(buff,"%d",x);
 
 	for(x=0;x < 40000;x+=200){
 		sprintf(buff,"%d",x);
-		//do_zload(ch,buff,0);
-		do_goto(ch, buff, 0);
-
+ 		do_goto(ch, buff, 0);
 	}
+
+#endif
 }
 
 void do_passwd(struct char_data *ch, char *argument, int cmdnum)
