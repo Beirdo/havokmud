@@ -2825,10 +2825,11 @@ void perform_violence(int pulse)
 
  	struct follow_type *f;
  struct char_data *ch, *vict;
-   struct obj_data *tmp,*tmp2;
+   struct obj_data *tmp,*tmp2,*obj;
    int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
    float x;
    int perc;
+   int weapontype;
 
    for(ch = combat_list; ch; ch=combat_next_dude)
    {
@@ -2918,7 +2919,30 @@ void perform_violence(int pulse)
                {
                   x /= 2.0;
                }
-*/
+*//*  Modifier for weaponskills -Gordon 1-18-04 */
+			if(obj = ch->equipment[WIELD]){
+				if(!IS_WEAPON(obj)){
+					weapontype = obj->weapontype + WEAPON_FIRST; //350 - 409
+
+					if(ch->weaponskills.slot1 == weapontype)
+					   x += (ch->weaponskills.grade1 - 50)/100;
+					else if(ch->weaponskills.slot2 == weapontype)
+					   x += (ch->weaponskills.grade2 - 50)/100;
+					else if(ch->weaponskills.slot3 == weapontype)
+					   x += (ch->weaponskills.grade3 - 50)/100;
+					else if(ch->weaponskills.slot4 == weapontype)
+					   x += (ch->weaponskills.grade4 - 50)/100;
+					else if(ch->weaponskills.slot5 == weapontype)
+			           x += (ch->weaponskills.grade5 - 50)/100;
+			        else if(ch->weaponskills.slot6 == weapontype)
+					   x += (ch->weaponskills.grade6 - 50)/100;
+					else if(ch->weaponskills.slot7 == weapontype)
+			           x += (ch->weaponskills.grade7 - 50)/100;
+			        else if(ch->weaponskills.slot8 == weapontype)
+			           x += (ch->weaponskills.grade8 - 50)/100;
+			        }
+                }
+
 			if(!A_NOHASTE(ch)) {
 				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
 					x = x + 1.5;/* I did this for the remortskills changes. Maybe I'll look at slow later (Gordon) */
