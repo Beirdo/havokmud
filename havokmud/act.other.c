@@ -388,10 +388,10 @@ void do_title(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if (strlen(argument) > 150) {
             send_to_char("Line too long, truncated\n", ch);
-            *(argument + 151) = '\0';
+            argument[151] = '\0';
         }
 
         temp = strdup( argument );
