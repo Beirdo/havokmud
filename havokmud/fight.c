@@ -2687,7 +2687,7 @@ int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
   return(mult);
 }
 
-#define SMITH_SHIELD 727
+#define SMITH_SHIELD 52877
 int HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int w_type, int (*dam_func)())
 {
 	extern byte lesser_backstab_mult[];

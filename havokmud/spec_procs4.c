@@ -763,9 +763,9 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 }
 
 /* procs for the King's Grove */
-#define LEGEND_STATUE 701
-#define LEGEND_PAINTING 703
-#define LEGEND_BIOGRAPHY 702
+#define LEGEND_STATUE 52851
+#define LEGEND_PAINTING 52852
+#define LEGEND_BIOGRAPHY 52853
 int generate_legend_statue()//struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
@@ -791,21 +791,21 @@ int generate_legend_statue()//struct char_data *ch, char *argument, int cmd)
 				/* coolness, the are! Determine the item. */
 				if(tmp->specials.m_kills >= 40000) {
 					itype = LEGEND_BIOGRAPHY;
-					rnum = number(2932,2934);
+					rnum = number(52892,52895);
 					sprintf(name,"biography tome %s",GET_NAME(tmp));
 					sprintf(shdesc,"a biography of %s",GET_NAME(tmp));
 					sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",GET_NAME(tmp));
 					sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.",GET_NAME(tmp));
 				} else if(tmp->specials.m_kills >= 20000) {
 					itype = LEGEND_PAINTING;
-					rnum = number(2926,2931);
+					rnum = number(52886,52891);
 					sprintf(name,"painting %s",GET_NAME(tmp));
 					sprintf(shdesc,"a painting of %s",GET_NAME(tmp));
 					sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",GET_NAME(tmp));
 					sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greatest of these times.",GET_NAME(tmp),GET_NAME(tmp));
 				} else {
 					itype = LEGEND_STATUE;
-					rnum = number(2901,2924);
+					rnum = number(52861,52884);
 					sprintf(name,"statue %s",GET_NAME(tmp));
 					sprintf(shdesc,"a statue of %s",GET_NAME(tmp));
 					sprintf(desc,"A statue of the legendary %s has been erected here.",GET_NAME(tmp));
@@ -863,7 +863,7 @@ int generate_legend_statue()//struct char_data *ch, char *argument, int cmd)
 	log(buf);
 }
 
-#define BERRYBASE 711
+#define BERRYBASE 52861
 int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[MAX_INPUT_LENGTH];
@@ -935,7 +935,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 	return(FALSE);
 }
 
-#define ACORN 733
+#define ACORN 52885
 int pick_acorns(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[MAX_INPUT_LENGTH];
@@ -1084,8 +1084,8 @@ int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *r
 	}
 }
 
-#define GNOME_HOME 2897
-#define GNOME_MOB  705
+#define GNOME_HOME 52857
+#define GNOME_MOB  52853
 int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[254];
@@ -1132,7 +1132,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 #define COLLECTIBLE_2 47961
 #define COLLECTIBLE_3 51838
 #define COLLECTIBLE_4 51839
-#define REWARD_GNOME    720
+#define REWARD_GNOME  52870
 int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[254], obj_name[120], vict_name[120];
@@ -1308,7 +1308,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *
 	return(FALSE);
 }
 
-#define QUEST_POTION 718
+#define QUEST_POTION 52868
 int qp_potion(struct char_data *ch, int cmd, char *arg)
 {
 	char buf[254], buffer[254];
@@ -1353,7 +1353,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 	}
 }
 
-#define CLIMB_ROOM 2896
+#define CLIMB_ROOM 52866
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[254], buffer[254];
@@ -1417,7 +1417,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 	return(FALSE);
 }
 
-#define SHARPENING_STONE 735
+#define SHARPENING_STONE 52881
 void do_sharpen(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj, *cmp, *stone;
@@ -1960,13 +1960,13 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
 }
 #endif
 
-#define ING_1	720
-#define ING_2	728
-#define ING_3	729
-#define ING_4	730
+#define ING_1	52870
+#define ING_2	52878
+#define ING_3	52879
+#define ING_4	52880
 #define ING_5	44180
 
-#define SMITH_SHIELD 727
+#define SMITH_SHIELD 52877
 
 int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -2295,7 +2295,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 /* End Tarantis */
 
 /* start shopkeeper .. this to make shops easier to build  -Lennya  20030731*/
-int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeeper, int type)
+int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeep, int type)
 {
 	struct room_data *rp;
 	struct char_data *j, *next;
@@ -2317,7 +2317,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
-	/* define the shopkeeper */
+	/* define the shopkeep */
 	if(ch->in_room)
 		rp = real_roomp(ch->in_room);
 	else {
@@ -2339,27 +2339,27 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		cmd !=  93 &&	/* offer */
 		cmd !=  57)		/* sell */
 		return(FALSE);
-shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
+shopkeep = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 /*	for(j = rp->people; j; next) {
 		next = j->next_in_room;
 		if(j->specials.proc == PROC_SHOPKEEPER) {
-			shopkeeper = j;
+			shopkeep = j;
 			break;
 		}
 	}
 */
-	if(!shopkeeper) {
+	if(!shopkeep) {
 		log("weirdness in shopkeeper, shopkeeper assigned but not found");
 		return(FALSE);
 	}
 
-	if(!IS_NPC(shopkeeper)) {
+	if(!IS_NPC(shopkeep)) {
 		log("weirdness in shopkeeper, shopkeeper is not a mob");
 		return(FALSE);
 	}
 
-	if(!IS_SET(shopkeeper->specials.act, ACT_SENTINEL))
-		SET_BIT(shopkeeper->specials.act, ACT_SENTINEL);
+	if(!IS_SET(shopkeep->specials.act, ACT_SENTINEL))
+		SET_BIT(shopkeep->specials.act, ACT_SENTINEL);
 
 	/* players with 14 chr pay avg price */
 	chr = GET_CHR(ch);
@@ -2369,15 +2369,15 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 
 	/* list */
 	if(cmd == 59) {
-		ch_printf(ch,"This is what %s currently has on store:\n\r\n\r",shopkeeper->player.short_descr);
+		ch_printf(ch,"This is what %s currently has on store:\n\r\n\r",shopkeep->player.short_descr);
 		send_to_char("  Count  Item                                       Price\n\r",ch);
 		    send_to_char("$c0008*---------------------------------------------------------*\n\r",ch);
-		obj = shopkeeper->carrying;
+		obj = shopkeep->carrying;
 		if(!obj) {
 			send_to_char("$c0008|$c0007        Nothing.                                         $c0008|\n\r",ch);
 		} else {
 
-			for (obj=shopkeeper->carrying; obj; obj = obj->next_content) {
+			for (obj=shopkeep->carrying; obj; obj = obj->next_content) {
 				if (CAN_SEE_OBJ(ch, obj)) {
 					if (cond_top < 50) {
 						found = FALSE;
@@ -2444,7 +2444,7 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 			i = 1;
 
 			while (i <= num && stop == 0) {
-				if (obj = get_obj_in_list_vis(ch, itemname, shopkeeper->carrying)) {
+				if (obj = get_obj_in_list_vis(ch, itemname, shopkeep->carrying)) {
 					cost = (int) obj->obj_flags.cost * modifier;
 					if(cost <0)
 						cost = 0;
@@ -2467,17 +2467,17 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 						obj_from_char(obj);
 						obj_to_char(obj, ch);
 						GET_GOLD(ch) -= cost;
-						GET_GOLD(shopkeeper) += cost;
+						GET_GOLD(shopkeep) += cost;
 						store_obj = obj;
 						i++;
 						tot_cost += cost;
 						rnum++;
 					}
 				} else if (rnum > 0) {
-					ch_printf(ch,"Alas, %s only seems to have %d %ss on store.\n\r",shopkeeper->player.short_descr, rnum, itemname);
+					ch_printf(ch,"Alas, %s only seems to have %d %ss on store.\n\r",shopkeep->player.short_descr, rnum, itemname);
 					stop = 1;
 				} else {
-					ch_printf(ch,"Alas, %s doesn't seem to stock any %ss..\n\r",shopkeeper->player.short_descr, itemname);
+					ch_printf(ch,"Alas, %s doesn't seem to stock any %ss..\n\r",shopkeep->player.short_descr, itemname);
 					stop = 1;
 
 				}
@@ -2486,10 +2486,10 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 
 		if(rnum == 1) {
 			ch_printf(ch,"You just bought %s for %d coins.\n\r",store_obj->short_description, cost);
-			act("$n buys $p from $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+			act("$n buys $p from $N.", FALSE, ch, obj, shopkeep, TO_ROOM);
 		} else if(rnum > 1) {
 			ch_printf(ch,"You just bought %d items for %d coins.\n\r", rnum, tot_cost);
-			act("$n buys some stuff from $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+			act("$n buys some stuff from $N.", FALSE, ch, obj, shopkeep, TO_ROOM);
 		}
 	}
 
@@ -2503,19 +2503,19 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 			if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
 				cost = (int) obj->obj_flags.cost/(3*modifier);
 				if(cost < 400) {
-					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeeper->player.short_descr);
+					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeep->player.short_descr);
 					return(TRUE);
 				} else {
-					if(GET_GOLD(shopkeeper) < cost) {
-						ch_printf(ch, "Alas, %s cannot afford that right now.\n\r",shopkeeper->player.short_descr);
+					if(GET_GOLD(shopkeep) < cost) {
+						ch_printf(ch, "Alas, %s cannot afford that right now.\n\r",shopkeep->player.short_descr);
 						return(TRUE);
 					} else {
 						obj_from_char(obj);
-						obj_to_char(obj, shopkeeper);
+						obj_to_char(obj, shopkeep);
 						ch_printf(ch,"You just sold %s for %d coins.\n\r",obj->short_description, cost);
-						act("$n sells $p to $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+						act("$n sells $p to $N.", FALSE, ch, obj, shopkeep, TO_ROOM);
 						GET_GOLD(ch) += cost;
-						GET_GOLD(shopkeeper) -= cost;
+						GET_GOLD(shopkeep) -= cost;
 						return(TRUE);
 					}
 				}
@@ -2530,16 +2530,16 @@ shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 	if(cmd == 93) {
 		only_argument(arg,itemname);
 		if(!*itemname) {
-			ch_printf(ch,"What would you like to offer to %s?\n\r",shopkeeper->player.short_descr);
+			ch_printf(ch,"What would you like to offer to %s?\n\r",shopkeep->player.short_descr);
 			return(TRUE);
 		} else {
 			if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
 				cost = (int) obj->obj_flags.cost/(3*modifier);
 				if(cost < 400) {
-					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeeper->player.short_descr);
+					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeep->player.short_descr);
 					return(TRUE);
 				} else {
-					ch_printf(ch,"%s is willing to pay you %d coins for %s.\n\r",shopkeeper->player.short_descr,cost,obj->short_description);
+					ch_printf(ch,"%s is willing to pay you %d coins for %s.\n\r",shopkeep->player.short_descr,cost,obj->short_description);
 					return(TRUE);
 				}
 			} else {

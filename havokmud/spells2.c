@@ -4678,9 +4678,13 @@ void cast_binding( byte level, struct char_data *ch, char *arg,
   case SPELL_TYPE_POTION:
 		case SPELL_TYPE_SPELL:
 		case SPELL_TYPE_STAFF:
-		case SPELL_TYPE_SCROLL:
 			spell_binding(level, ch,0, 0);
 			break;
+    case SPELL_TYPE_SCROLL:
+         if(tar_obj) return;
+	 //tar_ch = ch;
+         spell_binding(level, ch, tar_ch, 0);
+         break;
 		default :
 			log("Serious screw-up in cast_binding");
 			break;

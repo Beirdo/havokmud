@@ -352,46 +352,13 @@ const char *spell_wear_off_msg[] = {
     "wall of thought",
     "mind tap",
 	"Your blade barrier winks out of existence.",
+	"Mana no longer protects you.", //SPELL_MANA_SHIELD
+	"Your iron skins rust and fall off.", //SKILL_IRON_SKINS
 	"",
 	"",
 	"",
-	"",
-	"song of comprehension",
-	"",
-	"song of the lullaby",
-	"song of charming",
-	"",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"",
-	"",
-	"song of seeing",
-	"",
-	"",
-	"",//360
-	"song of levitation",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",//370
-	"",
-	"",
-	"",
-	"song of sight",
-	"",
-	"song of eternal light",
-	"song of the wanderer",
-	"",
-	"",
-	"heroes chant",//380
-	"\n"
+	"", //SKILL_FLURRY
+	"",	"\n"
 };
 
 const char *spell_wear_off_room_msg[] = {
@@ -737,46 +704,13 @@ const char *spell_wear_off_room_msg[] = {
     "wall of thought",
     "mind tap",
     "$n's blade barrier winks out of existence.",
+	"$n's mana shield exhausts itself", //SPELL_MANA_SHIELD
+	"$n's iron skins rust away.", //SPELL_IRON_SKINS
 	"",
 	"",
 	"",
-	"",
-	"song of comprehension",
-	"",
-	"song of the lullaby",
-	"song of charming",
-	"",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"",
-	"",
-	"song of seeing",
-	"",
-	"",
-	"",//360
-	"song of levitation",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",//370
-	"",
-	"",
-	"",
-	"song of sight",
-	"",
-	"song of eternal light",
-	"song of the wanderer",
-	"",
-	"",
-	"heroes chant",//380
-	"\n"
+	"", //SKILL_FLURRY
+	"",	"\n"
 };
 
 const char *spell_wear_off_soon_msg[] = {
@@ -1122,46 +1056,14 @@ const char *spell_wear_off_soon_msg[] = {
     "wall of thought",
     "mind tap",
 	"Your blade barrier wavers a moment.",
-	"",
-	"",
-	"",
-	"",
-	"song of comprehension",
-	"",
-	"song of the lullaby",
-	"song of charming",
-	"",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"",
-	"",
-	"song of seeing",
-	"",
-	"",
-	"",//360
-	"song of levitation",
+	"Your mana protection weakens some.", //SPELL_MANA_SHIELD
+	"Your iron skins are nearly rusted away.", //SPELL_IRON_SKINS
 	"",
 	"",
 	"",
 	"",
 	"",
-	"",
-	"",
-	"",
-	"",//370
-	"",
-	"",
-	"",
-	"song of sight",
-	"",
-	"song of eternal light",
-	"song of the wanderer",
-	"",
-	"",
-	"heroes chant",//380
-"\n"
+	"\n"
 };
 
 const char *spell_wear_off_soon_room_msg[] = {
@@ -1508,45 +1410,13 @@ const char *spell_wear_off_soon_room_msg[] = {
     "wall of thought",
    "mind tap",
    "$n's blade barrier wavers a moment.",
-	"",
-	"",
-	"",
-	"",
-	"song of comprehension",
-	"",
-	"song of the lullaby",
-	"song of charming",
-	"",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"",
-	"",
-	"song of seeing",
-	"",
-	"",
-	"",//360
-	"song of levitation",
+	"$n's mana protection fades momentarily.", //SPELL_MANA_SHIELD
+	"$n's skin seems to rust a bit.", //SPELL_IRON_SKINS
 	"",
 	"",
 	"",
 	"",
 	"",
-	"",
-	"",
-	"",
-	"",//370
-	"",
-	"",
-	"",
-	"song of sight",
-	"",
-	"song of eternal light",
-	"song of the wanderer",
-	"",
-	"",
-	"heroes chant",//380
 "\n"
 
 };
@@ -4386,45 +4256,6 @@ const char *spell_desc[] = { /* Last reviewed by Sentinel, big thanks */
  "",
  "",//340
  "A whirling barrier of blades surrounds $n.",
-	"",
-	"",
-	"",
-	"",
-	"song of comprehension",
-	"",
-	"song of the lullaby",
-	"song of charming",
-	"",//350
-	"song of enthrallment",
-	"song of calming",
-	"song of the guardian",
-	"song of muscle",
-	"",
-	"",
-	"song of seeing",
-	"",
-	"",
-	"",//360
-	"song of levitation",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",//370
-	"",
-	"",
-	"",
-	"song of sight",
-	"",
-	"song of eternal light",
-	"song of the wanderer",
-	"",
-	"",
-	"heroes chant",//380
  "\n"
 };
 

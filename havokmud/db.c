@@ -1672,99 +1672,99 @@ struct char_data *read_mobile(int nr, int type)
 		if(mob->specials.proc == PROC_QUEST) {
 			if(mob_index[mob->nr].func != QuestMobProc){
 				mob_index[mob->nr].func = *QuestMobProc;
-				log("assigning quest proc");
+//				log("assigning quest proc");
 			}
 		} else if (mob->specials.proc == PROC_SHOPKEEPER) {
 			if(mob_index[mob->nr].func != shopkeeper){
 				mob_index[mob->nr].func = *shopkeeper;
-				log("assigning shopkeeper proc");
+//				log("assigning shopkeeper proc");
 			}
 		} else if (mob->specials.proc == PROC_GUILDMASTER) {
 			if(mob_index[mob->nr].func != generic_guildmaster){
 				mob_index[mob->nr].func = *generic_guildmaster;
-				log("assigning guildmaster proc");
+//				log("assigning guildmaster proc");
 			}
 		} else if (mob->specials.proc == PROC_SWALLOWER) {
 			if(mob_index[mob->nr].func != Tyrannosaurus_swallower){
 				mob_index[mob->nr].func = *Tyrannosaurus_swallower;
-				log("assigning swallower proc");
+//				log("assigning swallower proc");
 			}
 		} else if (mob->specials.proc == PROC_OLD_BREATH) {
 			if(mob_index[mob->nr].func != BreathWeapon){
 				mob_index[mob->nr].func = *BreathWeapon;
-				log("assigning old breath proc");
+//				log("assigning old breath proc");
 			}
 		} else if (mob->specials.proc == PROC_FIRE_BREATH) {
 			if(mob_index[mob->nr].func != FireBreather){
 				mob_index[mob->nr].func = *FireBreather;
-				log("assigning fire breath proc");
+//				log("assigning fire breath proc");
 			}
 		} else if (mob->specials.proc == PROC_GAS_BREATH) {
 			if(mob_index[mob->nr].func != GasBreather){
 				mob_index[mob->nr].func = *GasBreather;
-				log("assigning gas breath proc");
+//				log("assigning gas breath proc");
 			}
 		} else if (mob->specials.proc == PROC_FROST_BREATH) {
 			if(mob_index[mob->nr].func != FrostBreather){
 				mob_index[mob->nr].func = *FrostBreather;
-				log("assigning frost breath proc");
+//				log("assigning frost breath proc");
 			}
 		} else if (mob->specials.proc == PROC_ACID_BREATH) {
 			if(mob_index[mob->nr].func != AcidBreather){
 				mob_index[mob->nr].func = *AcidBreather;
-				log("assigning acid breath proc");
+//				log("assigning acid breath proc");
 			}
 		} else if (mob->specials.proc == PROC_LIGHTNING_BREATH) {
 			if(mob_index[mob->nr].func != LightningBreather){
 				mob_index[mob->nr].func = *LightningBreather;
-				log("assigning electric breath proc");
+//				log("assigning electric breath proc");
 			}
 		} else if (mob->specials.proc == PROC_DEHYDRATION_BREATH) {
 			if(mob_index[mob->nr].func != DehydBreather){
 				mob_index[mob->nr].func = *DehydBreather;
-				log("assigning dehydration breath proc");
+//				log("assigning dehydration breath proc");
 			}
 		} else if (mob->specials.proc == PROC_VAPOR_BREATH) {
 			if(mob_index[mob->nr].func != VaporBreather){
 				mob_index[mob->nr].func = *VaporBreather;
-				log("assigning vapor breath proc");
+//				log("assigning vapor breath proc");
 			}
 		} else if (mob->specials.proc == PROC_SOUND_BREATH) {
 			if(mob_index[mob->nr].func != SoundBreather){
 				mob_index[mob->nr].func = *SoundBreather;
-				log("assigning sound breath proc");
+//				log("assigning sound breath proc");
 			}
 		} else if (mob->specials.proc == PROC_SHARD_BREATH) {
 			if(mob_index[mob->nr].func != ShardBreather){
 				mob_index[mob->nr].func = *ShardBreather;
-				log("assigning shard breath proc");
+//				log("assigning shard breath proc");
 			}
 		} else if (mob->specials.proc == PROC_SLEEP_BREATH) {
 			if(mob_index[mob->nr].func != SleepBreather){
 				mob_index[mob->nr].func = *SleepBreather;
-				log("assigning sleep breath proc");
+//				log("assigning sleep breath proc");
 			}
 		} else if (mob->specials.proc == PROC_LIGHT_BREATH) {
 			if(mob_index[mob->nr].func != LightBreather){
 				mob_index[mob->nr].func = *LightBreather;
-				log("assigning light breath proc");
+//				log("assigning light breath proc");
 			}
 		} else if (mob->specials.proc == PROC_DARK_BREATH) {
 			if(mob_index[mob->nr].func != DarkBreather){
 				mob_index[mob->nr].func = *DarkBreather;
-				log("assigning dark breath proc");
+//				log("assigning dark breath proc");
 			}
 		} else if (mob->specials.proc == PROC_RECEPTIONIST) {
 			if(mob_index[mob->nr].func != receptionist) {
 				mob_index[mob->nr].func = *receptionist;
-				log("assigning receptionist proc");
+//				log("assigning receptionist proc");
 			}
 			if (!IS_SET(mob->specials.act, ACT_SENTINEL))
 				SET_BIT(mob->specials.act, ACT_SENTINEL);
 		} else if (mob->specials.proc == PROC_REPAIRGUY) {
 			if(mob_index[mob->nr].func != RepairGuy) {
 				mob_index[mob->nr].func = *RepairGuy;
-				log("assigning repair guy proc");
+//				log("assigning repair guy proc");
 			}
 		}
 	}

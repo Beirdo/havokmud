@@ -1411,8 +1411,8 @@ void assign_mobiles()
 	{ 23202 , WeaponsMaster },
 
 /* King's Grove */
-	{702, DruidGuildMaster },
-	{705, gnome_collector },
+	{52850, DruidGuildMaster },
+	{52853, gnome_collector },
 
 
 

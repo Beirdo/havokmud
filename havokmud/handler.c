@@ -818,7 +818,7 @@ void char_from_room(struct char_data *ch)
   ch->next_in_room = 0;
 }
 
-#define STATUE_ZONE 4
+#define STATUE_ZONE 198
 /* place a character in a room */
 void char_to_room(struct char_data *ch, long room)
 {

@@ -460,7 +460,7 @@ dlog("in do_zsave");
 
 }
 
-#define STATUE_ZONE 4
+#define STATUE_ZONE 198
 void do_zload(struct char_data *ch, char *argument, int cmdnum)
 {
   int zone;
