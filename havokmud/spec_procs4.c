@@ -1388,7 +1388,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 	}
 }
 
-#define CLIMB_ROOM 52866
+#define CLIMB_ROOM 52856
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[254], buffer[254];
