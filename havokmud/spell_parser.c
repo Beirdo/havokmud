@@ -914,12 +914,48 @@ char *spells[]=
 	/* psi stuff */
    "wall of thought",
    "mind tap",
+	"blade barrier", /* 341 - blade barrier */
 
-   /* 341 - blade barrier */
-   "blade barrier",
-
-   /* bard songs */
-   "song of battle",
+	/* bard songs */
+	"detect sound",
+	"song of opening",
+	"throw voice",
+	"ventriloquate",
+	"song of comprehension",
+	"song of biting words",
+	"song of the lulaby",
+	"song of charming",
+	"song of the freezing north",//350
+	"entrhallment",
+	"song of calming",
+	"song of the guardian",
+	"song of muscle",
+	"song of mint and lemon",
+	"know alignment",
+	"song of seeing",
+	"song of spell breaching",
+	"know monster",
+	"song of lightning",//360
+	"song of levitation",
+	"song of the winter gale",
+	"song of dazzling",
+	"legend lore",
+	"song of the hunt",
+	"song of heraldry",
+	"song of the legendary weapon",
+	"song of lethargy",
+	"song of spirits",
+	"song of the high hunt",//370
+	"song of silence",
+	"song of speed",
+	"song of the summoner",
+	"song of sight",
+	"song of the hearth",
+	"song of eternal light",
+	"song of the wanderer",
+	"sounds of fear",
+	"song of battle",
+	"hero's chant",//380
    "\n"
 };
 

@@ -1145,13 +1145,15 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
 		 struct obj_cost *cost, int forcerent);
 
 void update_file(struct char_data *ch, struct obj_file_u *st);
+void update_reimb_file(struct char_data *ch, struct obj_file_u *st);
 void obj_store_to_char(struct char_data *ch, struct obj_file_u *st);
 void load_char_objs(struct char_data *ch);
+int reimb_char_objs(struct char_data *ch);
 void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st);
 int contained_weight(struct obj_data *container);
-void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
-		  struct char_data * ch, int delete);
+void obj_to_store(struct obj_data *obj, struct obj_file_u *st, struct char_data * ch, int delete);
 void save_obj(struct char_data *ch, struct obj_cost *cost, int delete);
+void save_obj_reimb(struct char_data *ch);
 void update_obj_file();
 void CountLimitedItems(struct obj_file_u *st);
 void PrintLimitedItems();
@@ -2387,3 +2389,4 @@ void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, 
 
 
 void do_eval(struct char_data *ch, char *arg, int cmd);
+void do_reimb(struct char_data *ch, char *argument, int cmd);

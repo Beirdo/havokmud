@@ -1146,36 +1146,35 @@ int GiveMinStrToWield(struct obj_data *obj, struct char_data *ch)
 
 struct obj_data *unequip_char(struct char_data *ch, int pos)
 {
-  int j;
-  struct obj_data *obj;
+	int j;
+	struct obj_data *obj;
 
-if (pos > MAX_WEAR || pos < 0) {
-log ("pos > MAX_WEAR || pos < 0 in handler.c unequip");
-return;
-}
+	if (pos > MAX_WEAR || pos < 0) {
+		log ("pos > MAX_WEAR || pos < 0 in handler.c unequip");
+		return;
+	}
 
 /*  assert(pos>=0 && pos<MAX_WEAR); */
-  assert(ch->equipment[pos]);
 
-  obj = ch->equipment[pos];
+	assert(ch->equipment[pos]);
 
-  assert(!obj->in_obj && obj->in_room == NOWHERE && !obj->carried_by);
+	obj = ch->equipment[pos];
 
-  if (GET_ITEM_TYPE(obj) == ITEM_ARMOR)
-    GET_AC(ch) += apply_ac(ch, pos);
+	assert(!obj->in_obj && obj->in_room == NOWHERE && !obj->carried_by);
 
-  ch->equipment[pos] = 0;
-  obj->equipped_by = 0;
-  obj->eq_pos = -1;
+	if (GET_ITEM_TYPE(obj) == ITEM_ARMOR)
+		GET_AC(ch) += apply_ac(ch, pos);
 
-  for(j=0; j<MAX_OBJ_AFFECT; j++) {
-    affect_modify(ch, obj->affected[j].location,
-		  obj->affected[j].modifier,
-		  obj->obj_flags.bitvector, FALSE);
+	ch->equipment[pos] = 0;
+	obj->equipped_by = 0;
+	obj->eq_pos = -1;
+
+	for(j=0; j<MAX_OBJ_AFFECT; j++) {
+		affect_modify(ch, obj->affected[j].location, obj->affected[j].modifier, obj->obj_flags.bitvector, FALSE);
 	}
-  affect_total(ch);
+	affect_total(ch);
 
-  return(obj);
+	return(obj);
 }
 
 

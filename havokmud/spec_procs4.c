@@ -325,11 +325,11 @@ int vampiric_embrace(struct char_data *ch, struct char_data *vict)
 		obj = ch->equipment[WIELD];
 		act("$c0008The negative aura surrounding your $p lashes out at $N, draining some of $S life.", FALSE, ch, obj, vict, TO_CHAR);
 		act("$c0008The negative aura surrounding $n's $p lashes out at $N, draining some of $S life.", FALSE, ch, obj, vict, TO_NOTVICT);
-		act("$c0008The negative aura surrounding $n's $p lashes out at you, draining some ofyour life.", FALSE, ch, obj, vict, TO_VICT);
+		act("$c0008The negative aura surrounding $n's $p lashes out at you, draining some of your life.", FALSE, ch, obj, vict, TO_VICT);
 	} else {
 		act("$c0008The negative aura surrounding your hands lashes out at $N, draining some of $S life.", FALSE, ch, 0, vict, TO_CHAR);
 		act("$c0008The negative aura surrounding $n's hands lashes out at $N, draining some of $S life.", FALSE, ch, 0, vict, TO_NOTVICT);
-		act("$c0008The negative aura surrounding $n's hands lashes out at you, draining some ofyour life.", FALSE, ch, 0, vict, TO_VICT);
+		act("$c0008The negative aura surrounding $n's hands lashes out at you, draining some of your life.", FALSE, ch, 0, vict, TO_VICT);
 	}
 	dam = dice(2,8);
 	if(IsResist(vict, IMM_DRAIN)) /* half damage for resist */
@@ -1994,6 +1994,11 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 		return(FALSE);
 	}
 
+	if(cmd == 72) { /* give */
+		send_to_char("Giving away your stuff for free? Better rethink this.\n\r",ch);
+		return(TRUE);
+	}
+
 	if(cmd == 86) { /* ask */
 		send_to_char("Yeelorn says, 'Aye, yer curious if yev got summat that I could use, eh? Right, lemme\n\r",ch);
 		send_to_char("rummage through yer packs and see if there's aught I kin use fer raw material.'\n\r",ch);
@@ -2203,7 +2208,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 					obj_to_char(obj, ch);
 					send_to_char("You give your items to Yeelorn, along with an incredible heap of coins.\n\r",ch);
 					send_to_char("Yeelorn pokes up his forge, and starts heating the shield. Once it's red hot,\n\r",ch);
-					send_to_char("he bends a few edges, abngs a few times, and the dragonbone collar is firmly\n\r",ch);
+					send_to_char("he bends a few edges, bangs a few times, and the dragonbone collar is firmly\n\r",ch);
 					send_to_char("attached. He then proceeds with folding the silver sheet over the shield, and\n\r",ch);
 					send_to_char("heats it some more. More hammering melds the silver with the shield and bone,\n\r",ch);
 					send_to_char("making it look rather impressive. Then, Yeelorn places it in a barrel ot brine,\n\r",ch);
@@ -2214,7 +2219,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 					send_to_char("seems to shudder. That must have been your imagination. Shields are not alive.\n\r",ch);
 					send_to_char("Or are they?\n\r",ch);
 					send_to_char("Once the shield has cooled down, Yeelorn takes a rag, and polishes it til it\n\r",ch);
-					send_to_char("shines ar bright as full moon. He giggles as he hands it over.\n\r",ch);
+					send_to_char("shines as bright as full moon. He giggles as he hands it over.\n\r",ch);
 					send_to_char("'Bout time yeh got on with yer adventuring' he says, as he winks at you.\n\r",ch);
 				} else {
 					log("could not load up prize for master_smith proc");

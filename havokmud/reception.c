@@ -333,19 +333,17 @@ if (limited_items >= 18)
   }
 
 
-  if ( cost->total_cost > GET_GOLD(ch) ) {
+	if ( cost->total_cost > GET_GOLD(ch) ) {
+		if (forcerent) {
+			sprintf(buf,"%s is being force rented and does not have gold!",GET_NAME(ch));
+			log_sev(buf,3);
+			slog(buf);
+		}
+		return(FALSE);
+	}  else  {
+		return(TRUE);
+	}
 
-  if (forcerent) {
-   sprintf(buf,"%s is being force rented and does not have gold!",GET_NAME(ch));
-   log_sev(buf,3);
-   slog(buf);
-  }
-
-     return(FALSE);
-    }  else  {
-      return(TRUE);
-
-  }
 }
 
 
@@ -394,6 +392,28 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
 	}
 }
 
+void update_reimb_file(struct char_data *ch, struct obj_file_u *st)
+{
+	FILE *fl;
+	char buf[200];
+
+	/*
+		write the aliases and bamfs:
+	*/
+
+	write_char_extra(ch);
+	sprintf(buf, "reimb/%s", lower(ch->player.name));
+
+	if (!(fl = fopen(buf, "w")))  {
+		perror("saving PC's objects");
+		assert(0);
+	} else {
+		rewind(fl);
+		strcpy(st->owner, GET_NAME(ch));
+		WriteObjs(fl, st);
+		fclose(fl);
+	}
+}
 
 /* ************************************************************************
 * Routines used to load a characters equipment from disk                  *
@@ -604,6 +624,74 @@ void load_char_objs(struct char_data *ch)
 
 }
 
+int reimb_char_objs(struct char_data *ch)
+{
+	FILE *fl;
+	bool found = FALSE;
+	float timegold;
+	struct obj_file_u st;
+	struct obj_data *tmp;
+	char tbuf[200];
+	int i;
+
+	/*
+		load in aliases and poofs first
+	*/
+//	load_char_extra(ch);
+
+
+	sprintf(tbuf, "reimb/%s", lower(ch->player.name));
+
+	/* r+b is for Binary Reading/Writing */
+	if (!(fl = fopen(tbuf, "r+b")))  {
+		log("Cannot find a reimb file for this character");
+		return(FALSE);
+	}
+
+	rewind(fl);
+
+	if (!ReadObjs(fl, &st)) {
+		log("This char's reimb file has been set to empty, sorry. Remind them not to RENT when needing a reimb");
+		return(FALSE);
+	}
+
+	if (str_cmp(st.owner, GET_NAME(ch)) != 0) {
+		log("Incompatible names in char file and reimb file. Aborting");
+		fclose(fl);
+		return(FALSE);
+	}
+
+/* restore char, remove affects */
+	RestoreChar(ch);
+	RemAllAffects(ch);
+
+    if (ch->in_room == NOWHERE) {
+		/* you made it back from the crash in time, 1 hour grace period. */
+		log("Character in invalid room. Aborting");
+		return(FALSE);
+	}
+
+	/* restore gold */
+	GET_GOLD(ch) = st.gold_left;
+
+	fclose(fl);
+
+	/* remove anything char is currently wearing/carrying */
+	for(i = 0; i < MAX_WEAR; i++) {
+		if(ch->equipment[i])
+			extract_obj(unequip_char(ch, i));
+	}
+	while(ch->carrying)
+		extract_obj(ch->carrying);
+
+	/* restore items from st */
+	obj_store_to_char(ch, &st);
+
+	/* save char */
+	save_char(ch, AUTO_RENT);
+
+	return(TRUE);
+}
 
 /* ************************************************************************
 * Routines used to save a characters equipment from disk                  *
@@ -828,18 +916,16 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 		st.objects[i].depth=0;
 	}
 
-	for(i=0; i<MAX_WEAR; i++)
+	for(i=0; i<MAX_WEAR; i++) {
 		if (ch->equipment[i]) {
 			if(ch->equipment[i]->obj_flags.cost_per_day != -1) {
 				st.objects[st.number].wearpos=i+1;
-			} else {
-//				sprintf(buf, "unrentable (%s) equipped, not storing the wear position", ch->equipment[i]->name);
-//				log(buf);
 			}
-		if (delete) {
-			obj_to_store(unequip_char(ch, i), &st, ch, delete);
-		} else {
-			obj_to_store(ch->equipment[i], &st, ch, delete);
+			if (delete) {
+				obj_to_store(unequip_char(ch, i), &st, ch, delete);
+			} else {
+				obj_to_store(ch->equipment[i], &st, ch, delete);
+			}
 		}
 	}
 
@@ -850,6 +936,40 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 	update_file(ch, &st);
 }
 
+void save_obj_reimb(struct char_data *ch)
+{
+	static struct obj_file_u st;
+	int i;
+	char buf[128];
+
+	st.number = 0;
+	st.gold_left = GET_GOLD(ch);
+
+	sprintf(buf, "Saving reimb info %s:%d", fname(ch->player.name), GET_GOLD(ch));
+	slog(buf);
+
+	st.total_cost = 0;//cost->total_cost;
+	st.last_update = time(0);
+	st.minimum_stay = 0; /* XXX where does this belong? */
+
+	cur_depth=0;
+
+	for(i=0;i<MAX_OBJ_SAVE;i++) {
+		st.objects[i].wearpos=0;
+		st.objects[i].depth=0;
+	}
+
+	for(i=0; i<MAX_WEAR; i++) {
+		if (ch->equipment[i]) {
+			if(ch->equipment[i]->obj_flags.cost_per_day != -1) {
+				st.objects[st.number].wearpos=i+1;
+			}
+			obj_to_store(ch->equipment[i], &st, ch, 0);
+		}
+	}
+	obj_to_store(ch->carrying, &st, ch, 0);
+	update_reimb_file(ch, &st);
+}
 
 
 /* ************************************************************************
@@ -1097,14 +1217,14 @@ int receptionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	  FALSE, recep, 0, ch, TO_VICT);
       act("$n helps $N into $S private chamber.",FALSE, recep,0,ch,TO_NOTVICT);
       ch->old_exp =0;
+	save_obj_reimb(ch); // reimbtest
       save_obj(ch, &cost,1);
       save_room = ch->in_room;
 
       if (ch->specials.start_room != 2 && !IS_SET(ch->specials.act, PLR_HAVEROOM)) /* hell */
 	ch->specials.start_room = save_room;
 
-      extract_char(ch);  /* you don't delete CHARACTERS when you extract
-			    them */
+      extract_char(ch);  /* you don't delete CHARACTERS when you extract them */
       save_char(ch, save_room);
       ch->in_room = save_room;
 

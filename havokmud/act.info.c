@@ -3946,7 +3946,7 @@ void do_resistances(struct char_data *ch, char *argument, int cmd) {
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
 
 	send_to_char("\n\r$c0005Current resistances:\n\r--------------\n\r",ch);
-	for(x=1;x<=BV13;x=x*2) {
+	for(x=1;x<=BV12;x=x*2) {
 
 	  if(IS_IMMUNE(ch,x))
 	    	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
@@ -3954,7 +3954,7 @@ void do_resistances(struct char_data *ch, char *argument, int cmd) {
 	  	if(IsResist(ch, x) && !IsSusc(ch, x))
 	  	 	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
 	  	else
-	   	  if(IsSusc(ch, x))
+	   	  if(IsSusc(ch, x) && !IsResist(ch, x))
 	  	  	ch_printf(ch,"$c000pYou are $c000CSusceptible$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
 	  	  else
 	  	  	ch_printf(ch,"$c000pYou are $c000CDefenseless$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);

@@ -1214,11 +1214,11 @@ int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 			/* mid level spellup */
 			if (GetMaxLevel(ch)>23) {
-				if (!IS_AFFECTED(ch, AFF_INVISIBLE)) {
-					act("$n utters the words 'now you see me, now you don't'",FALSE,ch,0,0,TO_ROOM);
-					cast_gather_shadows(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-					return(TRUE);
-				}
+//				if (!IS_AFFECTED(ch, AFF_INVISIBLE)) {
+//					act("$n utters the words 'now you see me, now you don't'",FALSE,ch,0,0,TO_ROOM);
+//					cast_gather_shadows(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+//					return(TRUE);
+//				}
 				if (!IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
 					act("$n utters the words 'something in my eye'",FALSE,ch,0,0,TO_ROOM);
 					cast_eye_of_the_dead(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
@@ -1294,7 +1294,16 @@ int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 		return(FALSE);
 
 	{
-		/* pester them */
+		/* get up defense */
+		if (GetMaxLevel(ch)>44) {
+			if (!IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
+				act("$n utters the words 'shroud of the dark lord'",FALSE,ch,0,0,TO_ROOM);
+				cast_chillshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+		}
+
+		/* then pester them */
 		switch(lspell) {
 			case 1:
 			case 2:

@@ -3528,11 +3528,11 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   }
 	if (IS_SET(ch->M_immune, Our_Bit)) /* immune overrides boths suspect and resist */
 		dam = -1;
-	else if (IS_SET(ch->immune, Our_Bit) && !IS_SET(ch->susc, Our_Bit)) {/* Make suscept override resist */
+	else if (IS_SET(ch->immune, Our_Bit) && !IS_SET(ch->susc, Our_Bit)) {/* Make suscept cancel out resist */
 		dam >>= 1;
 		if(!(number(0,9)))
 			send_to_char("Your resistances help to protect you from the attack.\n\r",ch);
-	} else if (IS_SET(ch->susc, Our_Bit)) {
+	} else if (IS_SET(ch->susc, Our_Bit) && !IS_SET(ch->immune, Our_Bit)) {
 		dam <<= 1;
 		if(!(number(0,9)))
 			send_to_char("Your susceptibility makes the attack do even more damage.\n\r",ch);

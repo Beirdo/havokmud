@@ -7598,8 +7598,43 @@ int eval(struct obj_data *object) {
 		total = -100;
 	return total;
 }
-/*
 
-total = 0 if item is NO-TAKE
+void do_reimb(struct char_data *ch, char *argument, int cmd)
+{
+	char name[50];
+	char buf[256];
+	struct char_data *victim;
+	struct descriptor_data *d;
 
-*/
+dlog("in do_reimb");
+
+	if (IS_NPC(ch)) return;
+
+	only_argument(argument,buf);
+	if (!*buf) {
+		send_to_char("Usage: reimb <player name>\n\r",ch);
+		return;
+	}
+
+	if(!(victim = get_char(buf))) {
+		send_to_char("Who didya want to reimburse?\n\r", ch);
+		return;
+	}
+
+	if (IS_NPC(victim)) {
+		send_to_char("Hah, reimburse mobs? Better make em return to character form first!\n\r",ch);
+		return;
+	}
+
+	if(reimb_char_objs(victim)) {
+		sprintf(buf,"%s just granted %s a reimbursement",GET_NAME(ch),GET_NAME(victim));
+		log(buf);
+
+		sprintf(buf,"You reimbursed %s, resetting his gold and equipment to the point when they last rented.\n\r",GET_NAME(victim));
+		send_to_char(buf,ch);
+		sprintf(buf,"You have been fully reimbursed by %s.\n\r",GET_NAME(ch));
+		send_to_char(buf,victim);
+	}
+
+	return;
+}

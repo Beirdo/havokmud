@@ -4636,6 +4636,7 @@ void cast_giant_growth( byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4669,6 +4670,7 @@ void cast_binding( byte level, struct char_data *ch, char *arg,
 {
 	switch (type) {
 		case SPELL_TYPE_WAND:
+  case SPELL_TYPE_POTION:
 		case SPELL_TYPE_SPELL:
 		case SPELL_TYPE_STAFF:
 		case SPELL_TYPE_SCROLL:
@@ -4686,6 +4688,7 @@ void cast_decay( byte level, struct char_data *ch, char *arg,
 	switch (type) {
 		case SPELL_TYPE_WAND:
 		case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
 		case SPELL_TYPE_STAFF:
 		case SPELL_TYPE_SCROLL:
 			spell_decay(level, ch,tar_ch, 0);
@@ -4749,6 +4752,7 @@ void cast_nullify( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4780,6 +4784,7 @@ void cast_eye_of_the_dead( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4825,6 +4830,7 @@ void cast_dark_pact( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4856,6 +4862,7 @@ void cast_vampiric_embrace( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4871,6 +4878,7 @@ void cast_bind_affinity( byte level, struct char_data *ch, char *arg,
 {
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -4932,6 +4940,7 @@ void cast_chillshield( byte level, struct char_data *ch, char *arg,
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
     spell_chillshield(level, ch, 0, 0);
@@ -5001,6 +5010,7 @@ void cast_disease(byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -5019,6 +5029,7 @@ void cast_invis_to_undead( byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -5056,6 +5067,7 @@ void cast_suit_of_bone( byte level, struct char_data *ch
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
       spell_suit_of_bone(level, ch, tar_ch, 0);
@@ -5073,6 +5085,7 @@ void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -5163,6 +5176,7 @@ void cast_gather_shadows( byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -5215,6 +5229,7 @@ void cast_endure_cold( byte level, struct char_data *ch, char *arg,
 
   switch(type) {
   case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -5250,6 +5265,7 @@ void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
     spell_blade_barrier(level, ch, 0, 0);
