@@ -987,7 +987,7 @@ void spell_Create_Monster(byte level, struct char_data *ch,
       {
 	if (IS_PC(ch) || ch->master)
 	{
-#if 0
+#if 1 /* don't know why this was disabled, but it shouldn't be. monsum bug solved! */
 	  af.duration  = follow_time(ch);
 #else
 	  af.duration  = 1;

@@ -1057,158 +1057,140 @@ int ObjFromCorpse( struct obj_data *c)
 int ClassSpecificStuff( struct char_data *ch)
 {
 int i;
-
-  //This fix the haste bug -MW 2001/03/12  
-  if(affected_by_spell(ch, SPELL_HASTE))
-  	ch->mult_att/=2;
-  else if(affected_by_spell(ch, SPELL_SLOW))
-  	ch->mult_att*=2;
   
   if ( HasClass(ch, CLASS_WARRIOR)  || HasClass(ch, CLASS_MONK) ||
        HasClass(ch,CLASS_BARBARIAN) || HasClass(ch, CLASS_PALADIN) ||
        HasClass(ch,CLASS_RANGER))   {
-    ch->mult_att = 1.0;
+       	// reset all attacks to 1.0
+	ch->mult_att = 1.0; 
 
-if (HasClass(ch, CLASS_BARBARIAN))     {
-      ch->mult_att+=(MIN(30,(GET_LEVEL(ch, BARBARIAN_LEVEL_IND)))*.05);
-    } else         
-if (HasClass(ch, CLASS_RANGER))     {
-      ch->mult_att+=(MIN(30,(GET_LEVEL(ch, RANGER_LEVEL_IND)))*.05);
-    } else         
-if (HasClass(ch, CLASS_PALADIN))     {
-      ch->mult_att+=(MIN(30,(GET_LEVEL(ch, PALADIN_LEVEL_IND)))*.05);
-   if (GET_ALIGNMENT(ch) >= 350) {
-      SET_BIT(ch->specials.affected_by,AFF_DETECT_EVIL);
-      SET_BIT(ch->specials.affected_by,AFF_PROTECT_FROM_EVIL);
-     }
-    } else         
-
-    if (HasClass(ch, CLASS_WARRIOR))     {
-      ch->mult_att+=(MIN(30,(GET_LEVEL(ch, WARRIOR_LEVEL_IND)))*.05);
-    } else 
-    
-    {
-     if (HasClass(ch, CLASS_MONK)) 
-      {
-	ch->mult_att+= (GET_LEVEL(ch, MONK_LEVEL_IND)/16.0);
-      }
-
-    if(affected_by_spell(ch, SPELL_HASTE))
-    	ch->mult_att*=2;
-    else if(affected_by_spell(ch, SPELL_SLOW))
-    	ch->mult_att/=2;     
-  
-    /* fix up damage stuff */
-      switch(GET_LEVEL(ch, MONK_LEVEL_IND)) {
-      case 1:
-      case 2:
-      case 3:
-	ch->specials.damnodice = 1;
-	ch->specials.damsizedice = 3;
-	break;
-      case 4:
-      case 5:
-	ch->specials.damnodice = 1;
-	ch->specials.damsizedice = 4;
-	break;
-      case 6:
-      case 7:
-      case 8:
-      case 9:
-      case 10:
-      case 11:
-	ch->specials.damnodice = 1;
-	ch->specials.damsizedice = 6;
-	break;
-      case 12:
-      case 13:
-      case 14:
-	ch->specials.damnodice = 2;
-	ch->specials.damsizedice = 3;
-	break;
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-	ch->specials.damnodice = 2;
-	ch->specials.damsizedice = 4;
-	break;
-      case 20:
-      case 21:
-	ch->specials.damnodice = 3;
-	ch->specials.damsizedice = 3;
-	break;
-      case 22:
-      case 23:
-      case 24:
-      case 25:
-      case 26:
-	ch->specials.damnodice = 3;
-	ch->specials.damsizedice = 4;
-	break;
-      case 27:
-      case 28:
-      case 29:
-	ch->specials.damnodice = 4;
-	ch->specials.damsizedice = 3;
-	break;
-      case 30:
-      case 31:
-      case 32:
-      case 33:
-      case 34:
-	ch->specials.damnodice = 4;
-	ch->specials.damsizedice = 4;
-	break;
-      case 35:
-      case 36:
-	ch->specials.damnodice = 4;
-	ch->specials.damsizedice = 5;
-	break;
-      case 37:
-      case 38:
-      case 39:
-      case 40:
-      case 41:
-      case 42:
-      case 43:
-      case 44:
-	ch->specials.damnodice = 5;
-	ch->specials.damsizedice = 4;
-	break;
-      case 45:
-      case 46:
-      case 47:
-      case 48:
-      case 49:
-	ch->specials.damnodice = 5;
-	ch->specials.damsizedice = 5;
-	break;
-      case 50:
-	ch->specials.damnodice = 7;
-	ch->specials.damsizedice = 4;
-	break;
-      default:
-	ch->specials.damnodice=1;
-	ch->specials.damsizedice = 2;
-	break;
-      }
-
-
-    }
+	// apply modifiers for warrior-type classes
+	if (HasClass(ch, CLASS_BARBARIAN))     {
+		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, BARBARIAN_LEVEL_IND)))*.05);
+	} 
+	else if (HasClass(ch, CLASS_RANGER))     {
+		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, RANGER_LEVEL_IND)))*.05);
+	} 
+	else if (HasClass(ch, CLASS_PALADIN))     {
+		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, PALADIN_LEVEL_IND)))*.05);
+		if (GET_ALIGNMENT(ch) >= 350) {
+      			SET_BIT(ch->specials.affected_by,AFF_DETECT_EVIL);
+      			SET_BIT(ch->specials.affected_by,AFF_PROTECT_FROM_EVIL);
+     		}
+    	} 
+	else if (HasClass(ch, CLASS_WARRIOR))     {
+      		ch->mult_att+=(MIN(30,(GET_LEVEL(ch, WARRIOR_LEVEL_IND)))*.05);
+	} 
+	// special case for monks
+	else {
+     		if (HasClass(ch, CLASS_MONK)) {
+			ch->mult_att+= (GET_LEVEL(ch, MONK_LEVEL_IND)/16.0);
+     		}
+   		  
+    		/* fix up damage stuff */
+      		switch(GET_LEVEL(ch, MONK_LEVEL_IND)) {
+      			case 1:
+      			case 2:
+      			case 3:
+				ch->specials.damnodice = 1;
+				ch->specials.damsizedice = 3;
+				break;
+      			case 4:
+      			case 5:
+				ch->specials.damnodice = 1;
+				ch->specials.damsizedice = 4;
+				break;
+      			case 6:
+      			case 7:
+      			case 8:
+      			case 9:
+      			case 10:
+      			case 11:
+				ch->specials.damnodice = 1;
+				ch->specials.damsizedice = 6;
+				break;
+      			case 12:
+      			case 13:
+      			case 14:
+				ch->specials.damnodice = 2;
+				ch->specials.damsizedice = 3;
+				break;
+      			case 15:
+      			case 16:
+      			case 17:
+      			case 18:
+      			case 19:
+				ch->specials.damnodice = 2;
+				ch->specials.damsizedice = 4;
+				break;
+      			case 20:
+      			case 21:
+				ch->specials.damnodice = 3;
+				ch->specials.damsizedice = 3;
+				break;
+      			case 22:
+      			case 23:
+      			case 24:
+      			case 25:
+      			case 26:
+				ch->specials.damnodice = 3;
+				ch->specials.damsizedice = 4;
+				break;
+      			case 27:
+      			case 28:
+      			case 29:
+				ch->specials.damnodice = 4;
+				ch->specials.damsizedice = 3;
+				break;
+      			case 30:
+      			case 31:
+      			case 32:
+      			case 33:
+      			case 34:
+				ch->specials.damnodice = 4;
+				ch->specials.damsizedice = 4;
+				break;
+      			case 35:
+      			case 36:
+				ch->specials.damnodice = 4;
+				ch->specials.damsizedice = 5;
+				break;
+      			case 37:
+      			case 38:
+      			case 39:
+      			case 40:
+      			case 41:
+      			case 42:
+      			case 43:
+      			case 44:
+				ch->specials.damnodice = 5;
+				ch->specials.damsizedice = 4;
+				break;
+      			case 45:
+     			case 46:
+      			case 47:
+      			case 48:
+      			case 49:
+				ch->specials.damnodice = 5;
+				ch->specials.damsizedice = 5;
+				break;
+      			case 50:
+				ch->specials.damnodice = 7;
+				ch->specials.damsizedice = 4;
+				break;
+      			default:
+				ch->specials.damnodice=1;
+				ch->specials.damsizedice = 2;
+				break;
+      		}
+    	}
   }
+/* working haste bug fix - Xamael (04/14/2002) */
+  if(affected_by_spell(ch, SPELL_HASTE))
+  	ch->mult_att*=2;
+  if(affected_by_spell(ch, SPELL_SLOW))
+	ch->mult_att/=2; 
 
-#if 0
-/*A quick fix for chars gaining while hasted*/
-for(i = 0; /*all the affects on a character*/;i++)
-   if(/*Character is affected by haste*/)
-      if(/*modifier is > 0*/)
-         //Double attacks
-      else if(/*modifier is < 0*/)
-         //Half attacks
-
-#endif
       /* other stuff.. immunities, etc, are set here */
 
   if (HasClass(ch, CLASS_MONK)) {
