@@ -1387,6 +1387,7 @@ void assign_mobiles()
  {51824, trinketlooter },
  {51805, lust_sinner },
  {51806, lust_sinner },
+ {51812, Tyrannosaurus_swallower}, /* Hambre, Guardian of Gluttony */
 
 #endif
 
@@ -1447,7 +1448,7 @@ void assign_objects()
 
 /* Temple of Sin */
    {51831, altarofsin },
-   {51827, chestproc }, //appliepie },
+   {51827, applepie },
    {51832, trinketcount },
 
 /*End Thunder Mountain Keep Objects*/

@@ -6735,51 +6735,59 @@ int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 {
 	struct obj_data *i, *win;
 	int virtual,x;
-     char buf[MAX_INPUT_LENGTH+80];
+    char buf[MAX_INPUT_LENGTH+80];
 	int hasStones[7]= { 0,0,0,0,0,0,0 };
 
-  if(cmd != 438) //rub alter
-    return(FALSE);
+	if(cmd != 438) /* rub */
+    	return(FALSE);
 
-   dlog("in altar");
+	dlog("in altar");
 
-	for(i=obj->contains;i;i=i->next_content) {
-     	 virtual = (i->item_number >= 0) ? obj_index[i->item_number].virtual : 0;
+	only_argument(argument,buf);
+	if (*buf) {
+		if (!(str_cmp("altar", buf)) || !(str_cmp("Altar", buf)) || !(str_cmp("ALTAR", buf))) {
+			/* rub altar */
+			for(i=obj->contains;i;i=i->next_content) {
+     	 		virtual = (i->item_number >= 0) ? obj_index[i->item_number].virtual : 0;
 
-		if(virtual < 51809 && virtual > 51801) {
-			hasStones[virtual-51802]=1;
-		 	//ch_printf(ch,"!%d",virtual-51802);
+				if(virtual < 51809 && virtual > 51801) {
+					hasStones[virtual-51802]=1;
+		 			//ch_printf(ch,"!%d",virtual-51802);
+				}
+    		}
+			/*Check to see if all stones are present*/
+			for (x = 0; x < 7;x++ ) {
+				if(hasStones[x]==0) {
+					send_to_char("As you rub the altar, it hums briefly, but nothing else happens.\n\r",ch);
+					return(TRUE);
+				}
+			}
+			/* yay, they're all there */
+			send_to_room("The Altar of Sin briefly glows, and a faint clicking sound can be heard within.\n\r",ch->in_room);
+			send_to_room("The Wisdom of Sin intones 'The prowess proven, the mind excelled, the dice rolled.'\n\r",ch->in_room);
+			send_to_room("The Wisdom of Sin intones 'Thus the reward may be claimed.'\n\r",ch->in_room);
 
-		}
-    }
-	/*Check to see if all stones are present*/
-	for (x = 0; x < 7;x++ ) {
-		if(hasStones[x]==0)
+			/*purge everything in altar*/
+			obj_from_room(obj);
+			extract_obj(obj);
+
+			obj = read_object(51831, VIRTUAL);
+			obj_to_room(obj, ch->in_room);
+
+			/*Load up the prize */
+			win = read_object(randomitem(), VIRTUAL);
+			if(!win) {
+				log("Invalid item in lennyas altar proc");
+				return(FALSE);
+			}
+			obj_to_obj(win, obj);
+			return(TRUE);
+		} else {
 			return(FALSE);
-	}
-
-	send_to_room("\n\rThe Altar of Sin briefly glows, and a faint clicking sound can be heard within.\n\r",ch->in_room);
-	send_to_room("The Wisdom of Sin intones 'The prowess proven, the mind excelled, the dice rolled.'\n\r",ch->in_room);
-	send_to_room("The Wisdom of Sin intones 'Thus the reward may be claimed.'\n\r",ch->in_room);
-
-
-	/*purge everything in altar*/
-
-		obj_from_room(obj);
-		extract_obj(obj);
-
-		obj = read_object(51831, VIRTUAL);
-		obj_to_room(obj, ch->in_room);
-
-	/*Load up the prize */
-	win = read_object(randomitem(), VIRTUAL);
-	if(!win) {
-		log("Invalid item in lennyas altar proc");
+		}
+	} else {
 		return(FALSE);
-
 	}
-	obj_to_obj(win, obj);
-	return(TRUE);
 }
 
 int randomitem(void) {
@@ -6928,21 +6936,38 @@ int randomitem(void) {
 
 int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
 
+	struct char_data *hambre;
+	struct obj_data *apple;
 
-	if (cmd == 67) 	{ /* put */
-	  do_put(ch, argument, 67);
-	  if(((obj->contains->item_number >= 0) ? obj_index[obj->contains->item_number].virtual : 0 )==51828) {
-   		send_to_room("\n\rA small army of servants enters the anteroom and lifts up the apple pie.\n\r",ch->in_room);
-   		send_to_room("The servants groan under the pie's weight, yet persevere and carry it through\n\r",ch->in_room);
-   		send_to_room("the eastern door. A few moments later, sounds of a feeding frenzy drift can be\n\r",ch->in_room);
-   		send_to_room("heard, followed by some coughing. Some more coughing.\n\r",ch->in_room);
-	    do_at(ch, "hambre slay hambre", 1);
 
-	    /*purge pie*/
-	    obj_from_room(obj);
-	    extract_obj(obj);
+	if (cmd == 67) { /* put */
 
-	  }
+		hambre = get_char_vis_world(ch, "guardian gluttony Hambre 14000", NULL);
+
+		if (!hambre) {
+			log("No Hambre found in applepie proc.");
+			return(FALSE);
+		}
+
+		do_put(ch, argument, 67);
+		apple=get_obj_in_list_vis(ch, "apple rotten poisoned", obj->contains);
+
+		if(!apple) {
+//			log("No apple found in applepie proc.");
+			return(TRUE);
+		}
+
+		if(obj_index[apple->item_number].virtual==51828) {
+			send_to_room("\n\rA small army of servants enters the anteroom and lifts up the apple pie.\n\r",ch->in_room);
+			send_to_room("The servants groan under the pie's weight, yet persevere and carry it through\n\r",ch->in_room);
+			send_to_room("the eastern door. A few moments later, sounds of a feeding frenzy drift can be\n\r",ch->in_room);
+			send_to_room("heard, followed by some coughing. Some more coughing... A strangled cry..\n\r",ch->in_room);
+			GET_HIT(hambre) = -1;
+			die(hambre, '\0');
+
+			/* purge pie */
+			extract_obj(obj);
+		}
     	return(TRUE);
     }
     return (FALSE);
@@ -7381,7 +7406,8 @@ int pride_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *r
 
 	char buf[MAX_STRING_LENGTH +30];
 
-	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 91 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151) {  /* wear wield hold follow grab doorbash run flee */
+	if (cmd == 13 || cmd == 14 || cmd == 65 || cmd == 91 || cmd == 150 || cmd == 258 || cmd == 384 || cmd == 151 || cmd == 567) {
+		/* wear wield hold follow grab doorbash run flee draw */
    		act("$n shines with pride.", FALSE, ch, 0, 0, TO_ROOM);
         act("You feel far too proud to do that.",FALSE,ch,0,0,TO_CHAR);
         return (TRUE);
