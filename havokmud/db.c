@@ -6535,10 +6535,9 @@ void clean_playerfile(void)
     Log(buf);
     sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
     Log(buf);
-    sprintf(buf, "mv %s %s.bak", PLAYER_FILE, PLAYER_FILE);
-    system(buf);
-    sprintf(buf, "mv temp %s", PLAYER_FILE);
-    system(buf);
+    sprintf(buf, "%s.bak", PLAYER_FILE);
+    rename(PLAYER_FILE, buf);
+    rename("temp", PLAYER_FILE);
     Log("Cleaning done.");
 }
 #else
@@ -6622,10 +6621,10 @@ void clean_playerfile(void)
                         sprintf(buf, "Purging rent file for %s, inactive for "
                                 "%d month.", uname, RENT_INACTIVE);
                         Log(buf);
-                        sprintf(buf, "rm rent/%s", uname);
-                        system(buf);
-                        sprintf(buf, "rm rent/%s.aux", grunt.dummy.name);
-                        system(buf);
+                        sprintf(buf, "rent/%s", uname);
+                        unlink(buf);
+                        sprintf(buf, "rent/%s.aux", grunt.dummy.name);
+                        unlink(buf);
                     }
 #endif
 
@@ -6702,10 +6701,9 @@ void clean_playerfile(void)
     Log(buf);
     sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
     Log(buf);
-    sprintf(buf, "mv %s %s.bak", PLAYER_FILE, PLAYER_FILE);
-    system(buf);
-    sprintf(buf, "mv temp %s", PLAYER_FILE);
-    system(buf);
+    sprintf(buf, "%s.bak", PLAYER_FILE);
+    rename(PLAYER_FILE, buf);
+    rename("temp", PLAYER_FILE);
     Log("Cleaning done.");
 }
 #endif

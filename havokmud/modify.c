@@ -1389,11 +1389,11 @@ void check_reboot()
                     if (system("./reboot")) {
                         Log("Reboot script terminated abnormally");
                         send_to_all("The reboot was cancelled.\n\r");
-                        system("mv ./reboot reboot.FAILED");
+                        rename("./reboot", "reboot.FAILED");
                         fclose(boot);
                         return;
                     } else {
-                        system("mv ./reboot reboot.SUCCEEDED");
+                        rename("./reboot", "reboot.SUCCEEDED");
                     }
                 }
 

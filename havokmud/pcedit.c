@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include <malloc.h>
 #include <time.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -130,13 +132,16 @@ struct my_char_data {
 void            muck(int orig_ammt, char name[80]);
 void            specific_axe(int orig_ammt, char name[80]);
 void            inactive_god_axe(int orig_ammt, time_t CURRENT_TIME);
-int             change_struct(int orig_ammt);
+void            change_struct(int orig_ammt);
 void            inactive_axe(int orig_ammt, time_t CURRENT_TIME);
 void            zero_bank();
 char           *time_print(long et);
 char           *lower(char *s);
 int             load_playerfile(char *argv[]);
 int             convert_playerfile(char *argv[]);
+void            test(int orig_ammt);
+int             spit_out_remains(char *argv[], int ammt);
+
 int             orig_ammt = 0,
                 after_ammt = 0;
 int             our_pos = 0;
@@ -165,7 +170,7 @@ int get_int(int min, int max, int zero_ok)
     return i;
 }
 
-get_string(char *s, int len)
+void get_string(char *s, int len)
 {
     do {
         fflush(stdin);
@@ -180,16 +185,12 @@ get_string(char *s, int len)
     } while (*s == '\0' || *s == ' ');
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     char            tempbuf[255];
     time_t          CURRENT_TIME;
-    int             choice,
-                    j;
-    register        i;
-    int             number_level[9];
-
-    system("clear");
+    int             choice;
+    int             i;
 
     if (argc != 3) {
         printf("please use this program in the following format:");
@@ -266,12 +267,12 @@ main(int argc, char *argv[])
             break;
         }
     } while (choice);
+    return(0);
 }
 
-int test(int orig_ammt)
+void test(int orig_ammt)
 {
-    register        i;
-    int             j = FALSE;
+    int             i;
     char            best[256],
                     best2[256];
     long            bestmkill = 0;
@@ -289,13 +290,13 @@ int test(int orig_ammt)
         }
     }
 
-    printf("%s is the mad killer of the mud with %d kills \n\r", best,
+    printf("%s is the mad killer of the mud with %ld kills \n\r", best,
            bestmkill);
     printf("%s is the richest of the mud with %d kills \n\r", best2,
            bestrich);
 }
 
-int change_struct(int orig_ammt)
+void change_struct(int orig_ammt)
 {
 }
 
@@ -311,12 +312,11 @@ void menu2()
 void muck(int orig_ammt, char name[80])
 {
     void            menu2();
-    register        i;
+    int             i;
     int             l,
                     m,
                     count,
                     f;
-    char            temp[10];
     char            buffer[255];
 
     printf("\ndoing Upper on:%s\n", name);
@@ -338,7 +338,8 @@ void muck(int orig_ammt, char name[80])
         if (!(strcmp(name, dummy[i]->grunt.name))) {
             our_pos = i;
 
-            printf("Levels: M:%d C:%d W:%d T:%d D:%d B:%d S:%d P:%d R:%d P:%d ",
+            printf("Levels: M:%d C:%d W:%d T:%d D:%d B:%d S:%d P:%d R:%d P:%d "
+                    "N:%d" ,
                  dummy[i]->grunt.level[0], dummy[i]->grunt.level[1],
                  dummy[i]->grunt.level[2], dummy[i]->grunt.level[3],
                  dummy[i]->grunt.level[4], dummy[i]->grunt.level[5],
@@ -364,7 +365,7 @@ void muck(int orig_ammt, char name[80])
                 case 1:
                     printf("%s:\n", dummy[i]->grunt.name);
                     printf("Levels: M:%d C:%d W:%d T:%d D:%d B:%d S:%d P:%d "
-                            "R:%d P:%d ",
+                            "R:%d P:%d N:%d ",
                          dummy[i]->grunt.level[0], dummy[i]->grunt.level[1],
                          dummy[i]->grunt.level[2], dummy[i]->grunt.level[3],
                          dummy[i]->grunt.level[4], dummy[i]->grunt.level[5],
@@ -384,7 +385,7 @@ void muck(int orig_ammt, char name[80])
                     }
 
                     printf("Levels: M:%d C:%d W:%d T:%d D:%d B:%d S:%d P:%d "
-                           "R:%d P:%d ",
+                           "R:%d P:%d N:%d ",
                          dummy[i]->grunt.level[0], dummy[i]->grunt.level[1],
                          dummy[i]->grunt.level[2], dummy[i]->grunt.level[3],
                          dummy[i]->grunt.level[4], dummy[i]->grunt.level[5],
@@ -394,7 +395,7 @@ void muck(int orig_ammt, char name[80])
                     break;
                 case 2:
                     printf("\n%s currently starts in room %d.",
-                           dummy[i]->grunt.load_room);
+                           dummy[i]->grunt.name, dummy[i]->grunt.load_room);
                     printf("\nNew room?\n");
                     dummy[i]->grunt.load_room = get_int(0, 40000, TRUE);
                     printf("\nStart room set to %d.",
@@ -477,7 +478,7 @@ void muck(int orig_ammt, char name[80])
                     }
                     break;
                 default:
-                    printf("finished mucking ... \n", f = 0);
+                    printf("finished mucking ... \n");
                     break;
                 }
             }
@@ -487,11 +488,11 @@ void muck(int orig_ammt, char name[80])
 
 void specific_axe(int orig_ammt, char *name)
 {
-    register        i;
+    int             i;
     int             j = FALSE;
 
     name[0] = toupper(name[0]);
-    for (i = 0; i < orig_ammt, !j; i++) {
+    for (i = 0; i < orig_ammt && !j; i++) {
         if (!(strcmp(name, dummy[i]->grunt.name))) {
             dummy[i]->AXE = TRUE;
             printf("%s's head found, putting it on the block.\n",
@@ -507,7 +508,7 @@ void specific_axe(int orig_ammt, char *name)
 
 void inactive_god_axe(int orig_ammt, time_t CURRENT_TIME)
 {
-    register        i,
+    int             i,
                     j,
                     max;
     int             amt = 0;
@@ -541,7 +542,7 @@ void inactive_god_axe(int orig_ammt, time_t CURRENT_TIME)
 
 void inactive_axe(int orig_ammt, time_t CURRENT_TIME)
 {
-    register        i,
+    int             i,
                     j,
                     max;
     char            buf[254];
@@ -570,10 +571,10 @@ void inactive_axe(int orig_ammt, time_t CURRENT_TIME)
             if (max < 51) {
                 dummy[i]->AXE = TRUE;
                 amt++;
-                sprintf(buf, "rm rent/%s", lower(dummy[i]->grunt.name));
-                system(buf);
-                sprintf(buf, "rm rent/%s.aux", dummy[i]->grunt.name);
-                system(buf);
+                sprintf(buf, "rent/%s", lower(dummy[i]->grunt.name));
+                unlink(buf);
+                sprintf(buf, "rent/%s.aux", dummy[i]->grunt.name);
+                unlink(buf);
             }
         }
     }
@@ -604,10 +605,8 @@ int spit_out_remains(char *argv[], int ammt)
 int load_playerfile(char *argv[])
 {
     int             ammt = 0;
-    int             test,
-                    tmpi;
-    FILE           *fl,
-                   *fl2;
+    int             test;
+    FILE           *fl;
 
     if (!(fl = fopen(argv[1], "r"))) {
         printf("\nCan not open %s, bye!\n", argv[1]);
@@ -646,8 +645,7 @@ int load_playerfile(char *argv[])
 
 int convert_playerfile(char *argv[])
 {
-    int             test,
-                    tmpi,
+    int             tmpi,
                     ammt = 0;
     FILE           *fl2;
 
@@ -933,11 +931,12 @@ int ReadObjs(FILE * fl, struct obj_file_u *st)
     for (i = 0; i < st->number; i++) {
         fread(&st->objects[i], sizeof(struct obj_file_elem), 1, fl);
     }
+    return (TRUE);
 }
 
-void zero_bank()
+void zero_bank(void)
 {
-    register        i;
+    int             i;
 
     for (i = 0; i < orig_ammt; i++) {
         dummy[i]->grunt.points.bankgold = 0;
