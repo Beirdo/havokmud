@@ -5393,7 +5393,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 #if 1
   int check = -1,x=0;
 
-  int destination[10];
+  //int destination[10];
   char buf[50];
   char buf2[256];
   int j;
@@ -5410,7 +5410,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	/* Check to see where the post is going */
 	check = -1;
 
-	for (x = 0; x < 7; x++) {
+	for (x = 0; x < 14; x++) {
 	  if (mob_index[post->nr].virtual==post_list[x]){
 	    check=x;
 	  }
@@ -5423,7 +5423,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 	j=destination[check];
 
-	sprintf(buf2,"Going to Room# %d\n\r",j);
+	//sprintf(buf2,"Going to Room# %d\n\r",j);
 	send_to_char(buf2,ch);
 	send_to_char("You touch the strange post and suddently feel your mind",ch);
     send_to_char(" and body being torn appart.\n\r",ch);
@@ -5456,10 +5456,9 @@ int board_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   if(*buf) {
 
     *buf = tolower(*buf);
-    if(!(str_cmp("ship",buf))) {
+    if((!str_cmp("ship",buf) || !str_cmp("corsair",buf)
+    						 || !str_cmp("corsair ship",buf))) {
       if(ship=get_char_room("corsair ship",ch->in_room)) {
-	     /* Check to see where the post is going */
-
 	     j=32033;
 
 	     send_to_char("You enter the ship.\n\r",ch);

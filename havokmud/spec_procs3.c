@@ -4157,11 +4157,12 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
  * May 5, 2001
  */
 #if 1
+
 int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  struct char_data *targ;
+  struct char_data *targ, *target;
   struct room_data *rp;
-  int i;
+  int i, location;
   char buf[256];
 
   if (cmd && cmd != 156) return(FALSE);
@@ -4171,10 +4172,23 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if ((targ = FindAnAttacker(ch))!='\0') {
       act("$n pushs you off the ship.", TRUE, ch, 0, 0, TO_ROOM);
 
-		char_from_room(mob);
-		char_to_room(mob,1111);  /*Find the room that the corsair ship is in*/
+		//char_from_room(mob);
+		if ( !(target=get_char_vis_world(ch,"ship",NULL)) )   {
+		  send_to_char ("Where did that darn ship go??.\n\r",ch);
+		  return;
+	    }
 
+	    location = target->in_room;
 
+		//char_from_room(mob);
+	//	char_to_room(mob,location);  /*Find the room that the corsair ship is in*/
+
+	//	char_from_room(ch);
+		//char_to_room(ch,location);  /*Find the room that the corsair ship is in*/
+		char_from_room(targ);
+		char_to_room(targ,location);  /*Find the room that the corsair ship is in*/
+		act("$n suddently falls from above.", TRUE, targ, 0, 0, TO_ROOM);
+    	act("You fall helplessly downward off the ship.", FALSE, ch, 0, 0, TO_CHAR);
     }
   }
 }
