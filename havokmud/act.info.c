@@ -2394,7 +2394,7 @@ dlog("in do_help");
 				}
 
 				send_to_char("There is no help on that word.\n\r", ch);
-				send_to_char("Perhaps try help skills <skill> or help spell <spell>.\n\r", ch);
+				send_to_char("Perhaps try help skill <skill> or help spell <spell>.\n\r", ch);
 
 				//(GH)NO help so add that key word to a file called ADD_HELP
 				if (!(fl = fopen(NEWHELP_FILE, "a")))	{
@@ -2409,6 +2409,75 @@ dlog("in do_help");
 				bot = ++mid;
 			else
 				top = --mid;
+		}
+		return;
+	}
+	send_to_char(help, ch);
+}
+void do_newhelp(struct char_data *ch, char *argument, int cmd)
+{
+  FILE *fl;
+  int i, possible, found;
+  char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
+
+
+dlog("in do_newhelp");
+
+	if (!ch->desc)
+		return;
+
+	possible = 0;
+	found = 0;
+
+	for(;isspace(*argument); argument++)  ;
+
+
+	if (*argument)
+	{
+		if (!help_index)  {
+			send_to_char("No help available.\n\r", ch);
+			return;
+		}
+
+		for (i = 0; i <= top_of_helpt; i++) {
+			if(!str_cmp(argument, help_index[i].keyword)) {
+				rewind(help_fl);
+				fseek(help_fl, help_index[i].pos, 0);
+				*buffer = '\0';
+				for (;;)  {
+					fgets(buf, 80, help_fl);
+					if (*buf == '#')
+						break;
+					if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
+						break;
+					if(buf[strlen(buf)-1]=='~')
+						buf[strlen(buf)-1] = '\0';
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				page_string(ch->desc, buffer, 1);
+				return;
+			} else if (is_abbrev(argument,help_index[i].keyword)) {
+				if(!possible) {
+					send_to_char("No exact match found. Possible matches are:\n\r\n\r",ch);
+				}
+				if(possible > 10) {
+					send_to_char("Too many matches found. Please be more specific.\n\r",ch);
+					return;
+				}
+				possible++;
+				sprintf(buf, "newhelp %s\n\r",help_index[i].keyword);
+				send_to_char(buf, ch);
+			}
+
+		}
+		if(possible) {
+			send_to_char("\n\rPlease specify. Only exact matches will work.\n\r",ch);
+			return;
+		} else if(!found) {
+			send_to_char("No remote or exact matches found.\n\r",ch);
+			send_to_char("Possibly try 'help skill <skill> or help spell <spell>'.\n\r",ch);
+			return;
 		}
 		return;
 	}
@@ -5902,7 +5971,6 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 		}
 	}
 }
-#if WEAPONSKLZ
 
 void do_weapons(struct char_data *ch, char *argument, int cmd)
 {
@@ -5950,7 +6018,6 @@ void do_weapons(struct char_data *ch, char *argument, int cmd)
 		send_to_char(buf,ch);
 	}
 }
-#endif
 
 void do_allweapons(struct char_data *ch, char *argument, int cmd)
 {

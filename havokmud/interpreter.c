@@ -1582,7 +1582,6 @@ AddCommand("autoexits",do_auto, 581, POSITION_RESTING,1);
 
 AddCommand("train", do_not_here, 582, POSITION_STANDING, 1);
 AddCommand("mend",do_mend,583,POSITION_STANDING,1);
-//AddCommand("genstatue",do_genstatue,584,POSITION_STANDING,51); /* should now be fully automatic */
 
 AddCommand("quest" ,do_set_quest,585, POSITION_RESTING,1);
 AddCommand("qtrans" ,do_qtrans,586, POSITION_STANDING,51);
@@ -1594,7 +1593,6 @@ AddCommand("induct", do_induct, 590, POSITION_STANDING,1);
 AddCommand("expel", do_expel, 591, POSITION_STANDING, 1);
 AddCommand("chat", do_chat, 592, POSITION_RESTING, 1);
 
-//AddCommand("goodiebag" ,do_goodiebag,593, POSITION_STANDING,51);
 AddCommand("qchat", do_qchat, 594, POSITION_RESTING, 1);
 AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
 AddCommand("call steed",do_steed, 596, POSITION_STANDING,1);
@@ -1612,12 +1610,11 @@ AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
 
 AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
 
+AddCommand("newhelp", do_newhelp, 606, POSITION_SLEEPING, 1);
+
 // room here
-#if WEAPONSKLZ
 
 AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
-#endif
-
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
 AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);

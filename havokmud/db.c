@@ -4148,7 +4148,6 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.m_kills = st->m_kills;
 
 	ch->specials.remortclass = st->remortclass;
-#if WEAPONSKLZ
 
 	ch->weaponskills.slot1 = st->slot1;
 	ch->weaponskills.slot2 = st->slot2;
@@ -4166,7 +4165,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->weaponskills.grade6 = st->grade6;
 	ch->weaponskills.grade7 = st->grade7;
 	ch->weaponskills.grade8 = st->grade8;
-#endif
+
   ch->specials.spells_to_learn = st->spells_to_learn;
   ch->specials.alignment    = st->alignment;
 
@@ -4331,7 +4330,6 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 	st->m_kills  = ch->specials.m_kills;
 
 	st->remortclass = ch->specials.remortclass;
-#if WEAPONSKLZ
 
 	st->slot1 = ch->weaponskills.slot1;
 	st->slot2 = ch->weaponskills.slot2;
@@ -4349,7 +4347,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 	st->grade6 = ch->weaponskills.grade6;
 	st->grade7 = ch->weaponskills.grade7;
 	st->grade8 = ch->weaponskills.grade8;
-#endif
+
      st->speaks = ch->player.speaks;
 	st->user_flags = ch->player.user_flags;
   st->points.armor   = 100;

@@ -148,6 +148,7 @@ void do_score(struct char_data *ch, char *argument, int cmd);
 void do_time(struct char_data *ch, char *argument, int cmd);
 void do_weather(struct char_data *ch, char *argument, int cmd);
 void do_help(struct char_data *ch, char *argument, int cmd);
+void do_newhelp(struct char_data *ch, char *argument, int cmd);
 
 void do_list_zones(struct char_data *ch, char *argument, int cmd);
 void do_recallhome(struct char_data *victim, char *argument, int cmd);
@@ -377,7 +378,6 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd);
 void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd);
 void do_setwtype(struct char_data *ch, char *argument, int cmd);
 void do_setsound(struct char_data *ch, char *argument, int cmd);
-void do_goodiebag(struct char_data *ch, char *argument, int cmd);
 void do_tweak(struct char_data *ch, char *argument, int cmd);
 
 /* From board.c */
@@ -516,10 +516,9 @@ int DamDetailsOk( struct char_data *ch, struct char_data *v, int dam, int type);
 int SetCharFighting(struct char_data *ch, struct char_data *v);
 int SetVictFighting(struct char_data *ch, struct char_data *v);
 
-#if WEAPONSKLZ
 
 void WeaponSkillCheck(struct char_data *ch);
-#endif
+
 
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam);
 int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type);

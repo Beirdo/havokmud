@@ -1474,7 +1474,6 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
   }
   return(TRUE);
 }
-#if WEAPONSKLZ
 void WeaponSkillCheck(struct char_data *ch)
 {
 	struct obj_data *obj;
@@ -1641,7 +1640,6 @@ void WeaponSkillCheck(struct char_data *ch)
 		}
 	}
 }
-#endif
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam)
 {
 	if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
@@ -2756,10 +2754,8 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*da
 		w_type = GetFormType(ch);  /* races have different types of attack */
 
 	thaco = CalcThaco(ch);
-#if WEAPONSKLZ
 
 	WeaponSkillCheck(ch);
-#endif
 
 	if (HitOrMiss(ch, victim, thaco)) {
 		if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
