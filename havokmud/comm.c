@@ -30,7 +30,7 @@
 void            identd_test(struct sockaddr_in in_addr);
 
 /* Make OSX work */
-#ifndef socklen_t
+#ifndef HAVE_SOCKLEN_T
 #define socklen_t int
 #endif 
 
