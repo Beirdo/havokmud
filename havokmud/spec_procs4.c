@@ -6086,6 +6086,87 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
     }
     return( FALSE );
 }
+
+struct dragon_def dragonTable[] = {
+    { RACE_DRAGON_RED,   
+      { { "$c000RA cone of fire",  spell_fire_breath } }, 1 },
+    { RACE_DRAGON_BLACK, 
+      { { "$c000GA cone of acid",  spell_acid_breath } }, 1 }, 
+    { RACE_DRAGON_GREEN, 
+      { { "$c000gA cloud of gas",  spell_gas_breath } }, 1 }, 
+    { RACE_DRAGON_WHITE, 
+      { { "$c000CA cone of frost", spell_frost_breath } }, 1 }, 
+    { RACE_DRAGON_BLUE,
+      { { "$c000BA bolt of lightning", spell_lightning_breath } }, 1 }, 
+    { RACE_DRAGON_SILVER, 
+      { { "$c000CA cone of frost", spell_frost_breath }, 
+        { "$c000YA golden ray", spell_paralyze_breath } }, 2 },
+    { RACE_DRAGON_GOLD,  
+      { { "$c000RA cone of fire", spell_fire_breath }, 
+        { "$c000gA cloud of gas", spell_gas_breath } }, 2 },
+    { RACE_DRAGON_BRONZE,
+      { { "$c000BA bolt of lightning", spell_lightning_breath }, 
+        { "$c000yA repulsive cloud", spell_repulsion_breath } }, 2 },
+    { RACE_DRAGON_COPPER,
+      { { "$c000PA sticky cloud", spell_slow_breath }, 
+        { "$c000GA cone of acid", spell_acid_breath } }, 2 },
+    { RACE_DRAGON_BRASS,
+      { { "$c000bA gloomy cloud", spell_sleep_breath }, 
+        { "$c000yA cloud of blistering sand", spell_desertheat_breath } }, 2 }
+};
+int dragonTableCount = NELEMS(dragonTable);
+
+int dragon(struct char_data *ch, int cmd, char *arg, 
+           struct char_data *mob, int type)
+{
+   char             buf[MAX_STRING_LENGTH];
+   struct   char_data   *tar_char;
+   int              i,
+                    j,
+                    level;
+    
+    if (cmd || GET_POS(ch) < POSITION_FIGHTING) {
+        return( FALSE );
+    }
+
+    if (!ch->specials.fighting || !number(0, 2) ) {
+        return( FALSE );
+    }
+
+    for( i = 0; i < dragonTableCount; i++ ) {
+        if( dragonTable[i].race == GET_RACE(ch) ) {
+            break;
+        }
+    }
+
+    if( i == dragonTableCount ) {
+        /* Bad dragon, he don't exist! */
+        sprintf( buf, "Dragon %s has an undefined breath type (race %d), "
+                      "defaulting to fire",
+                 GET_NAME(ch), GET_RACE(ch) );
+        Log(buf);
+        /* First entry is Red Dragon, breathes fire */
+        i = 0;
+    }
+
+    j = number(0, dragonTable[i].breathCount - 1);
+
+    act("$c000W$n rears back and inhales!$c000w", FALSE, ch, 0, 0, TO_ROOM);
+
+    sprintf(buf, "%s shoots forth from $n's mouth!$c000w",
+            dragonTable[i].breath[j].spews );
+    act(buf, FALSE, ch, 0, 0, TO_ROOM);
+
+    level = GetMaxLevel(ch);
+    
+    for (tar_char = real_roomp(ch->in_room)->people; tar_char;
+         tar_char = tar_char->next_in_room) {
+        if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {
+            (dragonTable[i].breath[j].func)(level, ch, tar_char, 0);
+        }
+    }
+    return(TRUE);
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

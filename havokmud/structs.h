@@ -2248,6 +2248,18 @@ struct pc_race_choice {
     int             classCount;
 };
 
+struct dragon_breath {
+    char       *spews;
+    void       (*func)();
+};
+
+#define MAX_BREATH 2
+struct dragon_def {
+    int         race;
+    struct dragon_breath breath[MAX_BREATH];
+    int         breathCount;
+};
+
 
 #endif
 

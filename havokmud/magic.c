@@ -1251,48 +1251,41 @@ void spell_sense_life(int level, struct char_data *ch,
 void spell_fire_breath(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
     struct obj_data *burn;
 
     assert(victim && ch);
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
-
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     } else if (!saves_spell(victim, SAVING_SPELL - 4)) {
-        /*
-         * Fail two saves, burn the wings
-         */
         BurnWings(victim);
     }
     MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
 
-    /*
-     * And now for the damage on inventory
-     */
-
-    /*
-     * DamageStuff(victim, FIRE_DAMAGE);
-     */
-
-    for (burn = victim->carrying;
-         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+    for (burn = victim->carrying; burn && 
+         burn->obj_flags.type_flag != ITEM_SCROLL &&
          burn->obj_flags.type_flag != ITEM_WAND &&
          burn->obj_flags.type_flag != ITEM_STAFF &&
          burn->obj_flags.type_flag != ITEM_BOAT;
          burn = burn->next_content) {
         if (!saves_spell(victim, SAVING_BREATH) && burn) {
-            act("$p burns into cinders.", 0, victim, burn, 0, TO_CHAR);
+            act("$p burns to cinders.", 0, victim, burn, 0, TO_CHAR);
             extract_obj(burn);
         }
     }
@@ -1301,30 +1294,33 @@ void spell_fire_breath(int level, struct char_data *ch,
 void spell_frost_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int              dam = 0;
     struct obj_data *frozen;
 
     assert(victim && ch);
+
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
-
+    
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     }
     MissileDamage(ch, victim, dam, SPELL_FROST_BREATH);
-
-    /*
-     * And now for the damage on inventory
-     */
 
     for (frozen = victim->carrying;
          frozen && ITEM_TYPE(frozen) != ITEM_DRINKCON &&
@@ -1340,58 +1336,97 @@ void spell_frost_breath(int level, struct char_data *ch,
 void spell_acid_breath(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
-
-    int             apply_ac(struct char_data *ch, int eq_pos);
-
+    int                   dam = 0;
+    struct      obj_data *burn;
+    
     assert(victim && ch);
+    
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     }
     MissileDamage(ch, victim, dam, SPELL_ACID_BREATH);
+    
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is completely corroded.", 0, victim, burn, 0, TO_CHAR);
+            extract_obj(burn);
+        }
+    }
 }
 
 void spell_gas_breath(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
+    struct      obj_data *burn;
 
     assert(victim && ch);
+    
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     }
     MissileDamage(ch, victim, dam, SPELL_GAS_BREATH);
+    
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is destroyed by the cloud of gas.", 0, victim, burn,
+                0, TO_CHAR);
+            extract_obj(burn);
+        }
+    }
 }
 
 void spell_lightning_breath(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int                  dam = 0;
+    struct  obj_data    *burn;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_lightning, magic.c");
@@ -1401,18 +1436,37 @@ void spell_lightning_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     }
     MissileDamage(ch, victim, dam, SPELL_LIGHTNING_BREATH);
+    
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is completely electrocuted.", 0, victim, burn,
+                0, TO_CHAR);
+            extract_obj(burn);
+        }
+    }
 }
 
 
@@ -1421,8 +1475,7 @@ void spell_dehydration_breath(int level, struct char_data *ch,
                               struct char_data *victim,
                               struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_dehydration, magic.c");
@@ -1432,14 +1485,19 @@ void spell_dehydration_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1452,8 +1510,7 @@ void spell_dehydration_breath(int level, struct char_data *ch,
 void spell_vapor_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_vapor, magic.c");
@@ -1463,14 +1520,19 @@ void spell_vapor_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1483,8 +1545,7 @@ void spell_vapor_breath(int level, struct char_data *ch,
 void spell_sound_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_sound, magic.c");
@@ -1494,14 +1555,19 @@ void spell_sound_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1515,21 +1581,26 @@ void spell_sound_breath(int level, struct char_data *ch,
 void spell_shard_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
     struct obj_data *burn;
 
     assert(victim && ch);
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1561,8 +1632,8 @@ void spell_shard_breath(int level, struct char_data *ch,
 void spell_sleep_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
+    struct affected_type af;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_sleep, magic.c");
@@ -1572,28 +1643,40 @@ void spell_sleep_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
+    } else {
+        af.type = SPELL_SLEEP;
+        af.duration = 5 + level;
+        af.modifier = 0;
+        af.location = APPLY_NONE;
+        af.bitvector = AFF_SLEEP;
+        affect_join(victim, &af, FALSE, FALSE);
+        
+        act("$n goes to sleep.", TRUE, victim, NULL, NULL, TO_ROOM);
+        GET_POS(victim) = POSITION_SLEEPING;
     }
-    MissileDamage(ch, victim, dam, SPELL_GAS_BREATH);
-    spell_sleep(level, ch, victim, 0);
-    spell_sleep(level, ch, victim, 0);
+    MissileDamage(ch, victim, dam, SPELL_GAS_BREATH); 
 }
 
 void spell_light_breath(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
     struct obj_data *burn;
 
     if (!victim || !ch) {
@@ -1604,14 +1687,19 @@ void spell_light_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1624,9 +1712,9 @@ void spell_light_breath(int level, struct char_data *ch,
      * And now for the damage on inventory
      */
 
-    /*
-     * DamageStuff(victim, FIRE_DAMAGE);
-     */
+#if 0
+    DamageStuff(victim, FIRE_DAMAGE);
+#endif
 
     for (burn = victim->carrying;
          burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
@@ -1645,8 +1733,7 @@ void spell_light_breath(int level, struct char_data *ch,
 void spell_dark_breath(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
-    int             hpch;
+    int             dam = 0;
 
     if (!victim || !ch) {
         Log("!ch || !victim in breath_dark, magic.c");
@@ -1656,14 +1743,19 @@ void spell_dark_breath(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    hpch = GET_MAX_HIT(ch);
-    hpch *= level;
-    hpch /= GetMaxLevel(ch);
-    hpch /= 2;
-    if (hpch < 10) {
-        hpch = 10;
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
     }
-    dam = hpch;
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
@@ -1674,6 +1766,256 @@ void spell_dark_breath(int level, struct char_data *ch,
     spell_blindness(level, ch, victim, 0);
 }
 
+void spell_desertheat_breath(int level, struct char_data *ch,
+                        struct char_data *victim, struct obj_data *obj)
+{
+    int             dam = 0;
+    struct obj_data *burn;
+
+    if (!victim || !ch) {
+        Log("!ch || !victim in desertheat, magic.c");
+        return;
+    }
+
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
+    }
+
+    if (saves_spell(victim, SAVING_BREATH)) {
+        dam >>= 1;
+    }
+    MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is burnt to a crisp by the blistering heat", 0,
+                victim, burn, 0, TO_CHAR);
+            extract_obj(burn);
+        }
+    }
+}
+
+void spell_repulsion_breath(int level, struct char_data *ch,
+                        struct char_data *victim, struct obj_data *obj)
+{
+    int             dam = 0,
+                    attempt,
+                    i;
+    struct obj_data *burn;
+
+    if (!victim || !ch) {
+        Log("!ch || !victim in desertheat, magic.c");
+        return;
+    }
+
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
+    }
+
+    if (saves_spell(victim, SAVING_BREATH)) {
+        dam >>= 1;
+    } else {
+        if (GET_POS(victim) > POSITION_SLEEPING && 
+            !IS_AFFECTED(victim, AFF_PARALYSIS) &&
+            !IS_SET(victim->specials.affected_by2, AFF2_BERSERK) &&
+            !IS_SET(victim->specials.affected_by2, AFF2_STYLE_BERSERK)) {
+                
+            for (i = 0; i < 6; i++) {
+                attempt = i;
+                if (CAN_GO(victim, attempt) &&
+                    !IS_SET(real_roomp(EXIT(victim, 
+                                            attempt)->to_room)->room_flags,
+                            DEATH) &&
+                    !IS_SET(real_roomp(EXIT(victim, 
+                                            attempt)->to_room)->room_flags,
+                            NO_FLEE)) {
+                    act("$n is repulsed and flees!", 
+                        TRUE, victim, 0, 0, TO_ROOM);
+                    send_to_char("You are repulsed and flee head over "
+                                 "heels.\n\r", victim);
+                    if (victim->specials.fighting->specials.fighting == 
+                        victim) {
+                        stop_fighting(victim->specials.fighting);
+                    }
+                    if (victim->specials.fighting) {
+                            stop_fighting(victim);
+                    }
+                    GET_POS(victim) = POSITION_STANDING;
+                    MoveOne(victim, attempt);
+                    GET_MOVE(victim) = -100;
+                }
+            }
+        }
+    }
+    MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+    for (burn = victim->carrying;
+        burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+        burn->obj_flags.type_flag != ITEM_WAND &&
+        burn->obj_flags.type_flag != ITEM_STAFF &&            
+        burn->obj_flags.type_flag != ITEM_BOAT;
+        burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is burnt to a crisp by the blistering heat", 0,
+                victim, burn, 0, TO_CHAR);
+            extract_obj(burn);
+        }
+    }
+}
+
+void spell_slow_breath(int level, struct char_data *ch,
+                        struct char_data *victim, struct obj_data *obj)
+{
+    int             dam = 0;
+    struct obj_data *burn;
+    struct affected_type af;
+
+    if (!victim || !ch) {
+        Log("!ch || !victim in desertheat, magic.c");
+        return;
+    }
+
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
+    }
+
+    if (saves_spell(victim, SAVING_BREATH)) {
+        dam >>= 1;
+    } else {
+        if (!affected_by_spell(victim, SPELL_SLOW)) {
+            
+            send_to_char("You feel very slow!\n\r", victim);
+            
+            af.type = SPELL_SLOW;
+            af.duration = 10;
+            af.modifier = 1;
+            af.location = APPLY_BV2;
+            af.bitvector = AFF2_SLOW;
+            affect_to_char(victim, &af);
+        }
+    }
+        
+    MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is destroyed.", 0,
+                victim, burn, 0, TO_CHAR);
+            extract_obj(burn);
+
+        }
+    }
+}
+
+void spell_paralyze_breath(int level, struct char_data *ch,
+                            struct char_data *victim, struct obj_data *obj)
+{
+    int              dam = 0;
+    struct obj_data *burn;
+    struct affected_type af;
+
+    if (!victim || !ch) {
+        Log("!ch || !victim in paralyze_breath magic.c");
+        return;
+    }
+
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    if ( level < 30 ) {
+        dam = dice(24, 6) + level;
+    } else if ( level < 40 ) {
+        dam = dice(24, 12) + level;
+    } else if ( level < 45 ) {
+        dam = dice(24, 24) + level;
+    } else if ( level < 49 ) {
+        dam = dice(48, 6) + level;
+    } else if ( level == 50 ) {
+        dam = dice(48, 12) + level;
+    } else if ( level > 50 ) {
+        dam = dice(level, 24) + level;
+    }
+
+    if (saves_spell(victim, SAVING_BREATH)) {
+        dam >>= 1;
+    } else {
+        if (!affected_by_spell(victim, SPELL_PARALYSIS)) {
+            
+            send_to_char("Your limbs freeze in place!\n\r", victim);
+            
+            af.type = SPELL_PARALYSIS;
+            af.duration = 4 + level;
+            af.modifier = 0;
+            af.location = APPLY_NONE;
+            af.bitvector = AFF_PARALYSIS;
+            affect_join(victim, &af, FALSE, FALSE);
+        }
+    }
+        
+    MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+
+    for (burn = victim->carrying;
+         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&
+         burn->obj_flags.type_flag != ITEM_WAND &&
+         burn->obj_flags.type_flag != ITEM_STAFF &&
+         burn->obj_flags.type_flag != ITEM_BOAT;
+         burn = burn->next_content) {
+        if (!saves_spell(victim, SAVING_BREATH) && burn) {
+            act("$p is destroyed.", 0,
+                victim, burn, 0, TO_CHAR);
+            extract_obj(burn);
+
+        }
+    }
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

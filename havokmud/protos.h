@@ -983,6 +983,18 @@ void            spell_identify(int level, struct char_data *ch,
 void            spell_fire_breath(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
+void            spell_paralyze_breath(int level, struct char_data *ch,
+                                      struct char_data *victim,
+                                      struct obj_data *obj);
+void            spell_repulsion_breath(int level, struct char_data *ch,
+                                       struct char_data *victim,
+                                       struct obj_data *obj);
+void            spell_slow_breath(int level, struct char_data *ch,
+                                  struct char_data *victim,
+                                  struct obj_data *obj);
+void            spell_desertheat_breath(int level, struct char_data *ch,
+                                  struct char_data *victim,
+                                  struct obj_data *obj);
 void            spell_frost_breath(int level, struct char_data *ch,
                                    struct char_data *victim,
                                    struct obj_data *obj);
@@ -4098,6 +4110,8 @@ void sprintclasses(unsigned long vektor, char *result);
 struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
                                      struct obj_data *equipment[], int *j);
 
+int dragon(struct char_data *ch, int cmd, char *arg, 
+           struct char_data *mob, int type);
 
 /*************************************************************************
  * Support for different platforms
