@@ -827,29 +827,151 @@ dlog("in do_rsave");
 }
 
 
-void do_emote(struct char_data *ch, char *argument, int cmd)
+void do_emote(struct char_data *ch, char *arg, int cmd)
 {
-	int i;
-	char buf[MAX_INPUT_LENGTH+40];
+	int i, j, k, found, extra;
+	char buf[MAX_INPUT_LENGTH+40], name[255], oriarg[MAX_STRING_LENGTH], *copy;
+	char part1[MAX_STRING_LENGTH],part2[MAX_STRING_LENGTH], sign[10];
+	struct char_data *vict;
 
 dlog("in do_emote");
 
 	if (check_soundproof(ch)) {
 	  return;
 	}
-
-
-	for (i = 0; *(argument + i) == ' '; i++);
-
-	if (!*(argument + i))
-		send_to_char("Yes.. But what?\n\r", ch);
-	else    {
-		sprintf(buf,"$n %s", argument + i);
-		act(buf,FALSE,ch,0,0,TO_ROOM);
-	if (IS_SET(ch->specials.act,PLR_ECHO))
-		act(buf,FALSE,ch,0,0,TO_CHAR); else
-		send_to_char("Ok.\n\r",ch);
+#if 1
+	i = 0;
+	j = 0;
+	k = 0;
+	found = 0;
+	sprintf(name, "");
+	sprintf(part1, "");
+	sprintf(oriarg, "%s",arg);
+	if(!*arg) {
+		send_to_char("Yes, but what?\n\r",ch);
+		return;
 	}
+	while(*arg && arg[0] != '*') {
+		half_chop(arg, buf, arg);
+		sprintf(part1, "%s %s",part1, buf);
+	}
+	if(*arg && arg[0] == '*' && arg[1] == ' ') {
+		half_chop(arg, sign, arg);
+		half_chop(arg, name, part2);
+		found = 1;
+	}
+
+	if(found) {
+		if (!(vict = get_char_room_vis(ch, name))) {
+			sprintf(buf, "Noone here by the name of %s.\n\r",name);
+			send_to_char(buf, ch);
+			return;
+		} else {
+			sprintf(buf, "$n%s $N %s", part1, part2);
+			act(buf, FALSE, ch, 0, vict, TO_NOTVICT);
+			act(buf, FALSE, ch, 0, vict, TO_CHAR);
+			sprintf(buf, "$n%s you %s", part1, part2);
+			act(buf, FALSE, ch, 0, vict, TO_VICT);
+		}
+	} else {
+		for (i = 0; *(oriarg + i) == ' '; i++);
+
+		if (!*(oriarg + i))
+			send_to_char("Yes.. But what?\n\r", ch);
+		else {
+			sprintf(buf,"$n %s", oriarg + i);
+			act(buf,FALSE,ch,0,0,TO_ROOM);
+			if (IS_SET(ch->specials.act,PLR_ECHO))
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			else
+				send_to_char("Ok.\n\r",ch);
+		}
+	}
+#else
+log("enter");
+	i = 0;
+	j = 0;
+	k = 0;
+	found = 0;
+	extra = 0;
+//	sprintf(name, ""); // (remember to make a *name)
+	sprintf(part1, "");
+	sprintf(oriarg, "%s",arg);
+	if(!*arg) {
+log("no arg");
+		send_to_char("Yes, but what?\n\r",ch);
+		return;
+	}
+	while(*arg && arg[0] != '*'&& arg[1] != ' ') {
+log("processing words before asterisk");
+		half_chop(arg, buf, arg);
+		sprintf(part1, "%s %s",part1, buf);
+	}
+	if(*arg && arg[0] == '*' && arg[1] != ' ') {
+		sprintf(copy, "%s",arg);
+
+		for (; *copy == '*'; copy++);
+
+		for (; *copy; copy++, name++) {
+			if(*copy == ' ')
+				break;
+			if(*copy == '*') {
+				extra = 1;
+				break;
+			}
+			*name = *copy;
+		}
+		*name = '\0';
+		if(extra)
+			for (; !isspace(*copy); copy++); // get rid of any junk til we meet a space
+
+		for (; isspace(*copy); copy++); // get rid of space
+
+		for (; *arg = *copy; arg++, copy++); // stick remainder into arg
+
+		found = 1;
+log("found legal asterisk");
+	}
+
+	if(found) {
+log("entered the complicated emote");
+		// see if there's a dude in the room with this name
+		if (!(vict = get_char_room_vis(ch, name))) {
+log("no target found");
+			sprintf(buf, "Noone here by the name of %s.\n\r",name);
+			send_to_char(buf, ch);
+			return;
+		} else {
+log("target found");
+			// now fix up buffers, do the acts
+			if(extra)
+				sprintf(buf, "$n%s $N's %s", part1, part2);
+			else
+				sprintf(buf, "$n%s $N %s", part1, part2);
+			act(buf, FALSE, ch, 0, vict, TO_NOTVICT);
+			act(buf, FALSE, ch, 0, vict, TO_CHAR);
+			if(extra)
+				sprintf(buf, "$n%s your %s", part1, part2);
+			else
+				sprintf(buf, "$n%s you %s", part1, part2);
+			act(buf, FALSE, ch, 0, vict, TO_VICT);
+		}
+	} else {
+log("entered the simple emote");
+		for (i = 0; *(oriarg + i) == ' '; i++);
+
+		if (!*(oriarg + i))
+			send_to_char("Yes.. But what?\n\r", ch);
+		else {
+			sprintf(buf,"$n %s", oriarg + i);
+			act(buf,FALSE,ch,0,0,TO_ROOM);
+			if (IS_SET(ch->specials.act,PLR_ECHO))
+				act(buf,FALSE,ch,0,0,TO_CHAR);
+			else
+				send_to_char("Ok.\n\r",ch);
+		}
+	}
+#endif
 }
 
 

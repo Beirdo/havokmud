@@ -770,7 +770,8 @@ void log_sev(char *str,int sev)
   if( spy_flag) fprintf(stderr, "%s",buf);
 
 /* My Addon to log into file... useful, he? */
-  if (!log_f) {
+#if 0
+	if (!log_f) {
              if(!(log_f=fopen("output.log", "w"))) {
   	         perror("log_sev");
         	return;
@@ -778,7 +779,7 @@ void log_sev(char *str,int sev)
   }
   fputs(buf, log_f);
   fflush(log_f);
-
+#endif
   /* End of my addon part - Manwe Windmaster 260697 */
   if (sev > 1 ) return;
   if (str)

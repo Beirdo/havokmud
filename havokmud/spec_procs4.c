@@ -2750,7 +2750,7 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_NECROMANCER)) {
 			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
@@ -2779,7 +2779,7 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);

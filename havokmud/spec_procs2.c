@@ -2104,8 +2104,8 @@ int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 		return(FALSE);
 
 	//170->Practice,164->Practise,
-	if (cmd==164 || cmd == 170) {
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+	if (cmd==164 || cmd == 170 || cmd == 582) {
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
 			strcat(buffer,buf);
@@ -3950,8 +3950,8 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		return(FALSE);
 
 	//170->Practice,164->Practise,
-	if (cmd==164 || cmd == 170) {
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+	if (cmd==164 || cmd == 170 || cmd == 582) {
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these lores:\n\r\n\r");
 			strcat(buffer,buf);
@@ -4322,9 +4322,9 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 				return (TRUE);
 			}
 		}
-	} else if (cmd==164 || cmd == 170) { /* prac */
+	} else if (cmd==164 || cmd == 170 || cmd == 582) { /* prac */
 		if (HasClass(ch,CLASS_MONK)) {
-			if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 				sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 				sprintf(buf,"You can practice any of these skills:\n\r\n\r");
 				strcat(buffer,buf);
@@ -4466,7 +4466,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 				return(TRUE);
 			}
 		} else if (HasClass(ch,CLASS_WARRIOR)) {
-			if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 				sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 				sprintf(buf,"You can practice these skills:\n\r\n\r");
 				strcat(buffer,buf);
@@ -4569,7 +4569,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_DRUID)) {
 			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
@@ -4603,7 +4603,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
 			strcat(buffer,buf);
@@ -6210,7 +6210,7 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_BARBARIAN)) {
 			send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
@@ -6239,7 +6239,7 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
 			strcat(buffer,buf);
@@ -6387,7 +6387,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_RANGER)) {
 			send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
@@ -6416,7 +6416,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);
@@ -6563,7 +6563,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_PSI)) {
 			send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
@@ -6592,7 +6592,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
 			strcat(buffer,buf);
@@ -6739,7 +6739,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 		return(FALSE);
 
 	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
+	if (cmd==164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
 		if (!HasClass(ch, CLASS_PALADIN)) {
 			send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
@@ -6768,7 +6768,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 			}
 		}
 
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+		if(!*arg && (cmd == 170 || cmd == 164 || cmd == 582)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
 			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);
@@ -6933,7 +6933,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct
 
   for(; *arg==' '; arg++); /* ditch spaces */
 
-  if ((cmd==164)||(cmd==170)||cmd==243)
+  if ((cmd==164)||(cmd==170)||cmd==243 || cmd == 582)
 {
   if (!HasClass(ch, CLASS_MAGIC_USER)) {
     do_say(guildmaster,"I do not teach heathens!",0);
@@ -7053,7 +7053,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, stru
 
   for(; *arg==' '; arg++); /* ditch spaces */
 
-  if ((cmd==164)||(cmd==170)||cmd==243)
+  if ((cmd==164)||(cmd==170)||cmd==243 || cmd == 582)
 {
   if (!HasClass(ch, CLASS_CLERIC)) {
     do_say(guildmaster,"I do not teach heathens!",0);

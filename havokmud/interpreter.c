@@ -1568,47 +1568,38 @@ AddCommand("bid",do_bid,570,POSITION_RESTING,0);
 AddCommand("resist",do_resistances,571,POSITION_RESTING,0);
 AddCommand("style",do_style, 572, POSITION_STANDING,0);
 AddCommand("fight",do_style, 572, POSITION_STANDING,0);
-
-  AddCommand("iwizlist",do_iwizlist,573,POSITION_DEAD,0);
+AddCommand("iwizlist",do_iwizlist,573,POSITION_DEAD,0);
 AddCommand("flux",do_flux,574,POSITION_STANDING,53);
 AddCommand("bs",do_backstab,575,POSITION_STANDING,1);
-
 AddCommand("autoassist",do_auto, 576, POSITION_RESTING,1);
 AddCommand("autoloot",do_auto, 577, POSITION_RESTING,1);
 AddCommand("autogold",do_auto, 578, POSITION_RESTING,1);
 AddCommand("autosplit",do_auto, 579, POSITION_RESTING,1);
 //AddCommand("autosac",do_auto, 580, POSITION_RESTING,1);
 AddCommand("autoexits",do_auto, 581, POSITION_RESTING,1);
-
 AddCommand("train", do_not_here, 582, POSITION_STANDING, 1);
 AddCommand("mend",do_mend,583,POSITION_STANDING,1);
-
 AddCommand("quest" ,do_set_quest,585, POSITION_RESTING,1);
 AddCommand("qtrans" ,do_qtrans,586, POSITION_STANDING,51);
 AddCommand("nooutdoor" ,do_set_nooutdoor,587, POSITION_RESTING,51);
 AddCommand("dismiss" ,do_dismiss,588, POSITION_RESTING,1);
 AddCommand("setsound" ,do_setsound,589, POSITION_STANDING,53);
-
 AddCommand("induct", do_induct, 590, POSITION_STANDING,1);
 AddCommand("expel", do_expel, 591, POSITION_STANDING, 1);
 AddCommand("chat", do_chat, 592, POSITION_RESTING, 1);
-
 AddCommand("qchat", do_qchat, 594, POSITION_RESTING, 1);
 AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
 AddCommand("call steed",do_steed, 596, POSITION_STANDING,1);
-
 AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
 AddCommand("tweak", do_tweak, 598, POSITION_STANDING, 55);
 AddCommand("mrebuild",do_mrebuild,599,POSITION_STANDING,59);
-
 AddCommand("flurry",do_flurry,600,POSITION_FIGHTING,1);
 AddCommand("flowerfist",do_flowerfist,601,POSITION_FIGHTING,1);
-
 AddCommand("sharpen",do_sharpen,602,POSITION_RESTING,1);
 AddCommand("eval", do_eval, 603, POSITION_STANDING, 53);
 AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
-
 AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
+AddCommand("affects", do_attribute,606, POSITION_DEAD,1);
 
 // room here
 
@@ -1618,11 +1609,9 @@ AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
 AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
 AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
-
-
- AddCommand("retreat", do_flee, 616, POSITION_SITTING, 1);
- AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
- AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
+AddCommand("retreat", do_flee, 616, POSITION_SITTING, 1);
+AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
+AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
 AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
 
