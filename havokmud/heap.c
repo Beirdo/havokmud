@@ -14,12 +14,14 @@ void SmartStrCpy(char *s1, const char *s2)
 {
     int             i;
 
-    /* ignore trailing spaces and \n */
+    /* 
+     * ignore trailing spaces and \n 
+     */
 
     i = strlen(s2);
-    while (s2[i] <= ' ')
+    while (s2[i] <= ' ') {
         i--;
-
+    }
     /*
      * null terminate s1 
      */
@@ -38,7 +40,9 @@ void StringHeap(char *string, struct StrHeap *Heap)
     int             i;
 
     if (!string || !*string) {
-        /* don't bother adding if null string */
+        /* 
+         * don't bother adding if null string 
+         */
         return;
     }
 
@@ -118,10 +122,12 @@ void            DisplayStringHeap(struct StrHeap *Heap, struct char_data *ch,
     }
 
     if (destroy) {
-        if (Heap->str)
+        if (Heap->str) {
             free(Heap->str);
-        if (Heap)
+        }
+        if (Heap) {
             free(Heap);
+        }
     }
 }
 

@@ -25,18 +25,22 @@ void destroy_hash_table(struct hash_header *ht, void (*gman) ())
     struct hash_link *scan,
                    *temp;
 
-    for (i = 0; i < ht->table_size; i++)
+    for (i = 0; i < ht->table_size; i++) {
         for (scan = ht->buckets[i]; scan;) {
             temp = scan->next;
             (*gman) (scan->data);
-            if (scan)
+            if (scan) {
                 free(scan);
+            }
             scan = temp;
         }
-    if (ht->buckets)
+    }
+    if (ht->buckets) {
         free(ht->buckets);
-    if (ht->keylist)
+    }
+    if (ht->keylist) {
         free(ht->keylist);
+    }
 }
 
 void _hash_enter(struct hash_header *ht, long key, void *data)
@@ -44,7 +48,9 @@ void _hash_enter(struct hash_header *ht, long key, void *data)
     struct hash_link *temp;
     int             i;
 
-    /* precondition: there is no entry for <key> yet */
+    /* 
+     * precondition: there is no entry for <key> yet 
+     */
 
     temp = (struct hash_link *) malloc(sizeof(struct hash_link));
     temp->key = key;
@@ -77,9 +83,9 @@ void           *hash_find(struct hash_header *ht, long key)
 
     scan = ht->buckets[HASH_KEY(ht, key)];
 
-    while (scan && scan->key != key)
+    while (scan && scan->key != key) {
         scan = scan->next;
-
+    }
     return scan ? scan->data : NULL;
 }
 
@@ -88,9 +94,9 @@ int room_enter(struct room_data *rb[], long key, struct room_data *rm)
     struct room_data *temp;
 
     temp = room_find(rb, key);
-    if (temp)
+    if (temp) {
         return (0);
-
+    }
     rb[key] = rm;
     return (1);
 
@@ -100,9 +106,9 @@ int hash_enter(struct hash_header *ht, long key, void *data)
 {
     void           *temp;
     temp = hash_find(ht, key);
-    if (temp)
+    if (temp) {
         return 0;
-
+    }
     _hash_enter(ht, key, data);
     return 1;
 }
@@ -112,9 +118,9 @@ struct room_data *room_find_or_create(struct room_data *rb[], long key)
     struct room_data *rv;
 
     rv = room_find(rb, key);
-    if (rv)
+    if (rv) {
         return rv;
-
+    }
     rv = (struct room_data *) malloc(sizeof(struct room_data));
 
     rb[key] = rv;
@@ -127,9 +133,9 @@ void           *hash_find_or_create(struct hash_header *ht, long key)
     void           *rval;
 
     rval = hash_find(ht, key);
-    if (rval)
+    if (rval) {
         return rval;
-
+    }
     rval = (void *) malloc(ht->rec_size);
     _hash_enter(ht, key, rval);
     return rval;
@@ -159,20 +165,21 @@ void           *hash_remove(struct hash_header *ht, long key)
 
     scan = ht->buckets + HASH_KEY(ht, key);
 
-    while (*scan && (*scan)->key != key)
+    while (*scan && (*scan)->key != key) {
         scan = &(*scan)->next;
-
+    }
     if (*scan) {
         temp = (*scan)->data;
         aux = *scan;
         *scan = aux->next;
-        if (aux)
+        if (aux) {
             free(aux);
-
-        for (i = 0; i < ht->klistlen; i++)
-            if (ht->keylist[i] == key)
+        }
+        for (i = 0; i < ht->klistlen; i++) {
+            if (ht->keylist[i] == key) {
                 break;
-
+            }
+        }
         if (i < ht->klistlen) {
             bcopy(ht->keylist + i + 1, ht->keylist + i,
                   (ht->klistlen - i) * sizeof(*ht->keylist));
@@ -209,8 +216,10 @@ void hash_iterate(struct hash_header *ht, void (*func) (), void *cdata)
         temp = hash_find(ht, key);
         (*func) (key, temp, cdata);
         if (ht->keylist[i] != key) {
-            /* They must have deleted this room */
-            /* Hit this slot again. */
+            /* 
+             * They must have deleted this room 
+             * Hit this slot again. 
+             */
             i--;
         }
     }
