@@ -119,7 +119,7 @@ if (!(trap =
     return;
   }
 
-  if (!HasClass(ch, CLASS_WARRIOR|CLASS_MONK|CLASS_BARBARIAN|CLASS_RANGER|CLASS_PALADIN) ) {
+  if (!HasClass(ch, CLASS_WARRIOR|CLASS_MONK|CLASS_BARBARIAN|CLASS_RANGER|CLASS_PALADIN|CLASS_THIEF) ) {
     send_to_char("You're no warrior!\n\r", ch);
     return;
   }

@@ -5223,7 +5223,8 @@ const struct skillset warriorskills[] = {
 };
 
 const struct skillset mainthiefskills[] = {
- {"None", 				-1							,-1}
+ {"disarm",	    SKILL_DISARM,		 1},
+ {"None", 			-1,				-1}
 };
 const struct skillset thiefskills[] = {
   {"backstab",  SKILL_BACKSTAB,      1},
