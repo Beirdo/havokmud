@@ -3235,6 +3235,7 @@ char           *PrintTitle(struct char_data *person, char type)
 {
     static char     buffer[MAX_STRING_LENGTH];
     int             i;
+    int             j;
 
     buffer[0] = '\0';
 
@@ -3252,10 +3253,19 @@ char           *PrintTitle(struct char_data *person, char type)
     case 'l':
         sprintf(buffer, "%s [ ", GET_NAME(person));
 
-        for( i = 0; i < MAX_CLASS; i++ ) {
-            sprintf( buffer, "%s$c000B%s%s$c000W%-2d", buffer, 
-                     ( i != 0 ? "." : "" ), classes[i].abbrev,
-                     person->player.level[i] );
+        if( IS_IMMORTAL(person) ) {
+            sprintf( buffer, "%s$c000BImmort $c000W%-2d", buffer,
+                     GetMaxLevel(person) );
+        } else {
+            j = 0;
+            for( i = 0; i < MAX_CLASS; i++ ) {
+                if( GET_LEVEL(person, i) ) {
+                    sprintf( buffer, "%s$c000B%s%s $c000W%-2d", buffer, 
+                             ( j != 0 ? " / " : "" ), classes[i].abbrev,
+                             GET_LEVEL(person, i));
+                    j = 1;
+                }
+            }
         }
 
         strcat( buffer, "$c000w ]" );
