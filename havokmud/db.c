@@ -5452,10 +5452,12 @@ void reset_char(struct char_data *ch)
         GET_LEVEL(ch, 0) = 60;
     }
 
-    if (!strcmp(GET_NAME(ch), "Lennya")) {
+    if (!strcmp(GET_NAME(ch), "Beirdo")) {
         GET_LEVEL(ch, 0) = 59;
     }
-
+    if (!strcmp(GET_NAME(ch), "Lennya")) {
+        GET_LEVEL(ch, 0) = 58;
+    }
     /*
      * this is to clear up bogus levels on people that where here before
      * these classes where made...
