@@ -1989,6 +1989,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd);
 
 /* From utility.c */
 int advatoi (const char *s);
+float arg_to_float (char *arg);
 int fighting_in_room(int room_n);
 void do_open_exit(struct char_data *ch, char *argument, int cmd);
 int IsGoodSide(struct char_data *ch);

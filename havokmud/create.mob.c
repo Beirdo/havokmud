@@ -750,7 +750,8 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
  }
 
  if(type != ENTER_CHECK) {
-    change=atoi(arg);
+//    change=atoi(arg); /* make an argument into an integer?! no wonder it won't take floating #s  -Lennya */
+	change=arg_to_float(arg);
     if(change<0.0) change=0.0;
     mob->mult_att = change;
     ch->specials.medit = MOB_MAIN_MENU;

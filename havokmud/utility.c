@@ -5446,6 +5446,114 @@ int advatoi (const char *s)
 }
 
 
+/* Lennya 20030730
+ * A little gadget to convert a string to a floating number.
+ * Maybe it already exists, but I couldn't find it. It works, anyway.
+ */
+float arg_to_float (char *arg)
+{
+	char buf[120]; /* a buffer to hold a copy of the argument */
+	float number = 0.0;           /* number to be returned */
+	int multiplier = 1;       /* multiplier used to get the extra digits right */
+	int abs = 0, i = 0, tmp = 0, x = 0, y = 10;
+
+	if(!*arg)
+		return(0.0);
+
+	abs = strlen(arg);
+
+	while(isdigit(arg[i])) {
+		switch(arg[i]) {
+			case '1':
+				tmp = 1;
+				break;
+			case '2':
+				tmp = 2;
+				break;
+			case '3':
+				tmp = 3;
+				break;
+			case '4':
+				tmp = 4;
+				break;
+			case '5':
+				tmp = 5;
+				break;
+			case '6':
+				tmp = 6;
+				break;
+			case '7':
+				tmp = 7;
+				break;
+			case '8':
+				tmp = 8;
+				break;
+			case '9':
+				tmp = 9;
+				break;
+			case '0':
+				tmp = 0;
+				break;
+			default:
+				tmp = 0;
+				break;
+		}
+		number = (number * 10) + tmp;
+		i++;
+	}
+	if(arg[i] != '.') { /* this aint no float, mate! */
+		log("is not a floating number");
+		return(0.0);
+	}
+	i++;
+	while(isdigit(arg[i])) {
+		switch(arg[i]) {
+			case '1':
+				tmp = 1;
+				break;
+			case '2':
+				tmp = 2;
+				break;
+			case '3':
+				tmp = 3;
+				break;
+			case '4':
+				tmp = 4;
+				break;
+			case '5':
+				tmp = 5;
+				break;
+			case '6':
+				tmp = 6;
+				break;
+			case '7':
+				tmp = 7;
+				break;
+			case '8':
+				tmp = 8;
+				break;
+			case '9':
+				tmp = 9;
+				break;
+			case '0':
+				tmp = 0;
+				break;
+			default:
+				tmp = 0;
+				break;
+		}
+		y = 1;
+		for(x=1;x<=multiplier;x++) {
+			y *= 10;
+		}
+		number = number + (float)tmp/y;
+		multiplier++;
+		i++;
+	}
+	return (number);
+}
+
+
 /**********************************************************************
 *   Function to format big numbers, so you can easy understand it.    *
 *    Added by Desden, el Chaman Tibetano (J.L.Sogorb) in Oct-1998     *
