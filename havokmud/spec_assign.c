@@ -64,7 +64,7 @@ void assign_mobiles()
 
   static struct special_proc_entry specials[] = {
 
-    { 1, TrainingGuild },//puff },
+    { 1, WeaponsMaster },//puff },
     { 2, Ringwraith },
     { 3, tormentor },
     { 4, Inquisitor},

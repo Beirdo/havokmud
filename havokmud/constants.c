@@ -3107,6 +3107,18 @@ const char *player_bits[] = {
 	"MAILING",      /*Doesn't seem to work TEB*/
 	"WIZREPORT",
 	"NOBEEP",
+	"Empty1",
+	"Empty2",
+	"Empty3",
+		"Empty4",
+		"Empty5",
+	"Empty6",
+		"Empty7",
+		"Empty8",
+	"Empty9",
+		"Empty10",
+		"Empty11",
+	"Empty12",
 	"\n"
 };
 
@@ -5641,5 +5653,6 @@ const struct skillset weaponskills[] = {
   {"heavy crossbow", WEAPON_HEAVY_CROSSBOW 		,1 },
   {"blowgun", WEAPON_BLOWGUN				,1 },
   {"tetsubo", WEAPON_TETSUBO				,1 },
+  {"generic", WEAPON_GENERIC ,1 },
   {"none",-1,-1 }
 };

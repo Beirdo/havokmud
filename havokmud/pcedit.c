@@ -7,7 +7,7 @@
 
 /* once file is converted BE SURE to update the structs.h file */
 
-#define NEW_MAX_SKILLS  	350
+#define NEW_MAX_SKILLS  	450
 #define NEW_MAX_AFFECT		40
 #define NEW_ABS_MAX_CLASS	20
 #define NEW_MAX_TOUNGE		3
@@ -16,24 +16,23 @@
 #define NEW_MAX_CONDITIONS	5
 
 		/* new structs here */
+#if 0
 struct char_file_u_new
 {
 	int class;
 	byte sex;
 	byte level[ABS_MAX_CLASS];
+	unsigned short int q_points;   /* Quest points of player */
 	time_t birth;  /* Time of birth of character     */
 	int played;    /* Number of secs played in total */
 	int   race;
 	unsigned int weight;
-	unsigned int height;	
+	unsigned int height;
 	char title[80];
 	char extra_str[255];
 	sh_int hometown;
 	char description[240];
 	bool talks[MAX_TOUNGE];
-#if 0
-	bool new_languages[MAX_NEW_LANGUAGES];
-#endif	
 	long extra_flags;
 	sh_int load_room;            /* Which room to place char in  */
 	struct char_ability_data abilities;
@@ -41,8 +40,8 @@ struct char_file_u_new
 	struct char_skill_data skills[MAX_SKILLS];
 	struct affected_type affected[MAX_AFFECT];
 	/* specials */
-	byte spells_to_learn;  
-	int alignment;     
+	byte spells_to_learn;
+	int alignment;
 	long affected_by;
 	long affected_by2;
 	time_t last_logon;  /* Time (in secs) of last logon */
@@ -54,11 +53,56 @@ struct char_file_u_new
 	sh_int apply_saving_throw[MAX_SAVES];
 	int conditions[MAX_CONDITIONS];
 	int startroom;  /* which room the player should start in */
-
 	long user_flags;	/* no-delete,use ansi,etc... */
 	int speaking;		/* language currently speakin in */
 
 };
+#else
+
+
+struct char_file_u_new
+{
+	int class;
+	byte sex;
+	byte level[ABS_MAX_CLASS];
+	unsigned short int q_points;   /* Quest points of player */
+	time_t birth;  /* Time of birth of character     */
+	int played;    /* Number of secs played in total */
+	int   race;
+	unsigned int weight;
+	unsigned int height;
+	char title[80];
+	char extra_str[255];
+	sh_int hometown;
+	char description[240];
+	bool talks[MAX_TOUNGE];
+	long extra_flags;
+	sh_int load_room;            /* Which room to place char in  */
+	struct char_ability_data abilities;
+	struct char_point_data points;
+	struct char_skill_data skills[450];
+	struct affected_type affected[MAX_AFFECT];
+	/* specials */
+	byte spells_to_learn;
+	int alignment;
+	long affected_by;
+	long affected_by2;
+	time_t last_logon;  /* Time (in secs) of last logon */
+	long    act;        /* ACT Flags                    */
+
+	/* char data */
+	char name[20];
+	char alias[30];  /* for later use.... */
+	char pwd[11];
+	sh_int apply_saving_throw[MAX_SAVES];
+	int conditions[MAX_CONDITIONS];
+	int startroom;  /* which room the player should start in */
+	long user_flags;	/* no-delete,use ansi,etc... */
+	int speaks;		/* language currently speakin in */
+
+};
+#endif
+
 
 struct my_char_data {
   struct char_file_u grunt;  		/* contained in structs.h */
@@ -118,7 +162,7 @@ main(int argc, char *argv[])
   int choice,j;
   register i;
   int number_level[9];
-  
+
   system("clear");
   if(argc != 3) {
     printf("please use this program in the following format:");
@@ -131,7 +175,7 @@ main(int argc, char *argv[])
   }
   orig_ammt=load_playerfile(argv);
   CURRENT_TIME=time(0);
-  for(i=0;i<orig_ammt;i++) 
+  for(i=0;i<orig_ammt;i++)
 	dummy[i]->AXE=FALSE;
 
   printf("\nStructures initialized.");
@@ -364,8 +408,8 @@ void muck(int orig_ammt, char name[80]) {
     }
   }
 }
-	
-      
+
+
 
 void specific_axe(int orig_ammt, char *name) {
   register i;
@@ -425,7 +469,7 @@ void inactive_axe(int orig_ammt, time_t CURRENT_TIME) {
 #else
 /* new */
     if((CURRENT_TIME - dummy[i]->grunt.last_logon) > (long) (16400 * 120)) {
-#endif    
+#endif
       for(j=0,max=0;j<MAX_CLASS;j++) {
 	if (dummy[i]->grunt.level[j] > max) {
 	  max = dummy[i]->grunt.level[j];
@@ -461,7 +505,7 @@ int spit_out_remains(char *argv[], int ammt) {
   }
   return j;
 }
-  
+
 int load_playerfile(char *argv[]) {
   int ammt=0;
   int test,tmpi;
@@ -486,15 +530,15 @@ int load_playerfile(char *argv[]) {
   }
   for (;!feof(fl);)    {
     dummy[ammt]=(struct my_char_data *)malloc(sizeof(struct my_char_data));
-    test=fread(&(dummy[ammt]->grunt),  sizeof(struct char_file_u), 1, fl); 
+    test=fread(&(dummy[ammt]->grunt),  sizeof(struct char_file_u), 1, fl);
 
-    if (!feof(fl)) 
-      if(strcmp(dummy[ammt]->grunt.name,"111111") && 
+    if (!feof(fl))
+      if(strcmp(dummy[ammt]->grunt.name,"111111") &&
          strcmp(dummy[ammt]->grunt.name,"") ) {
          printf("\nloading: [%s] <%d> <test:%d>",
            dummy[ammt]->grunt.name,
            ammt,
-           test); 
+           test);
 	 ammt++;
       }
 
@@ -515,7 +559,7 @@ int convert_playerfile(char *argv[]) {
   if(dummy==NULL) {
     printf("ack\n");
   }
-  
+
 	for(ammt=0;ammt<orig_ammt;ammt++) {
 	dummy[ammt]->grunt2.class = dummy[ammt]->grunt.class;                            /* NEW Class */
 	dummy[ammt]->grunt2.sex = dummy[ammt]->grunt.sex;
@@ -525,7 +569,7 @@ for (tmpi=0;tmpi<= ABS_MAX_CLASS;tmpi++) {
 	}
 for (tmpi=ABS_MAX_CLASS;tmpi<=NEW_ABS_MAX_CLASS;tmpi++)
     dummy[ammt]->grunt2.level[tmpi] = 0;
- 	
+
 	dummy[ammt]->grunt2.birth = dummy[ammt]->grunt.birth;
 	dummy[ammt]->grunt2.played = dummy[ammt]->grunt.played;
 	dummy[ammt]->grunt2.race = dummy[ammt]->grunt.race;
@@ -534,7 +578,7 @@ for (tmpi=ABS_MAX_CLASS;tmpi<=NEW_ABS_MAX_CLASS;tmpi++)
 
 for (tmpi=0;tmpi<=strlen(dummy[ammt]->grunt.title);tmpi++)
 	dummy[ammt]->grunt2.title[tmpi] = dummy[ammt]->grunt.title[tmpi];
-	
+
 for (tmpi=0;tmpi<=strlen(dummy[ammt]->grunt.extra_str);tmpi++)
 	dummy[ammt]->grunt2.extra_str[tmpi] = dummy[ammt]->grunt.extra_str[tmpi];
 
@@ -569,7 +613,7 @@ for (tmpi=0;tmpi<=MAX_SKILLS;tmpi++) {
 
 for (tmpi = MAX_SKILLS;tmpi<=NEW_MAX_SKILLS;tmpi++) {
 	 dummy[ammt]->grunt2.skills[tmpi].learned = 0;
-	 dummy[ammt]->grunt2.skills[tmpi].flags   = 0;	 
+	 dummy[ammt]->grunt2.skills[tmpi].flags   = 0;
  	 dummy[ammt]->grunt2.skills[tmpi].special = 0;
  	 dummy[ammt]->grunt2.skills[tmpi].nummem  = 0;
 	}
@@ -591,7 +635,7 @@ for (tmpi=MAX_AFFECT;tmpi<=NEW_MAX_AFFECT;tmpi++){
  dummy[ammt]->grunt2.affected[tmpi].bitvector = 0;
  dummy[ammt]->grunt2.affected[tmpi].next = NULL;
 }
-	
+
 dummy[ammt]->grunt2.spells_to_learn = dummy[ammt]->grunt.spells_to_learn;
 dummy[ammt]->grunt2.alignment = dummy[ammt]->grunt.alignment;
 dummy[ammt]->grunt2.affected_by = dummy[ammt]->grunt.affected_by;
@@ -613,20 +657,20 @@ for (tmpi=0;tmpi<=11;tmpi++)
   }
 for (tmpi=MAX_SAVES;tmpi<=NEW_MAX_SAVES;tmpi++)
  	dummy[ammt]->grunt2.apply_saving_throw[tmpi] = 0;
- 	
+
  for (tmpi=0;tmpi<=MAX_CONDITIONS;tmpi++) {
  	dummy[ammt]->grunt2.conditions[tmpi] = dummy[ammt]->grunt2.conditions[tmpi];
   }
 for (tmpi=MAX_CONDITIONS;tmpi<=NEW_MAX_CONDITIONS;tmpi++)
  	dummy[ammt]->grunt2.conditions[tmpi] = 0;
-  
+
   dummy[ammt]->grunt2.startroom = dummy[ammt]->grunt.startroom;
 
 
 				/* added 3/7/94 msw */
   dummy[ammt]->grunt2.user_flags = 0;
-  dummy[ammt]->grunt2.speaking   = 0;
-  
+  dummy[ammt]->grunt2.speaks   = 0;
+
 
  fwrite(&(dummy[ammt]->grunt2), sizeof(struct char_file_u_new), 1, fl2);
 }
@@ -635,7 +679,7 @@ for (tmpi=MAX_CONDITIONS;tmpi<=NEW_MAX_CONDITIONS;tmpi++)
   exit(0);
   return ammt;
 }
-  
+
 
 char *time_print(long et)
 {
@@ -675,12 +719,12 @@ void access_rent_files(int number, int ITEM, char buf[40]) {
     while(buf[j] != '\0' && j<30) {
       buf[j]=tolower(buf[j]);
       j++;
-    } 
+    }
     buf[j]='\0';
     if(buf[0]=='e')
     printf("\nAtteming to open %s's rent file.",buf);
          if(strlen(buff) > sprintf) {
-      (,"rent/%s",lower(buff)); 
+      (,"rent/%s",lower(buff));
       if((fl=fopen(buf,"r")) != NULL ) {
 	if(ReadObjs(fl,&muck)) {
 	  succeed++;
@@ -689,9 +733,9 @@ void access_rent_files(int number, int ITEM, char buf[40]) {
 	  for(j=0;j<muck.number && j< 250;j++) {
 	    if(muck.objects[j].item_number == (sh_int) ITEM) {
 	      printf("\n%s has it!",buff);
-	    } 
+	    }
 	  }
-	} 
+	}
       }
     }
   }
@@ -708,7 +752,7 @@ int ReadObjs( FILE *fl, struct obj_file_u *st)
     return(FALSE);
     printf("\nEmpty file.");
   }
-    
+
   fread(st->owner, sizeof(st->owner), 1, fl);
   if (feof(fl)) {
     fclose(fl);
@@ -766,7 +810,7 @@ char *lower(char *s)
   static char c[1000];
   static char *p;
   int i=0;
-  
+
   strcpy(c, s);
 
   while (c[i]) {

@@ -2443,7 +2443,7 @@ void spell_identify(byte level, struct char_data *ch,
   char buf[256], buf2[256];
   int i;
   bool found;
-
+extern const struct skillset weaponskills[];
   struct time_info_data age(struct char_data *ch);
 
   /* Spell Names */
@@ -2590,10 +2590,13 @@ strcat(buf,"\n\r");
       break;
 
     case ITEM_WEAPON :
-      sprintf(buf, "$c0005Damage Dice is '$c0014%dD%d$c0005'$c0015[%s]$c0005\n\r",
+
+      sprintf(buf, "$c0005Damage Dice is '$c0014%dD%d$c0005'$c0015[%s]$c0005 [%s]\n\r",
 	      obj->obj_flags.value[1],
 	      obj->obj_flags.value[2],
-	      AttackType[obj->obj_flags.value[3]-1]);
+	      AttackType[obj->obj_flags.value[3]-1],
+	      weaponskills[obj->weapontype].name);
+
       send_to_char(buf, ch);
       break;
 

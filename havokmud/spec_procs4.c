@@ -322,13 +322,12 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	  { "hitpoints",    1,      2},
 	  { "movement",  	2,      1},
 	  { "mana",         3,      2},
-
 	  { "constitution",	4,		 10},
 	  { "strength",     5,      10},
 	  { "dexterity",    6,      10},
 	  { "charisma",     7,      5},
-	  { "intelligence", 8,      10},
-	  { "wisdom",       9,      10},
+	  { "intelligence", 8,      12},
+	  { "wisdom",       9,      12},
 	  { "None",		    10,	    -1}
 
 	};
@@ -552,16 +551,16 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
+			sprintf(buf,"You can practice any of these weapon styles:\n\r\n\r");
 			strcat(buffer,buf);
 			x = 50;
 			/* list by level, so new skills show at top of list */
 				i=0;
 				while(weaponskills[i].level != -1) {
 					if (weaponskills[i].level <= x) {
-						sprintf(buf,"[%-2d] %-30s %-15s",weaponskills[i].level,
+						sprintf(buf,"$c000B[$c000W%-2d$c000B]$c000W %-30s %-15s",weaponskills[i].level,
 								weaponskills[i].name,
-								ch->skills[weaponskills[i].skillnum].learned >0? "(Practiced)":"(Unknown)");
+								ch->skills[weaponskills[i].skillnum].learned >0? "$c000Y($c000BPracticed$c000Y)$c000w":"$c000Y($c000RUnknown$c000Y)$c000w");
 						if (IsSpecialized(ch->skills[weaponskills[i].skillnum].special))
 							strcat(buf," (special)");
 						strcat(buf," \n\r");
@@ -585,11 +584,10 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						return(TRUE);
 					}
 
-					if(ch->skills[weaponskills[x].skillnum].learned > 45) {
+					if(ch->skills[weaponskills[x].skillnum].learned > 0) {
 						//check if skill already practiced
 						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
-									 " 'You must learn from experience and practice to get"
-									 " any better at that skill.'\n\r",ch);
+									 " 'You already look quite knowledgeable of that weapon.'\n\r",ch);
 						return(TRUE);
 					}
 
@@ -599,7 +597,7 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						return(TRUE);
 					}
 
-					sprintf(buf,"You practice %s for a while.\n\r",weaponskills[x].name);
+					sprintf(buf,"%s shows you how to use the %s correctly.\n\r",GET_NAME(mob),weaponskills[x].name);
 					send_to_char(buf,ch);
 					ch->specials.spells_to_learn--;
 

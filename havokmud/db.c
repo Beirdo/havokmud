@@ -2416,6 +2416,27 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
 }
 
 
+int weaponconvert(struct obj_data *obj) {
+
+	char buf[256];
+	extern const struct skillset weaponskills[];
+	int i=0;
+	return 0;
+	if(!obj)
+		return WEAPON_GENERIC;
+	while(weaponskills[i].level != -1) {
+		if(strstr(obj->name,weaponskills[i].name))	{
+			//sprintf(buf,"%s is a %s.\n\r",obj->name, weaponskills[i].name);
+			//printf(buf);
+			return 350+i;
+		}
+
+
+	}
+	return WEAPON_GENERIC;
+}
+
+
 int write_obj_to_file(struct obj_data *obj, FILE *f)
 {
 	int     i,tmp;
@@ -2478,8 +2499,8 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
 
  	if(IS_WEAPON(obj)) {
-		fprintf(f,"%d %d %d %d %d %ld 25 0\n", obj->obj_flags.weight, \
-			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified);
+		fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
+			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified, obj->speed, weaponconvert(obj));
 	} else {
 		fprintf(f,"%d %d %d %d %d %ld 0 0\n", obj->obj_flags.weight, \
 		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified);
@@ -3346,6 +3367,13 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     ch->skills[i].learned = MIN(st->skills[i].learned, max);
   }
 
+  for (i = WEAPON_FIRST; i <= WEAPON_LAST; i++) {
+    ch->skills[i].flags   = st->skills[i].flags;
+    ch->skills[i].special = st->skills[i].special;
+    ch->skills[i].nummem  = st->skills[i].nummem;
+    ch->skills[i].learned = MIN(st->skills[i].learned, max);
+  }
+
 
   ch->specials.spells_to_learn = st->spells_to_learn;
   ch->specials.alignment    = st->alignment;
@@ -3528,6 +3556,12 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
      st->skills[i].special = ch->skills[i].special;
      st->skills[i].nummem  = ch->skills[i].nummem;
     }
+  for (i = WEAPON_FIRST; i <= WEAPON_LAST; i++) {
+    st->skills[i] = ch->skills[i];
+        st->skills[i].flags   = ch->skills[i].flags;
+        st->skills[i].special = ch->skills[i].special;
+     st->skills[i].nummem  = ch->skills[i].nummem;
+  }
 
   strcpy(st->name, GET_NAME(ch) );
 
@@ -4058,6 +4092,11 @@ if (IS_SET(ch->specials.act,PLR_NOHASSLE) && GetMaxLevel(ch) < LOW_IMMORTAL) {
        ch->skills[i].special = 0;
     }
 
+  for (i=WEAPON_FIRST;i<=WEAPON_LAST;i++) {
+    if (ch->skills[i].learned < 95 || !IS_SET(ch->skills[i].flags,SKILL_KNOWN))
+       ch->skills[i].special = 0;
+    }
+
   SetDefaultLang(ch);
 
 
@@ -4105,21 +4144,6 @@ if (!HasClass(ch,CLASS_BARD))
    ch->player.level[11]=0;
 
 
-/*                                              */
-
-#if 0
-/*
-	Fix problem with Sorcerer learned spells
-*/
- if (HasClass(ch,CLASS_SORCERER)) {
-  for (i=0;i<MAX_SKILLS-1;i++) {
-  if (IS_SET(ch->skills[i].flags,SKILL_KNOWN)
-      && !IS_SET(ch->skills[i].flags,SKILL_KNOWN_CLERIC)
-      && !IS_SET(ch->skills[i].flags,SKILL_KNOWN_SORCERER) )
-	  SET_BIT(ch->skills[i].flags,SKILL_KNOWN_SORCERER);
- } /* for */
-}
-#endif
 
 ch->player.has_mail=FALSE;
 
@@ -4320,6 +4344,21 @@ void init_char(struct char_data *ch)
       ch->skills[i].nummem  = 0;
     }
   }
+
+  for (i = WEAPON_FIRST; i <= WEAPON_LAST; i++) {
+    if (GetMaxLevel(ch) <IMPLEMENTOR) {
+      ch->skills[i].learned = 0;
+      ch->skills[i].flags   = 0;
+      ch->skills[i].special = 0;
+      ch->skills[i].nummem  = 0;
+    }   else {
+      ch->skills[i].learned = 100;
+      ch->skills[i].flags   = 0;
+      ch->skills[i].special = 1;
+      ch->skills[i].nummem  = 0;
+    }
+  }
+
 
   ch->specials.affected_by = 0;
   ch->specials.spells_to_learn = 0;

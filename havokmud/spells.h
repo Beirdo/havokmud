@@ -406,6 +406,8 @@
 
 
 /* all new weapons to practice (GH) */
+#define WEAPON_FIRST 350
+
 #define WEAPON_SHORT_SWORD         350
 #define WEAPON_LONG_SWORD          351
 #define WEAPON_BROADSWORD          352
@@ -465,8 +467,8 @@
 #define WEAPON_HEAVY_CROSSBOW 		406
 #define WEAPON_BLOWGUN				407
 #define WEAPON_TETSUBO				408
-
-
+#define WEAPON_GENERIC              409
+#define WEAPON_LAST                409
 
 
 

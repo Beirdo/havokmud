@@ -818,7 +818,7 @@ struct room_data
 
 #define MAX_NEW_LANGUAGES 10  /* for new languages DO NOT CHANGE!  */
 
-#define MAX_SKILLS  350   /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 200->350 */
+#define MAX_SKILLS  450   /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 200->350 */
 #define MAX_WEAR    (MAX_WEAR_POS+1)
 #define MAX_AFFECT  40    /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 25->30*/
 #define MAX_SAVES   8     /* number of saving throws types... DO NOT CHANGE*/
