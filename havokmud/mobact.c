@@ -260,16 +260,16 @@ void check_mobile_activity(int pulse)
 
   for (ch = character_list; ch; ch = ch->next) {
     if (IS_MOB(ch) && ch->specials.fighting) {
- /*do_say(ch, "I got tick", 0); */
+ //do_say(ch, "I got tick", 0);
       if(ch->specials.tick_to_lag) {
- /*do_say(ch, "I'm lagging..", 0); */
+ //do_say(ch, "I'm lagging..", 0);
         ch->specials.tick_to_lag -= PULSE_VIOLENCE;
         continue;
       }
       if( number(1,20) > GET_DEX(ch) ) {
- /*do_say(ch, "I fail DEX check :(", 0); */
+ //do_say(ch, "I fail DEX check :(", 0);
       } else {
- /*do_say(ch, "Ok, lets kick some ass", 0); */
+// do_say(ch, "Ok, lets kick some ass", 0);
         mobile_activity(ch);
       }
     }
@@ -339,7 +339,6 @@ void mobile_activity(struct char_data *ch)
 	}
 
 if (!no_specials) {		/* do not run these if disabled */
-
  if (IS_SET(ch->specials.act,ACT_NECROMANCER)) {
     if (necromancer(ch,0,"",ch,PULSE_TICK)) {
         return;

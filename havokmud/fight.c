@@ -2033,7 +2033,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 				if(GET_HIT(v) < (max_hit/5))
 					act("You wish that your wounds would stop $c0010BLEEDING$c0007 so much!",
 						FALSE,v,0,0,TO_CHAR);
-				if (IS_NPC(v) && (IS_SET(v->specials.act, ACT_WIMPY))) {
+				if (IS_NPC(v) && !IS_SET(v->specials.act,ACT_POLYSELF) && (IS_SET(v->specials.act, ACT_WIMPY))) {
 					strcpy(buf, "flee");
 					command_interpreter(v, buf);
 				} else if (!IS_NPC(v)) {

@@ -440,10 +440,15 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
 	int i, attempt, loose, die, percent, charm;
 	void gain_exp(struct char_data *ch, int gain);
 	int special(struct char_data *ch, int cmd, char *arg);
+	struct char_data *tmp;
+	struct room_data *rp;
 
 dlog("in do_flee");
 
 	if (IS_AFFECTED(ch, AFF_PARALYSIS))
+		return;
+
+	if(!(rp = real_roomp(ch->in_room))
 		return;
 
 	if (GET_POS(ch) < POSITION_SLEEPING) {
@@ -613,23 +618,37 @@ dlog("in do_flee");
 					send_to_char("You flee head over heels.\n\r", ch);
 				} else {
 					send_to_char("You retreat skillfully\n\r", ch);
-					send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
-					gain_exp(ch, 100);
+					if (IS_PC(ch) {
+						send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+						gain_exp(ch, 100);
+					}
 				}
 
-				if (ch->specials.fighting->specials.fighting == ch)
-					stop_fighting(ch->specials.fighting);
+				// gotta make ALL ch's attackers stop fighting, not just one
+				for(tmp = rp->people; tmp; tmp->next_in_room) {
+					if(tmp->specials.fighting == ch)
+						stop_fighting(tmp);
+				}
+
+//				if (ch->specials.fighting->specials.fighting == ch)
+//					stop_fighting(ch->specials.fighting);
 
 				if (ch->specials.fighting)
 					stop_fighting(ch);
 
-				if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) && !IS_AFFECTED(ch, AFF_HIDE)) {
-					 do_hide(ch, 0, 0);
-					 if (!IS_AFFECTED(ch, AFF_HIDE)){
+				if(ch->attackers) {
+					log("fleeing dude still being attacked?! Could be bad.");
+				}
+
+				if(IS_PC(ch)) {
+					if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) && !IS_AFFECTED(ch, AFF_HIDE)) {
 						 do_hide(ch, 0, 0);
-					 }
+						 if (!IS_AFFECTED(ch, AFF_HIDE)){
+							 do_hide(ch, 0, 0);
+						 }
 
 
+					}
 				}
 				return;
 			} else {

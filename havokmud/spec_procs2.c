@@ -1335,6 +1335,8 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	extern int top_of_world;
 	struct room_data *room;
 
+//	log("entered druid proc");
+
 	if (cmd || !AWAKE(ch))
 		return(FALSE);
 	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
@@ -1382,6 +1384,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	}
 
 	if (!ch->specials.fighting) {
+//	log("not fighting");
 		if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
 			/* timer to heal up! */
 			if (GetMaxLevel(ch) >= 25)
@@ -1555,9 +1558,14 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			vict = FindVictim(ch);
 //	}
 	if (!vict)
-		vict = ch->specials.fighting;
-	if (!vict)
+		if(ch->specials.fighting) {
+//			log("fighting");
+			vict = ch->specials.fighting;
+		}
+	if (!vict) {
+//		log("I'm not fightin?");
 		return(FALSE);
+	}
 
 	if(vict == ch) {
 		log("victim same as char");
@@ -1586,6 +1594,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 
 	if (number(1,9)>3) {
+//	log("pester em");
 		/* pester them */
 		if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) && (number(0,4)==0)) {
 			act("$n whistles.",1,ch,0,0,TO_ROOM);
@@ -1675,6 +1684,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 		}
 		return(TRUE);
 	} else {
+//	log("better heal up");
 	/* do heal */
 		if (IS_AFFECTED(ch, AFF_BLIND) && (lspell >= 4) & (number(0,3)==0)) {
 			act("$n utters the words 'Praise Pentak, I can see!'", 1, ch,0,0,TO_ROOM);

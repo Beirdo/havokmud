@@ -510,10 +510,10 @@ void CleanZone(int zone)
 		for (obj = rp->contents; obj; obj = next_o) {
 			next_o=obj->next_content;
 			//obj_index[obj->item_number].number--; /* object maxxing.(GH) */
-			/* Do not clean out corpses or quest items. Bit of  kludge to avoid
+			/* Do not clean out corpses, druid trees or quest items. Bit of  kludge to avoid
 			 * deinit getting rid of quest items when a scavenge quest is going
 			 * on. Maybe make a SYS_NODEINIT? Hard to use for small imms. -Lennya */
-			if(!IS_CORPSE(obj) && !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
+			if(!IS_CORPSE(obj) && !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST) && (ITEM_TYPE(obj) != ITEM_TREE)) {
 				extract_obj(obj);
 			}
 		}
@@ -3013,6 +3013,7 @@ void TeleportPulseStuff(int pulse)
     next = ch->next;
     if (IS_MOB(ch)) {
       if (ch->specials.tick == tick && !ch->specials.fighting) {
+//		  log("through here");
 	mobile_activity(ch);
       }
     } else if (IS_PC(ch)) {

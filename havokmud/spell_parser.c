@@ -2489,7 +2489,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 			else {
 				int max, cost;
 
-				max = ch->specials.spellfail + 10;
+				max = ch->specials.spellfail;
 				max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
 				switch(BestMagicClass(ch)) {
 					case	MAGE_LEVEL_IND:
