@@ -15,7 +15,6 @@
 #include "trap.h"
 #include "utils.h"
 #include "vt100c.h"
-#include "wizlist.h"
 #include "parser.h"
 #include "mail.h"
 #include "dimd.h"
