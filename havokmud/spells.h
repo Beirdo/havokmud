@@ -598,6 +598,7 @@
 #define TAR_NAME	 (1<<11)
 #define TAR_VIOLENT	 (1<<12)
 #define TAR_ROOM         (1<<13)  /* spells which target the room  */
+#define TAR_GROUP		(1<<14) /* spells that target groupees */
 
 struct spell_info_type
 {

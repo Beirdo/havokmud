@@ -142,6 +142,9 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
   if (!o)
     return (FALSE);
 
+  if (IS_IMMORTAL(o) && !o->invis_level && o->in_room)
+    return(TRUE);
+
   if (o->invis_level > GetMaxLevel(s))
     return (FALSE);
 
@@ -3192,18 +3195,18 @@ void PlaysongPulseStuff(int pulse)
 				/* let's see what the mana cost per round is: */
 				cost = (int)(USE_MANA(ch, (int)spl)/10);
 				GET_MANA(ch) -= cost;
+				if(ch->in_room)
+					rp = real_roomp(ch->in_room);
+				if(!rp) {
+					log("weirdness in PlaysongPulseStuff");
+					return;
+				}
 				if(cost > GET_MANA(ch)) {
 					/* outta mana, stop playing */
 					send_to_char("Your voice drained, there's no other option but to end your song.\n\r",ch);
 					act("$n's voice turns into a croak, and, blushing furiously, $e ends $s song.",FALSE, ch, 0,0,TO_ROOM);
 					ch->specials.is_playing = 0;
 					/* is there someone else in the room playing this song? */
-					if(ch->in_room)
-						rp = real_roomp(ch->in_room);
-					if(!rp) {
-						log("weirdness in PlaysongPulseStuff");
-						return;
-					}
 					for (tmp = rp->people; tmp; tmp = tmp2) {
 						tmp2 = tmp->next_in_room;
 						if(tmp->specials.is_playing == spl) { /* there is, don't remove affects, we're done here */
@@ -3221,6 +3224,36 @@ void PlaysongPulseStuff(int pulse)
 								tmp->specials.is_hearing = 0;
 							}
 						}
+				} else {
+					if (IS_SET(spell_info[spl].targets, TAR_VIOLENT)) { /* make sure all non grouped are affected */
+						for (tmp = rp->people; tmp; tmp = tmp2) {
+							tmp2 = tmp->next_in_room;
+							if (!in_group(ch, tmp) || !IS_AFFECTED(tmp,AFF_GROUP)) {
+								if(!tmp->specials.is_hearing) {
+									((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
+									tmp->specials.is_hearing == spl;
+								}
+							}
+						}
+					} else if (IS_SET(spell_info[spl].targets, TAR_GROUP)) { /* make sure all groupees are affected */
+						for (tmp = rp->people; tmp; tmp = tmp2) {
+							tmp2 = tmp->next_in_room;
+							if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
+								if(tmp->specials.is_hearing != spl) {
+									((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
+									tmp->specials.is_hearing == spl;
+								}
+							}
+						}
+					} else if (IS_SET(spell_info[spl].targets, TAR_ROOM)) { /* make sure all peeps are affected */
+						for (tmp = rp->people; tmp; tmp = tmp2) {
+							tmp2 = tmp->next_in_room;
+							if(!tmp->specials.is_hearing) {
+								((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, 0, SPELL_TYPE_SPELL, tmp, 0));
+								tmp->specials.is_hearing == spl;
+							}
+						}
+					}
 				}
 			} else if(ch->specials.is_hearing) { /* see if there's still someone in the room singing */
 				spl = ch->specials.is_hearing;

@@ -3638,13 +3638,8 @@ ch->skills[STYLE_STANDARD].learned = 95;
 
 if (HasClass(ch,
  CLASS_CLERIC|CLASS_MAGIC_USER|CLASS_SORCERER|CLASS_PSI|
- CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID))
+ CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID|CLASS_BARD|CLASS_NECROMANCER))
  ch->skills[SKILL_READ_MAGIC].learned = 95;
-
-//if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
-// { /* set rangers and pals to good */
-//   GET_ALIGNMENT(ch) = 1000;
-// }else GET_ALIGNMENT(ch) = 0;
 
 	SetDefaultLang(ch);  /* the skill */
 
@@ -4388,6 +4383,65 @@ dlog("in do_show");
 				}
 			}
 		}
+	} else if (is_abbrev(buf, "itemtype") && (which_i=obj_index,topi=top_of_objt)) {
+		int objn, wearslot = 0;
+		struct index_data   *oi;
+
+		only_argument(argument, zonenum);
+
+		if(!(isdigit(*zonenum))) {
+			append_to_string_block(&sb,"Usage:\n\r"
+				 "  show itemtype #\n\r"
+				 "  Number ranging from  0   UNDEFINED\n\r"
+				 "                       1   LIGHT SOURCE\n\r"
+	             "                       2   SCROLL\n\r"
+	             "                       3   WAND\n\r"
+	             "                       4   STAFF\n\r"
+	             "                       5   WEAPON\n\r"
+	             "                       6   FIREWEAPON\n\r"
+	             "                       7   MISSILE\n\r"
+	             "                       8   TREASURE\n\r"
+	             "                       9   ARMOR\n\r"
+	             "                      10   POTION\n\r"
+	             "                      11   WORN\n\r"
+	             "                      12   OTHER\n\r"
+	             "                      13   THRASH\n\r"
+	             "                      14   TRAP\n\r"
+	             "                      15   CONTAINER\n\r"
+	             "                      16   NOTE\n\r"
+	             "                      17   LIQ CONTAINER\n\r"
+	             "                      18   KEY\n\r"
+	             "                      19   FOOD\n\r"
+	             "                      20   MONEY\n\r"
+	             "                      21   PEN\n\r"
+	             "                      22   BOAT\n\r"
+	             "                      23   AUDIO\n\r"
+	             "                      24   BOARD\n\r"
+	             "                      25   TREE\n\r"
+	             "                      26   ROCK\n\r"
+	             "                      27   PORTAL\n\r"
+	             "                      28   INSTRUMENT\n\r");
+		} else {
+			wearslot = atoi(zonenum);
+			append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
+			for (objn=0; objn < topi; objn++) {
+				oi = which_i + objn;
+				obj = read_object(oi->virtual, VIRTUAL);
+				if(obj) {
+					if(ITEM_TYPE(obj) ==  wearslot) {
+						if(eval(obj) < -5)
+							sprintf(color,"%s","$c0008");
+						else if(eval(obj) < 20)
+							sprintf(color,"%s","");
+						else
+							sprintf(color,"%s","$c000W");
+						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+						append_to_string_block(&sb, buf);
+						extract_obj(obj);
+					}
+				}
+			}
+		}
 	} else if (is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
 		int objn;
 		struct index_data   *oi;
@@ -4624,6 +4678,7 @@ dlog("in do_show");
 			 "  show zones\n\r"
 			 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
 			 "  show rooms (zone#|death|private)\n\r"
+			 "  show itemtype (#)\n\r"
 			 "  show wearslot (#)\n\r");
 		if(GetMaxLevel(ch) > 55) {
 			append_to_string_block(&sb,"  show report (zone#)\n\r");
@@ -4670,6 +4725,7 @@ dlog("in do_invis");
     }
     REMOVE_BIT(ch->specials.affected_by, AFF_INVISIBLE);
     ch->invis_level = 0;
+    do_save(ch, "", 0);
     return;
   }
 
@@ -4690,10 +4746,12 @@ dlog("in do_invis");
     if (ch->invis_level>0)
     {
       ch->invis_level = 0;
+      do_save(ch, "", 0);
       send_to_char("You are now totally visible.\n\r",ch);
     } else
     {
       ch->invis_level = LOW_IMMORTAL;
+      do_save(ch, "", 0);
       send_to_char("You are now invisible to all but gods.\n\r",ch);
     }
 

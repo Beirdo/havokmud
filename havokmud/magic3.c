@@ -1319,6 +1319,7 @@ void spell_reincarnate(byte level, struct char_data *ch,
 	st.points.exp *= 2;
 	st.points.leadership_exp *= 2; /* test */
 	st.talks[2] = TRUE;
+	st.m_deaths--;
 	st.abilities.con -= 1;
 
       act("The forest comes alive with the sounds of birds and animals",
@@ -5247,10 +5248,11 @@ void sounds_of_fear(byte level, struct char_data *ch, struct char_data *victim, 
 	}
 
 	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
-		if (!(in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP))) {
+		if (!in_group(ch, tmp) || !IS_AFFECTED(tmp,AFF_GROUP)) {
 			do_flee(tmp, "", 0);
 		}
 	}
+	ch->specials.is_playing = SOUNDS_OF_FEAR;
 }
 
 void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)

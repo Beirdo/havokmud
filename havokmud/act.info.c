@@ -2100,6 +2100,9 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	  ,color,color2, my_age.year,color,color2,DescAge(my_age.year,GET_RACE(ch)),color,color2, playing_time.day,color,color2, playing_time.hours,color,color2
 	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000w It's your birthday today.\n\r":""));
 
+
+  if(!ch->player.speaks)
+  	ch->player.speaks = SPEAK_COMMON;
   ch_printf(ch, "%sYou belong to the %s%s%s race, and speak the %s%s%s language.\n\r"
 	  ,color,color2, RaceName[GET_RACE(ch)],color,color2, languagelist[ch->player.speaks],color);
 

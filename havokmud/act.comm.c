@@ -335,7 +335,7 @@ dlog("in do_tell");
     return;
   }
 
-  if (check_soundproof(vict)) {
+  if (check_soundproof(vict) && !IS_IMMORTAL(ch)) {
 	send_to_char("In a silenced room, try again later.\n\r",ch);
 	return;
   }
