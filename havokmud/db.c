@@ -3469,7 +3469,7 @@ void reset_zone(int zone, int cmd)
 			else
 				extract_obj(obj);
 		} else {
-			extract_obj(obj);
+			obj_to_room(obj, ZCMD.arg3);
 		}
 
 		last_cmd = 1;
@@ -3513,7 +3513,7 @@ void reset_zone(int zone, int cmd)
 			else
 				extract_obj(obj);
 		} else {
-			extract_obj(obj);
+			obj_to_obj(obj, obj_to);
 		}
 
 	    last_cmd = 1;
@@ -3546,7 +3546,7 @@ void reset_zone(int zone, int cmd)
 			else
 				extract_obj(obj);
 		} else {
-			extract_obj(obj);
+			obj_to_char(obj, mob);
 		}
 
 	  last_cmd = 1;
@@ -3592,7 +3592,7 @@ void reset_zone(int zone, int cmd)
 			else
 				extract_obj(obj);
 		} else {
-			extract_obj(obj);
+			equip_char(mob, obj, ZCMD.arg3);
 		}
 
 	  } else {
