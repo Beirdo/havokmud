@@ -16,14 +16,6 @@
 #include "protos.h"
 #include "externs.h"
 
-#define NEWHELP_FILE      "ADD_HELP"
-/*
- * New help to add
- */
-#define QUESTLOG_FILE     "quest_log"
-/*
- * Log of quest transactions
- */
 #define STATUE_ZONE 198
 
 void            switch_light(byte why);
@@ -57,8 +49,7 @@ void            update_pos(struct char_data *victim);
 void do_auth(struct char_data *ch, char *argument, int cmd)
 {
     char           *name;
-    char            buf[256],
-                    buf2[256];
+    char            buf[256];
     int             done = FALSE;
     struct descriptor_data *d;
 
@@ -102,15 +93,12 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
          */
         if (strcasecmp(argument, "yes") == 0) {
             d->character->generic = NEWBIE_START;
-            sprintf(buf2, "%s has just accepted %s into the game.",
-                    ch->player.name, name);
-            Log(buf2);
+            Log("%s has just accepted %s into the game.", ch->player.name,
+                name);
             SEND_TO_Q("You have been accepted.  Press enter\n\r", d);
         } else if (strcasecmp(argument, "no") == 0) {
             SEND_TO_Q("You have been denied.  Press enter\n\r", d);
-            sprintf(buf2, "%s has just denied %s from the game.",
-                    ch->player.name, name);
-            Log(buf2);
+            Log("%s has just denied %s from the game.", ch->player.name, name);
             d->character->generic = NEWBIE_AXE;
         } else {
             SEND_TO_Q(argument, d);
@@ -167,19 +155,6 @@ void do_imptest(struct char_data *ch, char *arg, int cmd)
             }
         }
     }
-
-#if 0
-    int             x;
-    char           *tmp;
-    char            buff[256];
-    Log("loading all zones");
-
-    for (x = 0; x < 40000; x += 200) {
-        sprintf(buff, "%d", x);
-        do_goto(ch, buff, 0);
-    }
-
-#endif
 }
 
 void do_passwd(struct char_data *ch, char *argument, int cmdnum)
@@ -589,7 +564,6 @@ void do_highfive(struct char_data *ch, char *argument, int cmd)
 
 void do_silence(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[255];
     extern int      Silence;
 
     dlog("in do_silence");
@@ -601,15 +575,12 @@ void do_silence(struct char_data *ch, char *argument, int cmd)
     if (Silence == 0) {
         Silence = 1;
         send_to_char("You have now silenced polyed mobles.\n\r", ch);
-        sprintf(buf, "%s has stopped Polymophed characters from shouting.",
-                ch->player.name);
-        Log(buf);
+        Log("%s has stopped Polymophed characters from shouting.",
+            ch->player.name);
     } else {
         Silence = 0;
         send_to_char("You have now unsilenced mobles.\n\r", ch);
-        sprintf(buf, "%s has allowed Polymophed characters to shout.",
-                ch->player.name);
-        Log(buf);
+        Log("%s has allowed Polymophed characters to shout.", ch->player.name);
     }
 }
 
@@ -663,9 +634,8 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
         }
 
         strcpy(hostlist[numberhosts], arg2);
-        sprintf(buf, "%s has added host %s to the access denied list.",
-                GET_NAME(ch), hostlist[numberhosts]);
-        Log(buf);
+        Log("%s has added host %s to the access denied list.",
+            GET_NAME(ch), hostlist[numberhosts]);
         numberhosts++;
     } else if (strcasecmp(arg1, "rem") == 0) {
         if (numberhosts <= 0) {
@@ -685,14 +655,13 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
 
         for (a = 0; a <= numberhosts - 1; a++) {
             if (strncmp(hostlist[a], arg2, length) == 0) {
-                sprintf(buf, "%s has removed host %s from the access denied "
-                             "list.", GET_NAME(ch), hostlist[a]);
+                Log("%s has removed host %s from the access denied list.",
+                    GET_NAME(ch), hostlist[a]);
 
                 for (b = a; b <= numberhosts; b++) {
                     strcpy(hostlist[b], hostlist[b + 1]);
                 }
 
-                Log(buf);
                 numberhosts--;
                 return;
             }
@@ -1887,9 +1856,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                         /*
                          * log bogus aff->type
                          */
-                        sprintf(buf, "<%s> had a bogus aff->type act.wizard, "
-                                     "do_stat", GET_NAME(k));
-                        Log(buf);
+                        Log("<%s> had a bogus aff->type act.wizard, do_stat",
+                            GET_NAME(k));
                     }
                 }
             }
@@ -2682,15 +2650,12 @@ void do_set(struct char_data *ch, char *argument, int cmd)
         if (PeacefulWorks) {
             PeacefulWorks = FALSE;
             EasySummon = FALSE;
-            sprintf(buf, "Peaceful rooms and Easy Summon disabled by %s",
-                    GET_NAME(ch));
+            Log("Peaceful rooms and Easy Summon disabled by %s", GET_NAME(ch));
         } else {
             PeacefulWorks = TRUE;
             EasySummon = TRUE;
-            sprintf(buf, "Peaceful rooms and Easy Summon enabled by %s",
-                    GET_NAME(ch));
+            Log("Peaceful rooms and Easy Summon enabled by %s", GET_NAME(ch));
         }
-        Log(buf);
     /* Require one argument */
     } else if( !parmstr ) {
         send_to_char( "You need an argument for that, go read the help\n\r",
@@ -2913,7 +2878,6 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
 {
     char          *arg;
     struct char_data *victim;
-    char            buf[MAX_STRING_LENGTH];
 
     dlog("in do_snoop");
 
@@ -2932,10 +2896,8 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
             if (ch->desc->snoop.snooping->desc) {
                 ch->desc->snoop.snooping->desc->snoop.snoop_by = 0;
             } else {
-                sprintf(buf, "caught %s snooping %s who didn't have a "
-                             "descriptor!",
-                        ch->player.name, ch->desc->snoop.snooping->player.name);
-                Log(buf);
+                Log("caught %s snooping %s who didn't have a descriptor!",
+                    ch->player.name, ch->desc->snoop.snooping->player.name);
             }
             ch->desc->snoop.snooping = 0;
         }
@@ -2955,10 +2917,8 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
             if (ch->desc->snoop.snooping->desc) {
                 ch->desc->snoop.snooping->desc->snoop.snoop_by = 0;
             } else {
-                sprintf(buf, "caught %s snooping %s who didn't have a "
-                             "descriptor!",
-                        ch->player.name, ch->desc->snoop.snooping->player.name);
-                Log(buf);
+                Log("caught %s snooping %s who didn't have a descriptor!",
+                    ch->player.name, ch->desc->snoop.snooping->player.name);
                 /*
                  * logically.. this person has returned from being a
                  * creature?
@@ -5326,7 +5286,7 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
     char           *arg;
     struct descriptor_data *d;
     struct char_data *victim;
-    char            buf[1000];
+    
     dlog("in do_disconnect");
 
     if (IS_NPC(ch)) {
@@ -5356,9 +5316,8 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
                 (strcasecmp(GET_NAME(d->character), arg) == 0)) {
 
                 if ((GetMaxLevel(victim) > 51) && !(ch == victim)) {
-                    sprintf(buf, "%s just disconnected %s!", GET_NAME(ch),
-                            GET_NAME(victim));
-                    Log(buf);
+                    Log("%s just disconnected %s!", GET_NAME(ch),
+                        GET_NAME(victim));
                 }
                 close_socket(d);
                 send_to_char("Ok.\n\r", ch);
@@ -5752,8 +5711,7 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, victim);
         return;
     } else {
-        sprintf(buf, "%s just nuked %s!", GET_NAME(ch), GET_NAME(victim));
-        Log(buf);
+        Log("%s just nuked %s!", GET_NAME(ch), GET_NAME(victim));
         act("$n calls forth the wrath of the gods and destroys $N!", FALSE,
             ch, 0, victim, TO_NOTVICT);
         act("$n reaches into $N and pulls out a fighting soul!", FALSE, ch,
@@ -5811,7 +5769,6 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
     char           *arg;
     struct char_data *victim;
     struct obj_cost cost;
-    char            buf[254];
 
 
     dlog("in do_forcerent");
@@ -5848,9 +5805,8 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
                         cost.total_cost = 100;
                         save_obj(victim, &cost, 1);
                     } else {
-                        sprintf(buf, "%s had a failed recp_offer, they are "
-                                     "losing EQ!", GET_NAME(victim));
-                        Log(buf);
+                        Log("%s had a failed recp_offer, they are losing EQ!",
+                            GET_NAME(victim));
                     }
                     extract_char(victim);
                 }
@@ -5888,9 +5844,8 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
             cost.total_cost = 100;
             save_obj(victim, &cost, 1);
         } else {
-            sprintf(buf, "%s had a failed recp_offer, they are losing EQ!",
-                    GET_NAME(victim));
-            Log(buf);
+            Log("%s had a failed recp_offer, they are losing EQ!",
+                GET_NAME(victim));
         }
         extract_char(victim);
     }
@@ -6312,7 +6267,7 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
     if (!strcmp(namefile, "help")) {
         buf = view_newhelp();
     } else if (!strcmp(namefile, "quest")) {
-        buf = file_to_string(QUESTLOG_FILE);
+        buf = view_report(REPORT_QUEST);
     } else if (!strcmp(namefile, "bug")) {
         buf = view_report(REPORT_WIZBUG);
     } else if (!strcmp(namefile, "idea")) {
@@ -6453,8 +6408,8 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
     } else {
         mob_index[nr].pos = -1;
     }
-    sprintf(buf, "Mobile %s saved as vnum %ld", mob->player.name, vnum);
-    Log(buf);
+    Log("Mobile %s saved as vnum %ld", mob->player.name, vnum);
+
     sprintf(buf, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
     send_to_char(buf, ch);
 }
@@ -6554,8 +6509,8 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
         }
     }
 
+    Log("Object %s saved as vnum %ld", obj->name, vnum);
     sprintf(buf, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
-    Log(buf);
     send_to_char(buf, ch);
 }
 
@@ -6744,7 +6699,6 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg1,
                    *arg2;
-    char            buf[MAX_STRING_LENGTH];
 
     if (!IS_SET(ch->specials.act, PLR_WIZREPORT) && GetMaxLevel(ch) < 60) {
         send_to_char("You do not have access to this command!\n\r", ch);
@@ -6788,18 +6742,15 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
     } else if (!strcmp("cleanbug", arg1)) {
         send_to_char("Cleaning the mortal bug file NOW!\n\r", ch);
         db_clean_report( REPORT_BUG );
-        sprintf(buf, "%s just cleaned the bug file!", GET_NAME(ch));
-        Log(buf);
+        Log("%s just cleaned the bug file!", GET_NAME(ch));
     } else if (!strcmp("cleanidea", arg1)) {
         send_to_char("Cleaning the mortal idea file NOW!\n\r", ch);
         db_clean_report( REPORT_IDEA );
-        sprintf(buf, "%s just cleaned the idea file!", GET_NAME(ch));
-        Log(buf);
+        Log("%s just cleaned the idea file!", GET_NAME(ch));
     } else if (!strcmp("cleantypo", arg1)) {
         send_to_char("Cleaning the mortal typo file NOW!\n\r", ch);
         db_clean_report( REPORT_TYPO );
-        sprintf(buf, "%s just cleaned the typo file!", GET_NAME(ch));
-        Log(buf);
+        Log("%s just cleaned the typo file!", GET_NAME(ch));
     } else {
         send_to_char("What do you wanna do?!?!?\n\r", ch);
     }
@@ -7473,8 +7424,7 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 
             sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
             send_to_all(buf);
-            sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
-            Log(buf);
+            Log("%s closed the arena!\n\r", GET_NAME(ch));
         } else {
             send_to_char("The arena isn't open, numbskull!\n\r", ch);
         }
@@ -7518,8 +7468,7 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 
         sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
         send_to_all(buf);
-        sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
-        Log(buf);
+        Log("%s closed the arena!\n\r", GET_NAME(ch));
     } else {
         /*
          * first set flags to be FALSE
@@ -7635,9 +7584,8 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 #endif
         sprintf(buf, "$c000cType $c000CArena$c000c to enter\n\r");
         send_to_all(buf);
-        sprintf(buf, "%s opened an arena for level %d to %d in quadrant %d",
-                GET_NAME(ch), MinArenaLevel, MaxArenaLevel, Quadrant);
-        Log(buf);
+        Log("%s opened an arena for level %d to %d in quadrant %d",
+            GET_NAME(ch), MinArenaLevel, MaxArenaLevel, Quadrant);
     }
 }
 
@@ -8361,9 +8309,8 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
     }
 
     if (reimb_char_objs(victim)) {
-        sprintf(buf, "%s just granted %s a reimbursement", GET_NAME(ch),
-                GET_NAME(victim));
-        Log(buf);
+        Log("%s just granted %s a reimbursement", GET_NAME(ch),
+            GET_NAME(victim));
 
         sprintf(buf, "You reimbursed %s, resetting his gold and equipment to "
                      "the point when they last rented.\n\r", GET_NAME(victim));

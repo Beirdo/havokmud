@@ -823,8 +823,7 @@ int open_door(struct char_data *ch, int dir)
 
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
-        sprintf(buf, "NULL rp in open_door() for %s.", PERS(ch, ch));
-        Log(buf);
+        Log("NULL rp in open_door() for %s.", PERS(ch, ch));
     }
 
     exitp = rp->dir_option[dir];
@@ -870,8 +869,7 @@ int raw_open_door(struct char_data *ch, int dir)
 
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
-        sprintf(buf, "NULL rp in open_door() for %s.", PERS(ch, ch));
-        Log(buf);
+        Log("NULL rp in open_door() for %s.", PERS(ch, ch));
     }
 
     exitp = rp->dir_option[dir];
@@ -911,9 +909,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
     dlog("in do_open_exit");
 
     if (!cmdname) {
-        sprintf(buf, "something really wrong happen in do_open_exit, "
-                     "cmd:%d\r\n", cmd);
-        Log(buf);
+        Log("something really wrong happen in do_open_exit, cmd:%d\r\n", cmd);
         return;
     }
 
@@ -1153,7 +1149,6 @@ void raw_unlock_door(struct char_data *ch,
 {
     struct room_data *rp;
     struct room_direction_data *back;
-    char            buf[128];
 
     REMOVE_BIT(exitp->exit_info, EX_LOCKED);
     /*
@@ -1164,9 +1159,8 @@ void raw_unlock_door(struct char_data *ch,
         back->to_room == ch->in_room) {
         REMOVE_BIT(back->exit_info, EX_LOCKED);
     } else {
-        sprintf(buf, "Inconsistent door locks in rooms %ld->%ld",
-                ch->in_room, exitp->to_room);
-        Log(buf);
+        Log("Inconsistent door locks in rooms %ld->%ld", ch->in_room,
+            exitp->to_room);
     }
 }
 
@@ -1175,7 +1169,6 @@ void raw_lock_door(struct char_data *ch,
 {
     struct room_data *rp;
     struct room_direction_data *back;
-    char            buf[128];
 
     SET_BIT(exitp->exit_info, EX_LOCKED);
     /*
@@ -1186,9 +1179,8 @@ void raw_lock_door(struct char_data *ch,
         back->to_room == ch->in_room) {
         SET_BIT(back->exit_info, EX_LOCKED);
     } else {
-        sprintf(buf, "Inconsistent door locks in rooms %ld->%ld",
-                ch->in_room, exitp->to_room);
-        Log(buf);
+        Log("Inconsistent door locks in rooms %ld->%ld", ch->in_room,
+            exitp->to_room);
     }
 }
 
@@ -1446,9 +1438,8 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
             } else {
                 to_room = portal->obj_flags.value[0];
                 if (!rp) {
-                    sprintf(tmp, "Bad ObjValue1 for portal object, vnum %ld",
-                            obj_index[portal->item_number].virtual);
-                    Log(tmp);
+                    Log("Bad ObjValue1 for portal object, vnum %ld",
+                        obj_index[portal->item_number].virtual);
                     Log("char sent to void (room 0)");
                 }
                 act("You step into $p and emerge elsewhere.\n\r", FALSE,

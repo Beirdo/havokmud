@@ -33,17 +33,14 @@ void weight_change_object(struct obj_data *obj, int weight)
 {
     struct obj_data *tmp_obj;
     struct char_data *tmp_ch;
-    char            buf[255];
 
     if (GET_OBJ_WEIGHT(obj) + weight < 1) {
         weight = 0 - (GET_OBJ_WEIGHT(obj) - 1);
         if (obj->carried_by) {
-            sprintf(buf, "Bad weight change on %s, carried by %s.", obj->name, 
-                    obj->carried_by->player.name);
-            Log(buf);
+            Log("Bad weight change on %s, carried by %s.", obj->name, 
+                obj->carried_by->player.name);
         } else {
-            sprintf(buf, "Bad weight change on %s.", obj->name);
-            Log(buf);
+            Log("Bad weight change on %s.", obj->name);
         }
     }
 
@@ -715,253 +712,249 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     rp = real_roomp(ch->in_room);
 
     switch (keyword) {
-    case 0:{                    
-            if (ch->equipment[WEAR_LIGHT]) {
-                send_to_char("You are already holding a light source.\n\r",
-                             ch);
-            } else if (ch->equipment[WIELD]
-                       && ch->equipment[WIELD]->obj_flags.weight >
-                       str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
-                send_to_char("You cannot wield a two handed weapon, and hold "
-                             "a light source.\n\r", ch);
-            } else if ((ch->equipment[WIELD] && ch->equipment[HOLD])) {
-                send_to_char("Sorry, you only have two hands.\n\r", ch);
-            } else if (rp->sector_type == SECT_UNDERWATER &&
-                       obj_object->obj_flags.value[2] != -1) {
-                send_to_char("You can't light that underwater!\n\r", ch);
+    case 0:
+        if (ch->equipment[WEAR_LIGHT]) {
+            send_to_char("You are already holding a light source.\n\r",
+                         ch);
+        } else if (ch->equipment[WIELD] &&
+                   ch->equipment[WIELD]->obj_flags.weight >
+                   str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
+            send_to_char("You cannot wield a two handed weapon, and hold "
+                         "a light source.\n\r", ch);
+        } else if ((ch->equipment[WIELD] && ch->equipment[HOLD])) {
+            send_to_char("Sorry, you only have two hands.\n\r", ch);
+        } else if (rp->sector_type == SECT_UNDERWATER &&
+                   obj_object->obj_flags.value[2] != -1) {
+            send_to_char("You can't light that underwater!\n\r", ch);
+        } else {
+            if (obj_object->obj_flags.value[2]) {
+                real_roomp(ch->in_room)->light++;
+            }
+            sprintf(buffer, "You light %s and hold it.\n\r",
+                    obj_object->short_description);
+            send_to_char(buffer, ch);
+            perform_wear(ch, obj_object, keyword);
+            obj_from_char(obj_object);
+            equip_char(ch, obj_object, WEAR_LIGHT);
+        }
+        break;
+
+    case 1:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER)) {
+            if ((ch->equipment[WEAR_FINGER_L]) && 
+                (ch->equipment[WEAR_FINGER_R])) {
+                send_to_char("You are already wearing something on your "
+                             "fingers.\n\r", ch);
             } else {
-                if (obj_object->obj_flags.value[2]) {
-                    real_roomp(ch->in_room)->light++;
+                perform_wear(ch, obj_object, keyword);
+                if (ch->equipment[WEAR_FINGER_L]) {
+                    send_to_char("Ok. (right finger)\n\r", ch);
+                    obj_from_char(obj_object);
+                    equip_char(ch, obj_object, WEAR_FINGER_R);
+                } else {
+                    send_to_char("Ok. (left finger)\n\r", ch);
+                    obj_from_char(obj_object);
+                    equip_char(ch, obj_object, WEAR_FINGER_L);
                 }
-                sprintf(buffer, "You light %s and hold it.\n\r",
+            }
+        } else {
+            send_to_char("You can't wear that on your finger.\n\r", ch);
+        }
+        break;
+
+    case 2:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_NECK)) {
+            if ((ch->equipment[WEAR_NECK_1]) && (ch->equipment[WEAR_NECK_2])) {
+                send_to_char("You can't wear any more around your "
+                             "neck.\n\r", ch);
+            } else {
+                sprintf(buffer, "You wear %s around your neck.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                if (ch->equipment[WEAR_NECK_1]) {
+                    obj_from_char(obj_object);
+                    equip_char(ch, obj_object, WEAR_NECK_2);
+                } else {
+                    obj_from_char(obj_object);
+                    equip_char(ch, obj_object, WEAR_NECK_1);
+                }
+            }
+        } else {
+            send_to_char("You can't wear that around your neck.\n\r", ch);
+        }
+        break;
+
+    case 3:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_BODY)) {
+            if (ch->equipment[WEAR_BODY]) {
+                send_to_char("You already wear something on your body.\n\r",
+                             ch);
+            } else {
+                sprintf(buffer, "You wear %s on your body.\n\r",
                         obj_object->short_description);
                 send_to_char(buffer, ch);
                 perform_wear(ch, obj_object, keyword);
                 obj_from_char(obj_object);
-                equip_char(ch, obj_object, WEAR_LIGHT);
+                equip_char(ch, obj_object, WEAR_BODY);
             }
+        } else {
+            send_to_char("You can't wear that on your body.\n\r", ch);
         }
         break;
 
-    case 1:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_FINGER)) {
-                if ((ch->equipment[WEAR_FINGER_L]) && 
-                    (ch->equipment[WEAR_FINGER_R])) {
-                    send_to_char("You are already wearing something on your "
-                                 "fingers.\n\r", ch);
-                } else {
-                    perform_wear(ch, obj_object, keyword);
-                    if (ch->equipment[WEAR_FINGER_L]) {
-                        send_to_char("Ok. (right finger)\n\r", ch);
-                        obj_from_char(obj_object);
-                        equip_char(ch, obj_object, WEAR_FINGER_R);
-                    } else {
-                        send_to_char("Ok. (left finger)\n\r", ch);
-                        obj_from_char(obj_object);
-                        equip_char(ch, obj_object, WEAR_FINGER_L);
-                    }
-                }
+    case 4:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD)) {
+            if (ch->equipment[WEAR_HEAD]) {
+                send_to_char("You already wear something on your head.\n\r",
+                             ch);
             } else {
-                send_to_char("You can't wear that on your finger.\n\r", ch);
+                sprintf(buffer, "You wear %s on your head.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_HEAD);
             }
+        } else {
+            send_to_char("You can't wear that on your head.\n\r", ch);
         }
         break;
-    case 2:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_NECK)) {
-                if ((ch->equipment[WEAR_NECK_1])
-                    && (ch->equipment[WEAR_NECK_2])) {
-                    send_to_char("You can't wear any more around your "
-                                 "neck.\n\r", ch);
-                } else {
-                    sprintf(buffer, "You wear %s around your neck.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    if (ch->equipment[WEAR_NECK_1]) {
-                        obj_from_char(obj_object);
-                        equip_char(ch, obj_object, WEAR_NECK_2);
-                    } else {
-                        obj_from_char(obj_object);
-                        equip_char(ch, obj_object, WEAR_NECK_1);
-                    }
-                }
+
+    case 5:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS)) {
+            if (ch->equipment[WEAR_LEGS]) {
+                send_to_char("You already wear something on your legs.\n\r",
+                             ch);
             } else {
-                send_to_char("You can't wear that around your neck.\n\r", ch);
+                sprintf(buffer, "You wear %s on your legs.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_LEGS);
             }
+        } else {
+            send_to_char("You can't wear that on your legs.\n\r", ch);
         }
         break;
-    case 3:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_BODY)) {
-                if (ch->equipment[WEAR_BODY]) {
-                    send_to_char("You already wear something on your body.\n\r",
-                                 ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your body.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_BODY);
-                }
+
+    case 6:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_FEET)) {
+            if (ch->equipment[WEAR_FEET]) {
+                send_to_char("You already wear something on your feet.\n\r",
+                             ch);
             } else {
-                send_to_char("You can't wear that on your body.\n\r", ch);
+                sprintf(buffer, "You wear %s on your feet.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_FEET);
             }
+        } else {
+            send_to_char("You can't wear that on your feet.\n\r", ch);
         }
         break;
-    case 4:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_HEAD)) {
-                if (ch->equipment[WEAR_HEAD]) {
-                    send_to_char("You already wear something on your head.\n\r",
-                                 ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your head.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_HEAD);
-                }
+
+    case 7:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS)) {
+            if (ch->equipment[WEAR_HANDS]) {
+                send_to_char("You already wear something on your hands.\n\r",
+                             ch);
             } else {
-                send_to_char("You can't wear that on your head.\n\r", ch);
+                sprintf(buffer, "You wear %s on your hands.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_HANDS);
             }
+        } else {
+            send_to_char("You can't wear that on your hands.\n\r", ch);
         }
         break;
-    case 5:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_LEGS)) {
-                if (ch->equipment[WEAR_LEGS]) {
-                    send_to_char("You already wear something on your legs.\n\r",
-                                 ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your legs.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_LEGS);
-                }
+
+    case 8:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
+            if (ch->equipment[WEAR_ARMS]) {
+                send_to_char("You already wear something on your arms.\n\r",
+                             ch);
             } else {
-                send_to_char("You can't wear that on your legs.\n\r", ch);
+                sprintf(buffer, "You wear %s on your arms.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_ARMS);
             }
+        } else {
+            send_to_char("You can't wear that on your arms.\n\r", ch);
         }
         break;
-    case 6:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_FEET)) {
-                if (ch->equipment[WEAR_FEET]) {
-                    send_to_char("You already wear something on your feet.\n\r",
-                                 ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your feet.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_FEET);
-                }
+
+    case 9:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT)) {
+            if (ch->equipment[WEAR_ABOUT]) {
+                send_to_char("You already wear something about your "
+                             "body.\n\r", ch);
             } else {
-                send_to_char("You can't wear that on your feet.\n\r", ch);
+                sprintf(buffer, "You wear %s about your body.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_ABOUT);
             }
+        } else {
+            send_to_char("You can't wear that about your body.\n\r", ch);
         }
         break;
-    case 7:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_HANDS)) {
-                if (ch->equipment[WEAR_HANDS]) {
-                    send_to_char("You already wear something on your "
-                                 "hands.\n\r", ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your hands.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_HANDS);
-                }
+
+    case 10:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
+            if (ch->equipment[WEAR_WAISTE]) {
+                send_to_char("You already wear something about your "
+                             "waist.\n\r", ch);
             } else {
-                send_to_char("You can't wear that on your hands.\n\r", ch);
+                sprintf(buffer, "You wear %s around your waist.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_WAISTE);
             }
+        } else {
+            send_to_char("You can't wear that about your waist.\n\r", ch);
         }
         break;
-    case 8:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_ARMS)) {
-                if (ch->equipment[WEAR_ARMS]) {
-                    send_to_char("You already wear something on your arms.\n\r",
-                                 ch);
-                } else {
-                    sprintf(buffer, "You wear %s on your arms.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_ARMS);
-                }
+
+    case 11:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
+            if (ch->equipment[WEAR_WRIST_L] && 
+                ch->equipment[WEAR_WRIST_R]) {
+                send_to_char("You already wear something around both "
+                             "your wrists.\n\r", ch);
             } else {
-                send_to_char("You can't wear that on your arms.\n\r", ch);
-            }
-        }
-        break;
-    case 9:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_ABOUT)) {
-                if (ch->equipment[WEAR_ABOUT]) {
-                    send_to_char("You already wear something about your "
-                                 "body.\n\r", ch);
+                perform_wear(ch, obj_object, keyword);
+                obj_from_char(obj_object);
+                if (ch->equipment[WEAR_WRIST_L]) {
+                    send_to_char("Ok. (right wrist)\n\r", ch);
+                    equip_char(ch, obj_object, WEAR_WRIST_R);
                 } else {
-                    sprintf(buffer, "You wear %s about your body.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_ABOUT);
+                    send_to_char("Ok. (left wrist)\n\r", ch);
+                    equip_char(ch, obj_object, WEAR_WRIST_L);
                 }
-            } else {
-                send_to_char("You can't wear that about your body.\n\r", ch);
             }
-        }
-        break;
-    case 10:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_WAISTE)) {
-                if (ch->equipment[WEAR_WAISTE]) {
-                    send_to_char("You already wear something about your "
-                                 "waist.\n\r", ch);
-                } else {
-                    sprintf(buffer, "You wear %s around your waist.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_WAISTE);
-                }
-            } else {
-                send_to_char("You can't wear that about your waist.\n\r", ch);
-            }
-        }
-        break;
-    case 11:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_WRIST)) {
-                if ((ch->equipment[WEAR_WRIST_L])
-                    && (ch->equipment[WEAR_WRIST_R])) {
-                    send_to_char("You already wear something around both "
-                                 "your wrists.\n\r", ch);
-                } else {
-                    perform_wear(ch, obj_object, keyword);
-                    obj_from_char(obj_object);
-                    if (ch->equipment[WEAR_WRIST_L]) {
-                        send_to_char("Ok. (right wrist)\n\r", ch);
-                        equip_char(ch, obj_object, WEAR_WRIST_R);
-                    } else {
-                        send_to_char("Ok. (left wrist)\n\r", ch);
-                        equip_char(ch, obj_object, WEAR_WRIST_L);
-                    }
-                }
-            } else {
-                send_to_char("You can't wear that around your wrist.\n\r", ch);
-            }
+        } else {
+            send_to_char("You can't wear that around your wrist.\n\r", ch);
         }
         break;
 
     case 12:
         if (CAN_WEAR(obj_object, ITEM_WIELD)) {
             if (ch->equipment[WIELD]) {
-                send_to_char("You are already wielding something.\n\r",
-                             ch);
+                send_to_char("You are already wielding something.\n\r", ch);
             } else if (ch->equipment[WEAR_LIGHT] && ch->equipment[HOLD]) {
                 send_to_char("You must first remove something from one of "
                              "your hands.\n\r", ch);
@@ -1047,33 +1040,33 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         }
         break;
 
-    case 14:{
-            if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD)) {
-                if ((ch->equipment[WEAR_SHIELD])) {
-                    send_to_char("You are already using a shield\n\r", ch);
-                } else if (ch->equipment[WIELD]
-                        && ch->equipment[WIELD]->obj_flags.weight >
-                        str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
-                    send_to_char("You cannot wield a two handed weapon and "
-                                 "wear a shield.\n\r", ch);
-                } else if (ch->equipment[HOLD] && 
-                           CAN_WEAR(ch->equipment[HOLD], ITEM_WIELD)) {
-                    send_to_char("You can't wear a shield and hold a "
-                                 "weapon!\n\r", ch);
-                    return;
-                } else {
-                    perform_wear(ch, obj_object, keyword);
-                    sprintf(buffer, "You start using %s.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
-                    obj_from_char(obj_object);
-                    equip_char(ch, obj_object, WEAR_SHIELD);
-                }
+    case 14:
+        if (CAN_WEAR(obj_object, ITEM_WEAR_SHIELD)) {
+            if (ch->equipment[WEAR_SHIELD]) {
+                send_to_char("You are already using a shield\n\r", ch);
+            } else if (ch->equipment[WIELD] &&
+                       ch->equipment[WIELD]->obj_flags.weight >
+                       str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
+                send_to_char("You cannot wield a two handed weapon and "
+                             "wear a shield.\n\r", ch);
+            } else if (ch->equipment[HOLD] && 
+                       CAN_WEAR(ch->equipment[HOLD], ITEM_WIELD)) {
+                send_to_char("You can't wear a shield and hold a "
+                             "weapon!\n\r", ch);
+                return;
             } else {
-                send_to_char("You can't use that as a shield.\n\r", ch);
+                perform_wear(ch, obj_object, keyword);
+                sprintf(buffer, "You start using %s.\n\r",
+                        obj_object->short_description);
+                send_to_char(buffer, ch);
+                obj_from_char(obj_object);
+                equip_char(ch, obj_object, WEAR_SHIELD);
             }
+        } else {
+            send_to_char("You can't use that as a shield.\n\r", ch);
         }
         break;
+
     case 15:
         if (CAN_WEAR(obj_object, ITEM_WEAR_BACK)
             && obj_object->obj_flags.type_flag == ITEM_CONTAINER) {
@@ -1092,6 +1085,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("You can wear only containers on your back.\n\r", ch);
         }
         break;
+
     case 16:
         if (CAN_WEAR(obj_object, ITEM_WEAR_EAR)) {
             if ((ch->equipment[WEAR_EAR_L]) && (ch->equipment[WEAR_EAR_R])) {
@@ -1112,6 +1106,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("You can't insert this in your ear.\n\r", ch);
         }
         break;
+
     case 17:
         if (CAN_WEAR(obj_object, ITEM_WEAR_EYE)) {
             if (ch->equipment[WEAR_EYES]) {
@@ -1129,21 +1124,20 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
             send_to_char("You can't put that on your eyes.\n\r", ch);
         }
         break;
-    case -1:{
-            sprintf(buffer, "Wear %s where?.\n\r",
-                    obj_object->short_description);
-            send_to_char(buffer, ch);
-        }
+
+    case -1:
+        sprintf(buffer, "Wear %s where?.\n\r", obj_object->short_description);
+        send_to_char(buffer, ch);
         break;
-    case -2:{
-            sprintf(buffer, "You can't wear %s.\n\r",
-                    obj_object->short_description);
-            send_to_char(buffer, ch);
-        }
+
+    case -2:
+        sprintf(buffer, "You can't wear %s.\n\r",
+                obj_object->short_description);
+        send_to_char(buffer, ch);
         break;
-    default:{
-            Log("Unknown type called in wear.");
-        }
+
+    default:
+        Log("Unknown type %d called in wear.", keyword);
         break;
     }
 }
@@ -1574,15 +1568,12 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
      * first see if noone else is auctioning stuff 
      */
     if (minbid > 0) {
-        if (auctioneer) {
-            if (!(auctionobj = auctioneer->specials.auction)) {
-                Log("weird in do_auction");
-                return;
-            }
-        } else {
-            Log("weirder in do_auction");
+        if (!auctioneer ||
+            (auctioneer && !(auctionobj = auctioneer->specials.auction))) {
+            Log("weird in do_auction");
             return;
         }
+
         if (!bidder) {
             sprintf(buf, "%s is currently auctioning %s, minimum bid set "
                          "at %ld. Wait your turn.\n\r",

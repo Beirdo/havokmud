@@ -246,9 +246,8 @@ int remove_board_message(struct char_data *ch, char *arg,
     send_to_char("Message removed.\r\n", ch);
     sprintf(buf, "$n just removed message %d.", tmessage);
     act(buf, FALSE, ch, NULL, NULL, TO_ROOM);
-    sprintf(buf, "%s just removed message %d from board %d",
-            GET_NAME(ch), tmessage, board->boardId);
-    Log(buf);
+    Log("%s just removed message %d from board %d", GET_NAME(ch), tmessage,
+        board->boardId);
     return( TRUE );
 }
 

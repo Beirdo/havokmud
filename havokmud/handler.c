@@ -558,14 +558,10 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
 
 #if 0
             /* Temporary for debugging */
-            {
-                char buf[1024];
-                sprintf(buf, "%s AC = %d, temp = %d, new dex = %d, -(%d) +(%d)",
-                        GET_NAME(ch), GET_AC(ch), temp, GET_DEX(ch),
-                        dex_app[temp].defensive,
-                        dex_app[(int)GET_DEX(ch)].defensive );
-                Log(buf);
-            }
+            Log("%s AC = %d, temp = %d, new dex = %d, -(%d) +(%d)",
+                GET_NAME(ch), GET_AC(ch), temp, GET_DEX(ch),
+                dex_app[temp].defensive,
+                dex_app[(int)GET_DEX(ch)].defensive );
 #endif
 
 #if 0
@@ -876,8 +872,8 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         default:
 
 #ifdef LOG_DEBUG
-            Log("Unknown apply adjust attempt (handler.c, affect_modify).");
-            Log(ch->player.name);
+            Log("Unknown apply adjust attempt (handler.c, affect_modify).  %s",
+                GET_NAME(ch));
 #endif
             break;
 
@@ -995,8 +991,7 @@ void affect_remove(struct char_data *ch, struct affected_type *af)
     struct affected_type *hjp;
 
     if (!ch->affected) {
-        Log("affect removed from char without affect");
-        Log(GET_NAME(ch));
+        Log("affect removed from char without affect - %s", GET_NAME(ch));
         return;
     }
 
@@ -1127,7 +1122,6 @@ void affect_join(struct char_data *ch, struct affected_type *af,
  */
 void char_from_room(struct char_data *ch)
 {
-    char            buf[MAX_INPUT_LENGTH + 40];
     struct char_data *i;
     struct room_data *rp;
 
@@ -1147,10 +1141,9 @@ void char_from_room(struct char_data *ch)
 
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
-        sprintf(buf, "ERROR: char_from_room: %s was not in a valid room (%ld)",
-                (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
-                 ch->in_room);
-        Log(buf);
+        Log("ERROR: char_from_room: %s was not in a valid room (%ld)",
+            (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
+             ch->in_room);
         return;
     }
 
@@ -1172,10 +1165,9 @@ void char_from_room(struct char_data *ch)
         if (i) {
             i->next_in_room = ch->next_in_room;
         } else {
-            sprintf(buf, "Oops! %s was not in people list of his room %ld!",
-                    (!IS_NPC(ch) ? (ch)->player.name : 
-                     (ch)->player.short_descr), ch->in_room);
-            Log(buf);
+            Log("Oops! %s was not in people list of his room %ld!",
+                (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
+                ch->in_room);
         }
     }
 
@@ -1286,16 +1278,13 @@ void obj_to_char(struct obj_data *object, struct char_data *ch)
         Log(buf);
         return;
     }
+
 #if 0
     if (!object->in_obj && !object->carried_by && !object->equipped_by &&
         object->in_room == NOWHERE) {
-        char            buffer[1024];
-        sprintf(buffer,
-                "!object->in_obj && !object->carried_by && !object->equipped_by &&       object->in_room == NOWHERE");
-        Log(buffer);
-        sprintf(buffer, "Obj name (%s) Obj Vnum (%ld)", object->name,
-                ObjVnum(object));
-        Log(buffer);
+        Log("!object->in_obj && !object->carried_by && !object->equipped_by "
+            "&&       object->in_room == NOWHERE");
+        Log("Obj name (%s) Obj Vnum (%ld)", object->name, ObjVnum(object));
         return;
     }
 #else
@@ -1932,22 +1921,20 @@ void obj_from_obj(struct obj_data *obj)
 {
     struct obj_data *tmp,
                    *obj_from = NULL;
-    char            buf[100];
 
     if (obj->carried_by) {
-        sprintf(buf, "%s carried by %s in obj_from_obj\n", obj->name,
-                obj->carried_by->player.name);
-        Log(buf);
+        Log("%s carried by %s in obj_from_obj\n", obj->name,
+            obj->carried_by->player.name);
     }
+
     if (obj->equipped_by) {
-        sprintf(buf, "%s equipped by %s in obj_from_obj\n", obj->name,
-                obj->equipped_by->player.name);
-        Log(buf);
+        Log("%s equipped by %s in obj_from_obj\n", obj->name,
+            obj->equipped_by->player.name);
     }
+
     if (obj->in_room != NOWHERE) {
-        sprintf(buf, "%s in room %d in obj_from_obj\n", obj->name,
-                obj->in_room);
-        Log(buf);
+        Log("%s in room %d in obj_from_obj\n", obj->name,
+            obj->in_room);
     }
 
     assert(!obj->carried_by && !obj->equipped_by && obj->in_room == NOWHERE);
@@ -2037,9 +2024,8 @@ void extract_obj(struct obj_data *obj)
              */
             obj->equipped_by->equipment[(int)obj->eq_pos] = 0;
         } else {
-            Log("Extract on equipped item in slot -1 on:");
-            Log(obj->equipped_by->player.name);
-            Log(obj->name);
+            Log("Extract on equipped item in slot -1 on: %s - %s",
+                obj->equipped_by->player.name, obj->name);
             return;
         }
     } else if (obj->in_obj) {

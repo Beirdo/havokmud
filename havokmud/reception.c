@@ -148,8 +148,7 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
     cost->ok = TRUE;
 
     if (forcerent) {
-        sprintf(buf, "%s is being force rented!", GET_NAME(ch));
-        Log(buf);
+        Log("%s is being force rented!", GET_NAME(ch));
     }
 
     if (ch->specials.auction) {
@@ -200,9 +199,8 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
              */
             if (CountLims(ch->carrying)) {
                 if (i > 0 && (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
-                    sprintf(buf, "Removing carried items from %s in force "
-                                 "rent.", GET_NAME(ch));
-                    Log(buf);
+                    Log("Removing carried items from %s in force rent.", 
+                        GET_NAME(ch));
                 }
 
                 for (tmp = ch->carrying; tmp; tmp = tmp_next_obj) {
@@ -239,9 +237,8 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
              * check equiped items next if still over max limited 
              */
             if (i > 0) {
-                sprintf(buf, "Removing equipped items from %s in force rent.",
-                        GET_NAME(ch));
-                Log(buf);
+                Log("Removing equipped items from %s in force rent.",
+                    GET_NAME(ch));
 
                 for (ii = 0; ii < MAX_WEAR; ii++) {
                     tmp = ch->equipment[ii];
@@ -273,10 +270,9 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                 }
             }
 
-            if (i > 0&& (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
-                sprintf(buf, "%s force rented and still had more limited items"
-                             " than supposed to.", GET_NAME(ch));
-                Log(buf);
+            if (i > 0 && (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
+                Log( "%s force rented and still had more limited items"
+                     " than supposed to.", GET_NAME(ch));
             }
         }
     }
@@ -494,8 +490,6 @@ void update_reimb_file(struct char_data *ch, struct obj_file_u *st)
 
 void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
 {
-    char            buf[128];
-
     struct obj_data *obj;
     struct obj_data *in_obj[64],
                    *last_obj = NULL;
@@ -559,17 +553,14 @@ void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
             }
 
             if (st->objects[i].depth && st->objects[i].wearpos) {
-                sprintf(buf, "weird! object (%s) worn AND in container.\r\n",
-                        obj->name);
-                Log(buf);
+                Log("weird! object (%s) worn AND in container.\r\n", obj->name);
                 st->objects[i].depth = st->objects[i].wearpos = 0;
             }
 
             if (st->objects[i].depth > tmp_cur_depth) {
                 if (st->objects[i].depth != tmp_cur_depth + 1) {
-                    sprintf(buf, "weird! object depth changed from %d to %d",
-                            tmp_cur_depth, st->objects[i].depth);
-                    Log(buf);
+                    Log("weird! object depth changed from %d to %d",
+                        tmp_cur_depth, st->objects[i].depth);
                 }
                 in_obj[tmp_cur_depth++] = last_obj;
             } else if (st->objects[i].depth < tmp_cur_depth) {
@@ -662,8 +653,7 @@ void load_char_objs(struct char_data *ch)
 #endif
 
         if (!IS_IMMORTAL(ch) || ch->invis_level <= 58) {
-            sprintf(buf, "Char ran up charges of %g gold in rent", timegold);
-            Log(buf);
+            Log("Char ran up charges of %g gold in rent", timegold);
         }
 
         sprintf(buf, "You ran up charges of %g gold in rent.\n\r", timegold);
@@ -812,7 +802,6 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
 {
     int             j;
     struct obj_file_elem *oe;
-    char            buf[256];
 
     if (st->number >= MAX_OBJ_SAVE) {
         printf("you want to rent more than %d items?!\n", st->number);
@@ -838,9 +827,7 @@ void put_obj_in_store(struct obj_data *obj, struct obj_file_u *st)
     if (obj->name) {
         strcpy(oe->name, obj->name);
     } else {
-        sprintf(buf, "object %ld has no name!",
-                obj_index[obj->item_number].virtual);
-        Log(buf);
+        Log("object %ld has no name!", obj_index[obj->item_number].virtual);
     }
 
     if (obj->short_description) {
@@ -1112,13 +1099,11 @@ void update_obj_file(void)
          */
         if ((fl = fopen(buf, "r+b")) != '\0' && ReadObjs(fl, &st)) {
             if (strcasecmp(st.owner, player_table[i].name) != 0) {
-                sprintf(buf, "Ack!  Wrong person written into object file!"
-                             " (%s/%s)", st.owner, player_table[i].name);
-                Log(buf);
+                Log("Ack!  Wrong person written into object file! (%s/%s)",
+                    st.owner, player_table[i].name);
                 abort();
             } else {
-                sprintf(buf, "   Processing %s[%ld].", st.owner, i);
-                Log(buf);
+                Log("   Processing %s[%ld].", st.owner, i);
                 days_passed = (time(0) - st.last_update) / 
                               SECS_PER_REAL_DAY;
                 secs_lost = (time(0) - st.last_update) % SECS_PER_REAL_DAY;
@@ -1139,8 +1124,7 @@ void update_obj_file(void)
                      */
                     st.last_update = time(0) + 3600;
 
-                    sprintf(buf, "   Deautorenting %s", st.owner);
-                    Log(buf);
+                    Log("   Deautorenting %s", st.owner);
 
 #ifdef LIMITED_ITEMS
                     CountLimitedItems(&st);
@@ -1158,9 +1142,7 @@ void update_obj_file(void)
                     fclose(fl);
                 } else if (days_passed > 0) {
                     if ((st.total_cost * days_passed) > st.gold_left) {
-                        sprintf(buf, "   Dumping %s from object file.",
-                                ch_st.name);
-                        Log(buf);
+                        Log("   Dumping %s from object file.", ch_st.name);
 
                         ch_st.points.gold = 0;
                         ch_st.load_room = NOWHERE;
@@ -1174,8 +1156,7 @@ void update_obj_file(void)
                         fclose(fl);
                         ZeroRent(ch_st.name);
                     } else {
-                        sprintf(buf, "   Updating %s", st.owner);
-                        Log(buf);
+                        Log("   Updating %s", st.owner);
                         st.gold_left -= (st.total_cost * days_passed);
                         st.last_update = time(0) - secs_lost;
                         rewind(fl);
@@ -1189,8 +1170,7 @@ void update_obj_file(void)
 #ifdef LIMITED_ITEMS
                     CountLimitedItems(&st);
 #endif
-                    sprintf(buf, "  same day update on %s", st.owner);
-                    Log(buf);
+                    Log("  same day update on %s", st.owner);
                     rewind(fl);
                     WriteObjs(fl, &st);
                     fclose(fl);
@@ -1245,13 +1225,10 @@ void CountLimitedItems(struct obj_file_u *st)
 void PrintLimitedItems(void)
 {
     int             i;
-    char            buf[200];
 
     for (i = 0; i <= top_of_objt; i++) {
         if (obj_index[i].number > 0) {
-            sprintf(buf, "item> %ld [%d]", obj_index[i].virtual,
-                    obj_index[i].number);
-            Log(buf);
+            Log("item> %ld [%d]", obj_index[i].virtual, obj_index[i].number);
         }
     }
 }

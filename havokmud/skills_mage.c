@@ -1286,8 +1286,6 @@ void spell_curse(int level, struct char_data *ch,
 void cast_curse(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
-    char            buf[255];
-
     switch (type) {
     case SPELL_TYPE_SPELL:
         if (tar_obj) {
@@ -1333,8 +1331,7 @@ void cast_curse(int level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        sprintf(buf, "Serious screw up in curse! Char = %s.", ch->player.name);
-        Log(buf);
+        Log("Serious screw up in curse! Char = %s.", ch->player.name);
         break;
     }
 }
@@ -1517,7 +1514,6 @@ void spell_disintegrate(int level, struct char_data *ch,
     int             i,
                     damage;
     struct obj_data *x;
-    char            buf[MAX_STRING_LENGTH + 30];
 
     if (!ch) {
         Log("!ch in spell_disintegrate");
@@ -1585,9 +1581,8 @@ void spell_disintegrate(int level, struct char_data *ch,
             /*
              * player hitting player with disint outside arena
              */
-            sprintf(buf, "%s just hit %s with a disintegrate outside the "
-                         "arena!", GET_NAME(ch), GET_NAME(victim));
-            Log(buf);
+            Log("%s just hit %s with a disintegrate outside the arena!",
+                GET_NAME(ch), GET_NAME(victim));
         }
     } else {
         /*
@@ -5269,7 +5264,6 @@ void spell_portal(int level, struct char_data *ch,
     struct room_data *rp,
                    *nrp;
     char            buf[512];
-    char            str[180];
 
     assert(ch);
     assert((level >= 0) && (level <= ABS_MAX_LVL));
@@ -5301,8 +5295,7 @@ void spell_portal(int level, struct char_data *ch,
     }
 
     if (!(nrp = real_roomp(tmp_ch->in_room))) {
-        sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
-        Log(str);
+        Log("%s not in any room", GET_NAME(tmp_ch));
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }

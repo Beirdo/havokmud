@@ -223,8 +223,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 sk_num = SKILL_SWIM;
                 break;
             default:
-                sprintf(buf, "Strangeness in sailor (%d)", number);
-                Log(buf);
+                Log("Strangeness in sailor (%d)", number);
                 send_to_char("'Ack!  I feel faint!'\n\r", ch);
                 return (FALSE);
                 break;
@@ -385,8 +384,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             sk_num = SKILL_FIND_WATER;
             break;
         default:
-            sprintf(buf, "Strangeness in hunter (%d)", number);
-            Log(buf);
+            Log("Strangeness in hunter (%d)", number);
             send_to_char("'Ack!  I feel faint!'\n\r", ch);
             return (FALSE);
         }

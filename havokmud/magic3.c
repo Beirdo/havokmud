@@ -3597,7 +3597,6 @@ void spell_darktravel(int level, struct char_data *ch,
     struct room_data *rp,
                    *nrp,
                    *room;
-    char            str[180];
     int             location = 0,
                     tmp = 0;
 
@@ -3626,8 +3625,7 @@ void spell_darktravel(int level, struct char_data *ch,
     }
 
     if (!(nrp = real_roomp(tmp_ch->in_room))) {
-        sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
-        Log(str);
+        Log("%s not in any room", GET_NAME(tmp_ch));
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }

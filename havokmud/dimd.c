@@ -1608,14 +1608,12 @@ void printhost(struct in_addr *addr, char *buf)
     struct hostent *from;
 
     if ((from = gethostbyaddr((char *) addr, sizeof(addr), AF_INET))) {
-        strcpy(buf, from->h_name);
+        Log(from->h_name);
     } else {
-        Log("!from!");
         i = addr->s_addr;
-        sprintf(buf, "%d.%d.%d.%d", (i & 0xff), (i & 0xff00) >> 8,
-                (i & 0xff0000) >> 16, (i & 0xff000000) >> 24);
+        Log("%d.%d.%d.%d", (i & 0xff), (i & 0xff00) >> 8,
+            (i & 0xff0000) >> 16, (i & 0xff000000) >> 24);
     }
-    Log(buf);
 }
 
 void construct_who_list(char *buf, int cmd,

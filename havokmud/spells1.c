@@ -314,9 +314,6 @@ void cast_green_slime(int level, struct char_data *ch, char *arg,
 }
 
 
-
-
-
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

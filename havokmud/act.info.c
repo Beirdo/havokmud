@@ -2658,9 +2658,8 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     if( !possible && match == -1 ) {
         /* no matches at all! */
         send_to_char("No remote or exact matches found.\n\r", ch);
-        sprintf(buf, "%s is looking for a help on \"%s\". Can "
-                     "someone help %s?", GET_NAME(ch), argument, HMHR(ch));
-        Log(buf);
+        Log("%s is looking for a help on \"%s\". Can someone help %s?", 
+            GET_NAME(ch), argument, HMHR(ch));
 
         /*
          * add query to ADD_HELP
@@ -3857,8 +3856,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
     int             spl,
                     index,
                     i;
-    char            buf[MAX_STRING_LENGTH],
-                    tbuf[255];
+    char            buf[MAX_STRING_LENGTH];
 
     dlog("in do_spells");
 
@@ -3881,8 +3879,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
         if (IS_IMMORTAL(ch) ||
             spell_info[index].min_level_cleric < ABS_MAX_LVL) {
             if (!spells[spl]) {
-                sprintf(tbuf, "!spells[spl] on %d, do_spells in act.info.c", i);
-                Log(tbuf);
+                Log("!spells[spl] on %d, do_spells in act.info.c", i);
             } else {
                 sprintf(buf + strlen(buf),
                         "[%3d] %-30s  <%3d> %2d %3d %3d %3d %3d %3d %3d "

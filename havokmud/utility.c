@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <stdarg.h>
 
 #include "protos.h"
 #include "externs.h"
@@ -24,9 +24,16 @@ int pc_class_num(int clss);
 FILE           *log_f;
 int             spy_flag;
 
-void Log(char *s)
+static char logBuf[MAX_STRING_LENGTH];
+
+void Log(char *s, ...)
 {
-    log_sev(s, 1);
+    va_list ap;
+
+    va_start(ap, s);
+
+    vsnprintf(logBuf, MAX_STRING_LENGTH, s, ap);
+    log_sev(logBuf, 1);
 }
 
 
@@ -5300,8 +5307,7 @@ int IS_MURDER(struct char_data *ch)
     char            buf[256];
     if (IS_PC(ch) && IS_SET(ch->player.user_flags, MURDER_1) &&
         !IS_IMMORTAL(ch)) {
-        sprintf(buf, "%s has the MURDER set.", GET_NAME(ch));
-        Log(buf);
+        Log("%s has the MURDER set.", GET_NAME(ch));
         return (TRUE);
     }
 #endif
@@ -5315,8 +5321,7 @@ int IS_STEALER(struct char_data *ch)
 
     if (IS_PC(ch) && IS_SET(ch->player.user_flags, STOLE_1) &&
         !IS_IMMORTAL(ch)) {
-        sprintf(buf, "%s has STOLE set.", GET_NAME(ch));
-        Log(buf);
+        Log("%s has STOLE set.", GET_NAME(ch));
         return (TRUE);
     }
 #endif

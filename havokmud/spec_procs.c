@@ -4282,7 +4282,6 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     int             i,
                     index;
-    char            buf[256];
 
     if (cmd && cmd != 156) {
         return (FALSE);
@@ -4332,8 +4331,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
              * kill target:
              */
             GET_HIT(targ) = 0;
-            sprintf(buf, "%s killed by being swallowed whole", GET_NAME(targ));
-            Log(buf);
+            Log("%s killed by being swallowed whole", GET_NAME(targ));
             die(targ, '\0');
 
             /*
@@ -5120,7 +5118,6 @@ int trapper(struct char_data *ch, int cmd, char *arg,
             struct char_data *mob, int type)
 {
     struct char_data *tch;
-    char            buf[256];
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -5172,9 +5169,7 @@ int trapper(struct char_data *ch, int cmd, char *arg,
             act("$n has suffocated inside $N!",
                 FALSE, ch->specials.fighting, 0, ch, TO_ROOM);
             act("$n is dead!", FALSE, ch->specials.fighting, 0, ch, TO_ROOM);
-            sprintf(buf, "%s has suffocated to death.",
-                    GET_NAME(ch->specials.fighting));
-            Log(buf);
+            Log("%s has suffocated to death.", GET_NAME(ch->specials.fighting));
 
             die(ch->specials.fighting, '\0');
             ch->specials.fighting = 0x0;

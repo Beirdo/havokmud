@@ -111,8 +111,6 @@ void FindTrapDamage(struct char_data *v, struct obj_data *i)
 void TrapDamage(struct char_data *v, int damtype, int amnt,
                 struct obj_data *t)
 {
-    char            buf[132];
-
     amnt = SkipImmortals(v, amnt, damtype);
     if (amnt == -1) {
         return;
@@ -139,9 +137,8 @@ void TrapDamage(struct char_data *v, int damtype, int amnt,
     InformMess(v);
     if (GET_POS(v) == POSITION_DEAD) {
         if (!IS_NPC(v) && real_roomp(v->in_room)->name) {
-            sprintf(buf, "%s killed by a trap at %s",
-                    GET_NAME(v), real_roomp(v->in_room)->name);
-            Log(buf);
+            Log("%s killed by a trap at %s", GET_NAME(v),
+                real_roomp(v->in_room)->name);
         }
         die(v, '\0');
     }

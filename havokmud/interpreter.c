@@ -1903,9 +1903,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 return;
             }
 
-            sprintf(buf, "%s [%s] new player.", GET_NAME(d->character),
-                    d->host);
-            Log(buf);
+            Log("%s [%s] new player.", GET_NAME(d->character), d->host);
 
             /*
              * now that classes are set, initialize
@@ -2140,9 +2138,7 @@ void nanny(struct descriptor_data *d, char *arg)
         } else {
             if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
                 SEND_TO_Q("Wrong password.\n\r", d);
-                sprintf(buf, "%s entered a wrong password",
-                        GET_NAME(d->character));
-                Log(buf);
+                Log("%s entered a wrong password", GET_NAME(d->character));
                 close_socket(d);
                 return;
             }
@@ -2226,9 +2222,8 @@ void nanny(struct descriptor_data *d, char *arg)
 
                     if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
                         act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-                        sprintf(buf, "%s[%s] has reconnected.",
-                                GET_NAME(d->character), d->host);
-                        Log(buf);
+                        Log("%s[%s] has reconnected.", GET_NAME(d->character),
+                            d->host);
                     }
                     
                     if (d->character->specials.hostip) {
@@ -2246,17 +2241,15 @@ void nanny(struct descriptor_data *d, char *arg)
             if (d->character->specials.hostip == NULL) {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
-                    sprintf(buf, "%s[%s] has connected.\n\r",
-                            GET_NAME(d->character), d->host);
-                    Log(buf);
+                    Log("%s[%s] has connected.\n\r", GET_NAME(d->character),
+                        d->host);
                 }
             } else {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
-                    sprintf(buf, "%s[%s] has connected - Last connected"
-                            " from[%s]", GET_NAME(d->character), d->host,
-                            d->character->specials.hostip);
-                    Log(buf);
+                    Log("%s[%s] has connected - Last connected from[%s]", 
+                        GET_NAME(d->character), d->host,
+                        d->character->specials.hostip);
                 }
                 SEND_TO_Q(buf, d);
             }
@@ -2651,8 +2644,7 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         if (arg && !strcasecmp(arg, "yes") && 
             strcasecmp("Guest", GET_NAME(d->character))) {
-            sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
-            Log(buf);
+            Log("%s just killed theirself!", GET_NAME(d->character));
             for (i = 0; i <= top_of_p_table; i++) {
                 if (!strcasecmp(player_table[i].name, GET_NAME(d->character))) {
                     if (player_table[i].name) {
@@ -2720,9 +2712,7 @@ void nanny(struct descriptor_data *d, char *arg)
             reset_char(d->character);
             total_connections++;
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
-                sprintf(buf, "Loading %s's equipment",
-                        d->character->player.name);
-                Log(buf);
+                Log("Loading %s's equipment", d->character->player.name);
             }
 
             count_players = 1;
@@ -2902,8 +2892,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     default:
-        sprintf(buf, "Nanny: illegal state of con'ness (%d)", STATE(d));
-        Log(buf);
+        Log("Nanny: illegal state of con'ness (%d)", STATE(d));
         SEND_TO_Q("The mud has lost its brain on your connection, please "
                   "reconnect.\n\r", d);
         close_socket(d);

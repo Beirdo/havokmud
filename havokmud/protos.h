@@ -2912,7 +2912,7 @@ void            do_ventriloquate(struct char_data *ch, char *argument, int cmd);
 /*
  * From utility.c 
  */
-void            Log(char *s);
+void            Log(char *s, ...);
 int             advatoi(const char *s);
 int             fighting_in_room(int room_n);
 void            do_open_exit(struct char_data *ch, char *argument, int cmd);

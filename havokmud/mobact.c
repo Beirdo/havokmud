@@ -105,9 +105,8 @@ void mobile_wander(struct char_data *ch)
             }
             if( rp->zone != real_roomp(or)->zone && 
                 IS_SET(ch->specials.act, ACT_STAY_ZONE) ) {
-                sprintf(buf, "%s wandered from zone %ld to %ld",
-                             GET_NAME(ch), real_roomp(or)->zone, rp->zone );
-                Log(buf);
+                Log("%s wandered from zone %ld to %ld", GET_NAME(ch),
+                    real_roomp(or)->zone, rp->zone );
             }
             return;
         }
@@ -267,7 +266,6 @@ void mobile_activity(struct char_data *ch)
     struct char_data *tmp_ch;
 
     int             k;
-    char            buf[256];
     struct char_data *vict;
 
     /*
@@ -281,8 +279,7 @@ void mobile_activity(struct char_data *ch)
     if ((ch->in_room < 0) || !room_find(room_db, ch->in_room)) {
 #endif
 
-        Log("/----- Char not in correct room.  moving to 49");
-        Log(GET_NAME(ch));
+        Log("/----- Char %s not in correct room.  moving to 49", GET_NAME(ch));
 
         /* 
          * if they are in a - room, assume an error 
@@ -322,10 +319,8 @@ void mobile_activity(struct char_data *ch)
     if ((IS_SET(ch->specials.act, ACT_SPEC) || mob_index[ch->nr].func) && 
         !no_specials) {
         if (!mob_index[ch->nr].func) {
-            sprintf(buf, "Attempting to call a non-existing mob func on %s "
-                         "(VNUM %ld)", 
-                         GET_NAME(ch), mob_index[ch->nr].virtual);
-            Log(buf);
+            Log("Attempting to call a non-existing mob func on %s (VNUM %ld)", 
+                GET_NAME(ch), mob_index[ch->nr].virtual);
             REMOVE_BIT(ch->specials.act, ACT_SPEC);
         } else if ((*mob_index[ch->nr].func) (ch, 0, "", ch, PULSE_TICK)) {
             return;
@@ -576,6 +571,7 @@ int UseViolentHeldItem(struct char_data *ch)
                 Log( "Error in UseViolentHeldItem" );
                 return( FALSE );
             }
+
             tmp2 = objname;
             tmp = strsep( &tmp2, " " );
             tmp = skip_spaces(tmp);
@@ -594,10 +590,8 @@ int UseViolentHeldItem(struct char_data *ch)
             }
 
 #if 0
-            sprintf(buf, "%s attempting to use %s on %d.%s",
-                    GET_NAME(ch), tmp, tokillnum,
-                    GET_NAME(ch->specials.fighting));
-            Log(buf);
+            Log("%s attempting to use %s on %d.%s", GET_NAME(ch), tmp, 
+                tokillnum, GET_NAME(ch->specials.fighting));
 #endif
 
             if (tokillnum > 0) {
@@ -650,7 +644,6 @@ int AssistFriend(struct char_data *ch)
                    *next;
     int             t,
                     found;
-    char            buf[256];
     struct room_data *rp;
 
     rp = real_roomp(ch->in_room);
@@ -673,8 +666,7 @@ int AssistFriend(struct char_data *ch)
     assert(ch->in_room >= 0);
 #else
     if (ch->in_room < 0) {
-        sprintf(buf, "Mob %sin negative room", ch->player.name);
-        Log(buf);
+        Log("Mob %sin negative room", ch->player.name);
         ch->in_room = 0;
         extract_char(ch);
         return (0);
@@ -1057,9 +1049,8 @@ void sgoto(char *arg, struct char_data *ch)
             room = atoi(arg);
         }
     } else {
-        sprintf(buf, "Error in script %s, no destination for goto",
-                script_data[ch->script].filename);
-        Log(buf);
+        Log(buf, "Error in script %s, no destination for goto",
+            script_data[ch->script].filename);
         ch->commandp++;
         return;
     }
@@ -1116,9 +1107,8 @@ void do_jmp(char *arg, struct char_data *ch)
         }
     }
 
-    sprintf(buf, "Label %s undefined in script assigned to %s.  Ignoring.",
-            arg, GET_NAME(ch));
-    Log(buf);
+    Log("Label %s undefined in script assigned to %s.  Ignoring.",
+        arg, GET_NAME(ch));
 
     ch->commandp++;
 }
@@ -1140,9 +1130,8 @@ void do_jsr(char *arg, struct char_data *ch)
         }
     }
 
-    sprintf(buf, "Label %s undefined in script assigned to %s.  Ignoring.",
-            arg, GET_NAME(ch));
-    Log(buf);
+    Log("Label %s undefined in script assigned to %s.  Ignoring.",
+        arg, GET_NAME(ch));
 
     ch->commandp++;
 }

@@ -302,12 +302,9 @@ void set_fighting(struct char_data *ch, struct char_data *vict)
 void stop_fighting(struct char_data *ch)
 {
     struct char_data *tmp;
-    char            buf[300];
 
     if (!ch->specials.fighting) {
-        sprintf(buf, "%s not fighting at invocation of stop_fighting",
-                GET_NAME(ch));
-        Log(buf);
+        Log("%s not fighting at invocation of stop_fighting", GET_NAME(ch));
         return;
     }
 
@@ -1472,7 +1469,6 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
 int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
 {
     struct room_data *rp;
-    char            buf[MAX_INPUT_LENGTH + 20];
 
     /*
      * assert(GET_POS(victim) > POSITION_DEAD);
@@ -1487,8 +1483,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
     if (rp && (rp->room_flags & PEACEFUL) && type != SPELL_POISON &&
         type != SPELL_DISEASE && type != SPELL_DECAY &&
         type != SPELL_HEAT_STUFF && type != TYPE_SUFFERING) {
-        sprintf(buf, "damage(,,,%d) called in PEACEFUL room", type);
-        Log(buf);
+        Log("damage(,,,%d) called in PEACEFUL room", type);
         return (TRUE);
         /*
          * true, they are denied from fighting
@@ -2356,10 +2351,8 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
 #if 0
                             SET_BIT(ch->player.user_flags,MURDER_1);
 #endif
-                            sprintf(buf, "Setting MURDER bit on %s for "
-                                         "killing %s.",
-                                    GET_NAME(ch), GET_NAME(victim));
-                            Log(buf);
+                            Log("Setting MURDER bit on %s for killing %s.",
+                                GET_NAME(ch), GET_NAME(victim));
                         }
                     }
                     if (IS_PC(ch) && IS_PC(victim) &&
@@ -2589,13 +2582,11 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
                  int DistanceWeapon)
 {
     struct room_data *rp;
-    char            buf[256];
     extern char     PeacefulWorks;
 
     rp = real_roomp(ch->in_room);
     if (rp && rp->room_flags & PEACEFUL && PeacefulWorks) {
-        sprintf(buf, "hit() called in PEACEFUL room");
-        Log(buf);
+        Log("hit() called in PEACEFUL room");
         stop_fighting(ch);
         return (TRUE);
     }
@@ -2608,9 +2599,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         (IS_PC(victim) || IS_SET(victim->specials.act, ACT_POLYSELF)) &&
         (ch != victim) && !CanFightEachOther(ch, victim)) {
-        sprintf(buf, "%s was found fighting %s!", GET_NAME(ch),
-                GET_NAME(victim));
-        Log(buf);
+        Log("%s was found fighting %s!", GET_NAME(ch), GET_NAME(victim));
         act("You get an eerie feeling you should not be doing this, you FLEE!",
             FALSE, ch, 0, victim, TO_CHAR);
         act("$n seems about to attack you, then looks very scared!", FALSE,
@@ -2620,9 +2609,8 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
 #endif
 
     if ((ch->in_room != victim->in_room) && !DistanceWeapon) {
-        sprintf(buf, "NOT in same room when fighting : %s, %s",
-                ch->player.name, victim->player.name);
-        Log(buf);
+        Log("NOT in same room when fighting : %s, %s", ch->player.name,
+            victim->player.name);
         stop_fighting(ch);
         return (TRUE);
     }
@@ -3168,7 +3156,6 @@ void perform_violence(int pulse)
     int             perc;
     int             weapontype;
     struct room_data *rp;
-    char            buf[MAX_INPUT_LENGTH + 40];
     struct char_data *rec;
     struct obj_data *weapon;
 
@@ -3183,10 +3170,9 @@ void perform_violence(int pulse)
             Log("!ch->specials.fighting in perform violence fight.c");
             return;
         } else if (rp && rp->room_flags & PEACEFUL) {
-            sprintf(buf, "perform_violence() found %s fighting in a PEACEFUL "
-                         "room.", ch->player.name);
+            Log("perform_violence() found %s fighting in a PEACEFUL room.",
+                ch->player.name);
             stop_fighting(ch);
-            Log(buf);
         } else if (ch == ch->specials.fighting) {
             stop_fighting(ch);
         } else {
@@ -5490,9 +5476,9 @@ void NailThisSucker(struct char_data *ch)
      * delete EQ dropped by them if room was a DT
      */
     if (IS_SET(rp->room_flags, DEATH)) {
-        sprintf(buf, "%s hit a DeathTrap in room %s[%ld]\r\n",
-                GET_NAME(ch), real_roomp(room_num)->name, room_num);
-        Log(buf);
+        Log("%s hit a DeathTrap in room %s[%ld]\r\n", GET_NAME(ch),
+            real_roomp(room_num)->name, room_num);
+
         for (obj = real_roomp(room_num)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
 #if 0

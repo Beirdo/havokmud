@@ -300,7 +300,6 @@ void boot_db()
  */
 void reset_time()
 {
-    char            buf[80];
     long            beginning_of_time = 650336715;
 
     struct time_info_data mud_time_passed(time_t t2, time_t t1);
@@ -360,9 +359,8 @@ void reset_time()
         }
     }
 
-    sprintf(buf, "   Current Gametime: %dH %dD %dM %dY.",
-            time_info.hours, time_info.day, time_info.month, time_info.year);
-    Log(buf);
+    Log("   Current Gametime: %dH %dD %dM %dY.", time_info.hours,
+        time_info.day, time_info.month, time_info.year);
 
     weather_info.pressure = 960;
     if ((time_info.month >= 7) && (time_info.month <= 12)) {
@@ -510,13 +508,10 @@ void build_player_index()
             for (i = 0; i < MAX_CLASS; i++) {
                 if (dummy.level[i] >= IMMORTAL && 
                     strcmp(dummy.name, "111111")) {
-                    sprintf(buf,
-                            "GOD: %s, Levels [%d][%d][%d][%d][%d][%d][%d][%d]",
-                            dummy.name, dummy.level[0], dummy.level[1],
-                            dummy.level[2], dummy.level[3], dummy.level[4],
-                            dummy.level[5], dummy.level[6],
-                            dummy.level[7]);
-                    Log(buf);
+                    Log("GOD: %s, Levels [%d][%d][%d][%d][%d][%d][%d][%d]",
+                        dummy.name, dummy.level[0], dummy.level[1],
+                        dummy.level[2], dummy.level[3], dummy.level[4],
+                        dummy.level[5], dummy.level[6], dummy.level[7]);
                     max = 0;
 
                     /*
@@ -1043,10 +1038,10 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
      * scan for directory entrys
      */
     if ((dir = opendir(dirname)) == NULL) {
-        sprintf(tbuf, "unable to open index directory %s", dirname);
-        Log(tbuf);
+        Log("unable to open index directory %s", dirname);
         return (index);
     }
+
     while ((ent = readdir(dir)) != NULL) {
         if (*ent->d_name == '.') {
             continue;
@@ -1063,15 +1058,17 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                 break;
             }
         }
+
         if (dvnums[j] == vnum) {
             continue;
         }
+
         sprintf(buf, "%s/%s", dirname, ent->d_name);
         if ((f = fopen(buf, "rt")) == NULL) {
-            sprintf(tbuf, "Can't open file %s for reading\n", buf);
-            Log(tbuf);
+            Log("Can't open file %s for reading\n", buf);
             continue;
         }
+
         if (!i) {
             CREATE(index, struct index_data, bc);
         } else if (i >= bc) {
@@ -1082,6 +1079,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
             }
             bc += 50;
         }
+
         fscanf(f, "#%*d\n");
         index[i].virtual = vnum;
         index[i].pos = -1;
@@ -1093,9 +1091,11 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
         fclose(f);
         i++;
     }
+
     *alloc_top = bc;
     *top = i;
     closedir(dir);
+
     return (index);
 }
 
@@ -1328,9 +1328,8 @@ void load_one_room(FILE * fl, struct room_data *rp)
             }
             return;
         default:
-            sprintf(buf, "unknown auxiliary code `%s' in room load of #%ld",
-                    chk, rp->number);
-            Log(buf);
+            Log("unknown auxiliary code `%s' in room load of #%ld", chk, 
+                rp->number);
             break;
         }
     }
@@ -1449,12 +1448,10 @@ void boot_saved_zones()
         }
         sprintf(buf, "zones/%s", ent->d_name);
         if ((fp = fopen(buf, "rt")) == NULL) {
-            sprintf(buf, "Can't open file %s for reading\n", buf);
-            Log(buf);
+            Log("Can't open file %s for reading\n", buf);
             continue;
         }
-        sprintf(buf, "Loading saved zone %ld:%s", zone, zone_table[zone].name);
-        Log(buf);
+        Log("Loading saved zone %ld:%s", zone, zone_table[zone].name);
         LoadZoneFile(fp, zone);
         fclose(fp);
     }
@@ -1487,8 +1484,7 @@ void boot_saved_rooms()
         }
         sprintf(buf, "rooms/%s", ent->d_name);
         if ((fp = fopen(buf, "rt")) == NULL) {
-            sprintf(buf, "Can't open file %s for reading\n", buf);
-            Log(buf);
+            Log("Can't open file %s for reading\n", buf);
             continue;
         }
         while (!feof(fp)) {
@@ -1516,18 +1512,15 @@ void boot_saved_rooms()
         rooms++;
     }
     if (rooms) {
-        sprintf(buf, "Loaded %ld rooms", rooms);
-        Log(buf);
+        Log("Loaded %ld rooms", rooms);
     }
 
     closedir(dir);
 }
 
-#define LOG_ZONE_ERROR(ch, type, zone, cmd) {\
-        sprintf(buf, "error in zone %s cmd %ld (%c) resolving %s number", \
-                zone_table[zone].name, cmd, ch, type); \
-                  Log(buf); \
-                  }
+#define LOG_ZONE_ERROR(ch, type, zone, cmd) \
+        Log("error in zone %s cmd %ld (%c) resolving %s number", \
+            zone_table[zone].name, cmd, ch, type)
 
 void renum_zone_table(int spec_zone)
 {
@@ -1536,7 +1529,6 @@ void renum_zone_table(int spec_zone)
                     start,
                     end;
     struct reset_com *cmd;
-    char            buf[256];
 
     if (spec_zone) {
         start = end = spec_zone;
@@ -1796,9 +1788,7 @@ struct char_data *read_mobile(int nr, int type)
     if (mob_index[nr].pos == -1) {
         sprintf(buf, "%s/%ld", MOB_DIR, mob_index[nr].virtual);
         if ((f = fopen(buf, "rt")) == NULL) {
-            sprintf(buf, "can't open mobile file for mob %ld",
-                    mob_index[nr].virtual);
-            Log(buf);
+            Log("can't open mobile file for mob %ld", mob_index[nr].virtual);
             free_char(mob);
             return (0);
         }
@@ -2401,9 +2391,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
 #if 0
     if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
         char buf[200];
-        sprintf(buf, "%s has gold > level * 1500 (%d)",
-                mob->player.short_descr, mob->points.gold);
-        Log(buf);
+        Log("%s has gold > level * 1500 (%d)", mob->player.short_descr,
+            mob->points.gold);
     }
 #endif
     /*
@@ -2668,9 +2657,8 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
 #if 0
     if (mob->points.gold >GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
         char buf[200];
-        sprintf(buf, "%s has gold > level * 1500 (%d)",
-                mob->player.short_descr, mob->points.gold);
-        Log(buf);
+        Log("%s has gold > level * 1500 (%d)", mob->player.short_descr,
+            mob->points.gold);
     }
 #endif
 
@@ -3353,9 +3341,8 @@ struct obj_data *read_object(int nr, int type)
         if (obj_index[nr].pos == -1) {
             sprintf(buf, "%s/%ld", OBJ_DIR, obj_index[nr].virtual);
             if ((f = fopen(buf, "rt")) == NULL) {
-                sprintf(buf, "can't open object file for object %ld",
-                        obj_index[nr].virtual);
-                Log(buf);
+                Log("can't open object file for object %ld",
+                    obj_index[nr].virtual);
                 free_obj(obj);
                 return (0);
             }
@@ -3424,7 +3411,6 @@ void zone_update()
     struct reset_q_element *update_u,
                    *temp,
                    *tmp2;
-    char            buf[128];
     struct char_data *newch;
     int             to_room = 0;
     struct room_data *room;
@@ -3503,8 +3489,7 @@ void zone_update()
             } else if (!IS_SET(SystemFlags, SYS_NO_DEINIT)) {
                 CleanZone(update_u->zone_to_reset);
                 zone_table[update_u->zone_to_reset].start = 0;
-                sprintf(buf, "zone %d just deinited", update_u->zone_to_reset);
-                Log(buf);
+                Log("zone %d just deinited", update_u->zone_to_reset);
             } else {
                 reset_zone(update_u->zone_to_reset, 0);
             }
@@ -3577,7 +3562,6 @@ int does_Load(int num, int max)
 {
     float           temp = 0.0;
     float           temp2 = 0.0;
-    char            buff[200];
 
     if (max == 0) {
         return (TRUE);
@@ -3589,8 +3573,7 @@ int does_Load(int num, int max)
     }
     return TRUE;
 
-    sprintf(buff, "num=%d  max=%d", num, max);
-    Log(buff);
+    Log("num=%d  max=%d", num, max);
     if (max == 0) {
         return (TRUE);
     }
@@ -3605,9 +3588,7 @@ int does_Load(int num, int max)
     }
     temp2 = number(1, 101);
 
-    sprintf(buff, "Chance to load: %d    <=? Dice roll: %d", (int)temp,
-            (int)temp2);
-    Log(buff);
+    Log("Chance to load: %d    <=? Dice roll: %d", (int)temp, (int)temp2);
     if (temp2 <= temp) {
         return TRUE;
     } else {
@@ -3668,9 +3649,7 @@ void reset_zone(int zone, int cmd)
         s = zone_table[zone].name;
         d = (zone ? (zone_table[zone - 1].top + 1) : 0);
         e = zone_table[zone].top;
-        sprintf(buf, "Run time initialization of zone %s, rooms (%d-%d)",
-                s, d, e);
-        Log(buf);
+        Log("Run time initialization of zone %s, rooms (%d-%d)", s, d, e);
     }
 
     if (!zone_table[zone].cmd) {
@@ -3821,8 +3800,7 @@ void reset_zone(int zone, int cmd)
                             last_cmd = 0;
                         }
                     } else if ((obj = read_object(ZCMD.arg1, REAL))) {
-                        sprintf(buf, "Error finding room #%d", ZCMD.arg3);
-                        Log(buf);
+                        Log("Error finding room #%d", ZCMD.arg3);
                         last_cmd = 1;
                     } else {
                         last_cmd = 0;
@@ -4009,9 +3987,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             default:
-                sprintf(buf, "Undefd cmd in reset table; zone %d cmd# %d\n\r",
-                        zone, cmd_no);
-                Log(buf);
+                Log("Undefd cmd in reset table; zone %d cmd# %d\n\r", zone,
+                    cmd_no);
                 break;
             }
         } else
@@ -4053,9 +4030,7 @@ void reset_zone(int zone, int cmd)
         s = zone_table[zone].name;
         d = (zone ? (zone_table[zone - 1].top + 1) : 0);
         e = zone_table[zone].top;
-        sprintf(buf, "Run time initialization of zone %s, rooms (%d-%d)",
-                s, d, e);
-        Log(buf);
+        Log("Run time initialization of zone %s, rooms (%d-%d)", s, d, e);
     }
 
     if (!zone_table[zone].cmd) {
@@ -4187,8 +4162,7 @@ void reset_zone(int zone, int cmd)
                             last_cmd = 0;
                         }
                     } else if (obj = read_object(ZCMD.arg1, REAL)) {
-                        sprintf(buf, "Error finding room #%d", ZCMD.arg3);
-                        Log(buf);
+                        Log("Error finding room #%d", ZCMD.arg3);
                         last_cmd = 1;
                     } else {
                         last_cmd = 0;
@@ -4353,10 +4327,10 @@ void reset_zone(int zone, int cmd)
                 break;
 
             default:
-                sprintf(buf, "Undefd cmd [%c] in reset table; zone %d cmd %d.",
-                        ZCMD.command, zone, cmd_no);
-                Log(buf);
+                Log("Undefd cmd [%c] in reset table; zone %d cmd %d.",
+                    ZCMD.command, zone, cmd_no);
                 break;
+            }
         } else {
             last_cmd = 0;
         }
@@ -5149,7 +5123,6 @@ void ClearDeadBit(struct char_data *ch)
  */
 void reset_char(struct char_data *ch)
 {
-    char            buf[100];
     struct affected_type *af;
 
     int             i;
@@ -5226,14 +5199,10 @@ void reset_char(struct char_data *ch)
     }
 
     if (GET_BANK(ch) > GetMaxLevel(ch) * 100000) {
-        sprintf(buf, "%s has %s coins in bank.", GET_NAME(ch),
-                formatNum(GET_BANK(ch)));
-        Log(buf);
+        Log("%s has %s coins in bank.", GET_NAME(ch), formatNum(GET_BANK(ch)));
     }
     if (GET_GOLD(ch) > GetMaxLevel(ch) * 100000) {
-        sprintf(buf, "%s has %s coins.", GET_NAME(ch),
-                formatNum(GET_GOLD(ch)));
-        Log(buf);
+        Log("%s has %s coins.", GET_NAME(ch), formatNum(GET_GOLD(ch)));
     }
 
     /*
@@ -5898,7 +5867,6 @@ int ObjRoomCount(int nr, struct room_data *rp)
 
 void reboot_text(struct char_data *ch, char *arg, int cmd)
 {
-    char            buffer[100];
     struct char_data *p;
     int             i;
 
@@ -5920,9 +5888,8 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
         for (i = 0; i < top_of_scripts; i++) {
             if (script_data[i].virtual == mob_index[p->nr].virtual) {
                 SET_BIT(p->specials.act, ACT_SCRIPT);
-                sprintf(buffer, "Setting SCRIPT bit for mobile %s, file %s.",
-                        GET_NAME(p), script_data[i].filename);
-                Log(buffer);
+                Log("Setting SCRIPT bit for mobile %s, file %s.", GET_NAME(p),
+                    script_data[i].filename);
                 p->script = i;
                 break;
             }
@@ -5993,9 +5960,7 @@ void InitScripts()
 
         sprintf(buf, "scripts/%s", buf2);
         if (!(f2 = fopen(buf, "r"))) {
-            sprintf(buf, "Unable to open script \"%s\" for reading.",
-                    buf2);
-            Log(buf);
+            Log("Unable to open script \"%s\" for reading.", buf2);
         } else {
             script_data = (struct scripts *) realloc(script_data,
                                (top_of_scripts + 1) * sizeof(struct scripts));
@@ -6030,19 +5995,17 @@ void InitScripts()
             script_data[top_of_scripts].filename =
                 (char *) malloc((strlen(buf2) + 1) * sizeof(char));
             strcpy(script_data[top_of_scripts].filename, buf2);
-            sprintf(buf, "Script %s assigned to mobile %d.", buf2, i);
-            Log(buf);
+            Log("Script %s assigned to mobile %d.", buf2, i);
             top_of_scripts++;
             fclose(f2);
         }
     }
 
     if (top_of_scripts) {
-        sprintf(buf, "%d scripts assigned.", top_of_scripts);
+        Log("%d scripts assigned.", top_of_scripts);
     } else {
-        sprintf(buf, "No scripts found to assign.");
+        Log("No scripts found to assign.");
     }
-    Log(buf);
 
     fclose(f1);
 }
@@ -6331,8 +6294,7 @@ void ReadTextZone(FILE * fl)
                             last_cmd = 0;
                         }
                     } else if ((obj = read_object(i, VIRTUAL))) {
-                        sprintf(buf, "Error finding room #%d", k);
-                        Log(buf);
+                        Log("Error finding room #%d", k);
                         last_cmd = 1;
                     } else {
                         last_cmd = 0;
@@ -6502,9 +6464,8 @@ void clean_playerfile(void)
             num_processed++;
             grunt.AXE = FALSE;
             if (!strcasecmp(grunt.dummy.name, "111111")) {
-                sprintf(buf, "%s was deleted (111111 name hopefully).",
-                        grunt.dummy.name);
-                Log(buf);
+                Log("%s was deleted (111111 name hopefully).",
+                    grunt.dummy.name);
                 ones++;
                 num_deleted++;
                 grunt.AXE = TRUE;
@@ -6537,9 +6498,7 @@ void clean_playerfile(void)
                 for (i = 0; i < strlen(grunt.dummy.name); i++) {
                     if (!(toupper(grunt.dummy.name[i]) >= 'A' &&
                           toupper(grunt.dummy.name[i]) <= 'Z')) {
-                        sprintf(buf, "%s was deleted (strange name).",
-                                grunt.dummy.name);
-                        Log(buf);
+                        Log("%s was deleted (strange name).", grunt.dummy.name);
                         grunt.AXE = 1;
                         break;
                     }
@@ -6550,9 +6509,8 @@ void clean_playerfile(void)
                 if (!grunt.AXE) {
                     for (i = 0; i < MAX_CLASS; i++) {
                         if (grunt.dummy.level[i] < 0) {
-                            sprintf(buf, "%s was deleted (strange levels).",
-                                    grunt.dummy.name);
-                            Log(buf);
+                            Log("%s was deleted (strange levels).",
+                                grunt.dummy.name);
                             grunt.AXE = 1;
                             break;
                         }
@@ -6566,17 +6524,15 @@ void clean_playerfile(void)
         }
     }
 
-    sprintf(buf, "-- %d characters were processed.", num_processed);
-    Log(buf);
-    sprintf(buf, "-- %d characters were deleted.  ", num_deleted);
-    Log(buf);
-    sprintf(buf, "-- %d of these were allread deleted. (11111s)", ones);
-    Log(buf);
-    sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
-    Log(buf);
+    Log("-- %d characters were processed.", num_processed);
+    Log("-- %d characters were deleted.  ", num_deleted);
+    Log("-- %d of these were allread deleted. (11111s)", ones);
+    Log("-- %d gods were demoted due to inactivity.", num_demoted);
+
     sprintf(buf, "%s.bak", PLAYER_FILE);
     rename(PLAYER_FILE, buf);
     rename("temp", PLAYER_FILE);
+
     Log("Cleaning done.");
 }
 #else
@@ -6622,9 +6578,8 @@ void clean_playerfile(void)
             num_processed++;
             grunt.AXE = FALSE;
             if (!strcasecmp(grunt.dummy.name, "111111")) {
-                sprintf(buf, "%s was deleted (111111 name hopefully).",
-                        grunt.dummy.name);
-                Log(buf);
+                Log("%s was deleted (111111 name hopefully).",
+                    grunt.dummy.name);
                 ones++;
                 num_deleted++;
                 grunt.AXE = TRUE;
@@ -6657,9 +6612,8 @@ void clean_playerfile(void)
                         sprintf(uname, "%s", grunt.dummy.name);
                         uname[0] = tolower(uname[0]);
 
-                        sprintf(buf, "Purging rent file for %s, inactive for "
-                                "%d month.", uname, RENT_INACTIVE);
-                        Log(buf);
+                        Log("Purging rent file for %s, inactive for %d month.",
+                            uname, RENT_INACTIVE);
                         sprintf(buf, "rent/%s", uname);
                         unlink(buf);
                         sprintf(buf, "rent/%s.aux", grunt.dummy.name);
@@ -6673,9 +6627,8 @@ void clean_playerfile(void)
                         !IS_SET(grunt.dummy.user_flags, NO_DELETE)) {
                         num_deleted++;
                         grunt.AXE = TRUE;
-                        sprintf(buf, "%s deleted after %d months of "
-                                "inactivity.", grunt.dummy.name, j);
-                        Log(buf);
+                        Log("%s deleted after %d months of inactivity.",
+                            grunt.dummy.name, j);
                     }
 
                     /*
@@ -6686,10 +6639,8 @@ void clean_playerfile(void)
                             (long) (j * 2) * (SECS_PER_REAL_DAY * 30)) {
                             num_deleted++;
                             grunt.AXE = TRUE;
-                            sprintf(buf, "%s deleted after %d months of "
-                                    "inactivity.(NO_DELETE)",
-                                    grunt.dummy.name, j);
-                            Log(buf);
+                            Log("%s deleted after %d months of inactivity. "
+                                "(NO_DELETE)", grunt.dummy.name, j);
                         }
                     }
                 } else if (max > IMMORTAL) {
@@ -6699,17 +6650,13 @@ void clean_playerfile(void)
                     if (max > MAX_IMMORT) {
                         num_deleted++;
                         grunt.AXE = TRUE;
-                        sprintf(buf, "%s deleted after %d months of "
-                                "inactivity.(TOHIGHLEVEL)",
-                                grunt.dummy.name, j);
-                        Log(buf);
+                        Log("%s deleted after %d months of inactivity. "
+                            "(TOHIGHLEVEL)", grunt.dummy.name, j);
                     } else if (timeH - grunt.dummy.last_logon >
                                (long) SECS_PER_REAL_DAY * 30) {
                         num_demoted++;
-                        sprintf(buf, "%s demoted from %d to %d due to "
-                                "inactivity.", grunt.dummy.name, max,
-                                max - 1);
-                        Log(buf);
+                        Log("%s demoted from %d to %d due to inactivity.",
+                            grunt.dummy.name, max, max - 1);
                         /*
                          * so it doesn't happen twice
                          */
@@ -6732,17 +6679,15 @@ void clean_playerfile(void)
         }
     }
 
-    sprintf(buf, "-- %d characters were processed.", num_processed);
-    Log(buf);
-    sprintf(buf, "-- %d characters were deleted.  ", num_deleted);
-    Log(buf);
-    sprintf(buf, "-- %d of these were allread deleted. (11111s)", ones);
-    Log(buf);
-    sprintf(buf, "-- %d gods were demoted due to inactivity.", num_demoted);
-    Log(buf);
+    Log("-- %d characters were processed.", num_processed);
+    Log("-- %d characters were deleted.  ", num_deleted);
+    Log("-- %d of these were allread deleted. (11111s)", ones);
+    Log("-- %d gods were demoted due to inactivity.", num_demoted);
+
     sprintf(buf, "%s.bak", PLAYER_FILE);
     rename(PLAYER_FILE, buf);
     rename("temp", PLAYER_FILE);
+
     Log("Cleaning done.");
 }
 #endif

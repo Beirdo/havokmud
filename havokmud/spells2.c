@@ -1111,7 +1111,6 @@ void cast_dragon_breath(int level, struct char_data *ch, char *arg,
     struct pbreath *scan;
     int             i;
     struct affected_type af;
-    char            buf[MAX_STRING_LENGTH];
 
     if (!potion) {
         return;
@@ -1126,9 +1125,8 @@ void cast_dragon_breath(int level, struct char_data *ch, char *arg,
 
     if (scan->vnum == 0) {
         send_to_char("Hey, this potion isn't in my list!\n\r", ch);
-        sprintf(buf, "unlisted breath potion %s %ld", potion->short_description,
-                obj_index[potion->item_number].virtual);
-        Log(buf);
+        Log("unlisted breath potion %s %ld", potion->short_description,
+            obj_index[potion->item_number].virtual);
         return;
     }
 

@@ -15,8 +15,7 @@ int SecCheck(char *arg, char *site)
     sprintf(buf, "security/%s", arg);
 
     if (!(f1 = fopen(buf, "rt"))) {
-        sprintf(buf, "Unable to open security file for %s.", arg);
-        Log(buf);
+        Log("Unable to open security file for %s.", arg);
         return (-1);
     }
 
@@ -24,8 +23,7 @@ int SecCheck(char *arg, char *site)
     fclose(f1);
 
     if (!*buf2) {
-        sprintf(buf, "Security file for %s empty.", arg);
-        Log(buf);
+        Log("Security file for %s empty.", arg);
         return (-1);
     }
 
@@ -36,9 +34,7 @@ int SecCheck(char *arg, char *site)
         return (1);
     }
 
-    sprintf(buf, "Site %s and %s don't match for %s. Booting.", site, buf2,
-            arg);
-    Log(buf);
+    Log("Site %s and %s don't match for %s. Booting.", site, buf2, arg);
 
     return (0);
 }

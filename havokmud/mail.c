@@ -250,7 +250,6 @@ int scan_mail_file(void)
     header_block_type next_block;
     int             total_messages = 0,
                     block_num = 0;
-    char            buf[100];
 
     if (!(mail_file = fopen(MAIL_FILE, "r"))) {
         Log("Mail file non-existant... creating new file.");
@@ -271,16 +270,15 @@ int scan_mail_file(void)
 
     file_end_pos = ftell(mail_file);
     fclose(mail_file);
-    sprintf(buf, "   %ld bytes read.", file_end_pos);
-    Log(buf);
+    Log("   %ld bytes read.", file_end_pos);
+
     if (file_end_pos % BLOCK_SIZE) {
         Log("SYSERR: Error booting mail system -- Mail file corrupt!");
         Log("SYSERR: Mail disabled!");
         return 0;
     }
 
-    sprintf(buf, "   Mail file read -- %d messages.", total_messages);
-    Log(buf);
+    Log("   Mail file read -- %d messages.", total_messages);
     return 1;
 }
 
@@ -516,8 +514,8 @@ char           *read_delete(char *recipient, char *recipient_formatted)
     read_from_file(&header, BLOCK_SIZE, mail_address);
 
     if (header.block_type != HEADER_BLOCK) {
-        Log("SYSERR: Oh dear.");
         no_mail = 1;
+        Log("SYSERR: Oh dear.");
         Log("SYSERR: Mail system disabled!  -- Error #9.");
         return 0;
     }

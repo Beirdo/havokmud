@@ -1142,8 +1142,7 @@ int generate_legend_statue(void)
     struct char_data *tmp;
     struct char_file_u player;
     struct extra_descr_data *ed;
-    char            buf[254],
-                    name[254],
+    char            name[254],
                     shdesc[254],
                     desc[254],
                     exdesc[500];
@@ -1277,9 +1276,8 @@ int generate_legend_statue(void)
             return (TRUE);
         }
     }
-    sprintf(buf, "processed %d pfiles for legend statue check", 
-                 top_of_p_table + 1);
-    Log(buf);
+
+    Log("processed %d pfiles for legend statue check", top_of_p_table + 1);
     return( TRUE );
 }
 
@@ -1560,8 +1558,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
 int gnome_collector(struct char_data *ch, int cmd, char *arg,
                     struct room_data *rp, int type)
 {
-    char            buf[254],
-                   *obj_name,
+    char           *obj_name,
                    *vict_name,
                    *arg1;
     struct char_data *gnome,
@@ -1600,9 +1597,8 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
         SET_BIT(rp->room_flags, PEACEFUL);
     }
     if (!(gnome = get_char_room("gnome female collector", ch->in_room))) {
-        sprintf(buf, "gnome_collector proc is attached to a mob without "
-                     "proper name, in room %ld", ch->in_room);
-        Log(buf);
+        Log("gnome_collector proc is attached to a mob without "
+            "proper name, in room %ld", ch->in_room);
         return (FALSE);
     }
 
@@ -2024,11 +2020,9 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 w_type == TYPE_IMPALE) {
 
                 if (obj->obj_flags.value[2] == 0) {
-                    sprintf(buf, "%s tried to sharpen a weapon with invalid "
-                                 "value: %s, vnum %d.",
-                            GET_NAME(ch), obj->short_description,
-                            obj->item_number);
-                    Log(buf);
+                    Log("%s tried to sharpen a weapon with invalid value: %s, "
+                        "vnum %d.", GET_NAME(ch), obj->short_description,
+                        obj->item_number);
                     return;
                 }
 
@@ -2038,11 +2032,9 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 }
 
                 if (cmp->obj_flags.value[2] == 0) {
-                    sprintf(buf, "%s tried to sharpen a weapon with invalid "
-                                 "value: %s, vnum %d.",
-                            GET_NAME(ch), obj->short_description,
-                            obj->item_number);
-                    Log(buf);
+                    Log("%s tried to sharpen a weapon with invalid value: %s, "
+                        "vnum %d.", GET_NAME(ch), obj->short_description,
+                        obj->item_number);
                     extract_obj(cmp);
                     return;
                 }
@@ -5625,9 +5617,8 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
     }
 
     if (!(mob = get_char_room("nondescript man skill fixer", ch->in_room))) {
-        sprintf(buf, "skill fixer proc is attached to a mob without "
-                     "proper name, in room %ld", ch->in_room);
-        Log(buf);
+        Log("skill fixer proc is attached to a mob without proper name, "
+            "in room %ld", ch->in_room);
         return (FALSE);
     }
 
@@ -6030,9 +6021,8 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
             act(buf, FALSE, ch, obj, NULL, TO_CHAR);
         }
 
-        sprintf( buf, "%s exploded %s and took %d damage", GET_NAME(ch),
-                      obj->name, dam );
-        Log( buf );
+        Log( "%s exploded %s and took %d damage", GET_NAME(ch), obj->name,
+             dam );
 
         if( obj->carried_by ) {
             obj_from_char(obj);
@@ -6151,10 +6141,8 @@ int dragon(struct char_data *ch, int cmd, char *arg,
 
     if( i == dragonTableCount ) {
         /* Bad dragon, he don't exist! */
-        sprintf( buf, "Dragon %s has an undefined breath type (race %d), "
-                      "defaulting to fire",
-                 GET_NAME(ch), GET_RACE(ch) );
-        Log(buf);
+        Log( "Dragon %s has an undefined breath type (race %d), defaulting to "
+            "fire", GET_NAME(ch), GET_RACE(ch) );
         /* First entry is Red Dragon, breathes fire */
         i = 0;
     }

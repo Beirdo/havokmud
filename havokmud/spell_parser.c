@@ -2739,7 +2739,6 @@ void die_follower(struct char_data *ch)
 void add_follower(struct char_data *ch, struct char_data *leader)
 {
     struct follow_type *k;
-    char            buf[200];
 
     /*
      * instead of crashing the mud we try this 
@@ -2749,9 +2748,8 @@ void add_follower(struct char_data *ch, struct char_data *leader)
             TO_VICT);
         act("You cannot follow $N for some reason.", TRUE, ch, 0, leader,
             TO_CHAR);
-        sprintf(buf, "%s cannot follow %s for some reason", GET_NAME(ch),
-                GET_NAME(leader));
-        Log(buf);
+        Log("%s cannot follow %s for some reason", GET_NAME(ch), 
+            GET_NAME(leader));
         return;
     }
 
@@ -2896,18 +2894,6 @@ bool saves_spell(struct char_data *ch, sh_int save_type)
     }
 
     return (MAX(5, save) < number(1, 50));
-#if 0
-    return(MAX(1,save) < number(1,20));
-    char buf[200]; 
-    int saveroll = number(1,50); 
-    bool didsave = MAX(5,save) < saveroll; 
-    sprintf(buf,"NaturalSave: %d SaveBonus: %d NumberRolled: %d "
-                "DidSave?: %d\n\r", 
-            saving_throws[BestMagicClass(ch)][save_type]
-            [GET_LEVEL(ch,BestMagicClass(ch))], 
-            ch->specials.apply_saving_throw[save_type], saveroll, didsave);
-    Log(buf); return(didsave);
-#endif
 }
 
 bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
@@ -3132,8 +3118,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             }
 
             if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch) < 59) {
-                sprintf(buf, "%s cast %s", GET_NAME(ch), ori_argument);
-                Log(buf);
+                Log("%s cast %s", GET_NAME(ch), ori_argument);
             }
             free(ori_argument);
 
@@ -3760,8 +3745,7 @@ int check_falling(struct char_data *ch)
 
                 if (!IS_IMMORTAL(ch)) {
                     GET_HIT(ch) = 0;
-                    sprintf(buf, "%s has fallen to death", GET_NAME(ch));
-                    Log(buf);
+                    Log("%s has fallen to death", GET_NAME(ch));
 
                     if (!ch->desc) {
                         GET_GOLD(ch) = 0;
@@ -3835,8 +3819,7 @@ int check_falling(struct char_data *ch)
 
                 if (!IS_IMMORTAL(ch)) {
                     GET_HIT(ch) = 0;
-                    sprintf(buf, "%s has fallen to death", GET_NAME(ch));
-                    Log(buf);
+                    Log("%s has fallen to death", GET_NAME(ch));
                     
                     if (!ch->desc) {
                         GET_GOLD(ch) = 0;
@@ -3877,7 +3860,6 @@ int check_falling(struct char_data *ch)
 void check_drowning(struct char_data *ch)
 {
     struct room_data *rp;
-    char            buf[256];
 
     if (IS_AFFECTED(ch, AFF_WATERBREATH)) {
         return;
@@ -3894,8 +3876,7 @@ void check_drowning(struct char_data *ch)
         update_pos(ch);
 
         if (GET_HIT(ch) < -10) {
-            sprintf(buf, "%s killed by drowning", GET_NAME(ch));
-            Log(buf);
+            Log("%s killed by drowning", GET_NAME(ch));
 
             if (!ch->desc) {
                 GET_GOLD(ch) = 0;

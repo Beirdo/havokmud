@@ -391,8 +391,6 @@ void do_title(struct char_data *ch, char *argument, int cmd)
 
 void do_quit(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[256];
-
     dlog("in do_quit");
     if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM)) {
         return;
@@ -410,8 +408,7 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
     }
     if (GET_POS(ch) < POSITION_STUNNED) {
         send_to_char("You die before your time!\n\r", ch);
-        sprintf(buf, "%s dies via quit.", GET_NAME(ch));
-        Log(buf);
+        Log("%s dies via quit.", GET_NAME(ch));
         die(ch, '\0');
         return;
     }
@@ -753,9 +750,8 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
 
     if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
         send_to_char("Steal from a God?!?  Oh the thought!\n\r", ch);
-        sprintf(buf, "NOTE: %s tried to steal from GOD %s", GET_NAME(ch),
-                GET_NAME(victim));
-        Log(buf);
+        Log("NOTE: %s tried to steal from GOD %s", GET_NAME(ch),
+            GET_NAME(victim));
         return;
     }
 
@@ -977,8 +973,6 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
 
 void do_bug(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[MAX_STRING_LENGTH];
-
     dlog("in do_bug");
 
     if (IS_NPC(ch)) {
@@ -994,9 +988,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
 
     db_report_entry( REPORT_BUG, ch, argument );
 
-    sprintf(buf, "BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room,
-                 argument);
-    Log(buf);
+    Log("BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room, argument);
 
     send_to_char("Ok.\n\r", ch);
 }

@@ -157,8 +157,7 @@ void display_usage(char *progname)
 
 int main(int argc, char **argv)
 {
-    char            buf[512],
-                   *dir;
+    char           *dir;
     extern FILE    *log_f;
     extern long     SystemFlags;
     extern int      spy_flag;
@@ -284,8 +283,7 @@ int main(int argc, char **argv)
             break;
 
         case 'V':
-            Log("HavokMUD code version:");
-            Log(VERSION);
+            Log("HavokMUD code version: %s", VERSION);
             exit(0);
             break;
 
@@ -299,8 +297,7 @@ int main(int argc, char **argv)
         }
     }
 
-    Log("HavokMUD code version:");
-    Log(VERSION);
+    Log("HavokMUD code version: %s", VERSION);
 
     if( argv[optind] ) {
         if (!isdigit((int)*argv[optind])) {
@@ -322,15 +319,13 @@ int main(int argc, char **argv)
 
     Uptime = time(0);
 
-    sprintf(buf, "Running game on port %d.", mud_port);
-    Log(buf);
+    Log("Running game on port %d.", mud_port);
 
     if( !dir ) {
         dir = strdup(DFLT_DIR);
     }
 
-    sprintf(buf, "Using %s as data directory.", dir);
-    Log(buf);
+    Log("Using %s as data directory.", dir);
 
     if (chdir(dir) < 0) {
         perror("chdir");
@@ -1129,8 +1124,7 @@ int new_connection(int s)
     i = sizeof(peer);
     if (!getpeername(t, &peer, &i)) {
         *(peer.sa_data + 49) = '\0';
-        sprintf(buf, "New connection from addr %s.", peer.sa_data);
-        Log(buf);
+        Log("New connection from addr %s.", peer.sa_data);
     }
 #endif
 
@@ -1146,8 +1140,7 @@ int new_descriptor(int s)
     struct descriptor_data *newd;
     struct hostent *from;
     struct sockaddr_in sock;
-    char            buf[200],
-                    buf2[200];
+    char            buf[200];
 
     if ((desc = new_connection(s)) < 0) {
         return (-1);
@@ -1233,22 +1226,17 @@ int new_descriptor(int s)
 #if 0
     if (isbanned(newd->host) == BAN_ALL) {
         close(desc);
-        sprintf(buf2, "Connection attempt denied from [%s]", newd->host);
-        Log(buf2);
+        Log("Connection attempt denied from [%s]", newd->host);
         if (newd) {
             free(newd);
         }
         return (0);
     }
 #endif
+
     if (strncmp("localhost", newd->host, 9) != 0) {
-        sprintf(buf2, "New connection from addr %s: %d: %d", newd->host,
-                desc, maxdesc);
-        Log(buf2);
+        Log("New connection from addr %s: %d: %d", newd->host, desc, maxdesc);
     }
-#if 0
-    identd_test(sock);          /* test stuff */
-#endif
 
     /*
      * init desc data 
@@ -1443,9 +1431,8 @@ int write_to_descriptor(int desc, char *txt)
             if (errno == EWOULDBLOCK) {
                 break;
             }
-            sprintf(buf, "<#=%d> had a error (%d) in write to descriptor "
-                         "(Broken Pipe?)", desc, errno);
-            Log(buf);
+            Log("<#=%d> had a error (%d) in write to descriptor (Broken Pipe?)",
+                desc, errno);
             perror("Write_to_descriptor");
             /*
              * close_socket_fd(desc); 
@@ -1767,7 +1754,6 @@ void close_sockets(int s)
 
 void close_socket(struct descriptor_data *d)
 {
-    char            buf[MAX_STRING_LENGTH];
     struct descriptor_data *tmp;
 
     if (!d) {
@@ -1809,12 +1795,9 @@ void close_socket(struct descriptor_data *d)
 
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
                 if (!GET_NAME(d->character)) {
-                    sprintf(buf, "Closing link to: %s.", 
-                            GET_NAME(d->character));
-                    Log(buf);
+                    Log("Closing link to: %s.", GET_NAME(d->character));
                 } else {
-                    sprintf(buf, "Closing link to: NULL.");
-                    Log(buf);
+                    Log("Closing link to: NULL.");
                 }
             }   
 
@@ -1837,8 +1820,7 @@ void close_socket(struct descriptor_data *d)
             if (GET_NAME(d->character) && 
                 (!IS_IMMORTAL(d->character) || 
                  d->character->invis_level <= 58)) {
-                sprintf(buf, "Losing player: %s.", GET_NAME(d->character));
-                Log(buf);
+                Log("Losing player: %s.", GET_NAME(d->character));
             }
             free_char(d->character);
         }
@@ -2435,8 +2417,7 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                         i = fname((char *) vict_obj);
                         break;
                     default:
-                        Log("Illegal $-code to act():");
-                        Log(str);
+                        Log("Illegal $-code to act(): %s", str);
                         break;
                     }
 
@@ -2602,8 +2583,7 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                         i = fname((char *) vict_obj);
                         break;
                     default:
-                        Log("Illegal $-code to act():");
-                        Log(str);
+                        Log("Illegal $-code to act(): %s", str);
                         break;
                     }
 
@@ -3050,9 +3030,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                         break;
                     default:
 #if 0
-                        sprintf(tbuf,"Invalid Immmortal Prompt code '%c'",
-                               *pr_scan); 
-                        Log(tbuf); 
+                        Log("Invalid Immmortal Prompt code '%c'", *pr_scan); 
 #endif
                         *tbuf = 0;
                         break;
@@ -3060,8 +3038,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                     break;
                 default:
 #if 0
-                     sprintf(tbuf,"Invalid Prompt code '%c'",*pr_scan);
-                     Log(tbuf); 
+                     Log("Invalid Prompt code '%c'", *pr_scan);
 #endif
                     *tbuf = 0;
                     break;
@@ -3262,8 +3239,7 @@ void identd_test(struct sockaddr_in in_addr)
     addrlen = sizeof(addr);
 
     if (connect(fd, (struct sockaddr *) &addr, addrlen) == -1) {
-        sprintf(buf, "identd server not responding, errno: %d\n", errno);
-        Log(buf);
+        Log("identd server not responding, errno: %d\n", errno);
         return;
     }
 
@@ -3295,14 +3271,11 @@ void identd_test(struct sockaddr_in in_addr)
         return;
     }
     if (strcmp(reply_type, "ERROR") == 0) {
-        sprintf(buf, "Ident error: error code: %s\n", opsys);
-        Log(buf);
+        Log("Ident error: error code: %s\n", opsys);
     } else if (strcmp(reply_type, "USERID") != 0) {
-        sprintf(buf, "Ident error: illegal reply type: %s\n", reply_type);
-        Log(buf);
+        Log("Ident error: illegal reply type: %s\n", reply_type);
     } else {
-        sprintf(buf, "ident data -- system:%s user:%s\n", opsys, ident);
-        Log(buf);
+        Log("ident data -- system:%s user:%s\n", opsys, ident);
     }
 
     fclose(fp_out);

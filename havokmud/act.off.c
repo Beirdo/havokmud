@@ -831,14 +831,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                         gain_exp(ch, 100);
                     }
                 }
-                /*
-                 * gotta make ALL ch's attackers stop fighting, not just
-                 * one
-                 * for(tmp = rp->people; tmp; tmp->next_in_room) {
-                 * if(tmp->specials.fighting == ch)
-                 * stop_fighting(tmp);
-                 * }
-                 */
 
                 if (ch->specials.fighting->specials.fighting == ch) {
                     stop_fighting(ch->specials.fighting);
@@ -847,12 +839,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 if (ch->specials.fighting) {
                     stop_fighting(ch);
                 }
-
-#if 0
-                if (ch->attackers) {
-                    Log("fleeing dude still being attacked?! Could be bad.");
-                }
-#endif
 
                 if (IS_PC(ch)) {
                     if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) &&
@@ -1469,12 +1455,10 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
         if (ITEM_TYPE(obj) == ITEM_ARMOR) {
             if (obj->obj_flags.value[0] == 0 ||
                 obj->obj_flags.value[1] == 0) {
-                sprintf(buf, "%s tried to mend an invalid armor value: %s, "
-                             "vnum %ld.",
-                        GET_NAME(ch), obj->short_description,
-                        (obj->item_number >= 0) ?
-                         obj_index[obj->item_number].virtual : 0);
-                Log(buf);
+                Log("%s tried to mend an invalid armor value: %s, vnum %ld.",
+                    GET_NAME(ch), obj->short_description,
+                    (obj->item_number >= 0) ?
+                     obj_index[obj->item_number].virtual : 0);
                 return;
             }
 
@@ -1516,21 +1500,17 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
         
         if (ITEM_TYPE(obj) == ITEM_WEAPON) {
             if (obj->obj_flags.value[2] == 0) {
-                sprintf(buf, "%s tried to mend an weapon with invalid "
-                             "value: %s, vnum %d.",
-                        GET_NAME(ch), obj->short_description,
-                        obj->item_number);
-                Log(buf);
+                Log("%s tried to mend an weapon with invalid value: %s, "
+                    "vnum %d.", GET_NAME(ch), obj->short_description,
+                                obj->item_number);
                 return;
             }
 
             cmp = read_object(obj->item_number, REAL);
             if (cmp->obj_flags.value[2] == 0) {
-                sprintf(buf, "%s tried to mend an weapon with invalid "
-                             "value: %s, vnum %d.",
-                        GET_NAME(ch), obj->short_description,
-                        obj->item_number);
-                Log(buf);
+                Log("%s tried to mend an weapon with invalid value: %s, "
+                    "vnum %d.", GET_NAME(ch), obj->short_description,
+                                obj->item_number);
                 extract_obj(cmp);
                 return;
             }
@@ -1938,8 +1918,7 @@ void do_wimp(struct char_data *ch, char *argument, int cmd)
 void do_breath(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
-    char            buf[MAX_STRING_LENGTH],
-                   *name;
+    char           *name;
     int             count,
                     manacost;
     funcp           weapon;
@@ -1980,9 +1959,7 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
         }
 
         if (count < 1) {
-            sprintf(buf, "monster %s has no breath weapons",
-                    ch->player.short_descr);
-            Log(buf);
+            Log("monster %s has no breath weapons", ch->player.short_descr);
             send_to_char("Hey, why don't you have any breath weapons!?\n\r",
                          ch);
             return;
@@ -2847,10 +2824,8 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if ((GET_STR(ch) + (GET_ADD(ch) / 3)) < fw->obj_flags.value[0]) {
-        sprintf(arg1, "(%s) can't load (%s) because it requires (%d) strength "
-                      "to wield",
-                GET_NAME(ch), fw->name, fw->obj_flags.value[0]);
-        Log(arg1);
+        Log("(%s) can't load (%s) because it requires (%d) strength to wield",
+            GET_NAME(ch), fw->name, fw->obj_flags.value[0]);
         send_to_char("You aren't strong enough to draw such a mighty "
                      "weapon.\n\r", ch);
         return;

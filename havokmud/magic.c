@@ -1868,23 +1868,18 @@ void spell_repulsion_breath(int level, struct char_data *ch,
 
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
-        Log("saved");
     } else {
-        Log("failed save");
         if (GET_POS(victim) > POSITION_SLEEPING && 
             !IS_AFFECTED(victim, AFF_PARALYSIS) &&
             !IS_SET(victim->specials.affected_by2, AFF2_BERSERK) &&
             !IS_SET(victim->specials.affected_by2, AFF2_STYLE_BERSERK)) {
-            Log("good to go");    
             for (i = 0; i < 6; i++) {
                 attempt = i;
                 if (CAN_GO(victim, attempt) &&
-                    !IS_SET(real_roomp(EXIT(victim, 
-                                            attempt)->to_room)->room_flags,
-                            DEATH) &&
-                    !IS_SET(real_roomp(EXIT(victim, 
-                                            attempt)->to_room)->room_flags,
-                            NO_FLEE)) {
+                    !IS_SET(real_roomp(EXIT(victim, attempt)->to_room)->
+                              room_flags, DEATH) &&
+                    !IS_SET(real_roomp(EXIT(victim, attempt)->to_room)->
+                              room_flags, NO_FLEE)) {
                     act("$n is repulsed and flees!", 
                         TRUE, victim, 0, 0, TO_ROOM);
                     send_to_char("You are repulsed and flee head over "
@@ -1897,13 +1892,13 @@ void spell_repulsion_breath(int level, struct char_data *ch,
                     }
                     GET_POS(victim) = POSITION_STANDING;
                     MoveOne(victim, attempt);
-                    Log("moving victim");
                     GET_MOVE(victim) = -100;
                     RemHated(ch, victim);
                 }
             }
         }
     }
+
     MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
     for (burn = victim->carrying;
         burn && burn->obj_flags.type_flag != ITEM_SCROLL &&

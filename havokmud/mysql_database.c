@@ -89,9 +89,11 @@ void db_setup(void)
         exit(1);
     }
 
+    Log("Using database %s at %s", mysql_db, mysql_host);
+
     if( !mysql_real_connect(sql, mysql_host, mysql_user, mysql_passwd, 
                             mysql_db, 0, NULL, 0) ) {
-        Log("Unable to connect to the database!");
+        Log("Unable to connect to the database");
         mysql_error(sql);
         exit(1);
     }
@@ -876,18 +878,15 @@ void assign_mobiles( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_MOBILE )) ) {
-            sprintf( buf, "assign_mobiles: proc for mobile %s (%s) not "
-                          "registered.", row[0], row[1] );
-            Log( buf );
+            Log( "assign_mobiles: proc for mobile %s (%s) not registered.",
+                 row[0], row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rnum = real_mobile(vnum);
         if (rnum < 0) {
-            sprintf(buf, "assign_mobiles: Mobile %d not found in database.",
-                    vnum);
-            Log(buf);
+            Log("assign_mobiles: Mobile %d not found in database.", vnum);
             continue;
         }
 
@@ -929,18 +928,15 @@ void assign_objects( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_OBJECT )) ) {
-            sprintf( buf, "assign_objects: proc for object %s (%s) not "
-                          "registered.", row[0], row[1] );
-            Log( buf );
+            Log( "assign_objects: proc for object %s (%s) not registered.", 
+                 row[0], row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rnum = real_object(vnum);
         if (rnum < 0) {
-            sprintf(buf, "assign_objects: Object %d not found in database.",
-                    vnum);
-            Log(buf);
+            Log("assign_objects: Object %d not found in database.", vnum);
             continue;
         }
 
@@ -982,18 +978,15 @@ void assign_rooms( void )
         row = mysql_fetch_row(res);
 
         if( !(func = procGetFuncByName( row[1], PROC_ROOM )) ) {
-            sprintf( buf, "assign_rooms: proc for room %s (%s) not "
-                          "registered.", row[0], row[1] );
-            Log( buf );
+            Log( "assign_rooms: proc for room %s (%s) not registered.", row[0],
+                 row[1] );
             continue;
         }
         
         vnum = atoi(row[0]);
         rp = real_roomp(vnum);
         if (!rp) {
-            sprintf(buf, "assign_objects: Room %d not found in database.",
-                    vnum);
-            Log(buf);
+            Log( "assign_objects: Room %d not found in database.", vnum);
             continue;
         }
 

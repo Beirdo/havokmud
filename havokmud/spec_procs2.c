@@ -3005,9 +3005,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                         TO_NOTVICT);
                     REMOVE_BIT(t->player.user_flags, MURDER_1);
                     REMOVE_BIT(t->player.user_flags, STOLE_1);
-                    sprintf(buf, "Removing MURDER and STOLE bit from %s.",
-                            GET_NAME(t));
-                    Log(buf);
+                    Log("Removing MURDER and STOLE bit from %s.", GET_NAME(t));
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
                     do_look(t, NULL, 0);
@@ -3030,9 +3028,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                         TO_NOTVICT);
                     REMOVE_BIT(t->player.user_flags, STOLE_1);
                     REMOVE_BIT(t->player.user_flags, MURDER_1);
-                    sprintf(buf, "Removing STOLE and MURDER bit from %s.",
-                            GET_NAME(t));
-                    Log(buf);
+                    Log("Removing STOLE and MURDER bit from %s.", GET_NAME(t));
 
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
@@ -3972,7 +3968,6 @@ struct breather breath_monsters[] = {
 int BreathWeapon(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    char            buf[MAX_STRING_LENGTH];
     struct breather *scan;
     int             count;
 
@@ -3991,9 +3986,8 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         }
 
         if (scan->vnum < 0) {
-            sprintf(buf, "monster %s tries to breath, but isn't listed.",
-                    ch->player.short_descr);
-            Log(buf);
+            Log("monster %s tries to breath, but isn't listed.",
+                ch->player.short_descr);
             return FALSE;
         }
 
@@ -4004,9 +3998,7 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         }
 
         if (count < 1) {
-            sprintf(buf, "monster %s has no breath weapons",
-                    ch->player.short_descr);
-            Log(buf);
+            Log("monster %s has no breath weapons", ch->player.short_descr);
             return FALSE;
         }
 
@@ -5234,7 +5226,6 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
                   struct char_data *mob, int type)
 {
     char           *arg1;
-    char            buf[255];
     int             i;
     int             j;
     struct char_data *portal;
@@ -5256,8 +5247,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
         (portal = get_char_room("color pool", ch->in_room))) {
         i = mob_index[portal->nr].virtual - AST_MOB_NUM;
         if( i < 0 || i >= astral_dest_count ) {
-            sprintf( buf, "Astral destination bugger-up: index %d", i );
-            Log(buf);
+            Log( "Astral destination bugger-up: index %d", i );
             return(FALSE);
         }
 

@@ -694,13 +694,11 @@ void boot_the_shops(void)
 void assign_the_shopkeepers(void)
 {
     int             temp1;
-    char            buf[512];
 
     for (temp1 = 0; temp1 < number_of_shops; temp1++) {
         if (shop_index[temp1].keeper == -1) {
-            sprintf(buf, "Shop in room %d has NO shopkeeper\n",
-                    shop_index[temp1].in_room);
-            Log(buf);
+            Log("Shop in room %d has NO shopkeeper\n",
+                shop_index[temp1].in_room);
         } else {
             mob_index[shop_index[temp1].keeper].func = shop_keeper;
         }

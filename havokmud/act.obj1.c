@@ -25,7 +25,6 @@ void get(struct char_data *ch, struct obj_data *obj_object,
          struct obj_data *sub_object)
 {
     char            buffer[256];
-    char            buf[MAX_INPUT_LENGTH + 80];
 
     /*
      * check person to item ego
@@ -80,9 +79,8 @@ void get(struct char_data *ch, struct obj_data *obj_object,
             }
             if (GET_GOLD(ch) > 500000 &&
                 obj_object->obj_flags.value[0] > 100000) {
-                sprintf(buf, "%s just got %s coins", GET_NAME(ch),
-                        formatNum(obj_object->obj_flags.value[0]));
-                Log(buf);
+                Log("%s just got %s coins", GET_NAME(ch),
+                    formatNum(obj_object->obj_flags.value[0]));
             }
             extract_obj(obj_object);
         }
@@ -857,9 +855,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
         save_char(ch, AUTO_RENT);
 
         if (GET_GOLD(vict) > 500000 && amount > 100000) {
-            sprintf(buf, "%s gave %d coins to %s", GET_NAME(ch), amount,
-                    GET_NAME(vict));
-            Log(buf);
+            Log("%s gave %d coins to %s", GET_NAME(ch), amount, GET_NAME(vict));
         }
     } else {
         argument = get_argument(argument, &vict_name);

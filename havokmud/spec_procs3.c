@@ -5559,8 +5559,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-    char           *vict_name,
-                    buf[MAX_INPUT_LENGTH];
+    char           *vict_name;
     struct char_data *vict;
     int             test = 0,
                     tmp_con = 0;
@@ -5641,11 +5640,10 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
             GET_GOLD(ch) -= test;
             GET_EXP(ch) -= ((GET_RCON(ch)) * 5000000);
             do_save(ch, NULL, 0);
-            sprintf(buf, "Player %s just bought a CON point, %d to %d. Payed "
-                         "%d xps, %d gold.",
-                    GET_NAME(ch), tmp_con, GET_RCON(ch),
-                    GET_RCON(ch) * 5000000, test);
-            Log(buf);
+
+            Log("Player %s just bought a CON point, %d to %d. Payed "
+                "%d xps, %d gold.", GET_NAME(ch), tmp_con, GET_RCON(ch),
+                GET_RCON(ch) * 5000000, test);
         }
         return (TRUE);
     } else {
