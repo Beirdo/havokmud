@@ -50,8 +50,8 @@ dlog("in do_guard");
       SET_BIT(ch->specials.act, ACT_GUARDIAN);
       act("$n alertly watches you.", FALSE, ch, 0, ch->master, TO_VICT);
       act("$n alertly watches $N.", FALSE, ch, 0, ch->master, TO_NOTVICT);
-      send_to_char("You snap to attention\n\r", ch);    
-    }  
+      send_to_char("You snap to attention\n\r", ch);
+    }
   } else {
      if (!str_cmp(argument,"on")) {
       if (!IS_SET(ch->specials.act, ACT_GUARDIAN)) {
@@ -91,10 +91,10 @@ dlog("in do_junk");
       num = -1;
       strcpy(arg,newarg);
     } else if ((p = getabunch(arg,newarg))!='\0') {
-      num = p;                     
+      num = p;
       strcpy(arg,newarg);
     } else {
-      num = 1;  
+      num = 1;
     }
   } else {
     send_to_char("Junk what?\n\r",ch);
@@ -111,7 +111,7 @@ dlog("in do_junk");
       }
       value+=(MIN(1000,MAX(tmp_object->obj_flags.cost/4,1)));
       obj_from_char(tmp_object);
-      obj_index[tmp_object->item_number].number--;
+      //obj_index[tmp_object->item_number].number--;
       extract_obj(tmp_object);
       if (num > 0) num--;
       count++;
@@ -136,9 +136,9 @@ dlog("in do_junk");
   value /= 2;
 
   if (value) 	{
-    act("You are awarded for outstanding performance.", 
+    act("You are awarded for outstanding performance.",
 	FALSE, ch, 0, 0, TO_CHAR);
-    
+
     if (GetMaxLevel(ch) < 3)
       gain_exp(ch, MIN(100,value));
     else
@@ -182,7 +182,7 @@ dlog("in do_set_prompt");
   if (IS_NPC(ch) || !ch->desc)
     return;
 */
- 
+
   for(;isspace(*argument); argument++)  ;
   if (*argument) {
     if((n=atoi(argument))!=0) {
@@ -196,7 +196,7 @@ dlog("in do_set_prompt");
           sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
           send_to_char(buf, ch);
 */
-          if(ch->specials.prompt) 
+          if(ch->specials.prompt)
             free(ch->specials.prompt);
           ch->specials.prompt = strdup(prompts[i].pr);
           return;
@@ -207,7 +207,7 @@ dlog("in do_set_prompt");
       sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
       send_to_char(buf, ch);
 */
-      if(ch->specials.prompt) 
+      if(ch->specials.prompt)
         free(ch->specials.prompt);
       ch->specials.prompt = strdup(argument);
     }
@@ -215,7 +215,7 @@ dlog("in do_set_prompt");
     sprintf(buf,"Your current prompt is : %s\n\r",ch->specials.prompt);
     send_to_char(buf,ch);
   }
- 
+
 }
 
 
@@ -246,7 +246,7 @@ dlog("in do_title");
 if (ch->player.title)
     free(ch->player.title);
     ch->player.title = strdup(argument);
-  }      
+  }
 
 }
 
@@ -257,25 +257,25 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
 dlog("in do_quit");
   if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM))
     return;
-  
+
   if (GET_POS(ch) == POSITION_FIGHTING) {
     send_to_char("No way! You are fighting.\n\r", ch);
     return;
   }
-  
+
   if (GET_POS(ch) < POSITION_STUNNED) {
     send_to_char("You die before your time!\n\r", ch);
     sprintf(buf, "%s dies via quit.", GET_NAME(ch));
     log(buf);
-    die(ch,'\0');    
+    die(ch,'\0');
     return;
   }
-  
+
   act("Goodbye, friend.. Come back soon!", FALSE, ch, 0, 0, TO_CHAR);
   act("$n has left the game.", TRUE, ch,0,0,TO_ROOM);
   zero_rent(ch);
   extract_char(ch); /* Char is saved in extract char */
-  
+
  // close_socket(ch->desc);
 }
 
@@ -294,20 +294,20 @@ dlog("in do_save");
 
   if (IS_NPC(ch) && !(IS_SET(ch->specials.act, ACT_POLYSELF)))
     return;
-  
+
 if (cmd != 0)
 	send_to_char("Saving...\n\r",ch);
-  
+
 
   if (IS_NPC(ch) && (IS_SET(ch->specials.act, ACT_POLYSELF))) {
-    /*  
+    /*
       swap stuff, and equipment
       */
-    if (!ch->desc)  
+    if (!ch->desc)
       tmp = ch->orig;
-    else 
+    else
       tmp = ch->desc->original;  /* tmp = the original characer */
-    
+
     if (!tmp) return;
     tl = tmp->carrying;
 /*
@@ -316,7 +316,7 @@ if (cmd != 0)
   kicked off your body, it will end up in room #3, on the floor, and in
   the inventory of the polymorphed monster.  This is a "bad" thing.  So,
   to fix it, each item in the inventory is checked.  if it is in a room,
-  it is moved from the room, back to the correct inventory slot. 
+  it is moved from the room, back to the correct inventory slot.
   */
     tmp->carrying = ch->carrying;
     for (i = 0; i < MAX_WEAR; i++) {  /* move all the mobs eq to the ch */
@@ -394,14 +394,14 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
       return;
     }
     if (HasWBits(ch, ITEM_HUM)) {
-     send_to_char("Gonna be hard to sneak around with that thing humming\n\r", 
+     send_to_char("Gonna be hard to sneak around with that thing humming\n\r",
 		 ch);
      return;
    }
   }
 
   send_to_char("Ok, you'll try to move silently for a while.\n\r", ch);
-  
+
   percent=number(1,101); /* 101% is a complete failure */
 
   if (!ch->skills)
@@ -409,14 +409,14 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
 
   if (IS_AFFECTED(ch, AFF_SILENCE))
     percent = MIN(1, percent-35);  /* much easier when silenced */
-  
+
   if (percent > ch->skills[SKILL_SNEAK].learned +
       dex_app_skill[GET_DEX(ch)].sneak) {
       LearnFromMistake(ch, SKILL_SNEAK, 1, 90);
       WAIT_STATE(ch, PULSE_VIOLENCE);
       return;
     }
- 
+
   af.type = SKILL_SNEAK;
   af.duration = GET_LEVEL(ch, BestThiefClass(ch));
   af.modifier = 0;
@@ -424,7 +424,7 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
   af.bitvector = AFF_SNEAK;
   affect_to_char(ch, &af);
   WAIT_STATE(ch, PULSE_VIOLENCE);
-  
+
 }
 
 
@@ -432,10 +432,10 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
 void do_hide(struct char_data *ch, char *argument, int cmd)
 {
   byte percent;
-  
+
 
 dlog("in do_hide");
-  
+
   if (IS_AFFECTED(ch, AFF_HIDE))
     REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
 
@@ -452,25 +452,25 @@ dlog("in do_hide");
     send_to_char("You must do this outdoors.\n\r",ch);
     return;
    }
-  
+
   if (MOUNTED(ch)) {
     send_to_char("Yeah... right... while mounted\n\r", ch);
     return;
   }
-  
-   
+
+
   percent=number(1,101); /* 101% is a complete failure */
 
   if (!ch->skills)
     return;
-  
+
   if (percent > ch->skills[SKILL_HIDE].learned +
       dex_app_skill[GET_DEX(ch)].hide) {
     LearnFromMistake(ch, SKILL_HIDE, 1, 90);
     WAIT_STATE(ch, PULSE_VIOLENCE*1);
     return;
   }
-  
+
   SET_BIT(ch->specials.affected_by, AFF_HIDE);
   WAIT_STATE(ch, PULSE_VIOLENCE*1);
 
@@ -495,20 +495,20 @@ dlog("in do_steal");
 
   if (check_peaceful(ch, "What if he caught you?\n\r"))
     return;
-  
+
   argument = one_argument(argument, obj_name);
   only_argument(argument, victim_name);
-  
+
   if (!HasClass(ch, CLASS_THIEF)) {
     send_to_char("You're no thief!\n\r", ch);
     return;
   }
- 
+
   if (MOUNTED(ch)) {
     send_to_char("Yeah... right... while mounted\n\r", ch);
     return;
   }
-  
+
   if (!(victim = get_char_room_vis(ch, victim_name))) {
     send_to_char("Steal what from who?\n\r", ch);
     return;
@@ -525,31 +525,31 @@ dlog("in do_steal");
   }
 
   WAIT_STATE(ch, PULSE_VIOLENCE*2);  /* they're gonna have to wait. */
-  
+
   if ((GetMaxLevel(ch) < 2) && (!IS_NPC(victim))) {
     send_to_char("Due to misuse of steal, you can't steal from other players\n\r", ch);
     send_to_char("unless you are at least 2nd level. \n\r", ch);
     return;
   }
-  
+
   if ((!victim->desc) && (!IS_NPC(victim)))
     return;
-  
+
   /* 101% is a complete failure */
   percent=number(1,101) - dex_app_skill[GET_DEX(ch)].p_pocket;
-  
-  if (GET_POS(victim) < POSITION_SLEEPING || GetMaxLevel(ch) >=IMPLEMENTOR) 
+
+  if (GET_POS(victim) < POSITION_SLEEPING || GetMaxLevel(ch) >=IMPLEMENTOR)
     percent = -1; /* ALWAYS SUCCESS */
-  
+
   percent += GET_AVE_LEVEL(victim);
-  
+
   if (GetMaxLevel(victim)>MAX_MORT && GetMaxLevel(ch)<IMPLEMENTOR)
     percent = 101; /* Failure */
-  
+
   if (str_cmp(obj_name, "coins") && str_cmp(obj_name,"gold")) {
-    
+
     if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
-      
+
       for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++)
 	if (victim->equipment[eq_pos] &&
 	    (isname(obj_name, victim->equipment[eq_pos]->name)) &&
@@ -557,7 +557,7 @@ dlog("in do_steal");
 	  obj = victim->equipment[eq_pos];
 	  break;
 	}
-      
+
       if (!obj) {
 	act("$E has not got that item.",FALSE,ch,0,victim,TO_CHAR);
 	return;
@@ -585,7 +585,7 @@ dlog("in do_steal");
       	   ("You can't steal it, it must be CURSED!\n\r", ch);
 	 return;
       }
-      
+
       percent += GET_OBJ_WEIGHT(obj); /* Make heavy harder */
 
       if (AWAKE(victim) && (percent > ch->skills[SKILL_STEAL].learned)) {
@@ -607,7 +607,7 @@ dlog("in do_steal");
 #endif
 	    if (IS_PC(ch) && IS_PC(victim))
 	      GET_ALIGNMENT(ch)-=20;
-	    
+
 	  } else {
 	    send_to_char("You cannot carry that much.\n\r", ch);
 	  }
@@ -643,7 +643,7 @@ dlog("in do_steal");
       }
     }
   }
-  
+
   if (ohoh && IS_NPC(victim) && AWAKE(victim))
     if (IS_SET(victim->specials.act, ACT_NICE_THIEF)) {
       sprintf(buf, "%s is a bloody thief.", GET_NAME(ch));
@@ -655,51 +655,51 @@ dlog("in do_steal");
       else if (number(0,1))
 	hit(victim, ch, TYPE_UNDEFINED);
     }
-  
+
 }
 
-void do_practice(struct char_data *ch, char *arg, int cmd) 
+void do_practice(struct char_data *ch, char *arg, int cmd)
 {
   char buf[MAX_STRING_LENGTH*2], buffer[MAX_STRING_LENGTH*2], temp[20];
   int i;
   extern char *spells[];
   extern struct spell_info_type spell_info[MAX_SPL_LIST];
-  
+
 dlog("in do_practice");
 
   buffer[0] = '\0';
-  
+
   if ((cmd != 164) && (cmd != 170)) return;
-  
+
   if (!ch->skills)
     return;
-  
+
   for (; isspace(*arg); arg++);
-  
-  if (!arg) 
+
+  if (!arg)
   {
     send_to_char("You need to supply a class for that.",ch);
     return;
   }
-  
+
   switch(*arg) {
   case 'w':
   case 'W':
   case 'f':
-  case 'F': 
+  case 'F':
     {
-      if (!HasClass(ch, CLASS_WARRIOR)) 
+      if (!HasClass(ch, CLASS_WARRIOR))
       {
 	send_to_char("I bet you think you're a warrior.\n\r", ch);
 	return;
       }
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned 
-	&& IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) 
+	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
+	&& IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )
       {	  sprintf(buf,"%-30s %s",spells[i],
 		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
   strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -713,18 +713,18 @@ dlog("in do_practice");
   case 't':
   case 'T':
     {
- 
+
       if (!HasClass(ch, CLASS_THIEF)) {
 	send_to_char("I bet you think you're a thief.\n\r", ch);
 	return;
       }
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned 
+	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 	  sprintf(buf,"%-30s %s",spells[i],
 		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
     strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -757,8 +757,8 @@ dlog("in do_practice");
 	  strcat(buffer, "\r");
       }
       page_string(ch->desc, buffer, 1);
-      return;			  
-    } 
+      return;
+    }
     break;
 
   case 'S':
@@ -796,10 +796,10 @@ dlog("in do_practice");
 	  strcat(buffer, "\r");
       }
       page_string(ch->desc, buffer, 1);
-      return;			  
-    } 
+      return;
+    }
     break;
-    
+
   case 'C':
   case 'c':
     {
@@ -811,12 +811,12 @@ dlog("in do_practice");
       for(i=0; *spells[i] != '\n'; i++)
 	if (spell_info[i+1].spell_pointer &&
 	   (spell_info[i+1].min_level_cleric<=GET_LEVEL(ch,CLERIC_LEVEL_IND))
-             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {	   
+             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {
 	  sprintf(buf,"[%d] %s %s",
 		  spell_info[i+1].min_level_cleric,
 		  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
-  if (MEMORIZED(ch,i+1)) strcat(buf," (memorized)");  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
+  if (MEMORIZED(ch,i+1)) strcat(buf," (memorized)");
    strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -825,7 +825,7 @@ dlog("in do_practice");
       }
       page_string(ch->desc, buffer, 1);
       return;
-    } 
+    }
     break;
 
   case 'D':
@@ -839,11 +839,11 @@ dlog("in do_practice");
       for(i=0; *spells[i] != '\n'; i++)
 	if (spell_info[i+1].spell_pointer &&
 	   (spell_info[i+1].min_level_druid<=GET_LEVEL(ch, DRUID_LEVEL_IND))
-             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {	   
+             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {
 	  sprintf(buf,"[%d] %s %s",
 		  spell_info[i+1].min_level_druid,
 		  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
 	strcat(buf," \n\r"  );
 	  if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
 	    break;
@@ -852,23 +852,23 @@ dlog("in do_practice");
       }
       page_string(ch->desc, buffer, 1);
       return;
-    } 
+    }
     break;
-    
+
   case 'K':
   case 'k': {
       if (!HasClass(ch, CLASS_MONK)) {
 	send_to_char("I bet you think you're a monk.\n\r", ch);
 	return;
       }
-    
+
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned 
+	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 	  sprintf(buf,"%-30s %s",spells[i],
 		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
     strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -889,11 +889,11 @@ dlog("in do_practice");
       }
       send_to_char("You know the following skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned 
+	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 
   sprintf(buf,"%-30s %s",spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
       strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -903,7 +903,7 @@ dlog("in do_practice");
       page_string(ch->desc, buffer, 1);
       return;
     }
-    break;      
+    break;
 
   case 'R':
   case 'r': {
@@ -911,16 +911,16 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a ranger.\n\r", ch);
 	return;
       }
-    
+
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned 
+	if (ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 
 	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_ranger,	  
+	  spell_info[i+1].min_level_ranger,
 	  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
     strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -938,15 +938,15 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a psionist.\n\r", ch);
 	return;
       }
-    
+
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned 
+	if (ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_psi,	  
+	  spell_info[i+1].min_level_psi,
 	spells[i], how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
     strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -964,15 +964,15 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a paladin.\n\r", ch);
 	return;
       }
-    
+
       send_to_char("You have knowledge of these skills:\n\r", ch);
       for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned 
+	if (ch->skills[i+1].learned
 	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
 	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_paladin,	  
+	  spell_info[i+1].min_level_paladin,
 	  spells[i],		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");		  
+  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
     strcat(buf," \n\r");
 	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
 	    break;
@@ -989,7 +989,7 @@ dlog("in do_practice");
   }
 
   send_to_char("Go to your guildmaster to see the spells you don't have.\n\r", ch);
-  
+
 }
 
 
@@ -1115,7 +1115,7 @@ dlog("in do_breif");
 
   if (IS_NPC(ch))
     return;
-  
+
   if (IS_SET(ch->specials.act, PLR_BRIEF))	{
     send_to_char("Brief mode off.\n\r", ch);
     REMOVE_BIT(ch->specials.act, PLR_BRIEF);
@@ -1133,7 +1133,7 @@ dlog("in do_compact");
 
   if (IS_NPC(ch))
     return;
-  
+
   if (IS_SET(ch->specials.act, PLR_COMPACT))	{
     send_to_char("You are now in the uncompacted mode.\n\r", ch);
     REMOVE_BIT(ch->specials.act, PLR_COMPACT);
@@ -1150,17 +1150,17 @@ char *Condition(struct char_data *ch)
   int   c;
   static char buf[100];
   static char *p;
-  
+
   a = (float)GET_HIT(ch);
   b = (float)GET_MAX_HIT(ch);
-  
+
   t = a / b;
   c = (int)100.0*t;
-  
+
   strcpy(buf, how_good(c));
   p = buf;
   return(p);
-  
+
 }
 
 char *Tiredness(struct char_data *ch)
@@ -1169,17 +1169,17 @@ char *Tiredness(struct char_data *ch)
   int   c;
   static char buf[100];
   static char *p;
-  
+
   a = (float)GET_MOVE(ch);
   b = (float)GET_MAX_MOVE(ch);
-  
+
   t = a / b;
   c = (int)100.0*t;
-  
+
   strcpy(buf, how_good(c));
   p = buf;
   return(p);
-  
+
 }
 void do_group(struct char_data *ch, char *argument, int cmd)
 {
@@ -1204,12 +1204,12 @@ static char *rand_groupname[] = {
 dlog("in do_group");
 
   only_argument(argument, name);
-  
+
   if (!*name) {
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
       send_to_char("But you are a member of no group?!\n\r", ch);
     } else {
-      if(ch->specials.group_name) 
+      if(ch->specials.group_name)
         sprintf(buf,"$c0015Your group \"%s\" consists of:", ch->specials.group_name);
       else if(ch->master && ch->master->specials.group_name)
         sprintf(buf,"$c0015Your group \"%s\" consists of:", ch->master->specials.group_name);
@@ -1221,7 +1221,7 @@ dlog("in do_group");
       else
 	k = ch;
 
-      if (IS_AFFECTED(k, AFF_GROUP) 
+      if (IS_AFFECTED(k, AFF_GROUP)
       && GET_MAX_HIT(k) >0
       && GET_MAX_MANA(k) >0
       && GET_MAX_MOVE(k) >0
@@ -1232,7 +1232,7 @@ dlog("in do_group");
                   ((float)GET_MANA(k)/ (int)GET_MAX_MANA(k)) * 100.0+0.5,
                   ((float)GET_MOVE(k)/ (int)GET_MAX_MOVE(k)) * 100.0+0.5);
 	act(buf,FALSE,ch, 0, k, TO_CHAR);
-	
+
       }
 
       for(f=k->followers; f; f=f->next)
@@ -1250,26 +1250,26 @@ dlog("in do_group");
 	  act(buf,FALSE,ch, 0, f->follower, TO_CHAR);
 	}
 
-	  
+
     }
-    
+
     return;
   }
-             /* ----- Start of the group all functions ----- */ 
-  if(!(strcmp(name, "all"))) { 
+             /* ----- Start of the group all functions ----- */
+  if(!(strcmp(name, "all"))) {
    if (ch->master) {  //If ch is not the leader of the group, why the hell would he add person??
       act("You can not enroll group members without being head of a group.",
 	  FALSE, ch, 0, 0, TO_CHAR);
       return;
     }
-        
+
     if (!IS_AFFECTED(ch, AFF_GROUP)) { //If the leader is not grouped, group him...
 	SET_BIT(ch->specials.affected_by, AFF_GROUP);
-  	REMOVE_BIT(ch->specials.affected_by2, AFF2_CON_ORDER);       
+  	REMOVE_BIT(ch->specials.affected_by2, AFF2_CON_ORDER);
     	act("$n is now a member of $s own group.", FALSE, ch, 0, ch, TO_ROOM);
-        act("You are now a member of your group!", FALSE, ch, 0, ch, TO_CHAR);        
+        act("You are now a member of your group!", FALSE, ch, 0, ch, TO_CHAR);
      }
-     
+
       for(f=ch->followers; f; f=f->next) {  //Start of group all loop
 	 victim = f->follower;
 	 if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) { //Do not let immorts group morts
@@ -1278,18 +1278,18 @@ dlog("in do_group");
 	}
 	if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) { //Do not let morts group immorts
 	  act("Now now.  That would be CHEATING!",FALSE,ch,0,0,TO_CHAR);
-	  return;  
+	  return;
 	  }
-	  
+
 	if (!IS_AFFECTED(victim, AFF_GROUP)) { //If the follower isn't grouped, group him
 		act("$n is now a member of $N's group.", FALSE, victim, 0, ch, TO_ROOM);
 		act("You are now a member of $N's group.", FALSE, victim, 0, ch, TO_CHAR);
 		SET_BIT(victim->specials.affected_by, AFF_GROUP);
   		REMOVE_BIT(victim->specials.affected_by2, AFF2_CON_ORDER);
-		found = TRUE;  
+		found = TRUE;
       	}
     }
-    
+
     if (found) {
         /* set group name if not one */
       if (!ch->master && !ch->specials.group_name && ch->followers) {
@@ -1299,21 +1299,21 @@ dlog("in do_group");
            act(buf,FALSE,ch,0,0,TO_CHAR);
           }
      }
- /* ----- End of group all functions... Manwe Windmaster & Ugha, 050797 ----- */  
-   
+ /* ----- End of group all functions... Manwe Windmaster & Ugha, 050797 ----- */
+
   }
   else if (!(victim = get_char_room_vis(ch, name))) {
     send_to_char("No one here by that name.\n\r", ch);
   } else {
-    
+
     if (ch->master) {
       act("You can not enroll group members without being head of a group.",
 	  FALSE, ch, 0, 0, TO_CHAR);
       return;
     }
-    
+
     found = FALSE;
-    
+
     if (victim == ch)
       found = TRUE;
     else {
@@ -1324,7 +1324,7 @@ dlog("in do_group");
 	}
       }
     }
-    
+
     if (found) {
         if (IS_AFFECTED(victim, AFF_GROUP)) {
         if (victim!=ch){
@@ -1333,7 +1333,7 @@ dlog("in do_group");
 	} else {
 	act("$n has been kicked out of $s own group!", FALSE, victim, 0, ch, TO_ROOM);
 	act("You are no longer a member of your group!", FALSE, victim, 0, ch, TO_CHAR);
-	}	
+	}
 	REMOVE_BIT(victim->specials.affected_by, AFF_GROUP);
 	REMOVE_BIT(victim->specials.affected_by2, AFF2_CON_ORDER);
       } else {
@@ -1343,16 +1343,16 @@ dlog("in do_group");
 	}
 	if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
 	  act("Now now.  That would be CHEATING!",FALSE,ch,0,0,TO_CHAR);
-	  return;  
-	  
+	  return;
+
 	}
-	if (victim==ch) { 
+	if (victim==ch) {
 	act("$n is now a member of $s own group!", FALSE, victim, 0, ch, TO_ROOM);
 	act("You are now a member of your own group!", FALSE, victim, 0, ch, TO_CHAR);
 	} else {
 	act("$n is now a member of $N's group." , FALSE, victim, 0, ch, TO_ROOM);
 	act("You are now a member of $N's group.", FALSE, victim, 0, ch, TO_CHAR);
-	}	
+	}
 	SET_BIT(victim->specials.affected_by, AFF_GROUP);
   	REMOVE_BIT(victim->specials.affected_by2, AFF2_CON_ORDER);
 
@@ -1366,7 +1366,7 @@ dlog("in do_group");
 
       }
     } else {
-      act("$N must follow you, to enter the group", 
+      act("$N must follow you, to enter the group",
 	  FALSE, ch, 0, victim, TO_CHAR);
     }
   }
@@ -1406,7 +1406,7 @@ dlog("in do_group_name");
   send_to_char("\n\rSetting your group name to :", ch);send_to_char(arg, ch);
   send_to_char("\n\r",ch);
   ch->specials.group_name =strdup(arg);
-  
+
 }
 
 void do_quaff(struct char_data *ch, char *argument, int cmd)
@@ -1415,13 +1415,13 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
   struct obj_data *temp;
   int i;
   bool equipped;
-  
+
   equipped = FALSE;
 
 dlog("in do_quaff");
 
   only_argument(argument,buf);
-  
+
   if (!(temp = get_obj_in_list_vis(ch,buf,ch->carrying))) {
     temp = ch->equipment[HOLD];
     equipped = TRUE;
@@ -1430,7 +1430,7 @@ dlog("in do_quaff");
       return;
     }
   }
-  
+
   if (!IS_IMMORTAL(ch)) {
     if (GET_COND(ch,FULL)>23) {
       act("Your stomach can't contain anymore!",FALSE,ch,0,0,TO_CHAR);
@@ -1439,20 +1439,20 @@ dlog("in do_quaff");
       GET_COND(ch, FULL)+=1;
     }
   }
-  
+
   if (temp->obj_flags.type_flag!=ITEM_POTION) {
     act("You can only quaff potions.",FALSE,ch,0,0,TO_CHAR);
     return;
   }
-  
+
   act("$n quaffs $p.", TRUE, ch, temp, 0, TO_ROOM);
   act("You quaff $p which dissolves.",FALSE, ch, temp,0, TO_CHAR);
-  
+
   /*  my stuff */
   if (ch->specials.fighting) {
     if (equipped) {
       if (number(1,20) > ch->abilities.dex) {
-	act("$n is jolted and drops $p!  It shatters!", 
+	act("$n is jolted and drops $p!  It shatters!",
 	    TRUE, ch, temp, 0, TO_ROOM);
 	act("You arm is jolted and $p flies from your hand, *SMASH*",
 	    TRUE, ch, temp, 0, TO_CHAR);
@@ -1463,7 +1463,7 @@ dlog("in do_quaff");
       }
     } else {
       if (number(1,20) > ch->abilities.dex - 4) {
-	act("$n is jolted and drops $p!  It shatters!", 
+	act("$n is jolted and drops $p!  It shatters!",
 	    TRUE, ch, temp, 0, TO_ROOM);
 	act("You arm is jolted and $p flies from your hand, *SMASH*",
 	    TRUE, ch, temp, 0, TO_CHAR);
@@ -1472,19 +1472,19 @@ dlog("in do_quaff");
       }
     }
   }
-  
+
   for (i=1; i<4; i++)
     if (temp->obj_flags.value[i] >= 1)
       ((*spell_info[temp->obj_flags.value[i]].spell_pointer)
        ((byte) temp->obj_flags.value[0], ch, "", SPELL_TYPE_POTION, ch, temp));
-  
+
   if (equipped)
     temp = unequip_char(ch, HOLD);
-  
+
   extract_obj(temp);
-  
+
   WAIT_STATE(ch, PULSE_VIOLENCE);
-  
+
 }
 
 
@@ -1495,7 +1495,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
   struct char_data *victim;
   int i, bits;
   bool equipped;
-  
+
   equipped = FALSE;
   obj = 0;
   victim = 0;
@@ -1504,9 +1504,9 @@ dlog("in do_recite");
 
   if (!ch->skills)
     return;
-  
+
   argument = one_argument(argument,buf);
-  
+
   if (!(scroll = get_obj_in_list_vis(ch,buf,ch->carrying))) {
     scroll = ch->equipment[HOLD];
     equipped = TRUE;
@@ -1515,12 +1515,12 @@ dlog("in do_recite");
       return;
     }
   }
-  
+
   if (scroll->obj_flags.type_flag!=ITEM_SCROLL)  {
     act("Recite is normally used for scrolls.",FALSE,ch,0,0,TO_CHAR);
     return;
   }
-  
+
   if (*argument) {
     bits = generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM |
 			FIND_OBJ_EQUIP | FIND_CHAR_ROOM, ch, &victim, &obj);
@@ -1531,11 +1531,11 @@ dlog("in do_recite");
   } else {
     victim = ch;
   }
-  
-  if (!HasClass(ch, CLASS_MAGIC_USER) && 
-      !HasClass(ch, CLASS_CLERIC) && 
+
+  if (!HasClass(ch, CLASS_MAGIC_USER) &&
+      !HasClass(ch, CLASS_CLERIC) &&
       !HasClass(ch, CLASS_SORCERER)) {
- if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned || 
+ if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned ||
       ch->skills[SKILL_READ_MAGIC].learned == 0) {
       	WAIT_STATE(ch, PULSE_VIOLENCE*3);
 	send_to_char(
@@ -1543,23 +1543,23 @@ dlog("in do_recite");
 	return;
       }
   }
-  
+
   act("$n recites $p.", TRUE, ch, scroll, 0, TO_ROOM);
   act("You recite $p which bursts into flame.",FALSE,ch,scroll,0,TO_CHAR);
-  
+
   for (i=1; i<4; i++) {
     if (scroll->obj_flags.value[0] > 0) {  /* spells for casting */
-      if (scroll->obj_flags.value[i] >= 1) 
+      if (scroll->obj_flags.value[i] >= 1)
       {
-	if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets, 
-		   TAR_VIOLENT) && check_peaceful(ch, 
+	if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
+		   TAR_VIOLENT) && check_peaceful(ch,
 		   "Impolite magic is banned here."))
 	  continue;
 
-	if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r", 
+	if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r",
 			  "The magic dissolves powerlessly"))
 	  continue;
-		
+
 	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
 	 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
       }
@@ -1589,7 +1589,7 @@ dlog("in do_recite");
   }
   if (equipped)
     scroll = unequip_char(ch, HOLD);
-    
+
   extract_obj(scroll);
 
 }
@@ -1601,7 +1601,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
   char buf[100],buf2[100],buf3[100];
   struct char_data *tmp_char;
   struct obj_data *tmp_object, *stick;
-  
+
   int bits;
 
 dlog("in do_use");
@@ -1619,21 +1619,21 @@ dlog("in do_use");
     act("$n looks confused, and shrugs helplessly", FALSE, ch, 0, 0, TO_ROOM);
     return;
   }
-#endif  
+#endif
 
   if (RIDDEN(ch)) {
     return;
   }
 
   stick = ch->equipment[HOLD];
-  
+
   if (stick->obj_flags.type_flag == ITEM_STAFF)  {
     act("$n taps $p three times on the ground.",TRUE, ch, stick, 0,TO_ROOM);
     act("You tap $p three times on the ground.",FALSE,ch, stick, 0,TO_CHAR);
     if (stick->obj_flags.value[2] > 0) {  /* Is there any charges left? */
       stick->obj_flags.value[2]--;
 
-      if (check_nomagic(ch,"The magic is blocked by unknown forces.", 
+      if (check_nomagic(ch,"The magic is blocked by unknown forces.",
 			"The magic is blocked by unknown forces."))
 	return;
 
@@ -1645,7 +1645,7 @@ dlog("in do_use");
     }
 
   } else if (stick->obj_flags.type_flag == ITEM_WAND) {
-    bits = generic_find(argument, FIND_CHAR_ROOM | FIND_OBJ_INV | 
+    bits = generic_find(argument, FIND_CHAR_ROOM | FIND_OBJ_INV |
 			FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
     if (bits) {
       struct spell_info_type	*spellp;
@@ -1663,16 +1663,16 @@ dlog("in do_use");
       if (IS_SET(spellp->targets, TAR_VIOLENT) &&
 	  check_peaceful(ch, "Impolite magic is banned here."))
 	return;
-      
+
       if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
 	stick->obj_flags.value[2]--;
 
-      if (check_nomagic(ch,"The magic is blocked by unknown forces.", 
+      if (check_nomagic(ch,"The magic is blocked by unknown forces.",
 			"The magic is blocked by unknown forces."))
 	return;
 
 	((*spellp->spell_pointer)
-	 ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_WAND, 
+	 ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_WAND,
 	  tmp_char, tmp_object));
 	WAIT_STATE(ch, PULSE_VIOLENCE);
       } else {
@@ -1694,19 +1694,19 @@ dlog("in do_use");
      if (stick->obj_flags.value[2] > 0) { /* Is there any charges left? */
 	stick->obj_flags.value[2]--;
 
-        if (check_nomagic(ch,"The magic is blocked by unknown forces.", 
+        if (check_nomagic(ch,"The magic is blocked by unknown forces.",
 			"The magic is blocked by unknown forces."))
-          return;       
+          return;
 
          argument = strcat(strcat(buf2, " "), buf3);
 
 	((*spellp->spell_pointer)
-	 ((byte) stick->obj_flags.value[0], ch, argument, SPELL_TYPE_WAND, 
+	 ((byte) stick->obj_flags.value[0], ch, argument, SPELL_TYPE_WAND,
 	  tmp_char, tmp_object));
 	WAIT_STATE(ch, PULSE_VIOLENCE);
       } else {
 	send_to_char("The wand seems powerless.\n\r", ch);
-        }     
+        }
      } else {
          send_to_char("What should the wand be pointed at?\n\r", ch);
         }
@@ -1723,9 +1723,9 @@ dlog("in do_plr_noshout");
 
   if (IS_NPC(ch))
     return;
-  
+
   only_argument(argument, buf);
-  
+
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_DEAF)) {
       send_to_char("You can now hear shouts again.\n\r", ch);
@@ -1737,7 +1737,7 @@ dlog("in do_plr_noshout");
   } else {
     send_to_char("Only the gods can shut up someone else. \n\r",ch);
   }
-  
+
 }
 
 void do_plr_nogossip(struct char_data *ch, char *argument, int cmd)
@@ -1748,9 +1748,9 @@ dlog("in do_plr_nogossip");
 
   if (IS_NPC(ch))
     return;
-  
+
   only_argument(argument, buf);
-  
+
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_NOGOSSIP)) {
       send_to_char("You can now hear gossips again.\n\r", ch);
@@ -1762,7 +1762,7 @@ dlog("in do_plr_nogossip");
   } else {
     send_to_char("Only the gods can no gossip someone else. \n\r",ch);
   }
-  
+
 }
 
 void do_plr_noauction(struct char_data *ch, char *argument, int cmd)
@@ -1773,9 +1773,9 @@ dlog("in do_plr_noauction");
 
   if (IS_NPC(ch))
     return;
-  
+
   only_argument(argument, buf);
-  
+
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_NOAUCTION)) {
       send_to_char("You can now hear auctions again.\n\r", ch);
@@ -1787,7 +1787,7 @@ dlog("in do_plr_noauction");
   } else {
     send_to_char("Only the gods can no auction someone else. \n\r",ch);
   }
-  
+
 }
 
 void do_plr_notell(struct char_data *ch, char *argument, int cmd)
@@ -1798,9 +1798,9 @@ dlog("in do_plr_notell");
 
   if (IS_NPC(ch))
     return;
-  
+
   only_argument(argument, buf);
-  
+
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_NOTELL)) {
       send_to_char("You can now hear tells again.\n\r", ch);
@@ -1812,7 +1812,7 @@ dlog("in do_plr_notell");
   } else {
     send_to_char("Only the gods can notell up someone else. \n\r",ch);
   }
-  
+
 }
 
 
@@ -1933,7 +1933,7 @@ dlog("in do_mount");
 
   if (cmd == 276 || cmd == 278) {
     only_argument(arg, name);
-    
+
     if (!(horse = get_char_room_vis(ch, name))) {
       send_to_char("Mount what?\n\r", ch);
       return;
@@ -1943,14 +1943,14 @@ dlog("in do_mount");
       send_to_char("You can't ride things!\n\r", ch);
       return;
     }
-    
+
     if (IsRideable(horse)) {
 
       if (GET_POS(horse) < POSITION_STANDING) {
 	send_to_char("Your mount must be standing\n\r", ch);
 	return;
       }
-      
+
       if (RIDDEN(horse)) {
 	send_to_char("Already ridden\n\r", ch);
 	return;
@@ -1961,7 +1961,7 @@ dlog("in do_mount");
 
       check = MountEgoCheck(ch, horse);
       if (check > 5) {
-	act("$N snarls and attacks!", 
+	act("$N snarls and attacks!",
 	    FALSE, ch, 0, horse, TO_CHAR);
 	act("as $n tries to mount $N, $N attacks $n!",
 	    FALSE, ch, 0, horse, TO_NOTVICT);
@@ -1969,7 +1969,7 @@ dlog("in do_mount");
 	hit(horse, ch, TYPE_UNDEFINED);
 	return;
       } else if (check > -1) {
-	act("$N moves out of the way, you fall on your butt", 
+	act("$N moves out of the way, you fall on your butt",
 	    FALSE, ch, 0, horse, TO_CHAR);
 	act("as $n tries to mount $N, $N moves out of the way",
 	    FALSE, ch, 0, horse, TO_NOTVICT);
@@ -1988,11 +1988,11 @@ dlog("in do_mount");
 	GET_POS(ch) = POSITION_MOUNTED;
 	REMOVE_BIT(ch->specials.affected_by, AFF_SNEAK);
       } else {
-	act("You try to ride $N, but falls on $s butt", 
+	act("You try to ride $N, but falls on $s butt",
 	    FALSE, ch, 0, horse, TO_CHAR);
-	act("$n tries to ride $N, but falls on $s butt", 
+	act("$n tries to ride $N, but falls on $s butt",
 	    FALSE, ch, 0, horse, TO_NOTVICT);
-	act("$n tries to ride you, but falls on $s butt", 
+	act("$n tries to ride you, but falls on $s butt",
 	    FALSE, ch, 0, horse, TO_VICT);
 	GET_POS(ch) = POSITION_SITTING;
 	WAIT_STATE(ch, PULSE_VIOLENCE*2);
@@ -2018,7 +2018,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
 
   int spl,qend, diff;
   float duration;
-  struct affected_type af;	
+  struct affected_type af;
 
 dlog("in do_memorize");
 
@@ -2029,9 +2029,9 @@ dlog("in do_memorize");
     send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
     return;
   }
-  
+
   if (!IS_IMMORTAL(ch)) {
-    if (BestMagicClass(ch) == WARRIOR_LEVEL_IND || 
+    if (BestMagicClass(ch) == WARRIOR_LEVEL_IND ||
         BestMagicClass(ch) == BARBARIAN_LEVEL_IND) {
       send_to_char("Think you had better stick to fighting...\n\r", ch);
       return;
@@ -2058,9 +2058,9 @@ if (affected_by_spell(ch,SKILL_MEMORIZE)) {
    send_to_char("You can only learn one spell at a time.\n\r",ch);
    return;
   }
-   
+
   argument = skip_spaces(argument);
-  
+
   /* If there is no chars in argument */
   if (!(*argument)) {
 #if 1
@@ -2098,16 +2098,16 @@ sprintf(buf,
       }
       page_string(ch->desc, buffer, 0);
 #endif
-      
+
     return;
   }
-  
+
 if (GET_POS(ch) > POSITION_SITTING) {
     send_to_char("You cannot do this standing up.\n\r",ch);
-    
+
     if (affected_by_spell(ch,SKILL_MEMORIZE)) {
           SpellWearOff(SKILL_MEMORIZE,ch);
-          affect_from_char(ch,SKILL_MEMORIZE); 
+          affect_from_char(ch,SKILL_MEMORIZE);
           stop_memorizing(ch);
         }
     return;
@@ -2117,17 +2117,17 @@ if (GET_POS(ch) > POSITION_SITTING) {
     send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
     return;
   }
-  
+
   for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
     *(argument+qend) = LOWER(*(argument+qend));
-  
+
   if (*(argument+qend) != '\'') {
     send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
     return;
   }
-  
+
   spl = old_search_block(argument, 1, qend-1,spells, 0);
-  
+
   if (!spl) {
   send_to_char(
   "You flip through your spell book but do not find that spell.\n\r",ch);
@@ -2136,7 +2136,7 @@ if (GET_POS(ch) > POSITION_SITTING) {
 
   if (!ch->skills)
     return;
-  
+
   if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 
   if (!IS_IMMORTAL(ch)) {
@@ -2152,8 +2152,8 @@ if (GET_POS(ch) > POSITION_SITTING) {
  	   send_to_char("Sorry, you do not have the skills for that spell.\n\r",ch);
            return;
 	  }
-      
-  
+
+
   /* made it, lets memorize the spell! */
 
    if (ch->skills[spl].nummem < 0)  /* should not happen */
@@ -2194,7 +2194,7 @@ diff = spell_info[spl].min_level_magic;
     duration +=12;
 
 /* adjust for intelligence */
-  if ( GET_INT(ch) >= 18 ) 
+  if ( GET_INT(ch) >= 18 )
       duration -=2;
   else if ( GET_INT(ch) >= 16 )
       duration -=1;
@@ -2207,7 +2207,7 @@ diff = spell_info[spl].min_level_magic;
 
 /* adjust for levels beyond min required for spell */
   diff = GET_LEVEL(ch,SORCERER_LEVEL_IND) - spell_info[spl].min_level_sorcerer;
-  if ( diff >= 17 ) 
+  if ( diff >= 17 )
       duration -=2;
   else if ( diff >= 7 )
       duration -=1;
@@ -2215,21 +2215,21 @@ diff = spell_info[spl].min_level_magic;
       duration -=0; */
   else if ( diff <= 2 )
       duration +=2;
-      
+
   if ( duration < 0 )
     duration = 0;
   else if ( duration > 24 )
     duration = 24;
 
      af.type = SKILL_MEMORIZE;
-     af.duration =duration; 
+     af.duration =duration;
      af.modifier = spl;		 /* index of spell being memorized.*/
      af.location = APPLY_NONE;
      af.bitvector = 0;
 
      ch->next_memorize = mem_list;
      mem_list = ch;
-     affect_to_char(ch, &af);   
+     affect_to_char(ch, &af);
 
     send_to_char("You flip open your spell book then begin to read and meditate.\n\r",ch);
     act("$n opens a spell book then begins to read and meditate."
@@ -2240,13 +2240,13 @@ diff = spell_info[spl].min_level_magic;
 } /* end memorize */
 
 int TotalMaxCanMem(struct char_data *ch)
-{ 
+{
 extern struct int_app_type int_app[26];
 int i;
 
 if (OnlyClass(ch,CLASS_SORCERER))
    i=GET_LEVEL(ch,SORCERER_LEVEL_IND); else	/* Multis get less spells */
-   i=(int)(GET_LEVEL(ch,SORCERER_LEVEL_IND)/HowManyClasses(ch)*0.5); 
+   i=(int)(GET_LEVEL(ch,SORCERER_LEVEL_IND)/HowManyClasses(ch)*0.5);
 
    i +=(int)int_app[GET_INT(ch)].learn/2;
    return(i);
@@ -2326,7 +2326,7 @@ void check_memorize(struct char_data *ch, struct affected_type *af)
     send_to_char(
       "This spell eludes you, your efforts to memorize fail.\n\r", ch);
       LearnFromMistake(ch, af->modifier, 0, 95);
-    } else 
+    } else
       ch->skills[af->modifier].nummem +=1;
   }
 }
@@ -2355,11 +2355,11 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_set_flags");
 
- if (!ch) 
+ if (!ch)
     return;
 
  argument = one_argument(argument,type);
- 
+
  if (!*type) {
  	send_to_char("Set, but set what?!?!?\n\r",ch);
  	return;
@@ -2395,8 +2395,8 @@ dlog("in do_set_flags");
  if (!*field) {
    send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
    return;
- } 	
- 
+ }
+
  if (!strcmp(type,"war") && GetMaxLevel(ch)>=RACE_WAR_MIN_LEVEL) {
    if (!strcmp("enable",field)) {
     SET_BIT(ch->player.user_flags,RACE_WAR);
@@ -2406,7 +2406,7 @@ dlog("in do_set_flags");
      send_to_char("READ HELP on RACE WAR.\n\r",ch);
    return;
  }
- 
+
  if (!strcmp(type,"ansi")) {		/* turn ansi stuff ON/OFF */
    if (is_abbrev(field,"enable")) {
          send_to_char("Setting ansi colors enabled.\n\r",ch);
@@ -2417,13 +2417,13 @@ dlog("in do_set_flags");
        REMOVE_BIT(ch->player.user_flags,USE_ANSI);
    }
  } /* was ansi */
- else 
+ else
    if (!strcmp(type,"color")) {	/* set current screen color */
      char buf[128];
      sprintf(buf,"%sChanging screen colors!",ansi_parse(field));
      act(buf,FALSE,ch,0,0,TO_CHAR);
    }		/* was color*/
-   else 
+   else
      if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
        if (strstr(field,"enable")) {
          send_to_char("Setting page pause mode enabled.\n\r",ch);
@@ -2438,16 +2438,16 @@ dlog("in do_set_flags");
      else
        if (!strcmp(type,"group")) {
 	 if (!strcmp(field,"name")) {
-	   if (argument)  
+	   if (argument)
 	     do_group_name(ch,argument,0);
-	 } 
+	 }
 #if 0
-	 else 
+	 else
 	   if (!strcmp(field,"order")) {
 	     if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER)) {
 	       act("You no longer recieve orders from your leader.",FALSE,ch,0,0,TO_CHAR);
 	       act("$n stops accepting orders from $s group leader.",FALSE,ch,0,0,TO_ROOM);
-	       REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);	   
+	       REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
 	     } else
 	       if(!ch->master) {
 		 act("You already can accept orders from YOURSELF",FALSE,ch,0,0,TO_CHAR);
@@ -2460,12 +2460,12 @@ dlog("in do_set_flags");
 	 /* i disabled for not, allows people to order followers to bash 50 times */
 	 /* with no lag, as well as cast 50 times with no lag */
 #endif
-	 
+
 	   else {
 	     send_to_char("Unknown set group command\n",ch);
 	   }
        } /* end was a group command */
- 
+
        else
 	 if (!strcmp(type,"autoexits")) {
 	   if (strstr(field,"enable")) {
@@ -2476,14 +2476,14 @@ dlog("in do_set_flags");
 	     act("Setting autodisplay exits off.",FALSE,ch,0,0,TO_CHAR);
 	     if (IS_SET(ch->player.user_flags,SHOW_EXITS))
 	       REMOVE_BIT(ch->player.user_flags,SHOW_EXITS);
-	   }      
+	   }
 	 }
-	 else 
+	 else
 	   if (!strcmp(type,"email")) {
 	     if (*field) {
 	       /* set email to field */
 	       ch->specials.email= strdup(field);
-	      
+
 	       if (cmd){
 		 write_char_extra(ch);
 		 send_to_char("Email address set.\n\r",ch);
@@ -2503,13 +2503,13 @@ dlog("in do_set_flags");
 		 }
 	       } else
 		 send_to_char("Set Clan field to what??",ch);
-	     } 
+	     }
 	     else /* end email */
 	       {
 		 send_to_char("Unknown type to set.\n\r",ch);
 		 return;
 	       }
- 
+
 }
 /* Whois command code.
  * By: Greg Hovey
@@ -2521,25 +2521,25 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
   struct char_data *temp = 0;
   struct char_data *finger = 0;
   struct char_file_u tmp_store;
-  
+
   dlog("in do_finger");
-  
+
   argument= one_argument(argument,name);
   //skip_spaces(&argument);
-  
+
   if (!*name) {
     send_to_char("Whois whom?!?!\n\r",ch);
     return;
   }
-  
+
   CREATE(finger, struct char_data,1);
   clear_char(finger);
-  
+
   if(load_char(name, &tmp_store) > -1) { /*load actual char*/
     temp = finger;
     store_to_char(&tmp_store, finger);
     load_char_extra(finger); /*Load Clan and email fields*/
-      
+
     if (IS_NPC(finger)) {
       send_to_char("No person by that name\n\r",ch);
       return;
@@ -2556,7 +2556,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     else
       sprintf(buf,"$c0012Last time sited    : $c0015%s"
 	      ,asctime(localtime(&tmp_store.last_logon)));
-    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR); 
+    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
     /*Display char Email addy*/
     if(finger->specials.email==NULL)
       sprintf(buf, "$c0012Known message drop : $c0015None\n\r");
@@ -2565,7 +2565,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 	      , finger->specials.email);//GET_EMAIL(finger));
     //strcat(buf,GET_EMAIL(ch));
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
-    
+
     /*Display clan info*/
     if(finger->specials.clan==NULL)
       sprintf(buf,"$c0012Clan info          : $c0015None");
@@ -2573,20 +2573,20 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
       sprintf(buf,"$c0012Clan info          : $c0015%-50s",finger->specials.clan);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
-    
+
     if(finger->specials.rumor == NULL)
       sprintf(buf, "$c0012Rumored Info       : $c0015None");
     else
       sprintf(buf,"$c0012Rumored Info        : $c0015 %-50s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
-    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);	
+    send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
   } /* end found finger'e*/
   else  /*Else there is no character in char DB*/
     send_to_char("Character not found!!\n\r",ch);
-  
+
   free(finger); /*Ack.. dont' forget to free teh char data of Finger.*/
-    
+
 }
 /* My own add-ons ;) -Manwe Windmaster */
 
@@ -2598,9 +2598,9 @@ dlog("in do_plr_noooc");
 
   if (IS_NPC(ch))
     return;
-  
+
   only_argument(argument, buf);
-  
+
   if (!*buf) {
     if (IS_SET(ch->specials.act, PLR_NOOOC)) {
       send_to_char("You can now hear the OOC channel again.\n\r", ch);
@@ -2612,7 +2612,7 @@ dlog("in do_plr_noooc");
   } else {
     send_to_char("Only the gods can shut up someone else. \n\r",ch);
   }
-  
+
 }
 
 void do_arena(struct char_data *ch, char *argument, int cmd)
@@ -2623,21 +2623,21 @@ if (real_roomp(ch->in_room)->zone == 124){
    send_to_char("You ARE in Arena", ch);
    return;
    }
-   
+
 if (!MaxArenaLevel){
    send_to_char("The Arena is closed", ch);
    return;
    }
-   
+
 if (GetMaxLevel(ch) < MinArenaLevel){
    send_to_char("You're not strong enough to enter this Arena", ch);
    return;
    }
-   
+
 if (GetMaxLevel(ch) > MaxArenaLevel){
    send_to_char("You're too strong to enter this Arena", ch);
    return;
-   }   
+   }
   sprintf(buf, "%s just entered the ARENA!\n\r", GET_NAME(ch));
   send_to_all(buf);
   stop_follower(ch);
@@ -2664,23 +2664,23 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
   struct char_data *ch2, *tmp;
   char name[100];
   struct follow_type *f, *k;
-  
+
   if (!arg){
     send_to_char("Proper usage is:\n\rpromote <name>\n\r",ch);
     return;
   }
-  
+
   only_argument(arg, name);
   ch2 = get_char(name);
   //_room_vis(ch,name);
-  
+
   if(!strcmp(name,GET_NAME(ch))) {
     send_to_char("Your already the leader of the group.\n\r",ch);
     return;
   }
-  
+
   if (!IS_AFFECTED(ch, AFF_GROUP)){
-    send_to_char("But you aren't even IN a group.\n\r",ch); 
+    send_to_char("But you aren't even IN a group.\n\r",ch);
     return;
   }else
     if(!ch2){
@@ -2702,24 +2702,24 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 	    if(!IS_AFFECTED(ch2, AFF_GROUP) || ch2->master != ch){
 	      send_to_char("They aren't even in your group!\n\r",ch);
 	      return;
-	    }       
+	    }
   /*The actual promotion*/
   /*Tell everyone whats happening*/
   act("$c0012You promote $N to leader of the group.\r",FALSE, ch, 0,ch2,TO_CHAR);
   act("$c0012You have been promoted by $n to lead the group\r",FALSE,ch,0,ch2,TO_VICT);
   /*Group told later to be efficient*/
-  
+
   /*Person to be promoted follows himself */
   //stop_follower(ch2);
   k = ch->followers;
- 
+
   /* There is a faster method in doing this.. This is just a temp. fix.
      Greg Hovey
   */
 
   //takes all chars in group and adds it to an character array..
   for(k=ch->followers;k;k=k->next) {
-    if(k) { 
+    if(k) {
       c[count] = k->follower;
       count++;
     }
@@ -2728,25 +2728,25 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
   for(x = 0;x < count;x++) {
     if(ch2!=c[x])//display to each char wasn't going on..
       act(buf,FALSE,c[x], 0, name, TO_CHAR);
-    
+
     stop_follower_quiet(c[x]); //stop_following
 
     //add follower crap..
     c[x]->master = ch2;
     CREATE(k, struct follow_type, 1);
-  
+
     k->follower = c[x];
     k->next = ch2->followers;
     ch2->followers = k;
   }
- 
+
   ch->master = ch2;
   CREATE(k, struct follow_type, 1);
-  
+
   k->follower = ch;
   k->next = ch2->followers;
   ch2->followers = k;
- 
+
   //dont know if this is very profiecent but anyway..
   do_follow(ch2,GET_NAME(ch2),91);  //tell leader to follow themself
   do_group(ch2,"all",202);// and group all
@@ -2755,7 +2755,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 }
 
 
-#define SEVERED_HEAD    30 
+#define SEVERED_HEAD    30
 /* Behead corpse code
    By: Greg Hovey Feb. 2001 (GH)
    This method will allow you to behead a corpse with a slash or cleave weapon.
@@ -2768,18 +2768,18 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
 
   if (IS_NPC(ch))
     return;
-  
+
   if (!ch->skills)
     return;
-  
+
   if (MOUNTED(ch)) {
     send_to_char("Not from this mount you cannot!\n\r",ch);
     return;
   }
-  
+
   if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
     argument = one_argument(argument,itemname);
-   
+
   if (!*itemname) {
     send_to_char("Behead what?\n\r",ch);
     return;
@@ -2789,19 +2789,19 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
     send_to_char("Where did that bloody corpse go?\n\r",ch);
     return;
   } else {
-    /* affect[0] == race of corpse, affect[1] == level of corpse */     
+    /* affect[0] == race of corpse, affect[1] == level of corpse */
     if (j->affected[0].modifier !=0 && j->affected[1].modifier !=0) {
       /* item not a corpse if v3 = 0 */
       if (!j->obj_flags.value[3])     {
 	send_to_char("Sorry, this is not a carcass.\n\r",ch);
 	return;
       }
-        
+
       if (!ch->equipment[WIELD]) {
 	send_to_char("You need to wield a weapon, to make it a success.\n\r",ch);
 	return;
       }
-      
+
 
       /* need to do weapon check.. */
       //obj_flags.value[value]
@@ -2810,35 +2810,35 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
 	send_to_char("Your weapon isn't really good for that type of thing.\n\r",ch);
 	return;
       }
-      
+
       argument = one_argument(j->short_description, temp);
-      
+
       sprintf(buf,"%s",argument);
       /*load up the head object*/
       if ((r_num = real_object( SEVERED_HEAD )) >= 0) {
 	head = read_object(r_num, REAL);
-	obj_to_room(head,ch->in_room);  //to room perhaps? 
-      }	
+	obj_to_room(head,ch->in_room);  //to room perhaps?
+      }
       /*CHange name of head*/
       if (head->name)
 	free(head->name);
       sprintf(temp,"head%s",buf);
-      head->name=strdup(temp);    
-      
+      head->name=strdup(temp);
+
       if (head->short_description)
 	free(head->short_description);
       sprintf(temp,"The head%s",buf);
-      head->short_description=strdup(temp);  
-      
+      head->short_description=strdup(temp);
+
       if (head->description)
 	free(head->description);
       sprintf(temp,"The head%s lies here.",buf);
       head->description=strdup(temp);
-     
+
       j->affected[1].modifier=0; /* make corpse unusable for another behead */
       if (j->description){
 	argument = one_argument(j->description, temp);
-	
+
 	sprintf(buf,"The beheaded %s%s",temp,argument);
 	free(j->description);
       }
@@ -2847,19 +2847,19 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
       sprintf(buf,"You behead %s.\n\r",
 	      j->short_description);
       send_to_char(buf,ch);
-      
+
       sprintf(buf,"%s beheads %s.",GET_NAME(ch),
 	      j->short_description);
-      act(buf,TRUE, ch, 0, 0, TO_ROOM);     
-      WAIT_STATE(ch, PULSE_VIOLENCE*1); 
+      act(buf,TRUE, ch, 0, 0, TO_ROOM);
+      WAIT_STATE(ch, PULSE_VIOLENCE*1);
       return;
-    } 
+    }
     else {
       send_to_char("Sorry, the corpse is to mangled up to behead.\n\r",ch);
       return;
     }
   }
   return;
-  
-}//End of behead    
+
+}//End of behead
 

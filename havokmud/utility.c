@@ -29,7 +29,7 @@ extern struct hash_header room_db;	                  /* In db.c */
 #else
 extern struct room_data *room_db[];	                  /* In db.c */
 #endif
-extern char *dirs[]; 
+extern char *dirs[];
 extern int  RacialMax[][MAX_CLASS];
 extern int top_of_zone_table;
 extern int top_of_world;
@@ -52,7 +52,7 @@ FILE *log_f;
 int EgoBladeSave(struct char_data *ch)
 {
    int total;
-   
+
    if (GetMaxLevel(ch) <= 10) return(FALSE);
    total = (GetMaxLevel(ch) + GET_STR(ch) + GET_CON(ch));
    if (GET_HIT(ch) == 0) return(FALSE);
@@ -80,7 +80,7 @@ int GetItemClassRestrictions(struct obj_data *obj)
 
   if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
     total += CLASS_SORCERER;
-  } 
+  }
 
   if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
     total += CLASS_MAGIC_USER;
@@ -127,11 +127,11 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
 {
   if (!o)
     return (FALSE);
-    
-  if (o->invis_level > GetMaxLevel(s)) 
-    return (FALSE);    
 
-  if (IS_IMMORTAL(s) && (s->in_room != 0) ) 
+  if (o->invis_level > GetMaxLevel(s))
+    return (FALSE);
+
+  if (IS_IMMORTAL(s) && (s->in_room != 0) )
     return(TRUE);
 
   if (!o || s->in_room <= 0 || o->in_room <= 0){
@@ -167,14 +167,14 @@ int num=0;
 
   if (IS_IMMORTAL(ch))
     return(1);
-  
+
 
 
 /* changed the act.info.c, hope this works on traps INSIDE chests etc.. */
 /* msw */
 
 #if 1
-if ((ITEM_TYPE(obj) == ITEM_TRAP) && (GET_TRAP_CHARGES(obj) > 0)) 
+if ((ITEM_TYPE(obj) == ITEM_TRAP) && (GET_TRAP_CHARGES(obj) > 0))
 	{
 	num = number(1,101);
          if (CanSeeTrap(num,ch))  {
@@ -233,7 +233,7 @@ long ObjVnum( struct obj_data *o)
 }
 
 
-void Zwrite (FILE *fp, char cmd, int tf, int arg1, int arg2, int arg3, 
+void Zwrite (FILE *fp, char cmd, int tf, int arg1, int arg2, int arg3,
 	     char *desc)
 {
    char buf[100];
@@ -242,7 +242,7 @@ void Zwrite (FILE *fp, char cmd, int tf, int arg1, int arg2, int arg3,
      sprintf(buf, "%c %d %d %d %d   ; %s\n", cmd, tf, arg1, arg2, arg3, desc);
      fputs(buf, fp);
    } else {
-     sprintf(buf, "%c %d %d %d %d\n", cmd, tf, arg1, arg2, arg3); 
+     sprintf(buf, "%c %d %d %d %d\n", cmd, tf, arg1, arg2, arg3);
      fputs(buf, fp);
    }
 }
@@ -253,7 +253,7 @@ void RecZwriteObj(FILE *fp, struct obj_data *o)
 
    if (ITEM_TYPE(o) == ITEM_CONTAINER) {
      for (t = o->contains; t; t=t->next_content) {
-       Zwrite(fp, 'P', 1, ObjVnum(t), obj_index[t->item_number].number, ObjVnum(o), 
+       Zwrite(fp, 'P', 1, ObjVnum(t), obj_index[t->item_number].number, ObjVnum(o),
 	      t->short_description);
        RecZwriteObj(fp, t);
      }
@@ -262,7 +262,7 @@ void RecZwriteObj(FILE *fp, struct obj_data *o)
    }
 }
 
- 
+
 int SaveZoneFile(FILE *fp, int start_room, int end_room)
 {
   struct char_data *p;
@@ -270,8 +270,8 @@ int SaveZoneFile(FILE *fp, int start_room, int end_room)
   struct room_data *room;
   char cmd, c, buf[80];
   int i, j, arg1, arg2, arg3;
- 
- 
+
+
   for (i = start_room; i<=end_room; i++) {
     room = real_roomp(i);
     if (room) {
@@ -294,7 +294,7 @@ int SaveZoneFile(FILE *fp, int start_room, int end_room)
                 else arg2 = 65535;
                 arg3 = j;
                 strcpy(buf, p->equipment[j]->short_description);
-                Zwrite(fp, cmd,1,arg1, arg2, arg3, 
+                Zwrite(fp, cmd,1,arg1, arg2, arg3,
                        buf);
                 RecZwriteObj(fp, p->equipment[j]);
               }
@@ -332,7 +332,7 @@ int SaveZoneFile(FILE *fp, int start_room, int end_room)
       /*
        *  lastly.. doors
        */
- 
+
       for (j = 0; j < 6; j++) {
         /*
          *  if there is an door type exit, write it.
@@ -358,17 +358,17 @@ int SaveZoneFile(FILE *fp, int start_room, int end_room)
   fprintf(fp,"S\n");
 return 1;
 }
- 
- 
+
+
 int LoadZoneFile(FILE *fl, int zon)
 {
   int cmd_no = 0, expand, tmp, cc = 22;
   char *check, buf[81];
- 
+
   if(zone_table[zon].cmd) {
     free(zone_table[zon].cmd);
   }
- 
+
   /* read the command table */
   cmd_no = 0;
   for (expand = 1;!feof(fl);)          {
@@ -386,27 +386,27 @@ int LoadZoneFile(FILE *fl, int zon)
          }
        }
     }
- 
+
     expand = 1;
- 
+
     fscanf(fl, " "); /* skip blanks */
     fscanf(fl, "%c", &zone_table[zon].cmd[cmd_no].command);
- 
+
     if (zone_table[zon].cmd[cmd_no].command == 'S')
       break;
- 
+
     if (zone_table[zon].cmd[cmd_no].command == '*')   {
       expand = 0;
       fgets(buf, 80, fl); /* skip command */
       continue;
     }
- 
+
     fscanf(fl, " %d %d %d",
              &tmp,
              &zone_table[zon].cmd[cmd_no].arg1,
              &zone_table[zon].cmd[cmd_no].arg2);
     zone_table[zon].cmd[cmd_no].if_flag=tmp;
- 
+
     switch(zone_table[zon].cmd[cmd_no].command) {
       case 'M':
       case 'O':
@@ -429,14 +429,14 @@ void CleanZone(int zone)
   struct char_data *vict, *next_v;
   struct obj_data *obj, *next_o;
   int room,start,end,i;
- 
+
   start=zone?(zone_table[zone-1].top+1):0;
   end=zone_table[zone].top;
 
   for(i=start;i<=end;i++) {
     rp=real_roomp(i);
     if(!rp) continue;
- 
+
     for (vict = rp->people; vict; vict=next_v) {
       next_v=vict->next_in_room;
       if (IS_NPC(vict) && (!IS_SET(vict->specials.act, ACT_POLYSELF)))
@@ -444,39 +444,39 @@ void CleanZone(int zone)
       else
         send_to_char("\r\n\r\nSwirling winds of Chaos reform reality around you!\r\n\r\n",vict);
     }
-    
+
     for (obj = rp->contents; obj; obj = next_o) {
       next_o=obj->next_content;
-      obj_index[obj->item_number].number--; /* object maxxing.(GH) */
+      //obj_index[obj->item_number].number--; /* object maxxing.(GH) */
       extract_obj(obj);
     }
   }
 }
- 
+
 int ZoneCleanable(int zone)
 {
   struct room_data *rp;
   struct char_data *vict;
   int room,start,end,i;
- 
+
   start=zone?(zone_table[zone-1].top+1):0;
   end=zone_table[zone].top;
 
   for(i=start;i<=end;i++) {
     rp=real_roomp(i);
     if(!rp) return(TRUE);
- 
+
     for (vict = rp->people; vict; vict=vict->next_in_room) {
       if (IS_NPC(vict) && (!IS_SET(vict->specials.act, ACT_POLYSELF)))
         continue;
       else  return(FALSE);
     }
-    
+
   }
   return(TRUE);
 }
- 
- 
+
+
 int FindZone(int zone)
 {
         int i;
@@ -488,28 +488,28 @@ int FindZone(int zone)
   else
     return i;
 }
- 
+
 FILE *MakeZoneFile( struct char_data *c, int zone)
 {
   char buf[256];
   FILE *fp;
- 
+
   sprintf(buf, "zones/%d.zon", zone);
- 
+
   if ((fp = fopen(buf, "wt")) != NULL)
     return(fp);
   else
     return(0);
- 
+
 }
- 
+
 FILE *OpenZoneFile(struct char_data *c, int zone)
 {
   char buf[256];
   FILE *fp;
- 
+
   sprintf(buf, "zones/%d.zon", zone);
- 
+
   if ((fp = fopen(buf, "rt")) != NULL)
     return(fp);
   else
@@ -545,7 +545,7 @@ unsigned IsSusc(struct char_data *ch, int bit)
 }
 
 /* creates a random number in interval [from;to] */
-int number(int from, int to) 
+int number(int from, int to)
 {
    if (to - from + 1 )
 	return((random() % (to - from + 1)) + from);
@@ -556,7 +556,7 @@ int number(int from, int to)
 
 
 /* simulates dice roll */
-int dice(int number, int size) 
+int dice(int number, int size)
 {
   int r;
   int sum = 0;
@@ -603,7 +603,7 @@ int scan_number(char *text, int *rval)
 /* scan 'till found different or end of both                 */
 int str_cmp(char *arg1, char *arg2)
 {
-  #if 1 
+  #if 1
 int chk, i;
 
   if ((!arg2) || (!arg1))
@@ -613,7 +613,7 @@ int chk, i;
     if (chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))
       if (chk < 0)
 	return (-1);
-      else 
+      else
 	return (1);
   return(0);
 #else
@@ -627,16 +627,16 @@ int chk, i;
 /* scan 'till found different, end of both, or n reached     */
 int strn_cmp(char *arg1, char *arg2, int n)
 {
-#if 1 
+#if 1
   int chk, i;
-  
+
   for (i = 0; (*(arg1 + i) || *(arg2 + i)) && (n>0); i++, n--)
     if (chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))
       if (chk < 0)
 	return (-1);
-      else 
+      else
 	return (1);
-  
+
   return(0);
 #else
 return(strncmp(arg1,arg2,n));
@@ -654,7 +654,7 @@ void log_sev(char *str,int sev)
   static char buf[500];
   struct descriptor_data *i;
 
-  
+
   ct = time(0);
   tmstr = asctime(localtime(&ct));
   *(tmstr + strlen(tmstr) - 1) = '\0';
@@ -662,9 +662,9 @@ void log_sev(char *str,int sev)
 
   if( spy_flag) fprintf(stderr, "%s",buf);
 
-/* My Addon to log into file... useful, he? */  
+/* My Addon to log into file... useful, he? */
   if (!log_f) {
-             if(!(log_f=fopen("output.log", "w"))) {   
+             if(!(log_f=fopen("output.log", "w"))) {
   	         perror("log_sev");
         	return;
                 }
@@ -688,15 +688,15 @@ void slog(char *str)
 {
   log_sev(str,2);
 }
-	
+
 
 
 void sprintbit(unsigned long vektor, char *names[], char *result)
 {
   long nr;
-  
+
   *result = '\0';
-  
+
   for(nr=0; vektor; vektor>>=1)
     {
       if (IS_SET(1, vektor))
@@ -710,10 +710,10 @@ void sprintbit(unsigned long vektor, char *names[], char *result)
       if (*names[nr] != '\n')
 	nr++;
     }
-  
+
   if (!*result)
     strcat(result, "NOBITS");
-  else 
+  else
     result[strlen(result)-2] = '\0';
 }
 
@@ -763,14 +763,14 @@ struct time_info_data mud_time_passed(time_t t2, time_t t1)
 /* eld (6-9-93) -- Hopefully, this will fix the negative month, day, etc.  */
 /*                 problems...                                             */
 
-  if(t2 >= t1) { 
+  if(t2 >= t1) {
     secs = (long) (t2 - t1);
 
     now.year = secs/SECS_PER_MUD_YEAR;
 
     monthsecs = secs % SECS_PER_MUD_YEAR;
     now.month = monthsecs/SECS_PER_MUD_MONTH;
-    
+
     daysecs = monthsecs % SECS_PER_MUD_MONTH;
     now.day = daysecs/SECS_PER_MUD_DAY;
 
@@ -783,7 +783,7 @@ struct time_info_data mud_time_passed(time_t t2, time_t t1)
 
     monthsecs = secs % SECS_PER_MUD_YEAR;
     now.month = monthsecs/SECS_PER_MUD_MONTH;
-    
+
     daysecs = monthsecs % SECS_PER_MUD_MONTH;
     now.day = daysecs/SECS_PER_MUD_DAY;
 
@@ -803,7 +803,7 @@ struct time_info_data mud_time_passed(time_t t2, time_t t1)
       now.year = now.year + 1;
     }
     if(now.year)
-      now.year = -now.year;                
+      now.year = -now.year;
   }
   return(now);
 
@@ -819,7 +819,7 @@ void mud_time_passed2(time_t t2, time_t t1, struct time_info_data *t)
 
   if(t2 >= t1) {
     secs = (long) (t2 - t1);
-  
+
     t->year = secs/SECS_PER_MUD_YEAR;
 
     monthsecs = secs % SECS_PER_MUD_YEAR;
@@ -833,7 +833,7 @@ void mud_time_passed2(time_t t2, time_t t1, struct time_info_data *t)
   }else {
 
     secs = (long) (t1 - t2);
-  
+
     t->year = secs/SECS_PER_MUD_YEAR;
 
     monthsecs = secs % SECS_PER_MUD_YEAR;
@@ -858,7 +858,7 @@ void mud_time_passed2(time_t t2, time_t t1, struct time_info_data *t)
       t->year = t->year + 1;
     }
     if(t->year)
-      t->year = -t->year;                
+      t->year = -t->year;
   }
 }
 
@@ -867,19 +867,19 @@ void age2(struct char_data *ch, struct time_info_data *g)
 {
 
   mud_time_passed2(time(0),ch->player.time.birth, g);
-  
+
   g->year += 17;   /* All players start at 17 */
-  
+
 }
 
 struct time_info_data age(struct char_data *ch)
 {
   struct time_info_data player_age;
-  
+
   player_age = mud_time_passed(time(0),ch->player.time.birth);
-  
+
   player_age.year += 17;   /* All players start at 17 */
-  
+
   return(player_age);
 }
 
@@ -889,7 +889,7 @@ int in_group ( struct char_data *ch1, struct char_data *ch2)
 
 
 
-/* 
+/*
    possibilities ->
    1.  char is char2's master
    2.  char2 is char's master
@@ -898,7 +898,7 @@ int in_group ( struct char_data *ch1, struct char_data *ch2)
    5.. char2 rides char
 
     otherwise not true.
- 
+
 */
    if (ch1 == ch2)
       return(TRUE);
@@ -927,7 +927,7 @@ int in_group ( struct char_data *ch1, struct char_data *ch2)
 
 
 /*
-  more new procedures 
+  more new procedures
 */
 
 
@@ -954,7 +954,7 @@ char getall(char *name, char *newname)
 
    if (prd != '.')
      return(FALSE);
-   if (tmpname == NULL) 
+   if (tmpname == NULL)
       return(FALSE);
    if (strcmp(arg,"all"))
       return(FALSE);
@@ -966,7 +966,7 @@ char getall(char *name, char *newname)
 
    for (; *newname = *name; name++,newname++);
    /* :( this for loop is efficient yet arcane.. */
-   
+
    return(TRUE);
 }
 
@@ -1005,14 +1005,14 @@ int phit;
 int sab;
 char buf[200];
 
-   if (exp_flags > 100) { 
+   if (exp_flags > 100) {
      sprintf(buf, "Exp flags on %s are > 100 (%d)", GET_NAME(mob), exp_flags);
      log(buf);
    }
 
-/* 
-reads in the monster, and adds the flags together 
-for simplicity, 1 exceptional ability is 2 special abilities 
+/*
+reads in the monster, and adds the flags together
+for simplicity, 1 exceptional ability is 2 special abilities
 */
 
     if (GetMaxLevel(mob) < 0)
@@ -1179,12 +1179,12 @@ for simplicity, 1 exceptional ability is 2 special abilities
     case 32:
     case 33:
     case 34:
-    case 31 : 
+    case 31 :
       base = 22000;
       phit = 120;
       sab  = 12000;
       break;
-      
+
     case 35:
     case 36:
     case 37:
@@ -1258,9 +1258,9 @@ int sab;
 char buf[200];
 
 
-/* 
-reads in the monster, and adds the flags together 
-for simplicity, 1 exceptional ability is 2 special abilities 
+/*
+reads in the monster, and adds the flags together
+for simplicity, 1 exceptional ability is 2 special abilities
 */
 
     if (GetMaxLevel(mob) < 0)
@@ -1427,12 +1427,12 @@ for simplicity, 1 exceptional ability is 2 special abilities
     case 32:
     case 33:
     case 34:
-    case 31 : 
+    case 31 :
       base = 22000;
       phit = 120;
       sab  = 12000;
       break;
-      
+
     case 35:
     case 36:
     case 37:
@@ -1512,7 +1512,7 @@ void down_river( int pulse )
    char buf[80];
    struct room_data *rp;
 
-   if (pulse < 0) 
+   if (pulse < 0)
       return;
 
    for (ch = character_list; ch; ch = tmp) {
@@ -1538,12 +1538,12 @@ void down_river( int pulse )
                    if (!IS_AFFECTED(ch,AFF_FLYING) && !MOUNTED(ch)) {
 		     rp = real_roomp(ch->in_room);
 		     if (rp && rp->dir_option[rd] &&
-			 rp->dir_option[rd]->to_room && 
+			 rp->dir_option[rd]->to_room &&
 			(EXIT(ch, rd)->to_room != NOWHERE)) {
       		         if (ch->specials.fighting) {
                                stop_fighting(ch);
 			  }
-		         if(IS_IMMORTAL(ch) && 
+		         if(IS_IMMORTAL(ch) &&
 			    IS_SET(ch->specials.act, PLR_NOHASSLE)) {
 			   send_to_char("The waters swirl beneath your feet.\n\r",ch);
 			 } else {
@@ -1551,21 +1551,21 @@ void down_river( int pulse )
 			   send_to_char(buf,ch);
 			   if (RIDDEN(ch))
 			     send_to_char(buf,RIDDEN(ch));
-			   
+
 			   or = ch->in_room;
 			   char_from_room(ch);
 			   if (RIDDEN(ch))  {
 			     char_from_room(RIDDEN(ch));
-			     char_to_room(RIDDEN(ch), (real_roomp(or))->dir_option[rd]->to_room);			 
+			     char_to_room(RIDDEN(ch), (real_roomp(or))->dir_option[rd]->to_room);
 			   }
 			   char_to_room(ch,(real_roomp(or))->dir_option[rd]->to_room);
-			   
+
 			   do_look(ch, "\0",15);
 			   if (RIDDEN(ch)) {
 			     do_look(RIDDEN(ch), "\0",15);
 			   }
 			 }
-			 if (IS_SET(RM_FLAGS(ch->in_room), DEATH) && 
+			 if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
 			     GetMaxLevel(ch) < LOW_IMMORTAL) {
 			   if (RIDDEN(ch))
 			     NailThisSucker(RIDDEN(ch));
@@ -1590,52 +1590,52 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
    struct room_data     *rp;
    struct room_direction_data   *rdd;
    struct descriptor_data *desc;
- 
+
    if(!ch->desc)
      return;
 
    rstart = 0;
    rend = top_of_world;
- 
+
    if((fp=fopen("tinyworld.wld.new","w")) == NULL) {
      send_to_char("Can't create .wld file\r\n",ch);
      return;
    }
- 
+
    sprintf(buf,"%s resorts the world (The game will pause for a few moments).\r\n", ch->player.name);
    send_to_all(buf);
-   
+
    sprintf(buf,"Saving World (%ld rooms)\n\r",(long)top_of_world);
    send_to_char(buf,ch);
 
    for (i=rstart;i<=rend;i++) {
- 
+
      rp = real_roomp(i);
      if (rp==NULL)
        continue;
- 
+
 /*
    strip ^Ms from description
 */
      x = 0;
- 
-     if (!rp->description) 
+
+     if (!rp->description)
      {
        CREATE(rp->description, char, 8);
        strcpy(rp->description, "Empty");
      }
- 
-     for (k = 0; k <= strlen(rp->description); k++) 
+
+     for (k = 0; k <= strlen(rp->description); k++)
      {
        if (rp->description[k] != 13)
          temp[x++] = rp->description[k];
      }
      temp[x] = '\0';
- 
+
      if (temp[0] == '\0') {
        strcpy(temp, "Empty");
      }
- 
+
      fprintf(fp,"#%d\n%s~\n%s~\n",rp->number,rp->name,
                                     temp);
      if (!rp->tele_targ) {
@@ -1643,40 +1643,40 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
       } else {
         if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
            fprintf(fp, "%d %d -1 %d %d %d %d", rp->zone, rp->room_flags,
-                rp->tele_time, rp->tele_targ, 
+                rp->tele_time, rp->tele_targ,
                 rp->tele_mask, rp->sector_type);
         } else {
            fprintf(fp, "%d %d -1 %d %d %d %d %d", rp->zone, rp->room_flags,
-                rp->tele_time, rp->tele_targ, 
+                rp->tele_time, rp->tele_targ,
                 rp->tele_mask, rp->tele_cnt, rp->sector_type);
-        } 
+        }
       }
      if (rp->sector_type == SECT_WATER_NOSWIM) {
         fprintf(fp," %d %d",rp->river_speed,rp->river_dir);
      }
- 
+
      if (rp->room_flags & TUNNEL) {
        fprintf(fp, " %d ", (int)rp->moblim);
      }
- 
-     fprintf(fp,"\n");     
- 
+
+     fprintf(fp,"\n");
+
      for (j=0;j<6;j++) {
        rdd = rp->dir_option[j];
        if (rdd) {
           fprintf(fp,"D%d\n",j);
- 
+
           if (rdd->general_description && *rdd->general_description) {
             if (strlen(rdd->general_description) > 0) {
               temp[0] = '\0';
               x = 0;
-              
+
               for (k = 0; k <= strlen(rdd->general_description); k++) {
                 if (rdd->general_description[k] != 13)
                   temp[x++] = rdd->general_description[k];
               }
               temp[x] = '\0';
- 
+
               fprintf(fp,"%s~\n", temp);
             } else {
               fprintf(fp,"~\n");
@@ -1684,7 +1684,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
           } else {
             fprintf(fp,"~\n");
           }
- 
+
           if (rdd->keyword) {
            if (strlen(rdd->keyword)>0)
              fprintf(fp, "%s~\n",rdd->keyword);
@@ -1693,7 +1693,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
           } else {
             fprintf(fp, "~\n");
           }
- 
+
           fprintf(fp,"%d ", rdd->exit_info);
           fprintf(fp,"%d ", rdd->key);
           fprintf(fp,"%d ", rdd->to_room);
@@ -1701,37 +1701,37 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
           fprintf(fp,"\n");
        }
      }
- 
+
 /*
   extra descriptions..
 */
- 
+
    for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
      x = 0;
- 
+
     if (exptr->description) {
       for (k = 0; k <= strlen(exptr->description); k++) {
        if (exptr->description[k] != 13)
          temp[x++] = exptr->description[k];
       }
       temp[x] = '\0';
- 
+
      fprintf(fp,"E\n%s~\n%s~\n", exptr->keyword, temp);
     }
    }
- 
+
    fprintf(fp,"S\n");
- 
+
    }
    fclose(fp);
- 
+
    sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
    send_to_all(buf);
    send_to_char("\n\rDone\n\r",ch);
- 
+
  return;
 }
- 
+
 
 void RoomSave(struct char_data *ch, long start, long end)
 {
@@ -1741,10 +1741,10 @@ void RoomSave(struct char_data *ch, long start, long end)
    FILE *fp;
    struct room_data     *rp;
    struct room_direction_data   *rdd;
- 
+
    rstart = start;
    rend = end;
- 
+
    if (((rstart <= -1) || (rend <= -1)) ||
         ((rstart > WORLD_SIZE) || (rend > WORLD_SIZE))){
     send_to_char("I don't know those room #s.  make sure they are all\n\r",ch);
@@ -1752,47 +1752,47 @@ void RoomSave(struct char_data *ch, long start, long end)
     fclose(fp);
     return;
    }
- 
+
    send_to_char("Saving\n",ch);
    strcpy(dots, "\0");
- 
+
    for (i=rstart;i<=rend;i++) {
- 
+
      rp = real_roomp(i);
      if (rp==NULL)
        continue;
- 
+
      sprintf(fn, "rooms/%d", i);
      if ((fp = fopen(fn,"w")) == NULL)
      {
        send_to_char("Can't write to disk now..try later \n\r",ch);
        return;
      }
- 
+
      strcat(dots, ".");
- 
+
 /*
    strip ^Ms from description
 */
      x = 0;
- 
-     if (!rp->description) 
+
+     if (!rp->description)
      {
        CREATE(rp->description, char, 8);
        strcpy(rp->description, "Empty");
      }
- 
-     for (k = 0; k <= strlen(rp->description); k++) 
+
+     for (k = 0; k <= strlen(rp->description); k++)
      {
        if (rp->description[k] != 13)
          temp[x++] = rp->description[k];
      }
      temp[x] = '\0';
- 
+
      if (temp[0] == '\0') {
        strcpy(temp, "Empty");
      }
- 
+
      fprintf(fp,"#%d\n%s~\n%s~\n",rp->number,rp->name,
                                     temp);
      if (!rp->tele_targ) {
@@ -1800,40 +1800,40 @@ void RoomSave(struct char_data *ch, long start, long end)
       } else {
         if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
            fprintf(fp, "%d %d -1 %d %d %d %d", rp->zone, rp->room_flags,
-                rp->tele_time, rp->tele_targ, 
+                rp->tele_time, rp->tele_targ,
                 rp->tele_mask, rp->sector_type);
         } else {
            fprintf(fp, "%d %d -1 %d %d %d %d %d", rp->zone, rp->room_flags,
-                rp->tele_time, rp->tele_targ, 
+                rp->tele_time, rp->tele_targ,
                 rp->tele_mask, rp->tele_cnt, rp->sector_type);
-        } 
+        }
       }
      if (rp->sector_type == SECT_WATER_NOSWIM) {
         fprintf(fp," %d %d",rp->river_speed,rp->river_dir);
      }
- 
+
      if (rp->room_flags & TUNNEL) {
        fprintf(fp, " %d ", (int)rp->moblim);
      }
- 
-     fprintf(fp,"\n");     
- 
+
+     fprintf(fp,"\n");
+
      for (j=0;j<6;j++) {
        rdd = rp->dir_option[j];
        if (rdd) {
           fprintf(fp,"D%d\n",j);
- 
+
           if (rdd->general_description && *rdd->general_description) {
             if (strlen(rdd->general_description) > 0) {
               temp[0] = '\0';
               x = 0;
-              
+
               for (k = 0; k <= strlen(rdd->general_description); k++) {
                 if (rdd->general_description[k] != 13)
                   temp[x++] = rdd->general_description[k];
               }
               temp[x] = '\0';
- 
+
               fprintf(fp,"%s~\n", temp);
             } else {
               fprintf(fp,"~\n");
@@ -1841,7 +1841,7 @@ void RoomSave(struct char_data *ch, long start, long end)
           } else {
             fprintf(fp,"~\n");
           }
- 
+
           if (rdd->keyword) {
            if (strlen(rdd->keyword)>0)
              fprintf(fp, "%s~\n",rdd->keyword);
@@ -1850,7 +1850,7 @@ void RoomSave(struct char_data *ch, long start, long end)
           } else {
             fprintf(fp, "~\n");
           }
- 
+
           fprintf(fp,"%d ", rdd->exit_info);
           fprintf(fp,"%d ", rdd->key);
           fprintf(fp,"%d ", rdd->to_room);
@@ -1858,47 +1858,47 @@ void RoomSave(struct char_data *ch, long start, long end)
           fprintf(fp,"\n");
        }
      }
- 
+
 /*
   extra descriptions..
 */
- 
+
    for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
      x = 0;
- 
+
     if (exptr->description) {
       for (k = 0; k <= strlen(exptr->description); k++) {
        if (exptr->description[k] != 13)
          temp[x++] = exptr->description[k];
       }
       temp[x] = '\0';
- 
+
      fprintf(fp,"E\n%s~\n%s~\n", exptr->keyword, temp);
     }
    }
- 
+
    fprintf(fp,"S\n");
    fclose(fp);
- 
+
    }
- 
+
    send_to_char(dots, ch);
    send_to_char("\n\rDone\n\r",ch);
 }
- 
- 
+
+
 void RoomLoad( struct char_data *ch, int start, int end)
 {
   FILE *fp;
   int vnum, found = TRUE, x,r;
   char chk[50], buf[80];
   struct room_data *rp, dummy;
- 
- 
+
+
   send_to_char("Searching and loading rooms\n\r",ch);
- 
+
   for(vnum=start;vnum<=end;vnum++) {
- 
+
     sprintf(buf, "rooms/%d", vnum);
     if ((fp = fopen(buf,"r")) == NULL) {
       found = FALSE;
@@ -1925,21 +1925,21 @@ void RoomLoad( struct char_data *ch, int start, int end)
       cleanout_room(rp);
       send_to_char("-",ch);
     }
- 
+
     rp->number = vnum;
     load_one_room(fp, rp);
     fclose(fp);
   }
- 
+
   if (!found) {
     send_to_char("\n\rThe room number(s) that you specified could not all be found.\n\r",ch);
   } else {
     send_to_char("\n\rDone.\n\r",ch);
   }
- 
-} 
 
- 
+}
+
+
 
 void fake_setup_dir(FILE *fl, long room, int dir)
 {
@@ -1953,7 +1953,7 @@ void fake_setup_dir(FILE *fl, long room, int dir)
 	if (temp)
 	  free(temp);
 
-	fscanf(fl, " %d ", &tmp); 
+	fscanf(fl, " %d ", &tmp);
 	fscanf(fl, " %d ", &tmp);
 	fscanf(fl, " %d ", &tmp);
 }
@@ -1983,7 +1983,7 @@ if (!ch)
     case RACE_LYCANTH:
     case RACE_UNDEAD:
   case RACE_UNDEAD_VAMPIRE :
-  case RACE_UNDEAD_LICH    : 
+  case RACE_UNDEAD_LICH    :
   case RACE_UNDEAD_WIGHT   :
  case RACE_UNDEAD_GHAST   :
  case RACE_UNDEAD_SPECTRE :
@@ -1996,7 +1996,7 @@ if (!ch)
   case RACE_GIANT_FIRE   :
   case RACE_GIANT_CLOUD  :
   case RACE_GIANT_STORM  :
-  case RACE_GIANT_STONE  :    
+  case RACE_GIANT_STONE  :
     case RACE_GOBLIN:
     case RACE_DEVIL:
     case RACE_TROLL:
@@ -2116,7 +2116,7 @@ int IsVeggie( struct char_data *ch)
 {
 if (!ch)
 	return(FALSE);
-	
+
   switch(GET_RACE(ch))
     {
     case RACE_PARASITE:
@@ -2139,17 +2139,17 @@ if (!ch)
 	return(FALSE);
 
   switch(GET_RACE(ch)) {
-  case RACE_UNDEAD: 
+  case RACE_UNDEAD:
   case RACE_GHOST:
   case RACE_UNDEAD_VAMPIRE :
-  case RACE_UNDEAD_LICH    : 
+  case RACE_UNDEAD_LICH    :
   case RACE_UNDEAD_WIGHT   :
  case RACE_UNDEAD_GHAST   :
  case RACE_UNDEAD_SPECTRE :
  case RACE_UNDEAD_ZOMBIE  :
  case RACE_UNDEAD_SKELETON :
  case RACE_UNDEAD_GHOUL    :
-  
+
     return(TRUE);
     break;
   default:
@@ -2208,7 +2208,7 @@ if (!ch)
  case RACE_DRAGON_GOLD   :
  case RACE_DRAGON_BRONZE :
  case RACE_DRAGON_COPPER :
- case RACE_DRAGON_BRASS  : 
+ case RACE_DRAGON_BRASS  :
     case RACE_DINOSAUR:
     case RACE_SNAKE:
     case RACE_TROGMAN:
@@ -2229,9 +2229,9 @@ if (!ch)
 
   if (IsHumanoid(ch))
     return(TRUE);
-  if (IsUndead(ch)) 
+  if (IsUndead(ch))
     return(TRUE);
-  if (IsLycanthrope(ch)) 
+  if (IsLycanthrope(ch))
     return(TRUE);
   if (IsDiabolic(ch))
     return(TRUE);
@@ -2284,14 +2284,14 @@ if (!ch)
 
   case RACE_GOBLIN:  /* giantish for con's only... */
   case RACE_ORC:
-  
+
   case RACE_GIANT:
   case RACE_GIANT_HILL   :
   case RACE_GIANT_FROST  :
   case RACE_GIANT_FIRE   :
   case RACE_GIANT_CLOUD  :
   case RACE_GIANT_STORM  :
-  case RACE_GIANT_STONE  :  
+  case RACE_GIANT_STONE  :
   case RACE_TYTAN:
   case RACE_TROLL:
   case RACE_DRAAGDIM:
@@ -2302,7 +2302,7 @@ if (!ch)
     return(TRUE);
   default:
     return(FALSE);
-    break;      
+    break;
   }
 }
 
@@ -2428,7 +2428,7 @@ if (!ch)
  case RACE_DRAGON_GOLD   :
  case RACE_DRAGON_BRONZE :
  case RACE_DRAGON_COPPER :
- case RACE_DRAGON_BRASS  : 
+ case RACE_DRAGON_BRASS  :
       return(TRUE);
       break;
   default:
@@ -2451,8 +2451,8 @@ if (!ch || !tch) {
 	return;
 }
 
-	
- 
+
+
    persist =  GetMaxLevel(ch);
    persist *= (int) GET_ALIGNMENT(ch) / 100;
 
@@ -2471,7 +2471,7 @@ if (!ch || !tch) {
    ch->old_room = ch->in_room;
 #if 0
     if (GetMaxLevel(tch) >= IMMORTAL) {
-        sprintf(buf, ">>%s is hunting you from %s\n\r", 
+        sprintf(buf, ">>%s is hunting you from %s\n\r",
        	   (ch->player.short_descr[0]?ch->player.short_descr:"(null)"),
        	   (real_roomp(ch->in_room)->name[0]?real_roomp(ch->in_room)->name:"(null)"));
         send_to_char(buf, tch);
@@ -2486,7 +2486,7 @@ void CallForGuard
 {
   struct char_data *i;
   int type1, type2;
-  
+
   switch(area) {
   case MIDGAARD:
     type1 = 3060;
@@ -2548,13 +2548,13 @@ void CallForGuard
 
 void StandUp (struct char_data *ch)
 {
-   if ((GET_POS(ch)<POSITION_STANDING) && 
+   if ((GET_POS(ch)<POSITION_STANDING) &&
        (GET_POS(ch)>POSITION_STUNNED)) {
        if (ch->points.hit > (ch->points.max_hit / 2))
          act("$n quickly stands up.", 1, ch,0,0,TO_ROOM);
        else if (ch->points.hit > (ch->points.max_hit / 6))
          act("$n slowly stands up.", 1, ch,0,0,TO_ROOM);
-       else 
+       else
          act("$n gets to $s feet very slowly.", 1, ch,0,0,TO_ROOM);
        GET_POS(ch)=POSITION_STANDING;
    }
@@ -2576,7 +2576,7 @@ if (!ch || !ch->skills)
 		log("!or !ch-skills in MakeNiftyAttack() in utility.c");
 		return;
 	}
-  if (!ch->specials.fighting) 
+  if (!ch->specials.fighting)
      return;
 
   num = number(1,4);
@@ -2619,7 +2619,7 @@ void FighterMove( struct char_data *ch)
     } else {
       /* rescue on a 1 or 2, other on a 3 or 4 */
       if (GET_RACE(friend) == (GET_RACE(ch))) {
-	 if (GET_HIT(friend) < GET_HIT(ch)) { 
+	 if (GET_HIT(friend) < GET_HIT(ch)) {
 	   if (!ch->skills[SKILL_RESCUE].learned)
 	     ch->skills[SKILL_RESCUE].learned = GetMaxLevel(ch)*3+30;
 	   do_rescue(ch, GET_NAME(friend), 0);
@@ -2650,7 +2650,7 @@ void MonkMove( struct char_data *ch)
   if (!ch->specials.fighting) return;
 
   if (GET_POS(ch) < POSITION_FIGHTING) {
-    if (!ch->skills[SKILL_SPRING_LEAP].learned) 
+    if (!ch->skills[SKILL_SPRING_LEAP].learned)
       ch->skills[SKILL_SPRING_LEAP].learned = (GetMaxLevel(ch)*3)/2+25;
     do_springleap(ch, GET_NAME(ch->specials.fighting), 0);
     return;
@@ -2660,11 +2660,11 @@ void MonkMove( struct char_data *ch)
     /* Commented out as a temporary fix to monks fleeing challenges. */
     /* Was easier than rooting around in the spec_proc for the monk */
     /* challenge for it, which is proobably what should be done. */
-    /* jdb - was commented back in with the change to use 
+    /* jdb - was commented back in with the change to use
        command_interpreter */
 
     if (GET_HIT(ch) < GET_MAX_HIT(ch)/20) {
-      if (!ch->skills[SKILL_RETREAT].learned)  
+      if (!ch->skills[SKILL_RETREAT].learned)
 	ch->skills[SKILL_RETREAT].learned = GetMaxLevel(ch)*2+10;
       strcpy(buf, "flee");
       command_interpreter(ch, buf);
@@ -2675,7 +2675,7 @@ void MonkMove( struct char_data *ch)
 	if (GetMaxLevel(ch->specials.fighting) <= GetMaxLevel(ch)) {
 	  if (GET_MAX_HIT(ch->specials.fighting) < 2*GET_MAX_HIT(ch)) {
 	    if ((!affected_by_spell(ch->specials.fighting, SKILL_QUIV_PALM)) &&
-		(!affected_by_spell(ch, SKILL_QUIV_PALM)) && 
+		(!affected_by_spell(ch, SKILL_QUIV_PALM)) &&
 		ch->in_room == 551) {
 	      if(ch->specials.fighting->skills[SKILL_QUIV_PALM].learned &&
 		 ch->in_room == 551) {
@@ -2713,7 +2713,7 @@ void DevelopHatred( struct char_data *ch, struct char_data *v)
 
   diff = GET_ALIGNMENT(ch) - GET_ALIGNMENT(v);
   if (diff < 0) diff = -diff;
-  
+
   diff /= 20;
 
   if (GET_MAX_HIT(ch)) {
@@ -2809,7 +2809,7 @@ void RestoreChar(struct char_data *ch)
 
   GET_MANA(ch) = GET_MAX_MANA(ch);
   GET_HIT(ch) = GET_MAX_HIT(ch);
-  GET_MOVE(ch) = GET_MAX_MOVE(ch); 
+  GET_MOVE(ch) = GET_MAX_MOVE(ch);
   if (GetMaxLevel(ch) < LOW_IMMORTAL) {
     GET_COND(ch,THIRST) = 24;
     GET_COND(ch,FULL) = 24;
@@ -2830,15 +2830,15 @@ void RemAllAffects( struct char_data *ch)
 int CheckForBlockedMove
   (struct char_data *ch, int cmd, char *arg, int room, int dir, int class)
 {
-  
+
   char buf[256], buf2[256];
-  
+
   if (cmd>6 || cmd<1)
     return(FALSE);
-  
+
   strcpy(buf,  "The guard humiliates you, and block your way.\n\r");
   strcpy(buf2, "The guard humiliates $n, and blocks $s way.");
-  
+
   if ((IS_NPC(ch) && (IS_POLICE(ch))) || (GetMaxLevel(ch) >= DEMIGOD) ||
       (IS_AFFECTED(ch, AFF_SNEAK)))
     return(FALSE);
@@ -2849,7 +2849,7 @@ int CheckForBlockedMove
       act(buf2, FALSE, ch, 0, 0, TO_ROOM);
       send_to_char(buf, ch);
       return TRUE;
-    }  
+    }
   }
   return FALSE;
 
@@ -2858,20 +2858,20 @@ int CheckForBlockedMove
 
 void TeleportPulseStuff(int pulse)
 {
-  
+
   /*
     check_mobile_activity(pulse);
     Teleport(pulse);
     */
-  
+
   register struct char_data *ch;
   struct char_data *next, *tmp, *bk, *n2;
   int tick, tm;
   struct room_data *rp, *dest;
   struct obj_data *obj_object, *temp_obj;
-  
+
   tm = pulse % PULSE_MOBILE;    /* this is dependent on P_M = 3*P_T */
-  
+
   if (tm == 0) {
     tick = 0;
   } else if (tm == PULSE_TELEPORT) {
@@ -2879,7 +2879,7 @@ void TeleportPulseStuff(int pulse)
   } else if (tm == PULSE_TELEPORT*2) {
     tick = 2;
   }
-  
+
   for (ch = character_list; ch; ch = next) {
     next = ch->next;
     if (IS_MOB(ch)) {
@@ -2893,13 +2893,13 @@ void TeleportPulseStuff(int pulse)
 	  rp->tele_targ != rp->number &&
 	  (rp)->tele_time > 0 &&
 	  (pulse % (rp)->tele_time)==0) {
-	
+
 	dest = real_roomp(rp->tele_targ);
 	if (!dest) {
 	  log("invalid tele_targ");
 	  continue;
 	}
-	
+
 	obj_object = (rp)->contents;
 	while (obj_object) {
 	  temp_obj = obj_object->next_content;
@@ -2907,11 +2907,11 @@ void TeleportPulseStuff(int pulse)
 	  obj_to_room(obj_object, (rp)->tele_targ);
 	  obj_object = temp_obj;
 	}
-	
+
 	bk = 0;
 
 	while(rp->people/* should never fail */) {
-	  
+
 	  tmp = rp->people;   /* work through the list of people */
 	  if (!tmp) break;
 
@@ -2927,14 +2927,14 @@ void TeleportPulseStuff(int pulse)
 	  }
 
        	  if (IS_SET(dest->room_flags, DEATH) && (!IS_IMMORTAL(tmp))) {
-	    if (tmp == next) 
+	    if (tmp == next)
 	      next = tmp->next;
 	    NailThisSucker(tmp);
 	    continue;
 	  }
 	  if (dest->sector_type == SECT_AIR) {
 	    n2 = tmp->next;
-	    if (check_falling(tmp)) {	      
+	    if (check_falling(tmp)) {
 	      if (tmp == next)
 		next = n2;
 	    }
@@ -2966,14 +2966,14 @@ void RiverPulseStuff(int pulse)
   int rd, or;
   char buf[80], buffer[100];
   struct room_data *rp;
-  
-  if (pulse < 0) 
+
+  if (pulse < 0)
     return;
 
   for (i = descriptor_list; i; i=i->next) {
     if (!i->connected) {
       ch = i->character;
-      
+
       if (IS_PC(ch) || RIDDEN(ch)) {
 	if (ch->in_room != NOWHERE) {
 	  if ((real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM) ||
@@ -2988,7 +2988,7 @@ void RiverPulseStuff(int pulse)
 		  next_obj = obj_object->next_content;
 		  if ((real_roomp(ch->in_room))->dir_option[rd]) {
 		    obj_from_room(obj_object);
-		    obj_to_room(obj_object, 
+		    obj_to_room(obj_object,
 				(real_roomp(ch->in_room))->dir_option[rd]->to_room);
 		  }
 		}
@@ -3004,7 +3004,7 @@ void RiverPulseStuff(int pulse)
 		    if (!MOUNTED(ch)) {
 		      rp = real_roomp(ch->in_room);
 		      if (rp && rp->dir_option[rd] &&
-			  rp->dir_option[rd]->to_room && 
+			  rp->dir_option[rd]->to_room &&
 			  (EXIT(ch, rd)->to_room != NOWHERE)) {
 			if (ch->specials.fighting) {
 			  stop_fighting(ch);
@@ -3026,9 +3026,9 @@ void RiverPulseStuff(int pulse)
 			if (RIDDEN(ch)) {
 			  do_look(RIDDEN(ch), "\0",15);
 			}
-			
-			
-			if (IS_SET(RM_FLAGS(ch->in_room), DEATH) && 
+
+
+			if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
 			    GetMaxLevel(ch) < LOW_IMMORTAL) {
 			  NailThisSucker(ch);
 			  if (RIDDEN(ch))
@@ -3049,35 +3049,35 @@ void RiverPulseStuff(int pulse)
   if (!number(0,4)) {
     for (ch = character_list; ch; ch = tmp) {
       tmp = ch->next;
-      
+
       /*
        *   mobiles
-       */	
+       */
       if (!IS_PC(ch) && (ch->player.sounds) && (number(0,5)==0)) {
 	if (ch->specials.default_pos > POSITION_SLEEPING) {
 	  if (GET_POS(ch) > POSITION_SLEEPING) {
 	    /*
 	     *  Make the sound;
 	     */
-	    MakeNoise(ch->in_room, ch->player.sounds, 
+	    MakeNoise(ch->in_room, ch->player.sounds,
 		      ch->player.distant_snds);
 	  } else if (GET_POS(ch) == POSITION_SLEEPING) {
 	    /*
-	     * snore 
-	     */	 
-	    sprintf(buffer, "%s snores loudly.\n\r", 
+	     * snore
+	     */
+	    sprintf(buffer, "%s snores loudly.\n\r",
 		    ch->player.short_descr);
-	    MakeNoise(ch->in_room, buffer, 
+	    MakeNoise(ch->in_room, buffer,
 		      "You hear a loud snore nearby.\n\r");
 	  }
 	} else if (GET_POS(ch) == ch->specials.default_pos) {
 	  /*
 	   * Make the sound
-	   */       
+	   */
 	  MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
 	}
       }
-    }      
+    }
   }
 }
 
@@ -3095,7 +3095,7 @@ int apply_soundproof(struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
 
-  if (!rp) return(FALSE);  
+  if (!rp) return(FALSE);
 
   if (IS_SET(rp->room_flags, SILENCE)) {
      send_to_char("You are in a silence zone, you can't make a sound!\n\r",ch);
@@ -3123,7 +3123,7 @@ int check_soundproof(struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
 
-  if (!rp) return(FALSE);  
+  if (!rp) return(FALSE);
 
   if (IS_SET(rp->room_flags, SILENCE)) {
      return(TRUE);   /* for shouts, emotes, etc */
@@ -3192,7 +3192,7 @@ char *lower(char *s)
   static char c[1000];
   static char *p;
   int i=0;
-  
+
   strcpy(c, s);
 
   while (c[i]) {
@@ -3220,7 +3220,7 @@ void SetRacialStuff( struct char_data *mob)
 
   switch(GET_RACE(mob)) {
   case RACE_BIRD:
-    SET_BIT(mob->specials.affected_by, AFF_FLYING);    
+    SET_BIT(mob->specials.affected_by, AFF_FLYING);
     break;
   case RACE_FISH:
     SET_BIT(mob->specials.affected_by, AFF_WATERBREATH);
@@ -3236,7 +3236,7 @@ void SetRacialStuff( struct char_data *mob)
   case RACE_AVARIEL:
 	SET_BIT(mob->specials.affected_by,AFF_INFRAVISION);
 	SET_BIT(mob->immune, IMM_CHARM);
-	break;	
+	break;
   case RACE_DWARF:
   case RACE_DARK_DWARF:
   case RACE_DEEP_GNOME:
@@ -3271,11 +3271,11 @@ void SetRacialStuff( struct char_data *mob)
     break;
   case RACE_GIANT_FIRE   :
     SET_BIT(mob->M_immune, IMM_FIRE);
-    SET_BIT(mob->susc,IMM_COLD);    
+    SET_BIT(mob->susc,IMM_COLD);
     break;
   case RACE_GIANT_CLOUD  :
     SET_BIT(mob->M_immune, IMM_SLEEP);  /* should be gas... but no IMM_GAS */
-    SET_BIT(mob->susc,IMM_ACID);    
+    SET_BIT(mob->susc,IMM_ACID);
     break;
   case RACE_GIANT_STORM  :
     SET_BIT(mob->M_immune, IMM_ELEC);
@@ -3285,14 +3285,14 @@ void SetRacialStuff( struct char_data *mob)
     SET_BIT(mob->M_immune, IMM_PIERCE);
     break;
   case RACE_UNDEAD:
-  case RACE_UNDEAD_VAMPIRE : 
-  case RACE_UNDEAD_LICH    : 
+  case RACE_UNDEAD_VAMPIRE :
+  case RACE_UNDEAD_LICH    :
   case RACE_UNDEAD_WIGHT   :
   case RACE_UNDEAD_GHAST   :
   case RACE_UNDEAD_GHOUL   :
-  case RACE_UNDEAD_SPECTRE :   
+  case RACE_UNDEAD_SPECTRE :
   case RACE_UNDEAD_ZOMBIE  :
-  case RACE_UNDEAD_SKELETON : 
+  case RACE_UNDEAD_SKELETON :
    SET_BIT(mob->specials.affected_by, AFF_INFRAVISION);
    SET_BIT(mob->M_immune,IMM_POISON+IMM_DRAIN+IMM_SLEEP+IMM_HOLD+IMM_CHARM);
    break;
@@ -3321,7 +3321,7 @@ void SetRacialStuff( struct char_data *mob)
  			   break;
  case RACE_DRAGON_BRASS  : SET_BIT(mob->M_immune,IMM_ELEC);
  			   break;
- 
+
 case RACE_HALF_ELF:
 case RACE_HALF_OGRE:
 case RACE_HALF_ORC:
@@ -3335,8 +3335,8 @@ case RACE_HALF_GIANT:
 
    /* height and weight      / Hatred Foes! / */
  if (IS_NPC(mob))
-{ 
- switch(GET_RACE(mob)) 
+{
+ switch(GET_RACE(mob))
  {
   case RACE_HUMAN:break;
 
@@ -3350,7 +3350,7 @@ case RACE_HALF_GIANT:
   case RACE_ROCK_GNOME:break;
   case RACE_DEEP_GNOME:
      AddHatred(mob,OP_RACE,RACE_DROW);
- 
+
   case RACE_DWARF:
       AddHatred(mob,OP_RACE,RACE_GOBLIN);
       AddHatred(mob,OP_RACE,RACE_ORC);
@@ -3360,11 +3360,11 @@ case RACE_HALF_GIANT:
   case RACE_LYCANTH:
    AddHatred(mob,OP_RACE,RACE_HUMAN);
    break;
-  
+
   case RACE_UNDEAD:break;
   case RACE_DARK_DWARF:		  /* these guys hate good people */
   case RACE_UNDEAD_VAMPIRE :
-  case RACE_UNDEAD_LICH    : 
+  case RACE_UNDEAD_LICH    :
   case RACE_UNDEAD_WIGHT   :
   case RACE_UNDEAD_GHAST   :
   case RACE_UNDEAD_GHOUL   :
@@ -3373,7 +3373,7 @@ case RACE_HALF_GIANT:
   case RACE_UNDEAD_ZOMBIE  :break;
   case RACE_UNDEAD_SKELETON :break;
 
-  
+
 
   case RACE_VEGMAN:break;
   case RACE_MFLAYER:break;
@@ -3445,24 +3445,24 @@ case RACE_HALF_GIANT:
  case RACE_DRAGON_GOLD   :
  case RACE_DRAGON_BRONZE :
  case RACE_DRAGON_COPPER :
- case RACE_DRAGON_BRASS  : 
+ case RACE_DRAGON_BRASS  :
     mob->player.weight = MAX(60, GetMaxLevel(mob)*GetMaxLevel(mob)*2);
     mob->player.height = 100+ MIN(mob->player.weight, 500);
     break;
 
-  case RACE_BIRD: 
-  case RACE_PARASITE: 
-  case RACE_SLIME: 
+  case RACE_BIRD:
+  case RACE_PARASITE:
+  case RACE_SLIME:
     mob->player.weight = GetMaxLevel(mob)*(GetMaxLevel(mob)/5);
     mob->player.height = 10*GetMaxLevel(mob);
     break;
-  
+
 
   case RACE_GHOST:
     mob->player.weight = GetMaxLevel(mob)*(GetMaxLevel(mob)/5);
     mob->player.height = 10*GetMaxLevel(mob);
     break;
-  case RACE_TROLL: 
+  case RACE_TROLL:
     AddHatred(mob,OP_GOOD,1000);
     mob->player.height = 200+GetMaxLevel(mob)*15;
     mob->player.weight = (int)mob->player.height*1.5;
@@ -3479,22 +3479,22 @@ case RACE_HALF_GIANT:
     AddHatred(mob,OP_RACE,RACE_DWARF);
     break;
 
-  case RACE_DEVIL: 
-  case RACE_DEMON: 
+  case RACE_DEVIL:
+  case RACE_DEMON:
     AddHatred(mob,OP_GOOD,1000);
     mob->player.height = 200+GetMaxLevel(mob)*15;
     mob->player.weight = (int)mob->player.height*1.5;
     break;
 
 
-   case RACE_PLANAR:    
+   case RACE_PLANAR:
     mob->player.height = 200+GetMaxLevel(mob)*15;
     mob->player.weight = (int)mob->player.height*1.5;
     break;
 
   case RACE_GOD: break;
   case RACE_TREE: break;
-  case RACE_TYTAN: 
+  case RACE_TYTAN:
     mob->player.weight = MAX(500, GetMaxLevel(mob)*GetMaxLevel(mob)*10);
     mob->player.height = GetMaxLevel(mob)/2*100;
     break;
@@ -3502,10 +3502,10 @@ case RACE_HALF_GIANT:
  case RACE_HALF_ELF:
  case RACE_HALF_OGRE:
  case RACE_HALF_ORC:
- case RACE_HALF_GIANT:    
+ case RACE_HALF_GIANT:
 			break;
   } /* end switch */
-} /* if NPC */  
+} /* if NPC */
 
 }
 
@@ -3615,12 +3615,12 @@ int GetNewRace(struct char_file_u *s)
 int GetNewRace(struct char_file_u *s)
 {
  int return_race,try_again=TRUE;
- 
+
  while (try_again) {
- 
+
    return_race=number(1,MAX_RACE);
-   
-  switch(return_race) { 
+
+  switch(return_race) {
 		/* we allow these races to be used in reincarnations */
 	case RACE_HUMAN     :
 	case RACE_MOON_ELF  :
@@ -3631,15 +3631,15 @@ int GetNewRace(struct char_file_u *s)
 	case RACE_ORC      :
 	case RACE_DROW     :
 	case RACE_MFLAYER  :
-	case RACE_DARK_DWARF: 
+	case RACE_DARK_DWARF:
 	case RACE_DEEP_GNOME :
 	case RACE_GNOLL	:
 	case RACE_GOLD_ELF	:
 	case RACE_WILD_ELF	:
 	case RACE_SEA_ELF	:
 	case RACE_LIZARDMAN :
-	case RACE_HALF_ELF :  
-	case RACE_HALF_OGRE   : 
+	case RACE_HALF_ELF :
+	case RACE_HALF_OGRE   :
 	case RACE_HALF_ORC     :
 	case RACE_HALF_GIANT   :
 	case RACE_GIANT_HILL   :
@@ -3659,7 +3659,7 @@ int GetNewRace(struct char_file_u *s)
 		break;
 	}  /* end switch */
    }	 /* end while */
-   
+
    return(return_race);
 }
 #endif
@@ -3710,16 +3710,16 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
       drag_ego += align;
       if (GET_HIT(horse) > 0)
 	drag_ego -= GET_MAX_HIT(horse)/GET_HIT(horse);
-      else 
+      else
 	    drag_ego = 0;
       if (GET_HIT(ch) > 0)
 	ride_ego -= GET_MAX_HIT(ch)/GET_HIT(ch);
-      else 
+      else
 	ride_ego = 0;
-      
+
       check = drag_ego+number(1,10)-(ride_ego+number(1,10));
       return(check);
-      
+
     } else {
       return(-GetMaxLevel(horse));
     }
@@ -3728,7 +3728,7 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
 
     drag_ego = GetMaxLevel(horse);
 
-    if (drag_ego > 15) 
+    if (drag_ego > 15)
       drag_ego *= 2;
 
     ride_ego = ch->skills[SKILL_RIDE].learned/10 +
@@ -3739,8 +3739,8 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
     }
     check = drag_ego+number(1,5)-(ride_ego+number(1,10));
     return(check);
-  }    
-} 
+  }
+}
 
 int RideCheck( struct char_data *ch, int mod)
 {
@@ -3779,7 +3779,7 @@ int EqWBits(struct char_data *ch, int bits)
   int i;
 
   for (i=0;i< MAX_WEAR;i++){
-    if (ch->equipment[i] && 
+    if (ch->equipment[i] &&
         IS_SET(ch->equipment[i]->obj_flags.extra_flags, bits))
       return(TRUE);
   }
@@ -3811,8 +3811,8 @@ int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 char buf[128];
 
   if (!ch->skills) return(0);
-    
-  if (!IS_SET(ch->skills[sknum].flags, SKILL_KNOWN)) 
+
+  if (!IS_SET(ch->skills[sknum].flags, SKILL_KNOWN))
     return(0);
 
   if (ch->skills[sknum].learned < max && ch->skills[sknum].learned > 0)   {
@@ -3861,7 +3861,7 @@ int GetSumRaceMaxLevInRoom( struct char_data *ch)
   return(sum);
 }
 
-int too_many_followers(struct char_data *ch) 
+int too_many_followers(struct char_data *ch)
 {
   struct follow_type *k;
   int max_followers,actual_fol;
@@ -3869,9 +3869,9 @@ int too_many_followers(struct char_data *ch)
 
 
   max_followers = (int) chr_apply[GET_CHR(ch)].num_fol;
-  
-  for(k=ch->followers,actual_fol=0; k; k=k->next) 
-    if (IS_AFFECTED(k->follower, AFF_CHARM)) 
+
+  for(k=ch->followers,actual_fol=0; k; k=k->next)
+    if (IS_AFFECTED(k->follower, AFF_CHARM))
       actual_fol++;
 
   if(actual_fol < max_followers)
@@ -3907,23 +3907,23 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
   obj_ego = obj->obj_flags.cost_per_day;
 
  if (strstr(obj->name,"scroll") ||  strstr(obj->name,"potion") ||
-     strstr(obj->name,"bag") ||     
+     strstr(obj->name,"bag") ||
      strstr(obj->name,"key"   ) ) {
       return(0);
      }
-     
+
   if (obj_ego >= MAX(LIM_ITEM_COST_MIN,14000) || obj_ego < 0) {
-    
+
     if (obj_ego < 0)
       obj_ego = 50000;
 
     obj_ego /= 666;
 
-/*    
+/*
   alignment stuff
-    */    
+    */
 
-    if (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) || 
+    if (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) ||
 	(IS_OBJ_STAT(obj, ITEM_ANTI_EVIL))) {
       if (IS_NEUTRAL(ch))
 	obj_ego += obj_ego/4;
@@ -3937,7 +3937,7 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
       } else if (p_ego > 20) {
 	p_ego += (p_ego -20);
       }
-      
+
     } else {
       p_ego = 10000;
     }
@@ -3975,7 +3975,7 @@ void IncrementZoneNr(int nr)
     for (c = character_list;c;c=c->next) {
       if (c->specials.zone >= nr)
 	c->specials.zone--;
-    }    
+    }
   }
 }
 
@@ -4001,7 +4001,7 @@ int IsDarkOutside(struct room_data *rp)
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
 if ((IS_OBJ_STAT(obj_object,ITEM_GLOW))  || (IS_OBJ_STAT(obj_object,ITEM_HUM)) ||
-   (IS_OBJ_STAT(obj_object,ITEM_MAGIC)) || (IS_OBJ_STAT(obj_object,ITEM_BLESS)) ||	      
+   (IS_OBJ_STAT(obj_object,ITEM_MAGIC)) || (IS_OBJ_STAT(obj_object,ITEM_BLESS)) ||
    (IS_OBJ_STAT(obj_object,ITEM_NODROP)) )
     return(TRUE); else
     return(FALSE);
@@ -4010,11 +4010,11 @@ if ((IS_OBJ_STAT(obj_object,ITEM_GLOW))  || (IS_OBJ_STAT(obj_object,ITEM_HUM)) |
 int CheckGetBarbarianOK(struct char_data *ch,struct obj_data *obj_object)
 {
 #ifndef BARB_GET_DISABLE
- if (GET_LEVEL(ch,BARBARIAN_LEVEL_IND) !=0 && 
+ if (GET_LEVEL(ch,BARBARIAN_LEVEL_IND) !=0 &&
        (anti_barbarian_stuff(obj_object)) && (GetMaxLevel(ch)<LOW_IMMORTAL)  )
        {
-	act("$n you sense magic on $p and drop it.",FALSE,ch,obj_object,0,TO_CHAR);	        
-        act("$n shakes $s head and refuses to take $p.", FALSE, ch, obj_object, 0, TO_ROOM);	        
+	act("$n you sense magic on $p and drop it.",FALSE,ch,obj_object,0,TO_CHAR);
+        act("$n shakes $s head and refuses to take $p.", FALSE, ch, obj_object, 0, TO_ROOM);
         return(FALSE);
        }
 #endif
@@ -4026,8 +4026,8 @@ int CheckGiveBarbarianOK(struct char_data *ch,struct char_data *vict,
 {
   char buf[MAX_STRING_LENGTH];
 
-#ifndef BARB_GET_DISABLE 
- if (GET_LEVEL(vict,BARBARIAN_LEVEL_IND) !=0 && 
+#ifndef BARB_GET_DISABLE
+ if (GET_LEVEL(vict,BARBARIAN_LEVEL_IND) !=0 &&
          anti_barbarian_stuff(obj) && GetMaxLevel(vict)<LOW_IMMORTAL  )
        {
 	 if (GET_POS(vict)<=POSITION_SLEEPING)  {
@@ -4035,15 +4035,15 @@ int CheckGiveBarbarianOK(struct char_data *ch,struct char_data *vict,
  	   return(FALSE);
 	  } else  {
 	    sprintf(buf,"%s senses magic on the object and refuses it!\n\r",GET_NAME(vict));
-	   }            
+	   }
         send_to_char(buf,ch);
 	return(FALSE);
-       } 
+       }
 #endif
  return(TRUE);
 }
 
-int CheckEgo(struct char_data *ch, struct obj_data *obj) 
+int CheckEgo(struct char_data *ch, struct obj_data *obj)
 {
  int j=0;
 
@@ -4054,7 +4054,7 @@ if (!obj || !ch) {
 	log("!obj || !ch in CheckEgo, utility.c");
 	return(FALSE);
 	}
-	
+
   /*
     if the item is limited, check its ego.
     use some funky function to determine if pc's ego is higher than objs'
@@ -4064,36 +4064,36 @@ if (!obj || !ch) {
   if ((j < -5) && (GetMaxLevel(ch) < IMPLEMENTOR))
   {
     act("$p almost seems to say 'You're much too puny to use me, twerp!'",0,
-	ch, obj, 0, TO_CHAR); 
+	ch, obj, 0, TO_CHAR);
 
  if (obj->in_obj==NULL) {
-     act("$p falls to the floor",0,ch, obj, 0, TO_CHAR); 
-     act("$p removes itself from $n, and falls to the floor",0,ch, obj, 0, TO_ROOM); 
+     act("$p falls to the floor",0,ch, obj, 0, TO_CHAR);
+     act("$p removes itself from $n, and falls to the floor",0,ch, obj, 0, TO_ROOM);
     }
     return(FALSE);
-  } else 
+  } else
   if ((j < 0) && (GetMaxLevel(ch) < IMPLEMENTOR))  {
     act("$p almost seems to say 'You're pretty puny.  I don't want to be seen with you!\n", 0, ch, obj, 0, TO_CHAR);
 
-if (obj->in_obj==NULL) { 
-    act("$p falls to the floor",0,ch, obj, 0, TO_CHAR); 
-    act("$p removes itself from $n, and falls to the floor",0,ch, obj, 0, TO_ROOM); 
+if (obj->in_obj==NULL) {
+    act("$p falls to the floor",0,ch, obj, 0, TO_CHAR);
+    act("$p removes itself from $n, and falls to the floor",0,ch, obj, 0, TO_ROOM);
  }
     return(FALSE);
-  } else 
+  } else
     return(TRUE);
-  
+
   return(FALSE);
 #endif
 }
 
-int CheckGetEgo(struct char_data *ch, struct obj_data *obj) 
+int CheckGetEgo(struct char_data *ch, struct obj_data *obj)
 {
   return(TRUE);
 }
 
 int CheckEgoGive(struct char_data *ch,struct char_data *vict,
-					 struct obj_data *obj) 
+					 struct obj_data *obj)
 {
  int j=0;
 
@@ -4110,22 +4110,22 @@ return(TRUE);
   {
 if (AWAKE(vict)) {
       act("$p almost seems to say 'You're much too puny to use me, twerp!'",0,
- 	vict, obj, 0, TO_CHAR); 
-     act("$p refuses to leave $N's hands",0,vict, obj, ch, TO_CHAR); 
+ 	vict, obj, 0, TO_CHAR);
+     act("$p refuses to leave $N's hands",0,vict, obj, ch, TO_CHAR);
     }
-    act("$p refuses to be given to $n by $N ",0,vict, obj, ch, TO_ROOM); 
+    act("$p refuses to be given to $n by $N ",0,vict, obj, ch, TO_ROOM);
     return(FALSE);
-  } else 
+  } else
   if ((j < 0) && (GetMaxLevel(vict) < IMPLEMENTOR))  {
   if (AWAKE(vict)) {
     act("$p almost seems to say 'You're pretty puny.  I don't want to be seen with you!\n", 0, vict, obj, 0, TO_CHAR);
-    act("$p refuses to leave $N's hands",0,vict, obj, ch, TO_CHAR); 
+    act("$p refuses to leave $N's hands",0,vict, obj, ch, TO_CHAR);
     }
-    act("$p refuses to be given to $n by $N.",0,vict, obj, ch ,TO_ROOM); 
+    act("$p refuses to be given to $n by $N.",0,vict, obj, ch ,TO_ROOM);
     return(FALSE);
-  } else 
+  } else
     return(TRUE);
-  
+
   return(FALSE);
 #endif
 }
@@ -4151,7 +4151,7 @@ for (i=0;i<MAX_SPL_LIST;i++)
 
 int MAX_SPECIALS(struct char_data *ch)
 {
- return(GET_INT(ch));              
+ return(GET_INT(ch));
 }
 
 int CanSeeTrap(int num,struct char_data *ch)
@@ -4160,7 +4160,7 @@ if (HasClass(ch,CLASS_THIEF)) {
  return((affected_by_spell(ch,SPELL_FIND_TRAPS)) ||
         (ch->skills && num < (ch->skills[SKILL_FIND_TRAP].learned)
          && !MOUNTED(ch)));
- } 
+ }
 if (HasClass(ch,CLASS_RANGER) && OUTSIDE(ch)) {
    return((affected_by_spell(ch,SPELL_FIND_TRAPS)) ||
         (ch->skills && num < (ch->skills[SKILL_FIND_TRAP].learned)
@@ -4169,7 +4169,7 @@ if (HasClass(ch,CLASS_RANGER) && OUTSIDE(ch)) {
 
 if (affected_by_spell(ch,SPELL_FIND_TRAPS) && !MOUNTED(ch))
     return(TRUE);
-    
+
  return(FALSE);
 }
 
@@ -4180,10 +4180,10 @@ int MaxLimited(int lev)
 {
  if (lev <= 10) {
    return(3);
-  } else 
+  } else
  if (lev <= 15) {
    return(6);
-  } else 
+  } else
  if (lev <= 20) {
    return(9);
   } else
@@ -4202,7 +4202,7 @@ int MaxLimited(int lev)
  if (lev <= 45) {
    return(20);
   } else
- return(MAX_LIM_ITEMS);    
+ return(MAX_LIM_ITEMS);
 }
 
 int SiteLock (char *site)
@@ -4221,7 +4221,7 @@ for (i=0;i<numberhosts;i++) {
    }
   return(FALSE);
 #else
- return(FALSE);  
+ return(FALSE);
 #endif
 }
 
@@ -4245,9 +4245,9 @@ int MaxDexForRace(struct char_data *ch)
 			break;
 	case RACE_HALF_GIANT:
 			return(16);
-			break;						
+			break;
 	default:return(18);
-		break;		
+		break;
 	}/* end switch */
 }
 
@@ -4279,8 +4279,8 @@ int MaxWisForRace(struct char_data *ch)
 		break;
 	case RACE_FOREST_GNOME:
 		return(19);
-		break;	
-     	
+		break;
+
 	default:return(18);
 		break;
 	}/* end switch */
@@ -4296,10 +4296,10 @@ int MaxConForRace(struct char_data *ch)
 	 case RACE_MOON_ELF:
 	 case RACE_GOLD_ELF:
 	 case RACE_SEA_ELF:
-	 case RACE_DROW: 
+	 case RACE_DROW:
 	 case RACE_AVARIEL:
 	 		return(17);
-	 		break;	 			
+	 		break;
 	 default:return(18);
 	 	break;
 	}/* end switch */
@@ -4333,11 +4333,11 @@ if (GetMaxLevel(ch) >= SILLYLORD)
 	case RACE_TROLL:
 	case RACE_HALF_GIANT:return(19);
 				break;
-				
+
 	case RACE_HALFLING:
 	case RACE_GOBLIN:
 			return(17);
-			break;				
+			break;
 	default:return(18);
 		break;
 	}/* end switch */
@@ -4350,9 +4350,9 @@ int IS_MURDER(struct char_data *ch)
 char buf[256];
  if (IS_PC(ch) && IS_SET(ch->player.user_flags,MURDER_1) && !IS_IMMORTAL(ch)) {
  sprintf(buf,"%s has the MURDER set.",GET_NAME(ch));
- log(buf); 
- return (TRUE); 
-} 
+ log(buf);
+ return (TRUE);
+}
 #endif
   return(FALSE);
 }
@@ -4364,24 +4364,24 @@ char buf[256];
 
  if (IS_PC(ch) && IS_SET(ch->player.user_flags,STOLE_1) && !IS_IMMORTAL(ch)) {
  sprintf(buf,"%s has STOLE set.",GET_NAME(ch));
- log(buf); 
- return(TRUE); 
+ log(buf);
+ return(TRUE);
 }
 #endif
   return(FALSE);
 }
 
-int MEMORIZED(struct char_data *ch, int spl) 
+int MEMORIZED(struct char_data *ch, int spl)
 {
   if (ch->skills[spl].nummem >0)
      return(TRUE); else
 
-   if (ch->skills[spl].nummem < 0) 
+   if (ch->skills[spl].nummem < 0)
      ch->skills[spl].nummem = 0;
  return(FALSE);
 }
 
-int FORGET(struct char_data *ch, int spl) 
+int FORGET(struct char_data *ch, int spl)
 {
  if (ch->skills[spl].nummem)
      ch->skills[spl].nummem -=1;
@@ -4398,7 +4398,7 @@ if (OnlyClass(ch,CLASS_SORCERER))
 
 if (GET_INT(ch) > 18)
     BONUS +=(GET_INT(ch)-18);  /* +1 spell per intel over 18 */
-    
+
 if (GET_LEVEL(ch,SORCERER_LEVEL_IND) < 4) {
    return(3+BONUS);
   } else
@@ -4458,7 +4458,7 @@ int IS_LINKDEAD(struct char_data *ch)
 
 if (IS_SET(ch->specials.act,ACT_POLYSELF) && !ch->desc)
       return(TRUE);
-      
+
    return(FALSE);
 }
 
@@ -4468,17 +4468,17 @@ int IS_UNDERGROUND(struct char_data *ch)
  extern struct zone_data *zone_table;
 
   if ((rp = real_roomp(ch->in_room))!=NULL) {
-   if (IS_SET(zone_table[rp->zone].reset_mode, ZONE_UNDER_GROUND)) 
+   if (IS_SET(zone_table[rp->zone].reset_mode, ZONE_UNDER_GROUND))
    return(TRUE);
   }
- 
+
 return(FALSE);
 }
 
 int SetDefaultLang(struct char_data *ch)
 {
 int i;
-		
+
 switch (GET_RACE(ch)) {
 	case RACE_MOON_ELF:
 	case RACE_GOLD_ELF:
@@ -4505,11 +4505,11 @@ switch (GET_RACE(ch)) {
 	} /* end switch */
 	ch->skills[i].learned = 95;
 	SET_BIT(ch->skills[i].flags,SKILL_KNOWN);
-	
+
 	/* end default langauges sets */
 }
 
-int IsMagicSpell(int spell_num) 
+int IsMagicSpell(int spell_num)
 {
 int tmp=FALSE;
 
@@ -4605,11 +4605,11 @@ switch(spell_num) {
 	case TYPE_RANGE_WEAPON:
 		tmp = FALSE;	/* these are NOT magical! */
 		break;
-		
+
 	default :tmp = TRUE; /* default to IS MAGIC */
 		 break;
   } /* end switch */
-  
+
  return(tmp);
 }
 
@@ -4617,23 +4617,23 @@ switch(spell_num) {
 int exist(char *s)
 {
   int f;
-  
+
     f=open(s,O_RDONLY);
 	close(f);
-	
+
         if (f>0)
         return(TRUE);
               else
         return(FALSE);
 }
-                  
+
 
 	/* Good side just means they are of the first races and on the */
 	/* general good side of life, it does NOT refer to alignment */
 	/* only good side people can kill bad side people PC's */
 int IsGoodSide(struct char_data *ch)
 {
-  
+
   switch(GET_RACE(ch)) {
 
 	case RACE_HUMAN     :
@@ -4646,14 +4646,14 @@ int IsGoodSide(struct char_data *ch)
 	case	 RACE_HALFLING  :
 	case	 RACE_ROCK_GNOME     :
 	case	 RACE_HALF_ELF  :
-	case	 RACE_HALF_OGRE   : 
-	case	 RACE_HALF_ORC    : 
-	case	 RACE_HALF_GIANT  : 
+	case	 RACE_HALF_OGRE   :
+	case	 RACE_HALF_ORC    :
+	case	 RACE_HALF_GIANT  :
 
 	case 	RACE_DROW:
-				return(TRUE);	 
+				return(TRUE);
      } /* */
-    
+
   return(FALSE);
 }
 
@@ -4662,7 +4662,7 @@ int IsGoodSide(struct char_data *ch)
 	/* only bad side people can hit and kill good side people PC's */
 int IsBadSide(struct char_data *ch)
 {
-	
+
   switch(GET_RACE(ch))  {
   case RACE_GOBLIN:
   case RACE_DARK_DWARF:
@@ -4671,7 +4671,7 @@ int IsBadSide(struct char_data *ch)
   case RACE_MFLAYER:
     return(TRUE);
   } /* */
-  
+
   return(FALSE);
 }
 
@@ -4689,16 +4689,16 @@ if (IS_SET(SystemFlags,SYS_NOKILL))
 
 if ((IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) &&
     (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
-      return(TRUE);         
+      return(TRUE);
 
      if (IsGoodSide(ch) && IsGoodSide(ch2) ||
-         IsBadSide(ch)  && IsBadSide (ch2)) 
-         return(FALSE); else 
+         IsBadSide(ch)  && IsBadSide (ch2))
+         return(FALSE); else
 if (IS_SET(ch->player.user_flags,RACE_WAR) &&
     IS_SET(ch2->player.user_flags,RACE_WAR))  {
         return(TRUE);
     }
- 
+
   return(FALSE);
 }
 
@@ -4707,25 +4707,25 @@ int fighting_in_room(int room_n)
 {
  struct char_data *ch;
  struct room_data *r;
-                 
+
   r=real_roomp(room_n);
-    
-    if(!r) 
+
+    if(!r)
      return FALSE;
-  
-  for(ch=r->people;ch;ch=ch->next_in_room) 
-    if(ch->specials.fighting) 
+
+  for(ch=r->people;ch;ch=ch->next_in_room)
+    if(ch->specials.fighting)
        return TRUE;
-  
+
   return FALSE;
 }
-                                        
-                                        
+
+
 
 int str_cmp2(char *arg1, char *arg2)
 {
   int chk, i;
-  
+
   if (((!arg2) || (!arg1)) || (strlen(arg1)==0))
    return(1);
 
@@ -4738,14 +4738,14 @@ int str_cmp2(char *arg1, char *arg2)
   return(0);
 }
 
-int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir) 
+int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 {
  long l;
  int rdir;
  char buf[255];
  struct zone_data *zd,*tmpz;
  struct room_data *newrp;
-   
+
  if (GetMaxLevel(ch) < LOW_IMMORTAL || !rpp || !ch->desc ||
  	!IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
 	 return(FALSE);
@@ -4766,7 +4766,7 @@ if (newrp || l >zd->top) {
 	send_to_char("No more empty rooms!\n\r",ch);
 	return(FALSE);
 	}
-	
+
 /* create new room  */
 	sprintf(buf,"%ld %ld",l,l);
 	do_create(ch,buf,0);
@@ -4777,7 +4777,7 @@ if (newrp || l >zd->top) {
 		send_to_char("Could not create the next room!\n\r",ch);
 		return(FALSE);
 		}
-		
+
 /* 	set room flags and types to current rooms settings */
 	newrp->zone= (*rpp)->zone;
 	newrp->continent = (*rpp)->continent;
@@ -4792,7 +4792,7 @@ if (newrp || l >zd->top) {
 	newrp->room_flags= (*rpp)->room_flags;
 
 /* 	figure out number for reverse direction of dir */
-	switch(dir-1) 
+	switch(dir-1)
 		{
 			case NORTH:	rdir= SOUTH;
 				break;
@@ -4806,11 +4806,11 @@ if (newrp || l >zd->top) {
 				break;
 			case DOWN:	rdir=UP;
 				break;
- 		       default: 
+ 		       default:
  		           rdir=NORTH;
 				break;
 		} /* end switch */
-		
+
 /* 	make the exit to return in current room in new room */
 	sprintf(buf,"exit %d 0 -1 %ld",rdir,(*rpp)->number);
 	do_edit(ch,buf,0);
@@ -4821,7 +4821,7 @@ if (newrp || l >zd->top) {
 	do_edit(ch,buf,0);
 
 
-	
+
 /* return(TRUE); */
 
  return(FALSE);
@@ -4837,7 +4837,7 @@ void memory_check(char *p)
     fflush(stderr);
     abort();
   }
-#endif  
+#endif
 }
 
 void dlog(char *s)
@@ -4849,9 +4849,9 @@ void dlog(char *s)
 
 /*added 2001 (GH) */
 int pc_class_num(int clss) {
-		 
-  switch(clss) { 
-    case 1: return 0; 
+
+  switch(clss) {
+    case 1: return 0;
     case 2: return 1;
     case 4: return 2;
     case 8: return 3;
@@ -4863,6 +4863,6 @@ int pc_class_num(int clss) {
     case 512: return 9;
     case 1024: return 10;
     case 2048: return 11;
-      
+
   }
 }
