@@ -1011,7 +1011,8 @@ void gain_exp(struct char_data *ch, int gain)
             chrace = GET_RACE(ch);
         }
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i]) {
+            if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i] &&
+                (GET_LEVEL(ch, i) < 50)) {
                 if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch, i) + 2].exp - 1) {
                     /* 
                      * is already maxxed 
