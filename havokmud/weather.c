@@ -123,8 +123,8 @@ void another_hour(int mode)
         }
 
         if (tmp == gMoonSet) {
+            switch_light(MOON_SET);
             if (moontype > 15 && moontype < 25) {
-                switch_light(MOON_SET);
                 send_to_outdoor("Darkness once again fills the realm as the "
                                 "moon sets.\n\r");
             } else {

@@ -4836,7 +4836,7 @@ int IsDarkOutside(struct room_data *rp)
     if (rp->sector_type == SECT_FOREST && gLightLevel <= 1) {
         return (TRUE);
     } else if (gLightLevel == 0) {
-        return (FALSE);
+        return (TRUE);
     }
     return (FALSE);
 }
