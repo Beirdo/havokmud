@@ -618,7 +618,7 @@ dlog("in do_flee");
 					send_to_char("You flee head over heels.\n\r", ch);
 				} else {
 					send_to_char("You retreat skillfully\n\r", ch);
-					if (IS_PC(ch) {
+					if (IS_PC(ch)) {
 						send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
 						gain_exp(ch, 100);
 					}
