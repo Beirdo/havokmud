@@ -7051,7 +7051,7 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_da
 						return(TRUE);
 					}
 
-					if(ch->skills[loreskills[x].skillnum].learned >= 95) {
+					if(ch->skills[styleskillset[x].skillnum].learned >= 95) {
 						send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
 									" 'You're already a master of this art!'\n\r",ch);
 						return(TRUE);
