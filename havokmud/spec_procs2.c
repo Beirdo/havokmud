@@ -3936,6 +3936,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     "dodge",
     "switch opponents",
     "springleap",
+    "legsweep",
     "\n",
   };
   int percent=0, number=0;
@@ -3991,10 +3992,12 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
       send_to_char(buf,ch);
       sprintf(buf," kick:            %s\n\r",how_good(ch->skills[SKILL_KICK].learned));
       send_to_char(buf,ch);
+      sprintf(buf," Legsweep:        %s\n\r",how_good(ch->skills[SKILL_LEG_SWEEP].learned));
+      send_to_char(buf,ch);
       return(TRUE);
     } else {
       number = old_search_block(arg,0,strlen(arg),n_skills,FALSE);
-      send_to_char ("The ancient master says ",ch);
+      send_to_char ("$c0015The ancient master says ",ch);
       if (number == -1) {
 	send_to_char("'I do not know of this skill.'\n\r", ch);
 	return(TRUE);
@@ -4097,7 +4100,13 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	  return(TRUE);
 	}
 	break;
-
+  case 13:
+	sk_num = SKILL_LEG_SWEEP;
+	if (!HasClass(ch, CLASS_MONK)) {
+	  send_to_char("'You do not possess the proper skills'\n\r", ch);
+	  return(TRUE);
+	}
+	break;
       default:
 	sprintf(buf, "Strangeness in monk master (%d)", number);
 	log(buf);

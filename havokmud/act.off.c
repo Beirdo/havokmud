@@ -681,6 +681,104 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 }
 
 
+void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
+{
+  struct char_data *victim;
+  char name[256];
+  byte percent;
+  char buf[100];
+
+dlog("in do_leg_sweep");
+  if (!ch->skills)
+    return;
+
+   if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
+    return;
+
+if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+ if (!HasClass(ch, CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
+     send_to_char("You're no monk!\n\r", ch);
+     return;
+    }
+
+  only_argument(argument, name);
+
+  if (!(victim = get_char_room_vis(ch, name))) {
+    if (ch->specials.fighting) {
+      victim = ch->specials.fighting;
+    } else {
+      send_to_char("Who do you wish to legsweep??\n\r", ch);
+      return;
+    }
+  }
+
+
+  if (victim == ch) {
+    send_to_char("Aren't we funny today...\n\r", ch);
+    return;
+  }
+
+  if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+    if (!IsGiant(ch)) {
+      act("$N is MUCH too large to legsweep!", FALSE, ch, 0, victim, TO_CHAR);
+      return;
+    }
+  }
+
+  if (MOUNTED(victim)) {
+    send_to_char("You'll end up booting your targets mount if you do that!\n\r", ch);
+    return;
+  }
+
+  if (MOUNTED(ch)) {
+    send_to_char("You'll end up booting your mount if you do that!\n\r", ch);
+    return;
+  }
+
+
+  if (ch->attackers > 2) {
+    send_to_char("There are too many people around to do that!\n\r",ch);
+    return;
+  }
+
+  if (victim->attackers >= 3) {
+    send_to_char("You'll end up giving your buddies a good boot if you do that!\n\r", ch);
+    return;
+  }
+
+  percent=number(1,101); /* 101% is a complete failure */
+
+  /* some modifications to account for dexterity, and level */
+  percent -= dex_app[GET_DEX(ch)].reaction*10;
+  percent += dex_app[GET_DEX(victim)].reaction*10;
+
+  if (GetMaxLevel(victim) > 12) {
+    percent += ((GetMaxLevel(victim)-10) * 5);
+  }
+
+  if (percent > ch->skills[SKILL_LEG_SWEEP].learned) {
+    if (GET_POS(victim) > POSITION_DEAD) {
+      damage(ch, victim, 0, SKILL_LEG_SWEEP);
+      GET_POS(ch) = POSITION_SITTING;
+    }
+    LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
+    WAIT_STATE(ch, PULSE_VIOLENCE*3);
+  } else {
+    if (GET_POS(victim) > POSITION_DEAD) {
+      GET_POS(victim) = POSITION_SITTING;
+      if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
+         WAIT_STATE(victim, PULSE_VIOLENCE*2);
+         GET_POS(victim) = POSITION_SITTING;
+        sprintf(buf,"You receive 100 experience for using your leg sweep abilites.\n\r.",ch);
+		send_to_char(buf,ch);
+		gain_exp(ch, 100);
+      }
+    }
+  }
+  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}
+
+
 
 
 void do_rescue(struct char_data *ch, char *argument, int cmd)

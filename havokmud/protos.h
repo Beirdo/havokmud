@@ -219,6 +219,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd);
 void do_order(struct char_data *ch, char *argument, int cmd);
 void do_flee(struct char_data *ch, char *argument, int cmd);
 void do_bash(struct char_data *ch, char *argument, int cmd);
+void do_leg_sweep(struct char_data *ch, char *argument, int cmd);
 void do_rescue(struct char_data *ch, char *argument, int cmd);
 void do_assist(struct char_data *ch, char *argument, int cmd);
 void do_kick(struct char_data *ch, char *argument, int cmd);
