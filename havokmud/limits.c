@@ -203,7 +203,7 @@ int move_limit(struct char_data *ch)
   	   GET_RACE(ch) == RACE_SEA_ELF ||
            GET_RACE(ch)== RACE_HALF_ELF)
     max += 20;
-  else if (GET_CLASS(ch) == RACE_AVARIEL)
+  else if (GET_RACE(ch) == RACE_AVARIEL)
     max += 35;
   else if (GET_RACE(ch) == RACE_HALFLING)
     max -= 45 ;

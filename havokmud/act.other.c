@@ -165,7 +165,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
     {2, "H:%h V:%v> "},
     {3, "H:%h M:%m V:%v> "},
     {4, "H:%h/%H V:%v/%V> "},
-    {5, "H:%h/%H M:%m/%M V:%v/%v> "},
+    {5, "H:%h/%H M:%m/%M V:%v/%V> "},
     {6, "H:%h V:%v C:%C> "},
     {7, "H:%h M:%m V:%v C:%C> "},
     {8, "H:%h V:%v C:%C %S> "},
