@@ -3731,6 +3731,11 @@ void roll_abilities(struct char_data *ch)
         ch->abilities.con++;
         ch->abilities.dex--;
         ch->abilities.intel--;
+    } else if (GET_RACE(ch) == RACE_ORC) {
+        ch->abilities.str++;
+        ch->abilities.con++;
+        ch->abilities.chr -= 2;
+        ch->abilities.intel -= 2;
     } else if (GET_RACE(ch) == RACE_HALF_ORC) {
         ch->abilities.con++;
         ch->abilities.chr--;

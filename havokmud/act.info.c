@@ -1702,10 +1702,6 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         "down",
         "in",
         "at",
-        "",
-        /*
-         * Look at '' case
-         */
         "room",
         "\n"
     };
@@ -1734,7 +1730,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         argument = get_argument_nofill( argument, &arg1 );
         argument = get_argument( argument, &arg2 );
         if( !arg1 ) {
-            keyword_no = 9;
+            keyword_no = 8;
         } else if (!strcmp(arg1, "at") && arg2) {
             keyword_no = 7;
         } else if (!strcmp(arg1, "in") && arg2) {
@@ -2100,47 +2096,6 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             send_to_char("Sorry, I didn't understand that!\n\r", ch);
             break;
 
-            /*
-             * look 'room'
-             */
-        case 9:
-            send_to_char(real_roomp(ch->in_room)->name, ch);
-            send_to_char("\n\r", ch);
-            send_to_char(real_roomp(ch->in_room)->description, ch);
-
-            if (!IS_NPC(ch)) {
-                if (IS_SET(ch->specials.act, PLR_HUNTING)) {
-                    if (ch->specials.hunting) {
-                        res = track(ch, ch->specials.hunting);
-                        if (!res) {
-                            ch->specials.hunting = 0;
-                            ch->hunt_dist = 0;
-                            REMOVE_BIT(ch->specials.act, PLR_HUNTING);
-                        }
-                    } else {
-                        ch->hunt_dist = 0;
-                        REMOVE_BIT(ch->specials.act, PLR_HUNTING);
-                    }
-                }
-            } else {
-                if (IS_SET(ch->specials.act, ACT_HUNTING)) {
-                    if (ch->specials.hunting) {
-                        res = track(ch, ch->specials.hunting);
-                        if (!res) {
-                            ch->specials.hunting = 0;
-                            ch->hunt_dist = 0;
-                            REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-                        }
-                    } else {
-                        ch->hunt_dist = 0;
-                        REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-                    }
-                }
-            }
-            list_exits_in_room(ch);
-            list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
-            list_char_in_room(real_roomp(ch->in_room)->people, ch);
-            break;
         }
     }
 }
