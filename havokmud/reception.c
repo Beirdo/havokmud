@@ -35,6 +35,8 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
                   struct obj_data *obj, struct obj_cost *cost)
 {
    char buf[MAX_INPUT_LENGTH], buf2[MAX_INPUT_LENGTH];
+   char tmp_str[MAX_INPUT_LENGTH*2];
+   char *str_pos, *i;
    int temp;
   
    /* Add cost for an item and it's contents, and next->contents */
@@ -52,10 +54,27 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
 
          if(re)
          {
+            str_pos = tmp_str;  /* set up starting position */
+            for(i=obj->short_description; *i; i++)
+            {
+               /* If we find an ANSI string, add spaces to the left of the string.
+                * This accounts for correct alignment b/c the ansi code will be taken out. */
+               if((*i=='$') && ((*(i+1)=='c') || (*(i+1)=='C')))
+               {
+                  memcpy(str_pos, "      ", 6);
+                  str_pos += 6;
+               }
+            }
+            /* Now fill in the original description, making sure not to overrun
+             * the buffer. */
+            strncpy(str_pos, obj->short_description, &tmp_str[MAX_INPUT_LENGTH*2-1]-str_pos);
+
             if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
-               sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", obj->short_description, temp);
+               sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", tmp_str, temp);
             else
-               sprintf(buf, "%30s : %d coins/day\n\r", obj->short_description, temp);
+               sprintf(buf, "%30s : %d coins/day\n\r", tmp_str, temp);
+
+            /* And send it to the player */
             send_to_char(buf, ch);
          }
          cost->no_carried++;
