@@ -71,31 +71,37 @@ int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *ob
  * @Used: used in chestproc and preparationproc
 */
 int countPeople(int zonenr) {
-	int count=0;
-	struct descriptor_data *d;
-	struct char_data *person;
+   int count=0;
+   struct descriptor_data *d;
+   struct char_data *person;
 
-    for (d = descriptor_list; d; d = d->next) {
+   for(d = descriptor_list; d; d = d->next)
+   {
       person=(d->original?d->original:d->character);
 
-		if(person) {
-			if(real_roomp(person->in_room)->zone == zonenr) {
-				count++;
-			}
-		}
-	}
-	return count;
+      if(person && real_roomp(person->in_room))
+      {
+         if(real_roomp(person->in_room)->zone == zonenr)
+            count++;
+      }
+   }
+   return count;
 }
 /* part of royal rumble proc */
 
-int count_People_in_room(int room) {
-	  struct char_data *i;
-	  int count=0;
-		for (i=real_roomp(room)->people; i; i = i->next_in_room) {
-			if(i) //this counts the number of people in just this room.
-				count++;
-		}
-	return count;
+int count_People_in_room(int room)
+{
+   struct char_data *i;
+   int count=0;
+	if(real_roomp(room))
+   {
+      for(i=real_roomp(room)->people; i; i = i->next_in_room)
+      {
+         if(i) //this counts the number of people in just this room.
+            count++;
+      }
+   }
+   return count;
 }
 
 
