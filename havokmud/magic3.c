@@ -3779,7 +3779,6 @@ void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *vic
 		  /* End Change Jan 22, 2004 Odin */
 		    dam = GET_HIT(t)+25;
 		    damage(ch, t, dam, SPELL_MIST_OF_DEATH);
-		    act(t->player.name,FALSE,ch,0,0,TO_CHAR);
 		  } else {
 		    dam = dice(level,7);
 		    if (saves_spell(t, SAVING_PETRI)) /* save for half damage */
