@@ -2601,7 +2601,7 @@ strcat(buf,"\n\r");
       sprintf(buf, "$c0005Damage Dice is '$c0014%dD%d$c0005'$c0015[%s]$c0005 [%s]\n\r",
 	      obj->obj_flags.value[1],
 	      obj->obj_flags.value[2],
-	      AttackType[obj->obj_flags.value[3]-1],
+	      AttackType[obj->obj_flags.value[3]/*-1*/],
 	      weaponskills[obj->weapontype].name);
 
       send_to_char(buf, ch);

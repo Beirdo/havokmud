@@ -4045,8 +4045,8 @@ if (!ch->skills)
     }
   }
 
-  if (ch->equipment[WIELD]->obj_flags.value[3] != 4) {
-    send_to_char("Only smashing weapons can be used for charging.\n\r",ch);
+  if (ch->equipment[WIELD]->obj_flags.value[3] != 13) { /* TYPE_IMPALE */
+    send_to_char("Only true and honourable lances should be used for charging.\n\r",ch);
     return;
   }
 

@@ -330,8 +330,8 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 		if (t->in_room == ch->in_room) {
 //			log("woah, you dare fight me? dead you are");
 			act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
-			act("You are engulfed by $n, and are quickly disassembled",FALSE,ch,0,t,TO_VICT);
-			act("$N is quickly reduced to a bloody pile of bones by $n",FALSE,ch,0,t,TO_NOTVICT);
+			act("You are engulfed by $n, and are quickly disassembled.",FALSE,ch,0,t,TO_VICT);
+			act("$N is quickly reduced to a bloody pile of bones by $n.",FALSE,ch,0,t,TO_NOTVICT);
 			GET_HIT(ch) -= GET_HIT(t);
 			die(t,NULL);
 			/* find the corpse and destroy it */
@@ -341,13 +341,13 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 				return(FALSE);
 			}
 			for (co = rp->contents; co; co = co->next_content) {
-				if (IS_CORPSE(co))  {  /* assume 1st corpse is victim's */
+				if (IS_CORPSE(co))  { /* assume 1st corpse is victim's */
 					while (co->contains) {
 						o = co->contains;
 						obj_from_obj(o);
 						obj_to_room(o, ch->in_room);
 					}
-					extract_obj(co);  /* remove the corpse */
+					extract_obj(co); /* remove the corpse */
 				}
 			}
 		}
@@ -361,7 +361,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 	}
 
 	/* the generic is the direction of travel */
-	if (number(0,1)==0) {  /* move */
+	if (number(0,2)==0) {  /* move */
 		if (!ValidMove(ch, (ch->generic)-1)) {
 			/* not sure why generic is dir+1, but the -1 fixes it -Lennya 20030405 */
 			if(number(0,2)!=0) { /* 66% chance it dies */

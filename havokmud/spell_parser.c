@@ -776,6 +776,42 @@ char *spells[]=
    "defensive",
    "evasive",
    "mend",				/*303*/
+	"call steed",
+	/* necro spells */
+	"cold light",
+	"disease",
+	"invis to undead",
+	"life tap",
+	"suit of bone",
+	"spectral shield",//310
+	"clinging darkness",
+	"dominate undead",
+	"unsummon",
+	"siphon strength",
+	"gather shadows",
+	"mend bones",
+	"trace corpse",
+	"endure cold",
+	"life draw",
+	"numb the dead",//320
+	"binding",
+	"decay",
+	"shadow step",
+	"cavorting bones",
+	"mist of death",
+	"nullify",
+	"dark empathy",
+	"eye of the dead",
+	"soul steal",
+	"life leech",//330
+	"dark pact",
+	"darktravel",
+	"vampiric embrace",
+	"bind affinity",
+	"scourge of the warlock",
+	"finger of death",
+	"flesh golem",
+	"dominate undead", //338
    "\n"
 };
 
@@ -942,7 +978,7 @@ int RoomElementalDamage(int flags,struct char_data *ch) {
 	int type=0;
 	int x;
 
-if(IS_AFFECTED2(ch,AFF2_NO_OUTDOOR)) {
+if(IS_SET(ch->specials.act,PLR_NOOUTDOOR)) {
 	return 0;
 
 }
@@ -1203,7 +1239,7 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 				else
 					regenroom=20;
 				/* make it so imms can forego seeing this: */
-				if(!IS_AFFECTED2(i,AFF2_NO_OUTDOOR)) {
+				if(!IS_SET(i->specials.act,PLR_NOOUTDOOR)) {
 					if(GET_HIT(i)!=GET_MAX_HIT(i))
 						send_to_char("Your wounds seem to heal exceptionally quick.\n\r",i);
 					else if(GET_MANA(i)!=GET_MAX_MANA(i))
@@ -1838,6 +1874,42 @@ sprintf(buf, "$n utters the words, '%s'", spells[si-1]);
     }
 }
 
+weave_song(struct char_data *ch, int si)
+{
+	char buf[MAX_STRING_LENGTH], splwd[MAX_BUF_LENGTH];
+	char buf2[MAX_STRING_LENGTH];
+
+	int j, offs;
+	struct char_data *temp_char;
+	extern struct syllable syls[];
+
+	strcpy(buf, "");
+	strcpy(splwd, spells[si-1]);
+
+	offs = 0;
+
+	while(*(splwd+offs)) {
+		for(j=0; *(syls[j].org); j++)
+			if (strncmp(syls[j].org, splwd+offs, strlen(syls[j].org))==0) {
+				strcat(buf, syls[j].new);
+				if (strlen(syls[j].org))
+					offs+=strlen(syls[j].org);
+				else
+					++offs;
+			}
+	}
+
+	sprintf(buf2,"$n utters the words, '%s'", buf);
+	sprintf(buf, "$n magically weaves the song of %s.", spells[si-1]);
+
+	for(temp_char = real_roomp(ch->in_room)->people; temp_char; temp_char = temp_char->next_in_room)
+		if(temp_char != ch) {
+			if (GET_RACE(ch) == GET_RACE(temp_char))
+				act(buf, FALSE, ch, 0, temp_char, TO_VICT);
+			else
+				act(buf2, FALSE, ch, 0, temp_char, TO_VICT);
+		}
+}
 
 
 bool saves_spell(struct char_data *ch, sh_int save_type)
@@ -1947,6 +2019,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
 	if (cmd == 370 && !HasClass(ch,CLASS_PSI)) { /* take away mind spells for non psi */
 		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
+		return;
+	}
+	if (cmd == 600 && !HasClass(ch,CLASS_BARD)) { /* take away mind spells for non psi */
+		send_to_char("You try to sing a pretty song, but it sounds awful.\n\r", ch);
 		return;
 	}
 
@@ -2211,8 +2287,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				}
 			}
 
-			if (spl != SPELL_VENTRILOQUATE && cmd != 370)  /* :-) */
-				say_spell(ch, spl);		/* psi's do not utter! */
+			if (spl != SPELL_VENTRILOQUATE && cmd != 370 && cmd !=600 )  /* mind, weave */
+				say_spell(ch, spl);
+			else if(spl != SPELL_VENTRILOQUATE && cmd == 600) { /* make bards do a pretty song thing instead */
+
+			}
 
 			WAIT_STATE(ch, spell_info[spl].beats);
 
@@ -2314,12 +2393,27 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				send_to_char("Ok.\n\r",ch);
 				((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
 				cost = (int)USE_MANA(ch, (int)spl);
+				exp = NewExpCap(ch, cost*50);
 				if (cmd == 283) /* recall */ {
 					FORGET(ch, spl);
+				} else if (cmd == 600) {
+					struct obj_data *instrument;
+					/* bards get reduced mana cost for holding instrument, depending on obj value */
+					if(instrument=ch->equipment[HOLD]) {
+						if(ITEM_TYPE(instrument) == ITEM_INSTRUMENT) {
+							if(instrument->obj_flags.value[0] > -1 && instrument->obj_flags.value[0] < 51) {
+								cost = (int) cost *(1 - ((float)(instrument->obj_flags.value[0])/100));
+								GET_MANA(ch) -= cost;
+							} else {
+								/* this value is off limits! */
+								log("some instrument has an invalid mana reduction value!");
+							}
+						}
+					}
+					GET_MANA(ch) -= cost;
 				} else {
 					GET_MANA(ch) -= cost;
 				}
-				exp = NewExpCap(ch, cost*50);
 				sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert casting abilities.$c000w\n\r",exp);
 				send_to_char(buf,ch);
 				gain_exp(ch, exp);

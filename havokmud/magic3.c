@@ -2756,7 +2756,7 @@ void spell_holy_strength(byte level, struct char_data *ch,
 
     if (!affected_by_spell(victim,SPELL_HOLY_STRENGTH)) {
        act("The spirits of gods make you stronger.", FALSE, victim,0,0,TO_CHAR);
-       act("$n muscles seem to expand!\n\r", FALSE, victim, 0, 0, TO_ROOM);
+       act("$n's muscles seem to expand!", FALSE, victim, 0, 0, TO_ROOM);
 
        af.type      = SPELL_HOLY_STRENGTH;
        af.duration  = 2*level;

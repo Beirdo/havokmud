@@ -73,8 +73,9 @@ struct attack_hit_type attack_hit_text[] =
   {"cleave", "cleaves"},
   {"stab",   "stabs"},
   {"smash",  "smashes"},
-  {"smite",  "smites"},
+  {"smite",  "smites"},//
   {"blast",  "blasts"},
+  {"impale", "impales"},
   {"strike", "strikes"},		/* type RANGE_WEAPON */
   {"jab",    "jabs"},
   {"punch",  "punches"},
@@ -2033,7 +2034,8 @@ int Getw_type(struct obj_data *wielded)
     case 10 : w_type = TYPE_STING; break;
     case 11 : w_type = TYPE_PIERCE; break;
     case 12 : w_type = TYPE_BLAST; break;
-    case 13 : w_type = TYPE_RANGE_WEAPON; break;
+    case 13 : w_type = TYPE_IMPALE; break;
+    case 14 : w_type = TYPE_RANGE_WEAPON; break;
     default : w_type = TYPE_HIT; break;
   }
   return(w_type);
@@ -3389,6 +3391,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case TYPE_STING:
   case TYPE_STAB:
   case TYPE_RANGE_WEAPON:
+  case TYPE_IMPALE:
     Our_Bit = IMM_PIERCE;
     break;
 

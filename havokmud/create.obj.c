@@ -521,7 +521,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
 
  if(type != ENTER_CHECK) {
     switch(ch->specials.oedit) {
-    case CHANGE_OBJ_TYPE: if(update < 0 || update > 27)
+    case CHANGE_OBJ_TYPE: if(update < 0 || update > 28)
                             return;
                           else {
                             ch->specials.objedit->obj_flags.type_flag = update;
@@ -538,7 +538,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
 
  row = 0;
- for(i = 0; i < 28; i++) {
+ for(i = 0; i < 29; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -1286,12 +1286,15 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        send_to_char("\n\rValue3 is the number of of faces on damage die.",ch);
      else {
        send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r",ch);
+	   send_to_char("0  - smite\n\r",ch);
        send_to_char("1  - stab        2 - whip\n\r",ch);
        send_to_char("3  - slash       4 - smash\n\r",ch);
        send_to_char("5  - cleave      6 - crush\n\r",ch);
        send_to_char("7  - pound       8 - claw\n\r",ch);
        send_to_char("9  - bite       10 - sting\n\r",ch);
-       send_to_char("11 - pierce     12 - impale\n\r",ch);
+       send_to_char("11 - pierce     12 - blast\n\r",ch);
+//	   send_to_char("13 - smite      14 - impale weapon\n\r",ch);
+	   send_to_char("13 - impale     14 - ranged weapon\n\r",ch);
      }
      break;
    case ITEM_FIREWEAPON:
@@ -1310,6 +1313,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        send_to_char("9  - crush      10 - cleave\n\r",ch);
        send_to_char("11 - stab       12 - smash\n\r",ch);
        send_to_char("13 - smite      14 - impale\n\r",ch);
+	   send_to_char("13 - fire wpn   14 - impale weapon\n\r",ch);
      }
      break;
    case ITEM_MISSILE:
@@ -1435,6 +1439,12 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else
        send_to_char("\n\rValue not used for this item type.\n\r",ch);
 	 break;
+	case ITEM_INSTRUMENT:
+     if(value==0)
+       send_to_char("\n\rThis value determines the mana reduction of song weaving (1-50%).",ch);
+     else
+       send_to_char("\n\rValue not used for this item type.\n\r",ch);
+     break;
    default:
      send_to_char("Value not used for this item type.\n\r",ch);
      break;

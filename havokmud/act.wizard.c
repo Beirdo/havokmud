@@ -1006,13 +1006,18 @@ void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd)
 	if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
 		return;
 
-	if(IS_AFFECTED2(ch,AFF2_NO_OUTDOOR)) {
-		act("You open your senses to time and weather conditions in the realm.", TRUE, ch, 0, 0, TO_CHAR);
+	if(IS_AFFECTED2(ch, AFF2_NO_OUTDOOR)) { /* clean up that flag outta sa2 */
 		REMOVE_BIT(ch->specials.affected_by2, AFF2_NO_OUTDOOR);
+	}
+
+	/* now use the proper place for this one */
+	if(IS_SET(ch->specials.act,PLR_NOOUTDOOR)) {
+		act("You open your senses to time and weather conditions in the realm.", TRUE, ch, 0, 0, TO_CHAR);
+		REMOVE_BIT(ch->specials.act,PLR_NOOUTDOOR);
 	} else {
 		/*imms can go into nooutdoor mode */
 		act("You decide to ignore time and weather.", TRUE, ch, 0, 0, TO_CHAR);
-		SET_BIT(ch->specials.affected_by2, AFF2_NO_OUTDOOR);
+		SET_BIT(ch->specials.act,PLR_NOOUTDOOR);
 	}
 }
 
@@ -1849,6 +1854,9 @@ if (aff->type <=MAX_EXIST_SPELL) {
 	break;
 	  case ITEM_AUDIO :
 	sprintf(buf, "Sound : %s\0\0",(j->action_description ? j->action_description:"None"));
+	break;
+	  case ITEM_INSTRUMENT :
+	sprintf(buf, "Mana reduction : %d\n\r",(j->obj_flags.value[0]));
 	break;
 	default :
 	  sprintf(buf,"Values 0-3 : [%d] [%d] [%d] [%d]",
@@ -4415,7 +4423,7 @@ dlog("in do_show");
 							sprintf(buf, "damage:'%dD%d'[%s]",
 							obj->obj_flags.value[1],
 							obj->obj_flags.value[2],
-							AttackType[obj->obj_flags.value[3]-1]);
+							AttackType[obj->obj_flags.value[3]/*-1*/]);
 							append_to_string_block(&sb, buf);
 							break;
 						case ITEM_ARMOR :

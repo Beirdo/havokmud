@@ -363,7 +363,43 @@
 #define SKILL_MEND		 303
 #define SKILL_STEED		 304
 
-#define MAX_EXIST_SPELL         304   /* max number of skills/spells */
+/* Necromancer/Death mage stuff */
+#define SPELL_COLD_LIGHT		305
+#define SPELL_DISEASE			306	// 1 aff
+#define SPELL_INVIS_TO_UNDEAD	307	// 2
+#define SPELL_LIFE_TAP			308
+#define SPELL_SUIT_OF_BONE		309	// 3
+#define SPELL_SPECTRAL_SHIELD	310 // 4
+#define SPELL_CLINGING_DARKNESS	311 // 5
+#define SPELL DONIMATE_UNDEAD	312
+#define SPELL_UNSUMMON			313
+#define SPELL_SIPHON_STRENGTH	314 // 6
+#define SPELL_GATHER_SHADOWS	315 // 7
+#define SPELL_MEND_BONES		316
+#define SPELL_TRACE_CORPSE		317
+#define	SPELL_ENDURE_COLD		318 // 8
+#define SPELL_LIFE_DRAW			319
+#define SPELL_NUMB_DEAD		    320
+#define SPELL_BINDING			321
+#define SPELL_DECAY				322 // 9
+#define SPELL_SHADOW_STEP		323
+#define SPELL_CAVORTING_BONES	324 // 10
+#define SPELL_MIST_OF_DEATH		325
+#define SPELL_NULLIFY			326
+#define SPELL_DARK_EMPATHY		327
+#define SPELL_EYE_OF_THE_DEAD	328 // 11
+#define SPELL_SOUL_STEAL		329
+#define SPELL_LIFE_LEECH		330
+#define SPELL_DARK_PACT			331 // 12
+#define SPELL_DARKTRAVEL		332
+#define SPELL_VAMPIRIC_EMBRACE	333 // 13
+#define SPELL_BIND_AFFINITY		334
+#define SPELL_SCOURGE_WARLOCK	335
+#define SPELL_FINGER_OF_DEATH	336
+#define SPELL_FLESH_GOLEM		337 // 14
+#define SPELL_DOMINATE_UNDEAD	338
+
+#define MAX_EXIST_SPELL         338   /* max number of skills/spells */
 
 
 
@@ -408,11 +444,11 @@
 #define TYPE_SMASH                   382
 #define TYPE_SMITE                   383
 #define TYPE_BLAST                   384
-#define TYPE_RANGE_WEAPON	     385
-#define TYPE_JAB                 386
-#define TYPE_PUNCH               387
-#define TYPE_STRIKE              388
-
+#define TYPE_IMPALE				     385
+#define TYPE_RANGE_WEAPON	         386
+#define TYPE_JAB                     387
+#define TYPE_PUNCH                   388
+#define TYPE_STRIKE                  389
 
 
 

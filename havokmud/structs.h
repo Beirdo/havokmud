@@ -467,6 +467,7 @@ typedef struct {
 #define ITEM_TREE      25
 #define ITEM_ROCK      26
 #define ITEM_PORTAL		27
+#define ITEM_INSTRUMENT 28
 /* Bitvector For 'wear_flags' */
 
 #define ITEM_TAKE              1
@@ -1007,6 +1008,7 @@ struct room_data
 #define CLASS_RANGER 	 512
 #define CLASS_PSI	 1024
 #define CLASS_BARD       2048
+//#define CLASS_NECRO		4096
 
 /* sex */
 #define SEX_NEUTRAL   0
@@ -1088,7 +1090,7 @@ struct room_data
 #define PLR_NOBEEP    (1<<20)    /* ignore all beeps */
 #define PLR_HAVEROOM (1<<21)    /* Player is one of the first 100 heros and have been assigned an homeroom*/
 #define PLR_MAILING    (1<<22)  /* EMPTY */
-#define PLR_ARENA   (1<<23)
+#define PLR_NOOUTDOOR   (1<<23)
 /* New Auto stuff*/
 #define PLR_AUTOASSIST		(1<<24)
 #define PLR_AUTOEXIT		(1<<25)
@@ -1316,7 +1318,8 @@ struct char_special_data
 #define SKILL_KNOWN_PALADIN	512
 #define SKILL_KNOWN_RANGER	1024
 #define SKILL_KNOWN_PSI		2048
-#define SKILL_KNOWN_BARD        4096
+#define SKILL_KNOWN_BARD    4096
+//#define SKILL_KNOWN_NECRO	8192
 /* end */
 
 /* skill_data special */

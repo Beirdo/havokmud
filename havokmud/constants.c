@@ -2717,6 +2717,7 @@ const char *item_types[] = {
 "TREE", //25
 "ROCK",
 "PORTAL",//27
+"INSTRUMENT",
 	"\n"
 };
 
@@ -2818,7 +2819,7 @@ const char *exit_bits[] = {
 	"IS-DOOR",
 	"CLOSED",
 	"LOCKED",
-        "SECRECT",
+        "SECRET",
         "RSLOCKED",
         "PICKPROOF",
         "CLIMB",
@@ -3095,6 +3096,7 @@ const char *pc_class_types[] = {
 	"(Ranger)",
 	"(Psionist)",
 	"(Bard)",
+	"(Necro)",
 	"\n"
 };
 
@@ -3111,6 +3113,7 @@ const char *class_names[] = {
 	"Ranger",
 	"Psionist",
 	"Bard",
+	"Necromancer",
 	"\n"
 };
 
@@ -3193,12 +3196,12 @@ const char *player_bits[] = {
 	"FREEZE",
 	"NOTELL",
 	"NOFLY",
-	"MAILING",      /*Doesn't seem to work TEB*/
+	"WIZNOOOC",      /*Doesn't seem to work TEB*/
 	"WIZREPORT",
 	"NOBEEP",
 	"HaveRoom",
 	"Mailing",
-	"ARENA",
+	"NoOutdoor",
 		"Autoassist",
 		"Autoexit",
 	"Autoloot",
@@ -4961,6 +4964,60 @@ const struct skillset barbskills[] = {
    {"switch opponents",SKILL_SWITCH_OPP,      1}, //18
    {"None",				-1		,			 -1}
 };
+
+const struct skillset necroskills[] = {
+	{"animate dead",		SPELL_ANIMATE_DEAD			,5},
+	{"bind affinity",		SPELL_BIND_AFFINITY			,48},
+	{"binding",				SPELL_BINDING				,16},
+	{"cavorting bones",		SPELL_CAVORTING_BONES		,22},
+	{"clinging darkness",	SPELL_CLINGING_DARKNESS		,5},
+	{"cold light",			SPELL_COLD_LIGHT			,1},
+	{"dark empathy",		SPELL_DARK_EMPATHY			,24},
+	{"dark pact",			SPELL_DARK_PACT				,36},
+	{"darkness",			SPELL_GLOBE_DARKNESS		,5},
+	{"darktravel",			SPELL_DARKTRAVEL			,39},
+	{"decay",				SPELL_DECAY					,18},
+	{"detect invisible",	SPELL_DETECT_INVISIBLE		,8},
+	{"detect magic",		SPELL_DETECT_MAGIC			,3},
+	{"disease",				SPELL_DISEASE				,1},
+	{"dispel magic",		SPELL_DISPEL_MAGIC			,14},
+	{"dominate undead",		SPELL_DOMINATE_UNDEAD		,6},
+	{"enchant armor",		SPELL_ENCHANT_ARMOR			,17},
+	{"enchant weapon",		SPELL_ENCHANT_WEAPON		,21},
+	{"endure cold",			SPELL_ENDURE_COLD			,12},
+	{"energy drain",		SPELL_ENERGY_DRAIN			,15},
+	{"eye of the dead",		SPELL_EYE_OF_THE_DEAD		,26},
+	{"invis to undead",		SPELL_INVIS_TO_UNDEAD		,2},
+	{"fear",				SPELL_FEAR					,4},
+	{"feign death",			SKILL_FEIGN_DEATH			,1},
+	{"finger of death",		SPELL_FINGER_OF_DEATH		,25},
+	{"flesh golem",			SPELL_FLESH_GOLEM			,37},
+	{"gather shadows",		SPELL_GATHER_SHADOWS		,8},
+	{"life draw",			SPELL_LIFE_DRAW				,15},
+	{"life leech",			SPELL_LIFE_LEECH			,31},
+	{"life tap",			SPELL_LIFE_TAP				,2},
+	{"major invulnerbility",SPELL_GLOBE_MAJOR_INV		,30},
+	{"mend bones",			SPELL_MEND_BONES			,10},
+	{"minor invulnerbility",SPELL_GLOBE_MINOR_INV		,26},
+	{"mist of death",		SPELL_MIST_OF_DEATH			,28},
+	{"nullify",				SPELL_NULLIFY				,23},
+	{"numb the dead",		SPELL_NUMB_DEAD				,15},
+	{"poison",				SPELL_POISON				,8},
+	{"protection from good",SPELL_PROTECT_FROM_GOOD		,1},
+	{"scourge of the warlock",SPELL_SCOURGE_WARLOCK		,29},
+	{"shadow step",			SPELL_SHADOW_STEP			,20},
+	{"siphon strength",		SPELL_SIPHON_STRENGTH		,8},
+	{"spectral shield",		SPELL_SPECTRAL_SHIELD		,4},
+	{"soul steal",			SPELL_SOUL_STEAL			,27},
+	{"stone skin" ,			SPELL_STONE_SKIN			,32},
+	{"suit of bone",		SPELL_SUIT_OF_BONE			,3},
+	{"trace corpse",		SPELL_TRACE_CORPSE			,11},
+	{"unsummon",			SPELL_UNSUMMON				,7},
+	{"vampiric empbrace",	SPELL_VAMPIRIC_EMBRACE		,41},
+	{"weakness",			SPELL_WEAKNESS				,9},
+	{"None",				-1							,-1}
+};
+
 const struct skillset bardskills[] = {
   {"acid blast", SPELL_ACID_BLAST,     10},
   {"armor",      SPELL_ARMOR,          9},
@@ -5620,7 +5677,8 @@ const char *RaceDesc[132] =
 
 
 const char *AttackType[]= {
-    "Stab",
+	"Smite",
+    "Stab",//1
     "Whip",
     "Slash",
     "Smash",
@@ -5629,16 +5687,17 @@ const char *AttackType[]= {
     "Pound",
     "Claw",
     "Bite",
-    "Sting",
+    "Sting",//10
     "Pierce",
-    "Impale",
-	"Smite",
+    "Blast",
 	"Impale",
-	"Unknown",
-	"Unknown",
+	"Range Weapon",
+//	"Unknown",//15
+//	"Unknown",//16
     "Jab",
 	"Punch",
 	"Strike",
+	"Undefined",//test for 0
     "\n"
 };
 

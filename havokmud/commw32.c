@@ -1899,7 +1899,7 @@ void send_to_outdoor(char *messg)
   if (messg)
     for (i = descriptor_list; i; i = i->next)
       if (!i->connected)
-	if (OUTSIDE(i->character) && !IS_AFFECTED2(i->character, AFF2_NO_OUTDOOR))
+	if (OUTSIDE(i->character) && !IS_SET(i->character->specials.act,PLR_NOOUTDOOR))
 /*        SEND_TO_Q(messg, &i->output); */
 	SEND_TO_Q(
 	 ParseAnsiColors(IS_SET(i->character->player.user_flags, USE_ANSI),messg),
@@ -1915,7 +1915,7 @@ void send_to_desert(char *messg)
   if (messg) {
     for (i = descriptor_list; i; i = i->next) {
       if (!i->connected) {
-	if (OUTSIDE(i->character)&& !IS_AFFECTED2(i->character, AFF2_NO_OUTDOOR)) {
+	if (OUTSIDE(i->character)&& !IS_SET(i->character->specials.act,PLR_NOOUTDOOR)) {
 	  if ((rp = real_roomp(i->character->in_room))!=NULL) {
 	    if (IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) ||
 		rp->sector_type == SECT_DESERT) {
@@ -1941,7 +1941,7 @@ void send_to_out_other(char *messg)
   if (messg) {
     for (i = descriptor_list; i; i = i->next) {
       if (!i->connected) {
-	if (OUTSIDE(i->character)&& !IS_AFFECTED2(i->character, AFF2_NO_OUTDOOR)) {
+	if (OUTSIDE(i->character)&& !IS_SET(i->character->specials.act,PLR_NOOUTDOOR)) {
 	  if ((rp = real_roomp(i->character->in_room))!=NULL) {
 	    if (!IS_SET(zone_table[rp->zone].reset_mode, ZONE_DESERT) &&
 		!IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC) &&
@@ -1969,7 +1969,7 @@ void send_to_arctic(char *messg)
   if (messg) {
     for (i = descriptor_list; i; i = i->next) {
       if (!i->connected) {
-	if (OUTSIDE(i->character)&& !IS_AFFECTED2(i->character, AFF2_NO_OUTDOOR)) {
+	if (OUTSIDE(i->character)&& !IS_SET(i->character->specials.act,PLR_NOOUTDOOR)) {
 	  if ((rp = real_roomp(i->character->in_room))!=NULL) {
 	    if (IS_SET(zone_table[rp->zone].reset_mode, ZONE_ARCTIC)) {
 /*            SEND_TO_Q(messg, &i->output); */
