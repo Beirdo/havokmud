@@ -2790,10 +2790,10 @@ dlog("in do_who");
 				sprintf(levels, "Lesser God");     //is female or men
 				break;                             //modified by Thyrza 20/06/97
 				}                             
-			  else if (GET_SEX(person) == SEX_FEMALE){    //Check the typoes Thyrza ;)
-				sprintf(levels, "Lesser Goddess"); //and no {} in a switch :P
-				break;                             // corrected now ;)
-				}                                  //- Manwe Windmaster 200697
+			  else if (GET_SEX(person) == SEX_FEMALE){  
+				sprintf(levels, "Lesser Goddess"); 
+				break;                             
+				}                                  
  
 		case 55:  if (GET_SEX(person) == SEX_MALE){   
 				sprintf(levels, "God");
@@ -2832,15 +2832,21 @@ dlog("in do_who");
 				break;
 				}
 
-		case 59:  if (GET_SEX(person) == SEX_MALE){
-				sprintf(levels, "Supreme Lord");
-				break;
-				}
-			  else if (GET_SEX(person) == SEX_FEMALE){
-				sprintf(levels, "Supreme Lady");
-				break;
-				}
-
+	      case 59:    if(!strcmp(GET_NAME(person), "Salsilian"))     //Hardcoded the names of the current
+	    	                sprintf(levels, "Lord of Justice");      // High council members, this should be
+	                  else if(!strcmp(GET_NAME(person), "Alora"))    // fixxed with new immortal system code 
+			                sprintf(levels, "Lady of Communication");// -MW 02/20/2001
+	                  else if(!strcmp(GET_NAME(person), "Keirstad"))
+			                sprintf(levels, "Lord of Building");
+		              else if (GET_SEX(person) == SEX_MALE){
+            				sprintf(levels, "Supreme Lord");
+			        	break;
+					}
+					  else if (GET_SEX(person) == SEX_FEMALE){
+					        sprintf(levels, "Supreme Lady");
+					   break;
+            		}
+  
 		case 60: sprintf(levels, "Supreme Being");
 	      }
       	if(!str_cmp(GET_NAME(person), "Meckyl"))
