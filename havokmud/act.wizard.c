@@ -33,8 +33,8 @@ int             ZoneCleanable(int zone);
  */
 
 char            EasySummon = 1;
-int             MinArenaLevel,
-                MaxArenaLevel,
+int             MinArenaLevel = 0,
+                MaxArenaLevel = 0,
                 Quadrant = 0;
 int             ArenaNoGroup,
                 ArenaNoAssist,
@@ -7475,7 +7475,22 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg2);
     argument = get_argument(argument, &arg3);
 
-    if (!arg1 || !arg2 || !arg3 || !strcmp(arg1, "help")) {
+    if( !arg1 ) {
+        if( MinArenaLevel != 0 && MaxArenaLevel != 0 ) {
+            MinArenaLevel = 0;
+            MaxArenaLevel = 0;
+
+            sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
+            send_to_all(buf);
+            sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
+            Log(buf);
+        } else {
+            send_to_char("The arena isn't open, numbskull!\n\r", ch);
+        }
+        return;
+    }
+
+    if (!arg2 || !arg3 || !strcmp(arg1, "help")) {
         send_to_char("Usage: startarena <minlevel> <maxlevel> <quadrant> "
                      "<flags>\n\r", ch);
         send_to_char("       flags are optional, divide by spaces:\n\r", ch);
@@ -7507,8 +7522,8 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
     }
 
     if ((tmp1 == 0 && tmp2 == 0)) {
-        MinArenaLevel = tmp1;
-        MaxArenaLevel = tmp2;
+        MinArenaLevel = 0;
+        MaxArenaLevel = 0;
 
         sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
         send_to_all(buf);
@@ -7518,9 +7533,17 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
         /*
          * first set flags to be FALSE
          */
-        ArenaNoGroup = ArenaNoAssist = ArenaNoDispel = ArenaNoMagic = 0;
-        ArenaNoWSpells = ArenaNoSlay = ArenaNoFlee = ArenaNoHaste = 0;
-        ArenaNoPets = ArenaNoTravel = ArenaNoBash = 0;
+        ArenaNoGroup = 0;
+        ArenaNoAssist = 0;
+        ArenaNoDispel = 0;
+        ArenaNoMagic = 0;
+        ArenaNoWSpells = 0;
+        ArenaNoSlay = 0;
+        ArenaNoFlee = 0;
+        ArenaNoHaste = 0;
+        ArenaNoPets = 0;
+        ArenaNoTravel = 0;
+        ArenaNoBash = 0;
 
         while (argument) {
             argument = get_argument(argument, &flag);
