@@ -658,7 +658,7 @@ struct obj_data {
     int             tweak;
 
     char           *modBy;
-    long            modified;
+    time_t          modified;
 };
 /*
  * ======================================================================
