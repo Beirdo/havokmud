@@ -789,7 +789,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 		return;
 	}
 	/* try to locate extra description */
-	for (ed = rp->ex_description; ; ed = ed->next) {
+	for (ed = rp->ex_description; ; ed = ed->next)
 		if (!ed) {
 			CREATE(ed , struct extra_descr_data, 1);
 			ed->next = rp->ex_description;
@@ -809,9 +809,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 			send_to_char( "Modifying description.\n\r", ch);
 			break;
 		}
-		ch->desc->max_str = MAX_STRING_LENGTH;
-		return;
-	}
+	ch->desc->max_str = MAX_STRING_LENGTH;
+	return;
 	break;
 
   case 7:
