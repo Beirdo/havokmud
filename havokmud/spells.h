@@ -365,20 +365,28 @@
 
 #define MAX_EXIST_SPELL         304   /* max number of skills/spells */
 
-#define FIRST_BREATH_WEAPON	     306 /*	201 */
-#define SPELL_FIRE_BREATH            306 /*	201 */
-#define SPELL_GAS_BREATH             307 /*	202 */
-#define SPELL_FROST_BREATH           308 /*	203 */
-#define SPELL_ACID_BREATH            309 /*	204 */
-#define SPELL_LIGHTNING_BREATH       310 /*	205 */
-#define SPELL_DEHYDRATION_BREATH     311 /*	206 */
-#define SPELL_VAPOR_BREATH	     312 /*	207 */
-#define SPELL_SOUND_BREATH	     313 /*	208 */
-#define SPELL_SHARD_BREATH	     314 /*	209 */
-#define SPELL_SLEEP_BREATH	     315 /*	210 */
-#define SPELL_LIGHT_BREATH	     316 /*	211 */
-#define SPELL_DARK_BREATH	     317 /*	212 */
-#define LAST_BREATH_WEAPON	     317 /*	212 */
+
+
+
+
+
+
+
+
+#define FIRST_BREATH_WEAPON	     356 /*	201 */ //306
+#define SPELL_FIRE_BREATH            356 /*	206 starts at306*/
+#define SPELL_GAS_BREATH             357 /*	202 */
+#define SPELL_FROST_BREATH           358 /*	203 */
+#define SPELL_ACID_BREATH            359 /*	204 */
+#define SPELL_LIGHTNING_BREATH       360 /*	205 */
+#define SPELL_DEHYDRATION_BREATH     361 /*	206 */
+#define SPELL_VAPOR_BREATH	     362 /*	207 */
+#define SPELL_SOUND_BREATH	     363 /*	208 */
+#define SPELL_SHARD_BREATH	     364 /*	209 */
+#define SPELL_SLEEP_BREATH	     365 /*	210 */
+#define SPELL_LIGHT_BREATH	     366 /*	211 */
+#define SPELL_DARK_BREATH	     367 /*	212 */
+#define LAST_BREATH_WEAPON	     367 /*	212 */
 
 /* NOTE!!!!!!!!!!!!!!!
    all spells MUST be before these types.   Otherwise, certain aspects of
@@ -386,24 +394,24 @@
    */
 
 
-#define TYPE_HIT                     311
-#define TYPE_BLUDGEON                312
-#define TYPE_PIERCE                  313
-#define TYPE_SLASH                   314
-#define TYPE_WHIP                    315  /* EXAMPLE */
-#define TYPE_CLAW                    316  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_BITE                    317  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_STING                   318  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_CRUSH                   319  /* NO MESSAGES WRITTEN YET! */
-#define TYPE_CLEAVE                  320
-#define TYPE_STAB                    321
-#define TYPE_SMASH                   322
-#define TYPE_SMITE                   323
-#define TYPE_BLAST                   324
-#define TYPE_RANGE_WEAPON	     325
-#define TYPE_JAB                 326
-#define TYPE_PUNCH               327
-#define TYPE_STRIKE              328
+#define TYPE_HIT                     371 //use to be 311
+#define TYPE_BLUDGEON                372
+#define TYPE_PIERCE                  373
+#define TYPE_SLASH                   374
+#define TYPE_WHIP                    375  /* EXAMPLE */
+#define TYPE_CLAW                    376  /* NO MESSAGES WRITTEN YET! */
+#define TYPE_BITE                    377  /* NO MESSAGES WRITTEN YET! */
+#define TYPE_STING                   378  /* NO MESSAGES WRITTEN YET! */
+#define TYPE_CRUSH                   379  /* NO MESSAGES WRITTEN YET! */
+#define TYPE_CLEAVE                  380
+#define TYPE_STAB                    381
+#define TYPE_SMASH                   382
+#define TYPE_SMITE                   383
+#define TYPE_BLAST                   384
+#define TYPE_RANGE_WEAPON	     385
+#define TYPE_JAB                 386
+#define TYPE_PUNCH               387
+#define TYPE_STRIKE              388
 
 
 

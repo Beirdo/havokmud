@@ -5834,3 +5834,43 @@ const char *languagelist[] = {
 
 char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
 //None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Returners
+
+const char *MortalLevel[7][3] = {
+  {"$c0008Apprentice","$c0008Apprentice"   ,"$c0008Apprentice"},
+  {"$c0004Pilgrim"   ,"$c0004Pilgrim"      ,"$c0004Pilgrim"},
+  {"$c0006Explorer"  ,"$c0006Explorer"     ,"$c0006Explorer",},
+  {"$c0014Adventurer","$c0014Adventurer"   ,"$c0014Adventurer"},
+  {"$c0015Mystical"  ,"$c0015Mystical"     ,"$c0015Mystical"},
+  {"$c000BHero"      ,"$c000BHero"         ,"$c000BHero"},
+  {"$c000RHero"      ,"$c000RHeroine"      ,"$c000RHero"}
+};
+
+/*
+case 51: sprintf(levels,"Newbie Immortal"); break;
+                case 52: sprintf(levels,"Saint"); break;
+                case 53: sprintf(levels,"Creator"); break;
+                case 54: sprintf(levels,"Demi God"); break;
+                case 55: sprintf(levels,"God"); break;
+                case 56: sprintf(levels,"Greater God"); break;
+                case 57: sprintf(levels,"Overseer"); break;
+                case 58: sprintf(levels,"SD Lord"); break;
+                case 59: sprintf(levels,"Lord of Realm"); break;
+                case 60: sprintf(levels,"God of Realm"); break;
+  Lesser this.. greater that.. kind of sucks.. come up with new names.
+  (Deity Lesser Diety.. Greater diety.. Lesser god.. god.. greater god my ass..
+  those names suck..
+ */
+
+const char *ImmortalLevel[10][3] = {
+		{"Supreme Being","Supreme Being","Supreme Being"},  //60
+		{"Lesser Deity","Lesser Deity","Lesser Deity"},    //51
+		{"Deity","Deity","Deity"},                         //52
+ 		{"Greater Deity","Greater Deity","Greater Deity"}, //53
+		{"Lesser God", "Lesser Goddess", "Lesser God"},    //54
+		{"God","Goddess","God"},                           //55
+		{"Greater God", "Greater Goddess","Greater God"},  //56
+		{"God of Judgement""Goddess of Judgement", "Judgement Caller"}, //57
+		{"Lord", "Lady", "Thing"},                         //58
+		{"Supreme Lady", "Supreme Lord", "Supreme Thing"} //59
+
+};

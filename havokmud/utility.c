@@ -3882,7 +3882,7 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
 	if (mob_index[horse->nr].virtual == STEED_TEMPLATE) {
 //	if (!strcmp(horse->player.name,"charge horse") {
 		if(HasClass(ch, CLASS_PALADIN)) {
-			if(GET_LEVEL(ch) >= GET_LEVEL(horse)+10) {
+			if(GetMaxLevel(ch) >= GetMaxLevel(horse)+10) {
 				/* ok, this horse likes you */
 				return(-1);
 			}

@@ -2463,8 +2463,132 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
   return(strncmp(n1,n2,strlen(mask))==0);
 }
 */
+char *GetLevelTitle(struct char_data *ch) {
+	extern const char *ImmortalLevel[11][3];
+	extern const char *MortalLevel[7][3];
+	char buf[25];
+
+	return "$c000BLevelTitle";
 
 
+	if(IS_IMMORTAL(ch)) {
+
+		sprintf(buf,"%s", ImmortalLevel[GetMaxLevel(ch)][GET_SEX(ch)]);
+		return buf;
+	} else {
+		sprintf(buf,"%s",MortalLevel[GetMaxLevel(ch)][GET_SEX(ch)]);
+		return buf;
+	}
+/*
+	if(!strcmp(GET_NAME(person), "Tsaron"))       // Hardcoded the names of the current
+		sprintf(levels, "Supreme Dictator");      // High council members, this should be
+	else if(!strcmp(GET_NAME(person), "Banon"))   // fixxed with new immortal system code
+		sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
+	else if(!strcmp(GET_NAME(person), "Keirstad"))
+		sprintf(levels, "Lord of Building");
+	else if(!str_cmp(GET_NAME(person), "Ignatius"))
+		sprintf(levels, "Dragon Lord");
+	else if(!str_cmp(GET_NAME(person), "Pentak"))
+		sprintf(levels, "Creator");
+*/
+}
+
+ void do_who(struct char_data *ch, char *argument, int cmd) {
+
+  struct zone_data    *zd;
+  struct room_data *rm=0;
+  struct descriptor_data *d;
+  struct char_data *person;
+  char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
+  int count=0;
+
+  char color_cnt=1;
+  char flags[20]="";
+  char name_mask[40]="";
+  char tmpname1[80],tmpname2[80];
+  char buf[256];
+
+	char levels[40]="", classes[20]="";
+					extern char *classname[];
+					int i,total,classn; long bit;
+	char immortals[MAX_STRING_LENGTH]="", mortals[MAX_STRING_LENGTH]=""
+		 , quest[MAX_STRING_LENGTH]="", clan[MAX_STRING_LENGTH]="";
+
+
+	if( IS_IMMORTAL(ch) ) {  //Title
+		ch_printf(ch,"$c000pPlayers [God Version -? for Help]\n\r--------\n\r");
+	} else if(cmd==234) {
+			ch_printf(ch,"$c000pPlayers\n\r------------\n\r");
+	} else {
+		ch_printf(ch,"$c000p                        Havok Players\n\r"
+					 "$c000p                        -------------\n\r");
+	}
+
+
+	//Loops through all players in descriptor
+	for (d = descriptor_list; d; d = d->next) {
+		person=(d->original?d->original:d->character);
+
+		if(person) {
+
+				if(!IS_IMMORTAL(person)) {
+					for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
+						if(HasClass(person,bit)) {
+							classn++;
+							total+=person->player.level[i];
+							if(strlen(classes)!=0)
+								strcat(classes,"/");
+							sprintf(classes+strlen(classes),"%s",classname[i]);
+						}
+					}
+
+
+		  }
+			if(IS_IMMORTAL(person)) {
+				sprintf(buf,"$c000Y%-32s : %s", GetLevelTitle(person), GET_TITLE(person) );
+				strcat(immortals, buf);
+			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
+				sprintf(buf,"%s $c0012%s : %s", GetLevelTitle(person), classes, GET_TITLE(person) );
+				strcat(quest, buf);
+			} else {
+				sprintf(buf,"%s $c0012%s : %s", GetLevelTitle(person), classes, GET_TITLE(person) );
+				strcat(mortals, buf);
+			}
+			count++;
+
+
+/*
+				sprintf(tbuf, "%s $c0012%s",levels, classes);
+				sprintf(levels,"%32s","");
+				strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
+				sprintf(tbuf, "%-32s $c0005: $c0007%s",	levels,person->player.title);
+				*/
+	}
+
+	/* Print the different groups*/
+   }
+//ch_printf(ch," Immortals: %d   Quest: %d   Mortals: %d\n\r", strlen(immortals), strlen(quest), strlen(mortals));
+	if(strlen(immortals) != 0)
+	   ch_printf(ch,"\n\r%-20s$c000pImmortals\n\r$c000w%s ","", immortals);
+	if(strlen(quest)  != 0)
+	   ch_printf(ch,"\n\r\n\r%-20s$c000pQuest\n\r$c000w%s  ","", quest);
+	if(strlen(mortals)  != 0)
+	   ch_printf(ch,"\n\r\n\r%-20s$c000pMortals\n\r$c000w%s ", "", mortals);
+
+
+
+
+	/* Footer */
+    ch_printf(ch, "\n\r$c0005Total visible players: $c0015%d\n\r", count);
+    ch_printf(ch, "$c0005Connects since last reboot: $c0015%ld\n\r", total_connections);
+    ch_printf(ch, "$c0005Players online since last reboot: $c0015%ld\n\r", total_max_players);
+
+
+
+
+
+}
+/*
 void do_who(struct char_data *ch, char *argument, int cmd)
 {
   struct zone_data    *zd;
@@ -2481,9 +2605,9 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   char buf[256];
 
 dlog("in do_who");
-
+*/
 	/*  check for an arg */
-	argument = one_argument(argument,tbuf);
+/*	argument = one_argument(argument,tbuf);
 	if(tbuf[0]=='-' && tbuf[1]!='\0')
 		strcpy(flags,tbuf+1);
 	else
@@ -2521,17 +2645,17 @@ dlog("in do_who");
 	count=0;
 	for (d = descriptor_list; d; d = d->next) {
 		person=(d->original?d->original:d->character);
-//		if(!person->in_room) /* Let's not show people who sit at menu   -Lennya */
+//		if(!person->in_room) *//* Let's not show people who sit at menu   -Lennya */
 //			return;
-
+/*
 		if (CAN_SEE(ch, d->character) && (real_roomp(person->in_room)) &&
 				(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone || cmd!=234 ) &&
 				(!index(flags,'g') || IS_IMMORTAL(person))) {
 			if (OK_NAME(person,name_mask)) {
 				count++;
-				color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
+				color_cnt = (color_cnt++ % 9);
 
-				if (cmd==234) { /* it's a whozone command */
+				if (cmd==234) {*/ /* it's a whozone command */ /*
 					if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
 						sprintf(tbuf,"$c0012%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
 						if (GetMaxLevel(ch) >= LOW_IMMORTAL)
@@ -2573,6 +2697,7 @@ dlog("in do_who");
 
 		sprintf(tbuf, "%-32s $c0005: $c0007%s",
 				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+				*/
 /* commented this out becuz %-10s uses up its space for color codes as well,
  * thus making it necessary to use the same amount of colors for each clan, too
  * much of a bother imo.   -Lennya
@@ -2593,7 +2718,7 @@ dlog("in do_who");
 //		}
 //		sprintf(tbuf, "%-32s %s $c0005: $c0007%s",
 //				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-
+/*
 	} else {
 		switch(GetMaxLevel(person)) {
 		case 51: sprintf(levels, "Lesser Deity"); break;
@@ -2679,60 +2804,11 @@ dlog("in do_who");
 			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
 						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
-//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-//		else if(GET_CLAN(person)>0)
-//			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
-//		else
-//			sprintf(bufx, "           "); /* length 11 */
-/* fix up length, ugly stuff */
-//		length = 11; /* this should be enough length for any clan abbrev */
-//		clength = length - color_strlen(ch, bufx, 596);
-//		for(j = 1; j <= clength; j++) {
-//			strcat(bufx, " "); /* add some spaces */
-///		}
-//		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
-//				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-
-//			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-//				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//			else if(GET_CLAN(person)>0)
-//				sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//			else
-//				sprintf(bufx, "");
-
-//			sprintf(tbuf, " $c0011%-32s %-12s$c0005: $c0007%s",levels,
-//	                      bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-
 		} else {
 			strcpy(levels+10-(strlen(tbuf)/2),tbuf);
 			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
 							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
-//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-//		else if(GET_CLAN(person)>0)
-//			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
-//		else
-//			sprintf(bufx, "           "); /* length 11 */
-/* fix up length, ugly stuff */
-//		length = 11; /* this should be enough length for any clan abbrev */
-///		clength = length - color_strlen(ch, bufx, 596);
-//		for(j = 1; j <= clength; j++) {
-//			strcat(bufx, " "); /* add some spaces */
-//		}
-//		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
-//				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-
-//			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-//				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//			else if(GET_CLAN(person)>0)
-//				sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//			else
-//				sprintf(bufx, "");
-
-//			sprintf(tbuf, "$c0011%-32s %-12s$c0005: $c0007%s",levels, bufx,
-//					person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 		}
 	}
 #else
@@ -2768,7 +2844,7 @@ dlog("in do_who");
 
     if (strlen(buffer)+strlen(tbuf) < MAX_STRING_LENGTH*2-512)
       strcat(buffer,tbuf);
-  } else {                                  /* GOD WHO */
+  } else {
 
     int listed = 0, count, lcount, l, skip = FALSE;
     char ttbuf[256];
@@ -2835,7 +2911,7 @@ dlog("in do_who");
 	  if ((person->desc != NULL) || (index(flags,'d') != NULL)) {
 	    for (l = 0; l < strlen(flags) ; l++) {
 	      switch (flags[l]) {
-		case 'r': {  /* show race */
+		case 'r': {
 		    char bbuf[256];
 		  sprinttype((person->race),RaceName,ttbuf);
 		  sprintf(bbuf," [%s] ",ttbuf);
@@ -2907,6 +2983,11 @@ dlog("in do_who");
   }
   page_string(ch->desc,buffer,TRUE);
 }
+#endif
+
+*/
+
+
 
 void do_users(struct char_data *ch, char *argument, int cmd)
 {
