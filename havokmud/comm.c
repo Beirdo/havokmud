@@ -879,10 +879,8 @@ void write_to_q(char *txt, struct txt_q *queue)
 
     if (strl < 0 || strl > 35000) {
         Log("strlen returned bogus length in write_to_q, string was: ");
-        for (strl = 0; strl < 120; strl++) {
-            tbuf[strl] = txt[strl];
-        }
-        tbuf[strl] = 0;
+        strncpy( tbuf, txt, 120 );
+        tbuf[120] = '\0';
         Log(tbuf);
         if (new) {
             free(new);
@@ -923,11 +921,9 @@ void write_to_q(char *txt, struct txt_q *queue)
     strl = strlen(txt);
     if (strl < 0 || strl > 45000) {
         Log("strlen returned bogus length in write_to_q, string was:");
-        for (strl = 0; strl < 120; strl++) {
-            tbuf[strl] = txt[strl];
-        }
-        tbuf[strl] = 0;
-        Log(strl);
+        strncpy( tbuf, txt, 120 );
+        tbuf[120] = '\0';
+        Log(tbuf);
         if (new) {
             free(new);
         }

@@ -138,7 +138,7 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                     ii,
                     limited_items = 0,
                     exit = 0;
-    char            buf[MAX_INPUT_LENGTH];
+    char            buf[MAX_STRING_LENGTH];
     struct obj_data *tmp,
                    *tmp_next_obj,
                    *rare;
@@ -170,9 +170,6 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         limited_items += CountLims(ch->equipment[i]);
     }
 
-    if (!cost->ok) {
-        return (FALSE);
-    }
     if (cost->no_carried == 0) {
         if (receptionist) {
             act("$c0013[$c0015$n$c0013] tells you 'But you are not carrying "
@@ -293,13 +290,19 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         }
         return (FALSE);
     }
-#if 0
+    
+#ifdef MONK_ITEM_LIMIT
     if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_MONK) && 
         cost->no_carried > 20) { 
         send_to_char("Your vows forbid you to carry more"
                          " than 20 items\n\r", ch); return(FALSE); 
     } 
 #endif
+
+    if (!cost->ok) {
+        return (FALSE);
+    }
+
      
 #ifdef NEW_RENT
     /*

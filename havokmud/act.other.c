@@ -1234,7 +1234,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
      * ----- Start of the group all functions -----
      */
     if (strcasecmp(name, "self") == 0) {
-        sprintf(name, "%s", GET_NAME(ch));
+        name = GET_NAME(ch);
     }
 
     if (!(strcmp(name, "all"))) {
