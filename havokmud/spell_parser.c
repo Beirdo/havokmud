@@ -2698,10 +2698,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 }
 
                 GET_MANA(ch) -= cost;
-                sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience from"
-                             " your expert casting abilities.$c000w\n\r", exp);
-                send_to_char(buf, ch);
-                gain_exp(ch, exp);
+                if( exp ) {
+                    sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience "
+                                 "from your expert casting abilities."
+                                 "$c000w\n\r", exp);
+                    send_to_char(buf, ch);
+                    gain_exp(ch, exp);
+                }
             }
         }
         return;
