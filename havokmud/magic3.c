@@ -2167,65 +2167,66 @@ void spell_know_monster(byte level, struct char_data *ch,
   extern char *pc_class_types[];
   extern char *immunity_names[];
   extern char *RaceName[];
+  extern const char *RaceDesc[];
 
 /*
   depending on level, give info.. sometimes inaccurate
 */
 
   if (!IS_PC(victim)) {
-    sprintf(buf,"$N belongs to the %s race.", RaceName[GET_RACE(victim)]);
+    sprintf(buf,"$c000W$N$c000p belongs to the $c000W%s$c000p race.", RaceName[GET_RACE(victim)]);
     act(buf,FALSE, ch, 0, victim, TO_CHAR);
     if (level > 5) {
       exp = GetApprox(GET_EXP(victim), 40+level);
-      sprintf(buf, "$N is worth approximately %d experience", exp);
+      sprintf(buf, "$c000W$N$c000p is worth approximately $c000W%d$c000p experience", exp);
       act(buf,FALSE, ch, 0, victim, TO_CHAR);
     }
     if (level > 10) {
       lev = GetApprox(GetMaxLevel(victim), 40+level);
-      sprintf(buf, "$N fights like a %d level warrior, you think", lev);
+      sprintf(buf, "$c000W$N$c000p fights like a $c000W%d$c000p level warrior, you think", lev);
       act(buf,FALSE, ch, 0, victim, TO_CHAR);
     }
     if (level > 15) {
       if (IS_SET(victim->hatefield, HATE_RACE)) {
-	sprintf(buf, "$N seems to hate the %s race", RaceName[victim->hates.race]);
+	sprintf(buf, "$c000W$N$c000p seems to hate the $c000W%s$c000p race", RaceName[victim->hates.race]);
 	act(buf,FALSE, ch, 0, victim, TO_CHAR);
       }
       if (IS_SET(victim->hatefield, HATE_CLASS)) {
 	sprintbit((unsigned)victim->hates.class, pc_class_types, buf2);
-	sprintf(buf, "$N seems to hate the %s class(es)", buf2);
+	sprintf(buf, "$c000W$N$c000p seems to hate the $c000W%s$c000p class(es)", buf2);
 	act(buf,FALSE, ch, 0, victim, TO_CHAR);
       }
     }
     if (level > 20) {
       hits = GetApprox(GET_MAX_HIT(victim), 40+level);
-      sprintf(buf,"$N probably has about %d hit points", hits);
+      sprintf(buf,"$c000W$N$c000p probably has about $c000W%d$c000p hit points", hits);
       act(buf,FALSE, ch, 0, victim, TO_CHAR);
     }
     if (level > 25) {
       if (victim->susc) {
 	sprintbit(victim->susc, immunity_names, buf2);
-	sprintf(buf, "$N is susceptible to %s\n\r", buf2);
+	sprintf(buf, "$c000W$N$c000p is susceptible to $c000W%s$c000p\n\r", buf2);
 	act(buf,FALSE, ch, 0, victim, TO_CHAR);
       }
     }
     if (level > 30) {
       if (victim->immune) {
 	sprintbit(victim->immune, immunity_names, buf2);
-	sprintf(buf, "$N is resistant to %s\n\r", buf2);
+	sprintf(buf, "$c000W$N$c000p is resistant to $c000W%s$c000p\n\r", buf2);
 	act(buf,FALSE, ch, 0, victim, TO_CHAR);
       }
     }
     if (level > 35) {
       if (victim->M_immune) {
 	sprintbit(victim->M_immune, immunity_names, buf2);
-	sprintf(buf, "$N is immune to %s\n\r", buf2);
+	sprintf(buf, "$c000W$N$c000p is immune to $c000W%s$c000p\n\r", buf2);
 	act(buf,FALSE, ch, 0, victim, TO_CHAR);
       }
     }
     if (level > 40) {
       int att;
       att = GetApprox((int)victim->mult_att, 30+level);
-      sprintf(buf,"$N gets approx %d.0 attack(s) per round", att);
+      sprintf(buf,"$c000W$N$c000p gets approx $c000W%d.0$c000p attack(s) per round", att);
       act(buf,FALSE, ch, 0, victim, TO_CHAR);
     }
     if (level > 45) {
@@ -2233,10 +2234,13 @@ void spell_know_monster(byte level, struct char_data *ch,
       no = GetApprox(victim->specials.damnodice, 30+level);
       s = GetApprox(victim->specials.damsizedice, 30+level);
 
-      sprintf(buf,"Each does about %dd%d points of damage",
+      sprintf(buf,"$c000pEach does about $c000W%dd%d$c000p points of damage",
 	      no, s);
       act(buf,FALSE, ch, 0, victim, TO_CHAR);
     }
+
+    ch_printf(ch,"$c000pDescription:$c000W \n\r%s", RaceDesc[victim->race]);
+
   } else {
     send_to_char("Thats not a REAL monster\n\r", ch);
     return;
