@@ -3567,7 +3567,7 @@ if (victim->player.time.logon + victim->player.time.played<0) {
 	  if (GET_LEVEL(victim,i) < GetMaxLevel(victim))
 	      GET_LEVEL(victim,i) = GetMaxLevel(victim);
 	  }/* for */
-	  for (i=1;i<=CLASS_PSI;i*=2) {
+	  for (i=1;i<=CLASS_BARD;i*=2) {
 	    if (!HasClass(victim,i))
 	       victim->player.class +=i;
 	  } /* for */

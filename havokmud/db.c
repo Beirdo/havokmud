@@ -3877,7 +3877,7 @@ void init_char(struct char_data *ch)
 	  }/* for */
 
 /* set all classes */
-	  for (i=1;i<=CLASS_PSI;i*=2) {
+	  for (i=1;i<=CLASS_BARD;i*=2) {
 	    if (!HasClass(ch,i))
 	       ch->player.class +=i;
 	  } /* for */
