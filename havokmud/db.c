@@ -2568,7 +2568,7 @@ struct obj_data *read_object(int nr, int type)
   object_list = obj;
 
   obj_index[nr].number++; /*Object maxxing*/
-  obj->level = 0;
+  //obj->level = 0;
   obj_count++;
 #if BYTE_COUNT
   fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);

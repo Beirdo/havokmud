@@ -1897,6 +1897,8 @@ v2     = value[2] of item      | v3     = value[3] of item\r
 aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\r
 aff2   = special affect 2      | aff3   = special affect 3\r
 aff4   = special affect 4      | aff5   = special affect 5\r
+speed  = speed of weapon       | ego    = level of item \r
+max    = max of item\r
 \rNote: NI = Not implemented.\n\r",ch);
   return;
  } /* End Help! */
@@ -2004,7 +2006,24 @@ if (!*argument)
 	 j->obj_flags.cost=atol(parmstr);
 	 return;
 	} /* end value of item */
-
+	if (!strcmp(field,"ego"))
+		{
+		 argument = one_argument(argument,parmstr);
+		 j->level=atol(parmstr);
+		 return;
+	}
+	if (!strcmp(field,"speed"))
+		{
+		 argument = one_argument(argument,parmstr);
+		 j->speed=atol(parmstr);
+		 return;
+	}
+	if (!strcmp(field,"max"))
+		{
+		 argument = one_argument(argument,parmstr);
+		 j->max=atol(parmstr);
+		 return;
+	}
 	if (!strcmp(field,"timer"))
 	{
 	 argument = one_argument(argument,parmstr);

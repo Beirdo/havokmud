@@ -42,6 +42,10 @@
 #define CHANGE_S2AFFECT3_MOD 34
 #define CHANGE_S2AFFECT4_MOD 35
 #define CHANGE_S2AFFECT5_MOD 36
+#define CHANGE_OBJ_SPECIAL   37
+#define CHANGE_OBJ_EGO       38
+#define CHANGE_OBJ_SPEED     39
+#define CHANGE_OBJ_MAX       40
 
 #define ENTER_CHECK        1
 
@@ -60,7 +64,7 @@ char *obj_edit_menu = "    1) Name                    2) Short description\n\r"
                       "    5) Wear positions          6) Extra flags\n\r"
                       "    7) Weight                  8) Value\n\r"
                       "    9) Rent cost              10) Extra affects\n\r"
-		      "   11) Object values\n\r\n\r";
+		      		  "   11) Object values          12) Object Specials\n\r\n\r";
 
 void ChangeObjWear(struct char_data *ch, char *arg, int type);
 void UpdateObjMenu(struct char_data *ch);
@@ -80,7 +84,8 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type);
 void ObjHitReturn(struct char_data *ch, char *arg, int type);
 void ChangeObjSAffect(struct char_data *ch, char *arg, int type);
 void ChangeObjS2Affect(struct char_data *ch, char *arg, int type);
-
+void ChangeObjSpecials(struct char_data *ch, char *arg, int type);
+void ChangeObjSpecial(struct char_data *ch, char *arg, int type);
 void ChangeObjFlags(struct char_data *ch, char *arg, int type)
 {
  int i, a, check=0, row, update;
@@ -310,6 +315,10 @@ void ObjEdit(struct char_data *ch, char *arg)
            case 11: ch->specials.oedit = CHANGE_OBJ_VALUES;
                    ChangeObjValues(ch, "", ENTER_CHECK);
                    return;
+           case 12: ch->specials.oedit = CHANGE_OBJ_SPECIAL;
+                   ChangeObjSpecial(ch, "", ENTER_CHECK);
+                   return;
+
            default: UpdateObjMenu(ch);
                    return;
     }
@@ -381,6 +390,14 @@ case CHANGE_S2AFFECT3_MOD:
 case CHANGE_S2AFFECT4_MOD:
 case CHANGE_S2AFFECT5_MOD:
 	ChangeObjS2Affect(ch, arg, 0);
+	return;
+case CHANGE_OBJ_SPECIAL:
+	ChangeObjSpecial(ch,arg,0);
+	return;
+case CHANGE_OBJ_EGO:
+case CHANGE_OBJ_MAX:
+case CHANGE_OBJ_SPEED:
+	ChangeObjSpecials(ch,arg,0);
 	return;
  default: log("Got to bad spot in ObjEdit");
           return;
@@ -981,6 +998,130 @@ void ChangeObjValues(struct char_data *ch, char *arg, int type)
  return;
 }
 
+void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
+{
+ int update;
+ char buf[1024];
+
+ if(type != ENTER_CHECK) {
+    if(!*arg || (*arg == '\n')) {
+        ch->specials.oedit = OBJ_MAIN_MENU;
+        UpdateObjMenu(ch);
+        return;
+    }
+
+    update = atoi(arg);
+    if(update == 0) {
+       ChangeObjSpecial(ch, "", ENTER_CHECK);
+       return;
+    }
+
+    switch(update) {
+           case 1: ch->specials.oedit = CHANGE_OBJ_EGO;
+                   ChangeObjSpecials(ch, "", ENTER_CHECK);
+                   return;
+                   break;
+           case 2: ch->specials.oedit = CHANGE_OBJ_SPEED;
+                   ChangeObjSpecials(ch, "", ENTER_CHECK);
+                   return;
+                   break;
+           case 3: ch->specials.oedit = CHANGE_OBJ_MAX;
+                   ChangeObjSpecials(ch, "", ENTER_CHECK);
+                   return;
+                   break;
+           default: ChangeObjSpecial(ch, "", ENTER_CHECK);
+                    return;
+    }
+
+ }
+
+
+ sprintf(buf, VT_HOMECLR);
+ send_to_char(buf, ch);
+ send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max) --> ", ch);
+ return;
+
+}
+void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
+{
+  int temp=0;
+  int value,row=0,i,a=0,column,check;
+  long update;
+  char buf[1024];
+  bool skill=FALSE;
+
+  if(type != ENTER_CHECK) {
+    if(!*arg || (*arg == '\n')) {
+        ch->specials.oedit = OBJ_MAIN_MENU;
+        UpdateObjMenu(ch);
+        return;
+    }
+
+    update = atoi(arg);
+
+    if(update < 0) {
+        ch->specials.oedit=CHANGE_OBJ_SPECIAL;
+        ChangeObjSpecial(ch,"",ENTER_CHECK);
+        return;
+    }
+
+  switch(ch->specials.oedit) {
+        case CHANGE_OBJ_EGO:
+        	if(update < 51 && update >= 0)
+        		ch->specials.objedit->level=update;
+        	else {
+				temp=1;
+			}
+
+            break;
+        case CHANGE_OBJ_SPEED:
+        	if(update < 101 && update >= 0)
+			   ch->specials.objedit->speed=update;
+			else {
+				temp=1;
+			}
+
+            break;
+        case CHANGE_OBJ_MAX:
+        	if(update < 51 && update >= 0)
+			  ch->specials.objedit->max=update;
+			else {
+				temp=1;
+			}
+
+            break;
+        default:
+
+        	break;
+  }
+  	if(temp==0) {
+	  	ch->specials.oedit = OBJ_MAIN_MENU;
+	    UpdateObjMenu(ch);
+	}
+ }
+
+  	switch(ch->specials.oedit) {
+        case CHANGE_OBJ_EGO:
+			ch_printf(ch,"Please select the level of the item. Param(1-50) Current (%d)",ch->specials.objedit->level);
+			break;
+        case CHANGE_OBJ_SPEED:
+			if (IS_WEAPON(ch->specials.objedit))
+				ch_printf(ch,"Please enter weapon speed: Param(0-100)   Current(%d)", ch->specials.objedit->speed);
+			else {
+				send_to_char("Can only do this to weapons",ch);
+				ch->specials.oedit = CHANGE_OBJ_SPECIAL;
+                   ChangeObjSpecial(ch, "", ENTER_CHECK);
+			}
+			break;
+        case CHANGE_OBJ_MAX:
+			ch_printf(ch,"Please enter max of item: Param(0-100)    Current(%d)",ch->specials.objedit->max);
+			break;
+    	default:
+			//send_to_char("Bad value",ch);
+        	break;
+  	}
+
+}
 
 void ChangeObjValue(struct char_data *ch, char *arg, int type)
 {

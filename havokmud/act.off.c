@@ -775,9 +775,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
          WAIT_STATE(victim, PULSE_VIOLENCE*2);
          GET_POS(victim) = POSITION_SITTING;
-        act("You do a quick spin and knock $N legs out from underneath $M."
+        act("$c000CYou do a quick spin and knock $N legs out from underneath $M."
         	,FALSE, ch, 0, victim,TO_CHAR);
-        act("$n does a quick spin and knocks $N legs out from underneath $M."
+        act("$c000C$n does a quick spin and knocks $N legs out from underneath $M."
          	,FALSE, ch,0,victim,TO_ROOM);
         sprintf(buf,"You receive 100 experience for using your leg sweep abilites.\n\r.",ch);
 		send_to_char(buf,ch);
@@ -2199,11 +2199,11 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 				sprintf(temp,"$n changes $s stance and adopts %s %s style of fighting.",style[0]=='A' || style[0]=='E' ? "an": "a", fight_styles[x]);
 				act(temp,TRUE,ch,0,0,TO_ROOM);
 				ch->style = x;
-				return(TRUE);
+				return;
 			}
 			x++;
 		}
 		send_to_char("You don't seem to know that fighting style.\n\r",ch);
-		return(TRUE);
+		return;
 	}
 }

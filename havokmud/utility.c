@@ -4159,6 +4159,21 @@ if (!obj || !ch) {
     use some funky function to determine if pc's ego is higher than objs'
     ego.. if it is, proceed.. otherwise, deny.
     */
+    #if 1
+   		if((obj->level <= GetMaxLevel(ch)) || IS_IMMORTAL(ch)) {
+   			return(TRUE);
+   		} else {
+			act("$p almost seems to say 'You're pretty puny.  I don't want to be seen with you!\n", 0, ch, obj, 0, TO_CHAR);
+			return(FALSE);
+		}
+
+
+
+    #else
+
+
+
+
   j = ItemEgoClash(ch, obj, 0);
   if ((j < -5) && (GetMaxLevel(ch) < IMPLEMENTOR))
   {
@@ -4183,6 +4198,7 @@ if (obj->in_obj==NULL) {
     return(TRUE);
 
   return(FALSE);
+  #endif
 #endif
 }
 
