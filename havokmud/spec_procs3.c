@@ -31,27 +31,6 @@ extern int      spell_index[MAX_SPL_LIST];
 extern char    *spells[];
 extern int      rev_dir[];
 
-/*
- * extern procedures 
- */
-int             choose_exit_global(int a, int b, int c);
-void            hit(struct char_data *ch, struct char_data *victim, int type);
-void            gain_exp(struct char_data *ch, int gain);
-
-struct char_data *FindVictim(struct char_data *ch);
-struct char_data *char_holding(struct obj_data *obj);
-void            send_to_all(char *messg);
-int             IsUndead(struct char_data *ch);
-struct time_info_data age(struct char_data *ch);
-int             CountLims(struct obj_data *obj);
-struct char_data *FindAnAttacker(struct char_data *ch);
-void            NailThisSucker(struct char_data *ch);
-int             NumCharmedFollowersInRoom(struct char_data *ch);
-struct char_data *FindMobDiffZoneSameRace(struct char_data *ch);
-struct char_data *FindMobInRoomWithFunction(int room, int (*func) ());
-void            add_follower(struct char_data *ch,
-                             struct char_data *leader);
-void            stop_follower(struct char_data *ch);
 int randomitem(void);
 
 /*

@@ -17,11 +17,6 @@ struct time_info_data age(struct char_data *ch);
 
 #define ASTRAL_ENTRANCE   2701
 
-void            add_follower(struct char_data *ch, struct char_data *leader);
-bool            circle_follow(struct char_data *ch, struct char_data *victim);
-void            stop_follower(struct char_data *ch);
-void            sprintbit(unsigned long, char *[], char *);
-
 /*
  * For future use in blinding those with infravision who are fireballed or
  * otherwise subjected to lotsa heat quickly in dark rooms.

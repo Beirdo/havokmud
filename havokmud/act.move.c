@@ -1743,10 +1743,6 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
     char           *name;
     struct char_data *leader;
 
-    void            stop_follower(struct char_data *ch);
-    void            add_follower(struct char_data *ch,
-                                 struct char_data *leader);
-
     dlog("in do_follow");
 
     argument = get_argument(argument, &name);
