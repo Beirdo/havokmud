@@ -375,11 +375,8 @@ void set_fighting(struct char_data *ch, struct char_data *vict)
     if (affected_by_spell(ch, SKILL_MEDITATE)) {
         affect_from_char(ch, SKILL_MEDITATE);
     }
-    
-    if (!IS_AFFECTED(ch, AFF_PARALYSIS)) {
-        ch->specials.fighting = vict;
-        GET_POS(ch) = POSITION_FIGHTING;
-    }
+    ch->specials.fighting = vict;
+    GET_POS(ch) = POSITION_FIGHTING;
 
     /*
      * player has lost link and mob is killing him, force PC to flee
@@ -448,13 +445,10 @@ void stop_fighting(struct char_data *ch)
 
     ch->next_fighting = 0;
     ch->specials.fighting = 0;
-    
-    if (!IS_AFFECTED(ch, AFF_PARALYSIS)) {
-        if (MOUNTED(ch)) {
-            GET_POS(ch) = POSITION_MOUNTED;
-        } else {
-            GET_POS(ch) = POSITION_STANDING;
-        }
+    if (MOUNTED(ch)) {
+        GET_POS(ch) = POSITION_MOUNTED;
+    } else {
+        GET_POS(ch) = POSITION_STANDING;
     }
     update_pos(ch);
 }
@@ -2257,13 +2251,10 @@ void DamageMessages(struct char_data *ch, struct char_data *v, int dam,
             FALSE, v, 0, 0, TO_CHAR);
         break;
     case POSITION_STUNNED:
-        if (!IS_AFFECTED(v, AFF_PARALYSIS)) {
-            act("$n is stunned, but will probably regain consciousness again.",
-                TRUE, v, 0, 0, TO_ROOM);
-            act("You're stunned, but you will probably regain consciousness" 
-                 " again.",
-                FALSE, v, 0, 0, TO_CHAR);
-        }
+        act("$n is stunned, but will probably regain consciousness again.",
+            TRUE, v, 0, 0, TO_ROOM);
+        act("You're stunned, but you will probably regain consciousness again.",
+            FALSE, v, 0, 0, TO_CHAR);
         break;
     case POSITION_DEAD:
         act("$c0015$n is dead! $c0011R.I.P.", TRUE, v, 0, 0, TO_ROOM);
@@ -6175,3 +6166,4 @@ int FSkillCheck(struct char_data *ch, int fskill)
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
+
