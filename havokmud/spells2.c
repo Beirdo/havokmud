@@ -114,6 +114,8 @@ void cast_resurrection( byte level, struct char_data *ch, char *arg, int type,
 {
 
   switch(type){
+      case SPELL_TYPE_SCROLL:
+      case SPELL_TYPE_WAND:
   case SPELL_TYPE_SPELL:
     if (!tar_obj) return;
     spell_resurrection(level, ch, 0, tar_obj);
@@ -203,6 +205,7 @@ void cast_mana( byte level, struct char_data *ch, char *arg, int type,
 {
 
   switch(type){
+      case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_POTION:
     spell_mana(level, ch, ch, 0);
     break;
@@ -662,6 +665,7 @@ void cast_control_weather(byte level,struct char_data *ch, char *arg, int type,
   extern struct weather_data weather_info;
 
   switch (type) {
+      case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_SPELL:
 
     one_argument(arg,buffer);
@@ -756,6 +760,7 @@ void cast_create_water( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			if (tar_obj->obj_flags.type_flag != ITEM_DRINKCON) {
 				send_to_char("It is unable to hold water.\n\r", ch);
@@ -783,6 +788,7 @@ void cast_water_breath( byte level, struct char_data *ch, char *arg, int type,
       case SPELL_TYPE_POTION:
        	spell_water_breath(level,ch,tar_ch,0);
        	break;
+      case SPELL_TYPE_SCROLL:
       case SPELL_TYPE_WAND:
        	spell_water_breath(level,ch,tar_ch,0);
        	break;
@@ -807,6 +813,7 @@ void cast_flying( byte level, struct char_data *ch, char *arg, int type,
       case SPELL_TYPE_POTION:
        	spell_fly(level,ch,tar_ch,0);
        	break;
+      case SPELL_TYPE_SCROLL:
       case SPELL_TYPE_WAND:
        	spell_fly(level,ch,tar_ch,0);
        	break;
@@ -825,6 +832,7 @@ void cast_fly_group( byte level, struct char_data *ch, char *arg, int type,
   switch (type) {
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_WAND:
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_STAFF:
        	spell_fly_group(level,ch,0,0);
        	break;
@@ -844,6 +852,7 @@ void cast_heroes_feast( byte level, struct char_data *ch, char *arg, int type,
   switch (type) {
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_WAND:
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_STAFF:
        	spell_heroes_feast(level,ch,0,0);
        	break;
@@ -859,6 +868,7 @@ void cast_cure_blind( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			spell_cure_blind(level,ch,tar_ch,0);
 			break;
@@ -915,6 +925,7 @@ void cast_cure_light( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
       spell_cure_light(level,ch,tar_ch,0);
       break;
@@ -941,6 +952,7 @@ void cast_cure_serious( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
       spell_cure_serious(level,ch,tar_ch,0);
       break;
@@ -967,6 +979,7 @@ void cast_refresh( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
       spell_refresh(level,ch,tar_ch,0);
       break;
@@ -993,6 +1006,7 @@ void cast_second_wind( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
       spell_second_wind(level,ch,tar_ch,0);
       break;
@@ -1017,6 +1031,7 @@ void cast_shield( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
       spell_shield(level,ch,tar_ch,0);
       break;
@@ -1091,6 +1106,7 @@ void cast_detect_evil( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			if ( affected_by_spell(tar_ch, SPELL_DETECT_EVIL) ){
 				send_to_char("Nothing seems to happen.\n\r", tar_ch);
@@ -1120,6 +1136,7 @@ void cast_detect_good( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			if ( affected_by_spell(tar_ch, SPELL_DETECT_GOOD) ){
 				send_to_char("Nothing seems to happen.\n\r", tar_ch);
@@ -1148,6 +1165,7 @@ void cast_detect_good( byte level, struct char_data *ch, char *arg, int type,
 void cast_detect_invisibility( byte level, struct char_data *ch, char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
                 if (IS_AFFECTED(tar_ch, AFF_DETECT_INVISIBLE)) {
        			  send_to_char("Nothing seems to happen.\n\r", tar_ch);
@@ -1179,6 +1197,7 @@ void cast_detect_magic( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			if ( affected_by_spell(tar_ch, SPELL_DETECT_MAGIC) ){
 				send_to_char("Nothing seems to happen.\n\r", tar_ch);
@@ -1865,6 +1884,7 @@ void cast_summon( byte level, struct char_data *ch, char *arg, int type,
 {
   switch (type) {
 
+      case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
 			spell_summon(level, ch, tar_ch, 0);
 			break;
@@ -1928,6 +1948,7 @@ void cast_sense_life( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
+      case SPELL_TYPE_SCROLL:
 		case SPELL_TYPE_SPELL:
 			spell_sense_life(level, ch, ch, 0);
 			break;
@@ -2300,6 +2321,7 @@ void cast_succor( byte level, struct char_data *ch, char *arg, int type,
 {
 
   switch(type) {
+      case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
@@ -3039,6 +3061,8 @@ void cast_reincarnate( byte level, struct char_data *ch, char *arg, int type,
 {
 
   switch(type){
+      case SPELL_TYPE_SCROLL:
+      case SPELL_TYPE_WAND:
   case SPELL_TYPE_SPELL:
     if (!tar_obj) return;
     spell_reincarnate(level, ch, 0, tar_obj);

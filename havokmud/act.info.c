@@ -610,59 +610,59 @@ if (!ch || !i) {
     	    }
 
 	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
-	  strcat(buffer," (Hiding)");
+	  strcat(buffer,"$c000w (Hiding)");
 	if ( IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
-	  strcat(buffer," (invisible)");
+	  strcat(buffer,"$c000w (invisible)");
     if ( IS_AFFECTED(i,AFF_CHARM))
-	  strcat(buffer," (pet)$c0007");
+	  strcat(buffer,"$c000w (pet)$c0007");
 
       switch(GET_POS(i)) {
       case POSITION_STUNNED  :
-	strcat(buffer," is lying here, stunned."); break;
+	strcat(buffer,"$c000w is lying here, stunned."); break;
       case POSITION_INCAP    :
-	strcat(buffer," is lying here, incapacitated."); break;
+	strcat(buffer,"$c000w is lying here, incapacitated."); break;
       case POSITION_MORTALLYW:
-	strcat(buffer," is lying here, mortally wounded."); break;
+	strcat(buffer,"$c000w is lying here, mortally wounded."); break;
       case POSITION_DEAD     :
-	strcat(buffer," is lying here, dead."); break;
+	strcat(buffer,"$c000w is lying here, dead."); break;
       case POSITION_MOUNTED:
 	if (MOUNTED(i)) {
-	  strcat(buffer, " is here, riding ");
+	  strcat(buffer, "$c000w is here, riding ");
 	  strcat(buffer, MOUNTED(i)->player.short_descr);
 	} else {
 
-	  strcat(buffer, " is standing here.");
+	  strcat(buffer, "$c000w is standing here.");
 	}
 	break;
       case POSITION_STANDING :
 	if (!IS_AFFECTED(i, AFF_FLYING) && !affected_by_spell(i,SKILL_LEVITATION)) {
 	  if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	    strcat(buffer, "is floating here.");
+	    strcat(buffer, "$c000wis floating here.");
 	  else
-	    strcat(buffer," is standing here.");
+	    strcat(buffer,"$c000w is standing here.");
 	} else {
-	  strcat(buffer," is flying about.");
+	  strcat(buffer,"$c000w is flying about.");
 	}
 	break;
       case POSITION_SITTING  :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is floating here.");
+	  strcat(buffer, "$c000wis floating here.");
 	else
-	  strcat(buffer," is sitting here.");  break;
+	  strcat(buffer,"$c000w is sitting here.");  break;
       case POSITION_RESTING  :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is resting here in the water.");
+	  strcat(buffer, "$c000wis resting here in the water.");
 	else
-	strcat(buffer," is resting here.");  break;
+	strcat(buffer,"$c000w is resting here.");  break;
       case POSITION_SLEEPING :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is sleeping here in the water.");
+	  strcat(buffer, "$c000wis sleeping here in the water.");
 	else
-	strcat(buffer," is sleeping here."); break;
+	strcat(buffer,"$c000w is sleeping here."); break;
       case POSITION_FIGHTING :
 	if (i->specials.fighting) {
 
-	  strcat(buffer," is here, fighting ");
+	  strcat(buffer,"$c000w is here, fighting ");
 	  if (i->specials.fighting == ch)
 	    strcat(buffer," YOU!");
 	  else {
@@ -675,7 +675,7 @@ if (!ch || !i) {
 	      strcat(buffer, "someone who has already left.");
 	  }
 	} else /* NIL fighting pointer */
-	  strcat(buffer," is here struggling with thin air.");
+	  strcat(buffer,"$c000w is here struggling with thin air.");
 	break;
 	default : strcat(buffer," is floating here."); break;
       }
@@ -1011,11 +1011,11 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
       }
 
 	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
-	  strcat(buffer," (Hiding)");
+	  strcat(buffer,"$c000w (Hiding)");
 	if ( IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
-	  strcat(buffer," (invisible)");
+	  strcat(buffer,"$c000w (invisible)");
     if ( IS_AFFECTED(i,AFF_CHARM))
-	  strcat(buffer," (pet)$c0007");
+	  strcat(buffer,"$c000w (pet)$c0007");
 
       switch(GET_POS(i)) {
       case POSITION_STUNNED  :
@@ -1029,32 +1029,32 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
       case POSITION_STANDING :
 	if (!IS_AFFECTED(i, AFF_FLYING) && !affected_by_spell(i,SKILL_LEVITATION)) {
 	  if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	    strcat(buffer, "is floating here.");
+	    strcat(buffer, "$c000wis floating here.");
 	  else
-	    strcat(buffer," is standing here.");
+	    strcat(buffer,"$c000w is standing here.");
 	} else {
-	  strcat(buffer," is flying about.");
+	  strcat(buffer,"$c000w is flying about.");
 	}
 	break;
       case POSITION_SITTING  :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is floating here.");
+	  strcat(buffer, "$c000wis floating here.");
 	else
-	  strcat(buffer," is sitting here.");  break;
+	  strcat(buffer,"$c000w is sitting here.");  break;
       case POSITION_RESTING  :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is resting here in the water");
+	  strcat(buffer, "$c000wis resting here in the water");
 	else
-	  strcat(buffer," is resting here.");  break;
+	  strcat(buffer,"$c000w is resting here.");  break;
       case POSITION_SLEEPING :
 	if (real_roomp(i->in_room)->sector_type == SECT_WATER_NOSWIM)
-	  strcat(buffer, "is sleeping here in the water");
+	  strcat(buffer, "$c000wis sleeping here in the water");
 	else
-	  strcat(buffer," is sleeping here."); break;
+	  strcat(buffer,"$c000w is sleeping here."); break;
       case POSITION_FIGHTING :
 	if (i->specials.fighting) {
 
-	  strcat(buffer," is here, fighting ");
+	  strcat(buffer,"$c000w is here, fighting ");
 	  if (i->specials.fighting == ch)
 	    strcat(buffer," YOU!");
 	  else {

@@ -2125,6 +2125,14 @@ dlog("in do_recite");
 		return;
 	}
 
+	spl = scroll->obj_flags.value[1];
+
+	if(!spl) {
+		act("$n recites $p.", TRUE, ch, scroll, 0, TO_ROOM);
+		act("You recite $p which bursts into flame. Nothing happens.",FALSE,ch,scroll,0,TO_CHAR);
+		return;
+	}
+
 	if (*buf2) {
 		if (str_cmp(buf2,"self")==0) {
 			sprintf(buf2,"%s",GET_NAME(ch));
