@@ -1,11 +1,14 @@
+#ifndef _trap_h
+#define _trap_h
+
 #define TRAP_EFFECT_TYPE   0
 #define TRAP_DAM_TYPE      1
 #define TRAP_LEVEL         2
 #define TRAP_CHARGES       3
 
 /*
-   trap damage types...
-*/
+ * trap damage types... 
+ */
 
 #define TRAP_DAM_POISON    -4
 #define TRAP_DAM_SLEEP     -3
@@ -18,10 +21,10 @@
 #define TRAP_DAM_PIERCE    TYPE_PIERCE
 #define TRAP_DAM_SLASH     TYPE_SLASH
 
-#define TRAP_EFF_MOVE      1  /* trigger on movement    */
-#define TRAP_EFF_OBJECT    2  /* trigger on get or put  */
-#define TRAP_EFF_ROOM      4  /* affect all in froom    */
-#define TRAP_EFF_NORTH     8  /*  movement in this dir  */
+#define TRAP_EFF_MOVE      1    /* trigger on movement */
+#define TRAP_EFF_OBJECT    2    /* trigger on get or put */
+#define TRAP_EFF_ROOM      4    /* affect all in froom */
+#define TRAP_EFF_NORTH     8    /* movement in this dir */
 #define TRAP_EFF_EAST     16
 #define TRAP_EFF_SOUTH    32
 #define TRAP_EFF_WEST     64
@@ -33,3 +36,7 @@
 #define GET_TRAP_CHARGES(obj) (obj)->obj_flags.value[TRAP_CHARGES]
 #define GET_TRAP_DAM_TYPE(obj) (obj)->obj_flags.value[TRAP_DAM_TYPE]
 
+#endif
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
