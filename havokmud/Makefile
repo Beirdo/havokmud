@@ -19,7 +19,7 @@ LD=$(CC)
 ##  these are architecture dependent flags
 TITANFLAGS = -g -43 -vector_c -safe=ptrs -DTITAN
 #MYFLAGS = -ggdb3 -m486 -mno-fp-ret-in-387 
-MYFLAGS = -g -O6 #-Wall #-Werror
+MYFLAGS = -g -O #-Wall #-Werror
 ##
 CFLAGS = $(MYFLAGS) $(CPPFLAGS)
 ##
@@ -128,8 +128,8 @@ CFLAGS = $(MYFLAGS) $(CPPFLAGS)
 HEADERFILES = structs.h utils.h comm.h interpreter.h db.h
 ##
 
-OBJS = comm.o act.comm.o act.info.o act.move.o act.obj1.o act.obj2.o act.off.o act.other.o act.social.o act.wizard.o handler.o db.o interpreter.o utility.o spec_assign.o shop.o limits.o mobact.o fight.o modify.o weather.o spells1.o spells2.o spell_parser.o reception.o constants.o spec_procs.o signals.o board.o magic.o magic2.o skills.o opinion.o trap.o magicutils.o multiclass.o hash.o sound.o heap.o spec_procs2.o magic3.o security.o spec_procs3.o spec_procs4.o create.o bsd.o parser.o ansi_parser.o mail.o mindskills1.o mind_use1.o create.mob.o create.obj.o create.help.o paginate.o mod.text.o
-SRCS = comm.c act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c act.other.c act.social.c act.wizard.c handler.c db.c interpreter.c utility.c spec_assign.c shop.c limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c spell_parser.c reception.c constants.c spec_procs.c signals.c board.c magic.c magic2.c skills.c opinion.c trap.c magicutils.c multiclass.c hash.c sound.c heap.c spec_procs2.c magic3.c security.c spec_procs3.c spec_procs4.c create.c bsd.c parser.c ansi_parser.c mail.o mind_use1.c mindskills1.c create.mob.c create.obj.c create.help.c paginate.c mod.text.c
+OBJS = comm.o act.comm.o act.info.o act.move.o act.obj1.o act.obj2.o act.off.o act.other.o act.social.o act.wizard.o handler.o db.o interpreter.o utility.o spec_assign.o shop.o limits.o mobact.o fight.o modify.o weather.o spells1.o spells2.o spell_parser.o reception.o constants.o spec_procs.o signals.o board.o magic.o magic2.o skills.o opinion.o trap.o magicutils.o multiclass.o hash.o sound.o heap.o spec_procs2.o magic3.o security.o spec_procs3.o spec_procs4.o create.o bsd.o parser.o ansi_parser.o mail.o mindskills1.o mind_use1.o create.mob.o create.obj.o create.help.o paginate.o mod.text.o spec_guildmaster.o
+SRCS = comm.c act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c act.other.c act.social.c act.wizard.c handler.c db.c interpreter.c utility.c spec_assign.c shop.c limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c spell_parser.c reception.c constants.c spec_procs.c signals.c board.c magic.c magic2.c skills.c opinion.c trap.c magicutils.c multiclass.c hash.c sound.c heap.c spec_procs2.c magic3.c security.c spec_procs3.c spec_procs4.c create.c bsd.c parser.c ansi_parser.c mail.o mind_use1.c mindskills1.c create.mob.c create.obj.c create.help.c paginate.c mod.text.c spec_guildmaster.c
 
 all : dmserver
 	chmod g+rw *.o
@@ -141,7 +141,7 @@ dmserver : ${OBJS}
 ##  out the line after that
 ##      $(LD) -o $@ -g ${OBJS} /local/lib/gnu/gcc-gnulib /usr/lib/debug/malloc.o
 ##      $(LD) -o $@ -g ${OBJS} /usr/lib
-	$(LD) -o $@ ${OBJS} -lcrypt
+	$(LD) -g -o $@ ${OBJS} -lcrypt
 ##      $(LD) -o $@ -g ${OBJS} -L/usr/local/gnu/lib/gcc-lib/sun4-sunos4.1.1/2.3
 
 depend :
