@@ -4416,3 +4416,22 @@ void cast_prot_dragon_breath_gas( byte level, struct char_data *ch, char *arg,
   }
 
 }
+
+void cast_giant_growth( byte level, struct char_data *ch, char *arg, 
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_giant_growth(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in giant growth.");
+      break;
+  }
+}
+

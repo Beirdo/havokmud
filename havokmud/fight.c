@@ -2580,6 +2580,12 @@ void perform_violence(int pulse)
                                0, ch, tmp, tmp, TO_CHAR);
                            act("$c0015and then fumbles and drops $p as well!",
                                0, ch, tmp, tmp, TO_ROOM);
+			/* readded so dual wield has a chance to be learned no matter what you drop -Mythos 10-30-01 */
+			if(HasClass(ch,CLASS_RANGER))
+                        {
+                           LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+                        }
+
                         }
                      }
                   }

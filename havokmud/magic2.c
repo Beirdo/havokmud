@@ -1726,7 +1726,11 @@ if (level >= 45) {              /* if level 45> then they can do this */
     }
   }
 
-
+   if (affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
+	affect_from_char(victim,SPELL_GIANT_GROWTH);
+	send_to_char("You feel less powerful.\n\r",
+		     victim);
+  }
    if (level >= IMPLEMENTOR)  {
 
     if (affected_by_spell(victim,SPELL_ANTI_MAGIC_SHELL)) {

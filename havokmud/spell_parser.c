@@ -231,6 +231,8 @@ void cast_protection_from_good( byte level, struct char_data *ch, char
    *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_protection_from_good_group( byte level, struct char_data *ch,
    char *arg, int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_giant_growth( byte level, struct char_data *ch, char *arg,
+		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
 
 void cast_remove_curse( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_sanctuary( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
@@ -674,7 +676,7 @@ char *spells[]=
    "your wings are tired",
    "Your wings are burned",
    "protection from good group",
-   "***",
+   "giant growth",
    "***",
    "berserk",
    "tan",
@@ -2387,9 +2389,9 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
 
-
+/* added rescue to rangers at level 3 -Mythos 10-30-01 */
   spello(52,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
+ BIG_GUY+1,  BIG_GUY+1,  3,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
 
   spello(53,1,POSITION_STANDING,45,IMMORTAL, IMMORTAL,
@@ -2855,8 +2857,9 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   47,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   20,	 TAR_IGNORE, cast_mount, 0);
 
+/* gave rangers PFG at level 15 -Mythos 10-30-01 */
   spello(169,12,POSITION_STANDING,LOW_IMMORTAL,  7, LOW_IMMORTAL,
-  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  LOW_IMMORTAL,  LOW_IMMORTAL,  15,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_protection_from_good, 0);
 
 
@@ -2864,9 +2867,15 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   BIG_GUY+1,  BIG_GUY+1,1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
 
+/*gave rangers PFG Group at level 30 -Mythos 10-30-01 */
   spello(204,12,POSITION_STANDING,LOW_IMMORTAL,  20, LOW_IMMORTAL,
-  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  LOW_IMMORTAL,  LOW_IMMORTAL,  30,  LOW_IMMORTAL,
   45,	 TAR_IGNORE, cast_protection_from_good_group, 0);
+
+/* rangers new spell giant growth - costs 50 mana  -Mythos 10-30-01*/
+  spello(205, 12, POSITION_STANDING, IMMORTAL, IMMORTAL, IMMORTAL,
+  IMMORTAL,  IMMORTAL,  20,  IMMORTAL,
+  50, 	 TAR_CHAR_ROOM, cast_giant_growth, 0);
 
   spello(203,12, POSITION_STANDING,BIG_GUY+1,  BIG_GUY+1, BIG_GUY+1,
   BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,

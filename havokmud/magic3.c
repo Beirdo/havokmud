@@ -2502,3 +2502,34 @@ void spell_dragon_ride(byte level, struct char_data *ch,
   affect_to_char(ch, &af);
 }
 
+void spell_giant_growth(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj)
+{
+  /* +3 to hit +3 dam */
+  struct affected_type af;
+
+  if (affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
+    send_to_char("Already in effect\n\r", ch);
+    return;
+  }
+
+  GET_HIT(victim)+=number(1,8);
+
+  update_pos(victim);
+
+  act("$n grows in size.", FALSE, victim, 0, 0, TO_ROOM);
+  send_to_char("You feel larger!\n\r", victim);
+
+  af.type      = SPELL_GIANT_GROWTH;
+  af.duration  = 10;
+  af.modifier  = 3;
+  af.location  = APPLY_HITROLL;
+  af.bitvector = 0;
+  affect_to_char(victim, &af);
+  af.location = APPLY_DAMROLL;
+  af.modifier = 3;                 /* Make better */
+  affect_to_char(victim, &af);
+
+
+}
+

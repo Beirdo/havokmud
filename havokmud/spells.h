@@ -238,6 +238,9 @@
 #define COND_WINGS_TIRED             202 /*Set wings tired flag for avariel -teb*/
 #define COND_WINGS_BURNED            203
 #define SPELL_PROT_FROM_GOOD_GROUP   204
+#define SPELL_GIANT_GROWTH           205
+
+
 /* 205 */
 #define SPELL_GREEN_SLIME            206
 
