@@ -962,6 +962,12 @@ void spell_Create_Monster(byte level, struct char_data *ch,
      return;
     }
 
+	/* lets make monsum stronger.. they are pussies... (GH) */
+	GET_DAMROLL(mob) += (int) level/2 + 2;
+	GET_HITROLL(mob) += (int) level/2 + 2;
+	mob->points.max_hit += level * 2;
+	//GET_MAX_HIT(mob) += level*2;
+
     char_to_room(mob, ch->in_room);
 
     act("$n waves $s hand, and $N appears!", TRUE, ch, 0, mob, TO_ROOM);

@@ -1369,13 +1369,20 @@ void affect_update( int pulse )
 
 /* Check if making CH follow VICTIM will create an illegal */
 /* Follow "Loop/circle"                                    */
+/* Problem: Appears to give us an infinite loop every once in a while */
+/*         Attempting to put in some guide to stop it...  Temp fix (GH)*/
 bool circle_follow(struct char_data *ch, struct char_data *victim)
 {
   struct char_data *k;
-
+	int counter=0;
   for(k=victim; k; k=k->master) {
+    counter ++;
     if (k == ch)
       return(TRUE);
+  	if(counter > 20) {
+		log("Possible infinite Loop in circle follower?");
+		return(TRUE);
+	}
   }
 
   return(FALSE);
