@@ -4221,16 +4221,6 @@ void mind_use_sense_object(int level, struct char_data *ch, char *arg,
  */
 #define log(x) use_Log error
 
-#if 0
-/*
- * put in support for GNU-specific system calls that are missing in Cygwin
- */
-#if defined(__CYGWIN__)
-
-size_t strnlen(const char *s, size_t maxlen);
-
-#endif
-#endif
 
 #endif
 
