@@ -3703,42 +3703,40 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                     } else {
                         strcat(immortals, buf);
                     }
-                } else {
-                    if (IS_AFFECTED2(person, AFF2_QUEST)) {
-                        if (GET_EXP(person) > 200000000 ||
-                            IS_SET(person->specials.act, PLR_LEGEND)) {
-                            sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
-                                    GetLevelTitle(person), classes, color,
-                                    PrintTitle(person, type),
-                                    SPECIAL_FLAGS(ch, person));
-                        } else {
-                            sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
-                                    GetLevelTitle(person), classes, color,
-                                    PrintTitle(person, type),
-                                    SPECIAL_FLAGS(ch, person));
-                        }
-                        strcat(quest, buf);
+                } else if (IS_AFFECTED2(person, AFF2_QUEST)) {
+                    if (GET_EXP(person) > 200000000 ||
+                        IS_SET(person->specials.act, PLR_LEGEND)) {
+                        sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
+                                GetLevelTitle(person), classes, color,
+                                PrintTitle(person, type),
+                                SPECIAL_FLAGS(ch, person));
                     } else {
-                        if (GET_EXP(person) > 200000000 ||
-                            IS_SET(person->specials.act, PLR_LEGEND)) {
-                            sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
-                                    GetLevelTitle(person), classes, color,
-                                    PrintTitle(person, type),
-                                    SPECIAL_FLAGS(ch, person));
-                        } else {
-                            sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
-                                    GetLevelTitle(person), classes, color,
-                                    PrintTitle(person, type),
-                                    SPECIAL_FLAGS(ch, person));
-                        }
-                        strcat(mortals, buf);
+                        sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
+                                GetLevelTitle(person), classes, color,
+                                PrintTitle(person, type),
+                                SPECIAL_FLAGS(ch, person));
                     }
-                    count++;
+                    strcat(quest, buf);
+                } else {
+                    if (GET_EXP(person) > 200000000 ||
+                        IS_SET(person->specials.act, PLR_LEGEND)) {
+                        sprintf(buf, "%49s $c0012%-8s %s:$c000w %s%s\n\r",
+                                GetLevelTitle(person), classes, color,
+                                PrintTitle(person, type),
+                                SPECIAL_FLAGS(ch, person));
+                    } else {
+                        sprintf(buf, "%25s $c0012%-8s %s:$c000w %s%s\n\r",
+                                GetLevelTitle(person), classes, color,
+                                PrintTitle(person, type),
+                                SPECIAL_FLAGS(ch, person));
+                    }
+                    strcat(mortals, buf);
                 }
+                count++;
             }
         }
     }
-
+    
     if (count == 0)
         ch_printf(ch, "\n\r $c000W No visible characters found!!\n\r");
 
