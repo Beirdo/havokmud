@@ -918,14 +918,15 @@ char *spells[]=
 	"chillshield", //338
 
 	/* psi stuff */
-   "wall of thought",
-   "mind tap",
+	"wall of thought",
+	"mind tap",
+
 	"blade barrier", /* 341 - blade barrier */
 	"mana shield",
 	"iron skins",
 	"sense item",
 	"kinolock",
-	"flower fist",
+	"flowerfist",
 	"flurry of blows",
 	"scribe", //348
 	"group heal",

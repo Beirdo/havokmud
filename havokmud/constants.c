@@ -5459,7 +5459,7 @@ const struct skillset warmonkskills[] = {
 	{"None",			-1					,-1}
 };
 const struct skillset mainmonkskills[] = {
- {"flower fist", 		SKILL_FLOWER_FIST	,36},
+ {"flowerfist", 		SKILL_FLOWERFIST	,36},
  {"flurry of blows", 	SKILL_FLURRY		,18},
  {"None", 				-1							,-1}
 };

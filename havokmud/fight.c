@@ -2725,8 +2725,10 @@ void perform_violence(int pulse)
 				x+=(float)ch->equipment[WIELD]->speed/100;
 			} else {
 				if(HasClass(ch,CLASS_MONK))
-					x+=0.25;
+					x+=0.55;
 			}
+
+
                /* work through all of their attacks, until there is not
                 * a full attack left */
 
@@ -2790,6 +2792,10 @@ void perform_violence(int pulse)
 						x = x - x*0.40;
 				}
 
+			if (affected_by_spell(ch, SKILL_FLURRY)) {
+				x*=1.3;
+			}
+
                while(x > 0.999)
                {
                   if(ch->specials.fighting)
@@ -2833,7 +2839,7 @@ void perform_violence(int pulse)
 			   		x = 1.0;
 
 			   		if(!A_NOHASTE(ch)) {
-			   			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
+			   			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE) && (ch->specials.remortclass == RANGER_LEVEL_IND +1))
 			   				x = x + 0.75;
 			   			if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
 			   				x = x / 2;
@@ -2976,6 +2982,10 @@ void perform_violence(int pulse)
 					x = x / 2;
 			}
 
+			if (affected_by_spell(ch, SKILL_FLURRY)) {
+				x*=1.3;
+			}
+
                while(x > 0.999)
                {
                   if(ch->specials.fighting)
@@ -3026,6 +3036,9 @@ void perform_violence(int pulse)
                   } /* made percent check */
                }
             } /* End of if ch was a NPC */
+			if (affected_by_spell(ch, SKILL_FLURRY)) {
+				affect_from_char(ch, SKILL_FLURRY);
+			}
          }
          else
          { /* Not in same room, not awake, or paralyzed */
@@ -4579,7 +4592,7 @@ int GetFormType(struct char_data *ch)
 int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 {
 	int x=0, scheck = 0;
-  if(v->style==FIGHTING_STYLE_DEFENSIVE) {
+  if(v->style==FIGHTING_STYLE_DEFENSIVE && (v->specials.remortclass == MONK_LEVEL_IND+1)) {
 	  if (FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE))
 	  	x = v->skills[SKILL_DODGE].learned*2.5;
   }

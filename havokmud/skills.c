@@ -1826,56 +1826,52 @@ if (GET_MANA(ch) < 15)  {
     return;
   }
 
- if (ch->skills && ch->skills[SKILL_BELLOW].learned &&
-    (number(1,101) < ch->skills[SKILL_BELLOW].learned) ) {
+	if (ch->skills && ch->skills[SKILL_BELLOW].learned &&
+			(number(1,101) < ch->skills[SKILL_BELLOW].learned) ) {
 
-   GET_MANA(ch)-=15;
-   send_to_char("You let out a bellow that rattles your bones!\n\r",ch);
-   act("$n lets out a bellow that rattles your bones.",FALSE,ch,0,0,TO_ROOM);
-	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
-	gain_exp(ch, 100);
+		GET_MANA(ch)-=15;
+		send_to_char("You let out a bellow that rattles your bones!\n\r",ch);
+		act("$n lets out a bellow that rattles your bones.",FALSE,ch,0,0,TO_ROOM);
+		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+		gain_exp(ch, 100);
 
-for (vict=character_list;vict;vict= tmp) {
-     tmp=vict->next;
-     if (ch->in_room == vict->in_room && ch!=vict) {
-      if (!in_group(ch,vict) && !IS_IMMORTAL(vict)) {
-     if (GetMaxLevel(vict)-3 <= GetMaxLevel(ch)) {
-       if (!saves_spell(vict, SAVING_PARA)) {
-          /* they did not save here */
-  	 if ( (GetMaxLevel(ch)+number(1,40)) > 70 ) {
-  	     act("You stunned $N!",TRUE,ch,0,vict,TO_CHAR);
-  	     act("$n stuns $N with a loud bellow!",FALSE,ch,0,vict,TO_ROOM);
-  	     GET_POS(vict) = POSITION_STUNNED;
-  	     AddFeared(vict,ch);
-  	    } else {
-  	     act("You scared $N to death with your bellow!",TRUE,ch,0,vict,TO_CHAR);
-  	     act("$n scared $N with a loud bellow!",FALSE,ch,0,vict,TO_ROOM);
-             do_flee(vict,"",0);
-             AddFeared(vict,ch);
-            }
-
-        } else {
-	 /* they saved */
-		AddHated(vict,ch);
-		set_fighting(vict,ch);
-         }
-       } 				/* ^ level was greater or equal to mob */
-
-         else {				 /* V-- level was lower than mobs */
-       		/* nothing happens */
-               AddHated(vict,ch);
-	       set_fighting(vict,ch);
-          }
-
-      } /*  group/immo */
-     } /* inroom */
-    } /* end for */
-   } else { 					/* failed skill check */
-   send_to_char("You let out a squalk!\n\r",ch);
-   act("$n lets out a squalk of a bellow then blushes.",FALSE,ch,0,0,TO_ROOM);
-   LearnFromMistake(ch, SKILL_BELLOW, 0, 95);
- }
-  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+		for (vict=character_list;vict;vict= tmp) {
+			tmp=vict->next;
+			if (ch->in_room == vict->in_room && ch!=vict) {
+				if (!in_group(ch,vict) && !IS_IMMORTAL(vict)) {
+					if (GetMaxLevel(vict)-3 <= GetMaxLevel(ch)) {
+						if (!saves_spell(vict, SAVING_PARA)) {
+							/* they did not save here */
+							if ( (GetMaxLevel(ch)+number(1,40)) > 70 ) {
+								act("You stunned $N!",TRUE,ch,0,vict,TO_CHAR);
+								act("$n stuns $N with a loud bellow!",FALSE,ch,0,vict,TO_ROOM);
+								GET_POS(vict) = POSITION_STUNNED;
+								AddFeared(vict,ch);
+							} else {
+								act("You scared $N to death with your bellow!",TRUE,ch,0,vict,TO_CHAR);
+								act("$n scared $N with a loud bellow!",FALSE,ch,0,vict,TO_ROOM);
+								do_flee(vict,"",0);
+								AddFeared(vict,ch);
+							}
+						} else {
+							/* they saved */
+							AddHated(vict,ch);
+							set_fighting(vict,ch);
+						}
+					} else { /* V-- level was lower than mobs */
+						/* nothing happens */
+						AddHated(vict,ch);
+						set_fighting(vict,ch);
+					}
+				} /*  group/immo */
+			} /* inroom */
+		} /* end for */
+	} else { 					/* failed skill check */
+		send_to_char("You let out a squalk!\n\r",ch);
+		act("$n lets out a squalk of a bellow then blushes.",FALSE,ch,0,0,TO_ROOM);
+		LearnFromMistake(ch, SKILL_BELLOW, 0, 95);
+	}
+	WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }
 
 /* ranger skill */
@@ -4272,4 +4268,111 @@ dlog("in do_steed");
 		}
 	}
 	WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}
+
+void do_flurry(struct char_data *ch, char *argument, int cmd)
+{
+	int percent = 0;
+	struct affected_type af;
+
+dlog("in do_flurry");
+
+	if(ch->specials.remortclass != MONK_LEVEL_IND + 1) {
+		send_to_char("Err, you're likely to trip.\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills) {
+		log("Char without skills trying to flurry");
+		return;
+	}
+
+	if(!ch->skills[SKILL_FLURRY].learned) {
+		send_to_char("You need some guidance before attempting this.\n\r",ch);
+		return;
+	}
+
+	if(!ch->specials.fighting) {
+		send_to_char("You can only do this when engaged in battle.\n\r",ch);
+		return;
+	}
+
+	if (affected_by_spell(ch, SKILL_FLURRY)) {
+		send_to_char("You're doing the best you can!\n\r",ch);
+		return;
+	}
+
+	percent=number(1,101);
+
+	if (ch->skills[SKILL_FLURRY].learned) {
+		if (percent > ch->skills[SKILL_FLURRY].learned) {
+			send_to_char("You try a daunting combat move, but trip and stumble.\n\r",ch);
+			act("$n tries a daunting combat move, but trips and stumbles.",FALSE, ch, 0,0,TO_ROOM);
+			LearnFromMistake(ch, SKILL_FLURRY, 0, 90);
+		} else {
+			act("$n starts delivering precision strikes at lightning speed!",TRUE,ch,0,0,TO_ROOM);
+			act("You start delivering precision strikes at lightning speed!",TRUE,ch,0,0,TO_CHAR);
+			af.type      = SKILL_FLURRY;
+			af.duration  = 0;
+			af.modifier  = 5;
+			af.location  = APPLY_HITROLL;
+			af.bitvector = 0;
+			affect_to_char(ch, &af);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+		}
+	}
+
+//	WAIT_STATE(ch, PULSE_VIOLENCE*3); commented out for testing purposes
+}
+
+void do_flowerfist(struct char_data *ch, char *argument, int cmd)
+{
+	int percent = 0, dam = 0;
+	struct char_data *tch;
+
+dlog("in do_flowerfist");
+
+	if(ch->specials.remortclass != MONK_LEVEL_IND + 1) {
+		send_to_char("Err, are you sure you want to pick flowers at this moment?\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills) {
+		log("Char without skills trying to flowerfist");
+		return;
+	}
+
+	if(!ch->skills[SKILL_FLOWERFIST].learned) {
+		send_to_char("You need some guidance before attempting this.\n\r",ch);
+		return;
+	}
+
+	percent=number(1,120);
+
+	if (ch->skills[SKILL_FLOWERFIST].learned) {
+		if (percent > ch->skills[SKILL_FLOWERFIST].learned + GET_DEX(ch)) {
+			send_to_char("You can't seem to get it right.\n\r",ch);
+			act("$n seems to want to pick some flowers.",FALSE, ch, 0,0,TO_ROOM);
+			LearnFromMistake(ch, SKILL_FLOWERFIST, 0, 90);
+		} else {
+			act("$n chants loudly, while $s fists seem to be all over the place!",TRUE,ch,0,0,TO_ROOM);
+			act("You chant loudly, while sending hits throughout the area.",TRUE,ch,0,0,TO_CHAR);
+			for (tch=real_roomp(ch->in_room)->people; tch; tch=tch->next_in_room) {
+				if (!in_group(tch, ch)) {
+					dam = dice(6,6);
+					damage(ch, tch, dam, TYPE_HIT);
+
+					//some message while the messages file isn't updated yet
+					act("$n hits $N.",TRUE,ch,0,tch,TO_NOTVICT);
+					act("$n hits you.",TRUE,ch,0,tch,TO_VICT);
+					act("You hit $N.",TRUE,ch,0,tch,TO_CHAR);
+				}
+			}
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+		}
+	}
+
+//	WAIT_STATE(ch, PULSE_VIOLENCE*2); commented out for testing purposes
 }

@@ -1187,7 +1187,7 @@ int i;
 	// special case for monks
 	else {
      		if (HasClass(ch, CLASS_MONK)) {
-			ch->mult_att+= (GET_LEVEL(ch, MONK_LEVEL_IND)/16.0);
+				ch->mult_att+= (GET_LEVEL(ch, MONK_LEVEL_IND)/16.0);
      		}
 
     		/* fix up damage stuff */
