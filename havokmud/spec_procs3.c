@@ -4144,3 +4144,60 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
 }
 
 
+int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+  char buf[MAX_INPUT_LENGTH];
+
+  extern int drink_aff[][3];
+
+  extern struct weather_data weather_info;
+        void name_to_drinkcon(struct obj_data *obj,int type);
+        void name_from_drinkcon(struct obj_data *obj);
+
+
+  if (cmd==11) { /* drink */
+
+    only_argument(arg,buf);
+
+    /*if (str_cmp(buf, "fountain") && str_cmp(buf, "water")) {
+      return(FALSE);
+    }*/
+
+    send_to_char("You drink from the fountain\n\r", ch);
+    act("$n drinks from the fountain", FALSE, ch, 0, 0, TO_ROOM);
+
+
+    if(GET_COND(ch,THIRST)>20) {
+           act("You do not feel thirsty.",FALSE,ch,0,0,TO_CHAR);
+	   return(TRUE);
+	}	
+    if(GET_COND(ch,FULL)>20) {
+           act("You do are full.",FALSE,ch,0,0,TO_CHAR);
+	   return(TRUE);
+	}
+
+    GET_COND(ch,THIRST) = 24;
+    GET_COND(ch,FULL)+=1;
+
+    switch (number(0, 5)) {
+
+	/*If you are lucky, you will find the secret*/
+	case 1:
+		send_to_char("You see something glistening in the water.\n\r",ch);
+		send_to_char("As you reach to touch it, some magical force pulls you under.\n\r",ch);
+		char_from_room(ch);
+		char_to_room(ch,46201);
+		do_look(ch, "", 0);
+	break;
+	/*And if you aren't, you won't*/
+	default:
+		send_to_char("The water tastes so good, you are tempted to try some more.\n\r", ch);
+	break;
+	}
+	  return(TRUE);
+  }
+
+  /* All commands except fill and drink */
+  return(FALSE);
+}

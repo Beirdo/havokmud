@@ -1389,6 +1389,9 @@ void assign_rooms()
    //{40285, fiery_alley},
    //{40287, fiery_alley},
 
+/*Thunder Mountain Keep */
+{45450, Thunder_Fountain},
+
     { -1, NULL},
   };
   int i;
