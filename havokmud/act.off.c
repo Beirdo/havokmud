@@ -2164,9 +2164,10 @@ dlog("in do_throw");
   */
 
 void do_style(struct char_data *ch, char *argument, int cmd) {
-	char style[128], temp[128];
+	char style[128], temp[128],buf[254],buffer[MAX_STRING_LENGTH +30];
 	int x;
 	int found=0;
+	extern struct skillset styleskillset[];
 
   	only_argument(argument, style);
 
@@ -2184,7 +2185,7 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
   				strcat(buffer, buf);
   				strcat(buffer, "\r");
   			}
-  			i++;
+  			x++;
 		}
 		page_string(ch->desc, buffer, 1);
 		return;

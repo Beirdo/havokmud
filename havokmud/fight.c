@@ -1434,7 +1434,7 @@ char buf[255];
      dam = berserkdambonus(ch,dam);     /* More damage if berserked */
    }
 
-	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK)
+	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK))
 		dam = (int)(berserkdambonus(ch,dam) *0.75);
   dam = PreProcDam(v,type,dam);
 
@@ -1621,14 +1621,13 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 					  hard coded in do_kick */
   else
 
-  if ((attacktype >= TYPE_HIT) && (attacktype <= TYPE_RANGE_WEAPON))
-  {
-    dam_message(dam, ch, v, attacktype);
+	if ((attacktype >= TYPE_HIT) && (attacktype <= TYPE_RANGE_WEAPON)) {
+		dam_message(dam, ch, v, attacktype);
 		/* do not wanna frag the bow, frag the arrow instead! */
-    if (ch->equipment[WIELD] && attacktype != TYPE_RANGE_WEAPON)     {
-      BrittleCheck(ch,v, dam);
-    }
-  } else {
+		if (ch->equipment[WIELD] && attacktype != TYPE_RANGE_WEAPON) {
+			BrittleCheck(ch,v, dam);
+		}
+	} else {
 
     for(i = 0; i < MAX_MESSAGES; i++) {
       if (fight_messages[i].a_type == attacktype)
@@ -2238,7 +2237,7 @@ int MissVictim(struct char_data *ch, struct char_data *v, int type, int w_type,
 int GetWeaponDam(struct char_data *ch, struct char_data *v,
 		 struct obj_data *wielded)
 {
-   int dam, j, scheck = 0;
+   int dam, j;
    struct obj_data *obj;
    extern struct str_app_type str_app[];
 
@@ -2308,16 +2307,14 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 
 
 	if(ch->style==FIGHTING_STYLE_AGGRESSIVE) {
-		scheck = FSkillCheck(ch, 0, FIGHTING_STYLE_AGGRESSIVE);
-		if (scheck == 1) /* 20% more damage if successful */
+		if (FSkillCheck(ch, FIGHTING_STYLE_AGGRESSIVE)) /* 20% more damage if successful */
 			dam = dam*1.20;
 	}
 	if(ch->style==FIGHTING_STYLE_DEFENSIVE) {
-		scheck = FSkillCheck(ch, 0, FIGHTING_STYLE_DEFENSIVE);
-		if (scheck == 0)
-			dam = dam - dam*0.20; /* 20% less damage if failed */
-		else
+		if (FSkillCheck(ch, FIGHTING_STYLE_DEFENSIVE))
 			dam = dam - dam*0.10; /* 10% less damage if successful */
+		else
+			dam = dam - dam*0.20; /* 20% less damage if failed */
 	}
     if (GET_POS(v) <= POSITION_DEAD)
       return(0);
@@ -2393,9 +2390,8 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 */
 	if (v->skills && v->skills[SKILL_DODGE].learned) {
 		if (v->style==FIGHTING_STYLE_DEFENSIVE) {
-			scheck = FSkillCheck(v, 0, FIGHTING_STYLE_DEFENSIVE);
-			if (number(1,101) <= (scheck == 1 ? v->skills[SKILL_DODGE].learned * 1.25 : v->skills[SKILL_DODGE].learned)) {
-				dam -= number(1,(scheck == 1 ? 5:3));
+			if (number(1,101) <= ((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? v->skills[SKILL_DODGE].learned * 1.25 : v->skills[SKILL_DODGE].learned)) {
+				dam -= number(1,((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? 5:3));
 				if (HasClass(v, CLASS_MONK)) {
 					MonkDodge(ch, v, &dam);
 				}
@@ -2476,7 +2472,7 @@ void perform_violence(int pulse)
  	struct follow_type *f;
  struct char_data *ch, *vict;
    struct obj_data *tmp,*tmp2;
-   int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found, scheck = 0;
+   int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
    float x;
    int perc;
 
@@ -2541,10 +2537,9 @@ void perform_violence(int pulse)
                x = ch->mult_att;
 
                if(ch->style==FIGHTING_STYLE_BERSERKED && !IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
-				   	scheck = FSkillCheck(ch, 0, FIGHTING_STYLE_BERSERKED);
-				   	if (scheck == 1) { /* yay, let's go 'zerk! */
-						act("$n turns red and suddently becomes raged with anger!",TRUE,ch,0,0,TO_ROOM);
-						send_to_char("You feel your rage overcome you!!\n\r",ch);
+				   	if (FSkillCheck(ch, FIGHTING_STYLE_BERSERKED)) { /* yay, let's go 'zerk! */
+						act("*c000B$n turns red and suddently becomes raged with anger!$c000w",TRUE,ch,0,0,TO_ROOM);
+						send_to_char("*c000BYou feel your rage overcome you!!\n\r$c000w",ch);
 						SET_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
 					}
 			   }
@@ -2625,8 +2620,7 @@ void perform_violence(int pulse)
 					}
 
 				if(ch->style==FIGHTING_STYLE_EVASIVE) {
-					scheck = FSkillCheck(ch, 0, FIGHTING_STYLE_EVASIVE);
-					if (scheck == 1)
+					if (FSkillCheck(ch, FIGHTING_STYLE_EVASIVE))
 					//ch_printf(ch,"Number attacks before=%d\n\r",x);
 						x = x - x*0.20;
 					//ch_printf(ch,"Number of attacks after=%d\n\r",x);
@@ -4284,8 +4278,7 @@ int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 {
 	int x=0, scheck = 0;
   if(v->style==FIGHTING_STYLE_DEFENSIVE) {
-	  scheck = FSkillCheck(v, 0, FIGHTING_STYLE_DEFENSIVE);
-	  if (scheck == 1)
+	  if (FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE))
 	  	x = v->skills[SKILL_DODGE].learned*1.5;
   }
 
@@ -4568,7 +4561,7 @@ void specdamage(struct char_data *ch, struct char_data *v)
 return;
 }
 
-int FSkillCheck(struct char_data *ch, int scheck, int fskill)
+int FSkillCheck(struct char_data *ch, int fskill)
 {
 	int perc=0, tmp = 0, max = 95;
 	char fname[254], buf[254];
@@ -4583,8 +4576,7 @@ int FSkillCheck(struct char_data *ch, int scheck, int fskill)
 	perc = number(1,110);
 
 	if (perc > 100) {/* always 9% chance of failure */
-		scheck = 0;
-		return(scheck);
+		return(FALSE);
 	}
 	/* add some class modifiers to perc here */
 	switch(fskill) {
@@ -4620,7 +4612,6 @@ int FSkillCheck(struct char_data *ch, int scheck, int fskill)
 	}
 
 	if (perc > ch->skills[fskill].learned) { /* fail */
-		scheck = 0;
 		/* let's see if he learned */
 		if (ch->skills[fskill].learned > 75 && ch->skills[fskill].learned < max) { /* only learn if skill is high enough */
 			if (number(1, 96) > ch->skills[fskill].learned) {
@@ -4631,9 +4622,8 @@ int FSkillCheck(struct char_data *ch, int scheck, int fskill)
 				}
 		    }
 		}
-		return(scheck);
-	} else {
-		scheck = 1;
-		return(scheck);
+		return(FALSE);
+	} else { /* skill successful */
+		return(TRUE);
 	}
 }

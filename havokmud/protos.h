@@ -1242,7 +1242,7 @@ void do_berserk( struct char_data *ch, char *arg, int cmd);
 void do_carve( struct char_data *ch, char *arg, int cmd);
 
 void do_find( struct char_data *ch, char *arg, int cmd) ;
-int FSkillCheck(struct char_data *ch, int scheck, int fskill) ;
+int FSkillCheck(struct char_data *ch, int fskill) ;
 
 
 /* From spec_assign.c */
