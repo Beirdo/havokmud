@@ -1013,6 +1013,7 @@ int receptionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob
   struct obj_cost cost;
   struct char_data *recep = 0;
   struct char_data *temp_char;
+  struct room_data *rp;
   sh_int save_room;
   sh_int action_tabel[9];
 
@@ -1041,6 +1042,17 @@ int receptionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob
     log("No_receptionist.\n\r");
     assert(0);
   }
+
+  if(!(rp = real_roomp(recep->in_room))) {
+	  log("receptionist found, but not in a valid room");
+	  return(FALSE);
+  }
+
+	if(!IS_SET(rp->room_flags,PEACEFUL))
+		SET_BIT(rp->room_flags, PEACEFUL);
+	if(!IS_SET(rp->room_flags,NO_SUM))
+		SET_BIT(rp->room_flags, NO_SUM);
+
 
   if (IS_NPC(ch))
     return(FALSE);

@@ -1496,7 +1496,7 @@ sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%s$c0005], 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
 if(!IS_NPC(k)) {
-sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0014%s$c0005]",
+sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0007%s$c0005]",
 	      formatNum(GET_LEADERSHIP_EXP(k)),  clan_list[GET_CLAN(k)].name  );
 
 act(buf,FALSE,ch,0,0,TO_CHAR);

@@ -41,6 +41,11 @@ extern char *dirs[];
 
 extern int gSeason;  /* what season is it ? */
 
+int monkpreproom = 550;
+int druidpreproom = 500;
+#define MONK_CHALLENGE_ROOM 551
+#define DRUID_CHALLENGE_ROOM 501
+
 /* extern procedures */
 
 /* Bjs Shit Begin */
@@ -48,6 +53,7 @@ extern int gSeason;  /* what season is it ? */
 #define Bandits_Path   2180
 #define BASIL_GATEKEEPER_MAX_LEVEL 10
 #define Fountain_Level 20
+
 
 #define CMD_SAY 17
 #define CMD_ASAY 169
@@ -4655,7 +4661,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
   me = real_roomp(ch->in_room);
   if (!me) return(FALSE);
 
-  chal = real_roomp(ch->in_room+1);
+  chal = real_roomp(DRUID_CHALLENGE_ROOM);
   if (!chal) {
     send_to_char("The challenge room is gone.. please contact a god\n\r", ch);
     return(TRUE);
@@ -4664,7 +4670,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
   if (cmd == NOD) {
 
     if (!HasClass(ch, CLASS_DRUID)) {
-      send_to_char("You're no druid\n\r", ch);
+      send_to_char("You're no druid.\n\r", ch);
       return(FALSE);
     }
 
@@ -4675,16 +4681,16 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 
     if (GET_EXP(ch) <= titles[DRUID_LEVEL_IND]
 			 [GET_LEVEL(ch, DRUID_LEVEL_IND)+1].exp-100) {
-      send_to_char("You cannot advance now\n\r", ch);
+      send_to_char("You cannot advance now.\n\r", ch);
       return(TRUE);
     } else if(GET_LEVEL(ch, DRUID_LEVEL_IND)==50)
 	     {
-	 		send_to_char("You are far too powerful to be trained here... Seek an implementor to help you", ch);
+	 		send_to_char("You are far too powerful to be trained here... Seek an implementor to help you.", ch);
 			return(FALSE);
 	     }
 
     if (chal->river_speed != 0) {
-      send_to_char("The challenge room is busy.. please wait\n\r", ch);
+      send_to_char("The challenge room is busy.. please wait.\n\r", ch);
       return(TRUE);
     }
     for (i=0;i<MAX_WEAR;i++) {
@@ -4693,25 +4699,23 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 	obj_to_char(o, ch);
       }
     }
-//    while (ch->carrying)
-//		extract_obj(ch->carrying);
-
 	for(tmp_obj = ch->carrying;tmp_obj;tmp_obj = next_obj) {
 		next_obj = tmp_obj->next_content;
 		obj_from_char(tmp_obj);
 		obj_to_room(tmp_obj,ch->in_room);
 	}
 
+	druidpreproom = ch->in_room;
 
     send_to_char("You are taken into the combat room.\n\r", ch);
-    act("$n is ushered into the combat room", FALSE, ch, 0, 0, TO_ROOM);
-    newr = ch->in_room+1;
+    act("$n is ushered into the combat room.", FALSE, ch, 0, 0, TO_ROOM);
+    newr = DRUID_CHALLENGE_ROOM;
     char_from_room(ch);
     char_to_room(ch, newr);
     /* load the mob at the same lev as char */
     mob = read_mobile(DRUID_MOB+GET_LEVEL(ch, DRUID_LEVEL_IND)-10, VIRTUAL);
     if (!mob) {
-      send_to_char("The fight is called off.  go home\n\r", ch);
+      send_to_char("The fight is called off. Go home.\n\r", ch);
       return(TRUE);
     }
     char_to_room(mob, ch->in_room);
@@ -4778,7 +4782,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg, struct room_d
 			      GET_EXP(i));
 	     GainLevel(i, DRUID_LEVEL_IND);
 	     char_from_room(i);
-	     char_to_room(i, rm-1);
+	     char_to_room(i, druidpreproom);
 	     if (affected_by_spell(i, SPELL_POISON)) {
 	       affect_from_char(ch, SPELL_POISON);
 	     }
@@ -4826,7 +4830,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg, struct room_da
 
    if (cmd == FLEE) {
      /* this person just lost */
-     send_to_char("You lose\n\r",ch);
+     send_to_char("You lose.\n\r",ch);
      if (IS_PC(ch)) {
        if (IS_NPC(ch)) {
 	 do_return(ch,"",0);
@@ -4834,7 +4838,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg, struct room_da
        GET_EXP(ch) = MIN(titles[MONK_LEVEL_IND]
 			 [GET_LEVEL(ch, MONK_LEVEL_IND)].exp,
 			 GET_EXP(ch));
-       send_to_char("Go home\n\r", ch);
+       send_to_char("Go home.\n\r", ch);
        char_from_room(ch);
        char_to_room(ch, rm-1);
        me->river_speed = 0;
@@ -4856,7 +4860,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg, struct room_da
 			      GET_EXP(i));
 	     GainLevel(i, MONK_LEVEL_IND);
 	     char_from_room(i);
-	     char_to_room(i, rm-1);
+	     char_to_room(i, monkpreproom);
 
 	     while (me->people)
 	       extract_char(me->people);
@@ -4887,7 +4891,9 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
    me = real_roomp(ch->in_room);
    if (!me) return(FALSE);
 
-  chal = real_roomp(ch->in_room+1);
+
+
+  chal = real_roomp(MONK_CHALLENGE_ROOM);
   if (!chal) {
     send_to_char("The challenge room is gone.. please contact a god\n\r", ch);
     return(TRUE);
@@ -4921,23 +4927,23 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
 	obj_to_char(o, ch);
       }
     }
-//    while (ch->carrying)
-//      extract_obj(ch->carrying);
 	for(tmp_obj = ch->carrying;tmp_obj;tmp_obj = next_obj) {
 		next_obj = tmp_obj->next_content;
 		obj_from_char(tmp_obj);
 		obj_to_room(tmp_obj,ch->in_room);
 	}
 
+	monkpreproom = ch->in_room;
+
     send_to_char("You are taken into the combat room.\n\r", ch);
     act("$n is ushered into the combat room", FALSE, ch, 0, 0, TO_ROOM);
-    newr = ch->in_room+1;
+    newr = MONK_CHALLENGE_ROOM;
     char_from_room(ch);
     char_to_room(ch, newr);
     /* load the mob at the same lev as char */
     mob = read_mobile(MONK_MOB+GET_LEVEL(ch, MONK_LEVEL_IND)-10, VIRTUAL);
     if (!mob) {
-      send_to_char("The fight is called off.  go home\n\r", ch);
+      send_to_char("The fight is called off.. Go home.\n\r", ch);
       return(TRUE);
     }
     char_to_room(mob, ch->in_room);

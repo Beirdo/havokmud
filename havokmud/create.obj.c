@@ -602,7 +602,7 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
  obj=ch->specials.objedit;
  if(type != ENTER_CHECK) {
     change=atoi(arg);
-    if(change<0) change=0;
+    if(change<0) change=-1;
     obj->obj_flags.cost_per_day = change;
     ch->specials.oedit = OBJ_MAIN_MENU;
     UpdateObjMenu(ch);

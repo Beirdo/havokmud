@@ -4952,11 +4952,6 @@ void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type
   }
 }
 
-
-
-
-//#define SPELL_COLD_LIGHT		305
-
 void cast_cold_light( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -4975,7 +4970,6 @@ void cast_cold_light( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_DISEASE			306	// 1 aff
 void cast_disease(byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -4994,7 +4988,6 @@ void cast_disease(byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_INVIS_TO_UNDEAD	307	// 2
 void cast_invis_to_undead( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5013,7 +5006,6 @@ void cast_invis_to_undead( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_LIFE_TAP			308
 void cast_life_tap( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5031,8 +5023,6 @@ void cast_life_tap( byte level, struct char_data *ch, char *arg,
       break;
   }
 }
-
-//#define SPELL_SUIT_OF_BONE		309	// 3
 
 void cast_suit_of_bone( byte level, struct char_data *ch
 	,char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj )
@@ -5052,7 +5042,6 @@ void cast_suit_of_bone( byte level, struct char_data *ch
   }
 }
 
-//#define SPELL_SPECTRAL_SHIELD	310 // 4
 void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5071,7 +5060,6 @@ void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_CLINGING_DARKNESS	311 // 5
 void cast_clinging_darkness ( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5090,7 +5078,6 @@ void cast_clinging_darkness ( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL DONIMATE_UNDEAD	312
 void cast_dominate_undead( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5109,7 +5096,6 @@ void cast_dominate_undead( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_UNSUMMON			313
 void cast_unsummon( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5128,7 +5114,6 @@ void cast_unsummon( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_SIPHON_STRENGTH	314 // 6
 void cast_siphon_strength( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5147,7 +5132,6 @@ void cast_siphon_strength( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_GATHER_SHADOWS	315 // 7
 void cast_gather_shadows( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5166,7 +5150,6 @@ void cast_gather_shadows( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_MEND_BONES		316
 void cast_mend_bones( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5185,18 +5168,15 @@ void cast_mend_bones( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_TRACE_CORPSE		317
 void cast_trace_corpse( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  if (!tar_ch) tar_ch = ch;
-
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
-      spell_trace_corpse(level, ch, tar_ch, 0);
+      spell_trace_corpse(level, ch, 0, arg);
       break;
   default:
       log("serious screw-up in trace_corpse.");
@@ -5204,7 +5184,6 @@ void cast_trace_corpse( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define	SPELL_ENDURE_COLD		318 // 8
 void cast_endure_cold( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -5223,7 +5202,6 @@ void cast_endure_cold( byte level, struct char_data *ch, char *arg,
   }
 }
 
-//#define SPELL_LIFE_DRAW			319
 void cast_life_draw( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {

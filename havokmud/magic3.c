@@ -3346,10 +3346,93 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 
 
 }
-void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 
-	send_to_char("You start thinking of death and decay.\n\r",ch);
-	spell_locate_object(level, ch, NULL, "corpse");
+void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, char *arg)//struct obj_data *obj)
+{
+	struct obj_data *i, *corpse;
+	char name[255];
+	char buf[255];
+	int j = 0, found = 0, player_loc= 0, corpse_loc = 0;
+
+	assert(ch);
+	sprintf(name,"%s",arg);
+	sprintf(buf,"");
+
+	/* when starting out, no corpse has been found yet */
+	found = 0;
+	send_to_char("You open your senses to recent sites of death.\n\r", ch);
+
+	for (i = object_list; i && !found; i = i->next) {
+		if (isname(name, i->name)) {
+			if (i->obj_flags.value[3]) {
+				found = 1; /* we found a REAL corpse */
+				if(i->carried_by) {
+					if (strlen(PERS_LOC(i->carried_by, ch))>0) {
+						sprintf(buf,"You sense %s being carried by %s.\n\r",i->short_description,PERS(i->carried_by,ch));
+						j = 1;
+					}
+				} else if(i->equipped_by) {
+					if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
+						sprintf(buf,"You sense %s, equipped by %s.\n\r",i->short_description,PERS(i->equipped_by,ch));
+						j = 2;
+					}
+				} else if (i->in_obj) {
+					sprintf(buf,"You sense %s in %s.\n\r",i->short_description,i->in_obj->short_description);
+					/* can't trace corpses in objects */
+				} else {
+					sprintf(buf,"You sense %s in %s.\n\r",i->short_description,(i->in_room == NOWHERE ? "use but uncertain." :real_roomp(i->in_room)->name));
+					j = 3;
+				}
+				corpse = i;
+			}
+		}
+	}
+	send_to_char(buf, ch);
+
+	if(!found) {
+		send_to_char("Your senses could not pick up traces of this specific corpse.\n\r",ch);
+		act("Black spots float across $n's eyes. Then $e blinks and sighs.",FALSE,ch,0,0,TO_ROOM);
+	} else if(j == 0) {
+		send_to_char("You realize that tracing down this corpse is futile.\n\r",ch);
+		act("Black spots float across $n's eyes. Then $e blinks and sighs.",FALSE,ch,0,0,TO_ROOM);
+	} else { /* here goes the real corpse trace. Kinda like scry. */
+		if(ch->in_room)
+			player_loc = ch->in_room;
+
+		if(j == 1) {
+			if((corpse->carried_by)->in_room) {
+				corpse_loc = (corpse->carried_by)->in_room;
+			} else {
+				send_to_char("Alas, you cannot view this corpse's location.\n\r",ch);
+				act("Black spots float across $n's eyes. Then $e blinks and sighs..",FALSE,ch,0,0,TO_ROOM);
+				return;
+			}
+		} else if(j==2) { /* equipped corpses? oh well. What a weirdo. */
+			if((corpse->equipped_by)->in_room) {
+				corpse_loc = (corpse->equipped_by)->in_room;
+			} else {
+				send_to_char("Alas, you cannot view this corpse's location.\n\r",ch);
+				act("Black spots float across $n's eyes. Then $e blinks and sighs..",FALSE,ch,0,0,TO_ROOM);
+				return;
+			}
+		} else if(j==3) {
+			if(corpse->in_room) {
+				corpse_loc = corpse->in_room;
+			} else {
+				send_to_char("Alas, you cannot view this corpse's location.\n\r",ch);
+				act("Black spots float across $n's eyes. Then $e blinks and sighs..",FALSE,ch,0,0,TO_ROOM);
+				return;
+			}
+		}
+
+		send_to_char("\n\rYou focus your mental eye on the scene of decay.\n\r",ch);
+		act("Black spots float across $n's eyes, as $e loses $mself for a minute,",FALSE,ch,0,0,TO_ROOM);
+		char_from_room(ch);
+		char_to_room(ch, corpse_loc);
+		do_look(ch, "",15);
+		char_from_room(ch);
+		char_to_room(ch, player_loc);
+	}
 }
 
 void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {

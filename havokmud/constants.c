@@ -3415,6 +3415,7 @@ const char *procedure_bits[] = {
 	"Sleep Breather",
 	"Light Breather",
 	"Dark Breather",
+	"Receptionist",
 
 	"\n"
 };
@@ -4729,7 +4730,7 @@ const struct skillset mageskills[] = {
  {"gust of wind",		SPELL_GUST_OF_WIND			,10},
  {"haste",				SPELL_HASTE					,23},
  {"ice storm",			SPELL_ICE_STORM				,11},
- {"identify",			SPELL_IDENTIFY				,45},
+ {"identify",			SPELL_IDENTIFY				,27},
  {"incendiary cloud",	SPELL_INCENDIARY_CLOUD		,45},
  {"infravision",		SPELL_INFRAVISION			,8},
  {"invisibility",		SPELL_INVISIBLE				,4},

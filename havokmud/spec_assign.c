@@ -1403,6 +1403,7 @@ void assign_mobiles()
 /* City State of Tarantis */
 	{49600, nightwalker },
 	{49702, portal_regulator }, /* mob to stick the portal proc on */
+    {49611, receptionist },
 
 
 /* Heximal's new zone */
@@ -1567,6 +1568,7 @@ void assign_rooms()
 	{40017, arena_dispel_trap},
 
 /* Temple of Sin */
+	{51827, sinbarrel },
 	{51936, pride_remover_one},
 	{51935, pride_remover_two},
 	{51934, pride_remover_three},
@@ -1632,7 +1634,6 @@ void assign_rooms()
 	{51924, lag_room},
 	{51925, lag_room},
 
-
 /* Heximal's riddles */
 	{50962, riddle_exit },
 	{50963, riddle_exit },
@@ -1653,7 +1654,8 @@ void assign_rooms()
 	{ 51300, cog_room },
 
 /* Citystate of Tarantis */
-//	{737, timed_door },
+	{ 49593,   monk_challenge_prep_room},
+	{ 49599,   druid_challenge_prep_room},
 
 /* Rocky's Zone */
 	{17429, close_doors},
@@ -1661,17 +1663,19 @@ void assign_rooms()
 	{17431, close_doors},
 	{17432, close_doors},
 
-   /* Cthol (Xenon) */
+/* Cthol (Xenon) */
    {40233, dispel_room},
    //{40285, fiery_alley},
    //{40287, fiery_alley},
 
-    /*Thunder Mountain Keep */
-    {45450, Thunder_Fountain},
-    {45409, rope_room},
-    {46378, bahamut_home},
-    {31943, pet_shops },
-    {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
+/*Thunder Mountain Keep */
+	{45450, Thunder_Fountain},
+	{45409, rope_room},
+	{46378, bahamut_home},
+
+/* Winterfell */
+	{31943, pet_shops },
+	{31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
     /* Ash's Monk and Druid challenge rooms
        { 500,   druid_challenge_prep_room},
        { 501,   druid_challenge_room},
@@ -1680,7 +1684,6 @@ void assign_rooms()
     */
 { 44129,  Magic_Pool},//  in proc_assign and add to protos
 { 44114,  Read_Room},// in proc_assign and add to protos..
-{ 51827, sinbarrel },
 { 51151, preperationproc },  //Royal rumble proc.
 
 { 11353, knockproc },

@@ -2355,7 +2355,7 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, char *arg);//struct obj_data *obj)
 void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_numb_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);

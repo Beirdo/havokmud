@@ -1310,7 +1310,7 @@ if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
     send_to_char("No such object.\n\r",ch);
 }
 #else
-void spell_locate_object(byte level, struct char_data *ch,struct char_data *victim, char *arg)//struct obj_data *obj)
+void spell_locate_object(byte level, struct char_data *ch,struct char_data *victim, char *arg)
 {
 	struct obj_data *i;
 	char name[256];
@@ -1318,17 +1318,6 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 	int j, found = 0;
 
 	assert(ch);
-/*
-	if (!obj) {
-		send_to_char("Everywhere, you sense them everywhere!??\n\r",ch);
-		return;
-	}
-	if (!obj->name || !(*obj->name)) {
-		send_to_char("Which object?\n\r", ch);
-		return;
-	}
-*/
-//	strcpy(name, arg);//obj->name);
 	sprintf(name,"%s",arg);
 
 	/* when starting out, no object has been found yet */
@@ -2752,10 +2741,10 @@ strcat(buf,"\n\r");
   }
 
 if (GetMaxLevel(ch)<LOW_IMMORTAL) {
-  act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
-  act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
-  WAIT_STATE(ch,PULSE_VIOLENCE*12);
-  GET_POS(ch) = POSITION_STUNNED;
+//  act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
+//  act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
+  WAIT_STATE(ch,PULSE_VIOLENCE*2);//*12);
+//  GET_POS(ch) = POSITION_STUNNED;
  }
 
 }
@@ -2879,7 +2868,7 @@ if (level <0 || level >ABS_MAX_LVL)
 	     burn=burn->next_content) {
 	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
        		if (burn)  {
-       			act("$o burns",0,victim,burn,0,TO_CHAR);
+       			act("$o burns into cinders.",0,victim,burn,0,TO_CHAR);
        			extract_obj(burn);
        		}
 	     }
@@ -2912,16 +2901,15 @@ if (level <0 || level >ABS_MAX_LVL)
 
 	/* And now for the damage on inventory */
 
-       	for (frozen=victim->carrying ;
-       	    frozen && (frozen->obj_flags.type_flag!=ITEM_DRINKCON) &&
-	    (frozen->obj_flags.type_flag!=ITEM_POTION);
-	    frozen=frozen->next_content) {
+	for(frozen = victim->carrying;
+		frozen && (ITEM_TYPE(frozen) != ITEM_DRINKCON) &&	(ITEM_TYPE(frozen) != ITEM_POTION);
+		frozen =frozen->next_content) {
 
-       	    if (!saves_spell(victim, SAVING_BREATH) ) {
-       	      if (frozen) {
-		    act("$o shatters.",0,victim,frozen,0,TO_CHAR);
-		    extract_obj(frozen);
-	      }
+		if (!saves_spell(victim, SAVING_BREATH)) {
+			if (frozen) {
+				act("$p shatters.",0,victim,frozen,0,TO_CHAR);
+				extract_obj(frozen);
+			}
 	    }
 	}
 }

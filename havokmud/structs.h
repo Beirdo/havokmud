@@ -1111,6 +1111,7 @@ struct room_data
 #define PROC_SLEEP_BREATH	     16
 #define PROC_LIGHT_BREATH	     17
 #define PROC_DARK_BREATH	     18
+#define PROC_RECEPTIONIST	     19
 
 /* For players : specials.act */
 #define PLR_BRIEF     (1<<0)

@@ -1748,6 +1748,13 @@ struct char_data *read_mobile(int nr, int type)
 				mob_index[mob->nr].func = *DarkBreather;
 				log("assigning dark breath proc");
 			}
+		} else if (mob->specials.proc == PROC_RECEPTIONIST) {
+			if(mob_index[mob->nr].func != receptionist) {
+				mob_index[mob->nr].func = *receptionist;
+				log("assigning receptionist proc");
+			}
+			if (!IS_SET(mob->specials.act, ACT_SENTINEL))
+				SET_BIT(mob->specials.act, ACT_SENTINEL);
 		}
 	}
 	return(mob);
