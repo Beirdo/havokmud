@@ -7,10 +7,6 @@
 
 #include "protos.h"
 
-#define NOT !
-#define AND &&
-#define OR ||
-
 #define STATE(d) ((d)->connected)
 #define MAX_CMD_LIST 497
 #define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? \
@@ -654,18 +650,18 @@ int old_search_block(char *argument, int begin, int length, char **list,
      */
 
     if (mode) {
-        while (NOT found AND * (list[guess]) != '\n') {
+        while (!found && *(list[guess]) != '\n') {
             found = (length == strlen(list[guess]));
-            for (search = 0; (search < length AND found); search++) {
+            for (search = 0; (search < length && found); search++) {
                 found = (*(argument + begin + search) ==
                         *(list[guess] + search));
             }
             guess++;
         }
     } else {
-        while (NOT found AND * (list[guess]) != '\n') {
+        while (!found && *(list[guess]) != '\n') {
             found = 1;
-            for (search = 0; (search < length AND found); search++) {
+            for (search = 0; (search < length && found); search++) {
                 found = (*(argument + begin + search) ==
                         *(list[guess] + search));
             }
