@@ -5209,7 +5209,7 @@ const struct skillset clericskills[] = {
 	{"None",					-1							,-1}
 };
 const struct skillset mainwarriorskills[] = {
-	{"mend",		SKILL_MEND,			51},
+	{"mend",		SKILL_MEND,			1},
  {"None", 				-1							,-1}
 };
 const struct skillset warriorskills[] = {
