@@ -2138,6 +2138,8 @@ dlog("in do_recite");
 
   if (!HasClass(ch, CLASS_MAGIC_USER) &&
       !HasClass(ch, CLASS_CLERIC) &&
+      !HasClass(ch, CLASS_DRUID) &&
+      !HasClass(ch, CLASS_NECROMANCER) &&
       !HasClass(ch, CLASS_SORCERER)) {
  if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned ||
       ch->skills[SKILL_READ_MAGIC].learned == 0) {

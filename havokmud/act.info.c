@@ -2554,7 +2554,7 @@ char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
 				if (IS_IMMORTAL(ch) && person->invis_level > 50)
 					sprintf(buffer, "%s (invis %d)",buffer, person->invis_level);
 
-				sprintf(buffer,"%s\n\r",buffer);
+//				sprintf(buffer,"%s\n\r",buffer);
 
 	return buffer;
 
@@ -3626,6 +3626,16 @@ dlog("in do_levels");
   case 'R':
   case 'r':
     class = RANGER_LEVEL_IND;
+    break;
+
+  case 'N':
+  case 'n':
+    class = NECROMANCER_LEVEL_IND;
+    break;
+
+  case 'A':
+  case 'a':
+    class = BARD_LEVEL_IND;
     break;
 
   case 'I':

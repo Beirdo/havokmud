@@ -2733,7 +2733,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
       {"Heretic",      "Heretic",               135000},
       {"Bone Mender",      "Bone Mender",              250000}, /* 10 */
       {"Minion",        "Minion",                375000},
-      {"Necrophiliac",        "Necrophiliac",             750000},
+      {"Corruptor",        "Corruptor",             750000},
       {"Bat",   "Bat",         1250000},
       {"Defiler",   "Defiler",           1500000},
       {"Chosen",      "Chosen",              1875000},

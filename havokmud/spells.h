@@ -534,7 +534,7 @@
 
 /* More anything but spells and weapontypes can be insterted here! */
 #define MAX_TYPES 70
-#define MAX_SPL_LIST	329
+#define MAX_SPL_LIST	350
 
 #define SAVING_PARA   0
 #define SAVING_ROD    1

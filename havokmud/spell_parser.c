@@ -748,7 +748,7 @@ char *spells[]=
    "spring leap",
    "disarm",
    "read magic",
-   "evauluate",
+   "evaluate",
    "spy",
    "doorbash",
    "swim",

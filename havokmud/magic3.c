@@ -3183,6 +3183,7 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	struct affected_type af;
+//	struct room_data *rp;
 	float modifier;
 	int mod=0;
 
@@ -3190,6 +3191,11 @@ void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *v
 
 	if(victim == ch) {
 		send_to_char("Siphon your own strength? What a waste of mana.\n\r",ch);
+		return;
+	}
+
+	if(IS_PC(victim) && !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+		send_to_char("I think not. Go pester monsters instead.\n\r",ch);
 		return;
 	}
 
@@ -3278,6 +3284,8 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 	    GET_HIT(victim) = hit_limit(victim);
 	  else
 	    GET_HIT(victim) += healpoints;
+
+	  send_to_char("You expertly mend the undead's bones, making it healthier.\n\r", ch);
 
 	  send_to_char("Your bandages seem to tighten up!\n\r", victim);
 

@@ -1212,22 +1212,16 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 	struct char_data *nightwalker;
 	struct obj_data *obj;
 	extern struct time_info_data time_info;
-//	char doorname[MAX_STRING_LENGTH +30], buf[MAX_STRING_LENGTH +30];
 	char buffer[MAX_STRING_LENGTH +30];
-	int dummyroom = 0;
+	int check = 0;
 
-	if(time_info.hours < 20 || time_info.hours > 5) { /* it should not be there */
+	if(time_info.hours < 20 && time_info.hours > 5) { /* it should not be there */
 		rp = real_roomp(WAITROOM);
 		if(rp) {
 			for(obj = rp->contents; obj; obj = obj->next_content) {
 				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
-					dummyroom = ch->in_room;
-					char_from_room(ch);
-					char_to_room(ch,WAITROOM);
-					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					send_to_room("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!\n\r",WAITROOM);
 					extract_obj(obj);
-					char_from_room(ch);
-					char_to_room(ch,dummyroom);
 				}
 			}
 		}
@@ -1235,13 +1229,8 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 		if(rp) {
 			for(obj = rp->contents; obj; obj = obj->next_content) {
 				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
-					dummyroom = ch->in_room;
-					char_from_room(ch);
-					char_to_room(ch,REAVER_RM);
-					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					send_to_room("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!\n\r",REAVER_RM);
 					extract_obj(obj);
-					char_from_room(ch);
-					char_to_room(ch,dummyroom);
 				}
 			}
 		}
@@ -1249,13 +1238,8 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 		if(rp) {
 			for(obj = rp->contents; obj; obj = obj->next_content) {
 				if(obj_index[obj->item_number].virtual == REAVER_PORTAL) {
-					dummyroom = ch->in_room;
-					char_from_room(ch);
-					char_to_room(ch,DEST_ROOM);
-					act("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!",FALSE,ch,0,0, TO_ROOM);
+					send_to_room("$c0008The dark portal suddenly turns sideways, shrinks to a mere sliver, and disappears completely!\n\r",DEST_ROOM);
 					extract_obj(obj);
-					char_from_room(ch);
-					char_to_room(ch,dummyroom);
 				}
 			}
 		} /* all portals are gone, now do the transfer mob thing*/
@@ -1273,39 +1257,48 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 		}
 	} else { /* portals should appear */
 		rp = real_roomp(WAITROOM);
+		check = 0;
 		if(rp) {
-			if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
-				dummyroom = ch->in_room;
-				char_from_room(ch);
-				char_to_room(ch,WAITROOM);
-				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
-				obj_to_room(obj,WAITROOM);
-				char_from_room(ch);
-				char_to_room(ch,dummyroom);
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+					check = 1;
+				}
+			}
+			if(!check) {
+				if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
+					send_to_room("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!\n\r",WAITROOM);
+					obj_to_room(obj,WAITROOM);
+				}
 			}
 		}
 		rp = real_roomp(REAVER_RM);
+		check = 0;
 		if(rp) {
-			if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
-				dummyroom = ch->in_room;
-				char_from_room(ch);
-				char_to_room(ch,REAVER_RM);
-				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
-				obj_to_room(obj,REAVER_RM);
-				char_from_room(ch);
-				char_to_room(ch,dummyroom);
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+					check = 1;
+				}
+			}
+			if(!check) {
+				if(obj = read_object(TARANTIS_PORTAL, VIRTUAL)) {
+					send_to_room("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!\n\r",REAVER_RM);
+					obj_to_room(obj,REAVER_RM);
+				}
 			}
 		}
 		rp = real_roomp(DEST_ROOM);
+		check = 0;
 		if(rp) {
-			if(obj = read_object(REAVER_PORTAL, VIRTUAL)) {
-				dummyroom = ch->in_room;
-				char_from_room(ch);
-				char_to_room(ch,DEST_ROOM);
-				act("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!",FALSE,ch,0,0, TO_ROOM);
-				obj_to_room(obj,DEST_ROOM);
-				char_from_room(ch);
-				char_to_room(ch,dummyroom);
+			for(obj = rp->contents; obj; obj = obj->next_content) {
+				if(obj_index[obj->item_number].virtual == REAVER_PORTAL) {
+					check = 1;
+				}
+			}
+			if(!check) {
+				if(obj = read_object(REAVER_PORTAL, VIRTUAL)) {
+					send_to_room("$c0008A sliver of darkness suddenly appears. It widens, turns sideways, and becomes a portal!\n\r",DEST_ROOM);
+					obj_to_room(obj,DEST_ROOM);
+				}
 			}
 		}
 	}
@@ -1421,21 +1414,6 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	if (!IS_NPC(ch))
 		return(FALSE);
 
-	/* Make them enter portal if they're in the right spot */
-	if(ch->in_room) {
-		roomnr = ch->in_room;
-		if(roomnr == SPAWNROOM) {
-			if(rp = real_roomp(roomnr)) {
-				for(obj = rp->contents; obj; obj = obj->next_content) {
-					if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
-						do_enter(ch, "portal", 7);
-						return(FALSE);
-					}
-				}
-			}
-		}
-	}
-
 	/* if event death, do the die thing and load up a new mob at a spawn_room */
 	if (type == EVENT_DEATH) {
 		freshmob = read_mobile(real_mobile(NIGHTWALKER),REAL);
@@ -1452,6 +1430,21 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 			GET_HIT(ch) = -1;
 			die(ch, '\0');
 			return(TRUE);
+		}
+	}
+
+	/* Make them enter portal if they're in the right spot */
+	if(ch->in_room) {
+		roomnr = ch->in_room;
+		if(roomnr == WAITROOM) {
+			if(rp = real_roomp(roomnr)) {
+				for(obj = rp->contents; obj; obj = obj->next_content) {
+					if(obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
+						do_enter(ch, "portal", 7);
+						return(FALSE);
+					}
+				}
+			}
 		}
 	}
 	return(FALSE);
