@@ -519,7 +519,7 @@ void load_char_objs(struct char_data *ch)
       timegold = (int) ((st.total_cost*((float)time(0) - st.last_update)) /
 			(SECS_PER_REAL_DAY));
 #endif
-
+		//timegold=timegold+100000;
       sprintf(buf, "Char ran up charges of %g gold in rent", timegold);
       log(buf);
       sprintf(buf, "You ran up charges of %g gold in rent.\n\r", timegold);
@@ -527,10 +527,33 @@ void load_char_objs(struct char_data *ch)
       GET_GOLD(ch) -= timegold;
       found = TRUE;
       if (GET_GOLD(ch) < 0) {
-	log("** Char ran out of money in rent **");
-	send_to_char("You ran out of money, you deadbeat.\n\r", ch);
-	GET_GOLD(ch) = 0;
-	found = FALSE;
+
+		if(GET_BANK(ch)+GET_GOLD(ch) < 0) {
+			log("** Char ran out of money in rent **");
+			send_to_char("You ran out of money, you deadbeat.\n\r", ch);
+			send_to_char("You don't even have enough in your bank!!\n\r",ch);
+			GET_GOLD(ch) = 0;
+			GET_BANK(ch) = 0;
+			found = FALSE;
+
+		} else {
+
+			log("** Char ran out of rent so lets dip into bank **");
+			send_to_char("You ran out rent money.. lets dip into your bank account.\n\r",ch);
+			send_to_char("I'm ganna have to charge ya a little extra for that tho.\n\r",ch);
+
+			GET_BANK(ch) = GET_BANK(ch)+GET_GOLD(ch)+0.05*GET_GOLD(ch);
+
+			if(GET_BANK(ch) < 0)
+				GET_BANK(ch)=0;
+
+			GET_GOLD(ch) = 0;
+
+		}
+
+
+
+
       }
     if (has_mail((char *)GET_NAME(ch))){
 	send_to_char("$c0013[$c0015The scribe$c0013] bespeaks you: 'You have mail waiting!'", ch);
