@@ -1863,6 +1863,18 @@ if (GET_MANA(ch) < 15)  {
 						AddHated(vict,ch);
 						set_fighting(vict,ch);
 					}
+					if (ch->specials.remortclass == (WARRIOR_LEVEL_IND + 1)){
+					   if (GET_POS(vict) > POSITION_DEAD){
+					     act("$c000rYou send $N reeling with a mighty bellow.$c000w",FALSE, ch, 0, vict, TO_CHAR);
+					     act("$c000r$N is sent reeling by $n's mighty bellow.$c000w",FALSE, ch, 0, vict, TO_NOTVICT);
+					     act("$c000r$n sends you reeling with a mighty bellow.$c000w",FALSE, ch, 0, vict, TO_VICT);
+					     GET_POS(vict) = POSITION_SITTING;
+					     WAIT_STATE(vict, PULSE_VIOLENCE*2);
+					     GET_POS(vict) = POSITION_SITTING;
+					     WAIT_STATE(ch, PULSE_VIOLENCE*2);
+					     }
+					}
+
 				} /*  group/immo */
 			} /* inroom */
 		} /* end for */
