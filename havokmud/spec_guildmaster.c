@@ -1268,9 +1268,8 @@ void PrintSkills(struct char_data *ch, int level, struct skillset *skills,
     /*
      * list by level, so new skills show at top of list 
      */
-    i = 0;
-
     while (level != 0) {
+        i = 0;
         while (skills[i].level != -1) {
             if (level == -1 || skills[i].level == level) {
                 sprintf(buf, "[%-2d] %-30s %-15s",
