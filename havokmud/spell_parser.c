@@ -2702,17 +2702,17 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							return;
 						}
 					}
-					if (IS_AFFECTED(tar_char,AFF_SILENCE) && cmd == 600) {
-						act("Your song seems to have no impact on $N.",FALSE,ch,0,tar_char,TO_CHAR);
-						act("$n's song seems to leave &N unaffected.",FALSE,ch,0,tar_char,TO_NOTVICT);
-						act("$n seems to yell something at you, but you're in a state of blessed silence.",FALSE,ch,0,0,TO_VICT);
-						return;
-					}
 					if (tar_char) {
 						if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
 							act("Your magic fizzles against $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_CHAR);
 							act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_NOTVICT);
 							act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,tar_char,TO_VICT);
+							return;
+						}
+						if (IS_AFFECTED(tar_char,AFF_SILENCE) && cmd == 600) {
+							act("Your song seems to have no impact on $N.",FALSE,ch,0,tar_char,TO_CHAR);
+							act("$n's song seems to leave &N unaffected.",FALSE,ch,0,tar_char,TO_NOTVICT);
+							act("$n seems to yell something at you, but you're in a state of blessed silence.",FALSE,ch,0,0,TO_VICT);
 							return;
 						}
 						if (GET_POS(tar_char) == POSITION_DEAD) {
