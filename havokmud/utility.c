@@ -5254,9 +5254,13 @@ int CanFightEachOther(struct char_data *ch,struct char_data *ch2)
 if (IS_SET(SystemFlags,SYS_NOKILL))
     return(FALSE);
 
+if(real_roomp(ch->in_room) && real_roomp(ch2->in_room)) { // goddamn stupid bugs
 if ((IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM))
 	&&(IS_SET(real_roomp(ch2->in_room)->room_flags, ARENA_ROOM)))
       return(TRUE);
+ } else {
+	 return(FALSE);
+ }
 
 if(IS_SET(SystemFlags,SYS_WLD_ARENA) && IS_AFFECTED2(ch,AFF2_QUEST) && IS_AFFECTED2(ch2,AFF2_QUEST))
 	return(TRUE);
