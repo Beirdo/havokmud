@@ -2174,7 +2174,6 @@ dlog("in do_recite");
 				target = TAR_OBJ_ROOM;
 			}
 		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD)) {
-//			if (tar_obj = get_obj_vis(ch, name))
 				target_ok = TRUE;
 				sprintf(argument,"%s",buf2);
 				target = TAR_OBJ_WORLD;
@@ -2202,7 +2201,7 @@ dlog("in do_recite");
 		if (victim) {
 			if (IS_NPC(victim))
 				if (IS_SET(victim->specials.act, ACT_IMMORTAL)) {
-					send_to_char("You can't recite magic on that!",ch);
+					send_to_char("You can't recite magic on that!\n\r",ch);
 					return;
 				}
 		}
@@ -2212,10 +2211,11 @@ dlog("in do_recite");
 		}
 	} else {
 		if (IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
-			send_to_char("You can not recite this scroll upon yourself.\n\r", ch);
+			send_to_char("You cannot recite this scroll upon yourself.\n\r", ch);
 			return;
 		} else {
 			victim = ch;
+			target = TAR_CHAR_ROOM;
 		}
 	}
 
@@ -2238,31 +2238,18 @@ dlog("in do_recite");
 
 	for (i=1; i<4; i++) {
 		if (scroll->obj_flags.value[0] > 0) {  /* spells for casting */
-			if (scroll->obj_flags.value[i] >= 1)
-			{
+			if (scroll->obj_flags.value[i] >= 1) {
 				if (!IS_SET(spell_info[scroll->obj_flags.value[i]].targets, target))
 									/* this should keep 2nd and 3rd spells */
 					continue;		/* from crashing with the wrong target */
 				if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,TAR_VIOLENT) &&
 						check_peaceful(ch,"Impolite magic is banned here."))
 					continue;
-				if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r","The magic dissolves powerlessly"))
+				if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r","The magic dissolves powerlessly.\n\r"))
 					continue;
 
-/* Scroll is recited at scroll level (value 0) this way */
-//				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-//				((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL,victim, obj));
-/* Scroll is recited at best caster level regardless of scroll level*/
-//				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)(BestMagicClass(ch), ch, "", SPELL_TYPE_SCROLL,victim, obj));
-/* This was crashing mud */
-//
-
-//			}
-//		} else {
 				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
 				((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
-//sprintf(buffer,"d", target);
-//log(buffer);
 			}
 		} else {
 /* this is a learning scroll */

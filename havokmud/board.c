@@ -86,7 +86,7 @@ void new_board_message(struct char_data *ch, struct bulletin_board *bd, char *ti
   ch->desc->board = bd;
 
   send_to_char("Write your message.\r\n"
-               "Type :? and hit enter for help on using the editor.\r\n\r\n", ch);
+               "Type /? and hit enter for help on using the editor.\r\n\r\n", ch);
   act("$n starts writing a message.", TRUE, ch, NULL, NULL, TO_ROOM);
 
   /* Initiate the string_add procedures */
@@ -182,7 +182,7 @@ bool reply_board_message(struct char_data *ch, char *arg, struct obj_data *board
     ;
 
   if (!*arg)
-    sprintf(buf,  "RE:%s", strip_ansi(ansi_buf, msg->title, 128));
+    sprintf(buf,  "re: %s", strip_ansi(ansi_buf, msg->title, 128));
   else
     strncpy(buf, arg, 128);
 

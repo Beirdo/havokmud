@@ -109,7 +109,7 @@ void string_add(struct descriptor_data *d, char *str)
    * First of all we're concerned with finding a : at the beginning of an
    * incoming string, since that's our command character.
    */
-  if (*str == ':') {
+  if (*str == '/') {
     switch(str[1]) {
       case 'q': /* character is bombing out of the editor */
         terminator = -1;
@@ -136,17 +136,17 @@ void string_add(struct descriptor_data *d, char *str)
         *str = '\0';
         break;
       case '?': /* character wants help! */
-        SEND_TO_Q("           DaleMUD 3.? Millenium Edition Editor Help Screen\r\n"
-                  "          --------------------------------------------------\r\n\r\n"
+        SEND_TO_Q("           HavokMUD 2 Editor Help Screen\r\n"
+                  "---------------------------------------------------------------------\r\n\r\n"
                   "All commands issued within the editor must be issued at the beginning\r\n"
-                  "of a new line of text.  All commands are prefixed with the character :\r\n\r\n"
+                  "of a new line of text.  All commands are prefixed with the character /\r\n\r\n"
                   "Commands:\r\n"
-                  "------------------------------------------------------------\r\n"
-                  " :w -- This will save your message and exit the editor.\r\n"
-                  " :q -- This aborts your message without saving and exits the editor.\r\n"
-                  " :c -- This will clear the current message without exiting the editor.\r\n"
-                  " :p -- This will print the current message to your screen.\r\n"
-                  " :? -- Take a guess =)\r\n", d);
+                  "----------------------------------------------------------------------\r\n"
+                  " /w -- This will save your message and exit the editor.\r\n"
+                  " /q -- This aborts your message without saving and exits the editor.\r\n"
+                  " /c -- This will clear the current message without exiting the editor.\r\n"
+                  " /p -- This will print the current message to your screen.\r\n"
+                  " /? -- Take a guess =)\r\n", d);
         *str = '\0';
         break;
 
