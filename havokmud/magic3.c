@@ -817,7 +817,9 @@ void spell_feeblemind(int level, struct char_data *ch,
             affect_to_char(ch, &af);
         } else {
             send_to_char("You feel really really dumb\n\r", victim);
-
+            act("$n suddenly looks rather dumb.", FALSE, victim, 0, 0,
+                TO_NOTVICT);
+            
             af.type = SPELL_FEEBLEMIND;
             af.duration = 24;
             af.modifier = -5;
@@ -854,11 +856,14 @@ void spell_feeblemind(int level, struct char_data *ch,
             }
 #endif
         }
-    } else if (!victim->specials.fighting) {
-        /*
-         * they saved
-         */
-        set_fighting(victim, ch);
+    } else {
+	    if (!victim->specials.fighting) {
+            /*
+             * they saved
+             */
+            set_fighting(victim, ch);
+        }
+        act("$n seems to resist your spell.", FALSE, victim, 0, 0, TO_CHAR);
     }
 }
 
