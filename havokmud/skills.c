@@ -226,7 +226,7 @@ void do_track(struct char_data *ch, char *argument, int cmd)
     struct char_data *scan;
     extern struct char_data *character_list;
 
-#ifdef NOTRACK
+#ifndef USE_TRACK
     send_to_char("Sorry, tracking is disabled. Try again after reboot.\n\r",
                  ch);
     return;

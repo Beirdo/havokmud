@@ -115,8 +115,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
                     FALSE, re, obj, ch, TO_VICT);
                 cost->ok = FALSE;
             } else {
-#ifdef NODUPLICATES
-#else
+#ifdef DUPLICATES
                 act("Sorry, but $p don't keep in storage.", FALSE, ch, obj,
                     0, TO_CHAR);
 #endif
@@ -889,14 +888,14 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     }
 
     if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
-#ifndef NODUPLICATES
+#ifdef DUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
     } else if (obj->obj_flags.cost_per_day < 0) {
 
-#ifndef NODUPLICATES
+#ifdef DUPLICATES
         if (ch != '/0') {
             sprintf(buf, "You're told: '%s is just old junk, I'll throw it "
                          "away for you.'\n\r", obj->short_description);
@@ -947,14 +946,14 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     obj_to_store(obj->next_content, st, ch, delete);
 
     if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
-#ifndef NODUPLICATES
+#ifdef DUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
     } else if (obj->obj_flags.cost_per_day < 0) {
 
-#ifndef NODUPLICATES
+#ifdef DUPLICATES
         if (ch != '\0') {
             sprintf(buf, "You're told: '%s is just old junk, I'll throw it "
                          "away for you.'\n\r", obj->short_description);

@@ -276,20 +276,6 @@ int main(int argc, char **argv)
         strcpy(hostlist[a], " \0\0\0\0");
     }
     numberhosts = 0;
-
-#ifdef LOCKGROVE
-    Log("Locking out Host: oak.grove.iup.edu.");
-    strcpy(hostlist[0], "oak.grove.iup.edu");
-    numberhosts = 1;
-    Log("Locking out Host: everest.rutgers.edu.");
-    strcpy(hostlist[1], "everest.rutgers.edu");
-    numberhosts = 2;
-#endif                          /* LOCKGROVE */
-
-#ifdef PERSONAL_PERM_LOCKOUTS
-    numberhosts += 0;
-#endif
-
 #endif
 
     /*

@@ -2749,7 +2749,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     int             persist,
                     dist;
 
-#ifdef NOTRACK
+#ifndef USE_TRACK
     return;
 #endif
 
@@ -6620,7 +6620,7 @@ int is_abbrev(char *arg1, char *arg2)
  * Support for different platforms
  *************************************************************************/
 
-#if defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __sun__ )
+#ifndef HAVE_STRNLEN
 /* FreeBSD and Solaris seem to be missing strnlen */
 
 size_t strnlen(const char *s, size_t maxlen) 
@@ -6636,7 +6636,7 @@ size_t strnlen(const char *s, size_t maxlen)
 
 #endif
 
-#if defined( __sun__ )
+#ifndef HAVE_STRSEP
 /* Solaris seems to be missing strsep */
 char *strsep(char **stringp, const char *delim)
 {
@@ -6669,6 +6669,46 @@ char *strsep(char **stringp, const char *delim)
     }
 
     return( start );
+}
+#endif
+
+#ifndef HAVE_STRDUP
+char           *strdup(const char *str)
+{
+    int             len;
+    char           *copy;
+
+    len = strlen(str) + 1;
+    if (!(copy = (char *) malloc((u_int) len))) {
+        return ((char *) NULL);
+    }
+    bcopy(str, copy, len);
+    return (copy);
+}
+#endif
+
+#ifndef HAVE_STRSTR
+/*
+ * Find the first occurrence of find in s.
+ */
+char           *strstr(register const char *s, register const char *find)
+{
+    register char   c,
+                    sc;
+    register size_t len;
+
+    if ((c = *find++) != 0) {
+        len = strlen(find);
+        do {
+            do {
+                if ((sc = *s++) == 0) {
+                    return (NULL);
+                }
+            } while (sc != c);
+        } while (strncmp(s, find, len) != 0);
+        s--;
+    }
+    return ((char *) s);
 }
 #endif
 

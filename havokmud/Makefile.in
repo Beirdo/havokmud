@@ -40,7 +40,7 @@ ${DEPS} : Makefile
 
 %.d: %.c
 	@echo "Making $@ (dependencies for $<)"
-	@${CC} -MM ${GAMEFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
+	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
 
 .PHONY: clean cleanall
 
@@ -50,7 +50,10 @@ clean:
 cleanall: clean
 	rm -f ${DEPS}
 
-configure: configure.in
+distclean: cleanall
+	rm -f config.status config.log Makefile config.h
+
+configure: configure.ac
 	autoconf
 
 config.in.h: configure.in
