@@ -1,6 +1,6 @@
 /*
  * DaleMUD v2.0 Released 2/1994 See license.doc for distribution terms.
- * DaleMUD is based on DIKUMUD 
+ * DaleMUD is based on DIKUMUD
  */
 
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include "protos.h"
 
 /*
- * extern variables 
+ * extern variables
  */
 
 extern struct descriptor_data *descriptor_list;
@@ -69,7 +69,7 @@ void do_hit(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_hit");
 
-    if (check_peaceful(ch, 
+    if (check_peaceful(ch,
                        "You feel too peaceful to contemplate violence.\n\r")) {
         return;
     }
@@ -95,7 +95,7 @@ void do_hit(struct char_data *ch, char *argument, int cmd)
                     WAIT_STATE(ch, PULSE_VIOLENCE + 2);
                 } else {
                     if (victim != ch->specials.fighting) {
-                        if (ch->skills && 
+                        if (ch->skills &&
                             ch->skills[SKILL_SWITCH_OPP].learned) {
                             if (number(1, 101) <
                                 ch->skills[SKILL_SWITCH_OPP].learned) {
@@ -204,7 +204,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (!ch->equipment[WIELD]) {
-        send_to_char("You need to wield a weapon, to make it a success.\n\r", 
+        send_to_char("You need to wield a weapon, to make it a success.\n\r",
                      ch);
         return;
     }
@@ -218,7 +218,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (A_NOASSIST(ch, victim)) {
-        act("$N is already engaged with someone else!", FALSE, ch, 0, victim, 
+        act("$N is already engaged with someone else!", FALSE, ch, 0, victim,
             TO_CHAR);
         return;
     }
@@ -269,7 +269,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
             AddHated(victim, ch);
             return;
         } else {
-            act("You failed to sense a back attack from $N!", FALSE, victim, 
+            act("You failed to sense a back attack from $N!", FALSE, victim,
                 0, ch, TO_CHAR);
             act("$n fails to avoid a back attack from $N!", FALSE, victim,
                 0, ch, TO_ROOM);
@@ -277,7 +277,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         }
     }
     /*
-     * ^ they had skill avoid ba and where awake! ^ 
+     * ^ they had skill avoid ba and where awake! ^
      */
     percent = number(1, 101);   /* 101% is a complete failure */
 
@@ -287,8 +287,8 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
             if (AWAKE(victim)) {
                 AddHated(victim, ch);
                 /* damage (third arg) = 0 */
-                damage(ch, victim, 0, SKILL_BACKSTAB);  
-            } else {            
+                damage(ch, victim, 0, SKILL_BACKSTAB);
+            } else {
                 /* failed but vic is asleep */
                 base += 2;
                 GET_HITROLL(ch) += base;
@@ -316,10 +316,10 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
     }
     if (OnlyClass(ch, CLASS_THIEF)) {
         /* one round lag for sc thieves */
-        WAIT_STATE(ch, PULSE_VIOLENCE); 
+        WAIT_STATE(ch, PULSE_VIOLENCE);
     } else {
         /* two rounds lag for multi thieves */
-        WAIT_STATE(ch, PULSE_VIOLENCE * 2);     
+        WAIT_STATE(ch, PULSE_VIOLENCE * 2);
     }
 }
 
@@ -335,9 +335,9 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
     if (!ch) {
         return;
     }
-    if (cmd != 588) {             
-        /* 
-         * dismiss 
+    if (cmd != 588) {
+        /*
+         * dismiss
          */
         return;
     }
@@ -349,12 +349,12 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
         bits = generic_find(buf, FIND_CHAR_ROOM, ch, &tmp_char, &dummy);
         if (tmp_char) {
             if (tmp_char != ch) {
-                if (IS_NPC(tmp_char) && 
+                if (IS_NPC(tmp_char) &&
                     !IS_SET(tmp_char->specials.act, ACT_POLYSELF)) {
-                    if (tmp_char->master == ch && 
+                    if (tmp_char->master == ch &&
                         IS_AFFECTED(tmp_char, AFF_CHARM)) {
                         /*
-                         * valid target, let's get rid of it 
+                         * valid target, let's get rid of it
                          */
                         act("You wave you hand, and dismiss $N from your "
                             "service.", FALSE, ch, 0, tmp_char, TO_CHAR);
@@ -379,7 +379,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
                         send_to_char(buf2, ch);
                     }
                 } else {
-                    send_to_char("Dismissing other players? I think not!\n\r", 
+                    send_to_char("Dismissing other players? I think not!\n\r",
                                  ch);
                 }
             } else {
@@ -454,7 +454,7 @@ void do_order(struct char_data *ch, char *argument, int cmd)
                         send_to_char("Ok.\n\r", ch);
                         command_interpreter(victim, message);
                     }
-                } else if (IS_AFFECTED2(victim, AFF2_CON_ORDER) && 
+                } else if (IS_AFFECTED2(victim, AFF2_CON_ORDER) &&
                            victim->master == ch) {
                     send_to_char("Ok.\n\r", ch);
                     command_interpreter(victim, message);
@@ -489,7 +489,7 @@ void do_order(struct char_data *ch, char *argument, int cmd)
                 }
                 send_to_char("Ok.\n\r", ch);
             } else {
-                send_to_char("Nobody here is a loyal subject of yours!\n\r", 
+                send_to_char("Nobody here is a loyal subject of yours!\n\r",
                              ch);
             }
         }
@@ -527,15 +527,15 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
         send_to_char("The arena rules do not permit you to flee!\n\r", ch);
         return;
     }
-    if (IS_SET(ch->specials.affected_by2, AFF2_BERSERK) || 
+    if (IS_SET(ch->specials.affected_by2, AFF2_BERSERK) ||
         IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
         send_to_char("You can think of nothing but the battle!\n\r", ch);
         return;
     }
     /*
-     * NO_FLEE flag on rooms, Lennya 20030602 
+     * NO_FLEE flag on rooms, Lennya 20030602
      */
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, NO_FLEE) && 
+    if (IS_SET(real_roomp(ch->in_room)->room_flags, NO_FLEE) &&
         !IS_IMMORTAL(ch)) {
         send_to_char("Your feet feel like lead, and refuse to move!\n\r", ch);
         return;
@@ -565,21 +565,21 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
     }
     if (!(ch->specials.fighting)) {
         for (i = 0; i < 6; i++) {
-            /* 
-             * Select a random direction 
+            /*
+             * Select a random direction
              */
             attempt = number(0, 5);
-            if (CAN_GO(ch, attempt) && 
-                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, 
-                        DEATH) && 
-                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, 
+            if (CAN_GO(ch, attempt) &&
+                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+                        DEATH) &&
+                !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
                         NO_FLEE)) {
                 act("$n panics, and attempts to flee.", TRUE, ch, 0, 0,
                     TO_ROOM);
                 if (RIDDEN(ch)) {
                     if ((die = MoveOne(RIDDEN(ch), attempt, FALSE)) == 1) {
                         /*
-                         * The escape has succeeded 
+                         * The escape has succeeded
                          */
                         send_to_char("You flee head over heels.\n\r", ch);
                         return;
@@ -593,7 +593,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 } else {
                     if ((die = MoveOne(ch, attempt, FALSE)) == 1) {
                         /*
-                         * The escape has succeeded 
+                         * The escape has succeeded
                          */
                         send_to_char("You flee head over heels.\n\r", ch);
                         return;
@@ -612,17 +612,17 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
     }
 
     for (i = 0; i < 3; i++) {
-        /* 
-         * Select a random direction 
+        /*
+         * Select a random direction
          */
-        attempt = number(0, 5); 
+        attempt = number(0, 5);
         if (CAN_GO(ch, attempt) &&
             !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
                     DEATH) &&
             !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
                     NO_FLEE)) {
 
-            if (!ch->skills || 
+            if (!ch->skills ||
                 ch->skills[SKILL_RETREAT].learned < number(1, 101)) {
                 act("$n panics, and attempts to flee.", TRUE, ch, 0, 0,
                     TO_ROOM);
@@ -634,9 +634,9 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                  */
                 for (j = 0; j < 6; j++) {
                     if (CAN_GO(ch, j) &&
-                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags, 
+                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,
                                 DEATH) &&
-                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags, 
+                        !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,
                                 NO_FLEE)) {
                         attempt = j;
                         j = 10;
@@ -662,10 +662,10 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
             }
             if (die == 1) {
                 /*
-                 * The escape has succeeded. We'll be nice. 
+                 * The escape has succeeded. We'll be nice.
                  */
                 if (GetMaxLevel(ch) > 3) {
-                    if (panic || 
+                    if (panic ||
                         !HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN |
                                       CLASS_PALADIN | CLASS_RANGER)) {
                         loose = GetMaxLevel(ch) + (GetSecMaxLev(ch) / 2) +
@@ -681,18 +681,18 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 if (loose < 0) {
                     loose = 1;
                 }
-                if (IS_NPC(ch) && !(IS_SET(ch->specials.act, ACT_POLYSELF) && 
+                if (IS_NPC(ch) && !(IS_SET(ch->specials.act, ACT_POLYSELF) &&
                     !(IS_SET(ch->specials.act, ACT_AGGRESSIVE)))) {
                     AddFeared(ch, ch->specials.fighting);
                 } else {
-                    percent = (int)(100.0 * 
+                    percent = (int)(100.0 *
                                     (float)GET_HIT(ch->specials.fighting) /
                                     (float)GET_MAX_HIT(ch->specials.fighting));
                     if (Hates(ch->specials.fighting, ch)) {
                         SetHunting(ch->specials.fighting, ch);
-                    } else if ((IS_GOOD(ch) && 
-                                IS_EVIL(ch->specials.fighting)) || 
-                               (IS_EVIL(ch) && 
+                    } else if ((IS_GOOD(ch) &&
+                                IS_EVIL(ch->specials.fighting)) ||
+                               (IS_EVIL(ch) &&
                                 IS_GOOD(ch->specials.fighting))) {
                         AddHated(ch->specials.fighting, ch);
                         SetHunting(ch->specials.fighting, ch);
@@ -702,7 +702,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     }
                 }
                 if (IS_PC(ch) && panic) {
-                    if (HasClass(ch, CLASS_MONK) || 
+                    if (HasClass(ch, CLASS_MONK) ||
                         !HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN |
                                       CLASS_PALADIN | CLASS_RANGER)) {
                         gain_exp(ch, -loose);
@@ -738,7 +738,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     log("fleeing dude still being attacked?! Could be bad.");
                 }
                 if (IS_PC(ch)) {
-                    if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) && 
+                    if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) &&
                         !IS_AFFECTED(ch, AFF_HIDE)) {
                         do_hide(ch, 0, 0);
                         if (!IS_AFFECTED(ch, AFF_HIDE)) {
@@ -757,7 +757,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
         }
     }
     /*
-     * No exits were found 
+     * No exits were found
      */
     send_to_char("PANIC! You couldn't escape!\n\r", ch);
 }
@@ -779,7 +779,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         return;
 #endif
 
-    if (check_peaceful(ch, 
+    if (check_peaceful(ch,
                        "You feel too peaceful to contemplate violence.\n\r")) {
         return;
     }
@@ -848,7 +848,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
     }
     percent = number(1, 101);   /* 101% is a complete failure */
     /*
-     * some modifications to account for dexterity, and level 
+     * some modifications to account for dexterity, and level
      */
     percent -= dex_app[GET_DEX(ch)].reaction * 10;
     percent += dex_app[GET_DEX(victim)].reaction * 10;
@@ -925,7 +925,7 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (MOUNTED(ch)) {
-        send_to_char("You'll end up booting your mount if you do that!\n\r", 
+        send_to_char("You'll end up booting your mount if you do that!\n\r",
                      ch);
         return;
     }
@@ -939,12 +939,12 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                      "do that!\n\r", ch);
         return;
     }
-    percent = number(1, 101);   
-    /* 
-     * 101% is a complete failure 
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
      *
      *
-     * some modifications to account for dexterity, and level 
+     * some modifications to account for dexterity, and level
      */
     percent -= dex_app[GET_DEX(ch)].reaction * 10;
     percent += dex_app[GET_DEX(victim)].reaction * 10;
@@ -984,10 +984,10 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     FALSE, ch, 0, victim, TO_CHAR);
                 act("$c000C$n's legsweep lands a killing blow to $M.",
                     FALSE, ch, 0, victim, TO_ROOM);
-#if 0                   
+#if 0
                    act("$c000C$n's legsweep lands a killing blow to your "
                    "head.",FALSE, ch,0,victim,TO_VICT);
-#endif                
+#endif
                 sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
                              "for using your combat abilities.$c0007\n\r", ch);
                 send_to_char(buf, ch);
@@ -1034,26 +1034,26 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
     perc = number(1, 101);
     if (obj) {
         if (ITEM_TYPE(obj) == ITEM_ARMOR) {
-            if (obj->obj_flags.value[0] == 0 || 
+            if (obj->obj_flags.value[0] == 0 ||
                 obj->obj_flags.value[1] == 0) {
                 sprintf(buf, "%s tried to mend an invalid armor value: %s, "
                              "vnum %d.",
                         GET_NAME(ch), obj->short_description,
-                        (obj->item_number >= 0) ? 
-                         obj_index[obj->item_number].virtual : 
+                        (obj->item_number >= 0) ?
+                         obj_index[obj->item_number].virtual :
                          0);
                 log(buf);
                 return;
             }
             if (obj->obj_flags.value[0] >= obj->obj_flags.value[1]) {
-                send_to_char("That item has no need of your attention.\n\r", 
+                send_to_char("That item has no need of your attention.\n\r",
                              ch);
                 return;
             } else {
                 if (ch->skills[SKILL_MEND].learned < perc) {
                     /*
                      * failure permanently lowers full strength by one
-                     * point 
+                     * point
                      */
                     obj->obj_flags.value[1] -= 1;
                     sprintf(buf, "%s tries to mend %s, but only makes things "
@@ -1103,13 +1103,13 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             if (cmp->obj_flags.value[2] == obj->obj_flags.value[2]) {
-                send_to_char("That item has no need of your attention.\n\r", 
+                send_to_char("That item has no need of your attention.\n\r",
                              ch);
                 extract_obj(cmp);
             } else {
                 if (ch->skills[SKILL_MEND].learned < perc) {
                     /*
-                     * failure lowers damage die by one point 
+                     * failure lowers damage die by one point
                      */
                     obj->obj_flags.value[2] -= 1;
                     sprintf(buf, "%s tries to mend %s, but only makes matters "
@@ -1121,7 +1121,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                             obj->short_description);
                     send_to_char(buf, ch);
                     /*
-                     * did this scrap the weapon? 
+                     * did this scrap the weapon?
                      */
                     if (obj->obj_flags.value[2] < 1) {
                         sprintf(buf, "%s screwed up so bad that %s is reduced "
@@ -1207,7 +1207,7 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
     }
 
     if (ch->specials.fighting == victim) {
-        send_to_char("How can you rescue someone you are trying to kill?\n\r", 
+        send_to_char("How can you rescue someone you are trying to kill?\n\r",
                      ch);
         return;
     }
@@ -1218,11 +1218,11 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    for (tmp_ch = real_roomp(ch->in_room)->people; 
+    for (tmp_ch = real_roomp(ch->in_room)->people;
          tmp_ch && tmp_ch->specials.fighting != victim;
          tmp_ch = tmp_ch->next_in_room){
-        /* 
-         * Yes, this is an empty loop body 
+        /*
+         * Yes, this is an empty loop body
          */
     }
     if (!tmp_ch) {
@@ -1230,9 +1230,9 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    percent = number(1, 101);   
-    /* 
-     * 101% is a complete failure 
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
      */
 
     if ((percent > ch->skills[SKILL_RESCUE].learned)) {
@@ -1295,9 +1295,9 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills[SKILL_DISENGAGE].learned) {
         send_to_char("You don't seem to know this skill.", ch);
         return;
-#if 0        
+#if 0
         ch->skills[SKILL_DISENGAGE].learned = 50;
-#endif    
+#endif
     }
     percent = number(1, 101);
     percent += (GET_DEX(ch) - GET_DEX(ch->specials.fighting));
@@ -1306,9 +1306,9 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     }
     if (percent > ch->skills[SKILL_DISENGAGE].learned) {
         send_to_char("You can't seem to get away.\n\r", ch);
-        act("$n tries to back out of combat with $N, but seems to stumble.", 
+        act("$n tries to back out of combat with $N, but seems to stumble.",
             TRUE, ch, 0, ch->specials.fighting, TO_NOTVICT);
-        act("$n tries to back out of combat with you, but seems to stumble.", 
+        act("$n tries to back out of combat with you, but seems to stumble.",
             TRUE, ch, 0, ch->specials.fighting, TO_VICT);
         LearnFromMistake(ch, SKILL_DISENGAGE, 0, 90);
         WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -1363,8 +1363,8 @@ void do_assist(struct char_data *ch, char *argument, int cmd)
 #if 0
     for (tmp_ch=real_roomp(ch->in_room)->people; tmp_ch &&
      (tmp_ch->specials.fighting != victim); tmp_ch=tmp_ch->next_in_room){
-        /* 
-         * empty for loop
+        /*
+         * Empty loop
          */
     }
 #endif
@@ -1378,7 +1378,7 @@ void do_assist(struct char_data *ch, char *argument, int cmd)
         return;
     }
     hit(ch, tmp_ch, TYPE_UNDEFINED);
-    WAIT_STATE(ch, PULSE_VIOLENCE + 2); 
+    WAIT_STATE(ch, PULSE_VIOLENCE + 2);
 }
 
 void do_kick(struct char_data *ch, char *argument, int cmd)
@@ -1438,7 +1438,7 @@ void do_kick(struct char_data *ch, char *argument, int cmd)
     }
     percent = ((10 - (GET_AC(victim) / 10))) + number(1, 101);
     /*
-     * 101% is a complete failure 
+     * 101% is a complete failure
      */
     if (GET_RACE(victim) == RACE_GHOST) {
         kick_messages(ch, victim, 0);
@@ -1463,8 +1463,8 @@ void do_kick(struct char_data *ch, char *argument, int cmd)
         if (GET_POS(victim) > POSITION_DEAD) {
             dam = GET_LEVEL(ch, BestFightingClass(ch));
             if (!HasClass(ch, CLASS_MONK) || IS_NPC(ch)) {
-                /* 
-                 * so guards use fighter dam 
+                /*
+                 * so guards use fighter dam
                  */
                 dam = dam >> 1;
             }
@@ -1517,8 +1517,8 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
         for (scan = breath_monsters;
              scan->vnum >= 0 && scan->vnum != mob_index[ch->nr].virtual;
              scan++) {
-            /* 
-             * Empty for loop 
+            /*
+             * Empty loop
              */
         }
         if (scan->vnum < 0) {
@@ -1527,15 +1527,15 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
             return;
         }
         for (count = 0; scan->breaths[count]; count++) {
-            /* 
-             * Empty for loop 
+            /*
+             * Empty loop
              */
         }
         if (count < 1) {
             sprintf(buf, "monster %s has no breath weapons",
                     ch->player.short_descr);
             log(buf);
-            send_to_char("Hey, why don't you have any breath weapons!?\n\r", 
+            send_to_char("Hey, why don't you have any breath weapons!?\n\r",
                          ch);
             return;
         }
@@ -1639,7 +1639,7 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
                              ch);
                 return;
                 break;
-            }   
+            }
 
             argument = one_argument(argument, name);
             if (strn_cmp(name, "at", 2) && isspace(name[2])) {
@@ -1667,7 +1667,7 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
             }
         }
         /*
-         * !victim 
+         * !victim
          */
         if (victim) {
             if (victim == ch) {
@@ -1676,7 +1676,7 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
             } else {
                 if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == victim)) {
                     act("$N is just such a good friend, you simply "
-                            "can't shoot at $M.", 
+                            "can't shoot at $M.",
                             FALSE, ch, 0, victim, TO_CHAR);
                     return;
                 }
@@ -1862,7 +1862,7 @@ void do_quivering_palm(struct char_data *ch, char *arg, int cmd)
         }
     }
     WAIT_STATE(ch, PULSE_VIOLENCE * 1);
-    
+
     af.type = SKILL_QUIV_PALM;
     af.duration = 168;
     af.modifier = 0;
@@ -2089,7 +2089,7 @@ void do_berserk(struct char_data *ch, char *arg, int cmd)
     }
 
     /*
-     * all the checks passed, now get on with it! 
+     * all the checks passed, now get on with it!
      */
 
     skillcheck = number(0, 101);
@@ -2101,10 +2101,10 @@ void do_berserk(struct char_data *ch, char *arg, int cmd)
         LearnFromMistake(ch, SKILL_BERSERK, 0, 90);
     } else {
         if (GET_POS(victim) > POSITION_DEAD) {
-            /* 
-             * cost 15 mana to do it..  
+            /*
+             * cost 15 mana to do it..
              */
-            GET_MANA(ch) = (GET_MANA(ch) - 15); 
+            GET_MANA(ch) = (GET_MANA(ch) - 15);
             SET_BIT(ch->specials.affected_by2, AFF2_BERSERK);
             act("$c1012$n growls at $mself, and whirls into a killing frenzy!",
                 FALSE, ch, 0, victim, TO_ROOM);
@@ -2156,17 +2156,17 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
     }
     max_range = (((GET_STR(ch) + GET_ADD(ch) / 30) - 3) / 8) + 2;
     max_range = max_range / (sz + 1);
-    if (o->obj_flags.type_flag == ITEM_MISSILE && ch->equipment[WIELD] && 
+    if (o->obj_flags.type_flag == ITEM_MISSILE && ch->equipment[WIELD] &&
         ch->equipment[WIELD]->obj_flags.type_flag == ITEM_FIREWEAPON) {
         /*
-         * Add bow's range bonus 
+         * Add bow's range bonus
          */
         max_range += ch->equipment[WIELD]->obj_flags.value[2];
     }
     if (max_range == 0) {
         act("$p immediately hits the ground.  A truly pitiful throw.",
             TRUE, ch, o, 0, TO_ROOM);
-        act("$p flew 2 feet then fell to earth.  Maybe a lighter weapon...", 
+        act("$p flew 2 feet then fell to earth.  Maybe a lighter weapon...",
             TRUE, ch, o, 0, TO_CHAR);
         obj_to_room(o, ch->in_room);
         return;
@@ -2174,7 +2174,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
     range = 0;
     while (range < max_range && broken == FALSE) {
         /*
-         * Check for target 
+         * Check for target
          */
         there = 0;
         for (spud = real_roomp(rm)->people; spud; spud = next_spud) {
@@ -2187,18 +2187,18 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                             act("$p breaks into splinters.", TRUE, targ, o,
                                 0, TO_ROOM);
                             broken = TRUE;
-                            /* 
-                             * storage for broken arrows 
+                            /*
+                             * storage for broken arrows
                              */
-                            obj_to_room(o, 3);  
+                            obj_to_room(o, 3);
                             /*
                              * for some reason this causes the obj to get
                              * placed in very weird places
                              */
-#if 0                            
-                              obj_from_room(o); 
-                              extract_obj(o); 
-#endif                             
+#if 0
+                              obj_from_room(o);
+                              extract_obj(o);
+#endif
                         } else {
                             obj_to_room(o, rm);
                         }
@@ -2231,9 +2231,9 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                 if (number(1, 100) < o->obj_flags.value[0]) {
                     sprintf(buf, "%s breaks into splinters.\n\r",
                             o->short_description);
-                    obj_to_room(o, 3);  
-                    /* 
-                     * storage for broken arrows 
+                    obj_to_room(o, 3);
+                    /*
+                     * storage for broken arrows
                      */
                     broken = TRUE;
                 } else {
@@ -2270,8 +2270,8 @@ void throw_object(struct obj_data *o, int dir, int from)
                     buf2[100];
     int             distance = 0;
 
-    while (distance < 20 && real_roomp(from)->dir_option[dir] && 
-           real_roomp(from)->dir_option[dir]->exit_info < 2 && 
+    while (distance < 20 && real_roomp(from)->dir_option[dir] &&
+           real_roomp(from)->dir_option[dir]->exit_info < 2 &&
            real_roomp(from)->dir_option[dir]->to_room > 0) {
         if (distance) {
             sprintf(buf1, "%s flies into the room from the %s.\n\r",
@@ -2351,7 +2351,7 @@ int clearpath(struct char_data *ch, long room, int direc)
         return 0;
     }
     /*
-     * One-way windows are allowed... no see through 1-way exits 
+     * One-way windows are allowed... no see through 1-way exits
      */
     if (!real_roomp(real_roomp(room)->dir_option[direc]->to_room)->
         dir_option[opdir[direc]]) {
@@ -2477,7 +2477,7 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
         return;
     } else {
         /*
-         * add spot check before letting mortals get farther 
+         * add spot check before letting mortals get farther
          */
         if (rng > fw->obj_flags.value[1]) {
             send_to_char("You just can't fire that far!\n\r", ch);
@@ -2533,7 +2533,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
     }
     throw = get_obj_in_list_vis(ch, arg1, ch->carrying);
     /*
-     * Check if second argument is a character or direction 
+     * Check if second argument is a character or direction
      */
     (char *) targ = get_char_linear(ch, arg2, &rng, &dr);
     if (targ && targ == ch) {
@@ -2548,7 +2548,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
             return;
         } else {
             /*
-             * add spot check before letting mortals get father 
+             * add spot check before letting mortals get father
              */
 
             if (rng > throw->obj_flags.value[1]) {
@@ -2569,39 +2569,39 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
     }
     if (throw->obj_flags.type_flag != ITEM_WEAPON) {
         /*
-         * Friendly throw 
+         * Friendly throw
          */
 
-#if 0         
-        if (cmd!=263) 
-#endif         
+#if 0
+        if (cmd!=263)
+#endif
         send_to_char("OK.\n\r", ch);
         obj_from_char(throw);
 #if 0
-        if (cmd!=263) 
-#endif        
+        if (cmd!=263)
+#endif
         act("$n throws $p!", TRUE, ch, throw, 0, TO_ROOM);
         obj_to_room(throw, ch->in_room);
         throw_object(throw, tdir, ch->in_room);
     } else {
         if (check_peaceful(targ, "Someone just tried to throw a weapon at you,"
                                  " and you are in peaceful room! HA!")) {
-            send_to_char("You can not throw a weapon into a peaceful room!", 
+            send_to_char("You can not throw a weapon into a peaceful room!",
                          ch);
             return;
         }
 #if 0
-        if (cmd!=263) 
+        if (cmd!=263)
 #endif
         send_to_char("OK.\n\r", ch);
         obj_from_char(throw);
 #if 0
-        if (cmd!=263) 
+        if (cmd!=263)
 #endif
         act("$n throws $p!", TRUE, ch, throw, 0, TO_ROOM);
         throw_weapon(throw, tdir, targ, ch);
 #if 0
-        if (cmd!=263) 
+        if (cmd!=263)
 #endif
         WAIT_STATE(ch, 1);
     }
@@ -2623,13 +2623,13 @@ void do_style(struct char_data *ch, char *argument, int cmd)
     only_argument(argument, style);
     sprintf(buffer, "");
     if (!*style) {
-        /* 
-         * If no style, list all styles and how good 
+        /*
+         * If no style, list all styles and how good
          */
         sprintf(buffer, "You currently know the following fighting "
                         "styles.\n\r");
         while (styleskillset[x].level != -1) {
-            if (IS_SET(ch->skills[styleskillset[x].skillnum].flags, 
+            if (IS_SET(ch->skills[styleskillset[x].skillnum].flags,
                        SKILL_KNOWN)) {
                 sprintf(buf, "[%-2d] %-30s %-15s", styleskillset[x].level,
                         styleskillset[x].name,
@@ -2639,7 +2639,7 @@ void do_style(struct char_data *ch, char *argument, int cmd)
                     strcat(buf, " (special)");
                 }
                 strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) > 
+                if (strlen(buf) + strlen(buffer) >
                         (MAX_STRING_LENGTH * 2) - 2) {
                     break;
                 }
@@ -2656,7 +2656,7 @@ void do_style(struct char_data *ch, char *argument, int cmd)
     } else {
         x = 0;
         while (styleskillset[x].level != -1) {
-            if (is_abbrev(style, styleskillset[x].name) && 
+            if (is_abbrev(style, styleskillset[x].name) &&
                 ch->skills[x + 298].learned > 0) {
                 ch_printf(ch, "You change your stance and adopt %s %s style "
                               "of fighting.\n\r",
@@ -2664,7 +2664,7 @@ void do_style(struct char_data *ch, char *argument, int cmd)
                           fight_styles[x]);
                 sprintf(temp, "$n changes $s stance and adopts %s %s style "
                               "of fighting.",
-                        style[0] == 'A' || style[0] == 'E' ? "an" : "a", 
+                        style[0] == 'A' || style[0] == 'E' ? "an" : "a",
                         fight_styles[x]);
                 act(temp, TRUE, ch, 0, 0, TO_ROOM);
                 ch->style = x;
@@ -2746,7 +2746,7 @@ void do_expel(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (GET_CLAN(victim) != GET_CLAN(ch)) {
-        send_to_char("You can't expel someone that isn't in your clan.\n\r", 
+        send_to_char("You can't expel someone that isn't in your clan.\n\r",
                      ch);
         return;
     }
@@ -2766,19 +2766,19 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
     int             clannum = 0;
     dlog("in do_chat");
 
-    if ((!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) || 
-        IS_SET(ch->specials.act, PLR_NOOOC) || 
+    if ((!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) ||
+        IS_SET(ch->specials.act, PLR_NOOOC) ||
         IS_SET(ch->specials.act, PLR_WIZNOOOC)) {
         send_to_char("You can't use this command!!\n\r", ch);
         return;
     }
     if (clannum = GET_CLAN(ch) <= 1) {
-        send_to_char("You can't clan chat. You don't belong to a clan.\n\r", 
+        send_to_char("You can't clan chat. You don't belong to a clan.\n\r",
                      ch);
         return;
     }
     if (IS_SET(SystemFlags, SYS_NOOOC)) {
-        send_to_char("The use of clan chat has been temporarilly banned.\n\r", 
+        send_to_char("The use of clan chat has been temporarilly banned.\n\r",
                      ch);
         return;
     }
@@ -2787,7 +2787,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         send_to_char("It may return after a bit.\n\r", ch);
         return;
     }
-    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && 
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) &&
         GetMaxLevel(ch) < LOW_IMMORTAL) {
         send_to_char("You do not have the strength to clan chat!\n\r", ch);
         return;
@@ -2796,8 +2796,8 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     for (; *argument == ' '; argument++) {
-        /* 
-         * Empty loop 
+        /*
+         * Empty loop
          */
     }
     if ((ch->master && IS_AFFECTED(ch, AFF_CHARM)) &&
@@ -2826,16 +2826,16 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         }
 
         for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected && 
-                (IS_NPC(i->character) || 
-                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                  !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+            if (i->character != ch && !i->connected &&
+                (IS_NPC(i->character) ||
+                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                  !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                 !check_soundproof(i->character)) {
-#if 0                
+#if 0
                 ch_printf(ch,"My clan: %d Other clan: %d",
                     GET_CLAN(clannum), GET_CLAN(i->character) );
-#endif                
+#endif
                 if (GET_CLAN(i->character) == GET_CLAN(ch)) {
                     send_to_char(buf1, i->character);
                 }
@@ -2853,8 +2853,8 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_qchat");
 
-    if ((!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) || 
-        IS_SET(ch->specials.act, PLR_NOOOC) || 
+    if ((!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) ||
+        IS_SET(ch->specials.act, PLR_NOOOC) ||
         IS_SET(ch->specials.act, PLR_WIZNOOOC)) {
         send_to_char("You can't use this command!!\n\r", ch);
         return;
@@ -2877,8 +2877,8 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     for (; *argument == ' '; argument++) {
-        /* 
-         * Empty loop 
+        /*
+         * Empty loop
          */
     }
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) &&
@@ -2904,11 +2904,11 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
                       "$c000Ct$c000Ps $c0008'$c000C%s$c0008'\n\r",
                 GET_NAME(ch), argument);
         for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected && 
-                (IS_NPC(i->character) || 
-                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                  !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+            if (i->character != ch && !i->connected &&
+                (IS_NPC(i->character) ||
+                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                  !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                 !check_soundproof(i->character) &&
                 IS_AFFECTED2(i->character, AFF2_QUEST)) {
                 send_to_char(buf1, i->character);

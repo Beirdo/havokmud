@@ -29,7 +29,7 @@ void do_say(struct char_data *ch, char *argument, int cmd)
 
     for (i = 0; *(argument + i) == ' '; i++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -113,7 +113,7 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
 
     for (; *argument == ' '; argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -199,7 +199,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
 
     for (; *argument == ' '; argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -287,7 +287,7 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
 
     for (; *argument == ' '; argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -641,7 +641,7 @@ char           *RandomWord()
     int             i;
     for (i = 0; *rstring[i] != '\n'; i++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
     /*
@@ -665,7 +665,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 
     for (i = 0; *(argument + i) == ' '; i++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -829,7 +829,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
 
     for (ii = 0; *(argument + ii) == ' '; ii++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -996,7 +996,7 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
 	}
     for (i = 0; *(argument + i) == ' '; i++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -1169,7 +1169,7 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
 
     for (; *argument == ' '; argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -1339,7 +1339,7 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
 	}
     for (; *argument == ' '; argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 

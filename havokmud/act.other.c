@@ -1,6 +1,6 @@
 /*
  * DaleMUD v2.0 Released 2/1994 See license.doc for distribution terms.
- * DaleMUD is based on DIKUMUD 
+ * DaleMUD is based on DIKUMUD
  */
 
 #include <stdio.h>
@@ -10,7 +10,7 @@
 #include "protos.h"
 
 /*
- * extern variables 
+ * extern variables
  */
 extern int      ArenaNoGroup,
                 ArenaNoAssist,
@@ -34,9 +34,9 @@ extern char    *spells[];
 extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern int      MaxArenaLevel,
                 MinArenaLevel;
-struct char_data *mem_list = 0; 
-/* 
- * head for the list of memorizers 
+struct char_data *mem_list = 0;
+/*
+ * head for the list of memorizers
  */
 extern struct skillset warriorskills[];
 extern struct skillset thiefskills[];
@@ -74,14 +74,14 @@ void            stop_follower(struct char_data *ch);
 void            do_mobTell(struct char_data *ch, char *mob,
                            char *sentence);
 
-#define MAX_GNAME           7   
-/* 
- * The max group name index 
+#define MAX_GNAME           7
+/*
+ * The max group name index
  */
 
-#define RACE_WAR_MIN_LEVEL 10   
+#define RACE_WAR_MIN_LEVEL 10
 /* this is the level a user can turn race
- * war ON 
+ * war ON
  */
 #define ARENA_ZONE 124
 #define SEVERED_HEAD    29
@@ -105,8 +105,8 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
         return;
     }
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty got loop 
+        /*
+         * Empty got loop
          */
     }
     if (!*argument) {
@@ -176,7 +176,7 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
         tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
         if (tmp_object) {
             if (IS_OBJ_STAT(tmp_object, ITEM_NODROP)) {
-                send_to_char("You can't let go of it, it must be CURSED!\n\r", 
+                send_to_char("You can't let go of it, it must be CURSED!\n\r",
                              ch);
                 return;
             }
@@ -263,8 +263,8 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
     if (*argument) {
@@ -277,8 +277,8 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
                 if (prompts[i].n == n) {
 #if 0
                     sprintf(buf, "Your prompt now is : <%s>\n\r",
-                    argument); send_to_char(buf, ch); 
-#endif              
+                    argument); send_to_char(buf, ch);
+#endif
                     if (ch->specials.prompt) {
                         free(ch->specials.prompt);
                     }
@@ -295,8 +295,8 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
         } else {
 #if 0
             sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
-            send_to_char(buf, ch); 
-#endif      
+            send_to_char(buf, ch);
+#endif
             if (ch->specials.prompt) {
                 free(ch->specials.prompt);
             }
@@ -342,12 +342,12 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
     dlog("in do_set_bprompt");
 
 #if 0
-    if (IS_NPC(ch) || !ch->desc) return; 
-#endif     
+    if (IS_NPC(ch) || !ch->desc) return;
+#endif
 
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
     if (*argument) {
@@ -360,7 +360,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
                 if (prompts[i].n == n) {
 #if 0
                     sprintf(buf, "Your prompt now is : <%s>\n\r",
-                    argument); send_to_char(buf, ch); 
+                    argument); send_to_char(buf, ch);
 #endif
                     if (ch->specials.bprompt) {
                         free(ch->specials.bprompt);
@@ -378,7 +378,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
         } else {
 #if 0
             sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
-            send_to_char(buf, ch); 
+            send_to_char(buf, ch);
 #endif
             if (ch->specials.bprompt) {
                 free(ch->specials.bprompt);
@@ -415,8 +415,8 @@ void do_title(struct char_data *ch, char *argument, int cmd)
         return;
     }
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty  for loop 
+        /*
+         * Empty  for loop
          */
     }
     if (*argument) {
@@ -425,13 +425,13 @@ void do_title(struct char_data *ch, char *argument, int cmd)
             *(argument + 151) = '\0';
 #if 0
             sprintf(buf2,"%s %s", GET_NAME(ch), argument);
-#endif       
+#endif
         }
 
         sprintf(temp, "%s", argument);
         argument = one_argument(argument, buf);
         argument = one_argument(argument, buf2);
-#if 0        
+#if 0
         send_to_char(CAP(buf2),ch);
         send_to_char(GET_NAME(ch),ch);
 #endif
@@ -477,13 +477,13 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
     }
 #if 0
     act("Goodbye, friend.. Come back soon!", FALSE, ch, 0, 0, TO_CHAR);
-#endif    
+#endif
     do_mobTell(ch, "A Tiny Voice", "Goodbye Friend.. Come Back Soon!");
     act("$n has left the game.", TRUE, ch, 0, 0, TO_ROOM);
     zero_rent(ch);
 
-    /* 
-     * Char is saved in extract char 
+    /*
+     * Char is saved in extract char
      */
     extract_char(ch);
 #if 0
@@ -512,12 +512,12 @@ void do_save(struct char_data *ch, char *argument, int cmd)
     }
     if (IS_NPC(ch) && (IS_SET(ch->specials.act, ACT_POLYSELF))) {
         /*
-         * swap stuff, and equipment 
+         * swap stuff, and equipment
          */
         if (!ch->desc) {
             tmp = ch->orig;
         } else {
-            tmp = ch->desc->original;   
+            tmp = ch->desc->original;
         }
         if (!tmp) {
             return;
@@ -525,18 +525,18 @@ void do_save(struct char_data *ch, char *argument, int cmd)
         tl = tmp->carrying;
 
         /*
-         * there is a bug with this: When you save, the alignment thing is 
-         * checked, to see if you are supposed to be wearing what you are. 
-         * if your stuff gets kicked off your body, it will end up in room 
+         * there is a bug with this: When you save, the alignment thing is
+         * checked, to see if you are supposed to be wearing what you are.
+         * if your stuff gets kicked off your body, it will end up in room
          * #3, on the floor, and in the inventory of the polymorphed
          * monster.  This is a "bad" thing.  So, to fix it, each item in
-         * the inventory is checked.  if it is in a room, it is moved from 
-         * the room, back to the correct inventory slot. 
+         * the inventory is checked.  if it is in a room, it is moved from
+         * the room, back to the correct inventory slot.
          */
         tmp->carrying = ch->carrying;
         for (i = 0; i < MAX_WEAR; i++) {
-            /* 
-             * move all the mobs eq to the ch 
+            /*
+             * move all the mobs eq to the ch
              */
             teq[i] = tmp->equipment[i];
             tmp->equipment[i] = ch->equipment[i];
@@ -547,8 +547,8 @@ void do_save(struct char_data *ch, char *argument, int cmd)
         recep_offer(tmp, NULL, &cost, FALSE);
         save_obj(tmp, &cost, 0);
 
-        /* 
-         * we can't save tmp because they don't have a desc.  
+        /*
+         * we can't save tmp because they don't have a desc.
          */
         save_char(ch, AUTO_RENT);
 
@@ -561,11 +561,11 @@ void do_save(struct char_data *ch, char *argument, int cmd)
                 ch->equipment[i] = 0;
                 obj_from_room(o);
 #if 0
-                obj_to_char(o, ch); 
-#endif                 
-                equip_char(ch, o, i);   
-                /* 
-                 * equip the correct slot 
+                obj_to_char(o, ch);
+#endif
+                equip_char(ch, o, i);
+                /*
+                 * equip the correct slot
                  */
             }
         }
@@ -612,7 +612,7 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
     }
 
     /*
-     * a location has been found. 
+     * a location has been found.
      */
 
     act("$n thinks of home and then disappears.", TRUE, victim, 0, 0, TO_ROOM);
@@ -634,9 +634,9 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
     dlog("in do_sneak");
 
     if (IS_AFFECTED2(ch, AFF2_SKILL_SNEAK)) {
-#if 0       
+#if 0
         affect_from_char(ch, SKILL_SNEAK);
-#endif        
+#endif
         if (IS_AFFECTED(ch, AFF_HIDE)) {
             REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
         }
@@ -662,12 +662,12 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
         /*
          * removed this to balance with to many sneak items.. (GH)
          */
-#if 0        
-        if (EqWBits(ch, ITEM_ANTI_THIEF)) { 
+#if 0
+        if (EqWBits(ch, ITEM_ANTI_THIEF)) {
             send_to_char("Gonna be hard to "
-                    "sneak around in that!\n\r", ch); return; 
-        } 
-#endif        
+                    "sneak around in that!\n\r", ch); return;
+        }
+#endif
         if (HasWBits(ch, ITEM_HUM)) {
             send_to_char("Gonna be hard to sneak around with that thing "
                          "humming\n\r", ch);
@@ -675,25 +675,25 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
         }
     }
     send_to_char("Ok, you'll try to move silently for a while.\n\r", ch);
-    percent = number(1, 101);   
-    /* 
-     * 101% is a complete failure 
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
      */
     if (!ch->skills) {
         return;
     }
 #if 0
     if (percent > ch->skills[SKILL_SNEAK].learned +
-            dex_app_skill[GET_DEX(ch)].sneak) { 
-        LearnFromMistake(ch, SKILL_SNEAK, 1, 90); 
-        WAIT_STATE(ch, PULSE_VIOLENCE); return; 
-    } 
+            dex_app_skill[GET_DEX(ch)].sneak) {
+        LearnFromMistake(ch, SKILL_SNEAK, 1, 90);
+        WAIT_STATE(ch, PULSE_VIOLENCE); return;
+    }
 #endif
     if (IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
         send_to_char("You stop being sneaky!", ch);
-#if 0        
+#if 0
         affect_from_char(ch, SKILL_SNEAK);
-#endif        
+#endif
         REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
     } else {
         send_to_char("You start jumping from shadow to shadow.", ch);
@@ -702,13 +702,13 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
     }
 
 #if 0
-    af.type = SKILL_SNEAK; 
-    af.duration = GET_LEVEL(ch, BestThiefClass(ch)); 
-    af.modifier = 0; 
+    af.type = SKILL_SNEAK;
+    af.duration = GET_LEVEL(ch, BestThiefClass(ch));
+    af.modifier = 0;
     af.location = APPLY_NONE;
-    af.bitvector = AFF_SNEAK; 
-    affect_to_char(ch, &af); 
-    WAIT_STATE(ch, PULSE_VIOLENCE); 
+    af.bitvector = AFF_SNEAK;
+    affect_to_char(ch, &af);
+    WAIT_STATE(ch, PULSE_VIOLENCE);
 #endif
 }
 
@@ -729,7 +729,7 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
     if (IS_AFFECTED(ch, AFF_HIDE)) {
         REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
     }
-    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_BARBARIAN | 
+    if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_BARBARIAN |
                       CLASS_RANGER)) {
         send_to_char("You're not trained to hide!\n\r", ch);
         return;
@@ -747,9 +747,9 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
         send_to_char("Yeah... right... while mounted\n\r", ch);
         return;
     }
-    percent = number(1, 101);   
-    /* 
-     * 101% is a complete failure 
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
      */
     if (!ch->skills) {
         return;
@@ -826,13 +826,13 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * 101% is a complete failure 
+     * 101% is a complete failure
      */
     percent = number(1, 101) - dex_app_skill[GET_DEX(ch)].p_pocket;
 
     if (GET_POS(victim) < POSITION_SLEEPING || GetMaxLevel(ch) >= IMPLEMENTOR) {
-        /* 
-         * ALWAYS SUCCESS 
+        /*
+         * ALWAYS SUCCESS
          */
         percent = -1;
     }
@@ -840,9 +840,9 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
     percent += GET_AVE_LEVEL(victim);
 
     if (GetMaxLevel(victim) > MAX_MORT && GetMaxLevel(ch) < IMPLEMENTOR) {
-        percent = 101;          
-        /* 
-         * Failure 
+        percent = 101;
+        /*
+         * Failure
          */
     }
     if (str_cmp(obj_name, "coins") && str_cmp(obj_name, "gold")) {
@@ -861,11 +861,11 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                     TO_CHAR);
                 return;
             } else {
-                /* 
-                 * It is equipment 
+                /*
+                 * It is equipment
                  */
                 if ((GET_POS(victim) > POSITION_STUNNED)) {
-                    send_to_char("Steal the equipment now? Impossible!\n\r", 
+                    send_to_char("Steal the equipment now? Impossible!\n\r",
                                  ch);
                     return;
                 } else {
@@ -883,18 +883,18 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                     }
                 }
             }
-        } else {                
-            /* 
-             * obj found in inventory 
+        } else {
+            /*
+             * obj found in inventory
              */
             if (IS_OBJ_STAT(obj, ITEM_NODROP)) {
                 send_to_char("You can't steal it, it must be CURSED!\n\r", ch);
                 return;
             }
 
-            percent += GET_OBJ_WEIGHT(obj);     
-            /* 
-             * Make heavy harder 
+            percent += GET_OBJ_WEIGHT(obj);
+            /*
+             * Make heavy harder
              */
             if (AWAKE(victim) && percent > ch->skills[SKILL_STEAL].learned) {
                 ohoh = TRUE;
@@ -906,8 +906,8 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                 act("$n tries to steal something from $N.", TRUE, ch, 0,
                     victim, TO_NOTVICT);
             } else {
-                /* 
-                 * Steal the item 
+                /*
+                 * Steal the item
                  */
                 if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
                     if (IS_CARRYING_W(ch) + GET_OBJ_WEIGHT(obj) <
@@ -930,8 +930,8 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else {
-        /* 
-         * Steal some coins 
+        /*
+         * Steal some coins
          */
         if (AWAKE(victim) && (percent > ch->skills[SKILL_STEAL].learned)) {
             ohoh = TRUE;
@@ -950,7 +950,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                 TO_NOTVICT);
         } else {
             /*
-             * Steal some gold coins 
+             * Steal some gold coins
              */
             gold = (int) ((GET_GOLD(victim) * number(1, 10)) / 100);
             gold = MIN(number(1000, 2000), gold);
@@ -1002,7 +1002,7 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
     }
     for (; isspace(*arg); arg++) {
         /*
-         * Empty for loop
+         * Empty loop
          */
     }
     if (!arg) {
@@ -2254,16 +2254,16 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * skip whites 
+     * skip whites
      */
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
 
     if (!*argument) {
-        send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r", 
+        send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
         return;
     }
@@ -2293,11 +2293,11 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * skip whites 
+     * skip whites
      */
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
 
@@ -2330,11 +2330,11 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * skip whites 
+     * skip whites
      */
     for (; isspace(*argument); argument++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
 
@@ -2361,7 +2361,7 @@ void do_brief(struct char_data *ch, char *argument, int cmd)
 
     /*
      * for some reason mobs with a func keep setting themselves to brief
-     * mode -Lennya 
+     * mode -Lennya
      */
     if (IS_NPC(ch)) {
         return;
@@ -2500,9 +2500,9 @@ void do_group(struct char_data *ch, char *argument, int cmd)
             }
 
             for (f = k->followers; f; f = f->next) {
-                if (IS_AFFECTED(f->follower, AFF_GROUP) && 
-                    GET_MAX_HIT(f->follower) > 0 && 
-                    GET_MAX_MANA(f->follower) > 0 && 
+                if (IS_AFFECTED(f->follower, AFF_GROUP) &&
+                    GET_MAX_HIT(f->follower) > 0 &&
+                    GET_MAX_MANA(f->follower) > 0 &&
                     GET_MAX_MOVE(f->follower) > 0) {
                     sprintf(buf, "$c0014    %-15s             $c0011%s $c0006"
                             "HP:%2.0f%% MANA:%2.0f%% MV:%2.0f%%",
@@ -2524,7 +2524,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * ----- Start of the group all functions ----- 
+     * ----- Start of the group all functions -----
      */
     if (str_cmp(name, "self") == 0) {
         sprintf(name, "%s", GET_NAME(ch));
@@ -2538,7 +2538,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!IS_AFFECTED(ch, AFF_GROUP)) {
-            /* 
+            /*
              * If the leader is not grouped, group him...
              */
             SET_BIT(ch->specials.affected_by, AFF_GROUP);
@@ -2552,7 +2552,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
         for (f = ch->followers; f; f = f->next) {
             victim = f->follower;
             if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
-                /* 
+                /*
                  * Do not let mortals group imms
                  */
                 act("You really don't want $N in your group.", FALSE, ch,
@@ -2560,27 +2560,27 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             /*
-             * victim stronger?? 
+             * victim stronger??
              */
 #if 0
-            if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) { 
-                act("$N looks to be too strong to join you.", 
-                        FALSE, ch, 0, victim, TO_CHAR); 
-                return; 
-            } 
+            if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
+                act("$N looks to be too strong to join you.",
+                        FALSE, ch, 0, victim, TO_CHAR);
+                return;
+            }
 #endif
             /*
-             * your stronger?? 
+             * your stronger??
              */
 #if 0
-            if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) { 
-                act("$N looks to be too puny and week to join you.", 
-                        FALSE, ch, 0, victim, TO_CHAR); 
-                return; 
+            if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
+                act("$N looks to be too puny and week to join you.",
+                        FALSE, ch, 0, victim, TO_CHAR);
+                return;
             }
 #endif
             if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
-                /* 
+                /*
                  * Do not let imms group mortals
                  */
                 act("Now now.  That would be CHEATING!", FALSE, ch, 0, 0,
@@ -2589,7 +2589,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
             }
 
             if (!IS_AFFECTED(victim, AFF_GROUP)) {
-                /* 
+                /*
                  * If the follower isn't grouped, group him
                  */
                 act("$n is now a member of $N's group.", FALSE, victim, 0,
@@ -2604,7 +2604,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
 
         if (found) {
             /*
-             * set group name if not one 
+             * set group name if not one
              */
             if (!ch->master && !ch->specials.group_name && ch->followers) {
                 if (GET_CLAN(ch) > 1) {
@@ -2672,7 +2672,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 }
 
                 /*
-                 * victim stronger?? 
+                 * victim stronger??
                  */
                 if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
                     act("$N looks to be too strong to join you.", FALSE,
@@ -2681,7 +2681,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 }
 
                 /*
-                 * your stronger?? 
+                 * your stronger??
                  */
                 if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
                     act("$N looks to be too puny and week to join you.",
@@ -2704,7 +2704,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 REMOVE_BIT(victim->specials.affected_by2, AFF2_CON_ORDER);
 
                 /*
-                 * set group name if not one 
+                 * set group name if not one
                  */
                 if (!ch->master && !ch->specials.group_name && ch->followers) {
                     gnum = number(0, MAX_GNAME);
@@ -2730,14 +2730,14 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
     dlog("in do_group_name");
 
     /*
-     * check to see if this person is the master 
+     * check to see if this person is the master
      */
     if (ch->master || !IS_AFFECTED(ch, AFF_GROUP)) {
         send_to_char("You aren't the master of a group.\n\r", ch);
         return;
     }
     /*
-     * check to see at least 2 pcs in group 
+     * check to see at least 2 pcs in group
      */
     for (count = 0, f = ch->followers; f; f = f->next) {
         if (IS_AFFECTED(f->follower, AFF_GROUP) && IS_PC(f->follower)) {
@@ -2749,18 +2749,18 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
         return;
     }
     /*
-     * free the old ch->specials.group_name 
+     * free the old ch->specials.group_name
      */
     if (ch->specials.group_name) {
         free(ch->specials.group_name);
         ch->specials.group_name = 0;
     }
     /*
-     * set ch->specials.group_name to the argument 
+     * set ch->specials.group_name to the argument
      */
     for (; isspace(*arg); arg++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
 
@@ -2815,7 +2815,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * my stuff 
+     * my stuff
      */
     if (ch->specials.fighting &&
         number(1, 20) > ch->abilities.dex - ( equipped ? 0 : 4 ) ) {
@@ -2917,12 +2917,12 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
 
         /*
          * Multiple spells can still crash if they don't have the same
-         * spellinfo[i].target This will have to do for now -Lennya 
+         * spellinfo[i].target This will have to do for now -Lennya
          */
         spl = scroll->obj_flags.value[1];
 
         if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
-            if ((victim = get_char_room_vis(ch, buf2)) || 
+            if ((victim = get_char_room_vis(ch, buf2)) ||
                 str_cmp(GET_NAME(ch), buf2) == 0) {
                 if (str_cmp(GET_NAME(ch), buf2) == 0) {
                     victim = ch;
@@ -2983,7 +2983,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             }
         }
         /*
-         * name spells (?) 
+         * name spells (?)
          */
         if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
             obj = (void *) buf2;
@@ -2999,13 +2999,13 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             }
         }
         if (target_ok == 0) {
-            send_to_char("No such thing around to recite the scroll on.\n\r", 
+            send_to_char("No such thing around to recite the scroll on.\n\r",
                          ch);
             return;
         }
     } else {
         if (IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
-            send_to_char("You cannot recite this scroll upon yourself.\n\r", 
+            send_to_char("You cannot recite this scroll upon yourself.\n\r",
                          ch);
             return;
         } else {
@@ -3033,25 +3033,25 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         TO_CHAR);
 
     for (i = 1; i < 4; i++) {
-        if (scroll->obj_flags.value[0] > 0) {   
-            /* 
-             * spells for casting 
+        if (scroll->obj_flags.value[0] > 0) {
+            /*
+             * spells for casting
              */
             if (scroll->obj_flags.value[i] >= 1) {
                 if (!IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
                             target)) {
                     /*
-                     * this should keep 2nd and 3rd spells 
+                     * this should keep 2nd and 3rd spells
                      * from crashing with the wrong target
                      */
                     continue;
                 }
                 if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
-                           TAR_VIOLENT) && 
+                           TAR_VIOLENT) &&
                     check_peaceful(ch, "Impolite magic is banned here.")) {
                     continue;
                 }
-                if (check_nomagic(ch, 
+                if (check_nomagic(ch,
                                   "The magic is blocked by unknown forces.\n\r",
                                   "The magic dissolves powerlessly.\n\r")) {
                     continue;
@@ -3062,17 +3062,17 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             }
         } else {
             /*
-             * this is a learning scroll 
+             * this is a learning scroll
              */
-            if (scroll->obj_flags.value[0] < -30) {      
-                /* 
-                 * max learning is 30% 
+            if (scroll->obj_flags.value[0] < -30) {
+                /*
+                 * max learning is 30%
                  */
                 scroll->obj_flags.value[0] = -30;
             }
             if (scroll->obj_flags.value[i] > 0) {
-                /* 
-                 * positive learning 
+                /*
+                 * positive learning
                  */
                 if (ch->skills) {
                     if (ch->skills[scroll->obj_flags.value[i]].learned < 45) {
@@ -3081,21 +3081,21 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                     }
                 }
             } else {
-                /* 
-                 * negative learning (cursed) 
+                /*
+                 * negative learning (cursed)
                  */
                 if (scroll->obj_flags.value[i] < 0) {
-                    /* 
-                     * 0 = blank 
+                    /*
+                     * 0 = blank
                      */
                     if (ch->skills) {
-                        if (ch->skills[-scroll->obj_flags.value[i]].learned > 
+                        if (ch->skills[-scroll->obj_flags.value[i]].learned >
                             0) {
-                            ch->skills[-scroll->obj_flags.value[i]].learned += 
+                            ch->skills[-scroll->obj_flags.value[i]].learned +=
                                 scroll->obj_flags.value[0];
                         }
                         ch->skills[-scroll->obj_flags.value[i]].learned =
-                            MAX(0, 
+                            MAX(0,
                                 ch->skills[scroll->obj_flags.value[i]].learned);
                     }
                 }
@@ -3156,8 +3156,8 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         act("You tap $p three times on the ground.", FALSE, ch, stick, 0,
             TO_CHAR);
         if (stick->obj_flags.value[2] > 0) {
-            /* 
-             * Are there any charges left? 
+            /*
+             * Are there any charges left?
              */
             stick->obj_flags.value[2]--;
             if (check_nomagic(ch, "The magic is blocked by unknown forces.",
@@ -3176,7 +3176,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
             sprintf(buf2, "%s", GET_NAME(ch));
         }
         bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
-                                  FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, 
+                                  FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch,
                             &tmp_char, &tmp_object);
         if (bits) {
             spellp = spell_info + (stick->obj_flags.value[3]);
@@ -3207,27 +3207,27 @@ void do_use(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             if (stick->obj_flags.value[2] > 0) {
-                /* 
-                 * Are there any charges left? 
+                /*
+                 * Are there any charges left?
                  */
                 stick->obj_flags.value[2]--;
 
-                if (check_nomagic(ch, 
+                if (check_nomagic(ch,
                                   "The magic is blocked by unknown forces.",
                                   "The magic is blocked by unknown forces.")) {
                     return;
                 }
 
                 ((*spellp->spell_pointer)((byte) stick->obj_flags.value[0], ch,
-                                          "", SPELL_TYPE_WAND, tmp_char, 
+                                          "", SPELL_TYPE_WAND, tmp_char,
                                           tmp_object));
                 WAIT_STATE(ch, PULSE_VIOLENCE);
             } else {
                 send_to_char("The wand seems powerless.\n\r", ch);
             }
         } else if ((find_door(ch, buf2, buf3)) >= 0) {
-            /* 
-             * For when the arg is a door 
+            /*
+             * For when the arg is a door
              */
             spellp = spell_info + (stick->obj_flags.value[3]);
 
@@ -3239,12 +3239,12 @@ void do_use(struct char_data *ch, char *argument, int cmd)
                 return;
             }
             if (stick->obj_flags.value[2] > 0) {
-                /* 
-                 * Are there any charges left? 
+                /*
+                 * Are there any charges left?
                  */
                 stick->obj_flags.value[2]--;
 
-                if (check_nomagic(ch, 
+                if (check_nomagic(ch,
                                   "The magic is blocked by unknown forces.",
                                   "The magic is blocked by unknown forces.")) {
                     return;
@@ -3376,14 +3376,14 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
 
     if (cmd == 260) {
         for (; isspace(*arg); arg++) {
-            /* 
-             * Empty for loop 
+            /*
+             * Empty loop
              */
         }
 
-        if (!*arg) {            
-            /* 
-             * print list of current aliases 
+        if (!*arg) {
+            /*
+             * print list of current aliases
              */
             if (ch->specials.A_list) {
                 for (i = 0; i < 10; i++) {
@@ -3398,8 +3398,8 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
                 return;
             }
         } else {
-            /* 
-             * assign a particular alias 
+            /*
+             * assign a particular alias
              */
             if (!ch->specials.A_list) {
                 ch->specials.A_list = (Alias *) malloc(sizeof(Alias));
@@ -3419,11 +3419,11 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
                 GET_ALIAS(ch, num) = 0;
             }
             /*
-             * testing 
+             * testing
              */
-            p = strtok(0, " "); 
-            /* 
-             * get the command string 
+            p = strtok(0, " ");
+            /*
+             * get the command string
              */
             if (!p) {
                 send_to_char("Need to supply a command to alias, buddy\n\r",
@@ -3431,8 +3431,8 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
                 return;
             }
             p2 = strtok(p, " ");
-            /* 
-             * check the command, make sure its not an alias 
+            /*
+             * check the command, make sure its not an alias
              */
             if (!p2) {
                 send_to_char("Hmmmmm\n\r", ch);
@@ -3447,11 +3447,11 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
                 return;
             }
             /*
-             * verified.. now the copy. 
+             * verified.. now the copy.
              */
             if (strlen(p) <= 80) {
-                /* 
-                 * have to rebuild, because buf is full of nulls 
+                /*
+                 * have to rebuild, because buf is full of nulls
                  */
                 strcpy(buf2, arg);
                 p = strchr(buf2, ' ');
@@ -3464,12 +3464,12 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
                 return;
             }
         }
-    } else {                    
-        /* 
+    } else {
+        /*
          * execute this alias
-         * 260 = alias 
+         * 260 = alias
          */
-        num = cmd - 260;        
+        num = cmd - 260;
         if (num == 10) {
             num = 0;
         }
@@ -3633,10 +3633,10 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     argument = skip_spaces(argument);
 
     /*
-     * If there is no chars in argument 
+     * If there is no chars in argument
      */
     if (!(*argument)) {
-        send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r", 
+        send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r",
                      ch);
 
         sprintf(buf, "You can memorize one spell %d times, with a total of "
@@ -3650,9 +3650,9 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         for (i = 0; *spells[i] != '\n'; i++) {
             if (spell_info[i + 1].spell_pointer &&
                 (spell_info[i + 1].min_level_sorcerer <=
-                 GET_LEVEL(ch, SORCERER_LEVEL_IND)) && 
-                IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN) && 
-                IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN_SORCERER) && 
+                 GET_LEVEL(ch, SORCERER_LEVEL_IND)) &&
+                IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN) &&
+                IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN_SORCERER) &&
                 ch->skills[i + 1].nummem > 0) {
                 sprintf(buf, "[%d] %s %s",
                         spell_info[i + 1].min_level_sorcerer, spells[i],
@@ -3665,7 +3665,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
                     strcat(buf, temp);
                 }
                 strcat(buf, " \n\r");
-                if (strlen(buf) + strlen(buffer) > 
+                if (strlen(buf) + strlen(buffer) >
                         (MAX_STRING_LENGTH * 2) - 2) {
                     break;
                 }
@@ -3719,7 +3719,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 
         if (!IS_IMMORTAL(ch) &&
-            spell_info[spl].min_level_sorcerer > 
+            spell_info[spl].min_level_sorcerer >
             GET_LEVEL(ch, SORCERER_LEVEL_IND)) {
             send_to_char("Sorry, you do not have the skills for that "
                          "spell.\n\r", ch);
@@ -3727,7 +3727,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * Non-Sorcerer spell, cleric/druid or something else 
+         * Non-Sorcerer spell, cleric/druid or something else
          */
         if (spell_info[spl].min_level_sorcerer == 0) {
             send_to_char("Sorry, you do not have the skills for that "
@@ -3736,17 +3736,17 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * made it, lets memorize the spell! 
+         * made it, lets memorize the spell!
          */
         if (ch->skills[spl].nummem < 0) {
-            /* 
-             * should not happen 
+            /*
+             * should not happen
              */
             ch->skills[spl].nummem = 0;
         }
 
         /*
-         * players skill in the spell is the base for duration to memorize 
+         * players skill in the spell is the base for duration to memorize
          */
         diff = ch->skills[spl].learned;
         if (diff <= 10) {
@@ -3768,7 +3768,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * adjust directly for the level of the spell 
+         * adjust directly for the level of the spell
          */
         diff = spell_info[spl].min_level_magic;
         if (diff <= 5) {
@@ -3786,7 +3786,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * adjust for intelligence 
+         * adjust for intelligence
          */
         if (GET_INT(ch) >= 18) {
             duration -= 2;
@@ -3801,9 +3801,9 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * adjust for levels beyond min required for spell 
+         * adjust for levels beyond min required for spell
          */
-        diff = GET_LEVEL(ch, SORCERER_LEVEL_IND) - 
+        diff = GET_LEVEL(ch, SORCERER_LEVEL_IND) -
                spell_info[spl].min_level_sorcerer;
         if (diff >= 17) {
             duration -= 2;
@@ -3811,7 +3811,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
             duration -= 1;
         }
 #if 0
-        else if ( diff >= 5 ) { 
+        else if ( diff >= 5 ) {
             duration -=0;
         }
 #endif
@@ -3827,9 +3827,9 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
 
         af.type = SKILL_MEMORIZE;
         af.duration = duration;
-        af.modifier = spl;      
-        /* 
-         * index of spell being memorized. 
+        af.modifier = spl;
+        /*
+         * index of spell being memorized.
          */
         af.location = APPLY_NONE;
         af.bitvector = 0;
@@ -3855,8 +3855,8 @@ int TotalMaxCanMem(struct char_data *ch)
     if (OnlyClass(ch, CLASS_SORCERER)) {
         i = GET_LEVEL(ch, SORCERER_LEVEL_IND);
     } else {
-        /* 
-         * Multis get less spells 
+        /*
+         * Multis get less spells
          */
         i = (int) (GET_LEVEL(ch, SORCERER_LEVEL_IND) / HowManyClasses(ch) *
                    0.5);
@@ -3872,7 +3872,7 @@ int TotalMemorized(struct char_data *ch)
                     ii = 0;
 
     for (i = 0; i < MAX_SKILLS; i++) {
-        if (ch->skills[i].nummem && 
+        if (ch->skills[i].nummem &&
             IS_SET(ch->skills[i].flags, SKILL_KNOWN_SORCERER)) {
             ii += ch->skills[i].nummem;
         }
@@ -3900,7 +3900,7 @@ void check_memorize(struct char_data *ch, struct affected_type *af)
         }
 
         /*
-         * check for spellfail here .... 
+         * check for spellfail here ....
          */
 
         max = ch->specials.spellfail;
@@ -3909,7 +3909,7 @@ void check_memorize(struct char_data *ch, struct affected_type *af)
         max += GET_COND(ch, DRUNK) * 10;
 
         /*
-         * check EQ and alter spellfail accordingly 
+         * check EQ and alter spellfail accordingly
          */
         switch (BestMagicClass(ch)) {
         case MAGE_LEVEL_IND:
@@ -4010,55 +4010,55 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
     if (IS_AFFECTED2(ch, AFF2_QUEST)) {
         qcheck = 0;
         if (IS_IMMORTAL(ch)) {
-            /* 
-             * make him stop 
+            /*
+             * make him stop
              */
             REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
 
-            /* 
-             * see if another visible imm sports a qflag 
+            /*
+             * see if another visible imm sports a qflag
              */
-            for (i = descriptor_list; i; i = i->next) { 
-                if (i->character && !i->connected && 
+            for (i = descriptor_list; i; i = i->next) {
+                if (i->character && !i->connected &&
                     IS_IMMORTAL(i->character) &&
                     IS_AFFECTED2(i->character, AFF2_QUEST) &&
                     i->character->invis_level < 51) {
-                    /* 
-                     * there is, just stop questing 
+                    /*
+                     * there is, just stop questing
                      */
                     qcheck = 1;
                 }
             }
 
             if (qcheck) {
-                /* 
-                 * just stop 
+                /*
+                 * just stop
                  */
                 act("$n stops questing.", TRUE, ch, 0, 0, TO_ROOM);
                 act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
             } else {
                 act("You end the quest.", TRUE, ch, 0, 0, TO_CHAR);
 
-                /* 
-                 * make all morts stop questing too 
+                /*
+                 * make all morts stop questing too
                  */
                 for (i = descriptor_list; i; i = i->next) {
-                    if (i->character && !i->connected && 
+                    if (i->character && !i->connected &&
                         !IS_IMMORTAL(i->character) &&
                         IS_AFFECTED2(i->character, AFF2_QUEST)) {
                         /*
-                         * there is, just stop questing 
+                         * there is, just stop questing
                          */
                         tmp = i->character;
-                        act("$N has ended the quest.", TRUE, tmp, 0, ch, 
+                        act("$N has ended the quest.", TRUE, tmp, 0, ch,
                             TO_CHAR);
                         REMOVE_BIT(tmp->specials.affected_by2, AFF2_QUEST);
                     }
                 }
             }
         } else {
-            /* 
-             * not an imm 
+            /*
+             * not an imm
              */
             act("$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
             act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
@@ -4067,14 +4067,14 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
     } else {
         qcheck = 0;
         /*
-         * imms can always go into questy mode 
+         * imms can always go into questy mode
          */
         if (IS_IMMORTAL(ch)) {
             act("$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
             sprintf(buf, "%s started a quest.\n\r", GET_NAME(ch));
 
-            /* 
-             * quest log this 
+            /*
+             * quest log this
              */
             qlog(buf);
             act("The need to run a quest courses through your veins!",
@@ -4082,19 +4082,19 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
             SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
         } else {
             /*
-             * see if there's a connected, questy imm 
+             * see if there's a connected, questy imm
              */
             for (i = descriptor_list; i; i = i->next) {
-                if (i->character && CAN_SEE(ch, i->character) && 
-                    !i->connected && IS_IMMORTAL(i->character) && 
+                if (i->character && CAN_SEE(ch, i->character) &&
+                    !i->connected && IS_IMMORTAL(i->character) &&
                     IS_AFFECTED2(i->character, AFF2_QUEST)) {
                     qcheck = 1;
                 }
             }
 
-            if (qcheck) {       
-                /* 
-                 * there is 
+            if (qcheck) {
+                /*
+                 * there is
                  */
                 act("$n joins the quest!", TRUE, ch, 0, 0, TO_ROOM);
                 sprintf(buf, "%s just joined the quest.\n\r", GET_NAME(ch));
@@ -4103,10 +4103,10 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
                     TO_CHAR);
                 SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
             } else {
-                /* 
-                 * there isn't 
+                /*
+                 * there isn't
                  */
-                act("You cannot embark on a quest without Divine Guidance.", 
+                act("You cannot embark on a quest without Divine Guidance.",
                     TRUE, ch, 0, 0, TO_CHAR);
             }
         }
@@ -4119,27 +4119,27 @@ void do_flag_status(struct char_data *ch, char *argument, int cmd)
 #if 0
     ch_printf("AFK [%s] ANSI [%s]\n\r" ,(IS_AFFECTED2(ch,AFF2_AFK) ?
         "X" : " "),(IS_SET(ch->player.user_flags, USE_ANSI) ? "X":" ") );
-      
+
     ch_printf("%15s [%s] %15s [%s]\n\r"
         ,"Wimpy",(IS_SET(ch->specials.act, PLR_WIMPY) ? "X" : " "), "Zone "
         "Sounds",(IS_SET(ch->specials.act, ZONE_SOUNDS) ? "X":" ") );
-      
+
     ch_printf("%15s [%s] %15s [%s]\n\r"
         ,"Cloaked",(IS_SET(ch->specials.act, CLOAKED) ? "X" : " "),
         "Private",(IS_SET(ch->specials.act, CHAR_PRIVATE) ? "X":" ") );
-      
+
     send_to_char("Auto settings.",ch);
-      
+
     ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
         "Assist",(IS_SET(ch->specials.act, PLR_AUTOASSIST) ? "X" : " "),
         "Auto Split",(IS_SET(ch->specials.act, PLR_AUTOSPLIT) ? "X":" ") );
-      
+
     ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
         "Exit",(IS_SET(ch->specials.act, PLR_AUTOEXIT) ? "X" : " "), "Auto "
         "Loot",(IS_SET(ch->specials.act, PLR_AUTOLOOT) ? "X":" ") );
-     
+
     ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
-            "Gold",(IS_SET(ch->specials.act, PLR_AUTOGOLD) ? "X" : " "), 
+            "Gold",(IS_SET(ch->specials.act, PLR_AUTOGOLD) ? "X" : " "),
             "Auto Sac",(IS_SET(ch->specials.act, PLR_AUTOSAC) ? "X":" ") );
 #endif
 }
@@ -4264,17 +4264,17 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * get rid of annoying carriage returns -Lennya 
+     * get rid of annoying carriage returns -Lennya
      */
-    while (field[strlen(field) - 1] == '\r' || 
-           field[strlen(field) - 1] == '\n' || 
+    while (field[strlen(field) - 1] == '\r' ||
+           field[strlen(field) - 1] == '\n' ||
            field[strlen(field) - 1] == ' ') {
         field[strlen(field) - 1] = '\0';
     }
 
     if (!strcmp(type, "sound")) {
-        /* 
-         * turn ansi stuff ON/OFF 
+        /*
+         * turn ansi stuff ON/OFF
          */
         if (is_abbrev(field, "enable")) {
             send_to_char("Sound and Music enabled.\n\r", ch);
@@ -4286,8 +4286,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "private")) {
-        /* 
-         * turn ansi stuff ON/OFF 
+        /*
+         * turn ansi stuff ON/OFF
          */
         if (is_abbrev(field, "enable")) {
             send_to_char("Private flag enabled.\n\r", ch);
@@ -4299,8 +4299,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "ansi") || !strcmp(type, "color")) {
-        /* 
-         * turn ansi stuff ON/OFF 
+        /*
+         * turn ansi stuff ON/OFF
          */
         if (is_abbrev(field, "enable")) {
             send_to_char("Setting ansi colors enabled.\n\r", ch);
@@ -4312,8 +4312,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "oldcolors") || !strcmp(type, "oldschool")) {
-        /* 
-         * turn ansi stuff ON/OFF 
+        /*
+         * turn ansi stuff ON/OFF
          */
         if (is_abbrev(field, "enable")) {
             send_to_char("Setting old style colors.\n\r", ch);
@@ -4325,8 +4325,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "pause")) {
-        /* 
-         * turn page mode ON/OFF 
+        /*
+         * turn page mode ON/OFF
          */
         if (strstr(field, "enable")) {
             send_to_char("Setting page pause mode enabled.\n\r", ch);
@@ -4415,7 +4415,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
     } else if (!strcmp(type, "email")) {
         if (*field) {
             /*
-             * set email to field 
+             * set email to field
              */
             if (ch->specials.email) {
                 free(ch->specials.email);
@@ -4467,7 +4467,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     dlog("in do_finger");
 
     argument = one_argument(argument, name);
-#if 0    
+#if 0
     skip_spaces(&argument);
 #endif
     if (!*name) {
@@ -4479,14 +4479,14 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     clear_char(finger);
 
     if (load_char(name, &tmp_store) > -1) {
-        /* 
-         * load actual char 
+        /*
+         * load actual char
          */
         temp = finger;
         store_to_char(&tmp_store, finger);
         load_char_extra(finger);
-        /* 
-         * Load Clan and email fields 
+        /*
+         * Load Clan and email fields
          */
 
         if (IS_NPC(finger)) {
@@ -4494,7 +4494,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
             return;
         }
         /*
-         * Display Character information 
+         * Display Character information
          */
         sprintf(buf, "        $c0008-=* $c000BAdventurer information $c0008"
                      "*=-\n\r");
@@ -4504,14 +4504,14 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
         i = get_char(name);
         /*
-         * Last time sited?? 
+         * Last time sited??
          */
-        if ((IS_IMMORTAL(finger) && !IS_IMMORTAL(ch)) || 
+        if ((IS_IMMORTAL(finger) && !IS_IMMORTAL(ch)) ||
             GetMaxLevel(finger) > GetMaxLevel(ch)) {
             sprintf(buf, "$c000BLast time sited       : $c0007Unknown\n\r");
         } else if (i && i->desc) {
-            /* 
-             * if there is a name, and a file descriptor 
+            /*
+             * if there is a name, and a file descriptor
              */
             sprintf(buf, "$c000BLast time sited       : $c0007Currently "
                     "Playing\n\r");
@@ -4522,7 +4522,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
 
         /*
-         * Display char email addy 
+         * Display char email addy
          */
         if (finger->specials.email == NULL) {
             sprintf(buf, "$c000BKnown message drop    : $c0007None\n\r");
@@ -4549,10 +4549,10 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "$c000BHostIP                : $c0007None");
             } else {
                 sprintf(buf, "$c000BHostIP                : $c0007%s", "None");
-#if 0                
-                ,finger->specials.hostip, 
+#if 0
+                ,finger->specials.hostip,
                 strlen(finger->specials.hostip));
-#endif            
+#endif
             }
             strcat(buf, "\n\r");
             send_to_char(buf, ch);
@@ -4572,23 +4572,23 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
                   finger->specials.a_kills, finger->specials.a_deaths);
 
         /*
-         * let's give em a ratio to keep working on 
+         * let's give em a ratio to keep working on
          */
         akills = finger->specials.a_kills;
         adeaths = finger->specials.a_deaths;
         ch_printf(ch, "$c000BArena ratio           : $c0007%3.0f%%\n\r",
-                  ((akills + adeaths) == 0) ? 0 : 
-                  (((float) akills / 
+                  ((akills + adeaths) == 0) ? 0 :
+                  (((float) akills /
                     ((int) (akills + adeaths))) * 100.0 + 0.5));
     } else {
-        /* 
-         * Else there is no character in char DB 
+        /*
+         * Else there is no character in char DB
          */
         send_to_char("Character not found!!\n\r", ch);
     }
 
-    /* 
-     * Ack.. dont' forget to free the char data of finger. 
+    /*
+     * Ack.. dont' forget to free the char data of finger.
      */
     free(finger);
 }
@@ -4631,7 +4631,7 @@ void do_plr_noooc(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can now hear the OOC channel again.\n\r", ch);
             REMOVE_BIT(ch->specials.act, PLR_NOOOC);
         } else {
-            send_to_char("From now on, you won't hear the OOC channel.\n\r", 
+            send_to_char("From now on, you won't hear the OOC channel.\n\r",
                          ch);
             SET_BIT(ch->specials.act, PLR_NOOOC);
         }
@@ -4702,7 +4702,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 
     only_argument(arg, name);
     ch2 = get_char(name);
-    
+
 
     if (!strcmp(name, GET_NAME(ch))) {
         send_to_char("Your already the leader of the group.\n\r", ch);
@@ -4737,19 +4737,19 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
         ch, 0, ch2, TO_VICT);
 
     /*
-     * Person to be promoted follows himself 
+     * Person to be promoted follows himself
      */
 #if 0
     stop_follower(ch2);
-#endif    
+#endif
     k = ch->followers;
 
     /*
      * There is a faster method in doing this.. This is just a temp. fix.
-     * Greg Hovey 
+     * Greg Hovey
      */
 
-    /* 
+    /*
      * takes all chars in group and adds it to an character array..
      */
     for (k = ch->followers; k; k = k->next) {
@@ -4763,7 +4763,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
             GET_NAME(ch2));
     for (x = 0; x < count; x++) {
         if (ch2 != c[x]) {
-            /* 
+            /*
              * display to each char wasn't going on..
              */
             act(buf, FALSE, c[x], 0, name, TO_CHAR);
@@ -4771,7 +4771,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 
         stop_follower_quiet(c[x]);
 
-        /* 
+        /*
          * add follower stuff..
          */
         c[x]->master = ch2;
@@ -4789,19 +4789,19 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
     k->next = ch2->followers;
     ch2->followers = k;
 
-    /* 
+    /*
      * dont know if this is very efficient but anyway..
      */
-    
-    /* 
+
+    /*
      * tell leader to follow themself
      */
     do_follow(ch2, GET_NAME(ch2), 91);
 
-    /* 
+    /*
      * and group all
      */
-    do_group(ch2, "all", 202);  
+    do_group(ch2, "all", 202);
 }
 
 void do_behead(struct char_data *ch, char *argument, int cmd)
@@ -4831,21 +4831,21 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
         send_to_char("Behead what?\n\r", ch);
         return;
     }
-    
+
     /*
      * Find Corpse
      */
-    if (!(j = get_obj_in_list_vis(ch, itemname, 
+    if (!(j = get_obj_in_list_vis(ch, itemname,
                                   real_roomp(ch->in_room)->contents))) {
         send_to_char("Where did that bloody corpse go?\n\r", ch);
         return;
     } else {
         /*
-         * affect[0] == race of corpse, affect[1] == level of corpse 
+         * affect[0] == race of corpse, affect[1] == level of corpse
          */
         if (j->affected[0].modifier != 0 && j->affected[1].modifier != 0) {
             /*
-             * item not a corpse if v3 = 0 
+             * item not a corpse if v3 = 0
              */
             if (!IS_CORPSE(j)) {
                 send_to_char("Sorry, this is not a carcass.\n\r", ch);
@@ -4859,9 +4859,9 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
             }
 
             /*
-             * need to do weapon check.. 
+             * need to do weapon check..
              */
-            /* 
+            /*
              * obj_flags.value[value]
              */
             if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
@@ -4885,8 +4885,8 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
                     return;
 
                 }
-                obj_to_room(head, ch->in_room); 
-                /* 
+                obj_to_room(head, ch->in_room);
+                /*
                  * to room perhaps?
                  */
             }
@@ -4911,8 +4911,8 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
             sprintf(temp, "The head%s lies here.", buf);
             head->description = strdup(temp);
 
-            /* 
-             * make corpse unusable for another behead 
+            /*
+             * make corpse unusable for another behead
              */
             j->affected[1].modifier = 0;
 
@@ -4932,7 +4932,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
             act(buf, TRUE, ch, 0, 0, TO_ROOM);
             WAIT_STATE(ch, PULSE_VIOLENCE * 1);
         } else {
-            send_to_char("Sorry, the corpse is too mangled up to behead.\n\r", 
+            send_to_char("Sorry, the corpse is too mangled up to behead.\n\r",
                          ch);
         }
     }
@@ -4969,7 +4969,7 @@ void do_top10(struct char_data *ch, char *arg, int cmd)
     for (i = 0; i < top_of_p_table + 1; i++) {
         if (load_char((player_table + i)->name, &player) > -1) {
             /*
-             * store to a tmp char that we can deal with 
+             * store to a tmp char that we can deal with
              */
             CREATE(tmp, struct char_data, 1);
             clear_char(tmp);

@@ -1,6 +1,6 @@
 /*
  * DaleMUD v2.0 Released 2/1994 See license.doc for distribution terms.
- * DaleMUD is based on DIKUMUD 
+ * DaleMUD is based on DIKUMUD
  */
 
 #include <stdio.h>
@@ -10,7 +10,7 @@
 #include "protos.h"
 
 /*
- * extern variables 
+ * extern variables
  */
 
 extern struct descriptor_data *descriptor_list;
@@ -18,36 +18,36 @@ extern struct descriptor_data *descriptor_list;
 struct social_messg {
     int             act_nr;
     int             hide;
-    int             min_victim_position;        
-    /* 
-     * Position of victim 
+    int             min_victim_position;
+    /*
+     * Position of victim
      */
     /*
-     * No argument was supplied 
+     * No argument was supplied
      */
     char           *char_no_arg;
     char           *others_no_arg;
 
     /*
-     * An argument was there, and a victim was found 
+     * An argument was there, and a victim was found
      */
-    char           *char_found; 
-    /* 
-     * if NULL, read no further, ignore args 
+    char           *char_found;
+    /*
+     * if NULL, read no further, ignore args
      */
     char           *others_found;
     char           *vict_found;
     /*
-     * An argument was there, but no victim was found 
+     * An argument was there, but no victim was found
      */
     char           *not_found;
     /*
-     * The victim turned out to be the character 
+     * The victim turned out to be the character
      */
     char           *char_auto;
     char           *others_auto;
     /*
-     * For objects 
+     * For objects
      */
     char           *obj_you;
     char           *obj_other;
@@ -55,17 +55,17 @@ struct social_messg {
 }              *soc_mess_list = 0;
 
 struct pose_type {
-    int             level;      
-    /* 
-     * minimum level for poser 
+    int             level;
+    /*
+     * minimum level for poser
      */
-    char           *poser_msg[4];       
-    /* 
-     * message to poser 
+    char           *poser_msg[4];
+    /*
+     * message to poser
      */
-    char           *room_msg[4];        
-    /* 
-     * message to room 
+    char           *room_msg[4];
+    /*
+     * message to room
      */
 } pose_messages[MAX_MESSAGES];
 
@@ -116,20 +116,20 @@ void boot_social_messages()
         fscanf(fl, " %d \n", &min_pos);
 
         /*
-         * alloc a new cell 
+         * alloc a new cell
          */
         if (!soc_mess_list) {
             CREATE(soc_mess_list, struct social_messg, 1);
             list_top = 0;
         } else if (!(soc_mess_list = (struct social_messg *)
-                     realloc(soc_mess_list, 
+                     realloc(soc_mess_list,
                              sizeof(struct social_messg) * (++list_top + 1)))) {
             perror("boot_social_messages. realloc");
             exit(0);
         }
 
         /*
-         * read the stuff 
+         * read the stuff
          */
         soc_mess_list[list_top].act_nr = tmp;
         soc_mess_list[list_top].hide = hide;
@@ -141,11 +141,11 @@ void boot_social_messages()
         if(!soc_mess_list[list_top].char_found) {
             soc_mess_list[list_top].obj_you = fread_action(fl);
             soc_mess_list[list_top].obj_other = fread_action(fl);
-        } 
+        }
 #endif
 
         /*
-         * if no char_found, the rest is to be ignored 
+         * if no char_found, the rest is to be ignored
          */
         if (!soc_mess_list[list_top].char_found) {
             continue;
@@ -349,7 +349,7 @@ void do_pose(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_SET(ch->player.class, CLASS_MAGIC_USER | CLASS_CLERIC | 
+    if (!IS_SET(ch->player.class, CLASS_MAGIC_USER | CLASS_CLERIC |
                                   CLASS_WARRIOR | CLASS_THIEF)) {
         send_to_char("Sorry.. no pose messages for you yet\n", ch);
         return;
@@ -359,12 +359,12 @@ void do_pose(struct char_data *ch, char *argument, int cmd)
         class = number(0, OLD_MAX_CLASS - 1);
     } while ((lev = GET_LEVEL(ch, class)) < pose_messages[0].level);
 
-    for (counter = 0; 
-         pose_messages[counter].level < lev && 
-         pose_messages[counter].level > 0; 
+    for (counter = 0;
+         pose_messages[counter].level < lev &&
+         pose_messages[counter].level > 0;
          counter++) {
-        /* 
-         * Empty for loop 
+        /*
+         * Empty loop
          */
     }
     counter--;
@@ -423,34 +423,34 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
         *buf = '\0';
 
 #if 0
-    if(!*buf) { 
-        send_to_char("ooc %<Social name> <Person/object/noarg>.\n\r",ch); 
-        return; 
-    } 
+    if(!*buf) {
+        send_to_char("ooc %<Social name> <Person/object/noarg>.\n\r",ch);
+        return;
+    }
 #endif
 
     if (!*name) {
-        /* 
-         * No arguments 
+        /*
+         * No arguments
          */
 
         if (action->others_no_arg) {
             sprintf(buf2, "%s %s", command, action->others_no_arg);
             act(buf2, action->hide, ch, 0, 0, TO_CHAR);
             for (i = descriptor_list; i; i = i->next) {
-                if (i->character != ch && !i->connected && 
+                if (i->character != ch && !i->connected &&
                     (IS_NPC(i->character) ||
-                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                      !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                      !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                     !check_soundproof(i->character)) {
                     sprintf(buf2, "%s %s", command, action->others_no_arg);
                     act(buf2, action->hide, ch, 0, i->character, TO_VICT);
                 }
             }
         } else {
-            /* 
-             * need an argument for this one 
+            /*
+             * need an argument for this one
              */
             sprintf(buf2, "%s", action->char_no_arg);
             act(buf2, action->hide, ch, 0, 0, TO_CHAR);
@@ -464,11 +464,11 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
             act(buf2, action->hide, ch, objx, objx, TO_CHAR);
 
             for (i = descriptor_list; i; i = i->next) {
-                if (i->character != ch && !i->connected && 
+                if (i->character != ch && !i->connected &&
                     (IS_NPC(i->character) ||
-                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                      !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                      !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                     !check_soundproof(i->character)) {
                     sprintf(buf2, "%s %s\n\r", command, action->obj_other);
                     act2(buf2, action->hide, ch, objx, objx, i->character,
@@ -484,11 +484,11 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
         act(buf2, action->hide, ch, 0, 0, TO_CHAR);
 
         for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected && 
-                (IS_NPC(i->character) || 
-                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                  !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+            if (i->character != ch && !i->connected &&
+                (IS_NPC(i->character) ||
+                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                  !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                 !check_soundproof(i->character)) {
                 sprintf(buf2, "%s %s", command, action->others_auto);
                 act(buf2, action->hide, ch, 0, i->character, TO_VICT);
@@ -505,15 +505,15 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
             act(action->others_found, action->hide, ch, 0, vict, TO_NOTVICT);
 #endif
             for (i = descriptor_list; i; i = i->next) {
-                if (i->character != ch && !i->connected && 
-                    (IS_NPC(i->character) || 
-                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                      !IS_SET(i->character->specials.act, PLR_NOOOC) && 
-                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+                if (i->character != ch && !i->connected &&
+                    (IS_NPC(i->character) ||
+                     (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+                      !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+                      !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
                     !check_soundproof(i->character)) {
 #if 0
                     sprintf(buf2, "[OOC] %s \n\r", action->vict_found);
-#endif                    
+#endif
                     sprintf(buf2, "%s %s", command, action->others_found);
                     act2(buf2, action->hide, ch, 0, vict, i->character,
                          TO_VICT);

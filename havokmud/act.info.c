@@ -196,7 +196,7 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg)
      */
     for (; *(argument + begin) == ' '; begin++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -217,7 +217,7 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg)
      */
     for (; *(argument + begin) == ' '; begin++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -2867,7 +2867,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
     for (; isspace(*argument); argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -2982,7 +2982,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
     for (; isspace(*argument); argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -3203,7 +3203,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 
     for (; isspace(*argument); argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -4731,7 +4731,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
 
     for (; isspace(*argument); argument++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 
@@ -5788,7 +5788,7 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
 	}
     for (; isspace(*arg); arg++) {
 		/*
-		 * Empty for loop
+		 * Empty loop
 		 */
 	}
 

@@ -5,14 +5,14 @@
 #include "protos.h"
 
 /*
- * extern variables 
+ * extern variables
  */
 
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
 
 /*
- * extern functions 
+ * extern functions
  */
 
 struct obj_data *create_money(int amount);
@@ -20,11 +20,11 @@ char            getall(char *name, char *newname);
 int             getabunch(char *name, char *newname);
 
 /*
- * protos.h? 
+ * protos.h?
  */
 
 /*
- * procedures related to get 
+ * procedures related to get
  */
 void get(struct char_data *ch, struct obj_data *obj_object,
          struct obj_data *sub_object)
@@ -33,7 +33,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
     char            buf[MAX_INPUT_LENGTH + 80];
 
     /*
-     * check person to item ego 
+     * check person to item ego
      */
     if (CheckEgo(ch, obj_object) && CheckGetBarbarianOK(ch, obj_object)) {
         if (sub_object) {
@@ -61,20 +61,20 @@ void get(struct char_data *ch, struct obj_data *obj_object,
         if ((obj_object->obj_flags.type_flag == ITEM_MONEY) &&
             (obj_object->obj_flags.value[0] >= 1)) {
             obj_from_char(obj_object);
-            /* 
-             * don't notify if it's 1 coin or less 
+            /*
+             * don't notify if it's 1 coin or less
              */
-            if (obj_object->obj_flags.value[0] > 1) {   
+            if (obj_object->obj_flags.value[0] > 1) {
                 sprintf(buffer, "There was %s coins.\n\r",
                         formatNum(obj_object->obj_flags.value[0]));
                 send_to_char(buffer, ch);
             }
 
-            /* 
+            /*
              * don't split less than 1 coins
-             * and only try to split if you've got groupies 
+             * and only try to split if you've got groupies
              */
-            if (IS_SET(ch->specials.act, PLR_AUTOSPLIT) && 
+            if (IS_SET(ch->specials.act, PLR_AUTOSPLIT) &&
                 obj_object->obj_flags.value[0] > 1  &&
                 (ch->followers || ch->master)) {
                 sprintf(buffer, "%d", obj_object->obj_flags.value[0]);
@@ -83,7 +83,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
             } else {
                 GET_GOLD(ch) += obj_object->obj_flags.value[0];
             }
-            if (GET_GOLD(ch) > 500000 && 
+            if (GET_GOLD(ch) > 500000 &&
                 obj_object->obj_flags.value[0] > 100000) {
                 sprintf(buf, "%s just got %s coins", GET_NAME(ch),
                         formatNum(obj_object->obj_flags.value[0]));
@@ -116,43 +116,43 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     argument_interpreter(argument, arg1, arg2);
 
     /*
-     * get type 
+     * get type
      */
     if (!*arg1) {
         type = 0;
     }
 
-    if (*arg1 && !*arg2) {      
+    if (*arg1 && !*arg2) {
         if (!str_cmp(arg1, "all")) {
-            /* 
-             * plain "get all" 
+            /*
+             * plain "get all"
              */
             type = 1;
         } else {
-            /* 
-             * "get all.item" 
+            /*
+             * "get all.item"
              */
-            type = 2;           
+            type = 2;
         }
     }
 
     if (*arg1 && *arg2) {
         if (!str_cmp(arg1, "all")) {
             if (!str_cmp(arg2, "all")) {
-                /* 
-                 * "get all all" 
+                /*
+                 * "get all all"
                  */
                 type = 3;
             } else {
-                /* 
-                 * get all object 
+                /*
+                 * get all object
                  */
                 type = 4;
             }
         } else {
             if (!str_cmp(arg2, "all")) {
-                /* 
-                 * "get object all" 
+                /*
+                 * "get object all"
                  */
                 type = 5;
             } else {
@@ -163,14 +163,14 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 
     switch (type) {
         /*
-         * get 
+         * get
          */
     case 0:{
             send_to_char("Get what?\n\r", ch);
         }
         break;
         /*
-         * get all 
+         * get all
          */
     case 1:{
             sub_object = 0;
@@ -180,7 +180,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                  obj_object; obj_object = next_obj) {
                 next_obj = obj_object->next_content;
                 /*
-                 * check for a trap (traps fire often) 
+                 * check for a trap (traps fire often)
                  */
                 if (CheckForAnyTrap(ch, obj_object)) {
                     return;
@@ -220,7 +220,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
         break;
         /*
-         * get ??? (something) 
+         * get ??? (something)
          */
     case 2:{
             sub_object = 0;
@@ -237,7 +237,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
             }
 
             while (num != 0) {
-                obj_object = 
+                obj_object =
                     get_obj_in_list_vis(ch, arg1,
                                         real_roomp(ch->in_room)->contents);
                 if (obj_object) {
@@ -247,7 +247,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                         fail = TRUE;
                         num = 0;
                         /* no need for num and fail above I guess */
-                        return; 
+                        return;
                     }
 
                     if (CheckForGetTrap(ch, obj_object)) {
@@ -296,7 +296,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
         break;
         /*
-         * get all all 
+         * get all all
          */
 
     case 3:{
@@ -304,7 +304,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
         break;
         /*
-         * get all ??? 
+         * get all ???
          */
     case 4:{
             found = FALSE;
@@ -319,7 +319,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                     for (obj_object = sub_object->contains;
                          obj_object; obj_object = next_obj) {
                         /*
-                         * check for trap (jdb - 11/9) 
+                         * check for trap (jdb - 11/9)
                          */
                         if (CheckForGetTrap(ch, obj_object)) {
                             return;
@@ -327,7 +327,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                         next_obj = obj_object->next_content;
                         if (CAN_SEE_OBJ(ch, obj_object)) {
                             if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                                if (has || 
+                                if (has ||
                                     (IS_CARRYING_W(ch) +
                                      obj_object->obj_flags.weight) <
                                      CAN_CARRY_W(ch)) {
@@ -380,7 +380,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
         break;
         /*
-         * take ??? from ??? (is it??) 
+         * take ??? from ??? (is it??)
          */
 
     case 6:{
@@ -404,17 +404,17 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 
                     while (num != 0) {
 
-                        obj_object = 
+                        obj_object =
                             get_obj_in_list_vis(ch, arg1, sub_object->contains);
                         if (obj_object) {
                             /*
-                             * check for trap (jdb - 11/9) 
+                             * check for trap (jdb - 11/9)
                              */
                             if (CheckForInsideTrap(ch, sub_object)) {
                                 return;
                             }
                             if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-                                if (has || 
+                                if (has ||
                                     (IS_CARRYING_W(ch) +
                                      obj_object->obj_flags.weight) <
                                      CAN_CARRY_W(ch)) {
@@ -491,7 +491,10 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
     argument = one_argument(argument, arg);
     if (is_number(arg)) {
-        amount = advatoi(arg);  // atoi(arg);
+        amount = advatoi(arg);
+#if 0
+        atoi(arg);
+#endif
         argument = one_argument(argument, arg);
 
         if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0) {
@@ -519,7 +522,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         return;
     }
     /*
-     * else { only_argument(argument, arg); } 
+     * else { only_argument(argument, arg); }
      */
     if (*arg) {
         if (!str_cmp(arg, "all")) {
@@ -568,7 +571,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
             while (num != 0) {
                 tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
                 if (tmp_object) {
-                    if (!IS_SET(tmp_object->obj_flags.extra_flags, 
+                    if (!IS_SET(tmp_object->obj_flags.extra_flags,
                                 ITEM_NODROP)) {
                         sprintf(buffer, "You drop %s.\n\r",
                                 tmp_object->short_description);
@@ -676,7 +679,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                 send_to_char(buffer, ch);
                                 obj_from_char(tmp_object);
                                 if (sub_object->carried_by) {
-                                    IS_CARRYING_W(ch) += 
+                                    IS_CARRYING_W(ch) +=
                                         GET_OBJ_WEIGHT(tmp_object);
                                 }
                                 obj_to_obj(tmp_object, sub_object);
@@ -737,23 +740,23 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                         if (bits == FIND_OBJ_INV) {
                                             obj_from_char(obj_object);
                                             /*
-                                             * make up for above line 
+                                             * make up for above line
                                              */
                                             if (sub_object->carried_by) {
                                                 IS_CARRYING_W(ch) +=
                                                     GET_OBJ_WEIGHT(obj_object);
                                             }
                                             obj_to_obj(obj_object, sub_object);
-                                        } 
+                                        }
 #if 0
                                         else {
                                             /*
                                              * This isn't used
-                                             */ 
+                                             */
                                              obj_from_room(obj_object);
                                              obj_to_obj(obj_object,
-                                             sub_object); 
-                                             
+                                             sub_object);
+
                                         }
 #endif
                                         act("$n puts $p in $P", TRUE, ch,
@@ -761,7 +764,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                         num--;
                                     } else {
                                         if (singular(sub_object)) {
-                                            send_to_char("It won't fit.\n\r", 
+                                            send_to_char("It won't fit.\n\r",
                                                          ch);
                                         } else {
                                             send_to_char("They won't fit.\n\r",
@@ -838,22 +841,22 @@ void do_give(struct char_data *ch, char *argument, int cmd)
     argument = one_argument(argument, obj_name);
     obj = get_obj_in_list_vis(ch, obj_name, ch->carrying);
     /*
-     * sprintf(buf,"obj_name: %s",obj_name); 
+     * sprintf(buf,"obj_name: %s",obj_name);
      */
     if (!obj && is_number(obj_name)) {
         if (newstrlen(obj_name) >= 10) {
             obj_name[10] = '\0';
         }
-        amount = advatoi(obj_name);     
-        /* 
+        amount = advatoi(obj_name);
+        /*
          * atoi(obj_name);
          */
         argument = one_argument(argument, arg);
 
-        if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 && 
+        if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 &&
             str_cmp("gold", arg) != 0)
         {
-            send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r", 
+            send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r",
                          ch);
             return;
         }
@@ -862,7 +865,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             send_to_char("Sorry, you can't do that!\n\r", ch);
             return;
         }
-        if (GET_GOLD(ch) < amount && 
+        if (GET_GOLD(ch) < amount &&
             (IS_NPC(ch) || GetMaxLevel(ch) < DEMIGOD)) {
             send_to_char("You haven't got that many coins!\n\r", ch);
             return;
@@ -879,7 +882,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             send_to_char("To who?\n\r", ch);
             return;
         }
-        sprintf(buf, "You give %s gold coins to %s.\n\r", formatNum(amount), 
+        sprintf(buf, "You give %s gold coins to %s.\n\r", formatNum(amount),
                 PERS(vict, ch));
         send_to_char(buf, ch);
         sprintf(buf, "%s gives you %s gold coins.\n\r", PERS(ch, vict),
@@ -941,9 +944,9 @@ void do_give(struct char_data *ch, char *argument, int cmd)
                 return;
             }
 
-            /* 
+            /*
              * I hate it when I want to give stuff to mobiles/players and
-             * they cannot carry it -Lennya 
+             * they cannot carry it -Lennya
              */
             if (!IS_IMMORTAL(ch)) {
                 if ((IS_CARRYING_N(vict)) + 1 > CAN_CARRY_N(vict)) {
@@ -1020,8 +1023,8 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                 next_obj = tmp_object->next_content;
                 if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
                     obj_from_char(tmp_object);
-                    obj_to_room(tmp_object, ((number(0, 1) == 1)) ? 
-                                donations1 : 
+                    obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
+                                donations1 :
                                 donations2);
                     value += ((tmp_object->obj_flags.cost) * 10 / 100);
                     test = TRUE;
@@ -1077,8 +1080,8 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                         act("$p disappears from $n's hands!.", 1, ch,
                             tmp_object, 0, TO_ROOM);
                         obj_from_char(tmp_object);
-                        obj_to_room(tmp_object, ((number(0, 1) == 1)) ? 
-                                    donations1 : 
+                        obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
+                                    donations1 :
                                     donations2);
                         value += ((tmp_object->obj_flags.cost) * 10 / 100);
                     } else {
@@ -1106,7 +1109,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
 #if   NODUPLICATES
             do_save(ch, "", 0);
 #endif
-            /* 
+            /*
              * GET_GOLD(ch) += value;
              */
         }
