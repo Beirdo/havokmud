@@ -1771,10 +1771,30 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
             sprintf(buf, "%sFollowers are:", color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
-            for (fol = k->followers; fol; fol = fol->next) {
-                sprintf(buf, "%s    %s", color2, fol->follower->player.name);
+            if( k->followers ) {
+                for (fol = k->followers; fol; fol = fol->next) {
+                    sprintf(buf, "%s    %s", color2, 
+                                             fol->follower->player.name);
+                    act(buf, FALSE, ch, 0, 0, TO_CHAR);
+                }
+            } else {
+                sprintf(buf, "%s  None", color2 );
                 act(buf, FALSE, ch, 0, 0, TO_CHAR);
             }
+
+            /*
+             * Hates
+             */
+            sprintf(buf, "%sHates:  %s", color1, color2);
+            ShowHates(k, buf);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+            /*
+             * Fears
+             */
+            sprintf(buf, "%sFears:  %s", color1, color2);
+            ShowFears(k, buf);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
             /*
              * immunities

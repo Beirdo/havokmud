@@ -99,13 +99,12 @@ void mobile_wander(struct char_data *ch)
         if (GET_RACE(ch) == RACE_FISH) {
             rp = real_roomp(EXIT(ch, door)->to_room);
 
-            if (rp->sector_type == SECT_UNDERWATER ||
-                rp->sector_type == SECT_WATER_NOSWIM ||
-                rp->sector_type == SECT_WATER_SWIM) {
+            if (rp->sector_type != SECT_UNDERWATER &&
+                rp->sector_type != SECT_WATER_NOSWIM &&
+                rp->sector_type != SECT_WATER_SWIM) {
                 /*
-                 * then it is ok for the fish to wander there 
+                 * then it is not ok for the fish to wander there 
                  */
-            } else {
                 return;
             }
         }
@@ -303,7 +302,7 @@ void mobile_activity(struct char_data *ch)
     }
 
     /*
-     * darkraces have autodarkness -Lennya 20030604 
+     * darkraces have autodarkness
      */
     if (IsDarkrace(ch) && !affected_by_spell(ch, SPELL_GLOBE_DARKNESS) && 
         !IS_AFFECTED(ch, AFF_DARKNESS)) {
@@ -312,7 +311,7 @@ void mobile_activity(struct char_data *ch)
     }
 
     /*
-     * Make troll regen useful -Lennya 20030829 
+     * Make troll regen useful
      */
     if (GET_RACE(ch) == RACE_TROLL && GET_HIT(ch) < GET_MAX_HIT(ch)) {
         troll_regen(ch);
@@ -386,16 +385,14 @@ void mobile_activity(struct char_data *ch)
             return;
         }
 
+        if (IS_SET(ch->specials.act, ACT_PALADIN) &&
 #if 0
         /* 
          * Paladin special proc not completed 
          */
-        if (IS_SET(ch->specials.act, ACT_PALADIN) &&
             Paladin(ch, 0, "", ch, PULSE_TICK))
-#else
-        if (IS_SET(ch->specials.act, ACT_PALADIN) &&
-            fighter(ch, 0, "", ch, PULSE_TICK))
 #endif
+            fighter(ch, 0, "", ch, PULSE_TICK))
         {
             return;
         }
@@ -411,9 +408,6 @@ void mobile_activity(struct char_data *ch)
         }
     }
 
-    /*
-     * !no_special 
-     */
     /*
      * check to see if the monster is possessed 
      */

@@ -4068,6 +4068,9 @@ FILE           *OpenZoneFile(struct char_data *c, int zone);
 void            insert_object(struct obj_data *obj, long vnum);
 void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 
+void ShowHates(struct char_data *ch, char *buffer);
+void ShowFears(struct char_data *ch, char *buffer);
+
 #if defined( __CYGWIN__ )
 /* Since stupid cygwin doesn't define this in the standard place */
 char *crypt(const char *key, const char *salt);
