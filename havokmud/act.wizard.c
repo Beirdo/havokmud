@@ -1025,19 +1025,62 @@ dlog("in do_echo");
 void do_system(struct char_data *ch, char *argument, int cmd)
 {
 	int i;
-	char buf[256];
+	char buf[2256];
 
 dlog("in do_system");
 
 	if (IS_NPC(ch))
 		return;
 
+
+
 	for (i = 0; *(argument + i) == ' '; i++);
 
 	if (!*(argument + i))
-		send_to_char("That must be a mistake...\n\r", ch);
+		send_to_char("That must be a mistake...\n\rTry arguments 1-8 (Info, Ann, Upd, sys, warn, reb, wel, note)\n\r", ch);
 	else    {
-		sprintf(buf,"%s\n\r", argument + i);
+
+		switch(argument[0]) {
+
+			case '1':
+				argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RINFO$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '2':
+				argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RANNOUNCEMENT$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '3':
+		    	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RUPDATE$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '4':
+		    	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RSYSTEM$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '5':
+		    	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RWARNING$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '6':
+		    	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RREBOOT$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+	    	case '7':
+			   	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RWELCOME$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+			case '8':
+			   	argument++;//Remove the number..
+				sprintf(buf,"$c000Y-=$c000RNOTE$c000Y=-$c000C %s\n\r$c000w", argument);
+				break;
+
+	    	default:
+	       		sprintf(buf,"%s\n\r", argument + i);
+				break;
+
+		}
+
 		send_to_all(buf);
 	}
 }

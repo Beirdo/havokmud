@@ -2872,8 +2872,16 @@ char *PrintTitle(struct char_data *person,char type) {
 		   sprintf (buffer, "%s [I:%d]", GET_NAME(person),person->invis_level);
 		   return buffer;
 
+		case 'q':
+		  sprintf(buffer,"%s ->Quest points[%d]", GET_NAME(person), person->player.q_points);
+		  return buffer;
+		case 'p':
+		   sprintf (buffer, "%s ->PowerLevel:[%ld]", GET_NAME(person), CalcPowerLevel(person));
+		   return buffer;
+
+
 		default:
-			return GET_TITLE(person);
+			sprintf(buffer,"%s ", (person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
 
 	}
 }
@@ -2887,7 +2895,7 @@ char *PrintTitle(struct char_data *person,char type) {
   struct descriptor_data *d;
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
-  int count=0;
+  int count=0, temp=0;
 
 	char title[512];
 	int display=0;
@@ -2953,6 +2961,8 @@ argument = one_argument(argument,tbuf);
 			send_to_char("            -h    for hps/mana/moves\n\r",ch);
 			send_to_char("            -s    for stats\n\r",ch);
 			send_to_char("            -t    for title\n\r",ch);
+			send_to_char("            -q    for questpoints\n\r",ch);
+			send_to_char("            -p    for powerlevel\n\r",ch);
 			send_to_char("            -v    for visibility level\n\r\n\r",ch);
 			ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",color, total_connections);
 			ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",color, total_max_players);
@@ -2963,6 +2973,10 @@ argument = one_argument(argument,tbuf);
 	} else
 		type='t';
 
+	if(tbuf[0]!='-' && tbuf && tbuf[0]!=' ' && tbuf[0]!='\0') {
+		temp=1;
+		ch_printf(ch,"$c000WPartial name search for $c000Y%s.\n\r",tbuf);
+	}
 	for (d = descriptor_list; d; d = d->next) {
 		person=(d->original?d->original:d->character);
 		if(person) {
@@ -2980,7 +2994,17 @@ argument = one_argument(argument,tbuf);
 										count++;
 									}
 								}
-							} else {
+							} else if(temp==1) { /* partial name?? */
+								if(isname2(tbuf, GET_NAME(person))) {
+									if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
+										ch_printf(ch,"$c000w%-25s %s"," ",  (person->player.title?person->player.title:GET_NAME(person)));
+										if (GetMaxLevel(ch) >= LOW_IMMORTAL)
+											ch_printf(ch," [%ld]", person->in_room);
+										send_to_char("\n\r",ch);
+										count++;
+									}
+								}
+							}else {
 								/*Get mortal class titles */
 								if(!IS_IMMORTAL(person)) {
 										sprintf(classes,"");
@@ -3027,6 +3051,9 @@ argument = one_argument(argument,tbuf);
 			}
 		}
 	}
+
+	if (count==0)
+	    ch_printf(ch,"\n\r $c000W No visible characters found!!\n\r");
 
 	/* Print the different groups*/
 	if(cmd!=234) { /* If its a whozone.. don't show groups */
