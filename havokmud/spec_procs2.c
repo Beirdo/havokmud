@@ -1557,6 +1557,32 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	if (!vict)
 		return(FALSE);
 
+	if(vict == ch) {
+		log("victim same as char");
+		return(FALSE);
+	}
+
+	if(!vict->in_room) {
+		log("vict not in room");
+		return(FALSE);
+	}
+
+	if(!real_roomp(vict->in_room)) {
+		log("vict in bad room");
+		return(FALSE);
+	}
+
+	if(vict->in_room != ch->in_room) {
+		log("ch and vict in different rooms");
+		return(FALSE);
+	}
+
+	if(GET_POS(vict) <= POSITION_DEAD) {
+		log("trying to cast a spell on dead victim");
+		return(FALSE);
+	}
+
+
 	if (number(1,9)>3) {
 		/* pester them */
 		if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) && (number(0,4)==0)) {
