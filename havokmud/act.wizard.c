@@ -89,9 +89,19 @@ extern char    *AttackType[];
 
 void            update_pos(struct char_data *victim);
 /* Function declaration for the zonesummary commands */
-int linker(struct char_data *ch, int room);
-int mobstats(struct char_data *ch, int room);
+int list_zone_exits_in_room(struct char_data *ch, int room);
+int list_average_mob_power_in_room(struct char_data *ch, int room);
 long CalcPowerLevel(struct char_data *ch);
+/* Function declaration for the do_show functions */
+int do_show_rooms(struct char_data *ch, char *zonenum);
+int do_show_objects_in_zone (struct char_data *ch, char *zonenum);
+int do_show_objects_name (struct char_data *ch, char *objname);
+int do_show_mobiles(struct char_data *ch, char *arg);
+int do_show_wearslot(struct char_data *ch, int wearslot);
+int do_show_itemtype(struct char_data *ch, int itemtype);
+int do_show_zone_summary(struct char_data *ch, char *zonenum);
+int do_show_report(struct char_data *ch, char *zonenum);
+int do_show_loadrates(struct char_data *ch, char *zonenum);
 
 
 void do_auth(struct char_data *ch, char *argument, int cmd)
@@ -4444,386 +4454,578 @@ void show_room_zone(int rnum, struct room_data *rp,
     print_room(rnum, rp, srzs->sb);
 }
 
-void do_show(struct char_data *ch, char *argument, int cmd)
+int show_zones(struct char_data *ch)
 {
-    int             i;
-    char            buf2[256],
-                    color[10];
-    char            temp1[128],
-                    temp2[128];
-
-    int             objn;
-    struct index_data *oi;
-
-    int             zone;
-    char            buf[MAX_STRING_LENGTH],
-                   *zonenum;
-    struct obj_data *obj;
-    struct index_data *which_i;
-    int             bottom = 0,
-                    top = 0,
-                    topi;
-    struct string_block sb;
-    struct zone_data *zd;
-    char           *mode;
-    int             wearslot = 0;
-    struct show_room_zone_struct srzs;
-    char           *arg1;
-
-    dlog("in do_show");
-
-    if (IS_NPC(ch)) {
-        return;
+    int     zone = 0,
+            bottom = 0;
+    struct  zone_data *zd;
+    struct  string_block sb;
+    char    *mode;
+    char    buf[MAX_STRING_LENGTH];
+    
+    if (!ch) {
+        return FALSE;
     }
-
-    argument = get_argument(argument, &arg1);
-    if( !arg1 ) {
-        send_to_char( "Show what?\n\r", ch );
-        return;
-    }
-
+    
     init_string_block(&sb);
+    append_to_string_block(&sb, "\n\r$c000R* Zone / name / lifespan / age / "
+                                "rooms / deinit / reset *$c000w\n\r\n\r");
 
-    if (is_abbrev(arg1, "zones")) {
-        append_to_string_block(&sb, "# Zone   name                        "
-                                    "        lifespan age     rooms     "
-                                    "deinit   reset\n\r");
-
-        for (zone = 0; zone <= top_of_zone_table; zone++) {
-            zd = zone_table + zone;
-            switch (zd->reset_mode) {
-            case 0:
-                mode = "never    never";
-                break;
-            case 1:
-                mode = "ifempty  ifempty";
-                break;
-            case 2:
-                mode = "ifempty  always";
-                break;
-            case 3:
-                mode = "closed   closed";
-                break;
-            case 128:
-                mode = "never    always";
-                break;
+    for (zone = 0; zone <= top_of_zone_table; zone++) {
+        zd = zone_table + zone;
+        switch (zd->reset_mode) {
+        case 0:
+            mode = " $c000RN   N$c000w";
+            break;
+        case 1:
+            mode = " $c000YI   I$c000w";
+            break;
+        case 2:
+            mode = " $c000YI   $c000WA$c000w";
+            break;
+        case 3:
+            mode = " $c000GC   C$c000w";
+            break;
+        case 128:
+            mode = " $c000RN   $c000WA$c000w";
+            break;
             default:
-                if (zd->reset_mode > 2) {
-                    if (IS_SET(zd->reset_mode, ZONE_ALWAYS))
-                        mode = "*never   *never";
-                    else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
-                        mode = "*ifempty *ifempty";
-                    else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
-                        mode = "*closed  *closed";
-                    else if (IS_SET(zd->reset_mode, ZONE_NODEINIT))
-                        mode = "*never   *always";
-                    else
-                        mode = "*never   *never";
-                } else {
-                    mode = "!unknown!";
-                }
+            if (zd->reset_mode > 2) {
+                if (IS_SET(zd->reset_mode, ZONE_ALWAYS))
+                    mode = "$c000R*N  *N$c000w";
+                else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
+                    mode = "$c000Y*I  *I$c000w";
+                else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
+                    mode = "$c000R*C  *C$c000w";
+                else if (IS_SET(zd->reset_mode, ZONE_NODEINIT))
+                    mode = "$c000R*N  $c000W*A$c000w";
+                else
+                    mode = "$c000R*N  *N$c000w";
+            } else {
+                mode = "!unknown!";
             }
-            sprintf(buf, "%4d %-40s %4dm %4dm %6d-%-6ld %s\n\r", zone,
-                    zd->name, zd->lifespan, zd->age, bottom, zd->top,
-                    mode);
+        }
+        sprintf(buf, "$c000Y%4d $c000W%-40s $c000Y%2d$c000Bm $c000W%2d$c000Bm "
+                     "$c000W%6d$c000B-$c000W%-6ld %s\n\r", zone, zd->name, 
+                zd->lifespan, zd->age, bottom, zd->top, mode);
+        
+        append_to_string_block(&sb, buf);
+        bottom = zd->top + 1;
+        
+        
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
+
+int do_show_rooms(struct char_data *ch, char *zonenum)
+{
+    int             zone = 0;
+    struct          show_room_zone_struct srzs;
+    struct          string_block sb;
+    char            buf[MAX_STRING_LENGTH];
+    
+    init_string_block(&sb);
+    zone = atoi(zonenum);
+    
+    if (zone < 0 || zone > top_of_zone_table) {
+        send_to_char("That is not a valid zone number!\n\r", ch);
+        return FALSE;
+    }
+    
+    append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
+
+    if (is_abbrev(zonenum, "$c000Rdeath")) {
+#ifdef HASH
+        hash_iterate(&room_db, print_death_room, &sb);
+#else
+        room_iterate(room_db, print_death_room, &sb);
+#endif
+    } else if (is_abbrev(zonenum, "private")) {
+#ifdef HASH
+        hash_iterate(&room_db, print_private_room, &sb);
+#else
+        room_iterate(room_db, print_private_room, &sb);
+#endif
+    } else {
+        srzs.bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
+        srzs.top = zone_table[zone].top;
+        srzs.blank = 0;
+        srzs.sb = &sb;
+#ifdef HASH
+        hash_iterate(&room_db, show_room_zone, &srzs);
+#else
+        room_iterate(room_db, show_room_zone, &srzs);
+#endif
+        if (srzs.blank) {
+            sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank,
+                    srzs.lastblank);
             append_to_string_block(&sb, buf);
-            bottom = zd->top + 1;
+            srzs.blank = 0;
         }
-    } else if (is_abbrev(arg1, "objects")) {
-        which_i = obj_index;
-        topi = top_of_objt;
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
 
-        zonenum = skip_spaces(argument);
-        if( !zonenum ) {
-            send_to_char("What zone is that again?  I can't hear ya!\n\r", ch);
-            return;
+int do_show_objects_in_zone (struct char_data *ch, char *zonenum)
+{
+    struct      index_data      *oi,
+                                *which_i;
+    struct      obj_data        *obj;
+    struct      string_block    sb;
+    
+    char        buf     [MAX_STRING_LENGTH];
+    char        color   [10];
+    int         topi    = 0,
+                zone    = 0,
+                bottom  = 0,
+                top     = 0,
+                objn    = 0;
+    
+    
+    
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+    zone = atoi(zonenum);
+    
+    if (zone <= 0 || zone > top_of_zone_table) {
+        send_to_char("That is not a valid zone number.\n\r", ch);
+        return FALSE;
+    }
+    
+    bottom = zone_table[zone - 1].top + 1;
+    top = zone_table[zone].top;
+    append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
+    
+    for (objn = 0; objn < topi; objn++) {
+        oi = which_i + objn;
+        if (oi->virtual < bottom || oi->virtual > top) {
+            continue;
         }
-
-        if( isdigit((int)*zonenum) ) {
-            zone = atoi( zonenum );
-            if (zone <= 0 || zone > top_of_zone_table) {
-                send_to_char("That is not a valid zone_number\n\r", ch);
-                return;
+        obj = read_object(oi->virtual, VIRTUAL);
+        if (obj) {
+            if (eval(obj) < -5) {
+                sprintf(color, "%s", "$c0008");
+            } else if (eval(obj) < 20) {
+                sprintf(color, "%s", "");
+            } else {
+                sprintf(color, "%s", "$c000W");
             }
-            bottom = zone_table[zone - 1].top + 1;
-            top = zone_table[zone].top;
-        } else {
-            zone = -1;
-            /* Just so they are initialized */
-            bottom = zone_table[0].top + 1;
-            top = zone_table[1].top;
+            sprintf(buf, "$c000Y%5ld$c000w %4d %3d %s%7d   $c000w$c000W%s\n\r",
+                    oi->virtual, objn, (oi->number - 1), color,
+                    eval(obj), oi->name);
+            append_to_string_block(&sb, buf);
+            extract_obj(obj);
         }
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
 
+int do_show_objects_name (struct char_data *ch, char *objname)
+{
+    struct      index_data      *oi,
+                                *which_i;
+    struct      obj_data        *obj;
+    struct      string_block    sb;
+    char        buf     [MAX_STRING_LENGTH];
+    char        color   [10];
+    int         topi    = 0,
+                bottom  = 0,
+                top     = 0,
+                objn    = 0,
+                found   = 0;
+    
+    
+    
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+    bottom = zone_table[0].top + 1;
+    top = zone_table[1].top;
+    
+    append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
+    
+    for (objn = 0; objn < topi; objn++) {
+        oi = which_i + objn;
+        if (!isname(objname, oi->name)) {
+            if (objn == topi - 1 && found == 0) {
+                sprintf(buf, "\n\rNo \"%s\" found in object database.\n\r", 
+                        objname);
+                send_to_char(buf, ch);
+                return FALSE;
+            }
+            continue;
+        }
+        obj = read_object(oi->virtual, VIRTUAL);
+        if (obj) {
+            found = 1;
+            if (eval(obj) < -5) {
+                sprintf(color, "%s", "$c0008");
+            } else if (eval(obj) < 20) {
+                sprintf(color, "%s", "");
+            } else {
+                sprintf(color, "%s", "$c000W");
+            }
+            sprintf(buf, "$c000Y%5ld$c000w %4d %3d %s%7d   $c000w$c000W%s\n\r",
+                    oi->virtual, objn, (oi->number - 1), color,
+                    eval(obj), oi->name);
+            append_to_string_block(&sb, buf);
+            extract_obj(obj);
+        }
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
+
+int do_show_mobiles(struct char_data *ch, char *arg)
+{
+    
+    struct      index_data      *oi,
+                                *which_i;
+    struct      char_data       *mob;
+    struct      string_block    sb;
+    char        buf     [MAX_STRING_LENGTH];
+    int         topi    = 0,
+                bottom  = 0,
+                top     = 0,
+                mobn    = 0,
+                found   = 0,
+                zone    = -1;
+    
+    
+        
+    which_i = mob_index;
+    topi = top_of_mobt;
+    bottom = zone_table[0].top + 1;
+    top = zone_table[1].top;
+    init_string_block(&sb);
+    
+    if (isdigit((int)*arg)) {
+        zone = atoi(arg);
+        if (zone < 0 || zone > top_of_zone_table) {
+            send_to_char("That is not a valid zone_number\n\r",ch);
+            return FALSE;
+        }
+    }
+    
+    if (zone >= 0) {
+        bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
+        top = zone_table[zone].top;
+    }
+    
+    append_to_string_block(&sb, "VNUM  rnum count names\n\r");
+    
+    for (mobn = 0; mobn < topi; mobn++) {
+        oi = which_i + mobn;
+        if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
+            (zone < 0 && !isname(arg, oi->name))) {
+            if (mobn == topi - 1 && found == 0) {
+                if(isdigit((int)*arg)) {
+                    sprintf(buf, "\n\rNo mobiles found in zone %s.\n\r", 
+                            arg);
+                } else {
+                    sprintf(buf, "\n\rNo \"%s\" found in mobile database.\n\r",
+                            arg);
+                }
+                send_to_char(buf, ch);
+                return FALSE;
+            }
+            continue;
+        }
+        mob = read_mobile(oi->virtual, VIRTUAL);
+        
+        if (mob) {
+            found = 1;
+        }
+        extract_char(mob);
+        
+        sprintf(buf, "$c000Y%5ld$c000w %4d %3d  $c000W%s\n\r", 
+                oi->virtual, mobn, oi->number, oi->name);
+        append_to_string_block(&sb, buf);
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
+
+int do_show_wearslot(struct char_data *ch, int wearslot)
+{
+    struct  index_data      *oi,
+                            *which_i;
+    struct  obj_data        *obj;
+    struct  string_block    sb;
+    char    buf     [MAX_STRING_LENGTH];
+    char    color   [10];
+    int     topi    = 0,
+            objn    = 0;
+    
+    
+    
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+    
+    if (wearslot < 0) {
+        append_to_string_block(&sb, "Usage:\n\r"
+                                    "  show wearslot #\n\r"
+                                    "  Number ranging from  0   TAKE\n\r"
+                                    "                       1   FINGER\n\r"
+                                    "                       2   NECK\n\r"
+                                    "                       3   BODY\n\r"
+                                    "                       4   HEAD\n\r"
+                                    "                       5   LEGS\n\r"
+                                    "                       6   FEET\n\r"
+                                    "                       7   HANDS\n\r"
+                                    "                       8   ARMS\n\r"
+                                    "                       9   SHIELD\n\r");
+        append_to_string_block(&sb, "                      10   ABOUT\n\r"
+                                    "                      11   WAIST\n\r"
+                                    "                      12   WRIST\n\r"
+                                    "                      13   WIELD\n\r"
+                                    "                      14   HOLD\n\r"
+                                    "                      15   THROW\n\r"
+                                    "                      16   LIGHT-"
+                                    "SOURCE\n\r"
+                                    "                      17   BACK\n\r"
+                                    "                      18   EARS\n\r"
+                                    "                      19   EYES\n\r");
+    } else {
         append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
         for (objn = 0; objn < topi; objn++) {
             oi = which_i + objn;
-            if ((zone > 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
-                continue;
-            }
             obj = read_object(oi->virtual, VIRTUAL);
             if (obj) {
-                if (eval(obj) < -5) {
-                    sprintf(color, "%s", "$c0008");
-                } else if (eval(obj) < 20) {
-                    sprintf(color, "%s", "");
-                } else {
-                    sprintf(color, "%s", "$c000W");
+                if (IS_SET(obj->obj_flags.wear_flags,
+                           pc_num_class(wearslot))) {
+                    if (eval(obj) < -5) {
+                        sprintf(color, "%s", "$c0008");
+                    } else if (eval(obj) < 20) {
+                        sprintf(color, "%s", "");
+                    } else {
+                        sprintf(color, "%s", "$c000W");
+                    }
+                    sprintf(buf, "$c000Y%5ld$c000w %4d %3d %s%7d   "
+                                 "$c000W%s\n\r", oi->virtual, objn, 
+                            (oi->number - 1), color, eval(obj), oi->name);
+                    append_to_string_block(&sb, buf);
                 }
-
-                sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
-                        oi->virtual, objn, (oi->number - 1), color,
-                        eval(obj), oi->name);
-                append_to_string_block(&sb, buf);
                 extract_obj(obj);
             }
         }
-    } else if (is_abbrev(arg1, "wearslot") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
 
-        zonenum = skip_spaces(argument);
-        if (!zonenum || !(isdigit((int)*zonenum))) {
-            append_to_string_block(&sb, "Usage:\n\r"
-                                   "  show wearslot #\n\r"
-                                   "  Number ranging from  0   TAKE\n\r"
-                                   "                       1   FINGER\n\r"
-                                   "                       2   NECK\n\r"
-                                   "                       3   BODY\n\r"
-                                   "                       4   HEAD\n\r"
-                                   "                       5   LEGS\n\r"
-                                   "                       6   FEET\n\r"
-                                   "                       7   HANDS\n\r"
-                                   "                       8   ARMS\n\r"
-                                   "                       9   SHIELD\n\r");
-            append_to_string_block(&sb, "                      10   ABOUT\n\r"
-                                   "                      11   WAIST\n\r"
-                                   "                      12   WRIST\n\r"
-                                   "                      13   WIELD\n\r"
-                                   "                      14   HOLD\n\r"
-                                   "                      15   THROW\n\r"
-                                   "                      16   LIGHT-SOURCE\n\r"
-                                   "                      17   BACK\n\r"
-                                   "                      18   EARS\n\r"
-                                   "                      19   EYES\n\r");
-        } else {
-            wearslot = atoi(zonenum);
-            append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
-            for (objn = 0; objn < topi; objn++) {
-                oi = which_i + objn;
-                obj = read_object(oi->virtual, VIRTUAL);
-                if (obj) {
-                    if (IS_SET(obj->obj_flags.wear_flags,
-                               pc_num_class(wearslot))) {
-                        if (eval(obj) < -5) {
-                            sprintf(color, "%s", "$c0008");
-                        } else if (eval(obj) < 20) {
-                            sprintf(color, "%s", "");
-                        } else {
-                            sprintf(color, "%s", "$c000W");
-                        }
-                        sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
-                                oi->virtual, objn, (oi->number - 1), color,
-                                eval(obj), oi->name);
-                        append_to_string_block(&sb, buf);
-                    }
-                    extract_obj(obj);
-                }
-            }
-        }
-    } else if (is_abbrev(arg1, "itemtype") &&
-               (which_i = obj_index, topi = top_of_objt)) {
-        zonenum = skip_spaces(argument);
-        if (!zonenum || !(isdigit((int)*zonenum))) {
-            append_to_string_block(&sb, "Usage:\n\r"
-                                   "  show itemtype #\n\r"
-                                   "  Number ranging from  0   UNDEFINED\n\r"
-                                   "                       1   LIGHT SOURCE\n\r"
-                                   "                       2   SCROLL\n\r"
-                                   "                       3   WAND\n\r"
-                                   "                       4   STAFF\n\r"
-                                   "                       5   WEAPON\n\r"
-                                   "                       6   FIREWEAPON\n\r"
-                                   "                       7   MISSILE\n\r"
-                                   "                       8   TREASURE\n\r"
-                                   "                       9   ARMOR\n\r"
-                                   "                      10   POTION\n\r"
-                                   "                      11   WORN\n\r"
-                                   "                      12   OTHER\n\r");
-            append_to_string_block(&sb,
-                                   "                      13   THRASH\n\r"
-                                   "                      14   TRAP\n\r"
-                                   "                      15   CONTAINER\n\r"
-                                   "                      16   NOTE\n\r"
-                                   "                      17   LIQ "
-                                   "CONTAINER\n\r"
-                                   "                      18   KEY\n\r"
-                                   "                      19   FOOD\n\r"
-                                   "                      20   MONEY\n\r"
-                                   "                      21   PEN\n\r"
-                                   "                      22   BOAT\n\r"
-                                   "                      23   AUDIO\n\r"
-                                   "                      24   BOARD\n\r"
-                                   "                      25   TREE\n\r");
-            append_to_string_block(&sb,
-                                   "                      26   ROCK\n\r"
-                                   "                      27   PORTAL\n\r"
-                                   "                      28   INSTRUMENT\n\r");
-        } else {
-            wearslot = atoi(zonenum);
-            append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
-            for (objn = 0; objn < topi; objn++) {
-                oi = which_i + objn;
-                obj = read_object(oi->virtual, VIRTUAL);
-                if (obj) {
-                    if (ITEM_TYPE(obj) == wearslot) {
-                        if (eval(obj) < -5) {
-                            sprintf(color, "%s", "$c0008");
-                        } else if (eval(obj) < 20) {
-                            sprintf(color, "%s", "");
-                        } else {
-                            sprintf(color, "%s", "$c000W");
-                        }
-                        sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
-                                oi->virtual, objn, (oi->number - 1), color,
-                                eval(obj), oi->name);
-                        append_to_string_block(&sb, buf);
-                    }
-                    extract_obj(obj);
-                }
-            }
-        }
-    } else if (is_abbrev(arg1, "mobiles") &&
-               (which_i = mob_index, topi = top_of_mobt)) {
-        zonenum = skip_spaces(argument);
-        zone = -1;
+int do_show_itemtype(struct char_data *ch, int itemtype)
+{
+    struct  index_data      *oi,
+                            *which_i;
+    struct  obj_data        *obj;
+    struct  string_block    sb;
+    char    buf     [MAX_STRING_LENGTH];
+    char    color   [10];
+    int     topi    = 0,
+            objn    = 0;
 
-        if( zonenum && isdigit((int)*zonenum) ) {
-            zone = atoi(zonenum);
-            if (!zonenum || zone < 0 || zone > top_of_zone_table) {
-                send_to_char("That is not a valid zone_number\n\r",ch);
-                return;
-            }
-        }
-
-        if (zone >= 0) {
-            bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-            top = zone_table[zone].top;
-        }
-
-        append_to_string_block(&sb, "VNUM  rnum count names\n\r");
+    
+    
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+        
+    if (itemtype < 0) {
+        append_to_string_block(&sb, "Usage:\n\r"
+                                    "  show itemtype #\n\r"
+                                    "  Number ranging from  0   UNDEFINED\n\r"
+                                    "                       1   LIGHT-"
+                                    "SOURCE\n\r"
+                                    "                       2   SCROLL\n\r"
+                                    "                       3   WAND\n\r"
+                                    "                       4   STAFF\n\r"
+                                    "                       5   WEAPON\n\r"
+                                    "                       6   FIREWEAPON\n\r"
+                                    "                       7   MISSILE\n\r"
+                                    "                       8   TREASURE\n\r"
+                                    "                       9   ARMOR\n\r"
+                                    "                      10   POTION\n\r"
+                                    "                      11   WORN\n\r"
+                                    "                      12   OTHER\n\r");
+        append_to_string_block(&sb, "                      13   THRASH\n\r"
+                                    "                      14   TRAP\n\r"
+                                    "                      15   CONTAINER\n\r"
+                                    "                      16   NOTE\n\r"
+                                    "                      17   LIQ "
+                                    "CONTAINER\n\r"
+                                    "                      18   KEY\n\r"
+                                    "                      19   FOOD\n\r"
+                                    "                      20   MONEY\n\r"
+                                    "                      21   PEN\n\r"
+                                    "                      22   BOAT\n\r"
+                                    "                      23   AUDIO\n\r"
+                                    "                      24   BOARD\n\r"
+                                    "                      25   TREE\n\r");
+        append_to_string_block(&sb, "                      26   ROCK\n\r"
+                                    "                      27   PORTAL\n\r"
+                                    "                      28   "
+                                    "INSTRUMENT\n\r");
+    } else {
+        append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
         for (objn = 0; objn < topi; objn++) {
             oi = which_i + objn;
-            if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
-                continue;
-            }
-            /*
-             * optimize later
-             */
-            sprintf(buf, "%5ld %4d %3d  %s\n\r", oi->virtual, objn,
-                    oi->number, oi->name);
-            append_to_string_block(&sb, buf);
-        }
-    } else if (is_abbrev(arg1, "rooms")) {
-        zonenum = skip_spaces(argument);
-        zone = -1;
-
-        if( !zonenum ) {
-            send_to_char( "Show what rooms, silly?\n\r", ch );
-            return;
-        }
-
-        if( isdigit((int)*zonenum) ) {
-            zone = atoi(zonenum);
-        }
-
-        append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
-
-        if (is_abbrev(zonenum, "death")) {
-#ifdef HASH
-            hash_iterate(&room_db, print_death_room, &sb);
-#else
-            room_iterate(room_db, print_death_room, &sb);
-#endif
-        } else if (is_abbrev(zonenum, "private")) {
-#ifdef HASH
-            hash_iterate(&room_db, print_private_room, &sb);
-#else
-            room_iterate(room_db, print_private_room, &sb);
-#endif
-        } else if (zone < 0 || zone > top_of_zone_table) {
-            append_to_string_block(&sb, "I need a zone number with this "
-                                        "command\n\r");
-        } else {
-            srzs.bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-            srzs.top = zone_table[zone].top;
-            srzs.blank = 0;
-            srzs.sb = &sb;
-#ifdef HASH
-            hash_iterate(&room_db, show_room_zone, &srzs);
-#else
-            room_iterate(room_db, show_room_zone, &srzs);
-#endif
-            if (srzs.blank) {
-                sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank,
-                        srzs.lastblank);
-                append_to_string_block(&sb, buf);
-                srzs.blank = 0;
-            }
-        }
-    } else if ((is_abbrev(arg1, "report") &&
-             (which_i = obj_index, topi = top_of_objt)) ||
-             (is_abbrev(arg1, "stats") &&
-             (which_i = mob_index, topi = top_of_mobt))) {
-
-        if (GetMaxLevel(ch) < 56) {
-            send_to_char("Alas, the report option is only viewable for level "
-                         "56 and higher.\n\r", ch);
-            return;
-        }
-
-        zonenum = skip_spaces(argument);
-        zone = -1;
-        if( zonenum && isdigit((int)*zonenum) ) {
-            zone = atoi(zonenum);
-        }
-
-        if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
-            append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-            return;
-        }
-
-        bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-        top = zone_table[zone].top;
-
-        append_to_string_block(&sb, "VNUM  rnum count names\n\r");
-        for (objn = 0; objn < topi; objn++) {
-            oi = which_i + objn;
-            if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name)))
-                continue;
-            /*
-             * optimize later
-             */
             obj = read_object(oi->virtual, VIRTUAL);
             if (obj) {
-                sprintbit((unsigned) obj->obj_flags.wear_flags, wear_bits,
-                          temp1);
-                sprintbit((unsigned) obj->obj_flags.extra_flags, extra_bits,
-                          temp2);
-                if (oi->number - 1 != 0) {
+                if (ITEM_TYPE(obj) == itemtype) {
+                    if (eval(obj) < -5) {
+                        sprintf(color, "%s", "$c0008");
+                    } else if (eval(obj) < 20) {
+                        sprintf(color, "%s", "");
+                    } else {
+                        sprintf(color, "%s", "$c000W");
+                    }
+                    sprintf(buf, "$c000Y%5ld$c000w %4d %3d %s%7d  $c000W%s\n\r",
+                            oi->virtual, objn, (oi->number - 1), color,
+                            eval(obj), oi->name);
+                    append_to_string_block(&sb, buf);
+                }
+                extract_obj(obj);
+            }
+        }
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+} 
+
+int do_show_zone_summary(struct char_data *ch, char *zonenum)
+{
+    struct  index_data  *which_i;
+    struct  zone_data   *zd;
+    int     start       = 0, 
+            end         = 0,
+            counter     = 0,
+            counter2    = 0, 
+            x           = 0,
+            avg         = 0, 
+            temp        = 0,
+            zone        = -1,
+            topi        = 0;
+    
+        
+    which_i = obj_index;
+    topi = top_of_objt;
+
+    if( zonenum && isdigit((int)*zonenum) ) {
+        zone = atoi(zonenum);
+    }
+
+    if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
+        send_to_char("That is not a valid zone number\n\r", ch);
+        return FALSE;
+    }   
+    zd = zone_table + (zone - 1);
+    start = zd->top + 1;
+    zd = zone_table + zone;
+    end = zd->top;
+    
+    ch_printf(ch,"\n\rZone Summary:\n\r"
+                 "$c000BZone: $c000W%d $c000w($c000B%d-%d$c000w) %s\n\r",
+              zone, start, end, zd->name);
+
+    for (x = start; x <= end; x++) {
+        counter = counter + list_zone_exits_in_room(ch, x);
+        temp = list_average_mob_power_in_room(ch, x);
+        counter2 = counter2+temp;
+        if(temp != 0) {
+            avg++;
+        }
+    }
+    if (avg > 0 && counter2 > 0) {
+        ch_printf(ch,"$c000BAverage Powerlevel of the Mobs: $c000W%d$c000w\n\r",                  counter2/avg);
+    } else {
+        ch_printf(ch, "$c000RAverage Powerlevel unavailable for zone %d, "
+                      "init the zone.$c000w\n\r", zone);
+    }
+    if (counter == 0) {
+        ch_printf(ch,"No linker rooms found.\n\r");
+    }
+   return TRUE; 
+}
+
+int do_show_report(struct char_data *ch, char *zonenum)
+{
+    int     i = 0,
+            objn = 0,
+            zone = -1,
+            bottom = 0,
+            top = 0,
+            topi = 0;
+    char            buf2[256],
+                    temp1[128],
+                    temp2[128];
+    struct          index_data *oi;
+    char            buf[MAX_STRING_LENGTH];
+    struct          obj_data *obj;
+    struct          index_data *which_i;
+    struct          string_block sb;
+        
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+    
+    if (GetMaxLevel(ch) < 56) {
+        send_to_char("Alas, the report option is only viewable for level "
+                     "56 and higher.\n\r", ch);
+        return FALSE;
+    }
+    
+    if( zonenum && isdigit((int)*zonenum) ) {
+        zone = atoi(zonenum);
+    }
+
+    if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
+        send_to_char("That is not a valid zone number.\n\r", ch);
+        return FALSE;
+    }   
+
+    bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
+    top = zone_table[zone].top;
+
+    append_to_string_block(&sb, "VNUM  rnum count names\n\r");
+    for (objn = 0; objn < topi; objn++) {
+        oi = which_i + objn;
+        if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
+            (zone < 0 && !isname(zonenum, oi->name))) {
+            continue;
+        }
+            /*
+             * optimize later
+             */
+        obj = read_object(oi->virtual, VIRTUAL);
+        if (obj) {
+            sprintbit((unsigned) obj->obj_flags.wear_flags, wear_bits,
+                      temp1);
+            sprintbit((unsigned) obj->obj_flags.extra_flags, extra_bits,
+                      temp2);
+            if (oi->number - 1 != 0) {
                     /*
                      * VNUM; NAME; TYPE; FLAGS; Affect1; Affect2; Affect3;
                      * Affect4
                      */
-                    sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;",
-                            zone, oi->virtual,
-                            ((oi->number - 1 == 0) ? 0 : 1),
-                            obj->obj_flags.cost_per_day,
-                            oi->name, temp1, temp2);
-                    append_to_string_block(&sb, buf);
+                sprintf(buf, "%d;%ld;%d;%d;%s;%s;%s;", zone, oi->virtual,
+                        ((oi->number - 1 == 0) ? 0 : 1),
+                        obj->obj_flags.cost_per_day, oi->name, temp1, temp2);
+                append_to_string_block(&sb, buf);
 
-                    switch (GET_ITEM_TYPE(obj)) {
+                switch (GET_ITEM_TYPE(obj)) {
                     case ITEM_SCROLL:
                     case ITEM_POTION:
                         sprintf(buf, "Level %d:", obj->obj_flags.value[0]);
@@ -4874,14 +5076,14 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                         break;
                     default:
                         append_to_string_block(&sb, "None");
-                    }
-                    for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-                        append_to_string_block(&sb, ";");
-                        sprinttype(obj->affected[i].location, apply_types,
-                                   temp1);
-                        sprintf(buf, "%s ", temp1);
-                        append_to_string_block(&sb, buf);
-                        switch (obj->affected[i].location) {
+                }
+                for (i = 0; i < MAX_OBJ_AFFECT; i++) {
+                    append_to_string_block(&sb, ";");
+                    sprinttype(obj->affected[i].location, apply_types,
+                               temp1);
+                    sprintf(buf, "%s ", temp1);
+                    append_to_string_block(&sb, buf);
+                    switch (obj->affected[i].location) {
                         case APPLY_M_IMMUNE:
                         case APPLY_IMMUNE:
                         case APPLY_SUSC:
@@ -4935,59 +5137,186 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                             sprintf(buf2, "%ld",
                                     obj->affected[i].modifier);
                             break;
-                        }
-                        append_to_string_block(&sb, buf2);
                     }
-                    append_to_string_block(&sb, "\n\r");
+                    append_to_string_block(&sb, buf2);
                 }
-                extract_obj(obj);
-            }
-        }
-    } else if (is_abbrev(arg1, "maxxes") &&
-               (which_i = obj_index, topi = top_of_objt)) {
-        zonenum = skip_spaces(argument);
-        zone = -1;
-        if( zonenum && isdigit((int)*zonenum) ) {
-            zone = atoi(zonenum);
-        }
-
-        if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
-            append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-            return;
-        }
-
-        bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-        top = zone_table[zone].top;
-
-        append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
-        for (objn = 0; objn < topi; objn++) {
-            oi = which_i + objn;
-            if ((zone >= 0 &&
-                (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
-                continue;
-            }
-            /*
-             * optimize later
-             */
-            obj = read_object(oi->virtual, VIRTUAL);
-            if (obj && obj->max != 0) {
-                sprintf(buf, "%5ld %4d %3d/%3d  %s \n\r", oi->virtual,
-                        objn, oi->number - 1, obj->max, oi->name);
-                append_to_string_block(&sb, buf);
+                append_to_string_block(&sb, "\n\r");
             }
             extract_obj(obj);
         }
-        /*
-         * count brackets up to here.
-         */
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
+
+int do_show_loadrates(struct char_data *ch, char *zonenum)
+{
+    int     objn = 0,
+            zone = -1,
+            bottom = 0,
+            top = 0,
+            topi = 0;
+    
+    struct          index_data *oi;
+    char            buf[MAX_STRING_LENGTH];
+    struct          obj_data *obj;
+    struct          index_data *which_i;
+    struct          string_block sb;
+    
+    init_string_block(&sb);
+    which_i = obj_index;
+    topi = top_of_objt;
+    
+    if( zonenum && isdigit((int)*zonenum) ) {
+        zone = atoi(zonenum);
+    }
+
+    if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
+        send_to_char("That is not a valid zone_number\n\r", ch);
+        return FALSE;
+    }
+
+    bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
+    top = zone_table[zone].top;
+
+    append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
+    for (objn = 0; objn < topi; objn++) {
+        oi = which_i + objn;
+        if ((zone >= 0 &&
+            (oi->virtual < bottom || oi->virtual > top)) ||
+            (zone < 0 && !isname(zonenum, oi->name))) {
+            continue;
+        }
+            /*
+             * optimize later
+             */
+        obj = read_object(oi->virtual, VIRTUAL);
+        if (obj && obj->max != 0) {
+            sprintf(buf, "%5ld %4d %3d/%3d  %s \n\r", oi->virtual,
+                    objn, oi->number - 1, obj->max, oi->name);
+            append_to_string_block(&sb, buf);
+        }
+        extract_obj(obj);
+    }
+    page_string_block(&sb, ch);
+    destroy_string_block(&sb);
+    return TRUE;
+}
+
+void do_show(struct char_data *ch, char *argument, int cmd)
+{
+    int         wearslot = 0,
+                itemtype = 0;
+    char        *zonenum;
+    struct      string_block sb;
+    char        *arg1;
+    char        *arg2;
+    
+            
+    dlog("in do_show");
+
+    if (!ch || IS_NPC(ch)) {
+        return;
+    }
+
+    argument = get_argument(argument, &arg1);
+    
+    if( !arg1 ) {
+        send_to_char( "Show what?  Type \"show help\" for help.\n\r", ch );
+        return;
+    }
+
+    init_string_block(&sb);
+
+    if (is_abbrev(arg1, "zones")) {
+        show_zones(ch);
+    } else if (is_abbrev(arg1, "rooms")) {
+        arg2 = skip_spaces(argument);
+        if (arg2 && isdigit((int)*arg2)) {
+            do_show_rooms(ch, arg2);
+            return;
+        } else {
+            send_to_char ("You must provide a zone number with this "
+                          "command.\n\r", ch);
+            return;
+        } 
+    } else if (is_abbrev(arg1, "objects")) {
+        arg2 = skip_spaces(argument);
+        if (!arg2) {
+            send_to_char("You must provide a zone number, or (partial) "
+                         "object name with this command.\n\r", ch);
+            return;
+        } else if (isdigit((int)*arg2)) {
+            do_show_objects_in_zone(ch, arg2);
+            return;
+        } else {
+            do_show_objects_name(ch, arg2);
+            return;
+        }
+    } else if (is_abbrev(arg1, "wearslot")) {
+        arg2 = skip_spaces(argument);
+        if (!arg2 || !(isdigit((int)*arg2))) {
+            wearslot = -1;
+        } else {
+            wearslot = atoi(arg2);
+        }
+        do_show_wearslot(ch, wearslot);
+        return;
+    } else if (is_abbrev(arg1, "itemtype")) {
+        
+        arg2 = skip_spaces(argument);
+        if (!arg2 || !(isdigit((int)*arg2))) {
+            itemtype = -1;
+        } else {
+            itemtype = atoi(arg2);
+        }
+        do_show_itemtype(ch, itemtype);
+        return;
+    } else if (is_abbrev(arg1, "mobiles")) {
+        arg2 = skip_spaces(argument);
+        if (!arg2) {
+            send_to_char("You must provide a zone number, or (partial) "
+                         "object name with this command.\n\r", ch);
+            return;
+        } else {
+            do_show_mobiles(ch, arg2);
+            return;
+        }
+    } else if ((is_abbrev(arg1, "report")) || (is_abbrev(arg1, "stats"))) {
+        arg2 = skip_spaces(argument);
+        if (!arg2) {
+            send_to_char("You must provide a zone number.\n\r", ch);
+            return;
+        } else {
+            do_show_report(ch, arg2);
+            return;
+        }
+    } else if (is_abbrev(arg1, "summary")) {
+        zonenum = skip_spaces(argument);
+        if (!zonenum) {
+            send_to_char("You must provide a zone number.\n\r", ch);
+            return;
+        } else {
+            do_show_zone_summary(ch, zonenum);
+            return;
+        }
+    } else if (is_abbrev(arg1, "loadrates")) {
+        zonenum = skip_spaces(argument);
+        if (!zonenum) {
+            send_to_char("You must provide a zone number.\n\r", ch);
+            return;
+        } else {
+            do_show_loadrates(ch, zonenum);
+            return;
+        }
     } else {
         append_to_string_block(&sb, "Usage:\n\r"
                                "  show zones\n\r"
-                               "  show (objects|mobiles|maxxes) "
-                               "(zone#|name)\n\r"
+                               "  show (objects|mobiles) (zone#|name)\n\r"
                                "  show rooms (zone#|death|private)\n\r"
                                "  show itemtype (#)\n\r"
+                               "  show loadrate (zone#)\n\r"
                                "  show wearslot (#)\n\r");
         if (GetMaxLevel(ch) > 55) {
             append_to_string_block(&sb, "  show report (zone#)\n\r");
@@ -8377,74 +8706,41 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
 }
 
 
-#if 1
-
-/**
- ** zonesummary command will list the number of adjacent zones to a zone
- ** plus the average powerlevel to the mobs in the zone. (GH)
- **/
-void do_zonesummary(struct char_data *ch, char *argument, int cmd)
-{
-    struct zone_data *zd;
-    struct room_data *rm = 0;
-    int zone=0, start=0, end=0;
-    int counter=0,counter2=0, x=0;
-    int avg=0, temp=0;
-
-    rm = real_roomp(ch->in_room);
-    zone=rm->zone;
-
-    zd = zone_table + (zone - 1);
-    start= zd->top + 1;
-
-    zd=zone_table + zone;
-    end=zd->top;
-    ch_printf(ch,"\n\rZone Summary:");
-    ch_printf(ch,"\n\r$c000BZone: $c000W%d $c000w($c000B%d-%d$c000w) %s\n\r"
-                ,rm->zone, start,end, zd->name);
-
-    for (x=start;x <=end;x++) {
-        counter=counter+linker(ch, x);
-        temp=mobstats(ch,x);
-        counter2=counter2+temp;
-        if(temp!=0)
-            avg++;
-    }
-
-    ch_printf(ch,"$c000BAverage Powerlevel of the Mobs: $c000W%d$c000w\n\r"
-                ,counter2/avg);
-    if (counter==0)
-        ch_printf(ch,"No linker rooms found.\n\r");
-}
-
-/**
- ** List the exits of a room if it links to another zone (GH)
- **/
-int linker(struct char_data *ch, int room) {
-    struct room_data *rm = 0, *tmp = 0;
-    struct char_data *t;
-    int i, count = 0, mobcount = 0;
+/*
+ * List the exits of a room if it links to another zone (GH)
+ */
+int list_zone_exits_in_room(struct char_data *ch, int room) {
+    struct  room_data *rm = 0, 
+            *tmp = 0;
+    struct  char_data *t;
+    int     i, 
+            count = 0, 
+            mobcount = 0;
 
     rm = real_roomp(room);
-    if(!rm)
+    if(!rm) {
         return 0;
+    }
 
     for (i = 0; i <= 5; i++) {
         if (rm->dir_option[i]) {
             tmp = real_roomp(rm->dir_option[i]->to_room);
-            if(!tmp)
+            if(!tmp) {
                 return 0;
+            }
             if(rm->zone!=tmp->zone) {
                 ch_printf(ch,"$c000W- $c000w%d links to room %d"
-                             " (zone: %d).$c000w\n\r"
-                             ,rm->number, tmp->number, tmp->zone);
+                             " (zone: %d).$c000w\n\r", 
+                          rm->number, tmp->number, tmp->zone);
                 count++;
             }
         }
     }
 
     for (t = rm->people; t; t = t->next_in_room) {
-
+        /*
+         * Empty loop
+         */
     }
     if(rm->people) {
         mobcount++;
@@ -8452,35 +8748,34 @@ int linker(struct char_data *ch, int room) {
     return count;
 }
 
-/**
- **  Returns the average powerlevel of a mob in a certain room.(GH)
- **/
-int mobstats(struct char_data *ch, int room) {
-    struct room_data *rm = 0;
-    struct char_data *t;
-    int pwrlevel = 0, count=0;
+/*
+ *  Returns the average powerlevel of a mob in a certain room.(GH)
+ */
+int list_average_mob_power_in_room(struct char_data *ch, int room) {
+    struct  room_data *rm = 0;
+    struct  char_data *t;
+    int     pwrlevel = 0, 
+            count=0;
 
     rm = real_roomp(room);
-    if(!rm)
+    
+    if(!rm) {
         return 0;
+    }
 
     for (t = rm->people; t; t = t->next_in_room) {
-        pwrlevel=pwrlevel+CalcPowerLevel(t);
+        pwrlevel = pwrlevel + CalcPowerLevel(t);
         count++;
     }
 
 
-    if(count!=0) {
+    if(count != 0) {
         return pwrlevel/count;
     } else {
         return 0;
     }
 }
-/* Also, leave the vim comment at the bottom of the file, it's there for a
- * reason.
- */
 
-#endif
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
