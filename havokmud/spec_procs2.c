@@ -5976,9 +5976,6 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
   if (check_soundproof(ch)) return(FALSE);
 
-  if (IS_IMMORTAL(ch))
-    return(FALSE);
-
   guildmaster = FindMobInRoomWithFunction(ch->in_room, RangerGuildmaster);
 
   if (!guildmaster) return(FALSE);

@@ -219,6 +219,7 @@ struct QuestItem {
 #define ELEC_DAMAGE 3
 #define BLOW_DAMAGE 4
 #define ACID_DAMAGE 5
+#define FIRESHIELD  6
 
 #define HATE_SEX   1
 #define HATE_RACE  2

@@ -1537,7 +1537,8 @@ if (affected_by_spell(v,SPELL_ANTI_MAGIC_SHELL) && IsMagicSpell(type)) {
 
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
-  
+  int lev;  
+
   specdamage(ch,v);
 
   if (dam >= 0) {
@@ -1548,7 +1549,9 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
          !IS_AFFECTED(ch, AFF_FIRESHIELD))      {
         if(!saves_spell(ch, SAVING_SPELL-4))
           {BurnWings(ch);}
-	if (damage(v, ch, dam, SPELL_FIREBALL)) 	{
+	lev = GetMaxLevel(v);
+	dam = dice(1,6)+lev;
+	if (damage(v, ch, dam, SPELL_FIRESHIELD)) 	{
 	  if (GET_POS(ch) == POSITION_DEAD)
 	    return(TRUE);
 	}
@@ -3040,6 +3043,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 
   switch (type) {
   case SPELL_FIREBALL:
+  case SPELL_FIRESHIELD:
   case SPELL_METEOR_SWARM:
   case SPELL_BURNING_HANDS:
   case SPELL_FLAMESTRIKE:
@@ -3219,6 +3223,8 @@ void DamageAllStuff( struct char_data *ch, int dam_type)
      and damages the ones that should be damaged */
 
   /* equipment */
+
+  if (dam_type == FIRESHIELD) return;
 
   for (j = 0; j < MAX_WEAR; j++) {
     if (ch->equipment[j] && ch->equipment[j]->item_number>=0) {
@@ -3458,6 +3464,10 @@ int GetItemDamageType( int type)
 {
 
   switch(type) {
+  case SPELL_FIRESHIELD:
+    return(FIRESHIELD);
+    break;
+
   case SPELL_FIREBALL:
   case SPELL_METEOR_SWARM:
   case SPELL_FLAMESTRIKE:

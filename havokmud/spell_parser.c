@@ -143,8 +143,7 @@ void cast_detect_magic( byte level, struct char_data *ch, char *arg, int si, str
 void cast_detect_poison( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_dispel_evil( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_dispel_good( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_dispel_magic( byte level, struct char_data *ch, char *arg, int type,
-		       struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_dispel_magic( byte level, struct char_data *ch, char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_earthquake( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_enchant_weapon( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
 void cast_enchant_armor( byte level, struct char_data *ch, char *arg, int type,
