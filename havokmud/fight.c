@@ -3487,10 +3487,10 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   if (IS_SET(ch->susc, Our_Bit))
     dam <<= 1;
 
-  if (IS_SET(ch->immune, Our_Bit))
+  if (IS_SET(ch->immune, Our_Bit) && !IS_SET(ch->susc, Our_Bit)) /* Make suscept override resist */
     dam >>= 1;
 
-  if (IS_SET(ch->M_immune, Our_Bit))
+  if (IS_SET(ch->M_immune, Our_Bit)) /* immune overrides boths suspect and resist */
     dam = -1;
 
   return(dam);
@@ -3736,74 +3736,71 @@ int DamagedByAttack( struct obj_data *i, int dam_type)
 //monk check for damage???
 int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 {
-  int Immunity, total, j;
+	int Immunity, total, j;
 
-  Immunity = -1;
-  if (IS_SET(v->M_immune, IMM_NONMAG)) {
-    Immunity = 0;
-  }
-  if (IS_SET(v->M_immune, IMM_PLUS1)) {
-    Immunity = 1;
-  }
-  if (IS_SET(v->M_immune, IMM_PLUS2)) {
-    Immunity = 2;
-  }
-  if (IS_SET(v->M_immune, IMM_PLUS3)) {
-    Immunity = 3;
-  }
-  if (IS_SET(v->M_immune, IMM_PLUS4)) {
-    Immunity = 4;
-  }
-
-  if (Immunity < 0)
-    return(dam);
-
-  if ((type < TYPE_HIT) || (type > TYPE_STRIKE))
-  {
-    return(dam);
-  }
-  else
-  {
-    if (type == TYPE_HIT || IS_NPC(ch)) {
-  		if (GetMaxLevel(ch) > ((Immunity+1)*(Immunity+1))+6 ||
-     	((HasClass(ch,CLASS_BARBARIAN) || HasClass(ch,CLASS_MONK))  && BarbarianToHitMagicBonus(ch) >= Immunity)) {
-			return(dam);
-      }
-        else {
-
-		  act("$N ignores your puny attack", FALSE, ch, 0, v, TO_CHAR);
-		  return(0);
-      } /* was not TYPE_HIT or NPC */
-
-    } else
-    {
-      total = 0;
-   if (!ch->equipment[WIELD]) {
-		return(0);
+	Immunity = -1;
+	if (IS_SET(v->M_immune, IMM_NONMAG)) {
+		Immunity = 0;
 	}
-      for(j=0; j<MAX_OBJ_AFFECT; j++)
-		if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
-	    	(ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))  {
-	  		total += ch->equipment[WIELD]->affected[j].modifier;
+	if (IS_SET(v->M_immune, IMM_PLUS1)) {
+		Immunity = 1;
+	}
+	if (IS_SET(v->M_immune, IMM_PLUS2)) {
+		Immunity = 2;
+	}
+	if (IS_SET(v->M_immune, IMM_PLUS3)) {
+		Immunity = 3;
+	}
+	if (IS_SET(v->M_immune, IMM_PLUS4)) {
+		Immunity = 4;
+	}
+
+	if (Immunity < 0)
+		return(dam);
+
+	if ((type < TYPE_HIT) || (type > TYPE_STRIKE)) {
+		return(dam);
+	} else {
+		if (type == TYPE_HIT || IS_NPC(ch)) {
+			if (GetMaxLevel(ch) > ((Immunity+1)*(Immunity+1))+6 ||
+				((HasClass(ch,CLASS_BARBARIAN) || HasClass(ch,CLASS_MONK))  && BarbarianToHitMagicBonus(ch) >= Immunity)) {
+				return(dam);
+			} else {
+
+				act("$N ignores your puny attack", FALSE, ch, 0, v, TO_CHAR);
+				return(0);
+			} /* was not TYPE_HIT or NPC */
+
+		} else {
+			total = 0;
+			if (!ch->equipment[WIELD]) {
+				return(0);
+			}
+			for(j=0; j<MAX_OBJ_AFFECT; j++)
+				if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
+							(ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))  {
+					total += ch->equipment[WIELD]->affected[j].modifier;
+				}
+
+
+			if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)  {
+				total = BarbarianToHitMagicBonus(ch);
+			}
+
+
+			if (HasClass(ch,CLASS_MONK) && BarbarianToHitMagicBonus(ch) > total)  {
+				total = BarbarianToHitMagicBonus(ch);
+			}
+
+
+			if (total > Immunity)  {
+				return(dam);
+			} else {
+				act("$N ignores your puny weapon", FALSE, ch, 0, v, TO_CHAR);
+				return(0);
+			}
 		}
-
-  		if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)  {
-      		total = BarbarianToHitMagicBonus(ch);
-     	}
-
-		if (HasClass(ch,CLASS_MONK) && BarbarianToHitMagicBonus(ch) > total)  {
-		   total = BarbarianToHitMagicBonus(ch);
-     	}
-
-
-      	if (total > Immunity)  {
-			return(dam);
-      	} else {
-			act("$N ignores your puny weapon", FALSE, ch, 0, v, TO_CHAR);
-			return(0);
-      	}
-    }
-  }
+	}
 }
 
 

@@ -146,7 +146,7 @@ struct QuestItem {
 #define PERSONAL_PERM_LOCKOUTS	1
 #define LAG_MOBILES     1
 
-#define NEWMOBSTRUCTURE 0
+#define NEWMOBSTRUCTURE 1
 /*
  efficiency stuff
 */

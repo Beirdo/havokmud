@@ -5792,7 +5792,6 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
 	struct char_data *mob;
 	char mname[128],field[120],field2[120],buf[254];
 	long vnum = -1;
-	int  hpB = -1;
 	int nr;
 
 dlog("in do_msave");
@@ -5803,18 +5802,18 @@ dlog("in do_msave");
 
   argument=one_argument(argument,mname);
   if (!*mname) {
-    send_to_char("Msave <mobile name> <new_vnum> <Hit Point Bonus>\n\r",ch);
+    send_to_char("Msave <mobile name> <new_vnum>\n\r",ch);
     return;
   }
 
   argument=one_argument(argument,field);
   if(!*field) {
-    send_to_char("Msave <mobile name> <vnum> <Hit Point Bonus>\n\r", ch);
+    send_to_char("Msave <mobile name> <vnum>\n\r", ch);
     return;
   }
  argument=one_argument(argument,field2);
-  if(!*field2) {
-    send_to_char("Msave <mobile name> <vnum> <Hit Point Bonus>\n\r", ch);
+  if(*field2) {
+    send_to_char("Msave changed. Set hitpoints in medit. Msave <mobile name> <vnum>\n\r", ch);
     return;
   }
 
@@ -5830,11 +5829,11 @@ dlog("in do_msave");
   }
 
 
-  hpB = atoi(field2);
-  if (hpB < 0) {
-    send_to_char("Invalid HP Bonus\n\r",ch);
-    return;
-  }
+//  hpB = atoi(field2);
+//  if (hpB < 0) {
+//    send_to_char("Invalid HP Bonus\n\r",ch);
+//    return;
+//  }
 
 /* check for valid VNUM in this zone */
 
@@ -5869,7 +5868,7 @@ dlog("in do_msave");
 	}
 
 	fprintf(f,"#%ld\n",vnum);
-	write_mob_to_file(mob,f,hpB);
+	write_mob_to_file(mob,f);//0);//hpB);
 	fclose(f);
 	if (nr == -1)
 		insert_mobile(mob,vnum);

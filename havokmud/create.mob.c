@@ -33,6 +33,7 @@
 #define CHANGE_MOB_QUEST_YES 26
 #define CHANGE_MOB_QUEST_NO  27
 #define CHANGE_MOB_HPS       28
+#define CHANGE_MOB_COINAGE   29
 
 #define MOB_HIT_RETURN       99
 
@@ -58,7 +59,8 @@ char *mob_edit_menu = "    1) Name                    2) Short description\n\r"
 		              "   21) Distant sounds         22) Sex\n\r"
 		              "   23) Hit roll plus          24) Common Procedure\n\r"
 		              "   25) Talk response          26) Quest solved response\n\r"
-		              "   27) Quest wrong response   28) Max Hitpoints\n\r\n\r";
+		              "   27) Quest wrong response   28) Max Hitpoints\n\r"
+		              "   29) Mobile carried money   \n\r\n\r";
 
 
 void ChangeMobName(struct char_data *ch, char *arg, int type);
@@ -92,6 +94,7 @@ void ChangeMobTalks(struct char_data *ch, char *arg, int type);
 void ChangeMobQuestYes(struct char_data *ch, char *arg, int type);
 void ChangeMobQuestNo(struct char_data *ch, char *arg, int type);
 void ChangeMobHps(struct char_data *ch, char *arg, int type);
+void ChangeMobCoinage(struct char_data *ch, char *arg, int type);
 
 void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 {
@@ -364,6 +367,9 @@ void MobEdit(struct char_data *ch, char *arg)
            case 28: ch->specials.medit = CHANGE_MOB_HPS;
                    ChangeMobHps(ch, "", ENTER_CHECK);
                    return;
+           case 29: ch->specials.medit = CHANGE_MOB_COINAGE;
+                   ChangeMobCoinage(ch, "", ENTER_CHECK);
+                   return;
            default: UpdateMobMenu(ch);
                    return;
     }
@@ -427,6 +433,8 @@ void MobEdit(struct char_data *ch, char *arg)
  case CHANGE_MOB_QUEST_NO: ChangeMobQuestNo(ch, arg, 0);
          return;
  case CHANGE_MOB_HPS: ChangeMobHps(ch, arg, 0);
+         return;
+ case CHANGE_MOB_COINAGE: ChangeMobCoinage(ch, arg, 0);
          return;
 default: log("Got to bad spot in MobEdit");
           return;
@@ -1473,6 +1481,7 @@ void ChangeMobHps(struct char_data *ch, char *arg, int type)
 			change=1;
 
 		mob->points.max_hit = change;
+		mob->points.hit = change;
 		ch->specials.medit = MOB_MAIN_MENU;
 		UpdateMobMenu(ch);
 		return;
@@ -1484,6 +1493,42 @@ void ChangeMobHps(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current Mobile Hps: %d\n\r\n\r", mob->points.max_hit);
 	send_to_char("Pick number between 0 and 15000.\n\r\n\r", ch);
 	send_to_char("New Mobile Hps:\n\r", ch);
+
+	return;
+}
+
+void ChangeMobCoinage(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+	int change;
+
+	if(type != ENTER_CHECK)
+		if(!*arg || (*arg == '\n')) {
+			ch->specials.medit = MOB_MAIN_MENU;
+			UpdateMobMenu(ch);
+			return;
+		}
+
+	mob=ch->specials.mobedit;
+	if(type != ENTER_CHECK) {
+		change=atoi(arg);
+		if(change < 0 || change > 20000)
+			change=1;
+
+		mob->points.gold = change;
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+		return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	sprintf(buf, "Current Mobile Money: %d\n\r\n\r", mob->points.gold);
+	send_to_char("Pick number ranging from 0 to 20000.\n\r", ch);
+	send_to_char("Mob will load with 0.9 to 1.1 times the entered amount.\n\r\n\r", ch);
+	send_to_char("New Mobile Money:\n\r", ch);
 
 	return;
 }

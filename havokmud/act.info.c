@@ -3951,7 +3951,7 @@ void do_resistances(struct char_data *ch, char *argument, int cmd) {
 	  if(IS_IMMUNE(ch,x))
 	    	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
 	  	else
-	  	if(IsResist(ch, x))
+	  	if(IsResist(ch, x) && !IsSusc(ch, x))
 	  	 	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
 	  	else
 	   	  if(IsSusc(ch, x))

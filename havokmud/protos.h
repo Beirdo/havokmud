@@ -2208,7 +2208,7 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd);
 void do_ooc(struct char_data *ch, char *argument, int cmd);
 void do_plr_noooc(struct char_data *ch, char *argument, int cmd);
 void do_msave(struct char_data *ch, char *argument, int cmd);
-void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB);
+void write_mob_to_file(struct char_data *mob, FILE *mob_fi);//,int hpB);
 void do_wizreport(struct char_data *ch, char *argument, int cmd);
 void do_donate(struct char_data *ch, char *argument, int cmd);
 void do_reply(struct char_data *ch, char *argument, int cmd);

@@ -5344,7 +5344,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 			}
 
 			fprintf(vnum_f,"#%ld\n",i);
-			save_new_mobile_structure(mob, vnum_f, HpBonus);
+			save_new_mobile_structure(mob, vnum_f);//, HpBonus);
 			fclose(vnum_f);
 			if (nr == -1)
 				insert_mobile(mob, i);
@@ -5353,7 +5353,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 
 
 			fprintf(mob_file,"#%ld\n",i);
-			save_new_mobile_structure(mob,mob_file, HpBonus);
+			save_new_mobile_structure(mob,mob_file);//, HpBonus);
 			count++;
 			extract_char(mob);
 		}

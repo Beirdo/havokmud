@@ -2293,6 +2293,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE *mob_fi)
 	mob->points.armor = 10*tmp;
 
 	fscanf(mob_fi, " %d ", &tmp);
+	mob->points.max_hit = tmp;
 	mob->points.hit = tmp;
 //	mob->points.max_hit = dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8)+tmp;
 //	mob->points.hit = mob->points.max_hit;
@@ -2652,7 +2653,7 @@ void remove_cr(char *output, char *input)
  *                                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
+void write_mob_to_file(struct char_data *mob, FILE *mob_fi)//,int hpB)
 {
 #if NEWMOBSTRUCTURE
 	long    bc,ltmp;
@@ -2807,7 +2808,7 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
     fprintf(mob_fi, " %d ",(mob->points.hitroll-20)*-1 );
 
     fprintf(mob_fi, " %d ",mob->points.armor/10 );
-    fprintf(mob_fi, " %d ", hpB);
+    fprintf(mob_fi, " %d ", 0); /* set hp bonus to 0.. should never pass this code anymore anyway */
 
     fprintf(mob_fi, " %dd%d+%d \n",mob->specials.damnodice
 				  ,mob->specials.damsizedice
@@ -2869,7 +2870,7 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
 #endif
 }
 
-int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi, int hpB)
+int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi)//, int hpB)
 {
 	long    bc,ltmp;
 	int i, xpflag;
@@ -2899,10 +2900,17 @@ int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi, int hpB)
 	}
 
 	/* *** Numeric data *** */
+
+#if NEWMOBSTRUCTURE
+
+	/* do nothing */
+
+#else
 	if(IS_SET(mob->specials.act,ACT_NECROMANCER)) {
 		REMOVE_BIT(mob->specials.act, ACT_NECROMANCER); // replace old quest flag to new quest flag location
 		mob->specials.proc = PROC_QUEST;
-	}
+	}  /* this was a one time only action */
+#endif
 
 	tmp = mob->specials.act;    	// get actions flags
 	REMOVE_BIT(tmp, ACT_ISNPC);   	// remove flag IS NPC
@@ -2919,7 +2927,7 @@ int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi, int hpB)
 	fprintf(mob_fi, " %d ",GET_LEVEL(mob, WARRIOR_LEVEL_IND) );
 	fprintf(mob_fi, " %d ",(mob->points.hitroll-20)*-1 );
 	fprintf(mob_fi, " %d ",mob->points.armor/10 );
-	fprintf(mob_fi, " %d ", hpB);
+	fprintf(mob_fi, " %d ", mob->points.max_hit);
 	fprintf(mob_fi, " %dd%d+%d \n", mob->specials.damnodice, mob->specials.damsizedice, mob->points.damroll);
 
 	tmpexp = GET_EXP(mob);    // convert Exp to float for calculation
