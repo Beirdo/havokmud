@@ -2870,7 +2870,7 @@ struct char_data *FindVictim( struct char_data *ch)
 
    rp = real_roomp(ch->in_room);
 	if(!rp) {
-		log("/* No room??? Crash??? */");
+		//log("/* No room??? Crash??? */");
 		return(0);
 	}
 
@@ -3008,7 +3008,7 @@ struct char_data *FindVictim(struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
   if(!rp) {
-	log("No room data in FindVictim ??Crash???");
+	//log("No room data in FindVictim ??Crash???");
 	return(0);
   }
 
@@ -3132,7 +3132,7 @@ struct char_data *FindAnyVictim( struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
   if(!rp) {
-	log("No room data in FindMetaVictim ??Crash???");
+	//log("No room data in FindMetaVictim ??Crash???");
 	return(0);
   }
   if (ch->in_room < 0) return(0);
@@ -3866,7 +3866,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
 
    rp = real_roomp(ch->in_room);
 	if(!rp) {
-		log("No room data in FindAvictim ??Crash???");
+		//		log("No room data in FindAvictim ??Crash???");
 		return(0);
 	}
 
@@ -4062,7 +4062,7 @@ struct char_data *FindMetaVictim( struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
   if(!rp) {
-	log("No room data in FindMetaVictim ??Crash???");
+	//	log("No room data in FindMetaVictim ??Crash???");
 	return(0);
   }
 

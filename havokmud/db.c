@@ -2662,7 +2662,12 @@ int does_Load(int num, int max ) {
   char buff[200];
 
 	if (max == 0)
-  return (TRUE);
+  		return (TRUE);
+
+	if(number(0,100) < max)
+		return(TRUE);
+	else
+		return(FALSE);
 
   return TRUE;
 #if 1

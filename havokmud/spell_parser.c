@@ -1078,7 +1078,7 @@ int ValidRoom(struct char_data *ch ){
 
 	rp = real_roomp(ch->in_room);
 	if(!rp) {
-		log("/* no room? BLAH!!! least it never crashed */");
+		//log("/* no room? BLAH!!! least it never crashed */");
 		return(FALSE);
 	}
 	return (TRUE);

@@ -194,7 +194,7 @@ void MobScavenge(struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
   if(!rp) {
-	log("No room data in MobScavenge ??Crash???");
+	//log("No room data in MobScavenge ??Crash???");
 	return;
   } else
   if ((real_roomp(ch->in_room))->contents && number(0,4)) {
@@ -633,7 +633,7 @@ int AssistFriend( struct char_data *ch)
 
   rp = real_roomp(ch->in_room);
   if(!rp) {
-	log("No room data in AssistFriend ??Crash???");
+	//log("No room data in AssistFriend ??Crash???");
 	return(0);
   }
 
