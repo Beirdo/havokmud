@@ -27,32 +27,31 @@
 #include "protos.h"
 #include "externs.h"
 #include "utils.h"
+#include "version.h"
 
 void            identd_test(struct sockaddr_in in_addr);
+void display_usage(char *progname);
 
 /* Make OSX work */
 #ifndef HAVE_SOCKLEN_T
 #define socklen_t int
 #endif 
 
-#define MAX_CONNECTS 256        
 /* 
  * max number of descriptors (connections) 
- */
-                          
-/*
  * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
  */
+#define MAX_CONNECTS 256        
+
 
 #define DFLT_PORT 4000          /* default port */
 #define MAX_HOSTNAME   256
-#define OPT_USEC 250000         
+
 /* 
  * time delay corresponding to 4
  * passes/sec 
  */
-
-#define STATE(d) ((d)->connected)
+#define OPT_USEC 250000         
 
 int             mud_port;
 
@@ -126,14 +125,47 @@ void close_socket_fd(int desc)
 #endif
 }
 
+void display_usage(char *progname)
+{
+    fprintf(stderr, "Usage:\n"
+                    "%s [-l] [-d libdir] [-s] [-D sqlDB] [-U sqlUser] "
+                    "[-P sqlPass]\n"
+                    "\t[-H sqlHost] [-p port] [-A] [-N] [-R] [-L] [-h] [-V] "
+                    "[port]\n\n",
+                    progname );
+    fprintf(stderr, "\t-l\tRun in legal mode\n"
+                    "\t=d\tDefine the library dir (default %s)\n"
+                    "\t-s\tDisable special procedures\n"
+                    "\t-D\tDefine the MySQL database (default %s)\n",
+                    DFLT_DIR, DEF_MYSQL_DB );
+    fprintf(stderr, "\t-U\tDefine the MySQL user (default %s)\n"
+                    "\t-P\tDefine the MySQL password (default %s)\n"
+                    "\t-H\tDefine the MySQL host (default %s)\n"
+                    "\t-p\tDefine the MUD port (dsfault %d)\n",
+                    DEF_MYSQL_USER, DEF_MYSQL_PASSWD, DEF_MYSQL_HOST,
+                    DFLT_PORT );
+    fprintf(stderr, "\t-A\tDisable ALL color\n"
+                    "\t-N\tDiaable DNS lookups\n"
+                    "\t-R\tEnable newbie authorizing\n"
+                    "\t-L\tLog all users\n"
+                    "\t-h\tShow this help page\n"
+                    "\t-V\tShow version and exit\n\n" );
+    fprintf(stderr, "\tThe MUD port can be defined either with -p PORT or with "
+                    "PORT at the\n"
+                    "\tend of the command line\n\n" );
+}
+
 int main(int argc, char **argv)
 {
-    int             pos = 1;
     char            buf[512],
                    *dir;
     extern FILE    *log_f;
     extern long     SystemFlags;
     extern int      spy_flag;
+    int             opt;
+    extern char    *optarg;
+    extern int      optind;
+
 #ifdef SITELOCK
     int             a;
 #endif
@@ -148,8 +180,8 @@ int main(int argc, char **argv)
     malloc_debug(1);            /* some systems might not have this lib */
 #endif
 
-    mud_port = DFLT_PORT;
-    dir = DFLT_DIR;
+    mud_port = -1;
+    dir = NULL;
 
     SystemFlags = 0;
 
@@ -175,72 +207,117 @@ int main(int argc, char **argv)
 
 #endif
 
-#ifdef DEBUG
-    /*
-     * never seen this function, must be something john was working on,
-     * disabled 
-     */
-    /*
-     * malloc_debug(0); 
-     */
-#endif
-
-    while ((pos < argc) && (*(argv[pos]) == '-')) {
-        switch (*(argv[pos] + 1)) {
+    while( (opt = getopt(argc, argv, "ld:sD:U:P:H:p:ANRLhV")) != -1 ) {
+        switch (opt) {
         case 'l':
             lawful = 1;
             Log("Lawful mode selected.");
             break;
+
         case 'd':
-            if (*(argv[pos] + 2))
-                dir = argv[pos] + 2;
-            else if (++pos < argc)
-                dir = argv[pos];
-            else {
-                Log("Directory arg expected after option -d.");
-                assert(0);
+            if( dir ) {
+                free( dir );
             }
+            dir = strdup(optarg);
             break;
+
         case 's':
             no_specials = 1;
             Log("Suppressing assignment of special routines.");
+            break;
+
+        case 'D':
+            /* Database */
+            if( mysql_db ) {
+                free( mysql_db );
+            }
+            mysql_db = strdup(optarg);
+            break;
+
+        case 'U':
+            /* Database user */
+            if( mysql_user ) {
+                free( mysql_user );
+            }
+            mysql_user = strdup(optarg);
+            break;
+
+        case 'P':
+            /* Database password */
+            if( mysql_passwd ) {
+                free( mysql_passwd );
+            }
+            mysql_passwd = strdup(optarg);
+            break;
+
+        case 'H':
+            /* Database hose */
+            if( mysql_host ) {
+                free( mysql_host );
+            }
+            mysql_host = strdup(optarg);
+            break;
+
+        case 'p':
+            /* MUD Port */
+            mud_port = atoi(optarg);
             break;
 
         case 'A':
             SET_BIT(SystemFlags, SYS_NOANSI);
             Log("Disabling ALL color");
             break;
+
         case 'N':
             SET_BIT(SystemFlags, SYS_SKIPDNS);
             Log("Disabling DNS");
             break;
+
         case 'R':
             SET_BIT(SystemFlags, SYS_REQAPPROVE);
             Log("Newbie authorizes enabled");
             break;
+
         case 'L':
             SET_BIT(SystemFlags, SYS_LOGALL);
             Log("Logging all users");
             break;
 
+        case 'V':
+            Log("HavokMUD code version:");
+            Log(VERSION);
+            exit(0);
+            break;
+
+        case ':':
+        case '?':
+        case 'h':
         default:
-            sprintf(buf, "Unknown option -%c in argument string.",
-                    *(argv[pos] + 1));
-            Log(buf);
+            display_usage(argv[0]);
+            exit(1);
             break;
         }
-        pos++;
     }
 
-    if (pos < argc) {
-        if (!isdigit((int)*argv[pos])) {
-            fprintf(stderr, "Usage: %s [-l] [-s] [-d pathname] [ port # ]\n",
-                    argv[0]);
-            assert(0);
-        } else if ((mud_port = atoi(argv[pos])) <= 1024) {
-            printf("Illegal port #\n");
-            assert(0);
-        }
+    Log("HavokMUD code version:");
+    Log(VERSION);
+
+    if( argv[optind] ) {
+        if (!isdigit((int)*argv[optind])) {
+            display_usage(argv[0]);
+            exit(1);
+        } 
+
+        mud_port = atoi(argv[optind]);
+    }
+
+    if( mud_port == -1 ) {
+        mud_port = DFLT_PORT;
+    }
+
+    if (mud_port <= 1024) {
+        printf("Illegal port #\n");
+        exit(1);
     }
 
     Uptime = time(0);
@@ -248,13 +325,19 @@ int main(int argc, char **argv)
     sprintf(buf, "Running game on port %d.", mud_port);
     Log(buf);
 
-    if (chdir(dir) < 0) {
-        perror("chdir");
-        assert(0);
+    if( !dir ) {
+        dir = strdup(DFLT_DIR);
     }
 
     sprintf(buf, "Using %s as data directory.", dir);
     Log(buf);
+
+    if (chdir(dir) < 0) {
+        perror("chdir");
+        exit(1);
+    }
+
+    free( dir );
 
     srandom(time(0));
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
@@ -280,8 +363,6 @@ int main(int argc, char **argv)
     return (0);
 }
 
-#define PROFILE(x)
-
 /*
  * Init sockets, run game, and cleanup sockets 
  */
@@ -289,12 +370,8 @@ int run_the_game(int port)
 {
     extern int      spy_flag;
     int             s;
-    PROFILE(extern etext();)
-
     void            signal_setup(void);
     int             load(void);
-
-    PROFILE(monstartup((int) 2, etext);)
 
     descriptor_list = NULL;
 
@@ -319,8 +396,6 @@ int run_the_game(int port)
     game_loop(s);
 
     close_sockets(s);
-
-    PROFILE(monitor(0);)
 
     if (reboot_now) {
         Log("Rebooting.");

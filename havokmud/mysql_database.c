@@ -10,6 +10,11 @@
 static MYSQL *sql;
 
 /* Externally accessible */
+char *mysql_db    = NULL;
+char *mysql_user   = NULL;
+char *mysql_passwd = NULL;
+char *mysql_host   = NULL;
+
 struct class_def *classes;
 int             classCount;
 
@@ -63,16 +68,32 @@ void db_load_languages(void);
 
 void db_setup(void)
 {
-    if( !(sql = mysql_init(NULL)) ) {
-        Log("Unable to initialize a MySQL structure!!");
-        abort();
+    if( !mysql_db ) {
+        mysql_db = strdup(DEF_MYSQL_DB);
     }
 
-    if( !mysql_real_connect(sql, "localhost", "havokmud", "havokmud", 
-                            "havokdevel", 0, NULL, 0) ) {
+    if( !mysql_user ) {
+        mysql_user = strdup(DEF_MYSQL_USER);
+    }
+
+    if( !mysql_passwd ) {
+        mysql_passwd = strdup(DEF_MYSQL_PASSWD);
+    }
+
+    if( !mysql_host ) {
+        mysql_host = strdup(DEF_MYSQL_HOST);
+    }
+
+    if( !(sql = mysql_init(NULL)) ) {
+        Log("Unable to initialize a MySQL structure!!");
+        exit(1);
+    }
+
+    if( !mysql_real_connect(sql, mysql_host, mysql_user, mysql_passwd, 
+                            mysql_db, 0, NULL, 0) ) {
         Log("Unable to connect to the database!");
         mysql_error(sql);
-        abort();
+        exit(1);
     }
 }
 
@@ -239,13 +260,13 @@ void db_load_classes(void)
     if( !resClass || !(classCount = mysql_num_rows(resClass))) {
         /* No classes!? */
         Log( "No classes defined in the database!" );
-        abort();
+        exit(1);
     }
 
     classes = (struct class_def *)malloc(classCount * sizeof(struct class_def));
     if( !classes ) {
         Log( "Out of memory allocating classes[]" );
-        abort();
+        exit(1);
     }
 
     for( i = 0; i < classCount; i++ ) {
@@ -356,7 +377,7 @@ void db_load_classes(void)
     Log("Finished loading classes[] from SQL");
 
     if( err ) {
-        abort();
+        exit(1);
     }
 }
 
@@ -381,14 +402,14 @@ void db_load_skills(void)
     if( !resSkill || !(skillCount = mysql_num_rows(resSkill)) ) {
         /* No skills!? */
         Log( "No skills defined in the database!" );
-        abort();
+        exit(1);
     }
 
     skills = (struct skill_def *)malloc((skillCount + 1) * 
                                         sizeof(struct skill_def));
     if( !skills ) {
         Log( "Out of memory allocating skills[]" );
-        abort();
+        exit(1);
     }
 
     /* Leave skill 0 emtpy */
@@ -418,7 +439,7 @@ void db_load_skills(void)
     mysql_free_result(resSkill);
 
     if( err ) {
-        abort();
+        exit(1);
     }
 
     Log("Finished loading skills[] from SQL");
@@ -443,14 +464,14 @@ void db_load_structures(void)
     res = mysql_store_result(sql);
     if( !res || !(directionCount = mysql_num_rows(res)) ) {
         Log( "No directions defined in the database!" );
-        abort();
+        exit(1);
     }
 
     direction = (struct dir_data *)malloc(directionCount * 
                                           sizeof(struct dir_data));
     if( !direction ) {
         Log( "Out of memory allocating direction[]" );
-        abort();
+        exit(1);
     }
 
     for( i = 0; i < directionCount; i++ ) {
@@ -474,13 +495,13 @@ void db_load_structures(void)
     res = mysql_store_result(sql);
     if( !res || !(clanCount = mysql_num_rows(res)) ) {
         Log( "No clans defined in the database!" );
-        abort();
+        exit(1);
     }
 
     clan_list = (struct clan *)malloc(clanCount * sizeof(struct clan));
     if( !direction ) {
         Log( "Out of memory allocating clan_list[]" );
-        abort();
+        exit(1);
     }
 
     for( i = 0; i < clanCount; i++ ) {
@@ -501,14 +522,14 @@ void db_load_structures(void)
     res = mysql_store_result(sql);
     if( !res || !(sectorCount = mysql_num_rows(res)) ) {
         Log( "No sector types defined in the database!" );
-        abort();
+        exit(1);
     }
 
     sectors = (struct sector_data *)malloc(sectorCount * 
                                            sizeof(struct sector_data));
     if( !sectors ) {
         Log( "Out of memory allocating sectors[]" );
-        abort();
+        exit(1);
     }
 
     for( i = 0; i < sectorCount; i++ ) {
@@ -542,14 +563,14 @@ void db_load_messages(void)
     res = mysql_store_result(sql);
     if( !res || !(fightMessageCount = mysql_num_rows(res)) ) {
         Log( "No fight messages defined in the database!" );
-        abort();
+        exit(1);
     }
 
     fightMessages = (struct message_list *)malloc(fightMessageCount * 
                                                   sizeof(struct message_list));
     if( !direction ) {
         Log( "Out of memory allocating fightMessages[]" );
-        abort();
+        exit(1);
     }
 
     memset( fightMessages, 0, fightMessageCount * sizeof(struct message_list) );
@@ -601,14 +622,14 @@ void db_load_bannedUsers(void)
     res = mysql_store_result(sql);
     if( !res || !(bannedUserCount = mysql_num_rows(res)) ) {
         Log( "No banned usernames defined in the database!" );
-        abort();
+        exit(1);
     }
 
     bannedUsers = (struct banned_user *)malloc(bannedUserCount * 
                                                sizeof(struct banned_user));
     if( !bannedUsers ) {
         Log( "Out of memory allocating bannedUsers[]" );
-        abort();
+        exit(1);
     }
 
     for (i = 0; i < bannedUserCount; i++) {
@@ -656,14 +677,14 @@ void db_load_socials(void)
     res = mysql_store_result(sql);
     if( !res || !(socialMessageCount = mysql_num_rows(res)) ) {
         Log( "No social messages defined in the database!" );
-        abort();
+        exit(1);
     }
 
     socialMessages = (struct social_messg *)malloc(socialMessageCount * 
                                                    sizeof(struct social_messg));
     if( !socialMessages ) {
         Log( "Out of memory allocating socialMessages[]" );
-        abort();
+        exit(1);
     }
 
     memset( socialMessages, 0, 
@@ -714,14 +735,14 @@ void db_load_kick_messages(void)
     res = mysql_store_result(sql);
     if( !res || !(kickMessageCount = mysql_num_rows(res)) ) {
         Log( "No kick messages defined in the database!" );
-        abort();
+        exit(1);
     }
 
     kickMessages = (struct kick_messg *)malloc(kickMessageCount * 
                                                sizeof(struct kick_messg));
     if( !kickMessages ) {
         Log( "Out of memory allocating kickMessages[]" );
-        abort();
+        exit(1);
     }
 
     memset( kickMessages, 0, 
@@ -769,14 +790,14 @@ void db_load_poses(void)
     res = mysql_store_result(sql);
     if( !res || !(poseMessageCount = mysql_num_rows(res)) ) {
         Log( "No pose messages defined in the database!" );
-        abort();
+        exit(1);
     }
 
     poseMessages = (struct pose_type *)malloc(poseMessageCount * 
                                               sizeof(struct pose_type));
     if( !poseMessages ) {
         Log( "Out of memory allocating poseMessages[]" );
-        abort();
+        exit(1);
     }
 
     memset( poseMessages, 0, poseMessageCount * sizeof(struct pose_type) );
@@ -790,7 +811,7 @@ void db_load_poses(void)
         poseMessages[i].room_msg  = (char **)malloc(classCount * sizeof(char*));
         if( !poseMessages[i].poser_msg || !poseMessages[i].room_msg ) {
             Log( "Out of memory allocating poses" );
-            abort();
+            exit(1);
         }
 
         for( j = 0; j < classCount; j++ ) {
@@ -1010,7 +1031,7 @@ void db_load_races(void)
     races = (struct race_type *)malloc(raceCount * sizeof(struct race_type));
     if( !races ) {
         Log( "Out of memory allocating races[]" );
-        abort();
+        exit(1);
     }
 
     memset( races, 0, raceCount * sizeof(struct race_type) );
@@ -1040,7 +1061,7 @@ void db_load_races(void)
         races[i].racialMax = (int *)malloc(classCount * sizeof(int));
         if( !races[i].racialMax ) {
             Log( "Out of memory allocating races[i].racialMax" );
-            abort();
+            exit(1);
         }
 
         memset( races[i].racialMax, 0, classCount * sizeof(int) );
@@ -1089,7 +1110,7 @@ void db_load_languages(void)
                                           sizeof(struct lang_def));
     if( !languages ) {
         Log( "Out of memory allocating languages[]" );
-        abort();
+        exit(1);
     }
 
 
