@@ -2037,7 +2037,6 @@ void do_look(struct char_data *ch, char *argument, int cmd)
              * look ''
              */
         case 8:
-        case 9:    
             ch_printf(ch, "$c000W%s", real_roomp(ch->in_room)->name);
 
             send_to_char("\n\r", ch);
@@ -2097,6 +2096,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         case -1:
             send_to_char("Sorry, I didn't understand that!\n\r", ch);
             break;
+
         }
     }
 }

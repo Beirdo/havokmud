@@ -656,7 +656,6 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
     char            buf[255];
     char           *arg1;
     char           *arg2;
-
 #endif
 
     dlog("in do_wizlock");
