@@ -4170,7 +4170,7 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
   if (AWAKE(ch)) {
     if ((targ = FindAnAttacker(ch))!='\0') {
-      act("$n pushs you off the ship.", TRUE, ch, 0, 0, TO_ROOM);
+      act("$n pushes you off the ship.", TRUE, ch, 0, 0, TO_ROOM);
 
 		//char_from_room(mob);
 		if ( !(target=get_char_vis_world(ch,"ship",NULL)) )   {

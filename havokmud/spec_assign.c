@@ -1303,12 +1303,12 @@ void assign_mobiles()
     {31814,  ClericGuildMaster },     /* Cirelic cleric gm guildmaster*/
     {31815,  PaladinGuildmaster },    /* Justiciar paladin gm guildmaster*/
     {31806,  barbarian_guildmaster }, /* Cabal guildmaster gm barbarian*/
-    {31807,  RangerGuildmaster },     /* Raegar gm guildmaster warrior*/
+    {31807,  WarriorGuildMaster },     /* Raegar gm guildmaster warrior*/
     {31900,  DruidGuildMaster },      /* Winter druid guildmaster*/
     {31940,  monk_master },           /* Hands monk guildmaster*/
     {31801, receptionist },           /* winterfell receptionist */
     {31803, PostMaster },             /* winterfell scribe mage  */
-
+	{33038, RangerGuildmaster},   /*Ranger??*/
 
 
       /*{31856,}, */    /* Spendthrift (purchase items from characters)*/
