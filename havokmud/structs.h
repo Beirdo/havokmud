@@ -1966,7 +1966,7 @@ struct class_titles {
 /* Changes to be made for the remort bonusses, decided upon by Gordon and Lennya, 20040111
 
 Mage
-	brew, create potions of mage spells
+	brew, create potions of mage spells										//done by Lennya
 	mana shield, lets mana soak up damage (ignoring resist, suscept, sanc) before hps
 	+10 mana regen
 
