@@ -160,6 +160,8 @@ struct QuestItem {
 #define LAG_MOBILES     1
 
 #define NEWMOBSTRUCTURE 1
+#define WEAPONSKLZ 1
+
 /*
  efficiency stuff
 */
@@ -1280,7 +1282,7 @@ struct pc_data
 	int	dimd_credits;	/* credits used in remote comm */
 	long 	comm;		/* flags used for remote communications */
 };
-
+#if WEAPONSKLZ
 struct weaponskills
 {
 	int slot1;
@@ -1300,7 +1302,7 @@ struct weaponskills
 	int grade7;
 	int grade8;
 };
-
+#endif
 struct char_special_data
 {
   byte spellfail;        /* max # for spell failure (101) */
@@ -1524,8 +1526,9 @@ struct char_data
 	                                         the char */
         int old_exp;                  /* For energe restore -MW */
 	int style;  					/* Fighting Style!!!*/
+#if WEAPONSKLZ
 	struct weaponskills weaponskills; // the weaponry shiznit -Lennya
-
+#endif
 };
 
 
@@ -1609,7 +1612,7 @@ struct char_file_u
 	long m_kills;
 
 	int remortclass;
-/*
+#if WEAPONSKLZ
 	int slot1;
 	int slot2;
 	int slot3;
@@ -1626,7 +1629,7 @@ struct char_file_u
 	int grade6;
 	int grade7;
 	int grade8;
-*/
+#endif
 };
 
 /* ***********************************************************************

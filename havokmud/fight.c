@@ -1473,7 +1473,7 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
   }
   return(TRUE);
 }
-
+#if WEAPONSKLZ
 void WeaponSkillCheck(struct char_data *ch)
 {
 	struct obj_data *obj;
@@ -1571,7 +1571,7 @@ void WeaponSkillCheck(struct char_data *ch)
 			log("got to bad spot in WeaponSkillCheck");
 			return;
 		}
-		sprintf(buf,"You've decided to get in some practice with the %s.\n\r",weaponskills[weapontype-350].name);
+		sprintf(buf,"You've decided to get in some practice with the %s.\n\r",weaponskills[weapontype-WEAPON_FIRST].name);
 		send_to_char(buf,ch);
 	} else {
 		// 3% chance of skill increase
@@ -1617,7 +1617,7 @@ void WeaponSkillCheck(struct char_data *ch)
 		}
 	}
 }
-
+#endif
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam)
 {
 	if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
@@ -2729,8 +2729,10 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*da
 		w_type = GetFormType(ch);  /* races have different types of attack */
 
 	thaco = CalcThaco(ch);
+#if WEAPONSKLZ
 
 	WeaponSkillCheck(ch);
+#endif
 
 	if (HitOrMiss(ch, victim, thaco)) {
 		if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
