@@ -5399,7 +5399,7 @@ void cast_wall_of_thought(int level, struct char_data *ch, char *arg,
         spell_wall_of_thought(level, ch, ch, 0);
         break;
     default:
-        Log("Serious screw-up in stone_skin!");
+        Log("Serious screw-up in wall_of_thought!");
         break;
     }
 }
