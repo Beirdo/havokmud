@@ -1,6 +1,6 @@
 
-#ifndef _AREA_
-#define _AREA_
+#ifndef _area_h
+#define _area_h
 
 /*
  *  these defines are to make differentiation easier
@@ -16,3 +16,7 @@
 #define PRYDAIN   6
 
 #endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
