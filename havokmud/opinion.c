@@ -109,39 +109,38 @@ int AddHated( struct char_data *ch, struct char_data *pud)
     return(FALSE);
 
 
-  if (pud && ch) {
+	if (pud && ch) {
 
-if (GET_HIT(pud) <=0 || GET_POS(pud) <=POSITION_DEAD)
-	return(FALSE);
+		if (GET_HIT(pud) <=0 || GET_POS(pud) <=POSITION_DEAD)
+			return(FALSE);
 
-    if (!CAN_SEE(ch, pud))
-      return(FALSE);
+		if (!CAN_SEE(ch, pud))
+			return(FALSE);
 
-    CREATE(newpud, struct char_list, 1);
-    newpud->op_ch = pud;
-    strcpy(newpud->name, GET_NAME(pud));
-    newpud->next = ch->hates.clist;
-    ch->hates.clist = newpud;
-    if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_HATEFUL)) {
-      SET_BIT(ch->specials.act, ACT_HATEFUL);
-    }
-    if (!IS_SET(ch->hatefield, HATE_CHAR)) {
-      SET_BIT(ch->hatefield, HATE_CHAR);
-    }
+		CREATE(newpud, struct char_list, 1);
+		newpud->op_ch = pud;
+		strcpy(newpud->name, GET_NAME(pud));
+		newpud->next = ch->hates.clist;
+		ch->hates.clist = newpud;
+		if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_HATEFUL)) {
+			SET_BIT(ch->specials.act, ACT_HATEFUL);
+		}
+		if (!IS_SET(ch->hatefield, HATE_CHAR)) {
+			SET_BIT(ch->hatefield, HATE_CHAR);
+		}
 
-if (pud->in_room != ch->in_room) {
+		if (pud->in_room != ch->in_room) {
 
 /* log("setting hunt because mob was not in same as attacker");	 */
 
-    SetHunting(ch,pud);
-   }
+			SetHunting(ch,pud);
+		}
 
-    if (IS_IMMORTAL(pud))  {
-      send_to_char("---Someone hates you.\n\r",pud);
-     }
-  }
-
-  return( (pud && ch) ? TRUE : FALSE );
+		if (IS_IMMORTAL(pud))  {
+			send_to_char("---Someone hates you.\n\r",pud);
+		}
+	}
+	return( (pud && ch) ? TRUE : FALSE );
 }
 
 int AddHatred( struct char_data *ch, int parm_type, int parm)

@@ -174,21 +174,18 @@ FailPoison(struct char_data *victim, struct char_data *ch)
  if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER) && (number(1,100)>50) )
     return;  /* give single classed mages a break. */
 
-  if (!IS_PC(victim))
-  {
-    AddHated(victim, ch);
-    if (!victim->specials.fighting)
-    {
-      if (GET_POS(victim) > POSITION_SLEEPING)
-	set_fighting(victim, ch);
-      else if (number(0,1))
-      {
-	set_fighting(victim, ch);
-      }
-    }
-  } else
-
-  {
-    send_to_char("You feel sick, but the feeling fades.\n\r",victim);
-  }
+	if (!IS_PC(victim)) {
+//		AddHated(victim, ch);
+		if(AddHated(victim, ch)) {
+			if (!victim->specials.fighting) {
+				if (GET_POS(victim) > POSITION_SLEEPING)
+					set_fighting(victim, ch);
+				else if (number(0,1)) {
+					set_fighting(victim, ch);
+				}
+			}
+		}
+	} else {
+		send_to_char("You feel sick, but the feeling fades.\n\r",victim);
+	}
 }
