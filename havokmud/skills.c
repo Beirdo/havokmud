@@ -833,13 +833,7 @@ void do_swim(struct char_data *ch, char *arg, int cmd)
     }
     if (percent > ch->skills[SKILL_SWIM].learned) {
         send_to_char("You're too afraid to enter the water\n\r", ch);
-        if (ch->skills[SKILL_SWIM].learned < 95 &&
-            ch->skills[SKILL_SWIM].learned > 0 &&
-            number(1, 101) > ch->skills[SKILL_SWIM].learned) {
-
-            send_to_char("You feel a bit braver, though\n\r", ch);
-            ch->skills[SKILL_SWIM].learned++;
-        }
+        LearnFromMistake(ch, SKILL_SWIM, 0, 95);
         return;
     }
 
@@ -898,12 +892,9 @@ void do_spy(struct char_data *ch, char *arg, int cmd)
         return;
     }
     if (percent > ch->skills[SKILL_SPY].learned) {
-        if (ch->skills[SKILL_SPY].learned < 95 && 
-            ch->skills[SKILL_SPY].learned > 0 &&
-            number(1, 101) > ch->skills[SKILL_SPY].learned) {
-
-            ch->skills[SKILL_SPY].learned++;
-        }
+        send_to_char("You fail to enhance your vision.", ch);
+        LearnFromMistake(ch, SKILL_SPY, 0, 95);
+        
 
         af.type = SKILL_SPY;
         af.duration = (ch->skills[SKILL_SPY].learned / 10) + 1;
@@ -1022,12 +1013,7 @@ void do_feign_death(struct char_data *ch, char *arg, int cmd)
     } else {
         GET_POS(ch) = POSITION_SLEEPING;
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
-        if (ch->skills[SKILL_FEIGN_DEATH].learned < 95 &&
-            ch->skills[SKILL_FEIGN_DEATH].learned > 0) {
-            if (number(1, 101) > ch->skills[SKILL_FEIGN_DEATH].learned) {
-                ch->skills[SKILL_FEIGN_DEATH].learned++;
-            }
-        }
+        LearnFromMistake(ch, SKILL_FEIGN_DEATH, 0, 95);
     }
 }
 
@@ -1100,12 +1086,9 @@ void do_disguise(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
-    } else if (ch->skills[SKILL_DISGUISE].learned < 95 &&
-               ch->skills[SKILL_DISGUISE].learned > 0 &&
-               number(1, 101) > ch->skills[SKILL_DISGUISE].learned) {
-        ch->skills[SKILL_DISGUISE].learned++;
+    } else {
+        LearnFromMistake(ch, SKILL_DISGUISE, 0, 95);
     }
-
     af.type = SKILL_DISGUISE;
     af.duration = 24;
     af.modifier = 0;
