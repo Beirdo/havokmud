@@ -1568,7 +1568,7 @@ int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob
     case 9:
         sk_num = SKILL_DISENGAGE;
         if(!HasClass(ch, CLASS_WARRIOR)) {
-          send_to_char("'I only teach this skill to thieves'\n\r", ch);
+          send_to_char("'I only teach this skill to warriors.'\n\r", ch);
           return(TRUE);
 	}
         break;
@@ -3912,6 +3912,7 @@ if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
       send_to_char("The Archer says 'You are now a master of this art.'\n\r", ch);
       return(TRUE);
     }
+    return(TRUE);
   } else {
     return(archer(ch,cmd,arg,mob,type));
   }

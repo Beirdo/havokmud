@@ -1792,7 +1792,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0009A massive cone of fire shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
      spell_fire_breath(GetMaxLevel(ch),ch,tar_char,0);
@@ -1812,7 +1812,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0014A cone of blistering frost shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_frost_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -1831,7 +1831,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0010A stream of hot acid bursts forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_acid_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -1851,7 +1851,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0002A cloud of poisonous gas billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_gas_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -1872,7 +1872,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0012A bolt of lightning streaks forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
     spell_lightning_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6192,7 +6192,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0005A searing cone of dehydration billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_dehydration_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6211,7 +6211,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0006A cloud of scalding vapor surges forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_vapor_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6230,7 +6230,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0013A sonic vibration booms forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_sound_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6249,7 +6249,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0015A cone of glowing shards bursts forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_shard_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6268,7 +6268,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0003A cloud of sleeping gas billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_sleep_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6287,7 +6287,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0011A beam of bright yellow light shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_light_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
@@ -6306,7 +6306,7 @@ struct char_data *tar_char;
 
  if (ch->specials.fighting && number(0,2)) {
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
-   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   act("$c0008A cloud of oppressive darkness surges forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
    spell_dark_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
