@@ -2539,8 +2539,7 @@ void spell_identify(byte level, struct char_data *ch,
 
     case ITEM_WAND :
     case ITEM_STAFF :
-      sprintf(buf, "$c0005Has $c0014%d $c0005charges, with$c0014 %d$c0005
-charges left.\n\r",
+      sprintf(buf, "$c0005Costs $c0014%d $c0005mana to use, with$c0014 %d$c0005 charges left.\n\r",
 	      obj->obj_flags.value[1],
 	      obj->obj_flags.value[2]);
       send_to_char(buf, ch);
