@@ -1441,6 +1441,15 @@ dlog("in do_auction");
 
 	/* first see if noone else is auctioning stuff */
 	if (minbid > 0) {
+		if(auctioneer) {
+			if(!(auctionobj = auctioneer->specials.auction)) {
+				log("weird in do_auction");
+				return;
+			}
+		} else {
+			log("weirder in do_auction");
+			return;
+		}
 		if(!bidder) {
 			sprintf(buf, "%s is currently auctioning %s, minimum bid set at %d. Wait your turn.\n\r",
 					GET_NAME(auctioneer), auctionobj->short_description, minbid);
