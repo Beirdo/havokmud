@@ -351,6 +351,7 @@ struct QuestItem {
 #define PULSE_ARENA	100 /* see if there's a winner in arena */
 #define PULSE_AUCTION 80 /* every 20 seconds */
 #define PULSE_PLAYSONG 12 /* every 3 seconds */
+#define PULSE_TROLLREGEN 14 /* every once in a while */
 #define MAX_ROOMS   5000
 
 

@@ -308,6 +308,9 @@ void mobile_activity(struct char_data *ch)
 		cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 	}
 
+	/* Make troll regen useful  -Lennya 20030829 */
+	if (GET_RACE(ch) == RACE_TROLL && (GET_HIT(ch) < GET_MAX_HIT(ch)))
+		troll_regen(ch);
 
   /* Execute a script if there is one */
 

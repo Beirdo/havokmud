@@ -623,36 +623,35 @@ if (Mask == Class)
 
 void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 {
-  char buffer[MAX_STRING_LENGTH];
-  int BitMask;
-  struct room_data *rp;
-  extern const struct race_type race_list[];
+	char buffer[MAX_STRING_LENGTH];
+	int BitMask;
+	struct room_data *rp;
+	extern const struct race_type race_list[];
 
-  if (!IS_IMMORTAL(ch)) {
+	if (!IS_IMMORTAL(ch)) {
+		BitMask = GetItemClassRestrictions(obj_object);
+		if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
+log("onlyclass item");
+			if(!OnlyClassItemValid(ch, obj_object)) {
+				send_to_char("You are not the proper person for this.\n\r",ch);
+				return;
+			}
 
-    BitMask = GetItemClassRestrictions(obj_object);
-	/* only class items */
-
-/*Right here I want to check for Mage/Sorc Only Class and let either wear
-  it. --Pentak*/
-if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
-   if((OnlyClass(ch,CLASS_MAGIC_USER) || OnlyClass(ch,CLASS_SORCERER))
-      && (CLASS_MAGIC_USER + CLASS_SORCERER ==
-          GetItemClassRestrictions(obj_object)))
-	;
-   else {
-    if (!OnlyClass(ch,BitMask)) { /* check here only for class restricts */
-	send_to_char("You are not the proper person for this.\n\r",ch);
-	return;
-      }
-    }
-   }  else	/* not only-class, okay to check normal anti-settings */
-    if (IsRestricted(BitMask, ch->player.class) && IS_PC(ch)) {
-      send_to_char("You are forbidden to do that.\n\r", ch);
-      return;
-    }
-
-   }
+//			if(   (OnlyClass(ch,CLASS_MAGIC_USER) || OnlyClass(ch,CLASS_SORCERER))
+//					&& (CLASS_MAGIC_USER + CLASS_SORCERER ==
+//          			GetItemClassRestrictions(obj_object)));
+//			else {
+//				if (!OnlyClass(ch,BitMask)) { /* check here only for class restricts */
+//					send_to_char("You are not the proper person for this.\n\r",ch);
+//					return;
+//				}
+//			}
+		} else	/* not only-class, okay to check normal anti-settings */
+			if (IsRestricted(BitMask, ch->player.class) && IS_PC(ch)) {
+				send_to_char("You are forbidden to do that.\n\r", ch);
+				return;
+			}
+		}
 
 
 

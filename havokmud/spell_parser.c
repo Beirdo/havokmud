@@ -1357,13 +1357,13 @@ int GetHitRegen(struct char_data *i) {
 	char buf[256];
 	int damagex=0, trollregen=0, darkpact = 0;
 
-	if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
+/*	if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
 		trollregen=hit_gain(i)*0.5;
 		send_to_char("Your wounds seem to close up and heal over some.\n\r",i);
 		sprintf(buf,"%s's wounds seem to close up.\n\r",GET_NAME(i));
 		send_to_room_except(buf,i->in_room,i);
 	}
-
+*/
 	/* darkpact regen penalty */
 	if (affected_by_spell(i, SPELL_DARK_PACT)) {
 		send_to_char("$c0008Your.pact with the Dark Lord grants your mental power a boost, but drains some of your life.\n\r", i);
@@ -1378,7 +1378,7 @@ int GetHitRegen(struct char_data *i) {
 	}
 	/*Lets regen the characters*/
 	/*Hitpoints*/
-	return hit_gain(i) + GET_HIT(i) - damagex +trollregen - darkpact;
+	return hit_gain(i) + GET_HIT(i) - damagex - darkpact;//+trollregen;
 
 }
 int ValidRoom(struct char_data *ch ){

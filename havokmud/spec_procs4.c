@@ -2870,7 +2870,20 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_da
 	return(TRUE);
 }
 
+int troll_regen(struct char_data *ch)
+{
+	assert(ch);
 
+	if(GET_HIT(ch) >= GET_MAX_HIT(ch))
+		return(FALSE);
+
+	if(number(0,2))
+		return;
+
+	GET_HIT(ch)++;
+	act("$n's wounds seem to close of their own.",FALSE, ch, 0, 0, TO_ROOM);
+	act("Your wounds close of their own accord.",FALSE, ch, 0, 0, TO_CHAR);
+}
 
 int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 

@@ -80,6 +80,48 @@ int MAX(int a, int b)
 	return a > b ? a:b;
 }
 
+int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
+{
+	if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER))
+					&& !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_THIEF) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_THIEF))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_WARRIOR) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_FIGHTER))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_CLERIC) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_CLERIC))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_BARBARIAN) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARBARIAN))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_RANGER) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_RANGER))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_PALADIN) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PALADIN))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_PSI) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_PSI))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_MONK) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MONK))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_DRUID) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_DRUID))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_BARD) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARD))
+		return(FALSE);
+
+	if (HasClass(ch, CLASS_NECROMANCER) && !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_NECROMANCER))
+		return(FALSE);
+
+	return(TRUE);
+}
+
 int GetItemClassRestrictions(struct obj_data *obj)
 {
   int total=0;
@@ -3383,6 +3425,20 @@ void AuctionPulseStuff(int pulse)
 	}
 }
 
+void TrollRegenPulseStuff(int pulse)
+{
+	struct descriptor_data *i;
+	register struct char_data *ch;
+
+	for (i = descriptor_list; i; i=i->next) {
+		if (!i->connected) {
+			ch = i->character;
+			if (IS_PC(ch) && GET_RACE(ch) == RACE_TROLL && (GET_HIT(ch) < GET_MAX_HIT(ch)))
+				troll_regen(ch);
+		}
+	}
+}
+
 void RiverPulseStuff(int pulse)
 {
   /*
@@ -3404,7 +3460,6 @@ void RiverPulseStuff(int pulse)
   for (i = descriptor_list; i; i=i->next) {
     if (!i->connected) {
       ch = i->character;
-
       if (IS_PC(ch) || RIDDEN(ch)) {
 	if (ch->in_room != NOWHERE) {
 	  if ((real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM) ||

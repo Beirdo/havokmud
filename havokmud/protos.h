@@ -2039,6 +2039,7 @@ int EgoBladeSave(struct char_data *ch);
 int MIN(int a, int b);
 int MAX(int a, int b);
 int GetItemClassRestrictions(struct obj_data *obj);
+int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj);
 int CAN_SEE(struct char_data *s, struct char_data *o);
 int exit_ok(struct room_direction_data  *exit, struct room_data **rpp);
 long MobVnum( struct char_data *c);
@@ -2117,6 +2118,7 @@ void DarknessPulseStuff(int pulse);
 void ArenaPulseStuff(int pulse);
 void PlaysongPulseStuff(int pulse);
 void AuctionPulseStuff(int pulse);
+void TrollRegenPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);
@@ -2342,6 +2344,7 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeeper, int type);
+int troll_regen(struct char_data *ch);
 
 void do_top10(struct char_data *ch, char *arg, int cmd);
 

@@ -682,6 +682,12 @@ memory_check("end 5, begin 6");
 	      AuctionPulseStuff(pulse);
     }
 
+	if (!(pulse % PULSE_TROLLREGEN)) {
+		dlog("Before troll regen pulse");
+		memory_check("troll regen pulse");
+	      TrollRegenPulseStuff(pulse);
+    }
+
 	if (!(pulse % PULSE_PLAYSONG)) {
 		dlog("Before playing song pulse");
 		memory_check("playing song pulse");

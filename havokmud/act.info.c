@@ -5661,7 +5661,7 @@ dlog("in do_allweapons");
 
 	*buf=0;
 
-	send_to_char("[  #] Weapontype", ch);
+	send_to_char("[  #] Weapontype\n\r", ch);
 
 	i = 0;
 	while (weaponskills[i].level != -1) {
