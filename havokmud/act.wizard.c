@@ -1846,11 +1846,11 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             /*
              * language
              */
-             if (!ch->player.speaks) {
-                 ch->player.speaks = SPEAK_COMMON;
+             if (!k->player.speaks) {
+                 k->player.speaks = SPEAK_COMMON;
              }
              sprintf(buf, "%sCurrently Speaking: %s%s%s", color1, color2,
-                     languagelist[ch->player.speaks], color1);
+                     languagelist[k->player.speaks], color1);
              act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
 
@@ -3875,43 +3875,6 @@ void do_start(struct char_data *ch)
 
     SetDefaultLang(ch);
 
-    switch (GET_RACE(ch)) {
-    case RACE_DROW:
-    case RACE_GOLD_ELF:
-    case RACE_WILD_ELF:
-    case RACE_SEA_ELF:
-    case RACE_MOON_ELF:
-    case RACE_AVARIEL:
-        ch->player.speaks = SPEAK_ELVISH;
-        break;
-    case RACE_DWARF:
-    case RACE_DARK_DWARF:
-        ch->player.speaks = SPEAK_DWARVISH;
-        break;
-    case RACE_DEEP_GNOME:
-    case RACE_FOREST_GNOME:
-    case RACE_ROCK_GNOME:
-        ch->player.speaks = SPEAK_GNOMISH;
-        break;
-    case RACE_HALFLING:
-        ch->player.speaks = SPEAK_HALFLING;
-        break;
-    case RACE_HALF_ORC:
-        ch->player.speaks = SPEAK_ORCISH;
-        break;
-    case RACE_HALF_GIANT:
-        ch->player.speaks = SPEAK_GIANTISH;
-        break;
-    case RACE_HALF_OGRE:
-        ch->player.speaks = SPEAK_OGRE;
-        break;
-        /*
-         * humans, half-elves all speak common so let default get them
-         */
-    default:
-        ch->player.speaks = SPEAK_COMMON;
-        break;
-    }
 
     if (IS_SET(ch->player.user_flags, USE_ANSI)) {
         temp = 1;

@@ -917,7 +917,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
                  IS_IMMORTAL(t) || IS_NPC(t) || 
                  affected_by_spell(t, SKILL_ESP) || 
                  affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
-                 ch->player.speaks == 9)) {
+                 ch->player.speaks == SPEAK_ALL)) {
                 /*
                  * these guys always understand
                  */
