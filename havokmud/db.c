@@ -99,6 +99,10 @@ int  read_mob_from_file(struct char_data *mob,FILE *mob_fi);
 int  read_mob_from_new_file(struct char_data *mob,FILE *mob_fi);
 int GetExpFlags( struct char_data *mob, int exp);
 int wizcenter(char *buf);
+char *fread_string(FILE *f1);
+void setup_dir(FILE *fl, long room, int dir);
+struct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *alloc_top, char *dirname);
+
 /************************************************************************
 *  routines for booting the system                                       *
 *********************************************************************** */

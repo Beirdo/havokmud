@@ -27,6 +27,19 @@ typedef char byte;
 #define FOREST_DARK     2
 #define NO_DARK         3
 
+#define cmd_look       15
+#define cmd_write      149
+#define cmd_read       63
+#define cmd_remove     66
+#define cmd_reply      515
+#define cmd_reload     284
+#define cmd_first_move 1
+
+#define ONE_WORD                  24
+#define ONE_LINE                  96
+#define ONE_PARAGRAPH            576
+#define ONE_PAGE                3072
+
 
 #define PULSE_COMMAND   0
 #define PULSE_TICK      1
@@ -127,7 +140,7 @@ struct QuestItem {
   char *where;
 };
 
-#define VERSION "1.9.3 (GH)Dec. 17th, 2002"
+#define VERSION "1.9.9 Aug. 25th, 2003"
 /*
   tailoring stuff
 */
@@ -1733,6 +1746,7 @@ struct txt_q
 #define CON_CREATION_MENU   33
 #define CON_ALIGNMENT       34
 #define CON_HELP_EDITING    35
+#define CON_EMAILREG            36
 
 struct snoop_data
 {
@@ -1753,10 +1767,19 @@ struct descriptor_data
 	int pos;                      /* position in player-file    */
 	int connected;                /* mode of 'connectedness'    */
 	int wait;                     /* wait for how many loops    */
-	char *showstr_head;	      /* for paging through texts   */
+
+
+
+
 	char *showstr_point;	      /*       -                    */
-	char **str;                   /* for the modify-str system  */
-	int max_str;                  /* -                          */
+  char *showstr_head;	      /* for paging through texts   */
+  char **showstr_vector;        /* for paging through texts		*/
+  int  showstr_count;           /* number of pages to page through	*/
+  int  showstr_page;            /* which page are we currently showing?	*/
+  char **str;                   /* for the modify-str system  */
+  int max_str;                  /* -                          */
+
+
 	int prompt_mode;              /* control of prompt-printing */
 	char buf[MAX_STRING_LENGTH];  /* buffer for raw input       */
 	char last_input[MAX_INPUT_LENGTH];/* the last input         */
@@ -1764,20 +1787,30 @@ struct descriptor_data
 	char stat[MAX_STAT];         /* stat priorities            */
 
 		/* for the new write_to_out */
-char small_outbuf[SMALL_BUFSIZE];
-int bufptr;
-int bufspace;
-struct txt_block *large_outbuf;
-#if BLOCK_WRITE
-char *output;
-#else
-struct txt_q output;          /* q of strings to send       */
-#endif
+   char small_outbuf[SMALL_BUFSIZE];
+   int bufptr;
+   int bufspace;
+   struct txt_block *large_outbuf;
+   #if BLOCK_WRITE
+      char *output;
+   #else
+      struct txt_q output;          /* q of strings to send       */
+   #endif
 	struct txt_q input;           /* q of unprocessed input     */
 	struct char_data *character;  /* linked to char             */
         struct char_data *original;   /* original char              */
 	struct snoop_data snoop;      /* to snoop people.           */
 	struct descriptor_data *next; /* link to next descriptor    */
+
+
+  char                           *list_string; /* for building very large buffers for page_string */
+  int                            list_size; /* keeps track of strlen of list_string */
+
+
+  struct bulletin_board_message  *msg;  /* For posting discussion messages */
+  struct bulletin_board          *board; /* To keep track of the board we're posting to */
+
+
 };
 
 struct msg_type
@@ -1786,6 +1819,30 @@ struct msg_type
 	char *victim_msg;    /* message to victim   */
 	char *room_msg;      /* message to room     */
 };
+
+struct bulletin_board_message
+{
+  char                           *author;
+  char                           *title;
+  char                           *text;
+  time_t                         date;
+  int                            char_id;
+  short                          message_id;
+  short                          reply_to;
+  short                          language;
+
+  struct bulletin_board_message  *next;
+};
+
+struct bulletin_board
+{
+  short                          num_posts;
+  struct bulletin_board_message  *messages;
+  int                            board_num;
+
+  struct bulletin_board          *next;
+};
+
 
 struct message_type
 {

@@ -520,14 +520,12 @@ int game_loop(int s)
 	    string_add(point, comm);
 	  else
 	  if (!point->connected)          {
-	    if (point->showstr_point) {
+	    if (point->showstr_count) { //point->showstr_point) {
 	      show_string(point, comm);
-	      }
-	    else  {
-	     command_interpreter (  point->character, comm);
-	     }
-	  }
-	  else if(point->connected == CON_EDITING)
+	    }  else  {
+	        command_interpreter (  point->character, comm);
+	    }
+	  } else if(point->connected == CON_EDITING)
 	    RoomEdit(point->character,comm);
 	  else if(point->connected == CON_OBJ_EDITING)
 	    ObjEdit(point->character,comm);
@@ -565,10 +563,13 @@ memory_check("end 5, begin 6");
 	if (point->str)
 	  write_to_descriptor(point->descriptor, "-> ");
 	else if (!point->connected)
-	  if (point->showstr_point)
-	    write_to_descriptor(point->descriptor,
-				"[Return to continue/Q to quit]");
-	  else {
+	  if (point->showstr_count) { //point->showstr_point) {
+	    sprintf(promptbuf, "[ Enter to continue, (q)uit, (r)efresh, (b)ack, or page number (%d/%d) ]",
+	            point->showstr_page, point->showstr_count);
+	    write_to_descriptor(point->descriptor, promptbuf);
+	    //write_to_descriptor(point->descriptor,"[Return to continue/Q to quit]");
+
+	  } else {
 
 	    if(point->character->term == VT100) {
 	       struct char_data *ch;
@@ -1230,6 +1231,10 @@ if (newd)
   newd->showstr_head = 0;
   newd->showstr_point = 0;
   *newd->last_input= '\0';
+
+  newd->showstr_vector  = 0;
+  newd->showstr_count   = 0;
+
 #ifndef BLOCK_WRITE
    newd->output.head = NULL;
 #else
@@ -1242,6 +1247,9 @@ if (newd)
   newd->next = descriptor_list;
   newd->character = 0;
   newd->original = 0;
+
+
+
   newd->snoop.snooping = 0;
   newd->snoop.snoop_by = 0;
 
@@ -1249,7 +1257,8 @@ if (newd)
 
   descriptor_list = newd;
 
-  SEND_TO_Q(login, newd);
+//write_to_descriptor(newd,ParseAnsiColors(1 ,login));
+  SEND_TO_Q(ParseAnsiColors(1,login), newd);
   SEND_TO_Q("What is thy name? ", newd);
 
   return(0);

@@ -510,12 +510,11 @@ int game_loop(int s)
 	    string_add(point, comm);
 	  else
 	  if (!point->connected)          {
-	    if (point->showstr_point) {
+	    if ( point->showstr_count) { //point->showstr_point) {
 	      show_string(point, comm);
-	      }
-	    else  {
-	     command_interpreter (  point->character, comm);
-	     }
+	    } else  {
+	      command_interpreter (  point->character, comm);
+	    }
 	  }
 	  else if(point->connected == CON_EDITING)
 	    RoomEdit(point->character,comm);
@@ -555,11 +554,13 @@ memory_check("end 5, begin 6");
 	if (point->str)
 	  write_to_descriptor(point->descriptor, "-> ");
 	else if (!point->connected)
-	  if (point->showstr_point)
-	    write_to_descriptor(point->descriptor,
-				"[Return to continue/Q to quit]");
-	  else {
+	  if (point->showstr_count) { //point->showstr_point) {
+	  	    sprintf(promptbuf, "[ Enter to continue, (q)uit, (r)efresh, (b)ack, or page number (%d/%d) ]",
+	  	            point->showstr_page, point->showstr_count);
+	  	    write_to_descriptor(point->descriptor, promptbuf);
+	  	    //write_to_descriptor(point->descriptor,"[Return to continue/Q to quit]");
 
+	  } else {
 	    if(point->character->term == VT100) {
 	       struct char_data *ch;
 	       int update = 0;
@@ -1228,7 +1229,9 @@ if (newd)
 
   descriptor_list = newd;
 
-  SEND_TO_Q(login, newd);
+  //write_to_descriptor(newd,ParseAnsiColors(IS_SET(point->character->player.user_flags,USE_ANSI),login));
+  //SEND_TO_Q(login, newd);
+  SEND_TO_Q(ParseAnsiColors(1,login), newd);
   SEND_TO_Q("What is thy name? ", newd);
 
   return(0);

@@ -684,6 +684,48 @@ int scan_number(char *text, int *rval)
   return 1;
 }
 
+char *strip_ansi(char *newbuf, const char *orig, size_t maxlen)
+{
+  int i = 0, k = 0;
+
+  while ((orig + i) && (k < (maxlen - 1))) {
+    if ((*(orig + i) == '$') && ((orig + i + 1) && (LOWER(*(orig + i + 1)) == 'c')) &&
+        ((orig + i + 2) && isdigit(*(orig + i + 2))) && ((orig + i + 3) && isdigit(*(orig + i + 3))) &&
+        ((orig + i + 4) && isdigit(*(orig + i + 4))) && ((orig + i + 5) && isdigit(*(orig + i + 5))))
+      i += 6;
+
+    newbuf[k++] = orig[i];
+
+    if (orig + i)
+      i++;
+  }
+
+  newbuf[k] = '\0';
+
+  return newbuf;
+}
+
+
+/*
+ * This procedure removes the '\r' from a string so that it may be saved
+ * to a file correctly.
+*/
+char *strip_cr(char *newbuf, const char *orig, size_t maxlen)
+{
+  int i = 0, k = 0;
+
+  while (*(orig + i) && (k < (maxlen - 1))) {
+    if (*(orig + i) != '\r')
+      newbuf[k++] = orig[i];
+
+    i++;
+  }
+
+  newbuf[k] = '\0';
+
+  return newbuf;
+}
+
 
 /* returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2  */
 /* scan 'till found different or end of both                 */

@@ -283,7 +283,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd);
 
 /* From act.social.c */
 
-char *fread_action(FILE *fl);
+//char *fread_action(FILE *fl);
 void boot_social_messages();
 int find_action(int cmd);
 void do_action(struct char_data *ch, char *argument, int cmd);
@@ -438,21 +438,21 @@ int raw_force_all( char *to_force);
 
 
 /* From db.c */
-int fwrite_string (FILE *fl, char *buf);
+//XXint fwrite_string (FILE *fl, char *buf);
 void SaveTheWorld();
 void boot_db();
 void reset_time();
 void update_time();
 void build_player_index();
-struct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *alloc_top, char *dirname) ;
+//XXstruct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *alloc_top, char *dirname) ;
 void cleanout_room(struct room_data *rp);
 void completely_cleanout_room(struct room_data *rp);
-void load_one_room(FILE *fl, struct room_data *rp);
+//XXvoid load_one_room(FILE *fl, struct room_data *rp);
 void boot_world();
 void boot_saved_zones();
 void boot_saved_rooms();
 void allocate_room(long room_number);
-void setup_dir(FILE *fl, long room, int dir);
+//XXvoid setup_dir(FILE *fl, long room, int dir);
 void renum_zone_table(int spec_zone);
 void boot_zones();
 struct char_data *read_mobile(int nr, int type);
@@ -467,7 +467,7 @@ int create_entry(char *name);
 void save_char(struct char_data *ch, sh_int load_room);
 int compare(struct player_index_element *arg1, struct player_index_element
 	*arg2);
-char *fread_string(FILE *fl);
+//Xchar *fread_string(FILE *fl);
 void free_char(struct char_data *ch);
 void free_obj(struct obj_data *obj);
 int file_to_string(char *name, char *buf);
@@ -1111,7 +1111,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd);
 
 void do_setskill(struct char_data *ch, char *arg, int cmd);
 char *one_word(char *argument, char *first_arg );
-struct help_index_element *build_help_index(FILE *fl, int *num);
+//struct help_index_element *build_help_index(FILE *fl, int *num);
 void page_string(struct descriptor_data *d, char *str, int keep_internal);
 void show_string(struct descriptor_data *d, char *input);
 void night_watchman();
@@ -1163,8 +1163,8 @@ void PrintLimitedItems();
 int receptionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 void zero_rent( struct char_data *ch);
 void ZeroRent( char *n);
-int ReadObjs( FILE *fl, struct obj_file_u *st);
-int WriteObjs( FILE *fl, struct obj_file_u *st);
+//int ReadObjs( FILE *fl, struct obj_file_u *st);
+//int WriteObjs( FILE *fl, struct obj_file_u *st);
 void load_char_extra(struct char_data *ch);
 void write_char_extra( struct char_data *ch);
 void obj_store_to_room(int room, struct obj_file_u *st);
@@ -2045,14 +2045,14 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 int exit_ok(struct room_direction_data  *exit, struct room_data **rpp);
 long MobVnum( struct char_data *c);
 long ObjVnum( struct obj_data *o);
-void Zwrite (FILE *fp, char cmd, int tf, int arg1, int arg2, int arg3,
-	     char *desc);
-void RecZwriteObj(FILE *fp, struct obj_data *o);
-int SaveZoneFile(FILE *fl, int start_room, int end_room);
-int LoadZoneFile(FILE *fl, int zon);
+//void Zwrite (FILE *fp, char cmd, int tf, int arg1, int arg2, int arg3,
+//	     char *desc);
+//void RecZwriteObj(FILE *fp, struct obj_data *o);
+//int SaveZoneFile(FILE *fl, int start_room, int end_room);
+//int LoadZoneFile(FILE *fl, int zon);
 int FindZone(int zone);
-FILE *MakeZoneFile( struct char_data *c, int zone);
-FILE *OpenZoneFile(struct char_data *c, int zone);
+//FILE *MakeZoneFile( struct char_data *c, int zone);
+//FILE *OpenZoneFile(struct char_data *c, int zone);
 int WeaponImmune(struct char_data *ch);
 unsigned IsImmune(struct char_data *ch, int bit);
 unsigned IsResist(struct char_data *ch, int bit);
@@ -2077,7 +2077,7 @@ int DetermineExp( struct char_data *mob, int exp_flags);
 void down_river( int pulse );
 void RoomSave(struct char_data *ch, long start, long end);
 void RoomLoad( struct char_data *ch, int start, int end);
-void fake_setup_dir(FILE *fl, long room, int dir);
+//void fake_setup_dir(FILE *fl, long room, int dir);
 int IsHumanoid( struct char_data *ch);
 int IsRideable( struct char_data *ch);
 int IsAnimal( struct char_data *ch);
@@ -2228,7 +2228,7 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd);
 void do_ooc(struct char_data *ch, char *argument, int cmd);
 void do_plr_noooc(struct char_data *ch, char *argument, int cmd);
 void do_msave(struct char_data *ch, char *argument, int cmd);
-void write_mob_to_file(struct char_data *mob, FILE *mob_fi);//,int hpB);
+//void write_mob_to_file(struct char_data *mob, FILE *mob_fi);//,int hpB);
 void do_wizreport(struct char_data *ch, char *argument, int cmd);
 void do_donate(struct char_data *ch, char *argument, int cmd);
 void do_reply(struct char_data *ch, char *argument, int cmd);

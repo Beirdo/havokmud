@@ -93,6 +93,161 @@ int max_value[] =
 
 /* Add user input to the 'current' string (as defined by d->str) */
 
+#if 1
+
+
+/*
+ * This is basically the MUDs built-in editor.  I'm going to attempt to
+ * make it somewhat vi-like.  Okay so maybe that's an overstatement, I
+ * just want to add some functionality =)
+ */
+void string_add(struct descriptor_data *d, char *str)
+{
+  int terminator = 0;
+
+  /*
+   * First of all we're concerned with finding a : at the beginning of an
+   * incoming string, since that's our command character.
+   */
+  if (*str == ':') {
+    switch(str[1]) {
+      case 'q': /* character is bombing out of the editor */
+        terminator = -1;
+        *str = '\0';
+        break;
+      case 'w': /* character is saving message */
+        terminator = 1;
+        *str = '\0';
+        break;
+      case 'c':
+        if (*(d->str)) {
+          free(*(d->str));
+          *(d->str) = NULL;
+          SEND_TO_Q("Buffer cleared.\r\n", d);
+        } else
+          SEND_TO_Q("Buffer already empty.\r\n", d);
+        *str = '\0';
+        break;
+      case 'p': /* print the message */
+        if (*d->str && **d->str)
+          SEND_TO_Q(*d->str, d);
+        else
+          SEND_TO_Q("The buffer is currently empty.\r\n", d);
+        *str = '\0';
+        break;
+      case '?': /* character wants help! */
+        SEND_TO_Q("           DaleMUD 3.? Millenium Edition Editor Help Screen\r\n"
+                  "          --------------------------------------------------\r\n\r\n"
+                  "All commands issued within the editor must be issued at the beginning\r\n"
+                  "of a new line of text.  All commands are prefixed with the character :\r\n\r\n"
+                  "Commands:\r\n"
+                  "------------------------------------------------------------\r\n"
+                  " :w -- This will save your message and exit the editor.\r\n"
+                  " :q -- This aborts your message without saving and exits the editor.\r\n"
+                  " :c -- This will clear the current message without exiting the editor.\r\n"
+                  " :p -- This will print the current message to your screen.\r\n"
+                  " :? -- Take a guess =)\r\n", d);
+        *str = '\0';
+        break;
+
+      default: /* just an innocent mistake, let the string through unharmed */
+        break;
+    }
+  }
+
+  if (!(*d->str)) {
+    if (strlen(str) > d->max_str) {
+      send_to_char("String too long - Truncated.\r\n", d->character);
+      *(str + d->max_str) = '\0';
+    }
+
+    CREATE(*d->str, char, strlen(str) + 3);
+    strcpy(*d->str, str);
+  } else {
+    if (strlen(str) + strlen(*d->str) > d->max_str)	{
+      send_to_char("String too long. Last line ignored.\n\r", d->character);
+    } else {
+      if (!(*d->str = (char *) realloc(*d->str, strlen(*d->str) + strlen(str) + 3))) {
+        perror("string_add");
+        assert(0);
+      }
+      strcat(*d->str, str);
+    }
+  }
+
+  if (terminator) {
+    /* NULL empty messages */
+    if ((d->str) && (*d->str) && (**d->str == '\0')) {
+      free(*d->str);
+      *d->str = NULL;
+    }
+
+    if (!d->connected && (IS_SET(d->character->specials.act, PLR_MAILING))) {
+      if ((terminator > 0) && *d->str) {
+        store_mail(d->name, d->character->player.name, *d->str);
+        SEND_TO_Q("Message sent.\r\n", d);
+      } else
+        SEND_TO_Q("Message aborted.\r\n", d);
+
+      if (*d->str)
+        free(*d->str);
+      *d->str = NULL;
+      if (d->str)
+        free(d->str);
+      if (d->name)
+        free(d->name);
+      d->name = 0;
+      REMOVE_BIT(d->character->specials.act, PLR_MAILING);
+    } else if (!d->connected && (IS_SET(d->character->specials.act, PLR_NODIMD))) {
+      if ((terminator > 0) && *d->str) {
+        struct bulletin_board_message *tmp;
+
+        /* Post finished, add it to the board's list of messages */
+        d->msg->message_id = ++d->board->num_posts;
+        d->msg->date       = time(0);
+
+        /* link it up to the end of the list so lower-numbered messages are displayed first */
+        if (d->board->messages == NULL) { /* the list is empty */
+          d->board->messages = d->msg;
+        } else {
+          tmp = d->board->messages;
+          while (tmp->next)
+            tmp = tmp->next;
+
+          /* tmp should be at the end of the list */
+          tmp->next = d->msg;
+        }
+
+        /* Save the board and then toss the pointers */
+        save_board(d->board, d->board->board_num);
+
+        SEND_TO_Q("Message posted.\r\n", d);
+        act("$n has finished posting $s message.", TRUE, d->character, NULL, NULL, TO_ROOM);
+      } else { /* user has aborted the post */
+        if (*d->str)
+          free(*d->str);
+        *d->str = NULL;
+
+        if (d->msg->author)
+          free(d->msg->author);
+        if (d->msg->title)
+          free(d->msg->title);
+
+        SEND_TO_Q("Post aborted.\r\n", d);
+        act("$n decides not to finish $s message.", TRUE, d->character, NULL, NULL, TO_ROOM);
+      }
+
+      d->board = NULL;
+      d->msg   = NULL;
+      REMOVE_BIT(d->character->specials.act, PLR_NODIMD);
+    }
+    d->str = NULL;
+  } else if (*str)
+    strcat(*d->str, "\r\n");
+}
+
+
+#else
 void string_add(struct descriptor_data *d, char *str)
 {
   char *scan;
@@ -152,6 +307,7 @@ void string_add(struct descriptor_data *d, char *str)
     strcat(*d->str, "\n\r");
 }
 
+#endif
 
 #undef MAX_STR
 
@@ -894,7 +1050,7 @@ struct help_index_element *build_help_index(FILE *fl, int *num)
 }
 
 
-
+#if 0
 void page_string(struct descriptor_data *d, char *str, int keep_internal)
 {
   if (!d)
@@ -910,9 +1066,9 @@ void page_string(struct descriptor_data *d, char *str, int keep_internal)
 
   show_string(d, "");
 }
-
+#endif
 char *ParseAnsiColors(int UsingAnsi, char *txt);
-
+#if 0
 void show_string(struct descriptor_data *d, char *input)
 {
   char buffer[MAX_STRING_LENGTH], buf[MAX_INPUT_LENGTH+50];
@@ -962,7 +1118,7 @@ void show_string(struct descriptor_data *d, char *input)
     }
   }
 }
-
+#endif
 
 
 
