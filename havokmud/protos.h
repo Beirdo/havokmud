@@ -2251,3 +2251,4 @@ long NewExpCap(struct char_data *ch, long total);
 
 int ValidRoom(struct char_data *ch );
 
+void do_objectreport(struct char_data *ch, char *argument, int cmd);

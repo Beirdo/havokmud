@@ -2592,8 +2592,8 @@ strcat(buf,"\n\r");
 
       send_to_char(buf, ch);
 
-      sprintf(buf, "$c0005Size of armor is: $c0014%d\n\r",
-	  	      obj->obj_flags.value[2]);
+      sprintf(buf, "$c0005Size of armor is: $c0014%s\n\r",
+	  	      ArmorSize(obj->obj_flags.value[2]));
 
       send_to_char(buf, ch);
       break;

@@ -4299,6 +4299,29 @@ char *SpeedDesc(int a)
 }
 
 
+char *ArmorSize(int a)
+{
+
+  if (a == 0) {
+    return("Adjustable");
+  } else if (a == 1) {
+    return("Tiny");
+  } else if (a == 2) {
+    return("Small");
+  } else if (a == 3) {
+    return("Medium");
+  } else if (a == 4) {
+    return("Large");
+  } else if (a == 5) {
+	return("Huge");
+  } else if (a == 6) {
+	return("Enormous");
+  } else {
+    return("Invalid Size");
+  }
+}
+
+
 
 void do_display(struct char_data *ch, char *arg, int cmd)
 {

@@ -596,7 +596,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
   char buffer[MAX_STRING_LENGTH];
   int BitMask;
   struct room_data *rp;
-
+  extern const struct race_type race_list[];
 
   if (!IS_IMMORTAL(ch)) {
 
@@ -624,6 +624,36 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
 
    }
 
+
+
+	if(GET_ITEM_TYPE(obj_object)==ITEM_ARMOR) {
+
+
+		//0=all
+
+		//obj->obj_flags.value[2]          size of armor
+		//race_list[race].size
+		if( obj_object->obj_flags.value[2] == 0 ) {
+
+
+		} else
+			if(obj_object->obj_flags.value[2] == race_list[ch->race].size
+				|| obj_object->obj_flags.value[2] == (race_list[ch->race].size + 1)
+				|| obj_object->obj_flags.value[2] == (race_list[ch->race].size - 1) ) {
+
+			} else {
+			send_to_char("It doesnt' seem to fit",ch);
+			return;
+		}
+
+	//::Tsaron:: '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge, 6=gargantuan '
+	//You think 'then slowly introduce the sizes with new zones.'
+	//::Tsaron:: 'medium covers everything human, elf, half-orc'
+	//::Tsaron:: 'small is dwarf, gnome, and halfling'
+	//::Tsaron:: 'ogre and troll would be large'
+	//::Tsaron:: 'giant would be huge'
+
+	}
 
   if (anti_barbarian_stuff(obj_object) && GET_LEVEL(ch,BARBARIAN_LEVEL_IND) !=0
       && GetMaxLevel(ch) < LOW_IMMORTAL) {

@@ -160,5 +160,6 @@ struct race_type
   int old;
   int ancient;
   int venerable;
+  int size;
 
 };

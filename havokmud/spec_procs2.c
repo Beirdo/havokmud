@@ -2880,7 +2880,7 @@ int ABShout(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
    else  /* not been an hour, update how long it has been */
    {
       time_diff = time(NULL) - last_time;
-      printf("Avatar of Blibdoolpoolp - %d.\n", time_diff);
+      //printf("Avatar of Blibdoolpoolp - %d.\n", time_diff);
    }
 
    return(FALSE);
@@ -2910,7 +2910,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg, struct char_data *
       else
       {
          time_diff = time(NULL) - last_time;
-         printf("Avatar of Posereisn - %d.\n", time_diff);
+         //printf("Avatar of Posereisn - %d.\n", time_diff);
       }
    }
 
