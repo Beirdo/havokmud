@@ -4020,17 +4020,17 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (!(spell_info[sn].min_level_magic)) {  //is it a mage spell?
+	if (!(spell_info[sn+1].min_level_magic)) {  //is it a mage spell?
 		send_to_char("You cannot concoct that spell!\n\r",ch);
 		return;
 	}
 
-	if (spell_info[sn].brewable == 0){
+	if (spell_info[sn+1].brewable == 0){
 		send_to_char("You can't brew that spell.\n\r",ch);
 		return;
 	}
 
-	if((GET_MANA(ch) < spell_info[sn].min_usesmana*2) && !IS_IMMORTAL(ch)) {
+	if((GET_MANA(ch) < spell_info[sn+1].min_usesmana*2) && !IS_IMMORTAL(ch)) {
 		send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
 		return;
 	}
@@ -4047,8 +4047,8 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		WAIT_STATE(ch,PULSE_VIOLENCE*10);
 		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_CHAR );
 		act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_ROOM );
-		GET_HIT(ch) -= spell_info[sn].min_level_magic;
-		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		GET_HIT(ch) -= spell_info[sn+1].min_level_magic;
+		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		act("$n screams in pain as $p exploded on $m.",TRUE,ch,obj,NULL,TO_ROOM);
 		act("You scream in pain as $p explodes.",TRUE,ch,obj,NULL,TO_CHAR);
 
@@ -4057,7 +4057,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		return;
 	} else {
 
-		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		sprintf(buf, "You have imbued a new spell to %s.\n\r", obj->short_description);
 		send_to_char( buf, ch );
 		send_to_char("The brew was a success!\n\r", ch);
