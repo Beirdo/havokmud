@@ -23,7 +23,7 @@ extern char  *spells[];
 extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern int MaxArenaLevel, MinArenaLevel;
 struct char_data *mem_list = 0; /* head for the list of memorizers */
-
+void stop_follower(struct char_data *ch);
 void do_gain(struct char_data *ch, char *argument, int cmd)
 {
 dlog("in do_gain");
@@ -2585,71 +2585,99 @@ if (GetMaxLevel(ch) > MaxArenaLevel){
 
 void do_promote(struct char_data *ch, char *arg, int cmd)
 {
-struct char_data *ch2, *tmp;
-char name[100];
-struct follow_type *k;
-
-    if (!arg){
-      send_to_char("Proper usage is:\n\rpromote <name>\n\r",ch);
-      return;
-      }
-    
-    only_argument(arg, name);
-    ch2 = get_char_room_vis(ch,name);
-    
-    
-    if (!IS_AFFECTED(ch, AFF_GROUP)){ 
-      send_to_char("But you aren't even IN a group.\n\r",ch); 
-      return;
-      }else
+  int count = 0;
+  int x = 0;
+  struct char_data *c[25];
+  char buf[100];
+  struct char_data *ch2, *tmp;
+  char name[100];
+  struct follow_type *f, *k;
+  
+  if (!arg){
+    send_to_char("Proper usage is:\n\rpromote <name>\n\r",ch);
+    return;
+  }
+  
+  only_argument(arg, name);
+  ch2 = get_char(name);
+  //_room_vis(ch,name);
+  
+  if(!strcmp(name,GET_NAME(ch))) {
+    send_to_char("Your already the leader of the group.\n\r",ch);
+    return;
+  }
+  
+  if (!IS_AFFECTED(ch, AFF_GROUP)){
+    send_to_char("But you aren't even IN a group.\n\r",ch); 
+    return;
+  }else
     if(!ch2){
       send_to_char("You don't see that person.\n\r",ch);
       return;
+    }else
+      if(ch->master && ch->master->player.name == ch2->player.name){
+	send_to_char("You already follow that person.\n\r",ch);
+	return;
       }else
-    if(ch->master && ch->master->player.name == ch2->player.name){
-      send_to_char("You already follow that person.\n\r",ch);
-      return;
-      }else
-    if(ch->master){
-      send_to_char("Maybe you should ask your group leader to do that.\n\r",ch);
-      return;
-      }else
-    if(IS_NPC(ch2)){
-      send_to_char("You might want to entrust that position to an actual character.\n\r", ch);
-      return;
-      }else
-    if(!IS_AFFECTED(ch2, AFF_GROUP) || ch2->master != ch){
-      send_to_char("They aren't even in your group!\n\r",ch);
-      return;
-      }     
-
-
-/*The actual promotion*/
+	if(ch->master){
+	  send_to_char("Maybe you should ask your group leader to do that.\n\r",ch);
+	  return;
+	}else
+	  if(IS_NPC(ch2)){
+	    send_to_char("You might want to entrust that position to an actual character.\n\r", ch);
+	    return;
+	  }else
+	    if(!IS_AFFECTED(ch2, AFF_GROUP) || ch2->master != ch){
+	      send_to_char("They aren't even in your group!\n\r",ch);
+	      return;
+	    }       
+  /*The actual promotion*/
   /*Tell everyone whats happening*/
-   act("$c0012You promote $N to leader of the group.\r",FALSE, ch, 0,ch2,TO_CHAR);
-   act("$c0012You have been promoted by $n to lead the group\r",FALSE,ch,0,ch2,TO_VICT);
-   /*Group told later to be efficient*/
-
+  act("$c0012You promote $N to leader of the group.\r",FALSE, ch, 0,ch2,TO_CHAR);
+  act("$c0012You have been promoted by $n to lead the group\r",FALSE,ch,0,ch2,TO_VICT);
+  /*Group told later to be efficient*/
+  
   /*Person to be promoted follows himself */
-	stop_follower(ch2);
+  //stop_follower(ch2);
+  k = ch->followers;
+ 
+  /* There is a faster method in doing this.. This is just a temp. fix.
+     Greg Hovey
+  */
 
-  /*Rest of group follows new leader*/	
-  for(k = ch->followers;k;k = k->next)
-     {
-      tmp = k->follower;
-      act("$c0012$N has been promoted to leader of the group.\r",FALSE,k->follower, 0, name, TO_CHAR);
-      if(!IS_AFFECTED(k->follower, AFF_CHARM) &&
-         IS_AFFECTED(k->follower, AFF_GROUP))
-         {stop_follower(k->follower);
-          add_follower(tmp,ch2);
-          SET_BIT(tmp->specials.affected_by, AFF_GROUP);
-         }
-      }
+  //takes all chars in group and adds it to an character array..
+  for(k=ch->followers;k;k=k->next) {
+    if(k) { 
+      c[count] = k->follower;
+      count++;
+    }
+  }
+  sprintf(buf,"$c0012%s has been promoted to leader of the group.\r",GET_NAME(ch2));
+  for(x = 0;x < count;x++) {
+    if(ch2!=c[x])//display to each char wasn't going on..
+      act(buf,FALSE,c[x], 0, name, TO_CHAR);
+    
+    stop_follower_quiet(c[x]); //stop_following
 
-  /*Old leader follows new leader*/
-   add_follower(ch, ch2);
-   SET_BIT(ch2->specials.affected_by, AFF_GROUP);
-   SET_BIT(ch->specials.affected_by, AFF_GROUP);
+    //add follower crap..
+    c[x]->master = ch2;
+    CREATE(k, struct follow_type, 1);
+  
+    k->follower = c[x];
+    k->next = ch2->followers;
+    ch2->followers = k;
+  }
+ 
+  ch->master = ch2;
+  CREATE(k, struct follow_type, 1);
+  
+  k->follower = ch;
+  k->next = ch2->followers;
+  ch2->followers = k;
+ 
+  //dont know if this is very profiecent but anyway..
+  do_follow(ch2,GET_NAME(ch2),91);  //tell leader to follow themself
+  do_group(ch2,"all",202);// and group all
 
-return;
+  return;
 }

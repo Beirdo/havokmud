@@ -1433,7 +1433,7 @@ AddCommand("dthink",do_dthink,488,POSITION_RESTING,51);
 
 AddCommand("sending",do_sending,489,POSITION_STANDING,1);
 AddCommand("messenger",do_sending,490,POSITION_STANDING,1);
-AddCommand("promote", do_promote,491,POSITION_RESTING,59);
+AddCommand("promote", do_promote,491,POSITION_RESTING,1);
 
 AddCommand("ooedit",do_ooedit,492,POSITION_DEAD,53);
 AddCommand("whois",do_finger,493,POSITION_DEAD,1);

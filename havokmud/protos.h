@@ -2062,3 +2062,6 @@ int HasFlyItem(struct char_data *ch);
 #define random() rand()
 #define srandom(seed) srand(seed)
 
+
+//In spell_parser.c
+void stop_follower_quiet(struct char_data *ch);

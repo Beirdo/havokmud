@@ -1421,6 +1421,54 @@ if (j)
   REMOVE_BIT(ch->specials.affected_by, AFF_CHARM | AFF_GROUP);
 }
 
+void stop_follower_quiet(struct char_data *ch)
+{
+  struct follow_type *j, *k;
+
+  if (!ch->master) return;
+
+  if (IS_AFFECTED(ch, AFF_CHARM)) {
+    act("You realize that $N is a jerk!", FALSE, ch, 0, ch->master, TO_CHAR);
+    act("$n realizes that $N is a jerk!", FALSE, ch, 0, ch->master, 
+	TO_NOTVICT);
+      act("$n hates your guts!", FALSE, ch, 0, ch->master, TO_VICT);
+
+    if (affected_by_spell(ch, SPELL_CHARM_PERSON))
+      affect_from_char(ch, SPELL_CHARM_PERSON);
+
+  } else {
+  //act("You stop following $N.", FALSE, ch, 0, ch->master, TO_CHAR);
+    if (!IS_SET(ch->specials.act,PLR_STEALTH)) {
+      //  act("$n stops following $N.", FALSE, ch, 0, ch->master, TO_NOTVICT);
+      // act("$n stops following you.", FALSE, ch, 0, ch->master, TO_VICT);
+    }
+  }
+  
+  if (ch->master->followers->follower == ch) { /* Head of follower-list? */
+    k = ch->master->followers;
+    ch->master->followers = k->next;
+if (k)
+    free(k);
+  } else { /* locate follower who is not head of list */
+    
+    for(k = ch->master->followers; k->next && k->next->follower!=ch; 
+	k=k->next)  
+      ;
+    
+    if (k->next) {
+      j = k->next;
+      k->next = j->next;
+if (j)
+      free(j);
+    } else {
+      assert(FALSE);
+    }
+  }
+  
+  ch->master = 0;
+  REMOVE_BIT(ch->specials.affected_by, AFF_CHARM | AFF_GROUP);
+}
+
 
 
 /* Called when a character that follows/is followed dies */
