@@ -734,7 +734,7 @@ int write_one_help(struct char_data *ch, FILE *f_temp)
 	sprintf(buf,"\nDone by %s, %s", hlp->modBy, asctime(localtime(&hlp->modified)));
 	fputs(buf, f_temp);
 
-	fputs("#", f_temp);
+	fputs("#\n", f_temp);
 	return(TRUE);
 }
 
