@@ -1334,7 +1334,9 @@ void            spell_aura_power(int level, struct char_data *ch,
 void            spell_holy_armor(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);
-
+void            spell_circle_protection(int level, struct char_data *ch,
+                                        struct char_data *victim,
+                                        struct obj_data *obj);
 /*
  * From magicutils.c 
  */
@@ -1560,7 +1562,6 @@ void            do_find(struct char_data *ch, char *arg, int cmd);
 int             FSkillCheck(struct char_data *ch, int fskill);
 void            do_flowerfist(struct char_data *ch, char *argument, int cmd);
 void            do_flurry(struct char_data *ch, char *argument, int cmd);
-
 /*
  * From spec_assign.c 
  */
@@ -2884,7 +2885,10 @@ void            cast_aura_power(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-
+void            cast_circle_protection(int level, struct char_data *ch,
+                                       char *arg, int type,
+                                       struct char_data *tar_ch,
+                                       struct obj_data *tar_obj);
 void            do_charge(struct char_data *ch, char *argument, int cmd);
 void            do_steed(struct char_data *ch, char *argument, int cmd);
 void            do_stop(struct char_data *ch, char *argument, int cmd);
