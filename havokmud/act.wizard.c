@@ -4530,19 +4530,26 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        zone = atoi( zonenum );
-        if (zone <= 0 || zone > top_of_zone_table) {
-            send_to_char("That is not a valid zone_number\n\r", ch);
-            return;
+        if( isdigit(*zonenum) ) {
+            zone = atoi( zonenum );
+            if (zone <= 0 || zone > top_of_zone_table) {
+                send_to_char("That is not a valid zone_number\n\r", ch);
+                return;
+            }
+            bottom = zone_table[zone - 1].top + 1;
+            top = zone_table[zone].top;
+        } else {
+            zone = -1;
+            /* Just so they are initialized */
+            bottom = zone_table[0].top + 1;
+            top = zone_table[1].top;
         }
-
-        bottom = zone_table[zone - 1].top + 1;
-        top = zone_table[zone].top;
 
         append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
         for (objn = 0; objn < topi; objn++) {
             oi = which_i + objn;
-            if (oi->virtual < bottom || oi->virtual > top) {
+            if ((zone > 0 && (oi->virtual < bottom || oi->virtual > top)) ||
+                (zone < 0 && !isname(zonenum, oi->name))) {
                 continue;
             }
             obj = read_object(oi->virtual, VIRTUAL);

@@ -728,18 +728,18 @@ char           *strip_ansi(char *newbuf, const char *orig, size_t maxlen)
     int             i = 0,
                     k = 0;
 
-    while ((orig + i) && (k < (maxlen - 1))) {
-        if ((*(orig + i) == '$')
-            && ((orig + i + 1) && (LOWER(*(orig + i + 1)) == 'c'))
-            && ((orig + i + 2) && isdigit(*(orig + i + 2)))
-            && ((orig + i + 3) && isdigit(*(orig + i + 3)))
-            && ((orig + i + 4) && isdigit(*(orig + i + 4)))
-            && ((orig + i + 5) && isdigit(*(orig + i + 5)))) {
+    while (orig[i] && (k < (maxlen - 1))) {
+        while (orig[i] && orig[i] == '$' && 
+               orig[i + 1] && LOWER(orig[i + 1]) == 'c' && 
+               orig[i + 2] && isdigit(orig[i + 2]) && 
+               orig[i + 3] && isdigit(orig[i + 3]) && 
+               orig[i + 4] && isdigit(orig[i + 4]) && 
+               orig[i + 5] && isdigit(orig[i + 5])) {
             i += 6;
         }
         newbuf[k++] = orig[i];
 
-        if (orig + i) {
+        if (orig[i]) {
             i++;
         }
     }
