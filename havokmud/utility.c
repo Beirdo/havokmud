@@ -3231,7 +3231,7 @@ void traveling_qp(int pulse)
     char buf[256], name[256];
     struct char_data *ch, *newch;
     struct room_data *room;
-    struct obj_data *travelqp =0;
+    struct obj_data *travelqp =0, *qt;
     extern int qp_patience;
     extern struct index_data *mob_index;
     extern int top_of_world;
@@ -3256,9 +3256,11 @@ void traveling_qp(int pulse)
 	}
 
 	if(!IS_NPC(ch)) {
-		ch->player.q_points++;
-		send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w point.\n\r",ch);
-		log("carried by player, gained a QP");
+//		ch->player.q_points++;
+		send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
+		if(qt = read_object(27, VIRTUAL) {
+			obj_to_char(qt, ch);
+		log("carried by player, gained a QT");
 		extract_obj(travelqp);
 		return;
 	}
