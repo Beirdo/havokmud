@@ -4079,23 +4079,14 @@ void do_start(struct char_data *ch)
     send_to_all(buf);
 
     ch->specials.start_room = NOWHERE;
-
     StartLevels(ch);
-
     GET_EXP(ch) = 1;
-
     set_title(ch);
-#if 0
-    roll_abilities(ch);
-    /*
-     * This is now done earlier in creation
-     */
-#endif
-
+    
     /*
      *  This is the old style of determining hit points.  I modified it so that
      *  characters get the standard AD&D + 10 hp to start.
-     *    ch->points.max_hit  = 10;
+     *  ch->points.max_hit  = 10;
      */
 
     /*
@@ -4133,8 +4124,9 @@ void do_start(struct char_data *ch)
     if (HasClass(ch,
                  CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
                  CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
-                 CLASS_NECROMANCER))
+                 CLASS_NECROMANCER)) {
         ch->skills[SKILL_READ_MAGIC].learned = 95;
+    }
 
     SetDefaultLang(ch);
 
@@ -4200,6 +4192,43 @@ void do_start(struct char_data *ch)
     send_to_char("Autoexits activated\n\r", ch);
 
     if (IS_SET(ch->player.class, CLASS_THIEF)) {
+
+#if 1
+/* converting to switch */
+        switch (GET_RACE(ch)) {
+            case RACE_HUMAN:
+            case RACE_MOON_ELF:
+            case RACE_GOLD_ELF:
+            case RACE_WILD_ELF:
+            case RACE_SEA_ELF:
+            case RACE_AVARIEL:
+            case RACE_DWARF:
+            case RACE_HALFLING:
+            case RACE_ROCK_GNOME:
+            case RACE_DEEP_GNOME:
+            case RACE_FOREST_GNOME:
+                ch->skills[SKILL_SNEAK].learned = 10;
+                ch->skills[SKILL_HIDE].learned = 5;
+                ch->skills[SKILL_STEAL].learned = 15;
+                ch->skills[SKILL_BACKSTAB].learned = 10;
+                ch->skills[SKILL_PICK_LOCK].learned = 10;
+                break;
+            case RACE_DROW:
+                ch->skills[SKILL_SNEAK].learned = 20;
+                ch->skills[SKILL_HIDE].learned = 15;
+                ch->skills[SKILL_STEAL].learned = 25;
+                ch->skills[SKILL_BACKSTAB].learned = 20;
+                ch->skills[SKILL_PICK_LOCK].learned = 5;
+                break;
+            case RACE_HALF_ELF:
+                ch->skills[SKILL_HIDE].learned = 5;
+                ch->skills[SKILL_STEAL].learned = 10;
+                break;
+            default:
+                break;
+        }
+    }
+#else        
         if (GET_RACE(ch) == RACE_HUMAN) {
             ch->skills[SKILL_SNEAK].learned = 10;
             ch->skills[SKILL_HIDE].learned = 5;
@@ -4252,6 +4281,8 @@ void do_start(struct char_data *ch)
         } else if (GET_RACE(ch) == RACE_HALF_GIANT) {
         }
     }
+#endif
+    
 
     ch->skills[SKILL_BASH].learned = 0;
     ch->skills[SKILL_KICK].learned = 0;
