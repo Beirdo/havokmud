@@ -3530,8 +3530,16 @@ char           *PrintTitle(struct char_data *person, char type)
                 CalcPowerLevel(person));
         return buffer;
     case 'a':
-        sprintf(buffer, "%s ->Alignment:[%d]", GET_NAME(person),
-                GET_ALIGNMENT(person));
+        if (IS_GOOD(person)) {
+            sprintf(buffer, "%s     [Alignment - $c000W<%d>$c000w]",
+                    GET_NAME(person), GET_ALIGNMENT(person));
+        } else if (IS_EVIL(person)) {
+            sprintf(buffer, "%s     [Alignment - $c000R<%d>$c000w]",
+                    GET_NAME(person), GET_ALIGNMENT(person));
+        } else {
+            sprintf(buffer, "%s     [Alignment - $c000Y<%d>$c000w]", 
+                    GET_NAME(person), GET_ALIGNMENT(person));
+        }
         return buffer;
 
     default:

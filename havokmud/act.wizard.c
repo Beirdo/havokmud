@@ -4130,7 +4130,11 @@ void do_start(struct char_data *ch)
     }
 
     ch->skills[STYLE_STANDARD].learned = 95;
-
+    
+    if (!IS_AFFECTED(ch, AFF_GROUP)) {
+        do_group(ch, "all", 202);
+    }
+    
     if (HasClass(ch,
                  CLASS_CLERIC | CLASS_MAGIC_USER | CLASS_SORCERER |
                  CLASS_PSI | CLASS_PALADIN | CLASS_RANGER | CLASS_DRUID |
