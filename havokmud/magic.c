@@ -2527,7 +2527,7 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 				sprintf(buf2,"%s","unlimited");
 			else
 				sprintf(buf2,"%d", obj->max,obj->level);
-			sprintf(buf,"%s %sObjMax: [%s%s%s], Tweak Rate: [%s%d%s], ObjValue[%s%d%s]\n\r"
+			sprintf(buf,"%s %sLoadrate: [%s%s%s], Tweak Rate: [%s%d%s], ObjValue[%s%d%s]\n\r"
 				, buf, color1, color2, buf2, color1, color2, obj->tweak, color1, color2, eval(obj),color1);
 			send_to_char(buf, ch);
 

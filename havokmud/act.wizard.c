@@ -1714,19 +1714,19 @@ dlog("in do_stat");
 
 
    		if(j->level==0)
-    		sprintf(buf,"Ego: None ,");
+    		sprintf(buf,"Ego: None, ");
     	else
-    	    sprintf(buf,"Ego: Level %d ,",j->level);
+    	    sprintf(buf,"Ego: Level %d, ",j->level);
     	send_to_char(buf,ch);
 
 		if(j->max==0)
-		    sprintf(buf,"Max: None$c0005 ,");
+		    sprintf(buf,"Loadrate: None, ");
 		else
-		   sprintf(buf,"Max: Level %d ,",j->max);
+		   sprintf(buf,"Loadrate: Level %d, ",j->max);
 
 		send_to_char(buf,ch);
 
-    	sprintf(buf,"Last modified by (%s) on %s", j->modBy, asctime(localtime(&j->modified)));
+    	sprintf(buf,"Last modified by %s on %s", j->modBy, asctime(localtime(&j->modified)));
     	send_to_char(buf,ch);
 
 
@@ -6761,7 +6761,7 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
   if (isdigit(*num))
     number = atoi(num);
   else  {
-         send_to_char("usage is: setobjmax Vnum MaxCount.\n\r", ch);
+         send_to_char("usage is: setobjmax itemname loadrate.\n\r", ch);
       return;
     }
 
@@ -6770,11 +6770,11 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
 	      	return;
 	      }
 	      if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
-	      	send_to_char("where is that?\n\r",ch);
+	      	send_to_char("Where is that?\n\r",ch);
 	      	return;
       }
       obj->max = number;
-		sprintf(buf,"Set object max to %d\n\r",number);
+		sprintf(buf,"Set object loadrate to %d.\n\r",number);
 		send_to_char(buf,ch);
       return;
 /*

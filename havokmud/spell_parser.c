@@ -1359,8 +1359,8 @@ int GetHitRegen(struct char_data *i) {
 
 	if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
 		trollregen=hit_gain(i)*0.5;
-		send_to_char("Your wounds seem to close up and heal over some.",i);
-		sprintf(buf,"%s's wounds seem to close up.",GET_NAME(i));
+		send_to_char("Your wounds seem to close up and heal over some.\n\r",i);
+		sprintf(buf,"%s's wounds seem to close up.\n\r",GET_NAME(i));
 		send_to_room_except(buf,i->in_room,i);
 	}
 

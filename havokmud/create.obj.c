@@ -47,6 +47,7 @@
 #define CHANGE_OBJ_SPEED     39
 #define CHANGE_OBJ_MAX       40
 #define CHANGE_OBJ_TWEAK	 41
+#define CHANGE_OBJ_WTYPE	 42
 
 #define ENTER_CHECK        1
 
@@ -399,6 +400,7 @@ case CHANGE_OBJ_EGO:
 case CHANGE_OBJ_MAX:
 case CHANGE_OBJ_SPEED:
 case CHANGE_OBJ_TWEAK:
+case CHANGE_OBJ_WTYPE:
 	ChangeObjSpecials(ch,arg,0);
 	return;
  default: log("Got to bad spot in ObjEdit");
@@ -1064,6 +1066,10 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
                    ChangeObjSpecials(ch, "", ENTER_CHECK);
                    return;
                    break;
+           case 5: ch->specials.oedit = CHANGE_OBJ_WTYPE;
+                   ChangeObjSpecials(ch, "", ENTER_CHECK);
+                   return;
+                   break;
            default: ChangeObjSpecial(ch, "", ENTER_CHECK);
                     return;
     }
@@ -1073,7 +1079,7 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
 
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Max 4-Tweak) --> ", ch);
+ send_to_char("\n\r\n\rChange object special value #(1-Ego 2-Speed 3-Loadrate 4-Tweak 5-Weapontype) --> ", ch);
  return;
 
 }
@@ -1118,7 +1124,7 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 
             break;
         case CHANGE_OBJ_MAX:
-        	if(update < 51 && update >= 0)
+        	if(update < 101 && update >= 0)
 			  ch->specials.objedit->max=update;
 			else {
 				temp=1;
@@ -1128,6 +1134,13 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
         case CHANGE_OBJ_TWEAK:
         	if(update < 101 && update >= 0)
 			  ch->specials.objedit->tweak=update;
+			else {
+				temp=1;
+			}
+          break;
+        case CHANGE_OBJ_WTYPE:
+        	if(update <= WEAPON_LAST-340 && update >= WEAPON_FIRST-340)
+			  ch->specials.objedit->weapontype = update;
 			else {
 				temp=1;
 			}
@@ -1150,16 +1163,25 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 			if (IS_WEAPON(ch->specials.objedit))
 				ch_printf(ch,"Please enter weapon speed: Param(0-100)   Current(%d)", ch->specials.objedit->speed);
 			else {
-				send_to_char("Can only do this to weapons",ch);
+				send_to_char("Can only do this to weapons.\n\r",ch);
 				ch->specials.oedit = CHANGE_OBJ_SPECIAL;
                    ChangeObjSpecial(ch, "", ENTER_CHECK);
 			}
 			break;
         case CHANGE_OBJ_MAX:
-			ch_printf(ch,"Please enter max of item: Param(0-100)    Current(%d)",ch->specials.objedit->max);
+			ch_printf(ch,"Please enter loadrate of item: Param(0-100)    Current(%d)",ch->specials.objedit->max);
 			break;
 		case CHANGE_OBJ_TWEAK:
 			ch_printf(ch,"Please enter the Tweak rating. Param(0-100)    Current(%d)",ch->specials.objedit->tweak);
+			break;
+		case CHANGE_OBJ_WTYPE:
+			if (IS_WEAPON(ch->specials.objedit))
+				ch_printf(ch,"Please enter the Weapon Type. Param(0-59)    Current(%d)",ch->specials.objedit->weapontype);
+			else {
+				send_to_char("Can only do this to weapons.\n\r",ch);
+				ch->specials.oedit = CHANGE_OBJ_SPECIAL;
+                   ChangeObjSpecial(ch, "", ENTER_CHECK);
+			}
 			break;
     	default:
 			//send_to_char("Bad value",ch);

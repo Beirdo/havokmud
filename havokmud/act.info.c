@@ -5645,3 +5645,28 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 		}
 	}
 }
+
+void do_allweapons(struct char_data *ch, char *argument, int cmd)
+{
+	int i;
+	char buf[MAX_STRING_LENGTH];
+	extern const struct skillset weaponskills[];
+
+dlog("in do_allweapons");
+
+	if (IS_NPC(ch)) {
+		send_to_char("You ain't nothin' but a hound-dog.\n\r", ch);
+		return;
+	}
+
+	*buf=0;
+
+	send_to_char("[  #] Weapontype", ch);
+
+	i = 0;
+	while (weaponskills[i].level != -1) {
+		sprintf(buf,"[%3s] %s\n\r", i, weaponskills[i].name);
+		send_to_char(buf, ch);
+		i++;
+	}
+}
