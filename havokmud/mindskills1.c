@@ -767,11 +767,8 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 					found = 1; /* we found at least one item */
 					if (i->carried_by) {
 					  target = i->carried_by;
-					  log("item is carried");
-					  if(!IS_IMMORTAL(target)) {
-							 log("this target was not immortal");
-							 if (!(IS_SET(target->specials.act,ACT_PSI)) && (GetMaxLevel(target) > GetMaxLevel(ch))){
-						       log("target is not psi/59");
+	                    if(!IS_IMMORTAL(target)) {
+							 if (!(IS_SET(target->specials.act,ACT_PSI) && (GetMaxLevel(target) > GetMaxLevel(ch)))){
 						       room = target->in_room;
 											    }
 				      }
@@ -779,12 +776,10 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 
 					} else if (i->equipped_by) {
 						target = i->equipped_by;
-						log("item is equipped");
 						if(!IS_IMMORTAL(target)){
-							log("target is not immortal (equipped)");
-							if (!(IS_SET(target->specials.act,ACT_PSI)) && (GetMaxLevel(target) > GetMaxLevel(ch))){
-						       log("target is not psi/59");
+							if (!(IS_SET(target->specials.act,ACT_PSI) && (GetMaxLevel(target) > GetMaxLevel(ch)))){
 						       room = target->in_room;
+					}
 						}
 					} else if (i->in_obj) {
 						room = (i->in_obj->in_room);
@@ -814,5 +809,5 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 		}
 	}
 }
-}
+
 
