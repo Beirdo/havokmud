@@ -236,19 +236,22 @@ struct QuestItem {
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */
-#define SYS_NOPORTAL	1	/* no one can portal */
-#define SYS_NOASTRAL	2	/* no one can astral */
-#define SYS_NOSUMMON	4	/* no one can summon */
-#define SYS_NOKILL	8	/* NO PC (good side or bad side) can fight */
-#define SYS_LOGALL	16	/* log ALL users to the system log */
-#define SYS_ECLIPS	32	/* the world is in constant darkness! */
-#define SYS_SKIPDNS	64	/* skips DNS name searches on connects */
-#define SYS_REQAPPROVE	128	/* force god approval for new char	*/
-#define SYS_NOANSI	256	/* disable ansi colors world wide */
-#define SYS_WIZLOCKED   512     /* System is Wizlocked for all -Manwe Windmaster 030697 */
-#define SYS_NO_POLY     1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */
-#define SYS_NOOOC       2048    /* Provide from OOCing worldwird - Manwe */
-#define SYS_LOCOBJ      4096    /* Disbale Locate Object - Manwe Windmaster 1311197 */
+#define SYS_NOPORTAL	BV00//1	/* no one can portal */
+#define SYS_NOASTRAL	BV01//2	/* no one can astral */
+#define SYS_NOSUMMON	BV02//4	/* no one can summon */
+#define SYS_NOKILL		BV03//8	/* NO PC (good side or bad side) can fight */
+#define SYS_LOGALL		BV04//16	/* log ALL users to the system log */
+#define SYS_ECLIPS		BV05//32	/* the world is in constant darkness! */
+#define SYS_SKIPDNS		BV06//64	/* skips DNS name searches on connects */
+#define SYS_REQAPPROVE	BV07//128	/* force god approval for new char	*/
+#define SYS_NOANSI		BV08//256	/* disable ansi colors world wide */
+#define SYS_WIZLOCKED   BV09//512     /* System is Wizlocked for all -Manwe Windmaster 030697 */
+#define SYS_NO_POLY     BV10//1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */
+#define SYS_NOOOC       BV11//2048    /* Provide from OOCing worldwird - Manwe */
+#define SYS_LOCOBJ      BV12//4096    /* Disbale Locate Object - Manwe Windmaster 1311197 */
+#define SYS_WLD_ARENA   BV13    /* Makes the entire world flagged arena*/
+#define SYS_NO_DEINIT   BV14   /*makes zone not deinit*/
+
 /* end sys flags */
 
 #define SPEAK_COMMON		1
@@ -861,38 +864,38 @@ struct room_data
 #define THIRST       2
 
 /* Bitvector for 'affected_by' */
-#define AFF_BLIND             0x00000001
-#define AFF_INVISIBLE         0x00000002
-#define AFF_DETECT_EVIL       0x00000004
-#define AFF_DETECT_INVISIBLE  0x00000008
-#define AFF_DETECT_MAGIC      0x00000010
-#define AFF_SENSE_LIFE        0x00000020
-#define AFF_LIFE_PROT         0x00000040
-#define AFF_SANCTUARY         0x00000080
-#define AFF_DRAGON_RIDE       0x00000100
-#define AFF_GROWTH            0x00000200 /* this was the one that was missing*/
-#define AFF_CURSE             0x00000400
-#define AFF_FLYING            0x00000800
-#define AFF_POISON            0x00001000
-#define AFF_TREE_TRAVEL       0x00002000
-#define AFF_PARALYSIS         0x00004000
-#define AFF_INFRAVISION       0x00008000
-#define AFF_WATERBREATH       0x00010000
-#define AFF_SLEEP             0x00020000
-#define AFF_TRAVELLING        0x00040000  /* i.e. can't be stoned */
-#define AFF_SNEAK             0x00080000
-#define AFF_HIDE              0x00100000
-#define AFF_SILENCE           0x00200000
-#define AFF_CHARM             0x00400000
-#define AFF_FOLLOW            0x00800000
-#define AFF_PROTECT_FROM_EVIL 0x01000000  /*  */
-#define AFF_TRUE_SIGHT        0x02000000
-#define AFF_SCRYING           0x04000000   /* seeing other rooms */
-#define AFF_FIRESHIELD        0x08000000
-#define AFF_GROUP             0x10000000
-#define AFF_TELEPATHY         0x20000000
-#define AFF_WINGSTIRED         0x40000000
-#define AFF_WINGSBURNED        0x80000000
+#define AFF_BLIND             BV00//0x00000001
+#define AFF_INVISIBLE         BV01//0x00000002
+#define AFF_DETECT_EVIL       BV02//0x00000004
+#define AFF_DETECT_INVISIBLE  BV03//0x00000008
+#define AFF_DETECT_MAGIC      BV04//0x00000010
+#define AFF_SENSE_LIFE        BV05//0x00000020
+#define AFF_LIFE_PROT         BV06//0x00000040
+#define AFF_SANCTUARY         BV07//0x00000080
+#define AFF_DRAGON_RIDE       BV08//0x00000100
+#define AFF_GROWTH            BV09//0x00000200 /* this was the one that was missing*/
+#define AFF_CURSE             BV10//0x00000400
+#define AFF_FLYING            BV11//0x00000800
+#define AFF_POISON            BV12//0x00001000
+#define AFF_TREE_TRAVEL       BV13//0x00002000
+#define AFF_PARALYSIS         BV14//0x00004000
+#define AFF_INFRAVISION       BV15//0x00008000
+#define AFF_WATERBREATH       BV16//0x00010000
+#define AFF_SLEEP             BV17//0x00020000
+#define AFF_TRAVELLING        BV18//0x00040000  /* i.e. can't be stoned */
+#define AFF_SNEAK             BV19//0x00080000
+#define AFF_HIDE              BV20//0x00100000
+#define AFF_SILENCE           BV21//0x00200000
+#define AFF_CHARM             BV22//0x00400000
+#define AFF_FOLLOW            BV23//0x00800000
+#define AFF_PROTECT_FROM_EVIL BV24//0x01000000  /*  */
+#define AFF_TRUE_SIGHT        BV25//0x02000000
+#define AFF_SCRYING           BV26//0x04000000   /* seeing other rooms */
+#define AFF_FIRESHIELD        BV27//0x08000000
+#define AFF_GROUP             BV28//0x10000000
+#define AFF_TELEPATHY         BV29//0x20000000
+#define AFF_WINGSTIRED        BV30// 0x40000000
+#define AFF_WINGSBURNED       BV31// 0x80000000
 
 /* affects 2 */
 #define AFF2_ANIMAL_INVIS      BV00//0x00000001

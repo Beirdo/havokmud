@@ -260,7 +260,7 @@ if (!receptionist && forcerent) {
       discount = discount + (1 + GET_CHR(ch) - GET_CHR(receptionist));
 
 	if (IS_SET(ch->specials.act, PLR_CLAN_LEADER))
-		discount=100;  //100% discount for clan leaders..
+		discount+=10;  //100% discount for clan leaders..
 
     if(discount > 0 && discount !=100) {
       sprintf(buf,"$n winks at you and offers you a %d%% discount. (%d coins)"

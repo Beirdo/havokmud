@@ -2308,5 +2308,3 @@ void do_induct(struct char_data *ch, char *argument, int cmd);
 void do_chat(struct char_data *ch, char *argument, int cmd);
 void do_qchat(struct char_data *ch, char *argument, int cmd);
 void do_clanlist(struct char_data *ch, char *arg, int cmd);
-int color_strlen(struct char_data *ch, char *arg, int cmd);
-

@@ -103,6 +103,34 @@ extern long SystemFlags;
 
 /* extern functions */
 
+void log (char *s);
+int GET_RADIUS(struct char_data *ch);
+int IS_UNDERGROUND(struct char_data *ch);
+int MobLevBonus(struct char_data *ch);
+int bitvector_num(int temp);
+int clearpath(struct char_data *ch, long room, int direc);
+int atoi (const char *s);
+int CAN_SEE_OBJ( struct char_data *ch, struct obj_data *obj);
+void ch_printf(struct char_data *ch, char *fmt, ...);
+char *formatNum(int foo);
+char *DescAge(int age,int race);
+int pc_num_class(int clss);
+int color_strlen(struct char_data *ch, char *arg, int cmd);
+
+// void *malloc (size_t size);
+
+     void free (void *ptr);
+
+//     void *realloc (void *ptr, size_t size);
+
+     void *calloc (size_t nelem, size_t	elsize);
+
+//     void *memalign (size_t alignment, size_t size);
+
+//     void *valloc (size_t size);
+
+
+
 struct time_info_data age(struct char_data *ch);
 void page_string(struct descriptor_data *d, char *str, int keep_internal);
 int track( struct char_data *ch, struct char_data *vict);
@@ -197,10 +225,8 @@ if (*word && i->keyword)
 
 void show_obj_to_char(struct obj_data *object, struct char_data *ch, int mode)
 {
-  char buffer[MAX_STRING_LENGTH];
-  float fullperc;
-  float weight = 0;
-  struct obj_data *i;
+
+    char buffer[MAX_STRING_LENGTH];
   buffer[0] = 0;
   if ((mode == 0) && object->description)
     strcpy(buffer, object->description);
@@ -435,26 +461,25 @@ void list_obj_in_room(struct obj_data *list, struct char_data *ch)
 
   if (cond_top) {
     for (k=0; k<cond_top; k++) {
-      if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TRAP) &&
-	  (GET_TRAP_CHARGES(cond_ptr[k]) > 0))
-	  {
-	if (CAN_SEE_OBJ(ch,cond_ptr[k]))
-	  if (cond_tot[k] > 1) {
-	    sprintf(buf,"[%2d] ",Inventory_Num++);
-	    send_to_char(buf,ch);
-	    show_mult_obj_to_char(cond_ptr[k],ch,0,cond_tot[k]);
-	  } else {
-	    show_obj_to_char(cond_ptr[k],ch,0);
-	  }
-      } else {
-	if (cond_tot[k] > 1) {
-	  sprintf(buf,"[%2d] ",Inventory_Num++);
-	  send_to_char(buf,ch);
-	  show_mult_obj_to_char(cond_ptr[k],ch,0,cond_tot[k]);
-	} else {
-	  show_obj_to_char(cond_ptr[k],ch,0);
-	}
-      }
+      if ((ITEM_TYPE(cond_ptr[k]) == ITEM_TRAP) && (GET_TRAP_CHARGES(cond_ptr[k]) > 0))  {
+		if (CAN_SEE_OBJ(ch,cond_ptr[k])){
+	  		if (cond_tot[k] > 1) {
+	  			sprintf(buf,"[%2d] ",Inventory_Num++);
+	    		send_to_char(buf,ch);
+	    		show_mult_obj_to_char(cond_ptr[k],ch,0,cond_tot[k]);
+	  		} else {
+	    		show_obj_to_char(cond_ptr[k],ch,0);
+	  		}
+	  	 }
+      	} else {
+			if (cond_tot[k] > 1) {
+				sprintf(buf,"[%2d] ",Inventory_Num++);
+	  			send_to_char(buf,ch);
+	  			show_mult_obj_to_char(cond_ptr[k],ch,0,cond_tot[k]);
+			} else {
+	  			show_obj_to_char(cond_ptr[k],ch,0);
+			}
+      	}
     }
   }
 }
@@ -537,6 +562,7 @@ void list_obj_to_char(struct obj_data *list,struct char_data *ch, int mode,
 
 void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
 {
+
   char buffer[MAX_STRING_LENGTH];
   int j, found, percent, otype;
   struct obj_data *tmp_obj;
@@ -562,7 +588,8 @@ if (!ch || !i) {
        return;
       }
     }
-	sprintf(buffer,"");
+	//sprintf(buffer,""); lets see if below is more effective.
+	*buffer = '\0';
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos.*/
       if (!IS_NPC(i)) {
@@ -574,7 +601,7 @@ if (!ch || !i) {
 		  strcat(buffer,GET_TITLE(i));
     	  } else {
 				strcpy(buffer, i->player.short_descr);
-				CAP(buffer);
+				sprintf(buffer,"%s",CAP(buffer));
     	    }
 
 	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
@@ -863,7 +890,7 @@ if (!ch || !i) {
 void glance_at_char(struct char_data *i, struct char_data *ch)
 {
   char buffer[MAX_STRING_LENGTH];
-  int j, otype, percent ;
+  int otype, percent ;
   struct affected_type *aff;
 
 if (!ch || !i) {
@@ -942,7 +969,8 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
         return;
       }
     }
-	sprintf(buffer,"");
+	//lets see if below is more effective...sprintf(buffer,"");
+	*buffer = '\0';
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos. */
       if (!IS_NPC(i)) {
@@ -952,7 +980,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
 	  strcat(buffer,GET_TITLE(i));
       } else {
 	strcpy(buffer, i->player.short_descr);
-	CAP(buffer);
+	sprintf(buffer,"%s",CAP(buffer));
       }
 
 	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
@@ -1272,10 +1300,8 @@ void list_exits_in_room(struct char_data *ch)
 
 if (exitdata->to_room != NOWHERE || IS_IMMORTAL(ch))
   {
-  if (
-      ( /*!IS_SET(exitdata->exit_info, EX_CLOSED) && */
-	!IS_SET(exitdata->exit_info, EX_SECRET) || IS_IMMORTAL(ch)) ||
-	 IS_SET(exitdata->exit_info, EX_SECRET) && seeit )
+  if ((!IS_SET(exitdata->exit_info, EX_SECRET) || IS_IMMORTAL(ch)) ||
+	 (IS_SET(exitdata->exit_info, EX_SECRET) && seeit) )
        {
 	  sprintf(buf2," %s",listexits[door]);
 	  strcat(buf,buf2);
@@ -1443,7 +1469,7 @@ dlog("in do_look");
 						if (immcheck)
 							return;
 					}
-					sprintf(buffer, "%d look", exitp->to_room);
+					sprintf(buffer, "%ld look", exitp->to_room);
 					do_at(ch, buffer, 0);
 				} else {
 					send_to_char("You see nothing special.\n\r", ch);
@@ -1794,13 +1820,9 @@ void generate_map(struct char_data *ch, int size, int x, int y) {
 
 }
 void recurse_map(struct room_data *rp, int size, int x, int y) {
-struct room_direction_data        *exitp;
 	struct room_data *rm;
-	int temp=0;
 
-	//print_map(ch);
-
-//	if(map[x][y]!=0)
+//	if(map[x][y]!=0) //May wasn't printing out completely.
 //		return;
 	if(!rp) {
 		map[x][y]=22;
@@ -1950,7 +1972,7 @@ dlog("in do_exits2");
 	/* don't print unless immortal */
 	if (IS_IMMORTAL(ch))
 	{
-	  sprintf(buf + strlen(buf), "%s - swirling chaos of #%d\n\r",
+	  sprintf(buf + strlen(buf), "%s - swirling chaos of #%ld\n\r",
 		  exits[door], exitdata->to_room);
 	}
       }
@@ -1966,7 +1988,7 @@ dlog("in do_exits2");
 	    strcat(buf, " (closed)");
 	  if(IS_DARK(exitdata->to_room))
 	    strcat(buf, " (dark)");
-	  sprintf(buf + strlen(buf), " #%d\n\r", exitdata->to_room);
+	  sprintf(buf + strlen(buf), " #%ld\n\r", exitdata->to_room);
 	}
 	else if (!IS_SET(exitdata->exit_info, EX_CLOSED) &&
 		 !IS_SET(exitdata->exit_info, EX_SECRET)) /* msw 10/93 */
@@ -2030,12 +2052,6 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
   ch_printf(ch, "$c000BYou carry $c000w%s$c000B coins, and have an additional $c000w%d$c000B in the bank.\n\r", formatNum(GET_GOLD(ch)), (ch->points.bankgold) );
   ch_printf(ch, "$c000BYour alignment is: $c000w%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
 
-  //sprintf(buff,"%s",formatNum(GET_GOLD(ch)));
-  //sprintf(buf,"$c000BYou have scored $c000w%s$c000B exp and you have $c000w%s$c000B gold coins, and $c000w%d$c000B Quest points ($c000w%d$c000B).\n\r",
-	//  formatNum(GET_EXP(ch)),buff,ch->player.q_points, ch->specials.questwon);
-  //send_to_char(buf,ch);
-
-  //ch_printf(ch,"$c000BYou have scored $c000w%s$c000B leadership exp.\n\r", formatNum(GET_LEADERSHIP_EXP(ch)));
 
 	if ( !(GetMaxLevel(ch)>MAX_MORT || (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF)))) {
   		buf[0] = '\0';
@@ -2046,15 +2062,13 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 		for (x=0; x < MAX_CLASS; x++) {
   			if (HasClass(ch, pc_num_class(x))) {
 
-    			sprintf(buf2, "%5s$c000BLevel:$c000w%-2d  %-15s$c000B", " ",GET_LEVEL(ch, x),class_names[x]);
+    			sprintf(buf2, "%-5s$c000BLevel:$c000w%-2d  %-15s$c000B", " ",GET_LEVEL(ch, x), class_names[x]);
     			strcat(buf, buf2);
     			if (GetMaxLevel(ch)<MAX_IMMORT)
     	   			sprintf(buf2,"%s%s:$c000w%s$c000B \n\r"," ","Xp needed"	,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
     			else
-    	   			sprintf(buf2,"%s:0  %d", class_names[x],(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
+    	   			sprintf(buf2,"%s:0  %ld", class_names[x],(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
     			strcat(buf,buf2);
-
-
   			}
 		}
   		send_to_char(buf,ch);
@@ -2130,7 +2144,6 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	    if (GET_COND(ch,THIRST)<2  && GET_COND(ch,THIRST) != -1)
 	      send_to_char("$c000BYou are $c000wthirsty$c000B...\n\r",ch);
 	  }
-
 	//send_to_char("\n\r\n\r$c000BType '$c000wpinfo$c000B' to see list of current character flags.\n\r",ch);
 }
 
@@ -2297,7 +2310,7 @@ dlog("in do_help");
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
  char buf[MAX_STRING_LENGTH];
- char buf2[20];
+
  int i, j = 1;
  NODE *n;
 
@@ -2459,8 +2472,12 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   struct descriptor_data *d;
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
+//<<<<<<< act.info.c
+//  int count;
+//=======
   char bufx[126], bufy[100], bufz[100];
   int count, length=0, clength=0, j=0;
+//>>>>>>> 1.64
   char color_cnt=1;
   char flags[20]="";
   char name_mask[40]="";
@@ -2519,7 +2536,7 @@ dlog("in do_who");
 	    if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
 	      sprintf(tbuf,"$c0012%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
 	      if (GetMaxLevel(ch) >= LOW_IMMORTAL)
-		sprintf(tbuf+strlen(tbuf)," [%d]", person->in_room);
+		sprintf(tbuf+strlen(tbuf)," [%ld]", person->in_room);
 	    }
 	  } else {
 	    char levels[40]="", classes[20]="";
@@ -2735,7 +2752,7 @@ dlog("in do_who");
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD]$c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)
-		sprintf(tbuf+strlen(tbuf), " (invis %d)",person->invis_level);
+		sprintf(tbuf+strlen(tbuf), "(invis %d)",person->invis_level);
 	    sprintf(tbuf+strlen(tbuf),"\n\r");
 	    if (strlen(buffer)+strlen(tbuf) < (MAX_STRING_LENGTH*2)-512)
 	      strcat(buffer,tbuf);
@@ -2747,8 +2764,8 @@ dlog("in do_who");
     else
       sprintf(tbuf, "\n\r$c0005Total visible players: $c0015%d\n\r", count);
 
-    sprintf(tbuf+strlen(tbuf), "$c0005Max connects since last reboot: $c0015%d\n\r", total_connections);
-    sprintf(tbuf+strlen(tbuf), "$c0005Max players online since last reboot: $c0015%d\n\r", total_max_players);
+    sprintf(tbuf+strlen(tbuf), "$c0005Max connects since last reboot: $c0015%ld\n\r", total_connections);
+    sprintf(tbuf+strlen(tbuf), "$c0005Max players online since last reboot: $c0015%ld\n\r", total_max_players);
 
     if (strlen(buffer)+strlen(tbuf) < MAX_STRING_LENGTH*2-512)
       strcat(buffer,tbuf);
@@ -2871,7 +2888,7 @@ dlog("in do_who");
 	  }
 	  if ((person->desc != NULL) || (index(flags,'d') != NULL)) {
 	    if(OK_NAME(person,name_mask)) {
-	      if (strlen(buffer)+strlen(tbuf) < (MAX_STRING_LENGTH*2)-512) {
+	      if ((strlen(buffer)+strlen(tbuf)) < ((MAX_STRING_LENGTH*2)-512)) {
 		strcat(buffer,tbuf);
 		strcat(buffer,"\n\r");
 	      }
@@ -2886,7 +2903,7 @@ dlog("in do_who");
     else
       sprintf(tbuf,"\n\r$c0005Total players / Link dead [%d/%d] (%2.0f%%)\n\r",
 	  count,lcount,((float)lcount / (int)count) * 100);
-    if (strlen(buffer)+strlen(tbuf) < (MAX_STRING_LENGTH*2)-512)
+    if ((strlen(buffer)+strlen(tbuf)) < ((MAX_STRING_LENGTH*2)-512))
 	strcat(buffer,tbuf);
   }
   page_string(ch->desc,buffer,TRUE);
@@ -2904,7 +2921,7 @@ void do_users(struct char_data *ch, char *argument, int cmd)
 
   for (d = descriptor_list; d; d = d->next){
     if (d->character) {
-      if ( CAN_SEE(ch, d->character) || GetMaxLevel(ch) >= 51 && ((d->character)->invis_level <= GetMaxLevel(ch)))
+      if ( CAN_SEE(ch, d->character) || ((GetMaxLevel(ch) >= 51) && ((d->character)->invis_level <= GetMaxLevel(ch))))
 	{
 	  if (d && d->character && d->character->player.name)
 	    {
@@ -3047,7 +3064,7 @@ if (!CAN_SEE(ch, person))
 	  (person->in_room > -1 ? real_roomp(person->in_room)->name : "Nowhere"));
 
   if (GetMaxLevel(ch) >= LOW_IMMORTAL)
-    sprintf(buf+strlen(buf),"[%d]", person->in_room);
+    sprintf(buf+strlen(buf),"[%ld]", person->in_room);
 
   strcpy(buf+strlen(buf), "\n\r");
 
@@ -3123,13 +3140,13 @@ dlog("in do_where");
 				if (d->character && (d->connected == CON_PLYNG) && (d->character->in_room != NOWHERE)
 									&& CAN_SEE(ch, d->character)) {
 					if (d->original)   /* If switched */
-						sprintf(buf, "%-20s - %s [%d] In body of %s\n\r",
+						sprintf(buf, "%-20s - %s [%ld] In body of %s\n\r",
 											d->original->player.name,
 											real_roomp(d->character->in_room)->name,
 											d->character->in_room,
 											fname(d->character->player.name));
 					else
-						sprintf(buf, "%-20s - %s [%d]\n\r",
+						sprintf(buf, "%-20s - %s [%ld]\n\r",
 											d->character->player.name,
 											real_roomp(d->character->in_room)->name,
 											d->character->in_room);
@@ -3294,7 +3311,7 @@ dlog("in do_levels");
 
   for (i = 1; i <= RaceMax; i++) {
 /* crashed in sprintf here, see if you can figure out why. msw, 8/24/94 */
-    sprintf(buf2, "[%2d] %9d-%-9d : %s\n\r", i,
+    sprintf(buf2, "[%2d] %9ld-%-9ld : %s\n\r", i,
 	    titles[class][i].exp,
 	    titles[class][i + 1].exp, (GET_SEX(ch)==SEX_FEMALE?titles[class][i].title_f:titles[class][i].title_m));
 	/* send_to_char(buf, ch); */
@@ -3310,7 +3327,7 @@ dlog("in do_levels");
 void do_consider(struct char_data *ch, char *argument, int cmd)
 {
   struct char_data *victim;
-  char name[256], buf[256];
+  char name[256];
   int diff;
 
 dlog("in do_consider");
@@ -3589,7 +3606,7 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 #if HASH
   sprintf(buf, "$c0005Total number of rooms in world: $c0015%d", room_db.klistlen);
 #else
-  sprintf(buf, "$c0005Total number of rooms in world: $c0015%d", room_count);
+  sprintf(buf, "$c0005Total number of rooms in world: $c0015%ld", room_count);
 #endif
   act(buf,FALSE, ch,0,0,TO_CHAR);
   sprintf(buf, "$c0005Total number of zones in world: $c0015%d\n\r",
@@ -3604,17 +3621,17 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
   sprintf(buf,"$c0005Total number of registered players: $c0015%d",top_of_p_table + 1);
    act(buf,FALSE, ch,0,0,TO_CHAR);
 
-  sprintf(buf, "$c0005Total number of monsters in game: $c0015%d", mob_count);
+  sprintf(buf, "$c0005Total number of monsters in game: $c0015%ld", mob_count);
   act(buf,FALSE, ch,0,0,TO_CHAR);
 
-  sprintf(buf, "$c0005Total number of objects in game: $c0015%d", obj_count);
+  sprintf(buf, "$c0005Total number of objects in game: $c0015%ld", obj_count);
   act(buf, FALSE,ch,0,0,TO_CHAR);
 
-  sprintf(buf, "$c0005Total number of connections since last reboot: $c0015%d",
+  sprintf(buf, "$c0005Total number of connections since last reboot: $c0015%ld",
   			total_connections );
   act(buf, FALSE,ch,0,0,TO_CHAR);
 
-  sprintf(buf, "$c0005Max. # of players online since last reboot: $c0015%d",
+  sprintf(buf, "$c0005Max. # of players online since last reboot: $c0015%ld",
   			total_max_players );
   act(buf, FALSE,ch,0,0,TO_CHAR);
 
@@ -3649,16 +3666,13 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
    char buf[MAX_STRING_LENGTH];
    struct affected_type *aff;
    struct time_info_data my_age;
-   int i = 0, j2 = 0, Worn_Index = 0, x;
+   int i = 0, j2 = 0, Worn_Index = 0;
    short last_type;
    char buf2[MAX_STRING_LENGTH];
-   char buf3[MAX_STRING_LENGTH];
-   struct obj_data *j=0, *p=0;
-   extern char *apply_types[];
+   struct obj_data *j=0;
    extern char *affected_bits[];
    extern char *affected_bits2[];
-
-   dlog("in do_attrib");
+  dlog("in do_attrib");
 
    age2(ch, &my_age);
 
@@ -4712,7 +4726,7 @@ dlog("in do_scan");
      if ((spud = get_char_room_vis(ch, arg1))) {
 
   		sprintf(buf,"$n peers intently at $N.");
-  		sprintf(buf2,"You peer intently at $N.  You sense an aura power of %l",CalcPowerLevel(spud));
+  		sprintf(buf2,"You peer intently at $N.  You sense an aura power of %ld",CalcPowerLevel(spud));
   		act(buf, FALSE, ch,0, spud, TO_ROOM);
   		act(buf2, FALSE, ch,0, spud, TO_CHAR);
 
@@ -5006,10 +5020,10 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
   int count;
   char color_cnt=1;
-  char flags[20]="";
+
   char name_mask[40]="";
   char tmpname1[80],tmpname2[80];
-  char levels[40]="", classes[20]="";
+  char levels[40]="";
   extern char *classname[];
   int i,total,classn; long bit;
 dlog("in do_whoarena");
@@ -5025,7 +5039,7 @@ dlog("in do_whoarena");
 	  (real_roomp(person->in_room)->zone == 124)) {
 	if (OK_NAME(person,name_mask)) {
 	  count++;
-	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
+    	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
 #if 1
 	   if(!IS_IMMORTAL(person)) {
          char classes[20]="";
@@ -5051,7 +5065,7 @@ dlog("in do_whoarena");
 	      else if(total<41) strcpy(levels,"$c0014Adventurer");
 	      else if(total<51) strcpy(levels,"$c0015Mystical");
               sprintf(tbuf, "%s $c0012%s",levels, classes);
-              sprintf(levels,"%32s","");
+              //(GH)Uncommented.. does it do anything? sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
               sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
                       person->player.title?person->player.title:GET_NAME(person));//"(Null)");
@@ -5119,8 +5133,10 @@ dlog("in do_whoarena");
 		case 60: sprintf(levels, "Supreme Being");
 	      }
       	if(!str_cmp(GET_NAME(person), "Meckyl"))
-      		sprintf(levels, "");
-              sprintf(tbuf, "%s",levels);
+      		//sprintf(levels, "");
+            *levels = '\0';
+
+            sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
               if(real_roomp(ch->in_room)->zone == 124) {
@@ -5236,7 +5252,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 		x = 1;
 		while(clan_list[x].number != -1) {
 			sprintf(name,"%s",clan_list[x].name);
-			CAP(name);
+			sprintf(name,"%s",CAP(name));
 			length = 35; /* this should be enough length for any clan name */
 			clength = length - color_strlen(ch, name, 596);
 			for(j = 1; j <= clength; j++) {
@@ -5244,6 +5260,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 			}
 			sprintf(buf,"$c000c[$c000w%2d$c000c] $c000w%s   $c000c[$c000w%s$c000c]\n\r",
 				x, name, clan_list[x].shortname);
+
 			send_to_char(buf,ch);
 			x++;
 		}

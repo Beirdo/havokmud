@@ -2658,6 +2658,7 @@ void zone_update()
 			is_empty(update_u->zone_to_reset))) {
 
 /* Lennya's deinit of zones stuff */
+			//IS_SET(SystemFlags,SYS_NO_DEINIT)
 			if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT)) {
 				/* this should never deinit, or set back to 0 */
 				reset_zone(update_u->zone_to_reset);

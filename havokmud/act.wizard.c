@@ -1487,7 +1487,7 @@ act(buf,FALSE,ch,0,0,TO_CHAR);
 
 
 sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0014%s$c0005]",
-	      GET_LEADERSHIP_EXP(k),  clan_list[GET_CLAN(k)].name  );
+	      formatNum(GET_LEADERSHIP_EXP(k)),  clan_list[GET_CLAN(k)].name  );
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
@@ -5083,7 +5083,7 @@ if (IS_NPC(ch))
   char buf[255];
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
   send_to_char("interven [type]
-(Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp )\n\r\n\r",ch);
+(Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena, deinit )\n\r\n\r",ch);
   return;
  }
 
@@ -5235,15 +5235,38 @@ the light will return.\n");
 	     send_to_all("RPing is now enforced on every channel");
 	   }
 	 } else if (!strcmp("locobj",arg)) {                   /* Disable locate object */
-	 if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
-	    REMOVE_BIT(SystemFlags,SYS_LOCOBJ);
-	    send_to_char("Locate Object enabled\n\r",ch);
-	    log("Locate object has been enabled");
-	      } else {
-	       SET_BIT(SystemFlags,SYS_LOCOBJ);
-	     send_to_char("Locate Object disabled\n\r",ch);
-	     log("Locate Object disabled");
-	   }
+	 			if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
+	    			REMOVE_BIT(SystemFlags,SYS_LOCOBJ);
+	    			send_to_char("Locate Object enabled\n\r",ch);
+	    			log("Locate object has been enabled");
+	    		} else {
+	    		   SET_BIT(SystemFlags,SYS_LOCOBJ);
+	    			 send_to_char("Locate Object disabled\n\r",ch);
+	    			 log("Locate Object disabled");
+	   			}
+	   		}else if (!strcmp("worldarena",arg)) {                   /* world arena */
+	 			if (IS_SET(SystemFlags,SYS_WLD_ARENA)) {
+	 			   	REMOVE_BIT(SystemFlags,SYS_WLD_ARENA);
+	 			   	send_to_char("World arena disable\n\r",ch);
+	 			   	log("World Arena has been disable");
+	 			} else {
+	 			   	SET_BIT(SystemFlags,SYS_WLD_ARENA);
+	 		    	send_to_char("World Arena enabled\n\r",ch);
+	 		    	log("World Arena enabled");
+	 		    }
+
+
+    } else if (!strcmp("deinit",arg)) {                   /* world arena */
+	 			if (IS_SET(SystemFlags,SYS_NO_DEINIT)) {
+	 			   	REMOVE_BIT(SystemFlags,SYS_NO_DEINIT);
+	 			   	send_to_char("Deinit zones disable\n\r",ch);
+	 			   	log("Deinit Zones has been disable");
+	 			} else {
+	 			   	SET_BIT(SystemFlags,SYS_NO_DEINIT);
+	 		    	send_to_char("Deinit zones enabled\n\r",ch);
+	 		    	log("Deinit zones enabled");
+	 		    }
+
 
     } else
   send_to_char("Godly powers you have, but how do you wanna use them?\n",ch);
