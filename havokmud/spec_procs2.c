@@ -1372,6 +1372,10 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				act("$n touches a nearby plant, and disappears!", 1, ch, 0, 0, TO_ROOM);
 				char_from_room(ch);
 				char_to_room(ch, to_room);
+				stop_fighting(ch);
+				if(ch->specials.fighting)
+					if(ch->specials.fighting->specials.fighting == ch)
+						stop_fighting(ch->specials.fighting);
 				/* Tataa! come chase me, you bastard! I'm gonna heal up a bit in the mean time */
 			}
 		}

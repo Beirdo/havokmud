@@ -2008,6 +2008,12 @@ if (IS_SET(victim->specials.affected_by2,AFF2_HEAT_STUFF)) {
 			send_to_char("The aura of negative energy leaves your hands.\n\r",victim);
 	    }
 	}
+	   if (affected_by_spell(victim, SPELL_IRON_SKINS)){
+		  if (yes || !saves_spell(victim, SAVING_SPELL)) {
+			  affect_from_char(victim, SPELL_IRON_SKINS);
+			  send_to_char("Your iron skins shatter leaving you unprotected.\n\r", victim);
+				}
+			  }
 
 	if (level >= IMPLEMENTOR)  {
 /* imp level (ie death) always gets rid of stoneskin  -Lennya */
@@ -2062,20 +2068,14 @@ if (IS_SET(victim->specials.affected_by2,AFF2_HEAT_STUFF)) {
 		if (affected_by_spell(victim,SPELL_FLESH_GOLEM))
 			affect_from_char(victim,SPELL_FLESH_GOLEM);
 
-		if (affected_by_spell(victim, SPELL_MANA_SHIELD)){
-			if (yes || !saves_spell(victim, SAVING_SPELL)) {
-			  affect_from_char(victim, SPELL_MANA_SHIELD);
-		  	  send_to_char("Your mana shield is disrupted and fails.\n\r", victim);
-		  }
-	  }
+		if (affected_by_spell(victim, SPELL_MANA_SHIELD))
+			affect_from_char(victim, SPELL_MANA_SHIELD);
 
-	   if (affected_by_spell(victim, SPELL_IRON_SKINS)){
-		  if (yes || !saves_spell(victim, SAVING_SPELL)) {
-			  affect_from_char(victim, SPELL_IRON_SKINS);
-			  send_to_char("Your iron skins shatter leaving you unprotected.\n\r", victim);
-				}
-			  }
-}
+		if (affected_by_spell(victim, SPELL_FEEBLEMIND))
+			affect_from_char(victim, SPELL_FEEBLEMIND);
+
+
+	}
 }
 
 

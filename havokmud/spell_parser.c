@@ -2487,10 +2487,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 			else {
 				int max, cost;
 
-				max = ch->specials.spellfail;
+				max = ch->specials.spellfail + 10;
 				max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
-				if(cmd == 600)
-					max -= chr_apply[GET_CHR(ch)].reaction; /* 0 at 12cha, 30 at 18cha */
 				switch(BestMagicClass(ch)) {
 					case	MAGE_LEVEL_IND:
 						if (EqWBits(ch,ITEM_ANTI_MAGE))
@@ -2531,12 +2529,14 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						break;
 				}
 				/* end EQ check	*/
+
+//				if(max<101)
+//					max=101; // still some chance of failure
+
 				if (ch->attackers > 0)
 					max += spell_info[spl].spellfail;
 				else if (ch->specials.fighting)
-					max += spell_info[spl].spellfail/2;
-				if (cmd == 283)  /* recall:  less chance of spell fail ... */
-					max = max/2;
+					max += (int)spell_info[spl].spellfail/2;
 
 				if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special) && cmd != 283 ) {
 					send_to_char("You lost your concentration!\n\r", ch);
