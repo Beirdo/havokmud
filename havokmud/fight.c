@@ -1736,120 +1736,125 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim, int killedbytyp
 
 
 
-if (IS_LINKDEAD(victim)) {
-     if (GET_POS(victim) != POSITION_DEAD) {
-	do_flee(victim,"\0",0);
-	return(FALSE);
-     } else {
-	die(victim,killedbytype);
-        return(FALSE);
-       }
-  }
+	if (IS_LINKDEAD(victim)) {
+     	if (GET_POS(victim) != POSITION_DEAD) {
+			do_flee(victim,"\0",0);
+			return(FALSE);
+    	 } else {
+			die(victim,killedbytype);
+    	    return(FALSE);
+         }
+    }
 
-  if (!AWAKE(victim))
-    if (victim->specials.fighting)
-      stop_fighting(victim);
 
-  if (GET_POS(victim) == POSITION_DEAD) {
 
+  	if (!AWAKE(victim))
+  	  if (victim->specials.fighting)
+  	    stop_fighting(victim);
+
+  	if (GET_POS(victim) == POSITION_DEAD) {
     /*
       special for no-death rooms
       */
-    rp = real_roomp(victim->in_room);
-    if (rp && IS_SET(rp->room_flags, NO_DEATH)) {
-      GET_HIT(victim) = 1;
-      GET_POS(victim) = POSITION_STANDING;
-      strcpy(buf, "flee");
-      command_interpreter(victim, buf);
-      return(FALSE);
-    }
+  	  rp = real_roomp(victim->in_room);
+  	  if (rp && IS_SET(rp->room_flags, NO_DEATH)) {
+  	    GET_HIT(victim) = 1;
+  	    GET_POS(victim) = POSITION_STANDING;
+  	    strcpy(buf, "flee");
+  	    command_interpreter(victim, buf);
+  	    return(FALSE);
+  	  }
 
-    if (ch->specials.fighting == victim)
-      stop_fighting(ch);
-    if (IS_NPC(victim) && !IS_SET(victim->specials.act, ACT_POLYSELF)) {
-      if (IS_AFFECTED(ch, AFF_GROUP)) {
-	group_gain(ch, victim);
-      } else {
-	/* Calculate level-difference bonus */
-	exp = GET_EXP(victim);
+  	  if (ch->specials.fighting == victim)
+  	    stop_fighting(ch);
+  	  if (IS_NPC(victim) && !IS_SET(victim->specials.act, ACT_POLYSELF)) {
+  	    if (IS_AFFECTED(ch, AFF_GROUP)) {
+			group_gain(ch, victim);
+  	    } else {
+			/* Calculate level-difference bonus */
+			exp = GET_EXP(victim);
+			exp = MAX(exp, 1);
+			if (!IS_PC(victim)) {
+				exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
+			if (!IS_IMMORTAL(ch))
+				exp= NewExpCap(ch, exp);
 
-	exp = MAX(exp, 1);
-
-	if (!IS_PC(victim)) {
-
-	exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
-
-	if (!IS_IMMORTAL(ch))
-		exp= NewExpCap(ch, exp);
-
-	  gain_exp(ch, exp);
-	  sprintf(buf,"You receive %d experience from your battles.\n\r", exp);
-	  send_to_char(buf,ch);
-	}
-	change_alignment(ch, victim);
+			gain_exp(ch, exp);
+			sprintf(buf,"You receive %d experience from your battles.\n\r", exp);
+	  		send_to_char(buf,ch);
+		}
+		change_alignment(ch, victim);
       }
     }
+
+
+
     if (IS_PC(victim)) {
       if (victim->in_room > -1) {
-	if (IS_NPC(ch)&&!IS_SET(ch->specials.act, ACT_POLYSELF)) {
-	/* killed by npc */
+		if (IS_NPC(ch)&&!IS_SET(ch->specials.act, ACT_POLYSELF)) {
+			/* killed by npc */
+		 	if (IS_MURDER(victim)) {
+			//      REMOVE_BIT(victim->player.user_flags,MURDER_1);
+      		}
+			/* same here, with stole */
+	  		if (IS_STEALER(victim)) {
+	  		    REMOVE_BIT(victim->player.user_flags,STOLE_1);
+	  		}
+    		if(!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM))
+				sprintf(buf, "%s killed by %s at %s\n\r",GET_NAME(victim), ch->player.short_descr,(real_roomp(victim->in_room))->name);
+  			else {
+			   	sprintf(buf, "%s killed by %s in ARENA!\n\r",GET_NAME(victim), ch->player.short_descr);
+			}
+			/* global death messages */
+			send_to_all(buf);
+		} else {
+			/* killed by PC */
+			if (!IS_PC(victim) && !IS_SET(victim->specials.act,ACT_POLYSELF))
+				if (victim != ch && !IS_IMMORTAL(victim)) {
+			        //   SET_BIT(ch->player.user_flags,MURDER_1);
+		        	sprintf(buf, "Setting MURDER bit on %s for killing %s.",
+					GET_NAME(ch),GET_NAME(victim));
+          			log(buf);
+	  			}
+  			if (IS_PC(ch) && IS_PC(victim) && IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
+		        sprintf(buf, "%s killed by %s in ARENA\n\r",GET_NAME(victim), GET_NAME(ch));
+				send_to_all(buf);
+			}
 
-  if (IS_MURDER(victim)) {
-//      REMOVE_BIT(victim->player.user_flags,MURDER_1);
-     }
+			if ((IS_GOOD(ch) && !IS_EVIL(victim))  || (IS_EVIL(ch) && IS_NEUTRAL(victim))) {
+	   			sprintf(buf, "%s killed by %s at %s -- <Player kill, Illegal>",  GET_NAME(victim), ch->player.name,
+	    			(real_roomp(victim->in_room))->name);
+		   	} else {
+	   	 		sprintf(buf, "%s killed by %s at %s",GET_NAME(victim), GET_NAME(ch),   (real_roomp(victim->in_room))->name);
 
-/* same here, with stole */
-  if (IS_STEALER(victim)) {
-      REMOVE_BIT(victim->player.user_flags,STOLE_1);
-     }
-        if(!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM))
-	   sprintf(buf, "%s killed by %s at %s\n\r",
-		GET_NAME(victim), ch->player.short_descr,
-		(real_roomp(victim->in_room))->name);
-       else
-	   sprintf(buf, "%s killed by %s in ARENA!\n\r",
-		GET_NAME(victim), ch->player.short_descr);
-	/* global death messages */
-#if 1
-	send_to_all(buf);
-#endif
+			}
+
+		}
+    } else {
+		sprintf(buf, "%s killed by %s at Nowhere.",GET_NAME(victim),(IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+    }
+      log_sev(buf, 6);
+  }
+	if(IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
+		if(IS_PC(ch))
+			ch->specials.a_kills=ch->specials.a_kills+1;
+		if(IS_PC(victim))
+			victim->specials.a_deaths=victim->specials.a_deaths + 1;
+
 
 	} else {
-		/* killed by PC */
-if (!IS_PC(victim) && !IS_SET(victim->specials.act,ACT_POLYSELF))
-      if (victim != ch && !IS_IMMORTAL(victim)) {
-        //   SET_BIT(ch->player.user_flags,MURDER_1);
-          sprintf(buf, "Setting MURDER bit on %s for killing %s.",
-                  GET_NAME(ch),GET_NAME(victim));
-          log(buf);
-	  }
 
-	  if (IS_PC(ch) && IS_PC(victim) && IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
-	        sprintf(buf, "%s killed by %s in ARENA\n\r",
-		GET_NAME(victim), GET_NAME(ch));
-		send_to_all(buf);
-	  }
-
-	   if ((IS_GOOD(ch) && !IS_EVIL(victim))  ||
-	       (IS_EVIL(ch) && IS_NEUTRAL(victim))) {
-	     sprintf(buf, "%s killed by %s at %s -- <Player kill, Illegal>",
-		     GET_NAME(victim), ch->player.name,
-		     (real_roomp(victim->in_room))->name);
-	   } else {
-	     sprintf(buf, "%s killed by %s at %s",
-		     GET_NAME(victim), GET_NAME(ch),
-		     (real_roomp(victim->in_room))->name);
-	   }
+		if(IS_PC(ch))
+			ch->specials.m_kills=ch->specials.m_kills+1;
+		if(IS_PC(victim))
+			victim->specials.m_deaths=victim->specials.m_deaths + 1;
 
 	}
-      } else {
-	sprintf(buf, "%s killed by %s at Nowhere.",
-		GET_NAME(victim),
-		(IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
-      }
-      log_sev(buf, 6);
-    }
-    die(victim,killedbytype);
+
+
+  die(victim,killedbytype);
+
+
     /*
      *  if the victim is dead, return TRUE.
      */
@@ -4485,6 +4490,7 @@ void raw_kill_arena(struct char_data *ch)
       death_cry(ch);
    char_from_room(ch);
    send_to_char("Some mystical powers save you from death!", ch);
+
    char_to_room(ch, ch->specials.start_room);
    if (affected_by_spell(ch, SPELL_PARALYSIS))
       affect_from_char(ch, SPELL_PARALYSIS);

@@ -1283,6 +1283,11 @@ IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
     send_to_char("It may return after a bit.\n\r", ch);
     return;
   }
+	if (GET_MOVE(ch)<5 || GET_MANA(ch)<5 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+	   send_to_char("You do not have the strength to shout!\n\r",ch);
+	   return;
+	}
+
 
   if (apply_soundproof(ch))
     return;
@@ -1304,6 +1309,11 @@ IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
       act(buf1,FALSE, ch,0,0,TO_CHAR);
     }
     sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'", argument);
+	    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+	        GET_MOVE(ch) -= 5;
+	        GET_MANA(ch) -= 5;
+	        }
+
 
     for (i = descriptor_list; i; i = i->next)
       if (i->character != ch && !i->connected &&

@@ -472,7 +472,7 @@ dlog("in do_ zload");
     return;
   }
 /* make some permission checks */
-  if( GetMaxLevel(ch)<56 && zone != GET_ZONE(ch) )  {
+  if( (GetMaxLevel(ch)<56 && zone != GET_ZONE(ch)) || cmdnum!=0)  {
     send_to_char("Sorry, you are not authorized to load this zone.\n\r", ch);
     return;
   }

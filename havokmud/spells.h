@@ -406,8 +406,17 @@
 
 
 /* all new weapons to practice (GH) */
-#define WEAPON_FIRST 350
-
+#define WEAPON_FIRST 340
+#define WEAPON_SLING				340
+#define WEAPON_STAFF_SLING			341
+#define WEAPON_SHORT_BOW			342
+#define WEAPON_LONG_BOW				343
+#define WEAPON_HAND_CROSSBOW		344
+#define WEAPON_LIGHT_CROSSBOW		345
+#define WEAPON_HEAVY_CROSSBOW 		346
+#define WEAPON_BLOWGUN				347
+#define WEAPON_TETSUBO				348
+#define WEAPON_GENERIC              349
 #define WEAPON_SHORT_SWORD         350
 #define WEAPON_LONG_SWORD          351
 #define WEAPON_BROADSWORD          352
@@ -458,17 +467,7 @@
 #define WEAPON_DART					397
 #define WEAPON_JAVELIN				398
 #define WEAPON_HARPOON				399
-#define WEAPON_SLING				400
-#define WEAPON_STAFF_SLING			401
-#define WEAPON_SHORT_BOW			402
-#define WEAPON_LONG_BOW				403
-#define WEAPON_HAND_CROSSBOW		404
-#define WEAPON_LIGHT_CROSSBOW		405
-#define WEAPON_HEAVY_CROSSBOW 		406
-#define WEAPON_BLOWGUN				407
-#define WEAPON_TETSUBO				408
-#define WEAPON_GENERIC              409
-#define WEAPON_LAST                409
+#define WEAPON_LAST                399
 
 
 

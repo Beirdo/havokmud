@@ -1397,7 +1397,8 @@ void assign_mobiles()
  {3959, mermaid }, /* roaming mermaids */
 /* Heximal's new zone */
 	{50998, Deshima },
-	//{1    , TrainingGuildTrainingGuild },
+	{23201    , TrainingGuild },
+	{ 23202 , WeaponsMaster },
 #endif
 
     { -1, NULL },
@@ -1621,6 +1622,8 @@ void assign_rooms()
 { 44114,  Read_Room},// in proc_assign and add to protos..
 { 51827, sinbarrel },
 { 51151, preperationproc },  //Royal rumble proc.
+
+{ 11353, knockproc },
     { -1, NULL},
   };
   int i;

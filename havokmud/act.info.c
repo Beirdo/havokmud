@@ -2237,6 +2237,7 @@ dlog("in do_score");
 	  formatNum(GET_EXP(ch)),buff,ch->player.q_points, ch->specials.questwon);
   send_to_char(buf,ch);
 
+
 	/* the mud will crash without this check! */
 if (GetMaxLevel(ch)>MAX_MORT ||
      (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))) {
@@ -2426,6 +2427,11 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 	  playing_time.hours);
    send_to_char(buf,ch);
 
+   ch_printf(ch,"$c000pYou have killed $c000W%d$c000p monsters, and have died $c000W%d$c000p times. Arena($c000W%d$c000p/$c000W%d$c000p)\n\r",
+    	ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
+
+
+
     /* Drow fight -4 in lighted rooms! */
 if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW &&
      !IS_AFFECTED2(ch,AFF2_DARKNESS) && !IS_UNDERGROUND(ch))   {
@@ -2448,6 +2454,8 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
   sprintf(buf,"$c0005You have $c0015%d $c0005practice sessions remaining.\n\r",
 	      ch->specials.spells_to_learn);
   send_to_char(buf, ch);
+
+
 
   switch(GET_POS(ch)) {
   case POSITION_DEAD :
@@ -2976,7 +2984,7 @@ dlog("in do_who");
 	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
 		sprintf(levels, "Supreme Dictator");      // High council members, this should be
 	      else if(!strcmp(GET_NAME(person), "Banon"))    // fixxed with new immortal system code
-		sprintf(levels, "$c000RC$c000rr$c000Re$c000ra$c000Rt$c000ro$c000Rr");// -MW 02/20/2001
+		sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))

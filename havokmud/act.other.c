@@ -3300,6 +3300,11 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
+
+    ch_printf(ch, "$c000pArena Stats         : ($c000C%d Kills$c000p/$c000C%d Deaths$c000p).\n\r",
+    	finger->specials.m_kills, finger->specials.m_deaths);
+
+
   } /* end found finger'e*/
   else  /*Else there is no character in char DB*/
     send_to_char("Character not found!!\n\r",ch);

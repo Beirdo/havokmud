@@ -52,7 +52,7 @@ int length[] =
 	256,
 	240,
 	60,
-	
+
 };
 
 
@@ -69,7 +69,7 @@ int room_length[] =
         50
 };
 
-char *skill_fields[] = 
+char *skill_fields[] =
 {
 	"learned",
 	"affected",
@@ -96,14 +96,14 @@ void string_add(struct descriptor_data *d, char *str)
 {
   char *scan;
   int terminator = 0;
-  
+
   /* determine if this is the terminal string, and truncate if so */
   for (scan = str; *scan; scan++)
     if (terminator = (*scan == '~'))  {
       *scan = '\0';
       break;
     }
-  
+
   if (!(*d->str))	{
     if (strlen(str) > d->max_str)  	{
       send_to_char("String too long - Truncated.\n\r",
@@ -119,7 +119,7 @@ void string_add(struct descriptor_data *d, char *str)
 		   d->character);
       terminator = 1;
     } else 	{
-      if (!(*d->str = (char *) realloc(*d->str, strlen(*d->str) + 
+      if (!(*d->str = (char *) realloc(*d->str, strlen(*d->str) +
 				       strlen(str) + 3)))     	{
 	perror("string_add");
 	assert(0);
@@ -127,7 +127,7 @@ void string_add(struct descriptor_data *d, char *str)
       strcat(*d->str, str);
     }
   }
-  
+
   if (terminator)	{
            if (!d->connected && (IS_SET(d->character->specials.act, PLR_MAILING))) {
               store_mail(d->name, d->character->player.name, *d->str);
@@ -159,7 +159,7 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
 {
   char buf[MAX_STRING_LENGTH];
 
-  
+
   /* determine type */
   arg = one_argument(arg, buf);
   if (is_abbrev(buf, "char"))
@@ -170,29 +170,29 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
     *type = TP_ERROR;
     return;
   }
-  
+
   /* find name */
   arg = one_argument(arg, name);
-  
+
   /* field name and number */
   arg = one_argument(arg, buf);
   if (!(*field = old_search_block(buf, 0, strlen(buf), string_fields, 0)))
     return;
-  
+
   /* string */
   for (; isspace(*arg); arg++);
   for (; *string = *arg; arg++, string++);
-  
+
   return;
 }
 
-	 
+
 
 
 /* modification of malloc'ed strings in chars/objects */
 void do_string(struct char_data *ch, char *arg, int cmd)
 {
-  
+
   char name[MAX_STRING_LENGTH], string[MAX_STRING_LENGTH];
   struct extra_descr_data *ed, *tmp;
   int field, type;
@@ -200,29 +200,29 @@ void do_string(struct char_data *ch, char *arg, int cmd)
   struct obj_data *obj;
   if (IS_NPC(ch))
     return;
-  
+
   quad_arg(arg, &type, name, &field, string);
-  
+
   if (type == TP_ERROR)	{
     send_to_char(
 		 "Syntax:\n\rstring ('obj'|'char') <name> <field> [<string>].",
 		 ch);
     return;
   }
-  
+
   if (!field)	{
     send_to_char("No field by that name. Try 'help string'.\n\r",
 		 ch);
     return;
   }
-  
+
   if (type == TP_MOB)	{
     /* locate the beast */
     if (!(mob = get_char_vis(ch, name))) {
       send_to_char("I don't know anyone by that name...\n\r", ch);
       return;
     }
-    
+
     switch(field)	{
     case 1:
       if (!IS_NPC(mob) && GetMaxLevel(ch) < IMPLEMENTOR) {
@@ -261,7 +261,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
 	send_to_char("Monsters have no titles.\n\r",ch);
 	return;
       }
-      if ((GetMaxLevel(ch) >= GetMaxLevel(mob)) && (ch != mob)) 
+      if ((GetMaxLevel(ch) >= GetMaxLevel(mob)) && (ch != mob))
 	ch->desc->str = &mob->player.title;
       else {
 	send_to_char("Sorry, can't set the title of someone of higher level.\n\r", ch);
@@ -293,10 +293,10 @@ void do_string(struct char_data *ch, char *arg, int cmd)
       send_to_char("Can't find such a thing here..\n\r", ch);
       return;
     }
-    
+
     switch(field)  	{
-      
-    case 1: 
+
+    case 1:
       if (!*string) {
 	send_to_char("You have to supply a keyword.\n\r", ch);
 	return;
@@ -305,12 +305,12 @@ void do_string(struct char_data *ch, char *arg, int cmd)
 	break;
       }
       break;
-    case 2: 
+    case 2:
       if (!*string) {
 	send_to_char("You have to supply a keyword.\n\r", ch);
 	return;
       } else {
-        ch->desc->str = &obj->short_description; 
+        ch->desc->str = &obj->short_description;
 	break;
       }
     case 3: ch->desc->str = &obj->description; break;
@@ -360,22 +360,22 @@ void do_string(struct char_data *ch, char *arg, int cmd)
 	  free(ed->keyword);
 	  if (ed->description)
 	    free(ed->description);
-	  
-	  /* delete the entry in the desr list */						
+
+	  /* delete the entry in the desr list */
 	  if (ed == obj->ex_description)
 	    obj->ex_description = ed->next;
 	  else {
-	    for(tmp = obj->ex_description; tmp->next != ed; 
+	    for(tmp = obj->ex_description; tmp->next != ed;
 		tmp = tmp->next);
 	    tmp->next = ed->next;
 	  }
 	if (ed)
 	  free(ed);
-	  
+
 	  send_to_char("Field deleted.\n\r", ch);
 	  return;
 	}
-      break;				
+      break;
     default:
       send_to_char(
 		   "That field is undefined for objects.\n\r", ch);
@@ -383,12 +383,12 @@ void do_string(struct char_data *ch, char *arg, int cmd)
       break;
     }
   }
-  
+
   if (*ch->desc->str)	{
     free(*ch->desc->str);
   }
-  
-  if (*string) {   /* there was a string in the argument array */ 
+
+  if (*string) {   /* there was a string in the argument array */
     if (strlen(string) > length[field - 1])	{
       send_to_char("String too long - truncated.\n\r", ch);
       *(string + length[field - 1]) = '\0';
@@ -411,16 +411,16 @@ void bisect_arg(char *arg, int *field, char *string)
 {
   char buf[MAX_INPUT_LENGTH+40];
 
-  
+
   /* field name and number */
   arg = one_argument(arg, buf);
   if (!(*field = old_search_block(buf, 0, strlen(buf), room_fields, 0)))
     return;
-  
+
   /* string */
   for (; isspace(*arg); arg++);
   for (; *string = *arg; arg++, string++);
-  
+
   return;
 }
 
@@ -434,9 +434,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
   char name[MAX_INPUT_LENGTH], string[512], buf[132],sdflags[30];
   struct extra_descr_data *ed, *tmp;
   struct room_data	*rp;
-  
+
   rp = real_roomp(ch->in_room);
-  
+
   if ((IS_NPC(ch)) || (GetMaxLevel(ch)<LOW_IMMORTAL))
     return;
 
@@ -449,19 +449,19 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
      send_to_char("Sorry, you are not authorized to edit this zone.\n\r", ch);
      return;
   }
-  
+
   bisect_arg(arg, &field, string);
-  
+
   if (!field)	{
     send_to_char("No field by that name. Try 'help edit'.\n\r", ch);
     return;
   }
-  
+
   r_flags = -1;
   s_type = -1;
-  
+
   switch(field) {
-    
+
   case 1: ch->desc->str = &rp->name; break;
   case 2: ch->desc->str = &rp->description; break;
   case 3: sscanf(string,"%u %d ",&r_flags,&s_type);
@@ -473,7 +473,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
     rp->room_flags = r_flags;
     rp->sector_type = s_type;
-    
+
     if (rp->sector_type == SECT_WATER_NOSWIM) {
       send_to_char("P.S. you need to do speed and flow\n\r",ch);
       send_to_char("For this river. (set to 0 as default)\n\r",ch);
@@ -483,12 +483,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
     return;
     break;
-    
-  case 4: 
+
+  case 4:
 
     open_cmd=-1; /* no cmd by default */
     sscanf(string,"%d %s %d %d %d", &dir, &sdflags, &dkey, &exroom, &open_cmd);
-    
+
     /*
       check if the exit exists
       */
@@ -508,12 +508,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         case '5': dflags = EX_CLIMB | EX_ISDOOR | EX_PICKPROOF; break;
         case 'S': case 's': dflags |= EX_SECRET; break;
         case 'C': case 'c': dflags |= EX_CLIMB; break;
-        case 'P': case 'p': dflags |= EX_PICKPROOF; break;          
+        case 'P': case 'p': dflags |= EX_PICKPROOF; break;
         case 'D': case 'd': dflags |= EX_ISDOOR; break;
         default: send_to_char("Invalid char in dflags value!\r\n", ch); break;
       }
     }
-    
+
     if (rp->dir_option[dir]) {
       send_to_char("modifying exit\n\r",ch);
 
@@ -535,7 +535,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
       return;
     } else {
       send_to_char("New exit\n\r",ch);
-      CREATE(rp->dir_option[dir], 
+      CREATE(rp->dir_option[dir],
 	     struct room_direction_data, 1);
 
       rp->dir_option[dir]->exit_info=dflags;
@@ -543,38 +543,38 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
       rp->dir_option[dir]->to_room = exroom;
       rp->dir_option[dir]->open_cmd = open_cmd;
     }
-    
+
     if (rp->dir_option[dir]->exit_info>0) {
       string[0] = 0;
       send_to_char("enter keywords, 1 line only. \n\r",ch);
       send_to_char("terminate with an ~ on the same line.\n\r",ch);
-      ch->desc->str = &rp->dir_option[dir]->keyword; 
+      ch->desc->str = &rp->dir_option[dir]->keyword;
       break;
     } else {
       return;
-    }   
-    
+    }
+
   case 5: dir = -1;
-    sscanf(string,"%d", &dir); 
+    sscanf(string,"%d", &dir);
     if ((dir >=0) && (dir <= 5)) {
       send_to_char("Enter text, term. with '~' on a blank line",ch);
       string[0] = 0;
       if (rp->dir_option[dir]) {
 	ch->desc->str = &rp->dir_option[dir]->general_description;
       } else {
-	CREATE(rp->dir_option[dir], 
+	CREATE(rp->dir_option[dir],
 	       struct room_direction_data, 1);
 	ch->desc->str = &rp->dir_option[dir]->general_description;
       }
     } else {
       send_to_char("Illegal direction\n\r",ch);
       send_to_char("Must enter 0-5.I will ask for text.\n\r",ch);
-      return;		  
+      return;
     }
     break;
-  case 6: 
-    /* 
-      extra descriptions 
+  case 6:
+    /*
+      extra descriptions
       */
     if (!*string)  	{
       send_to_char("You have to supply a keyword.\n\r", ch);
@@ -602,9 +602,9 @@ if (ed->description)
 	break;
       }
     ch->desc->max_str = MAX_STRING_LENGTH;
-    return; 
+    return;
     break;
-    
+
   case 7:
     /*  this is where the river stuff will go */
     rspeed = 0; rdir = 0;
@@ -627,7 +627,7 @@ if (ed->description)
       break;
     } else {
       if (IS_SET(TELE_COUNT, tele_mask)) {
-	sscanf(string,"%d %d %d %d", 
+	sscanf(string,"%d %d %d %d",
 	       &tele_time, &tele_room, &tele_mask, &tele_cnt);
 	if (tele_cnt < 0) {
 	  send_to_char
@@ -647,7 +647,7 @@ if (ed->description)
         return;
       }
     }
-    
+
     return;
   case 9:
     if (sscanf(string, "%d", &moblim) < 1) {
@@ -661,7 +661,7 @@ if (ed->description)
         return;
       break;
     }
-  case 10: 
+  case 10:
     /*
       deletion
       */
@@ -679,34 +679,34 @@ if (ed->description)
 	  free(ed->keyword);
 	  if (ed->description)
 	    free(ed->description);
-	  
-	  /* delete the entry in the desr list */						
+
+	  /* delete the entry in the desr list */
 	  if (ed == rp->ex_description)
 	    rp->ex_description = ed->next;
 	  else {
-	    for(tmp = rp->ex_description; tmp->next != ed; 
+	    for(tmp = rp->ex_description; tmp->next != ed;
 		tmp = tmp->next);
 	    tmp->next = ed->next;
 	  }
 	if (ed)
 	  free(ed);
-	  
+
 	  send_to_char("Field deleted.\n\r", ch);
 	  return;
 	}
-      break;				
-    
+      break;
+
   default:
     send_to_char("I'm so confused :-)\n\r",ch);
     return;
     break;
   }
-  
+
   if (*ch->desc->str)	{
     free(*ch->desc->str);
   }
-  
-  if (*string) {   /* there was a string in the argument array */ 
+
+  if (*string) {   /* there was a string in the argument array */
     if (strlen(string) > room_length[field - 1])	{
       send_to_char("String too long - truncated.\n\r", ch);
       *(string + length[field - 1]) = '\0';
@@ -720,7 +720,7 @@ if (ed->description)
     *ch->desc->str = 0;
     ch->desc->max_str = room_length[field - 1];
   }
-  
+
 }
 
 
@@ -752,36 +752,36 @@ void do_setskill(struct char_data *ch, char *arg, int cmd)
 char *one_word(char *argument, char *first_arg )
 {
   int begin, look_at;
-  
+
   begin = 0;
-  
+
   do
     {
       for ( ;isspace(*(argument + begin)); begin++);
-      
+
       if (*(argument+begin) == '\"') {  /* is it a quote */
-	
+
 	begin++;
-	
-	for (look_at=0; (*(argument+begin+look_at) >= ' ') && 
+
+	for (look_at=0; (*(argument+begin+look_at) >= ' ') &&
 	     (*(argument+begin+look_at) != '\"') ; look_at++)
 				*(first_arg + look_at) = LOWER(*(argument + begin + look_at));
-	
+
 	if (*(argument+begin+look_at) == '\"')
 	  begin++;
-	
+
       } else {
-	
+
 	for (look_at=0; *(argument+begin+look_at) > ' ' ; look_at++)
 	  *(first_arg + look_at) = LOWER(*(argument + begin + look_at));
-	
+
       }
-      
+
       *(first_arg + look_at) = '\0';
       begin += look_at;
     }
   while (fill_word(first_arg));
-  
+
   return(argument+begin);
 }
 
@@ -850,7 +850,7 @@ void page_string(struct descriptor_data *d, char *str, int keep_internal)
 {
   if (!d)
     return;
-  
+
   if (keep_internal)	{
     CREATE(d->showstr_head, char, strlen(str) + 1);
     strcpy(d->showstr_head, str);
@@ -858,7 +858,7 @@ void page_string(struct descriptor_data *d, char *str, int keep_internal)
   }
   else
     d->showstr_point = str;
-  
+
   show_string(d, "");
 }
 
@@ -869,9 +869,9 @@ void show_string(struct descriptor_data *d, char *input)
   char buffer[MAX_STRING_LENGTH], buf[MAX_INPUT_LENGTH+50];
   register char *scan, *chk;
   int lines = 0, toggle = 1;
-  int i;  
+  int i;
   one_argument(input, buf);
-  
+
   if (*buf)    {
     if (d->showstr_head){
       free(d->showstr_head);
@@ -881,7 +881,7 @@ void show_string(struct descriptor_data *d, char *input)
     return;
   }
 
-  if(IS_SET(d->character->player.user_flags,USE_PAGING)) {  
+  if(IS_SET(d->character->player.user_flags,USE_PAGING)) {
     if(d->character->term == 0)
       i = 22;
     else
@@ -899,7 +899,7 @@ void show_string(struct descriptor_data *d, char *input)
     else if (!*scan || (lines >= i))      {
       *scan = '\0';
      SEND_TO_Q(ParseAnsiColors(IS_SET(d->character->player.user_flags,USE_ANSI),buffer),d);
-     
+
       /* see if this is the end (or near the end) of the string */
       for (chk = d->showstr_point; isspace(*chk); chk++);
       if (!*chk)	  {
@@ -923,15 +923,15 @@ void night_watchman()
 {
   long tc;
   struct tm *t_info;
-  
+
   extern int mudshutdown;
-  
+
   void send_to_all(char *messg);
-  
+
   tc = time(0);
   t_info = localtime(&tc);
-  
-  if ((t_info->tm_hour == 8) && (t_info->tm_wday > 0) &&
+
+ if ((t_info->tm_hour == 8) && (t_info->tm_wday > 0) &&
       (t_info->tm_wday < 6))
     if (t_info->tm_min > 50)
       {
@@ -952,13 +952,13 @@ void check_reboot()
   struct tm *t_info;
   char dummy;
   FILE *boot;
-  
+
   extern int mudshutdown, reboot;
-  
+
   tc = time(0);
   t_info = localtime(&tc);
-  
-  if ( (t_info->tm_hour + 1) == REBOOT_AT && t_info->tm_min > 30 ) 
+
+  if ( (t_info->tm_hour + 1) == REBOOT_AT && t_info->tm_min > 30 )
     if (boot = fopen("./reboot", "r"))
       {
 	if (t_info->tm_min > 50)
@@ -979,23 +979,23 @@ void check_reboot()
 		else
 		  system("mv ./reboot reboot.SUCCEEDED");
 	      }
-	    
+
 	    send_to_all("Automatic reboot. Come back in a little while.\n\r");
 	    raw_force_all("return");
   	    raw_force_all("save");
 	    mudshutdown = reboot = 1;
 	  }
 
-	else if (t_info->tm_min > 49) 
+	else if (t_info->tm_min > 49)
 	    send_to_all("MUD WILL REBOOT IN 1 MINUTE!\n\r");
-	else if (t_info->tm_min > 45) 
+	else if (t_info->tm_min > 45)
 	    send_to_all("MUD WILL REBOOT IN 5 MINUTES.\n\r");
 	else if (t_info->tm_min > 40)
 	  send_to_all("ATTENTION: DikuMUD will reboot in 10 minutes.\n\r");
 	else if (t_info->tm_min > 30)
 	  send_to_all(
 	      "Warning: The game will close and reboot in 20 minutes.\n\r");
-	
+
 	fclose(boot);
       }
 }
@@ -1005,11 +1005,11 @@ int workhours()
 {
   long tc;
   struct tm *t_info;
-  
+
   tc = time(0);
   t_info = localtime(&tc);
-  
-  return((t_info->tm_wday > 0) && (t_info->tm_wday < 6) && 
+
+  return((t_info->tm_wday > 0) && (t_info->tm_wday < 6) &&
 	 (t_info->tm_hour >= 9) && (t_info->tm_hour < 17));
 }
 
@@ -1039,7 +1039,7 @@ int load()
   static int previous[5];
   static int p_point = -1;
   extern int slow_death;
-  
+
   if (!(fl = fopen("/tmp/.sysline", "r")))    {
     perror("sysline. (dying)");
     slow_death = 1;
@@ -1051,7 +1051,7 @@ int load()
     return(-1);
   }
   fclose(fl);
-  
+
   if (p_point < 0)    {
     previous[0] = atoi(info.sl_load1);
     for (i = 1; i< 5; i++)
@@ -1063,7 +1063,7 @@ int load()
     previous[p_point] = atoi(info.sl_load1);
     if (++p_point > 4)
       p_point = 0;
-    
+
     for (i = 0, sum = 0; i < 5; i++)
       sum += previous[i];
     return((int) sum / 5);
@@ -1074,7 +1074,7 @@ char *nogames()
 {
   static char text[200];
   FILE *fl;
-  
+
   if (fl = fopen("lib/nogames", "r"))
     {
       log("/usr/games/nogames exists");
@@ -1099,13 +1099,13 @@ void gr(int s)
       "WARNING: The game will close in 1 minute.\n\r"
       };
   static int wnr = 0;
-  
+
   extern int slow_death, mudshutdown;
-  
+
   void send_to_all(char *messg);
-  
+
   void coma(int s);
-  
+
   if (((ld = load()) >= 6) || (txt = nogames()) || slow_death)
     {
       if (ld >= 6)	{
@@ -1119,10 +1119,10 @@ void gr(int s)
 	  strcpy(buf,
 		 "Game playing is no longer permitted on this machine:\n\r");
 	  strcat(buf, txt);
-	  strcat(buf, "\n\r"); 
+	  strcat(buf, "\n\r");
 	  send_to_all(buf);
 	}
-      
+
       if (wnr < 3)
 	send_to_all(warnings[wnr++]);
       else

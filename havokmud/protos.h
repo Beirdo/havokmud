@@ -2277,3 +2277,4 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

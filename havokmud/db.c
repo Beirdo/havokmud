@@ -3374,6 +3374,11 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     ch->skills[i].learned = MIN(st->skills[i].learned, max);
   }
 
+	ch->specials.a_deaths = st->a_deaths;
+	ch->specials.a_kills = st->a_kills;
+	ch->specials.m_deaths = st->m_deaths;
+	ch->specials.m_kills = st->m_kills;
+
 
   ch->specials.spells_to_learn = st->spells_to_learn;
   ch->specials.alignment    = st->alignment;
@@ -3528,6 +3533,12 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
   st->affected_by2     = ch->specials.affected_by2;
   st->startroom =     ch->specials.start_room;
   st->extra_flags =   ch->player.extra_flags;
+
+
+	st->a_deaths= ch->specials.a_deaths;
+	st->a_kills = ch->specials.a_kills;
+	st->m_deaths = ch->specials.m_deaths;
+	st->m_kills  = ch->specials.m_kills;
 
 
      st->speaks = ch->player.speaks;

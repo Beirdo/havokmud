@@ -818,7 +818,7 @@ struct room_data
 
 #define MAX_NEW_LANGUAGES 10  /* for new languages DO NOT CHANGE!  */
 
-#define MAX_SKILLS  450   /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 200->350 */
+#define MAX_SKILLS  400   /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 200->350 */
 #define MAX_WEAR    (MAX_WEAR_POS+1)
 #define MAX_AFFECT  40    /* Used in CHAR_FILE_U *DO*NOT*CHANGE* 25->30*/
 #define MAX_SAVES   8     /* number of saving throws types... DO NOT CHANGE*/
@@ -1256,6 +1256,12 @@ struct char_special_data
   struct auction_data *auctionx;
   struct obj_data *auction;
   long minbid;
+
+  	int a_deaths;
+  	int a_kills;
+  	int m_deaths;
+  	long m_kills;
+
   };
 
 /* skill_data flags */
@@ -1456,6 +1462,11 @@ struct char_file_u
 	int startroom;  /* which room the player should start in */
 	long user_flags;	/* no-delete,use ansi,etc... */
 	int speaks;		/* language currently speakin in */
+
+	int a_deaths;
+	int a_kills;
+	int m_deaths;
+	long m_kills;
 
 };
 

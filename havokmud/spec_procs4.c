@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <time.h>
 #include "protos.h"
 /* #include "mail.h" 	 moved to protos.h */
 
@@ -34,6 +34,8 @@ extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct spell_info_type spell_info[];
 extern char *dirs[];
 extern int rev_dir[];
+extern struct zone_data *zone_table;
+
 
 
 
@@ -55,7 +57,8 @@ int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *ob
    dlog("in chestproc");
 
 	if(countPeople(RUMBLE_ZONE)>1)  {
-		ch_printf(ch,"You can't open the chest yet, there is still people in the battle arena!%d", countPeople(RUMBLE_ZONE));
+		//ch_printf(ch,"You can't open the chest yet, there is still people in the battle arena!%d", countPeople(RUMBLE_ZONE));
+		ch_printf(ch,"The chest seems to resist your touch...",ch);
 		return(TRUE);
 	} else
 		return(FALSE);
@@ -101,38 +104,65 @@ int count_People_in_room(int room) {
  * @Author: Greg Hovey (Banon)
  * @Assigned to obj/mob/room: Room(51151)
 */
+#define THE_HOUR  17
 int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 
+void do_close(struct char_data *ch, char *argument, int cmd);
 	  struct char_data *i;
 	  int count=0, rand=0,x=0, zone=0;
+		long curr_time;
+		struct tm *t_info;
 
 
-	if (cmd!=67)   //temporary command
+	if (cmd!=224)   //pull
 		return(FALSE);
+
+
+ curr_time = time(0);
+  t_info = localtime(&curr_time);
+
+	curr_time = time(NULL);
+	//ch_printf(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
+
+
+
 
 	count = count_People_in_room(ch->in_room);
 	zone = countPeople(RUMBLE_ZONE);
 
-	if((zone-count )==1 || (zone-count)==0){
+	if(((zone-count )==1 || (zone-count)==0) && t_info->tm_hour==THE_HOUR){
 
+		if(!IS_SET(rp->dir_option[2]->exit_info, EX_LOCKED) || !IS_SET(rp->dir_option[2]->exit_info, EX_CLOSED)) {
+			do_close(ch, "door", 0);
+			raw_lock_door( ch, EXIT(ch,2), 2);
+
+		}
+		ch_printf(ch,"You knock on the big wooden door and then slowly, it opens.\n\r");
 
 		//send_to_char("1 person in arena.. boot someone new",ch);
 		rand=number(0,count-1);
 
 				for (i=real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
 					if(i && x==rand) {
-						send_to_zone("$c000BThe gong sounds as someone new gets pushed into the arena.%c000w",ch);
+						send_to_char("You pull the rope of the gong.\n\r",ch);
+						send_to_zone("$c000BThe gong sounds as someone new gets pushed into the arena.$c000w\n\r",ch);
+						send_to_char("$c000BThe gong sounds as someone new gets pushed into the arena.$c000w\n\r",ch);
 						char_from_room(i);
+						send_to_char("You blink for a second and find yourself elsewhere.\n\r",i);
+
 						char_to_room(i,number(51153,51158));
+						do_look(i,"",0);
 						return(TRUE);
 					}
 					x++;
 
  				}
-	} else
-	ch_printf(ch,"Number of people in zone:%d   Number of people in room:%d",zone, count);
-
+	} else {
+		//ch_printf(ch,"Number of people in zone:%d   Number of people in room:%d",zone, count);
+		ch_printf(ch,"You ring the gong but nothing happens.\n\r");
+		do_zload(ch,"188",0);
+	}
 
  	return(TRUE);
 }
@@ -475,7 +505,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	  { "charisma",     7,      5},
 	  { "intelligence", 8,      12},
 	  { "wisdom",       9,      12},
-	  { "None",		    10,	    -1}
+	  { "None",		    -1,	    -1}
 
 	};
 	int x=0, stat=0;
@@ -694,6 +724,10 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	//170->Practice,164->Practise, 243->gain
 	if (cmd==164 || cmd == 170) {
 
+		if(!OnlyClass(ch,CLASS_WARRIOR)) {
+			send_to_char("Only single class warriors can learn weapons styles proficiently.",ch);
+			return(FALSE);
+		}
 
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
@@ -726,20 +760,20 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 			while (weaponskills[x].level != -1) {
 				if(is_abbrev(arg,weaponskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(weaponskills[x].level > 51) {
-						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
-								" 'You're not experienced enough to learn this skill.'",ch);
+						send_to_char("$c0013[$c0015Weapon Master$c0013] tells you"
+								" 'You're not experienced enough to learn this weapon.'",ch);
 						return(TRUE);
 					}
 
 					if(ch->skills[weaponskills[x].skillnum].learned > 0) {
 						//check if skill already practiced
-						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+						send_to_char("$c0013[$c0015Weapon Master$c0013] tells you"
 									 " 'You already look quite knowledgeable of that weapon.'\n\r",ch);
 						return(TRUE);
 					}
 
 					if(ch->specials.spells_to_learn <=0) {
-						send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+						send_to_char("$c0013[$c0015Weapon Master$c0013] tells you"
 									" 'You don't have enough practice points.'\n\r",ch);
 						return(TRUE);
 					}
@@ -750,21 +784,51 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 					if(!IS_SET(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN)) {
 						SET_BIT(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN);
-						SET_BIT(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN_BARD);
+						SET_BIT(ch->skills[weaponskills[x].skillnum].flags,SKILL_KNOWN);
 					}
 					percent=ch->skills[weaponskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
 					ch->skills[weaponskills[x].skillnum].learned = MIN(95,percent);
-					if(ch->skills[weaponskills[x].skillnum].learned >= 95)
+					if(ch->skills[weaponskills[x].skillnum].learned > 0)
 						send_to_char("'You are now a master of this art.'\n\r",ch);
 					return(TRUE);
 				}
 				x++;
 			}
-			send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you '"
+			send_to_char("$c0013[$c0015Weapon Master$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
 			return(TRUE);
 		}
 	}
 #endif
 	return (FALSE);
+}
+int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+
+		long curr_time;
+		struct tm *t_info;
+
+	log("Knockproc");
+	if (cmd!=429)   //knock
+		return(FALSE);
+
+
+ curr_time = time(0);
+  t_info = localtime(&curr_time);
+
+	curr_time = time(NULL);
+	//ch_printf(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
+
+
+	if(t_info->tm_hour != THE_HOUR && (IS_SET(rp->dir_option[0]->exit_info, EX_LOCKED)))  {
+		do_zload(ch,"188",0);
+		raw_unlock_door( ch, EXIT(ch,0), 0);
+		open_door(ch, 0);
+		ch_printf(ch,"You knock on the big wooden door and then slowly, it opens.\n\r");
+
+		act("$n knocks on the big door and then suddently, the big door opens up.",TRUE,ch,0,0,TO_ROOM);
+		return(TRUE);
+	}
+
+	ch_printf(ch,"You knock on the big wooden door but nothing seems to happen.\n\r");
+	return(TRUE);
 }

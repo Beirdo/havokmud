@@ -3261,11 +3261,10 @@ int SpaceForSkills(struct char_data *ch)
     create space for the skills for some mobile or character.
   */
 
-
   ch->skills = (struct char_skill_data *)malloc(MAX_SKILLS*sizeof(struct char_skill_data));
 
   if (ch->skills == 0)
-    assert(0);
+	   assert(0);
 
 }
 
