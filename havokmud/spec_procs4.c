@@ -2106,6 +2106,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	}
 
 	if(cmd == 56) { /* buy */
+		obj1 = obj2 = obj3 = obj4 = obj5 = 0;
 		for (i = object_list; i; i = i->next) {
 			if (obj_index[i->item_number].virtual == ING_1) {
 				obj = i;
@@ -2170,7 +2171,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			found = 0;
 		}
 
-		if(obj1 && obj2 && obj3 && obj && obj5) {
+		if(obj1 && obj2 && obj3 && obj4 && obj5) {
 			/* got all the items.. how about a million coins? */
 			if(GET_GOLD(ch) < 1000000) {
 				send_to_char("Yeelorn says, 'Aye laddie, ye've got yerself the items, but yer still some money short.'\n\r",ch);
@@ -2221,7 +2222,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 				}
 			}
 			return(TRUE);
-		}
+		} /* not all items are in posession, buy does nothing special */
 	}
 	return(FALSE);
 }

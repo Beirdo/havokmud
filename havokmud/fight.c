@@ -2114,9 +2114,9 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
       (ch != victim) &&
 	!CanFightEachOther(ch,victim)       ) {
      char buf[255];
-	sprintf(buf,"%s was found fighing %s!",GET_NAME(ch),GET_NAME(victim));
+	sprintf(buf,"%s was found fighting %s!",GET_NAME(ch),GET_NAME(victim));
      log(buf);
-     act("You get a errie feeling you should not be doing this, you FLEE!",FALSE,ch,0,victim,TO_CHAR);
+     act("You get an eerie feeling you should not be doing this, you FLEE!",FALSE,ch,0,victim,TO_CHAR);
      act("$n seems about to attack you, then looks very scared!",FALSE,ch,0,victim,TO_VICT);
      do_flee(ch,"",0);
     }
