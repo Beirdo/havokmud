@@ -2985,7 +2985,7 @@ void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *v
 	    af.duration  = 24;
 	    af.modifier  = 0;
 	    af.location  = APPLY_BV2;
-	    af.bitvector = AFF2_ANIMAL_INVIS;
+	    af.bitvector = AFF2_INVIS_TO_UNDEAD;
 	    affect_to_char(victim, &af);
 	  }
 }
@@ -4348,6 +4348,17 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 			REMOVE_BIT(ch->specials.affected_by, AFF_FIRESHIELD);
 		}
 
+		if (affected_by_spell(ch, SPELL_BLADE_BARRIER)) {
+			act("The whirling blades around $n freeze up and shatter.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			affect_from_char(ch,SPELL_BLADE_BARRIER);
+		}
+		if (IS_AFFECTED2(ch, AFF2_BLADE_BARRIER)) {
+			act("The whirling blades around $n freeze up and shatter.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			REMOVE_BIT(ch->specials.affected_by2, AFF2_BLADE_BARRIER);
+		}
+
 		act("$c000C$n is surrounded by a cold blue aura.",TRUE,ch,0,0,TO_ROOM);
 		act("$c000CYou summon an aura of chilly blue flames around you.",TRUE,ch,0,0,TO_CHAR);
 
@@ -4362,4 +4373,43 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 	}
 }
 
+void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	if (!affected_by_spell(ch, SPELL_BLADE_BARRIER)) {
+		if (affected_by_spell(ch, SPELL_FIRESHIELD)) {
+			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			affect_from_char(ch,SPELL_FIRESHIELD);
+		}
+		if (IS_AFFECTED(ch, AFF_FIRESHIELD)) {
+			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			REMOVE_BIT(ch->specials.affected_by, AFF_FIRESHIELD);
+		}
+		if (affected_by_spell(ch, SPELL_CHILLSHIELD)) {
+			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			affect_from_char(ch,SPELL_CHILLSHIELD);
+		}
+		if (IS_AFFECTED2(ch, AFF2_CHILLSHIELD)) {
+			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			REMOVE_BIT(ch->specials.affected_by2, AFF2_CHILLSHIELD);
+		}
+
+		act("$c000B$n is surrounded by a barrier of whirling blades.",TRUE,ch,0,0,TO_ROOM);
+		act("$c000BYou summon a barrier of whirling blades around you.",TRUE,ch,0,0,TO_CHAR);
+
+		af.type      = SPELL_BLADE_BARRIER;
+		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+		af.modifier  = 0;
+		af.location  = APPLY_BV2;
+		af.bitvector = AFF2_BLADE_BARRIER;
+		affect_to_char(ch, &af);
+	} else {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+	}
+}
 

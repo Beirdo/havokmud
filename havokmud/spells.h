@@ -399,14 +399,15 @@
 #define SPELL_FLESH_GOLEM		337 // done - checked
 #define SPELL_CHILLSHIELD		338 //
 
-
 /*PSI Spells */
 #define SPELL_WALL_OF_THOUGHT   339
 #define SKILL_MIND_TAP          340
 
+#define SPELL_BLADE_BARRIER		341
 
 
-#define MAX_EXIST_SPELL         340   /* max number of skills/spells */
+
+#define MAX_EXIST_SPELL         341   /* max number of skills/spells */
 
 
 

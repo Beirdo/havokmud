@@ -155,6 +155,12 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
   if (IS_AFFECTED(s, AFF_BLIND))
     return(FALSE);
 
+  if (IS_AFFECTED2(o, AFF2_ANIMAL_INVIS) && IsAnimal(s))
+    return(FALSE);
+
+  if (IS_AFFECTED2(o, AFF2_INVIS_TO_UNDEAD) && IsUndead(s))
+    return(FALSE);
+
   if (IS_AFFECTED(s, AFF_TRUE_SIGHT))
     return(TRUE);
 
@@ -168,24 +174,9 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
       return(FALSE);
   }
 
-  if(s->in_room)
-	  if(IS_DARK(s->in_room))
-		  if(o->in_room)
-			  if(IS_DARK(o->in_room))
-				  if(!IS_AFFECTED(s, AFF_INFRAVISION))
-					  return(FALSE);
-/*			wonder if this sheds light on the problem  --Lennya
-
   if ((IS_DARK(s->in_room) || IS_DARK(o->in_room)) &&
         (!IS_AFFECTED(s, AFF_INFRAVISION)))
         return(FALSE);
-*/
-  if (IS_AFFECTED2(o, AFF2_ANIMAL_INVIS) && IsAnimal(s))
-    return(FALSE);
-
-  if (IS_AFFECTED2(o, AFF2_INVIS_TO_UNDEAD) && IsUndead(s))
-    return(FALSE);
-
 
   return(TRUE);
 }

@@ -5242,3 +5242,18 @@ void cast_life_draw( byte level, struct char_data *ch, char *arg,
   }
 }
 
+void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_blade_barrier(level, ch, 0, 0);
+    break;
+  default:
+      log("serious screw-up in cast_blade_barrier");
+      break;
+  }
+}

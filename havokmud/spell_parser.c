@@ -556,6 +556,9 @@ void cast_flesh_golem( byte level, struct char_data *ch, char *arg,
 void cast_chillshield( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
+void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
 struct spell_info_type spell_info[MAX_SPL_LIST];
 
 char *spells[]=
@@ -903,8 +906,13 @@ char *spells[]=
 	"finger of death",
 	"flesh golem",
 	"chillshield", //338
+
+	/* psi stuff */
    "wall of thought",
    "mind tap",
+
+   /* 341 - blade barrier */
+   "blade barrier",
    "\n"
 };
 
@@ -2920,7 +2928,7 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   22,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   25,	 TAR_IGNORE, cast_mon_sum7,0,0, LOW_IMMORTAL);
 
-  spello(81,24,POSITION_STANDING, 40, 45, 48,
+  spello(81,24,POSITION_STANDING, 40, LOW_IMMORTAL, 48,
   40,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_SELF_ONLY | TAR_CHAR_ROOM, cast_fireshield,0,0, LOW_IMMORTAL);
 
@@ -3872,7 +3880,12 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(338,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_IGNORE , cast_chillshield, 0,0, 45);
+/* end necro spells */
 
+
+  spello(341,24,POSITION_STANDING, LOW_IMMORTAL, 45,  LOW_IMMORTAL,
+  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  40,	 TAR_IGNORE , cast_blade_barrier, 0,0, LOW_IMMORTAL);
 
 
 }

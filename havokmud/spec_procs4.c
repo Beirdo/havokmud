@@ -1487,10 +1487,6 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		return(FALSE);
 	}
 
-	/* let's make sure shopkeepers don't get killed or robbed */
-	if(!IS_SET(rp->room_flags,PEACEFUL))
-		SET_BIT(rp->room_flags, i);
-
 	if (cmd !=  59 &&	/* list */
 		cmd !=  56 &&	/* buy */
 		cmd !=  93 &&	/* offer */
@@ -1507,6 +1503,11 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		log("weirdness in shopkeeper, shopkeeper found but not assigned");
 		return(FALSE);
 	}
+
+	/* let's make sure shopkeepers don't get killed or robbed */
+	if(!IS_SET(real_roomp(shopkeeper->in_room)->room_flags,PEACEFUL))
+		SET_BIT(real_roomp(shopkeeper->in_room)->room_flags, i);
+
 
 	if(!IS_NPC(shopkeeper)) {
 		log("weirdness in shopkeeper, shopkeeper is not a mob");

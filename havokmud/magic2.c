@@ -1625,7 +1625,7 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		affect_from_char(victim,SPELL_CHILLSHIELD);
 		send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
 		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+			act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
 		}
       }
       /*
@@ -1639,9 +1639,9 @@ void spell_dispel_magic(byte level, struct char_data *ch,
     if (IS_AFFECTED2(victim, AFF2_CHILLSHIELD)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	REMOVE_BIT(victim->specials.affected_by2, AFF2_CHILLSHIELD);
-	send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
+	send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
 		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+			act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
 		}
 	}
       /*
@@ -1652,6 +1652,37 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	set_fighting(victim, ch);
       }
     }
+
+
+    if (affected_by_spell(victim,SPELL_BLADE_BARRIER)) {
+      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+		affect_from_char(victim,SPELL_BLADE_BARRIER);
+		send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
+			act("$n's blade barrier disappears.",FALSE,victim,0,0,TO_ROOM);
+      }
+      /*
+       *  aggressive Act.
+       */
+      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
+	    (IS_NPC(victim))) {
+	  set_fighting(victim, ch);
+	}
+    }
+    if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER)) {
+      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+	REMOVE_BIT(victim->specials.affected_by2, AFF2_BLADE_BARRIER);
+	send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
+			act("$n's blade barrier disappears.",FALSE,victim,0,0,TO_ROOM);
+	}
+      /*
+       *  aggressive Act.
+       */
+      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
+	  (IS_NPC(victim))) {
+	set_fighting(victim, ch);
+      }
+    }
+
 
 
     if (affected_by_spell(victim,SPELL_FAERIE_FIRE))

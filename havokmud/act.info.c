@@ -753,6 +753,9 @@ if (!ch || !i) {
    if  (IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0008$n is surrounded by darkness!", FALSE, i, 0, ch, TO_VICT);
 
+   if  (IS_AFFECTED2(i,AFF2_BLADE_BARRIER))
+      act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
+
   } else if (mode == 1) {
 
     if (i->player.description)
@@ -1138,6 +1141,9 @@ if (IS_LINKDEAD(i))
 
     if (IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0008$n is surround by darkness!", FALSE, i, 0, ch, TO_VICT);
+
+   if  (IS_AFFECTED2(i,AFF2_BLADE_BARRIER))
+      act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
 
   } else if (mode == 1) {
 

@@ -1623,6 +1623,16 @@ void spell_fireshield(byte level, struct char_data *ch, struct char_data *victim
 			act("The heat of your spell melts the icey aura surrounding you.",TRUE,victim,0,0,TO_CHAR);
 			REMOVE_BIT(victim->specials.affected_by2, AFF2_CHILLSHIELD);
 		}
+		if (affected_by_spell(victim, SPELL_BLADE_BARRIER)) {
+			act("The whirling blades around $n burn to cinders.",TRUE,victim,0,0,TO_ROOM);
+			act("The heat of your spell burns your blade barrier to cinders.",TRUE,victim,0,0,TO_CHAR);
+			affect_from_char(victim,SPELL_BLADE_BARRIER);
+		}
+		if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER)) {
+			act("The whirling blades around $n burn to cinders.",TRUE,victim,0,0,TO_ROOM);
+			act("The heat of your spell burns your blade barrier to cinders.",TRUE,victim,0,0,TO_CHAR);
+			REMOVE_BIT(victim->specials.affected_by2, AFF2_BLADE_BARRIER);
+		}
 
 		act("$c000R$n is surrounded by a glowing red aura.",TRUE,victim,0,0,TO_ROOM);
 		act("$c000RYou start glowing red.",TRUE,victim,0,0,TO_CHAR);

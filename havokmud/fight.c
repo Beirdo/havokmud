@@ -1662,7 +1662,6 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 				}
 				lev = GetMaxLevel(v);
 				dam = dice(1,6)+(lev/2);
-				//blip
 				if (damage(v, ch, dam, SPELL_FIRESHIELD)) {
 					if (GET_POS(ch) == POSITION_DEAD)
 						return(TRUE);
@@ -1671,16 +1670,13 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 			if (IS_AFFECTED2(v, AFF2_CHILLSHIELD) && !IS_AFFECTED2(ch, AFF2_CHILLSHIELD)) {
 				lev = GetMaxLevel(v);
 				dam = dice(1,6)+(lev/2);
-				//blip
 				if (damage(v, ch, dam, SPELL_CHILLSHIELD)) {
 					if (GET_POS(ch) == POSITION_DEAD)
 						return(TRUE);
 				}
 			}
-
 		}
 		update_pos(v);
-//	} else {
 	}
 	return(FALSE);
 }
@@ -2443,12 +2439,6 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 			tmp = backstab_mult[GetMaxLevel(ch)];
 		}
 		dam *= tmp;
-		/* let's try the damage display here */
-//		if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
-//			  sprintf(buf2,"%s $c0011($c0015%d$c0011)$c0007",buf,dam);
-//			  	act(buf2, FALSE, ch, wield, victim, TO_CHAR);
-//			ch_printf(ch,"$c000pYour backstab did %d damage.$c000w\n\r",dam);
-//		}
 		dead = (*dam_func)(ch, v, dam, type);
 	} else { /* not a backstab hit */
 		/* reduce damage for dodge skill:*/
@@ -2516,10 +2506,31 @@ void MissileHit(struct char_data *ch, struct char_data *victim, int type)
 
 void hit(struct char_data *ch, struct char_data *victim, int type)
 {
+	int dam = 0;
+
   if (A_NOASSIST(ch,victim)) {
 	  act("$N is already engaged with someone else!",FALSE,ch,0,victim,TO_CHAR);
 	  return;
   }
+
+  /* let's see if this works */
+			if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER) && !IS_AFFECTED2(ch, AFF2_BLADE_BARRIER)) {
+				/* 8d8, half for save, on a successful hit */
+				if (HitOrMiss(victim, ch, CalcThaco(victim))) {
+					dam = dice(8,8);
+					if (saves_spell(ch, SAVING_SPELL))
+						dam >>= 1;
+
+					if (damage(victim, ch, dam, SPELL_BLADE_BARRIER)) {
+						if (GET_POS(ch) == POSITION_DEAD)
+							return;
+					}
+				} else { /* miss */
+					damage(victim, ch, 0, SPELL_BLADE_BARRIER);
+				}
+			}
+
+
   root_hit(ch, victim, type, damage,FALSE);
 }
 
@@ -3436,6 +3447,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case TYPE_WHIP:
   case TYPE_CLEAVE:
   case TYPE_CLAW:
+  case SPELL_BLADE_BARRIER:
     Our_Bit = IMM_SLASH;
     break;
 
@@ -3840,6 +3852,9 @@ int GetItemDamageType( int type)
     break;
   case SPELL_CHILLSHIELD:
     return(CHILLSHIELD);
+    break;
+  case SPELL_BLADE_BARRIER:
+    return(BLADE_BARRIER);
     break;
 
   case SPELL_FIREBALL:

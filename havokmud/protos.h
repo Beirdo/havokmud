@@ -2366,3 +2366,5 @@ void spell_finger_of_death(byte level, struct char_data *ch, struct char_data *v
 void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
+void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+

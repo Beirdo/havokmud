@@ -4072,7 +4072,7 @@ if (!ch->skills)
 		act("You charge agressively at $N on your sturdy steed.\n\r",FALSE,ch,0,victim,TO_CHAR);
 		act("$n charges agressively forward on his steed at $N", FALSE,ch,0,victim,TO_ROOM);
         //AddHated(victim, ch);
-		damage(ch,victim,GET_DAMROLL(ch)*3, SKILL_CHARGE);
+		damage(ch,victim,GET_DAMROLL(ch)*6, SKILL_CHARGE);
         //hit(ch,victim,SKILL_CHARGE);
 	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 	gain_exp(ch, 100);

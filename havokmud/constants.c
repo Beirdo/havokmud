@@ -351,7 +351,7 @@ const char *spell_wear_off_msg[] = {
  	"The aura of freezing flames that surrounds you melts.", //338
     "wall of thought",
     "mind tap",
- "",
+ "Your blade barrier winks out of existence.",
   "",
   "",
   "",
@@ -724,6 +724,7 @@ const char *spell_wear_off_room_msg[] = {
  	"The aura of freezing flames surrounding $n melts.", //338
     "wall of thought",
     "mind tap",
+    "$n's blade barrier winks out of existence.",
 
 "\n"
 };
@@ -1070,7 +1071,7 @@ const char *spell_wear_off_soon_msg[] = {
  	"Your aura of freezing flames hisses softly.", //338
     "wall of thought",
     "mind tap",
-
+	"Your blade barrier wavers a moment",
 "\n"
 };
 
@@ -1417,6 +1418,7 @@ const char *spell_wear_off_soon_room_msg[] = {
  	"$n's aura of freezing flames hisses softly.", //338
     "wall of thought",
    "mind tap",
+   "$n's blade barrier wavers a moment.",
 
 "\n"
 
@@ -1518,6 +1520,7 @@ const char *ItemDamType[] =
 	"corroded",
 	"burned",
 	"frozen",
+	"shredded",
 	"\n"
 };
 
@@ -4202,10 +4205,10 @@ const char *spell_desc[] = {
  "",
  "",
  "",
- "",
+ "An aura of chill flames surrounds $n.",
  "",
  "",//340
- "",
+ "A whirling barrier of blades surrounds $n.",
  "",
  "",
  "",
@@ -5061,6 +5064,7 @@ const struct skillset clericskills[] = {
 	{"animate dead",			SPELL_ANIMATE_DEAD			,8},
 	{"armor",					SPELL_ARMOR					,2},
 	{"astral walk",				SPELL_ASTRAL_WALK			,30},
+	{"blade barrier",			SPELL_BLADE_BARRIER			,45},
 	{"bless",					SPELL_BLESS					,1},
 	{"blindness",				SPELL_BLINDNESS				,14},
 	{"cacaodemon",				SPELL_CACAODEMON			,29},
@@ -5095,7 +5099,7 @@ const struct skillset clericskills[] = {
 	{"faerie fire",				SPELL_FAERIE_FIRE			,4},
 	{"faerie fog",				SPELL_FAERIE_FOG			,11},
 	{"find traps",				SPELL_FIND_TRAPS			,16},
-	{"fireshield",				SPELL_FIRESHIELD			,45},
+//	{"fireshield",				SPELL_FIRESHIELD			,45},
 	{"flamestrike",				SPELL_FLAMESTRIKE			,15},
 	{"fly",						SPELL_FLY					,22},
 	{"golem",					SPELL_GOLEM					,15},
@@ -5385,31 +5389,6 @@ const struct skillset bardskills[] = {
   {"web",            SPELL_WEB,             15},
   {"None",			-1		,				-1}
 };
-/*
-const struct skillset necromancerskills[] = {
-  {"acid blast", SPELL_ACID_BLAST,     10},
-  {"armor",      SPELL_ARMOR,          9},
-  {"bash",      SKILL_BASH,          2},
-  {"blindness",      SPELL_BLINDNESS,       16},
-  {"burning hands", SPELL_BURNING_HANDS,10},
-  {"calm",       SPELL_CALM,           8},
-  {"chain lightning", SPELL_CHAIN_LIGHTNING, 40},
-  {"charm monster",  SPELL_CHARM_MONSTER, 14},
-  {"charm person",SPELL_CHARM_PERSON,  8},
-  {"chill touch",SPELL_CHILL_TOUCH,    8},
-  {"colour spray",   SPELL_COLOUR_SPRAY,     18},
-  {"comprehend language",SPELL_COMP_LANGUAGES,5},
-  {"cone of cold",   SPELL_CONE_OF_COLD,  21},
-  {"conjure elemental", SPELL_CONJURE_ELEMENTAL, 20},
-  {"continual light", SPELL_CONT_LIGHT,   14},
-  {"create light",    SPELL_LIGHT,         5},
-  {"curse",          SPELL_CURSE,           17},
-  {"darkness",   SPELL_GLOBE_DARKNESS,       9},
-  {"web",            SPELL_WEB,             15},
-  {"None",			-1		,				-1}
-};
-*/
-
 
 // '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge, 6=gargantuan '
 const struct race_type race_list[] = {
@@ -6106,7 +6085,7 @@ const struct skillset weaponskills[] = {
   {"shuriken", WEAPON_SHURIKEN				,1 },
   {"thowring knife", WEAPON_THROWING_KNIFE		,1 },
   {"dart", WEAPON_DART					,1 },
-  {"javalin", WEAPON_JAVELIN				,1 },
+  {"javelin", WEAPON_JAVELIN				,1 },
   {"harpoon", WEAPON_HARPOON				,1 },
   {"sling", WEAPON_SLING				,1 },
   {"staff slink", WEAPON_STAFF_SLING			,1 },
