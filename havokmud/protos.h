@@ -9,7 +9,6 @@
 #include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
-#include "poly.h"
 #include "race.h"
 #include "script.h"
 #include "spells.h"
@@ -4176,6 +4175,12 @@ void show_skills(struct char_data *ch, char *buffer,
 
 void            do_mobTell2(struct char_data *ch,
                             struct char_data *mob, char *sentence);
+
+FILE           *MakeZoneFile(struct char_data *c, int zone);
+int             SaveZoneFile(FILE * fp, int start_room, int end_room);
+FILE           *OpenZoneFile(struct char_data *c, int zone);
+void            insert_object(struct obj_data *obj, long vnum);
+void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 
 #if defined( __CYGWIN__ )
 /* Since stupid cygwin doesn't define this in the standard place */
