@@ -468,8 +468,9 @@ int color_strlen(struct char_data *ch, char *arg, int cmd)
                     rel = 0,
                     i = 0;
 
-    if (!*arg)
+    if (!*arg) {
         return (0);
+    }
     abs = strlen(arg);
     for (i = 0; i <= abs; i++) {
         if (arg[i] == '$') {
@@ -492,22 +493,28 @@ int search_block(char *arg, char **list, bool exact)
     /*
      * Make into lower case, and get length of string 
      */
-    for (l = 0; *(arg + l); l++)
+    for (l = 0; *(arg + l); l++) {
         *(arg + l) = LOWER(*(arg + l));
-
+    }
     if (exact) {
-        for (i = 0; **(list + i) != '\n'; i++)
-            if (!strcmp(arg, *(list + i)))
+        for (i = 0; **(list + i) != '\n'; i++) {
+            if (!strcmp(arg, *(list + i))) {
                 return (i);
+            }
+        }
     } else {
         if (!l) {
-            /* Avoid "" to match the first available string */
+            /* 
+             * Avoid "" to match the first available string 
+             */
             l = 1;
         }
 
-        for (i = 0; **(list + i) != '\n'; i++)
-            if (!strncmp(arg, *(list + i), l))
+        for (i = 0; **(list + i) != '\n'; i++) {
+            if (!strncmp(arg, *(list + i), l)) {
                 return (i);
+            }
+        }
     }
 
     return (-1);
@@ -531,19 +538,22 @@ int old_search_block(char *argument, int begin, int length, char **list,
      * Search for a match 
      */
 
-    if (mode)
+    if (mode) {
         while (NOT found AND * (list[guess]) != '\n') {
             found = (length == strlen(list[guess]));
-            for (search = 0; (search < length AND found); search++)
+            for (search = 0; (search < length AND found); search++) {
                 found = (*(argument + begin + search) == 
                         *(list[guess] + search));
+            }
             guess++;
+        }
     } else {
         while (NOT found AND * (list[guess]) != '\n') {
             found = 1;
-            for (search = 0; (search < length AND found); search++)
+            for (search = 0; (search < length AND found); search++) {
                 found = (*(argument + begin + search) ==
                         *(list[guess] + search));
+            }
             guess++;
         }
     }
@@ -594,8 +604,9 @@ void command_interpreter(struct char_data *ch, char *argument)
         found = FALSE;
         if ((!ch->player.name[0]) || (ch->player.name[0] < ' ')) {
             log("Error in character name.  Changed to 'Error'");
-            if (ch->player.name)
+            if (ch->player.name) {
                 free(ch->player.name);
+            }
             ch->player.name = (char *) malloc(6);
             strcpy(ch->player.name, "Error");
             return;
@@ -608,8 +619,9 @@ void command_interpreter(struct char_data *ch, char *argument)
         }
         if (found) {
             log("Error in character name.  Changed to 'Error'");
-            if (ch->player.name)
+            if (ch->player.name) {
                 free(ch->player.name);
+            }
             ch->player.name = (char *) malloc(6);
             strcpy(ch->player.name, "Error");
             return;
@@ -620,10 +632,11 @@ void command_interpreter(struct char_data *ch, char *argument)
     } else if (!isalpha(*argument)) {
         buf1[0] = *argument;
         buf1[1] = '\0';
-        if ((argument + 1))
+        if ((argument + 1)) {
             strcpy(buf2, (argument + 1));
-        else
+        } else {
             buf2[0] = '\0';
+        }
     } else {
         half_chop(argument, buf1, buf2);
         i = 0;
@@ -636,10 +649,11 @@ void command_interpreter(struct char_data *ch, char *argument)
     /*
      * New parser by DM 
      */
-    if (*buf1)
+    if (*buf1) {
         n = FindValidCommand(buf1);
-    else
+    } else {
         n = NULL;
+    }
     /*
      * cmd = old_search_block(argument,begin,look_at,command,0); 
      */
@@ -734,13 +748,17 @@ void command_interpreter(struct char_data *ch, char *argument)
                         slog(buf);
                     }
                 } else if (IS_AFFECTED2(ch, AFF2_LOG_ME)) {
-                    /* user flagged as log person */
+                    /* 
+                     * user flagged as log person 
+                     */
                     sprintf(buf, "[%ld] %s:%s", ch->in_room,
                             ch->player.name, argument);
                     slog(buf);
                 } else if ((GetMaxLevel(ch) >= LOW_IMMORTAL) && 
                            (GetMaxLevel(ch) < 60)) {
-                    /* we log ALL immortals */
+                    /* 
+                     * we log ALL immortals 
+                     */
                     sprintf(buf, "[%ld] %s:%s", ch->in_room,
                             ch->player.name, argument);
                     slog(buf);
@@ -764,11 +782,12 @@ void command_interpreter(struct char_data *ch, char *argument)
             return;
         }
     }
-    if (n && (n->func == 0))
+    if (n && (n->func == 0)) {
         send_to_char
             ("Sorry, but that command has yet to be implemented...\n\r", ch);
-    else
+    } else {
         send_to_char("Pardon? \n\r", ch);
+    }
 }
 
 void argument_interpreter(char *argument, char *first_arg, char *second_arg)
@@ -783,7 +802,9 @@ void argument_interpreter(char *argument, char *first_arg, char *second_arg)
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -806,7 +827,9 @@ void argument_interpreter(char *argument, char *first_arg, char *second_arg)
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -841,7 +864,9 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -864,7 +889,9 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -887,7 +914,9 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -912,20 +941,23 @@ int is_number(char *str)
      * int look_at; 
      */
 
-    if (*str == '\0')
+    if (*str == '\0') {
         return (0);
-    else if (newstrlen(str) > 8)
+    } else if (newstrlen(str) > 8) {
         return (0);
-    else if ((atoi(str) == 0) && (str[0] != '0'))
+    } else if ((atoi(str) == 0) && (str[0] != '0')) {
         return (0);
-    else
+    } else {
         return (1);
-
-    /*
-     * for(look_at=0;*(str+look_at) != '\0';look_at++)
-     * if((*(str+look_at)<'0')||(*(str+look_at)>'9')) return(0);
-     * return(1); 
-     */
+    }
+#if 0
+    for(look_at=0;*(str+look_at) != '\0';look_at++) {
+        if((*(str+look_at)<'0')||(*(str+look_at)>'9')) {
+            return(0);
+        }
+        return(1);
+    }
+#endif
 }
 
 /*
@@ -933,13 +965,16 @@ int is_number(char *str)
  * char pointer would be neat, and avoiding the func-calls would save a
  * little time... If anyone feels pissed, I'm sorry.. Anyhow, the code is
  * snatched from the old one, so it outta work..
- * 
- * void one_argument(char *argument,char *first_arg ) { static char
- * dummy[MAX_STRING_LENGTH];
- * 
- * argument_interpreter(argument,first_arg,dummy); }
- * 
  */
+ #if 0
+ void one_argument(char *argument,char *first_arg ) 
+ {
+    static char
+    
+    dummy[MAX_STRING_LENGTH];
+    argument_interpreter(argument,first_arg,dummy); 
+ }
+ #endif
 
 /*
  * find the first sub-argument of a string, return pointer to first char
@@ -957,7 +992,9 @@ char           *one_argument(char *argument, char *first_arg)
          * Find first non blank 
          */
         for (; isspace(*(argument + begin)); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         /*
@@ -979,8 +1016,9 @@ char           *one_argument(char *argument, char *first_arg)
 
 void only_argument(char *argument, char *dest)
 {
-    while (*argument && isspace(*argument))
+    while (*argument && isspace(*argument)) {
         argument++;
+    }
     strcpy(dest, argument);
 }
 
@@ -994,13 +1032,14 @@ int fill_word(char *argument)
  */
 int is_abbrev(char *arg1, char *arg2)
 {
-    if (!*arg1)
+    if (!*arg1) {
         return (0);
-
-    for (; *arg1; arg1++, arg2++)
-        if (LOWER(*arg1) != LOWER(*arg2))
+    }
+    for (; *arg1; arg1++, arg2++) {
+        if (LOWER(*arg1) != LOWER(*arg2)) {
             return (0);
-
+        }
+    }
     return (1);
 }
 
@@ -1010,21 +1049,29 @@ int is_abbrev(char *arg1, char *arg2)
 void half_chop(char *string, char *arg1, char *arg2)
 {
     for (; isspace(*string); string++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     for (; !isspace(*arg1 = *string) && *string; string++, arg1++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     *arg1 = '\0';
 
     for (; isspace(*string); string++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     for (; (*arg2 = *string); string++, arg2++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 }
 
@@ -1036,7 +1083,10 @@ int special(struct char_data *ch, int cmd, char *arg)
 
     if (ch->in_room == NOWHERE) {
         char_to_room(ch, 3001);
-        // added 0 here.. had no returning value in Int function (GH'04)
+        /* 
+         * added 0 here.. had no returning 
+         * value in Int function (GH'04)
+         */
         return (0);
     }
 
@@ -1055,8 +1105,10 @@ int special(struct char_data *ch, int cmd, char *arg)
      */
     for (j = 0; j <= (MAX_WEAR - 1); j++) {
         if (ch->equipment[j] && ch->equipment[j]->item_number >= 0) {
-            if (IS_SET(ch->equipment[j]->obj_flags.extra_flags, ITEM_ANTI_SUN))
+            if (IS_SET(ch->equipment[j]->obj_flags.extra_flags, 
+                ITEM_ANTI_SUN)) {
                 AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
+            }
             if (ch->equipment[j] && 
                 obj_index[ch->equipment[j]->item_number].func &&
                 (*obj_index[ch->equipment[j]->item_number].func)
@@ -1076,7 +1128,9 @@ int special(struct char_data *ch, int cmd, char *arg)
         if (i->item_number >= 0 && obj_index[i->item_number].func &&
             (*obj_index[i->item_number].func) (ch, cmd, arg, i, 
                                                PULSE_COMMAND)) {
-            /* Crashes here when saving item twice */
+            /* 
+             * Crashes here when saving item twice 
+             */
             return (1);
         }
     }
@@ -1098,7 +1152,9 @@ int special(struct char_data *ch, int cmd, char *arg)
         if (i->item_number >= 0 && obj_index[i->item_number].func &&
             (*obj_index[i->item_number].func) (ch, cmd, arg, i, 
                                                PULSE_COMMAND)) {
-            /* Crash here maybe?? FROZE HERE!! loop? */
+            /* 
+             * Crash here maybe?? FROZE HERE!! loop? 
+             */
             return (1);
         }
     }
@@ -1106,6 +1162,8 @@ int special(struct char_data *ch, int cmd, char *arg)
     return (0);
 }
 
+
+     
 void assign_command_pointers(void)
 {
     InitRadix();
@@ -1119,6 +1177,7 @@ void assign_command_pointers(void)
     AddCommand("exits", do_exits, 8, POSITION_RESTING, 0);
     AddCommand("kiss", do_action, 9, POSITION_RESTING, 1);
     AddCommand("get", do_get, 10, POSITION_RESTING, 1);
+    
     AddCommand("drink", do_drink, 11, POSITION_RESTING, 1);
     AddCommand("eat", do_eat, 12, POSITION_RESTING, 1);
     AddCommand("wear", do_wear, 13, POSITION_RESTING, 0);
@@ -1128,6 +1187,7 @@ void assign_command_pointers(void)
 #if 1
     AddCommand("say", do_new_say, 17, POSITION_RESTING, 0);
 #else
+    
     AddCommand("say", do_say, 17, POSITION_RESTING, 0);
 #endif
     AddCommand("shout", do_shout, 18, POSITION_RESTING, 2);
@@ -1137,9 +1197,9 @@ void assign_command_pointers(void)
     AddCommand("bounce", do_action, 22, POSITION_STANDING, 0);
     AddCommand("smile", do_action, 23, POSITION_RESTING, 0);
     AddCommand("dance", do_action, 24, POSITION_STANDING, 0);
+    
     AddCommand("kill", do_kill, 25, POSITION_FIGHTING, 1);
     AddCommand("id", do_id, 26, POSITION_STANDING, 1);
-
     AddCommand("laugh", do_action, 27, POSITION_RESTING, 0);
     AddCommand("giggle", do_action, 28, POSITION_RESTING, 0);
     AddCommand("shake", do_action, 29, POSITION_RESTING, 0);
@@ -1147,6 +1207,7 @@ void assign_command_pointers(void)
     AddCommand("growl", do_action, 31, POSITION_RESTING, 0);
     AddCommand("scream", do_action, 32, POSITION_RESTING, 0);
     AddCommand("insult", do_insult, 33, POSITION_RESTING, 0);
+    
     AddCommand("comfort", do_action, 34, POSITION_RESTING, 0);
     AddCommand("nod", do_action, 35, POSITION_RESTING, 0);
     AddCommand("sigh", do_action, 36, POSITION_RESTING, 0);
@@ -1156,6 +1217,7 @@ void assign_command_pointers(void)
     AddCommand("emote", do_emote, 40, POSITION_SLEEPING, 0);
     AddCommand("echo", do_echo, 41, POSITION_SLEEPING, 1);
     AddCommand("stand", do_stand, 42, POSITION_RESTING, 0);
+    
     AddCommand("sit", do_sit, 43, POSITION_RESTING, 0);
     AddCommand("rest", do_rest, 44, POSITION_RESTING, 0);
     AddCommand("sleep", do_sleep, 45, POSITION_SLEEPING, 0);
@@ -1165,6 +1227,7 @@ void assign_command_pointers(void)
     AddCommand("hug", do_action, 49, POSITION_RESTING, 0);
     AddCommand("snuggle", do_action, 50, POSITION_RESTING, 0);
     AddCommand("cuddle", do_action, 51, POSITION_RESTING, 0);
+    
     AddCommand("nuzzle", do_action, 52, POSITION_RESTING, 0);
     AddCommand("cry", do_action, 53, POSITION_RESTING, 0);
     AddCommand("news", do_news, 54, POSITION_SLEEPING, 0);
@@ -1174,6 +1237,7 @@ void assign_command_pointers(void)
     AddCommand("value", do_value, 58, POSITION_RESTING, 0);
     AddCommand("list", do_not_here, 59, POSITION_STANDING, 0);
     AddCommand("drop", do_drop, 60, POSITION_RESTING, 1);
+    
     AddCommand("goto", do_goto, 61, POSITION_SLEEPING, 0);
     AddCommand("weather", do_weather, 62, POSITION_RESTING, 0);
     AddCommand("read", do_read, 63, POSITION_RESTING, 0);
@@ -1183,6 +1247,7 @@ void assign_command_pointers(void)
     AddCommand("put", do_put, 67, POSITION_RESTING, 0);
     AddCommand("shutdow", do_shutdow, 68, POSITION_DEAD, SILLYLORD);
     AddCommand("save", do_save, 69, POSITION_STUNNED, 0);
+    
     AddCommand("hit", do_hit, 70, POSITION_FIGHTING, 1);
     AddCommand("string", do_string, 71, POSITION_SLEEPING, 53);
     AddCommand("give", do_give, 72, POSITION_RESTING, 1);
@@ -1192,6 +1257,7 @@ void assign_command_pointers(void)
     AddCommand("time", do_time, 76, POSITION_DEAD, 0);
     AddCommand("load", do_load, 77, POSITION_DEAD, SAINT);
     AddCommand("purge", do_purge, 78, POSITION_DEAD, 53);
+    
     AddCommand("shutdown", do_shutdown, 79, POSITION_DEAD, SILLYLORD);
     AddCommand("idea", do_idea, 80, POSITION_DEAD, 0);
     AddCommand("typo", do_typo, 81, POSITION_DEAD, 0);
@@ -1201,6 +1267,7 @@ void assign_command_pointers(void)
     AddCommand("at", do_at, 85, POSITION_DEAD, 51);
     AddCommand("ask", do_ask, 86, POSITION_RESTING, 0);
     AddCommand("order", do_order, 87, POSITION_RESTING, 1);
+    
     AddCommand("sip", do_sip, 88, POSITION_RESTING, 0);
     AddCommand("taste", do_taste, 89, POSITION_RESTING, 0);
     AddCommand("snoop", do_snoop, 90, POSITION_DEAD, 55);
@@ -1210,6 +1277,7 @@ void assign_command_pointers(void)
     AddCommand("poke", do_action, 94, POSITION_RESTING, 0);
     AddCommand("advance", do_advance, 95, POSITION_DEAD, IMPLEMENTOR);
     AddCommand("accuse", do_action, 96, POSITION_SITTING, 0);
+    
     AddCommand("grin", do_action, 97, POSITION_RESTING, 0);
     AddCommand("bow", do_action, 98, POSITION_STANDING, 0);
     AddCommand("open", do_open, 99, POSITION_SITTING, 0);
@@ -1219,6 +1287,7 @@ void assign_command_pointers(void)
     AddCommand("leave", do_leave, 103, POSITION_STANDING, 0);
     AddCommand("applaud", do_action, 104, POSITION_RESTING, 0);
     AddCommand("blush", do_action, 105, POSITION_RESTING, 0);
+    
     AddCommand("burp", do_action, 106, POSITION_RESTING, 0);
     AddCommand("chuckle", do_action, 107, POSITION_RESTING, 0);
     AddCommand("clap", do_action, 108, POSITION_RESTING, 0);
@@ -1228,6 +1297,7 @@ void assign_command_pointers(void)
     AddCommand("flip", do_action, 112, POSITION_STANDING, 0);
     AddCommand("fondle", do_action, 113, POSITION_RESTING, 0);
     AddCommand("frown", do_action, 114, POSITION_RESTING, 0);
+    
     AddCommand("gasp", do_action, 115, POSITION_RESTING, 0);
     AddCommand("glare", do_action, 116, POSITION_RESTING, 0);
     AddCommand("groan", do_action, 117, POSITION_RESTING, 0);
@@ -1237,6 +1307,7 @@ void assign_command_pointers(void)
     AddCommand("love", do_action, 121, POSITION_RESTING, 0);
     AddCommand("moan", do_action, 122, POSITION_RESTING, 0);
     AddCommand("nibble", do_action, 123, POSITION_RESTING, 0);
+    
     AddCommand("pout", do_action, 124, POSITION_RESTING, 0);
     AddCommand("purr", do_action, 125, POSITION_RESTING, 0);
     AddCommand("ruffle", do_action, 126, POSITION_STANDING, 0);
@@ -1245,9 +1316,10 @@ void assign_command_pointers(void)
     AddCommand("sing", do_action, 129, POSITION_RESTING, 0);
     AddCommand("slap", do_action, 130, POSITION_RESTING, 0);
     AddCommand("smirk", do_action, 131, POSITION_RESTING, 0);
-    /*
-     * AddCommand("snap",do_action,132,POSITION_RESTING,0);
-     */
+#if 0
+    AddCommand("snap",do_action,132,POSITION_RESTING,0);
+#endif
+    
     AddCommand("sneeze", do_action, 133, POSITION_RESTING, 0);
     AddCommand("snicker", do_action, 134, POSITION_RESTING, 0);
     AddCommand("sniff", do_action, 135, POSITION_RESTING, 0);
@@ -1255,15 +1327,17 @@ void assign_command_pointers(void)
     AddCommand("spit", do_action, 137, POSITION_STANDING, 0);
     AddCommand("squeeze", do_action, 138, POSITION_RESTING, 0);
     AddCommand("stare", do_action, 139, POSITION_RESTING, 0);
-    /*
-     * AddCommand("strut",do_action,140,POSITION_STANDING,0);
-     */
+#if 0
+    AddCommand("strut",do_action,140,POSITION_STANDING,0);
+#endif
+    
     AddCommand("thank", do_action, 141, POSITION_RESTING, 0);
     AddCommand("twiddle", do_action, 142, POSITION_RESTING, 0);
     AddCommand("wave", do_action, 143, POSITION_RESTING, 0);
     AddCommand("whistle", do_action, 144, POSITION_RESTING, 0);
     AddCommand("wiggle", do_action, 145, POSITION_STANDING, 0);
     AddCommand("wink", do_action, 146, POSITION_RESTING, 0);
+    
     AddCommand("yawn", do_action, 147, POSITION_RESTING, 0);
     AddCommand("snowball", do_action, 148, POSITION_STANDING, 51);
     AddCommand("write", do_write, 149, POSITION_STANDING, 1);
@@ -1273,6 +1347,7 @@ void assign_command_pointers(void)
     AddCommand("hide", do_hide, 153, POSITION_RESTING, 1);
     AddCommand("backstab", do_backstab, 154, POSITION_STANDING, 1);
     AddCommand("pick", do_pick, 155, POSITION_STANDING, 1);
+    
     AddCommand("steal", do_steal, 156, POSITION_STANDING, 1);
     AddCommand("bash", do_bash, 157, POSITION_FIGHTING, 1);
     AddCommand("rescue", do_rescue, 158, POSITION_FIGHTING, 1);
@@ -1282,8 +1357,8 @@ void assign_command_pointers(void)
     AddCommand("massage", do_action, 162, POSITION_RESTING, 0);
     AddCommand("tickle", do_action, 163, POSITION_RESTING, 0);
     AddCommand("practice", do_practice, 164, POSITION_RESTING, 1);
+    
     AddCommand("study", do_practice, 164, POSITION_RESTING, 1);
-
     AddCommand("pat", do_action, 165, POSITION_RESTING, 0);
     AddCommand("examine", do_examine, 166, POSITION_SITTING, 0);
     AddCommand("take", do_get, 167, POSITION_RESTING, 1);
@@ -1293,24 +1368,26 @@ void assign_command_pointers(void)
 #else
     AddCommand("'", do_say, 169, POSITION_RESTING, 0);
 #endif
+    
     AddCommand("practise", do_practice, 170, POSITION_RESTING, 1);
     AddCommand("curse", do_action, 171, POSITION_RESTING, 0);
     AddCommand("use", do_use, 172, POSITION_SITTING, 1);
     AddCommand("where", do_where, 173, POSITION_DEAD, 1);
     AddCommand("levels", do_levels, 174, POSITION_DEAD, 0);
-    /*
-     * AddCommand("reroll",do_reroll,175,POSITION_DEAD,SILLYLORD); 
-     */
+#if 0
+    AddCommand("reroll",do_reroll,175,POSITION_DEAD,SILLYLORD); 
+#endif
+    
     AddCommand("pray", do_pray, 176, POSITION_SITTING, 1);
-
     AddCommand(",", do_emote, 177, POSITION_SLEEPING, 0);
     AddCommand("beg", do_action, 178, POSITION_RESTING, 0);
-    /*
-     * AddCommand("bleed",do_not_here,179,POSITION_RESTING,0); 
-     */
+#if 0    
+    AddCommand("bleed",do_not_here,179,POSITION_RESTING,0); 
+#endif
     AddCommand("cringe", do_action, 180, POSITION_RESTING, 0);
     AddCommand("cackle", do_action, 181, POSITION_RESTING, 0);
     AddCommand("fume", do_action, 182, POSITION_RESTING, 0);
+    
     AddCommand("grovel", do_action, 183, POSITION_RESTING, 0);
     AddCommand("hop", do_action, 184, POSITION_RESTING, 0);
     AddCommand("nudge", do_action, 185, POSITION_RESTING, 0);
@@ -1320,6 +1397,7 @@ void assign_command_pointers(void)
     AddCommand("punch", do_action, 189, POSITION_RESTING, 0);
     AddCommand("snarl", do_action, 190, POSITION_RESTING, 0);
     AddCommand("spank", do_action, 191, POSITION_RESTING, 0);
+    
     AddCommand("steam", do_action, 192, POSITION_RESTING, 0);
     AddCommand("tackle", do_action, 193, POSITION_RESTING, 0);
     AddCommand("taunt", do_action, 194, POSITION_RESTING, 0);
@@ -1329,6 +1407,7 @@ void assign_command_pointers(void)
     AddCommand("yodel", do_action, 198, POSITION_RESTING, 0);
     AddCommand("brief", do_brief, 199, POSITION_DEAD, 0);
     AddCommand("wizlist", do_wizlist, 200, POSITION_DEAD, 0);
+    
     AddCommand("consider", do_consider, 201, POSITION_RESTING, 0);
     AddCommand("group", do_group, 202, POSITION_RESTING, 1);
     AddCommand("restore", do_restore, 203, POSITION_DEAD, 52);
@@ -1338,6 +1417,7 @@ void assign_command_pointers(void)
     AddCommand("recite", do_recite, 207, POSITION_STANDING, 0);
     AddCommand("users", do_users, 208, POSITION_DEAD, LOW_IMMORTAL);
     AddCommand("pose", do_pose, 209, POSITION_STANDING, 0);
+    
     AddCommand("noshout", do_noshout, 210, POSITION_SLEEPING, 54);
     AddCommand("wizhelp", do_wizhelp, 211, POSITION_SLEEPING, LOW_IMMORTAL);
     AddCommand("credits", do_credits, 212, POSITION_DEAD, 0);
@@ -1347,6 +1427,7 @@ void assign_command_pointers(void)
     AddCommand("slay", do_kill, 216, POSITION_STANDING, 57);
     AddCommand("wimpy", do_wimp, 217, POSITION_DEAD, 0);
     AddCommand("junk", do_junk, 218, POSITION_RESTING, 1);
+    
     AddCommand("deposit", do_not_here, 219, POSITION_RESTING, 1);
     AddCommand("withdraw", do_not_here, 220, POSITION_RESTING, 1);
     AddCommand("balance", do_not_here, 221, POSITION_RESTING, 1);
@@ -1356,6 +1437,7 @@ void assign_command_pointers(void)
     AddCommand("stealth", do_stealth, 225, POSITION_DEAD, LOW_IMMORTAL);
     AddCommand("edit", do_edit, 226, POSITION_DEAD, 53);
     AddCommand("@", do_set, 227, POSITION_DEAD, IMPLEMENTOR);
+    
     AddCommand("rsave", do_rsave, 228, POSITION_DEAD, 53);
     AddCommand("rload", do_rload, 229, POSITION_DEAD, 53);
     AddCommand("track", do_track, 230, POSITION_DEAD, 1);
@@ -1365,6 +1447,7 @@ void assign_command_pointers(void)
     AddCommand("whozone", do_who, 234, POSITION_DEAD, 0);
     AddCommand("assist", do_assist, 235, POSITION_FIGHTING, 1);
     AddCommand("attribute", do_attribute, 236, POSITION_DEAD, 1);
+    
     AddCommand("world", do_world, 237, POSITION_DEAD, 0);
     AddCommand("allspells", do_spells, 238, POSITION_DEAD, 0);
     AddCommand("breath", do_breath, 239, POSITION_FIGHTING, 1);
@@ -1372,10 +1455,10 @@ void assign_command_pointers(void)
     AddCommand("debug", do_debug, 241, POSITION_DEAD, 60);
     AddCommand("invisible", do_invis, 242, POSITION_DEAD, LOW_IMMORTAL);
     AddCommand("gain", do_gain, 243, POSITION_DEAD, 1);
-
-    /*
-     * AddCommand("rrload",do_rrload,244,POSITION_DEAD,CREATOR); 
-     */
+#if 0
+    AddCommand("rrload",do_rrload,244,POSITION_DEAD,CREATOR); 
+#endif
+    
     AddCommand("daydream", do_action, 244, POSITION_SLEEPING, 0);
     AddCommand("disarm", do_disarm, 245, POSITION_FIGHTING, 1);
     AddCommand("bonk", do_action, 246, POSITION_SITTING, 1);
@@ -1384,17 +1467,18 @@ void assign_command_pointers(void)
     AddCommand("imptest", do_imptest, 249, POSITION_SITTING, 60);
     AddCommand("shoot", do_fire, 250, POSITION_STANDING, 1);
     AddCommand("silence", do_silence, 251, POSITION_STANDING, 54);
-    /*
-     * AddCommand("teams",do_not_here,252,POSITION_STANDING, BIG_GUY); 
-     * AddCommand("player",do_not_here,253,POSITION_STANDING, BIG_GUY); 
-     */
+#if 0
+    AddCommand("teams",do_not_here,252,POSITION_STANDING, BIG_GUY); 
+    AddCommand("player",do_not_here,253,POSITION_STANDING, BIG_GUY);
+#endif
+    
     AddCommand("create", do_create, 254, POSITION_STANDING, 53);
     AddCommand("bamfin", do_bamfin, 255, POSITION_STANDING, LOW_IMMORTAL);
     AddCommand("bamfout", do_bamfout, 256, POSITION_STANDING, LOW_IMMORTAL);
     AddCommand("vis", do_invis, 257, POSITION_RESTING, 0);
     AddCommand("doorbash", do_doorbash, 258, POSITION_STANDING, 1);
+    
     AddCommand("mosh", do_action, 259, POSITION_FIGHTING, 1);
-
     /*
      * alias commands 
      */
@@ -1403,16 +1487,17 @@ void assign_command_pointers(void)
     AddCommand("2", do_alias, 262, POSITION_DEAD, 1);
     AddCommand("3", do_alias, 263, POSITION_DEAD, 1);
     AddCommand("4", do_alias, 264, POSITION_DEAD, 1);
+    
     AddCommand("5", do_alias, 265, POSITION_DEAD, 1);
     AddCommand("6", do_alias, 266, POSITION_DEAD, 1);
     AddCommand("7", do_alias, 267, POSITION_DEAD, 1);
     AddCommand("8", do_alias, 268, POSITION_DEAD, 1);
     AddCommand("9", do_alias, 269, POSITION_DEAD, 1);
     AddCommand("0", do_alias, 270, POSITION_DEAD, 1);
-
     AddCommand("swim", do_swim, 271, POSITION_STANDING, 1);
     AddCommand("spy", do_spy, 272, POSITION_STANDING, 1);
     AddCommand("springleap", do_springleap, 273, POSITION_RESTING, 1);
+    
     AddCommand("quivering palm", do_quivering_palm, 274, POSITION_FIGHTING, 30);
     AddCommand("feign death", do_feign_death, 275, POSITION_FIGHTING, 1);
     AddCommand("mount", do_mount, 276, POSITION_STANDING, 1);
@@ -1423,8 +1508,8 @@ void assign_command_pointers(void)
      * had to put this here BEFORE setsev so it would get this and not
      * setsev 
      */
+    
     AddCommand("set", do_set_flags, 280, POSITION_DEAD, 0);
-
     AddCommand("first aid", do_first_aid, 281, POSITION_RESTING, 1);
     AddCommand("log", do_set_log, 282, POSITION_DEAD, 60);
     AddCommand("recall", do_cast, 283, POSITION_SITTING, 1);
@@ -1432,6 +1517,7 @@ void assign_command_pointers(void)
     AddCommand("event", do_event, 285, POSITION_DEAD, 60);
     AddCommand("disguise", do_disguise, 286, POSITION_STANDING, 1);
     AddCommand("climb", do_climb, 287, POSITION_STANDING, 1);
+    
     AddCommand("beep", do_beep, 288, POSITION_DEAD, 51);
     AddCommand("bite", do_action, 289, POSITION_RESTING, 1);
     AddCommand("redit", do_redit, 290, POSITION_SLEEPING, 53);
@@ -1439,10 +1525,9 @@ void assign_command_pointers(void)
     AddCommand("resize", do_resize, 292, POSITION_SLEEPING, 1);
     AddCommand("\"", do_commune, 293, POSITION_SLEEPING, LOW_IMMORTAL);
     AddCommand("#", do_cset, 294, POSITION_DEAD, 59);
-
     AddCommand("auth", do_auth, 299, POSITION_SLEEPING, LOW_IMMORTAL);
-
     AddCommand("noyell", do_plr_nogossip, 301, POSITION_RESTING, 0);
+    
     AddCommand("gossip", do_yell, 302, POSITION_RESTING, 0);
     AddCommand("noauction", do_plr_noauction, 303, POSITION_RESTING, 0);
     AddCommand("auction", do_auction, 304, POSITION_RESTING, 0);
@@ -1452,8 +1537,8 @@ void assign_command_pointers(void)
     AddCommand("oedit", do_oedit, 308, POSITION_DEAD, 53);
     AddCommand("report", do_report, 309, POSITION_RESTING, 1);
     AddCommand("interven", do_god_interven, 310, POSITION_DEAD, 58);
+    
     AddCommand("gtell", do_gtell, 311, POSITION_SLEEPING, 1);
-
     AddCommand("raise", do_action, 312, POSITION_RESTING, 1);
     AddCommand("tap", do_action, 313, POSITION_STANDING, 1);
     AddCommand("liege", do_action, 314, POSITION_RESTING, 1);
@@ -1462,6 +1547,7 @@ void assign_command_pointers(void)
     AddCommand("kneel", do_action, 317, POSITION_STANDING, 1);
     AddCommand("finger", do_action, 318, POSITION_RESTING, 1);
     AddCommand("pace", do_action, 319, POSITION_STANDING, 1);
+    
     AddCommand("tongue", do_action, 320, POSITION_RESTING, 1);
     AddCommand("flex", do_action, 321, POSITION_STANDING, 1);
     AddCommand("ack", do_action, 322, POSITION_RESTING, 1);
@@ -1469,10 +1555,9 @@ void assign_command_pointers(void)
     AddCommand("caress", do_action, 324, POSITION_RESTING, 1);
     AddCommand("cheer", do_action, 325, POSITION_RESTING, 1);
     AddCommand("jump", do_action, 326, POSITION_STANDING, 1);
-
-    /*
-     * AddCommand("roll",do_action,327,POSITION_RESTING,1); 
-     */
+#if 0
+    AddCommand("roll",do_action,327,POSITION_RESTING,1);
+#endif
 
     AddCommand("split", do_split, 328, POSITION_RESTING, 1);
     AddCommand("berserk", do_berserk, 329, POSITION_FIGHTING, 1);
@@ -1482,9 +1567,9 @@ void assign_command_pointers(void)
     AddCommand("bellow", do_bellow, 333, POSITION_FIGHTING, 1);
     AddCommand("camouflage", do_hide, 334, POSITION_STANDING, 1);
     AddCommand("carve", do_carve, 335, POSITION_STANDING, 1);
+    
     AddCommand("nuke", do_nuke, 336, POSITION_DEAD, IMPLEMENTOR);
     AddCommand("skills", do_show_skill, 337, POSITION_SLEEPING, 0);
-
     AddCommand("doorway", do_doorway, 338, POSITION_STANDING, 1);
     AddCommand("portal", do_psi_portal, 339, POSITION_STANDING, 1);
     AddCommand("summon", do_mindsummon, 340, POSITION_STANDING, 1);
@@ -1492,17 +1577,17 @@ void assign_command_pointers(void)
     AddCommand("flame", do_flame_shroud, 342, POSITION_STANDING, 1);
     AddCommand("aura", do_aura_sight, 343, POSITION_RESTING, 1);
     AddCommand("great", do_great_sight, 344, POSITION_RESTING, 1);
-    AddCommand("psionic invisibility", do_invisibililty, 345,
-               POSITION_STANDING, 1);
+    
+    AddCommand("psionic invisibility", do_invisibililty, 345, 
+                POSITION_STANDING, 1);
     AddCommand("blast", do_blast, 346, POSITION_FIGHTING, 1);
-
-    /*
-     * AddCommand("psionic blast",do_blast,347,POSITION_FIGHTING,0); 
-     */
+#if 0
+    AddCommand("psionic blast",do_blast,347,POSITION_FIGHTING,0); 
+#endif
     AddCommand("medit", do_medit, 347, POSITION_DEAD, 53);
-
     AddCommand("hypnotize", do_hypnosis, 348, POSITION_STANDING, 1);
     AddCommand("scry", do_scry, 349, POSITION_RESTING, 1);
+    
     AddCommand("adrenalize", do_adrenalize, 350, POSITION_STANDING, 1);
     AddCommand("brew", do_brew, 351, POSITION_STANDING, 1);
     AddCommand("meditate", do_meditate, 352, POSITION_RESTING, 0);
@@ -1512,6 +1597,7 @@ void assign_command_pointers(void)
     AddCommand("blessing", do_blessing, 356, POSITION_STANDING, 0);
     AddCommand("heroic", do_heroic_rescue, 357, POSITION_FIGHTING, 0);
     AddCommand("scan", do_scan, 358, POSITION_STANDING, IMMORTAL);
+    
     AddCommand("shield", do_psi_shield, 359, POSITION_STANDING, 0);
     AddCommand("notell", do_plr_notell, 360, POSITION_DEAD, 0);
     AddCommand("commands", do_command_list, 361, POSITION_DEAD, 0);
@@ -1521,6 +1607,7 @@ void assign_command_pointers(void)
     AddCommand("esp", do_esp, 365, POSITION_STANDING, 0);
     AddCommand("mail", do_not_here, 366, POSITION_STANDING, 0);
     AddCommand("check", do_not_here, 367, POSITION_STANDING, 0);
+    
     AddCommand("receive", do_not_here, 368, POSITION_STANDING, 0);
     AddCommand("telepathy", do_telepathy, 369, POSITION_RESTING, 0);
     AddCommand("mind", do_cast, 370, POSITION_SITTING, 0);
@@ -1530,21 +1617,23 @@ void assign_command_pointers(void)
     AddCommand("push", do_open_exit, 374, POSITION_STANDING, 0);
     AddCommand("zload", do_zload, 375, POSITION_STANDING, 53);
     AddCommand("zsave", do_zsave, 376, POSITION_STANDING, 53);
+    
     AddCommand("zclean", do_zclean, 377, POSITION_STANDING, 53);
     AddCommand("wrebuild", do_WorldSave, 378, POSITION_STANDING, 60);
     AddCommand("gwho", list_groups, 379, POSITION_DEAD, 0);
     AddCommand("mforce", do_mforce, 380, POSITION_DEAD, 53);
     AddCommand("clone", do_clone, 381, POSITION_DEAD, 53);
-
     AddCommand("fire", do_fire, 382, POSITION_DEAD, 0);
     AddCommand("throw", do_throw, 383, POSITION_SITTING, 0);
     AddCommand("run", do_run, 384, POSITION_STANDING, 0);
     AddCommand("notch", do_weapon_load, 385, POSITION_RESTING, 0);
+    
     AddCommand("load", do_weapon_load, 386, POSITION_RESTING, 0);
     AddCommand("spot", do_spot, 387, POSITION_STANDING, 0);
     AddCommand("view", do_viewfile, 388, POSITION_DEAD, 51);
     AddCommand("afk", do_set_afk, 389, POSITION_DEAD, 1);
 
+    
     /*
      * lots of Socials 
      */
@@ -1558,6 +1647,7 @@ void assign_command_pointers(void)
     AddCommand("bhug", do_action, 407, POSITION_RESTING, 0);
     AddCommand("bcheck", do_action, 408, POSITION_RESTING, 0);
     AddCommand("boast", do_action, 409, POSITION_RESTING, 0);
+    
     AddCommand("chide", do_action, 410, POSITION_RESTING, 0);
     AddCommand("compliment", do_action, 411, POSITION_RESTING, 0);
     AddCommand("ceyes", do_action, 412, POSITION_RESTING, 0);
@@ -1567,6 +1657,7 @@ void assign_command_pointers(void)
     AddCommand("calm", do_action, 416, POSITION_RESTING, 0);
     AddCommand("cower", do_action, 417, POSITION_RESTING, 0);
     AddCommand("confess", do_action, 418, POSITION_RESTING, 0);
+    
     AddCommand("drool", do_action, 419, POSITION_RESTING, 0);
     AddCommand("grit", do_action, 420, POSITION_RESTING, 0);
     AddCommand("greet", do_action, 421, POSITION_RESTING, 0);
@@ -1576,6 +1667,7 @@ void assign_command_pointers(void)
     AddCommand("hum", do_action, 425, POSITION_RESTING, 0);
     AddCommand("hkiss", do_action, 426, POSITION_RESTING, 0);
     AddCommand("ignore", do_action, 427, POSITION_RESTING, 0);
+    
     AddCommand("interrupt", do_action, 428, POSITION_RESTING, 0);
     AddCommand("knock", do_action, 429, POSITION_RESTING, 0);
     AddCommand("listen", do_action, 430, POSITION_RESTING, 0);
@@ -1585,6 +1677,7 @@ void assign_command_pointers(void)
     AddCommand("plot", do_action, 434, POSITION_RESTING, 0);
     AddCommand("pie", do_action, 435, POSITION_RESTING, 0);
     AddCommand("pleade", do_action, 436, POSITION_RESTING, 0);
+    
     AddCommand("pant", do_action, 437, POSITION_RESTING, 0);
     AddCommand("rub", do_action, 438, POSITION_RESTING, 0);
     AddCommand("roll", do_action, 439, POSITION_RESTING, 0);
@@ -1594,6 +1687,7 @@ void assign_command_pointers(void)
     AddCommand("snap", do_action, 443, POSITION_RESTING, 0);
     AddCommand("strut", do_action, 444, POSITION_RESTING, 0);
     AddCommand("stroke", do_action, 445, POSITION_RESTING, 0);
+    
     AddCommand("stretch", do_action, 446, POSITION_RESTING, 0);
     AddCommand("swave", do_action, 447, POSITION_RESTING, 0);
     AddCommand("sob", do_action, 448, POSITION_RESTING, 0);
@@ -1603,6 +1697,7 @@ void assign_command_pointers(void)
     AddCommand("scowl", do_action, 452, POSITION_RESTING, 0);
     AddCommand("shudder", do_action, 453, POSITION_RESTING, 0);
     AddCommand("strip", do_action, 454, POSITION_RESTING, 0);
+    
     AddCommand("scoff", do_action, 455, POSITION_RESTING, 0);
     AddCommand("salute", do_action, 456, POSITION_RESTING, 0);
     AddCommand("scold", do_action, 457, POSITION_RESTING, 0);
@@ -1612,6 +1707,7 @@ void assign_command_pointers(void)
     AddCommand("toast", do_action, 461, POSITION_RESTING, 0);
     AddCommand("tug", do_action, 462, POSITION_RESTING, 0);
     AddCommand("touch", do_action, 463, POSITION_RESTING, 0);
+    
     AddCommand("tremble", do_action, 464, POSITION_RESTING, 0);
     AddCommand("twitch", do_action, 465, POSITION_RESTING, 0);
     AddCommand("whimper", do_action, 466, POSITION_RESTING, 0);
@@ -1619,7 +1715,7 @@ void assign_command_pointers(void)
     AddCommand("wedge", do_action, 468, POSITION_RESTING, 0);
     AddCommand("apologize", do_action, 469, POSITION_RESTING, 0);
 
-#if 0                           // 1//USE_DIMD
+#if 0               
     AddCommand("dmanage", do_dmanage, 480, POSITION_RESTING, IMPLEMENTOR);
     AddCommand("drestrict", do_drestrict, 481, POSITION_RESTING, 55);
     AddCommand("dlink", do_dlink, 482, POSITION_RESTING, 55);
@@ -1634,15 +1730,14 @@ void assign_command_pointers(void)
     AddCommand("sending", do_sending, 489, POSITION_STANDING, 1);
     AddCommand("messenger", do_sending, 490, POSITION_STANDING, 1);
     AddCommand("promote", do_promote, 491, POSITION_RESTING, 1);
-
     AddCommand("ooedit", do_ooedit, 492, POSITION_DEAD, 53);
     AddCommand("whois", do_finger, 493, POSITION_DEAD, 1);
     AddCommand("osave", do_osave, 494, POSITION_DEAD, 53);
     AddCommand("msave", do_msave, 494, POSITION_DEAD, 53);
-
     AddCommand("?", do_help, 495, POSITION_DEAD, 0);
     AddCommand("home", do_home, 496, POSITION_DEAD, 51);
     AddCommand("wizset", do_wizset, 497, POSITION_DEAD, 51);
+    
     AddCommand("ooc", do_ooc, 497, POSITION_RESTING, 2);
     AddCommand("noooc", do_plr_noooc, 498, POSITION_SLEEPING, 2);
     AddCommand("wiznoooc", do_wiznoooc, 499, POSITION_SLEEPING, 54);
@@ -1662,6 +1757,7 @@ void assign_command_pointers(void)
     AddCommand("wizreport", do_wizreport, 509, POSITION_RESTING, 55);
     AddCommand("lgos", do_lgos, 510, POSITION_RESTING, 51);
     AddCommand("groove", do_action, 511, POSITION_RESTING, 1);
+    
     AddCommand("wdisplay", do_action, 512, POSITION_STANDING, 1);
     AddCommand("jam", do_action, 513, POSITION_STANDING, 1);
     AddCommand("donate", do_donate, 514, POSITION_RESTING, 1);
@@ -1671,6 +1767,7 @@ void assign_command_pointers(void)
     AddCommand("punish", do_punish, 518, POSITION_RESTING, 51);
     AddCommand("spend", do_spend, 519, POSITION_RESTING, 51);
     AddCommand("seepoints", do_see_points, 520, POSITION_RESTING, 51);
+    
     AddCommand("bugmail", bugmail, 521, POSITION_STANDING, 1);
     AddCommand("setobjmax", do_setobjmax, 522, POSITION_RESTING, 53);
     AddCommand("setobjspeed", do_setobjspeed, 523, POSITION_RESTING, 53);
@@ -1680,11 +1777,11 @@ void assign_command_pointers(void)
     AddCommand("startarena", do_startarena, 525, POSITION_SITTING, 55);
     AddCommand("whoarena", do_whoarena, 525, POSITION_RESTING, 0);
     AddCommand("frolic", do_action, 526, POSITION_STANDING, 0);
+    
     AddCommand("land", do_land, 527, POSITION_STANDING, 0);
     AddCommand("launch", do_launch, 528, POSITION_STANDING, 0);
     AddCommand("disengage", do_disengage, 529, POSITION_FIGHTING, 1);
     AddCommand("prompt", do_set_prompt, 530, POSITION_RESTING, 0);
-
     AddCommand("talk", do_talk, 531, POSITION_RESTING, 1);
     AddCommand("disagree", do_action, 532, POSITION_RESTING, 0);
     AddCommand("beckon", do_action, 533, POSITION_RESTING, 0);
@@ -1700,6 +1797,7 @@ void assign_command_pointers(void)
     AddCommand("tag", do_action, 542, POSITION_RESTING, 0);
     AddCommand("trip", do_action, 543, POSITION_RESTING, 0);
     AddCommand("grunt", do_action, 544, POSITION_RESTING, 0);
+    
     AddCommand("imitate", do_action, 545, POSITION_RESTING, 0);
     AddCommand("hickey", do_action, 546, POSITION_RESTING, 0);
     AddCommand("torture", do_action, 547, POSITION_RESTING, 0);
@@ -1709,6 +1807,7 @@ void assign_command_pointers(void)
     AddCommand("bbl", do_action, 551, POSITION_RESTING, 0);
     AddCommand("beam", do_action, 552, POSITION_RESTING, 0);
     AddCommand("challenge", do_action, 553, POSITION_RESTING, 0);
+    
     AddCommand("mutter", do_action, 554, POSITION_RESTING, 0);
     AddCommand("beat", do_action, 555, POSITION_RESTING, 0);
     AddCommand("moon", do_action, 556, POSITION_RESTING, 0);
@@ -1717,10 +1816,14 @@ void assign_command_pointers(void)
     AddCommand("behead", do_behead, 559, POSITION_STANDING, 0);
     AddCommand("pinfo", do_flag_status, 560, POSITION_RESTING, 59);
     
-    /* being worked on */
-    // Moved down
-    // below.AddCommand("board",do_not_here,561,POSITION_STANDING,0);
-
+    /* 
+     * being worked on
+     * Moved down
+     * below.
+     */
+#if 0
+    AddCommand("board",do_not_here,561,POSITION_STANDING,0);
+#endif
     /*
      * New command for editing gossiping scribe's messages -bwise 
      */
@@ -1734,6 +1837,7 @@ void assign_command_pointers(void)
     AddCommand("bprompt", do_set_bprompt, 569, POSITION_RESTING, 0);
     AddCommand("bid", do_bid, 570, POSITION_RESTING, 0);
     AddCommand("resist", do_resistances, 571, POSITION_RESTING, 0);
+    
     AddCommand("style", do_style, 572, POSITION_STANDING, 0);
     AddCommand("fight", do_style, 572, POSITION_STANDING, 0);
     AddCommand("iwizlist", do_iwizlist, 573, POSITION_DEAD, 0);
@@ -1743,7 +1847,9 @@ void assign_command_pointers(void)
     AddCommand("autoloot", do_auto, 577, POSITION_RESTING, 1);
     AddCommand("autogold", do_auto, 578, POSITION_RESTING, 1);
     AddCommand("autosplit", do_auto, 579, POSITION_RESTING, 1);
-    // AddCommand("autosac",do_auto, 580, POSITION_RESTING,1);
+#if 0
+    AddCommand("autosac",do_auto, 580, POSITION_RESTING,1);
+#endif
     AddCommand("autoexits", do_auto, 581, POSITION_RESTING, 1);
     AddCommand("train", do_not_here, 582, POSITION_STANDING, 1);
     AddCommand("mend", do_mend, 583, POSITION_STANDING, 1);
@@ -1751,6 +1857,7 @@ void assign_command_pointers(void)
     AddCommand("qtrans", do_qtrans, 586, POSITION_STANDING, 51);
     AddCommand("nooutdoor", do_set_nooutdoor, 587, POSITION_RESTING, 51);
     AddCommand("dismiss", do_dismiss, 588, POSITION_RESTING, 1);
+    
     AddCommand("setsound", do_setsound, 589, POSITION_STANDING, 53);
     AddCommand("induct", do_induct, 590, POSITION_STANDING, 1);
     AddCommand("expel", do_expel, 591, POSITION_STANDING, 1);
@@ -1760,6 +1867,7 @@ void assign_command_pointers(void)
     AddCommand("call steed", do_steed, 596, POSITION_STANDING, 1);
     AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
     AddCommand("tweak", do_tweak, 598, POSITION_STANDING, 55);
+    
     AddCommand("mrebuild", do_mrebuild, 599, POSITION_STANDING, 59);
     AddCommand("flurry", do_flurry, 600, POSITION_FIGHTING, 1);
     AddCommand("flowerfist", do_flowerfist, 601, POSITION_FIGHTING, 1);
@@ -1768,21 +1876,23 @@ void assign_command_pointers(void)
     AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
     AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
     AddCommand("affects", do_attribute, 606, POSITION_DEAD, 1);
-
-    // room here
+/* 
+ * 607
+ * 608
+ * 609
+ */
     AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
     AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
     AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
     AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
     AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
     AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
+    
     AddCommand("retreat", do_flee, 616, POSITION_SITTING, 1);
     AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
     AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
     AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
     AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
-
-    // BOARD DISEMBARK EMBARK PLANK
     /*
      * New command for sailing/ships 
      */
@@ -1823,7 +1933,9 @@ int _parse_name(char *arg, char *name)
      * skip whitespaces 
      */
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
@@ -1833,9 +1945,9 @@ int _parse_name(char *arg, char *name)
 
     }
 
-    if (!i)
+    if (!i) {
         return (1);
-
+    }
     return (0);
 }
 
@@ -1858,9 +1970,9 @@ int _check_ass_name(char *name)
                     j,
                     k;
 
-    if (strlen(name) > MAX_NAME_LENGTH)
+    if (strlen(name) > MAX_NAME_LENGTH) {
         return 1;
-
+    }
     if (!shitlist) {
         if ((f = fopen(ASSHOLE_FNAME, "rt")) == NULL) {
             log("can't open asshole names list");
@@ -1869,7 +1981,9 @@ int _check_ass_name(char *name)
             return 0;
         }
         for (i = 0; fgets(buf, 180, f) != NULL; i++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
         shitlist = (struct shitlist *) calloc((i + 3), sizeof(struct shitlist));
         rewind(f);
@@ -1906,41 +2020,49 @@ int _check_ass_name(char *name)
         for (i = 0; *shitlist[i].name; i++) {
             sprintf(buf, "mode: %d, name: %s", shitlist[i].how, 
                     shitlist[i].name);
-            /*
-             * log(buf);
-             */
+#if 0
+            log(buf);
+#endif
         }
     }
 
-    for (j = 0; *shitlist[j].name; j++)
+    for (j = 0; *shitlist[j].name; j++) {
         switch (shitlist[j].how) {
         case 0:
-            if (!str_cmp(name, shitlist[j].name))
+            if (!str_cmp(name, shitlist[j].name)) {
                 return 1;
+            }
             break;
         case 1:
-            if (!strn_cmp(name, shitlist[j].name, strlen(shitlist[j].name)))
+            if (!strn_cmp(name, shitlist[j].name, strlen(shitlist[j].name))) {
                 return 1;
+            }
             break;
         case 2:
-            if (strlen(name) < strlen(shitlist[j].name))
+            if (strlen(name) < strlen(shitlist[j].name)) {
                 break;
+            }
             if (!str_cmp(name + (strlen(name) - strlen(shitlist[j].name)), 
-                         shitlist[j].name))
+                         shitlist[j].name)) {
                 return 1;
+            }
             break;
         case 3:
-            if (strlen(name) < strlen(shitlist[j].name))
+            if (strlen(name) < strlen(shitlist[j].name)) {
                 break;
-            for (k = 0; k <= strlen(name) - strlen(shitlist[j].name); k++)
+            }
+            for (k = 0; k <= strlen(name) - strlen(shitlist[j].name); k++) {
                 if (!strn_cmp(name + k, shitlist[j].name,
-                              strlen(shitlist[j].name)))
+                              strlen(shitlist[j].name))) {
                     return 1;
+                }
+            }
             break;
         default:
             log("Grr! invalid value in shitlist, interpreter.c _parse_name");
             return 1;
         }
+    }
     return (0);
 }
 
@@ -1961,17 +2083,19 @@ void show_menu(struct descriptor_data *d)
             strcat(classes, classname[bit]);
         }
     }
-    if (!(strcmp(classes, "")))
+    if (!(strcmp(classes, ""))) {
         sprintf(classes, "None Selected");
-
+    }
     sprintf(mainclass, "%s", "");
     if (d->character->specials.remortclass) {
-        // remort == 0 means none picked
+       /*
+        * remort == 0 means none picked
+        */
         strcat(mainclass, classname[(d->character->specials.remortclass - 1)]);
     }
-    if (!(strcmp(mainclass, "")))
+    if (!(strcmp(mainclass, ""))) {
         sprintf(mainclass, "None Selected");
-
+    }
     sprintf(bufx, "$c0009-=$c0015Havok Character Creation Menu [%s]"
                   "$c0009=-\n\r\n\r", GET_NAME(d->character));
 
@@ -1987,7 +2111,9 @@ void show_menu(struct descriptor_data *d)
                 RaceName[GET_RACE(d->character)]);
         strcat(bufx, buf);
     } else {
-        /* make default race to Human rather than half-breed */
+        /* 
+         * make default race to Human rather than half-breed 
+         */
         GET_RACE(d->character) = 1;
         sprintf(buf, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
                 RaceName[GET_RACE(d->character)]);
@@ -2000,12 +2126,12 @@ void show_menu(struct descriptor_data *d)
     sprintf(buf, "$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r", mainclass);
     strcat(bufx, buf);
 
-    if (!GET_CON(d->character) || GET_CON(d->character) == 0)
+    if (!GET_CON(d->character) || GET_CON(d->character) == 0) {
         strcat(bufx, "$c00156) $c0012Character Stats.[$c0015None "
                      "Picked$c0012]\n\r");
-    else
+    } else {
         strcat(bufx, "$c00156) $c0012Character Stats.[$c0015Done$c0012]\n\r");
-
+    }
     sprintf(buf, "$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r",
             (GET_ALIGNMENT(d->character) ?  
              AlignDesc(GET_ALIGNMENT(d->character)) : "None"));
@@ -2058,9 +2184,13 @@ void nanny(struct descriptor_data *d, char *arg)
 
     switch (STATE(d)) {
     case CON_CREATION_MENU:
-        // show_menu(d);
+#if 0
+        show_menu(d);
+#endif
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
         switch (*arg) {
         case '1':
@@ -2118,8 +2248,9 @@ void nanny(struct descriptor_data *d, char *arg)
                           " charisma\n\r", d);
                 SEND_TO_Q("Your choices? ", d);
                 STATE(d) = CON_STAT_LIST;
-            } else
+            } else {
                 SEND_TO_Q("\nPlease select a class first.\n\r", d);
+            }
             break;
         case '7':
             sprintf(bufx, 
@@ -2136,22 +2267,22 @@ void nanny(struct descriptor_data *d, char *arg)
                     "the spell heal makes you good\n\r");
             send_to_char(bufx, d->character);
 
-            if (HasClass(d->character, CLASS_PALADIN))
+            if (HasClass(d->character, CLASS_PALADIN)) {
                 sprintf(bufx, "Please select your alignment "
                               "($c000WGood$c000w)");
-            else if (HasClass(d->character, CLASS_DRUID))
+            } else if (HasClass(d->character, CLASS_DRUID)) {
                 sprintf(bufx, "Please select your alignment (Neutral)");
-            else if (HasClass(d->character, CLASS_NECROMANCER))
+            } else if (HasClass(d->character, CLASS_NECROMANCER)) {
                 sprintf(bufx, "Please select your alignment "
                               "($c000REvil$c000w)");
-            else if (HasClass(d->character, CLASS_RANGER))
+            } else if (HasClass(d->character, CLASS_RANGER)) {
                 sprintf(bufx, "Please select your alignment "
                               "($c000WGood$c000w/Neutral$c000w)");
-            else
+            } else {
                 sprintf(bufx, "Please select your alignment "
                               "($c000WGood$c000w/Neutral$c000w/"
                               "$c000REvil$c000w)");
-
+            }
             send_to_char(bufx, d->character);
             STATE(d) = CON_ALIGNMENT;
             break;
@@ -2192,7 +2323,7 @@ void nanny(struct descriptor_data *d, char *arg)
             log(buf);
 
             /*
-             ** now that classes are set, initialize
+             * now that classes are set, initialize
              */
             init_char(d->character);
 
@@ -2203,7 +2334,9 @@ void nanny(struct descriptor_data *d, char *arg)
             save_char(d->character, AUTO_RENT);
 
             SEND_TO_Q(NEWBIE_NOTE, d);
-            // SEND_TO_Q(motd, d);
+#if 0
+            SEND_TO_Q(motd, d);
+#endif            
             send_to_char(motd, d->character);
             SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
             STATE(d) = CON_RMOTD;
@@ -2216,7 +2349,9 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
     case CON_ALIGNMENT:
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         switch (*arg) {
@@ -2263,9 +2398,11 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_ANSI:
 
-        // temp
+        
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         switch (*arg) {
@@ -2291,8 +2428,9 @@ void nanny(struct descriptor_data *d, char *arg)
         default:
             SEND_TO_Q("Please type Yes or No.\n\r", d);
             SEND_TO_Q("Would you like ansi colors? :", d);
-            // STATE(d) = CON_ANSI;
-
+#if 0            
+            STATE(d) = CON_ANSI;
+#endif
             return;
             break;
         }
@@ -2300,7 +2438,9 @@ void nanny(struct descriptor_data *d, char *arg)
     case CON_QRACE:
         d->character->reroll = 20;
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (!*arg) {
@@ -2336,7 +2476,10 @@ void nanny(struct descriptor_data *d, char *arg)
         }
         break;
 
-    case CON_NME:               /* wait for input of name */
+    case CON_NME:               
+    /* 
+     * wait for input of name 
+     */
         if (!d->character) {
             CREATE(d->character, struct char_data, 1);
             clear_char(d->character);
@@ -2344,12 +2487,14 @@ void nanny(struct descriptor_data *d, char *arg)
         }
 
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
-        if (!*arg)
+        if (!*arg) {
             close_socket(d);
-        else {
+        } else {
             if (_parse_name(arg, tmp_name)) {
                 SEND_TO_Q("Illegal name, please try another.\r\n", d);
                 SEND_TO_Q("Name: ", d);
@@ -2401,12 +2546,17 @@ void nanny(struct descriptor_data *d, char *arg)
         }
         break;
 
-    case CON_NMECNF:            /* wait for conf. of new name */
+    case CON_NMECNF:            
+    /* 
+     * wait for conf. of new name 
+     */
         /*
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (*arg == 'y' || *arg == 'Y') {
@@ -2420,26 +2570,34 @@ void nanny(struct descriptor_data *d, char *arg)
             STATE(d) = CON_PWDGET;
         } else if (*arg == 'n' || *arg == 'N') {
             SEND_TO_Q("Ok, what IS it, then? ", d);
-            if (GET_NAME(d->character))
+            if (GET_NAME(d->character)) {
                 free(GET_NAME(d->character));
+            }
             STATE(d) = CON_NME;
         } else {
-            /* Please do Y or N */
+            /* 
+             * Please do Y or N 
+             */
             SEND_TO_Q("Please type Yes or No? ", d);
         }
         break;
 
-    case CON_PWDNRM:            /* get pwd for known player */
+    case CON_PWDNRM:            
+    /* 
+     * get pwd for known player 
+     */
         /*
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
-        if (!*arg)
+        if (!*arg) {
             close_socket(d);
-        else {
+        } else {
             if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
                 SEND_TO_Q("Wrong password.\n\r", d);
                 sprintf(buf, "%s entered a wrong password",
@@ -2482,7 +2640,9 @@ void nanny(struct descriptor_data *d, char *arg)
                             already_p = 1;
                         }
                     } else {
-                        /* No switch has been made */
+                        /* 
+                         * No switch has been made 
+                         */
                         if (GET_NAME(k->character) &&
                             str_cmp(GET_NAME(k->character),
                                     GET_NAME(d->character)) == 0) {
@@ -2553,27 +2713,33 @@ void nanny(struct descriptor_data *d, char *arg)
                 }
                 SEND_TO_Q(buf, d);
             }
-
-            /*
-             * 
-             * if (d->character->specials.hostip)
-             * free(d->character->specials.hostip);
-             * d->character->specials.hostip = d->host; 
-             */
+#if 0
+            if (d->character->specials.hostip) {
+                free(d->character->specials.hostip);
+            }
+            d->character->specials.hostip = d->host; 
+#endif             
 
             send_to_char(motd, d->character);
-            // SEND_TO_Q(motd, d);
+#if 0            
+            SEND_TO_Q(motd, d);
+#endif            
             SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
             STATE(d) = CON_RMOTD;
         }
         break;
 
-    case CON_PWDGET:            /* get pwd for new player */
+    case CON_PWDGET:            
+    /* 
+     * get pwd for new player 
+     */
         /*
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (!*arg || strlen(arg) > 10) {
@@ -2594,12 +2760,17 @@ void nanny(struct descriptor_data *d, char *arg)
         STATE(d) = CON_PWDCNF;
         break;
 
-    case CON_PWDCNF:            /* get confirmation of new pwd */
+    case CON_PWDCNF:            
+    /* 
+     * get confirmation of new pwd 
+     */
         /*
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
@@ -2614,18 +2785,27 @@ void nanny(struct descriptor_data *d, char *arg)
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Would you like to have ansi colors? ", d);
-            // show_menu(d);
-            STATE(d) = CON_ANSI;        // CON_CREATION_MENU;
-
+#if 0            
+            show_menu(d);
+#endif
+            STATE(d) = CON_ANSI;        
+#if 0            
+            CON_CREATION_MENU;
+#endif
         }
         break;
 
-    case CON_QSEX:              /* query sex of new user */
+    case CON_QSEX:              
+    /* 
+     * query sex of new user 
+     */
         /*
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         switch (*arg) {
@@ -2666,14 +2846,18 @@ void nanny(struct descriptor_data *d, char *arg)
 
         index = 0;
         while (*arg && index < MAX_STAT) {
-            if (*arg == 'S' || *arg == 's')
+            if (*arg == 'S' || *arg == 's') {
                 d->stat[index++] = 's';
-            if (*arg == 'I' || *arg == 'i')
+            }
+            if (*arg == 'I' || *arg == 'i') {
                 d->stat[index++] = 'i';
-            if (*arg == 'W' || *arg == 'w')
+            }
+            if (*arg == 'W' || *arg == 'w') {
                 d->stat[index++] = 'w';
-            if (*arg == 'D' || *arg == 'd')
+            }
+            if (*arg == 'D' || *arg == 'd') {
                 d->stat[index++] = 'd';
+            }
             if (*arg == 'C' || *arg == 'c') {
                 arg++;
                 if (*arg == 'O' || *arg == 'o') {
@@ -2752,7 +2936,9 @@ void nanny(struct descriptor_data *d, char *arg)
     case CON_REROLL:
 
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         d->character->reroll--;
@@ -2852,14 +3038,18 @@ void nanny(struct descriptor_data *d, char *arg)
         SEND_TO_Q(NEWBIE_NOTE, d);
         STATE(d) = CON_RMOTD;
         send_to_char(motd, d->character);
-        // SEND_TO_Q(motd, d);
+#if 0        
+        SEND_TO_Q(motd, d);
+#endif        
         SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
         STATE(d) = CON_RMOTD;
         break;
 
     case CON_MCLASS:
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         d->character->specials.remortclass = 0;
@@ -2892,7 +3082,9 @@ void nanny(struct descriptor_data *d, char *arg)
          */
 
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         d->character->player.class = 0;
@@ -2915,8 +3107,9 @@ void nanny(struct descriptor_data *d, char *arg)
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        avariel_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = avariel_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -2925,16 +3118,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_GOLD_ELF:
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        gold_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = gold_elf_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -2943,16 +3138,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_WILD_ELF:
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        wild_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = wild_elf_class_choice[ii];
+                    }
                     ii++;
                 }
                 if ((d->character->player.class != 0)) {
@@ -2968,8 +3165,9 @@ void nanny(struct descriptor_data *d, char *arg)
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        sea_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = sea_elf_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -2978,16 +3176,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_MOON_ELF:
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        moon_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = moon_elf_class_choice[ii];
+                    }
                     ii++;
                 }
                 if ((d->character->player.class != 0)) {
@@ -2995,16 +3195,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HUMAN:
                 ii = 0;
                 while (d->character->player.class == 0
                        && human_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = human_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3013,16 +3215,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HALFLING:
                 ii = 0;
                 while (d->character->player.class == 0
                        && halfling_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = halfling_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3031,17 +3235,19 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_FOREST_GNOME:
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        forest_gnome_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class =
                             forest_gnome_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3050,8 +3256,9 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_DEEP_GNOME:
@@ -3059,9 +3266,10 @@ void nanny(struct descriptor_data *d, char *arg)
                 ii = 0;
                 while (d->character->player.class == 0 &&
                        rock_gnome_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class =
                             rock_gnome_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3070,16 +3278,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_DWARF:
                 ii = 0;
                 while (d->character->player.class == 0
                        && dwarf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = dwarf_class_choice[ii];
+                    }
                     ii++;
                 }
                 if (d->character->player.class != 0) {
@@ -3087,16 +3297,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HALF_ELF:
                 ii = 0;
                 while (d->character->player.class == 0
                        && half_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = half_elf_class_choice[ii];
+                    }
                     ii++;
                 }
                 if (d->character->player.class != 0) {
@@ -3104,16 +3316,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HALF_OGRE:
                 ii = 0;
                 while (d->character->player.class == 0
                        && half_ogre_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = half_ogre_class_choice[ii];
+                    }
                     ii++;
                 }
                 if (d->character->player.class != 0) {
@@ -3121,17 +3335,19 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HALF_GIANT:
                 ii = 0;
                 while (d->character->player.class == 0
                        && half_giant_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class =
                             half_giant_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3140,16 +3356,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_HALF_ORC:
                 ii = 0;
                 while (d->character->player.class == 0
                        && half_orc_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = half_orc_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3158,16 +3376,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_ORC:
                 ii = 0;
                 while (d->character->player.class == 0
                        && orc_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = orc_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3176,16 +3396,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_GOBLIN:
                 ii = 0;
                 while (d->character->player.class == 0
                        && goblin_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = goblin_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3194,16 +3416,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_DROW:
                 ii = 0;
                 while (d->character->player.class == 0
                        && dark_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = dark_elf_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3212,17 +3436,19 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_DARK_DWARF:
                 ii = 0;
                 while (d->character->player.class == 0
                        && dark_dwarf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class =
                             dark_dwarf_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3231,16 +3457,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             case RACE_TROLL:
                 ii = 0;
                 while (d->character->player.class == 0
                        && troll_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = troll_class_choice[ii];
+                    }
                     ii++;
                 }
 
@@ -3249,16 +3477,18 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
 
             default:
                 ii = 0;
                 while (d->character->player.class == 0
                        && default_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii)
+                    if (atoi(arg) == ii) {
                         d->character->player.class = default_class_choice[ii];
+                    }
                     ii++;
                 }
                 if (d->character->player.class != 0) {
@@ -3266,8 +3496,9 @@ void nanny(struct descriptor_data *d, char *arg)
                         STATE(d) = CON_CREATION_MENU;
                         show_menu(d);
                     }
-                } else
+                } else {
                     show_class_selection(d, GET_RACE(d->character));
+                }
                 break;
             }
             break;
@@ -3314,8 +3545,9 @@ void nanny(struct descriptor_data *d, char *arg)
             sprintf(buf, "%s [%s] new player.", GET_NAME(d->character),
                     d->host);
             log_sev(buf, 1);
-            if (!strncmp(d->host, "128.197.152", 11))
+            if (!strncmp(d->host, "128.197.152", 11)) {
                 d->character->generic = 1;
+            }
             /*
              * I decided to give them another chance.  -Steppenwolf 
              * They blew it. -DM 
@@ -3357,7 +3589,9 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_CHECK_MAGE_TYPE:
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (!strcmp(arg, "yes")) {
@@ -3369,16 +3603,21 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_RMOTD:
-        /* read CR after printing motd */
+        /* 
+         * read CR after printing motd 
+         */
         if (GetMaxLevel(d->character) > 50) {
             send_to_char(wmotd, d->character);
-            // SEND_TO_Q(wmotd, d);
+#if 0            
+            SEND_TO_Q(wmotd, d);
+#endif            
             SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
             STATE(d) = CON_WMOTD;
             break;
         }
-        if (d->character->term != 0)
+        if (d->character->term != 0) {
             ScreenOff(d->character);
+        }
         send_to_char(MENU, d->character);
 
         STATE(d) = CON_SLCT;
@@ -3392,7 +3631,9 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_WMOTD:
-        /* read CR after printing motd */
+        /* 
+         * read CR after printing motd 
+         */
         send_to_char(MENU, d->character);
 
         STATE(d) = CON_SLCT;
@@ -3411,7 +3652,9 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_DELETE_ME:
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (!strcmp(arg, "yes") && strcmp("Guest", GET_NAME(d->character))) {
@@ -3420,8 +3663,9 @@ void nanny(struct descriptor_data *d, char *arg)
             for (i = 0; i <= top_of_p_table; i++) {
                 if (!str_cmp((player_table + i)->name, 
                              GET_NAME(d->character))) {
-                    if ((player_table + i)->name)
+                    if ((player_table + i)->name) {
                         free((player_table + i)->name);
+                    }
                     (player_table + i)->name =
                         (char *) malloc(strlen("111111"));
                     strcpy((player_table + i)->name, "111111");
@@ -3468,7 +3712,9 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         switch (*arg) {
@@ -3486,13 +3732,15 @@ void nanny(struct descriptor_data *d, char *arg)
             }
 
             count_players = 1;
-            for (desc = descriptor_list; desc; desc = desc->next)
-                if (!desc->connected)
+            for (desc = descriptor_list; desc; desc = desc->next) {
+                if (!desc->connected) {
                     count_players++;
+                }
+            }
 
-            if (total_max_players < count_players)
+            if (total_max_players < count_players) {
                 total_max_players = count_players;
-
+            }
             load_char_objs(d->character);
 
             save_char(d->character, AUTO_RENT);
@@ -3541,12 +3789,14 @@ void nanny(struct descriptor_data *d, char *arg)
             }
 
             d->character->specials.tick = plr_tick_count++;
-            if (plr_tick_count == PLR_TICK_WRAP)
+            if (plr_tick_count == PLR_TICK_WRAP) {
                 plr_tick_count = 0;
+            }
             act("$n has entered the game.", TRUE, d->character, 0, 0, TO_ROOM);
             STATE(d) = CON_PLYNG;
-            if (!GetMaxLevel(d->character))
+            if (!GetMaxLevel(d->character)) {
                 do_start(d->character);
+            }
             do_look(d->character, "", 15);
             /*
              * do an auction check, grant reimbs as needed 
@@ -3578,8 +3828,9 @@ void nanny(struct descriptor_data *d, char *arg)
             if (d->character->player.description) {
                 SEND_TO_Q("Old description :\n\r", d);
                 SEND_TO_Q(d->character->player.description, d);
-                if (d->character->player.description)
+                if (d->character->player.description) {
                     free(d->character->player.description);
+                }
                 d->character->player.description = 0;
             }
             d->str = &d->character->player.description;
@@ -3617,7 +3868,9 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (!*arg || strlen(arg) > 10) {
@@ -3651,7 +3904,9 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces 
          */
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
@@ -3938,10 +4193,10 @@ void show_race_choice(struct descriptor_data *d)
         }
 
         strcat(buf, "\n\r");
-        if (i == 13)
+        if (i == 13) {
             strcat(buf, "$c000WThe Races Listed below may have some racials"
                         " hatreds. Advanced players only.\n\r");
-
+        }
         send_to_char(buf, d->character);
         i++;
     }
