@@ -1153,31 +1153,6 @@ int new_descriptor(int s)
 
   CREATE(newd, struct descriptor_data, 1);
 
-#if 0
-		/* older code replaced */
-
-  *newd->host = '\0';
-  /* find info */
-  size = sizeof(sock);
-  if (getpeername(desc, (struct sockaddr *) &sock, &size) < 0)    {
-    perror("getpeername");
-    *newd->host = '\0';
-  }
-
-  if(*newd->host == '\0') {
-#ifndef sun
-    if ((long) strncpy(newd->host, inet_ntoa(sock.sin_addr), 49) > 0)  {
-      *(newd->host + 49) = '\0';
-      sprintf(buf, "New connection from addr %s: %d: %d", newd->host, desc, maxdesc);
-      log_sev(buf,3);
-    }
-#else
-    strcpy(newd->host, (char *)inet_ntoa(&sock.sin_addr));
-#endif
-  }
-
-	/* end old code */
-#endif
 
 /*newer code */
    /* find info */
@@ -1202,24 +1177,11 @@ int new_descriptor(int s)
       *(newd->host + 49) = '\0';
    }
 
-#if 0
-   if (isbanned(newd->host) == BAN_ALL) {
-      close(desc);
-      sprintf(buf2, "Connection attempt denied from [%s]", newd->host);
-      log(buf2);
-if (newd)
-      free(newd);
-      return(0);
-   }
-#endif
    if (strncmp("localhost",newd->host,9) != 0) {
       sprintf(buf2, "New connection from addr %s: %d: %d", newd->host, desc, maxdesc);
       log(buf2);
    }
 
-#if 0
-  identd_test(sock);    /* test stuff */
-#endif
 
 /* end newer code */
 

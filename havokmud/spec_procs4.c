@@ -3241,7 +3241,8 @@ AddCommand("steer", do_sea_commands, 625, POSITION_STANDING, 1);
 */
 
 int disembark_ship(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
-
+int x=0;
+int room=0, go=0;
 	if(cmd==621) { /*disembark */
 
 			if ( oceanmap[GET_XCOORD(obj)][GET_YCOORD(obj)]=='@' ) {
@@ -3249,10 +3250,40 @@ int disembark_ship(struct char_data *ch, int cmd, char *argument, struct obj_dat
 						send_to_char("You can't while your fighting!",ch);
 						return(TRUE);
 				  }
-					/*lets move to the port city*/
-				  char_from_room(ch);
-				  char_to_room(ch, 3005);
-				  do_look(ch,"",0);
+
+
+
+				  struct map_coord
+				  {
+				    int x;
+				    int y;
+				    int room;
+				    int home;
+
+				  };
+/*
+struct map_coord
+{
+  int x;
+  int y;
+  int room;
+  int home;
+
+};
+const struct map_coord map_coords[]
+*/
+					/*lets find out where they are going */
+					while( map_coords[x].x!= -1) {
+						if (map_coords[x].x ==GET_XCOORD(obj) && map_coords[x].x ==GET_YCOORD(obj)){
+							char_from_room(ch);
+							char_to_room(ch, map_coords[x].room);
+				  			do_look(ch,"",0);
+							return (TRUE);
+						}
+
+						x++;
+					}
+					send_to_char("Ahh.. maybe we don't have a place to disembark!\n\r",ch);
 			} else {
 				send_to_char("There is no place around to disembark your ship!\n\r",ch);
 				return (TRUE);
@@ -3528,3 +3559,38 @@ void printColors(struct char_data *ch, char *buf) {
 
 	send_to_char(buffer,ch);
 }
+
+
+
+int embark_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  int j;
+  char buf[256];
+  struct char_data *ship;
+  if(cmd!=620) return(FALSE);	/* board ship */
+
+  one_argument(arg,buf);
+  if(*buf) {
+
+    *buf = tolower(*buf);  /* Fix this Bull shit .. should be easy */
+    if((!str_cmp("ship",buf) || !str_cmp("ship",buf)
+    						 || !str_cmp("ship",buf))) {
+      if(ship=get_char_room("",ch->in_room)) {
+	     j=mob_index[ship->nr].virtual;
+
+	     send_to_char("You enter the ship.\n\r",ch);
+
+	     act("$n enters the ship.", FALSE , ch, 0, 0, TO_ROOM);
+	     char_from_room(ch);
+	     char_to_room(ch,j);
+	     act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
+	     do_look(ch, "", 0);
+	     return(TRUE);
+      }
+	  return(FALSE);
+    } else return(FALSE);
+  }
+
+  return(FALSE);
+}
+

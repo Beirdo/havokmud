@@ -2623,5 +2623,6 @@ struct map_coord
   int x;
   int y;
   int room;
+  int home;
 
 };

@@ -2449,3 +2449,4 @@ void ch_printf(struct char_data *ch, char *fmt, ...);
 
 
 int ships_helm(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
+int embark_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
