@@ -1104,9 +1104,6 @@ void            spell_shield(int level, struct char_data *ch,
 void            spell_weakness(int level, struct char_data *ch,
                                struct char_data *victim,
                                struct obj_data *obj);
-void            spell_invis_group(int level, struct char_data *ch,
-                                  struct char_data *victim,
-                                  struct obj_data *obj);
 void            spell_acid_blast(int level, struct char_data *ch,
                                  struct char_data *victim,
                                  struct obj_data *obj);

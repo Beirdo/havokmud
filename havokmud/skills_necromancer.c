@@ -136,7 +136,45 @@ void cast_animate_dead(int level, struct char_data *ch, char *arg,
     }
 }
 
+void spell_chill_touch(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
+{
+    struct affected_type af;
+    int             dam;
 
+    assert(victim && ch);
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    dam = number(level, 3 * level);
+
+    if (!saves_spell(victim, SAVING_SPELL)) {
+        af.type = SPELL_CHILL_TOUCH;
+        af.duration = 6;
+        af.modifier = -1;
+        af.location = APPLY_STR;
+        af.bitvector = 0;
+        affect_join(victim, &af, TRUE, FALSE);
+    } else {
+        dam >>= 1;
+    }
+    damage(ch, victim, dam, SPELL_CHILL_TOUCH);
+}
+
+void cast_chill_touch(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *victim,
+                      struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_WAND:
+        spell_chill_touch(level, ch, victim, 0);
+        break;
+    default:
+        Log("Serious screw-up in chill touch!");
+        break;
+    }
+}
 
 
 

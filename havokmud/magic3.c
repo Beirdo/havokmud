@@ -394,143 +394,6 @@ void spell_holyword(int level, struct char_data *ch,
     }
 }
 
-void spell_golem(int level, struct char_data *ch,
-                 struct char_data *victim, struct obj_data *obj)
-{
-    int             count = 0;
-    int             armor;
-    struct char_data *gol;
-    struct obj_data *helm = 0,
-                   *jacket = 0,
-                   *leggings = 0,
-                   *sleeves = 0,
-                   *gloves = 0,
-                   *boots = 0,
-                   *o;
-    struct room_data *rp;
-
-    /*
-     * you need: helm, jacket, leggings, sleeves, gloves, boots
-     */
-
-    rp = real_roomp(ch->in_room);
-    if (!rp) {
-        return;
-    }
-    for (o = rp->contents; o; o = o->next_content) {
-        if (ITEM_TYPE(o) == ITEM_ARMOR) {
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_HEAD) && !helm) {
-                count++;
-                helm = o;
-                continue;
-            }
-
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_FEET) && !boots) {
-                count++;
-                boots = o;
-                continue;
-            }
-
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_BODY) && !jacket) {
-                count++;
-                jacket = o;
-                continue;
-            }
-
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_LEGS) && !leggings) {
-                count++;
-                leggings = o;
-                continue;
-            }
-
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_ARMS) && !sleeves) {
-                count++;
-                sleeves = o;
-                continue;
-            }
-
-            if (IS_SET(o->obj_flags.wear_flags, ITEM_WEAR_HANDS) && !gloves) {
-                count++;
-                gloves = o;
-                continue;
-            }
-        }
-    }
-
-    if (count < 6) {
-        send_to_char("You don't have all the correct pieces!\n\r", ch);
-        return;
-    }
-
-    if (count > 6) {
-        send_to_char("Smells like an error to me!\n\r", ch);
-        return;
-    }
-
-    if (!boots || !sleeves || !gloves || !helm || !jacket || !leggings) {
-        /*
-         * shouldn't get this far
-         */
-        send_to_char("You don't have all the correct pieces!\n\r", ch);
-        return;
-    }
-
-    gol = read_mobile(GOLEM, VIRTUAL);
-    char_to_room(gol, ch->in_room);
-
-    /*
-     * add up the armor values in the pieces
-     */
-    armor = boots->obj_flags.value[0];
-    armor += helm->obj_flags.value[0];
-    armor += gloves->obj_flags.value[0];
-    armor += (leggings->obj_flags.value[0] * 2);
-    armor += (sleeves->obj_flags.value[0] * 2);
-    armor += (jacket->obj_flags.value[0] * 3);
-
-    GET_AC(gol) -= armor;
-
-    gol->points.max_hit = dice((armor / 6), 10) + GetMaxLevel(ch);
-    GET_HIT(gol) = GET_MAX_HIT(gol);
-    GET_LEVEL(gol, WARRIOR_LEVEL_IND) = (armor / 6);
-    SET_BIT(gol->specials.affected_by, AFF_CHARM);
-    GET_EXP(gol) = 0;
-    IS_CARRYING_W(gol) = 0;
-    IS_CARRYING_N(gol) = 0;
-    gol->player.class = CLASS_WARRIOR;
-
-    if (GET_LEVEL(gol, WARRIOR_LEVEL_IND) > 10) {
-        gol->mult_att += 0.5;
-    }
-    /*
-     * add all the effects from all the items to the golem
-     */
-    AddAffects(gol, boots);
-    AddAffects(gol, gloves);
-    AddAffects(gol, jacket);
-    AddAffects(gol, sleeves);
-    AddAffects(gol, leggings);
-    AddAffects(gol, helm);
-
-    act("$n waves $s hand over a pile of armor on the floor", FALSE, ch, 0,
-        0, TO_ROOM);
-    act("You wave your hands over the pile of armor", FALSE, ch, 0, 0, TO_CHAR);
-    act("The armor flys together to form a humanoid figure!", FALSE, ch, 0,
-        0, TO_ROOM);
-    act("$N is quickly assembled from the pieces", FALSE, ch, 0, gol, TO_CHAR);
-
-    add_follower(gol, ch);
-    extract_obj(helm);
-    extract_obj(boots);
-    extract_obj(gloves);
-    extract_obj(leggings);
-    extract_obj(sleeves);
-    extract_obj(jacket);
-}
-
-/***************/
-
-
 void spell_shillelagh(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
@@ -1591,26 +1454,6 @@ void spell_invis_to_animals(int level, struct char_data *ch,
     }
 }
 
-void spell_slow_poison(int level, struct char_data *ch,
-                       struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    assert(ch && victim);
-
-    if (affected_by_spell(victim, SPELL_POISON)) {
-        act("$n seems to fade slightly.", TRUE, victim, 0, 0, TO_ROOM);
-        send_to_char("You feel a bit better!.\n\r", victim);
-
-        af.type = SPELL_SLOW_POISON;
-        af.duration = 24;
-        af.modifier = 0;
-        af.location = 0;
-        af.bitvector = 0;
-        affect_to_char(victim, &af);
-    }
-}
-
 void spell_snare(int level, struct char_data *ch,
                  struct char_data *victim, struct obj_data *obj)
 {
@@ -1859,80 +1702,6 @@ void spell_heat_stuff(int level, struct char_data *ch,
     }
 }
 
-
-void spell_dust_devil(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    int             vnum;
-    struct char_data *mob;
-    struct affected_type af;
-
-    if (affected_by_spell(ch, SPELL_DUST_DEVIL)) {
-        send_to_char("You can only do this once per 24 hours\n\r", ch);
-        return;
-    }
-
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
-        send_to_char("You can't cast this spell indoors!\n\r", ch);
-        return;
-    }
-
-    vnum = DUST_DEVIL;
-
-    mob = read_mobile(vnum, VIRTUAL);
-
-    if (!mob) {
-        send_to_char("None available\n\r", ch);
-        return;
-    }
-
-    act("$n performs a complicated ritual!", TRUE, ch, 0, 0, TO_ROOM);
-    act("You perform the ritual of summoning", TRUE, ch, 0, 0, TO_CHAR);
-
-    char_to_room(mob, ch->in_room);
-    act("$n appears through a momentary rift in the ether!",
-        FALSE, mob, 0, 0, TO_ROOM);
-
-    /*
-     * charm them for a while
-     */
-    if (mob->master) {
-        stop_follower(mob);
-    }
-    add_follower(mob, ch);
-
-    af.type = SPELL_CHARM_PERSON;
-
-    if (IS_PC(ch) || ch->master) {
-        af.duration = 24;
-        af.modifier = 0;
-        af.location = 0;
-        af.bitvector = AFF_CHARM;
-        affect_to_char(mob, &af);
-    } else {
-        SET_BIT(mob->specials.affected_by, AFF_CHARM);
-    }
-
-    af.type = SPELL_DUST_DEVIL;
-    af.duration = 24;
-    af.modifier = 0;
-    af.location = 0;
-    af.bitvector = 0;
-    affect_to_char(ch, &af);
-
-    /*
-     * adjust the bits...
-     * get rid of aggressive, add sentinel
-     */
-
-    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
-        REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
-    }
-    if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
-        SET_BIT(mob->specials.act, ACT_SENTINEL);
-    }
-}
-
 void spell_sunray(int level, struct char_data *ch,
                   struct char_data *victim, struct obj_data *obj)
 {
@@ -1982,28 +1751,6 @@ void spell_sunray(int level, struct char_data *ch,
             }
         }
     }
-}
-
-
-void spell_find_traps(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    /*
-     * raise their detect traps skill
-     */
-    if (affected_by_spell(ch, SPELL_FIND_TRAPS)) {
-        send_to_char("You area already searching for traps.\n\r", ch);
-        return;
-    }
-
-    af.type = SPELL_FIND_TRAPS;
-    af.duration = level;
-    af.modifier = 50 + level;
-    af.location = APPLY_FIND_TRAPS;
-    af.bitvector = 0;
-    affect_to_char(ch, &af);
 }
 
 void spell_firestorm(int level, struct char_data *ch,
@@ -2071,165 +1818,6 @@ void spell_dragon_ride(int level, struct char_data *ch,
     af.location = 0;
     af.bitvector = AFF_DRAGON_RIDE;
     affect_to_char(ch, &af);
-}
-
-void spell_enlightenment(int level, struct char_data *ch,
-                         struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-    
-    if (affected_by_spell(victim, SPELL_ENLIGHTENMENT)) {
-        send_to_char("You are already enlightened!\n\r", ch);
-        return;
-    }
-
-    if (affected_by_spell(victim, SPELL_FEEBLEMIND)) {
-        send_to_char("Your mind is too feeble to enlighten!\n\r", ch);
-        return;
-    }
-
-    send_to_char("You feel enlightened by the gods\n\r", victim);
-
-    af.type = SPELL_ENLIGHTENMENT;
-    af.duration = 24;
-    af.modifier = 2;
-    af.location = APPLY_INT;
-    af.bitvector = 0;
-    affect_to_char(victim, &af);
-
-    af.type = SPELL_ENLIGHTENMENT;
-    af.duration = 24;
-    af.modifier = 2;
-    af.location = APPLY_WIS;
-    af.bitvector = 0;
-    affect_to_char(victim, &af);
-}
-
-void spell_wrath_god(int level, struct char_data *ch,
-                     struct char_data *victim, struct obj_data *obj)
-{
-    int             dam;
-
-    assert(victim && ch);
-    assert((level >= 1) && (level <= ABS_MAX_LVL));
-
-    dam = dice(level, 4);
-
-    if (saves_spell(victim, SAVING_SPELL)) {
-        dam >>= 1;
-    }
-    if (GET_RACE(ch) == RACE_GOD) {
-        dam = 0;
-    }
-    if (!HitOrMiss(ch, victim, CalcThaco(ch))) {
-        dam = 0;
-    }
-    damage(ch, victim, dam, SPELL_WRATH_GOD);
-}
-
-void spell_pacifism(int level, struct char_data *ch,
-                    struct char_data *victim, struct obj_data *obj)
-{
-    assert(ch && victim);
-
-    /*
-     * removes aggressive bit from monsters
-     */
-    if (IS_NPC(victim)) {
-        if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
-            if (HitOrMiss(ch, victim, CalcThaco(ch))) {
-                REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
-                send_to_char("You feel peace and harmony surrounding you.\n\r",
-                             ch);
-            }
-        } else {
-            send_to_char("You feel at peace with the universe.\n\r", victim);
-        }
-    } else {
-        send_to_char("You feel at peace with the universe.\n\r", victim);
-    }
-}
-
-void spell_aura_power(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    /*
-     * +2 to hit +2 dam
-     */
-
-    if (affected_by_spell(victim, SPELL_AURA_POWER)) {
-        send_to_char("You already feel an aura of power surrounding you.\n\r",
-                     ch);
-        return;
-    }
-
-    act("$n suddenly has a godly aura surrounding $m.", FALSE, victim, 0,
-        0, TO_ROOM);
-    send_to_char("You suddenly feel a godly aura surrounding you.\n\r", victim);
-
-    af.type = SPELL_AURA_POWER;
-    af.duration = 10;
-    af.modifier = 2;
-    af.location = APPLY_HITROLL;
-    af.bitvector = 0;
-    affect_to_char(victim, &af);
-
-    af.location = APPLY_DAMROLL;
-    af.modifier = 2;
-    affect_to_char(victim, &af);
-}
-
-void spell_holy_strength(int level, struct char_data *ch,
-                         struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    assert(victim);
-
-    if (!affected_by_spell(victim, SPELL_HOLY_STRENGTH)) {
-        act("The spirits of gods make you stronger.", FALSE, victim, 0, 0,
-            TO_CHAR);
-        act("$n's muscles seem to expand!", FALSE, victim, 0, 0, TO_ROOM);
-
-        af.type = SPELL_HOLY_STRENGTH;
-        af.duration = 2 * level;
-        if (level >= CREATOR) {
-            af.modifier = 0;
-        } else {
-            af.modifier = number(1, 8);
-        }
-        af.location = APPLY_STR;
-        af.bitvector = 0;
-        affect_to_char(victim, &af);
-    } else {
-        act("Nothing seems to happen.", FALSE, ch, 0, 0, TO_CHAR);
-    }
-}
-
-void spell_holy_armor(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    assert(victim);
-    if (level < 0 || level > ABS_MAX_LVL) {
-        return;
-    }
-    if (!affected_by_spell(victim, SPELL_HOLY_ARMOR)) {
-        af.type = SPELL_HOLY_ARMOR;
-        af.duration = 24;
-        af.modifier = -20;
-        af.location = APPLY_AC;
-        af.bitvector = 0;
-
-        affect_to_char(victim, &af);
-        send_to_char("You feel the spirits of gods protecting you.\n\r",
-                     victim);
-    } else {
-        send_to_char("Nothing new seems to happen\n\r", ch);
-    }
 }
 
 void spell_giant_growth(int level, struct char_data *ch,
@@ -4117,89 +3705,6 @@ void spell_chillshield(int level, struct char_data *ch,
     }
 }
 
-void spell_blade_barrier(int level, struct char_data *ch,
-                         struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    if (!affected_by_spell(ch, SPELL_BLADE_BARRIER)) {
-        if (affected_by_spell(ch, SPELL_FIRESHIELD)) {
-            act("The fiery aura around $n is extinguished.", TRUE, ch, 0,
-                0, TO_ROOM);
-            act("Your blades rip away the last vistiges of the fireshield "
-                "surrounding you.", TRUE, ch, 0, 0, TO_CHAR);
-            affect_from_char(ch, SPELL_FIRESHIELD);
-        }
-
-        if (IS_AFFECTED(ch, AFF_FIRESHIELD)) {
-            act("The fiery aura around $n is extinguished.", TRUE, ch, 0,
-                0, TO_ROOM);
-            act("Your blades rip away the last vistiges of the fireshield "
-                "surrounding you.", TRUE, ch, 0, 0, TO_CHAR);
-            REMOVE_BIT(ch->specials.affected_by, AFF_FIRESHIELD);
-        }
-
-        if (affected_by_spell(ch, SPELL_CHILLSHIELD)) {
-            act("The cold aura around $n is extinguished.", TRUE, ch, 0, 0,
-                TO_ROOM);
-            act("Your blades rip away the last vistiges of the chillshield "
-                "surrounding you.", TRUE, ch, 0, 0, TO_CHAR);
-            affect_from_char(ch, SPELL_CHILLSHIELD);
-        }
-        if (IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
-            act("The cold aura around $n is extinguished.", TRUE, ch, 0, 0,
-                TO_ROOM);
-            act("Your blades rip away the last vistiges of the chillshield "
-                "surrounding you.", TRUE, ch, 0, 0, TO_CHAR);
-            REMOVE_BIT(ch->specials.affected_by, AFF_CHILLSHIELD);
-        }
-
-        act("$c000B$n is surrounded by a barrier of whirling blades.",
-            TRUE, ch, 0, 0, TO_ROOM);
-        act("$c000BYou summon a barrier of whirling blades around you.",
-            TRUE, ch, 0, 0, TO_CHAR);
-
-        af.type = SPELL_BLADE_BARRIER;
-
-        if( IS_IMMORTAL(ch) ) {
-            af.duration = level;
-        } else {
-            af.duration = (ch->specials.remortclass == CLERIC_LEVEL_IND + 1 ? 
-                           4 : 3 );
-        }
-        af.modifier = 0;
-        af.location = APPLY_NONE;
-        af.bitvector = AFF_BLADE_BARRIER;
-        affect_to_char(ch, &af);
-    } else {
-        send_to_char("Nothing new seems to happen.\n\r", ch);
-    }
-}
-
-
-void spell_group_heal(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    struct char_data *tch;
-
-    if (real_roomp(ch->in_room) == NULL) {
-        return;
-    }
-
-    if (!IS_AFFECTED(ch, AFF_GROUP)) {
-        send_to_char("You cannot cast this spell when you're not in a "
-                     "group!\n\r", ch);
-        return;
-    }
-
-    for (tch = real_roomp(ch->in_room)->people; tch;
-         tch = tch->next_in_room) {
-        if (in_group(tch, ch)) {
-            spell_heal(level, ch, tch, 0);
-        }
-    }
-}
-
 void spell_iron_skins(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
@@ -4306,7 +3811,55 @@ void spell_circle_protection(int level, struct char_data *ch,
     }
 }
             
-        
+void spell_detect_poison(int level, struct char_data *ch,
+                         struct char_data *victim, struct obj_data *obj)
+{
+    assert(ch && (victim || obj));
+
+    if (victim) {
+        if (victim == ch) {
+            if (IS_AFFECTED(victim, AFF_POISON)) {
+                send_to_char("You can sense poison in your blood.\n\r", ch);
+            } else {
+                send_to_char("You feel healthy.\n\r", ch);
+            }
+        } else if (IS_AFFECTED(victim, AFF_POISON)) {
+            act("You sense that $E is poisoned.", FALSE, ch, 0, victim,
+                TO_CHAR);
+        } else {
+            act("You don't find any poisons in $S blood.", FALSE, ch, 0,
+                victim, TO_CHAR);
+        }
+    } else {
+        /*
+         * It's an object
+         */
+        if (obj->obj_flags.type_flag == ITEM_DRINKCON ||
+            obj->obj_flags.type_flag == ITEM_FOOD) {
+            if (obj->obj_flags.value[3]) {
+                act("Poisonous fumes are revealed.", FALSE, ch, 0, 0, TO_CHAR);
+            } else {
+                send_to_char("It looks very delicious.\n\r", ch);
+            }
+        }
+    }
+}
+
+void spell_unholy_word(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
+{
+    int             max = 80;
+
+    max += level;
+    max += level / 2;
+
+    if (GET_MAX_HIT(victim) <= max || GetMaxLevel(ch) > 53) {
+        damage(ch, victim, GET_MAX_HIT(victim) * 12, SPELL_UNHOLY_WORD);
+    } else {
+        send_to_char("They are too powerful to destroy this way\n\r", ch);
+    }
+}
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
