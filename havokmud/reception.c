@@ -1137,7 +1137,12 @@ void load_char_extra(struct char_data *ch)
 	      sprintf(tmp,"email %s",s);
 	      do_set_flags(ch,tmp,0);
 	    } else 
-	if (!strcmp(p,"setsev")) {      /* setup severity level */
+	      if(!strcmp(p,"clan")) { /* Clan info*/
+		char tmp2[256];
+		sprintf(tmp2,"clan %s", s);
+		do_set_flags(ch,tmp2,0);
+	      } else
+		if (!strcmp(p,"setsev")) {      /* setup severity level */
 		do_setsev(ch,s,0);
 	} else
 	if (!strcmp(p,"invislev") && GetMaxLevel(ch) > MAX_MORT) {
@@ -1194,21 +1199,25 @@ void write_char_extra( struct char_data *ch)
     if (ch->specials.poofout) {
       fprintf(fp, "out: %s\n", ch->specials.poofout);
     }
-    if (ch->specials.email) {
-		fprintf(fp, "email: %s\n",ch->specials.email);
-	}
-   if (ch->specials.sev) {
-		fprintf(fp, "setsev: %d\n",ch->specials.sev);
-	}       
-   if (ch->invis_level) {
-		fprintf(fp, "invislev: %d\n",ch->invis_level);
-	}       
+  
+    if (ch->specials.sev) {
+      fprintf(fp, "setsev: %d\n",ch->specials.sev);
+    }       
+    if (ch->invis_level) {
+      fprintf(fp, "invislev: %d\n",ch->invis_level);
+    }       
     fprintf(fp, "zone: %d\n", GET_ZONE(ch));
   }
   if( ch->specials.prompt) {
     fprintf(fp, "prompt: %s\n", ch->specials.prompt);
   }
- 
+  if (ch->specials.email) {
+    fprintf(fp, "email: %s\n",ch->specials.email);
+  }
+  if (ch->specials.clan) {
+    fprintf(fp, "clan: %s\n",ch->specials.clan);
+  }
+  
   if (ch->specials.A_list) {
     for (i=0;i<10;i++) {
       if (GET_ALIAS(ch, i)) {

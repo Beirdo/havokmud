@@ -2070,3 +2070,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd);
 
 /*Spec_procs.c*/
 int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+
+/*Spec_procs3*/
+int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

@@ -1509,9 +1509,10 @@ AddCommand("beam",do_action,552,POSITION_RESTING,0);
 AddCommand("challenge",do_action,553,POSITION_RESTING,0); 
 AddCommand("mutter",do_action,554,POSITION_RESTING,0); 
 AddCommand("beat",do_action,555,POSITION_RESTING,0); 
-AddCommand("moon",do_action,556,POSITION_RESTING,0); 
-AddCommand("dream",do_action,557,POSITION_RESTING,0); 
-AddCommand("behead",do_behead,558,POSITION_STANDING,0);
+ AddCommand("moon",do_action,556,POSITION_RESTING,0); 
+ AddCommand("dream",do_action,557,POSITION_RESTING,0); 
+ AddCommand("shove",do_action, 558, POSITION_RESTING,0);
+ AddCommand("behead",do_behead,559,POSITION_STANDING,0);
 
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince

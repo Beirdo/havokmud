@@ -765,7 +765,7 @@ void assign_mobiles()
 **  Sewer Rats
 */
     {7002, attack_rats},
-    {2531, DragonHunterLeader},
+    {2531, DispellerIncMob }, //DragonHunterLeader},
     {3063, HuntingMercenary},
 
 /*

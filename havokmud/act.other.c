@@ -2366,115 +2366,130 @@ dlog("in do_set_flags");
 
  argument = one_argument(argument,field);
 
-if (!strcmp("war",type) &&  (!*field)) {
- send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU CANNOT REMOVE IT!\n\r",ch);
- send_to_char("Be sure to READ the help on RACE WAR.\n\r",ch);
- return;
-}
-
-if (!*field) {
-	send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
-	return;
-  } 	
-
-if (!strcmp(type,"war") && GetMaxLevel(ch)>=RACE_WAR_MIN_LEVEL) {
- if (!strcmp("enable",field)) {
+ if (!strcmp("war",type) &&  (!*field)) {
+   send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU CANNOT REMOVE IT!\n\r",ch);
+   send_to_char("Be sure to READ the help on RACE WAR.\n\r",ch);
+   return;
+ }
+ 
+ if (!*field) {
+   send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
+   return;
+ } 	
+ 
+ if (!strcmp(type,"war") && GetMaxLevel(ch)>=RACE_WAR_MIN_LEVEL) {
+   if (!strcmp("enable",field)) {
     SET_BIT(ch->player.user_flags,RACE_WAR);
     send_to_char("YOU CAN BE ATTACKED BY YOUR RACIAL ENEMIES!\n\r",ch);
     return;
-  } else
+   } else
   send_to_char("READ HELP on RACE WAR.\n\r",ch);
- return;
-}
-
-if (!strcmp(type,"ansi")) {		/* turn ansi stuff ON/OFF */
-     if (is_abbrev(field,"enable")) {
+   return;
+ }
+ 
+ if (!strcmp(type,"ansi")) {		/* turn ansi stuff ON/OFF */
+   if (is_abbrev(field,"enable")) {
          send_to_char("Setting ansi colors enabled.\n\r",ch);
          SET_BIT(ch->player.user_flags,USE_ANSI);
-        } else {
-          act("Setting ansi colors off.",FALSE,ch,0,0,TO_CHAR);
-          if (IS_SET(ch->player.user_flags,USE_ANSI))
-              REMOVE_BIT(ch->player.user_flags,USE_ANSI);
-     }
-    } /* was ansi */
-else 
-  if (!strcmp(type,"color")) {	/* set current screen color */
-        char buf[128];
-    	sprintf(buf,"%sChanging screen colors!",ansi_parse(field));
-    	act(buf,FALSE,ch,0,0,TO_CHAR);
-  }		/* was color*/
-else 
-if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
-     if (strstr(field,"enable")) {
+   } else {
+     act("Setting ansi colors off.",FALSE,ch,0,0,TO_CHAR);
+     if (IS_SET(ch->player.user_flags,USE_ANSI))
+       REMOVE_BIT(ch->player.user_flags,USE_ANSI);
+   }
+ } /* was ansi */
+ else 
+   if (!strcmp(type,"color")) {	/* set current screen color */
+     char buf[128];
+     sprintf(buf,"%sChanging screen colors!",ansi_parse(field));
+     act(buf,FALSE,ch,0,0,TO_CHAR);
+   }		/* was color*/
+   else 
+     if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
+       if (strstr(field,"enable")) {
          send_to_char("Setting page pause mode enabled.\n\r",ch);
          SET_BIT(ch->player.user_flags,USE_PAGING);
-     } else {
+       } else {
          act("Turning page pause off.",FALSE,ch,0,0,TO_CHAR);
          if (IS_SET(ch->player.user_flags,USE_PAGING))
-              REMOVE_BIT(ch->player.user_flags,USE_PAGING);
+	   REMOVE_BIT(ch->player.user_flags,USE_PAGING);
+       }
      }
-}
 
-else
-  if (!strcmp(type,"group")) {
-    if (!strcmp(field,"name")) {
-      if (argument)  
-        do_group_name(ch,argument,0);
-     } 
+     else
+       if (!strcmp(type,"group")) {
+	 if (!strcmp(field,"name")) {
+	   if (argument)  
+	     do_group_name(ch,argument,0);
+	 } 
 #if 0
-      else 
-     if (!strcmp(field,"order")) {
-	if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER)) {
-	   act("You no longer recieve orders from your leader.",FALSE,ch,0,0,TO_CHAR);
-	   act("$n stops accepting orders from $s group leader.",FALSE,ch,0,0,TO_ROOM);
-	   REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);	   
-	   } else
-      if(!ch->master) {
-        act("You already can accept orders from YOURSELF",FALSE,ch,0,0,TO_CHAR);
-      } else {
-        act("You now can receive orders from your group leader",FALSE,ch,0,0,TO_CHAR);
-        act("$N just give you permission to order $m", FALSE,ch->master,0,ch,TO_CHAR);
-        SET_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
-      }
-     }  /* end order */
-/* i disabled for not, allows people to order followers to bash 50 times */
-/* with no lag, as well as cast 50 times with no lag */
+	 else 
+	   if (!strcmp(field,"order")) {
+	     if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER)) {
+	       act("You no longer recieve orders from your leader.",FALSE,ch,0,0,TO_CHAR);
+	       act("$n stops accepting orders from $s group leader.",FALSE,ch,0,0,TO_ROOM);
+	       REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);	   
+	     } else
+	       if(!ch->master) {
+		 act("You already can accept orders from YOURSELF",FALSE,ch,0,0,TO_CHAR);
+	       } else {
+		 act("You now can receive orders from your group leader",FALSE,ch,0,0,TO_CHAR);
+		 act("$N just give you permission to order $m", FALSE,ch->master,0,ch,TO_CHAR);
+		 SET_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
+	       }
+	   }  /* end order */
+	 /* i disabled for not, allows people to order followers to bash 50 times */
+	 /* with no lag, as well as cast 50 times with no lag */
 #endif
+	 
+	   else {
+	     send_to_char("Unknown set group command\n",ch);
+	   }
+       } /* end was a group command */
  
-       else {
-       send_to_char("Unknown set group command\n",ch);
-     }
-  } /* end was a group command */
-
-  else
-  if (!strcmp(type,"autoexits")) {
-    if (strstr(field,"enable")) {
-      act("Setting autodisplay exits on.",FALSE,ch,0,0,TO_CHAR);
-      if (!IS_SET(ch->player.user_flags,SHOW_EXITS))
-        SET_BIT(ch->player.user_flags,SHOW_EXITS);
-    } else {
-      act("Setting autodisplay exits off.",FALSE,ch,0,0,TO_CHAR);
-      if (IS_SET(ch->player.user_flags,SHOW_EXITS))
-        REMOVE_BIT(ch->player.user_flags,SHOW_EXITS);
-    }      
-  }
-else 
-	if (!strcmp(type,"email")) {
-		if (*field) {
-		/* set email to field */
-	          ch->specials.email= strdup(field);
-	if (cmd)
-		send_to_char("Email address set.\n\r",ch);
-		 } else {
-	if (cmd)
-		send_to_char("Set email address to what?\n\r",ch);
-		   }
-		} else /* end email */
-     {
-      send_to_char("Unknown type to set.\n\r",ch);
-      return;
-     }
-	
+       else
+	 if (!strcmp(type,"autoexits")) {
+	   if (strstr(field,"enable")) {
+	     act("Setting autodisplay exits on.",FALSE,ch,0,0,TO_CHAR);
+	     if (!IS_SET(ch->player.user_flags,SHOW_EXITS))
+	       SET_BIT(ch->player.user_flags,SHOW_EXITS);
+	   } else {
+	     act("Setting autodisplay exits off.",FALSE,ch,0,0,TO_CHAR);
+	     if (IS_SET(ch->player.user_flags,SHOW_EXITS))
+	       REMOVE_BIT(ch->player.user_flags,SHOW_EXITS);
+	   }      
+	 }
+	 else 
+	   if (!strcmp(type,"email")) {
+	     if (*field) {
+	       /* set email to field */
+	       ch->specials.email= strdup(field);
+	      
+	       if (cmd){
+		 write_char_extra(ch);
+		 send_to_char("Email address set.\n\r",ch);
+	       }
+	     } else {
+	       if (cmd)
+		 send_to_char("Set email address to what?\n\r",ch);
+	     }
+	   } else
+	     if(!strcmp(type, "clan")) {
+	       if(*field) {
+		 ch->specials.clan = strdup(field);
+		 if(cmd==280) {
+		   write_char_extra(ch);
+		   //load_char_extra(ch);
+		   send_to_char("Clan Field set..",ch);
+		 }
+	       } else
+		 send_to_char("Set Clan field to what??",ch);
+	     } 
+	     else /* end email */
+	       {
+		 send_to_char("Unknown type to set.\n\r",ch);
+		 return;
+	       }
+ 
 }
 /* Whois command code.
  * By: Greg Hovey
@@ -2527,15 +2542,15 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
       sprintf(buf, "$c0012Known message drop : $c0015None\n\r");
     else
       sprintf(buf, "$c0012Known message drop : $c0015%-60s\n\r"
-	      , finger->specials.clan);//GET_EMAIL(finger));
+	      , finger->specials.email);//GET_EMAIL(finger));
     //strcat(buf,GET_EMAIL(ch));
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
- 
+    
     /*Display clan info*/
     if(finger->specials.clan==NULL)
       sprintf(buf,"$c0012Clan info          : $c0015None");
     else
-      sprintf(buf,"$c0012Clan info            : $c0015%-50s",finger->specials.clan);
+      sprintf(buf,"$c0012Clan info          : $c0015%-50s",finger->specials.clan);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
     
@@ -2744,8 +2759,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
   
   if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
     argument = one_argument(argument,itemname);
-  
- 
+   
   if (!*itemname) {
     send_to_char("Behead what?\n\r",ch);
     return;
@@ -2773,7 +2787,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
       //obj_flags.value[value]
       if (!(Getw_type(ch->equipment[WIELD]) == TYPE_SLASH ||
 	    Getw_type(ch->equipment[WIELD]) == TYPE_CLEAVE)) {
-	send_to_char("Your weapon isn't really a good for that type of thing.\n\r",ch);
+	send_to_char("Your weapon isn't really good for that type of thing.\n\r",ch);
 	return;
       }
       

@@ -4098,6 +4098,37 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
     } 
   return FALSE;
 }
+/* This procs allows a mob to dispel and incernary cloud someone after they miss a bash
+ * By Greg Hovey
+ * Feb 25, 2001
+ */
 
+int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  struct char_data *targ;
+  struct room_data *rp;
+  int i;
+  char buf[256];
+
+  if (cmd && cmd != 156) return(FALSE);
+  
+  if (cmd == 156) {
+    send_to_char("You're much too afraid to steal anything!\n\r", ch);
+    return(TRUE);
+  }
+
+  if (AWAKE(ch)) {
+    if ((targ = FindAnAttacker(ch))!='\0') {
+      act("$n slowly raises $s hands.", TRUE, ch, 0, 0, TO_ROOM);
+
+      if (!saves_spell(targ, SAVING_PARA)) {
+	act("Suddently $n utters some strange words!", 
+	    TRUE, ch, 0, targ, TO_ROOM);
+	cast_dispel_magic(60, ch, "", SPELL_TYPE_SPELL, targ,0);
+	cast_incendiary_cloud(60, ch, "", SPELL_TYPE_SPELL, targ,0);
+      }
+    }
+  }
+}
 
 
