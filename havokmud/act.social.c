@@ -430,7 +430,9 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
 #endif
 
     if (!*name) {
-        /* No arguments */
+        /* 
+         * No arguments 
+         */
 
         if (action->others_no_arg) {
             sprintf(buf2, "%s %s", command, action->others_no_arg);
@@ -447,7 +449,9 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
                 }
             }
         } else {
-            /* need an argument for this one */
+            /* 
+             * need an argument for this one 
+             */
             sprintf(buf2, "%s", action->char_no_arg);
             act(buf2, action->hide, ch, 0, 0, TO_CHAR);
         }
