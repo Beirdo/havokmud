@@ -74,7 +74,7 @@ int countPeople(int zonenr) {
    int count=0;
    struct descriptor_data *d;
    struct char_data *person;
-
+/*
    for(d = descriptor_list; d; d = d->next)
    {
       person=(d->original?d->original:d->character);
@@ -87,6 +87,20 @@ int countPeople(int zonenr) {
 		}
 	}
 	return count;
+*/
+  for(d = descriptor_list; d; d = d->next)
+   {
+      person=(d->original?d->original:d->character);
+
+      if(person && real_roomp(person->in_room))
+      {
+         if(real_roomp(person->in_room)->zone == zonenr)
+            count++;
+      }
+   }
+
+	return count;
+
 }
 /* part of royal rumble proc */
 
