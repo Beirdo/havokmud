@@ -1926,6 +1926,13 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     char            letter;
 
     extern int      mob_tick_count;
+
+    if( !mob ) {
+        return( -1 );
+    }
+    
+    memset( mob, 0, sizeof(struct char_data) );
+
 #if 0
     HpBonus=0;
 #endif

@@ -103,6 +103,7 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 {
     int             i,
                     row,
+                    len,
                     update;
     char            buf[255];
     int             totalActionFlags = 32;
@@ -133,25 +134,21 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
-    sprintf(buf, "Mobile Action Flags:");
+    sprintf(buf, "Mobile Action Flags:\n\r\n\r");
     send_to_char(buf, ch);
 
     row = 0;
 
     for (i = 0; i < totalActionFlags; i++) {
-        sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1) {
-            row++;
-        }
+        len = sprintf(buf, "%5s%-2d [%s] %s", "", i + 1,
+                      ((ch->specials.mobedit->specials.act & (1 << i)) ? "X" :
+                        " "), action_bits[i]);
         send_to_char(buf, ch);
-        sprintf(buf, "%-2d [%s] %s", i + 1,
-                ((ch->specials.mobedit->specials.act & (1 << i)) ? "X" : " "), 
-                action_bits[i]);
+        sprintf(buf, "%*s", ((i & 1) ? 2 : 38 - len), ((i & 1) ? "\n\r" : ""));
         send_to_char(buf, ch);
     }
 
-    sprintf(buf, VT_CURSPOS, 21, 1);
-    send_to_char(buf, ch);
+    send_to_char("\n\r", ch);
     send_to_char("Select the number to toggle, <C/R> to return to main "
                  "menu.\n\r--> ", ch);
 }
