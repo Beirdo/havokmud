@@ -33,9 +33,9 @@ void mind_burn(byte level, struct char_data *ch,
     struct char_data *tmp_victim,
                    *temp;
 
-    if (!ch)
+    if (!ch) {
         return;
-
+    }
     dam = dice(1, 4) + level / 2 + 1;
 
     send_to_char("Gouts of flame shoot forth from your mind!\n\r", ch);
@@ -76,9 +76,9 @@ void mind_teleport(byte level, struct char_data *ch,
     extern int      top_of_world;
     struct room_data *room;
 
-    if (!ch || !victim)
+    if (!ch || !victim) {
         return;
-
+    }
     if (victim != ch) {
         if (saves_spell(victim, SAVING_SPELL)) {
             send_to_char("You can't seem to force them to blink out.\n\r", ch);
@@ -92,7 +92,9 @@ void mind_teleport(byte level, struct char_data *ch,
             }
             return;
         } else {
-            /* the character (target) is now the victim */
+            /* 
+             * the character (target) is now the victim 
+             */
             ch = victim;
         }
     }
@@ -283,7 +285,9 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);
 
     /*
@@ -310,7 +314,9 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
             do_move(victim, "\0", dir_num);
         }
     } else {
-        // fighting move
+        /* 
+         * fighting move
+         */
         if (percent > ch->skills[SKILL_TELEKINESIS].learned) {
             act("You cannot seem to focus your mind enough for the telekinetic"
                 " force.", FALSE, ch, 0, victim, TO_CHAR);
@@ -326,8 +332,9 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
             act("$n slams $N to the ground with $s telekinetic powers!",
                 FALSE, ch, 0, victim, TO_ROOM);
             GET_POS(victim) = POSITION_SITTING;
-            if (!victim->specials.fighting)
+            if (!victim->specials.fighting) {
                 set_fighting(victim, ch);
+            }
             WAIT_STATE(victim, PULSE_VIOLENCE * 4);
         }
     }
@@ -415,9 +422,9 @@ void mind_cell_adjustment(byte level, struct char_data *ch,
 void mind_chameleon(byte level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
-    if (!ch)
+    if (!ch) {
         return;
-
+    }
     if (IS_AFFECTED(ch, AFF_HIDE)) {
         REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
     }
@@ -436,9 +443,9 @@ void mind_psi_strength(byte level, struct char_data *ch,
 {
     struct affected_type af;
 
-    if (!victim || !ch)
+    if (!victim || !ch) {
         return;
-
+    }
     if (!affected_by_spell(victim, SKILL_PSI_STRENGTH)) {
         act("You feel stronger.", FALSE, victim, 0, 0, TO_CHAR);
         act("$n seems stronger!\n\r", FALSE, victim, 0, 0, TO_ROOM);
@@ -447,15 +454,17 @@ void mind_psi_strength(byte level, struct char_data *ch,
         if (IS_NPC(victim)) {
             if (level >= CREATOR) {
                 af.modifier = 25 - GET_STR(victim);
-            } else
+            } else {
                 af.modifier = number(1, 6);
+            }
         } else {
-            if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_BARBARIAN))
+            if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_BARBARIAN)) {
                 af.modifier = number(1, 8);
-            else if (HasClass(ch, CLASS_CLERIC | CLASS_THIEF | CLASS_PSI))
+            } else if (HasClass(ch, CLASS_CLERIC | CLASS_THIEF | CLASS_PSI)) {
                 af.modifier = number(1, 6);
-            else
+            } else {
                 af.modifier = number(1, 4);
+            }
         }
         af.location = APPLY_STR;
         af.bitvector = 0;
@@ -657,7 +666,10 @@ void mind_ultra_blast(byte level, struct char_data *ch,
                     }
                     MissileDamage(ch, tmp_victim, dam, SKILL_ULTRA_BLAST);
                 } else {
-                    dam >>= 1;  /* half dam */
+                    dam >>= 1;  
+                    /* 
+                     * half dam 
+                     */
                     /*
                      * NO damage if effected by TOWER OF IRON WILL 
                      */
@@ -817,9 +829,9 @@ void mind_sense_object(byte level, struct char_data *ch,
     sprintf(name, "%s", arg);
     sprintf(buf, "");
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this\n\r", ch);
@@ -844,7 +856,9 @@ void mind_sense_object(byte level, struct char_data *ch,
         for (i = object_list; i; i = i->next) {
             if (isname(name, i->name) &&
                 !IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
-                /* ITEM_QUEST flag makes item !locate -Lennya 20030602 */
+                /* 
+                 * ITEM_QUEST flag makes item !locate -Lennya 20030602 
+                 */
                 if (i->carried_by) {
                     target = i->carried_by;
                     if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
@@ -889,7 +903,9 @@ void mind_sense_object(byte level, struct char_data *ch,
         send_to_char("You cannot sense that item.\n\r", ch);
         return;
     } else {
-        // a valid room check
+        /* 
+         * a valid room check
+         */
         if (real_roomp(room)) {
             send_to_char("You close your eyes and envision your target.\n\r",
                          ch);

@@ -128,7 +128,9 @@ void mind_use_telekinesis(byte level, struct char_data *ch, char *arg,
              * get the argument, parse it into a direction 
              */
             for (; *arg == ' '; arg++) {
-                /* Empty loop */
+                /* 
+                 * Empty loop 
+                 */
             }
 
             if (!*arg) {
