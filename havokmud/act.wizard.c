@@ -4698,8 +4698,10 @@ dlog("in do_invis");
     }
     REMOVE_BIT(ch->specials.affected_by, AFF_INVISIBLE);
     ch->invis_level = 0;
-    do_save(ch, "", 0);
-    return;
+    return;   /*took out the save here, saving resets spell affects on eq
+    			which made vis not work if you had a spell affect invis
+    			item on, maybe look at making it save on the next tick
+    			somtime -gordon jan222004- */
   }
 
     one_argument( argument, buf );

@@ -982,7 +982,7 @@ void assign_command_pointers ()
 #endif
   AddCommand("shout",do_shout,18,POSITION_RESTING,2);
   AddCommand("tell",do_tell,19,POSITION_RESTING,0);
-  AddCommand("inventory",do_inventory,20,POSITION_DEAD,0);
+  AddCommand("inventory",do_inventory,20,POSITION_STUNNED,0);
   AddCommand("qui",do_qui,21,POSITION_DEAD,0);
   AddCommand("bounce",do_action,22,POSITION_STANDING,0);
   AddCommand("smile",do_action,23,POSITION_RESTING,0);
