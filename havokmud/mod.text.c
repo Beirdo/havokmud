@@ -380,7 +380,7 @@ void ChangeTfdBody(struct char_data *ch, char *arg, int type)
 	send_to_char(buf, ch);
 	send_to_char(tfd->body, ch);
 	send_to_char("\n\r\n\rNew body of textfile: \n\r", ch);
-	send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+	send_to_char("(Terminate with a /w. Press <C/R> again to continue. Use /? for more info on editing strings.)\n\r",ch);
 	if (tfd->body)
 		free(tfd->body);
 	tfd->body = NULL;

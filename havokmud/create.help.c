@@ -1192,7 +1192,7 @@ void ChangeHelpDescription(struct char_data *ch, char *arg, int type)
 	send_to_char(buf, ch);
 	send_to_char(hlp->description, ch);
 	send_to_char("\n\r\n\rNew Helpfile Description:\n\r", ch);
-	send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+	send_to_char("(Use /? for help on editing strings. Press <C/R> again to continue)\n\r",ch);
 	if (hlp->description)
 		free(hlp->description);
 	hlp->description = NULL;

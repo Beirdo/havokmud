@@ -583,14 +583,14 @@ void	postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
    act("$n starts to write a note.", TRUE, ch, 0, 0, TO_ROOM);
    if (cmd != BUGMAIL) {
       sprintf(buf, "$n tells you, 'I'll take %d coins for the delivery.'\n\r"
-          "$n tells you, 'Write your message, use ~ when done.'",
+          "$n tells you, 'Write your message, use /w when done. Use /? for more info on editing strings.'",
           STAMP_PRICE);
       act(buf, FALSE, mailman, 0, ch, TO_VICT);
       GET_GOLD(ch) -= STAMP_PRICE;
    }
    else {
       act(" 'Havok MUD thanks you for reporting your bugs.'", FALSE, mailman, 0, ch, TO_VICT);
-      act(" 'Write your message, use ~ when done.'", FALSE, mailman, 0, ch, TO_VICT);
+      act(" 'Write your message, use /w when done. Use /? for more info on editing strings.'", FALSE, mailman, 0, ch, TO_VICT);
    }
    SET_BIT(ch->specials.act, PLR_MAILING);
 

@@ -491,7 +491,7 @@ dlog("in do_write");
   } else {
       /* we can write - hooray! */
       send_to_char
-	("Ok.. go ahead and write.. end the note with a ~.\n\r", ch);
+	("Ok.. go ahead and write.. Use /? for help on editing strings.\n\r", ch);
       act("$n begins to jot down a note.", TRUE, ch, 0,0,TO_ROOM);
       ch->desc->str = &paper->action_description;
       ch->desc->max_str = MAX_NOTE_LENGTH;

@@ -558,7 +558,7 @@ void ChangeMobDesc(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  send_to_char(mob->player.description, ch);
  send_to_char("\n\r\n\rNew Mobile Description:\n\r", ch);
- send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Use /? for help on editing strings. Press <C/R> again to continue)\n\r",ch);
 if (mob->player.description)
  free(mob->player.description);
  mob->player.description = NULL;
@@ -1158,7 +1158,7 @@ if (mob->player.sounds!=0) {
     send_to_char(mob->player.sounds, ch);
  }
  send_to_char("\n\r\n\rNew Mobile Sound:\n\r", ch);
- send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Terminate with a /w on a new line. Press <C/R> again to continue)\n\r",ch);
 if (mob->player.sounds)
  free(mob->player.sounds);
  mob->player.sounds = NULL;
@@ -1196,7 +1196,7 @@ if (mob->player.distant_snds!=0){
  }
 
  send_to_char("\n\r\n\rNew Mobile Distant Sound:\n\r", ch);
- send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Terminate with a /w on a new line. Press <C/R> again to continue)\n\r",ch);
 if (mob->player.distant_snds)
  free(mob->player.distant_snds);
  mob->player.distant_snds = NULL;
@@ -1394,8 +1394,8 @@ void ChangeMobTalks(struct char_data *ch, char *arg, int type)
 	send_to_char(buf, ch);
 	send_to_char(mob->specials.talks, ch);
 	send_to_char("\n\r\n\rNew mobile talk response:\n\r", ch);
-	send_to_char("\n\rTo delete, use ~ only.\n\r", ch);
-	send_to_char("Terminate with a ~ on a new line. Press <C/R> again to continue.\n\r",ch);
+	send_to_char("\n\rTo delete, use /w only.\n\r", ch);
+	send_to_char("Terminate with a /w on a new line. Press <C/R> again to continue. /? for more help.\n\r",ch);
 	if (mob->specials.talks)
 		free(mob->specials.talks);
 	mob->specials.talks = NULL;
@@ -1424,7 +1424,7 @@ void ChangeMobQuestYes(struct char_data *ch, char *arg, int type)
 	send_to_char(buf, ch);
 	send_to_char(mob->specials.quest_yes, ch);
 	send_to_char("\n\r\n\rNew mobile gave-correct-quest-item response:\n\r", ch);
-	send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+	send_to_char("(Terminate with a /w on a new line. Press <C/R> again to continue)\n\r",ch);
 	if (mob->specials.quest_yes)
 		free(mob->specials.quest_yes);
 	mob->specials.quest_yes = NULL;
@@ -1453,7 +1453,7 @@ void ChangeMobQuestNo(struct char_data *ch, char *arg, int type)
 	send_to_char(buf, ch);
 	send_to_char(mob->specials.quest_no, ch);
 	send_to_char("\n\r\n\rNew mobile gave-wrong-quest-item response:\n\r", ch);
-	send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+	send_to_char("(Terminate with a /w on a new line. Press <C/R> again to continue)\n\r",ch);
 	if (mob->specials.quest_no)
 		free(mob->specials.quest_no);
 	mob->specials.quest_no = NULL;

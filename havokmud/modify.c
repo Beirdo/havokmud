@@ -555,7 +555,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     ch->desc->str = 0;
     send_to_char("Ok.\n\r", ch);
   } else {  /* there was no string. enter string mode */
-    send_to_char("Enter string. terminate with '~'.\n\r", ch);
+    send_to_char("Enter string. terminate with '/w'.\n\r", ch);
     *ch->desc->str = 0;
     ch->desc->max_str = length[field - 1];
   }
@@ -755,7 +755,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     if (rp->dir_option[dir]->exit_info>0) {
       string[0] = 0;
       send_to_char("enter keywords, 1 line only. \n\r",ch);
-      send_to_char("terminate with an ~ on the same line.\n\r",ch);
+      send_to_char("terminate with /w on the SECOND line.\n\r",ch);
       ch->desc->str = &rp->dir_option[dir]->keyword;
       break;
     } else {
@@ -765,7 +765,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
   case 5: dir = -1;
     sscanf(string,"%d", &dir);
     if ((dir >=0) && (dir <= 5)) {
-      send_to_char("Enter text, term. with '~' on a blank line",ch);
+      send_to_char("Enter text, term. with '/w' on a blank line",ch);
       string[0] = 0;
       if (rp->dir_option[dir]) {
 	ch->desc->str = &rp->dir_option[dir]->general_description;
@@ -922,7 +922,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     ch->desc->str = 0;
     send_to_char("Ok.\n\r", ch);
   } else {  /* there was no string. enter string mode */
-    send_to_char("Enter string. terminate with '~'.\n\r", ch);
+    send_to_char("Enter string. Terminate with '/w'. Help with '/?'.\n\r", ch);
     *ch->desc->str = 0;
     ch->desc->max_str = room_length[field - 1];
   }

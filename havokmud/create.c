@@ -272,7 +272,7 @@ void ChangeRoomDesc(struct room_data *rp, struct char_data *ch, char *arg, int t
  send_to_char(buf, ch);
  send_to_char(rp->description, ch);
  send_to_char("\n\r\n\rNew Room Description:\n\r", ch);
- send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Use /? for help on editing strings. Press <C/R> again to continue)\n\r",ch);
 if (rp->description)
  free(rp->description);
  rp->description = NULL;
