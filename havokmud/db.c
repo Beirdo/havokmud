@@ -1616,6 +1616,7 @@ struct char_data *read_mobile(int nr, int type)
 	FILE *newmobfile;
 	struct char_data *mob;
 	int tmp, i;
+	int savebase;
 	long bc;
 	char chk[50], buf[100];
 
@@ -1764,6 +1765,7 @@ struct char_data *read_mobile(int nr, int type)
 
 int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 {
+  int savebase = 40;
   int i,nr;
   long tmp, tmp2, tmp3, bc = 0;
   char buf[100], buffer[255];
@@ -1920,8 +1922,16 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 		for (i = 0; i < 3; i++)
 			GET_COND(mob, i) = -1;
 
-		for (i = 0; i < MAX_SAVES; i++)
-			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+		for (i = 0; i < MAX_SAVES; i++) {
+//			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+			savebase = 40;
+			if(number(0,1))
+				savebase += number(0,3);
+			else
+				savebase -= number(0,3);
+			mob->specials.apply_saving_throw[i] = MAX(savebase - (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
+		}
+
 
 	} else if ((letter == 'A') || (letter == 'N') || (letter == 'B') || (letter == 'L')) {
 
@@ -2058,8 +2068,15 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 		for (i = 0; i < 3; i++)
 			GET_COND(mob, i) = -1;
 
-		for (i = 0; i < MAX_SAVES; i++)
-			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+		for (i = 0; i < MAX_SAVES; i++) {
+//			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+			savebase = 40;
+			if(number(0,1))
+				savebase += number(0,3);
+			else
+				savebase -= number(0,3);
+			mob->specials.apply_saving_throw[i] = MAX(savebase - (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
+		}
 
 	} else {  /* The old monsters are down below here */
 
@@ -2231,6 +2248,7 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 
 int read_mob_from_new_file(struct char_data *mob, FILE *mob_fi)
 {
+  int savebase = 40;
   int i,nr;
   long tmp, tmp2, tmp3, bc = 0;
   char buf[100], buffer[255];
@@ -2381,8 +2399,16 @@ int read_mob_from_new_file(struct char_data *mob, FILE *mob_fi)
 	for (i = 0; i < 3; i++)
 		GET_COND(mob, i) = -1;
 
-	for (i = 0; i < MAX_SAVES; i++)
-		mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+	for (i = 0; i < MAX_SAVES; i++) {
+//		mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+		savebase = 40;
+		if(number(0,1))
+			savebase += number(0,3);
+		else
+			savebase -= number(0,3);
+		mob->specials.apply_saving_throw[i] = MAX(savebase - (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
+	}
+
 
 	mob->tmpabilities = mob->abilities;
 
@@ -5808,3 +5834,4 @@ if(!grunt.AXE)
   log("Cleaning done.");
 
 }
+
