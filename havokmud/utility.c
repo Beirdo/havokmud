@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -6575,6 +6574,29 @@ int count_People_in_room(int room)
     }
     return count;
 }
+
+#if 0
+/*
+ * put in support for GNU-specific system calls that are missing in Cygwin
+ */
+#if defined(__CYGWIN__)
+
+size_t strnlen(const char *s, size_t maxlen)
+{
+    int             i;
+
+    for (i = 0; *s && i < maxlen; s++, i++) {
+        /*
+         * Empty loop 
+         */
+    }
+
+    return (i);
+}
+
+#endif
+#endif
+
 
 
 /*

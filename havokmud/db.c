@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -9,6 +8,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
 

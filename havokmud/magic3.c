@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -869,8 +868,9 @@ void spell_shillelagh(int level, struct char_data *ch,
     int             i;
     int             count = 0;
 
-    assert(ch && obj);
-    assert(MAX_OBJ_AFFECT >= 2);
+    if(!ch || !obj || MAX_OBJ_AFFECT < 2) {
+        return;
+    }
 
     if ((GET_ITEM_TYPE(obj) == ITEM_WEAPON) &&
         !IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {

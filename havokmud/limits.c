@@ -1,4 +1,4 @@
-
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -6,9 +6,6 @@
 
 #include "protos.h"
 
-#if 0
-struct room_data *real_roomp(int); 
-#endif 
 extern struct index_data *obj_index;
 extern struct char_data *character_list;
 extern struct obj_data *object_list;

@@ -3,11 +3,11 @@
  * Done by Lennya, Sept 2003
  */
 
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "protos.h"
 
 extern char     motd[MAX_STRING_LENGTH];

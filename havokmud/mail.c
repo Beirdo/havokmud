@@ -86,8 +86,7 @@ Send comments, bug reports, etc. to jelson@server.cs.jhu.edu
 
 */
 
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -311,8 +310,10 @@ void store_mail(char *to, char *from, char *message_pointer)
     int             bytes_written = 0;
     int             total_length = strlen(message_pointer);
 
-    assert(sizeof(header_block_type) == sizeof(data_block_type));
-    assert(sizeof(header_block_type) == BLOCK_SIZE);
+    if( sizeof(header_block_type) != sizeof(data_block_type) ||
+        sizeof(header_block_type) != BLOCK_SIZE ) {
+        return;
+    }
 
     if (!*from || !*to || !*message_pointer) {
         Log("SYSERR: Mail system -- non-fatal error #5.");

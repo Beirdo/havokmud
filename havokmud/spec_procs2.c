@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -12,37 +11,6 @@
  * external vars 
  */
 
-#if 0
-extern struct skillset warriorskills[];
-extern struct skillset thiefskills[];
-extern struct skillset barbskills[];
-extern struct skillset monkskills[];
-extern struct skillset mageskills[];
-extern struct skillset sorcskills[];
-extern struct skillset clericskills[];
-extern struct skillset druidskills[];
-extern struct skillset paladinskills[];
-extern struct skillset rangerskills[];
-extern struct skillset psiskills[];
-extern struct skillset warninjaskills[];
-extern struct skillset thfninjaskills[];
-extern struct skillset allninjaskills[];
-extern struct skillset warmonkskills[];
-extern struct skillset archerskills[];
-extern struct skillset loreskills[];
-extern struct skillset mainwarriorskills[];
-extern struct skillset mainthiefskills[];
-extern struct skillset mainbarbskills[];
-extern struct skillset mainnecroskills[];
-extern struct skillset mainmonkskills[];
-extern struct skillset mainmageskills[];
-extern struct skillset mainsorcskills[];
-extern struct skillset mainclericskills[];
-extern struct skillset maindruidskills[];
-extern struct skillset mainpaladinskills[];
-extern struct skillset mainrangerskills[];
-extern struct skillset mainpsiskills[];
-#endif
 
 extern struct room_data *world;
 extern struct char_data *character_list;

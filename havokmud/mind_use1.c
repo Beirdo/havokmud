@@ -4,8 +4,10 @@
  ***     PSI skills
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
+
 #include "protos.h"
 
 extern char    *dirs[];

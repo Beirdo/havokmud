@@ -3,14 +3,14 @@
  * DaleMUD is based on DIKUMUD
  */
 
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 
 #include "protos.h"
+
 #define NEWHELP_FILE      "ADD_HELP"
 /*
  * New help to add

@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -7,6 +6,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+
 #define NOT !
 #define AND &&
 #define OR ||

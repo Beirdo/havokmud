@@ -4,11 +4,18 @@
  * See license.doc for distribution terms.  SillyMUD is based on DIKUMUD 
  */
 
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#ifndef TRUE
 #define TRUE 1
+#endif
+
+#ifndef FALSE
 #define FALSE 0
+#endif
 
 #include "protos.h"
 

@@ -2,8 +2,7 @@
  * DaleMUD,
  */
 
-#define _GNU_SOURCE
-
+#include "config.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>

@@ -31,14 +31,8 @@
  * SUCH DAMAGE.
  */
 
+#include "config.h"
 #include <string.h>
-
-#if 0
-#include <stdlib.h>
-#include <bsd/types.h>
-#include <sys/cdefs.h>
-#endif
-
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>

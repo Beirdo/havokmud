@@ -3,8 +3,7 @@
  * DaleMUD is based on DIKUMUD 
  */
 
-#define _GNU_SOURCE
-
+#include "config.h"
 #include "structs.h"
 #include "limits.h"
 #include "trap.h"
