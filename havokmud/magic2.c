@@ -1255,7 +1255,7 @@ void spell_animate_dead(int level, struct char_data *ch,
 
     act("With mystic power, $n animates a corpse.", TRUE, ch, 0, 0, TO_ROOM);
     act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_ROOM);
-
+    act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_CHAR);
     /*
      * zombie should be charmed and follower ch 
      */
