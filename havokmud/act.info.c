@@ -2532,7 +2532,7 @@ char *GetLevelTitle(struct char_data *ch) {
 	int i;
 	int high=0;
 	int class=0;
-	int exp = 0;
+//	int exp = 0;
 
 
 /*get color of title */
@@ -2556,10 +2556,11 @@ char *GetLevelTitle(struct char_data *ch) {
 		return buf;
 	} else {
 		/* determine the highest xp value gained level */
-		exp = GET_EXP(ch);
-		for (i=0;i<=CLASS_COUNT;i++) {
-			if (HasClass(ch, i)) {
-				if ((titles[i][GET_LEVEL(ch, i)].exp > high) && (GET_LEVEL(ch, i) != 0)) {
+//		exp = GET_EXP(ch);
+		for (i=0;i < MAX_CLASS;i++) {
+//			if (HasClass(ch, i)) {
+			if(GET_LEVEL(ch, i)) {
+				if(titles[i][GET_LEVEL(ch, i)].exp > high) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
 					class = i;
 				}
