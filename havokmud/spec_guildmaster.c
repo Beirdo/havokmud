@@ -41,6 +41,9 @@ extern struct skillset maindruidskills[];
 extern struct skillset mainpaladinskills[];
 extern struct skillset mainrangerskills[];
 extern struct skillset mainpsiskills[];
+extern char    *spells[];
+extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 
 extern int      RacialMax[][MAX_CLASS];
 extern char *class_names[];
@@ -927,10 +930,9 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[256];
     int             i,
+                    index,
                     number = 0;
     struct char_data *guildmaster;
-    extern char    *spells[];
-    extern struct spell_info_type spell_info[MAX_SPL_LIST];
 
     if (!AWAKE(ch)) {
         return (FALSE);
@@ -984,14 +986,19 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             send_to_char("You can practise any of these spells:\n\r", ch);
 
             for (i = 0; *spells[i] != '\n'; i++) {
-                if (spell_info[i + 1].spell_pointer && 
-                    spell_info[i + 1].min_level_magic <= 
+                index = spell_index[i + 1];
+                if( index == -1 ) {
+                    continue;
+                }
+
+                if (spell_info[index].spell_pointer && 
+                    spell_info[index].min_level_magic <= 
                     GET_LEVEL(ch, MAGE_LEVEL_IND) &&
                     spell_info[i + 1].min_level_magic <=
                      GetMaxLevel(guildmaster) - 10) {
 
                     sprintf(buf, "[%d] %-15s %s \n\r",
-                            spell_info[i + 1].min_level_magic,
+                            spell_info[index].min_level_magic,
                             spells[i], how_good(ch->skills[i + 1].learned));
                     send_to_char(buf, ch);
                 }
@@ -1006,19 +1013,20 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
-        if (number == -1) {
+        index = spell_index[number];
+        if (number == -1 || index == -1) {
             do_say(guildmaster, "You do not know of this spell.", 0);
             return (TRUE);
         }
 
         if (GET_LEVEL(ch, MAGE_LEVEL_IND) <
-            spell_info[number].min_level_magic) {
+            spell_info[index].min_level_magic) {
             do_say(guildmaster, "You do not know of this spell.", 0);
             return (TRUE);
         }
 
         if (GetMaxLevel(guildmaster) - 10 < 
-            spell_info[number].min_level_magic) {
+            spell_info[index].min_level_magic) {
             do_say(guildmaster, "I don't know of this spell.", 0);
             return (TRUE);
         }
@@ -1065,10 +1073,9 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[256];
     int             i,
+                    index,
                     number = 0;
     struct char_data *guildmaster;
-    extern char    *spells[];
-    extern struct spell_info_type spell_info[MAX_SPL_LIST];
 
     if (!AWAKE(ch)) {
         return (FALSE);
@@ -1092,7 +1099,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     if (!guildmaster) {
         return (FALSE);
     }
-    for (; *arg == ' '; arg++) {
+    for (; isspace(*arg); arg++) {
         /* 
          * ditch spaces 
          */
@@ -1122,13 +1129,18 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             send_to_char("You can practise any of these spells:\n\r", ch);
 
             for (i = 0; *spells[i] != '\n'; i++) {
-                if (spell_info[i + 1].spell_pointer &&
-                    spell_info[i + 1].min_level_cleric <=
+                index = spell_index[i + 1];
+                if( index == -1 ) {
+                    continue;
+                }
+
+                if (spell_info[index].spell_pointer &&
+                    spell_info[index].min_level_cleric <=
                     GET_LEVEL(ch, CLERIC_LEVEL_IND) &&
-                    spell_info[i + 1].min_level_cleric <=
+                    spell_info[index].min_level_cleric <=
                      GetMaxLevel(guildmaster) - 10) {
                     sprintf(buf, "[%d] %-15s %s \n\r",
-                            spell_info[i + 1].min_level_cleric,
+                            spell_info[index].min_level_cleric,
                             spells[i], how_good(ch->skills[i + 1].learned));
                     send_to_char(buf, ch);
                 }
@@ -1144,19 +1156,20 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
-        if (number == -1) {
+        index = spell_index[number];
+        if (number == -1 || index == -1) {
             do_say(guildmaster, "You do not know of this spell.", 0);
             return (TRUE);
         }
 
         if (GET_LEVEL(ch, CLERIC_LEVEL_IND) <
-            spell_info[number].min_level_cleric) {
+            spell_info[index].min_level_cleric) {
             do_say(guildmaster, "You do not know of this spell.", 0);
             return (TRUE);
         }
 
         if (GetMaxLevel(guildmaster) - 10 <
-            spell_info[number].min_level_cleric) {
+            spell_info[index].min_level_cleric) {
             do_say(guildmaster, "I don't know of this spell.", 0);
             return (TRUE);
         }

@@ -17,9 +17,6 @@ typedef unsigned short int ush_int;
 typedef char    bool;
 typedef char    byte;
 
-/*
- * my new stuff
- */
 #define MAX_CLAN   10
 
 #define ALL_DARK        1
@@ -335,6 +332,7 @@ struct QuestItem {
 #define IMPLEMENTOR  59
 #define BIG_GUY      60
 #define MAX_IMMORT   60
+#define NEVER_USE    61
 
         /*
          * Immune flags...

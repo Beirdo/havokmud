@@ -2084,7 +2084,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     if (aff->type <= MAX_EXIST_SPELL) {
                         sprintf(buf, "%sSpell : '%s%s%s (spell number %s%d%s)'",
                                 color1, color2, spells[aff->type - 1],
-                                color1, color2, (aff->type), color1);
+                                color1, color2, aff->type, color1);
                         act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
                         sprintf(buf, "     %sModifies %s%s%s by %s%ld%s points",
@@ -2210,7 +2210,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                         j->obj_flags.value[2]);
                 break;
             case ITEM_SCROLL:
-                sprintf(buf, "Spells : %d, %d, %d, %d",
+            case ITEM_POTION:
+                sprintf(buf, "Spells (level %d): %d, %d, %d",
                         j->obj_flags.value[0], j->obj_flags.value[1],
                         j->obj_flags.value[2], j->obj_flags.value[3]);
                 break;
@@ -2240,11 +2241,6 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "AC-apply : [%d]\n\rFull Strength : [%d]",
                         j->obj_flags.value[0], j->obj_flags.value[1]);
 
-                break;
-            case ITEM_POTION:
-                sprintf(buf, "Spells : %d, %d, %d, %d",
-                        j->obj_flags.value[0], j->obj_flags.value[1],
-                        j->obj_flags.value[2], j->obj_flags.value[3]);
                 break;
             case ITEM_TRAP:
                 sprintf(buf,
@@ -4810,27 +4806,24 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             append_to_string_block(&sb, buf);
             bottom = zd->top + 1;
         }
-    } else if (is_abbrev(buf, "objects") &&
-               (which_i = obj_index, topi = top_of_objt)) {
+    } else if (is_abbrev(buf, "objects")) {
+        which_i = obj_index; 
+        topi = top_of_objt;
+
         only_argument(argument, zonenum);
-        zone = -1;
-        if (sscanf(zonenum, "%i", &zone) == 1 &&
-            (zone < 0 || zone > top_of_zone_table)) {
-            append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+        zone = atoi( zonenum );
+        if (zone <= 0 || zone > top_of_zone_table) {
+            send_to_char("That is not a valid zone_number\n\r", ch);
             return;
         }
-        if (zone >= 0) {
-            bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
-            top = zone_table[zone].top;
-        }
+
+        bottom = zone_table[zone - 1].top + 1;
+        top = zone_table[zone].top;
+
         append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
         for (objn = 0; objn < topi; objn++) {
             oi = which_i + objn;
-            /*
-             * optimize later
-             */
-            if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
-                (zone < 0 && !isname(zonenum, oi->name))) {
+            if (oi->virtual < bottom || oi->virtual > top) {
                 continue;
             }
             obj = read_object(oi->virtual, VIRTUAL);
@@ -4841,12 +4834,13 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     sprintf(color, "%s", "");
                 } else {
                     sprintf(color, "%s", "$c000W");
+                }
+
                 sprintf(buf, "%5ld %4d %3d %s%7d   $c000w%s\n\r",
                         oi->virtual, objn, (oi->number - 1), color,
                         eval(obj), oi->name);
                 append_to_string_block(&sb, buf);
                 extract_obj(obj);
-                }
             }
         }
     } else if (is_abbrev(buf, "wearslot") &&
@@ -5034,9 +5028,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
              (which_i = mob_index, topi = top_of_mobt))) {
 
         if (GetMaxLevel(ch) < 56) {
-            send_to_char
-                ("Alas, the report option is only viewable for level 56 and "
-                 "higher.\n\r", ch);
+            send_to_char("Alas, the report option is only viewable for level "
+                         "56 and higher.\n\r", ch);
             return;
         }
 

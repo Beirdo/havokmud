@@ -712,33 +712,6 @@ void spell_blindness(int level, struct char_data *ch,
     }
 }
 
-void spell_clone(int level, struct char_data *ch,
-                 struct char_data *victim, struct obj_data *obj)
-{
-
-    assert(ch && (victim || obj));
-    if (level < 0 || level > ABS_MAX_LVL) {
-        return;
-    }
-    send_to_char("Clone is not ready yet.", ch);
-
-    if (obj) {
-
-    } else {
-#if 0
-        clone_char(victim);
-#endif
-    }
-}
-
-void spell_control_weather(int level, struct char_data *ch,
-                           struct char_data *victim, struct obj_data *obj)
-{
-    /*
-     * Control Weather is not possible here!!!
-     * Better/Worse can not be transferred
-     */
-}
 
 void spell_create_food(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
@@ -1821,14 +1794,6 @@ void spell_strength(int level, struct char_data *ch,
     }
 }
 
-void spell_ventriloquate(int level, struct char_data *ch,
-                         struct char_data *victim, struct obj_data *obj)
-{
-    /*
-     * Not possible!! No argument!
-     */
-}
-
 void spell_word_of_recall(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
@@ -2743,25 +2708,13 @@ void spell_identify(int level, struct char_data *ch,
                     obj->obj_flags.value[0], color1);
             send_to_char(buf, ch);
 
-            if (obj->obj_flags.value[1] >= 1) {
-                sprinttype(obj->obj_flags.value[1] - 1, spells, buf);
-                sprintf(buf2, "%s%s", color2, buf);
-                strcat(buf2, "\n\r");
-                send_to_char(buf2, ch);
-            }
-
-            if (obj->obj_flags.value[2] >= 1) {
-                sprinttype(obj->obj_flags.value[2] - 1, spells, buf);
-                sprintf(buf2, "%s%s", color2, buf);
-                strcat(buf2, "\n\r");
-                send_to_char(buf2, ch);
-            }
-
-            if (obj->obj_flags.value[3] >= 1) {
-                sprinttype(obj->obj_flags.value[3] - 1, spells, buf);
-                sprintf(buf2, "%s%s", color2, buf);
-                strcat(buf2, "\n\r");
-                send_to_char(buf2, ch);
+            for( i = 1; i < 4; i++ ) {
+                if (obj->obj_flags.value[i] >= 1) {
+                    sprinttype(obj->obj_flags.value[i] - 1, spells, buf);
+                    sprintf(buf2, "%s%s", color2, buf);
+                    strcat(buf2, "\n\r");
+                    send_to_char(buf2, ch);
+                }
             }
             break;
 

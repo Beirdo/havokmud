@@ -65,7 +65,7 @@ extern struct obj_data *object_list;
 extern struct index_data *mob_index;
 extern struct char_data *character_list;
 extern struct spell_info_type spell_info[];
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
+extern int      spell_index[MAX_SPL_LIST];
 extern char    *spells[];
 extern char    *ItemDamType[];
 extern int      ItemSaveThrows[22][5];
@@ -1909,6 +1909,7 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
     char            buf[255];
     struct affected_type *aff;
     int             right_protection = FALSE;
+    int             index;
 
     if (v->master == ch) {
         stop_follower(v);
@@ -2102,6 +2103,8 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
         }
 
     } else {
+        index = spell_index[type];
+
         if (affected_by_spell(v, SPELL_ANTI_MAGIC_SHELL) &&
             IsMagicSpell(type)) {
             sprintf(buf, "$N snickers as the %s from $n fizzles on $S "
@@ -2114,7 +2117,8 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
             act(buf, FALSE, ch, 0, v, TO_VICT);
             dam = -1;
         } else if (affected_by_spell(v, SPELL_GLOBE_MINOR_INV) &&
-                   type < TYPE_HIT && spell_info[type].min_level_magic < 6) {
+                   type < TYPE_HIT && index != -1 &&
+                   spell_info[index].min_level_magic < 6) {
             /*
              * minor globe check here immune to level 1-5 and below magic
              * user spells
@@ -2134,8 +2138,8 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
          * major globe immune to level 5-10 magic user spells
          */
         if (affected_by_spell(v, SPELL_GLOBE_MAJOR_INV) && type < TYPE_HIT &&
-            spell_info[type].min_level_magic < 11 &&
-            spell_info[type].min_level_magic > 5) {
+            index != -1 && spell_info[index].min_level_magic < 11 &&
+            spell_info[index].min_level_magic > 5) {
 
             sprintf(buf, "$N laughs as the %s from $n bounces off $S globe!",
                     spells[type - 1]);
@@ -4446,7 +4450,7 @@ struct char_data *AttackRandomChar(struct char_data *mob)
 {
     struct char_data *tempchar;
     int             i = 0;
-    int             pctoattack = number(1, i);
+    int             pctoattack;
     int             k = 1;
 
     for (tempchar = real_roomp(mob->in_room)->people; tempchar;
@@ -4455,8 +4459,8 @@ struct char_data *AttackRandomChar(struct char_data *mob)
             i++;
         }
     }
-
     if (i > 0) {
+        pctoattack = number(1, i);
         for (tempchar = real_roomp(mob->in_room)->people;
              tempchar; tempchar = tempchar->next_in_room) {
             if (IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
@@ -4475,7 +4479,10 @@ struct char_data *AttackRandomChar(struct char_data *mob)
  * @Name:        doroomdamage
  * @description: A helper function, to handle the odd damage
  *               things that happen in the various rooms and
- *               mobiles
+ *               mobiles.  Add a damage type and the messages
+ *               you want to use.  Use this for self-damaging
+ *               effects, or individualized messages for odd
+ *               situations.
  * @Author:      Rick Peplinski (Talesian)
  * @Assigned to obj/mob/room: N/A
  */
@@ -4485,6 +4492,7 @@ int doroomdamage(struct char_data *tempchar, int dam, int attacktype)
     if (DamCheckDeny(tempchar, tempchar, attacktype)) {
         return (FALSE);
     }
+
     dam = SkipImmortals(tempchar, dam, attacktype);
 
     dam = PreProcDam(tempchar, attacktype, dam);
@@ -4503,7 +4511,7 @@ int doroomdamage(struct char_data *tempchar, int dam, int attacktype)
         return (FALSE);
     } else if (attacktype == SPELL_INCENDIARY_CLOUD) {
         act("You are blasted by the fire, it burns unnaturally hot, like "
-            "demonfire!.", FALSE, tempchar, 0, 0, TO_CHAR);
+            "demonfire!", FALSE, tempchar, 0, 0, TO_CHAR);
     } else if (attacktype == SPELL_BLADE_BARRIER) {
         act("The jaws clamp down on you, cutting through skin, muscle, "
             "and bone!", FALSE, tempchar, 0, 0, TO_CHAR);
@@ -5202,33 +5210,11 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
 
 }
 
-#if 0
-void WeaponSpell(struct char_data *c, struct char_data *v, int type)
-{
-    int             j,
-                    num;
-
-    if ((c->in_room == v->in_room)
-        && (GET_POS(v) != POSITION_DEAD)) {
-        if ((c->equipment[WIELD])
-            && ((type >= TYPE_BLUDGEON)
-                && (type <= TYPE_SMITE))) {
-            for (j = 0; j < MAX_OBJ_AFFECT; j++) {
-                if (c->equipment[WIELD]->affected[j].
-                    location == APPLY_WEAPON_SPELL) {
-                    num = c->equipment[WIELD]->affected[j].modifier;
-                    ((*spell_info[num].spell_pointer)
-                     (6, c, "", SPELL_TYPE_WAND, v, 0));
-                }
-            }
-        }
-    }
-}
-#else
 void WeaponSpell(struct char_data *c,
                  struct char_data *v, struct obj_data *obj, int type)
 {
     int             j,
+                    index,
                     num;
     struct obj_data *weapon;
 
@@ -5249,14 +5235,16 @@ void WeaponSpell(struct char_data *c,
                 if (num <= 0) {
                     num = 1;
                 }
-                ((*spell_info[num].spell_pointer)(6, c, "", SPELL_TYPE_WAND,
-                                                  v, 0));
+                index = spell_index[num];
+                if( index != -1 && spell_info[index].spell_pointer ) {
+                    ((*spell_info[index].spell_pointer)
+                      (6, c, "", SPELL_TYPE_WAND, v, 0));
+                }
             }
         }
     }
 }
 
-#endif
 
 struct char_data *FindAnAttacker(struct char_data *ch)
 {

@@ -3954,7 +3954,7 @@ void nanny(struct descriptor_data *d, char *arg)
             d->str = &d->character->player.description;
             d->max_str = 240;
             STATE(d) = CON_EXDSCR;
-            SEND_TO_Q("<type \\w to save.>\n\r", d);
+            SEND_TO_Q("<type /w to save.>\n\r", d);
             break;
 
         case '3':

@@ -21,6 +21,7 @@ extern struct descriptor_data *descriptor_list;
 extern char    *drinks[];
 extern int      drink_aff[][3];
 extern struct spell_info_type spell_info[];
+extern int     spell_index[MAX_SPL_LIST];
 /*
  * Auction stuff
  * if 0, nothing up for sale 
@@ -250,6 +251,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[100];
     int             j,
+                    index,
                     num;
     struct obj_data *temp;
     struct affected_type af;
@@ -297,8 +299,11 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
             /*
              * hit 'em with the spell 
              */
-            ((*spell_info[num].spell_pointer) (6, ch, "", SPELL_TYPE_POTION, 
-                                               ch, 0));
+            index = spell_index[num];
+            if( index != -1 && spell_info[index].spell_pointer ) {
+                ((*spell_info[index].spell_pointer)(6, ch, "",
+                                                    SPELL_TYPE_POTION, ch, 0));
+            }
         }
     }
 

@@ -454,12 +454,6 @@ void spell_succor(int level, struct char_data *ch,
     act("You wave your hand and create $p.", TRUE, ch, o, 0, TO_CHAR);
 }
 
-void spell_detect_charm(int level, struct char_data *ch,
-                        struct char_data *victim, struct obj_data *obj)
-{
-
-}
-
 void spell_true_seeing(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
@@ -898,21 +892,6 @@ void spell_ice_storm(int level, struct char_data *ch,
     }
 }
 
-void spell_poison_cloud(int level, struct char_data *ch,
-                        struct char_data *victim, struct obj_data *obj)
-{
-
-}
-
-void spell_major_create(int level, struct char_data *ch,
-                        struct char_data *victim, struct obj_data *obj)
-{
-}
-
-void spell_sending(int level, struct char_data *ch,
-                   struct char_data *victim, struct obj_data *obj)
-{
-}
 
 void spell_meteor_swarm(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
@@ -2434,12 +2413,6 @@ void spell_cacaodemon(int level, struct char_data *ch,
     if (!IS_SET(victim->specials.act, ACT_SENTINEL)) {
         SET_BIT(victim->specials.act, ACT_SENTINEL);
     }
-}
-
-void spell_improved_identify(int level, struct char_data *ch,
-                             struct char_data *victim,
-                             struct obj_data *obj)
-{
 }
 
 void spell_geyser(int level, struct char_data *ch,

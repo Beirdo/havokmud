@@ -30,11 +30,11 @@ extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
 extern struct dex_skill_type dex_app_skill[];
 extern struct spell_info_type spell_info[];
+extern int       spell_index[MAX_SPL_LIST];
 extern struct char_data *character_list;
 extern struct index_data *obj_index;
 extern struct time_info_data time_info;
 extern char    *spells[];
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern int      MaxArenaLevel,
                 MinArenaLevel;
 struct char_data *mem_list = 0;
@@ -2775,7 +2775,8 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[100];
     struct obj_data *temp;
-    int             i;
+    int             i,
+                    index;
     bool            equipped;
 
     equipped = FALSE;
@@ -2835,9 +2836,12 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
 
     for (i = 1; i < 4; i++) {
         if (temp->obj_flags.value[i] >= 1) {
-            ((*spell_info[temp->obj_flags.value[i]].spell_pointer)
-             ((byte) temp->obj_flags.value[0], ch, "", SPELL_TYPE_POTION,
-              ch, temp));
+            index = spell_index[temp->obj_flags.value[i]];
+            if( index != -1 && spell_info[index].spell_pointer ) {
+                ((*spell_info[index].spell_pointer)
+                 ((byte) temp->obj_flags.value[0], ch, "", SPELL_TYPE_POTION,
+                  ch, temp));
+            }
         }
     }
 
@@ -2861,6 +2865,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                    *obj;
     struct char_data *victim;
     int             i,
+                    index,
                     spl;
     bool            equipped;
     bool            target_ok;
@@ -2900,8 +2905,9 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     }
 
     spl = scroll->obj_flags.value[1];
+    index = spell_index[spl];
 
-    if (!spl) {
+    if (!spl || index == -1) {
         act("$n recites $p.", TRUE, ch, scroll, 0, TO_ROOM);
         act("You recite $p which bursts into flame. Nothing happens.",
             FALSE, ch, scroll, 0, TO_CHAR);
@@ -2917,16 +2923,15 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
          * Multiple spells can still crash if they don't have the same
          * spellinfo[i].target This will have to do for now -Lennya
          */
-        spl = scroll->obj_flags.value[1];
-
-        if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
+        if (IS_SET(spell_info[index].targets, TAR_CHAR_ROOM)) {
             if ((victim = get_char_room_vis(ch, buf2)) ||
                 str_cmp(GET_NAME(ch), buf2) == 0) {
                 if (str_cmp(GET_NAME(ch), buf2) == 0) {
                     victim = ch;
                 }
                 if (victim == ch || victim == ch->specials.fighting ||
-                    victim->attackers < 6 || victim->specials.fighting == ch) {
+                    victim->attackers < 6 ||
+                    victim->specials.fighting == ch) {
                     target_ok = TRUE;
                     target = TAR_CHAR_ROOM;
                 } else {
@@ -2938,31 +2943,36 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                 target_ok = FALSE;
             }
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_CHAR_WORLD)) {
             if ((victim = get_char_vis(ch, buf2))) {
                 target_ok = TRUE;
                 target = TAR_CHAR_WORLD;
             }
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_INV)) {
             if ((obj = get_obj_in_list_vis(ch, buf2, ch->carrying))) {
                 target = TAR_OBJ_INV;
                 target_ok = TRUE;
             }
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_ROOM)) {
             if ((obj = get_obj_in_list_vis(ch, buf2,
                                      real_roomp(ch->in_room)->contents))) {
                 target_ok = TRUE;
                 target = TAR_OBJ_ROOM;
             }
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_WORLD)) {
             target_ok = TRUE;
             sprintf(argument, "%s", buf2);
             target = TAR_OBJ_WORLD;
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_EQUIP)) {
             for (i = 0; i < MAX_WEAR && !target_ok; i++) {
                 if (ch->equipment[i]
                     && str_cmp(buf2, ch->equipment[i]->name) == 0) {
@@ -2972,21 +2982,21 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_SELF_ONLY)) {
             if (str_cmp(GET_NAME(ch), buf2) == 0) {
                 victim = ch;
                 target_ok = TRUE;
                 target = TAR_SELF_ONLY;
             }
         }
-        /*
-         * name spells (?)
-         */
-        if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
+
+        if (!target_ok && IS_SET(spell_info[index].targets, TAR_NAME)) {
             obj = (void *) buf2;
             target_ok = TRUE;
             target = TAR_NAME;
         }
+
         if (victim) {
             if (IS_NPC(victim)) {
                 if (IS_SET(victim->specials.act, ACT_IMMORTAL)) {
@@ -2995,13 +3005,14 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                 }
             }
         }
+
         if (target_ok == 0) {
             send_to_char("No such thing around to recite the scroll on.\n\r",
                          ch);
             return;
         }
     } else {
-        if (IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
+        if (IS_SET(spell_info[index].targets, TAR_SELF_NONO)) {
             send_to_char("You cannot recite this scroll upon yourself.\n\r",
                          ch);
             return;
@@ -3035,16 +3046,16 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
              * spells for casting
              */
             if (scroll->obj_flags.value[i] >= 1) {
-                if (!IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
-                            target)) {
+                index = spell_index[scroll->obj_flags.value[i]];
+                if (index == -1 || 
+                    !IS_SET(spell_info[index].targets, target)) {
                     /*
                      * this should keep 2nd and 3rd spells
                      * from crashing with the wrong target
                      */
                     continue;
                 }
-                if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
-                           TAR_VIOLENT) &&
+                if (IS_SET(spell_info[index].targets, TAR_VIOLENT) &&
                     check_peaceful(ch, "Impolite magic is banned here.")) {
                     continue;
                 }
@@ -3053,9 +3064,12 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
                                   "The magic dissolves powerlessly.\n\r")) {
                     continue;
                 }
-                ((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-                 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL,
-                  victim, obj));
+
+                if( spell_info[index].spell_pointer ) {
+                    ((*spell_info[index].spell_pointer)
+                     ((byte) scroll->obj_flags.value[0], ch, "", 
+                      SPELL_TYPE_SCROLL, victim, obj));
+                }
             }
         } else {
             /*
@@ -3114,7 +3128,8 @@ void do_use(struct char_data *ch, char *argument, int cmd)
     struct obj_data *tmp_object,
                    *stick;
 
-    int             bits;
+    int             bits,
+                    index;
     struct spell_info_type *spellp;
 
     dlog("in do_use");
@@ -3161,10 +3176,14 @@ void do_use(struct char_data *ch, char *argument, int cmd)
                               "The magic is blocked by unknown forces.")) {
                 return;
             }
-            ((*spell_info[stick->obj_flags.value[3]].spell_pointer)
-             ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_STAFF,
-              0, 0));
-            WAIT_STATE(ch, PULSE_VIOLENCE);
+
+            index = spell_index[stick->obj_flags.value[3]];
+            if( index != -1 && spell_info[index].spell_pointer) {
+                ((*spell_info[index].spell_pointer)
+                 ((byte) stick->obj_flags.value[0], ch, "", SPELL_TYPE_STAFF,
+                  0, 0));
+                WAIT_STATE(ch, PULSE_VIOLENCE);
+            }
         } else {
             send_to_char("The staff seems powerless.\n\r", ch);
         }
@@ -3172,92 +3191,103 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         if (str_cmp(buf2, "self") == 0) {
             sprintf(buf2, "%s", GET_NAME(ch));
         }
+
         bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
                                   FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch,
                             &tmp_char, &tmp_object);
-        if (bits) {
-            spellp = spell_info + (stick->obj_flags.value[3]);
+        index = spell_index[stick->obj_flags.value[3]];
 
-            if (bits == FIND_CHAR_ROOM) {
-                if (ch == tmp_char) {
-                    act("$n points $p at $mself.", TRUE, ch, stick,
-                        tmp_char, TO_ROOM);
-                    act("You point $p at yourself.", FALSE, ch, stick,
-                        tmp_char, TO_CHAR);
+        if( index != -1 ) {
+            if (bits) {
+                spellp = &spell_info[index];
+
+                if (bits == FIND_CHAR_ROOM) {
+                    if (ch == tmp_char) {
+                        act("$n points $p at $mself.", TRUE, ch, stick,
+                            tmp_char, TO_ROOM);
+                        act("You point $p at yourself.", FALSE, ch, stick,
+                            tmp_char, TO_CHAR);
+                    } else {
+                        act("$n points $p at $N.", TRUE, ch, stick, tmp_char,
+                            TO_NOTVICT);
+                        act("$n points $p at you.", TRUE, ch, stick, tmp_char,
+                            TO_VICT);
+                        act("You point $p at $N.", FALSE, ch, stick, tmp_char,
+                            TO_CHAR);
+                    }
                 } else {
-                    act("$n points $p at $N.", TRUE, ch, stick, tmp_char,
-                        TO_NOTVICT);
-                    act("$n points $p at you.", TRUE, ch, stick, tmp_char,
-                        TO_VICT);
-                    act("You point $p at $N.", FALSE, ch, stick, tmp_char,
+                    act("$n points $p at $P.", TRUE, ch, stick, tmp_object,
+                        TO_ROOM);
+                    act("You point $p at $P.", FALSE, ch, stick, tmp_object,
                         TO_CHAR);
                 }
-            } else {
-                act("$n points $p at $P.", TRUE, ch, stick, tmp_object,
-                    TO_ROOM);
-                act("You point $p at $P.", FALSE, ch, stick, tmp_object,
-                    TO_CHAR);
-            }
 
-            if (IS_SET(spellp->targets, TAR_VIOLENT) &&
-                check_peaceful(ch, "Impolite magic is banned here.")) {
-                return;
-            }
-            if (stick->obj_flags.value[2] > 0) {
-                /*
-                 * Are there any charges left?
-                 */
-                stick->obj_flags.value[2]--;
-
-                if (check_nomagic(ch,
-                                  "The magic is blocked by unknown forces.",
-                                  "The magic is blocked by unknown forces.")) {
+                if (IS_SET(spellp->targets, TAR_VIOLENT) &&
+                    check_peaceful(ch, "Impolite magic is banned here.")) {
                     return;
                 }
 
-                ((*spellp->spell_pointer)((byte) stick->obj_flags.value[0], ch,
-                                          "", SPELL_TYPE_WAND, tmp_char,
-                                          tmp_object));
-                WAIT_STATE(ch, PULSE_VIOLENCE);
-            } else {
-                send_to_char("The wand seems powerless.\n\r", ch);
-            }
-        } else if ((find_door(ch, buf2, buf3)) >= 0) {
-            /*
-             * For when the arg is a door
-             */
-            spellp = spell_info + (stick->obj_flags.value[3]);
+                if (stick->obj_flags.value[2] > 0) {
+                    /*
+                     * Are there any charges left?
+                     */
+                    stick->obj_flags.value[2]--;
 
-            if (stick->obj_flags.value[3] != SPELL_KNOCK) {
-                send_to_char("That spell is useless on doors.\n\r", ch);
-                /*
-                 * Spell is not knock, error and return
-                 */
-                return;
-            }
-            if (stick->obj_flags.value[2] > 0) {
-                /*
-                 * Are there any charges left?
-                 */
-                stick->obj_flags.value[2]--;
+                    if (check_nomagic(ch,
+                                   "The magic is blocked by unknown forces.",
+                                   "The magic is blocked by unknown forces.")) {
+                        return;
+                    }
 
-                if (check_nomagic(ch,
-                                  "The magic is blocked by unknown forces.",
-                                  "The magic is blocked by unknown forces.")) {
+                    if( spellp->spell_pointer ) {
+                        ((*spellp->spell_pointer)
+                         ((byte) stick->obj_flags.value[0], ch, "", 
+                          SPELL_TYPE_WAND, tmp_char, tmp_object));
+                        WAIT_STATE(ch, PULSE_VIOLENCE);
+                    }
+                } else {
+                    send_to_char("The wand seems powerless.\n\r", ch);
+                }
+            } else if ((find_door(ch, buf2, buf3)) >= 0) {
+                /*
+                 * For when the arg is a door
+                 */
+                spellp = &spell_info[index];
+
+                if (stick->obj_flags.value[3] != SPELL_KNOCK) {
+                    send_to_char("That spell is useless on doors.\n\r", ch);
+                    /*
+                     * Spell is not knock, error and return
+                     */
                     return;
                 }
 
-                argument = strcat(strcat(buf2, " "), buf3);
+                if (stick->obj_flags.value[2] > 0) {
+                    /*
+                     * Are there any charges left?
+                     */
+                    stick->obj_flags.value[2]--;
 
-                ((*spellp->spell_pointer)((byte) stick->obj_flags.value[0], ch,
-                                          argument, SPELL_TYPE_WAND, tmp_char,
-                                          tmp_object));
-                WAIT_STATE(ch, PULSE_VIOLENCE);
+                    if (check_nomagic(ch,
+                                   "The magic is blocked by unknown forces.",
+                                   "The magic is blocked by unknown forces.")) {
+                        return;
+                    }
+
+                    argument = strcat(strcat(buf2, " "), buf3);
+
+                    if( spellp->spell_pointer ) {
+                        ((*spellp->spell_pointer)
+                          ((byte) stick->obj_flags.value[0], ch, argument,
+                           SPELL_TYPE_WAND, tmp_char, tmp_object));
+                        WAIT_STATE(ch, PULSE_VIOLENCE);
+                    }
+                } else {
+                    send_to_char("The wand seems powerless.\n\r", ch);
+                }
             } else {
-                send_to_char("The wand seems powerless.\n\r", ch);
+                send_to_char("What should the wand be pointed at?\n\r", ch);
             }
-        } else {
-            send_to_char("What should the wand be pointed at?\n\r", ch);
         }
     } else {
         send_to_char("Use is normally only for wands and staves.\n\r", ch);
@@ -3588,7 +3618,8 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     char            buf[MAX_STRING_LENGTH * 2],
                     buffer[MAX_STRING_LENGTH * 2],
                     temp[20];
-    int             i;
+    int             i, 
+                    index;
 
 
     dlog("in do_memorize");
@@ -3644,14 +3675,19 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
         send_to_char("Your spellbook holds these spells:\n\r", ch);
         for (i = 0; *spells[i] != '\n'; i++) {
-            if (spell_info[i + 1].spell_pointer &&
-                (spell_info[i + 1].min_level_sorcerer <=
+            index = spell_index[i + 1];
+            if( index == -1 ) {
+                continue;
+            }
+
+            if (spell_info[index].spell_pointer &&
+                (spell_info[index].min_level_sorcerer <=
                  GET_LEVEL(ch, SORCERER_LEVEL_IND)) &&
                 IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN) &&
                 IS_SET(ch->skills[i + 1].flags, SKILL_KNOWN_SORCERER) &&
                 ch->skills[i + 1].nummem > 0) {
                 sprintf(buf, "[%d] %s %s",
-                        spell_info[i + 1].min_level_sorcerer, spells[i],
+                        spell_info[index].min_level_sorcerer, spells[i],
                         how_good(ch->skills[i + 1].learned));
                 if (IsSpecialized(ch->skills[i + 1].special)) {
                     strcat(buf, " (special)");
@@ -3660,9 +3696,10 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
                     sprintf(temp, " x%d", ch->skills[i + 1].nummem);
                     strcat(buf, temp);
                 }
+
                 strcat(buf, " \n\r");
                 if (strlen(buf) + strlen(buffer) >
-                        (MAX_STRING_LENGTH * 2) - 2) {
+                     (MAX_STRING_LENGTH * 2) - 2) {
                     break;
                 }
                 strcat(buffer, buf);
@@ -3702,8 +3739,9 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     }
 
     spl = old_search_block(argument, 1, qend - 1, spells, 0);
+    index = spell_index[spl];
 
-    if (!spl) {
+    if (!spl || index == -1) {
         send_to_char("You flip through your spell book but do not find that "
                      "spell.\n\r", ch);
         return;
@@ -3712,10 +3750,10 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills) {
         return;
     }
-    if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 
+    if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[index].spell_pointer) {
         if (!IS_IMMORTAL(ch) &&
-            spell_info[spl].min_level_sorcerer >
+            spell_info[index].min_level_sorcerer >
             GET_LEVEL(ch, SORCERER_LEVEL_IND)) {
             send_to_char("Sorry, you do not have the skills for that "
                          "spell.\n\r", ch);
@@ -3725,7 +3763,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         /*
          * Non-Sorcerer spell, cleric/druid or something else
          */
-        if (spell_info[spl].min_level_sorcerer == 0) {
+        if (spell_info[index].min_level_sorcerer == 0) {
             send_to_char("Sorry, you do not have the skills for that "
                          "spell.\n\r", ch);
             return;
@@ -3766,7 +3804,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         /*
          * adjust directly for the level of the spell
          */
-        diff = spell_info[spl].min_level_magic;
+        diff = spell_info[index].min_level_magic;
         if (diff <= 5) {
             duration += 2;
         } else if (diff <= 10) {
@@ -3800,7 +3838,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
          * adjust for levels beyond min required for spell
          */
         diff = GET_LEVEL(ch, SORCERER_LEVEL_IND) -
-               spell_info[spl].min_level_sorcerer;
+               spell_info[index].min_level_sorcerer;
         if (diff >= 17) {
             duration -= 2;
         } else if (diff >= 7) {
@@ -3879,7 +3917,8 @@ int TotalMemorized(struct char_data *ch)
 
 void check_memorize(struct char_data *ch, struct affected_type *af)
 {
-    int             max;
+    int             max,
+                    index;
 
     if (af->type == SKILL_MEMORIZE) {
         if (ch->skills[af->modifier].nummem >=
@@ -3942,10 +3981,13 @@ void check_memorize(struct char_data *ch, struct affected_type *af)
             break;
         }
 
-        if (ch->attackers > 0) {
-            max += spell_info[af->modifier].spellfail;
-        } else if (ch->specials.fighting) {
-            max += spell_info[af->modifier].spellfail / 2;
+        index = spell_index[af->modifier];
+        if( index != -1 ) {
+            if (ch->attackers > 0) {
+                max += spell_info[index].spellfail;
+            } else if (ch->specials.fighting) {
+                max += spell_info[index].spellfail / 2;
+            }
         }
 
         if (number(1, max) > ch->skills[af->modifier].learned &&
