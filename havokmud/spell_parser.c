@@ -2965,8 +2965,8 @@ void do_id(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[256];
 
-    sprintf(buf, "'id' %s", argument);
-    do_cast(ch, buf, 0);
+    sprintf(buf, "cast 'id' %s", argument);
+    command_interpreter(ch, buf);
 }
 
 /*
@@ -3030,8 +3030,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && 
-        !IS_EVIL(ch)) {
+    if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && !IS_EVIL(ch)) {
         /*
          * necro too GOOD to cast 
          */
@@ -3041,10 +3040,12 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    ori_argument = strdup(argument);
-    if( !ori_argument ) {
-        Log( "Out of memory in cast!\n\r" );
-        return;
+    if( argument ) {
+        ori_argument = strdup(argument);
+        if( !ori_argument ) {
+            Log( "Out of memory in cast!\n\r" );
+            return;
+        }
     }
 
     /*
