@@ -3835,6 +3835,12 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 	struct obj_data *obj;
 	int sn = -1, x, percent = 0, formula=0, qend;
 
+	if(affected_by_spell(ch,SPELL_FEEBLEMIND)) {
+		send_to_char("Der, what is that?\n\r",ch);
+		return;
+	}
+
+
 	if(!MainClass(ch, CLERIC_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of scribing scrolls.\n\r",ch);
 		return;
@@ -3992,6 +3998,11 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 	char arg[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
 	int sn = -1, x, percent = 0, formula=0, qend;
+
+	if(affected_by_spell(ch,SPELL_FEEBLEMIND)) {
+		send_to_char("Der, what is that?\n\r",ch);
+		return;
+	}
 
 	if(!MainClass(ch, MAGE_LEVEL_IND) && !IS_IMMORTAL(ch)) {
 		send_to_char("Alas, you can only dream of brewing your own potions.\n\r",ch);

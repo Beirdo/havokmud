@@ -2146,6 +2146,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	extern struct chr_app_type chr_apply[];
 	extern struct int_app_type int_sf_modifier[];
 
+	if(affected_by_spell(ch,SPELL_FEEBLEMIND)) {
+		send_to_char("Der, what is that?\n\r",ch);
+		return;
+	}
 
 	if (!IsHumanoid(ch)) {
 		send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
