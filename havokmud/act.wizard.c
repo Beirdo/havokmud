@@ -4353,7 +4353,7 @@ dlog("in do_show");
 	             "                       3   BODY\n\r"
 	             "                       4   HEAD\n\r"
 	             "                       5   LEGS\n\r"
-	             "                       6	 FEET\n\r"
+	             "                       6   FEET\n\r"
 	             "                       7   HANDS\n\r"
 	             "                       8   ARMS\n\r"
 	             "                       9   SHIELD\n\r"
@@ -4624,7 +4624,7 @@ dlog("in do_show");
 			 "  show zones\n\r"
 			 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
 			 "  show rooms (zone#|death|private)\n\r"
-			 "  show wearslot (#)");
+			 "  show wearslot (#)\n\r");
 		if(GetMaxLevel(ch) > 55) {
 			append_to_string_block(&sb,"  show report (zone#)\n\r");
 		}

@@ -270,14 +270,12 @@ void spell_haste(byte level, struct char_data *ch,
     act("$N is already hasty!",FALSE,ch,0,victim,TO_CHAR);
     return;
   }
-
-
-
+/* Why can't mobs haste anyway?    commented out by Lennya
   if (IS_NPC(victim)) {
     send_to_char("It doesn't seem to work\n", ch);
     return;
   }
-
+*/
   if (IS_IMMUNE(victim, IMM_HOLD)) {
     act("$N seems to ignore your spell", FALSE, ch, 0, victim, TO_CHAR);
     act("$n just tried to haste you, but you ignored it.", FALSE, ch, 0,

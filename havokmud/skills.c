@@ -4521,23 +4521,6 @@ dlog("in do_legend_lore");
 
 void do_ventriloquate(struct char_data *ch, char *argument, int cmd)
 {
-
-/*
-		Usage: Venttriloquate (target) (what the target should appear to say)
-		Cost: 5 Vitality
-		Display to char if successful:
-			‘You make it seem as if TARGETNAME said ‘TEXT’.’
-		Display to char if unsuccessful:
-‘You tried to make TARGETNAME seem to say ‘TEXT’, but everyone knows they didn’t.’
-		Display to room if successful:
-			‘$c0015TARGETNAME says, ‘TEXT’.’
-		Display to room if unsuccessful:
-‘Someone tried to make it seem like TARGETNAME said ‘TEXT’.’
-		Display to target if successful:
-			‘$c0015Out of absolutely nowhere, you seem to say, ‘TEXT’.’
-		Display to target if unsuccessful:
-			‘Someone tried to make it seem like you said ‘TEXT’.
-*/
 	int percent = 0;
 	int dam = 0;
 	struct char_data *vict;
@@ -4568,7 +4551,7 @@ dlog("in do_ventriloquate");
 	argument_split_2(argument,name,string);
 
 	if(!*name) {
-		send_to_char("Impersonate who?.\n\r",ch);
+		send_to_char("Impersonate who?\n\r",ch);
 		return;
 	}
 
@@ -4597,11 +4580,11 @@ dlog("in do_ventriloquate");
 	if (ch->skills[SKILL_VENTRILOQUATE].learned) {
 		if (percent > ch->skills[SKILL_VENTRILOQUATE].learned) {
 
-			sprintf("You tried to make $N seem to say ‘%s’, but everyone knows $E didn’t.",string);
+			sprintf(buf,"You tried to make $N seem to say ‘%s’, but everyone knows $E didn’t.",string);
 			act(buf,FALSE, ch, 0,vict,TO_CHAR);
-			sprintf("Someone tried to make it seem like $N said ‘%s’",string);
+			sprintf(buf,"Someone tried to make it seem like $N said ‘%s’",string);
 			act(buf,FALSE, ch, 0,vict,TO_NOTVICT);
-			sprintf("Someone tried to make it seem like you said ‘%s’",string);
+			sprintf(buf,"Someone tried to make it seem like you said ‘%s’",string);
 			act(buf,FALSE, ch, 0,vict,TO_VICT);
 
 			LearnFromMistake(ch, SKILL_THROW_VOICE, 0, 95);
