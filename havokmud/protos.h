@@ -4070,6 +4070,8 @@ void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 
 void ShowHates(struct char_data *ch, char *buffer);
 void ShowFears(struct char_data *ch, char *buffer);
+void sprintclasses(unsigned long vektor, char *result);
+
 
 /*************************************************************************
  * Support for different platforms

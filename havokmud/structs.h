@@ -2242,6 +2242,13 @@ struct PolyType {
 };
 
 
+struct pc_race_choice {
+    int             raceNum;
+    const int      *classesAvail;
+    int             classCount;
+};
+
+
 #endif
 
 /*

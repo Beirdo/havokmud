@@ -890,6 +890,8 @@ extern long     SystemFlags;
 extern long     TempDis;
 extern struct descriptor_data *descriptor_list;
 extern const struct class_def classes[MAX_CLASS];
+extern const struct pc_race_choice race_choice[];
+extern int       race_choice_count;
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
@@ -901,370 +903,6 @@ char           *Sex[] = { "Neutral", "Male", "Female" };
 
 int             pc_num_class(int clss);
 void show_class_selection(struct descriptor_data *d, int r);
-
-/*
- * this is how we tell which race gets which class !
- * to add a new class seletion add the CLASS_NAME above the
- * message 'NEW CLASS SELETIONS HERE'
- */
-
-/*
- * these are the allowable PC races
- */
-const int       race_choice[] = {
-    RACE_DWARF,
-    RACE_MOON_ELF,
-    RACE_GOLD_ELF,
-    RACE_WILD_ELF,
-    RACE_AVARIEL,
-    RACE_HUMAN,
-    RACE_ROCK_GNOME,
-    RACE_FOREST_GNOME,
-    RACE_HALFLING,
-    RACE_HALF_ELF,
-    RACE_HALF_ORC,
-    RACE_HALF_OGRE,
-    RACE_HALF_GIANT,
-    RACE_DROW,                  /* bad guys here */
-
-    RACE_ORC,
-    RACE_GOBLIN,
-    RACE_TROLL,
-    RACE_DARK_DWARF,
-
-    -1
-};
-
-/*
- * WARNING: do not remove the 0 at the end of the const, will cause your
- * mud to die hard!
- */
-
-const int       avariel_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_CLERIC + CLASS_WARRIOR,
-    CLASS_MAGIC_USER + CLASS_WARRIOR,
-    CLASS_MAGIC_USER + CLASS_CLERIC,
-    CLASS_MAGIC_USER + CLASS_CLERIC + CLASS_WARRIOR,
-    0
-};
-
-const int       moon_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       gold_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-
-    0
-};
-
-const int       sea_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-
-    0
-};
-
-const int       wild_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_DRUID,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-
-    0
-};
-
-const int       dwarf_class_choice[] = {
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_CLERIC,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       halfling_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_THIEF + CLASS_WARRIOR,
-    CLASS_DRUID,
-    CLASS_MONK,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       rock_gnome_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_CLERIC,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       forest_gnome_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_RANGER,
-    CLASS_DRUID,
-    CLASS_RANGER + CLASS_DRUID,
-    CLASS_CLERIC + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       human_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_BARBARIAN,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_NECROMANCER,
-    CLASS_WARRIOR + CLASS_DRUID,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_CLERIC,
-    CLASS_NECROMANCER + CLASS_WARRIOR,
-    CLASS_WARRIOR + CLASS_CLERIC + CLASS_MAGIC_USER,
-    CLASS_THIEF + CLASS_CLERIC + CLASS_MAGIC_USER,
-#if 0
-    CLASS_THIEF+CLASS_WARRIOR+CLASS_CLERIC,
-#endif
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       half_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_DRUID,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_CLERIC + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_MAGIC_USER + CLASS_CLERIC,
-    CLASS_WARRIOR + CLASS_CLERIC,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       half_orc_class_choice[] = {
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_CLERIC + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_CLERIC + CLASS_THIEF,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       half_ogre_class_choice[] = {
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_CLERIC + CLASS_WARRIOR,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       half_giant_class_choice[] = {
-    CLASS_WARRIOR,
-    CLASS_BARBARIAN,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       orc_class_choice[] = {
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_CLERIC,
-    CLASS_BARBARIAN,
-    CLASS_THIEF + CLASS_CLERIC,
-    /*
-     * new class below here
-     */
-
-    0
-};
-
-const int       goblin_class_choice[] = {
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_CLERIC,
-    CLASS_BARBARIAN,
-    CLASS_WARRIOR + CLASS_THIEF,
-    /*
-     * new class below here
-     */
-
-    0
-};
-
-const int       troll_class_choice[] = {
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_CLERIC,
-    CLASS_BARBARIAN,
-    CLASS_WARRIOR + CLASS_CLERIC,
-    /*
-     * new clases below here
-     */
-
-    0
-};
-
-const int       default_class_choice[] = {
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_CLERIC,
-    CLASS_MAGIC_USER,
-    CLASS_BARBARIAN,
-    CLASS_PALADIN,
-    CLASS_RANGER,
-    CLASS_PSI,
-    /*
-     * new clases below here
-     */
-
-    0
-};
-
-const int       dark_dwarf_class_choice[] = {
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_WARRIOR + CLASS_CLERIC,
-    CLASS_NECROMANCER + CLASS_WARRIOR,
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
-
-const int       dark_elf_class_choice[] = {
-    CLASS_MAGIC_USER,
-    CLASS_CLERIC,
-    CLASS_WARRIOR,
-    CLASS_THIEF,
-    CLASS_DRUID,
-    CLASS_MONK,
-    CLASS_PSI,
-    CLASS_WARRIOR + CLASS_MAGIC_USER,
-    CLASS_WARRIOR + CLASS_THIEF,
-    CLASS_MAGIC_USER + CLASS_THIEF,
-    CLASS_CLERIC + CLASS_MAGIC_USER,
-    CLASS_NECROMANCER + CLASS_WARRIOR,
-    CLASS_MAGIC_USER + CLASS_WARRIOR + CLASS_THIEF,
-#if 0
-    CLASS_NECROMANCER+CLASS_WARRIOR+CLASS_THIEF,
-#endif
-    /*
-     * NEW CLASS SELECTIONS HERE
-     */
-    0
-};
 
 
 char           *fill[] = { "in",
@@ -2221,8 +1859,9 @@ void nanny(struct descriptor_data *d, char *arg)
     char            buf[1024];
 
     int             player_i,
-                    count = 0,
-                    oops = FALSE,
+                    class,
+                    race,
+                    found,
                     index = 0;
     char            tmp_name[20];
     struct char_file_u tmp_store;
@@ -2234,7 +1873,6 @@ void nanny(struct descriptor_data *d, char *arg)
                     tmpi = 0;
     int             already_p = 0;
     int             pick = 0;
-    int             ii = 0;
     struct char_file_u ch_st;
     FILE           *char_file;
     struct obj_data *obj;
@@ -2437,15 +2075,9 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         } 
        
-        while (race_choice[i] != -1) {
-            i++;
-        }
         tmpi = atoi(arg);
-        if (tmpi >= 0 && tmpi <= i - 1) {
-            /*
-             * set the chars race to this
-             */
-            GET_RACE(d->character) = race_choice[tmpi];
+        if (tmpi >= 1 && tmpi <= race_choice_count) {
+            GET_RACE(d->character) = race_choice[tmpi - 1].raceNum;
             EnterState(d, CON_CREATION_MENU);
         } else {
             SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
@@ -2897,6 +2529,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
+        d->character->player.class = 0;
 
         arg = skip_spaces(arg);
         if( !arg ) {
@@ -2913,109 +2546,52 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
-        d->character->player.class = 0;
-        count = 0;
-        oops = FALSE;
+        class = atoi(arg);
+        race  = GET_RACE(d->character);
 
-        if( isdigit((int)*arg )) {
-            ii = atoi(arg);
-
-            switch (GET_RACE(d->character)) {
-            case RACE_AVARIEL:
-                d->character->player.class = avariel_class_choice[ii];
-                break;
-
-            case RACE_GOLD_ELF:
-                d->character->player.class = gold_elf_class_choice[ii];
-                break;
-
-            case RACE_WILD_ELF:
-                d->character->player.class = wild_elf_class_choice[ii];
-                break;
-
-            case RACE_SEA_ELF:
-                d->character->player.class = sea_elf_class_choice[ii];
-                break;
-
-            case RACE_MOON_ELF:
-                d->character->player.class = moon_elf_class_choice[ii];
-                break;
-
-            case RACE_HUMAN:
-                d->character->player.class = human_class_choice[ii];
-                break;
-
-            case RACE_HALFLING:
-                d->character->player.class = halfling_class_choice[ii];
-                break;
-
-            case RACE_FOREST_GNOME:
-                d->character->player.class = forest_gnome_class_choice[ii];
-                break;
-
-            case RACE_DEEP_GNOME:
-            case RACE_ROCK_GNOME:
-                d->character->player.class = rock_gnome_class_choice[ii];
-                break;
-
-            case RACE_DWARF:
-                d->character->player.class = dwarf_class_choice[ii];
-                break;
-
-            case RACE_HALF_ELF:
-                d->character->player.class = half_elf_class_choice[ii];
-                break;
-
-            case RACE_HALF_OGRE:
-                d->character->player.class = half_ogre_class_choice[ii];
-                break;
-
-            case RACE_HALF_GIANT:
-                d->character->player.class = half_giant_class_choice[ii];
-                break;
-
-            case RACE_HALF_ORC:
-                d->character->player.class = half_orc_class_choice[ii];
-                break;
-
-            case RACE_ORC:
-                d->character->player.class = orc_class_choice[ii];
-                break;
-
-            case RACE_GOBLIN:
-                d->character->player.class = goblin_class_choice[ii];
-                break;
-
-            case RACE_DROW:
-                d->character->player.class = dark_elf_class_choice[ii];
-                break;
-
-            case RACE_DARK_DWARF:
-                d->character->player.class = dark_dwarf_class_choice[ii];
-                break;
-
-            case RACE_TROLL:
-                d->character->player.class = troll_class_choice[ii];
-                break;
-
-            default:
-                d->character->player.class = default_class_choice[ii];
-                break;
-            }
+        if( class <= 0 ) {
+            SEND_TO_Q("Invalid selection!\n\r", d);
+            EnterState(d, CON_QCLASS);
+            return;
         }
 
+        for( i = 0, found = FALSE; !found && i < race_choice_count; i++ ) {
+            if( race_choice[i].raceNum == race ) {
+                /*
+                 * Found it.  Time to check the class
+                 */
+                if( class > race_choice[i].classCount ) {
+                    SEND_TO_Q("Invalid selection!\n\r", d);
+                    EnterState(d, CON_QCLASS);
+                    return;
+                }
+
+                /* Class choice is valid */
+                d->character->player.class = 
+                    race_choice[i].classesAvail[class - 1];
+                found = TRUE;
+            }
+        }
+                    
         if (d->character->player.class == 0) {
             SEND_TO_Q("Invalid selection!\n\r", d);
             EnterState(d, CON_QCLASS);
             return;
         }
 
-        if (HasClass(d->character, CLASS_MAGIC_USER)) {
-            EnterState(d, CON_CHECK_MAGE_TYPE);
-            return;
-        }
+        if( found ) {
+            if (HasClass(d->character, CLASS_MAGIC_USER)) {
+                EnterState(d, CON_CHECK_MAGE_TYPE);
+                return;
+            }
 
-        EnterState(d, CON_CREATION_MENU);
+            EnterState(d, CON_CREATION_MENU);
+        } else {
+            SEND_TO_Q("Your race seems to be incorrect, please reselect\n\r", 
+                      d);
+            Log("Couldn't find a race in creation, screwy!!");
+            EnterState(d, CON_CREATION_MENU);
+        }
         break;
 
     case CON_AUTH:
@@ -3388,240 +2964,38 @@ void nanny(struct descriptor_data *d, char *arg)
 
 void show_class_selection(struct descriptor_data *d, int r)
 {
-    int             i = 0;
+    int             found;
+    int             i,
+                    j;
     char            buf[254],
                     buf2[254];
-    extern char    *pc_class_types[];
 
-    switch (r) {
-    case RACE_AVARIEL:
-        for (i = 0; avariel_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
+    for( i = 0, found = FALSE; !found && race_choice_count; i++ ) {
+        if( race_choice[i].raceNum == r ) {
+            /* Found it, show the classes */
+            for( j = 0; j < race_choice[i].classCount; j++ ) {
+                sprintf( buf, "%d) ", j + 1 );
+                sprintclasses((unsigned)race_choice[i].classesAvail[j],
+                              buf2);
+                strcat(buf, buf2);
+                strcat(buf, "\n\r");
+                SEND_TO_Q(buf, d);
+            }
 
-            sprintbit((unsigned) avariel_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
+            found = TRUE;
         }
-        break;
+    }
 
-    case RACE_GOLD_ELF:
-        for (i = 0; gold_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-
-            sprintbit((unsigned) gold_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_WILD_ELF:
-        for (i = 0; wild_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-
-            sprintbit((unsigned) wild_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_SEA_ELF:
-        for (i = 0; sea_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-
-            sprintbit((unsigned) sea_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_MOON_ELF:
-        for (i = 0; moon_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-
-            sprintbit((unsigned) moon_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_FOREST_GNOME:
-        for (i = 0; forest_gnome_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-
-            sprintbit((unsigned) forest_gnome_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_DEEP_GNOME:
-    case RACE_ROCK_GNOME:
-        for (i = 0; rock_gnome_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) rock_gnome_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_DWARF:
-        for (i = 0; dwarf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) dwarf_class_choice[i], pc_class_types,
-                      buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HALFLING:
-        for (i = 0; halfling_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) halfling_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HUMAN:
-        for (i = 0; human_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) human_class_choice[i], pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HALF_ELF:
-        for (i = 0; half_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) half_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HALF_ORC:
-        for (i = 0; half_orc_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) half_orc_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HALF_OGRE:
-        for (i = 0; half_ogre_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) half_ogre_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_HALF_GIANT:
-        for (i = 0; half_giant_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) half_giant_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_ORC:
-        for (i = 0; orc_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) orc_class_choice[i], pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_GOBLIN:
-        for (i = 0; goblin_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) goblin_class_choice[i], pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_DROW:
-        for (i = 0; dark_elf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) dark_elf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_DARK_DWARF:
-        for (i = 0; dark_dwarf_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) dark_dwarf_class_choice[i],
-                      pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    case RACE_TROLL:
-        for (i = 0; troll_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) troll_class_choice[i], pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
-
-    default:
-        for (i = 0; default_class_choice[i] != 0; i++) {
-            sprintf(buf, "%d) ", i);
-            sprintbit((unsigned) default_class_choice[i], pc_class_types, buf2);
-            strcat(buf, buf2);
-            strcat(buf, "\n\r");
-            SEND_TO_Q(buf, d);
-        }
-        break;
+    if( !found ) {
+        Log("Screwup in show_class_selection()");
     }
 }
 
+
 void show_race_choice(struct descriptor_data *d)
 {
-    int             ii,
-                    i = 0;
+    int             i,
+                    j;
     char            buf[255],
                     buf2[254];
 
@@ -3632,24 +3006,22 @@ void show_race_choice(struct descriptor_data *d)
             "pa", "ra", "ps", "ne");
     SEND_TO_Q(buf, d);
 
-    while (race_choice[i] != -1) {
-        sprintf(buf, "$c000W%-3d)$c0007 %-15s", i, RaceName[race_choice[i]]);
-
+    for (i = 0; i < race_choice_count; i++) {
+        sprintf(buf, "%s$c000W%-3d)$c0007 %-15s", 
+                (race_choice[i].raceNum == RACE_DROW ?
+                 "$c000WThe Races Listed below may have some racials hatreds."
+                 "  Advanced players only.\n\r" : ""),
+                i + 1, RaceName[race_choice[i].raceNum]);
         /*
-         * show level limits
+         * show level limits 
          */
-        for (ii = 0; ii < MAX_CLASS; ii++) {
-            sprintf(buf2, " %-3d", RacialMax[race_choice[i]][ii]);
+        for (j = 0; j < MAX_CLASS; j++) {
+            sprintf(buf2, " %-3d", RacialMax[race_choice[i].raceNum][j]);
             strcat(buf, buf2);
         }
 
         strcat(buf, "\n\r");
-        if (i == 13) {
-            strcat(buf, "$c000WThe Races Listed below may have some racials"
-                        " hatreds. Advanced players only.\n\r");
-        }
         send_to_char(buf, d->character);
-        i++;
     }
 
     send_to_char("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,"

@@ -855,6 +855,29 @@ void sprintbit(unsigned long vektor, char *names[], char *result)
     }
 }
 
+void sprintclasses(unsigned long vektor, char *result)
+{
+    long            nr;
+
+    *result = '\0';
+
+    for( nr = 0; vektor && nr < MAX_CLASS; vektor >>=1, nr++ ) {
+        if( vektor & 1 ) {
+            strcat( result, classes[nr].abbrev );
+        } else {
+            strcat( result, "  " );
+        }
+
+        if( vektor & (~1) ) {
+            strcat( result, "/" );
+        }
+    }
+
+    if( !*result ) {
+        strcat( result, "NOBITS" );
+    }
+}
+
 void sprinttype(int type, char *names[], char *result)
 {
     int             nr;
