@@ -347,6 +347,8 @@ const int       halfling_class_choice[] = {
     CLASS_WARRIOR,
     CLASS_THIEF,
     CLASS_THIEF + CLASS_WARRIOR,
+    CLASS_DRUID,
+    CLASS_MONK,
     /*
      * NEW CLASS SELECTIONS HERE
      */
