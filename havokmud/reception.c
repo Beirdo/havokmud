@@ -1553,8 +1553,7 @@ void load_char_extra(struct char_data *ch)
                     /* 
                      * set upbattleprompt 
                      */
-                    sprintf(tmp2, "%s", s);
-                    do_set_bprompt(ch, tmp2, 0);
+                    do_set_bprompt(ch, s, 0);
                 } else if (!strcmp(p, "email")) {
                     /* 
                      * set up email finger info 
@@ -1596,22 +1595,15 @@ void load_char_extra(struct char_data *ch)
                     /* 
                      * setup prompt 
                      */
-                    if (strchr(s, '\n') != '\0') {
-                        *((char *) strchr(s, '\n')) = 0;
-                    }
-                    if (strchr(s, '\r') != '\0') {
-                        *((char *) strchr(s, '\r')) = 0;
-                    }
                     do_set_prompt(ch, s, 0);
                 } else if (s) {
-                    s[strlen(s)] = '\0';
                     n = atoi(p);
 
                     if (n >= 0 && n <= 9) { 
                         /* 
                          * set up alias 
                          */
-                        sprintf(tmp, "%d %s", n, s + 1);
+                        sprintf(tmp, "%d %s", n, s);
                         do_alias(ch, tmp, 260);
                     }
                 }
