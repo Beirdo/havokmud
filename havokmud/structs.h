@@ -365,7 +365,7 @@ struct QuestItem {
 #define PULSE_AUCTION 80 /* every 20 seconds */
 #define PULSE_PLAYSONG 12 /* every 3 seconds */
 #define PULSE_TROLLREGEN 14 /* every once in a while */
-#define PULSE_TQP 12 /* do a travel check for the qp, every 20 secs */
+#define PULSE_TQP 40 /* do a travel check for the qp, every 10 secs */
 #define MAX_ROOMS   5000
 
 
