@@ -3708,8 +3708,9 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice this skill:\n\r\n\r");
 			strcat(buffer,buf);
+			x = 50;
 			/* list by level, so new skills show at top of list */
 			while (x != 0) {
 				while(archerskills[i].level != -1) {
@@ -3761,9 +3762,9 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 					if(!IS_SET(ch->skills[archerskills[x].skillnum].flags,SKILL_KNOWN)) {
 						SET_BIT(ch->skills[archerskills[x].skillnum].flags,SKILL_KNOWN);
 					}
-					percent=ch->skills[clericskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
-					ch->skills[clericskills[x].skillnum].learned = MIN(95,percent);
-					if(ch->skills[clericskills[x].skillnum].learned >= 95)
+					percent=ch->skills[archerskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[archerskills[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[archerskills[x].skillnum].learned >= 95)
 						send_to_char("'You are now a master of this art.'\n\r",ch);
 					return(TRUE);
 				}
