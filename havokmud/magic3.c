@@ -3161,7 +3161,47 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 	}
 
 }
-void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+
+void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  struct affected_type af;
+	  float modifier;
+		int mod=0;
+	  assert(ch && victim);
+
+	if (!affected_by_spell(ch,SPELL_SIPHON_STRENGTH)) {
+				/* Weaken victim */
+	     if (!saves_spell(victim, SAVING_SPELL)) {
+			modifier = level/200.0;
+			act("You feel your strength being siphoned from your body.", FALSE, victim,0,0,TO_VICT);
+			act("$n almost colapses.", FALSE, victim, 0, 0, TO_ROOM);
+
+			af.type      = SPELL_SIPHON_STRENGTH;
+			af.duration  = (int) level/2;
+			mod= victim->abilities.str * modifier;
+			af.modifier  = (int)0 - mod;
+			if (victim->abilities.str_add) {
+			   af.modifier -= 2;
+				mod+=2;
+			}
+			af.location  = APPLY_STR;
+			af.bitvector = 0;
+
+			affect_to_char(victim, &af);
+
+					/*strengthen ch*/
+		  	act("You feel your muscles becoming engorged.", FALSE, ch,0,0,TO_CHAR);
+	     	act("$n muscles suddently become engorged!", FALSE, ch, 0, 0, TO_ROOM);
+
+	     	af.type      = SPELL_SIPHON_STRENGTH;
+	     	af.duration  = 2*level;
+			af.modifier = mod;/* number of strength added*/
+	     	af.location  = APPLY_STR;
+	     	af.bitvector = 0;
+	     	affect_to_char(ch, &af);
+		}
+	}	else
+		send_to_char("I'm not sure if your muscles can stand such power.",ch);
+}
 
 
 void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
@@ -3213,7 +3253,11 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 
 
 }
-void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+
+	send_to_char("You start thinking of death and decay.",ch);
+	spell_locate_object(level, ch, NULL, "corpse");
+}
 
 void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
   struct affected_type af;

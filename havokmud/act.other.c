@@ -3189,7 +3189,7 @@ dlog("in do_set_flags");
 
 	if (!*type) {
 		send_to_char("Set, but set what?!?!? type help set for further details on\n\r",ch);
-		send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak\n\r",ch);
+		send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak oldcolors\n\r",ch);
 		return;
 	}
 
@@ -3267,7 +3267,16 @@ dlog("in do_set_flags");
 			if (IS_SET(ch->player.user_flags,USE_ANSI))
 				REMOVE_BIT(ch->player.user_flags,USE_ANSI);
 		}
-	} else if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
+	} else if (!strcmp(type,"oldcolors") || !strcmp(type, "oldschool")) {		/* turn ansi stuff ON/OFF */
+		if (is_abbrev(field,"enable")) {
+			send_to_char("Setting old style colors.\n\r",ch);
+			SET_BIT(ch->player.user_flags,OLD_COLORS);
+		} else {
+			act("Removing old school colors.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,OLD_COLORS))
+				REMOVE_BIT(ch->player.user_flags,OLD_COLORS);
+		}
+	  } else if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
 		if (strstr(field,"enable")) {
 			send_to_char("Setting page pause mode enabled.\n\r",ch);
 			SET_BIT(ch->player.user_flags,USE_PAGING);

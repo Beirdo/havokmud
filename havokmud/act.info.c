@@ -2028,30 +2028,36 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
   	char buff[50];
   	struct time_info_data real_time_passed(time_t t2, time_t t1);
   	int x;
-
+	char color[10];
  dlog("in do_score");
+
+
+	if(IS_SET(ch->player.user_flags,OLD_COLORS))
+		sprintf(color,"$c000p");
+	else
+		sprintf(color,"$c000B");
 
   	age2(ch, &my_age);
 
   	if (GET_TITLE(ch)) {
-    	ch_printf(ch,"$c000BYou are $c000w%s\n\r", GET_TITLE(ch));
+    	ch_printf(ch,"%sYou are $c000w%s\n\r",color, GET_TITLE(ch));
   	}
 
   playing_time = real_time_passed((time(0)-ch->player.time.logon) + ch->player.time.played, 0);
 
 
-  ch_printf(ch, "$c000BYou are $c000w%d$c000B years old and $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
-	  , my_age.year,DescAge(my_age.year,GET_RACE(ch)), playing_time.day, playing_time.hours
+  ch_printf(ch, "%sYou are $c000w%d$c000B years old and $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
+	  ,color, my_age.year,DescAge(my_age.year,GET_RACE(ch)), playing_time.day, playing_time.hours
 	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000w It's your birthday today.\n\r":""));
 
-  ch_printf(ch, "$c000BYou belong to the $c000w%s$c000B race, and speak the $c000w%s$c000B language.\n\r"
-	  , RaceName[GET_RACE(ch)], languagelist[ch->player.speaks]);
+  ch_printf(ch, "%sYou belong to the $c000w%s$c000B race, and speak the $c000w%s$c000B language.\n\r"
+	  ,color, RaceName[GET_RACE(ch)], languagelist[ch->player.speaks]);
 
-  ch_printf(ch, "$c000BYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.\n\r",
- 		GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch));
-  ch_printf(ch, "$c000BYou won $c000w%d$c000B Quests and own $c000w%d$c000B quest points.\n\r",ch->specials.questwon, ch->player.q_points);
-  ch_printf(ch, "$c000BYou carry $c000w%s$c000B coins, and have an additional $c000w%d$c000B in the bank.\n\r", formatNum(GET_GOLD(ch)), (ch->points.bankgold) );
-  ch_printf(ch, "$c000BYour alignment is: $c000w%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
+  ch_printf(ch, "%sYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.\n\r",
+ 		color, GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch));
+  ch_printf(ch, "%sYou won $c000w%d$c000B Quests and own $c000w%d$c000B quest points.\n\r", color,ch->specials.questwon, ch->player.q_points);
+  ch_printf(ch, "%sYou carry $c000w%s$c000B coins, and have an additional $c000w%d$c000B in the bank.\n\r", color, formatNum(GET_GOLD(ch)), (ch->points.bankgold) );
+  ch_printf(ch, "%sYour alignment is: $c000w%s\n\r", color, AlignDesc(GET_ALIGNMENT(ch)));
 
 
 	if ( !(GetMaxLevel(ch)>MAX_MORT || (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF)))) {
@@ -2510,6 +2516,8 @@ char *GetLevelTitle(struct char_data *ch) {
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
   int count=0;
 
+
+	char color[10];
   char color_cnt=1;
   char flags[20]="";
   char name_mask[40]="";
@@ -2522,14 +2530,18 @@ char *GetLevelTitle(struct char_data *ch) {
 	char immortals[MAX_STRING_LENGTH]="", mortals[MAX_STRING_LENGTH]=""
 		 , quest[MAX_STRING_LENGTH]="", clan[MAX_STRING_LENGTH]="";
 
+	if(IS_SET(ch->player.user_flags,OLD_COLORS))
+		sprintf(color,"$c000p");
+	else
+		sprintf(color,"$c000B");
 
 	if( IS_IMMORTAL(ch) ) {  //Title
-		ch_printf(ch,"$c000pPlayers [God Version -? for Help]\n\r--------\n\r");
+		ch_printf(ch,"%sPlayers [God Version -? for Help]\n\r--------\n\r",color);
 	} else if(cmd==234) {
-			ch_printf(ch,"$c000pPlayers\n\r------------\n\r");
+			ch_printf(ch,"%sPlayers\n\r------------\n\r", color);
 	} else {
-		ch_printf(ch,"$c000p                        Havok Players\n\r"
-					 "$c000p                        -------------\n\r");
+		ch_printf(ch,"%s                        Havok Players\n\r"
+					 "                        -------------\n\r",color);
 	}
 
 
@@ -2556,7 +2568,7 @@ char *GetLevelTitle(struct char_data *ch) {
 		  }
 			if(IS_IMMORTAL(person)) {
 
-				sprintf(buf,"%25s $c000w%-8s $c000p:$c000w %s\n\r"," "
+				sprintf(buf,"%15s $c000Y%-8s $c000p:$c000w %s\n\r",""
 					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), GET_TITLE(person) );
 				strcat(immortals, buf);
 			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
@@ -2583,11 +2595,11 @@ char *GetLevelTitle(struct char_data *ch) {
    }
 //ch_printf(ch," Immortals: %d   Quest: %d   Mortals: %d\n\r", strlen(immortals), strlen(quest), strlen(mortals));
 	if(strlen(immortals) != 0)
-	   ch_printf(ch,"%-2s$c000pImmortals\n\r$c000w%s","", immortals);
+	   ch_printf(ch,"%-32s%sImmortals\n\r$c000w%s","",color, immortals);
 	if(strlen(quest)  != 0)
-	   ch_printf(ch,"\n\r%-2s$c000pQuest\n\r$c000w%s","", quest);
+	   ch_printf(ch,"\n\r%-34s%sQuest\n\r$c000w%s","",color, quest);
 	if(strlen(mortals)  != 0)
-	   ch_printf(ch,"\n\r%-2s$c000pMortals\n\r$c000w%s", "", mortals);
+	   ch_printf(ch,"\n\r%-33s%sMortals\n\r$c000w%s", "",color, mortals);
 
 
 
@@ -2595,9 +2607,9 @@ char *GetLevelTitle(struct char_data *ch) {
 
 
 	/* Footer */
-    ch_printf(ch, "\n\r$c0005Total visible players: $c0015%d\n\r", count);
-    ch_printf(ch, "$c0005Connects since last reboot: $c0015%ld\n\r", total_connections);
-    ch_printf(ch, "$c0005Players online since last reboot: $c0015%ld\n\r", total_max_players);
+    ch_printf(ch, "\n\r%sTotal visible players: $c0015%d\n\r",color, count);
+    ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",color, total_connections);
+    ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",color, total_max_players);
 }
 #else
 
@@ -3764,7 +3776,13 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
    struct obj_data *j=0;
    extern char *affected_bits[];
    extern char *affected_bits2[];
+	char color[10];
   dlog("in do_attrib");
+
+		if(IS_SET(ch->player.user_flags,OLD_COLORS))
+			sprintf(color,"$c000p");
+		else
+			sprintf(color,"$c000B");
 
    age2(ch, &my_age);
 

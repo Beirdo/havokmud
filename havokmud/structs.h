@@ -236,6 +236,8 @@ struct QuestItem {
 #define GHOST          BV22
 #define FAST_MAP_EDIT  BV23
 
+#define OLD_COLORS     BV24
+
 
 /* end user flags */
 

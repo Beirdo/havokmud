@@ -6033,18 +6033,20 @@ dlog("in do_home");
 void do_wizset(struct char_data *ch, char *argument, int cmd)
 {
 	char flag[255],name[255];
-
-
+	char temp[256];
 dlog("in do_wizset");
 
 	if (IS_NPC(ch) || !ch)
 		return;
 
+sprintf(temp,"%s",argument);
+
+
  argument=one_argument(argument,flag);
  argument=one_argument(argument,name);
 
  if (!*flag) {
-	send_to_char("Set what wizard flag? (fast/map/home)\n\r",ch);
+	send_to_char("Set what wizard flag? (fast/map/home/immtitle)\n\r",ch);
 	return;
  }
 
@@ -6066,9 +6068,23 @@ dlog("in do_wizset");
 				SET_BIT(ch->player.user_flags,FAST_AREA_EDIT); /* can only do map with fast enabled */
 			SET_BIT(ch->player.user_flags,FAST_MAP_EDIT);
 		}
-	} else
+	} else if (!strcmp("immtitle",flag)) {
+		half_chop(temp,name,temp);
 
- if (!strcmp("home",flag)) {
+		if(*temp) {
+			if (ch->specials.immtitle)
+				free(ch->specials.immtitle);
+			ch->specials.immtitle = strdup(temp);
+			write_char_extra(ch);
+			send_to_char("Immort title Field set.\n\r",ch);
+
+		} else {
+			if (ch->specials.clan)
+				free(ch->specials.clan);
+			send_to_char("Immort title removed.\n\r",ch);
+		}
+
+	} else if (!strcmp("home",flag)) {
 	/* if (!*name) {
 		send_to_char("Set to what room?\n\r",ch);
 	} else {
@@ -6079,8 +6095,7 @@ dlog("in do_wizset");
 
 	ch->specials.start_room=ch->in_room;
 	} else
-
- send_to_char("That is not a valid setting.\n\r",ch);
+ 		send_to_char("That is not a valid setting.\n\r",ch);
 
  send_to_char("Ok.\n\r",ch);
 }
