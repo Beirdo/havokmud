@@ -2143,69 +2143,91 @@ dlog("in do_exits2");
 }
 
 #endif
+/*Score*/
+
+const char *languagelist[] = {
+  "???",
+  "Common",
+  "Elvish",
+  "Halfling",
+  "Dwarvish",
+  "Orcish",
+  "Giantish",
+  "Ogre",
+  "Gnomish",
+  "All"};
+
+
 
 void do_score(struct char_data *ch, char *argument, int cmd)
 {
   struct time_info_data playing_time;
   static char buf[1000], buf2[1000];
   struct time_info_data my_age;
-
+  
   struct time_info_data real_time_passed(time_t t2, time_t t1);
 
 dlog("in do_score");
 
   age2(ch, &my_age);
-  sprintf(buf, "$c0005You are $c0015%d$c0005 years old.", my_age.year);
+  sprintf(buf, "$c0005You are $c0015%d$c0005 years old and very $c0015%s$c0005.\n\r"
+	  , my_age.year,DescAge(my_age.year,GET_RACE(ch)));
   if ((my_age.month == 0) && (my_age.year == 0))
-    strcat(buf,"$c0015 It's your birthday today.");
- act(buf,FALSE, ch,0,0,TO_CHAR);
+    strcat(buf,"$c0015 It's your birthday today.\n\r");
+  send_to_char(buf,ch);
 
-  sprintf(buf, "$c0005You belong to the $c0015%s$c0005 race", RaceName[GET_RACE(ch)]);
-  act(buf,FALSE, ch,0,0,TO_CHAR);
+  sprintf(buf, "$c0005You belong to the $c0015%s$c0005 race\n\r"
+	  , RaceName[GET_RACE(ch)]);
+  send_to_char(buf,ch);
+
+  sprintf(buf,"$c0005You are currently speaking the $c0015%s$c0005 language\n\r"
+	  ,languagelist[ch->player.speaks]);
+  send_to_char(buf,ch);
 
   if (!IS_IMMORTAL(ch) && (!IS_NPC(ch))) {
     if (GET_COND(ch,DRUNK)>10)
-       act("$c0011You are intoxicated.",FALSE, ch,0,0,TO_CHAR);
+       send_to_char("$c0011You are intoxicated.\n\r",ch);
     if (GET_COND(ch,FULL)<2 && GET_COND(ch,FULL) != -1)
-      act("$c0005You are $c0015hungry$c0005...",FALSE, ch,0,0,TO_CHAR);
+      send_to_char("$c0005You are $c0015hungry$c0005...\n\r",ch);
     if (GET_COND(ch,THIRST)<2  && GET_COND(ch,THIRST) != -1)
-      act("$c0005You are $c0015thirsty$c0005...",FALSE, ch,0,0,TO_CHAR);
+      send_to_char("$c0005You are $c0015thirsty$c0005...\n\r",ch);
   }
-
+  
   sprintf(buf,
-"$c0005You have $c0015%d$c0005($c0011%d$c0005) hit, $c0015%d$c0005($c0011%d$c0005) mana and $c0015%d$c0005($c0011%d$c0005) movement points.",
+"$c0005You have $c0015%d$c0005($c0011%d$c0005) hit, $c0015%d$c0005($c0011%d$c0005) mana and $c0015%d$c0005($c0011%d$c0005) movement points.\n\r",
  GET_HIT(ch),GET_MAX_HIT(ch),
  GET_MANA(ch),GET_MAX_MANA(ch),
  GET_MOVE(ch),GET_MAX_MOVE(ch));
- act(buf,FALSE,ch,0,0,TO_CHAR);
-
-  sprintf(buf, "$c0005Your alignment is: $c0015%s", AlignDesc(GET_ALIGNMENT(ch)));
-  act(buf,FALSE,ch,0,0,TO_CHAR);
-
-  sprintf(buf,"$c0005You have scored $c0015%d$c0005 exp and you have $c0015%d$c0005 gold coins, and $c0015%d$c0005 Quest points.",
+ send_to_char(buf,ch);
+  
+  sprintf(buf, "$c0005Your alignment is: $c0015%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
+  send_to_char(buf,ch);
+  
+  sprintf(buf,"$c0005You have scored $c0015%d$c0005 exp and you have $c0015%d$c0005 gold coins, and $c0015%d$c0005 Quest points.\n\r",
 	  GET_EXP(ch),GET_GOLD(ch),ch->player.q_points);
-  act(buf,FALSE,ch,0,0,TO_CHAR);
+  send_to_char(buf,ch);
 
 	/* the mud will crash without this check! */
 if (GetMaxLevel(ch)>MAX_MORT ||
-     (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))) {
+     (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))) { 
 		/* do nothing! */
-} else
+} else 
 {
   buf[0] = '\0';
-  sprintf(buf,"$c0005Exp to next level : ");
+  sprintf(buf,"$c0005Exp to next level : ");  
   if (HasClass(ch, CLASS_MAGIC_USER)) {
-  if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"M:$c0015%d$c0005 ",
-  (titles[MAGE_LEVEL_IND][GET_LEVEL(ch, MAGE_LEVEL_IND)+1].exp)-GET_EXP(ch));
-  else
-   sprintf(buf2,"M:0 ");
-  strcat(buf,buf2);
+    if (GetMaxLevel(ch)<MAX_IMMORT)
+      sprintf(buf2,"M:$c0015%ld$c0005 ",
+	      (titles[MAGE_LEVEL_IND][GET_LEVEL(ch, MAGE_LEVEL_IND)+1].exp)-
+	      GET_EXP(ch));
+    else
+      sprintf(buf2,"M:0 ");
+    strcat(buf,buf2);
   }
 
   if (HasClass(ch, CLASS_CLERIC)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"C:$c0015%d$c0005 ",
+  sprintf(buf2,"C:$c0015%ld$c0005 ",
   (titles[CLERIC_LEVEL_IND][GET_LEVEL(ch, CLERIC_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"C:0 ");
@@ -2214,17 +2236,17 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 
   if (HasClass(ch, CLASS_THIEF)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"T:$c0015%d$c0005 ",
+  sprintf(buf2,"T:$c0015%ld$c0005 ",
   (titles[THIEF_LEVEL_IND][GET_LEVEL(ch, THIEF_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"T:0 ");
   strcat(buf,buf2);
-  }
+  }  
 
 
   if (HasClass(ch, CLASS_WARRIOR)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"W:$c0015%d$c0005 ",
+  sprintf(buf2,"W:$c0015%ld$c0005 ",
   (titles[WARRIOR_LEVEL_IND][GET_LEVEL(ch, WARRIOR_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"W:0 ");
@@ -2233,7 +2255,7 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 
   if (HasClass(ch, CLASS_DRUID)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"D:$c0015%d$c0005 ",
+  sprintf(buf2,"D:$c0015%ld$c0005 ",
   (titles[DRUID_LEVEL_IND][GET_LEVEL(ch, DRUID_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"D:0 ");
@@ -2241,16 +2263,24 @@ if (GetMaxLevel(ch)>MAX_MORT ||
   }
   if (HasClass(ch, CLASS_MONK)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"K:$c0015%d$c0005 ",
+  sprintf(buf2,"K:$c0015%ld$c0005 ",
   (titles[MONK_LEVEL_IND][GET_LEVEL(ch, MONK_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"K:0 ");
   strcat(buf,buf2);
   }
-
+  /* New Bard Class
+    if (HasClass(ch, CLASS_BARD)) {
+    if (GetMaxLevel(ch)<MAX_IMMORT)
+    sprintf(buf2,"BD:$c0015%ld$c0005 ",(titles[BARD_LEVEL_IND][GET_LEVEL(ch, BARD_LEVEL_IND)+1].exp)-GET_EXP(ch));
+    else
+    sprintf(buf2,"BD:0 ");
+    strcat(buf,buf2);
+    }
+  */
   if (HasClass(ch, CLASS_BARBARIAN)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"B:$c0015%d$c0005 ",
+  sprintf(buf2,"B:$c0015%ld$c0005 ",
   (titles[BARBARIAN_LEVEL_IND][GET_LEVEL(ch, BARBARIAN_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"B:0 ");
@@ -2259,25 +2289,25 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 
   if (HasClass(ch, CLASS_SORCERER)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"S:$c0015%d$c0005 ",
+  sprintf(buf2,"S:$c0015%ld$c0005 ",
   (titles[SORCERER_LEVEL_IND][GET_LEVEL(ch, SORCERER_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"S:0 ");
   strcat(buf,buf2);
   }
-
+  
   if (HasClass(ch, CLASS_PALADIN)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"PA:$c0015%d$c0005 ",
+  sprintf(buf2,"PA:$c0015%ld$c0005 ",
   (titles[PALADIN_LEVEL_IND][GET_LEVEL(ch, PALADIN_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"PA:0 ");
   strcat(buf,buf2);
-  }
-
+  } 
+  
    if (HasClass(ch, CLASS_RANGER)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"R:$c0015%d$c0005 ",
+  sprintf(buf2,"R:$c0015%ld$c0005 ",
   (titles[RANGER_LEVEL_IND][GET_LEVEL(ch, RANGER_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"R:0 ");
@@ -2286,16 +2316,16 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 
    if (HasClass(ch, CLASS_PSI)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
-  sprintf(buf2,"PS:$c0015%d$c0005 ",
+  sprintf(buf2,"PS:$c0015%ld$c0005 ",
   (titles[PSI_LEVEL_IND][GET_LEVEL(ch, PSI_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"PS:0 ");
   strcat(buf,buf2);
   }
-
-  act(buf,FALSE,ch,0,0,TO_CHAR);
+   strcat(buf,"\n\r");
+  send_to_char(buf,ch);
 }
-
+  
   buf[0] = '\0';
   sprintf(buf, "$c0005Your levels:");
   if (HasClass(ch, CLASS_MAGIC_USER)) {
@@ -2325,7 +2355,7 @@ if (GetMaxLevel(ch)>MAX_MORT ||
   if (HasClass(ch, CLASS_BARBARIAN)) {
     sprintf(buf2, " B:$c0015%d$c0005", GET_LEVEL(ch, BARBARIAN_LEVEL_IND));
     strcat(buf, buf2);
-  }
+  }  
 
   if (HasClass(ch, CLASS_SORCERER)) {
     sprintf(buf2, " S:$c0015%d$c0005", GET_LEVEL(ch, SORCERER_LEVEL_IND));
@@ -2338,81 +2368,89 @@ if (GetMaxLevel(ch)>MAX_MORT ||
   if (HasClass(ch, CLASS_RANGER)) {
     sprintf(buf2, " R:$c0015%d$c0005", GET_LEVEL(ch, RANGER_LEVEL_IND));
     strcat(buf, buf2);
-  }
+  }  
 
   if (HasClass(ch, CLASS_PSI)) {
     sprintf(buf2, " PS:$c0015%d$c0005", GET_LEVEL(ch, PSI_LEVEL_IND));
     strcat(buf, buf2);
-  }
-
-  act(buf,FALSE,ch,0,0,TO_CHAR);
-
+  }  
+  /*
+    if (HasClass(ch, CLASS_BARD)) {
+    sprintf(buf2, " BD:$c0015%d$c0005", GET_LEVEL(ch, BARD_LEVEL_IND));
+    //, GET_LEVEL(ch, BARD_LEVEL_IND));
+    strcat(buf, buf2);
+    }
+  */
+  strcat(buf,"\n\r");
+  send_to_char(buf,ch);
+  
   if (GET_TITLE(ch)) {
-    sprintf(buf,"$c0005This ranks you as $c0015%s $c0011%s", GET_NAME(ch), GET_TITLE(ch));
-    act(buf,FALSE,ch,0,0,TO_CHAR);
+    sprintf(buf,"$c0005This ranks you as $c0015%s $c0011%s\n\r", GET_NAME(ch), GET_TITLE(ch));
+    send_to_char(buf,ch);
   }
-
+  
   playing_time = real_time_passed((time(0)-ch->player.time.logon) +
 				  ch->player.time.played, 0);
-  sprintf(buf,"$c0005You have been playing for $c0015%d$c0005 days and $c0015%d$c0005 hours.",
+  sprintf(buf,"$c0005You have been playing for $c0015%d$c0005 days and $c0015%d$c0005 hours.\n\r",
 	  playing_time.day,
-	  playing_time.hours);
-   act(buf,FALSE,ch,0,0,TO_CHAR);
-
+	  playing_time.hours);          
+   send_to_char(buf,ch);
+  
     /* Drow fight -4 in lighted rooms! */
-if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW &&
+if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && 
      !affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_UNDERGROUND(ch))   {
-       sprintf(buf,"$c0011The light is the area causes you great pain$c0009!");
-	act(buf,FALSE,ch,0,0,TO_CHAR);
+       sprintf(buf,"$c0011The light is the area causes you great pain$c0009!\n\r");
+	send_to_char(buf,ch);
    }
 if (IS_SET(ch->specials.affected_by,AFF_WINGSBURNED))
    {
-   sprintf(buf, "$c0009Your burned and tattered wings are a source of great pain.$c0005");
-	act(buf,FALSE,ch,0,0,TO_CHAR);
+   sprintf(buf, "$c0009Your burned and tattered wings are a source of great pain.$c0005\n\r");
+	send_to_char(buf,ch);
    }
 if (IS_SET(ch->specials.act,PLR_NOFLY))
    {
-   sprintf(buf, "$c0015You are on the ground in spite of your fly item.$c0005");
-	act(buf,FALSE,ch,0,0,TO_CHAR);
+   sprintf(buf, "$c0015You are on the ground in spite of your fly item.$c0005\n\r");
+	send_to_char(buf,ch);
    }
-
+	      
   switch(GET_POS(ch)) {
-  case POSITION_DEAD :
-    act("$c0009You are DEAD!",FALSE, ch,0,0,TO_CHAR); break;
+  case POSITION_DEAD : 
+    send_to_char("$c0009You are DEAD!\n\r", ch); break;
   case POSITION_MORTALLYW :
-    act("$c0009You are mortally wounded!, you should seek help!",FALSE, ch,0,0,TO_CHAR); break;
-  case POSITION_INCAP :
-    act("$c0009You are incapacitated, slowly fading away",FALSE, ch,0,0,TO_CHAR); break;
-  case POSITION_STUNNED :
-    act("$c0011You are stunned! You can't move",FALSE, ch,0,0,TO_CHAR); break;
-  case POSITION_SLEEPING :
-    act("$c0010You are sleeping.",FALSE,ch,0,0,TO_CHAR); break;
-  case POSITION_RESTING  :
-    act("$c0012You are resting.",FALSE,ch,0,0,TO_CHAR); break;
-  case POSITION_SITTING  :
-    act("$c0013You are sitting.",FALSE,ch,0,0,TO_CHAR); break;
+    send_to_char("$c0009You are mortally wounded!, you should seek help!",ch); break;
+  case POSITION_INCAP : 
+    send_to_char("$c0009You are incapacitated, slowly fading away",ch); break;
+  case POSITION_STUNNED : 
+    send_to_char("$c0011You are stunned! You can't move", ch); break;
+  case POSITION_SLEEPING : 
+    send_to_char("$c0010You are sleeping.",ch); break;
+  case POSITION_RESTING  : 
+    send_to_char("$c0012You are resting.",ch); break;
+  case POSITION_SITTING  : 
+    send_to_char("$c0013You are sitting.",ch); break;
   case POSITION_FIGHTING :
     if (ch->specials.fighting)
       act("$c1009You are fighting $N.", FALSE, ch, 0,
-	  ch->specials.fighting, TO_CHAR);
+	  ch->specials.fighting, TO_CHAR);//<---------------ACT
     else
-      act("$c1009You are fighting thin air.",FALSE, ch,0,0,TO_CHAR);
+      send_to_char("$c1009You are fighting thin air.\n\r",ch);
     break;
   case POSITION_STANDING :
-    act("$c0005You are standing.",FALSE,ch,0,0,TO_CHAR); break;
+    send_to_char("$c0005You are standing.",ch); break;
   case POSITION_MOUNTED:
     if (MOUNTED(ch)) {
-	sprintf(buf,"$c0005You are riding on $c0015%s",MOUNTED(ch)->player.short_descr);
-	act(buf,FALSE,ch,0,0,TO_CHAR);
+	sprintf(buf,"$c0005You are riding on $c0015%s\n\r",MOUNTED(ch)->player.short_descr);
+	send_to_char(buf,ch);
     } else {
-      act("$c0005You are standing.",FALSE,ch,0,0,TO_CHAR);break;
+      send_to_char("$c0005You are standing.\n\r",ch);break;
     }
     break;
     default :
-      act("$c0005You are floating.",FALSE,ch,0,0,TO_CHAR); break;
+      send_to_char("$c0005You are floating.\n\r",ch); break;
   }
-
+  
 }
+
 
 
 void do_time(struct char_data *ch, char *argument, int cmd)
@@ -3755,46 +3793,48 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 
 }
 
+
 void do_attribute(struct char_data *ch, char *argument, int cmd)
 {
   char buf[MAX_STRING_LENGTH];
   struct affected_type *aff;
   struct time_info_data my_age;
-
+  
 dlog("in do_attrib");
-
-  age2(ch, &my_age);
-
-  sprintf(buf,
-	  "$c0005You are $c0014%d$c0005 years and $c0014%d$c0005 months, $c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.",
+ 
+ age2(ch, &my_age);
+ 
+ sprintf(buf,
+	 "$c0005You are $c0014%d$c0005 years and $c0014%d$c0005 months, $c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.\n\r",
 	  my_age.year, my_age.month,
 	  ch->player.height,
 	  ch->player.weight);
-
-  act(buf,FALSE, ch,0,0,TO_CHAR);
-
-  sprintf(buf, "$c0005You are carrying $c0014%d$c0005 lbs of equipment.",
+  
+  send_to_char(buf,ch);
+  //,FALSE, ch,0,0,TO_CHAR);
+  
+  sprintf(buf, "$c0005You are carrying $c0014%d$c0005 lbs of equipment.\n\r",
 	  IS_CARRYING_W(ch));
-  act(buf,FALSE, ch,0,0,TO_CHAR);
-
-  sprintf(buf,"$c0005You are$c0014 %s",ArmorDesc(ch->points.armor));
-  act(buf,FALSE,ch,0,0,TO_CHAR);
-
-if (GetMaxLevel(ch) > 15) {
-       sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, $c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR",
-	    GET_STR(ch), GET_ADD(ch), GET_INT(ch), GET_WIS(ch), GET_DEX(ch),
+  send_to_char(buf,ch); 
+  
+  sprintf(buf,"$c0005You are$c0014 %s\n\r",ArmorDesc(ch->points.armor));
+  send_to_char(buf,ch);
+  
+  if (GetMaxLevel(ch) > 15) { 
+    sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, $c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR\n\r",
+	    GET_STR(ch), GET_ADD(ch), GET_INT(ch), GET_WIS(ch), GET_DEX(ch), 
 	    GET_CON(ch), GET_CHR(ch));
-       act(buf,FALSE,ch,0,0,TO_CHAR);
+    send_to_char(buf,ch);
    }
 
-  sprintf(buf, "$c0005Your hit bonus and damage bonus are $c0014%s$c0005 and $c0014%s$c0005 respectively.",
+  sprintf(buf, "$c0005Your hit bonus and damage bonus are $c0014%s$c0005 and $c0014%s$c0005 respectively.\n\r",
 	  HitRollDesc(GET_HITROLL(ch)), DamRollDesc(GET_DAMROLL(ch)));
-   act(buf,FALSE, ch,0,0,TO_CHAR);
+   send_to_char(buf,ch);
 
   /*
   **   by popular demand -- affected stuff
   */
-  act("\n\r$c0005Current affects:\n\r--------------",FALSE, ch,0,0,TO_CHAR);
+  send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
   if (ch->affected) {
     for(aff = ch->affected; aff; aff = aff->next) {
       if (aff->type <= MAX_EXIST_SPELL) {
@@ -3805,18 +3845,18 @@ if (GetMaxLevel(ch) > 15) {
 	case SPELL_PRAYER:
 	case SKILL_SWIM:
 	case SKILL_SPY:
-	case SKILL_FIRST_AID:
+	case SKILL_FIRST_AID:   
 	case SKILL_LAY_ON_HANDS:
 	case SKILL_MEDITATE:
 	  break;
 	case SKILL_MEMORIZE:
-	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.",spells[aff->modifier-1], (aff->duration*4));
-	  act(buf,FALSE, ch,0,0,TO_CHAR);
+	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.\n\r",spells[aff->modifier-1], (aff->duration*4));
+	  send_to_char(buf,ch);
 	  break;
 
 	default:
-	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.",spells[aff->type-1], aff->duration);
-	  act(buf,FALSE, ch,0,0,TO_CHAR);
+	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
+	  send_to_char(buf,ch);
 	  break;
 	}
       }

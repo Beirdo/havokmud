@@ -25,6 +25,8 @@ extern struct char_data *character_list;
 extern struct index_data *mob_index, *obj_index;
 extern struct chr_app_type chr_apply[];
 extern struct zone_data *zone_table;
+extern const struct race_type race_list[];
+
 #if HASH
 extern struct hash_header room_db;	                  /* In db.c */
 #else
@@ -4862,4 +4864,22 @@ int pc_class_num(int clss) {
     case 2048: return 11;
 
   }
+}
+
+char *DescAge(int age,int race) {
+
+  if (age > race_list[race].venerable)
+    return "Vernerable";
+  else if (age > race_list[race].ancient)
+    return "Ancient";
+  else if (age > race_list[race].old)
+    return "Old";
+  else if (age > race_list[race].middle)
+    return "Middle Aged";
+  else if (age > race_list[race].mature)
+    return "Mature";
+  else if (age > race_list[race].young)
+    return "Young";
+  else return "ERROR";
+  
 }
