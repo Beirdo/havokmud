@@ -51,7 +51,7 @@ extern struct int_app_type int_app[26];
 extern struct title_type titles[4][ABS_MAX_LVL];
 extern char    *dirs[];
 
-extern int      gSeason;        /* what season is it ? */
+extern int      gSeason;
 
 int             monkpreproom = 550;
 int             druidpreproom = 500;
@@ -107,9 +107,9 @@ void            do_sit(struct char_data *ch, char *arg, int cmd);
 int ghost(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (ch->specials.fighting && 
         ch->specials.fighting->in_room == ch->in_room) {
         act("$n touches $N!", 1, ch, 0, ch->specials.fighting, TO_NOTVICT);
@@ -125,8 +125,11 @@ int ghost(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int druid_protector(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-    static int      b = 1;      /* use this as a switch, to avoid double
-                                 * challenges */
+    static int      b = 1;      
+    /* 
+     * use this as a switch, to avoid double
+     * challenges 
+     */
 
     if (cmd) {
         if (cmd <= 6 && cmd >= 1 && IS_PC(ch)) {
@@ -148,7 +151,10 @@ int druid_protector(struct char_data *ch, int cmd, char *arg,
                 b = 1;
             }
             return (FALSE);
-        }                       /* cmd 1 - 6 */
+        }                       
+        /* 
+         * cmd 1 - 6 
+         */
         return (FALSE);
     } 
     
@@ -175,7 +181,9 @@ int Magic_Fountain(struct char_data *ch, int cmd, char *arg,
     void            name_from_drinkcon(struct obj_data *obj);
 
     if (cmd == 11) {
-        /* drink */
+        /* 
+         * drink 
+         */
 
         only_argument(arg, buf);
 
@@ -400,18 +408,18 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
 
     extern char     EasySummon;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (ch->specials.fighting)
+    }
+    if (ch->specials.fighting) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (TRUE);
-
+    }
     /*
      **  wait till at 75% of hitpoints.
      */
@@ -491,18 +499,18 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
     char            buf[255];
     extern char     EasySummon;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (ch->specials.fighting)
+    }
+    if (ch->specials.fighting) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (TRUE);
-
+    }
     /*
      * wait till at 75% of hitpoints. 
      */
@@ -513,7 +521,9 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
         if (IS_SET(ch->hatefield, HATE_CHAR) && ch->hates.clist) {
             for (i = ch->hates.clist; i; i = i->next) {
                 if (i->op_ch) {
-                    /* if there is a char_ptr */
+                    /* 
+                     * if there is a char_ptr 
+                     */
                     targ = i->op_ch;
                     if (IS_PC(targ)) {
                         sprintf(buf, "You hate %s\n\r", targ->player.name);
@@ -569,12 +579,14 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
                     spell_portal(GetMaxLevel(ch), ch, targ, 0);
                     command_interpreter(ch, "enter portal");
                 } else {
-                    /* its a psi summoner, do his stuff */
-                    /*
+                    /* 
+                     * its a psi summoner, do his stuff
+                     *
                      * with easy_summon turned off must portal, so.. 
                      */
-                    if (!ch->skills[SKILL_PORTAL].learned)
+                    if (!ch->skills[SKILL_PORTAL].learned) {
                         ch->skills[SKILL_PORTAL].learned = 100;
+                    }
                     do_psi_portal(ch, targ->player.name, 0);
                     ch->points.mana = 100;
                 }
@@ -587,10 +599,11 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
                 }
                 act("$n says, 'And now my young $N... You will DIE!", 0,
                     ch, 0, targ, TO_ROOM);
-                if (!IS_SET(ch->player.class, CLASS_PSI))
+                if (!IS_SET(ch->player.class, CLASS_PSI)) {
                     spell_dispel_magic(GetMaxLevel(ch), ch, targ, 0);
-                else
+                } else {
                     do_blast(ch, targ->player.name, 1);
+                }
             }
             return (FALSE);
         } else {
@@ -605,9 +618,9 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
 int monk(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
          int type)
 {
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (ch->specials.fighting) {
         MonkMove(ch);
     }
@@ -635,9 +648,9 @@ int jive_box(struct char_data *ch, int cmd, char *arg,
                     buf3[255],
                     tmp[255];
 
-    if (type != PULSE_COMMAND)
+    if (type != PULSE_COMMAND) {
         return (FALSE);
-
+    }
     switch (cmd) {
     case 17:
     case 169:
@@ -671,17 +684,23 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
     byte            lspell;
     char            buf[200];
 
-    if (cmd || !AWAKE(ch) || IS_AFFECTED(ch, AFF_PARALYSIS))
+    if (cmd || !AWAKE(ch) || IS_AFFECTED(ch, AFF_PARALYSIS)) {
         return (FALSE);
-
+    }
     if (!MobCastCheck(ch, 0)) {
-        /*
-         * if(ch->specials.fighting) { act("$n reevaluates his priorities, 
-         * and decides it's best to get out.", 1, ch, 0, 0, TO_ROOM);
-         * do_flee(ch, "", 0); } else { // mages get funky skillz act("$n
-         * quickly prepares a potion of dispel magic, and quaffs it!", 1,
-         * ch, 0, 0, TO_ROOM); spell_dispel_magic(level, ch, ch, 0); } 
-         */
+#if 0        
+        if(ch->specials.fighting) { 
+            act("$n reevaluates his priorities, and decides it's"
+                " best to get out.", 1, ch, 0, 0, TO_ROOM);
+            do_flee(ch, "", 0); 
+        } else { 
+            /* 
+             * mages get funky skillz 
+             */
+             act("$n quickly prepares a potion of dispel magic, "
+                 "and quaffs it!", 1, ch, 0, 0, TO_ROOM); 
+             spell_dispel_magic(level, ch, ch, 0); } 
+#endif         
         return (TRUE);
     }
 
@@ -708,8 +727,9 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
 #ifdef PREP_SPELLS
 
         if (!ch->desc) {
-            /* make sure it is a mob not a pc */
-            /*
+            /* 
+             * make sure it is a mob not a pc
+             *
              * low level prep spells here 
              */
             if (!affected_by_spell(ch, SPELL_SHIELD)) {
@@ -792,37 +812,37 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
 #endif
     }
 
-    if (!ch->specials.fighting)
+    if (!ch->specials.fighting) {
         return (FALSE);
-
+    }
     if (!IS_PC(ch) && GET_POS(ch) > POSITION_STUNNED && 
         GET_POS(ch) < POSITION_FIGHTING) {
-        if (GET_HIT(ch) > GET_HIT(ch->specials.fighting) / 2)
+        if (GET_HIT(ch) > GET_HIT(ch->specials.fighting) / 2) {
             StandUp(ch);
-        else {
+        } else {
             StandUp(ch);
             do_flee(ch, "\0", 0);
         }
         return (TRUE);
     }
 
-    if (check_soundproof(ch))
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (FALSE);
-
+    }
     /*
      * Find a dude to to evil things upon ! 
      */
     vict = FindVictim(ch);
 
-    if (!vict)
+    if (!vict) {
         vict = ch->specials.fighting;
-
-    if (!vict)
+    }
+    if (!vict) {
         return (FALSE);
-
+    }
     lspell = number(0, GetMaxLevel(ch));
     
     if (!IS_PC(ch)) {
@@ -831,9 +851,9 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
 
     lspell = MIN(GetMaxLevel(ch), lspell);
 
-    if (lspell < 1)
+    if (lspell < 1) {
         lspell = 1;
-
+    }
     if (IS_AFFECTED(ch, AFF_BLIND) && (lspell > 15)) {
         act("$n utters the words 'Let me see the light!'", TRUE, ch, 0, 0,
             TO_ROOM);
@@ -841,9 +861,9 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
         return TRUE;
     }
 
-    if (IS_AFFECTED(ch, AFF_BLIND))
+    if (IS_AFFECTED(ch, AFF_BLIND)) {
         return (FALSE);
-
+    }
     if (IS_AFFECTED(vict, AFF_SANCTUARY) && lspell > 10 && 
         GetMaxLevel(ch) > GetMaxLevel(vict)) {
         act("$n utters the words 'Use MagicAway Instant Magic Remover'", 1,
@@ -1092,9 +1112,9 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
     extern int      top_of_world;
     struct room_data *room;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (GET_POS(ch) < POSITION_STANDING && GET_POS(ch) > POSITION_STUNNED) {
         StandUp(ch);
         return (TRUE);
@@ -1104,12 +1124,12 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
-    if (check_soundproof(ch))
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (FALSE);
-
+    }
     /*
      * random number from 0 to level 
      */
@@ -1117,16 +1137,17 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
     lspell += GetMaxLevel(ch) / 5;
     lspell = MIN(GetMaxLevel(ch), lspell);
 
-    if (lspell < 1)
+    if (lspell < 1) {
         lspell = 1;
-
+    }
     /*
      * are we hurting so bad? 
      */
     if (GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && ch->specials.fighting && 
         !number(0, 2)) {
-        /* cool, we're outtie! */
-        /*
+        /* 
+         * cool, we're outtie!
+         *
          * ouch, we are.. let's see if we can get outta here 
          */
         act("$n utters the words 'I see a shadow!'", 1, ch, 0, 0, TO_ROOM);
@@ -1146,8 +1167,9 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
 
 #ifdef PREP_SPELLS
         if (!ch->desc) {
-            /* is it a mob? */
-            /*
+            /* 
+             * is it a mob?
+             *
              * low level spellup 
              */
             if (!affected_by_spell(ch, SPELL_SUIT_OF_BONE)) {
@@ -1280,12 +1302,12 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
         vict = FindVictim(ch);
     }
 
-    if (!vict)
+    if (!vict) {
         vict = ch->specials.fighting;
-
-    if (!vict)
+    }
+    if (!vict) {
         return (FALSE);
-
+    }
     /*
      * get up defense 
      */
@@ -1442,9 +1464,8 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
                 act("$n utters the words 'oh golly'", 1, ch, 0, 0, TO_ROOM);
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
-            } else
-                if (obj_index[(ch->equipment[WEAR_EYES])->item_number].
-                    virtual == TONGUE_ITEM) {
+            } else if (obj_index[(ch->equipment[WEAR_EYES])->item_number].
+                       virtual == TONGUE_ITEM) {
                 act("$n utters the words 'oh golly'", 1, ch, 0, 0, TO_ROOM);
                 cast_scourge_warlock(GetMaxLevel(ch), ch, "",
                                      SPELL_TYPE_SPELL, vict, 0);
@@ -1460,7 +1481,9 @@ int necromancer(struct char_data *ch, int cmd, char *arg,
             cast_finger_of_death(GetMaxLevel(ch), ch, "",
                                  SPELL_TYPE_SPELL, vict, 0);
         } else {           
-            /* can't touch them, better get outta here */
+            /* 
+             * can't touch them, better get outta here 
+             */
             while (!room) {
                 to_room = number(0, top_of_world);
                 room = real_roomp(to_room);
@@ -1503,12 +1526,12 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     nr = 0;
     extern int      top_of_world;
     struct room_data *room;
-
-    // log("entered druid proc");
-
-    if (cmd || !AWAKE(ch))
+#if 0
+    log("entered druid proc");
+#endif
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (GET_POS(ch) < POSITION_STANDING && GET_POS(ch) > POSITION_STUNNED) {
         StandUp(ch);
         return (TRUE);
@@ -1518,12 +1541,12 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         return (TRUE);
     }
 
-    if (check_soundproof(ch))
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (FALSE);
-
+    }
     /*
      * random number from 0 to level 
      */
@@ -1531,9 +1554,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     lspell += GetMaxLevel(ch) / 5;
     lspell = MIN(GetMaxLevel(ch), lspell);
 
-    if (lspell < 1)
+    if (lspell < 1) {
         lspell = 1;
-
+    }
     /*
      * are we hurting so bad? 
      */
@@ -1541,7 +1564,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         !IS_SET(ch->specials.act, ACT_AGGRESSIVE) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS) &&
         real_roomp(ch->in_room)->sector_type != SECT_AIR && !number(0, 2)) {
-        /* cool, we're outtie! */
+        /* 
+         * cool, we're outtie! 
+         */
         while (!room) {
             to_room = number(0, top_of_world);
             room = real_roomp(to_room);
@@ -1569,16 +1594,18 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
 
     if (!ch->specials.fighting) {
-        // log("not fighting");
+#if 0        
+        log("not fighting");
+#endif        
         if (GET_HIT(ch) < GET_MAX_HIT(ch) - 10) {
             /*
              * timer to heal up! 
              */
-            if (GetMaxLevel(ch) >= 25)
+            if (GetMaxLevel(ch) >= 25) {
                 num = 3;
-            else
+            } else {
                 num = 2;
-
+            }
             switch (number(0, num)) {
             case 1:
                 act("$n utters the words 'Woah! I feel GOOD! Heh.'", 1, ch,
@@ -1609,8 +1636,10 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 #ifdef PREP_SPELLS
         if (!ch->desc) {
-            /* is it a mob? */
-            /*
+            /* 
+             * is it a mob? 
+             *
+             *
              * low level spellup 
              */
             if (!ch->equipment[WIELD] && GetMaxLevel(ch) < 11) {
@@ -1815,9 +1844,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     /*
      * Find a dude to to evil things upon ! 
      */
-    if (IS_SET(ch->specials.act, ACT_AGGRESSIVE))
+    if (IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
         vict = FindVictim(ch);
-
+    }
     if (!vict && ch->specials.fighting) {
         vict = ch->specials.fighting;
     }
@@ -1852,7 +1881,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
 
     if (number(1, 9) > 3) {
-        // log("pester em");
+#if 0        
+        log("pester em");
+#endif        
         /*
          * pester them 
          */
@@ -1968,7 +1999,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         }
         return (TRUE);
     } else {
-        // log("better heal up");
+#if 0        
+        log("better heal up");
+#endif        
         /*
          * do heal 
          */
@@ -2050,9 +2083,9 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     byte            lspell,
                     healperc = 0;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (GET_POS(ch) < POSITION_STANDING && GET_POS(ch) > POSITION_STUNNED) {
         StandUp(ch);
         return (TRUE);
@@ -2061,12 +2094,12 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (!MobCastCheck(ch, 0)) {
         return (TRUE);
     }
-    if (check_soundproof(ch))
+    if (check_soundproof(ch)) {
         return (FALSE);
-
-    if (check_nomagic(ch, 0, 0))
+    }
+    if (check_nomagic(ch, 0, 0)) {
         return (FALSE);
-
+    }
     if (!ch->specials.fighting) {
         if (GET_HIT(ch) < GET_MAX_HIT(ch) - 10) {
             if ((lspell = GetMaxLevel(ch)) >= 20) {
@@ -2092,8 +2125,9 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 #ifdef PREP_SPELLS
         if (!ch->desc) {
-            /* make sure it is a mob */
-            /*
+            /* 
+             * make sure it is a mob 
+             *
              * low level prep 
              */
             if (!affected_by_spell(ch, SPELL_ARMOR)) {
@@ -2230,15 +2264,15 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     /*
      * Find a dude to to evil things upon ! 
      */
-    if ((vict = FindAHatee(ch)) == NULL)
+    if ((vict = FindAHatee(ch)) == NULL) {
         vict = FindVictim(ch);
-
-    if (!vict)
+    }
+    if (!vict) {
         vict = ch->specials.fighting;
-
-    if (!vict)
+    }
+    if (!vict) {
         return (FALSE);
-
+    }
     /*
      * gen number from 0 to level 
      */
@@ -2247,9 +2281,9 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     lspell += GetMaxLevel(ch) / 5;
     lspell = MIN(GetMaxLevel(ch), lspell);
 
-    if (lspell < 1)
+    if (lspell < 1) {
         lspell = 1;
-
+    }
     if (GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && lspell > 31 && 
         !IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
         act("$n utters the words 'Woah! I'm outta here!'", 1, ch, 0, 0,
@@ -2268,16 +2302,17 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
      * first -- hit a foe, or help yourself? 
      */
 
-    if (ch->points.hit < (ch->points.max_hit / 2))
+    if (ch->points.hit < (ch->points.max_hit / 2)) {
         healperc = 7;
-    else if (ch->points.hit < (ch->points.max_hit / 4))
+    } else if (ch->points.hit < (ch->points.max_hit / 4)) {
         healperc = 5;
-    else if (ch->points.hit < (ch->points.max_hit / 8))
+    } else if (ch->points.hit < (ch->points.max_hit / 8)) {
         healperc = 3;
-
+    }
     if (number(1, healperc + 2) > 3) {
-        /* do harm */
-        /*
+        /* 
+         * do harm 
+         *
          * call lightning 
          */
         if (OUTSIDE(ch) && weather_info.sky >= SKY_RAINING && lspell >= 15 && 
@@ -2441,64 +2476,51 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     struct obj_data *new;
 
-    /* special procedure for this mob/obj */
+    /* 
+     * special procedure for this mob/obj 
+     */
     int             (*rep_guy) ();
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     rep_guy = RepairGuy;
 
     if (IS_NPC(ch)) {
         if (cmd == 72) {
             arg = one_argument(arg, obj_name);
-            if (!*obj_name)
+            if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name,
+                                ch->carrying)))) {
                 return (FALSE);
-
-            if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))
-                return (FALSE);
-            
+            }
             arg = one_argument(arg, vict_name);
-            if (!*vict_name)
+            if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+                || (!IS_NPC(vict))) {
                 return (FALSE);
-
-            if (!(vict = get_char_room_vis(ch, vict_name)))
-                return (FALSE);
-
-            if (!IS_NPC(vict))
-                return (FALSE);
-
+            }
             if (mob_index[vict->nr].func == rep_guy) {
                 send_to_char("Nah, you really wouldn't want to do that.", ch);
                 return (TRUE);
             }
-        } else
+        } else {
             return (FALSE);
+        }
     }
 
     if (cmd == 72) {
-        /* give */
-        /*
+        /* 
+         * give 
+         *
          * determine the correct obj 
          */
         arg = one_argument(arg, obj_name);
-        if (!*obj_name) {
+        if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name,
+                               ch->carrying)))){
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
-
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
-            send_to_char("Give what?\n\r", ch);
-            return (FALSE);
-        }
-
         arg = one_argument(arg, vict_name);
-        if (!*vict_name) {
-            send_to_char("To who?\n\r", ch);
-            return (FALSE);
-        }
-
-        if (!(vict = get_char_room_vis(ch, vict_name))) {
+        if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))) {
             send_to_char("To who?\n\r", ch);
             return (FALSE);
         }
@@ -2511,9 +2533,9 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
         /*
          * the target is the repairman, or an NPC 
          */
-        if (!IS_NPC(vict))
+        if (!IS_NPC(vict)) {
             return (FALSE);
-
+        }
         if (mob_index[vict->nr].func == rep_guy) {
             /*
              * we have the repair guy, and we can give him the stuff 
@@ -2539,7 +2561,9 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
                 cost *= (obj->obj_flags.value[1] - obj->obj_flags.value[0]);
 
                 if (GetMaxLevel(vict) > 25) {
-                    /* super repair guy */
+                    /* 
+                     * super repair guy 
+                     */
                     cost *= 2;
                 }
 
@@ -2662,8 +2686,9 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
-    if (cmd)
+    if (cmd) {
         return FALSE;
+    }
     return (fighter(ch, cmd, arg, mob, type));
 }
 
@@ -2672,7 +2697,9 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 {
     char           *p,
                     buf[256];
-    /* Samah's own referent pointer */
+    /* 
+     * Samah's own referent pointer 
+     */
     struct char_data *Sammy;
     struct char_data *t,
                    *t2,
@@ -2681,9 +2708,9 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     struct room_data *rp;
 
     rp = real_roomp(ch->in_room);
-    if (!rp)
+    if (!rp) {
         return (FALSE);
-
+    }
     if (cmd) {
         if (GET_RACE(ch) == RACE_SARTAN || GET_RACE(ch) == RACE_PATRYN ||
             GetMaxLevel(ch) == BIG_GUY) {
@@ -2694,13 +2721,17 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                                                                Samah);
 
         for (; *arg == ' '; arg++) {
-            /* skip whitespace */
+            /* 
+             * skip whitespace 
+             */
         }
 
         strcpy(buf, arg);
 
         if (cmd == 207) {
-            /* recite */
+            /* 
+             * recite 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             p = (char *) strtok(buf, " ");
@@ -2710,7 +2741,9 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 return (TRUE);
             }
         } else if (cmd == 84) {
-            /* cast */
+            /* 
+             * cast 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             /*
@@ -2738,35 +2771,45 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 return (TRUE);
             }
         } else if (cmd == 17 || cmd == 169) {
-            /* say */
+            /* 
+             * say 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             act("$n says 'Mensch should be seen, and not heard'", FALSE,
                 Sammy, 0, 0, TO_ROOM);
             return (TRUE);
         } else if (cmd == 40 || cmd == 214 || cmd == 177) {
-            /* emote */
+            /* 
+             * emote 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             act("$n says 'Cease your childish pantonimes, Mensch.'", FALSE,
                 Sammy, 0, 0, TO_ROOM);
             return (TRUE);
         } else if (cmd == 19 || cmd == 18 || cmd == 83) {
-            /* say, shout whisp */
+            /* 
+             * say, shout whisp 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             act("$n says 'Speak only when spoken to, Mensch.'", FALSE,
                 Sammy, 0, 0, TO_ROOM);
             return (TRUE);
         } else if (cmd == 86) {
-            /* ask */
+            /* 
+             * ask 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             act("$n says 'Your ignorance is too immense to be rectified at "
                 "this time. Mensch.'", FALSE, Sammy, 0, 0, TO_ROOM);
             return (TRUE);
         } else if (cmd == 87 || cmd == 46) {
-            /* order, force */
+            /* 
+             * order, force 
+             */
             act("$n glares at you", FALSE, Sammy, 0, ch, TO_VICT);
             act("$n glares at $N", FALSE, Sammy, 0, ch, TO_NOTVICT);
             act("$n says 'I'll be the only one giving orders here, Mensch'",
@@ -2815,7 +2858,9 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
              */
             for (t = rp->people; t; t = t->next_in_room) {
                 if (IS_NPC(t) && IS_PC(t)) {
-                    /* ah.. polymorphed :-) */
+                    /* 
+                     * ah.. polymorphed :-) 
+                     */
                     act("$n glares at $N", FALSE, ch, 0, t, TO_NOTVICT);
                     act("$n glares at you", FALSE, ch, 0, t, TO_VICT);
                     act("$n says 'Seek not to disguise your true form from "
@@ -2843,7 +2888,9 @@ int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
 
 #if EASY_LEVELS
     if (GET_LEVEL(ch, Class) > 0) {
-        /* for now.. so as not to give it away */
+        /* 
+         * for now.. so as not to give it away 
+         */
         if (cmd == GAIN) {
             GainLevel(ch, Class);
             return (TRUE);
@@ -2928,9 +2975,9 @@ int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
 int AbyssGateKeeper(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (!cmd) {
         if (ch->specials.fighting) {
             fighter(ch, cmd, arg, mob, type);
@@ -3385,9 +3432,9 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
                    *evil;
     int             max_evil;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (ch->specials.fighting) {
         fighter(ch, cmd, arg, mob, type);
 
@@ -3399,9 +3446,9 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
                     TRUE, ch, 0, 0, TO_ROOM);
             }
 
-            if (ch->specials.fighting)
+            if (ch->specials.fighting) {
                 CallForGuard(ch, ch->specials.fighting, 3, type);
-
+            }
             return (TRUE);
         }
     }
@@ -3409,9 +3456,9 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
     max_evil = 0;
     evil = 0;
 
-    if (check_peaceful(ch, ""))
+    if (check_peaceful(ch, "")) {
         return FALSE;
-
+    }
 #if 0
 
     /*
@@ -3473,8 +3520,9 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
 
             max_evil = -1000;
             evil = tch;
-            if (!check_soundproof(ch))
+            if (!check_soundproof(ch)) {
                 act("$n screams 'EVIL!!! BANZAI!!'", FALSE, ch, 0, 0, TO_ROOM);
+            }
             hit(ch, evil, TYPE_UNDEFINED);
             return (TRUE);
         }
@@ -3503,9 +3551,9 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
                     FALSE, ch, 0, 0, TO_ROOM);
             }
 
-            if (!ch->skills)
+            if (!ch->skills) {
                 SpaceForSkills(ch);
-
+            }
             if (!ch->skills[SKILL_RESCUE].learned) {
                 ch->skills[SKILL_RESCUE].learned = GetMaxLevel(ch) * 3 + 30;
             }
@@ -3525,9 +3573,9 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg,
                    *evil;
     int             max_evil;
 
-    if (cmd || !AWAKE(ch))
+    if (cmd || !AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (ch->specials.fighting) {
         fighter(ch, cmd, arg, mob, type);
 
@@ -3539,9 +3587,9 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg,
                     TRUE, ch, 0, 0, TO_ROOM);
             }
 
-            if (ch->specials.fighting)
+            if (ch->specials.fighting) {
                 CallForGuard(ch, ch->specials.fighting, 3, type);
-
+            }
             return (TRUE);
         }
     }
@@ -3549,9 +3597,9 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg,
     max_evil = 1000;
     evil = 0;
 
-    if (check_peaceful(ch, ""))
+    if (check_peaceful(ch, "")) {
         return FALSE;
-
+    }
     for (tch = real_roomp(ch->in_room)->people; tch;
          tch = tch->next_in_room) {
         if (tch->specials.fighting && GET_ALIGNMENT(tch) < max_evil &&
@@ -3588,21 +3636,26 @@ int ABShout(struct char_data *ch, int cmd, char *arg,
     static time_t   time_diff = 0;
     static time_t   last_time = 0;
 
-    if (cmd)
+    if (cmd) {
         return (FALSE);
-
+    }
     /*
      * If it has been an hour, there is a 33% chance he will shout 
      */
     if (time_diff > 3600 && !number(0, 2)) {
-        time_diff = 0;          /* reset */
+        time_diff = 0;          
+        /* 
+         * reset 
+         */
         last_time = time(NULL);
         do_shout(ch, "You puny mortals, come release me!  I have a pest dragon"
                      " whom imprisoned me to slay, and some sea elves to boot!",
                  0);
         return (TRUE);
     } else {
-        /* not been an hour, update how long it has been */
+        /* 
+         * not been an hour, update how long it has been 
+         */
         time_diff = time(NULL) - last_time;
     }
 
@@ -3630,7 +3683,10 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
          * If it has been an hour, there is a 33% chance he will shout 
          */
         if ((time_diff > 3600) && (!number(0, 2))) {
-            time_diff = 0;      /* reset */
+            time_diff = 0;      
+            /* 
+             * reset 
+             */
             last_time = time(NULL);
             do_shout(ch, "Might a noble mortal bring me what is rightfully "
                          "mine?  You shall be generously rewarded!", 0);
@@ -3640,12 +3696,14 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (cmd == 72) {
-        /* give */
-        /*
+        /* 
+         * give 
+         *
+         *
          * determine the correct obj 
          */
         arg = one_argument(arg, obj_name);
@@ -3675,15 +3733,15 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if (IS_PC(vict))
+        if (IS_PC(vict)) {
             return (FALSE);
-
+        }
         /*
          * the target is not the Avatar of Posereisn or is a PC 
          */
-        if (mob_index[vict->nr].virtual != 28042)
+        if (mob_index[vict->nr].virtual != 28042) {
             return (FALSE);
-
+        }
         /*
          * The object is not the Ankh of Posereisn 
          */
@@ -3696,11 +3754,12 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         } else {
             sprintf(buf, "%s %s", obj_name, vict_name);
             do_give(ch, buf, 0);
-            if (obj_index[obj->item_number].virtual == 28180)
+            if (obj_index[obj->item_number].virtual == 28180) {
                 test = 1;
+            }
         }
 
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             test = 1;
             do_give(ch, "Ankh-Posereisn Avatar-Posereisn", 0);
         }
@@ -3708,9 +3767,13 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
 
     if (test == 1) {
-        /* It is the Avatar, and the Ankh */
+        /* 
+         * It is the Avatar, and the Ankh 
+         */
         if (vict->equipment[WIELD]) {
-            /* This is only done if he is wielding hellreaper */
+            /* 
+             * This is only done if he is wielding hellreaper 
+             */
             sprintf(buf, "%s Thank you mighty hero.  Take this as a token of "
                          "my appreciation.", GET_NAME(ch));
             do_tell(vict, buf, 19);
@@ -3719,7 +3782,9 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             do_give(vict, buf, 0);
             return (TRUE);
         } else {
-            /* This is done if he is not wielding hellreaper */
+            /* 
+             * This is done if he is not wielding hellreaper 
+             */
             sprintf(buf, "%s You are indeed a mighty hero, but I cannot take "
                          "this, for I have nothing to offer you in return.",
                     GET_NAME(ch));
@@ -3739,23 +3804,26 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
 
     if (ch->specials.fighting) {
-        if (magic_user(ch, cmd, arg, mob, type))
+        if (magic_user(ch, cmd, arg, mob, type)) {
             return (TRUE);
-
+        }
         if (!check_soundproof(ch) && !number(0, 120)) {
             do_shout(ch, "To me, my fellows! I am in need of thy aid!", 0);
-            if (ch->specials.fighting)
+            if (ch->specials.fighting) {
                 CallForGuard(ch, ch->specials.fighting, 3, type);
+            }
             return (TRUE);
         }
     }
 
-    if (check_peaceful(ch, ""))
+    if (check_peaceful(ch, "")) {
         return FALSE;
-
+    }
     if (cmd && AWAKE(ch)) {
         if (ch->desc && GetMaxLevel(ch) < 15) {
-            /* keep newbies from trying to kill elminster */
+            /* 
+             * keep newbies from trying to kill elminster 
+             */
             switch (cmd) {
             case 370:
             case 283:
@@ -3817,28 +3885,32 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
                 CAN_SEE(ch, tch->master)) {
                 switch (number(0, 3)) {
                 case 0:
-                    if (!check_soundproof(ch))
+                    if (!check_soundproof(ch)) {
                         act("$n kicks some dirt at $N and says 'Luck is with "
                             "you today.'", FALSE, ch, 0, tch, TO_ROOM);
+                    }
                     break;
                 case 1:
-                    if (!check_soundproof(ch))
+                    if (!check_soundproof(ch)) {
                         act("$n points his wand at $N 'You best leave with "
                             "your master.'", FALSE, ch, 0, tch, TO_ROOM);
+                    }
                     break;
                 case 2:
                     sprintf(buf, "%s glances at %s with a look of anger, then "
                                  "snorts.",
                             ch->player.short_descr, GET_NAME(tch->master));
 
-                    if (!check_soundproof(ch))
+                    if (!check_soundproof(ch)) {
                         act(buf, FALSE, ch, 0, tch, TO_ROOM);
+                    }
                     break;
                 case 3:
                 default:
-                    if (!check_soundproof(ch))
+                    if (!check_soundproof(ch)) {
                         act("$n growls at $N 'If your master were not here...'",
                             FALSE, ch, 0, tch, TO_ROOM);
+                    }
                     break;
                 }
                 return (TRUE);
@@ -3969,7 +4041,9 @@ struct breath_victim *choose_victims(struct char_data *ch,
              */
             temp->yesno = (!dice(1, 5));
         } else {
-            /* bystanders get his 3/5 times */
+            /* 
+             * bystanders get his 3/5 times 
+             */
             temp->yesno = (dice(1, 5) < 4);
         }
     }
@@ -3982,8 +4056,9 @@ void free_victims(struct breath_victim *head)
 
     while (head) {
         temp = head->next;
-        if (head)
+        if (head) {
             free(head);
+        }
         head = temp;
     }
 }
@@ -4037,7 +4112,9 @@ int use_breath_weapon(struct char_data *ch, struct char_data *target,
     } else if (GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && GET_MANA(ch) >= -2 * cost) {
         breath_weapon(ch, target, cost, func);
     } else if (GET_MANA(ch) <= -3 * cost) {
-        /* sputter */
+        /* 
+         * sputter 
+         */
         breath_weapon(ch, target, 0, NULL);
     }
 }
@@ -4097,15 +4174,19 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
     struct breather *scan;
     int             count;
 
-    if (cmd)
+    if (cmd) {
         return FALSE;
-
+    }
     if (ch->specials.fighting &&
         ch->specials.fighting->in_room == ch->in_room) {
 
         for (scan = breath_monsters;
              scan->vnum >= 0 && scan->vnum != mob_index[ch->nr].virtual;
-             scan++);
+             scan++) {
+            /*
+             * Empty loop
+             */
+        }
 
         if (scan->vnum < 0) {
             sprintf(buf, "monster %s tries to breath, but isn't listed.",
@@ -4115,7 +4196,9 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         }
 
         for (count = 0; scan->breaths[count]; count++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (count < 1) {
@@ -4171,12 +4254,12 @@ int DruidTree(struct char_data *ch)
     ch->points.max_hit = GetMaxLevel(ch) * 10;
     ch->points.hit += GetMaxLevel(ch) * 5;
 
-    if (ch->player.long_descr)
+    if (ch->player.long_descr) {
         free(ch->player.long_descr);
-
-    if (ch->player.short_descr)
+    }
+    if (ch->player.short_descr) {
         free(ch->player.short_descr);
-
+    }
     ch->player.short_descr = (char *) strdup("The druid-tree");
     ch->player.long_descr = (char *) strdup("A huge tree stands here");
     GET_HIT(ch) = MIN(GET_MAX_HIT(ch), GET_HIT(ch));
@@ -4194,12 +4277,12 @@ int DruidMob(struct char_data *ch)
     ch->points.max_hit *= 2;
     ch->points.hit += GET_HIT(ch) / 2;
 
-    if (ch->player.long_descr)
+    if (ch->player.long_descr) {
         free(ch->player.long_descr);
-
-    if (ch->player.short_descr)
+    }
+    if (ch->player.short_descr) {
         free(ch->player.short_descr);
-
+    }
     ch->player.short_descr = strdup("The druid-lion");
     ch->player.long_descr = strdup("A huge lion stands here, his tail twitches"
                                    " menacingly");
@@ -4218,31 +4301,26 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
     struct char_data *vict;
     int             i;
 
-    if (cmd)
+    if ((cmd) || (!AWAKE(ch))) {
         return (FALSE);
-    if (!AWAKE(ch))
-        return (FALSE);
-
+    }
     rp = real_roomp(ch->in_room);
-    if (!rp)
+    if ((!rp) || (check_soundproof(ch))) {
         return (FALSE);
-
-    if (check_soundproof(ch))
-        return (FALSE);
-
+    }
     GreetPeople(ch);
 
-    if (check_nomagic(ch, 0, 0))
+    if (check_nomagic(ch, 0, 0)) {
         return (FALSE);
-
+    }
     if (GET_POS(ch) < POSITION_FIGHTING && GET_POS(ch) > POSITION_SLEEPING) {
         StandUp(ch);
         return (TRUE);
     }
 
-    if (number(0, 101) > GetMaxLevel(ch) + 40)
+    if (number(0, 101) > GetMaxLevel(ch) + 40) {
         return (TRUE);
-
+    }
     if (!ch->specials.fighting) {
         level = number(1, GetMaxLevel(ch));
         if (GET_HIT(ch) < GET_MAX_HIT(ch)) {
@@ -4268,20 +4346,21 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
 
         if (ch->in_room == 501 && (vict = FindAHatee(ch)) == NULL) {
             vict = FindVictim(ch);
-            if (vict)
+            if (vict) {
                 do_hit(ch, GET_NAME(vict), 0);
+            }
             return (FALSE);
         }
     } else {
-        if ((vict = FindAHatee(ch)) == NULL)
+        if ((vict = FindAHatee(ch)) == NULL) {
             vict = FindVictim(ch);
-
-        if (!vict)
+        }
+        if (!vict) {
             vict = ch->specials.fighting;
-
-        if (!vict)
+        }
+        if (!vict) {
             return (FALSE);
-
+        }
         level = number(1, GetMaxLevel(ch));
 
         if ((GET_HIT(ch) < GET_MAX_HIT(ch) / 2) && number(0, 1)) {
@@ -4416,18 +4495,17 @@ int MonkChallenger(struct char_data *ch, int cmd, char *arg,
 {
     struct char_data *vict;
 
-    if (cmd)
+    if ((cmd) || (!AWAKE(ch))) {
         return (FALSE);
-    if (!AWAKE(ch))
-        return (FALSE);
-
+    }
     GreetPeople(ch);
 
     if (!ch->specials.fighting && ch->in_room == 551 &&
         (vict = FindAHatee(ch)) == NULL) {
         vict = FindVictim(ch);
-        if (vict)
+        if (vict) {
             do_hit(ch, GET_NAME(vict), 0);
+        }
         return (FALSE);
     }
     MonkMove(ch);
@@ -4449,9 +4527,9 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
     struct char_data *mob;
 
     me = real_roomp(ch->in_room);
-    if (!me)
+    if (!me) {
         return (FALSE);
-
+    }
     chal = real_roomp(DRUID_CHALLENGE_ROOM);
     if (!chal) {
         send_to_char("The challenge room is gone.. please contact a god\n\r",
@@ -4534,14 +4612,14 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
     int             rm;
 
     me = real_roomp(ch->in_room);
-    if (!me)
+    if (!me) {
         return (FALSE);
-
+    }
     rm = ch->in_room;
 
-    if (!me->river_speed)
+    if (!me->river_speed) {
         return (FALSE);
-
+    }
     if (IS_PC(ch)) {
         REMOVE_BIT(ch->specials.act, PLR_WIMPY);
     }
@@ -4625,12 +4703,9 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
     rm = ch->in_room;
 
     me = real_roomp(ch->in_room);
-    if (!me)
+    if ((!me) || (!me->river_speed)) {
         return (FALSE);
-
-    if (!me->river_speed)
-        return (FALSE);
-
+    }
     if (IS_PC(ch)) {
         REMOVE_BIT(ch->specials.act, PLR_WIMPY);
     }
@@ -4671,12 +4746,12 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                         char_from_room(i);
                         char_to_room(i, monkpreproom);
 
-                        while (me->people)
+                        while (me->people) {
                             extract_char(me->people);
-
-                        while (me->contents)
+                        }
+                        while (me->contents) {
                             extract_obj(me->contents);
-
+                        }
                         me->river_speed = 0;
                         return (TRUE);
                     }
@@ -4702,9 +4777,9 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
     struct char_data *mob;
 
     me = real_roomp(ch->in_room);
-    if (!me)
+    if (!me) {
         return (FALSE);
-
+    }
     chal = real_roomp(MONK_CHALLENGE_ROOM);
     if (!chal) {
         send_to_char("The challenge room is gone.. please contact a god\n\r",
@@ -4797,20 +4872,22 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
     char            obj_name[50];
 
     if (type == PULSE_COMMAND) {
-        if (cmd != ENTER)
+        if (cmd != ENTER) {
             return (FALSE);
-
+        }
         arg = one_argument(arg, obj_name);
         if (!(port = get_obj_in_list_vis(ch, obj_name,
                                          real_roomp(ch->in_room)->contents))) {
             return (FALSE);
         }
 
-        if (port != obj)
+        if (port != obj) {
             return (FALSE);
-
+        }
         if (port->obj_flags.value[1] <= 0 || port->obj_flags.value[1] > 80000) {
-            /* see hash.h Mythos */
+            /* 
+             * see hash.h Mythos 
+             */
             send_to_char("The portal leads nowhere\n\r", ch);
             return;
         }
@@ -4843,9 +4920,9 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
     if (type == PULSE_COMMAND) {
         return (FALSE);
     } else {
-        if (obj->obj_flags.value[0])
+        if (obj->obj_flags.value[0]) {
             obj->obj_flags.value[0]--;
-
+        }
         if (obj->obj_flags.value[0] == 0 && obj->in_room) {
             if (obj->in_room != NOWHERE && real_roomp(obj->in_room)->people) {
                 act("$p disintegrates into atomic particles!", FALSE,
@@ -4863,26 +4940,32 @@ int attack_rats(struct char_data *ch, int cmd, char *arg,
 {
     int             dir;
 
-    if (type == PULSE_COMMAND)
+    if (type == PULSE_COMMAND) {
         return (FALSE);
-
+    }
     if (type == EVENT_WINTER) {
         ch->generic = ATTACK_ROOM + number(0, 26);
-        /* so they'll attack beggars, etc */
+        /* 
+         * so they'll attack beggars, etc 
+         */
         AddHatred(ch, OP_RACE, RACE_HUMAN);
     }
 
-    if (type == EVENT_SPRING)
+    if (type == EVENT_SPRING) {
         ch->generic = 0;
-
-    if (ch->generic == 0)
+    }
+    if (ch->generic == 0) {
         return (FALSE);
-
+    }
     dir = choose_exit_global(ch->in_room, ch->generic, MAX_ROOMS);
     if (dir == -1) {
-        /* assume we found it.. start wandering */
+        /* 
+         * assume we found it.. start wandering 
+         */
         ch->generic = 0;
-        /* We Can't Go Anywhere. */
+        /* 
+         * We Can't Go Anywhere. 
+         */
         return (FALSE);
     }
 
@@ -4899,12 +4982,18 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     dir,
                     count;
     char            buf[255];
-
-    /*
-     * if(type == PULSE_COMMAND) { if(cmd == 19) if(!strncasecmp(arg,
-     * "biff", 4)) { do_follow(ch, arg, cmd); do_group(mob, GET_NAME(ch),
-     * 0); return(TRUE); } return(FALSE); }
-     */
+#if 0
+    if(type == PULSE_COMMAND) { 
+        if(cmd == 19) {
+            if(!strncasecmp(arg,"biff", 4)) { 
+                do_follow(ch, arg, cmd); 
+                do_group(mob, GET_NAME(ch), 0); 
+                return(TRUE); 
+            }
+        }
+        return(FALSE); 
+    }
+#endif
 
     if (type == PULSE_TICK) {
         if (ch->specials.position == POSITION_SITTING) {
@@ -4968,9 +5057,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     }
                 }
 
-                if (!IS_AFFECTED(ch, AFF_GROUP))
+                if (!IS_AFFECTED(ch, AFF_GROUP)) {
                     SET_BIT(ch->specials.affected_by, AFF_GROUP);
-
+                }
                 spell_fly_group(40, ch, 0, 0);
                 return (FALSE);
             } else if (ch->generic == 23) {
@@ -4989,13 +5078,17 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     dir = choose_exit_global(ch->in_room, i->in_room,
                                              MAX_ROOMS);
                     if (dir == -1) {
-                        /* can't go anywhere, wait... */
+                        /* 
+                         * can't go anywhere, wait... 
+                         */
                         return (FALSE);
                     }
                     go_direction(ch, dir);
 
                     if (ch->in_room == i->in_room) {
-                        /* we're here! */
+                        /* 
+                         * we're here! 
+                         */
                         do_shout(ch, "The dragon must die!", 0);
 
                         for (j = real_roomp(ch->in_room)->people; j;
@@ -5019,7 +5112,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
             } else if (ch->generic == 25) {
                 dir = choose_exit_global(ch->in_room, WHERE_TO_SIT, MAX_ROOMS);
                 if (dir == -1) {
-                    /* no place to go, wait */
+                    /* 
+                     * no place to go, wait 
+                     */
                     return (FALSE);
                 }
                 go_direction(ch, dir);
@@ -5043,9 +5138,13 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
     }
 
     if (type == EVENT_WEEK) {
-        /* months are TOO long */
+        /* 
+         * months are TOO long 
+         */
         if (ch->specials.position != POSITION_SITTING) {
-            /* We're doing something else, ignore */
+            /* 
+             * We're doing something else, ignore 
+             */
             return (FALSE);
         }
 
@@ -5057,7 +5156,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!found) {
-            /* No Dragon in the game, ignore */
+            /* 
+             * No Dragon in the game, ignore 
+             */
             return (FALSE);
         }
 
@@ -5079,21 +5180,26 @@ int HuntingMercenary(struct char_data *ch, int cmd, char *arg,
 {
     int             dir;
 
-    if (type == PULSE_COMMAND)
+    if (type == PULSE_COMMAND) {
         return (FALSE);
-
+    }
     if (type == PULSE_TICK) {
         if (ch->generic == 1) {
-            /* Going to room */
-            if (!IS_SET(ch->specials.act, ACT_SENTINEL))
+            /* 
+             * Going to room 
+             */
+            if (!IS_SET(ch->specials.act, ACT_SENTINEL)) {
                 SET_BIT(ch->specials.act, ACT_SENTINEL);
+            }
             dir = choose_exit_global(ch->in_room, WHERE_TO_SIT, MAX_ROOMS);
-            if (dir == -1)
+            if (dir == -1) {
                 return (FALSE);
+            }
             go_direction(ch, dir);
 
-            if (ch->in_room == WHERE_TO_SIT)
+            if (ch->in_room == WHERE_TO_SIT) {
                 ch->generic = 0;
+            }
         }
         return (FALSE);
     }
@@ -5110,12 +5216,14 @@ int HuntingMercenary(struct char_data *ch, int cmd, char *arg,
 
     if (type == EVENT_FOLLOW) {
         if (ch == mob) {
-            if (IS_SET(ch->specials.act, ACT_SENTINEL))
+            if (IS_SET(ch->specials.act, ACT_SENTINEL)) {
                 REMOVE_BIT(ch->specials.act, ACT_SENTINEL);
+            }
             ch->generic = 0;
             stop_follower(ch);
-        } else
+        } else {
             add_follower(ch, mob);
+        }
     }
 
     return (FALSE);
@@ -5131,16 +5239,18 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
                     ind;
     char            buf[255];
 
-    if (cmd != 224)
+    if (cmd != 224) {
         return (FALSE);
-
+    }
     if (GET_GOLD(ch) < 25) {
         send_to_char("You don't have enough gold!\n\r", ch);
         return (TRUE);
     }
 
     if (jackpot == 0) {
-        /* always at LEAST have 25 in there */
+        /* 
+         * always at LEAST have 25 in there 
+         */
         jackpot = 25; 
     }
 
@@ -5207,12 +5317,16 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
     }
 
     if (i[0] == i[1] && i[1] == i[2]) {
-        /* Ok, they've won, now how much? */
+        /* 
+         * Ok, they've won, now how much? 
+         */
         send_to_char("You've won!\n\r", ch);
 
         switch (i[0]) {
         case 0:
-            /* Give them back what they put in */
+            /* 
+             * Give them back what they put in 
+             */
             ind = 25;
             break;
         case 1:
@@ -5228,7 +5342,9 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
             ind = 1000;
             break;
         case 5:
-            /* Wow! We've won big! */
+            /* 
+             * Wow! We've won big! 
+             */
             ind = jackpot; 
             act("Sirens start sounding and lights start flashing everywhere!", 
                 FALSE, ch, 0, 0, TO_ROOM);
@@ -5236,7 +5352,9 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
         }
 
         if (ind > jackpot) {
-            /* Can only win as much as there is */
+            /* 
+             * Can only win as much as there is 
+             */
             ind = jackpot;
         }
 
@@ -5291,7 +5409,10 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
      */
 
     if (cmd != 7) {
-        return (FALSE);         /* enter */
+        return (FALSE);         
+        /* 
+         * enter 
+         */
     }
 
 
@@ -5365,7 +5486,9 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
     struct char_data *post;
 
     if (cmd != 463) {
-        /* touch */
+        /* 
+         * touch 
+         */
         return (FALSE);
     }
 
@@ -5386,11 +5509,13 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
                     }
                 }
 
-                if (check == -1)
+                if (check == -1) {
                     return (FALSE);
-
+                }
                 if (GetMaxLevel(ch) < 41) {
-                    /* level fix */
+                    /* 
+                     * level fix 
+                     */
                     send_to_char("You touch the post, and a brief sensation "
                                  "of unworthiness runs through you.\n\r", ch);
                     return (TRUE);
@@ -5459,9 +5584,9 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
 {
     char            buf[255];
 
-    if (type == PULSE_COMMAND)
+    if (type == PULSE_COMMAND) {
         return (FALSE);
-
+    }
     if (type == EVENT_END_STRIKE && ch->specials.position == POSITION_SITTING) {
         do_emote(ch, "is off strike.", 0);
         do_stand(ch, "", 0);
@@ -5470,8 +5595,9 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
                                                  sizeof(char) * 54);
         strcpy(ch->player.long_descr,
                "A dwarven mine-worker is here, working the mines.\n\r");
-        if (gevent != 0)
+        if (gevent != 0) {
             gevent = 0;
+        }
         shop_multiplier = 0;
     }
 
@@ -5497,7 +5623,9 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
 
         ch->generic++;
         if (ch->generic == 30) {
-            /* strike over, back to work */
+            /* 
+             * strike over, back to work 
+             */
             PulseMobiles(EVENT_END_STRIKE);
             if (ch->specials.position == POSITION_SITTING) {
                 do_emote(ch, "is off strike.", 0);
@@ -5516,9 +5644,9 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if ((type == EVENT_BIRTH) && (gevent != DWARVES_STRIKE))
+    if ((type == EVENT_BIRTH) && (gevent != DWARVES_STRIKE)) {
         return (FALSE);
-
+    }
     if (type == EVENT_BIRTH) {
         if (ch->specials.position == POSITION_STANDING) {
             do_emote(ch, "is on strike.", 0);
@@ -5535,12 +5663,16 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
 
     if (type == EVENT_WEEK) {
         if (gevent != 0) {
-            /* something else happening? FORGET IT! */
+            /* 
+             * something else happening? FORGET IT! 
+             */
             return (FALSE);
         }
 
         if (!number(1, 6)) {
-            /* 1 in 6 chance of striking this week */
+            /* 
+             * 1 in 6 chance of striking this week 
+             */
             return (FALSE);
         }
 
@@ -5577,9 +5709,9 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
 {
     struct char_data *i;
 
-    if (cmd || !AWAKE(ch) || ch->specials.fighting)
+    if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
-
+    }
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].virtual == 6005 && !number(0, 3)) {
             do_emote(ch, "sees the damn fox and runs like hell.", 0);
@@ -5610,9 +5742,9 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
                    *k,
                    *next;
 
-    if (cmd || !AWAKE(ch) || ch->specials.fighting)
+    if (cmd || !AWAKE(ch) || ch->specials.fighting) {
         return FALSE;
-
+    }
     if (ch->generic) {
         ch->generic--;
         return TRUE;
@@ -5656,13 +5788,13 @@ int antioch_grenade(struct char_data *ch, int cmd, char *arg,
         obj->obj_flags.value[0] -= 1;
     }
 
-    if (type != PULSE_COMMAND)
+    if (type != PULSE_COMMAND) {
         return (0);
-
+    }
     if (cmd == CMD_SAY || cmd == CMD_ASAY) {
-        while (*arg == ' ')
+        while (*arg == ' ') {
             arg++;
-
+        }
         if (!strcmp(arg, "one")) {
             obj->obj_flags.value[0] = 4;
         } else if (!strcmp(arg, "two") && obj->obj_flags.value[0] >= 3 && 
@@ -5750,7 +5882,9 @@ int arena_arrow_dispel_trap(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "A magic arrow emerges from the wall nearly hits "
                          "%s\n\r", GET_NAME(ch));
             send_to_room_except(buf, ch->in_room, ch);
-            // do_move(ch, arg, (cmd+999));
+#if 0             
+            do_move(ch, arg, (cmd+999));
+#endif            
             return (FALSE);
         }
     }
@@ -5769,14 +5903,18 @@ int arena_fireball_trap(struct char_data *ch, int cmd, char *arg,
             send_to_char("You barely avoid a fireball!", ch);
             sprintf(buf, "%s barely avoids a huge fireball!", GET_NAME(ch));
             send_to_room_except(buf, ch->in_room, ch);
-            // do_move(ch, arg, (cmd+999));
+#if 0            
+            do_move(ch, arg, (cmd+999));
+#endif            
             return (FALSE);
         } else {
             send_to_char("You are envelopped by burning flames!", ch);
             sprintf(buf, "A fireball strikes %s!", GET_NAME(ch));
             send_to_room_except(buf, ch->in_room, ch);
             MissileDamage(ch, ch, dam, SPELL_FIREBALL);
-            // do_move(ch, arg, (cmd+999));
+#if 0            
+            do_move(ch, arg, (cmd+999));
+#endif     
             return (FALSE);
         }
         return (FALSE);
@@ -5791,7 +5929,9 @@ int arena_dispel_trap(struct char_data *ch, int cmd, char *arg,
 
     if (cmd >= 1 && cmd <= 6) {
         spell_dispel_magic(50, ch, ch, 0);
-        // do_move(ch, arg, (cmd+999));
+#if 0        
+        do_move(ch, arg, (cmd+999));
+#endif    
     }
     return (FALSE);
 }
@@ -5805,7 +5945,9 @@ int dispel_room(struct char_data *ch, int cmd, char *arg,
     char            buf[MAX_STRING_LENGTH + 30];
 
     if (cmd == 5) {
-        /* Up */
+        /* 
+         * Up 
+         */
         spell_dispel_magic(50, ch, ch, 0);
         return (FALSE);
     }
@@ -5818,13 +5960,17 @@ int fiery_alley(struct char_data *ch, int cmd, char *arg,
     char            buf[MAX_STRING_LENGTH + 30];
 
     if (ch->in_room == 40287 && cmd == 4) {
-        /* West */
+        /* 
+         * West 
+         */
         spell_fireball(40, ch, ch, 0);
         return (FALSE);
     }
 
     if (ch->in_room == 40285 && cmd == 2) {
-        /* East */
+        /* 
+         * East 
+         */
         spell_fireball(40, ch, ch, 0);
         return (FALSE);
     }
