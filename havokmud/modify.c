@@ -207,10 +207,12 @@ void string_add(struct descriptor_data *d, char *str)
             }
 
             *d->str = NULL;
-            if (d->str)
+            if (d->str) {
                 free(d->str);
-            if (d->name)
+            }
+            if (d->name) {
                 free(d->name);
+            }
             d->name = 0;
             REMOVE_BIT(d->character->specials.act, PLR_MAILING);
         } else if (!d->connected && 
@@ -250,15 +252,17 @@ void string_add(struct descriptor_data *d, char *str)
                     d->character, NULL, NULL, TO_ROOM);
             } else {
                 /* user has aborted the post */
-                if (*d->str)
+                if (*d->str) {
                     free(*d->str);
+                }
                 *d->str = NULL;
 
-                if (d->msg->author)
+                if (d->msg->author) {
                     free(d->msg->author);
-                if (d->msg->title)
+                }
+                if (d->msg->title) {
                     free(d->msg->title);
-
+                }
                 SEND_TO_Q("Post aborted.\r\n", d);
                 act("$n decides not to finish $s message.", TRUE,
                     d->character, NULL, NULL, TO_ROOM);
@@ -317,24 +321,29 @@ void string_add(struct descriptor_data *d, char *str)
         if (!d->connected && 
             (IS_SET(d->character->specials.act, PLR_MAILING))) {
             store_mail(d->name, d->character->player.name, *d->str);
-            if (*d->str)
+            if (*d->str) {
                 free(*d->str);
-            if (d->str)
+            }
+            if (d->str) {
                 free(d->str);
-            if (d->name)
+            }
+            if (d->name) {
                 free(d->name);
+            }
             d->name = 0;
             SEND_TO_Q("Message sent!\n\r", d);
-            if (!IS_NPC(d->character))
+            if (!IS_NPC(d->character)) {
                 REMOVE_BIT(d->character->specials.act, PLR_MAILING);
+            }
         }
         d->str = 0;
         if (d->connected == CON_EXDSCR) {
             send_to_char(MENU, d->character);
             d->connected = CON_SLCT;
         }
-    } else
+    } else {
         strcat(*d->str, "\n\r");
+    }
 }
 
 #endif
@@ -350,11 +359,11 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
      * determine type 
      */
     arg = one_argument(arg, buf);
-    if (is_abbrev(buf, "char"))
+    if (is_abbrev(buf, "char")) {
         *type = TP_MOB;
-    else if (is_abbrev(buf, "obj"))
+    } else if (is_abbrev(buf, "obj")) {
         *type = TP_OBJ;
-    else {
+    } else {
         *type = TP_ERROR;
         return;
     }
@@ -368,18 +377,22 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
      * field name and number 
      */
     arg = one_argument(arg, buf);
-    if (!(*field = old_search_block(buf, 0, strlen(buf), string_fields, 0)))
+    if (!(*field = old_search_block(buf, 0, strlen(buf), string_fields, 0))) {
         return;
-
+    }
     /*
      * string 
      */
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     for (; *string = *arg; arg++, string++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 }
 
@@ -397,9 +410,9 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     type;
     struct char_data *mob;
     struct obj_data *obj;
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
+    }
     quad_arg(arg, &type, name, &field, string);
 
     if (type == TP_ERROR) {
@@ -542,20 +555,28 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     send_to_char("New field.\n\r", ch);
                     break;
                 } else if (!str_cmp(ed->keyword, string)) {
-                    /* the field exists */
-                    if (ed->description)
+                    /* 
+                     * the field exists 
+                     */
+                    if (ed->description) {
                         free(ed->description);
+                    }
                     ed->description = 0;
                     ch->desc->str = &ed->description;
                     send_to_char("Modifying description.\n\r", ch);
                     break;
                 }
             ch->desc->max_str = MAX_STRING_LENGTH;
-            /* the stndrd (see below) procedure does not apply here */
+            /* 
+             * the stndrd (see below) procedure 
+             * does not apply here 
+             */
             return;
             break;
         case 6:
-            /* deletion */
+            /* 
+             * deletion 
+             */
             if (!*string) {
                 send_to_char("You must supply a field name.\n\r", ch);
                 return;
@@ -568,11 +589,12 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     send_to_char("No field with that keyword.\n\r", ch);
                     return;
                 } else if (!str_cmp(ed->keyword, string)) {
-                    if (ed->keyword)
+                    if (ed->keyword) {
                         free(ed->keyword);
-                    if (ed->description)
+                    }
+                    if (ed->description) {
                         free(ed->description);
-
+                    }
                     /*
                      * delete the entry in the desr list 
                      */
@@ -580,7 +602,11 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                         obj->ex_description = ed->next;
                     } else {
                         for (tmp = obj->ex_description; tmp->next != ed;
-                             tmp = tmp->next);
+                             tmp = tmp->next) {
+                            /*
+                             * Empty loop
+                             */
+                        }
                         tmp->next = ed->next;
                     }
 
@@ -605,7 +631,9 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 
     if (*string) {
-        /* there was a string in the argument array */
+        /* 
+         * there was a string in the argument array 
+         */
         if (strlen(string) > length[field - 1]) {
             send_to_char("String too long - truncated.\n\r", ch);
             *(string + length[field - 1]) = '\0';
@@ -615,7 +643,9 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         ch->desc->str = 0;
         send_to_char("Ok.\n\r", ch);
     } else {
-        /* there was no string. enter string mode */
+        /* 
+         * there was no string. enter string mode 
+         */
         send_to_char("Enter string. terminate with '/w'.\n\r", ch);
         *ch->desc->str = 0;
         ch->desc->max_str = length[field - 1];
@@ -630,18 +660,22 @@ void bisect_arg(char *arg, int *field, char *string)
      * field name and number 
      */
     arg = one_argument(arg, buf);
-    if (!(*field = old_search_block(buf, 0, strlen(buf), room_fields, 0)))
+    if (!(*field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
         return;
-
+    }
     /*
      * string 
      */
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     for (; *string = *arg; arg++, string++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 }
 
@@ -678,20 +712,20 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 
     rp = real_roomp(ch->in_room);
 
-    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < LOW_IMMORTAL))
+    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < LOW_IMMORTAL)) {
         return;
-
+    }
     /* 
      * someone is forced to do something. can be bad!
      * the ch->desc->str field will cause problems... 
      */
-    if (!ch->desc)
-        return;                 
-
+    if (!ch->desc) {
+        return;                     
+    }
     if ((GetMaxLevel(ch) < 56) && rp->zone != GET_ZONE(ch)) {
-        /*
-         * (!IS_SET(ch->specials.permissions,PREV_AREA_MAKER)) )
-         */
+#if 0
+        (!IS_SET(ch->specials.permissions,PREV_AREA_MAKER)) )
+#endif
         send_to_char("Sorry, you are not authorized to edit this zone.\n\r",
                      ch);
         return;
@@ -728,7 +762,10 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                          "<sector_type>\n\r", ch);
             send_to_char("For current room only, use\n\r", ch);
             send_to_char("  edit fs 0 0 <flags> <sector_type>\n\r", ch);
-            // damn that's a big number.  mebbe move it up a bit?
+            /* 
+             * damn that's a big number.  
+             * mebbe move it up a bit?
+             */
             maproom = 1 << 28;
             ch_printf(ch, "Bitvector for map rooms = %ld\n\r", maproom);
             send_to_char("If room is unnamed, the default sector name will be "
@@ -738,8 +775,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         }
 
         /*
-         * Did some work to make it easier to change flags on a range of
-         * rooms -Lennya 
+         * Did some work to make it easier to change 
+         * flags on a range of rooms -Lennya 
          */
 
         if ((r_start == 0) || (r_end == 0)) {
@@ -800,7 +837,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
 
     case 4:
-        /* no cmd by default */
+        /* 
+         * no cmd by default 
+         */
         open_cmd = -1;
         sscanf(string, "%d %s %d %d %d", &dir, &sdflags, &dkey, &exroom,
                &open_cmd);
@@ -868,8 +907,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 rp->dir_option[dir]->to_room = exroom;
             } else {
                 send_to_char("Deleting exit.\n\r", ch);
-                if (rp->dir_option[dir])
+                if (rp->dir_option[dir]) {
                     free(rp->dir_option[dir]);
+                }
                 rp->dir_option[dir] = 0;
                 return;
             }
@@ -939,8 +979,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 /*
                  * the field exists 
                  */
-                if (ed->description)
+                if (ed->description) {
                     free(ed->description);
+                }
                 ed->description = 0;
                 ch->desc->str = &ed->description;
                 send_to_char("Modifying description.\n\r", ch);
@@ -1027,10 +1068,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                              " exact keywords.\n\r", ch);
                 return;
             } else if (!str_cmp(ed->keyword, string)) {
-                if (ed->keyword)
+                if (ed->keyword) {
                     free(ed->keyword);
-                if (ed->description)
+                }
+                if (ed->description) {
                     free(ed->description);
+                }
 
                 /*
                  * delete the entry in the descr list 
@@ -1040,14 +1083,16 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 } else {
                     for (tmp = rp->ex_description; tmp->next != ed;
                          tmp = tmp->next) {
-                        /* Empty loop */
+                        /* 
+                         * Empty loop 
+                         */
                     }
                     tmp->next = ed->next; 
                 }
 
-                if (ed)
+                if (ed) {
                     free(ed);
-
+                }
                 send_to_char("Field deleted.\n\r", ch);
                 return;
             }
@@ -1065,7 +1110,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
 
     if (*string) {
-        /* there was a string in the argument array */
+        /* 
+         * there was a string in the argument array 
+         */
         if (strlen(string) > room_length[field - 1]) {
             send_to_char("String too long - truncated.\n\r", ch);
             *(string + length[field - 1]) = '\0';
@@ -1075,7 +1122,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         ch->desc->str = 0;
         send_to_char("Ok.\n\r", ch);
     } else {
-        /* there was no string. enter string mode */
+        /* 
+         * there was no string. enter string mode 
+         */
         send_to_char("Enter string. Terminate with '/w'. Help with '/?'.\n\r",
                      ch);
         *ch->desc->str = 0;
@@ -1112,11 +1161,15 @@ char           *one_word(char *argument, char *first_arg)
 
     do {
         for (; isspace(argument[begin]); begin++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (argument[begin] == '\"') {
-            /* is it a quote */
+            /* 
+             * is it a quote 
+             */
             begin++;
 
             for (look_at = 0; argument[begin + look_at] >= ' ' &&
@@ -1124,9 +1177,9 @@ char           *one_word(char *argument, char *first_arg)
                 first_arg[look_at] = LOWER(argument[begin + look_at]);
              }
 
-            if (argument[begin + look_at] == '\"')
+            if (argument[begin + look_at] == '\"') {
                 begin++;
-
+            }
         } else {
             for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
                 first_arg[look_at] = LOWER(argument[begin + look_at]);
@@ -1164,9 +1217,9 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
              */
             scan = one_word(scan, tmp);
 
-            if (!*tmp)
+            if (!*tmp) {
                 break;
-
+            }
             if (!list) {
                 CREATE(list, struct help_index_element, 1);
                 nr = 0;
