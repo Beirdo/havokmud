@@ -2921,7 +2921,7 @@ void perform_violence(int pulse)
                }
 *//*  Modifier for weaponskills -Gordon 1-18-04 */
 			if(obj = ch->equipment[WIELD]){
-				if(!IS_WEAPON(obj)){
+				if(IS_WEAPON(obj)){
 					weapontype = obj->weapontype + WEAPON_FIRST; //350 - 409
 
 					if(ch->weaponskills.slot1 == weapontype)
