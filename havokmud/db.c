@@ -4921,11 +4921,11 @@ if (GET_RACE(ch) > MAX_RACE || GET_RACE(ch) < 0)
 	GET_RACE(ch)=1;
 
 // Don't want the imps to be deleted, do you?
-if (!strcmp(GET_NAME(ch),"Banon")) {
+if (!(strcmp(GET_NAME(ch),"Banon")) || !(strcmp(GET_NAME(ch), "Gordon"))) {
 	GET_LEVEL(ch,0) = 60;
 	}
 
-if (!(strcmp(GET_NAME(ch),"Lennya")) || !(strcmp(GET_NAME(ch), "Gordon"))) {
+if (!strcmp(GET_NAME(ch), "Lennya")) {
 	GET_LEVEL(ch,0)=59;
 	}
 //End of this modif... -Manwe Windmaster 260697 */
