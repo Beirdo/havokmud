@@ -466,6 +466,10 @@ void cast_wizard_eye( byte level, struct char_data *ch, char *arg, int type,
 void cast_energy_restore( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj ); //Reverse drain -MW
 
+/* Necro spells */
+void cast_shadow_step( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
 
 struct spell_info_type spell_info[MAX_SPL_LIST];
 

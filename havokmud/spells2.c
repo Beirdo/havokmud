@@ -4632,10 +4632,10 @@ void cast_shadow_step( byte level, struct char_data *ch, char *arg,
 		case SPELL_TYPE_SPELL:
 		case SPELL_TYPE_STAFF:
 		case SPELL_TYPE_SCROLL:
-			spell_wizard_eye(level, ch,victim, 0);
+			spell_shadow_step(level, ch,ch, 0);
 			break;
 		default :
-			log("Serious screw-up in cast_wizard_eye!");
+			log("Serious screw-up in cast_shadow_step");
 			break;
 	}
 }

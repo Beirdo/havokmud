@@ -2859,7 +2859,7 @@ void spell_shadow_step(byte level, struct char_data *ch,
 					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, DEATH) &&
 					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, NO_FLEE)) {
 			act("$n steps into a nearby shadow and seems to dissipate.", FALSE, ch, 0, 0, TO_ROOM);
-			send_to_char("You shift into a nearby shadow, and let it carry you away.\n\r\n\r", victim);
+			send_to_char("You shift into a nearby shadow, and let it carry you away.\n\r\n\r", ch);
 
 			char_from_room(ch);
 			char_to_room(ch, EXIT(ch, attempt)->to_room);
