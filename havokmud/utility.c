@@ -3102,6 +3102,8 @@ int apply_soundproof(struct char_data *ch)
 {
   struct room_data *rp;
 
+  if (IS_IMMORTAL(ch)) return(FALSE);
+
   if (IS_AFFECTED(ch, AFF_SILENCE)) {
     send_to_char("You are silenced, you can't make a sound!\n\r", ch);
     return(TRUE);
