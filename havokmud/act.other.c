@@ -301,7 +301,7 @@ dlog("in do_set_bprompt");
 
     }
   } else {
-    sprintf(buf,"Your current prompt is : %s\n\r",ch->specials.bprompt);
+    sprintf(buf,"Your current battle prompt is : %s\n\r",ch->specials.bprompt);
     send_to_char(buf,ch);
   }
 
@@ -2692,6 +2692,19 @@ dlog("in do_set_flags");
 	   }
 	 }
 	 else
+	 if (!strcmp(type,"advice")) {
+	 	   if (strstr(field,"enable")) {
+	 	     act("Turning on Newbie Help.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->player.user_flags,NEW_USER))
+	 	       SET_BIT(ch->player.user_flags,NEW_USER);
+	 	   } else {
+	 	     act("Turning newbie help OFF.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (IS_SET(ch->player.user_flags,NEW_USER))
+	 	       REMOVE_BIT(ch->player.user_flags,NEW_USER);
+	 	   }
+	 	 }
+	 	 else
+
 	   if (!strcmp(type,"email")) {
 	     if (*field) {
 	       /* set email to field */

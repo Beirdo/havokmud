@@ -3365,6 +3365,9 @@ if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
 	if(temp==1)
 	  SET_BIT(ch->player.user_flags,USE_ANSI);
 
+	if (!IS_SET(ch->specials.act, NEW_USER))
+		SET_BIT(ch->player.user_flags,NEW_USER);
+	send_to_char("New user mode activated.\n\r",ch);
 
 	if (!IS_SET(ch->specials.act, PLR_WIMPY))
     	SET_BIT(ch->specials.act, PLR_WIMPY);

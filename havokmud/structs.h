@@ -225,6 +225,7 @@ struct QuestItem {
 #define ZONE_SOUNDS    BV17//131072
 #define CHAR_PRIVATE   BV18//262144
 #define CLAN_LEADER    BV19
+#define NEW_USER       BV20
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */
@@ -324,6 +325,7 @@ struct QuestItem {
 #define PULSE_RIVER    15
 #define PULSE_TELEPORT      10
 #define PULSE_MAILCHECK 	240
+#define PULSE_ADVICE       200
 #define MAX_ROOMS   5000
 
 struct nodes
@@ -676,6 +678,15 @@ struct large_room_data
  long flags[9];
 #endif
 };
+
+struct auction_data
+{
+	struct obj_data *obj;
+	int minbid;
+	struct char_data *taker;
+
+};
+
 
 struct room_direction_data
 {
@@ -1207,6 +1218,8 @@ struct char_special_data
   sh_int apply_saving_throw[MAX_SAVES]; /* Saving throw (Bonuses)  */
 
   int questwon;
+  struct auction_data *item;
+
 };
 
 /* skill_data flags */

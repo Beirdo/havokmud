@@ -2039,6 +2039,7 @@ void RemAllAffects( struct char_data *ch);
 int CheckForBlockedMove
   (struct char_data *ch, int cmd, char *arg, int room, int dir, int class);
 void TeleportPulseStuff(int pulse);
+void AdvicePulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);

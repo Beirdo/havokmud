@@ -2966,6 +2966,71 @@ void TeleportPulseStuff(int pulse)
   }
 }
 
+
+char *advicelist[] = {
+	"Havok's webpage is located at $c000Whttp:\\havok.haaksman.org",
+	"Remember, when you want to leave, find an innkeeper to rent.(Frm Temple. $c000Ws2e4neu)",
+	"After gaining enough exp to level, remember to see your guildmaster to gain and learn new skills.",
+	"To disable this advice channel, type $c000WSET ADVICE DISABLE",
+	"Use the $c000WOOC $c000wcommand to talk out of character.",
+	"Remember, the $c000WYELL$c000w command is used for zone communication and $c000WSHOUT$c000w is a world wide channel.",
+	"If you have any ideas for the mud, please use the $c000WIDEA$c000w command to inform the gods of it.",
+	"To see a list of all the socials in the game, type $c000WHELP SOCIAL.",
+	"West of the Temple is a good place to get experience and some good starting gear.",
+	"East of the Temple is donations.  There is also another donations in New Thalos",
+	"North of the Temple is the hall of rules.  Ignorance of these rules is unacceptable.",
+	"Don't forget to eat and drink or you may die of hunger and thirst.",
+	"To see who is grouped, type $c000WGWHO.",
+	"To turn off any certain channel, type $c000WNOOOC, NOSHOUT, NOYELL$c000w, etc.",
+	"If you have any problems, ask for a god and they may assist you at any time.",
+	"Remember, no foul language over public channels please.",
+	"To see if anyone is in the arena battling, type$c000W WHOARENA",
+	"Karysinya Coach is a quick and easy way to travel the lands. (From Meeting Square go $c000Wsesu$c000w)",
+	"Type $c000WWORLD $c000wto see some interesting facts about Havok.",
+	"$c000WATTRIBUTES $c000wcommand is used to see what spell affects and stats your character has.",
+	"Did you know that you could immort to after you gain 200mil xp?",
+	"Type $c000WWIZLIST $c000wto see a list of all the immortals that trek the lands of Havok.",
+	"Before attacking someone, use the $c000WCONSIDER$c000w command to determine how strong they are.",
+	"To see a list of people in the same zone as you, type $c000WWHOZONE$c000w.",
+	"Some items have ego which means you have to be a certain level to use the item.",
+	"See our discussion board, go 2 east & 1 north of meeting square. ($c000WLook board, read<Message#>",
+	"At times, you may see our resident bot Seth on, whom will spell you up and summon you when needed.",
+	"Typing $c000WQUIT$c000W will not save your character's equipment, visit an innkeeper to keep your gear safe.",//27
+	"Bug the immortals to add more help and advice to this list.",
+	"Type $c000WNEWS$c000w to see a list of the last news and events thats occured on Havok",
+	"Use $c000WBPROMPT$c000w to set your battle prompt the same was as the regular $c000WPROMPT$c000w command.",
+	"Type $c000WHELP COLOR$c000w to get a list of the color code characters.",
+	"You cannot $c000WSHOUT$c000w or use $c000WOOC$c000w until level 2." //32
+
+};
+
+void AdvicePulseStuff(int pulse)
+{
+	int numberadvice = 32;
+  struct descriptor_data *i;
+  register struct char_data *ch;
+  char buf[80], buffer[150];
+
+  if (pulse < 0)
+    return;
+
+  for (i = descriptor_list; i; i=i->next) {
+    if (!i->connected) {
+      ch = i->character;
+
+      if (IS_PC(ch)) {
+		if (ch->in_room != NOWHERE) {
+			if (IS_SET(ch->player.user_flags, NEW_USER)) {
+				sprintf(buffer,"$c000GAdvice: '$c000w%s$c000G'",advicelist[number(0,numberadvice)]);
+				send_to_char(buffer,ch);
+			}
+      	}
+      }
+	}
+   }
+}
+
+
 void RiverPulseStuff(int pulse)
 {
   /*

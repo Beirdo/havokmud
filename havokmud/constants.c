@@ -2904,6 +2904,7 @@ const char *special_user_flags[] =
 	"ZONE-SOUNDS",
 	"CHAR-PRIVATE",
 	"CLAN-LEADER",
+	"NEW-USER",
 	"\n"
 };
 const char *immunity_names[] =

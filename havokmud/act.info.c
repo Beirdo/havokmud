@@ -2594,6 +2594,22 @@ dlog("in do_help");
 	      page_string(ch->desc, buffer, 1);
 	      return;
 	    }     else if (bot >= top)      {
+
+	      		if(cmd==38) {
+		  			sprintf(buf,"spell %s",argument);
+		  			do_help(ch, buf, 1);
+		  			return;
+		  		  } else
+		  		     if(cmd==1) {
+		  				  half_chop(argument,buf,buffer);
+
+		  				sprintf(buf,"skill %s",buffer);
+		  				do_help(ch, buf, 0);
+		  				return;
+					 }
+
+
+
 	      send_to_char("There is no help on that word.\n\r", ch);
 	      send_to_char("Perhaps try help skills <skill> or help spell <spell>.\n\r", ch);
 	       //(GH)NO help so add that key word to a file called ADD_HELP
@@ -2971,8 +2987,12 @@ dlog("in do_who");
 		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
 	  }
+
+	  if (IS_SET(ch->player.user_flags, NEW_USER))
+	  	    sprintf(tbuf+strlen(tbuf),"$c000G [$c000WNEW$c000G] $c0007");
 	    if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
+		if (IS_SET(ch->specials.act, NEW_USER))
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD] $c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)
