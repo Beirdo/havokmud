@@ -27,7 +27,7 @@
 ************************************************************************ */
 int             no_mail = 0;
 int             top_of_scripts = 0;
-int             top_of_world = 99999;   /* ref to the top element of world 
+int             top_of_world = 99999;   /* ref to the top element of world
                                          */
 #if HASH
 struct hash_header room_db;
@@ -44,7 +44,9 @@ struct message_list fight_messages[MAX_MESSAGES];       /* fighting messages */
 struct player_index_element *player_table = 0;  /* index to player file */
 int             top_of_p_table = 0;     /* ref to top of table */
 int             top_of_p_file = 0;
-// int HpBonus; /* used for the mob file conversion, mrebuild */
+#if 0
+int HpBonus; /* used for the mob file conversion, mrebuild */
+#endif
 int             cog_sequence = 0;
 
 long            total_bc = 0;
@@ -91,12 +93,12 @@ int             top_of_helpt;           /* top of help index table */
 int             top_of_wizhelpt;        /* top of wiz help index table */
 
 struct time_info_data time_info;        /* the infomation about the time */
-struct weather_data weather_info;       /* the infomation about the 
-                                         * weather 
+struct weather_data weather_info;       /* the infomation about the
+                                         * weather
                                          */
 
 /*
- * long saved_rooms[WORLD_SIZE]; 
+ * long saved_rooms[WORLD_SIZE];
  */
 long            number_of_saved_rooms = 0;
 extern struct descriptor_data *descriptor_list;
@@ -125,7 +127,7 @@ int             qp_patience;
 *********************************************************************** */
 
 /*
- * body of the booting system 
+ * body of the booting system
  */
 void boot_db()
 {
@@ -156,7 +158,7 @@ void boot_db()
 
 #if 0
     /*
-     * some machines are pre-allocation specific when dealing with realloc 
+     * some machines are pre-allocation specific when dealing with realloc
      */
     script_data = (struct scripts *) malloc(sizeof(struct scripts));
     CommandSetup();
@@ -279,9 +281,9 @@ void boot_db()
 
     reset_q.head = reset_q.tail = 0;
 
-    /* 
-     * cycle through pfiles to see if anyone 
-     * get a statue 
+    /*
+     * cycle through pfiles to see if anyone
+     * get a statue
      */
 #if 0
     generate_legend_statue();
@@ -290,7 +292,7 @@ void boot_db()
 }
 
 /*
- * reset the time in the game from file 
+ * reset the time in the game from file
  */
 void reset_time()
 {
@@ -388,7 +390,7 @@ void reset_time()
 }
 
 /*
- * update the time file 
+ * update the time file
  */
 void update_time()
 {
@@ -436,7 +438,7 @@ int wizcenter(char *buf)
 }
 
 /*
- * generate index table for the player file 
+ * generate index table for the player file
  */
 void build_player_index()
 {
@@ -455,7 +457,7 @@ void build_player_index()
     struct wizlistgen list_wiz;
 
     /*
-     * might use ABS_MAX_CLASS here some time 
+     * might use ABS_MAX_CLASS here some time
      */
     for (j = 0; j < MAX_CLASS; j++) {
         list_wiz.number[j] = 0;
@@ -469,14 +471,14 @@ void build_player_index()
         fread(&dummy, sizeof(struct char_file_u), 1, fl);
         if (!feof(fl)) {
             /*
-             * Create new entry in the list 
+             * Create new entry in the list
              */
             if (nr == -1) {
                 CREATE(player_table, struct player_index_element, 1);
                 nr = 0;
             } else {
                 if (!(player_table = (struct player_index_element *)realloc(
-                        player_table, 
+                        player_table,
                         (++nr + 1) * sizeof(struct player_index_element)))) {
                     perror("generate index");
                     exit(0);
@@ -500,7 +502,7 @@ void build_player_index()
             }
 #if 1
             /*
-             * was 5 
+             * was 5
              */
             for (i = 0; i < MAX_CLASS; i++) {
                 if (dummy.level[i] >= 51 && strcmp(dummy.name, "111111")) {
@@ -514,7 +516,7 @@ void build_player_index()
                     max = 0;
 
                     /*
-                     * MAX_CLASS does not work here... 
+                     * MAX_CLASS does not work here...
                      */
                     for (j = 0; j < MAX_CLASS; j++) {
                         if (dummy.level[j] > max) {
@@ -914,7 +916,7 @@ struct index_data *insert_index(struct index_data *index, void *data,
                                 long vnum)
 {
     if (top_of_mobt >= top_of_alloc_mobt) {
-        if (!(index = (struct index_data *)realloc(index, 
+        if (!(index = (struct index_data *)realloc(index,
                       (top_of_mobt + 50) * sizeof(struct index_data)))) {
             perror("load indices");
             assert(0);
@@ -963,7 +965,7 @@ void read_object_to_memory(long vnum)
 }
 
 /*
- * generate index table for object or monster file 
+ * generate index table for object or monster file
  */
 struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                                     int *alloc_top, char *dirname)
@@ -982,15 +984,15 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                     tbuf[128];
 
     /*
-     * scan main obj file 
+     * scan main obj file
      */
     rewind(fl);
     for (;;) {
         if (fgets(buf, sizeof(buf), fl)) {
             if (*buf == '#') {
-                if (!i) {        
-                    /* 
-                     * first cell 
+                if (!i) {
+                    /*
+                     * first cell
                      */
                     CREATE(index, struct index_data, bc);
                 } else if (i >= bc) {
@@ -1005,12 +1007,12 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                 sprintf(tbuf, "%s/%ld", dirname, index[i].virtual);
                 if ((f = fopen(tbuf, "rt")) == NULL) {
                     index[i].pos = ftell(fl);
-                    index[i].name = (index[i].virtual < 99999) ? 
+                    index[i].name = (index[i].virtual < 99999) ?
                                      fread_string(fl) : strdup("omega");
                 } else {
                     index[i].pos = -1;
                     fscanf(f, "#%*d\n");
-                    index[i].name = (index[i].virtual < 99999) ? 
+                    index[i].name = (index[i].virtual < 99999) ?
                                      fread_string(f) : strdup("omega");
                     dvnums[di++] = index[i].virtual;
                     fclose(f);
@@ -1035,7 +1037,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
     *top = i;
 
     /*
-     * scan for directory entrys 
+     * scan for directory entrys
      */
     if ((dir = opendir(dirname)) == NULL) {
         sprintf(tbuf, "unable to open index directory %s", dirname);
@@ -1051,7 +1053,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
             continue;
         }
         /*
-         * search if vnum was already sorted in main database 
+         * search if vnum was already sorted in main database
          */
         for (j = 0; j < di; j++) {
             if (dvnums[j] == vnum) {
@@ -1070,7 +1072,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
         if (!i) {
             CREATE(index, struct index_data, bc);
         } else if (i >= bc) {
-            if (!(index = (struct index_data *) realloc(index, 
+            if (!(index = (struct index_data *) realloc(index,
                           (i + 50) * sizeof(struct index_data)))) {
                 perror("load indices");
                 assert(0);
@@ -1080,7 +1082,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
         fscanf(f, "#%*d\n");
         index[i].virtual = vnum;
         index[i].pos = -1;
-        index[i].name = (index[i].virtual < 99999) ? fread_string(f) : 
+        index[i].name = (index[i].virtual < 99999) ? fread_string(f) :
                          strdup("omega");
         index[i].number = 0;
         index[i].func = 0;
@@ -1144,8 +1146,8 @@ void completely_cleanout_room(struct room_data *rp)
             "the Void.", FALSE, NULL, NULL, NULL, TO_VICT);
         char_from_room(ch);
 
-        /* 
-         * send character to the void 
+        /*
+         * send character to the void
          */
         char_to_room(ch, 0);
     }
@@ -1154,8 +1156,8 @@ void completely_cleanout_room(struct room_data *rp)
         obj = rp->contents;
         obj_from_room(obj);
 
-        /* 
-         * send item to the void 
+        /*
+         * send item to the void
          */
         obj_to_room(obj, 0);
     }
@@ -1189,13 +1191,13 @@ void load_one_room(FILE * fl, struct room_data *rp)
         fscanf(fl, " %*d ");
 
         /*
-         * OBS: Assumes ordering of input rooms 
+         * OBS: Assumes ordering of input rooms
          */
         for (zone = 0;
              rp->number > zone_table[zone].top && zone <= top_of_zone_table;
              zone++) {
-            /* 
-             * Empty loop 
+            /*
+             * Empty loop
              */
         }
 
@@ -1232,12 +1234,12 @@ void load_one_room(FILE * fl, struct room_data *rp)
         rp->tele_cnt = 0;
     }
 
-    /* 
-     * river 
+    /*
+     * river
      */
     if (tmp == SECT_WATER_NOSWIM || tmp == SECT_UNDERWATER) {
         /*
-         * read direction and rate of flow 
+         * read direction and rate of flow
          */
         fscanf(fl, " %ld ", &tmp);
         rp->river_speed = tmp;
@@ -1265,13 +1267,13 @@ void load_one_room(FILE * fl, struct room_data *rp)
             setup_dir(fl, rp->number, atoi(chk + 1));
             bc += sizeof(struct room_direction_data);
 #if 0
-            bc += strlen(rp->dir_option[atoi(chk + 1)]->general_description); 
-            bc += strlen(rp->dir_option[atoi(chk + 1)]->keyword); 
-#endif       
+            bc += strlen(rp->dir_option[atoi(chk + 1)]->general_description);
+            bc += strlen(rp->dir_option[atoi(chk + 1)]->keyword);
+#endif
             break;
         case 'E':
-            /* 
-             * extra description field 
+            /*
+             * extra description field
              */
 
             CREATE(new_descr, struct extra_descr_data, 1);
@@ -1293,8 +1295,8 @@ void load_one_room(FILE * fl, struct room_data *rp)
             rp->ex_description = new_descr;
             break;
         case 'S':
-            /* 
-             * end of current room 
+            /*
+             * end of current room
              */
 
 #if BYTE_COUNT
@@ -1308,15 +1310,15 @@ void load_one_room(FILE * fl, struct room_data *rp)
 #if 0
             if(IS_SET(rp->room_flags, SAVE_ROOM)) {
                 saved_rooms[number_of_saved_rooms] = rp->number;
-                number_of_saved_rooms++; 
-            } 
+                number_of_saved_rooms++;
+            }
 #endif
             sprintf(buf, "world/%ld", rp->number);
             fp = fopen(buf, "r");
             if (fp) {
                 /*
                  * saved_rooms[number_of_saved_rooms] = rp->number;
-                 * number_of_saved_rooms++; 
+                 * number_of_saved_rooms++;
                  */
                 fclose(fp);
             }
@@ -1331,7 +1333,7 @@ void load_one_room(FILE * fl, struct room_data *rp)
 }
 
 /*
- * load the rooms 
+ * load the rooms
  */
 void boot_world(void)
 {
@@ -1358,16 +1360,18 @@ void boot_world(void)
     while (fscanf(fl, " #%ld\n", &virtual_nr) == 1) {
         allocate_room(virtual_nr);
         /*
-         * do we need to to_of_world++ in here somewhere? msw 
+         * do we need to to_of_world++ in here somewhere? msw
          */
         rp = real_roomp(virtual_nr);
         /*
-         * lets see what this does, old style allocations msw 
+         * lets see what this does, old style allocations msw
          */
 #if 0
         if (rp) {
             bzero(rp, sizeof(struct room_data)
-                 // bzero(rp, sizeof(*rp));
+#if 0
+                  bzero(rp, sizeof(*rp));
+#endif
                   else {
                   fprintf(stderr, "Error, room %d not in database!(%d)\n",
                           virtual_nr, last); assert(0);}
@@ -1396,7 +1400,7 @@ void allocate_room(long room_number)
 }
 
 /*
- * read direction data 
+ * read direction data
  */
 void setup_dir(FILE * fl, long room, int dir)
 {
@@ -1407,10 +1411,10 @@ void setup_dir(FILE * fl, long room, int dir)
     rp = real_roomp(room);
 
     if (!rp) {
-        /* 
-         * this is a quick fix to make the game stop crashing 
+        /*
+         * this is a quick fix to make the game stop crashing
          */
-        rp = &dummy;            
+        rp = &dummy;
         dummy.number = room;
     }
 
@@ -1497,9 +1501,9 @@ void boot_saved_rooms()
         }
         while (!feof(fp)) {
             fscanf(fp, "#%*d\n");
-            if ((rp = real_roomp(vnum)) == 0) { 
-                /* 
-                 * empty room 
+            if ((rp = real_roomp(vnum)) == 0) {
+                /*
+                 * empty room
                  */
                 rp = (void *) malloc(sizeof(struct room_data));
                 if (rp) {
@@ -1570,7 +1574,7 @@ void renum_zone_table(int spec_zone)
                 }
 #if 0
                 cmd->arg3 = real_room(cmd->arg3);
-                
+
 #endif
                 if (cmd->arg3 < 0) {
                     LOG_ZONE_ERROR('C', "room", zone, comm);
@@ -1584,7 +1588,7 @@ void renum_zone_table(int spec_zone)
                 if (cmd->arg3 != NOWHERE) {
 #if 0
                     cmd->arg3 = real_room(cmd->arg3);
-#endif                     
+#endif
                     if (cmd->arg3 < 0) {
                         LOG_ZONE_ERROR('O', "room", zone, comm);
                     }
@@ -1626,7 +1630,7 @@ void renum_zone_table(int spec_zone)
 }
 
 /*
- * load the zone table and command tables 
+ * load the zone table and command tables
  */
 void boot_zones(void)
 {
@@ -1649,19 +1653,19 @@ void boot_zones(void)
     for (;;) {
         fscanf(fl, " #%d\n", &znumber);
         check = fread_string(fl);
-        /* 
-         * end of file 
+        /*
+         * end of file
          */
         if (*check == '$') {
             break;
         }
         /*
-         * alloc a new zone 
+         * alloc a new zone
          */
         if (!zon) {
             CREATE(zone_table, struct zone_data, bc);
         } else if (zon >= bc) {
-            if (!(zone_table = (struct zone_data *) realloc(zone_table, 
+            if (!(zone_table = (struct zone_data *) realloc(zone_table,
                             (zon + 10) * sizeof(struct zone_data)))) {
                 perror("boot_zones realloc");
                 assert(0);
@@ -1674,12 +1678,12 @@ void boot_zones(void)
         fscanf(fl, " %d ", &zone_table[zon].lifespan);
         fscanf(fl, " %d ", &zone_table[zon].reset_mode);
         /*
-         * read the command table 
+         * read the command table
          */
 
         /*
-         * new code to allow the game to be 'static' i.e. all the mobs are 
-         * saved in one big zone file, and restored later. 
+         * new code to allow the game to be 'static' i.e. all the mobs are
+         * saved in one big zone file, and restored later.
          */
 
         cmd_no = 0;
@@ -1703,8 +1707,8 @@ void boot_zones(void)
             }
 
             expand = 1;
-            /* 
-             * skip blanks 
+            /*
+             * skip blanks
              */
             fscanf(fl, " ");
             fscanf(fl, "%c", &zone_table[zon].cmd[cmd_no].command);
@@ -1714,8 +1718,8 @@ void boot_zones(void)
             }
             if (zone_table[zon].cmd[cmd_no].command == '*') {
                 expand = 0;
-                /* 
-                 * skip command 
+                /*
+                 * skip command
                  */
                 fgets(buf, 80, fl);
                 continue;
@@ -1736,8 +1740,8 @@ void boot_zones(void)
                 fscanf(fl, " %d", &zone_table[zon].cmd[cmd_no].arg3);
             }
 
-            /* 
-             * read comment 
+            /*
+             * read comment
              */
             fgets(buf, 80, fl);
             cmd_no++;
@@ -1745,15 +1749,15 @@ void boot_zones(void)
         zon++;
         if (zon == 1) {
             /*
-             * fix the cheat 
+             * fix the cheat
              */
 #if 0
-            if (fl != tmp_fl && fl != 0) { 
-                fclose(fl); 
+            if (fl != tmp_fl && fl != 0) {
+                fclose(fl);
                 fl = tmp_fl;
             }
 #endif
-             
+
         }
 
     }
@@ -1769,7 +1773,7 @@ void boot_zones(void)
 *********************************************************************** */
 
 /*
- * read a mobile from MOB_FILE 
+ * read a mobile from MOB_FILE
  */
 struct char_data *read_mobile(int nr, int type)
 {
@@ -1796,8 +1800,8 @@ struct char_data *read_mobile(int nr, int type)
     clear_char(mob);
     mob->nr = nr;
 
-    /* 
-     * mobile in external file 
+    /*
+     * mobile in external file
      */
     if (mob_index[nr].pos == -1) {
         sprintf(buf, "%s/%ld", MOB_DIR, mob_index[nr].virtual);
@@ -1822,7 +1826,7 @@ struct char_data *read_mobile(int nr, int type)
     mob_count++;
 
     /*
-     * assign common proc flags 
+     * assign common proc flags
      */
     if (mob->specials.proc != 0) {
         if (mob->specials.proc == PROC_QUEST) {
@@ -1831,7 +1835,7 @@ struct char_data *read_mobile(int nr, int type)
             }
         } else if (mob->specials.proc == PROC_SHOPKEEPER) {
             if (mob_index[mob->nr].func != shopkeeper) {
-                mob_index[mob->nr].func = *shopkeeper; 
+                mob_index[mob->nr].func = *shopkeeper;
             }
         } else if (mob->specials.proc == PROC_GUILDMASTER) {
             if (mob_index[mob->nr].func != generic_guildmaster) {
@@ -1920,9 +1924,9 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     char            letter;
 
     extern int      mob_tick_count;
-
-    // HpBonus=0;
-
+#if 0
+    HpBonus=0;
+#endif
     nr = mob->nr;
     mob->player.name = fread_string(mob_fi);
     if (*mob->player.name) {
@@ -1943,7 +1947,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob->player.title = 0;
 
     /*
-     *** Numeric data *** 
+     *** Numeric data ***
      */
 
     mob->mult_att = 1.0;
@@ -2011,7 +2015,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
             mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
 
             fscanf(mob_fi, " %ld ", &tmp);
-            tmp = MAX(tmp, GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 
+            tmp = MAX(tmp, GET_LEVEL(mob, WARRIOR_LEVEL_IND) *
                                           mob->points.max_hit);
             GET_EXP(mob) = tmp;
 
@@ -2080,7 +2084,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         }
         for (i = 0; i < MAX_SAVES; i++) {
 #if 0
-            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, 
+            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob,
             WARRIOR_LEVEL_IND), 2);
 #endif
             savebase = 40;
@@ -2093,7 +2097,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
                     (int) (GET_LEVEL(mob, WARRIOR_LEVEL_IND) * 0.533), 6);
         }
 
-    } else if ((letter == 'A') || (letter == 'N') || (letter == 'B') || 
+    } else if ((letter == 'A') || (letter == 'N') || (letter == 'B') ||
                (letter == 'L')) {
         if ((letter == 'A') || (letter == 'B') || (letter == 'L')) {
             fscanf(mob_fi, " %ld ", &tmp);
@@ -2161,7 +2165,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
             mob->points.gold = (int)((float)((number(900, 1100) * tmp) / 1000));
 
             /*
-             * this is where the new exp will come into play 
+             * this is where the new exp will come into play
              */
             fscanf(mob_fi, " %ld \n", &tmp);
             if (tmp >= 0) {
@@ -2236,7 +2240,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         }
         for (i = 0; i < MAX_SAVES; i++) {
 #if 0
-            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, 
+            mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob,
             WARRIOR_LEVEL_IND), 2);
 #endif
             savebase = 40;
@@ -2250,8 +2254,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         }
 
     } else {
-        /* 
-         * The old monsters are down below here 
+        /*
+         * The old monsters are down below here
          */
 
         fscanf(mob_fi, "\n");
@@ -2338,14 +2342,14 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
         fscanf(mob_fi, " \n ");
 
         /*
-         * Set the damage as some standard 1d4 
+         * Set the damage as some standard 1d4
          */
         mob->points.damroll = 0;
         mob->specials.damnodice = 1;
         mob->specials.damsizedice = 6;
 
         /*
-         * Calculate THAC0 as a formular of Level 
+         * Calculate THAC0 as a formular of Level
          */
         mob->points.hitroll = MAX(1, GET_LEVEL(mob, WARRIOR_LEVEL_IND) - 3);
     }
@@ -2353,8 +2357,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob->tmpabilities = mob->abilities;
 
     for (i = 0; i < MAX_WEAR; i++) {
-        /* 
-         * Initialisering Ok 
+        /*
+         * Initialisering Ok
          */
         mob->equipment[i] = 0;
     }
@@ -2370,7 +2374,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob->waitp = 0;
 
     /*
-     * Check to see if associated with a script, if so, set it up 
+     * Check to see if associated with a script, if so, set it up
      */
     if (IS_SET(mob->specials.act, ACT_SCRIPT)) {
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
@@ -2384,8 +2388,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     }
 
     /*
-     * tell the spec_proc (if there is one) that we've been born 
-     * insert in list 
+     * tell the spec_proc (if there is one) that we've been born
+     * insert in list
      */
 
     mob->next = character_list;
@@ -2403,31 +2407,31 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
      * Meh this creates such a lot of spam
      */
 #if 0
-    if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) { 
+    if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
         char buf[200];
-        sprintf(buf, "%s has gold > level * 1500 (%d)", 
-                mob->player.short_descr, mob->points.gold); 
-        Log(buf); 
-    } 
+        sprintf(buf, "%s has gold > level * 1500 (%d)",
+                mob->player.short_descr, mob->points.gold);
+        Log(buf);
+    }
 #endif
     /*
-     * set up things that all members of the race have 
+     * set up things that all members of the race have
      */
     SetRacialStuff(mob);
 
     /*
-     * change exp for wimpy mobs (lower) 
+     * change exp for wimpy mobs (lower)
      */
     if (IS_SET(mob->specials.act, ACT_WIMPY)) {
         GET_EXP(mob) -= GET_EXP(mob) / 10;
     }
     /*
-     * change exp for agressive mobs (higher) 
+     * change exp for agressive mobs (higher)
      */
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
         GET_EXP(mob) += GET_EXP(mob) / 10;
         /*
-         * big bonus for fully aggressive mobs for now 
+         * big bonus for fully aggressive mobs for now
          */
         if (!IS_SET(mob->specials.act, ACT_WIMPY)
             || IS_SET(mob->specials.act, ACT_META_AGG)) {
@@ -2436,7 +2440,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     }
 
     /*
-     * set up distributed movement system 
+     * set up distributed movement system
      */
     mob->specials.tick = mob_tick_count++;
 
@@ -2498,7 +2502,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     mob->player.title = 0;
 
     /*
-     *** Numeric data *** 
+     *** Numeric data ***
      */
     mob->specials.spellfail = 101;
 
@@ -2617,7 +2621,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     }
     for (i = 0; i < MAX_SAVES; i++) {
 #if 0
-        mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, 
+        mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob,
               WARRIOR_LEVEL_IND), 2);
 #endif
         savebase = 40;
@@ -2632,9 +2636,9 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
 
     mob->tmpabilities = mob->abilities;
 
-    for (i = 0; i < MAX_WEAR; i++) {    
-        /* 
-         * Initialisering Ok 
+    for (i = 0; i < MAX_WEAR; i++) {
+        /*
+         * Initialisering Ok
          */
         mob->equipment[i] = 0;
     }
@@ -2649,7 +2653,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     mob->waitp = 0;
 
     /*
-     * Check to see if associated with a script, if so, set it up 
+     * Check to see if associated with a script, if so, set it up
      */
     if (IS_SET(mob->specials.act, ACT_SCRIPT)) {
         REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
@@ -2662,54 +2666,54 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
         }
     }
     /*
-     * tell the spec_proc (if there is one) that we've been born 
+     * tell the spec_proc (if there is one) that we've been born
      */
     /*
-     * insert in list 
+     * insert in list
      */
 
     mob->next = character_list;
     character_list = mob;
 
     /*
-     * Meh this creates such a lot of spam 
+     * Meh this creates such a lot of spam
      */
 #if 0
-    if (mob->points.gold >GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) { 
+    if (mob->points.gold >GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
         char buf[200];
-        sprintf(buf, "%s has gold > level * 1500 (%d)", 
-                mob->player.short_descr, mob->points.gold); 
-        Log(buf); 
+        sprintf(buf, "%s has gold > level * 1500 (%d)",
+                mob->player.short_descr, mob->points.gold);
+        Log(buf);
     }
 #endif
-     
+
     /*
-     * set up things that all members of the race have 
+     * set up things that all members of the race have
      */
     SetRacialStuff(mob);
 
     /*
-     * change exp for wimpy mobs (lower) 
+     * change exp for wimpy mobs (lower)
      */
     if (IS_SET(mob->specials.act, ACT_WIMPY)) {
         GET_EXP(mob) -= GET_EXP(mob) / 10;
     }
     /*
-     * change exp for agressive mobs (higher) 
+     * change exp for agressive mobs (higher)
      */
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
         GET_EXP(mob) += GET_EXP(mob) / 10;
         /*
-         * big bonus for fully aggressive mobs for now 
+         * big bonus for fully aggressive mobs for now
          */
-        if (!IS_SET(mob->specials.act, ACT_WIMPY) 
+        if (!IS_SET(mob->specials.act, ACT_WIMPY)
             || IS_SET(mob->specials.act, ACT_META_AGG)) {
             GET_EXP(mob) += (GET_EXP(mob) / 2);
         }
     }
 
     /*
-     * set up distributed movement system 
+     * set up distributed movement system
      */
     mob->specials.tick = mob_tick_count++;
 
@@ -2744,7 +2748,7 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 
     /*
-     *** numeric data *** 
+     *** numeric data ***
      */
 
     obj->obj_flags.type_flag = osrc->obj_flags.type_flag;
@@ -2759,7 +2763,7 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     obj->obj_flags.cost_per_day = osrc->obj_flags.cost_per_day;
 
     /*
-     *** extra descriptions *** 
+     *** extra descriptions ***
      */
 
     obj->ex_description = 0;
@@ -2785,8 +2789,8 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 }
 
-#define NEWSETUP 1              
-/* 
+#define NEWSETUP 1
+/*
  * used for old style dale objects
  */
 int read_obj_from_file(struct obj_data *obj, FILE * f)
@@ -2824,7 +2828,7 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
     }
 
     /*
-     *** numeric data *** 
+     *** numeric data ***
      */
 
     fscanf(f, " %d ", &tmp);
@@ -2869,13 +2873,13 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
 #endif
 
     /*
-     * Let's see if this works, Lennya 
+     * Let's see if this works, Lennya
      */
     fscanf(f, " %d \n", &tmp);
     obj->tweak = tmp;
 
     /*
-     *** extra descriptions *** 
+     *** extra descriptions ***
      */
 
     obj->ex_description = 0;
@@ -2897,8 +2901,8 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
     }
 
     for (i = 0; (i < MAX_OBJ_AFFECT) && (*chk == 'A'); i++) {
-        /* 
-         * inserted to fix bug with load 
+        /*
+         * inserted to fix bug with load
          * of object in individual file
          */
         *chk = 'x';
@@ -2917,11 +2921,11 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
 }
 
 /*
- * ---------- Start of change_cr_to_nl) ---------- 
+ * ---------- Start of change_cr_to_nl) ----------
  */
 /*
- * change each occurence of a Carriage Return 
- * by a New Line in a buffer 
+ * change each occurence of a Carriage Return
+ * by a New Line in a buffer
  */
 void remove_cr(char *output, char *input)
 {
@@ -2942,10 +2946,10 @@ void remove_cr(char *output, char *input)
 }
 
 /*
- * ---------- Start of write_mob_to_file ---------- 
+ * ---------- Start of write_mob_to_file ----------
  */
 /*
- * write a mobile to a file 
+ * write a mobile to a file
  */
 
  /*
@@ -2988,7 +2992,7 @@ void write_mob_to_file(struct char_data *mob, FILE * mob_fi)
     char            buff[MAX_STRING_LENGTH];
 
     /*
-     *** String data *** 
+     *** String data ***
      */
     fwrite_string(mob_fi, mob->player.name);
     fwrite_string(mob_fi, mob->player.short_descr);
@@ -3010,7 +3014,7 @@ void write_mob_to_file(struct char_data *mob, FILE * mob_fi)
     }
 
     /*
-     *** Numeric data *** 
+     *** Numeric data ***
      */
     tmp = mob->specials.act;
     REMOVE_BIT(tmp, ACT_ISNPC);
@@ -3034,20 +3038,20 @@ void write_mob_to_file(struct char_data *mob, FILE * mob_fi)
     tmpexp = GET_EXP(mob);
 
     /*
-     * revert exp for agressive mobs (lower) 
+     * revert exp for agressive mobs (lower)
      */
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
         /*
-         * big bonus for fully aggressive mobs for now 
+         * big bonus for fully aggressive mobs for now
          */
-        if (!IS_SET(mob->specials.act, ACT_WIMPY) || 
+        if (!IS_SET(mob->specials.act, ACT_WIMPY) ||
             IS_SET(mob->specials.act, ACT_META_AGG)) {
             tmpexp = tmpexp / 1.5;
         }
         tmpexp = tmpexp / 1.1;
     }
     /*
-     * revert exp for wimpy mobs (higher) 
+     * revert exp for wimpy mobs (higher)
      */
     if (IS_SET(mob->specials.act, ACT_WIMPY)) {
         tmpexp = tmpexp / 0.9;
@@ -3106,7 +3110,7 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     char            buff[MAX_STRING_LENGTH];
 
     /*
-     *** String data *** 
+     *** String data ***
      */
     fwrite_string(mob_fi, mob->player.name);
     fwrite_string(mob_fi, mob->player.short_descr);
@@ -3128,7 +3132,7 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     }
 
     /*
-     *** Numeric data *** 
+     *** Numeric data ***
      */
     tmp = mob->specials.act;
     REMOVE_BIT(tmp, ACT_ISNPC);
@@ -3152,13 +3156,13 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     tmpexp = GET_EXP(mob);
 
     /*
-     * revert exp for agressive mobs (lower) 
+     * revert exp for agressive mobs (lower)
      */
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
         /*
-         * big bonus for fully aggressive mobs for now 
+         * big bonus for fully aggressive mobs for now
          */
-        if (!IS_SET(mob->specials.act, ACT_WIMPY) || 
+        if (!IS_SET(mob->specials.act, ACT_WIMPY) ||
             IS_SET(mob->specials.act, ACT_META_AGG)) {
             tmpexp = tmpexp / 1.5;
         }
@@ -3166,7 +3170,7 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
     }
 
     /*
-     * revert exp for wimpy mobs (higher) 
+     * revert exp for wimpy mobs (higher)
      */
     if (IS_SET(mob->specials.act, ACT_WIMPY)) {
         tmpexp = tmpexp / 0.9;
@@ -3230,9 +3234,11 @@ int weaponconvert(struct obj_data *obj)
         return WEAPON_GENERIC;
     while (weaponskills[i].level != -1) {
         if (strstr(obj->name, weaponskills[i].name)) {
-            // sprintf(buf,"%s is a %s.\n\r",obj->name,
-            // weaponskills[i].name);
-            // printf(buf);
+#if 0
+            sprintf(buf,"%s is a %s.\n\r",obj->name,
+            weaponskills[i].name);
+            printf(buf);
+#endif
             return 350 + i;
         }
 
@@ -3246,7 +3252,7 @@ void write_obj_to_file(struct obj_data *obj, FILE * f)
     struct extra_descr_data *descr;
 
 #if 0
-     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual); 
+     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual);
 #endif
     fwrite_string(f, obj->name);
     fwrite_string(f, obj->short_description);
@@ -3265,7 +3271,7 @@ void write_obj_to_file(struct obj_data *obj, FILE * f)
             obj->max, obj->modified, obj->speed, obj->weapontype, obj->tweak);
 
     /*
-     *** extra descriptions *** 
+     *** extra descriptions ***
      */
     if (obj->ex_description) {
         for (descr = obj->ex_description; descr; descr = descr->next) {
@@ -3289,7 +3295,7 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
     struct extra_descr_data *descr;
 
 #if 0
-     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual); 
+     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual);
 #endif
     fwrite_string(f, obj->name);
     fwrite_string(f, obj->short_description);
@@ -3298,10 +3304,10 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
     fwrite_string(f, obj->modBy);
 #if 0
     obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN
-    obj->obj_flags.extra_flags 
+    obj->obj_flags.extra_flags
 #endif
 
-    /* 
+    /*
      * let's get rid of the !bard flags, remove this when assigning a
      * decent flag here
      */
@@ -3322,19 +3328,19 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
     if (IS_WEAPON(obj)) {
         fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
                 obj->obj_flags.cost,
-                (obj->obj_flags.cost_per_day == -1 ? -1 : 
-                 obj->obj_flags.cost_per_day), obj->level, obj->max, 
+                (obj->obj_flags.cost_per_day == -1 ? -1 :
+                 obj->obj_flags.cost_per_day), obj->level, obj->max,
                 obj->modified, obj->speed, weaponconvert(obj), obj->tweak);
     } else {
         fprintf(f, "%d %d %d %d %d %ld 0 0 %d\n", obj->obj_flags.weight,
-                obj->obj_flags.cost, 
-                (obj->obj_flags.cost_per_day == -1 ? -1 : 
-                 obj->obj_flags.cost_per_day), obj->level, obj->max, 
+                obj->obj_flags.cost,
+                (obj->obj_flags.cost_per_day == -1 ? -1 :
+                 obj->obj_flags.cost_per_day), obj->level, obj->max,
                 obj->modified, obj->tweak);
     }
 
     /*
-     *** extra descriptions *** 
+     *** extra descriptions ***
      */
     if (obj->ex_description) {
         for (descr = obj->ex_description; descr; descr = descr->next) {
@@ -3353,7 +3359,7 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
 }
 
 /*
- * read an object from OBJ_FILE 
+ * read an object from OBJ_FILE
  */
 struct obj_data *read_object(int nr, int type)
 {
@@ -3424,7 +3430,7 @@ struct obj_data *read_object(int nr, int type)
     obj_index[nr].number++;
 #if 0
     obj->level = 0;
-#endif    
+#endif
     obj_count++;
 #if BYTE_COUNT
     fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);
@@ -3435,7 +3441,7 @@ struct obj_data *read_object(int nr, int type)
 
 
 /*
- * counts the number of inited zones 
+ * counts the number of inited zones
  */
 int init_counter()
 {
@@ -3452,7 +3458,7 @@ int init_counter()
 
 /*
  * update zone ages, queue for reset if necessary, and dequeue when
- * possible 
+ * possible
  */
 void zone_update()
 {
@@ -3471,17 +3477,17 @@ void zone_update()
     extern long     SystemFlags;
 
     /*
-     * enqueue zones 
+     * enqueue zones
      */
     for (i = 0; i <= top_of_zone_table; i++) {
         if (zone_table[i].start) {
-            if (zone_table[i].age < zone_table[i].lifespan && 
+            if (zone_table[i].age < zone_table[i].lifespan &&
                 zone_table[i].reset_mode) {
                 (zone_table[i].age)++;
-            } else if (zone_table[i].age < ZO_DEAD && 
+            } else if (zone_table[i].age < ZO_DEAD &&
                        zone_table[i].reset_mode) {
                 /*
-                 * enqueue zone 
+                 * enqueue zone
                  */
 
                 CREATE(update_u, struct reset_q_element, 1);
@@ -3501,17 +3507,17 @@ void zone_update()
     }
 
     /*
-     * dequeue zones (if possible) and reset 
+     * dequeue zones (if possible) and reset
      */
     for (update_u = reset_q.head; update_u; update_u = tmp2) {
         if (update_u->zone_to_reset > top_of_zone_table) {
 
             /*
-             * this may or may not work 
+             * this may or may not work
              */
             /*
              * may result in some lost memory, but the loss is not
-             * signifigant over the short run 
+             * signifigant over the short run
              */
 
             update_u->zone_to_reset = 0;
@@ -3519,24 +3525,24 @@ void zone_update()
         }
         tmp2 = update_u->next;
 
-        if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, 
-                   ZONE_ALWAYS) || 
+        if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode,
+                   ZONE_ALWAYS) ||
             IS_SET(zone_table[update_u->zone_to_reset].reset_mode,
                    ZONE_NODEINIT) ||
-            (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, 
+            (IS_SET(zone_table[update_u->zone_to_reset].reset_mode,
                     ZONE_EMPTY) && is_empty(update_u->zone_to_reset))) {
             /*
-             * Lennya's deinit of zones stuff 
+             * Lennya's deinit of zones stuff
              */
             if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode,
                        ZONE_NODEINIT)) {
                 /*
-                 * this should never deinit, or set back to 0 
+                 * this should never deinit, or set back to 0
                  */
                 reset_zone(update_u->zone_to_reset, 0);
             } else if (!is_empty(update_u->zone_to_reset)) {
                 /*
-                 * just reset, not cleaned when there's people in it 
+                 * just reset, not cleaned when there's people in it
                  */
                 reset_zone(update_u->zone_to_reset, 0);
             } else if (!IS_SET(SystemFlags, SYS_NO_DEINIT)) {
@@ -3572,23 +3578,23 @@ void zone_update()
     if (i > (MIN_INIT_TQP - 1)) {
         for (i = 1; i <= TQP_AMOUNT; i++) {
             if (!(travelqp = find_tqp(i))) {
-                /* 
+                /*
                  * init the travelqp thing
                  */
                 newch = 0;
                 qp_patience = 0;
                 while (!newch) {
-                    /* this MAY cause endless loop, 
+                    /* this MAY cause endless loop,
                      * may have to go for(1..100)
                      */
                     to_room = number(0, top_of_world);
                     room = real_roomp(to_room);
                     if (room && (newch = room->people)) {
-                        if (IS_PC(newch) || 
+                        if (IS_PC(newch) ||
                             IS_SET(newch->specials.act, ACT_POLYSELF)) {
                             newch = 0;
                         } else {
-                            /* 
+                            /*
                              * does he already have one? (is this
                              * really needed? more calcs)
                              */
@@ -3635,17 +3641,17 @@ int does_Load(int num, int max)
         return (TRUE);
     }
     if (num > max) {
-        /* 
+        /*
          * Maxxed.. but there is a slight chance of loading (GH)
-         * 20/2 would be a 10% chance of loading.. 
+         * 20/2 would be a 10% chance of loading..
          */
-        temp = (max / 2) + 1;   
+        temp = (max / 2) + 1;
     } else {
         temp = 100 - ((num / (2 * max)) * 100.0);
     }
     temp2 = number(1, 101);
 
-    sprintf(buff, "Chance to load: %d    <=? Dice roll: %d", (int)temp, 
+    sprintf(buff, "Chance to load: %d    <=? Dice roll: %d", (int)temp,
             (int)temp2);
     Log(buff);
     if (temp2 <= temp) {
@@ -3659,7 +3665,7 @@ int does_Load(int num, int max)
 
 
 /*
- * execute the reset command table of a given zone 
+ * execute the reset command table of a given zone
  */
 void reset_zone(int zone, int cmd)
 {
@@ -3667,9 +3673,9 @@ void reset_zone(int zone, int cmd)
                     last_cmd = 1,
                     tweakroll = 100,
                     tweakrate = 0;
-    int             tweakmin = 0;       /* 
+    int             tweakmin = 0;       /*
                                          * this is the minimum tweak rate
-                                         * on ALL items, currently 0 
+                                         * on ALL items, currently 0
                                          */
     char            buf[256];
     struct char_data *mob;
@@ -3726,8 +3732,8 @@ void reset_zone(int zone, int cmd)
         if (last_cmd || ZCMD.if_flag <= 0) {
             switch (ZCMD.command) {
             case 'M':
-                /* 
-                 * read a mobile 
+                /*
+                 * read a mobile
                  */
                 if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !fighting_in_room(ZCMD.arg3) &&
@@ -3762,10 +3768,10 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'C':
-                /* 
-                 * read a mobile.  Charm them to follow prev. 
+                /*
+                 * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) && 
+                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
@@ -3784,7 +3790,7 @@ void reset_zone(int zone, int cmd)
                     if (master) {
                         char_to_room(mob, master->in_room);
                         /*
-                         * add the charm bit to the dude. 
+                         * add the charm bit to the dude.
                          */
                         add_follower(mob, master);
                         SET_BIT(mob->specials.affected_by, AFF_CHARM);
@@ -3800,14 +3806,14 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'Z':
-                /* 
-                 * set the last mobile to this zone 
+                /*
+                 * set the last mobile to this zone
                  */
                 if (mob) {
                     mob->specials.zone = ZCMD.arg1;
 
                     if (GET_RACE(mob) > RACE_ROCK_GNOME) {
-                        if (!strchr(zone_table[ZCMD.arg1].races, 
+                        if (!strchr(zone_table[ZCMD.arg1].races,
                                     GET_RACE(mob))) {
                             zone_table[ZCMD.arg1].races[strlen(zone_table[ZCMD.
                                     arg1].races)] = GET_RACE(mob);
@@ -3817,15 +3823,15 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'O':
-                /* 
-                 * read an object  On ground load (GH) 
+                /*
+                 * read an object  On ground load (GH)
                  */
 
                 if (TRUE) {
-                    if (ZCMD.arg3 >= 0 && 
+                    if (ZCMD.arg3 >= 0 &&
                         ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
-                        if ((ZCMD.if_flag > 0 && 
-                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) || 
+                        if ((ZCMD.if_flag > 0 &&
+                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                             (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
                                 (-ZCMD.if_flag) + 1)) {
                             if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
@@ -3873,8 +3879,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'P':
-                /* 
-                 * object to object 
+                /*
+                 * object to object
                  */
                 if (TRUE) {
                     obj = read_object(ZCMD.arg1, REAL);
@@ -3915,8 +3921,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'G':
-                /* 
-                 * obj_to_char 
+                /*
+                 * obj_to_char
                  */
                 if (TRUE && (obj = read_object(ZCMD.arg1, REAL)) && mob) {
                     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
@@ -3950,7 +3956,7 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'H':
-                /* 
+                /*
                  * hatred to char
                  */
 
@@ -3962,8 +3968,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'F':
-                /* 
-                 * fear to char 
+                /*
+                 * fear to char
                  */
 
                 if (AddFears(mob, ZCMD.arg1, ZCMD.arg2)) {
@@ -3973,9 +3979,9 @@ void reset_zone(int zone, int cmd)
                 }
                 break;
 
-            case 'E':           
-            /* 
-             * object to equipment list 
+            case 'E':
+            /*
+             * object to equipment list
              */
                 if (TRUE && (obj = read_object(ZCMD.arg1, REAL))) {
                     if (!mob->equipment[ZCMD.arg3]) {
@@ -4017,8 +4023,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'D':
-                /* 
-                 * set state of door 
+                /*
+                 * set state of door
                  */
                 rp = real_roomp(ZCMD.arg1);
                 if (rp && rp->dir_option[ZCMD.arg2]) {
@@ -4045,7 +4051,7 @@ void reset_zone(int zone, int cmd)
                     last_cmd = 1;
                 } else {
                     /*
-                     * that exit doesn't exist anymore 
+                     * that exit doesn't exist anymore
                      */
                 }
                 break;
@@ -4071,7 +4077,7 @@ void reset_zone(int zone, int cmd)
     zone_table[zone].start = 1;
 #else
     /*
-     * Old Silly reset zone... 
+     * Old Silly reset zone...
      */
 
     if (zone == 0 && !done) {
@@ -4111,10 +4117,10 @@ void reset_zone(int zone, int cmd)
         if (last_cmd || ZCMD.if_flag <= 0)
             switch (ZCMD.command) {
             case 'M':
-                /* 
-                 * read a mobile 
+                /*
+                 * read a mobile
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) && 
+                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
@@ -4125,7 +4131,7 @@ void reset_zone(int zone, int cmd)
                     mob->specials.zone = zone;
                     char_to_room(mob, ZCMD.arg3);
 
-                    if (GET_RACE(mob) > RACE_ROCK_GNOME && 
+                    if (GET_RACE(mob) > RACE_ROCK_GNOME &&
                         !strchr(zone_table[zone].races, GET_RACE(mob))) {
                         zone_table[zone].races[strlen(zone_table[zone].
                                 races)] = GET_RACE(mob);
@@ -4139,10 +4145,10 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'C':
-                /* 
-                 * read a mobile.  Charm them to follow prev. 
+                /*
+                 * read a mobile.  Charm them to follow prev.
                  */
-                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) && 
+                if ((mob_index[ZCMD.arg1].number < ZCMD.arg2) &&
                     !CheckKillFile(mob_index[ZCMD.arg1].virtual)) {
                     mob = read_mobile(ZCMD.arg1, REAL);
                     if (!mob) {
@@ -4156,7 +4162,7 @@ void reset_zone(int zone, int cmd)
                     }
                     mob->specials.zone = zone;
 
-                    if (GET_RACE(mob) > RACE_ROCK_GNOME && 
+                    if (GET_RACE(mob) > RACE_ROCK_GNOME &&
                         !strchr(zone_table[zone].races, GET_RACE(mob))) {
                         zone_table[zone].races[strlen(zone_table[zone].
                             races)] = GET_RACE(mob);
@@ -4165,7 +4171,7 @@ void reset_zone(int zone, int cmd)
                     if (master) {
                         char_to_room(mob, master->in_room);
                         /*
-                         * add the charm bit to the dude. 
+                         * add the charm bit to the dude.
                          */
                         add_follower(mob, master);
                         SET_BIT(mob->specials.affected_by, AFF_CHARM);
@@ -4181,8 +4187,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'Z':
-                /* 
-                 * set the last mobile to this zone 
+                /*
+                 * set the last mobile to this zone
                  */
                 if (mob) {
                     mob->specials.zone = ZCMD.arg1;
@@ -4196,15 +4202,15 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'O':
-                /* 
-                 * read an object 
+                /*
+                 * read an object
                  */
-                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 || 
+                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) {
-                    if (ZCMD.arg3 >= 0 && 
+                    if (ZCMD.arg3 >= 0 &&
                         (rp = real_roomp(ZCMD.arg3)) != NULL) {
-                        if ((ZCMD.if_flag > 0 && 
-                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) || 
+                        if ((ZCMD.if_flag > 0 &&
+                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
                             (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1, rp) <
                                 (-ZCMD.if_flag) + 1)) {
                             if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
@@ -4239,10 +4245,10 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'P':
-                /* 
-                 * object to object 
+                /*
+                 * object to object
                  */
-                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 || 
+                if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) {
                     obj = read_object(ZCMD.arg1, REAL);
                     obj_to = get_obj_num(ZCMD.arg3);
@@ -4270,11 +4276,11 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'G':
-                /* 
-                 * obj_to_char 
+                /*
+                 * obj_to_char
                  */
-                if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 || 
-                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) && 
+                if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
+                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
                     (obj = read_object(ZCMD.arg1, REAL))) {
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
                         tweakroll = number(1, 100);
@@ -4296,8 +4302,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'H':
-                /* 
-                 * hatred to char 
+                /*
+                 * hatred to char
                  */
 
                 if (AddHatred(mob, ZCMD.arg1, ZCMD.arg2)) {
@@ -4308,8 +4314,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'F':
-                /* 
-                 * fear to char 
+                /*
+                 * fear to char
                  */
 
                 if (AddFears(mob, ZCMD.arg1, ZCMD.arg2)) {
@@ -4320,11 +4326,11 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'E':
-                /* 
-                 * object to equipment list 
+                /*
+                 * object to equipment list
                  */
                 if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 ||
-                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) && 
+                     obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
                     (obj = read_object(ZCMD.arg1, REAL))) {
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -4355,8 +4361,8 @@ void reset_zone(int zone, int cmd)
                 break;
 
             case 'D':
-                /* 
-                 * set state of door 
+                /*
+                 * set state of door
                  */
                 rp = real_roomp(ZCMD.arg1);
                 if (rp && rp->dir_option[ZCMD.arg2]) {
@@ -4389,7 +4395,7 @@ void reset_zone(int zone, int cmd)
                     last_cmd = 1;
                 } else {
                     /*
-                     * that exit doesn't exist anymore 
+                     * that exit doesn't exist anymore
                      */
                 }
                 break;
@@ -4404,7 +4410,7 @@ void reset_zone(int zone, int cmd)
         }
 
     }
-    
+
 #if 0
     for (j = 0; zone_table[zone].races[j]; j++) {
         fprintf(stderr, "%d ", (int) zone_table[zone].races[j]);
@@ -4422,14 +4428,14 @@ void reset_zone(int zone, int cmd)
 #undef ZCMD
 
 /*
- * for use in reset_zone; return TRUE if zone 'nr' is free of PC's 
+ * for use in reset_zone; return TRUE if zone 'nr' is free of PC's
  */
 int is_empty(int zone_nr)
 {
     struct descriptor_data *i;
 
     for (i = descriptor_list; i; i = i->next) {
-        if (!i->connected && 
+        if (!i->connected &&
             real_roomp(i->character->in_room)->zone == zone_nr) {
             return (0);
         }
@@ -4443,7 +4449,7 @@ int is_empty(int zone_nr)
 *********************************************************************** */
 
 /*
- * Load a char, TRUE if loaded, FALSE if not 
+ * Load a char, TRUE if loaded, FALSE if not
  */
 int load_char(char *name, struct char_file_u *char_element)
 {
@@ -4466,9 +4472,9 @@ int load_char(char *name, struct char_file_u *char_element)
         /*
          **  Kludge for ressurection
          */
-        char_element->talks[2] = FALSE; 
-        /* 
-         * they are not dead 
+        char_element->talks[2] = FALSE;
+        /*
+         * they are not dead
          */
         return (player_i);
     }
@@ -4476,7 +4482,7 @@ int load_char(char *name, struct char_file_u *char_element)
 }
 
 /*
- * copy data from the file structure to a char struct 
+ * copy data from the file structure to a char struct
  */
 void store_to_char(struct char_file_u *st, struct char_data *ch)
 {
@@ -4490,7 +4496,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
         ch->player.level[i] = st->level[i];
     }
     /*
-     * to make sure all levels above the normal are 0 
+     * to make sure all levels above the normal are 0
      */
     for (i = MAX_CLASS; i < ABS_MAX_CLASS; i++) {
         ch->player.level[i] = 0;
@@ -4509,7 +4515,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     }
 
     /*
-     * some little fixxes for new title (GH) may28/2002 
+     * some little fixxes for new title (GH) may28/2002
      */
     if (!strstr(ch->player.title, st->name)) {
         sprintf(ch->player.title, "%s", st->name);
@@ -4618,7 +4624,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
         GET_COND(ch, i) = st->conditions[i];
     }
     /*
-     * Add all spell effects 
+     * Add all spell effects
      */
     ch->affected = 0;
     for (i = 0; i < MAX_AFFECT; i++) {
@@ -4632,7 +4638,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     ch->term = 0;
 
     /*
-     * set default screen size 
+     * set default screen size
      */
     ch->size = 25;
 
@@ -4652,7 +4658,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     ch->style = 0;
 
     /*
-     * need to malloc the space for the pc struct 
+     * need to malloc the space for the pc struct
      */
     ch->pc = (void *) malloc(sizeof(struct pc_data));
     if (ch->pc) {
@@ -4661,8 +4667,8 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
         Log("malloc for ch->pc failed, db.c store_to_char");
     }
     ch->pc->plr = 0;
-    /* 
-     * should = st->act eventually 
+    /*
+     * should = st->act eventually
      */
     ch->pc->dimd_credits = 0;
     ch->pc->comm = 0;
@@ -4671,7 +4677,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 }
 
 /*
- * copy vital data from a players char-structure to the file structure 
+ * copy vital data from a players char-structure to the file structure
  */
 void char_to_store(struct char_data *ch, struct char_file_u *st)
 {
@@ -4680,7 +4686,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
     struct obj_data *char_eq[MAX_WEAR];
 
     /*
-     * Unaffect everything a character can be affected by 
+     * Unaffect everything a character can be affected by
      */
 
     for (i = 0; i < MAX_WEAR; i++) {
@@ -4696,7 +4702,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
             st->affected[i] = *af;
             st->affected[i].next = 0;
             /*
-             * subtract effect of the spell or the effect will be doubled 
+             * subtract effect of the spell or the effect will be doubled
              */
             affect_modify(ch, st->affected[i].location,
                           st->affected[i].modifier,
@@ -4814,8 +4820,8 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
     for (af = ch->affected, i = 0; i < MAX_AFFECT; i++) {
         if (af) {
             /*
-             * Add effect of the spell or it will be lost 
-             * When saving without quitting 
+             * Add effect of the spell or it will be lost
+             * When saving without quitting
              */
             affect_modify(ch, st->affected[i].location,
                           st->affected[i].modifier,
@@ -4832,7 +4838,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 }
 
 /*
- * create a new entry in the in-memory index table for the player file 
+ * create a new entry in the in-memory index table for the player file
  */
 int create_entry(char *name)
 {
@@ -4852,7 +4858,7 @@ int create_entry(char *name)
     CREATE(player_table[top_of_p_table].name, char, strlen(name) + 1);
 
     /*
-     * copy lowercase equivalent of name to table field 
+     * copy lowercase equivalent of name to table field
      */
     for (i = 0; (*(player_table[top_of_p_table].name + i) = LOWER(*(name + i)));
          i++) {
@@ -4867,7 +4873,7 @@ int create_entry(char *name)
 }
 
 /*
- * write the vital data of a player to the player file 
+ * write the vital data of a player to the player file
  */
 void save_char(struct char_data *ch, sh_int load_room)
 {
@@ -4881,14 +4887,14 @@ void save_char(struct char_data *ch, sh_int load_room)
         return;
     }
 #if 0
-    if (IS_CARRYING_W(ch) < 0) { 
+    if (IS_CARRYING_W(ch) < 0) {
         char buf[256]; sprintf(buf,"%s has a negative weight carried"
-                " of (%d) please fix me", GET_NAME(ch),IS_CARRYING_W(ch)); 
-        Log(buf); 
-    } 
+                " of (%d) please fix me", GET_NAME(ch),IS_CARRYING_W(ch));
+        Log(buf);
+    }
     /*
      *This was ridiculous!
-     * -MW 
+     * -MW
      */
 #endif
     if (IS_NPC(ch)) {
@@ -4938,7 +4944,7 @@ void save_char(struct char_data *ch, sh_int load_room)
 }
 
 /*
- * for possible later use with qsort 
+ * for possible later use with qsort
  */
 int compare(struct player_index_element *arg1, struct player_index_element
             *arg2)
@@ -4960,7 +4966,7 @@ int fwrite_string(FILE * fl, char *buf)
 }
 
 /*
- * Original fread_string was a memory leaking piece of garbage... -DM 
+ * Original fread_string was a memory leaking piece of garbage... -DM
  */
 char           *fread_string(FILE * f1)
 {
@@ -4988,8 +4994,8 @@ char           *fread_string(FILE * f1)
     }
 
     if (i == MAX_STRING_LENGTH - 3) {
-        /* 
-         * We filled the buffer 
+        /*
+         * We filled the buffer
          */
         buf[i] = '\0';
         Log("File too long (fread_string).");
@@ -5007,7 +5013,7 @@ char           *fread_string(FILE * f1)
 }
 
 /*
- * release memory allocated for a char struct 
+ * release memory allocated for a char struct
  */
 void free_char(struct char_data *ch)
 {
@@ -5064,7 +5070,7 @@ void free_char(struct char_data *ch)
 }
 
 /*
- * release memory allocated for an obj struct 
+ * release memory allocated for an obj struct
  */
 void free_obj(struct obj_data *obj)
 {
@@ -5107,7 +5113,7 @@ void free_obj(struct obj_data *obj)
 }
 
 /*
- * read contents of a text file, and place in buf 
+ * read contents of a text file, and place in buf
  */
 int file_to_string(char *name, char *buf)
 {
@@ -5177,7 +5183,7 @@ void ClearDeadBit(struct char_data *ch)
 }
 
 /*
- * clear some of the the working variables of a char 
+ * clear some of the the working variables of a char
  */
 void reset_char(struct char_data *ch)
 {
@@ -5223,7 +5229,7 @@ void reset_char(struct char_data *ch)
     ch->fears.clist = 0;
 
     /*
-     * AC adjustment 
+     * AC adjustment
      */
     GET_AC(ch) = 100;
 
@@ -5270,7 +5276,7 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * Class specific Stuff 
+     * Class specific Stuff
      */
 
     ClassSpecificStuff(ch);
@@ -5281,13 +5287,13 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * racial stuff 
+     * racial stuff
      */
     SetRacialStuff(ch);
 
     /*
-     * update the affects on the character. 
-     * we try and use default set in .aux file 
+     * update the affects on the character.
+     * we try and use default set in .aux file
      */
     if (ch->specials.sev > 9 || ch->specials.sev < 0) {
         ch->specials.sev = 0;
@@ -5301,20 +5307,20 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * could add barbarian double dex bonus here.... ... Nah! 
+     * could add barbarian double dex bonus here.... ... Nah!
      */
 
     if (GET_AC(ch) > 100) {
         GET_AC(ch) = 100;
     }
     /*
-     * clear out the 'dead' bit on characters 
+     * clear out the 'dead' bit on characters
      */
     if (ch->desc) {
         ClearDeadBit(ch);
     }
     /*
-     * Clear out berserk flags case there was a crash in a fight 
+     * Clear out berserk flags case there was a crash in a fight
      */
     if (IS_SET(ch->specials.affected_by2, AFF2_BERSERK)) {
         REMOVE_BIT(ch->specials.affected_by2, AFF2_BERSERK);
@@ -5325,13 +5331,13 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * Clear out MAILING flags case there was a crash 
+     * Clear out MAILING flags case there was a crash
      */
     if (IS_SET(ch->specials.act, PLR_MAILING)) {
         REMOVE_BIT(ch->specials.act, PLR_MAILING);
     }
     /*
-     * Clear out edit flags 
+     * Clear out edit flags
      */
     if (IS_SET(ch->player.user_flags, CAN_OBJ_EDIT)) {
         REMOVE_BIT(ch->player.user_flags, CAN_OBJ_EDIT);
@@ -5344,7 +5350,7 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * Clear out order/AFK flags 
+     * Clear out order/AFK flags
      */
 
     if (IS_SET(ch->specials.affected_by2, AFF2_CON_ORDER)) {
@@ -5357,20 +5363,20 @@ void reset_char(struct char_data *ch)
         REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
     }
     /*
-     * Remove bogus flags on mortals 
+     * Remove bogus flags on mortals
      */
 
-    if (IS_SET(ch->specials.act, PLR_NOHASSLE) && 
+    if (IS_SET(ch->specials.act, PLR_NOHASSLE) &&
         GetMaxLevel(ch) < LOW_IMMORTAL) {
         REMOVE_BIT(ch->specials.act, PLR_NOHASSLE);
     }
 
     /*
-     * check spells and if lower than 95 remove special flag 
+     * check spells and if lower than 95 remove special flag
      */
     if (!IS_IMMORTAL(ch)) {
         for (i = 0; i < MAX_SKILLS - 1; i++) {
-            if (ch->skills[i].learned < 95 || 
+            if (ch->skills[i].learned < 95 ||
                 !IS_SET(ch->skills[i].flags, SKILL_KNOWN)) {
                 ch->skills[i].special = 0;
             }
@@ -5378,7 +5384,7 @@ void reset_char(struct char_data *ch)
     }
 
     for (i = WEAPON_FIRST; i <= WEAPON_LAST; i++) {
-        if (ch->skills[i].learned < 95 || 
+        if (ch->skills[i].learned < 95 ||
             !IS_SET(ch->skills[i].flags, SKILL_KNOWN)) {
             ch->skills[i].special = 0;
         }
@@ -5387,15 +5393,15 @@ void reset_char(struct char_data *ch)
     SetDefaultLang(ch);
 
     /*
-     * to correct bogus races... 
+     * to correct bogus races...
      */
     if (GET_RACE(ch) > MAX_RACE || GET_RACE(ch) < 0) {
         GET_RACE(ch) = 1;
     }
-    /* 
+    /*
      * Don't want the imps to be deleted, do you?
      */
-    if (!(strcmp(GET_NAME(ch), "Banon")) || 
+    if (!(strcmp(GET_NAME(ch), "Banon")) ||
         !(strcmp(GET_NAME(ch), "Gordon"))) {
         GET_LEVEL(ch, 0) = 60;
     }
@@ -5405,8 +5411,8 @@ void reset_char(struct char_data *ch)
     }
 
     /*
-     * this is to clear up bogus levels on people that where here before 
-     * these classes where made... 
+     * this is to clear up bogus levels on people that where here before
+     * these classes where made...
      */
 
     if (!HasClass(ch, CLASS_MAGIC_USER)) {
@@ -5473,14 +5479,14 @@ void clear_object(struct obj_data *obj)
 }
 
 /*
- * initialize a new character only if class is set 
+ * initialize a new character only if class is set
  */
 void init_char(struct char_data *ch)
 {
     int             i;
 
     /*
-     *** if this is our first player --- he be God *** 
+     *** if this is our first player --- he be God ***
      */
 
     if (top_of_p_table < 0) {
@@ -5492,7 +5498,7 @@ void init_char(struct char_data *ch)
         ch->points.max_hit = 1000;
 
         /*
-         * set all levels 
+         * set all levels
          */
 
         for (i = 0; i < MAX_CLASS; i++) {
@@ -5502,7 +5508,7 @@ void init_char(struct char_data *ch)
         }
 
         /*
-         * set all classes 
+         * set all classes
          */
         for (i = 1; i <= CLASS_NECROMANCER; i *= 2) {
             if (!HasClass(ch, i)) {
@@ -5510,7 +5516,7 @@ void init_char(struct char_data *ch)
             }
         }
     }
-    
+
     set_title(ch);
 
     ch->player.short_descr = 0;
@@ -5534,7 +5540,7 @@ void init_char(struct char_data *ch)
     GET_CHR(ch) = 11;
 
     /*
-     * make favors for sex 
+     * make favors for sex
      */
     if (GET_RACE(ch) == RACE_HUMAN) {
         if (ch->player.sex == SEX_MALE) {
@@ -5678,7 +5684,7 @@ struct room_data *real_roomp(long virtual)
 }
 
 /*
- * returns the real number of the monster with given virtual number 
+ * returns the real number of the monster with given virtual number
  */
 int real_mobile(int virtual)
 {
@@ -5690,7 +5696,7 @@ int real_mobile(int virtual)
     top = top_of_sort_mobt;
 
     /*
-     * perform binary search on mob-table 
+     * perform binary search on mob-table
      */
     for (;;) {
         mid = (bot + top) / 2;
@@ -5700,7 +5706,7 @@ int real_mobile(int virtual)
         }
         if (bot >= top) {
             /*
-             * start unsorted search now 
+             * start unsorted search now
              */
             for (mid = top_of_sort_mobt; mid < top_of_mobt; mid++) {
                 if ((mob_index + mid)->virtual == virtual) {
@@ -5718,7 +5724,7 @@ int real_mobile(int virtual)
 }
 
 /*
- * returns the real number of the object with given virtual number 
+ * returns the real number of the object with given virtual number
  */
 int real_object(int virtual)
 {
@@ -5729,7 +5735,7 @@ int real_object(int virtual)
     bot = 0;
     top = top_of_sort_objt;
     /*
-     * perform binary search on obj-table 
+     * perform binary search on obj-table
      */
     for (;;) {
         mid = (bot + top) / 2;
@@ -5739,7 +5745,7 @@ int real_object(int virtual)
         }
         if (bot >= top) {
             /*
-             * start unsorted search now 
+             * start unsorted search now
              */
             for (mid = top_of_sort_objt; mid < top_of_objt; mid++) {
                 if ((obj_index + mid)->virtual == virtual) {
@@ -5773,8 +5779,8 @@ int str_len(char *buf)
 {
     int             i = 0;
     for (; buf[i] != '\0'; i++) {
-        /* 
-         * Empty loop 
+        /*
+         * Empty loop
          */
     }
     return (i);
@@ -5800,7 +5806,7 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
 
     /*
      * jdb -- you don't appear to re-install the scripts after you reset
-     * the script db 
+     * the script db
      */
 
     for (p = character_list; p; p = p->next) {
@@ -5832,12 +5838,12 @@ void InitScripts()
     }
     return;
     /*
-     * DISABLED 
+     * DISABLED
      */
 
     /*
-     * what is ths for? turn off all the scripts ??? 
-     * -yes, just in case the script file was removed, saves pointer probs 
+     * what is ths for? turn off all the scripts ???
+     * -yes, just in case the script file was removed, saves pointer probs
      */
 
     for (mob = character_list; mob; mob = mob->next) {
@@ -5895,10 +5901,10 @@ void InitScripts()
                 }
                 /*
                  * you really don't want to do a lot of reallocs all at
-                 * once 
+                 * once
                  */
                 if (count == 0) {
-                    script_data[top_of_scripts].script = 
+                    script_data[top_of_scripts].script =
                         (struct foo_data *)malloc(sizeof(struct foo_data));
                 } else {
                     script_data[top_of_scripts].script = (struct foo_data *)
@@ -5963,8 +5969,8 @@ void ReloadRooms()
 
     for (i = 0; i < number_of_saved_rooms; i++) {
 #if 0
-         load_room_objs(saved_rooms[i]) 
-#endif  
+         load_room_objs(saved_rooms[i])
+#endif
          /*
           * Empty loop
           */
@@ -6020,7 +6026,7 @@ void SaveTheWorld()
                     fprintf(fp, "Z 1 %d 1\n", p->specials.zone);
 
                     /*
-                     * save hatreds && fears 
+                     * save hatreds && fears
                      */
                     if (IS_SET(p->hatefield, HATE_SEX)) {
                         fprintf(fp, "H 1 %d %d -1\n", OP_SEX, p->hates.sex);
@@ -6035,7 +6041,7 @@ void SaveTheWorld()
                         fprintf(fp, "H 1 %d %d -1\n", OP_EVIL, p->hates.evil);
                     }
                     if (IS_SET(p->hatefield, HATE_CLASS)) {
-                        fprintf(fp, "H 1 %d %d -1\n", OP_CLASS, 
+                        fprintf(fp, "H 1 %d %d -1\n", OP_CLASS,
                             p->hates.class);
                     }
                     if (IS_SET(p->hatefield, HATE_VNUM)) {
@@ -6054,7 +6060,7 @@ void SaveTheWorld()
                         fprintf(fp, "H 1 %d %d -1\n", OP_EVIL, p->fears.evil);
                     }
                     if (IS_SET(p->fearfield, FEAR_CLASS)) {
-                        fprintf(fp, "H 1 %d %d -1\n", OP_CLASS, 
+                        fprintf(fp, "H 1 %d %d -1\n", OP_CLASS,
                             p->fears.class);
                     }
                     if (IS_SET(p->fearfield, FEAR_VNUM)) {
@@ -6122,8 +6128,8 @@ void ReadTextZone(FILE * fl)
             break;
         }
         if (c == '*') {
-            /* 
-             * skip command 
+            /*
+             * skip command
              */
             fgets(buf, 80, fl);
             continue;
@@ -6134,18 +6140,18 @@ void ReadTextZone(FILE * fl)
             || c == 'D') {
             fscanf(fl, " %d", &k);
         }
-        /* 
-         * read comment 
+        /*
+         * read comment
          */
         fgets(buf, 80, fl);
         if (last_cmd || tmp <= 0) {
             switch (c) {
             case 'M':
-                /* 
-                 * read a mobile 
+                /*
+                 * read a mobile
                  */
                 i = real_mobile(i);
-                if ((mob_index[i].number < j) && 
+                if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].virtual)) {
                     mob = read_mobile(i, REAL);
                     char_to_room(mob, k);
@@ -6158,17 +6164,17 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'C':
-                /* 
-                 * read a mobile.  Charm them to follow prev. 
+                /*
+                 * read a mobile.  Charm them to follow prev.
                  */
                 i = real_mobile(i);
-                if ((mob_index[i].number < j) && 
+                if ((mob_index[i].number < j) &&
                     !CheckKillFile(mob_index[i].virtual)) {
                     mob = read_mobile(i, REAL);
                     if (master) {
                         char_to_room(mob, master->in_room);
                         /*
-                         * add the charm bit to the dude. 
+                         * add the charm bit to the dude.
                          */
                         add_follower(mob, master);
                         SET_BIT(mob->specials.affected_by, AFF_CHARM);
@@ -6184,8 +6190,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'Z':
-                /* 
-                 * set the last mobile to this zone 
+                /*
+                 * set the last mobile to this zone
                  */
                 if (mob) {
                     mob->specials.zone = i;
@@ -6203,8 +6209,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'O':
-                /* 
-                 * read an object 
+                /*
+                 * read an object
                  */
                 i = real_object(i);
                 if (obj_index[i].number < j) {
@@ -6231,8 +6237,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'P':
-                /* 
-                 * object to object 
+                /*
+                 * object to object
                  */
                 i = real_object(i);
                 if (obj_index[i].number < j) {
@@ -6250,8 +6256,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'G':
-                /* 
-                 * obj_to_char 
+                /*
+                 * obj_to_char
                  */
                 i = real_object(i);
                 if (obj_index[i].number < j &&
@@ -6266,8 +6272,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'H':
-                /* 
-                 * hatred to char 
+                /*
+                 * hatred to char
                  */
 
                 if (AddHatred(mob, i, j)) {
@@ -6278,8 +6284,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'F':
-                /* 
-                 * fear to char 
+                /*
+                 * fear to char
                  */
 
                 if (AddFears(mob, i, j)) {
@@ -6290,7 +6296,7 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'E':
-                /* 
+                /*
                  * object to equipment list
                  */
                 i = real_object(i);
@@ -6312,8 +6318,8 @@ void ReadTextZone(FILE * fl)
                 break;
 
             case 'D':
-                /* 
-                 * set state of door 
+                /*
+                 * set state of door
                  */
                 rp = real_roomp(i);
                 if (rp && rp->dir_option[j]) {
@@ -6334,7 +6340,7 @@ void ReadTextZone(FILE * fl)
                     last_cmd = 1;
                 } else {
                     /*
-                     * that exit doesn't exist anymore 
+                     * that exit doesn't exist anymore
                      */
                 }
                 break;
@@ -6387,7 +6393,7 @@ void clean_playerfile(void)
         fread(&(grunt.dummy), sizeof(struct char_file_u), 1, f);
         if (!feof(f)) {
             /*
-             * we have someone 
+             * we have someone
              */
             num_processed++;
             grunt.AXE = FALSE;
@@ -6418,11 +6424,11 @@ void clean_playerfile(void)
                 }
 
                 /*
-                 * level < LOW_IMMORT 
+                 * level < LOW_IMMORT
                  */
                 /*
                  * used to clear up corrupted players files, bogus chars in the
-                 * name... etc.. 
+                 * name... etc..
                  */
                 for (i = 0; i < strlen(grunt.dummy.name); i++) {
                     if (!(toupper(grunt.dummy.name[i]) >= 'A' &&
@@ -6435,7 +6441,7 @@ void clean_playerfile(void)
                     }
                 }
                 /*
-                 * used to clear chars with bogus levels and such 
+                 * used to clear chars with bogus levels and such
                  */
                 if (!grunt.AXE) {
                     for (i = 0; i < MAX_CLASS; i++) {
@@ -6508,7 +6514,7 @@ void clean_playerfile(void)
         fread(&(grunt.dummy), sizeof(struct char_file_u), 1, f);
         if (!feof(f)) {
             /*
-             * we have someone 
+             * we have someone
              */
             num_processed++;
             grunt.AXE = FALSE;
@@ -6539,7 +6545,7 @@ void clean_playerfile(void)
 
 #if CHECK_RENT_INACTIVE
                     /*
-                     * Purge rent files! after inactivity of 1 month 
+                     * Purge rent files! after inactivity of 1 month
                      */
                     if (!grunt.AXE &&
                         timeH - grunt.dummy.last_logon >
@@ -6570,7 +6576,7 @@ void clean_playerfile(void)
                     }
 
                     /*
-                     * even the no_deletes get deleted after a time 
+                     * even the no_deletes get deleted after a time
                      */
                     if (IS_SET(grunt.dummy.user_flags, NO_DELETE)) {
                         if (timeH - grunt.dummy.last_logon >
@@ -6585,7 +6591,7 @@ void clean_playerfile(void)
                     }
                 } else if (max > LOW_IMMORTAL) {
                     /*
-                     * delete people with levels greater than BIG_GUY 
+                     * delete people with levels greater than BIG_GUY
                      */
                     if (max > BIG_GUY) {
                         num_deleted++;
@@ -6602,12 +6608,12 @@ void clean_playerfile(void)
                                 max - 1);
                         Log(buf);
                         /*
-                         * so it doesn't happen twice 
+                         * so it doesn't happen twice
                          */
                         grunt.dummy.last_logon = timeH;
                         max--;
                         /*
-                         * should not be necessary 
+                         * should not be necessary
                          */
                         max = MAX(51, max);
                         for (j = 0; j < MAX_CLASS; j++) {

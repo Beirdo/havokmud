@@ -3,7 +3,7 @@
  * paginate.c
  * Part of DaleMUD 3.? Millenium Edition
  * Re-written and re-released by Chris Lack (psycho_driver@yahoo.com)
- * You are obliged to follow the DaleMUD and Diku licenses if you use any 
+ * You are obliged to follow the DaleMUD and Diku licenses if you use any
  * portion of this source code.
  ****************************************************************************
  */
@@ -35,7 +35,7 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
 /*
 * Traverse down the string until the begining of the next page has
 * been reached.  Return NULL if this is the last page of the
-* string. 
+* string.
 */
 char           *next_page(char *str)
 {
@@ -44,32 +44,32 @@ char           *next_page(char *str)
 
     for (;; str++) {
         /*
-         * If end of string, return NULL. 
+         * If end of string, return NULL.
          */
         if (*str == '\0') {
             return NULL;
         } else if (line > PAGE_LENGTH) {
             /*
-             * If we're at the start of the next page, return this fact. 
+             * If we're at the start of the next page, return this fact.
              */
             return str;
         }
 
         /*
-         * Carriage return puts us in column one. 
+         * Carriage return puts us in column one.
          */
         if (*str == '\r') {
             col = 1;
         } else if (*str == '\n') {
             /*
-             * Newline puts us on the next line. 
+             * Newline puts us on the next line.
              */
             line++;
         } else if (col++ > PAGE_WIDTH) {
             /*
              * We need to check here and see if we are over the page
              * width, and if so, compensate by going to the begining of
-             * the next line. 
+             * the next line.
              */
             col = 1;
             line++;
@@ -78,7 +78,7 @@ char           *next_page(char *str)
 }
 
 /*
- * Function that returns the number of pages in the string. 
+ * Function that returns the number of pages in the string.
  */
 int count_pages(char *str)
 {
@@ -91,7 +91,7 @@ int count_pages(char *str)
 }
 
 /*
- * The call that displays the next page. 
+ * The call that displays the next page.
  */
 void show_string(struct descriptor_data *d, char *input)
 {
@@ -102,7 +102,7 @@ void show_string(struct descriptor_data *d, char *input)
     one_argument(input, tmpbuf);
 
     /*
-     * Q is for quit. :) 
+     * Q is for quit. :)
      */
     if (LOWER(*tmpbuf) == 'q') {
         free(d->showstr_vector);
@@ -115,29 +115,29 @@ void show_string(struct descriptor_data *d, char *input)
     } else if (LOWER(*tmpbuf) == 'r') {
         /*
          *  R is for refresh, so back up one page internally so we
-         * can display it again. 
+         * can display it again.
          */
         d->showstr_page = MAX(0, d->showstr_page - 1);
     } else if (LOWER(*tmpbuf) == 'b') {
         /*
          *  B is for back, so back up two pages internally so we can
-         * display the correct page here. 
+         * display the correct page here.
          */
         d->showstr_page = MAX(0, d->showstr_page - 2);
     } else if (isdigit(*tmpbuf)) {
         /*
          *  Feature to 'goto' a page.  Just type the number of the
-         * page and you are there! 
+         * page and you are there!
          */
         d->showstr_page = MAX(0, MIN(atoi(tmpbuf) - 1, d->showstr_count - 1));
     }
 
     /*
      * If we're displaying the last page, just send it to the
-     * character, and then free up the space we used. 
+     * character, and then free up the space we used.
      */
     if (d->showstr_page + 1 >= d->showstr_count) {
-        SEND_TO_Q(ParseAnsiColors(IS_SET(d->character->player.user_flags, 
+        SEND_TO_Q(ParseAnsiColors(IS_SET(d->character->player.user_flags,
                                          USE_ANSI),
                                   d->showstr_vector[d->showstr_page]), d);
 
@@ -149,7 +149,7 @@ void show_string(struct descriptor_data *d, char *input)
         }
     } else {
         /*
-         * Or if we have more to show.... 
+         * Or if we have more to show....
          */
         diff = ((int) d->showstr_vector[d->showstr_page + 1]) -
                ((int) d->showstr_vector[d->showstr_page]);
@@ -158,14 +158,14 @@ void show_string(struct descriptor_data *d, char *input)
 
         SEND_TO_Q(ParseAnsiColors(IS_SET(d->character->player.user_flags,
                                          USE_ANSI), bigbuf), d);
-        d->showstr_page++; 
+        d->showstr_page++;
     }
 }
 
 /*
  * This function assigns all the pointers for showstr_vector for the
  * page_string function, after showstr_vector has been allocated and
- * showstr_count set. 
+ * showstr_count set.
  */
 void paginate_string(char *str, struct descriptor_data *d)
 {
@@ -183,7 +183,7 @@ void paginate_string(char *str, struct descriptor_data *d)
 }
 
 /*
- * The call that gets the paging ball rolling... 
+ * The call that gets the paging ball rolling...
  */
 void page_string(struct descriptor_data *d, char *str, int keep_internal)
 {
@@ -211,20 +211,21 @@ void page_string(struct descriptor_data *d, char *str, int keep_internal)
 /*
  *  The following list_ functions are for building a very large
  * dynamic string buffer which is attached the a player's descriptor
- * and then sending it out to the character via page_string. 
+ * and then sending it out to the character via page_string.
  */
 
 /*
  *  Initialize the list_string pointer on the character's
- * descriptor. 
+ * descriptor.
  */
 void list_init(struct descriptor_data *d)
 {
     if (d->list_string != NULL) {
-        // mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT,
-        // SEV_ALL,
-        // "list_init called for %s when d->list_string already
-        // allocated", d->account.account_name);
+#if 0
+        mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+        		"list_init called for %s when d->list_string already "
+        		"allocated", d->account.account_name);
+#endif
         Log("List_ijnit called before");
     }
     d->list_size = ONE_PAGE;
@@ -242,10 +243,11 @@ void list_append(struct descriptor_data *d, char *fmt, ...)
                    *new_list;
 
     if (d->list_string == NULL) {
-        // mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT,
-        // SEV_ALL,
-        // "list_append called for %s before list_init",
-        // d->account.account_name);
+#if 0
+        mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+         		"list_append called for %s before list_init",
+    			d->account.account_name);
+#endif
         Log("List_ijnit bedfore list_init");
     }
 
@@ -270,10 +272,11 @@ void list_append(struct descriptor_data *d, char *fmt, ...)
 void list_end(struct descriptor_data *d)
 {
     if (d->list_string == NULL) {
-        // mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT,
-        // SEV_ALL,
-        // "list_end called for %s before list_init",
-        // d->account.account_name);
+#if 0
+        mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT, SEV_ALL,
+        		"list_end called for %s before list_init",
+     			d->account.account_name);
+#endif
         Log("List_ijnit called before list_init");
     }
 
