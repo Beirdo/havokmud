@@ -1717,7 +1717,7 @@ if (!ch->skills[SKILL_FIND_WATER].learned >0) {
 	TRUE, ch, 0, 0, TO_CHAR);
     act("$n searches and searches for something to drink but comes up empty.",
 	TRUE, ch, 0, 0, TO_ROOM);
-	LearnFromMistake(ch, SKILL_FIND_FOOD, 0, 90);
+	LearnFromMistake(ch, SKILL_FIND_WATER, 0, 90);
       } else
 
        { /* made it */
