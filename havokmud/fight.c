@@ -2710,49 +2710,54 @@ void perform_violence(int pulse)
 					x += 0.50;
 				}
 				/*autoassist?*/
-					if(ch) {
-				    	if(IS_AFFECTED(ch, AFF_GROUP)&&IS_PC(ch)) {
-							if(!ch->master) {
-								for(f = ch->followers; f; f=f->next) {
-										 if((GET_POS(f->follower) != POSITION_FIGHTING) && !f->follower->specials.fighting
-										 		&& f->follower->in_room==ch->in_room && GET_POS(f->follower) > POSITION_SITTING) {
-											if (IS_SET(f->follower->specials.act, PLR_AUTOASSIST)) {
-												act("$n screams and runs into battle, weapons a swinging.",FALSE,f->follower,0,0,TO_ROOM);
-												ch_printf(f->follower,"You raise your weapon and run in to assist %s.\n\r"
-												 		,GET_NAME(f->follower->master));
-												do_assist(f->follower, GET_NAME(f->follower->master), 0);
-											}
-										 }
+				if(ch) {
+			    	if(IS_AFFECTED(ch, AFF_GROUP)&&IS_PC(ch)) {
+						for(f = ch->followers; f; f=f->next) {
+							if((GET_POS(f->follower) != POSITION_FIGHTING) && !f->follower->specials.fighting
+								 		&& f->follower->in_room==ch->in_room && GET_POS(f->follower) > POSITION_SITTING) {
+								if (IS_SET(f->follower->specials.act, PLR_AUTOASSIST) && IS_AFFECTED(f->follower, AFF_GROUP)) {
+									act("$n screams and runs into battle, weapons a swinging.",FALSE,f->follower,0,0,TO_ROOM);
+									ch_printf(f->follower,"You raise your weapon and run in to assist %s.\n\r"
+										 		,GET_NAME(f->follower->master));
+//									do_assist(f->follower, GET_NAME(f->follower->master), 0);
+									set_fighting(f->follower, ch->specials.fighting);
+								}
+							}
+						}
+						if(ch->master) {
+							if((GET_POS(ch->master) != POSITION_FIGHTING) && !ch->master->specials.fighting
+								 		&& ch->master->in_room==ch->in_room && GET_POS(ch->master) > POSITION_SITTING) {
+								if (IS_SET(ch->master->specials.act, PLR_AUTOASSIST) && IS_AFFECTED(ch->master, AFF_GROUP)) {
+									act("$n screams and runs into battle, weapons a swinging.",FALSE,ch->master,0,0,TO_ROOM);
+									ch_printf(ch->master,"You raise your weapon and run in to assist %s.\n\r"
+										 		,GET_NAME(ch));
+//									do_assist(ch->master, GET_NAME(f->follower->master), 0);
+									set_fighting(ch->master, ch->specials.fighting);
 								}
 							}
 						}
 					}
+				}
 
 				if(ch->style==FIGHTING_STYLE_EVASIVE) {
 					if (FSkillCheck(ch, FIGHTING_STYLE_EVASIVE))
-					//ch_printf(ch,"Number attacks before=%d\n\r",x);
 						x = x - x*0.20;
-					//ch_printf(ch,"Number of attacks after=%d\n\r",x);
 					else
 						x = x - x*0.40;
 				}
-				//sprintf(temp,"\n\rNumatks:%.2f\n\r",x);
-				//send_to_char(temp,ch);
 
-			/* Bards do not hit when using an INSTRUMENT   -Lennya */
-			if (HasClass(ch, CLASS_BARD) && !IS_IMMORTAL(ch)) {
-				if (ch->equipment[WIELD])
-					if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
-						x = 0;
-				else if (ch->equipment[HOLD])
-					if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
-						x = 0;
-				else if (ch->equipment[WEAR_LIGHT])
-					if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
-						x = 0;
-
-			}
-
+				/* Bards do not hit when using an INSTRUMENT   -Lennya */
+				if (HasClass(ch, CLASS_BARD) && !IS_IMMORTAL(ch)) {
+					if (ch->equipment[WIELD])
+						if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
+							x = 0;
+					if (ch->equipment[HOLD])
+						if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
+							x = 0;
+					if (ch->equipment[WEAR_LIGHT])
+						if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
+							x = 0;
+				}
 
                while(x > 0.999)
                {

@@ -559,8 +559,106 @@ void cast_chillshield( byte level, struct char_data *ch, char *arg,
 void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
+/* bard stuff */
+void play_song_of_opening( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_comprehension( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_biting_words( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_lullaby( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_charming( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_freezing_north( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_enthrallment( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_calming( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_guardian( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_muscle( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_mint_and_lemon( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_seeing( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_spell_breaching( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_lightning( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_levitation( byte level, struct char_data *ch, char *arg,
+	 int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_winter_gale( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_dazzling( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_hunt( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_heraldry( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_legendary_weapon( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_lethargy( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_spirits( byte level, struct char_data *ch, char *arg,
+	 int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_high_hunt( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_silence( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_speed( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_summoner( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_sight( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_the_hearth( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_eternal_light( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_song_of_wanderer( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_sounds_of_fear( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
 void play_song_of_battle( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void play_heros_chant( byte level, struct char_data *ch, char *arg,
+	int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
 
 
 struct spell_info_type spell_info[MAX_SPL_LIST];
@@ -2239,15 +2337,12 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-
 	/* mobs do not get skills so we just check it for PC's */
 	if (!ch->skills)
 		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
 			send_to_char("You do not have skills!\n\r",ch);
 			return;
 		}
-
-
 
 	if (cmd != 370 && OnlyClass(ch, CLASS_PSI)) {
 		send_to_char("Use your mind!\n\r",ch);
@@ -2269,6 +2364,17 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		send_to_char("You have no knowledge of this spell.\n\r",ch);
 		return;
 	}
+
+	if (( (spl > LAST_BARD_SONG) || (spl < FIRST_BARD_SONG) ) && cmd == 600) {
+		send_to_char("You can only play songs, not spells.\n\r",ch);
+		return;
+	}
+
+	if (( (spl <= LAST_BARD_SONG) && (spl >= FIRST_BARD_SONG) ) && cmd != 600) {
+		send_to_char("Where did you come from?! Songs are meant to be played!\n\r",ch);
+		return;
+	}
+
 
 	if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 		if (GET_POS(ch) < spell_info[spl].minimum_position) {
@@ -3975,10 +4081,140 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_IGNORE , cast_blade_barrier, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);
 
-  spello(342,24,POSITION_STANDING, LOW_IMMORTAL, 45,  LOW_IMMORTAL,
-  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  40, TAR_IGNORE , play_song_of_battle, 0,0, 4, LOW_IMMORTAL);
 
+/* bard stuff */
+	spello(343,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_IGNORE , play_song_of_opening, 0,0, 1, LOW_IMMORTAL);
+
+	spello(346,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_CHAR_ROOM , play_song_of_comprehension, 0,0, 5, LOW_IMMORTAL);
+
+	spello(347,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	20, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_biting_words, 0,0, 6, LOW_IMMORTAL);
+
+	spello(348,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	15, TAR_CHAR_ROOM , play_song_of_the_lullaby, 0,0, 7, LOW_IMMORTAL);
+
+	spello(349,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_CHAR_ROOM , play_song_of_charming, 0,0, 8, LOW_IMMORTAL);
+
+	spello(350,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	15, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_freezing_north, 0,0, 8, LOW_IMMORTAL);
+
+	spello(351,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_IGNORE , play_song_of_enthrallment, 0,0, 8, LOW_IMMORTAL);
+
+	spello(352,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	15, TAR_CHAR_ROOM , play_song_of_calming, 0,0, 8, LOW_IMMORTAL);
+
+	spello(353,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	20, TAR_IGNORE , play_song_of_the_guardian, 0,0, 9, LOW_IMMORTAL);
+
+	spello(354,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_CHAR_ROOM , play_song_of_muscle, 0,0, 10, LOW_IMMORTAL);
+
+	spello(355,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	5, TAR_CHAR_ROOM , play_song_of_mint_and_lemon, 0,0, 10, LOW_IMMORTAL);
+
+	spello(357,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_CHAR_ROOM , play_song_of_seeing, 0,0, 12, LOW_IMMORTAL);
+
+	spello(358,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	15, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_spell_breaching, 0,0, 13, LOW_IMMORTAL);
+
+	spello(360,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	16, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_lightning, 0,0, 14, LOW_IMMORTAL);
+
+	spello(361,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	15, TAR_CHAR_ROOM , play_song_of_levitation, 0,0, 15, LOW_IMMORTAL);
+
+	spello(362,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_IGNORE , play_song_of_the_winter_gale, 0,0, 15, LOW_IMMORTAL);
+
+	spello(363,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	5, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_dazzling, 0,0, 15, LOW_IMMORTAL);
+
+	spello(365,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	10, TAR_CHAR_ROOM , play_song_of_the_hunt, 0,0, 16, LOW_IMMORTAL);
+
+	spello(366,48,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	100, TAR_OBJ_INV | TAR_OBJ_ROOM , play_song_of_heraldry, 0,0, 18, LOW_IMMORTAL);
+
+	spello(367,48,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	100, TAR_OBJ_INV | TAR_OBJ_ROOM , play_song_of_legendary_weapon, 0,0, 20, LOW_IMMORTAL);
+
+	spello(368,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	20, TAR_CHAR_ROOM , play_song_of_lethargy, 0,0, 23, LOW_IMMORTAL);
+
+	spello(369,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	40, TAR_IGNORE , play_song_of_spirits, 0,0, 24, LOW_IMMORTAL);
+
+	spello(370,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	20, TAR_CHAR_ROOM , play_song_of_the_high_hunt, 0,0, 24, LOW_IMMORTAL);
+
+	spello(371,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_CHAR_ROOM | TAR_VIOLENT , play_song_of_silence, 0,0, 25, LOW_IMMORTAL);
+
+	spello(372,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	25, TAR_CHAR_ROOM , play_song_of_speed, 0,0, 27, LOW_IMMORTAL);
+
+	spello(373,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	25, TAR_IGNORE , play_song_of_summoner, 0,0, 31, LOW_IMMORTAL);
+
+	spello(374,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_CHAR_ROOM , play_song_of_sight, 0,0, 44, LOW_IMMORTAL);
+
+	spello(375,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_IGNORE , play_song_of_the_hearth, 0,0, 45, LOW_IMMORTAL);
+
+	spello(376,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	30, TAR_IGNORE , play_song_of_eternal_light, 0,0, 14, LOW_IMMORTAL);
+
+	spello(377,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	40, TAR_IGNORE , play_song_of_wanderer, 0,0, 35, LOW_IMMORTAL);
+
+	spello(378,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	25, TAR_IGNORE , play_sounds_of_fear, 0,0, 37, LOW_IMMORTAL);
+
+	spello(379,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	40, TAR_IGNORE , play_song_of_battle, 0,0, 40, LOW_IMMORTAL);
+
+	spello(380,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	80, TAR_IGNORE | TAR_CHAR_ROOM, play_heros_chant, 0,0, 50, LOW_IMMORTAL);
+/* end bard stuff */
 
 }
 void SpellWearOffSoon(int s, struct char_data *ch)

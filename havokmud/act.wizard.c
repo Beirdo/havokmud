@@ -4319,14 +4319,13 @@ dlog("in do_show");
 								zone<0 && !isname(zonenum, oi->name))
 				continue; /* optimize later*/
 			obj = read_object(oi->virtual, VIRTUAL);
-			if(eval(obj) < -5)
-				sprintf(color,"%s","$c0008");
-			else if(eval(obj) < 20)
-				sprintf(color,"%s","");
-			else
-				sprintf(color,"%s","$c000W");
-
 			if(obj) {
+				if(eval(obj) < -5)
+					sprintf(color,"%s","$c0008");
+				else if(eval(obj) < 20)
+					sprintf(color,"%s","");
+				else
+					sprintf(color,"%s","$c000W");
 				sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 				append_to_string_block(&sb, buf);
 				extract_obj(obj);

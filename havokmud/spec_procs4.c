@@ -2896,7 +2896,7 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	only_argument(arg, classname);
 
 	if(!*classname) {
-		do_mobTell2(ch, mob, "A class you must chooose!");
+		do_mobTell2(ch, mob, "A class you must choose!");
 		return(TRUE);
 	}
 

@@ -407,15 +407,17 @@
 
 
 /* bard stuff */
+#define FIRST_BARD_SONG			342
+
 #define SKILL_DETECT_SOUND		342
-#define SONG_OF_OPENING			343
+#define SONG_OF_OPENING			343 // done
 #define SKILL_THROW_VOICE		344
 #define SKILL_VENTRILOQUATE		345
-#define SONG_OF_COMPREHENSION	346
-#define SONG_OF_BITING_WORDS	347
-#define SONG_OF_THE_LULLABY		348
-#define SONG_OF_CHARMING		349
-#define SONG_OF_FREEZING_NORTH	350
+#define SONG_OF_COMPREHENSION	346 // done
+#define SONG_OF_BITING_WORDS	347 // done
+#define SONG_OF_THE_LULLABY		348 // done
+#define SONG_OF_CHARMING		349 // done
+#define SONG_OF_FREEZING_NORTH	350 // done
 #define SONG_OF_ENTRALLMENT		351
 #define SONG_OF_CALMING			352
 #define SONG_OF_THE_GUARDIAN	353
@@ -423,11 +425,11 @@
 #define SONG_OF_MINT_AND_LEMON	355
 #define SKILL_KNOW_ALIGNMENT	356
 #define SONG_OF_SEEING			357
-#define SONG_OF_SPELL_BREACHING	358
+#define SONG_OF_SPELL_BREACHING	358 // done
 #define SKILL_KNOW_MONSTER		359
-#define SONG_OF_LIGHTNING		360
+#define SONG_OF_LIGHTNING		360 // done
 #define SONG_OF_LEVITATION		361
-#define SONG_OF_THE_WINTER_GALE	362
+#define SONG_OF_THE_WINTER_GALE	362 // done
 #define SONG_OF_DAZZLING		363
 #define SKILL_LEGEND_LORE		364
 #define SONG_OF_THE_HUNT		365
@@ -446,6 +448,10 @@
 #define SOUNDS_OF_FEAR			378
 #define SONG_OF_BATTLE			379
 #define HEROS_CHANT				380
+
+#define LAST_BARD_SONG			380 /* make sure to place new songs between first and last song. And no spells! */
+
+
 
 #define MAX_EXIST_SPELL         380   /* max number of skills/spells */
 

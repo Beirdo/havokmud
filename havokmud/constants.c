@@ -5538,7 +5538,7 @@ const struct skillset bardskills[] = {
 	{"song of spirits",				SONG_OF_SPIRITS					,24},
 	{"song of the freezing north",	SONG_OF_FREEZING_NORTH			,8},
 	{"song of the guardian",		SONG_OF_THE_GUARDIAN			,9},
-	{"song of the hearth",			SONG_OF_THE_HEARTH				,47},
+	{"song of the hearth",			SONG_OF_THE_HEARTH				,45},
 	{"song of the high hunt",		SONG_OF_THE_HIGH_HUNT			,24},
 	{"song of the hunt",			SONG_OF_THE_HUNT				,16},
 	{"song of the lullaby",			SONG_OF_THE_LULLABY				,7},

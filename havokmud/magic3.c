@@ -4504,6 +4504,243 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 	}
 }
 
+
+void song_of_comprehension(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+	char buf[128];
+
+	if (!victim)
+		return;
+
+	if (!affected_by_spell(victim, SPELL_COMP_LANGUAGES) && !affected_by_spell(victim, SONG_OF_COMPREHENSION)) {
+		if (ch != victim) {
+			act("$n plays a song, and $N seems better able to understand you.", FALSE, ch, 0, victim, TO_NOTVICT);
+			act("As you play, $N's ears become truly open.", FALSE, ch, 0, victim, TO_CHAR);
+			act("$n gently touches your ears, wow you have missed so much!", FALSE, ch, 0, victim, TO_VICT);
+		} else {
+			act("$n plays a song, and $e seems better able to understand you.", FALSE, ch, 0, 0, TO_NOTVICT);
+			act("As you play, your ears become truly open.", FALSE, ch, 0, victim, TO_CHAR);
+		}
+		af.type      = SONG_OF_COMPREHENSION;
+		af.duration  = (level<LOW_IMMORTAL) ? (int)level/2 : level;  				/* one tic only! */
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = 0;
+		affect_to_char(victim, &af);
+	} else {
+		if (ch != victim) {
+			sprintf(buf,"You play, but $N’s listening abilities do not improve.");
+		} else {
+			sprintf(buf,"Your ears could not be in better shape!");
+		}
+		act(buf,FALSE,ch,0,victim,TO_CHAR);
+	}
+}
+
+void song_of_biting_words(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+
+	assert(victim && ch);
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	dam = dice(2,10) + level;
+
+	if ( saves_spell(victim, SAVING_SPELL) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SONG_OF_BITING_WORDS);
+}
+
+void song_of_charming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	void add_follower(struct char_data *ch, struct char_data *leader);
+	bool circle_follow(struct char_data *ch, struct char_data *victim);
+	void stop_follower(struct char_data *ch);
+
+	assert(ch && victim);
+
+	if (victim == ch) {
+		send_to_char("You like yourself even better!\n\r", ch);
+		return;
+	}
+
+	if (!IS_AFFECTED(victim, AFF_CHARM) && !IS_AFFECTED(ch, AFF_CHARM)) {
+		if (circle_follow(victim, ch)) {
+			send_to_char("Sorry, following in circles can not be allowed.\n\r", ch);
+			return;
+		}
+
+		if (GetMaxLevel(victim) > GetMaxLevel(ch)+10) {
+			FailCharm(victim, ch);
+			return;
+		}
+
+		if (too_many_followers(ch)) {
+			act("$N takes one look at the size of your posse and just says no!", TRUE, ch, ch->equipment[WIELD], victim, TO_CHAR);
+			act("$N takes one look at the size of $n's posse and just says no!", TRUE, ch, ch->equipment[WIELD], victim, TO_ROOM);
+			return;
+		}
+
+		if (IsImmune(victim, IMM_CHARM)) {
+			FailCharm(victim,ch);
+			return;
+		}
+
+		if (IsResist(victim, IMM_CHARM)) {
+			if (saves_spell(victim, SAVING_PARA)) {
+				FailCharm(victim,ch);
+				return;
+			}
+			if (saves_spell(victim, SAVING_PARA)) {
+				FailCharm(victim,ch);
+				return;
+			}
+		} else {
+			if (!IsSusc(victim, IMM_CHARM)) {
+				if (saves_spell(victim, SAVING_PARA)) {
+					FailCharm(victim,ch);
+					return;
+				}
+			}
+		}
+
+		if (victim->master)
+			stop_follower(victim);
+
+		add_follower(victim, ch);
+
+		af.type      = SONG_OF_CHARMING;
+
+		if (GET_CHR(ch))
+			af.duration  = follow_time(ch);
+		else
+			af.duration  = 24*18;
+
+		if (IS_GOOD(victim) && IS_GOOD(ch))
+			af.duration *= 2;
+
+		af.modifier  = 0;
+		af.location  = 0;
+		af.bitvector = AFF_CHARM;
+		affect_to_char(victim, &af);
+
+		act("Isn't $n just such a nice fellow?",FALSE,ch,0,victim,TO_VICT);
+
+		if (!IS_PC(ch)) {
+			REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+			SET_BIT(victim->specials.act, ACT_SENTINEL);
+		}
+	}
+}
+
+void song_of_enthrallment(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+	if(!HasInstrument(ch))
+		return;
+
+}
+
+void song_of_calming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_the_guardian(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_muscle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_mint_and_lemon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_seeing(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_levitation(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_dazzling(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_the_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_lethargy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_spirits(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_the_high_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_silence(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_speed(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_summoner(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_sight(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_the_hearth(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_eternal_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void song_of_wanderer(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
+void sounds_of_fear(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+}
+
 void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	struct affected_type af;
@@ -4537,4 +4774,9 @@ void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, 
 			}
 		}
 	}
+}
+
+void heros_chant(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
 }

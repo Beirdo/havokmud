@@ -2147,6 +2147,7 @@ int CheckEgoGive(struct char_data *ch,struct char_data *vict,
 					 struct obj_data *obj);
 int HowManySpecials(struct char_data *ch) ;
 void tweak(struct obj_data *obj);
+int HasInstrument(struct char_data *ch);
 
 /* From weather.c */
 
@@ -2385,11 +2386,42 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
 void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
+/* bard songs, magic3.c */
+void song_of_comprehension(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_biting_words(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_the_lullaby(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_charming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_freezing_north(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_enthrallment(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_calming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_the_guardian(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_muscle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_mint_and_lemon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_seeing(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_spell_breaching(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_lightning(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_levitation(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_the_winter_gale(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_dazzling(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_the_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_heraldry(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+//void song_of_legendary_weapon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_lethargy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_spirits(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_the_high_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_silence(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_speed(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_summoner(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_sight(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_the_hearth(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_eternal_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_wanderer(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void sounds_of_fear(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void heros_chant(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
 void do_eval(struct char_data *ch, char *arg, int cmd);
 void do_reimb(struct char_data *ch, char *argument, int cmd);
-
 
 int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

@@ -559,12 +559,12 @@ unsigned IsImmune(struct char_data *ch, int bit)
 
 unsigned IsResist(struct char_data *ch, int bit)
 {
-  return(IS_SET(bit, ch->immune));
+  return(IS_SET(bit, ch->immune) && !IS_SET(bit, ch->susc));
 }
 
 unsigned IsSusc(struct char_data *ch, int bit)
 {
-  return(IS_SET(bit, ch->susc));
+  return(IS_SET(bit, ch->susc) && !IS_SET(bit, ch->immune));
 }
 
 /* creates a random number in interval [from;to] */
@@ -575,6 +575,24 @@ int number(int from, int to)
    else
        return(from);
 }
+
+int HasInstrument(struct char_data *ch)
+{
+
+	if (ch->equipment[WIELD])
+		if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
+			return(TRUE);
+	if (ch->equipment[HOLD])
+		if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
+			return(TRUE);
+	if (ch->equipment[WEAR_LIGHT])
+		if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
+			return(TRUE);
+
+	send_to_char("Ah, you need an instrument to play this song.\n\r", ch);
+	return(FALSE);
+}
+
 
 
 
