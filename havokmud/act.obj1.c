@@ -594,7 +594,9 @@ dlog("in do_put");
            } /*end if bag = tmp_obj if */
           }/*end Cursed else*/
         }/*end for*/
-       return;
+	 act("$n tries to fit as much stuff as $e can into $p."
+	     , FALSE, ch, sub_object, 0, TO_ROOM);
+	 return;
        }
 	/*end all*/
       } else {
