@@ -2315,7 +2315,7 @@ struct obj_data *read_object(int nr, int type)
   obj->next = object_list;
   object_list = obj;
 
-  obj_index[nr].number++; /*Object maxxing*/
+  //obj_index[nr].number++; /*Object maxxing*/
 
   obj_count++;
 #if BYTE_COUNT

@@ -2713,6 +2713,7 @@ dlog("in do_load");
       }
     }
     
+    obj_index[obj->item_number].number++;
     obj = read_object(number, REAL);
     obj_to_char(obj, ch);
 
