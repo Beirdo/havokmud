@@ -1,5 +1,6 @@
 
 #include "config.h"
+#include "platform.h"
 #include <signal.h>
 #include <stdio.h>
 #include <sys/time.h>

@@ -615,7 +615,7 @@ struct obj_affected_type {
  * ======================== Structure for object ========================
  */
 struct obj_data {
-    sh_int          item_number;        /* Where in data-base */
+    int             item_number;        /* Where in data-base */
     int             in_room;    /* In what room -1 when conta/carr */
     struct obj_flag_data obj_flags;     /* Object information */
     struct obj_affected_type
@@ -623,7 +623,7 @@ struct obj_data {
                                                  * to change */
 
     sh_int          sector;     /* for large rooms */
-    sh_int          char_vnum;  /* for ressurection */
+    int             char_vnum;  /* for ressurection */
     long            char_f_pos; /* for ressurection */
     char           *name;       /* Title of object :get etc.  */
     char           *description;        /* When in room */

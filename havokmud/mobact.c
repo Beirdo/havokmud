@@ -1,5 +1,6 @@
 
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -133,7 +134,7 @@ void MobHunt(struct char_data *ch)
     int             res,
                     k;
 
-#ifdef NOTRACK
+#ifndef USE_TRACK
     /* too much CPU useage for some machines. */
     return;
 #endif

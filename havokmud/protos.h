@@ -2951,8 +2951,12 @@ int             CheckGiveBarbarianOK(struct char_data *ch,
                                      struct char_data *vict,
                                      struct obj_data *obj);
 int             EgoBladeSave(struct char_data *ch);
+#ifndef MIN
 int             MIN(int a, int b);
+#endif
+#ifndef MAX
 int             MAX(int a, int b);
+#endif
 int             GetItemClassRestrictions(struct obj_data *obj);
 int             OnlyClassItemValid(struct char_data *ch,
                                    struct obj_data *obj);
@@ -4123,12 +4127,12 @@ int dragon(struct char_data *ch, int cmd, char *arg,
 char *crypt(const char *key, const char *salt);
 #endif
 
-#if defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __sun__ )
+#ifndef HAVE_STRNLEN 
 /* FreeBSD and Solaris seem to be missing strnlen */
 size_t strnlen(const char *s, size_t maxlen);
 #endif
 
-#if defined (__sun__)
+#ifndef HAVE_STRSEP
 /* Solaris seems to be missing strsep */
 char *strsep(char **stringp, const char *delim);
 #endif

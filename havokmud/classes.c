@@ -1,4 +1,5 @@
 #include "config.h"
+#include "platform.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>

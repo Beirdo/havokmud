@@ -3,6 +3,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -6784,7 +6785,7 @@ void cast_weakness(int level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_STAFF:
         for (tar_ch = real_roomp(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
-            if (!in_group) {
+            if (!in_group(tar_ch, ch)) {
                 spell_weakness(level, ch, tar_ch, 0);
             }
         }

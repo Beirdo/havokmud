@@ -1,7 +1,7 @@
 ##
 ## The compiler your gonna use to compile this with..
 ##
-CC=gcc
+CC=@CC@
 ##
 LD=$(CC)
 
@@ -9,13 +9,11 @@ LD=$(CC)
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -ansi -pedantic
 
 ##  Libraries
-LIBS = -lcrypt
-# Solaris needs the following
-#LIBS = -lcrypt -lsocket -lnsl
+LIBS = @LIBS@
 
 
 SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
-	act.other.c act.social.c act.wizard.c ansi_parser.c board.c bsd.c \
+	act.other.c act.social.c act.wizard.c ansi_parser.c board.c \
 	classes.c comm.c constants.c create.c create.help.c create.mob.c \
 	create.obj.c db.c fight.c handler.c hash.c heap.c interpreter.c \
 	limits.c magic2.c magic3.c magic.c magicutils.c mail.c mindskills1.c \
@@ -26,13 +24,14 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	spec_assign.c spec_guildmaster.c spec_procs2.c spec_procs3.c \
 	spec_procs4.c spec_procs.c spell_parser.c spells1.c spells2.c trap.c \
 	utility.c weather.c
+EXE =	havokmud@EXEEXT@
 
 OBJS = ${SRCS:.c=.o}
 DEPS = ${SRCS:.c=.d}
 
-all : dmserver
+all : $(EXE)
 
-dmserver : ${OBJS}
+$(EXE) : ${OBJS}
 	$(LD) -g -o $@ $+ ${LIBS}
 
 depend : ${DEPS}
@@ -41,15 +40,28 @@ ${DEPS} : Makefile
 
 %.d: %.c
 	@echo "Making $@ (dependencies for $<)"
-	@${CC} -MM ${GAMEFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
+	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
 
 .PHONY: clean cleanall
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(EXE)
 
 cleanall: clean
 	rm -f ${DEPS}
+
+distclean: cleanall
+	rm -f config.status config.log Makefile config.h
+
+configure: configure.ac
+	autoconf
+
+config.in.h: configure.in
+	autoheader
+
+Makefile: Makefile.in configure
+	@echo Your Makefile is out of date, rerun ./configure
+	
 
 -include ${DEPS}
 

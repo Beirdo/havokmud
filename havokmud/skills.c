@@ -3,6 +3,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -226,7 +227,7 @@ void do_track(struct char_data *ch, char *argument, int cmd)
     struct char_data *scan;
     extern struct char_data *character_list;
 
-#ifdef NOTRACK
+#ifndef USE_TRACK
     send_to_char("Sorry, tracking is disabled. Try again after reboot.\n\r",
                  ch);
     return;
@@ -2226,7 +2227,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
                      "through.\n\r", ch);
         act("$n closes $s eyes and a shimmering portal appears!", FALSE,
             ch, 0, 0, TO_ROOM);
-        act("$n steps through the portal and the portal dissapears!",
+        act("$n steps through the portal and the portal disappears!",
             FALSE, ch, 0, 0, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, location);
@@ -2814,7 +2815,7 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
     if (affected_by_spell(ch, SPELL_DETECT_INVISIBLE) &&
 	affected_by_spell(ch, SPELL_SENSE_LIFE) &&
 	affected_by_spell(ch, SPELL_TRUE_SIGHT)) {
-        send_to_char("You cannot seem to benifit anything from this.\n\r",
+        send_to_char("You cannot seem to benefit anything from this.\n\r",
 		     ch);
         return;
     }

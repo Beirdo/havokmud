@@ -8,6 +8,7 @@
  *****************************************************************************/
 
 #include "config.h"
+#include "platform.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>

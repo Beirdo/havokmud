@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -853,7 +854,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             act("You unequip $p and steal it.", FALSE, ch, obj, 0, TO_CHAR);
             act("$n steals $p from $N.", FALSE, ch, obj, victim, TO_NOTVICT);
             obj_to_char(unequip_char(victim, eq_pos), ch);
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
             do_save(ch, "", 0);
             do_save(victim, "", 0);
 #endif
@@ -892,7 +893,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                         obj_from_char(obj);
                         obj_to_char(obj, ch);
                         send_to_char("Got it!\n\r", ch);
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
                         do_save(ch, "", 0);
                         do_save(victim, "", 0);
 #endif
@@ -1036,7 +1037,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
 void do_bug(struct char_data *ch, char *argument, int cmd)
 {
     FILE           *fl;
-    char            str[MAX_INPUT_LENGTH + 20];
+    char            str[MAX_STRING_LENGTH];
 
     dlog("in do_bug");
 

@@ -1,4 +1,5 @@
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -30,27 +31,6 @@ extern int      spell_index[MAX_SPL_LIST];
 extern char    *spells[];
 extern int      rev_dir[];
 
-/*
- * extern procedures 
- */
-int             choose_exit_global(int a, int b, int c);
-void            hit(struct char_data *ch, struct char_data *victim, int type);
-void            gain_exp(struct char_data *ch, int gain);
-
-struct char_data *FindVictim(struct char_data *ch);
-struct char_data *char_holding(struct obj_data *obj);
-void            send_to_all(char *messg);
-int             IsUndead(struct char_data *ch);
-struct time_info_data age(struct char_data *ch);
-int             CountLims(struct obj_data *obj);
-struct char_data *FindAnAttacker(struct char_data *ch);
-void            NailThisSucker(struct char_data *ch);
-int             NumCharmedFollowersInRoom(struct char_data *ch);
-struct char_data *FindMobDiffZoneSameRace(struct char_data *ch);
-struct char_data *FindMobInRoomWithFunction(int room, int (*func) ());
-void            add_follower(struct char_data *ch,
-                             struct char_data *leader);
-void            stop_follower(struct char_data *ch);
 int randomitem(void);
 
 /*
@@ -7199,7 +7179,7 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
                 send_to_char("There is a slight wrenching sensation, and then "
                              "the color disappears.\n\r", ch);
                 send_to_char("\n\r", ch);
-                act("$n enters the pool and dissapears!", FALSE, ch, 0, 0,
+                act("$n enters the pool and disappears!", FALSE, ch, 0, 0,
                     TO_ROOM);
                 char_from_room(ch);
                 char_to_room(ch, BAHAMUT_HOME);

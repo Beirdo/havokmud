@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include "structs.h"
 #include "trap.h"
 #include "race.h"
@@ -1465,7 +1466,7 @@ const char     *spell_wear_off_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "The shock of the backstab you suffered has worn off.",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -1511,7 +1512,7 @@ const char     *spell_wear_off_msg[] = {
     "spell91, please report.",
     "Your skin returns to normal.",
     "spell93, please report.",
-    "Your clarity of vision dissapears",
+    "Your clarity of vision disappears",
     "spell95, please report",
     "The pink glow around your body fades.",    /* 96 */
     "spell 97, please report.",
@@ -1819,7 +1820,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -2171,7 +2172,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "The pain from the backstab is getting better, slowly.",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -2530,7 +2531,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -5080,7 +5081,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel */
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",

@@ -1,4 +1,5 @@
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -11,13 +12,6 @@
 /*
  * Extern structures
  */
-#if 0
-void            add_follower(struct char_data *ch,
-                             struct char_data *leader);
-bool            circle_follow(struct char_data *ch,
-                              struct char_data *victim);
-void            stop_follower(struct char_data *ch);
-#endif
 
 
 #define TREE 6110

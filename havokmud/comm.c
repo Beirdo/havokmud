@@ -4,6 +4,7 @@
  */
 
 #include "config.h"
+#include "platform.h"
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -27,6 +28,11 @@
 #include "utils.h"
 
 void            identd_test(struct sockaddr_in in_addr);
+
+/* Make OSX work */
+#ifndef HAVE_SOCKLEN_T
+#define socklen_t int
+#endif 
 
 #define MAX_CONNECTS 256        
 /* 
@@ -149,11 +155,12 @@ int main(int argc, char **argv)
 #ifdef SITELOCK
     int             a;
 #endif
-    spy_flag = TRUE;
 #if defined(__sun__) || defined(__NetBSD__)
     struct rlimit   rl;
     int             res;
 #endif
+
+    spy_flag = TRUE;
 
 #ifdef MALLOC_DEBUG
     malloc_debug(1);            /* some systems might not have this lib */
@@ -276,20 +283,6 @@ int main(int argc, char **argv)
         strcpy(hostlist[a], " \0\0\0\0");
     }
     numberhosts = 0;
-
-#ifdef LOCKGROVE
-    Log("Locking out Host: oak.grove.iup.edu.");
-    strcpy(hostlist[0], "oak.grove.iup.edu");
-    numberhosts = 1;
-    Log("Locking out Host: everest.rutgers.edu.");
-    strcpy(hostlist[1], "everest.rutgers.edu");
-    numberhosts = 2;
-#endif                          /* LOCKGROVE */
-
-#ifdef PERSONAL_PERM_LOCKOUTS
-    numberhosts += 0;
-#endif
-
 #endif
 
     /*
@@ -1126,6 +1119,7 @@ int new_connection(int s)
     struct sockaddr_in isa;
 #ifdef __sun__
     struct sockaddr peer;
+    char            buf[MAX_STRING_LENGTH];
 #endif
     int             i;
     int             t;

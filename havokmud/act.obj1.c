@@ -1,6 +1,8 @@
 #include "config.h"
+#include "platform.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 
 #include "protos.h"
@@ -535,7 +537,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
             act("You drop everything you own.", 1, ch, 0, 0, TO_CHAR);
             act("$n drops everything $e owns.", 1, ch, 0, 0, TO_ROOM);
         }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
         do_save(ch, "", 0);
 #endif
         return;
@@ -585,7 +587,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
             num--;
         }
     }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
     do_save(ch, "", 0);
 #endif
 }
@@ -765,7 +767,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         num = 0;
                     }
                 }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
                 do_save(ch, "", 0);
 #endif
             }
@@ -946,7 +948,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             }
 
         }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
         do_save(ch, "", 0);
         do_save(vict, "", 0);
 #endif
@@ -1008,7 +1010,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     0, 0, TO_CHAR);
                 act("$n donates everything he carries!.", 1, ch, 0, 0, TO_ROOM);
             }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
             do_save(ch, "", 0);
 #endif
         } else {
@@ -1062,7 +1064,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     num--;
                 }
             }
-#ifdef NODUPLICATES
+#ifndef DUPLICATES
             do_save(ch, "", 0);
 #endif
             /*
