@@ -1,30 +1,23 @@
 ##  these are compile time constructs, that affect the running of the ga
 ## See farther down for explaination of these and more! msw
 ##
-CPPFLAGS = -DPREP_SPELLS -DPREVENT_PKILL -DLOG_ALL  -DLAG_MOBILE -DSITELOCK -DUSE_EGOS -DLIMITED_ITEMS
-## -DDEBUG -DDEBUG_LOG
-##
-## -DPREP_SPELLS -DDEBUG_LOG
-## -DDEBUG -DMALLOC_DEBUG -DDEBUG_LOG
-## -DCLEAN_AT_BOOT -DCHECK_RENT_INACTIVE
-## -DSTRANGE_WACK -DBLOCK_WRITE 
-## 
+GAMEFLAGS = -DPREP_SPELLS -DPREVENT_PKILL -DLOG_ALL -DLAG_MOBILE -DSITELOCK \
+	    -DUSE_EGOS -DLIMITED_ITEMS
+
 ##
 ## The compiler your gonna use to compile this with..
 ##
-CC=gcc  
+CC=gcc
 ##
 LD=$(CC)
-##
+
 ##  these are architecture dependent flags
-TITANFLAGS = -g -43 -vector_c -safe=ptrs -DTITAN
-#MYFLAGS = -ggdb3 -m486 -mno-fp-ret-in-387 
-MYFLAGS = -g -O6 #-Wall #-Werror
+COMPILEFLAGS = -g -O6 #-Wall #-Werror
 ##
-CFLAGS = $(MYFLAGS) $(CPPFLAGS)
-##
+CFLAGS = $(COMPILEFLAGS) $(GAMEFLAGS)
+
 ## **********************************************************
-##      COMPILE TIME DEFINES, CPPFLAGS!
+##      COMPILE TIME DEFINES (GAMEFLAGS)
 ##
 ##  For lower exp loss at lower levels -DNEWEXP
 ##
@@ -124,93 +117,41 @@ CFLAGS = $(MYFLAGS) $(CPPFLAGS)
 ## -DNEW_RENT
 ##              Charge 100 coins per day of rent, regardless of item types.
 ##
-##
-HEADERFILES = structs.h utils.h comm.h interpreter.h db.h
-##
 
-OBJS = comm.o act.comm.o act.info.o act.move.o act.obj1.o act.obj2.o act.off.o act.other.o act.social.o act.wizard.o handler.o db.o interpreter.o utility.o spec_assign.o shop.o limits.o mobact.o fight.o modify.o weather.o spells1.o spells2.o spell_parser.o reception.o constants.o spec_procs.o signals.o board.o magic.o magic2.o skills.o opinion.o trap.o magicutils.o multiclass.o hash.o sound.o heap.o spec_procs2.o magic3.o security.o spec_procs3.o spec_procs4.o create.o bsd.o parser.o ansi_parser.o mail.o mindskills1.o mind_use1.o create.mob.o create.obj.o create.help.o paginate.o mod.text.o spec_guildmaster.o
-SRCS = comm.c act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c act.other.c act.social.c act.wizard.c handler.c db.c interpreter.c utility.c spec_assign.c shop.c limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c spell_parser.c reception.c constants.c spec_procs.c signals.c board.c magic.c magic2.c skills.c opinion.c trap.c magicutils.c multiclass.c hash.c sound.c heap.c spec_procs2.c magic3.c security.c spec_procs3.c spec_procs4.c create.c bsd.c parser.c ansi_parser.c mail.o mind_use1.c mindskills1.c create.mob.c create.obj.c create.help.c paginate.c mod.text.c spec_guildmaster.c
+SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
+	act.other.c act.social.c act.wizard.c ansi_parser.c board.c bsd.c \
+	comm.c constants.c create.c create.help.c create.mob.c create.obj.c \
+	db.c fight.c handler.c hash.c heap.c interpreter.c limits.c magic2.c \
+	magic3.c magic.c magicutils.c mail.c mindskills1.c mind_use1.c \
+	mobact.c modify.c mod.text.c multiclass.c opinion.c paginate.c \
+	parser.c reception.c security.c shop.c signals.c skills.c sound.c \
+	spec_assign.c spec_guildmaster.c spec_procs2.c spec_procs3.c \
+	spec_procs4.c spec_procs.c spell_parser.c spells1.c spells2.c trap.c \
+	utility.c weather.c
+
+OBJS = ${SRCS:.c=.o}
+DEPS = ${SRCS:.c=.d}
 
 all : dmserver
-	chmod g+rw *.o
-
 
 dmserver : ${OBJS}
+	$(LD) -g -o $@ $+ -lcrypt
 
-## if you want to add debugging stuff, uncomment the following, and comment
-##  out the line after that
-##      $(LD) -o $@ -g ${OBJS} /local/lib/gnu/gcc-gnulib /usr/lib/debug/malloc.o
-##      $(LD) -o $@ -g ${OBJS} /usr/lib
-	$(LD) -g -o $@ ${OBJS} -lcrypt
-##      $(LD) -o $@ -g ${OBJS} -L/usr/local/gnu/lib/gcc-lib/sun4-sunos4.1.1/2.3
+depend : ${DEPS}
 
-depend :
-	makedepend ${SRCS}
+${DEPS} : Makefile
+
+%.d: %.c
+	@echo "Making $@ (dependencies for $<)"
+	@${CC} -MM ${GAMEFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
 
 .PHONY: clean cleanall
 
 clean:
 	rm -f $(OBJS)
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+cleanall: clean
+	rm -f ${DEPS}
 
-comm.o: protos.h
-act.comm.o: protos.h
-act.move.o: protos.h
-act.off.o: protos.h
-act.obj1.o: protos.h
-act.obj2.o: protos.h
-act.info.o: protos.h
-act.other.o: protos.h
-act.social.o: protos.h
-act.wizard.o: protos.h
-handler.o: protos.h
-db.o: protos.h
-interpreter.o: protos.h
-utility.o: protos.h
-spec_assign.o: protos.h
-shop.o: protos.h
-limits.o: protos.h
-mobact.o: protos.h
-fight.o: protos.h
-modify.o: protos.h
-weather.o: protos.h
-spells1.o: protos.h
-spells2.o: protos.h
-spell_parser.o: protos.h
-reception.o: protos.h
-constants.o: protos.h
-spec_procs.o: protos.h
-signals.o: protos.h
-board.o: protos.h
-magic.o: protos.h
-magic2.o: protos.h
-magic3.o: protos.h
-magicutils.o: protos.h
-multiclass.o: protos.h
-skills.o: protos.h
-opinion.o: protos.h
-trap.o: protos.h
-hash.o: protos.h
-sound.o: protos.h
-heap.o: protos.h
-spec_procs2.o: protos.h
-spec_procs3.o: protos.h
-spec_procs4.o: protos.h
-security.o:
-create.o: protos.h
-bsd.o:
-parser.o: protos.h
-ansi_parser.o: protos.h
-mail.o:protos.h
-mind_use1.o: protos.h
-mindskills1.o:protos.h
-create.mob.o:protos.h
-create.obj.o:protos.h
-create.help.o:protos.h
-mod.text.o:protos.h
-dimd.o:
-sunmalloc.o:
-paginate.o:protos.h
-create.help.o:protos.h
-paginate.o:protos.h
+-include ${DEPS}
+
