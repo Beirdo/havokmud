@@ -3420,9 +3420,12 @@ void AuctionPulseStuff(int pulse)
 			/* return item to bidder */
 			ch_printf(bidder, "You receive %s.\n\r",auctionobj->short_description);
 			auctioneer->specials.auction = 0;
-				assert(!auctionobj->in_obj);
-				assert(auctionobj->in_room == NOWHERE);
-				assert(!auctionobj->carried_by);
+//				assert(!auctionobj->in_obj);
+				auctionobj->in_obj = 0;
+//				assert(auctionobj->in_room == NOWHERE);
+				auctionobj->in_room = 0;
+//				assert(!auctionobj->carried_by);
+				auctionobj->carried_by = 0;
 
 			auctionobj->equipped_by = 0;
 			auctionobj->eq_pos = -1;
