@@ -3336,7 +3336,8 @@ void save_char(struct char_data *ch, sh_int load_room)
       }
     tmp = 0;
   }
-
+  GET_LEVEL(ch,BARD_LEVEL_IND) = 0; 
+  //ch->levels[11] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
   if (expand = (ch->desc->pos > top_of_p_file)) {
     strcpy(mode, "a");
     top_of_p_file++;
