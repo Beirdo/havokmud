@@ -207,6 +207,12 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( winger, PROC_MOBILE ),
     REGISTER_PROC( wraith, PROC_MOBILE ),
     REGISTER_PROC( zork, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_master, PROC_MOBILE),
+    REGISTER_PROC( mazekeeper_riddle_one, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_two, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_three, PROC_MOBILE ),
+    REGISTER_PROC( mazekeeper_riddle_four, PROC_MOBILE),
 
     REGISTER_PROC( altarofsin, PROC_OBJECT ),
     REGISTER_PROC( applepie, PROC_OBJECT ),
@@ -1669,7 +1675,15 @@ struct special_proc_entry mobSpecials[] = {
     /*
      * Sentinel's The Estate 
      */
-    {51300, janaurius}
+    {51300, janaurius},
+
+    /* mob procs zone 39 */
+    {6516, mazekeeper},
+    {6599, mazekeeper_riddle_master},
+    {6595, mazekeeper_riddle_one},
+    {6596, mazekeeper_riddle_two},
+    {6597, mazekeeper_riddle_three},
+    {6598, mazekeeper_riddle_four}
 };
 int mobSpecialCount = NELEMS(mobSpecials);
 
@@ -1915,6 +1929,7 @@ struct special_proc_entry roomSpecials[] = {
     {37839, ventroom},
 
     {11353, knockproc}
+
 };
 int roomSpecialCount = NELEMS(roomSpecials);
 

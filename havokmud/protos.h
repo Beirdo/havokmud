@@ -3277,6 +3277,19 @@ int             generic_guildmaster(struct char_data *ch, int cmd,
 int skillfixer(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type);
 
+int mazekeeper(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
+int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
+
+int mazekeeper_riddle_one(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
+int mazekeeper_riddle_two(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
+int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
+int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
+                      struct char_data *mob);
 
 
 /*
