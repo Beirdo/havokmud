@@ -1433,34 +1433,32 @@ void do_at(struct char_data *ch, char *argument, int cmd)
         location = loc_nr;
     } else if ((target_mob = get_char_vis(ch, loc_str)) != NULL) {
         location = target_mob->in_room;
-    } else {
-        if ((target_obj = get_obj_vis_world(ch, loc_str, NULL)) != NULL) {
-            if (target_obj->in_room != NOWHERE) {
-                location = target_obj->in_room;
-            } else {
-                send_to_char("The object is not available.\n\r", ch);
-                return;
-            }
+    } else if ((target_obj = get_obj_vis_world(ch, loc_str, NULL)) != NULL) {
+        if (target_obj->in_room != NOWHERE) {
+            location = target_obj->in_room;
         } else {
-            send_to_char("No such creature or object around.\n\r", ch);
+            send_to_char("The object is not available.\n\r", ch);
             return;
         }
-        /*
-         * a location has been found.
-         */
-        original_loc = ch->in_room;
-        char_from_room(ch);
-        char_to_room(ch, location);
-        command_interpreter(ch, command);
-        /*
-         * check if the guy's still there
-         */
-        for (target_mob = real_roomp(location)->people; target_mob;
-                target_mob = target_mob->next_in_room) {
-            if (ch == target_mob) {
-                char_from_room(ch);
-                char_to_room(ch, original_loc);
-            }
+    } else {
+        send_to_char("No such creature or object around.\n\r", ch);
+        return;
+    }
+    /*
+     * a location has been found.
+     */
+    original_loc = ch->in_room;
+    char_from_room(ch);
+    char_to_room(ch, location);
+    command_interpreter(ch, command);
+    /*
+     * check if the guy's still there
+     */
+    for (target_mob = real_roomp(location)->people; target_mob;
+         target_mob = target_mob->next_in_room) {
+        if (ch == target_mob) {
+            char_from_room(ch);
+            char_to_room(ch, original_loc);
         }
     }
 }
