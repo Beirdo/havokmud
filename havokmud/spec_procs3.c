@@ -3608,7 +3608,9 @@ int BerserkerItem(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!IS_SET(ch->specials.affected_by2, AFF2_BERSERK)) {
+#if 0
             Log("trying to berserk because of item ");
+#endif
             /*
              * not berserked go berserk! 
              */
