@@ -31,6 +31,10 @@ void PrintSkills(struct char_data *ch, int level,
                  const struct skillset *skills, char *buffer);
 int LearnSkill(struct char_data *ch, const struct skillset *skills, char *arg,
                int level, char *teacher, int charge);
+int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
+                         struct char_data *mob, int type, int class_bit, 
+                         int level_ind);
+
 
 #define SPELL_SPECIAL_COST 100000       /* 100k to specialize per spell */
 
@@ -595,13 +599,6 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
                                 DRUID_LEVEL_IND);
 }
 
-
-void do_mobTell2(struct char_data *ch, struct char_data *mob,
-                 char *sentence);
-
-int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
-                          struct char_data *mob, int type
-                          , int class_bit, int level_ind);
 
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type)
