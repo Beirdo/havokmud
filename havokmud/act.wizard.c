@@ -5314,13 +5314,15 @@ dlog("in do_wizset");
 	return;
  }
 
-
  if (!strcmp("fast",flag)) {
-	if (IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
-	    REMOVE_BIT(ch->player.user_flags,FAST_AREA_EDIT); else
-	send_to_char("Not yet...\n\r",ch);
-/*          SET_BIT(ch->player.user_flags,FAST_AREA_EDIT); */
-	} else
+   if (IS_SET(ch->player.user_flags,FAST_AREA_EDIT)){
+     send_to_char("Fast edit disabled.\n\r",ch);
+     REMOVE_BIT(ch->player.user_flags,FAST_AREA_EDIT);
+   } else{
+     send_to_char("$c0001Fast edit Enabled.\n\r",ch);
+     SET_BIT(ch->player.user_flags,FAST_AREA_EDIT);
+   }
+ } else
 
  if (!strcmp("home",flag)) {
 	/* if (!*name) {
@@ -5921,6 +5923,7 @@ void do_seeobjmax(struct char_data *ch, char *argument, int cmd)
      else sprintf(number,"%d",obj_index[rnum].MaxObjCount);
      sprintf(buf,"Maximum count for object %s is: %s. \n\r",(char *) obj->name,number);
      send_to_char(buf,ch);
+     obj_index[obj->item_number].number--;
     }
   else send_to_char("Error on Read Object. maximum not displayed. \n\r",ch);
 

@@ -17,6 +17,7 @@ int SetDefaultLang(struct char_data *ch);
 
 void log_sev(char *s, int i);
 void log (char *s) { log_sev(s, 1); }
+extern char *exits[];
 extern long SystemFlags;
 extern struct time_data time_info;
 extern struct descriptor_data *descriptor_list;
@@ -4737,94 +4738,90 @@ int str_cmp2(char *arg1, char *arg2)
   return (1);
   return(0);
 }
-
+/* Edit Fast rewriten by Greg Hovey(GH)
+   makes an exit to a new room and back
+*/
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 {
- long l;
- int rdir;
- char buf[255];
- struct zone_data *zd,*tmpz;
- struct room_data *newrp;
+  int current = 0;
+  long l;
+  int rdir,x;
+  char buf[255];
+  struct zone_data *zd;
+  struct room_data *rm=0;
 
- if (GetMaxLevel(ch) < LOW_IMMORTAL || !rpp || !ch->desc ||
- 	!IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
-	 return(FALSE);
-
- if(GetMaxLevel(ch) < GOD &&  (*rpp)->zone != GET_ZONE(ch))  {
-    send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
+  if (GetMaxLevel(ch) < 53 || !rpp || !ch->desc ||
+      !IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
     return(FALSE);
+
+  current = ch->in_room;
+  rm = real_roomp(ch->in_room);
+  //lets find valid room..
+  zd = zone_table+(rm->zone-1);
+
+
+  if(GetMaxLevel(ch) < 57 &&  rm->zone != GET_ZONE(ch))  {
+    send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
+    return(TRUE);
   }
-/* check for first room avalible in this zone */
-  zd = zone_table+(*rpp)->zone;
-  tmpz = zone_table+(*rpp)->zone-1;
-l=tmpz->top+1;
-newrp=real_roomp(l);
-for (l=tmpz->top+1,newrp=real_roomp(l);
-     l<zd->top && newrp;l++,newrp=real_roomp(l))
-
-if (newrp || l >zd->top) {
-	send_to_char("No more empty rooms!\n\r",ch);
-	return(FALSE);
-	}
-
-/* create new room  */
-	sprintf(buf,"%ld %ld",l,l);
-	do_create(ch,buf,0);
-
-	/* check and make sure it loaded alright... */
-	newrp=real_roomp(l);
-	if (!newrp) {
-		send_to_char("Could not create the next room!\n\r",ch);
-		return(FALSE);
-		}
-
-/* 	set room flags and types to current rooms settings */
-	newrp->zone= (*rpp)->zone;
-	newrp->continent = (*rpp)->continent;
-	newrp->sector_type = (*rpp)->sector_type;
-	newrp->river_dir  = (*rpp)->river_dir;
-	newrp->river_speed= (*rpp)->river_speed;
-	newrp->tele_time = (*rpp)->tele_time;
-	newrp->tele_targ = (*rpp)->tele_targ;
-	newrp->tele_mask = (*rpp)->tele_mask;
-	newrp->tele_cnt	 = (*rpp)->tele_cnt;
-	newrp->moblim= (*rpp)->moblim;
-	newrp->room_flags= (*rpp)->room_flags;
-
-/* 	figure out number for reverse direction of dir */
-	switch(dir-1)
-		{
-			case NORTH:	rdir= SOUTH;
-				break;
-			case SOUTH:	rdir= NORTH;
-				break;
-			case EAST:	rdir= WEST;
-				break;
-			case WEST:	rdir=EAST;
-				break;
-			case UP	:	rdir=DOWN;
-				break;
-			case DOWN:	rdir=UP;
-				break;
- 		       default:
- 		           rdir=NORTH;
-				break;
-		} /* end switch */
-
-/* 	make the exit to return in current room in new room */
-	sprintf(buf,"exit %d 0 -1 %ld",rdir,(*rpp)->number);
-	do_edit(ch,buf,0);
-
-/*	use dir number for direction in this one */
-/*	make exit in current room to new room */
-	sprintf(buf,"exit %d 0 -1 %ld",dir-1,newrp->number);
-	do_edit(ch,buf,0);
 
 
+  x = zd->top;
+  zd = zone_table+rm->zone;
 
-/* return(TRUE); */
+  for(x=x+1;x < zd->top;x++) {
+    if (real_roomp(x)==NULL) {
+      CreateOneRoom(x);
+      sprintf(buf,"$c0001Room exit created from room %d to %d.\n\r",current,x);
+      send_to_char(buf,ch);
 
- return(FALSE);
+      sprintf(buf,"exit %d 0 0 %d",dir,x);
+      do_edit(ch,buf,0);  //make exit in disired direction..
+      //move char to that room..
+      sprintf(buf,"%s",exits[dir]);
+      do_move(ch,buf,dir+1);
+      dir = opdir(dir); //opposite direction..
+
+      if (real_roomp(current)==NULL) {
+	CreateOneRoom(current);
+      }
+
+      sprintf(buf,"exit %d 0 0 %d",dir,current);
+      do_edit(ch,buf,0);
+      do_look(ch,"",15);
+      return(TRUE);
+      //break;
+    }
+
+  }
+  send_to_char("No more empty rooms in your assigned zone!!\n\r",ch);
+
+  return(TRUE);
+}
+
+/*finds oposite direction of a direction.. ex. south->north.. 0->2*/
+
+      int opdir(int dir) {
+  switch(dir) {
+  case 0:
+  case 1:
+    dir=dir+2;
+    break;
+  case 2:
+  case 3:
+    dir=dir-2;
+    break;
+  case 4:
+    dir=5;
+    break;
+  case 5:
+    dir=4;
+    break;
+  default:
+    dir = 0;
+    break;
+  }
+  return dir;
 }
 
 
