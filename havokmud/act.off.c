@@ -2540,7 +2540,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd) {
 		}
 	  if (IS_SET(SystemFlags,SYS_NOOOC))
 	  {
-	     send_to_char("The use of clan chat have been temporarilly banned.\n\r", ch);
+	     send_to_char("The use of clan chat has been temporarilly banned.\n\r", ch);
 	     return;
 	  }
 	  if (IS_NPC(ch) &&
@@ -2592,7 +2592,66 @@ void do_chat(struct char_data *ch, char *argument, int cmd) {
 			    send_to_char(buf1,i->character);
 	      }
 	  }
+}
 
+void do_qchat(struct char_data *ch, char *argument, int cmd) {
+	  char buf1[MAX_INPUT_LENGTH+80];
+	  struct descriptor_data *i;
+	  extern int Silence;
+		int clannum=0;
+	dlog("in do_qchat");
 
+	  if (!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT) || IS_SET(ch->specials.act, PLR_NOOOC) ||
+	IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
+	    send_to_char("You can't use this command!!\n\r", ch);
+	    return;
+	  }
+		if(!IS_AFFECTED2(ch,AFF2_QUEST)) {
+			send_to_char("You cannot quest chat. Gotta join first.\n\r",ch);
+			return;
+		}
+	  if (IS_SET(SystemFlags,SYS_NOOOC))
+	  {
+	     send_to_char("The use of quest chat has been temporarilly banned.\n\r", ch);
+	     return;
+	  }
+	  if (IS_NPC(ch) &&
+	      (Silence == 1) &&
+	      (IS_SET(ch->specials.act, ACT_POLYSELF)))
+	  {
+	    send_to_char("Polymorphed worldwide comms has been banned.\n\r", ch);
+	    send_to_char("It may return after a bit.\n\r", ch);
+	    return;
+	  }
 
+	  if (apply_soundproof(ch))
+	    return;
+
+	  for (; *argument == ' '; argument++);
+
+	  if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
+	    if (!IS_IMMORTAL(ch->master)) {
+	      send_to_char("I don't think so :-)", ch->master);
+	      return;
+	    }
+	  }
+
+	  if (!(*argument))
+	    send_to_char("Your fellow questees aren't interested in hearing nothing.\n\r", ch);
+	  else {
+	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+	      sprintf(buf1,"$c000wYou $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct $c0008'$c000w%s$c0008'", argument);
+	      act(buf1,FALSE, ch,0,0,TO_CHAR);
+	    }
+	    sprintf(buf1, "$c0008-=$c000w%s$c0008=- $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000Ps $c0008'$c000w%s$c0008'\n\r",GET_NAME(ch), argument);
+
+	    for (i = descriptor_list; i; i = i->next)
+	      if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
+		   (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+	       !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && !check_soundproof(i->character)) {
+			  //ch_printf(ch,"My clan: %d   Other clan: %d", GET_CLAN(clannum), GET_CLAN(i->character) );
+			  if(IS_AFFECTED2(i->character,AFF2_QUEST))
+			    send_to_char(buf1,i->character);
+	      }
+	  }
 }

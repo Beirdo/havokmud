@@ -687,6 +687,12 @@ memory_check("end 5, begin 6");
 	      DarknessPulseStuff(pulse);
     }
 
+	if (!(pulse % PULSE_ARENA)) {
+		dlog("Before arena pulse");
+		memory_check("arena pulse");
+	      ArenaPulseStuff(pulse);
+    }
+
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");
 	memory_check(" before pulse weather");

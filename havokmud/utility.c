@@ -458,8 +458,10 @@ void CleanZone(int zone)
 		for (obj = rp->contents; obj; obj = next_o) {
 			next_o=obj->next_content;
 			//obj_index[obj->item_number].number--; /* object maxxing.(GH) */
-			/* Do not clean out corpses   -Lennya */
-			if(!IS_CORPSE(obj)) {
+			/* Do not clean out corpses or quest items. Bit of  kludge to avoid
+			 * deinit getting rid of quest items when a scavenge quest is going
+			 * on. Maybe make a SYS_NODEINIT? Hard to use for small imms. -Lennya */
+			if(!IS_CORPSE(obj) || !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
 				extract_obj(obj);
 			}
 		}
@@ -3086,6 +3088,49 @@ void DarknessPulseStuff(int pulse)
 			}
 		}
 	}
+}
+
+#define ARENA_ZONE 5//124
+void ArenaPulseStuff(int pulse)
+{
+	struct descriptor_data *i;
+	register struct char_data *ch;
+	char buf[80], buffer[150];
+	int location = 0;
+	extern int MinArenaLevel, MaxArenaLevel;
+
+	if (pulse < 0)
+		return;
+
+	if(MinArenaLevel == 0 && MaxArenaLevel == 0) { /* arena must be closed */
+		if(countPeople(ARENA_ZONE) == 1) { /* last one standing in arena! */
+			/* let's see who this is */
+			for (i = descriptor_list; i; i=i->next) {
+				if (!i->connected) {
+					ch = i->character;
+					if(!ch) {
+						log("Weirdness. Found a char in arena, but now he's gone?");
+					}
+					if (IS_PC(ch) && (real_roomp(ch->in_room)->zone == ARENA_ZONE)) {
+						/* we have a winner - move and declare */
+						if(location = ch->player.hometown) {
+							char_from_room(ch);
+							char_to_room(ch, location);
+							send_to_char("You have won the arena, and are sent back home.\n\r\n\r", ch);
+							act("$n appears in the middle of the room.", TRUE, ch, 0, 0, TO_ROOM);
+							do_look(ch, "",15);
+							send_to_char("\n\r", ch);
+						}
+						sprintf(buf,"%s has been declared winner of this Arena!!\n\r",GET_NAME(ch));
+						send_to_all(buf);
+					}
+				}
+			}
+			if(!ch) {
+				log("Weirdness. Found a char in arena, but now he's gone?");
+			}
+		} /* not enough or too many people in arena */
+	} /* arena not closed */
 }
 
 void RiverPulseStuff(int pulse)

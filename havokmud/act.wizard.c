@@ -5225,20 +5225,20 @@ the light will return.\n");
 	 if (IS_SET(SystemFlags,SYS_NOOOC)) {
 	    REMOVE_BIT(SystemFlags,SYS_NOOOC);
 	    send_to_char("OOC channel re-enabled\n\r",ch);
-	    log("OOC channel have been re-enabled");
-	    send_to_all("OOC channel have been re-enabled");
+	    log("OOC channel has been re-enabled");
+	    send_to_all("OOC channel has been re-enabled");
 	  } else {
 	     SET_BIT(SystemFlags,SYS_NOOOC);
 	     send_to_char("OOC channel disabled, RP is now strictly enforced\n\r",ch);
 	     log("OOC channel disabled");
-	     send_to_all("The power of the OOC channel have been disabled...");
+	     send_to_all("The power of the OOC channel has been disabled...");
 	     send_to_all("RPing is now enforced on every channel");
 	   }
 	 } else if (!strcmp("locobj",arg)) {                   /* Disable locate object */
 	 if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
 	    REMOVE_BIT(SystemFlags,SYS_LOCOBJ);
 	    send_to_char("Locate Object enabled\n\r",ch);
-	    log("Locate object have been enabled");
+	    log("Locate object has been enabled");
 	      } else {
 	       SET_BIT(SystemFlags,SYS_LOCOBJ);
 	     send_to_char("Locate Object disabled\n\r",ch);

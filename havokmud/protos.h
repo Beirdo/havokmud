@@ -2094,6 +2094,7 @@ int CheckForBlockedMove
 void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
 void DarknessPulseStuff(int pulse);
+void ArenaPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);
@@ -2305,3 +2306,5 @@ int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 void do_expel(struct char_data *ch, char *argument, int cmd);
 void do_induct(struct char_data *ch, char *argument, int cmd);
 void do_chat(struct char_data *ch, char *argument, int cmd);
+void do_qchat(struct char_data *ch, char *argument, int cmd);
+void do_clanlist(struct char_data *ch, char *arg, int cmd);

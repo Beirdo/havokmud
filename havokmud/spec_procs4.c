@@ -1014,7 +1014,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 		if (obj->item_number != pot_rnr)
 			return(FALSE);
 		act("$n quaffs $p.",TRUE,ch,obj,0,TO_ROOM);
-		act("You quaff $o which dissolves.",FALSE,ch,obj,0,TO_CHAR);
+		act("You quaff $p which dissolves.",FALSE,ch,obj,0,TO_CHAR);
 		act("You have claimed your quest point!",FALSE,ch,obj,0,TO_CHAR);
 		sprintf(buf,"%s just quaffed a quest potion.\n\r",GET_NAME(ch));
 		qlog(buf);

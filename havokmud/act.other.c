@@ -2940,6 +2940,7 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
 {
 	int qcheck = 0;
 	struct descriptor_data *i;
+	struct char_data *tmp;
 	char buf[254];
 
 dlog("in do_set_quest");
@@ -2949,11 +2950,37 @@ dlog("in do_set_quest");
   if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
     return;
 
-  if(IS_AFFECTED2(ch,AFF2_QUEST)) {
-    act("$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
-    act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
-    REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
+	if(IS_AFFECTED2(ch,AFF2_QUEST)) {
+		qcheck = 0;
+	  	if (IS_IMMORTAL(ch)) {
+			REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST); /* make him stop */
+			for (i = descriptor_list; i; i = i->next) { /* see if another visible imm sports a qflag */
+				if (IS_IMMORTAL(i->character) && IS_AFFECTED2(i->character, AFF2_QUEST) && i->character->invis_level < 51) {
+					/* there is, just stop questing */
+					qcheck = 1;
+				}
+			}
+			if (qcheck) { /* just stop */
+				act("$n stops questing.", TRUE, ch, 0, 0, TO_ROOM);
+				act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
+			} else { /* make all morts stop questing too */
+				act("You end the quest.", TRUE, ch, 0, 0, TO_CHAR);
+				for (i = descriptor_list; i; i = i->next) { /* see if another imm sports a qflag */
+					if (!IS_IMMORTAL(i->character) && IS_AFFECTED2(i->character, AFF2_QUEST)) {
+						/* there is, just stop questing */
+						tmp = i->character;
+						act("$N has ended the quest.", TRUE, tmp, 0, ch, TO_CHAR);
+						REMOVE_BIT(tmp->specials.affected_by2, AFF2_QUEST);
+					}
+				}
+			}
+		} else { /* not an imm */
+			act("$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
+			act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
+			REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
+		}
 	} else {
+		qcheck = 0;
 		/*imms can always go into questy mode */
 		if (IS_IMMORTAL(ch)) {
 			act("$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
@@ -3387,7 +3414,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     /* let's give em a ratio to keep working on */
     akills = finger->specials.a_kills;
     adeaths = finger->specials.a_deaths;
-    ch_printf(ch, "$c000BArena ratio           : $c0007%2.0f%s\n\r",
+    ch_printf(ch, "$c000BArena ratio           : $c0007%3.0f%s\n\r",
     ((akills+adeaths) == 0) ? 0 : ( ((float)akills  / ((int) (akills+adeaths)))  * 100.0 + 0.5),"%");
 
   } /* end found finger'e*/
@@ -3443,27 +3470,28 @@ dlog("in do_plr_noooc");
 
 }
 
+#define ARENA_ZONE 5//124
 void do_arena(struct char_data *ch, char *argument, int cmd)
 {
 char buf[MAX_STRING_LENGTH];
 
-if (real_roomp(ch->in_room)->zone == 124){
-   send_to_char("You ARE in Arena.", ch);
+if (real_roomp(ch->in_room)->zone == ARENA_ZONE){
+   send_to_char("You're already in the Arena.\n\r", ch);
    return;
    }
 
 if (!MaxArenaLevel){
-   send_to_char("The Arena is closed.", ch);
+   send_to_char("The Arena is closed.\n\r", ch);
    return;
    }
 
 if (GetMaxLevel(ch) < MinArenaLevel){
-   send_to_char("You're not strong enough to enter this arena.", ch);
+   send_to_char("You're not strong enough to enter this arena.\n\r", ch);
    return;
    }
 
 if (GetMaxLevel(ch) > MaxArenaLevel){
-   send_to_char("You're too strong to enter this arena.", ch);
+   send_to_char("You're too strong to enter this arena.\n\r", ch);
    return;
    }
   sprintf(buf, "%s just entered the ARENA!\n\r", GET_NAME(ch));
@@ -3473,11 +3501,11 @@ if (GetMaxLevel(ch) > MaxArenaLevel){
   GET_MANA(ch) = GET_MAX_MANA(ch);
   GET_HIT(ch) = GET_MAX_HIT(ch);
   GET_MOVE(ch) = GET_MAX_MOVE(ch);
-  sprintf(buf, "%s disappears suddently!", GET_NAME(ch));
+  sprintf(buf, "%s disappears suddently!\n\r", GET_NAME(ch));
   send_to_room_except(buf, ch->in_room, ch);
   char_from_room(ch);
   char_to_room(ch, ARENA_ENTRANCE);
-  sprintf(buf, "%s appears in the room!", GET_NAME(ch));
+  sprintf(buf, "%s appears in the room!\n\r", GET_NAME(ch));
   send_to_room_except(buf, ch->in_room, ch);
   do_look(ch, "", 0);
   return;

@@ -2011,22 +2011,23 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
   	age2(ch, &my_age);
 
   	if (GET_TITLE(ch)) {
-    	ch_printf(ch,"$c000BYou are $c000Y%s\n\r", GET_TITLE(ch));
+    	ch_printf(ch,"$c000BYou are $c000w%s\n\r", GET_TITLE(ch));
   	}
 
   playing_time = real_time_passed((time(0)-ch->player.time.logon) + ch->player.time.played, 0);
 
 
-  ch_printf(ch, "$c000BYou are $c000w%d$c000B years old and very $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
+  ch_printf(ch, "$c000BYou are $c000w%d$c000B years old and $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
 	  , my_age.year,DescAge(my_age.year,GET_RACE(ch)), playing_time.day, playing_time.hours
 	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000w It's your birthday today.\n\r":""));
 
   ch_printf(ch, "$c000BYou belong to the $c000w%s$c000B race, and speak the $c000w%s$c000B language.\n\r"
 	  , RaceName[GET_RACE(ch)], languagelist[ch->player.speaks]);
 
-  ch_printf(ch,"$c000BYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.  Gold: $c000w%s$c000p\n\r",
- 		GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch) ,formatNum(GET_GOLD(ch)));
-
+  ch_printf(ch, "$c000BYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.\n\r",
+ 		GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch));
+  ch_printf(ch, "$c000BYou won $c000w%d$c000B Quests and own $c000w%d$c000B quest points.\n\r",ch->specials.questwon, ch->player.q_points);
+  ch_printf(ch, "$c000BYou carry $c000w%s$c000B coins, and have an additional $c000w%d$c000B in the bank.\n\r", formatNum(GET_GOLD(ch)), (ch->points.bankgold) );
   ch_printf(ch, "$c000BYour alignment is: $c000w%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
 
   //sprintf(buff,"%s",formatNum(GET_GOLD(ch)));
@@ -2045,7 +2046,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 		for (x=0; x < MAX_CLASS; x++) {
   			if (HasClass(ch, pc_num_class(x))) {
 
-    			sprintf(buf2, "%5s$c000BLevel:$c000w%-2d %-15s$c000B", " ",GET_LEVEL(ch, x),class_names[x]);
+    			sprintf(buf2, "%5s$c000BLevel:$c000w%-2d  %-15s$c000B", " ",GET_LEVEL(ch, x),class_names[x]);
     			strcat(buf, buf2);
     			if (GetMaxLevel(ch)<MAX_IMMORT)
     	   			sprintf(buf2,"%s%s:$c000w%s$c000B \n\r"," ","Xp needed"	,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
@@ -2063,7 +2064,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 		ch_printf(ch,"$c000BYou are a level $c000w%d $c000Bimmortal.\n\r",GetMaxLevel(ch));
 	}
 
-   ch_printf(ch,"$c000BYou have killed $c000w%d$c000B monsters, and have died $c000w%d$c000B times. Arena($c000w%d$c000B/$c000w%d$c000B)\n\r",
+   ch_printf(ch,"$c000BYou have killed $c000w%d$c000B monsters, and have died $c000w%d$c000B times. Arena: $c000w%d$c000B/$c000w%d$c000B\n\r",
     	ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
 /*ch_printf(ch,"$c000BKills: $c000w%d$c000B   Deaths: $c000w%d$c000B   Arena Kills: $c000w%d$c000B   Arena Deaths: $c000w%d$c000B\n\r"
 	,ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
@@ -2088,8 +2089,10 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 
 	if(GET_CLAN(ch) == 0) {
 		send_to_char("$c000BYou do not belong to a clan.\n\r",ch);
+	} else if (GET_CLAN(ch) == 1) {
+		send_to_char("$c000BYou have recently been $c000wexiled$c000B from a clan.\n\r",ch);
 	} else {
-		ch_printf(ch,"$c000BYou belong to the $c000w%s$c000B.\n\r", clan_list[GET_CLAN(ch)].name);
+		ch_printf(ch,"$c000BYou belong to $c000w%s$c000B.\n\r", clan_list[GET_CLAN(ch)].name);
 	}
 
 	ch_printf(ch,"$c000BYou have $c000w%d$c000B practice sessions remaining.\n\r",ch->specials.spells_to_learn);
@@ -5183,4 +5186,90 @@ void do_map(struct char_data *ch, char *argument, int cmd) {
 
 send_to_char("DO_MAP",ch);
 
+}
+
+/* clanlist command, shows which clans exist, or who is in what in which clan
+ * Lennya 20030611
+ */
+void do_clanlist(struct char_data *ch, char *arg, int cmd)
+{
+	struct char_data *tmp;
+	struct char_file_u player;
+	char buf[254], name[254];
+	int x = 0, i = 0, clan = 0;
+	extern int top_of_p_table;
+	extern struct player_index_element *player_table;
+	extern const struct clan clan_list[MAX_CLAN];
+
+	if(!ch)
+		return;
+
+	if(!*arg) {
+		/* list the clans */
+		send_to_char("              $c000c-=* $c0008Clan List $c000c*=-\n\r",ch);
+		send_to_char("\n\r",ch);
+		/* don't list unclanned, start at i = 1 */
+		x = 1;
+		while(clan_list[x].number != -1) {
+			sprintf(name,"%s",clan_list[x].name);
+			CAP(name);
+			sprintf(buf,"$c000c[$c000w%2d$c000c] $c000w%s   $c000c[$c000w%s$c000c]\n\r",
+				x, name, clan_list[x].shortname);
+			send_to_char(buf,ch);
+			x++;
+		}
+		return;
+	} else {
+		if (!isdigit(*arg)) {
+			send_to_char("Usage:  clanlist\n\r",ch);
+			send_to_char("        clanlist <clan number>\n\r",ch);
+			return;
+		} else {
+			clan = atoi(arg);
+//			if((clan > 0) && (clan < (MAX_CLAN -1))) {
+			if(clan_list[clan].number < 1) {
+				send_to_char("Unknown clan number.\n\r", ch);
+				return;
+			} else {
+				/* valid clan number */
+				ch_printf(ch,"    $c000c-=* $c000w%s Clan info $c000c*=-\n\r",clan_list[clan].name);
+
+				/* loop through pfiles, check for leader[clan] */
+				for(i=0;i<top_of_p_table+1;i++) {
+					if (load_char((player_table + i)->name, &player) > -1) {
+						/* store to a tmp char that we can deal with */
+						CREATE(tmp, struct char_data,1);
+						clear_char(tmp);
+						store_to_char(&player, tmp);
+						if(IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
+							ch_printf(ch, "$c000c[$c0008Leader$c000c] $c000w%s\n\r",
+								tmp->player.title?tmp->player.title:GET_NAME(tmp));
+						}
+						free(tmp);
+					} else {
+						log("screw up bigtime in load_char in clanlist");
+						return;
+					}
+				}
+				i=0;
+				/* now loop through pfiles, check for member[clan] */
+				for(i=0;i<top_of_p_table+1;i++) {
+					if (load_char((player_table + i)->name, &player) > -1) {
+						/* store to a tmp char that we can deal with */
+						CREATE(tmp, struct char_data,1);
+						clear_char(tmp);
+						store_to_char(&player, tmp);
+						if(!IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
+							ch_printf(ch, "$c000c[$c0008Member$c000c] $c000w%s\n\r",
+								tmp->player.title?tmp->player.title:GET_NAME(tmp));
+						}
+						free(tmp);
+					} else {
+						log("screw up bigtime in load_char in clanlist");
+						return;
+					}
+				}
+			}
+		}
+	}
 }
