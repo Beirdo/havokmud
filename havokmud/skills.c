@@ -2511,8 +2511,7 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    }
 
    if ( ch->skills[SKILL_FLAME_SHROUD].learned < dice (1,101) )   {
-     send_to_char ("You failed and barely avoided burning
-yourself.\n\r",ch);
+     send_to_char ("You failed and barely avoided burning yourself.\n\r",ch);
      act("$n pats at a small flame on $s arm.",FALSE,ch,0,0,TO_ROOM);
      GET_MANA(ch) -= 20;
      LearnFromMistake(ch, SKILL_FLAME_SHROUD, 0, 95);

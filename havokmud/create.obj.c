@@ -721,177 +721,206 @@ void ChangeObjAffects(struct char_data *ch, char *arg, int type)
 
 void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 {
-  int update,affect,row=0,i,a=0,column,check;
-  char buf[1024];
+   int update,affect,row=0,i,a=0,column,check;
+   char buf[1024];
 
-  switch(ch->specials.oedit) {
-        case CHANGE_OBJ_AFFECT1: affect = 1;
-                                break;
-        case CHANGE_OBJ_AFFECT2: affect = 2;
-                                break;
-        case CHANGE_OBJ_AFFECT3: affect = 3;
-                                break;
-        case CHANGE_OBJ_AFFECT4: affect = 4;
-                                break;
-        case CHANGE_OBJ_AFFECT5: affect = 5;
-                                break;
-  }
+   switch(ch->specials.oedit)
+   {
+      case CHANGE_OBJ_AFFECT1:
+         affect = 1;
+         break;
+      case CHANGE_OBJ_AFFECT2:
+         affect = 2;
+         break;
+      case CHANGE_OBJ_AFFECT3:
+         affect = 3;
+         break;
+      case CHANGE_OBJ_AFFECT4:
+         affect = 4;
+         break;
+      case CHANGE_OBJ_AFFECT5:
+         affect = 5;
+         break;
+      default:
+         break;
+   }
 
- if(type != ENTER_CHECK) {
-    if(!*arg || (*arg == '\n')) {
-        ch->specials.oedit = OBJ_MAIN_MENU;
-        UpdateObjMenu(ch);
-        return;
-    }
-
-    update = atoi(arg)-1;
-
-    if(update < 0 || update > 57) {
-        ch->specials.oedit = OBJ_MAIN_MENU;
-        UpdateObjMenu(ch);
-        return;
-    }
-
-    ch->specials.objedit->affected[affect-1].location=update;
-    ch->specials.objedit->affected[affect-1].modifier=0;
-
-      switch(affect) {
-            case 1: ch->specials.oedit = CHANGE_AFFECT1_MOD;
-                    break;
-            case 2: ch->specials.oedit = CHANGE_AFFECT2_MOD;
-                    break;
-            case 3: ch->specials.oedit = CHANGE_AFFECT3_MOD;
-                    break;
-            case 4: ch->specials.oedit = CHANGE_AFFECT4_MOD;
-                    break;
-            case 5: ch->specials.oedit = CHANGE_AFFECT5_MOD;
-                    break;
+   if(type != ENTER_CHECK)
+   {
+      if(!*arg || (*arg == '\n'))
+      {
+         ch->specials.oedit = OBJ_MAIN_MENU;
+         UpdateObjMenu(ch);
+         return;
       }
+
+      update = atoi(arg)-1;
+
+      if(update < 0 || update > 57)
+      {
+         ch->specials.oedit = OBJ_MAIN_MENU;
+         UpdateObjMenu(ch);
+         return;
+      }
+
+      ch->specials.objedit->affected[affect-1].location=update;
+      ch->specials.objedit->affected[affect-1].modifier=0;
+
+      switch(affect)
+      {
+         case 1:
+            ch->specials.oedit = CHANGE_AFFECT1_MOD;
+            break;
+         case 2:
+            ch->specials.oedit = CHANGE_AFFECT2_MOD;
+            break;
+         case 3:
+            ch->specials.oedit = CHANGE_AFFECT3_MOD;
+            break;
+         case 4:
+            ch->specials.oedit = CHANGE_AFFECT4_MOD;
+            break;
+         case 5:
+            ch->specials.oedit = CHANGE_AFFECT5_MOD;
+            break;
+         default:
+            break;
+      }
+
       sprintf(buf, VT_HOMECLR);
       send_to_char(buf, ch);
       functionflag=FALSE;
-      switch(update) {
-        case 0:
-	case 43:
-	case 44:
-	case 45:
-	case 48: /*check*/
-	case 49: /*check*/
-	case 56:
-          send_to_char("\n\rNote: Modifier does not affect anything in this case.\n\r",ch);
-          break;
-        case 1:
-	case 2:
-	case 3:
-	case 4:
-	case 5:
-        case 6:
-	case 8:
-	case 9:
-	case 10:
-	case 11:
-	case 12:
-	case 13:
-	case 14:
-	case 15:
-	case 17:
-	case 18:
-	case 19:
-	case 20:
-	case 21:
-	case 22:
-	case 23:
-	case 24:
-	case 25:
-        case 40:
-        case 41:
-	case 42:
-	case 50:
-	case 51:
-	case 52:
-	case 53:
-	case 54:
-	case 55:
-          send_to_char("\n\rNote: Modifier will make field go up modifier number of points.\n\r",ch);
-          send_to_char("      Positive modifier will make field go up, negative modifier will make\n\r      field go down.\n\r",ch);
-          break;
-	case 7:
-          send_to_char("\n\rNote: Modifier will change characters sex by adding.\n\r      0=neutral, 1=male, 2=female\n\r",ch);
-          break;
-	case 16: /*check*/
-          ChangeObjS2Affect(ch, "", ENTER_CHECK);
-          functionflag=TRUE;
-          break;
-	case 26:
-	case 27:
-	case 28:
-	  send_to_char("\n\rNote: Modifier should be ADDED together from this list of immunity flags.\n\r",ch);
-          row = 0;
-          for(i = 0; i < 18; i++) {
-            sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-            if(i & 1)
-              row++;
+
+      switch(update)
+      {
+         case 0:
+         case 43:
+         case 44:
+         case 45:
+         case 48: /*check*/
+         case 49: /*check*/
+         case 56:
+            send_to_char("\n\rNote: Modifier does not affect anything in this case.\n\r",ch);
+            break;
+         case 1:
+         case 2:
+         case 3:
+         case 4:
+         case 5:
+         case 6:
+         case 8:
+         case 9:
+         case 10:
+         case 11:
+         case 12:
+         case 13:
+         case 14:
+         case 15:
+         case 17:
+         case 18:
+         case 19:
+         case 20:
+         case 21:
+         case 22:
+         case 23:
+         case 24:
+         case 25:
+         case 40:
+         case 41:
+         case 42:
+         case 50:
+         case 51:
+         case 52:
+         case 53:
+         case 54:
+         case 55:
+            send_to_char("\n\rNote: Modifier will make field go up modifier number of points.\n\r",ch);
+            send_to_char("      Positive modifier will make field go up, negative modifier will make\n\r      field go down.\n\r",ch);
+            break;
+         case 7:
+            send_to_char("\n\rNote: Modifier will change characters sex by adding.\n\r      0=neutral, 1=male, 2=female\n\r",ch);
+            break;
+         case 16: /*check*/
+            ChangeObjS2Affect(ch, "", ENTER_CHECK);
+            functionflag=TRUE;
+            break;
+         case 26:
+         case 27:
+         case 28:
+            send_to_char("\n\rNote: Modifier should be ADDED together from this list of immunity flags.\n\r",ch);
+            row = 0;
+            for(i = 0; i < 18; i++)
+            {
+               sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+               if(i & 1)
+                  row++;
+               send_to_char(buf, ch);
+               check=1;
+
+               if(i>0)
+                  for(a=1;a<=i;a++)
+                     check*=2;
+
+               sprintf(buf, "%-6d :   %s", check, immunity_names[i]);
+               send_to_char(buf, ch);
+            }
+            sprintf(buf, VT_CURSPOS, 20, 1);
             send_to_char(buf, ch);
-            check=1;
-            if(i>0)
-              for(a=1;a<=i;a++)
-                check*=2;
-            sprintf(buf, "%-6d :   %s", check, immunity_names[i]);
-            send_to_char(buf, ch);
-          }
-          sprintf(buf, VT_CURSPOS, 20, 1);
-          send_to_char(buf, ch);
-	  break;
-        case 29:
-          ChangeObjSAffect(ch, "", ENTER_CHECK);
-          functionflag=TRUE;
-          break;
-	case 30:
-	case 31:
-	  send_to_char("\n\rNote: Modifier will be a spell # which you can get from the allspells.\n\r",ch);
-          break;
-        case 32:
-	case 33:
-	case 34:
-	case 35:
-	case 36:
-	case 37:
-	case 38:
-	case 39:
-	case 46:
-	case 47:
-	  send_to_char("\n\rNote: Modifier will affect % learned of skill.\n\r",ch);
-	  send_to_char("      Positive values will increase the % learned making the char less likely\n\r      to fail while negative numbers will do the opposite.\n\r",ch);
-	  break;
-        break;
+            break;
+         case 29:
+            ChangeObjSAffect(ch, "", ENTER_CHECK);
+            functionflag=TRUE;
+            break;
+         case 30:
+         case 31:
+            send_to_char("\n\rNote: Modifier will be a spell # which you can get from the allspells.\n\r",ch);
+            break;
+         case 32:
+         case 33:
+         case 34:
+         case 35:
+         case 36:
+         case 37:
+         case 38:
+         case 39:
+         case 46:
+         case 47:
+            send_to_char("\n\rNote: Modifier will affect % learned of skill.\n\r",ch);
+            send_to_char("      Positive values will increase the % learned making the char less likely\n\r      to fail while negative numbers will do the opposite.\n\r",ch);
+            break;
+         break;
       }
-      if (!functionflag){
-      send_to_char("\n\r\n\rEnter new Modifier (return for 0): ", ch);
-      ChangeAffectMod(ch,"",ENTER_CHECK);}
+      if(!functionflag)
+      {
+         send_to_char("\n\r\n\rEnter new Modifier (return for 0): ", ch);
+         ChangeAffectMod(ch,"",ENTER_CHECK);
+      }
       return;
-  }
+   }
 
- sprintf(buf, VT_HOMECLR);
- send_to_char(buf, ch);
+   sprintf(buf, VT_HOMECLR);
+   send_to_char(buf, ch);
 
- for(i = 0; i < 57; i++) {
-    a++;
-    if(a==1) column=5;
-    else if(a==2) column = 30;
-    else if(a==3) column = 55;
-    sprintf(buf, VT_CURSPOS, row + 1, column);
-    if(a==3) {
-      row++;
-      a=0;
-    }
-    send_to_char(buf, ch);
-    sprintf(buf, "%-2d %s", i + 1, apply_types[i]);
-    send_to_char(buf, ch);
-  }
+   for(i = 0; i < 57; i++)
+   {
+      a++;
+      if(a==1) column=5;
+      else if(a==2) column = 30;
+      else if(a==3) column = 55;
+      sprintf(buf, VT_CURSPOS, row + 1, column);
+      if(a==3)
+      {
+         row++;
+         a=0;
+      }
+      send_to_char(buf, ch);
+      sprintf(buf, "%-2d %s", i + 1, apply_types[i]);
+      send_to_char(buf, ch);
+   }
 
- sprintf(buf, VT_CURSPOS, 21, 1);
- send_to_char(buf, ch);
- send_to_char("Select the apply number or hit enter for the main menu.\n\r--> ",ch);
+   sprintf(buf, VT_CURSPOS, 21, 1);
+   send_to_char(buf, ch);
+   send_to_char("Select the apply number or hit enter for the main menu.\n\r--> ",ch);
 }
 
 void ChangeAffectMod(struct char_data *ch, char *arg, int type)
