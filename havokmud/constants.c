@@ -5165,7 +5165,7 @@ const struct skillset rangerskills[] = {
 };
 const struct skillset mainpsiskills[] = {
  {"kinolock", 					SKILL_KINOLOCK			,9},
- {"sense item", 				SKILL_SENSE_ITEM		,25},
+ {"sense object", 				SKILL_SENSE_OBJECT		,25},
  {"None", 				-1							,-1}
 };
 const struct skillset psiskills[] = {

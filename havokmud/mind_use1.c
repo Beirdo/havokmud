@@ -390,3 +390,22 @@ void mind_use_kinolock( byte level, struct char_data *ch, char *arg, int type,
 	                  break;
 	         }
 }
+
+void mind_use_sense_object( byte level, struct char_data *ch, char *arg,
+  int si, int type, struct char_data *tar_ch, struct obj_data *tar_obj)
+{
+
+	switch (type) {
+         	case SPELL_TYPE_WAND:
+		case SPELL_TYPE_SPELL:
+	        case SPELL_TYPE_STAFF:
+                case SPELL_TYPE_SCROLL:
+			mind_sense_object(level, ch, NULL, arg);
+			break;
+                default :
+                     log("Serious screw-up in mind_sense_object");
+                break;
+			}
+		}
+
+

@@ -144,8 +144,9 @@ void mind_use_mind_tap( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_kinolock( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj );
+void mind_use_sense_object( byte level, struct char_data *ch, char *arg, int si,
+  struct char_data *tar_ch, struct obj_data *tar_obj);
 /* end psi mind stuff */
-
 
 void cast_animate_dead( byte level, struct char_data *ch, char *arg, int type,
 		       struct char_data *tar_ch, struct obj_data *tar_obj );
@@ -926,7 +927,7 @@ char *spells[]=
 	"blade barrier", /* 341 - blade barrier */
 	"mana shield",
 	"iron skins",
-	"sense item",
+	"sense object",
 	"kinolock",
 	"flowerfist",
 	"flurry of blows",
@@ -3833,13 +3834,13 @@ void assign_spell_pointers()
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
 	65, TAR_IGNORE, cast_iron_skins, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);
 
-/*	spello(344,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  25,
-	25, TAR_OBJ_WORLD, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// sense item
-*/
+	spello(344,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	20, TAR_OBJ_WORLD, mind_use_sense_object, 0,0, LOW_IMMORTAL, LOW_IMMORTAL); /* sense item*/
+
 	spello(345,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE, mind_use_kinolock, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);/* kinolock
+	40, TAR_IGNORE, mind_use_kinolock, 0,0, LOW_IMMORTAL, LOW_IMMORTAL); /* kinolock
 
 	spello(346,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  36,  LOW_IMMORTAL,
