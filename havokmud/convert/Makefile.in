@@ -1,0 +1,64 @@
+##
+## The compiler your gonna use to compile this with..
+##
+CC=@CC@
+##
+LD=$(CC)
+
+##  these are architecture dependent flags
+CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -Wno-long-long -ansi -pedantic \
+	 @INCLUDES@ 
+
+##  Libraries
+LIBS = @LIBS@
+LDFLAGS = @LDFLAGS@
+
+SRCS =	convert-objects.c
+LIBSRCS = mysql_database.c utility.c db.c
+
+EXE =	 convert-objects
+
+OBJS = ${SRCS:.c=.o}
+DEPS = ${SRCS:.c=.d}
+
+LIBOBJS = ${LIBSRCS:.c=.o}
+LIBDEPS = ${LIBSRCS:.c=.d}
+
+SHLIB = libconvert.a
+
+all : $(EXE)
+
+${EXE}:	${SHLIB}
+
+${SHLIB}:	${LIBOBJS}
+	${AR} rsv $@ $+
+
+convert-objects@EXEEXT@:	convert-objects.o
+	$(LD) -g -o $@ $+ ${LDFLAGS} ${LIBS} -L. -lconvert
+
+depend : ${DEPS} ${LIBDEPS}
+
+${DEPS} : Makefile
+
+%.d: %.c
+	@echo "Making $@ (dependencies for $<)"
+	@${CC} -MM ${CFLAGS} $< | sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g'  > $@
+
+.PHONY: clean cleanall
+
+clean:
+	rm -f $(OBJS) ${LIBOBJS} $(EXE) libconvert.a
+
+cleanall: clean
+	rm -f ${DEPS} ${LIBDEPS}
+
+distclean: cleanall
+	rm -f Makefile
+
+Makefile: Makefile.in ../configure
+	@echo Your Makefile is out of date, rerun ./configure
+	
+
+-include ${DEPS}
+-include ${LIBDEPS}
+
