@@ -61,9 +61,13 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
     /*
      * 170->Practice,164->Practise, 243->gain
      */
-    if (cmd == 170 || cmd == 164 || cmd == 243) {
-        ch_printf(ch, "Gain:%d  Study:%d Practice:%d", CMD_gain, CMD_study,
-                  CMD_practice);
+
+    if (cmd == CMD_practice || cmd == CMD_study || cmd == CMD_gain) {
+		/* ch_printf(ch,"Gain:%d  Study:%d Practice:%d",
+		 *  CMD_gain, CMD_study, CMD_practice);
+         */
+
+        sprintf(guildmastername,"%s",classes[level_ind].name);
 
         sprintf(guildmastername, "%s", classes[level_ind].name);
 
@@ -117,7 +121,7 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                     return (TRUE);
                 } else {
                     /*
-                     * else just gain the level 
+                     * else just gain the level
                      */
                     GainLevel(ch, level_ind);
                     return (TRUE);
@@ -591,15 +595,19 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
                                 DRUID_LEVEL_IND);
 }
 
+
+void do_mobTell2(struct char_data *ch, struct char_data *mob,
+                 char *sentence);
+
+int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
+                          struct char_data *mob, int type
+                          , int class_bit, int level_ind);
+
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type)
 {
     return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_BARBARIAN,
-                                BARBARIAN_LEVEL_IND);
-    /*
-     * , * barbarian_guildmaster * ); 
-     */
-
+                               BARBARIAN_LEVEL_IND);
 }
 
 int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
