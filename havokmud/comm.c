@@ -612,13 +612,12 @@ int game_loop(int s)
          * give the people some prompts 
          */
         memory_check("end 5, begin 6");
-        for (point = descriptor_list; point; point = point->next) {
+        for (point = descriptor_list; point; point = point->next) 
             if (point->prompt_mode) {
                 if (point->str) {
                     write_to_descriptor(point->descriptor, "-> ");
-                }
-            } else if (!point->connected) {
-                if (point->showstr_count) {
+                } else if (!point->connected) 
+                    if (point->showstr_count) {
 #if 0
                 if (point->showstr_point) {
 #endif               
@@ -676,24 +675,30 @@ int game_loop(int s)
                     }
 
                     if (point->character->player.has_mail) {
-                        write_to_descriptor(point->descriptor, ParseAnsiColors( 
-                                IS_SET(point->character->player.user_flags,
-                                       USE_ANSI), "$c0003[MAIL] "));
+                        write_to_descriptor(point->descriptor, 
+                                            ParseAnsiColors( \
+                                IS_SET(point->character->player.user_flags, 
+                                       USE_ANSI), \
+                                       "$c0003[MAIL] "));
                     }
 
                     if (IS_AFFECTED2(point->character, AFF2_AFK)) {
-                        write_to_descriptor(point->descriptor, ParseAnsiColors(
+                        write_to_descriptor(point->descriptor, 
+                                            ParseAnsiColors( \
                                 IS_SET(point->character->player.user_flags,
-                                       USE_ANSI), "$c0006[AFK] "));
+                                       USE_ANSI), \
+                                       "$c0006[AFK] "));
                     }
 
-                    write_to_descriptor(point->descriptor, ParseAnsiColors(
+                    write_to_descriptor(point->descriptor, 
+                                        ParseAnsiColors( \
                             IS_SET(point->character->player.user_flags,
-                                   USE_ANSI), promptbuf));
+                            USE_ANSI), \
+                                   promptbuf));
                 }
                 point->prompt_mode = 0;
             }
-        }
+        
 
         /*
          * handle heartbeat stuff 
@@ -807,7 +812,7 @@ int game_loop(int s)
          * tics since last checkpoint signal 
          */
         tics++;
-    }
+    }    
 }
 
 /*
