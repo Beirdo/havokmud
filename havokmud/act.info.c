@@ -5665,7 +5665,7 @@ dlog("in do_allweapons");
 
 	i = 0;
 	while (weaponskills[i].level != -1) {
-		sprintf(buf,"[%3s] %s\n\r", i, weaponskills[i].name);
+		sprintf(buf,"[%3d] %s\n\r", i, weaponskills[i].name);
 		send_to_char(buf, ch);
 		i++;
 	}
