@@ -3059,7 +3059,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     strcpy(ch->player.title, st->name);
   }
 	/*some little fixxes for new title (GH) may28/2002 */
-    if (!strstr(buf,st->name)) {
+    if (!strstr(ch->player.title,st->name)) {
 		sprintf(ch->player.title,"%s",st->name);
 	}
 

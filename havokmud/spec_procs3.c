@@ -5054,7 +5054,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 
 	if (temp_ch->player.title)
           free(temp_ch->player.title);
-    temp_ch->player.title = strdup(argument);
+    sprintf(temp_ch->player.title,"%s %s",GET_NAME(temp_ch),argument);
     return(1);
 	}
 

@@ -1225,6 +1225,8 @@ void assign_mobiles()
     {22704, receptionist},
     {22720, receptionist},
     {22727, ninja_master},
+    {22732,  PostMaster },/* Order */
+    {22731, receptionist },/* Order */
 
 /* Thikahnus's zone */
     {37203, FrostBreather}, //Iceberg
@@ -1477,8 +1479,6 @@ void assign_rooms()
     { 26010,	Fountain},
     { 26109,   Fountain},  /* Stormcloak fountain*/
     { 22739,   Fountain}, /* {O}rder fountain */
-    { 22732,  PostMaster },/* Order */
-    { 22731, receptionist },/* Order */
     { 2000,  bank },
     { 13521, bank },
     { 18224, bank},
