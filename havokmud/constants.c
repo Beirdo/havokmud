@@ -564,7 +564,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"mount", SPELL_MOUNT, 15, 45},
         {"poison", SPELL_POISON, 8, 45},
         {"protection from cold", SPELL_PROT_COLD, 20, 45},
-        {"protection from electricity", SPELL_PROT_ELEC, 18, 45},
+        {"protection from electricity", SPELL_PROT_ELEC, 19, 45},
         {"protection from fire", SPELL_PROT_FIRE, 21, 45},
         {"refresh", SPELL_REFRESH, 4, 45},
         {"reincarnate", SPELL_REINCARNATE, 39, 45},
