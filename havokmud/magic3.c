@@ -247,6 +247,8 @@ void spell_haste(byte level, struct char_data *ch,
     return;
   }
 
+
+
   if (IS_NPC(victim)) {
     send_to_char("It doesn't seem to work\n", ch);
     return;

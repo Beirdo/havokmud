@@ -2012,8 +2012,10 @@ int clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 }
 
+#define NEWSETUP 0
 int read_obj_from_file(struct obj_data *obj, FILE *f)
 {
+
 	int     i,tmp;
 	long    bc,ltmp;
 	char    chk[50];
@@ -2035,6 +2037,12 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
     if (obj->action_description && *obj->action_description) {
       bc += strlen(obj->action_description);
     }
+#if NEWSETUP
+    obj->modBy = fread_string(f);
+    if (obj->modBy && *obj->modBy) {
+      bc += strlen(obj->modBy);
+    }
+#endif
 
     /* *** numeric data *** */
 
@@ -2059,6 +2067,15 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
     fscanf(f, " %d \n", &tmp);
     obj->obj_flags.cost_per_day = tmp;
 
+
+#if NEWSETUP
+    fscanf(f, " %d \n", &tmp);
+    obj->level = tmp;
+    fscanf(f, " %d \n", &tmp);
+    obj->max = tmp;
+	fscanf(f, " %ld \n", &tmp);
+	obj->modified = tmp;
+#endif
     /* *** extra descriptions *** */
 
     obj->ex_description = 0;
@@ -2239,13 +2256,15 @@ int write_obj_to_file(struct obj_data *obj, FILE *f)
   fwrite_string(f, obj->short_description);
   fwrite_string(f, obj->description);
   fwrite_string(f, obj->action_description);
+  fwrite_string(f, obj->modBy);
 
   fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
 		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
-  fprintf(f,"%d %d %d\n", obj->obj_flags.weight, \
-		obj->obj_flags.cost, obj->obj_flags.cost_per_day);
+  fprintf(f,"%d %d %d %d %d %ld\n", obj->obj_flags.weight, \
+		obj->obj_flags.cost, obj->obj_flags.cost_per_day,obj->level,obj->max
+		,obj->modified);
 
   /* *** extra descriptions *** */
   if(obj->ex_description)
@@ -2271,12 +2290,13 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
   fwrite_string(f, obj->short_description);
   fwrite_string(f, obj->description);
   fwrite_string(f, obj->action_description);
+  fwrite_string(f, "un-modified");
 
   fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
 		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
-  fprintf(f,"%d %d %d 0 0\n", obj->obj_flags.weight, \
+  fprintf(f,"%d %d %d 0 0 0\n", obj->obj_flags.weight, \
 		obj->obj_flags.cost, obj->obj_flags.cost_per_day);
 
   /* *** extra descriptions *** */
@@ -2360,7 +2380,7 @@ struct obj_data *read_object(int nr, int type)
   object_list = obj;
 
   obj_index[nr].number++; /*Object maxxing*/
-
+  obj->level = 0;
   obj_count++;
 #if BYTE_COUNT
   fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);
@@ -3059,7 +3079,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
     strcpy(ch->player.title, st->name);
   }
 	/*some little fixxes for new title (GH) may28/2002 */
-    if (!strstr(ch->player.title,st->name)) {
+    if (!strstr(ch->player.title, st->name)) {
 		sprintf(ch->player.title,"%s",st->name);
 	}
 
@@ -3548,6 +3568,8 @@ if (!obj) {                             /* bug fix, msw */
 		free(obj->short_description);
 	if(obj->action_description && *obj->action_description)
 		free(obj->action_description);
+	if(obj->modBy && *obj->modBy)
+		free(obj->modBy);
 
 	for( this = obj->ex_description ;
 		(this != 0);this = next_one )
@@ -3819,15 +3841,15 @@ if (IS_SET(ch->specials.act,PLR_NOHASSLE) && GetMaxLevel(ch) < LOW_IMMORTAL) {
 if (GET_RACE(ch) > MAX_RACE || GET_RACE(ch) < 0)
 	GET_RACE(ch)=1;
 
-/* Don't want the imps to be deleted, do you?
-if (!strcmp(GET_NAME(ch),"Manwe")) {
+// Don't want the imps to be deleted, do you?
+if (!strcmp(GET_NAME(ch),"Banon")) {
 	GET_LEVEL(ch,0) = 60;
 	}
 
-if (!(strcmp(GET_NAME(ch),"Thyrza")) || !(strcmp(GET_NAME(ch), "Gimble"))) {
+if (!(strcmp(GET_NAME(ch),"Pentak")) || !(strcmp(GET_NAME(ch), "Tsaron"))) {
 	GET_LEVEL(ch,0)=59;
 	}
-End of this modif... -Manwe Windmaster 260697 */
+//End of this modif... -Manwe Windmaster 260697 */
 
 /* this is to clear up bogus levels on people that where here before */
 /* these classes where made... */
@@ -3855,6 +3877,9 @@ if (!HasClass(ch,CLASS_RANGER))
    ch->player.level[9]=0;
 if (!HasClass(ch,CLASS_PSI))
    ch->player.level[10]=0;
+if (!HasClass(ch,CLASS_BARD))
+   ch->player.level[11]=0;
+
 
 /*                                              */
 

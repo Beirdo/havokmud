@@ -1225,8 +1225,8 @@ void assign_mobiles()
     {22704, receptionist},
     {22720, receptionist},
     {22727, ninja_master},
-    {22732,  PostMaster },/* Order */
-    {22731, receptionist },/* Order */
+    { 22732,  PostMaster },/* Order */
+    { 22731, receptionist },/* Order */
 
 /* Thikahnus's zone */
     {37203, FrostBreather}, //Iceberg

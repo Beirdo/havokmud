@@ -2877,6 +2877,8 @@ const char *affected_bits2[] =
         "Detect Good",
 	"Protection from Good",
 	"Darkness",
+	"Haste",
+	"Blade-Barrier",
 	"\n"
 };
 

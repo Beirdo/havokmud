@@ -1509,9 +1509,9 @@ void spell_protection_from_good(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROTECT_FROM_GOOD) ) {
     af.type      = SPELL_PROTECT_FROM_GOOD;
-    af.duration  = 24;
+    af.duration  = 24;//24;
     af.modifier  = 0;
-    af.location  = APPLY_BV2;
+    af.location  = APPLY_SPELL2;//APPLY_BV2;
     af.bitvector = AFF2_PROTECT_FROM_GOOD;
     affect_to_char(victim, &af);
     send_to_char("You have a sinister feeling!\n\r", victim);
@@ -2470,14 +2470,23 @@ void spell_identify(byte level, struct char_data *ch,
       sprintf(buf, "$c0005R-number: [$c0014%d$c0005], V-number: [$c0014%d$c0005]",
 	      obj->item_number,
 	      (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0);
-      if ( obj_index[obj->item_number].MaxObjCount == 0
-	   || obj_index[obj->item_number].MaxObjCount == 65535 )
+      if (obj->max==0)
         sprintf(buf2,"$c0014%s","unlimited");
       else
-        sprintf(buf2,"$c0014%d$c0005",obj_index[obj->item_number].MaxObjCount);
+        sprintf(buf2,"$c0014%d$c0005", obj->max,obj->level);//obj_index[obj->item_number].MaxObjCount);
       sprintf(buf,"%s $c0005ObjMax: [$c0014%s$c0005].\n\r", buf, buf2);
       send_to_char(buf, ch);
-    }
+    	if(obj->level==0)
+    		sprintf(buf2,"$c0005Ego: $c0014None$c0005, ");
+    	else
+    	    sprintf(buf2,"$c0005Ego: $c0014Level %d$c0005, ",obj->level);
+    	send_to_char(buf2,ch);
+
+    	sprintf(buf2,"$c0005Last modified by $c0014%s $c0005on $c0014%s",obj->modBy,asctime(localtime(&obj->modified)));
+    	send_to_char(buf2,ch);
+
+
+   }
 
     if (obj->obj_flags.bitvector) {
       send_to_char("$c0005Item will give you following abilities:$c0014  ", ch);
@@ -2610,6 +2619,7 @@ void spell_identify(byte level, struct char_data *ch,
 	   strcat(buf,"\n\r");
 	   sprintf(buf2,buf);
 	   break;
+	//(GH)Should i put this here??  case APPLY_BV2:
 	case APPLY_SPELL2:
 	   sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
 	   sprintf(buf,"$c0015");
@@ -3154,8 +3164,8 @@ if (level <0 || level >ABS_MAX_LVL)
   DamageStuff(victim, FIRE_DAMAGE);
 */
 
-       	for (burn=victim->carrying ; 
-	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) && 
+       	for (burn=victim->carrying ;
+	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) &&
 	    (burn->obj_flags.type_flag!=ITEM_WAND) &&
 	    (burn->obj_flags.type_flag!=ITEM_STAFF) &&
 	    (burn->obj_flags.type_flag!=ITEM_BOAT);
@@ -3231,15 +3241,15 @@ if (level <0 || level >ABS_MAX_LVL)
 	spell_blindness(level,ch,victim,0);
 	spell_blindness(level,ch,victim,0);
 
-	
+
 	/* And now for the damage on inventory */
 
 /*
   DamageStuff(victim, FIRE_DAMAGE);
 */
 
-       	for (burn=victim->carrying ; 
-	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) && 
+       	for (burn=victim->carrying ;
+	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) &&
 	    (burn->obj_flags.type_flag!=ITEM_WAND) &&
 	    (burn->obj_flags.type_flag!=ITEM_STAFF) &&
 	    (burn->obj_flags.type_flag!=ITEM_BOAT);

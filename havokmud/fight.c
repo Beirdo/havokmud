@@ -1537,7 +1537,7 @@ if (affected_by_spell(v,SPELL_ANTI_MAGIC_SHELL) && IsMagicSpell(type)) {
 
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
-  int lev;  
+  int lev;
 
   specdamage(ch,v);
 
@@ -1657,6 +1657,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
   case POSITION_DEAD:
     act("$c0015$n is dead! $c0011R.I.P.", TRUE, v, 0, 0, TO_ROOM);
     act("$c0009You are dead!  Sorry...", FALSE, v, 0, 0, TO_CHAR);
+    //send_to_char("$c0009You are dead! Sorry..",v);
     break;
 
   default:  /* >= POSITION SLEEPING */
@@ -2475,6 +2476,7 @@ void perform_violence(int pulse)
             if(!IS_NPC(ch))
             {
                /* set x = # of attacks */
+
                x = ch->mult_att;
 
                /* if dude is a monk, and is wielding something */
@@ -2493,6 +2495,8 @@ void perform_violence(int pulse)
                   x /= 2.0;
                }
 
+			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
+				x = x * 2;
 #if 0
      /* heavy woundage = fewer attacks */
      x -= WoundWearyness(ch);
@@ -4227,10 +4231,10 @@ return;
 #define BAHAMUT_ARMOR 45495
 void specdamage(struct char_data *ch, struct char_data *v)
 {
-  struct obj_data *object;  
+  struct obj_data *object;
 
   if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v);
-  if (ch->equipment[WEAR_BODY]) { 
+  if (ch->equipment[WEAR_BODY]) {
 	object = ch->equipment[WEAR_BODY];
   	if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR) bahamut_armor(ch, v);
   }

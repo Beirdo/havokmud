@@ -44,7 +44,7 @@ int FreeFears( struct char_data *ch)
 }
 
 
-int RemHated( struct char_data *ch, struct char_data *pud) 
+int RemHated( struct char_data *ch, struct char_data *pud)
 {
   struct char_list *oldpud, *t;
 
@@ -60,7 +60,7 @@ int RemHated( struct char_data *ch, struct char_data *pud)
 	    free(t);
 	    break;
 	  } else {
-	    for (oldpud = ch->hates.clist; oldpud->next != t; 
+	    for (oldpud = ch->hates.clist; oldpud->next != t;
 		 oldpud = oldpud->next);
 	    oldpud->next = oldpud->next->next;
 	if (t)
@@ -77,7 +77,7 @@ int RemHated( struct char_data *ch, struct char_data *pud)
 	    free(t);
             break;
 	  } else {
-	    for (oldpud = ch->hates.clist; oldpud->next != t; 
+	    for (oldpud = ch->hates.clist; oldpud->next != t;
 		 oldpud = oldpud->next);
 	    oldpud->next = oldpud->next->next;
 	if (t)
@@ -87,7 +87,7 @@ int RemHated( struct char_data *ch, struct char_data *pud)
 	}
       }
      }
-  } 
+  }
 
   if (!ch->hates.clist) {
     REMOVE_BIT(ch->hatefield, HATE_CHAR);
@@ -100,7 +100,7 @@ int RemHated( struct char_data *ch, struct char_data *pud)
 
 
 
-int AddHated( struct char_data *ch, struct char_data *pud) 
+int AddHated( struct char_data *ch, struct char_data *pud)
 {
 
   struct char_list *newpud;
@@ -108,10 +108,10 @@ int AddHated( struct char_data *ch, struct char_data *pud)
   if (ch == pud)
     return(FALSE);
 
-	
+
   if (pud && ch) {
 
-if (GET_HIT(pud) <=0 || GET_POS(pud) <=POSITION_DEAD) 
+if (GET_HIT(pud) <=0 || GET_POS(pud) <=POSITION_DEAD)
 	return(FALSE);
 
     if (!CAN_SEE(ch, pud))
@@ -129,7 +129,7 @@ if (GET_HIT(pud) <=0 || GET_POS(pud) <=POSITION_DEAD)
       SET_BIT(ch->hatefield, HATE_CHAR);
     }
 
-if (pud->in_room != ch->in_room) { 
+if (pud->in_room != ch->in_room) {
 
 /* log("setting hunt because mob was not in same as attacker");	 */
 
@@ -138,9 +138,9 @@ if (pud->in_room != ch->in_room) {
 
     if (IS_IMMORTAL(pud))  {
       send_to_char("---Someone hates you.\n\r",pud);
-     }      
-  } 
-  
+     }
+  }
+
   return( (pud && ch) ? TRUE : FALSE );
 }
 
@@ -205,7 +205,7 @@ int Hates( struct char_data *ch, struct char_data *v)
     if (ch->hates.clist) {
       for (i = ch->hates.clist; i; i = i->next) {
         if (i->op_ch) {
-	  if ((i->op_ch == v) && 
+	  if ((i->op_ch == v) &&
 	    (!strcmp(i->name, GET_NAME(v))))
 	    return(TRUE);
 	} else {
@@ -254,13 +254,13 @@ int Fears( struct char_data *ch, struct char_data *v)
 {
   struct char_list *i;
   char buf[255];
-  
+
   if (IS_AFFECTED(ch, AFF_PARALYSIS))
     return(FALSE);
-  
+
   if (!IS_SET(ch->specials.act, ACT_AFRAID))
     return(FALSE);
-  
+
   if (IS_SET(ch->fearfield, FEAR_CHAR)) {
     if (ch->fears.clist) {
       for (i = ch->fears.clist; i; i = i->next) {
@@ -279,7 +279,7 @@ int Fears( struct char_data *ch, struct char_data *v)
 	      if (!strcmp(i->name, GET_NAME(v)))
 		return(TRUE);
 	    }
-	  }	  
+	  }
 	}
       }
     }
@@ -314,17 +314,17 @@ int Fears( struct char_data *ch, struct char_data *v)
   return(FALSE);
 }
 
-int RemFeared( struct char_data *ch, struct char_data *pud) 
+int RemFeared( struct char_data *ch, struct char_data *pud)
 {
 
   struct char_list *oldpud, *t, *tmp;
 
-  if (!IS_SET(ch->specials.act, ACT_AFRAID)) 
+  if (!IS_SET(ch->specials.act, ACT_AFRAID))
     return(FALSE);
 
   if (pud && (ch->fears.clist!=0)) {
-    tmp = ch->fears.clist;    
-    for (oldpud = ch->fears.clist; (oldpud!=0); oldpud = tmp) {       
+    tmp = ch->fears.clist;
+    for (oldpud = ch->fears.clist; (oldpud!=0); oldpud = tmp) {
       if (oldpud==0) return(FALSE);
       tmp = oldpud->next;
       if (oldpud->op_ch) {
@@ -336,7 +336,7 @@ int RemFeared( struct char_data *ch, struct char_data *pud)
 	    free(t);
             break;
 	  } else {
-	    for (oldpud = ch->fears.clist; oldpud->next != t; 
+	    for (oldpud = ch->fears.clist; oldpud->next != t;
 		 oldpud = oldpud->next);
 	    oldpud->next = oldpud->next->next;
 	if (t)
@@ -353,7 +353,7 @@ int RemFeared( struct char_data *ch, struct char_data *pud)
 	    free(t);
             break;
 	  } else {
-	    for (oldpud = ch->fears.clist; oldpud->next != t; 
+	    for (oldpud = ch->fears.clist; oldpud->next != t;
 		 oldpud = oldpud->next);
 	    oldpud->next = oldpud->next->next;
 	if (t)
@@ -373,7 +373,7 @@ int RemFeared( struct char_data *ch, struct char_data *pud)
 
 
 
-int AddFeared( struct char_data *ch, struct char_data *pud) 
+int AddFeared( struct char_data *ch, struct char_data *pud)
 {
 
   struct char_list *newpud;
@@ -388,17 +388,17 @@ int AddFeared( struct char_data *ch, struct char_data *pud)
     strcpy(newpud->name,GET_NAME(pud));
     newpud->next = ch->fears.clist;
     ch->fears.clist = newpud;
-    
+
     if (!IS_SET(ch->specials.act, ACT_AFRAID)) {
       SET_BIT(ch->specials.act, ACT_AFRAID);
     }
     if (!IS_SET(ch->fearfield, FEAR_CHAR)) {
       SET_BIT(ch->fearfield, FEAR_CHAR);
     }
-    if (IS_IMMORTAL(pud)) 
+    if (IS_IMMORTAL(pud))
       send_to_char("---Someone fears you.(as well they should)\n\r",pud);
-  } 
-  
+  }
+
   return( (pud) ? TRUE : FALSE);
 }
 
@@ -442,16 +442,16 @@ int AddFears( struct char_data *ch, int parm_type, int parm)
    }
 }
 
-
-struct char_data *FindAHatee( struct char_data *ch) 
+/* FindAHatee crashes alot.. fix it!! */
+#if 1
+struct char_data *FindAHatee( struct char_data *ch)
 {
    struct char_data *tmp_ch;
 
    if (ch->in_room < 0)
      return(0);
 
-   for (tmp_ch=real_roomp(ch->in_room)->people; tmp_ch; 
-        tmp_ch = tmp_ch->next_in_room) {
+    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch; tmp_ch = tmp_ch->next_in_room) {
        if (Hates(ch, tmp_ch) && (CAN_SEE(ch, tmp_ch))) {
     	  if (ch->in_room == tmp_ch->in_room) {
 	    if (ch != tmp_ch) {
@@ -465,15 +465,39 @@ struct char_data *FindAHatee( struct char_data *ch)
      }
      return(0);
 }
+#else
+/*Stock muds FindAHatee */
+struct char_data *FindAHatee(struct char_data *ch)
+{
+  struct char_data *tmp_ch;
 
-struct char_data *FindAFearee( struct char_data *ch) 
+  if (ch->in_room == NULL)
+    return NULL;
+
+  for (tmp_ch = ch->in_room->people; tmp_ch; tmp_ch = tmp_ch->next_in_room) {
+    if (Hates(ch, tmp_ch) && (CAN_SEE(ch, tmp_ch))) {
+      if (ch->in_room == tmp_ch->in_room) {
+        if (ch != tmp_ch) {
+          return(tmp_ch);
+        } else {
+          RemHated(ch, tmp_ch);
+          return NULL;
+        }
+      }
+    }
+  }
+
+  return NULL;
+}
+#endif
+struct char_data *FindAFearee( struct char_data *ch)
 {
    struct char_data *tmp_ch;
 
    if (ch->in_room < 0)
      return(0);
 
-   for (tmp_ch=real_roomp(ch->in_room)->people; tmp_ch; 
+   for (tmp_ch=real_roomp(ch->in_room)->people; tmp_ch;
         tmp_ch = tmp_ch->next_in_room) {
        if (Fears(ch, tmp_ch) && (CAN_SEE(ch, tmp_ch))) {
     	  if ((ch->in_room == tmp_ch->in_room) &&
@@ -495,9 +519,9 @@ struct char_data *FindAFearee( struct char_data *ch)
 
 void ZeroHatred(struct char_data *ch, struct char_data *v)
 {
-  
+
   struct char_list *oldpud;
-  
+
   for (oldpud = ch->hates.clist; oldpud; oldpud = oldpud->next) {
     if (oldpud) {
       if (oldpud->op_ch) {
@@ -512,9 +536,9 @@ void ZeroHatred(struct char_data *ch, struct char_data *v)
 
 void ZeroFeared(struct char_data *ch, struct char_data *v)
 {
-  
+
   struct char_list *oldpud;
-  
+
   for (oldpud = ch->fears.clist; oldpud; oldpud = oldpud->next) {
     if (oldpud) {
       if (oldpud->op_ch) {
@@ -532,7 +556,7 @@ void ZeroFeared(struct char_data *ch, struct char_data *v)
 */
 void DeleteHatreds(struct char_data *ch)
 {
-  
+
   struct char_data *i;
   extern struct char_data *character_list;
 
@@ -549,7 +573,7 @@ void DeleteFears(struct char_data *ch)
   struct char_data *i;
   extern struct char_data *character_list;
 
-  
+
   for (i = character_list; i; i = i->next) {
     if (Fears(i, ch))
       RemFeared(i, ch);

@@ -2977,6 +2977,11 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
       /*load up the head object*/
       if ((r_num = real_object( SEVERED_HEAD )) >= 0) {
 	head = read_object(r_num, REAL);
+		if(!head) {
+			log("ERROR IN BEhead.. make head object");
+			return;
+
+		}
 	obj_to_room(head,ch->in_room);  //to room perhaps?
       }
       /*CHange name of head*/

@@ -176,7 +176,7 @@ if (sb->data)
 void affect_modify(struct char_data *ch,byte loc, long mod, long bitv,bool add)
 {
   int i, temp,temp2;
-
+	char buf[25];
 
 if (!ch)
    return;
@@ -208,11 +208,11 @@ if (!ch)
     }
   } else if (loc == APPLY_WEAPON_SPELL) {
     return;
-  } else if (loc == APPLY_SPELL2) {
+  } else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
     if (add) {
-      SET_BIT(ch->specials.affected_by2, mod);
+      SET_BIT(ch->specials.affected_by2, bitv);
     } else {
-      REMOVE_BIT(ch->specials.affected_by2, mod);
+      REMOVE_BIT(ch->specials.affected_by2, bitv);
     }
     return;
   } else {
@@ -479,21 +479,26 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 
     case APPLY_HASTE:
       if (mod > 0) {
-	if (IS_SET(SystemFlags, SYS_WIZLOCKED))
-	  fprintf(stderr, "current mult = %f\n", ch->mult_att);
-	ch->mult_att = ch->mult_att * 2.0;
-	if (IS_SET(SystemFlags, SYS_WIZLOCKED))
-	  fprintf(stderr, "new mult = %f\n", ch->mult_att);
+		if (IS_SET(SystemFlags, SYS_WIZLOCKED))
+		  fprintf(stderr, "current mult = %f\n", ch->mult_att);
+		    //if (affected_by_spell(ch, SPELL_HASTE))
+		       //ch->mult_att*=2;
+			SET_BIT(ch->specials.affected_by2, AFF2_HASTE);
+		if (IS_SET(SystemFlags, SYS_WIZLOCKED))
+			fprintf(stderr, "new mult = %f\n", ch->mult_att);
       } else if (mod < 0) {
-	ch->mult_att = ch->mult_att / 2.0;
-      }
-      break;
+			REMOVE_BIT(ch->specials.affected_by2, AFF2_HASTE);
+			//ch->mult_att = ch->mult_att / 2.0;
+	  }
+	 break;
+
 
     case APPLY_SLOW:
       if (mod > 0)
 	ch->mult_att /= 2.0;
-      else if (mod < 0)
-	ch->mult_att *= 2.0;
+      else if (mod < 0) {
+		//ch->mult_att *= 2.0;
+	}
       break;
 
     case APPLY_ATTACKS:
@@ -581,7 +586,7 @@ void affect_total(struct char_data *ch)
   for(i=0; i<MAX_WEAR; i++) {
     if (ch->equipment[i])
       for(j=0; j<MAX_OBJ_AFFECT; j++)
-	affect_modify(ch, ch->equipment[i]->affected[j].location,
+		affect_modify(ch, ch->equipment[i]->affected[j].location,
 		      ch->equipment[i]->affected[j].modifier,
 		      ch->equipment[i]->obj_flags.bitvector, FALSE);
   }
@@ -655,7 +660,9 @@ if (!af){
   *affected_alloc = *af;
   affected_alloc->next = ch->affected;
   ch->affected = affected_alloc;
+
   affect_modify(ch, af->location,af->modifier,af->bitvector, TRUE);
+
   affect_total(ch);
 }
 
@@ -1112,13 +1119,14 @@ if ( obj_index[obj->item_number].func == EvilBlade ||
     GET_AC(ch) -= apply_ac(ch, pos);
 
   for(j=0; j<MAX_OBJ_AFFECT; j++)
-    affect_modify(ch, obj->affected[j].location,
+   	affect_modify(ch, obj->affected[j].location,
 		  obj->affected[j].modifier,
 		  obj->obj_flags.bitvector, TRUE);
-/*I think this can be removed --Pentak
-  if(IS_SET(ch->specials.act, PLR_NOFLY))
-    {REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
-    }*/
+
+
+
+
+
   if (GET_ITEM_TYPE(obj) == ITEM_WEAPON) {
     /* some nifty manuevering for strength */
     if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
@@ -1169,11 +1177,11 @@ return;
   obj->equipped_by = 0;
   obj->eq_pos = -1;
 
-  for(j=0; j<MAX_OBJ_AFFECT; j++)
+  for(j=0; j<MAX_OBJ_AFFECT; j++) {
     affect_modify(ch, obj->affected[j].location,
 		  obj->affected[j].modifier,
 		  obj->obj_flags.bitvector, FALSE);
-
+	}
   affect_total(ch);
 
   return(obj);
@@ -2301,12 +2309,12 @@ void AddAffects( struct char_data *ch, struct obj_data *o)
 
   for (i=0;i<MAX_OBJ_AFFECT;i++) {
     if (o->affected[i].location != APPLY_NONE) {
-      affect_modify(ch, o->affected[i].location,
+      	affect_modify(ch, o->affected[i].location,
 		    o->affected[i].modifier,
 		    o->obj_flags.bitvector, TRUE);
-    } else {
+    } else
       return;
-    }
+
   }
 
 }

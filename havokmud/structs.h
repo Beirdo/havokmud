@@ -549,6 +549,12 @@ struct obj_data
 	char *old_name;                /* For Behead                     */
 	int is_corpse;                 /* For Behead                     */
 	int beheaded_corpse ;          /* For Behead                     */
+	/*New fields (GH) */
+	int level;
+	int max;
+
+	char *modBy;
+	long modified;
 };
 /* ======================================================================*/
 
@@ -786,7 +792,8 @@ struct room_data
 #define AFF2_DETECT_GOOD       0x00000040
 #define AFF2_PROTECT_FROM_GOOD 0x00000080
 #define AFF2_DARKNESS	       0x00000100
-
+#define AFF2_HASTE             0x00000200
+#define AFF2_SLOW			   0x00000400
 /* modifiers to char's abilities */
 
 #define APPLY_NONE              0

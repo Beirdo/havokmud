@@ -4987,6 +4987,10 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
 		count++;
  	 }
    }
+
+
+  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1\n\r$");
+
    fclose(fp);
 
    sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);

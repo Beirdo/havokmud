@@ -1460,14 +1460,16 @@ if (k->player.user_flags) {
      send_to_char(buf, ch);
 
       /* Showing the bitvector */
-if (k->specials.affected_by) {
+      sprintf(buf,"A1:%d    A2:%d\n\r", k->specials.affected_by, k->specials.affected_by2);
+		send_to_char(buf,ch);
+	if (k->specials.affected_by) {
        sprintbit((unsigned)k->specials.affected_by,affected_bits,buf);
        send_to_char("Affected by: ", ch);
        strcat(buf,"\n\r");
        send_to_char(buf, ch);
       }
 
-    if (k->specials.affected_by2) {
+    if (k->specials.affected_by2||1) {
        sprintbit((unsigned)k->specials.affected_by2,affected_bits2,buf);
        send_to_char("Affected by2: ", ch);
        strcat(buf,"\n\r");
@@ -1492,10 +1494,11 @@ if (aff->type <=MAX_EXIST_SPELL) {
 	  sprintf(buf,"     Expires in %3d hours, Bits set ",
 		  aff->duration);
 	  send_to_char(buf,ch);
-	  if (aff->location != APPLY_BV2)
-	    sprintbit((unsigned)aff->bitvector,affected_bits,buf);
-	  else
+	  if (aff->location == APPLY_BV2 || aff->location == APPLY_SPELL2)
 	    sprintbit((unsigned)aff->bitvector,affected_bits2,buf);
+	  else
+	    sprintbit((unsigned)aff->bitvector,affected_bits,buf);
+
 	  strcat(buf,"\n\r");
 	  send_to_char(buf, ch);
 	} else {
@@ -1555,6 +1558,23 @@ if (aff->type <=MAX_EXIST_SPELL) {
 	      j->obj_flags.weight,j->obj_flags.cost,
 	      j->obj_flags.cost_per_day,  j->obj_flags.timer);
       send_to_char(buf, ch);
+
+
+   		if(j->level==0)
+    		sprintf(buf,"$c0005Ego: $c0014None$c0005 ,");
+    	else
+    	    sprintf(buf,"$c0005Ego: $c0014Level %d$c0005 ,",j->level);
+    	send_to_char(buf,ch);
+
+		if(j->max==0)
+		    sprintf(buf,"$c0005Max: $c0014None$c0005 ,");
+		else
+		   sprintf(buf,"$c0005Max: $c0014Level %d$c0005 ,",j->max);
+
+		send_to_char(buf,ch);
+    	sprintf(buf,"$c0005Last modified by $c0014(%s) $c0005on $c0014%s",j->modBy,asctime(localtime(&j->modified)));
+    	send_to_char(buf,ch);
+
 
       strcpy(buf,"In room: ");
       if (j->in_room == NOWHERE)
@@ -5380,6 +5400,12 @@ dlog("in do_osave");
     return;
   }
 
+  if (obj->modBy)
+    free(obj->modBy);
+
+  obj->modBy = (char *)strdup(GET_NAME(ch));
+  obj->modified = time(0);
+
   fprintf(f,"#%ld\n",vnum);
   write_obj_to_file(obj,f);
   fclose(f);
@@ -5987,11 +6013,6 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
 
   argument = one_argument(argument, objec);
 
-  if (isdigit(*objec))  vnum = atoi(objec);
-  else {
-       send_to_char("usage is: setobjmax Vnum MaxCount. \n\r", ch);
-      return;
-    }
 
   only_argument(argument, num);
   if (isdigit(*num))
@@ -6001,28 +6022,29 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
       return;
     }
 
-  rnum = real_object(vnum);
-
-
-  if ( rnum<0 || rnum>top_of_objt) {
-      send_to_char("There is no such object.\n\r", ch);
-      return;
-    }
-
-  if ( number <= 0) {
-      send_to_char("Maximum object count must be greater than 0.\n\r", ch);
-      return;
-    }
-
+        if (!*objec) {
+	     	send_to_char("Give what?\n\r",ch);
+	      	return(FALSE);
+	      }
+	      if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+	      	send_to_char("where is that?\n\r",ch);
+	      	return(TRUE);
+      }
+      obj->max = number;
+		sprintf(buf,"Set object max to %d\n\r",number);
+		send_to_char(buf,ch);
+      return(TRUE);
+/*
   obj = read_object(rnum, REAL);
   if (obj) {
      obj_index[rnum].MaxObjCount = number;
      sprintf(buf,"Maximum object count set to %d on object %s. \n\r",number,(char *) obj->name);
      send_to_char(buf,ch);
-     /* Temporary.. Object doesnt' get destroyed here */
+     / Temporary.. Object doesnt' get destroyed here /
      obj_index[obj->item_number].number--;
     }
   else send_to_char("Error on Read Object. maximum not set. \n\r",ch);
+*/
 }
 
 void do_seeobjmax(struct char_data *ch, char *argument, int cmd)

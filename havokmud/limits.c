@@ -1062,7 +1062,7 @@ int i;
        HasClass(ch,CLASS_BARBARIAN) || HasClass(ch, CLASS_PALADIN) ||
        HasClass(ch,CLASS_RANGER))   {
        	// reset all attacks to 1.0
-	ch->mult_att = 1.0;
+		ch->mult_att = 1.0;
 
 	// apply modifiers for warrior-type classes
 	if (HasClass(ch, CLASS_BARBARIAN))     {
@@ -1184,12 +1184,10 @@ int i;
 				break;
       		}
     	}
-  }
-/* working haste bug fix - Xamael (04/14/2002) */
-  if(affected_by_spell(ch, SPELL_HASTE))
-  	ch->mult_att*=2;
-  if(affected_by_spell(ch, SPELL_SLOW))
-	ch->mult_att/=2;
+
+
+}
+
 
       /* other stuff.. immunities, etc, are set here */
 
