@@ -1500,7 +1500,7 @@ if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
 		act("Your mana shield absorbs part of the blow, and is fully drained.",FALSE, ch, 0, v, TO_VICT);
 		act("$N's mana shield absorbs part of your blow, and is fully drained.",FALSE, ch, 0, v, TO_CHAR);
 		act("$N's mana shield absorbs part of the blow, and is fully drained.",FALSE, ch, 0, v, TO_NOTVICT);
-		affect_from_char(victim,SPELL_MANA_SHIELD);
+		affect_from_char(v,SPELL_MANA_SHIELD);
 	} else {
 		act("Your mana shield absorbs the blow!",FALSE, ch, 0, v, TO_VICT);
 		act("$N's mana shield absorbs your blow!",FALSE, ch, 0, v, TO_CHAR);
