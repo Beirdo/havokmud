@@ -159,7 +159,8 @@ int isname2(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (!strncasecmp(argv[i], xargv[j], strlen(argv[i]))) {
+            if (argv[i] && xargv[j] &&
+                !strncasecmp(argv[i], xargv[j], strlen(argv[i]))) {
                 xargv[j] = NULL;
                 break;
             }

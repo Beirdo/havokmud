@@ -3251,7 +3251,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     if (!target_ok && IS_SET(spell_info[index].targets,
                                              TAR_OBJ_WORLD)) {
                         target_ok = TRUE;
-                        sprintf(argument, "%s", name);
+                        argument = name;
                     }
 
                     /*
