@@ -21,6 +21,7 @@
 #include "parser.h"
 #include "mail.h"
 #include "dimd.h"
+#include <stdio.h>
 
 /*
  * From Heap.c 
