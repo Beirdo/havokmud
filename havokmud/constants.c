@@ -1265,7 +1265,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"psionic blast", SKILL_PSIONIC_BLAST, 1, 45},
         {"psionic danger sense", SKILL_DANGER_SENSE, 23, 45},
         {"psionic disintegrate", SKILL_DISINTEGRATE, 38, 45},
-        {"psionic teleport", SKILL_PSI_TELEPORT, 12, 30},
+        {"psionic teleport", SKILL_PSI_TELEPORT, 12, 45},
         {"psychic crush", SKILL_PSYCHIC_CRUSH, 37, 45},
         {"psychic impersonation", SKILL_PSYCHIC_IMPERSONATION, 3, 45},
         {"scry", SKILL_SCRY, 7, 45},
