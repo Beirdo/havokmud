@@ -942,7 +942,7 @@ int green_slime(struct char_data *ch, int cmd, char *arg,
     }
     for (cons = real_roomp(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
-        if (!IS_NPC(cons) && GetMaxLevel(cons) < LOW_IMMORTAL) {
+        if (cons != ch  && !IS_IMMORTAL(cons)) {
             cast_green_slime(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL,
                              cons, 0);
         }
@@ -1024,8 +1024,7 @@ int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     for (cons = real_roomp(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
-        if (!IS_NPC(cons) && GetMaxLevel(cons) < LOW_IMMORTAL &&
-            !number(0, 4)) {
+        if (cons != ch && !IS_IMMORTAL(cons) && !number(0, 4)) {
             npc_steal(ch, cons);
         }
     }
@@ -3024,7 +3023,7 @@ int sisyphus(struct char_data *ch, int cmd, char *arg,
             }
             if (ch->in_room == Ivory_Gate && cmd == 4 &&
                 SISYPHUS_MAX_LEVEL < GetMaxLevel(ch) &&
-                GetMaxLevel(ch) < LOW_IMMORTAL) {
+                !IS_IMMORTAL(ch)) {
                 if (!check_soundproof(ch)) {
                     act("$n tells you 'First you'll have to get past me!'",
                         TRUE, mob, 0, ch, TO_VICT);
@@ -4145,8 +4144,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
         char_to_room(v, (real_roomp(or))->dir_option[dir]->to_room);
         do_look(v, "\0", 15);
 
-        if (IS_SET(RM_FLAGS(v->in_room), DEATH) &&
-            GetMaxLevel(v) < LOW_IMMORTAL) {
+        if (IS_SET(RM_FLAGS(v->in_room), DEATH) && !IS_IMMORTAL(v)) {
             NailThisSucker(v);
         }
     }
@@ -5611,7 +5609,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         } else {
             for (vict = real_roomp(ch->in_room)->people; vict;
                  vict = vict->next_in_room) {
-                if (!IS_NPC(vict) && GetMaxLevel(vict) < LOW_IMMORTAL &&
+                if (ch != vict && !IS_NPC(vict) && !IS_IMMORTAL(vict) && 
                     !number(0, 3)) {
                     act("$n snaps out of his meditation.", FALSE, ch, 0, 0,
                         TO_ROOM);

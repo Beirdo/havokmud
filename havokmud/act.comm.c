@@ -124,8 +124,7 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && !IS_IMMORTAL(ch)) {
         send_to_char("You do not have the strength to shout!\n\r", ch);
         return;
     }
@@ -150,7 +149,7 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
 		act("$c0009[$c0015$n$c0009] lifts up $s head and shouts loudly",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             GET_MOVE(ch) -= 5;
             GET_MANA(ch) -= 5;
         }
@@ -241,28 +240,21 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
                     && !check_soundproof(i->character)) {
 
 #if ZONE_COMM_ONLY
-                    /*
-                     * yell in zone only
-                     */
                     if (i->character->in_room != NOWHERE) {
                         if (real_roomp(ch->in_room)->zone ==
                             real_roomp(i->character->in_room)->zone
-                            && GetMaxLevel(i->character) < LOW_IMMORTAL
-                            && GetMaxLevel(ch) < LOW_IMMORTAL) {
+                            && !IS_IMMORTAL(i->character)
+                            && !IS_IMMORTAL(ch)) {
                             act(buf1, 0, ch, 0, i->character, TO_VICT);
-                        } else if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
-		/*
-		 *My addons from here... - Manwe
-		 */
+                        } else if (IS_IMMORTAL(ch)) {
                             sprintf(buf3,
-                                    "$c0011[$c0015$n$c0011] yells across the world '%s'",
-                                    argument);
+                                    "$c0011[$c0015$n$c0011] yells across "
+                                    "the world '%s'", argument);
                             act(buf3, 0, ch, 0, i->character, TO_VICT);
-                        } else if (GetMaxLevel(i->character) >=
-                                   LOW_IMMORTAL) {
+                        } else if (IS_IMMORTAL(i->character)) {
                             sprintf(buf2,
-                                    "$c0011[$c0015$n$c0011] yells from zone %ld '%s'",
-                                    real_roomp(ch->in_room)->zone,
+                                    "$c0011[$c0015$n$c0011] yells from zone "
+                                    "%ld '%s'", real_roomp(ch->in_room)->zone,
                                     argument);
                             act(buf2, 0, ch, 0, i->character, TO_VICT);
                         }
@@ -313,7 +305,7 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
             if (i->character != ch && !i->connected
                 && !IS_NPC(i->character)
                 && !IS_SET(i->character->specials.act, PLR_NOSHOUT)
-                && (GetMaxLevel(i->character) >= LOW_IMMORTAL)) {
+                && IS_IMMORTAL(i->character)) {
                 act(buf1, 0, ch, 0, i->character, TO_VICT);
 			}
 		}
@@ -378,15 +370,13 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
     } else if (IS_NPC(vict) && !(vict->desc)) {
         send_to_char("No-one by that name here..\n\r", ch);
         return;
-    } else if (!(GetMaxLevel(ch) >= LOW_IMMORTAL)
-               && IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } else if (!IS_IMMORTAL(ch) && IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for tells right now.", FALSE, ch, 0, vict,
             TO_CHAR);
         return;
-    } else if ((GetMaxLevel(vict) >= LOW_IMMORTAL)
-               && (GetMaxLevel(ch) >= LOW_IMMORTAL)
-               && (GetMaxLevel(ch) < GetMaxLevel(vict))
-               && IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } else if (IS_IMMORTAL(vict) && IS_IMMORTAL(ch) && 
+               GetMaxLevel(ch) < GetMaxLevel(vict) && 
+               IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for tells right now!", FALSE, ch, 0, vict,
             TO_CHAR);
         return;
@@ -401,7 +391,7 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
     }
 #if ZONE_COMM_ONLY
     if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
-        GetMaxLevel(ch) < LOW_IMMORTAL && GetMaxLevel(vict) < LOW_IMMORTAL) {
+        !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
         send_to_char("That person is not near enough for you to tell.\n\r",
                      ch);
         return;
@@ -783,9 +773,9 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
         i = SPEAK_OGRE;
     } else if (strstr(buf, "gnomish")) {
         i = SPEAK_GNOMISH;
-    } else if (strstr(buf, "all") && (GetMaxLevel(ch) >= 51)) {
+    } else if (strstr(buf, "all") && IS_IMMORTAL(ch)) {
         i = SPEAK_ALL;
-    } else if (strstr(buf, "godlike") && (GetMaxLevel(ch) >= 51)) {
+    } else if (strstr(buf, "godlike") && IS_IMMORTAL(ch)) {
         i = SPEAK_GODLIKE;
     } else {
         i = -1;
@@ -915,7 +905,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
 
         while (p) {
             if (number(1, 75 + strlen(p)) < learned
-                || GetMaxLevel(ch) >= LOW_IMMORTAL) {
+                || IS_IMMORTAL(ch)) {
                 strcat(buf2, p);
             } else {
                 /*
@@ -948,16 +938,16 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
 
         for (t = rp->people; t; t = t->next_in_room) {
             if (t != ch) {
-                if ((t->skills)
-                    && (number(1, diff) < t->skills[skill_num].learned
-                    || GetMaxLevel(t) >= LOW_IMMORTAL || IS_NPC(t)
-                    || affected_by_spell(t, SKILL_ESP)
-                    || affected_by_spell(t, SPELL_COMP_LANGUAGES)
-                    || ch->player.speaks == 9)) {
+                if ((t->skills) && 
+                    (number(1, diff) < t->skills[skill_num].learned || 
+                     IS_IMMORTAL(t) || IS_NPC(t) || 
+                     affected_by_spell(t, SKILL_ESP) || 
+                     affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
+                     ch->player.speaks == 9)) {
                     /*
                      * these guys always understand
                      */
-                    if (GetMaxLevel(t) >= LOW_IMMORTAL ||
+                    if (IS_IMMORTAL(t)  || IS_NPC(t) ||
                         affected_by_spell(t, SKILL_ESP) ||
                         affected_by_spell(t, SPELL_COMP_LANGUAGES) ||
                         IS_NPC(t) || ch->player.speaks == SPEAK_ALL) {
@@ -1191,10 +1181,9 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
                     argument);
 
             for (i = descriptor_list; i; i = i->next) {
-                if (i->character != ch && !i->connected
-                    && !IS_NPC(i->character)
-                    && !IS_SET(i->character->specials.act, PLR_NOSHOUT)
-                    && (GetMaxLevel(i->character) >= LOW_IMMORTAL)) {
+                if (i->character != ch && !i->connected && 
+                    !IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
+                    IS_IMMORTAL(i->character)) {
                     act(buf1, 0, ch, 0, i->character, TO_VICT);
 				}
             }
@@ -1261,15 +1250,13 @@ void do_telepathy(struct char_data *ch, char *argument, int cmd)
     } else if (IS_NPC(vict) && !(vict->desc)) {
         send_to_char("No-one by that name here..\n\r", ch);
         return;
-    } else if (!(GetMaxLevel(ch) >= LOW_IMMORTAL)
-               && IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } else if (!IS_IMMORTAL(ch) && IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for thoughts right now.", FALSE, ch, 0,
             vict, TO_CHAR);
         return;
-    } else if ((GetMaxLevel(vict) >= LOW_IMMORTAL)
-               && (GetMaxLevel(ch) >= LOW_IMMORTAL)
-               && (GetMaxLevel(ch) < GetMaxLevel(vict))
-               && IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } else if (IS_IMMORTAL(vict) && IS_IMMORTAL(ch) && 
+               GetMaxLevel(ch) < GetMaxLevel(vict) && 
+               IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for thoughts right now!", FALSE, ch, 0,
             vict, TO_CHAR);
         return;
@@ -1326,8 +1313,7 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         send_to_char("It may return after a bit.\n\r", ch);
         return;
     }
-    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && 
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && (!IS_IMMORTAL(ch))) {
         send_to_char("You do not have the strength to shout!\n\r", ch);
         return;
     }
@@ -1366,7 +1352,7 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         }
         sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'",
                 argument);
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             GET_MOVE(ch) -= 5;
             GET_MANA(ch) -= 5;
         }
@@ -1412,7 +1398,7 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd)
         act(buf1, FALSE, ch, 0, 0, TO_CHAR);
     }
     sprintf(buf1, "%s $n%s$c0012", command, argument);
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_MOVE(ch) -= 5;
         GET_MANA(ch) -= 5;
     }
@@ -1468,10 +1454,9 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
     }
 #if ZONE_COMM_ONLY
     if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
-        GetMaxLevel(ch) < LOW_IMMORTAL && GetMaxLevel(vict) < LOW_IMMORTAL) {
-        send_to_char
-            ("That person is not near enough for you to reply, bad :(.\n\r",
-             ch);
+        !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
+        send_to_char("That person is not near enough for you to reply.\n\r",
+                     ch);
         return;
     }
 #endif

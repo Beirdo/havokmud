@@ -639,8 +639,7 @@ int timnus(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (cmd) {
         if (cmd == 1 && ch->in_room == TimnusRoom &&
-            TIMNUSNORTHLIMIT < GetMaxLevel(ch) &&
-            GetMaxLevel(ch) < LOW_IMMORTAL) {
+            GetMaxLevel(ch) > TIMNUSNORTHLIMIT && !IS_IMMORTAL(ch)) {
             if (!check_soundproof(ch)) {
                 act("$n tells you 'Thou art not pure enough of heart.'",
                     TRUE, mob, 0, ch, TO_VICT);
@@ -648,8 +647,7 @@ int timnus(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             act("$n grins evilly.", TRUE, mob, 0, ch, TO_VICT);
             return (TRUE);
         } else if (cmd == 4 && ch->in_room == TimnusRoom && 
-                   TIMNUSWESTLIMIT < GetMaxLevel(ch) &&
-                   GetMaxLevel(ch) < LOW_IMMORTAL) {
+                   GetMaxLevel(ch) > TIMNUSWESTLIMIT && !IS_IMMORTAL(ch)) {
             if (!check_soundproof(ch)) {
                 act("$n tells you 'Thou art not pure enough of heart.'",
                     TRUE, mob, 0, ch, TO_VICT);
@@ -5072,7 +5070,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
         /*
          * If object is not Marbles
          */
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != MARBLES)) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);
@@ -5481,7 +5479,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         if (mob_index[vict->nr].virtual != ELAMIN) {
             return (FALSE);
         }
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if (obj_index[obj->item_number].virtual != PEN_MIGHT) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);
@@ -5547,7 +5545,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
         if (mob_index[vict->nr].virtual != GOBLIN_CHUIRGEON) {
             return (FALSE);
         }
-        if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+        if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
             send_to_char("Get real.  You shouldn't be playing around with "
                          "him.\n\r", ch);
             return (TRUE);
@@ -5563,7 +5561,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     } else if (cmd == 56) {
         /* Buy */
-        if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+        if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
             send_to_char("Get real.  You shouldn't be playing around with "
                          "him.\n\r", ch);
             return (TRUE);
@@ -6389,7 +6387,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         if (mob_index[vict->nr].virtual != STARVING_MAN) {
             return (FALSE);
         }
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if (obj->obj_flags.type_flag != ITEM_FOOD) {
                 sprintf(buf, "%s Thank you, but that is not what I desire.",
                         GET_NAME(ch));

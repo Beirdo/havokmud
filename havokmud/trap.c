@@ -265,7 +265,7 @@ void TrapTeleport(struct char_data *v)
     do_look(v, "", 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
-        GetMaxLevel(v) < LOW_IMMORTAL) {
+        !IS_IMMORTAL(v)) {
         NailThisSucker(v);
     }
 }

@@ -320,7 +320,6 @@ struct QuestItem {
 
 #define ABS_MAX_LVL  70
 #define MAX_MORT     50
-#define LOW_IMMORTAL 51
 #define IMMORTAL     51
 #define CREATOR      52
 #define SAINT        53
@@ -330,7 +329,6 @@ struct QuestItem {
 #define GREATER_GOD  57
 #define SILLYLORD    58
 #define IMPLEMENTOR  59
-#define BIG_GUY      60
 #define MAX_IMMORT   60
 #define NEVER_USE    61
 

@@ -111,7 +111,7 @@ int druid_protector(struct char_data *ch, int cmd, char *arg,
                 send_to_char("Basil Great Druid looks at you\n\r", ch);
                 if (ch->in_room == Bandits_Path && cmd == 1 &&
                     BASIL_GATEKEEPER_MAX_LEVEL < GetMaxLevel(ch) &&
-                    GetMaxLevel(ch) < LOW_IMMORTAL) {
+                    !IS_IMMORTAL(ch)) {
                     if (!check_soundproof(ch)) {
                         act("Basil the Great Druid tells you 'Begone "
                             "Unbelievers!'", TRUE, ch, 0, 0, TO_CHAR);
@@ -2668,7 +2668,7 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     if (cmd) {
         if (GET_RACE(ch) == RACE_SARTAN || GET_RACE(ch) == RACE_PATRYN ||
-            GetMaxLevel(ch) == BIG_GUY) {
+            GetMaxLevel(ch) == MAX_IMMORT) {
             return (FALSE);
         }
 
@@ -3701,7 +3701,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         /*
          * The object is not the Ankh of Posereisn 
          */
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != 28180)) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);

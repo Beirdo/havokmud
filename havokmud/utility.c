@@ -864,7 +864,7 @@ void log_sev(char *str, int sev)
         sprintf(buf, "/* %s */\n\r", str);
     }
     for (i = descriptor_list; i; i = i->next) {
-        if (!i->connected && GetMaxLevel(i->character) >= LOW_IMMORTAL &&
+        if (!i->connected && IS_IMMORTAL(i->character) &&
             i->character->specials.sev <= sev &&
             !IS_SET(i->character->specials.act, PLR_NOSHOUT)) {
             SEND_TO_Q(buf, i);
@@ -1818,7 +1818,7 @@ void down_river(int pulse)
                         }
                     }
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                        GetMaxLevel(ch) < LOW_IMMORTAL) {
+                        IS_IMMORTAL(ch)) {
                         if (RIDDEN(ch)) {
                             NailThisSucker(RIDDEN(ch));
                         }
@@ -2744,7 +2744,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     ch->old_room = ch->in_room;
 
 #if 0
-    if (GetMaxLevel(tch) >= IMMORTAL) {
+    if (IS_IMMORTAL(tch)) {
         sprintf(buf, ">>%s is hunting you from %s\n\r",
                 (ch->player.short_descr[0] ? ch->player.
                  short_descr : "(null)"),
@@ -3089,7 +3089,7 @@ void RestoreChar(struct char_data *ch)
     GET_MANA(ch) = GET_MAX_MANA(ch);
     GET_HIT(ch) = GET_MAX_HIT(ch);
     GET_MOVE(ch) = GET_MAX_MOVE(ch);
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_COND(ch, THIRST) = 24;
         GET_COND(ch, FULL) = 24;
     } else {
@@ -3758,7 +3758,7 @@ void RiverPulseStuff(int pulse)
                         }
 
                         if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                            GetMaxLevel(ch) < LOW_IMMORTAL) {
+                            !IS_IMMORTAL(ch)) {
                             NailThisSucker(ch);
                             if (RIDDEN(ch)) {
                                 NailThisSucker(RIDDEN(ch));
@@ -4858,7 +4858,7 @@ int CheckGetBarbarianOK(struct char_data *ch, struct obj_data *obj_object)
 {
 #ifndef BARB_GET_DISABLE
     if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
-        anti_barbarian_stuff(obj_object) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+        anti_barbarian_stuff(obj_object) && !IS_IMMORTAL(ch)) {
         act("You sense magic on $p and drop it.", FALSE, ch, obj_object, 0,
             TO_CHAR);
         act("$n shakes $s head and refuses to take $p.", FALSE, ch,
@@ -4876,7 +4876,7 @@ int CheckGiveBarbarianOK(struct char_data *ch, struct char_data *vict,
 
 #ifndef BARB_GET_DISABLE
     if (GET_LEVEL(vict, BARBARIAN_LEVEL_IND) != 0 &&
-        anti_barbarian_stuff(obj) && GetMaxLevel(vict) < LOW_IMMORTAL) {
+        anti_barbarian_stuff(obj) && !IS_IMMORTAL(vict)) {
         if (GET_POS(vict) <= POSITION_SLEEPING) {
             sprintf(buf, "You think it best to not give this item to %s.\n\r",
                     GET_NAME(vict));

@@ -729,7 +729,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                 strcat(buffer, "$c000w (Hiding)");
 			}
             if (IS_AFFECTED(i, AFF_INVISIBLE)
-                || i->invis_level == LOW_IMMORTAL) {
+                || i->invis_level == IMMORTAL) {
                 strcat(buffer, "$c000w (invisible)");
 			}
             if (IS_AFFECTED(i, AFF_CHARM)) {
@@ -861,7 +861,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                 strcat(buffer, " (Hiding)");
 			}
             if (IS_AFFECTED(i, AFF_INVISIBLE)
-                || i->invis_level == LOW_IMMORTAL) {
+                || i->invis_level == IMMORTAL) {
                 strcat(buffer, " (invisible)");
 			}
             if (IS_AFFECTED(i, AFF_CHARM)) {
@@ -1251,7 +1251,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
                 strcat(buffer, "$c000w (Hiding)");
 			}
             if (IS_AFFECTED(i, AFF_INVISIBLE)
-                || i->invis_level == LOW_IMMORTAL) {
+                || i->invis_level == IMMORTAL) {
                 strcat(buffer, "$c000w (invisible)");
 			}
             if (IS_AFFECTED(i, AFF_CHARM)) {
@@ -1379,7 +1379,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch,
                 strcat(buffer, " (Hiding)");
 			}
             if (IS_AFFECTED(i, AFF_INVISIBLE)
-                || i->invis_level == LOW_IMMORTAL) {
+                || i->invis_level == IMMORTAL) {
                 strcat(buffer, " (invisible)");
 			}
             if (IS_AFFECTED(i, AFF_CHARM)) {
@@ -3144,7 +3144,7 @@ void do_wizhelp(struct char_data *ch, char *arg, int cmd)
         n = radix_head[i].next;
         while (n) {
             if (n->min_level <= GetMaxLevel(ch) && 
-                n->min_level >= LOW_IMMORTAL) {
+                n->min_level >= IMMORTAL) {
                 if (n->min_level == GetMaxLevel(ch)) {
                     sprintf((buf + strlen(buf)),
                             "$c000BL:$c000Y%d $c000w%-14s", n->min_level,
@@ -3310,9 +3310,9 @@ char           *GetLevelTitle(struct char_data *ch)
         sprintf(color, "$c0006");
     } else if (level < 41) {
         sprintf(color, "$c0014");
-    } else if (level < 50) {
+    } else if (level < MAX_MORT) {
         sprintf(color, "$c000W");
-    } else if (level < 51) {
+    } else if (level < IMMORTAL) {
         sprintf(color, "$c000B");
     } else {
         sprintf(color, "$c000Y");
@@ -3426,7 +3426,7 @@ char           *SPECIAL_FLAGS(struct char_data *ch,
     if (IS_LINKDEAD(person)) {
         sprintf(buffer, "%s$c0015[LINKDEAD]$c0007", buffer);
 	}
-    if (IS_IMMORTAL(ch) && person->invis_level > 50) {
+    if (IS_IMMORTAL(ch) && person->invis_level > MAX_MORT) {
         sprintf(buffer, "%s(invis %d)", buffer, person->invis_level);
 	}
 
@@ -3649,7 +3649,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                         ch_printf(ch, "$c000w%-25s - %s",
                                   GET_NAME(person),
                                   real_roomp(person->in_room)->name);
-                        if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+                        if (IS_IMMORTAL(ch)) {
                             ch_printf(ch, " [%ld]", person->in_room);
 						}
                         send_to_char("\n\r", ch);
@@ -3665,7 +3665,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                         ch_printf(ch, "$c000w%-25s %s", " ",
                                   (person->player.title ?
                                    person->player.title : GET_NAME(person)));
-                        if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+                        if (IS_IMMORTAL(ch)) {
                             ch_printf(ch, " [%ld]", person->in_room);
 						}
                         send_to_char("\n\r", ch);
@@ -3791,7 +3791,7 @@ void do_users(struct char_data *ch, char *argument, int cmd)
     for (d = descriptor_list; d; d = d->next) {
         if (d->character) {
             if (CAN_SEE(ch, d->character) ||
-                (GetMaxLevel(ch) >= 51 &&
+                (IS_IMMORTAL(ch) &&
                  d->character->invis_level <= GetMaxLevel(ch))) {
                 if (d && d->character && d->character->player.name) {
                     sprintf(line, "$c000W%-16s$c000w: ", 
@@ -3929,7 +3929,7 @@ void do_where_person(struct char_data *ch, struct char_data *person,
             (person->in_room > -1 ?
              real_roomp(person->in_room)->name : "$c000RNowhere$c000w"));
 
-    if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+    if (IS_IMMORTAL(ch)) {
         sprintf(buf + strlen(buf), "$c000B[$c000W%ld$c000B]$c000w", 
                 person->in_room);
 	}
@@ -4009,7 +4009,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
     only_argument(argument, name);
 
     if (!*name) {
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             send_to_char("What are you looking for?\n\r", ch);
             return;
         } else {
@@ -4060,10 +4060,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     for (i = character_list; i; i = i->next) {
         if (isname(name, i->player.name) && CAN_SEE(ch, i)) {
-            if (i->in_room != NOWHERE &&
-                (GetMaxLevel(ch) >= LOW_IMMORTAL ||
-                 real_roomp(i->in_room)->zone ==
-                 real_roomp(ch->in_room)->zone)) {
+            if (i->in_room != NOWHERE && (IS_IMMORTAL(ch) || 
+                real_roomp(i->in_room)->zone == 
+                real_roomp(ch->in_room)->zone)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);
@@ -4075,7 +4074,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
                         break;
 					}
                 }
-                if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+                if (!IS_IMMORTAL(ch)) {
                     break;
 				}
             }
@@ -4260,7 +4259,7 @@ void do_consider(struct char_data *ch, char *argument, int cmd)
     act("$n looks at $N", FALSE, ch, 0, victim, TO_NOTVICT);
     act("$n looks at you", FALSE, ch, 0, victim, TO_VICT);
 
-    if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+    if (IS_IMMORTAL(ch)) {
         send_to_char("Consider this, What the heck do you need con for?\n\r",
                      ch);
         return;
@@ -4484,7 +4483,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
         if( index == -1 ) {
             continue;
         }
-        if (GetMaxLevel(ch) > LOW_IMMORTAL ||
+        if (GetMaxLevel(ch) > IMMORTAL ||
             spell_info[index].min_level_cleric < ABS_MAX_LVL) {
             if (!spells[spl]) {
                 sprintf(tbuf, "!spells[spl] on %d, do_spells in act.info.c", i);
@@ -4536,7 +4535,7 @@ void do_world(struct char_data *ch, char *argument, int cmd)
     sprintf(buf, "$c000BCurrent time is: $c000W%s $c000B(PST)$c000w", tmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-    if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+    if (IS_IMMORTAL(ch)) {
         sprintbit((unsigned long) SystemFlags, system_flag_types, tbuf);
         sprintf(buf, "$c000BCurrent system settings: [$c000W%s$c000B]$c000w",
                 tbuf);
@@ -5422,7 +5421,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         if (!ch->skills[SKILL_SPOT].learned) {
             send_to_char("You have not been trained to spot.\n\r", ch);
             return;
@@ -5574,7 +5573,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         if (!ch->skills[SKILL_SPOT].learned) {
             send_to_char("You have not been trained to spot.\n\r", ch);
             return;
@@ -6167,7 +6166,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
             if (IS_LINKDEAD(person)) {
                 sprintf(tbuf + strlen(tbuf), "$c0015 [LINKDEAD] $c0007");
             }
-            if (IS_IMMORTAL(ch) && person->invis_level > 50) {
+            if (IS_IMMORTAL(ch) && person->invis_level > MAX_MORT) {
                 sprintf(tbuf + strlen(tbuf), "(invis)");
             }
             sprintf(tbuf + strlen(tbuf), "\n\r");

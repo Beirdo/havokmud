@@ -731,7 +731,7 @@ void advance_level(struct char_data *ch, int class)
 
     ClassSpecificStuff(ch);
 
-    if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
+    if (IS_IMMORTAL(ch)) {
         for (i = 0; i < 3; i++) {
             ch->specials.conditions[i] = -1;
         }
@@ -766,7 +766,7 @@ void drop_level(struct char_data *ch, int class, int goddrain)
     extern struct wis_app_type wis_app[];
     extern struct con_app_type con_app[];
 
-    if (!goddrain && GetMaxLevel(ch) >= LOW_IMMORTAL) {
+    if (!goddrain && IS_IMMORTAL(ch)) {
             return;
     }
 

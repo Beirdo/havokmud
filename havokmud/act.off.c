@@ -2759,8 +2759,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         send_to_char("It may return after a bit.\n\r", ch);
         return;
     }
-    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && !IS_IMMORTAL(ch)) {
         send_to_char("You do not have the strength to clan chat!\n\r", ch);
         return;
     }
@@ -2792,7 +2791,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
                       "$c000c'\n\r",
                 GET_NAME(ch), argument);
 
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             GET_MOVE(ch) -= 5;
             GET_MANA(ch) -= 5;
         }

@@ -369,7 +369,7 @@ struct command_def commandList[] = {
     { "steam", do_action, 192, POSITION_RESTING, 0 },
     { "tackle", do_action, 193, POSITION_RESTING, 0 },
     { "taunt", do_action, 194, POSITION_RESTING, 0 },
-    { "think", do_commune, 195, POSITION_RESTING, LOW_IMMORTAL },
+    { "think", do_commune, 195, POSITION_RESTING, IMMORTAL },
     { "whine", do_action, 196, POSITION_RESTING, 0 },
     { "worship", do_action, 197, POSITION_RESTING, 0 },
     { "yodel", do_action, 198, POSITION_RESTING, 0 },
@@ -383,11 +383,11 @@ struct command_def commandList[] = {
     { "switch", do_switch, 205, POSITION_DEAD, 55 },
     { "quaff", do_quaff, 206, POSITION_RESTING, 0 },
     { "recite", do_recite, 207, POSITION_STANDING, 0 },
-    { "users", do_users, 208, POSITION_DEAD, LOW_IMMORTAL },
+    { "users", do_users, 208, POSITION_DEAD, IMMORTAL },
     { "pose", do_pose, 209, POSITION_STANDING, 0 },
 
     { "noshout", do_noshout, 210, POSITION_SLEEPING, 54 },
-    { "wizhelp", do_wizhelp, 211, POSITION_SLEEPING, LOW_IMMORTAL },
+    { "wizhelp", do_wizhelp, 211, POSITION_SLEEPING, IMMORTAL },
     { "credits", do_credits, 212, POSITION_DEAD, 0 },
     { "compact", do_compact, 213, POSITION_DEAD, 0 },
     { ":", do_emote, 214, POSITION_SLEEPING, 0 },
@@ -399,10 +399,10 @@ struct command_def commandList[] = {
     { "deposit", do_not_here, 219, POSITION_RESTING, 1 },
     { "withdraw", do_not_here, 220, POSITION_RESTING, 1 },
     { "balance", do_not_here, 221, POSITION_RESTING, 1 },
-    { "nohassle", do_nohassle, 222, POSITION_DEAD, LOW_IMMORTAL },
+    { "nohassle", do_nohassle, 222, POSITION_DEAD, IMMORTAL },
     { "system", do_system, 223, POSITION_DEAD, 55 },
     { "pull", do_open_exit, 224, POSITION_STANDING, 1 },
-    { "stealth", do_stealth, 225, POSITION_DEAD, LOW_IMMORTAL },
+    { "stealth", do_stealth, 225, POSITION_DEAD, IMMORTAL },
     { "edit", do_edit, 226, POSITION_DEAD, 53 },
     { "@", do_set, 227, POSITION_DEAD, IMPLEMENTOR },
 
@@ -421,7 +421,7 @@ struct command_def commandList[] = {
     { "breath", do_breath, 239, POSITION_FIGHTING, 1 },
     { "show", do_show, 240, POSITION_DEAD, 52 },
     { "debug", do_debug, 241, POSITION_DEAD, 60 },
-    { "invisible", do_invis, 242, POSITION_DEAD, LOW_IMMORTAL },
+    { "invisible", do_invis, 242, POSITION_DEAD, IMMORTAL },
     { "gain", do_gain, 243, POSITION_DEAD, 1 },
 #if 0
     { "rrload",do_rrload,244,POSITION_DEAD,CREATOR },
@@ -436,13 +436,13 @@ struct command_def commandList[] = {
     { "shoot", do_fire, 250, POSITION_STANDING, 1 },
     { "silence", do_silence, 251, POSITION_STANDING, 54 },
 #if 0
-    { "teams",do_not_here,252,POSITION_STANDING, BIG_GUY },
-    { "player",do_not_here,253,POSITION_STANDING, BIG_GUY },
+    { "teams",do_not_here,252,POSITION_STANDING, MAX_IMMORT },
+    { "player",do_not_here,253,POSITION_STANDING, MAX_IMMORT },
 #endif
 
     { "create", do_create, 254, POSITION_STANDING, 53 },
-    { "bamfin", do_bamfin, 255, POSITION_STANDING, LOW_IMMORTAL },
-    { "bamfout", do_bamfout, 256, POSITION_STANDING, LOW_IMMORTAL },
+    { "bamfin", do_bamfin, 255, POSITION_STANDING, IMMORTAL },
+    { "bamfout", do_bamfout, 256, POSITION_STANDING, IMMORTAL },
     { "vis", do_invis, 257, POSITION_RESTING, 0 },
     { "doorbash", do_doorbash, 258, POSITION_STANDING, 1 },
 
@@ -480,7 +480,7 @@ struct command_def commandList[] = {
     { "first aid", do_first_aid, 281, POSITION_RESTING, 1 },
     { "log", do_set_log, 282, POSITION_DEAD, 60 },
     { "recall", do_cast, 283, POSITION_SITTING, 1 },
-    { "reload", reboot_text, 284, POSITION_DEAD, BIG_GUY },
+    { "reload", reboot_text, 284, POSITION_DEAD, MAX_IMMORT },
     { "event", do_event, 285, POSITION_DEAD, 60 },
     { "disguise", do_disguise, 286, POSITION_STANDING, 1 },
     { "climb", do_climb, 287, POSITION_STANDING, 1 },
@@ -490,15 +490,15 @@ struct command_def commandList[] = {
     { "redit", do_redit, 290, POSITION_SLEEPING, 53 },
     { "display", do_display, 291, POSITION_SLEEPING, 1 },
     { "resize", do_resize, 292, POSITION_SLEEPING, 1 },
-    { "\"", do_commune, 293, POSITION_SLEEPING, LOW_IMMORTAL },
+    { "\"", do_commune, 293, POSITION_SLEEPING, IMMORTAL },
     { "#", do_cset, 294, POSITION_DEAD, 59 },
-    { "auth", do_auth, 299, POSITION_SLEEPING, LOW_IMMORTAL },
+    { "auth", do_auth, 299, POSITION_SLEEPING, IMMORTAL },
     { "noyell", do_plr_nogossip, 301, POSITION_RESTING, 0 },
 
     { "gossip", do_yell, 302, POSITION_RESTING, 0 },
     { "noauction", do_plr_noauction, 303, POSITION_RESTING, 0 },
     { "auction", do_auction, 304, POSITION_RESTING, 0 },
-    { "discon", do_disconnect, 305, POSITION_RESTING, LOW_IMMORTAL },
+    { "discon", do_disconnect, 305, POSITION_RESTING, IMMORTAL },
     { "freeze", do_freeze, 306, POSITION_SLEEPING, 55 },
     { "drain", do_drainlevel, 307, POSITION_SLEEPING, IMPLEMENTOR },
     { "oedit", do_oedit, 308, POSITION_DEAD, 53 },
@@ -1571,8 +1571,7 @@ void command_interpreter(struct char_data *ch, char *argument)
                     sprintf(buf, "[%ld] %s:%s", ch->in_room,
                             ch->player.name, argument);
                     slog(buf);
-                } else if ((GetMaxLevel(ch) >= LOW_IMMORTAL) &&
-                           (GetMaxLevel(ch) < 60)) {
+                } else if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
                     /*
                      * we log ALL immortals
                      */
@@ -3691,7 +3690,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * read CR after printing motd
          */
-        if (GetMaxLevel(d->character) > 50) {
+        if (IS_IMMORTAL(d->character)) {
             send_to_char(wmotd, d->character);
 #if 0
             SEND_TO_Q(wmotd, d);
@@ -3707,7 +3706,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
         STATE(d) = CON_SLCT;
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
-            GetMaxLevel(d->character) < LOW_IMMORTAL) {
+            !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
             SEND_TO_Q(buf, d);
@@ -3723,7 +3722,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
         STATE(d) = CON_SLCT;
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
-            GetMaxLevel(d->character) < LOW_IMMORTAL) {
+            !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your site"
                          " is banned.\n\r");
             SEND_TO_Q(buf, d);
@@ -3834,7 +3833,7 @@ void nanny(struct descriptor_data *d, char *arg)
             character_list = d->character;
             if (d->character->in_room == NOWHERE ||
                 d->character->in_room == AUTO_RENT) {
-                if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
+                if (!IS_IMMORTAL(d->character)) {
                     if (d->character->specials.start_room <= 0) {
                         if (GET_RACE(d->character) == RACE_HALFLING) {
                             char_to_room(d->character, 1103);

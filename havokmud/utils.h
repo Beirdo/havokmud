@@ -256,7 +256,7 @@
 
 #define OUTSIDE(ch) (!IS_SET(real_roomp((ch)->in_room)->room_flags,INDOORS))
 
-#define IS_IMMORTAL(ch) (!IS_NPC(ch)&&(GetMaxLevel(ch)>=LOW_IMMORTAL))
+#define IS_IMMORTAL(ch) (!IS_NPC(ch) && (GetMaxLevel(ch) >= IMMORTAL))
 
 #define IS_POLICE(ch) ((mob_index[ch->nr].virtual == 3060) || \
                        (mob_index[ch->nr].virtual == 3069) || \

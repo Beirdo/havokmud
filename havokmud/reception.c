@@ -396,10 +396,10 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         act(buf, FALSE, receptionist, 0, ch, TO_VICT);
 
         if (cost->total_cost > GET_GOLD(ch)) {
-            if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+            if (!IS_IMMORTAL(ch)) {
                 act("$c0013[$c0015$n$c0013] tells you 'Which I can see you "
                     "can't afford'", FALSE, receptionist, 0, ch, TO_VICT);
-            } else if (GetMaxLevel(ch) > LOW_IMMORTAL) {
+            } else {
                 act("$c0013[$c0015$n$c0013] tells you 'Well, since you're a "
                     "God, I guess it's okay'", FALSE, receptionist, 0, ch, 
                     TO_VICT);

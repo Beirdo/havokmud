@@ -729,9 +729,10 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
                     diff,
                     d2;
 
-    if (IS_NPC(ch)) {
+    if (IS_NPC(ch) || IS_IMMORTAL(ch) ) {
         return;
     }
+
     if (IS_GOOD(ch) && (IS_GOOD(victim))) {
         change = (GET_ALIGNMENT(victim) / 200) *
                  (MAX(1, GetMaxLevel(victim) - GetMaxLevel(ch)));
@@ -757,7 +758,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_DRUID) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_DRUID)) {
         diff = 0 - GET_ALIGNMENT(ch);
         d2 = 0 - (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -784,7 +785,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
 
     }
 
-    if (HasClass(ch, CLASS_PALADIN) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_PALADIN)) {
         diff = GET_ALIGNMENT(ch);
         d2 = (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -810,7 +811,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_RANGER)) {
         diff = GET_ALIGNMENT(ch);
         d2 = (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -838,7 +839,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
 
     GET_ALIGNMENT(ch) -= change;
 
-    if (HasClass(ch, CLASS_DRUID) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_DRUID)) {
         if (GET_ALIGNMENT(ch) > 350 || GET_ALIGNMENT(ch) < -350) {
             send_to_char("The Patron of Druids and Rangers, has "
                          "excommunicated you for your heresies.\n\r", ch);
@@ -854,8 +855,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
             /*
              * Used for the Dr/Ra Multiclass
              */
-            if (HasClass(ch, CLASS_RANGER)
-                && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+            if (HasClass(ch, CLASS_RANGER)) {
                 send_to_char("The Patron of Rangers has excommunicated "
                              "you for your heresies.\n\r", ch);
                 send_to_char("You are forever more a mere warrior!\n\r", ch);
@@ -870,7 +870,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_PALADIN) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_PALADIN)) {
         if (GET_ALIGNMENT(ch) < 350) {
             send_to_char("The Patron of Paladins has excommunicated you "
                          "for your heresies.\n\r", ch);
@@ -885,7 +885,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_RANGER)) {
         if (GET_ALIGNMENT(ch) < -350) {
             send_to_char("The Patron of Rangers has excommunicated "
                          "you for your heresies\n\r", ch);
@@ -957,9 +957,12 @@ void raw_kill(struct char_data *ch, int killedbytype)
     /*
      * give them some food and water so they don't whine.
      */
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_COND(ch, THIRST) = 20;
         GET_COND(ch, FULL) = 20;
+    } else {
+        GET_COND(ch, THIRST) = -1;
+        GET_COND(ch, FULL) = -1;
     }
 
     /*
@@ -1023,10 +1026,10 @@ void die(struct char_data *ch, int killedbytype)
             }
         }
 #if LEVEL_LOSS
-
+        
         for (i = 0; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) > 1) {
-                if (GET_LEVEL(ch, i) >= LOW_IMMORTAL) {
+                if (IS_IMMORTAL(ch)) {
                     break;
                 }
                 if (GET_EXP(ch) <

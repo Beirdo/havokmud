@@ -120,7 +120,7 @@ bool dimd_can_see(int slev, struct char_data *o)
     if (!slev && IS_AFFECTED(o, AFF_INVISIBLE)) {
         return FALSE;
     }
-    if (o->invis_level && (o->invis_level - (LOW_IMMORTAL - 1)) > slev) {
+    if (o->invis_level && (o->invis_level - (IMMORTAL - 1)) > slev) {
         return FALSE;
     }
     return TRUE;
@@ -621,7 +621,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 
         for (d = descriptor_list; d; d = d->next) {
             if (!d->connected && d->character != ch && 
-                GetMaxLevel(d->character) >= LOW_IMMORTAL && 
+                IS_IMMORTAL(d->character) && 
                 !IS_SET(d->character->pc->comm, COMM_NOMUSE)) {
                 cact(buf, FALSE, ch, 0, d->character, TO_VICT, CLR_MUSE);
             }
@@ -1278,7 +1278,7 @@ void dimd_loop(void)
 
                             for (d = descriptor_list; d; d = d->next) {
                                 if (!d->connected && 
-                                    GetMaxLevel(d->character) >= LOW_IMMORTAL &&
+                                    IS_IMMORTAL(d->character) &&
                                     !IS_SET(d->character->pc->comm,
                                             COMM_NOMUSE)) {
                                     cmsg(buf, d->character, CLR_MUSE);

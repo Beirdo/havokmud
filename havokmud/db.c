@@ -531,12 +531,13 @@ void build_player_index()
                     dummy.level[j] = 0;
                 }
             }
-#if 1
+
             /*
              * was 5
              */
             for (i = 0; i < MAX_CLASS; i++) {
-                if (dummy.level[i] >= 51 && strcmp(dummy.name, "111111")) {
+                if (dummy.level[i] >= IMMORTAL && 
+                    strcmp(dummy.name, "111111")) {
                     sprintf(buf,
                             "GOD: %s, Levels [%d][%d][%d][%d][%d][%d][%d][%d]",
                             dummy.name, dummy.level[0], dummy.level[1],
@@ -568,7 +569,6 @@ void build_player_index()
                     break;
                 }
             }
-#endif
 
         }
     }
@@ -5263,7 +5263,7 @@ void reset_char(struct char_data *ch)
     }
 
     for (i = 0; i < MAX_CLASS; i++) {
-        if (GET_LEVEL(ch, i) > BIG_GUY) {
+        if (GET_LEVEL(ch, i) > MAX_IMMORT) {
             GET_LEVEL(ch, i) = 51;
         }
     }
@@ -5414,8 +5414,7 @@ void reset_char(struct char_data *ch)
      * Remove bogus flags on mortals
      */
 
-    if (IS_SET(ch->specials.act, PLR_NOHASSLE) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (IS_SET(ch->specials.act, PLR_NOHASSLE) && !IS_IMMORTAL(ch)) {
         REMOVE_BIT(ch->specials.act, PLR_NOHASSLE);
     }
 
@@ -6474,7 +6473,7 @@ void clean_playerfile(void)
                         max = grunt.dummy.level[j];
                     }
                 }
-                if (max < LOW_IMMORTAL) {
+                if (max < IMMORTAL) {
                     j = 1;
                     if (max > 15) {
                         j++;
@@ -6594,7 +6593,7 @@ void clean_playerfile(void)
                         max = grunt.dummy.level[j];
                     }
                 }
-                if (max < LOW_IMMORTAL) {
+                if (max < IMMORTAL) {
                     j = 1;
                     if (max > 15) {
                         j++;
@@ -6652,11 +6651,11 @@ void clean_playerfile(void)
                             Log(buf);
                         }
                     }
-                } else if (max > LOW_IMMORTAL) {
+                } else if (max > IMMORTAL) {
                     /*
-                     * delete people with levels greater than BIG_GUY
+                     * delete people with levels greater than MAX_IMMORT
                      */
-                    if (max > BIG_GUY) {
+                    if (max > MAX_IMMORT) {
                         num_deleted++;
                         grunt.AXE = TRUE;
                         sprintf(buf, "%s deleted after %d months of "

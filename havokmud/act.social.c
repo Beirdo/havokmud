@@ -337,10 +337,7 @@ void do_pose(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_pose");
 
-    lev = GetMaxLevel(ch);
-    if (IS_IMMORTAL(ch)) {
-        lev = LOW_IMMORTAL - 1;
-    }
+    lev = (IS_IMMORTAL(ch) ? MAX_MORT : GetMaxLevel(ch));
 
     if ((lev < pose_messages[0].level) || !IS_PC(ch)) {
         send_to_char("Pardon?\n\r", ch);

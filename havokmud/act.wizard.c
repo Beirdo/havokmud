@@ -1481,13 +1481,11 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_goto");
 
-    if (IS_NPC(ch)) {
-        return;
-    }
-    if ((GetMaxLevel(ch) > 0) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (!IS_IMMORTAL(ch)) {
         send_to_char("Huh?\n\r", ch);
         return;
     }
+
     only_argument(argument, buf);
     if (!*buf) {
         send_to_char("You must supply a room number or a name.\n\r", ch);
@@ -2855,8 +2853,8 @@ void do_set(struct char_data *ch, char *argument, int cmd)
                 send_to_char(GET_NAME(ch), mob);
                 send_to_char(" just tried to change your level.\n\r", mob);
                 return;
-            } else if (GetMaxLevel(mob) < LOW_IMMORTAL &&
-                       GetMaxLevel(ch) < IMPLEMENTOR && parm2 > 50) {
+            } else if (!IS_IMMORTAL(mob) &&
+                       GetMaxLevel(ch) < IMPLEMENTOR && parm2 > MAX_MORT) {
                 send_to_char("Thou shalt not create new immortals.\n\r", ch);
             }
         } else {
@@ -3361,8 +3359,7 @@ void do_return(struct char_data *ch, char *argument, int cmd)
         send_to_char("Arglebargle, glop-glyf!?!\n\r", ch);
         return;
     } else {
-        if (GET_POS(ch) == POSITION_FIGHTING &&
-            GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (GET_POS(ch) == POSITION_FIGHTING && !IS_IMMORTAL(ch)) {
             send_to_char("Not in a fight!\n\r", ch);
             return;
         }
@@ -3638,7 +3635,7 @@ void do_load(struct char_data *ch, char *argument, int cmd)
 #endif
         obj_to_char(obj, ch);
 
-        if (GetMaxLevel(ch) < BIG_GUY) {
+        if (GetMaxLevel(ch) < MAX_IMMORT) {
             sprintf(buf, "%s loaded %s", GET_NAME(ch), obj->name);
             log_sev(buf, 0);
         }
@@ -5330,7 +5327,7 @@ void do_invis(struct char_data *ch, char *argument, int cmd)
         do_save(ch, "", 0);
         send_to_char("You are now totally visible.\n\r", ch);
     } else {
-        ch->invis_level = LOW_IMMORTAL;
+        ch->invis_level = IMMORTAL;
         do_save(ch, "", 0);
         send_to_char("You are now invisible to all but gods.\n\r", ch);
     }
@@ -6560,7 +6557,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_msave");
 
-    if (IS_NPC(ch) || GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         return;
     }
 
@@ -6661,7 +6658,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_osave");
 
-    if (IS_NPC(ch) || GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         return;
     }
 
@@ -7110,9 +7107,9 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
                     if (i->character->in_room != NOWHERE) {
                         if (real_roomp(ch->in_room)->zone ==
                             real_roomp(i->character->in_room)->zone &&
-                            GetMaxLevel(i->character) < LOW_IMMORTAL) {
+                            !IS_IMMORTAL(i->character)) {
                             act(buf1, 0, ch, 0, i->character, TO_VICT);
-                        } else if (GetMaxLevel(i->character) >= LOW_IMMORTAL) {
+                        } else if (IS_IMMORTAL(i->character)) {
                             sprintf(buf2, "$c0011[$c0015$n$c0011] yells from "
                                     "zone %ld '%s'",
                                     real_roomp(ch->in_room)->zone, argument);

@@ -1888,7 +1888,7 @@ void close_socket(struct descriptor_data *d)
             d->character->desc = 0;
 
             /*
-             * d->character->invis_level = LOW_IMMORTAL; msw 8/9/94 
+             * d->character->invis_level = IMMORTAL; msw 8/9/94 
              */
 
             if (!IS_AFFECTED(d->character, AFF_CHARM) && d->character->master) {

@@ -463,7 +463,7 @@ void spell_haste(int level, struct char_data *ch,
     }
 
     af.type = SPELL_HASTE;
-    af.duration = (level < LOW_IMMORTAL) ? level : 99;
+    af.duration = (!IS_IMMORTAL(ch) ? level : 99);
     af.modifier = 1;
     af.location = APPLY_BV2;
     af.bitvector = AFF2_HASTE;
@@ -1152,7 +1152,7 @@ void spell_creeping_death(int level, struct char_data *ch,
     act("$n slumps to the ground, exhausted.", FALSE, ch, 0, 0, TO_ROOM);
     act("You are overcome by a wave of exhaustion.", FALSE, ch, 0, 0, TO_CHAR);
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_POS(ch) = POSITION_STUNNED;
         af.type = SPELL_CREEPING_DEATH;
         af.duration = 2;
@@ -2082,7 +2082,7 @@ void spell_gust_of_wind(int level, struct char_data *ch,
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
 
@@ -2542,7 +2542,7 @@ void spell_firestorm(int level, struct char_data *ch,
         temp = tmp_victim->next_in_room;
         rdam = dam;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
 
@@ -2620,7 +2620,7 @@ void spell_teleport_wo_error(int level, struct char_data *ch,
         check_falling(ch);
 
         if (IS_SET(real_roomp(ch->in_room)->room_flags, DEATH) &&
-            GetMaxLevel(ch) < LOW_IMMORTAL) {
+            !IS_IMMORTAL(ch)) {
             NailThisSucker(ch);
         }
     }
@@ -4833,7 +4833,7 @@ void spell_chillshield(int level, struct char_data *ch,
             TRUE, ch, 0, 0, TO_CHAR);
 
         af.type = SPELL_CHILLSHIELD;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_CHILLSHIELD;
@@ -4887,10 +4887,11 @@ void spell_blade_barrier(int level, struct char_data *ch,
 
         af.type = SPELL_BLADE_BARRIER;
 
-        if (ch->specials.remortclass != CLERIC_LEVEL_IND + 1) {
-            af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        if( IS_IMMORTAL(ch) ) {
+            af.duration = level;
         } else {
-            af.duration = (level < LOW_IMMORTAL) ? 4 : level;
+            af.duration = (ch->specials.remortclass == CLERIC_LEVEL_IND + 1 ? 
+                           4 : 3 );
         }
         af.modifier = 0;
         af.location = APPLY_NONE;
@@ -4913,7 +4914,7 @@ void spell_mana_shield(int level, struct char_data *ch,
             "to your head.", TRUE, ch, 0, 0, TO_CHAR);
 
         af.type = SPELL_MANA_SHIELD;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = 0;

@@ -741,7 +741,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
         }
 
         if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-            GetMaxLevel(ch) < LOW_IMMORTAL) {
+            !IS_IMMORTAL(ch)) {
             NailThisSucker(ch);
             return;
         } else {
@@ -805,7 +805,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
                     }
 
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                        GetMaxLevel(ch) < LOW_IMMORTAL) {
+                        !IS_IMMORTAL(ch)) {
                         NailThisSucker(ch);
                         return;
                     }
@@ -1239,7 +1239,7 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
                 DisplayMove(ch, dir, was_in, 1);
                 if (!check_falling(ch) && 
                     IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                    GetMaxLevel(ch) < LOW_IMMORTAL) {
+                    !IS_IMMORTAL(ch)) {
                     NailThisSucker(ch);
                     return;
                 }
@@ -2075,7 +2075,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((GET_MANA(ch) < 10) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MANA(ch) < 10) && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have the concentration to do this.\n\r", ch);
         return;
     }
@@ -2184,7 +2184,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 20 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 20 && !IS_IMMORTAL(ch)) {
         send_to_char("You have a headache. Better rest before you try this "
                      "again.\n\r", ch);
         return;
@@ -2291,7 +2291,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 50 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 50 && !IS_IMMORTAL(ch)) {
         send_to_char("You have a headache. Better rest before you try this "
                      "again.\n\r", ch);
         return;
@@ -2488,7 +2488,7 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((GET_MANA(ch) < 30) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MANA(ch) < 30) && !IS_IMMORTAL(ch)) {
         send_to_char("You have a headache. Better rest before you try this "
                      "again.\n\r", ch);
         return;
@@ -2684,7 +2684,7 @@ void do_flame_shroud(struct char_data *ch, char *argument, int cmd)
         send_to_char("You're already surrounded with flames.\n\r", ch);
         return;
     }
-    if (GET_MANA(ch) < 40 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 40 && !IS_IMMORTAL(ch)) {
         send_to_char("You'll need more psycic energy to attempt this.\n\r", ch);
         return;
     }
@@ -2882,13 +2882,12 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((GetMaxLevel(victim) >= LOW_IMMORTAL || IS_IMMORTAL(victim)) &&
-        !IS_NPC(victim)) {
+    if (IS_IMMORTAL(victim)) {
         send_to_char("They ignore your attempt at humor!\n\r", ch);
         return;
     }
 
-    if (GET_MANA(ch) < 25 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 25 && !IS_IMMORTAL(ch)) {
         send_to_char("Your mind is not up to the challenge at the moment.\n\r",
                      ch);
         return;
@@ -2941,7 +2940,7 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
         if (level > 49) {
             potency += 2;
         }
-        if (level > 50) {
+        if (level > MAX_MORT) {
             potency += 2;
         }
         if (GetMaxLevel(ch) > 57) {
@@ -3224,7 +3223,7 @@ void do_hypnosis(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 25 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 25 && !IS_IMMORTAL(ch)) {
         send_to_char("Your mind needs a rest.\n\r", ch);
         return;
     }
@@ -3351,7 +3350,7 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 20 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 20 && !IS_IMMORTAL(ch)) {
         send_to_char("You have a headache. Better rest before you try this "
                      "again.\n\r", ch);
     } else if (dice(1, 101) > ch->skills[SKILL_SCRY].learned) {
@@ -3395,7 +3394,7 @@ void do_invisibililty(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 10 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 10 && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mental power to hide yourself.\n\r",
                      ch);
         return;
@@ -3455,7 +3454,7 @@ void do_adrenalize(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 15 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 15 && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have the mental power to do this.\n\r", ch);
         return;
     }
@@ -3998,7 +3997,7 @@ void do_psi_shield(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 10 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (GET_MANA(ch) < 10 && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mental power to protect "
                      "yourself.\n\r", ch);
         return;
@@ -4059,7 +4058,7 @@ void do_esp(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((GET_MANA(ch) < 10) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MANA(ch) < 10) && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mental power to do that.\n\r", ch);
         return;
     }
@@ -4110,7 +4109,7 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if ((GET_MANA(ch) < 5) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MANA(ch) < 5) && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have the power to do that.\n\r", ch);
         return;
     }
@@ -4124,7 +4123,7 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 
     if (skill_check < number(1, 101)) {
         send_to_char("You fumble and screw up the spell.\n\r", ch);
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             GET_MANA(ch) -= 3;
         }
         if (ch->skills[SPELL_SENDING].learned >
@@ -4136,7 +4135,7 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_MANA(ch) -= 5;
     }
     half_chop(argument, target_name, message);
@@ -4209,7 +4208,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 50 && GetMaxLevel(ch) <= 50) {
+    if (GET_MANA(ch) < 50 && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mana to scribe that spell.\n\r",
                      ch);
         return;
@@ -4344,16 +4343,16 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         obj->description = strdup("A scroll, bound with enchantments, lies on "
                                   "the ground.");
 
-        if (GetMaxLevel(ch) > 50) {
+        if (IS_IMMORTAL(ch)) {
             /* 
              * set spell level.
              */
-            obj->obj_flags.value[0] = 50;
+            obj->obj_flags.value[0] = MAX_MORT;
             
             /* 
              * set ego to level.
              */
-            obj->level = 50;
+            obj->level = MAX_MORT;
         } else {
             /* 
              * set spell level.
@@ -4416,7 +4415,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GET_MANA(ch) < 50 && GetMaxLevel(ch) <= 50) {
+    if (GET_MANA(ch) < 50 && !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mana to brew that spell.\n\r", ch);
         return;
     }
@@ -4534,11 +4533,11 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "%s", "A weird coloured potion is on the ground.");
         obj->description = (char *) strdup(buf);
 
-        if (GetMaxLevel(ch) > 50) {
+        if (IS_IMMORTAL(ch)) {
             /* 
              * set spell level.
              */
-            obj->obj_flags.value[0] = 50;
+            obj->obj_flags.value[0] = MAX_MORT;
         } else {
             /* 
              * set spell level.

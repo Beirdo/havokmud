@@ -307,7 +307,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (temp->obj_flags.value[3] && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (temp->obj_flags.value[3] && !IS_IMMORTAL(ch)) {
         act("That tasted rather strange !!", FALSE, ch, 0, 0, TO_CHAR);
         act("$n coughs and utters some strange sounds.", FALSE, ch, 0, 0,
             TO_ROOM);
@@ -721,8 +721,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     }
 
     if (anti_barbarian_stuff(obj_object) && 
-        GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && 
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+        GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && !IS_IMMORTAL(ch)) {
         send_to_char("Eck! Not that! You sense magic on it!!! You quickly "
                 "drop it!\n\r", ch);
         act("$n shivers and drops $p!", FALSE, ch, obj_object, 0, TO_ROOM);

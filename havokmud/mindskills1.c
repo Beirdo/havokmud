@@ -49,7 +49,7 @@ void mind_burn(int level, struct char_data *ch,
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
             if (!in_group(ch, tmp_victim)) {
@@ -134,7 +134,7 @@ void mind_teleport(int level, struct char_data *ch,
     do_look(ch, "", 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+        !IS_IMMORTAL(ch)) {
         NailThisSucker(ch);
         return;
     }
@@ -227,7 +227,7 @@ void mind_clairvoyance(int level, struct char_data *ch,
         }
 
         af.type = SKILL_CLAIRVOYANCE;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_SCRYING;
@@ -410,7 +410,7 @@ void mind_cell_adjustment(int level, struct char_data *ch,
         GET_HIT(victim) += 100;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         act("You are overcome by exhaustion.", FALSE, ch, 0, 0, TO_CHAR);
         act("$n slumps to the ground exhausted.", FALSE, ch, 0, 0, TO_ROOM);
         WAIT_STATE(ch, PULSE_VIOLENCE * 12);

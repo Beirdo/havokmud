@@ -79,7 +79,7 @@ void spell_resurrection(int level, struct char_data *ch,
              */
 
             if (IsImmune(victim, IMM_CHARM) || IsResist(victim, IMM_CHARM) ||
-                (GetMaxLevel(victim) > 50)) {
+                IS_IMMORTAL(victim)) {
                 act("$n says 'Thank you'", FALSE, ch, 0, victim, TO_ROOM);
             } else if (too_many_followers(ch)) {
                 act("$N takes one look at the size of your posse and just says"
@@ -835,7 +835,7 @@ void spell_cone_of_cold(int level, struct char_data *ch,
         rdam = dam;
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
             if (!in_group(ch, tmp_victim)) {
@@ -874,7 +874,7 @@ void spell_ice_storm(int level, struct char_data *ch,
         rdam = dam;
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
             if (!in_group(ch, tmp_victim)) {
@@ -2303,8 +2303,9 @@ void spell_faerie_fog(int level, struct char_data *ch,
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = tmp_victim->next_in_room) {
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (IS_IMMORTAL(tmp_victim))
+            if (IS_IMMORTAL(tmp_victim)) {
                 break;
+            }
             if (!in_group(ch, tmp_victim)) {
                 if (IS_AFFECTED(tmp_victim, AFF_HIDE)) {
                     if (ImpSaveSpell(tmp_victim, SAVING_SPELL, -10)) {
@@ -2435,7 +2436,7 @@ void spell_geyser(int level, struct char_data *ch,
          tmp_victim; tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if ((ch != tmp_victim) && (ch->in_room == tmp_victim->in_room)) {
-            if (GetMaxLevel(tmp_victim) < LOW_IMMORTAL || IS_NPC(tmp_victim)) {
+            if (!IS_IMMORTAL(tmp_victim)) {
                 MissileDamage(ch, tmp_victim, dam, SPELL_GEYSER);
                 act("You are seared by the boiling water!!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -2522,7 +2523,7 @@ void spell_prot_energy_drain(int level, struct char_data *ch,
         send_to_char("You call forth a protective shield against energy "
                      "drain.\n\r", ch);
         af.type = SPELL_PROT_ENERGY_DRAIN;
-        af.duration = level >= LOW_IMMORTAL ? level : 3;
+        af.duration = !IS_IMMORTAL(ch) ? 3 : level;
         af.modifier = IMM_DRAIN;
         af.location = APPLY_IMMUNE;
         af.bitvector = 0;

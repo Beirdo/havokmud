@@ -5139,7 +5139,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                     stop = 1;
                 } else if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
                            anti_barbarian_stuff(obj) && 
-                           GetMaxLevel(ch) < LOW_IMMORTAL) {
+                           !IS_IMMORTAL(ch)) {
                     send_to_char("You sense magic on the object and think "
                                  "better of buying it.\n\r", ch);
                     stop = 1;
