@@ -4114,9 +4114,9 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
   struct obj_data *obj;
   char buf[256];
-  int x,temp=0;
-
-  int questitems[13][3] = {
+  int x=0,temp=0;
+  char mobname[128];
+  int questitems[14][3] = {
     {871,CLASS_CLERIC,     6},
     {872,CLASS_MAGIC_USER, 7},
     {873,CLASS_DRUID,      6},
@@ -4129,75 +4129,76 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
     {880,CLASS_RANGER,     7},
     {881,CLASS_BARBARIAN,  7},
 	{882,CLASS_MAGIC_USER, 6},
-	{883,CLASS_DRUID,      7}
+	{883,CLASS_DRUID,      7},
+	{ -1, -1, -1 }
 
   };
-  //*pc_class_types[]
+
+  sprintf(mobname, "%s", GET_NAME(mob) );
+
+
   if (cmd==59) { //list
-    send_to_char("Quest Point Items:\n\r", ch);
+    ch_printf(ch,"Quest Point Items:\n\r$c0011%-25s  %-20s\n\r","Name","QPs");
+    ch_printf(ch,"%-25s  %-20s\n\r","----","---");
 
-    sprintf(buf,"$c0011%-25s %-15s %-10s\n\r","Name","Class","QPs");
-    send_to_char(buf,ch);
+    while( questitems[x][0]!=-1 ) { //loop through all the items in the shop.. lets print all of them.
+         obj = read_object(questitems[x][0], VIRTUAL);
 
-    sprintf(buf,"%-25s %-15s %-10s\n\r","----","-----","---");
-    send_to_char(buf,ch);
-
-    for(x = 0;x < 13;x ++) {
-
-      if(HasClass(ch,questitems[x][1])) {
-	temp = questitems[x][0];
-	obj = read_object(temp, VIRTUAL);
-
-	if(obj) {
-	  sprintf(buf,"$c0012%-25s $c0014%-16s $c0015%-10d$c0007\n\r"
-		  ,obj->short_description
-		  ,pc_class_types[pc_class_num(questitems[x][1])]
-		  ,questitems[x][2]);
-	  send_to_char(buf,ch);
-	}
-      }
-
+	     if(obj) {
+		   ch_printf(ch, "$c0012%-25s  $c0015%-20d$c0007\n\r" ,obj->short_description ,questitems[x][2]);
+	     }
+    	 x++;
     }
+    ch_printf(ch,"\n\r Available commands 'List', 'ID <ITEM>', 'Buy <ITEM>'\n\r");
     return(TRUE);
   } else
+	if(cmd==26) { /*lets ID that mofo */
 
-    if(cmd == 56) {
+    	while( questitems[x][0]!=-1 ) { //loop through all the items in the shop.. lets print all of them.
+           obj = read_object(questitems[x][0], VIRTUAL);
 
+	       if(obj) {
+		      if(isname(arg,obj->name)) {
+		         spell_identify(50, ch, 0, obj);
+		    	 return(TRUE);
+			  }
+	       }
+    	   x++;
+        }
+    } else
 
+    if(cmd == 56) { /*buy?*/
       temp = 13;//ch->player.q_points;
       //lets search for item..
-      for (x = 0;x < 13;x++) {
-	temp = questitems[x][0];
-	obj = read_object(temp, VIRTUAL);
-	if (obj) {
-
-     /*crashes Here (GH)*/
-	if(isname(arg,obj->name)) {
-	  temp = questitems[x][2];
-	  if (temp <= ch->player.q_points) {
-	    ch->player.q_points = ch->player.q_points - temp;
-	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
-		" 'I hope you enjoy.'",FALSE,ch,0,0,TO_CHAR);
-	    sprintf(buf,"The QPSalesman gives you %s\n\r",obj->short_description);
-	    send_to_char(buf,ch);
-	    obj_to_char(obj,ch);
-	  	sprintf(buf," $s just bought %s\n\r",GET_NAME(ch), obj->short_description);
-	  	qlog(buf);
-	  } else
-	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
-		" 'You don't have enought QPoints for that item'"
-		,FALSE,ch,0,0,TO_CHAR);
-
-	  return TRUE;
-	}
-}
-   }
-      act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
-	  " 'I don't have that item.'",FALSE,ch,0,0,TO_CHAR);
-      return TRUE;
+      while( questitems[x][0]!=-1 ) { //loop through all the items in the shop.. see if someone wants to buy one.
+		if (obj = read_object(questitems[x][0], VIRTUAL)) {
+			if(isname(arg,obj->name)) {
+	  			temp = questitems[x][2];
+	  			if (temp <= ch->player.q_points) {
+	  			  ch->player.q_points = ch->player.q_points - temp;
+	  			  ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I hope you enjoy.'\n\r", mobname);
+	  			  ch_printf(ch,"%s gives you %s\n\r",mobname, obj->short_description);
+	  			  obj_to_char(obj,ch);
+                  sprintf(buf," $s just bought %s\n\r",GET_NAME(ch), obj->short_description);
+	  			  qlog(buf);
+	  			} else {
+	    			ch_printf(ch,"$c0013[$c0015%s$c0013] tells you 'You don't have enought QPoints for that item'\n\r", mobname);
+				}
+	  			return TRUE;
+			}
+		}
+		x++;
+   	  }
+      ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I don't have that item.'\n\r", mobname);
+      return (TRUE);
     }
-  return FALSE;
+
+   /* Guess this function didn't get called */
+   return FALSE;
 }
+
+
+
 /* This procs allows a mob to dispel and incernary cloud someone after they miss a bash
  * By Greg Hovey
  * Feb 25, 2001
