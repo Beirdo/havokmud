@@ -58,8 +58,8 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 #define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || (!IS_SET(real_roomp(room)->room_flags, DARK) || !real_roomp(room)->dark))
 #else
 
-#define IS_DARK(room) (!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) && (real_roomp(room)->light <= 0 && \
-		(IS_SET(real_roomp(room)->room_flags, DARK) || IsDarkOutside(real_roomp(room)))))
+#define IS_DARK(room) (!IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) && (real_roomp(room)->light <= 0 \
+	&& (IS_SET(real_roomp(room)->room_flags, DARK) || (IsDarkOutside(real_roomp(room))))))
 
 #define IS_LIGHT(room) (IS_SET(real_roomp(room)->room_flags, EVER_LIGHT) || real_roomp(room)->light>0 || \
 	 (!IS_SET(real_roomp(room)->room_flags, DARK) && \

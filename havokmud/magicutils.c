@@ -171,18 +171,16 @@ FailCalm(struct char_data *victim, struct char_data *ch)
 
 FailPoison(struct char_data *victim, struct char_data *ch)
 {
- if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER) && (number(1,100)>50) )
+ if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER|CLASS_NECROMANCER) && (number(1,100)>50) )
     return;  /* give single classed mages a break. */
 
 	if (!IS_PC(victim)) {
 //		AddHated(victim, ch);
-		if(AddHated(victim, ch)) {
-			if (!victim->specials.fighting) {
-				if (GET_POS(victim) > POSITION_SLEEPING)
-					set_fighting(victim, ch);
-				else if (number(0,1)) {
-					set_fighting(victim, ch);
-				}
+		if (!victim->specials.fighting) {
+			if (GET_POS(victim) > POSITION_SLEEPING)
+				set_fighting(victim, ch);
+			else if (number(0,1)) {
+				set_fighting(victim, ch);
 			}
 		}
 	} else {

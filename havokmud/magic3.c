@@ -3820,11 +3820,11 @@ void spell_soul_steal(byte level, struct char_data *ch, struct char_data *victim
 		return;
 
 	if(victim == ch) {
-		send_to_char("You cannot steal your own soul, it is already in the Dark Lord's posession.\n\r",ch);
+		send_to_char("You cannot steal your own soul, it is already in the Dark Lord's possession.\n\r",ch);
 		return;
 	}
 
-	mana = 20 + number(-8,30);
+	mana = 20 + number(-8,50);
 
 	act("Briefly, a glowing strand of energy seems to fleet from $N to $n.",FALSE, ch, 0, victim, TO_NOTVICT);
 	act("A glowing strand of energy coming from $N fortifies your mental condition.",FALSE, ch, 0, victim, TO_CHAR);

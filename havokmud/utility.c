@@ -5522,7 +5522,19 @@ dlog("in tweak");
 							} else { /* bad tweak */
 								roll = number(1,2);
 							}
-							obj->affected[i].modifier = obj->affected[i].modifier - roll;
+							mod = obj->affected[i].modifier - roll;
+
+							/* stick to certain limits */
+							if(mod > 3) {
+								if(ITEM_TYPE(obj) != ITEM_WEAPON) {
+									mod = 3;
+								} else {
+									if(mod > 5) {
+										mod = 5;
+									}
+								}
+							}
+							obj->affected[i].modifier = mod;
 						}
 					}
 					break;
@@ -5564,12 +5576,12 @@ dlog("in tweak");
 				case APPLY_SPELLFAIL:
 					{ /* +/- 1..75% */
 						if(number(0,4)) {
-							roll = 100 + (number(1,75));
+							roll = (number(1,75));
 							mod = (int)obj->affected[i].modifier*roll/100;
 							if (number(0,1)) {
-								obj->affected[i].modifier = mod;
+								obj->affected[i].modifier += mod;
 							} else if(number(0,1)) {
-								obj->affected[i].modifier = mod;
+								obj->affected[i].modifier -= mod;
 							}
 						} /* no tweak */
 					}

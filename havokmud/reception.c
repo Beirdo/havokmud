@@ -390,79 +390,79 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
 
 void obj_store_to_char(struct char_data *ch, struct obj_file_u *st)
 {
-char buf[128];
+	char buf[128];
 
-  struct obj_data *obj;
-  struct obj_data *in_obj[64],*last_obj;
-  int tmp_cur_depth=0;
-  int i, j;
+	struct obj_data *obj;
+	struct obj_data *in_obj[64],*last_obj;
+	int tmp_cur_depth=0;
+	int i, j;
 
-  void obj_to_char(struct obj_data *object, struct char_data *ch);
+	void obj_to_char(struct obj_data *object, struct char_data *ch);
+	extern const char *wear_bits[];
 
-  for(i=0; i<st->number; i++) {
-    if (st->objects[i].item_number > -1 &&        real_object(st->objects[i].item_number) > -1) {
-      obj = read_object(st->objects[i].item_number, VIRTUAL);
-      if (IS_RARE(obj))
-      	obj_index[obj->item_number].number--;
-      obj->obj_flags.value[0] = st->objects[i].value[0];
-      obj->obj_flags.value[1] = st->objects[i].value[1];
-      obj->obj_flags.value[2] = st->objects[i].value[2];
-      obj->obj_flags.value[3] = st->objects[i].value[3];
-      obj->obj_flags.extra_flags = st->objects[i].extra_flags;
-      obj->obj_flags.weight      = st->objects[i].weight;
-      obj->obj_flags.timer       = st->objects[i].timer;
-      obj->obj_flags.bitvector   = st->objects[i].bitvector;
+	for(i=0; i<st->number; i++) {
+		if (st->objects[i].item_number > -1 && real_object(st->objects[i].item_number) > -1) {
+			obj = read_object(st->objects[i].item_number, VIRTUAL);
+			if (IS_RARE(obj))
+				obj_index[obj->item_number].number--;
+			obj->obj_flags.value[0] = st->objects[i].value[0];
+			obj->obj_flags.value[1] = st->objects[i].value[1];
+			obj->obj_flags.value[2] = st->objects[i].value[2];
+			obj->obj_flags.value[3] = st->objects[i].value[3];
+			obj->obj_flags.extra_flags = st->objects[i].extra_flags;
+			obj->obj_flags.weight      = st->objects[i].weight;
+			obj->obj_flags.timer       = st->objects[i].timer;
+			obj->obj_flags.bitvector   = st->objects[i].bitvector;
 
 /*  new, saving names and descrips stuff o_s_t_c*/
-      if (obj->name)
-	 free(obj->name);
-      if (obj->short_description)
-	 free(obj->short_description);
-      if (obj->description)
-	 free(obj->description);
+			if (obj->name)
+				free(obj->name);
+			if (obj->short_description)
+				free(obj->short_description);
+			if (obj->description)
+				free(obj->description);
 
-      obj->name = (char *)malloc(strlen(st->objects[i].name)+1);
-      obj->short_description = (char *)malloc(strlen(st->objects[i].sd)+1);
-      obj->description = (char *)malloc(strlen(st->objects[i].desc)+1);
+			obj->name = (char *)malloc(strlen(st->objects[i].name)+1);
+			obj->short_description = (char *)malloc(strlen(st->objects[i].sd)+1);
+			obj->description = (char *)malloc(strlen(st->objects[i].desc)+1);
 
-      strcpy(obj->name, st->objects[i].name);
-      strcpy(obj->short_description, st->objects[i].sd);
-      strcpy(obj->description, st->objects[i].desc);
+			strcpy(obj->name, st->objects[i].name);
+			strcpy(obj->short_description, st->objects[i].sd);
+			strcpy(obj->description, st->objects[i].desc);
 /* end of new, possibly buggy stuff */
 
-      for(j=0; j<MAX_OBJ_AFFECT; j++)
-	obj->affected[j] = st->objects[i].affected[j];
+			for(j=0; j<MAX_OBJ_AFFECT; j++)
+				obj->affected[j] = st->objects[i].affected[j];
 
 /* item restoring */
-      if(st->objects[i].depth>60) {
-	 log("weird! object have depth >60.\r\n");
-	 st->objects[i].depth=0;
-      }
-      if(st->objects[i].depth&&st->objects[i].wearpos) {
-	 sprintf(buf,"weird! object (%s) weared and in cointainer.\r\n",obj->name);
-	 log(buf);
-	 st->objects[i].depth=st->objects[i].wearpos=0;
-      }
-      if(st->objects[i].depth>tmp_cur_depth) {
-	 if(st->objects[i].depth!=tmp_cur_depth+1) {
-	    sprintf(buf,"weird! object depth changed from %d to %d",tmp_cur_depth,st->objects[i].depth);
-	    log(buf);
-	 }
-	 in_obj[tmp_cur_depth++]=last_obj;
-      }
-      else
-      if(st->objects[i].depth<tmp_cur_depth) {
-	 tmp_cur_depth--;
-      }
-      if(st->objects[i].wearpos)
-	 equip_char(ch,obj,st->objects[i].wearpos-1);
-      if(tmp_cur_depth && !st->objects[i].wearpos)
-	 obj_to_obj(obj,in_obj[tmp_cur_depth-1]);
-      else if(st->objects[i].wearpos==0)
-	 obj_to_char(obj, ch);
-      last_obj=obj;
-   }
-  }
+			if(st->objects[i].depth>60) {
+				log("weird! object have depth >60.\r\n");
+				st->objects[i].depth=0;
+			}
+			if(st->objects[i].depth && st->objects[i].wearpos) {
+				sprintf(buf,"weird! object (%s) weared and in cointainer.\r\n",obj->name);
+				log(buf);
+				st->objects[i].depth = st->objects[i].wearpos = 0;
+			}
+			if(st->objects[i].depth > tmp_cur_depth) {
+				if(st->objects[i].depth != tmp_cur_depth+1) {
+					sprintf(buf,"weird! object depth changed from %d to %d",tmp_cur_depth,st->objects[i].depth);
+					log(buf);
+				}
+				in_obj[tmp_cur_depth++]=last_obj;
+			} else if(st->objects[i].depth < tmp_cur_depth) {
+				tmp_cur_depth--;
+			}
+			if(st->objects[i].wearpos)
+				equip_char(ch,obj,st->objects[i].wearpos-1);
+			if(tmp_cur_depth && !st->objects[i].wearpos) {
+				obj_to_obj(obj,in_obj[tmp_cur_depth-1]);
+			} else if(st->objects[i].wearpos==0) {
+				obj_to_char(obj, ch);
+			}
+			last_obj=obj;
+		}
+	}
 }
 
 
@@ -796,42 +796,47 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
 /* write the vital data of a player to the player file */
 void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 {
-  static struct obj_file_u st;
-  int i;
-  char buf[128];
+	static struct obj_file_u st;
+	int i;
+	char buf[128];
 
-  st.number = 0;
-  st.gold_left = GET_GOLD(ch);
+	st.number = 0;
+	st.gold_left = GET_GOLD(ch);
 
-  sprintf(buf, "Saving %s:%d", fname(ch->player.name), GET_GOLD(ch));
-  slog(buf);
+	sprintf(buf, "Saving %s:%d", fname(ch->player.name), GET_GOLD(ch));
+	slog(buf);
 
-  st.total_cost = cost->total_cost;
-  st.last_update = time(0);
-  st.minimum_stay = 0; /* XXX where does this belong? */
+	st.total_cost = cost->total_cost;
+	st.last_update = time(0);
+	st.minimum_stay = 0; /* XXX where does this belong? */
 
-  cur_depth=0;
+	cur_depth=0;
 
-  for(i=0;i<MAX_OBJ_SAVE;i++) {
-    st.objects[i].wearpos=0;
-    st.objects[i].depth=0;
-  }
+	for(i=0;i<MAX_OBJ_SAVE;i++) {
+		st.objects[i].wearpos=0;
+		st.objects[i].depth=0;
+	}
 
-  for(i=0; i<MAX_WEAR; i++)
-    if (ch->equipment[i]) {
-      st.objects[st.number].wearpos=i+1;
-      if (delete) {
-	 obj_to_store(unequip_char(ch, i), &st, ch, delete);
-      } else {
-	 obj_to_store(ch->equipment[i], &st, ch, delete);
-      }
-    }
+	for(i=0; i<MAX_WEAR; i++)
+		if (ch->equipment[i]) {
+			if(ch->equipment[i]->obj_flags.cost_per_day != -1) {
+				st.objects[st.number].wearpos=i+1;
+			} else {
+				sprintf(buf, "unrentable (%s) equipped, not storing the wear position", ch->equipment[i]->name);
+				log(buf);
+			}
+		if (delete) {
+			obj_to_store(unequip_char(ch, i), &st, ch, delete);
+		} else {
+			obj_to_store(ch->equipment[i], &st, ch, delete);
+		}
+	}
 
-  obj_to_store(ch->carrying, &st, ch, delete);
-  if (delete)
-     ch->carrying = 0;
+	obj_to_store(ch->carrying, &st, ch, delete);
+	if (delete)
+		ch->carrying = 0;
 
-  update_file(ch, &st);
+	update_file(ch, &st);
 }
 
 
