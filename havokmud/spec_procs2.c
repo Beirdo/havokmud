@@ -715,7 +715,9 @@ int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 					return(TRUE);
 				}
 				if (GetMaxLevel(ch) >= 40) {
-					if (!affected_by_spell(ch,SPELL_FIRESHIELD) && !IS_AFFECTED(ch,AFF_FIRESHIELD)) {
+					if (!affected_by_spell(ch,SPELL_BLADE_BARRIER) &&
+						!affected_by_spell(ch,SPELL_FIRESHIELD) &&
+						!affected_by_spell(ch,SPELL_CHILLSHIELD) && !number(0,2)) {
 						act("$n utters the words 'crackle'", 1, ch, 0, 0, TO_ROOM);
 						cast_fireshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 						return(TRUE);
@@ -1099,7 +1101,9 @@ int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 			}
 
 			if (GetMaxLevel(ch)>44) {
-				if (!IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
+				if (!affected_by_spell(ch,SPELL_BLADE_BARRIER) &&
+						!affected_by_spell(ch,SPELL_FIRESHIELD) &&
+						!affected_by_spell(ch,SPELL_CHILLSHIELD) && !number(0,2)) {
 					act("$n utters the words 'shroud of the dark lord'",FALSE,ch,0,0,TO_ROOM);
 					cast_chillshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
@@ -1475,7 +1479,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 			/* high level spellup, whoopie, this will be a killer */
 			if (GetMaxLevel(ch)>47) {
-				if (!IS_AFFECTED(ch, AFF_FIRESHIELD)) {
+				if (!affected_by_spell(ch,SPELL_BLADE_BARRIER) &&
+						!affected_by_spell(ch,SPELL_FIRESHIELD) &&
+						!affected_by_spell(ch,SPELL_CHILLSHIELD) && !number(0,2)) {
 					act("$n utters the words 'shroud of the phoenix'",FALSE,ch,0,0,TO_ROOM);
 					cast_fireshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
@@ -1784,7 +1790,9 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 					return(TRUE);
 				}
 				if (GetMaxLevel(ch) > 44) {
-					if (!affected_by_spell(ch,SPELL_BLADE_BARRIER)) {
+					if (!affected_by_spell(ch,SPELL_BLADE_BARRIER) &&
+						!affected_by_spell(ch,SPELL_FIRESHIELD) &&
+						!affected_by_spell(ch,SPELL_CHILLSHIELD) && !number(0,2)) {
 						act("$n utters the words 'butcher's blade'",FALSE,ch,0,0,TO_ROOM);
 						cast_blade_barrier(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 						return(TRUE);
