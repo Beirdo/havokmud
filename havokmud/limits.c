@@ -9,7 +9,7 @@
 extern struct index_data *obj_index;
 extern struct char_data *character_list;
 extern struct obj_data *object_list;
-extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
+extern const struct class_def classes[MAX_CLASS];
 extern struct room_data *world;
 extern const char *RaceName[];
 extern int      RacialMax[][MAX_CLASS];
@@ -600,7 +600,8 @@ void advance_level(struct char_data *ch, int class)
     add_move = GET_MAX_MOVE(ch);
     add_mana = GET_MAX_MANA(ch);
     if (GET_LEVEL(ch, class) > 0 && 
-        GET_EXP(ch) < titles[class][(int)GET_LEVEL(ch, class) + 1].exp) {
+        GET_EXP(ch) < classes[class].titles[(int)GET_LEVEL(ch, class) + 1].exp)
+    {
         /*
          * they can't advance here 
          */
@@ -941,11 +942,11 @@ void drop_level(struct char_data *ch, int class, int goddrain)
         MAX(1, MAX(2, wis_app[(int)GET_RWIS(ch)].bonus) / HowManyClasses(ch));
 
     if (ch->points.exp >
-        MIN(titles[lin_class][(int)GET_LEVEL(ch, lin_class)].exp,
+        MIN(classes[lin_class].titles[(int)GET_LEVEL(ch, lin_class)].exp,
             GET_EXP(ch))) {
-        ch->points.exp = MIN(titles[lin_class]
-                                   [(int)GET_LEVEL(ch, lin_class)].exp,
-                             GET_EXP(ch));
+        ch->points.exp = 
+            MIN(classes[lin_class].titles[(int)GET_LEVEL(ch, lin_class)].exp,
+                GET_EXP(ch));
     }
 
     if (ch->points.exp < 0) {
@@ -1013,21 +1014,25 @@ void gain_exp(struct char_data *ch, int gain)
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i] &&
                 (GET_LEVEL(ch, i) < 50)) {
-                if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch, i) + 2].exp - 1) {
+                if (GET_EXP(ch) >= classes[i].titles[GET_LEVEL(ch, i) + 2].exp -
+                                   1) {
                     /* 
                      * is already maxxed 
                      */
                     send_to_char("You must gain at your guild before"
                                  " you can acquire more experience.\n\r", ch);
                     return;
-                } else if (GET_EXP(ch) >= titles[i][GET_LEVEL(ch, i) + 1].exp &&
+                } else if (GET_EXP(ch) >= 
+                             classes[i].titles[GET_LEVEL(ch, i) + 1].exp &&
                            GET_EXP(ch) + gain >= 
-                               titles[i][GET_LEVEL(ch, i) + 2].exp - 1) {
+                               classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1)
+                {
                     /* 
                      * char was levelled, not maxxed 
                      * but hits max with this one 
                      */
-                    GET_EXP(ch) = titles[i][GET_LEVEL(ch, i) + 2].exp - 1;  
+                    GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp -
+                                  1;  
 
                     /* 
                      * Let's tell him then.  
@@ -1036,7 +1041,7 @@ void gain_exp(struct char_data *ch, int gain)
                                  "can acquire more experience.\n\r", ch);
                     return;
                 } else if (GET_EXP(ch) + gain >= 
-                               titles[i][GET_LEVEL(ch, i) + 1].exp) {
+                               classes[i].titles[GET_LEVEL(ch, i) + 1].exp) {
                     /* 
                      * this is the levelling stroke 
                      */
@@ -1047,11 +1052,12 @@ void gain_exp(struct char_data *ch, int gain)
                                  "the level.\n\r", ch);
 
                     if (GET_EXP(ch) + gain >= 
-                            titles[i][GET_LEVEL(ch, i) + 2].exp) {
+                            classes[i].titles[GET_LEVEL(ch, i) + 2].exp) {
                         /* 
                          * this is the maxxing stroke 
                          */
-                        GET_EXP(ch) = titles[i][GET_LEVEL(ch, i) + 2].exp - 1;
+                        GET_EXP(ch) = 
+                            classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
                         
                         /* 
                          * let's notify them 
@@ -1070,9 +1076,9 @@ void gain_exp(struct char_data *ch, int gain)
         }
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) && GET_LEVEL(ch, i) < RacialMax[chrace][i] && 
-                GET_EXP(ch) > titles[i][GET_LEVEL(ch, i) + 2].exp) {
+                GET_EXP(ch) > classes[i].titles[GET_LEVEL(ch, i) + 2].exp) {
 
-                GET_EXP(ch) = titles[i][GET_LEVEL(ch, i) + 2].exp - 1;
+                GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
             }
         }
     } else {
@@ -1099,7 +1105,8 @@ void gain_exp_regardless(struct char_data *ch, int gain, int class)
         if (gain > 0) {
             GET_EXP(ch) += gain;
 
-            for (i = 0; i < ABS_MAX_LVL && titles[class][i].exp <= GET_EXP(ch);
+            for (i = 0; 
+                 i < ABS_MAX_LVL && classes[class].titles[i].exp <= GET_EXP(ch);
                  i++) {
                 if (i > GET_LEVEL(ch, class)) {
                     send_to_char("You raise a level\n\r", ch);

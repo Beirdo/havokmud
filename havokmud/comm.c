@@ -73,6 +73,7 @@ extern struct room_data *room_db;       /* In db.c */
 extern char     *login;
 extern char     *sector_types[];
 extern char     *room_bits[];
+extern const struct class_def classes[MAX_CLASS];
 /*
  * extern int top_of_world; In db.c 
  */
@@ -2794,7 +2795,6 @@ int _affected_by_s(struct char_data *ch, int skill)
 void construct_prompt(char *outbuf, struct char_data *ch)
 {
     struct room_data *rm = 0;
-    extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
     char            tbuf[255],
                    *pr_scan,
                    *mask;
@@ -2869,7 +2869,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                     for (l = 1, i = 0, exp = 999999999;
                          i <= NECROMANCER_LEVEL_IND; i++, l <<= 1) {
                         if (HasClass(ch, l)) {
-                            texp = (titles[i][GET_LEVEL(ch, i) + 1].exp) -
+                            texp = classes[i].titles[GET_LEVEL(ch, i) + 1].exp -
                                    GET_EXP(ch);
                             if (texp < exp) {
                                 exp = texp;

@@ -2218,6 +2218,44 @@ struct map_coord {
 
 };
 
+struct command_def {
+    char           *name;
+    void          (*func)();
+    int             number;
+    int             min_pos;
+    int             min_lev;
+};
+
+typedef enum {
+    PROC_UNDEF = -1,
+    PROC_MOBILE,
+    PROC_OBJECT,
+    PROC_ROOM
+} proc_type;
+
+typedef int (*int_func)();
+
+struct spec_proc {
+    char           *name;
+    int_func        func;
+    proc_type       type;
+};
+
+struct title_type {
+    char           *title_m;
+    char           *title_f;
+    long            exp;
+};
+
+struct class_def {
+    char           *abbrev;
+    char           *name;
+    int             thaco[ABS_MAX_LVL];
+    struct skillset skills[256];
+    struct skillset mainskills[64];
+    struct title_type titles[ABS_MAX_LVL];
+};
+
 #endif
 
 /*

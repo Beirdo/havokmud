@@ -9,7 +9,6 @@
 #include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
-#include "limits.h"
 #include "poly.h"
 #include "race.h"
 #include "script.h"
@@ -372,6 +371,8 @@ void            do_nuke(struct char_data *ch, char *argument, int cmd);
 void            do_scan(struct char_data *ch, char *arg, int cmd);
 void            do_ghost(struct char_data *ch, char *argument, int cmd);
 
+void            do_spot(struct char_data *ch, char *argument, int cmd);
+void            do_cset(struct char_data *ch, char *arg, int cmd);
 void            do_auth(struct char_data *ch, char *argument, int cmd);
 void            do_imptest(struct char_data *ch, char *arg, int cmd);
 void            do_passwd(struct char_data *ch, char *argument,
@@ -4164,6 +4165,17 @@ void mind_use_sense_object(int level, struct char_data *ch, char *arg,
 
 
 char *file_to_string(char *name);
+
+int_func procGetFuncByName( char *name, proc_type type );
+char *procGetNameByFunc( int_func func, proc_type type );
+
+void show_class_skills(struct char_data *ch, char *buffer, int classnum,
+                       int skills);
+void show_skills(struct char_data *ch, char *buffer, 
+                 const struct skillset *skills);
+
+void            do_mobTell2(struct char_data *ch,
+                            struct char_data *mob, char *sentence);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()

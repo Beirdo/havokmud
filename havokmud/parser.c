@@ -16,12 +16,12 @@ struct radix_list radix_head[27];
 byte            HashTable[256];
 
 /*
- * Command list is allocated at run-time in the following order: ** name,
- * command pointer, number, min_position, min_level, next, previous. **
- * the number can be anything, it's no longer really needed, although **
- * it is recommended that you keep them in numeric order to avoid
- * confusion. ** NOTE: next and previous MUST be defined as NULL to avoid
- * any possible ** problems. 
+ * Command list is allocated at run-time in the following order: 
+ * ** name, command pointer, number, min_position, min_level, next, previous. 
+ * ** the number can be anything, it's no longer really needed, although 
+ * ** it is recommended that you keep them in numeric order to avoid confusion.
+ * ** NOTE: next and previous MUST be defined as NULL to avoid any possible 
+ * ** problems. 
  */
 
 /*
