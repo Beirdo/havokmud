@@ -506,8 +506,7 @@ void game_loop(int s)
 
         }
 
-        if (select(0, (fd_set *) 0, (fd_set *) 0, (fd_set *) 0, 
-                   &timeout) < 0) {
+        if (select(0, NULL, NULL, NULL, &timeout) < 0) {
             perror("Select sleep");
             /*
              * assert(0);
