@@ -1384,6 +1384,7 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 					if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
 					&& (real_roomp(ch->in_room)->zone == real_roomp(i->in_room)->zone))
 					|| (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+					found = 1;
 					sprintf(buf2,"%s in %s.\n\r",i->short_description,(i->in_room == NOWHERE ? "use but uncertain." :real_roomp(i->in_room)->name));
 					strcat(buf,buf2);
 					j--;

@@ -5415,7 +5415,7 @@ if (IS_NPC(ch))
    } else if (!strcmp("zonelocate", arg)) {
 	   			if (IS_SET(SystemFlags,SYS_ZONELOCATE)) {
 					REMOVE_BIT(SystemFlags,SYS_ZONELOCATE);
-					send_to_char("Zone only locating has been disabled\n\r",ch);
+					send_to_char("Zone only locating has been enabled\n\r",ch);
 					log("Zone only locating has been disabled");
 				} else {
 					SET_BIT(SystemFlags,SYS_ZONELOCATE);
