@@ -5956,7 +5956,7 @@ void do_weapons(struct char_data *ch, char *argument, int cmd)
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot6) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot6-350].name, how_good(ch->weaponskills.grade61));
+		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot6-350].name, how_good(ch->weaponskills.grade6));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot7) {
