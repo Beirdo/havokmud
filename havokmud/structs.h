@@ -17,7 +17,7 @@ typedef unsigned short int ush_int;
 typedef char bool;
 typedef char byte;
 
-/*  
+/*
    my new stuff
 */
 
@@ -91,11 +91,11 @@ struct QuestItem {
   tailoring stuff
 */
 		/* I define all these as TRUE, see makefile for more info */
-		
+
 #define LIMITED_ITEMS 1
 #define SITELOCK      1
 #define NODUPLICATES  1
-#define EGO           1 
+#define EGO           1
 #define LEVEL_LOSS	1
 #define NEWEXP		1
 #define NEWGAIN		1
@@ -111,7 +111,7 @@ struct QuestItem {
 /*
 **  Site locking stuff.. written by Scot Gardner
 */
-#define MAX_BAN_HOSTS 50 
+#define MAX_BAN_HOSTS 50
 
 /*
 **  Newbie authorization stuff
@@ -196,7 +196,7 @@ struct QuestItem {
 #define SYS_REQAPPROVE	128	/* force god approval for new char	*/
 #define SYS_NOANSI	256	/* disable ansi colors world wide */
 #define SYS_WIZLOCKED   512     /* System is Wizlocked for all -Manwe Windmaster 030697 */
-#define SYS_NO_POLY     1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */                        
+#define SYS_NO_POLY     1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */
 #define SYS_NOOOC       2048    /* Provide from OOCing worldwird - Manwe */
 #define SYS_LOCOBJ      4096    /* Disbale Locate Object - Manwe Windmaster 1311197
 /* end sys flags */
@@ -206,7 +206,7 @@ struct QuestItem {
 #define SPEAK_HALFLING		3
 #define SPEAK_DWARVISH		4
 #define SPEAK_ORCISH		5
-#define SPEAK_GIANTISH		6	
+#define SPEAK_GIANTISH		6
 #define SPEAK_OGRE		7
 #define SPEAK_GNOMISH		8
 #define SPEAK_ALL               9
@@ -306,7 +306,7 @@ struct string_block {
 
 
 /*
-  memory stuff 
+  memory stuff
 */
 
 struct char_list {
@@ -334,8 +334,8 @@ typedef struct {
 
 #define PULSE_ZONE     240
 
- #define PULSE_MOBILE    30 
-#define PULSE_VIOLENCE  16   
+ #define PULSE_MOBILE    30
+#define PULSE_VIOLENCE  16
 #define WAIT_SEC       4
 #define WAIT_ROUND     4
 
@@ -378,7 +378,7 @@ typedef struct {
 #define ITEM_MISSILE    7
 #define ITEM_TREASURE   8
 #define ITEM_ARMOR      9
-#define ITEM_POTION    10 
+#define ITEM_POTION    10
 #define ITEM_WORN      11
 #define ITEM_OTHER     12
 #define ITEM_TRASH     13
@@ -398,17 +398,17 @@ typedef struct {
 
 /* Bitvector For 'wear_flags' */
 
-#define ITEM_TAKE              1 
+#define ITEM_TAKE              1
 #define ITEM_WEAR_FINGER       2
 #define ITEM_WEAR_NECK         4
 #define ITEM_WEAR_BODY         8
 #define ITEM_WEAR_HEAD        16
 #define ITEM_WEAR_LEGS        32
 #define ITEM_WEAR_FEET        64
-#define ITEM_WEAR_HANDS      128 
+#define ITEM_WEAR_HANDS      128
 #define ITEM_WEAR_ARMS       256
 #define ITEM_WEAR_SHIELD     512
-#define ITEM_WEAR_ABOUT     1024 
+#define ITEM_WEAR_ABOUT     1024
 #define ITEM_WEAR_WAISTE    2048
 #define ITEM_WEAR_WRIST     4096
 #define ITEM_WIELD          8192
@@ -521,7 +521,7 @@ struct obj_affected_type {
 struct obj_data
 {
 	sh_int item_number;            /* Where in data-base             */
-	int in_room;                /* In what room -1 when conta/carr  */ 
+	int in_room;                /* In what room -1 when conta/carr  */
 	struct obj_flag_data obj_flags;/* Object information             */
 	struct obj_affected_type
 	    affected[MAX_OBJ_AFFECT];  /* Which abilities in PC to change*/
@@ -543,7 +543,7 @@ struct obj_data
 	struct obj_data *next;         /* For the object list            */
 	char *old_name;                /* For Behead                     */
 	int is_corpse;                 /* For Behead                     */
-	int beheaded_corpse ;          /* For Behead                     */ 
+	int beheaded_corpse ;          /* For Behead                     */
 };
 /* ======================================================================*/
 
@@ -613,18 +613,18 @@ struct obj_data
 #define LARGE_IMPASS         4
 
 
-struct large_room_data 
+struct large_room_data
 {
 #if 0
   unsigned int flags[9];
 #else
  long flags[9];
-#endif 
+#endif
 };
 
 struct room_direction_data
 {
-	char *general_description;    /* When look DIR.                  */ 
+	char *general_description;    /* When look DIR.                  */
 	char *keyword;                /* for open/close                  */
 
 #if 0
@@ -671,11 +671,11 @@ struct room_data
 	char *description;           /* Shown when entered                 */
 	struct extra_descr_data *ex_description; /* for examine/look       */
 	struct room_direction_data *dir_option[6]; /* Directions           */
-	long room_flags;             /* DEATH,DARK ... etc                 */ 
+	long room_flags;             /* DEATH,DARK ... etc                 */
 	byte light;                  /* Number of lightsources in room     */
         byte dark;
 	int (*funct)();              /* special procedure                  */
-         
+
 	struct obj_data *contents;   /* List of items in room              */
 	struct char_data *people;    /* List of NPC / PC in room           */
 
@@ -934,7 +934,7 @@ struct room_data
 #define PLR_STEALTH   (1<<6) /* char won't be announced in a variety of situations */
 #define PLR_HUNTING   (1<<7) /* the player is hunting someone, do a track each look */
 #define PLR_DEAF      (1<<8) /* The player does not hear shouts */
-#define PLR_ECHO      (1<<9) /* Messages (tells, shout,etc) echo back */  
+#define PLR_ECHO      (1<<9) /* Messages (tells, shout,etc) echo back */
 #define PLR_NOGOSSIP  (1<<10) /* New, gossip channel */
 #define PLR_NOAUCTION (1<<11) /* New AUCTION channel */
 #define PLR_NODIMD    (1<<12) /* Cant use DIMD */
@@ -948,7 +948,7 @@ struct room_data
 #define PLR_NOBEEP    (1<<20)    /* ignore all beeps */
 #define PLR_HAVEROOM (1<<21)    /* Player is one of the first 100 heros and have been assigned an homeroom*/
 #define PLR_MAILING    (1<<22)  /* EMPTY */
-#define PLR_ARENA   (1<<23)   
+#define PLR_ARENA   (1<<23)
 
 /* This structure is purely intended to be an easy way to transfer */
 /* and return information about time (real or mudwise).            */
@@ -998,11 +998,11 @@ struct char_player_data
 
   long class;         /* PC s class or NPC alignment          */
   int hometown;       /* PC s Hometown (zone)                 */
-  
+
   long extra_flags;   /* for ressurection in the future , etc */
-  
+
   struct time_data time; /* PC s AGE in days                  */
-  
+
   byte level[ABS_MAX_CLASS];    /* PC / NPC s level         */
   unsigned short int q_points;   /* Quest points of player */
 };
@@ -1011,11 +1011,11 @@ struct char_player_data
 /* Used in CHAR_FILE_U *DO*NOT*CHANGE* */
 struct char_ability_data
 {
-  sbyte str; 
+  sbyte str;
   sbyte str_add;      /* 000 - 100 if strength 18             */
   sbyte intel;
-  sbyte wis; 
-  sbyte dex; 
+  sbyte wis;
+  sbyte dex;
   sbyte con;
   sbyte chr;
   sbyte extra;
@@ -1026,36 +1026,36 @@ struct char_ability_data
 /* Used in CHAR_FILE_U *DO*NOT*CHANGE* */
 struct char_point_data
 {
-  sh_int mana;         
+  sh_int mana;
   sh_int max_mana;
 /*   ubyte  mana_gain ; */
   char  mana_gain ;
 
-  sh_int hit;   
+  sh_int hit;
   sh_int max_hit;      /* Max hit for NPC                         */
 /*   ubyte  hit_gain; */
-   char  hit_gain; 
+   char  hit_gain;
 
-  sh_int move;  
+  sh_int move;
   sh_int max_move;     /* Max move for NPC                        */
 /*   ubyte  move_gain; */
-  char  move_gain;  
-  
+  char  move_gain;
+
   sh_int extra1;  /* extra stuff */
   sh_int extra2;
   ubyte  extra3;
-  
+
   sh_int armor;        /* Internal -100..100, external -10..10 AC */
   int gold;            /* Money carried                           */
   int bankgold;        /* gold in the bank.                       */
   int exp;             /* The experience of the player            */
   int true_exp;        /* gonna be used for dual class		  */
   int extra_dual;      /* case I need an extra duall class bit    */
-  
-  
+
+
   sbyte hitroll;       /* Any bonus or penalty to the hit roll    */
   sbyte damroll;       /* Any bonus or penalty to the damage roll */
-  
+
   sbyte extra_h;       /* extra */
 };
 
@@ -1079,11 +1079,11 @@ struct char_special_data
   char sev;                  /* log severety level for gods */
   long userpos;
   char *userpwd;
- 
+
   long start_room;  /* so people can be set to start certain places */
   int edit;                /* edit state */
 
-        sbyte mobtype;                        /* mob type simple, A, L, B */ 
+        sbyte mobtype;                        /* mob type simple, A, L, B */
         unsigned long exp_flag;                 /* exp flag for this mob */
         sbyte hp_num_dice;			/* number of HPS dice */
         unsigned int hp_size_dice;		/* size of HPS dice */
@@ -1095,7 +1095,7 @@ struct char_special_data
         unsigned int dam_bonus;			/* damage bonus */
         byte medit;                           /*  mob edit menu at */
         struct char_data *mobedit;            /*  mob editing */
-        
+
         byte oedit;                            /*  obj editing menu at */
         struct obj_data *objedit;             /*  object editing */
 
@@ -1109,7 +1109,7 @@ struct char_special_data
   int was_in_room;         /* storage of location for linkdead people */
   int attack_type;         /* The Attack Type Bitvector for NPC's */
   int alignment;           /* +-1000 for alignments               */
-  
+
   char *poofin;
   char *poofout;
   char *prompt;
@@ -1117,24 +1117,24 @@ struct char_special_data
   char *clan;
   int *clanNum;
   char *rumor;
-  char *group_name; /* current group name if any... */  
-  
+  char *group_name; /* current group name if any... */
+
   Alias   *A_list;
-  struct char_data *misc;  
+  struct char_data *misc;
   struct char_data *fighting; /* Opponent                          */
-	
+
   struct char_data *hunting;  /* Hunting person..                  */
 
   struct char_data *ridden_by;
   struct char_data *mounted_on;
-  
+
   struct char_data *charging;	/* we are charging this person */
   int  charge_dir;		/* direction charging */
-  
+
   long affected_by;  /* Bitvector for spells/skills affected by    */
   long affected_by2; /* Other special things                       */
 
-  long act;		/* flags for NPC behavior */  
+  long act;		/* flags for NPC behavior */
 
   sh_int apply_saving_throw[MAX_SAVES]; /* Saving throw (Bonuses)  */
 
@@ -1197,7 +1197,7 @@ struct char_data
 {
 	long nr;			/* monster nr */
 	long in_room;                    /* Location                    */
-        int reroll;                    /* Number of rerolls still availiable */                   
+        int reroll;                    /* Number of rerolls still availiable */
         int term;
         int size;
         struct last_checked last;        /* For displays                */
@@ -1218,7 +1218,7 @@ struct char_data
 	sh_int hunt_dist;                /* max dist the player can hunt */
 
 	struct pc_data *pc;		/* pcdata */
-	
+
         unsigned short hatefield;
         unsigned short fearfield;
 
@@ -1228,14 +1228,14 @@ struct char_data
 	sh_int  persist;
 	int     old_room;
 
-        
-	void *act_ptr;    /* numeric argument for the mobile 
+
+	void *act_ptr;    /* numeric argument for the mobile
 					actions */
 
 	struct char_player_data player;       /* Normal data            */
 	struct char_ability_data abilities;   /* Abilities              */
 	struct char_ability_data tmpabilities;/* The abilities we use  */
-	struct affected_type *affected;       /* affected by what spells */	
+	struct affected_type *affected;       /* affected by what spells */
 	struct char_point_data points;        /* Points                 */
 	struct char_special_data specials;    /* Special plaing constant */
 
@@ -1244,7 +1244,7 @@ struct char_data
 	struct obj_data *equipment[MAX_WEAR]; /* Equipment array         */
 	struct obj_data *carrying;            /* Head of list            */
 	/* end monitor */
-	
+
 	struct descriptor_data *desc;         /* NULL for mobiles        */
 	struct char_data *orig;               /* Special for polymorph   */
 
@@ -1306,7 +1306,7 @@ struct char_file_u
 	int played;    /* Number of secs played in total */
 	int   race;
 	unsigned int weight;
-	unsigned int height;	
+	unsigned int height;
 	char title[80];
 	char extra_str[255];
 	sh_int hometown;
@@ -1319,8 +1319,8 @@ struct char_file_u
 	struct char_skill_data skills[MAX_SKILLS];
 	struct affected_type affected[MAX_AFFECT];
 	/* specials */
-	byte spells_to_learn;  
-	int alignment;     
+	byte spells_to_learn;
+	int alignment;
 	long affected_by;
 	long affected_by2;
 	time_t last_logon;  /* Time (in secs) of last logon */
@@ -1353,7 +1353,7 @@ struct obj_cost { /* used in act.other.c:do_save as
 
 #define MAX_OBJ_SAVE 200 /* Used in OBJ_FILE_U *DO*NOT*CHANGE* */
 
-struct obj_file_elem 
+struct obj_file_elem
 {
 	int item_number;
 
@@ -1471,10 +1471,10 @@ struct txt_q
 #define CON_REROLL     29
 #define CON_PRESS_ENTER 30
 #define CON_ALREADY_PLAYING 31
-
+#define CON_ANSI            32
 struct snoop_data
 {
-	struct char_data *snooping;	
+	struct char_data *snooping;
 		/* Who is this char snooping */
 	struct char_data *snoop_by;
 		/* And who is snooping on this char */
@@ -1485,7 +1485,7 @@ struct descriptor_data
 	int descriptor;	            /* file descriptor for socket */
 
 	char *name;		/* ptr to name for mail system */
-	
+
 	char host[50];                /* hostname                   */
 	char pwd[12];                 /* password                   */
 	int pos;                      /* position in player-file    */
@@ -1507,7 +1507,7 @@ int bufptr;
 int bufspace;
 struct txt_block *large_outbuf;
 #if BLOCK_WRITE
-char *output;	
+char *output;
 #else
 struct txt_q output;          /* q of strings to send       */
 #endif
@@ -1518,7 +1518,7 @@ struct txt_q output;          /* q of strings to send       */
 	struct descriptor_data *next; /* link to next descriptor    */
 };
 
-struct msg_type 
+struct msg_type
 {
 	char *attacker_msg;  /* message to attacker */
 	char *victim_msg;    /* message to victim   */

@@ -86,8 +86,8 @@ const int race_choice[]= {
   RACE_GOBLIN,
   RACE_TROLL,
   RACE_DARK_DWARF,
-*/  
-  -1  
+*/
+  -1
   };
 
 /* WARNING: do not remove the 0 at the end of the const, will cause your */
@@ -103,7 +103,7 @@ const int avariel_class_choice[]= {
 	CLASS_MAGIC_USER+CLASS_CLERIC+CLASS_WARRIOR,
 0
 };
-  
+
 const int moon_elf_class_choice[]= {
 	CLASS_MAGIC_USER,
 	CLASS_CLERIC,
@@ -389,11 +389,11 @@ char *fill[]=
 int search_block(char *arg, char **list, bool exact)
 {
   register int i,l;
-  
+
   /* Make into lower case, and get length of string */
   for(l=0; *(arg+l); l++)
     *(arg+l)=LOWER(*(arg+l));
-  
+
   if (exact) {
     for(i=0; **(list+i) != '\n'; i++)
       if (!strcmp(arg, *(list+i)))
@@ -405,7 +405,7 @@ int search_block(char *arg, char **list, bool exact)
       if (!strncmp(arg, *(list+i), l))
 	return(i);
   }
-  
+
   return(-1);
 }
 
@@ -413,17 +413,17 @@ int search_block(char *arg, char **list, bool exact)
 int old_search_block(char *argument,int begin,int length,char **list,int mode)
 {
   int guess, found, search;
-  
-  
+
+
   /* If the word contain 0 letters, then a match is already found */
   found = (length < 1);
-  
+
   guess = 0;
-  
+
   /* Search for a match */
-  
+
   if(mode)
-    while ( NOT found AND *(list[guess]) != '\n' )      
+    while ( NOT found AND *(list[guess]) != '\n' )
       {
 	found=(length==strlen(list[guess]));
 	for(search=0;( search < length AND found );search++)
@@ -437,15 +437,15 @@ int old_search_block(char *argument,int begin,int length,char **list,int mode)
 	  guess++;
 	}
       }
-  
-  return ( found ? guess : -1 ); 
+
+  return ( found ? guess : -1 );
 }
 
-void command_interpreter(struct char_data *ch, char *argument) 
+void command_interpreter(struct char_data *ch, char *argument)
 {
 
   char buf[200];
-  extern int no_specials;       
+  extern int no_specials;
   NODE *n;
   char buf1[255], buf2[255];
 
@@ -460,7 +460,7 @@ if (HasClass(ch,TempDis) && GetMaxLevel(ch) < 58 && IS_PC(ch)) {
     act("$c0006You return to the keyboard.", TRUE, ch, 0, 0, TO_CHAR);
     REMOVE_BIT(ch->specials.affected_by2, AFF2_AFK);
 if (ch->pc)
-	REMOVE_BIT(ch->pc->comm,COMM_AFK);    
+	REMOVE_BIT(ch->pc->comm,COMM_AFK);
   }
 
   if (MOUNTED(ch)) {
@@ -478,7 +478,7 @@ if (ch->pc)
 if (ch->player.name)
 	free(ch->player.name);
 	ch->player.name = (char *)malloc(6);
-	strcpy(ch->player.name, "Error"); 
+	strcpy(ch->player.name, "Error");
 	return;
     }
     strcpy(buf, ch->player.name);
@@ -498,7 +498,7 @@ if (ch->player.name)
   }
  if(!*argument || *argument == '\n') {
     return;
- }  
+ }
  else if(!isalpha(*argument)) {
    buf1[0] = *argument;
    buf1[1] = '\0';
@@ -513,7 +513,7 @@ if (ch->player.name)
    i = 0;
    while(buf1[i] != '\0') {
        buf1[i] = LOWER(buf1[i]);
-       i++;   
+       i++;
      }
  }
 
@@ -521,24 +521,24 @@ if (ch->player.name)
  if(*buf1)
    n = FindValidCommand(buf1);
  else n = NULL;
-/*  
+/*
   cmd = old_search_block(argument,begin,look_at,command,0);
 */
   if (!n) {
     send_to_char("Pardon?\n\r", ch);
     return;
   }
-  
+
   if ( GetMaxLevel(ch)<n->min_level )   {
     send_to_char("Pardon?\n\r", ch);
     return;
   }
-  
-  if ((n->func != 0))   
+
+  if ((n->func != 0))
   {
-    if ((!IS_AFFECTED(ch, AFF_PARALYSIS)) || (n->min_pos <= POSITION_STUNNED)) 
+    if ((!IS_AFFECTED(ch, AFF_PARALYSIS)) || (n->min_pos <= POSITION_STUNNED))
     {
-      if( GET_POS(ch) < n->min_pos ) 
+      if( GET_POS(ch) < n->min_pos )
       {
 	switch(GET_POS(ch))
 	  {
@@ -551,7 +551,7 @@ if (ch->player.name)
 		"You are in a pretty bad shape, unable to do anything!\n\r",
 			 ch);
 	    break;
-	    
+
 	  case POSITION_STUNNED:
 	    send_to_char(
 	   "All you can do right now, is think about the stars!\n\r", ch);
@@ -573,21 +573,21 @@ if (ch->player.name)
 	    send_to_char("Fraid you can't do that\n\r", ch);
 	    break;
 	  } /* switch */
-      } else 
+      } else
       {
 
  /* They can't move, must have pissed off an immo!         */
- /* make sure polies can move, some mobs have this bit set */ 
- 
+ /* make sure polies can move, some mobs have this bit set */
+
  if (IS_SET(ch->specials.act, PLR_FREEZE) ) {
    if (IS_SET(ch->specials.act, ACT_POLYSELF) || IS_PC(ch)) {
-     send_to_char("You have been frozen in your steps, you cannot do a thing!\n\r",ch);         
-     return;  
+     send_to_char("You have been frozen in your steps, you cannot do a thing!\n\r",ch);
+     return;
     }
    }
-	
+
 	if (!no_specials && special(ch, n->number, buf2)) {
-	  return;  
+	  return;
 	  }
 
 	  if(n->log) {
@@ -601,7 +601,7 @@ if (ch->player.name)
 	   if (!IS_PC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF)) {
 	      sprintf(buf,"[%d] <%s>:%s", ch->in_room,ch->player.name, argument);
 	      slog(buf);
-	    } 
+	    }
 #endif
 
 #if 1           /* disabled for now UNCOMMENT SOON */
@@ -610,7 +610,7 @@ if (ch->player.name)
 	   if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
 	      sprintf(buf,"[%d] %s:%s", ch->in_room,ch->player.name, argument);
 	      slog(buf);
-	    } 
+	    }
 	  } else        /* user flagged as log person */
 	   if(IS_AFFECTED2(ch, AFF2_LOG_ME)) {
 	      sprintf(buf,"[%d] %s:%s", ch->in_room,ch->player.name, argument);
@@ -623,7 +623,7 @@ if (ch->player.name)
 
 	 /* end logging stuff */
 #endif
-	 
+
 	  if (GET_GOLD(ch) > 2000000) {
 	    sprintf(buf,"%s:%s",fname(ch->player.name),argument);
 	    slog(buf);
@@ -640,51 +640,51 @@ if (ch->player.name)
   }
   if (n && (n->func == 0))
 send_to_char("Sorry, but that command has yet to be implemented...\n\r",ch);
-  else 
+  else
 send_to_char("Pardon? \n\r", ch);
 }
 
 void argument_interpreter(char *argument,char *first_arg,char *second_arg )
 {
   int look_at, begin;
-  
+
   begin = 0;
-  
+
   do
     {
       /* Find first non blank */
       for ( ;*(argument + begin ) == ' ' ; begin++);
-      
+
       /* Find length of first word */
       for ( look_at=0; *(argument+begin+look_at)> ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to first_arg */
 	*(first_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(first_arg + look_at)='\0';
       begin += look_at;
-      
+
     }
   while( fill_word(first_arg));
-  
+
   do
     {
       /* Find first non blank */
       for ( ;*(argument + begin ) == ' ' ; begin++);
-      
+
       /* Find length of first word */
       for ( look_at=0; *(argument+begin+look_at)> ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to second_arg */
 	*(second_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(second_arg + look_at)='\0';
       begin += look_at;
-      
+
     }
   while( fill_word(second_arg));
 }
@@ -694,62 +694,62 @@ void three_arg(char *argument,char *first_arg, char *second_arg,
                char  *third_arg )
 {
   int look_at, begin;
-  
+
   begin = 0;
-  
+
   do
     {
       /* Find first non blank */
       for ( ;*(argument + begin ) == ' ' ; begin++);
-      
+
       /* Find length of first word */
       for ( look_at=0; *(argument+begin+look_at)> ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to first_arg */
 	*(first_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(first_arg + look_at)='\0';
       begin += look_at;
-      
+
     }
   while( fill_word(first_arg));
-  
+
   do
     {
       /* Find first non blank */
       for ( ;*(argument + begin ) == ' ' ; begin++);
-      
+
       /* Find length of first word */
       for ( look_at=0; *(argument+begin+look_at)> ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to second_arg */
 	*(second_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(second_arg + look_at)='\0';
       begin += look_at;
-      
+
     }
   while( fill_word(second_arg));
   do
     {
       /* Find first non blank */
       for ( ;*(argument + begin ) == ' ' ; begin++);
-      
+
       /* Find length of first word */
       for ( look_at=0; *(argument+begin+look_at)> ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to third_arg */
 	*(third_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(third_arg + look_at)='\0';
       begin += look_at;
-      
+
     }
   while( fill_word(third_arg));
 }
@@ -757,7 +757,7 @@ void three_arg(char *argument,char *first_arg, char *second_arg,
 int is_number(char *str)
 {
 /*   int look_at; */
-  
+
   if(*str=='\0')
     return(0);
   else if (newstrlen(str) > 8)
@@ -772,18 +772,18 @@ int is_number(char *str)
   return(1); */
 }
 
-/*  Quinn substituted a new one-arg for the old one.. I thought returning a 
+/*  Quinn substituted a new one-arg for the old one.. I thought returning a
     char pointer would be neat, and avoiding the func-calls would save a
     little time... If anyone feels pissed, I'm sorry.. Anyhow, the code is
     snatched from the old one, so it outta work..
-    
+
     void one_argument(char *argument,char *first_arg )
     {
     static char dummy[MAX_STRING_LENGTH];
-    
+
     argument_interpreter(argument,first_arg,dummy);
     }
-    
+
     */
 
 
@@ -792,26 +792,26 @@ int is_number(char *str)
 char *one_argument(char *argument, char *first_arg )
 {
   int begin,look_at;
-  
+
   begin = 0;
-  
+
   do    {
       /* Find first non blank */
       for ( ;isspace(*(argument + begin)); begin++);
-      
+
       /* Find length of first word */
       for (look_at=0; *(argument+begin+look_at) > ' ' ; look_at++)
-	
+
 	/* Make all letters lower case,
 	   AND copy them to first_arg */
 	*(first_arg + look_at) =
 	  LOWER(*(argument + begin + look_at));
-      
+
       *(first_arg + look_at)='\0';
       begin += look_at;
     }
   while (fill_word(first_arg));
-  
+
   return(argument+begin);
 }
 
@@ -841,11 +841,11 @@ int is_abbrev(char *arg1, char *arg2)
 {
   if (!*arg1)
     return(0);
-  
+
   for (; *arg1; arg1++, arg2++)
     if (LOWER(*arg1) != LOWER(*arg2))
       return(0);
-  
+
   return(1);
 }
 
@@ -856,13 +856,13 @@ int is_abbrev(char *arg1, char *arg2)
 void half_chop(char *string, char *arg1, char *arg2)
 {
   for (; isspace(*string); string++);
-  
+
   for (; !isspace(*arg1 = *string) && *string; string++, arg1++);
-  
+
   *arg1 = '\0';
-  
+
   for (; isspace(*string); string++);
-  
+
   for (; *arg2 = *string; string++, arg2++);
 }
 
@@ -873,47 +873,47 @@ int special(struct char_data *ch, int cmd, char *arg)
   register struct obj_data *i;
   register struct char_data *k;
   int j;
-  
-  
+
+
   if (ch->in_room == NOWHERE) {
     char_to_room(ch, 3001);
     return;
   }
-  
+
   /* special in room? */
   if (real_roomp(ch->in_room)->funct)
     if ((*real_roomp(ch->in_room)->funct)(ch, cmd, arg, real_roomp(ch->in_room), PULSE_COMMAND))
       return(1);
-  
+
   /* special in equipment list? */
   for (j = 0; j <= (MAX_WEAR - 1); j++)
  if (ch->equipment[j] && ch->equipment[j]->item_number>=0)  {
 
-  if (IS_SET(ch->equipment[j]->obj_flags.extra_flags,ITEM_ANTI_SUN)) 
+  if (IS_SET(ch->equipment[j]->obj_flags.extra_flags,ITEM_ANTI_SUN))
     AntiSunItem(ch, cmd, arg, ch->equipment[j], PULSE_COMMAND);
 	if (ch->equipment[j]) {
-	  if (obj_index[ch->equipment[j]->item_number].func) 
+	  if (obj_index[ch->equipment[j]->item_number].func)
 	  if ((*obj_index[ch->equipment[j]->item_number].func )
 	      (ch, cmd, arg, ch->equipment[j], PULSE_COMMAND))
 	   return(TRUE);
 	  }              /* if ch->equipment[j] */
 	}        /* item_number >=0 */
-		  
-  
+
+
   /* special in inventory? */
   for (i = ch->carrying; i; i = i->next_content)
     if (i->item_number>=0)
       if (obj_index[i->item_number].func)
 	if ((*obj_index[i->item_number].func)(ch, cmd, arg, i, PULSE_COMMAND))
 	  return(1);
-    
+
   /* special in mobile present? */
   for (k = real_roomp(ch->in_room)->people; k; k = k->next_in_room)
     if ( IS_MOB(k) )
       if (mob_index[k->nr].func)
 	if ((*mob_index[k->nr].func)(ch, cmd, arg, k, PULSE_COMMAND))
 	  return(1);
-  
+
   /* special in object present? */
   for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content)
     if (i->item_number>=0)
@@ -998,7 +998,7 @@ void assign_command_pointers ()
   AddCommand("grab",do_grab,65,POSITION_RESTING,0);
   AddCommand("remove",do_remove,66,POSITION_RESTING,0);
   AddCommand("put",do_put,67,POSITION_RESTING,0);
-  AddCommand("shutdow",do_shutdow,68,POSITION_DEAD,SILLYLORD); 
+  AddCommand("shutdow",do_shutdow,68,POSITION_DEAD,SILLYLORD);
   AddCommand("save",do_save,69,POSITION_SLEEPING,0);
   AddCommand("hit",do_hit,70,POSITION_FIGHTING,1);
   AddCommand("string",do_string,71,POSITION_SLEEPING,53);
@@ -1462,21 +1462,21 @@ AddCommand("lgos",do_lgos,510,POSITION_RESTING,51);
 AddCommand("groove",do_action, 511, POSITION_RESTING,1);
 AddCommand("wdisplay", do_action, 512, POSITION_STANDING, 1);
 AddCommand("jam", do_action, 513, POSITION_STANDING, 1);
-AddCommand("donate", do_donate, 514, POSITION_RESTING,1); 
-AddCommand("reply", do_reply, 515, POSITION_RESTING,1); 
-AddCommand("set_spy", do_set_spy, 516, POSITION_DEAD,60); 
+AddCommand("donate", do_donate, 514, POSITION_RESTING,1);
+AddCommand("reply", do_reply, 515, POSITION_RESTING,1);
+AddCommand("set_spy", do_set_spy, 516, POSITION_DEAD,60);
 AddCommand("reward", do_reward, 517, POSITION_RESTING,51);
-AddCommand("punish", do_punish, 518, POSITION_RESTING,51); 
-AddCommand("spend", do_spend, 519, POSITION_RESTING,51); 
-AddCommand("seepoints", do_see_points, 520, POSITION_RESTING,51); 
-AddCommand("bugmail", bugmail, 521, POSITION_STANDING,1); 
-AddCommand("setobjmax", do_setobjmax, 522, POSITION_RESTING,53); 
-AddCommand("seeobjmax", do_seeobjmax, 523, POSITION_RESTING,53); 
-AddCommand("wclean", do_wclean, 524, POSITION_RESTING,58); 
+AddCommand("punish", do_punish, 518, POSITION_RESTING,51);
+AddCommand("spend", do_spend, 519, POSITION_RESTING,51);
+AddCommand("seepoints", do_see_points, 520, POSITION_RESTING,51);
+AddCommand("bugmail", bugmail, 521, POSITION_STANDING,1);
+AddCommand("setobjmax", do_setobjmax, 522, POSITION_RESTING,53);
+AddCommand("seeobjmax", do_seeobjmax, 523, POSITION_RESTING,53);
+AddCommand("wclean", do_wclean, 524, POSITION_RESTING,58);
 AddCommand("glance", do_glance, 525, POSITION_SITTING,1);
 AddCommand("arena", do_arena, 525, POSITION_SITTING,1);
 AddCommand("startarena", do_startarena, 525, POSITION_SITTING,55);
-AddCommand("whoarena", do_whoarena, 525, POSITION_RESTING,0); 
+AddCommand("whoarena", do_whoarena, 525, POSITION_RESTING,0);
 AddCommand("frolic",do_action,526,POSITION_STANDING,0);
 AddCommand("land",do_land,527,POSITION_STANDING,0);
 AddCommand("launch",do_launch,528,POSITION_STANDING,0);
@@ -1485,32 +1485,32 @@ AddCommand("launch",do_launch,528,POSITION_STANDING,0);
 
  /*New stuff 2001 (GH)*/
 AddCommand("talk",do_action,531,POSITION_RESTING,1);
-AddCommand("disagree",do_action,532,POSITION_RESTING,0); 
-AddCommand("beckon",do_action,533,POSITION_RESTING,0); 
-AddCommand("pounce",do_action,534,POSITION_STANDING,0); 
-AddCommand("amaze",do_action,535,POSITION_RESTING,0); 
-AddCommand("tank",do_action,536,POSITION_STANDING,0); 
-AddCommand("hshake",do_action,537,POSITION_STANDING,0); 
-AddCommand("backhand",do_action,538,POSITION_STANDING,0); 
-AddCommand("surrender",do_action,539,POSITION_RESTING,0); 
-AddCommand("collapse",do_action,540,POSITION_STANDING,0); 
-AddCommand("wince",do_action,541,POSITION_RESTING,0); 
-AddCommand("tag",do_action,542,POSITION_RESTING,0); 
-AddCommand("trip",do_action,543,POSITION_RESTING,0); 
-AddCommand("grunt",do_action,544,POSITION_RESTING,0); 
+AddCommand("disagree",do_action,532,POSITION_RESTING,0);
+AddCommand("beckon",do_action,533,POSITION_RESTING,0);
+AddCommand("pounce",do_action,534,POSITION_STANDING,0);
+AddCommand("amaze",do_action,535,POSITION_RESTING,0);
+AddCommand("tank",do_action,536,POSITION_STANDING,0);
+AddCommand("hshake",do_action,537,POSITION_STANDING,0);
+AddCommand("backhand",do_action,538,POSITION_STANDING,0);
+AddCommand("surrender",do_action,539,POSITION_RESTING,0);
+AddCommand("collapse",do_action,540,POSITION_STANDING,0);
+AddCommand("wince",do_action,541,POSITION_RESTING,0);
+AddCommand("tag",do_action,542,POSITION_RESTING,0);
+AddCommand("trip",do_action,543,POSITION_RESTING,0);
+AddCommand("grunt",do_action,544,POSITION_RESTING,0);
 AddCommand("imitate",do_action,545,POSITION_RESTING,0);
-AddCommand("hickey",do_action,546,POSITION_RESTING,0); 
-AddCommand("torture",do_action,547,POSITION_RESTING,0); 
-AddCommand("addict",do_action,548,POSITION_RESTING,0); 
-AddCommand("adjust",do_action,549,POSITION_RESTING,0); 
-AddCommand("anti",do_action,550,POSITION_RESTING,0); 
-AddCommand("bbl",do_action,551,POSITION_RESTING,0); 
-AddCommand("beam",do_action,552,POSITION_RESTING,0); 
-AddCommand("challenge",do_action,553,POSITION_RESTING,0); 
-AddCommand("mutter",do_action,554,POSITION_RESTING,0); 
-AddCommand("beat",do_action,555,POSITION_RESTING,0); 
- AddCommand("moon",do_action,556,POSITION_RESTING,0); 
- AddCommand("dream",do_action,557,POSITION_RESTING,0); 
+AddCommand("hickey",do_action,546,POSITION_RESTING,0);
+AddCommand("torture",do_action,547,POSITION_RESTING,0);
+AddCommand("addict",do_action,548,POSITION_RESTING,0);
+AddCommand("adjust",do_action,549,POSITION_RESTING,0);
+AddCommand("anti",do_action,550,POSITION_RESTING,0);
+AddCommand("bbl",do_action,551,POSITION_RESTING,0);
+AddCommand("beam",do_action,552,POSITION_RESTING,0);
+AddCommand("challenge",do_action,553,POSITION_RESTING,0);
+AddCommand("mutter",do_action,554,POSITION_RESTING,0);
+AddCommand("beat",do_action,555,POSITION_RESTING,0);
+ AddCommand("moon",do_action,556,POSITION_RESTING,0);
+ AddCommand("dream",do_action,557,POSITION_RESTING,0);
  AddCommand("shove",do_action, 558, POSITION_RESTING,0);
  AddCommand("behead",do_behead,559,POSITION_STANDING,0);
 
@@ -1535,12 +1535,12 @@ AddCommand("beat",do_action,555,POSITION_RESTING,0);
 int find_name(char *name)
 {
   int i;
-  
+
   for (i = 0; i <= top_of_p_table; i++) {
     if (!str_cmp((player_table + i)->name, name))
       return(i);
   }
-  
+
   return(-1);
 }
 
@@ -1553,13 +1553,13 @@ int _parse_name(char *arg, char *name)
   for (; isspace(*arg); arg++);
   for (i = 0; *name = *arg; arg++, i++, name++) {
     if ((*arg <0) || !isalpha(*arg) || i > MAX_NAME_LENGTH)
-      return(1); 
+      return(1);
 
-   }      
-  
+   }
+
   if (!i)
     return(1);
-  
+
   return(0);
 }
 
@@ -1581,7 +1581,7 @@ int _check_ass_name(char *name)
   int i,j,k;
 
 if(strlen(name) > MAX_NAME_LENGTH)
-   return 1;  
+   return 1;
 
   if(!shitlist) {
     if((f=fopen(ASSHOLE_FNAME,"rt"))==NULL) {
@@ -1668,25 +1668,59 @@ void nanny(struct descriptor_data *d, char *arg)
   extern struct descriptor_data *descriptor_list;
   extern long SystemFlags;
   extern int plr_tick_count;
-  
+
   void do_look(struct char_data *ch, char *argument, int cmd);
   void load_char_objs(struct char_data *ch);
   int load_char(char *name, struct char_file_u *char_element);
   void show_class_selection(struct descriptor_data *d, int r);
-  
+
   write(d->descriptor, echo_on, 6);
-  
+
   switch (STATE(d))     {
-    
+    case CON_ANSI:
+
+    for (; isspace(*arg); arg++);
+    switch (*arg)
+      {
+      case 'y':
+      case 'Y':
+	/* Set ansi */
+	SET_BIT(d->character->player.user_flags,USE_ANSI);
+
+	send_to_char("$c0012A$c0010n$c0011s$c0014i$c0007 colors enabled.\n\r\n\r"
+		     ,d->character);
+	show_race_choice(d);
+	SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
+	STATE(d) = CON_QRACE;
+	return;
+	break;
+
+      case 'n':
+      case 'N':
+	show_race_choice(d);
+	SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
+	STATE(d) = CON_QRACE;
+	return;
+	break;
+
+      default:
+	SEND_TO_Q("Please type Yes or No.\n\r", d);
+	SEND_TO_Q("Would you like ansi colors? :", d);
+	//STATE(d) = CON_ANSI;
+
+	return;
+	break;
+  }
+
   case CON_QRACE:
     d->character->reroll=9;
     for (; isspace(*arg); arg++)  ;
-    if (!*arg) 
+    if (!*arg)
     {
 	show_race_choice(d);
       SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
       STATE(d) = CON_QRACE;
-    } else 
+    } else
     if (*arg == '?') {
 	SEND_TO_Q(RACEHELP, d);
 	show_race_choice(d);
@@ -1694,8 +1728,8 @@ void nanny(struct descriptor_data *d, char *arg)
 	STATE(d) = CON_QRACE;
     } else {
       int i=0,tmpi=0;
-	
-	while (race_choice[i]!=-1) i++;      
+
+	while (race_choice[i]!=-1) i++;
 	tmpi=atoi(arg);
 	if (tmpi>=0 && tmpi <=i-1)
 	  {
@@ -1705,23 +1739,23 @@ void nanny(struct descriptor_data *d, char *arg)
 		STATE(d) = CON_QSEX;
 	  } else {
 		SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
-		show_race_choice(d);            
+		show_race_choice(d);
 		STATE(d) = CON_QRACE;
 	   /* bogus race selection! */
 	  }
 
-	
-      
+
+
     }
     break;
-    
+
   case CON_NME:         /* wait for input of name       */
     if (!d->character) {
       CREATE(d->character, struct char_data, 1);
       clear_char(d->character);
       d->character->desc = d;
     }
-    
+
     for (; isspace(*arg); arg++)  ;
     if (!*arg)
       close_socket(d);
@@ -1736,8 +1770,8 @@ void nanny(struct descriptor_data *d, char *arg)
       STATE(d)=CON_WIZLOCK;
       return;
     }
-  
-  
+
+
     if ((player_i = load_char(tmp_name, &tmp_store)) > -1)  {
   /*  -- commented out long ago ... (bcw 13/july/1999)
    *  check for tmp_store.max_corpse;
@@ -1750,11 +1784,11 @@ void nanny(struct descriptor_data *d, char *arg)
  }
 */
 /* connecting an existing character ... */
-      store_to_char(&tmp_store, d->character);        
+      store_to_char(&tmp_store, d->character);
       strcpy(d->pwd, tmp_store.pwd);
       d->pos = player_table[player_i].nr;
       SEND_TO_Q("Password: ", d);
-      write(d->descriptor, echo_off, 4); 
+      write(d->descriptor, echo_off, 4);
       STATE(d) = CON_PWDNRM;
     } else {
 /* player unknown gotta make a new */
@@ -1765,7 +1799,7 @@ void nanny(struct descriptor_data *d, char *arg)
       }
 /* move forward creating new character */
       if (!IS_SET(SystemFlags, SYS_WIZLOCKED)) {
-        CREATE(GET_NAME(d->character), char, 
+        CREATE(GET_NAME(d->character), char,
           strlen(tmp_name) + 1);
         strcpy(GET_NAME(d->character), CAP(tmp_name));
         sprintf(buf, "Did I get that right, %s (Y/N)? ",
@@ -1781,19 +1815,19 @@ void nanny(struct descriptor_data *d, char *arg)
     }
   }
     break;
-    
+
   case CON_NMECNF:      /* wait for conf. of new name   */
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
-    
+
     if (*arg == 'y' || *arg == 'Y')     {
-      write(d->descriptor, echo_on, 4); 
+      write(d->descriptor, echo_on, 4);
       SEND_TO_Q("New character.\n\r", d);
-      
-      sprintf(buf, 
+
+      sprintf(buf,
 	      "Give me a password for %s: ",
 	      GET_NAME(d->character));
-      
+
       SEND_TO_Q(buf, d);
       write(d->descriptor, echo_off, 4);
       STATE(d) = CON_PWDGET;
@@ -1808,7 +1842,7 @@ if (GET_NAME(d->character))
       }
     }
     break;
-    
+
   case CON_PWDNRM:      /* get pwd for known player     */
 /* skip whitespaces */
     for (; isspace(*arg); arg++);
@@ -1831,7 +1865,7 @@ if (GET_NAME(d->character))
         if (GetMaxLevel(d->character) >= 58) {
           switch(SecCheck(GET_NAME(d->character), d->host)) {
             case -1:
-            case 0: 
+            case 0:
               SEND_TO_Q("Security check reveals invalid site\n\r", d);
               SEND_TO_Q("Speak to an implementor to fix problem\n\r", d);
               SEND_TO_Q("If you are an implementor, add yourself to the\n\r",d);
@@ -1909,7 +1943,7 @@ if (GET_NAME(d->character))
           }
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
-  
+
           act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
           sprintf(buf, "%s[%s] has reconnected.",
           GET_NAME(d->character), d->host);
@@ -1926,13 +1960,13 @@ if (GET_NAME(d->character))
       STATE(d) = CON_RMOTD;
     }
     break;
- 
+
 /* changed 'tack' for the implementation of this ... ;) */
 #if 0
   case CON_ALREADY_PLAYING:      /* confirm this players desire to reconnect */
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
-   
+
     if (*arg == 'y' || *arg == 'Y') {
       for (tmp_ch = character_list; tmp_ch; tmp_ch = tmp_ch->next) {
         if ( (!str_cmp(GET_NAME(d->character), GET_NAME(tmp_ch))
@@ -1959,7 +1993,7 @@ if (GET_NAME(d->character))
           }
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
-  
+
           act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
           sprintf(buf, "%s[%s] has reconnected.",
             GET_NAME(d->character), d->host);
@@ -1982,22 +2016,22 @@ if (GET_NAME(d->character))
 
     break;
 
-#endif    
+#endif
 
   case CON_PWDGET:      /* get pwd for new player       */
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
-    
+
     if (!*arg || strlen(arg) > 10)      {
-      
+
       write(d->descriptor, echo_on, 6);
       SEND_TO_Q("Illegal password.\n\r", d);
       SEND_TO_Q("Password: ", d);
-      
+
       write(d->descriptor, echo_off, 4);
       return;
     }
-    
+
     strncpy(d->pwd,(char *)crypt(arg, d->character->player.name), 10);
     *(d->pwd + 10) = '\0';
     write(d->descriptor, echo_on, 6);
@@ -2005,27 +2039,28 @@ if (GET_NAME(d->character))
     write(d->descriptor, echo_off, 4);
     STATE(d) = CON_PWDCNF;
     break;
-    
-  case CON_PWDCNF:      /* get confirmation of new pwd  */
-    /* skip whitespaces */
-    for (; isspace(*arg); arg++);
-    
-    if (strncmp((char *)crypt(arg, d->pwd), d->pwd, 10)) {
-      write(d->descriptor, echo_on, 6);
-      
-      SEND_TO_Q("Passwords don't match.\n\r", d);
-      SEND_TO_Q("Retype password: ", d);
-      STATE(d) = CON_PWDGET;
-      write(d->descriptor, echo_off, 4);
-      return;
-    } else {
-      write(d->descriptor, echo_on, 6);
-     show_race_choice(d);
-      SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
-      STATE(d) = CON_QRACE;
-    }
-    break;
-  
+
+   case CON_PWDCNF:      /* get confirmation of new pwd  */
+      /* skip whitespaces */
+      for (; isspace(*arg); arg++);
+
+      if (strncmp((char *)crypt(arg, d->pwd), d->pwd, 10)) {
+        write(d->descriptor, echo_on, 6);
+
+        SEND_TO_Q("Passwords don't match.\n\r", d);
+        SEND_TO_Q("Retype password: ", d);
+        STATE(d) = CON_PWDGET;
+        write(d->descriptor, echo_off, 4);
+        return;
+      } else {
+        write(d->descriptor, echo_on, 6);
+
+        SEND_TO_Q("Would you like to have ansi colors? ",d);
+        STATE(d) = CON_ANSI;
+
+        }
+      break;
+
   case CON_QSEX:                /* query sex of new user        */
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
@@ -2036,34 +2071,34 @@ if (GET_NAME(d->character))
 	/* sex MALE */
 	d->character->player.sex = SEX_MALE;
 	break;
-	
+
       case 'f':
       case 'F':
 	/* sex FEMALE */
 	d->character->player.sex = SEX_FEMALE;
 	break;
-	
+
       default:
 	SEND_TO_Q("That's not a sex..\n\r", d);
 	SEND_TO_Q("What IS your sex? :", d);
 	return;
 	break;
       }
-      
+
     SEND_TO_Q("\n\rSelect your class now.\n\r",d);
     show_class_selection(d,GET_RACE(d->character));
     SEND_TO_Q("Enter ? for help.\n\r", d);
     SEND_TO_Q("\n\rClass :", d);
     STATE(d) = CON_QCLASS;
     break;
-   
+
   case CON_STAT_LIST:
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
 
     index = 0;
     while (*arg && index < MAX_STAT) {
-      if (*arg == 'S' || *arg == 's') 
+      if (*arg == 'S' || *arg == 's')
 	d->stat[index++] = 's';
       if (*arg == 'I' || *arg == 'i')
 	d->stat[index++] = 'i';
@@ -2079,7 +2114,7 @@ if (GET_NAME(d->character))
 	  d->stat[index++] = 'h';
 	} else {
 	  SEND_TO_Q("That was an invalid choice.\n\r",d);
-	  SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+	  SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
 	  SEND_TO_Q("Seperated by spaces.  don't duplicate letters \n\r", d);
 	  SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
 	  SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly Charisma\n\r",d);
@@ -2088,13 +2123,13 @@ if (GET_NAME(d->character))
 	  break;
 	}
       }
-      arg++;      
+      arg++;
     }
 
     if (index < MAX_STAT) {
       SEND_TO_Q("You did not enter enough legal stats\n\r", d);
       SEND_TO_Q("That was an invalid choice.\n\r",d);
-      SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+      SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
       SEND_TO_Q("Seperated by spaces, don't duplicate letters \n\r", d);
       SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
       SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly Charisma\n\r",d);
@@ -2122,25 +2157,25 @@ if (GET_NAME(d->character))
 	if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
 	      /* set the AUTH flags */
 	      /* (3 chances) */
-	      d->character->generic = NEWBIE_REQUEST+NEWBIE_CHANCES;  
+	      d->character->generic = NEWBIE_REQUEST+NEWBIE_CHANCES;
 	}
     }
-    
+
 if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
     /* set the AUTH flags */
     /* (3 chances) */
-    d->character->generic = NEWBIE_REQUEST+NEWBIE_CHANCES;  
+    d->character->generic = NEWBIE_REQUEST+NEWBIE_CHANCES;
     }
 
     STATE(d) = CON_REROLL;
     break;
-  
+
   case CON_REROLL:
-  
+
   for(; isspace(*arg);arg++);
-  
-  d->character->reroll--; 
- 
+
+  d->character->reroll--;
+
  if (*arg!='r' &&  *arg!='R'){
     SEND_TO_Q("Stats chosen!", d);
     STATE(d)= CON_RMOTD;
@@ -2157,9 +2192,9 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
 	/* create an entry in the file */
 	d->pos = create_entry(GET_NAME(d->character));
 	save_char(d->character, AUTO_RENT);
-        
+
         /* page_string(d,NEWBIE_NOTE,1); */
-	 SEND_TO_Q(NEWBIE_NOTE, d); 
+	 SEND_TO_Q(NEWBIE_NOTE, d);
 	 STATE(d) = CON_RMOTD;
 	 SEND_TO_Q(motd, d);
 	 SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
@@ -2220,18 +2255,18 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
 	 SEND_TO_Q("\n\r\n*** PRESS ENTER: ", d);
 	 STATE(d) = CON_PRESS_ENTER;
          break;
-      }   
-  }  
+      }
+  }
 case CON_PRESS_ENTER:
        /*   page_string(d,NEWBIE_NOTE,1); */
-	 SEND_TO_Q(NEWBIE_NOTE, d); 
+	 SEND_TO_Q(NEWBIE_NOTE, d);
 	 STATE(d) = CON_RMOTD;
 	 SEND_TO_Q(motd, d);
 	 SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
 	 STATE(d) = CON_RMOTD;
          break;
- 
-  case CON_QCLASS : 
+
+  case CON_QCLASS :
 {
   int total_class=0;
   int ii=0;
@@ -2242,7 +2277,7 @@ case CON_PRESS_ENTER:
     count=0;
     oops=FALSE;
 
-    
+
    switch (*arg) {
 	case '0':
 	case '1':
@@ -2253,29 +2288,29 @@ case CON_PRESS_ENTER:
 	case '6':
 	case '7':
 	case '8':
-	case '9': 
+	case '9':
 	     {
 	      switch(GET_RACE(d->character)) {
 		case RACE_AVARIEL:{
 		ii=0;
 		while (d->character->player.class==0 &&
                        avariel_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=avariel_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }
-                    } 
+                    }
 		    else show_class_selection(d,GET_RACE(d->character));
-		    
+
 				 } break;
 
 
@@ -2283,22 +2318,22 @@ case CON_PRESS_ENTER:
 		ii=0;
 		while (d->character->player.class==0 &&
                        gold_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=gold_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }
-                    } 
+                    }
 		    else show_class_selection(d,GET_RACE(d->character));
-		    
+
 				 } break;
 
 
@@ -2307,80 +2342,80 @@ case CON_PRESS_ENTER:
 		ii=0;
 		while (d->character->player.class==0 &&
                     wild_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=wild_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }
-                    } 
+                    }
 		    else show_class_selection(d,GET_RACE(d->character));
-		    
+
 				  } break;
 
 		case RACE_SEA_ELF:{
 		ii=0;
 		while (d->character->player.class==0 &&
                     sea_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=sea_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }
-                    } 
+                    }
 		    else show_class_selection(d,GET_RACE(d->character));
-		    
+
 				  } break;
 
 
-		case RACE_MOON_ELF: { 
+		case RACE_MOON_ELF: {
 		ii=0;
 		while (d->character->player.class==0 &&
                        moon_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=moon_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }
-                    } 
+                    }
 		    else show_class_selection(d,GET_RACE(d->character));
-		    
+
 				  } break;
 
 		case RACE_HUMAN:{
 		ii=0;
 		while (d->character->player.class==0 && human_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=human_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
 		    {
-		     SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		     SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2392,13 +2427,13 @@ case CON_PRESS_ENTER:
 		case RACE_HALFLING:{
 		ii=0;
 		while (d->character->player.class==0 && halfling_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=halfling_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2407,27 +2442,27 @@ case CON_PRESS_ENTER:
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
-		
+
 	    case RACE_FOREST_GNOME:{
 		ii=0;
 		while (d->character->player.class==0 &&
                     forest_gnome_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 
 
               d->character->player.class=forest_gnome_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }}
-                    
+
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
 
@@ -2436,34 +2471,34 @@ case CON_PRESS_ENTER:
 		ii=0;
 		while (d->character->player.class==0 &&
                     rock_gnome_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 
                     d->character->player.class=rock_gnome_class_choice[ii];
 		    ii++;
 		} /* end while */
-		if ((d->character->player.class != 0)) 
+		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
                      SEND_TO_Q("Your choices? ",d);
                      STATE(d) = CON_STAT_LIST;
                     }}
-                    
+
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
 
 		case RACE_DWARF:{
 		ii=0;
 		while (d->character->player.class==0 && dwarf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=dwarf_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2476,13 +2511,13 @@ case CON_PRESS_ENTER:
 		case RACE_HALF_ELF:{
 		ii=0;
 		while (d->character->player.class==0 && half_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=half_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2495,13 +2530,13 @@ case CON_PRESS_ENTER:
 		case RACE_HALF_OGRE:{
 		ii=0;
 		while (d->character->player.class==0 && half_ogre_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=half_ogre_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2513,13 +2548,13 @@ case CON_PRESS_ENTER:
 		case RACE_HALF_GIANT:{
 		ii=0;
 		while (d->character->player.class==0 && half_giant_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=half_giant_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2531,13 +2566,13 @@ case CON_PRESS_ENTER:
 		case RACE_HALF_ORC:{
 		ii=0;
 		while (d->character->player.class==0 && half_orc_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=half_orc_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2550,13 +2585,13 @@ case CON_PRESS_ENTER:
      case RACE_ORC:{
 		ii=0;
 		while (d->character->player.class==0 && orc_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=orc_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2569,13 +2604,13 @@ case CON_PRESS_ENTER:
      case RACE_GOBLIN:{
 		ii=0;
 		while (d->character->player.class==0 && goblin_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=goblin_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		   {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2588,13 +2623,13 @@ case CON_PRESS_ENTER:
      case RACE_DROW:{
 		ii=0;
 		while (d->character->player.class==0 && dark_elf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=dark_elf_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		   {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2603,17 +2638,17 @@ case CON_PRESS_ENTER:
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
-     
+
      case RACE_DARK_DWARF:{
 		ii=0;
 		while (d->character->player.class==0 && dark_dwarf_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=dark_dwarf_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2625,13 +2660,13 @@ case CON_PRESS_ENTER:
      case RACE_TROLL:{
 		ii=0;
 		while (d->character->player.class==0 && troll_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=troll_class_choice[ii];
 		    ii++;
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2644,7 +2679,7 @@ case CON_PRESS_ENTER:
      default:{
 		ii=0;
 		while (d->character->player.class==0 && default_class_choice[ii] !=0) {
-		    if (atoi(arg) == ii) 
+		    if (atoi(arg) == ii)
 		    d->character->player.class=default_class_choice[ii];
 		    ii++;
 		} /* end while */
@@ -2652,7 +2687,7 @@ case CON_PRESS_ENTER:
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
 		    {
 		     SEND_TO_Q("\n\rSelect your stat priority, by listing
-them from highest to lowest\n\r",d);    
+them from highest to lowest\n\r",d);
     		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
                      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
                      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
@@ -2667,41 +2702,41 @@ them from highest to lowest\n\r",d);
 	     } break;
 
 
-   case '?' : { 
-		SEND_TO_Q(CLASS_HELP,d); 
+   case '?' : {
+		SEND_TO_Q(CLASS_HELP,d);
 		SEND_TO_Q("\n\rSelect your class now.\n\r",d);
 		show_class_selection(d,GET_RACE(d->character));
 		SEND_TO_Q("Enter ? for help.\n\r", d);
 		SEND_TO_Q("\n\rClass :", d);
-		break; 
+		break;
 	       }
   default : {
 		SEND_TO_Q("Invalid selection!\n\r",d);
 		show_class_selection(d,GET_RACE(d->character));
 		SEND_TO_Q("Enter ? for help.\n\r", d);
 		SEND_TO_Q("\n\rClass :", d);
-		break; 
-	    }               
-	     
-		 
-	   } /* end arg switch */   
+		break;
+	    }
 
 
-	 
+	   } /* end arg switch */
+
+
+
   if (HasClass(d->character,CLASS_MAGIC_USER)) {
      SEND_TO_Q(RU_SORCERER,d);
      STATE(d) = CON_CHECK_MAGE_TYPE;
      break;
     }
-      
+
   } /* ADDED */
-    
+
   }
   break; /* end CON_QCLASS */
 
-  
+
   case CON_AUTH: {   /* notify gods */
-     if (d->character->generic >= NEWBIE_START) {   
+     if (d->character->generic >= NEWBIE_START) {
 	/*
 	** now that classes are set, initialize
 	*/
@@ -2711,7 +2746,7 @@ them from highest to lowest\n\r",d);
        save_char(d->character, AUTO_RENT);
 	SEND_TO_Q(motd, d);
 	SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-	STATE(d) = CON_RMOTD;            
+	STATE(d) = CON_RMOTD;
      } else if (d->character->generic >= NEWBIE_REQUEST) {
        sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
        log_sev(buf, 7);
@@ -2721,7 +2756,7 @@ them from highest to lowest\n\r",d);
   /* They blew it. -DM */
        if (!strncmp(d->host,"oak.grove", 9)
 	    || !strncmp(d->host,"143.195.1.20",12)) {
-	 d->character->generic=1;        
+	 d->character->generic=1;
        } else {
 	 if (top_of_p_table > 0) {
 	   sprintf(buf,"Type Authorize %s to allow into game.", GET_NAME(d->character));
@@ -2736,7 +2771,7 @@ them from highest to lowest\n\r",d);
        **  enough for gods.  now player is told to shut up.
        */
        d->character->generic--;   /* NEWBIE_START == 3 == 3 chances */
-       sprintf(buf, "Please wait. You have %d requests remaining.\n\r", 
+       sprintf(buf, "Please wait. You have %d requests remaining.\n\r",
 	       d->character->generic);
        SEND_TO_Q(buf, d);
        if (d->character->generic == 0) {
@@ -2751,7 +2786,7 @@ them from highest to lowest\n\r",d);
        STATE(d) = CON_WIZLOCK;
      }
    }
-   break;  
+   break;
 
 case CON_CHECK_MAGE_TYPE:{
      for (;isspace(*arg);arg++);
@@ -2759,20 +2794,20 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->player.class -=CLASS_MAGIC_USER;
 	  d->character->player.class +=CLASS_SORCERER;
 	} /* end we wanted Sorcerer class! */
-	SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);    
+	SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
    	SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
    	SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
         SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
         SEND_TO_Q("Your choices? ",d);
         STATE(d) = CON_STAT_LIST;
    } break;
-    
+
   case CON_RMOTD:               /* read CR after printing motd  */
     if(GetMaxLevel(d->character) > 50 ) {
 	 SEND_TO_Q(wmotd, d);
 	 SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
 	 STATE(d) = CON_WMOTD;
-	 break; 
+	 break;
 	}
     if(d->character->term != 0)
        ScreenOff(d->character);
@@ -2787,7 +2822,7 @@ case CON_CHECK_MAGE_TYPE:{
     }
     break;
 
-    
+
   case CON_WMOTD:               /* read CR after printing motd  */
 
     SEND_TO_Q(MENU, d);
@@ -2800,17 +2835,17 @@ case CON_CHECK_MAGE_TYPE:{
       }
     }
     break;
-    
+
   case CON_WIZLOCK:
     close_socket(d);
     break;
-  
- /* case CON_CITY_CHOICE: This thing was just a silly crap! 
+
+ /* case CON_CITY_CHOICE: This thing was just a silly crap!
     for (; isspace(*arg); arg++);
     if (d->character->in_room != NOWHERE) {
       SEND_TO_Q("This choice is only valid when you have been auto-saved\n\r",d);
       STATE(d) = CON_SLCT;
-    } else {  
+    } else {
       switch (*arg)     {
 
       case '1':
@@ -2826,21 +2861,21 @@ case CON_CHECK_MAGE_TYPE:{
 
 	char_to_room(d->character, 3001);
 	d->character->player.hometown = 3001;
-	
+
 
 	d->character->specials.tick = plr_tick_count++;
 	if (plr_tick_count == PLR_TICK_WRAP)
 	  plr_tick_count=0;
-     
 
-	act("$n has entered the game.", 
+
+	act("$n has entered the game.",
 	    TRUE, d->character, 0, 0, TO_ROOM);
 	STATE(d) = CON_PLYNG;
 	if (!GetMaxLevel(d->character))
 	  do_start(d->character);
 	do_look(d->character, "",15);
 	d->prompt_mode = 1;
-	
+
 	break;
       case '2':
 
@@ -2859,8 +2894,8 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->specials.tick = plr_tick_count++;
 	  if (plr_tick_count == PLR_TICK_WRAP)
 	     plr_tick_count=0;
-      
-	  act("$n has entered the game.", 
+
+	  act("$n has entered the game.",
 	      TRUE, d->character, 0, 0, TO_ROOM);
 	  STATE(d) = CON_PLYNG;
 	  if (!GetMaxLevel(d->character))
@@ -2887,8 +2922,8 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->specials.tick = plr_tick_count++;
 	  if (plr_tick_count == PLR_TICK_WRAP)
 	     plr_tick_count=0;
-      
-	  act("$n has entered the game.", 
+
+	  act("$n has entered the game.",
 	      TRUE, d->character, 0, 0, TO_ROOM);
 	  STATE(d) = CON_PLYNG;
 	  if (!GetMaxLevel(d->character))
@@ -2920,8 +2955,8 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->specials.tick = plr_tick_count++;
 	  if (plr_tick_count == PLR_TICK_WRAP)
 	     plr_tick_count=0;
-      
-	  act("$n has entered the game.", 
+
+	  act("$n has entered the game.",
 	      TRUE, d->character, 0, 0, TO_ROOM);
 	  STATE(d) = CON_PLYNG;
 	  if (!GetMaxLevel(d->character))
@@ -2953,8 +2988,8 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->specials.tick = plr_tick_count++;
 	  if (plr_tick_count == PLR_TICK_WRAP)
 	     plr_tick_count=0;
-      
-	  act("$n has entered the game.", 
+
+	  act("$n has entered the game.",
 	      TRUE, d->character, 0, 0, TO_ROOM);
 	  STATE(d) = CON_PLYNG;
 	  if (!GetMaxLevel(d->character))
@@ -2968,7 +3003,7 @@ case CON_CHECK_MAGE_TYPE:{
 	  STATE(d) = CON_SLCT;
 	  break;
 	}
-	
+
       default:
 	SEND_TO_Q("That was an illegal choice.\n\r", d);
 	STATE(d) = CON_SLCT;
@@ -2977,7 +3012,7 @@ case CON_CHECK_MAGE_TYPE:{
     }
     break; */
 
-       
+
   case CON_DELETE_ME:{
       int i;
       struct char_file_u ch_st;
@@ -2988,7 +3023,7 @@ case CON_CHECK_MAGE_TYPE:{
 
    if (!strcmp(arg,"yes") && strcmp("Guest",GET_NAME(d->character)) ) {
       char buf[256];
-       
+
        sprintf(buf,"%s just killed theirself!",GET_NAME(d->character));
        log(buf);
       for (i = 0; i <= top_of_p_table; i++)     {
@@ -3029,7 +3064,7 @@ if ((player_table+i)->name)
      }
     break;
 
-    
+
   case CON_SLCT:                /* get selection from main menu */
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
@@ -3042,16 +3077,16 @@ if ((player_table+i)->name)
    case 'k': {
 	      SEND_TO_Q("Are you sure you want to delete yourself? (yes/no) ",d);
 	      STATE(d)=CON_DELETE_ME;
-	      break; 
+	      break;
 	} */
 
-	
+
     case '1':
       reset_char(d->character);
       sprintf(buf, "Loading %s's equipment", d->character->player.name);
       log(buf);
       load_char_objs(d->character);
-      
+
 	  //	if ((r_num = real_object(12)) >= 0)   {
      //		obj = read_object(r_num, REAL);
      //		obj_to_char(obj,ch);                        /* bread   */
@@ -3084,7 +3119,7 @@ if ((player_table+i)->name)
 	    }
 	  } else {
 	    char_to_room(d->character, d->character->specials.start_room);
-	      d->character->player.hometown = 
+	      d->character->player.hometown =
 		d->character->specials.start_room;
 	  }
 	} else {
@@ -3094,7 +3129,7 @@ if ((player_table+i)->name)
 	  } else {
 	    if (real_roomp(d->character->specials.start_room)) {
 	      char_to_room(d->character, d->character->specials.start_room);
-	      d->character->player.hometown = 
+	      d->character->player.hometown =
 		d->character->specials.start_room;
 	    } else {
 	      char_to_room(d->character, 1000);
@@ -3105,9 +3140,9 @@ if ((player_table+i)->name)
       } else {
 	if (real_roomp(d->character->in_room)) {
 	  char_to_room(d->character,
-		       d->character->in_room);    
+		       d->character->in_room);
 	  d->character->player.hometown = d->character->in_room;
-	} else { 
+	} else {
 	  char_to_room(d->character, 3001);
 	  d->character->player.hometown = 3001;
 	}
@@ -3116,7 +3151,7 @@ if ((player_table+i)->name)
       d->character->specials.tick = plr_tick_count++;
       if (plr_tick_count == PLR_TICK_WRAP)
 	plr_tick_count=0;
-      act("$n has entered the game.", 
+      act("$n has entered the game.",
 	  TRUE, d->character, 0, 0, TO_ROOM);
       STATE(d) = CON_PLYNG;
       if (!GetMaxLevel(d->character))
@@ -3124,7 +3159,7 @@ if ((player_table+i)->name)
       do_look(d->character, "",15);
       d->prompt_mode = 1;
       break;
-      
+
     case '2':
       SEND_TO_Q("Enter a text you'd like others to see when they look at you.\n\r", d);
       SEND_TO_Q("Terminate with a '~'.\n\r", d);
@@ -3135,12 +3170,12 @@ if (d->character->player.description)
 	  free(d->character->player.description);
 	  d->character->player.description = 0;
 	}
-      d->str = 
+      d->str =
 	&d->character->player.description;
       d->max_str = 240;
       STATE(d) = CON_EXDSCR;
       break;
-      
+
     case '3':
       SEND_TO_Q(STORY, d);
       STATE(d) = CON_RMOTD;
@@ -3149,10 +3184,10 @@ if (d->character->player.description)
       SEND_TO_Q("Enter a new password: ", d);
 
       write(d->descriptor, echo_off, 4);
-      
+
       STATE(d) = CON_PWDNEW;
       break;
-    
+
   /*  case '5':
 	SEND_TO_Q("Where would you like to enter?\n\r", d);
 	SEND_TO_Q("1.    Shadowdale\n\r", d);
@@ -3168,61 +3203,61 @@ if (d->character->player.description)
       break;  Same silly crap as up there */
 
    case 'K':
-   case 'k': 
+   case 'k':
 	 SEND_TO_Q("Are you sure you want to delete yourself? (yes/no) ",d);
 	 STATE(d)=CON_DELETE_ME;
 	 break;
-	
-    
+
+
     default:
       SEND_TO_Q("Wrong option.\n\r", d);
       SEND_TO_Q(MENU, d);
       break;
     }
     break;
-  
+
   case CON_PWDNEW:
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
-    
+
     if (!*arg || strlen(arg) > 10)      {
 	write(d->descriptor, echo_on, 6);
-	
+
 	SEND_TO_Q("Illegal password.\n\r", d);
 	SEND_TO_Q("Password: ", d);
 
 	write(d->descriptor, echo_off, 4);
-	
-	
+
+
 	return;
       }
-    
+
     strncpy(d->pwd,(char *) crypt(arg, d->character->player.name), 10);
     *(d->pwd + 10) = '\0';
     write(d->descriptor, echo_on, 6);
-    
+
     SEND_TO_Q("Please retype password: ", d);
-    
+
     STATE(d) = CON_PWDNCNF;
     write(d->descriptor, echo_off, 4);
-    
-    
+
+
     break;
   case CON_PWDNCNF:
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
-    
+
     if (strncmp((char *)crypt(arg, d->pwd), d->pwd, 10))      {
 	  write(d->descriptor, echo_on, 6);
 	  SEND_TO_Q("Passwords don't match.\n\r", d);
 	  SEND_TO_Q("Retype password: ", d);
 	  write(d->descriptor, echo_off, 4);
-	  
+
 	  STATE(d) = CON_PWDNEW;
 	  return;
 	}
     write(d->descriptor, echo_on, 6);
-    
+
     SEND_TO_Q(
 	      "\n\rDone. You must enter the game to make the change final\n\r",
 	      d);
@@ -3253,7 +3288,7 @@ extern char *pc_class_types[];
 
        sprintbit((unsigned)avariel_class_choice[i],pc_class_types,buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 
@@ -3263,7 +3298,7 @@ extern char *pc_class_types[];
 
        sprintbit((unsigned)gold_elf_class_choice[i],pc_class_types,buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 
@@ -3273,7 +3308,7 @@ extern char *pc_class_types[];
 
        sprintbit((unsigned)wild_elf_class_choice[i],pc_class_types,buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 
@@ -3283,36 +3318,36 @@ extern char *pc_class_types[];
 
        sprintbit((unsigned)sea_elf_class_choice[i],pc_class_types,buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
-	 case RACE_MOON_ELF:{ 
+	 case RACE_MOON_ELF:{
 		 for (i=0;moon_elf_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 
        sprintbit((unsigned)moon_elf_class_choice[i],pc_class_types,buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 } break; 
+		 } break;
 		 case RACE_FOREST_GNOME:{
 		 for (i=0;forest_gnome_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 
 sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 
-		
+
 		 case RACE_DEEP_GNOME:
-		 case RACE_ROCK_GNOME:{ 
+		 case RACE_ROCK_GNOME:{
 		 for (i=0;rock_gnome_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
              sprintbit((unsigned)rock_gnome_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 		 case RACE_DWARF:{
@@ -3320,7 +3355,7 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)dwarf_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 		 case RACE_HALFLING:{
@@ -3328,7 +3363,7 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)halfling_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 		 case RACE_HUMAN: {
@@ -3336,7 +3371,7 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)human_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 		 case RACE_HALF_ELF:{
@@ -3344,23 +3379,23 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)half_elf_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
-		 case RACE_HALF_ORC:{ 
+		 case RACE_HALF_ORC:{
 		 for (i=0;half_orc_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)half_orc_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
-		 case RACE_HALF_OGRE:{ 
+		 case RACE_HALF_OGRE:{
 		 for (i=0;half_ogre_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)half_ogre_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
 		 } break;
 		 case RACE_HALF_GIANT:{
@@ -3368,9 +3403,9 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)half_giant_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
 
 		 case RACE_ORC:{
@@ -3378,49 +3413,49 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)orc_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
-		 
+
 		 case RACE_GOBLIN:{
 		 for (i=0;goblin_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)goblin_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
-		 
+
 		 case RACE_DROW:{
 		 for (i=0;dark_elf_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)dark_elf_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
-		 
+
 		 case RACE_DARK_DWARF:{
 		 for (i=0;dark_dwarf_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)dark_dwarf_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
-		 
+
 		 case RACE_TROLL:{
 		 for (i=0;troll_class_choice[i]!=0;i++) {
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)troll_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
 
 	default:{
@@ -3428,11 +3463,11 @@ sprintbit((unsigned)forest_gnome_class_choice[i],pc_class_types, buf2);
 		  sprintf(buf,"%d) ",i);
 		  sprintbit((unsigned)default_class_choice[i],pc_class_types, buf2);
 		  strcat(buf,buf2);  strcat(buf,"\n\r");
-		  SEND_TO_Q(buf,d); 
+		  SEND_TO_Q(buf,d);
 		  } /* end for */
-		 
+
 		 } break;
-		 
+
 		 } /* end switch */
 }
 
@@ -3443,20 +3478,20 @@ int show_race_choice(struct descriptor_data *d)
 
 SEND_TO_Q(  "                                  Level Limits\n\r",d);
 sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
-	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps");     
+	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps");
 	SEND_TO_Q(buf,d);
-		
+
 	while (race_choice[i]!=-1) {
 	  sprintf(buf,"%-3d) %-15s",i,RaceName[race_choice[i]]);
 
 	  /* show level limits */
 	   for (ii=0;ii<MAX_CLASS;ii++) {
-	      sprintf(buf2," %-3d",RacialMax[race_choice[i]][ii]); 
+	      sprintf(buf2," %-3d",RacialMax[race_choice[i]][ii]);
 	      strcat(buf,buf2);
 	     } /* end for */
-	     
+
 	  strcat(buf,"\n\r");
-	  SEND_TO_Q(buf,d); 
+	  SEND_TO_Q(buf,d);
 	  i++;
 	 }
 

@@ -3129,7 +3129,7 @@ void roll_abilities(struct char_data *ch)
 
 void do_start(struct char_data *ch)
 {
-  int r_num,i;
+  int r_num,i,temp = 0;
   struct obj_data *obj;
   char buf[80];
 
@@ -3219,9 +3219,16 @@ if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
 			break;
 		} /* end race switch */
 
+	if(IS_SET(ch->player.user_flags,USE_ANSI))
+	  temp = 1;
 
-GET_SPECFLAGS(ch) = 0;                           /* set default to null */
-SET_BIT(ch->player.user_flags,USE_PAGING);      /* set each user to pause screens */
+	GET_SPECFLAGS(ch) = 0;                           /* set default to null */
+	SET_BIT(ch->player.user_flags,USE_PAGING);/* set each user topause screens*/
+	if(temp==1)
+	  SET_BIT(ch->player.user_flags,USE_ANSI);
+	//commented out for now.. (GH)
+	//SET_BIT(ch->player.user_flags, ACT_WIMPY);
+	//send_to_char("Wimpy mode activated\n\r",ch);
 
   if (IS_SET(ch->player.class, CLASS_THIEF))   {
     if (GET_RACE(ch) == RACE_HUMAN)
