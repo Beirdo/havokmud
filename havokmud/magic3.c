@@ -2791,31 +2791,32 @@ void spell_enlightenment(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
-
-    if (!affected_by_spell(victim, SPELL_ENLIGHTENMENT) ||
-        !saves_spell(victim, SAVING_SPELL)) {
-
-        if (affected_by_spell(victim, SPELL_FEEBLEMIND)) {
-            send_to_char("They have already been enlightened!\n\r", ch);
-            return;
-        }
-
-        send_to_char("You feel enlightened by the gods\n\r", victim);
-
-        af.type = SPELL_ENLIGHTENMENT;
-        af.duration = 24;
-        af.modifier = 2;
-        af.location = APPLY_INT;
-        af.bitvector = 0;
-        affect_to_char(victim, &af);
-
-        af.type = SPELL_ENLIGHTENMENT;
-        af.duration = 24;
-        af.modifier = 2;
-        af.location = APPLY_WIS;
-        af.bitvector = 0;
-        affect_to_char(victim, &af);
+    
+    if (affected_by_spell(victim, SPELL_ENLIGHTENMENT)) {
+        send_to_char("You are already enlightened!\n\r", ch);
+        return;
     }
+
+    if (affected_by_spell(victim, SPELL_FEEBLEMIND)) {
+        send_to_char("Your mind is too feeble to enlighten!\n\r", ch);
+        return;
+    }
+
+    send_to_char("You feel enlightened by the gods\n\r", victim);
+
+    af.type = SPELL_ENLIGHTENMENT;
+    af.duration = 24;
+    af.modifier = 2;
+    af.location = APPLY_INT;
+    af.bitvector = 0;
+    affect_to_char(victim, &af);
+
+    af.type = SPELL_ENLIGHTENMENT;
+    af.duration = 24;
+    af.modifier = 2;
+    af.location = APPLY_WIS;
+    af.bitvector = 0;
+    affect_to_char(victim, &af);
 }
 
 void spell_wrath_god(int level, struct char_data *ch,
