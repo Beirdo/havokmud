@@ -32,7 +32,8 @@ extern int      ArenaNoGroup,
 void mind_burn(int level, struct char_data *ch,
                struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -48,6 +49,7 @@ void mind_burn(int level, struct char_data *ch,
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
+        rdam = dam;
         if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
             if (IS_IMMORTAL(tmp_victim)) {
                 return;
@@ -57,11 +59,11 @@ void mind_burn(int level, struct char_data *ch,
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 heat_blind(tmp_victim);
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam = 0;
+                    rdam = 1;
                 } else if (!saves_spell(tmp_victim, SAVING_SPELL - 4)) {
                     BurnWings(tmp_victim);
                 }
-                MissileDamage(ch, tmp_victim, dam, SKILL_MIND_BURN);
+                MissileDamage(ch, tmp_victim, rdam, SKILL_MIND_BURN);
             } else {
                 act("You are able to avoid the flames!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
