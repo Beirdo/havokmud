@@ -2813,7 +2813,7 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         d->character->reroll--;
 
-        if (arg && *arg != 'r' && *arg != 'R') {
+        if (!arg || (*arg != 'r' && *arg != 'R')) {
             SEND_TO_Q("Stats chosen!\n\r", d);
 
             STATE(d) = CON_CREATION_MENU;

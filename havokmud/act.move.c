@@ -1083,7 +1083,7 @@ void do_close(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
                      &obj)) {
         /*
          * this is an object 
@@ -1231,7 +1231,7 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
                      &obj)) {
         /*
          * this is an object 
@@ -1300,7 +1300,7 @@ void do_unlock(struct char_data *ch, char *argument, int cmd)
         return;
     }
     
-    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
                      &obj)) {
         /*
          * this is an object 
@@ -1787,7 +1787,7 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
                 send_to_char("You are already following yourself.\n\r", ch);
                 return;
             }
-            stop_follower(ch);
+           stop_follower(ch);
         } else {
             if (circle_follow(ch, leader)) {
                 act("Sorry, but following in 'loops' is not allowed",
