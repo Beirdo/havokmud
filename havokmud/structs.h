@@ -1967,6 +1967,7 @@ struct skillset {
   char *name;
   int skillnum;
   int level;
+  int maxlearn;
 };
 
 struct affect_list {
