@@ -2173,7 +2173,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
         if (ch->specials.A_list) {
             if (GET_ALIAS(ch, num)) {
                 strcpy(buf, GET_ALIAS(ch, num));
-                if (*arg) {
+                if (arg && *arg) {
                     sprintf(buf2, "%s%s", buf, arg);
                     command_interpreter(ch, buf2);
                 } else {
