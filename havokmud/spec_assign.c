@@ -1293,26 +1293,26 @@ void assign_mobiles()
   {45415, FrostBreather},     /* Gavmorak silver dragon */
   {45416, FireBreather},      /* Tarius gold dragon */
   {45417, elamin},
-  {45421, FrostBreather},	/*gavmorak silver dragon*/
-  {45422, FireBreather},	/*Viska mist dragon*/
-  {45423, GasBreather},		/*Korack topaz dragon*/
-  {45424, GasBreather},		/*Katsulas emerald dragon*/
-  {45425, AcidBreather},	/*Skaer black dragon*/
-  {45426, FireBreather},	/*Barack crystal dragon*/
-  {45427, FireBreather},	/*Nevarock brass dragon*/
+  {45421, FrostBreather},	/*merick white dragon*/
+  {45422, VaporBreather},	/*Viska mist dragon*/
+  {45423, DehydBreather},	/*Korack topaz dragon*/
+  {45424, SoundBreather},	/*Katsulas emerald dragon*/
+  {45425, GasBreather},		/*Skaer deep dragon*/
+  {45426, ShardBreather},	/*Barack crystal dragon*/
+  {45427, SleepBreather},	/*Nevarock brass dragon*/
   {45429, AcidBreather},	/*Rhyder copper dragon*/
-  {45430, LightningBreather},	/*Irie blue dragon*/
-  {45431, FrostBreather},	/*Symon silver dragon*/
+  {45430, SoundBreather},	/*Irie sapphire dragon*/
+  {45431, LightBreather},	/*Symon mercury dragon*/
   {45432, AcidBreather},	/*Ragnorak black dragon*/
-  {45433, GasBreather},		/*Sleigh green dragon*/
+  {45433, ShardBreather},	/*Sleigh amethyst dragon*/
   {45434, FrostBreather},	/*Tegellen cloud dragon*/
   {45435, LightningBreather},	/*Haddox blue dragon*/
   {45437, FireBreather},	/*Tynan red dragon*/
-  {45439, AcidBreather},	/*Rank black dragon*/
+  {45439, DarkBreather},	/*Rank shadow dragon*/
   {45440, starving_man},
   {45443, goblin_chuirgeon},
   {45463, cronus_pool},
-  {45564, FireBreather},	/*Cronus gold dragon*/
+  {45564, GasBreather},		/*Cronus gold dragon*/
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */

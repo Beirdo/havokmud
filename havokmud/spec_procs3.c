@@ -6075,7 +6075,7 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           send_to_char("You press on further and the pool surrounds you, like some soft membrane.\n\r",ch);
           send_to_char("There is a slight wrenching sensation, and then the color disappears.\n\r",ch);
           send_to_char("\n\r",ch);
-          act("$n enters a color and dissapears!", FALSE , ch, 0, 0, TO_ROOM);
+          act("$n enters the pool and dissapears!", FALSE , ch, 0, 0, TO_ROOM);
           char_from_room(ch);
           char_to_room(ch,BAHAMUT_HOME);
           act("$n appears in a dazzling explosion of light!", FALSE, ch, 0, 0, TO_ROOM);
@@ -6085,4 +6085,137 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     } else return(FALSE);
   }
 return(FALSE);
+}
+
+int DehydBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_dehydration_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int VaporBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_vapor_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);    
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int SoundBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_sound_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int ShardBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_shard_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int SleepBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_sleep_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int LightBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_light_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
+}
+
+int DarkBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+struct char_data *tar_char;
+ if (cmd) 
+    return(FALSE);
+
+ if (ch->specials.fighting && number(0,2)) {
+   act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
+   act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
+   for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
+   if (!IS_IMMORTAL(tar_char))
+   spell_dark_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
+  }
+   return(TRUE);
+ }
+
+ return(FALSE);
 }

@@ -360,7 +360,14 @@
 #define SPELL_FROST_BREATH           308 /*	203 */
 #define SPELL_ACID_BREATH            309 /*	204 */
 #define SPELL_LIGHTNING_BREATH       310 /*	205 */
-#define LAST_BREATH_WEAPON	     310 /*	205 */
+#define SPELL_DEHYDRATION_BREATH     311 /*	206 */
+#define SPELL_VAPOR_BREATH	     312 /*	207 */
+#define SPELL_SOUND_BREATH	     313 /*	208 */
+#define SPELL_SHARD_BREATH	     314 /*	209 */
+#define SPELL_SLEEP_BREATH	     315 /*	210 */
+#define SPELL_LIGHT_BREATH	     316 /*	211 */
+#define SPELL_DARK_BREATH	     317 /*	212 */
+#define LAST_BREATH_WEAPON	     317 /*	212 */
 
 /* NOTE!!!!!!!!!!!!!!!
    all spells MUST be before these types.   Otherwise, certain aspects of

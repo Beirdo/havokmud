@@ -3031,3 +3031,257 @@ damage = dice(level,10);
     if (IS_PC(ch) && IS_PC(victim))
       GET_ALIGNMENT(ch)-=2;
 }
+
+void spell_dehydration_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_dehydration, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_GAS_BREATH);
+	spell_energy_drain(level,ch,victim,0);
+	spell_weakness(level,ch,victim,0);
+
+}
+
+void spell_vapor_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_vapor, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+	spell_energy_drain(level,ch,victim,0);
+	spell_weakness(level,ch,victim,0);
+
+}
+
+void spell_sound_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_sound, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_LIGHTNING_BREATH);
+	spell_paralyze(level,ch,victim,0);
+	spell_silence(level,ch,victim,0);
+	spell_fear(level,ch,victim,0);
+
+}
+
+void spell_shard_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+	struct obj_data *burn;
+
+	assert(victim && ch);
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_LIGHTNING_BREATH);
+
+	/* And now for the damage on inventory */
+
+/*
+  DamageStuff(victim, FIRE_DAMAGE);
+*/
+
+       	for (burn=victim->carrying ; 
+	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) && 
+	    (burn->obj_flags.type_flag!=ITEM_WAND) &&
+	    (burn->obj_flags.type_flag!=ITEM_STAFF) &&
+	    (burn->obj_flags.type_flag!=ITEM_BOAT);
+	     burn=burn->next_content) {
+	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
+       		if (burn)  {
+       			act("$o is destroyed by the projectiles",0,victim,burn,0,TO_CHAR);
+       			extract_obj(burn);
+       		}
+	     }
+	}
+}
+
+void spell_sleep_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_sleep, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_GAS_BREATH);
+	spell_sleep(level,ch,victim,0);
+	spell_sleep(level,ch,victim,0);
+
+}
+
+void spell_light_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+	struct obj_data *burn;
+
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_light, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
+	spell_blindness(level,ch,victim,0);
+	spell_blindness(level,ch,victim,0);
+
+	
+	/* And now for the damage on inventory */
+
+/*
+  DamageStuff(victim, FIRE_DAMAGE);
+*/
+
+       	for (burn=victim->carrying ; 
+	     burn && (burn->obj_flags.type_flag!=ITEM_SCROLL) && 
+	    (burn->obj_flags.type_flag!=ITEM_WAND) &&
+	    (burn->obj_flags.type_flag!=ITEM_STAFF) &&
+	    (burn->obj_flags.type_flag!=ITEM_BOAT);
+	     burn=burn->next_content) {
+	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
+       		if (burn)  {
+       			act("$o is burnt to a crisp by the blinding light",0,victim,burn,0,TO_CHAR);
+       			extract_obj(burn);
+       		}
+	     }
+	}
+}
+
+void spell_dark_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	int hpch;
+
+if (!victim || !ch) { /* 	assert(victim && ch); */
+	log("!ch || !victim in breath_dark, magic.c");
+	return;
+}
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+	hpch = GET_MAX_HIT(ch);
+	hpch *= level;
+	hpch /= GetMaxLevel(ch);
+	hpch /= 2;
+	if(hpch<10) hpch=10;
+
+	dam = hpch;
+
+	if ( saves_spell(victim, SAVING_BREATH) )
+		dam >>= 1;
+
+	MissileDamage(ch, victim, dam, SPELL_GAS_BREATH);
+	spell_energy_drain(level,ch,victim,0);
+	spell_weakness(level,ch,victim,0);
+	spell_blindness(level,ch,victim,0);
+
+}

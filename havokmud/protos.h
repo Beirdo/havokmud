@@ -784,6 +784,20 @@ void spell_gas_breath(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj);
 void spell_lightning_breath(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj);
+void spell_dehydration_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_vapor_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_sound_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_shard_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_sleep_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_light_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
+void spell_dark_breath(byte level, struct char_data *ch,
+  struct char_data *victim, struct obj_data *obj);
 
 
 /* Fom magic2.c */
@@ -1350,6 +1364,13 @@ int FrostBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 int AcidBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int GasBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int LightningBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int DehydBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int VaporBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int SoundBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int ShardBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int SleepBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int LightBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int DarkBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int magic_user_imp(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int snake_guardians(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
