@@ -2769,6 +2769,7 @@ void StandUp(struct char_data *ch)
 void MakeNiftyAttack(struct char_data *ch)
 {
     int             num;
+    char           *name;
 
     if (!ch->skills) {
         SpaceForSkills(ch);
@@ -2784,39 +2785,46 @@ void MakeNiftyAttack(struct char_data *ch)
         return;
     }
     num = number(1, 4);
+    name = strdup(GET_NAME(ch->specials.fighting));
+
     switch (num) {
     case 1:
     case 2:
         if (!ch->skills[SKILL_BASH].learned) {
             ch->skills[SKILL_BASH].learned = 10 + GetMaxLevel(ch) * 4;
         }
-        do_bash(ch, GET_NAME(ch->specials.fighting), 0);
+        do_bash(ch, name, 0);
         break;
     case 3:
         if (ch->equipment[WIELD]) {
             if (!ch->skills[SKILL_DISARM].learned) {
                 ch->skills[SKILL_DISARM].learned = 10 + GetMaxLevel(ch) * 4;
             }
-            do_disarm(ch, GET_NAME(ch->specials.fighting), 0);
+            do_disarm(ch, name, 0);
         } else {
             if (!ch->skills[SKILL_KICK].learned) {
                 ch->skills[SKILL_KICK].learned = 10 + GetMaxLevel(ch) * 4;
             }
-            do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+            do_kick(ch, name, 0);
         }
         break;
     case 4:
         if (!ch->skills[SKILL_KICK].learned) {
             ch->skills[SKILL_KICK].learned = 10 + GetMaxLevel(ch) * 4;
         }
-        do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+        do_kick(ch, name, 0);
         break;
+    }
+
+    if( name ) {
+        free( name );
     }
 }
 
 void FighterMove(struct char_data *ch)
 {
     struct char_data *friend;
+    char           *name;
 
     if (!ch->skills) {
         SET_BIT(ch->player.class, CLASS_WARRIOR);
@@ -2838,7 +2846,11 @@ void FighterMove(struct char_data *ch)
                         ch->skills[SKILL_RESCUE].learned =
                             GetMaxLevel(ch) * 3 + 30;
                     }
-                    do_rescue(ch, GET_NAME(friend), 0);
+                    name = strdup(GET_NAME(friend));
+                    do_rescue(ch, name, 0);
+                    if( name ) {
+                        free( name );
+                    }
                 } else {
                     MakeNiftyAttack(ch);
                 }
@@ -2852,6 +2864,7 @@ void FighterMove(struct char_data *ch)
 void MonkMove(struct char_data *ch)
 {
     char            buf[100];
+    char           *name;
 
     if (!ch->skills) {
         SpaceForSkills(ch);
@@ -2862,12 +2875,14 @@ void MonkMove(struct char_data *ch)
     if (!ch->specials.fighting) {
         return;
     }
+
+    name = strdup(GET_NAME(ch->specials.fighting));
     if (GET_POS(ch) < POSITION_FIGHTING) {
         if (!ch->skills[SKILL_SPRING_LEAP].learned) {
             ch->skills[SKILL_SPRING_LEAP].learned =
                 (GetMaxLevel(ch) * 3) / 2 + 25;
         }
-        do_springleap(ch, GET_NAME(ch->specials.fighting), 0);
+        do_springleap(ch, name, 0);
         return;
     } else {
         /*
@@ -2893,7 +2908,7 @@ void MonkMove(struct char_data *ch)
                     ch->skills[SKILL_QUIV_PALM].learned =
                         GetMaxLevel(ch) * 2 - 5;
                 }
-                do_quivering_palm(ch, GET_NAME(ch->specials.  fighting), 0);
+                do_quivering_palm(ch, name, 0);
                 return;
             }
 
@@ -2902,7 +2917,7 @@ void MonkMove(struct char_data *ch)
                     ch->skills[SKILL_DISARM].learned =
                         (GetMaxLevel(ch) * 3) / 2 + 25;
                 }
-                do_disarm(ch, GET_NAME(ch->specials.fighting), 0);
+                do_disarm(ch, name, 0);
                 return;
             }
 
@@ -2910,8 +2925,12 @@ void MonkMove(struct char_data *ch)
                 ch->skills[SKILL_KICK].learned =
                     (GetMaxLevel(ch) * 3) / 2 + 25;
             }
-            do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+            do_kick(ch, name, 0);
         }
+    }
+
+    if( name ) {
+        free( name );
     }
 }
 
