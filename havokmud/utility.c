@@ -1945,6 +1945,7 @@ void RoomSave(struct char_data *ch, long start, long end)
                     i,
                     j,
                     k,
+                    len,
                     x;
     struct extra_descr_data *exptr;
     FILE           *fp = NULL;
@@ -2052,7 +2053,16 @@ void RoomSave(struct char_data *ch, long start, long end)
                 }
 
                 if (rdd->keyword) {
-                    if (strlen(rdd->keyword) > 0) {
+                    do {
+                        len = strlen(rdd->keyword);
+                        if( len == 0 || (rdd->keyword[len-1] != '\n' &&
+                                         rdd->keyword[len-1] != '\r') ) {
+                            break;
+                        }
+                        rdd->keyword[len-1] = '\0';
+                    } while( len > 0 );
+
+                    if (len > 0) {
                         fprintf(fp, "%s~\n", rdd->keyword);
                     } else {
                         fprintf(fp, "~\n");
