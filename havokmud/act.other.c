@@ -1339,17 +1339,14 @@ dlog("in do_group");
         sprintf(buf,"$c0015Your group \"%s\" consists of:", ch->master->specials.group_name);
       else
         sprintf(buf,"$c0015Your group consists of:");
+
       act(buf,FALSE,ch,0,0,TO_CHAR);
       if (ch->master)
-	k = ch->master;
+		k = ch->master;
       else
-	k = ch;
+		k = ch;
 
-      if (IS_AFFECTED(k, AFF_GROUP)
-      && GET_MAX_HIT(k) >0
-      && GET_MAX_MANA(k) >0
-      && GET_MAX_MOVE(k) >0
-      ) {
+      if (IS_AFFECTED(k, AFF_GROUP) && GET_MAX_HIT(k) >0  && GET_MAX_MANA(k) >0 && GET_MAX_MOVE(k) >0 ) {
 	sprintf(buf, "$c0014    %-15s $c0011(Head of group) $c0006HP:%2.0f%% MANA:%2.0f%% MV:%2.0f%%",
 	          fname(k->player.name),
                   ((float)GET_HIT(k) / (int)GET_MAX_HIT(k)) * 100.0+0.5,
@@ -2732,13 +2729,13 @@ dlog("in do_set_flags");
 	 else
 		if (!strcmp(type,"autoassist")) {
 	 	   if (strstr(field,"enable")) {
-	 	     act("Setting autoloot on.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (!IS_SET(ch->specials.act, PLR_AUTOLOOT))
-	 	       SET_BIT(ch->specials.act, PLR_AUTOLOOT);
+	 	     act("Setting autoassist on.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->specials.act, PLR_AUTOASSIST))
+	 	       SET_BIT(ch->specials.act, PLR_AUTOASSIST);
 	 	   } else {
 	 	     act("Setting autoassist off.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (IS_SET(ch->specials.act, PLR_AUTOLOOT))
-	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOLOOT);
+	 	     if (IS_SET(ch->specials.act, PLR_AUTOASSIST))
+	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOASSIST);
 	 	   }
 	 	 }
 	 else

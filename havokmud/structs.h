@@ -125,7 +125,7 @@ struct QuestItem {
   char *where;
 };
 
-#define VERSION "1.9.2 (GH)Aug. 12th, 2002"
+#define VERSION "1.9.3 (GH)Dec. 17th, 2002"
 /*
   tailoring stuff
 */

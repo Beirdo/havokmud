@@ -484,13 +484,14 @@ if (corpse->description)
 	free(corpse->description);
 if (corpse->short_description)
 	free(corpse->short_description);
-    corpse->name = strdup("dust pile bones");
+    corpse->name = strdup("dust pile bones corpse");
     corpse->description = strdup("A pile of dust and bones is here.");
     corpse->short_description = strdup("a pile of dust and bones");
   }
 
 
   corpse->contains = ch->carrying;
+
   if(GET_GOLD(ch)>0) {
     money = create_money(GET_GOLD(ch));
     GET_GOLD(ch)=0;
@@ -2450,6 +2451,8 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
 void perform_violence(int pulse)
 {
  	char temp[30];
+
+ 	struct follow_type *f;
  struct char_data *ch, *vict;
    struct obj_data *tmp,*tmp2;
    int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
@@ -2567,6 +2570,25 @@ void perform_violence(int pulse)
 				if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK)) {
 					x += 0.50;
 				}
+
+				/*autoassist?*/
+					if(ch) {
+				    	if(IS_AFFECTED(ch, AFF_GROUP)&&IS_PC(ch)) {
+							if(!ch->master) {
+								for(f = ch->followers; f; f=f->next) {
+										 if((GET_POS(f->follower) != POSITION_FIGHTING) && !f->follower->specials.fighting
+										 		&& f->follower->in_room==ch->in_room && GET_POS(f->follower) > POSITION_SITTING) {
+											if (IS_SET(f->follower->specials.act, PLR_AUTOASSIST)) {
+												act("$n screams and runs into battle, weapons a swinging.",FALSE,f->follower,0,0,TO_ROOM);
+												ch_printf(f->follower,"You raise your weapon and run in to assist %s.\n\r"
+												 		,GET_NAME(f->follower->master));
+												do_assist(f->follower, GET_NAME(f->follower->master), 0);
+											}
+										 }
+								}
+							}
+						}
+					}
 
 				//sprintf(temp,"\n\rNumatks:%.2f\n\r",x);
 				//send_to_char(temp,ch);
@@ -2736,6 +2758,8 @@ void perform_violence(int pulse)
       }
    }
 
+
+
    /* charging loop */
    for(ch=character_list;ch;ch=ch->next)
    {
@@ -2791,6 +2815,9 @@ void perform_violence(int pulse)
          }
       }
    } /* end charge */
+
+
+
 }
 
 #if 1

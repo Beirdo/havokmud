@@ -2104,72 +2104,7 @@ struct obj_data *get_obj_vis_accessible(struct char_data *ch, char *name)
 
 
 
-#if 0
-struct obj_data *create_money( int amount )
-{
-  struct obj_data *obj;
-  struct extra_descr_data *new_descr;
-  char buf[80];
 
-/*  char *strdup(char *str); */
-
-  if(amount<=0) {
-      log("ERROR: Try to create negative money.");
-      assert(0);
-    }
-
-  CREATE(obj, struct obj_data, 1);
-  CREATE(new_descr, struct extra_descr_data, 1);
-  clear_object(obj);
-
-  if(amount==1){
-      obj->name = strdup("coin gold");
-      obj->short_description = strdup("a gold coin");
-      obj->description = strdup("One miserable gold coin.");
-
-      new_descr->keyword = strdup("coin gold");
-      new_descr->description = strdup("One miserable gold coin.");
-    }  else {
-      obj->name = strdup("coins gold");
-      obj->short_description = strdup("gold coins");
-      obj->description = strdup("A pile of gold coins.");
-
-      new_descr->keyword = strdup("coins gold");
-      if(amount<10) {
-	sprintf(buf,"There is %d coins.",amount);
-	new_descr->description = strdup(buf);
-      }
-      else if (amount<100) {
-	sprintf(buf,"There is about %d coins",10*(amount/10));
-	new_descr->description = strdup(buf);
-      }
-      else if (amount<1000) {
-	sprintf(buf,"It looks like something round %d coins",100*(amount/100));
-	new_descr->description = strdup(buf);
-      }
-      else if (amount<100000) {
-	sprintf(buf,"You guess there is %d coins",1000*((amount/1000)+ number(0,(amount/1000))));
-	new_descr->description = strdup(buf);
-      }
-      else
-	new_descr->description = strdup("There is A LOT of coins");
-    }
-
-  new_descr->next = 0;
-  obj->ex_description = new_descr;
-
-  obj->obj_flags.type_flag = ITEM_MONEY;
-  obj->obj_flags.wear_flags = ITEM_TAKE;
-  obj->obj_flags.value[0] = amount;
-  obj->obj_flags.cost = amount;
-  obj->item_number = -1;
-
-  obj->next = object_list;
-  object_list = obj;
-
-  return(obj);
-}
-#else
 #define OBJ_VNUM_MONEY_SOME	1540
 #define OBJ_VNUM_MONEY_ONE	9493
 struct obj_data *create_money( int amount )
@@ -2200,7 +2135,7 @@ struct obj_data *create_money( int amount )
     return obj;
 }
 
-#endif
+
 
 
 /* Generic Find, designed to find any object/character                    */
