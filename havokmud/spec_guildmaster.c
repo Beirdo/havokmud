@@ -826,7 +826,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
             }
 
             if (ch->specials.remortclass == PSI_LEVEL_IND + 1 &&
-                LearnSkill(ch, psiskills, arg, 
+                LearnSkill(ch, mainpsiskills, arg, 
                            GET_LEVEL(ch, PSI_LEVEL_IND), 
                            "The Psi Guildmaster", 0) ) {
                 return( TRUE );
