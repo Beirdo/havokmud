@@ -1042,23 +1042,19 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	struct follow_type *f;
 	int total, pc, group_count=0, group_max_level=1; /* the highest level number the group has */
 
-log("1");
 	if (!(k=ch->master)) {
 		k = ch;
-log("2");
 	}
 	/* can't get exp for killing players */
 
 	if (!IS_NPC(victim)) {
 		return;
-log("3");
 	}
 
 	if (IS_AFFECTED(k, AFF_GROUP) && (k->in_room == ch->in_room))
 		no_members = GET_AVE_LEVEL(k);
 	else {
 		no_members = 0;
-log("4");
 	}
 
 	pc = FALSE;
@@ -1113,7 +1109,6 @@ log("4");
 		act(buf, FALSE, k, 0, 0, TO_CHAR);
 		gain_exp(k,total);
 		change_alignment(k, victim);
-log("5");
 	}
 
 	for (f=k->followers; f; f=f->next) {
@@ -1146,7 +1141,6 @@ log("5");
 				act(buf, FALSE, f->follower,0,0,TO_CHAR);
 				gain_exp(f->follower,  total);
 				change_alignment(f->follower, victim);
-log("6");
 			} else {
 				if (f->follower->master && IS_AFFECTED(f->follower, AFF_CHARM)) {
 					total = RatioExp(f->follower->master, victim, total);
@@ -1163,7 +1157,6 @@ log("6");
 						act(buf, FALSE, f->follower->master,0,f->follower,TO_CHAR);
 						gain_exp(f->follower->master,  total);
 						change_alignment(f->follower, victim);
-log("7");
 					}
 				} else {
 					total = RatioExp(f->follower, victim, total);
@@ -1185,7 +1178,6 @@ log("7");
 					gain_exp(f->follower,  total);
 
 					change_alignment(f->follower, victim);
-log("8");
 				}
 			}
 		}
