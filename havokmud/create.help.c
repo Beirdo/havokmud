@@ -793,7 +793,7 @@ void HelpEdit(struct char_data *ch, char *arg)
         ChangeHelpWizard(ch, arg, 0);
         break;
     default:
-        log("Got to bad spot in HelpEdit");
+        Log("Got to bad spot in HelpEdit");
         break;
     }
 }

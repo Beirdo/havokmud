@@ -2951,7 +2951,7 @@ void            do_ventriloquate(struct char_data *ch, char *argument, int cmd);
 /*
  * From utility.c 
  */
-void            log(char *s);
+void            Log(char *s);
 int             advatoi(const char *s);
 float           arg_to_float(char *arg);
 int             fighting_in_room(int room_n);
@@ -3561,6 +3561,11 @@ int             ships_helm(struct char_data *ch, int cmd, char *argument,
                            struct obj_data *obj, int type);
 int             embark_ship(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
+
+/*
+ * TOTALLY break log() if someone tries to use it!  Use Log()
+ */
+#define log(x) use_Log error
 
 #endif
 

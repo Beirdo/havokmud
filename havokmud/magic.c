@@ -3151,7 +3151,7 @@ void spell_lightning_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_lightning, magic.c");
+        Log("!ch || !victim in breath_lightning, magic.c");
         return;
     }
 
@@ -3206,12 +3206,12 @@ void spell_disintegrate(byte level, struct char_data *ch,
     char            buf[MAX_STRING_LENGTH + 30];
 
     if (!ch) {
-        log("!ch in spell_disintegrate");
+        Log("!ch in spell_disintegrate");
         return;
     }
 
     if (!victim) {
-        log("!victim in spell_disintegrate");
+        Log("!victim in spell_disintegrate");
         return;
     }
 
@@ -3273,7 +3273,7 @@ void spell_disintegrate(byte level, struct char_data *ch,
              */
             sprintf(buf, "%s just hit %s with a disintegrate outside the "
                          "arena!", ch, victim);
-            log(buf);
+            Log(buf);
         }
     } else {
         /* 
@@ -3296,7 +3296,7 @@ void spell_dehydration_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_dehydration, magic.c");
+        Log("!ch || !victim in breath_dehydration, magic.c");
         return;
     }
 
@@ -3327,7 +3327,7 @@ void spell_vapor_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_vapor, magic.c");
+        Log("!ch || !victim in breath_vapor, magic.c");
         return;
     }
 
@@ -3358,7 +3358,7 @@ void spell_sound_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_sound, magic.c");
+        Log("!ch || !victim in breath_sound, magic.c");
         return;
     }
 
@@ -3436,7 +3436,7 @@ void spell_sleep_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_sleep, magic.c");
+        Log("!ch || !victim in breath_sleep, magic.c");
         return;
     }
 
@@ -3468,7 +3468,7 @@ void spell_light_breath(byte level, struct char_data *ch,
     struct obj_data *burn;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_light, magic.c");
+        Log("!ch || !victim in breath_light, magic.c");
         return;
     }
 
@@ -3520,7 +3520,7 @@ void spell_dark_breath(byte level, struct char_data *ch,
     int             hpch;
 
     if (!victim || !ch) {
-        log("!ch || !victim in breath_dark, magic.c");
+        Log("!ch || !victim in breath_dark, magic.c");
         return;
     }
 

@@ -152,7 +152,7 @@ void TrapDamage(struct char_data *v, int damtype, int amnt,
         if (!IS_NPC(v) && real_roomp(v->in_room)->name) {
             sprintf(buf, "%s killed by a trap at %s",
                     GET_NAME(v), real_roomp(v->in_room)->name);
-            log(buf);
+            Log(buf);
         }
         die(v, '\0');
     }

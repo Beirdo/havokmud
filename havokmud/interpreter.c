@@ -479,7 +479,7 @@ int color_strlen(struct char_data *ch, char *arg, int cmd)
     }
     rel = abs - (6 * num);
     if (rel < 0) {
-        log("erps, oddness in color_strlen");
+        Log("erps, oddness in color_strlen");
         return (0);
     }
     return (rel);
@@ -603,7 +603,7 @@ void command_interpreter(struct char_data *ch, char *argument)
     if (!IS_NPC(ch)) {
         found = FALSE;
         if ((!ch->player.name[0]) || (ch->player.name[0] < ' ')) {
-            log("Error in character name.  Changed to 'Error'");
+            Log("Error in character name.  Changed to 'Error'");
             if (ch->player.name) {
                 free(ch->player.name);
             }
@@ -618,7 +618,7 @@ void command_interpreter(struct char_data *ch, char *argument)
             }
         }
         if (found) {
-            log("Error in character name.  Changed to 'Error'");
+            Log("Error in character name.  Changed to 'Error'");
             if (ch->player.name) {
                 free(ch->player.name);
             }
@@ -1975,7 +1975,7 @@ int _check_ass_name(char *name)
     }
     if (!shitlist) {
         if ((f = fopen(ASSHOLE_FNAME, "rt")) == NULL) {
-            log("can't open asshole names list");
+            Log("can't open asshole names list");
             shitlist = (struct shitlist *) calloc(1, sizeof(struct shitlist));
             *shitlist[0].name = 0;
             return 0;
@@ -2021,7 +2021,7 @@ int _check_ass_name(char *name)
             sprintf(buf, "mode: %d, name: %s", shitlist[i].how, 
                     shitlist[i].name);
 #if 0
-            log(buf);
+            Log(buf);
 #endif
         }
     }
@@ -2059,7 +2059,7 @@ int _check_ass_name(char *name)
             }
             break;
         default:
-            log("Grr! invalid value in shitlist, interpreter.c _parse_name");
+            Log("Grr! invalid value in shitlist, interpreter.c _parse_name");
             return 1;
         }
     }
@@ -2320,7 +2320,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
             sprintf(buf, "%s [%s] new player.", GET_NAME(d->character),
                     d->host);
-            log(buf);
+            Log(buf);
 
             /*
              * now that classes are set, initialize
@@ -2602,7 +2602,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 SEND_TO_Q("Wrong password.\n\r", d);
                 sprintf(buf, "%s entered a wrong password",
                         GET_NAME(d->character));
-                log(buf);
+                Log(buf);
                 close_socket(d);
                 return;
             }
@@ -2688,7 +2688,7 @@ void nanny(struct descriptor_data *d, char *arg)
                         act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
                         sprintf(buf, "%s[%s] has reconnected.",
                                 GET_NAME(d->character), d->host);
-                        log(buf);
+                        Log(buf);
                     }
                     return;
                 }
@@ -2700,7 +2700,7 @@ void nanny(struct descriptor_data *d, char *arg)
                     d->character->invis_level <= 58) {
                     sprintf(buf, "%s[%s] has connected.\n\r",
                             GET_NAME(d->character), d->host);
-                    log(buf);
+                    Log(buf);
                 }
             } else {
                 if (!IS_IMMORTAL(d->character) || 
@@ -2709,7 +2709,7 @@ void nanny(struct descriptor_data *d, char *arg)
                             " from[%s]",
                             GET_NAME(d->character), d->host,
                             d->character->specials.hostip);
-                    log(buf);
+                    Log(buf);
                 }
                 SEND_TO_Q(buf, d);
             }
@@ -3012,7 +3012,7 @@ void nanny(struct descriptor_data *d, char *arg)
             } else {
                 sprintf(buf, "%s [%s] new player.",
                         GET_NAME(d->character), d->host);
-                log(buf);
+                Log(buf);
                 /*
                  ** now that classes are set, initialize
                  */
@@ -3562,7 +3562,7 @@ void nanny(struct descriptor_data *d, char *arg)
                     log_sev(buf, 1);
                     log_sev("type 'Wizhelp Authorize' for other commands", 1);
                 } else {
-                    log("Initial character.  Authorized Automatically");
+                    Log("Initial character.  Authorized Automatically");
                     d->character->generic = NEWBIE_START + 5;
                 }
             }
@@ -3659,7 +3659,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
         if (!strcmp(arg, "yes") && strcmp("Guest", GET_NAME(d->character))) {
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
-            log(buf);
+            Log(buf);
             for (i = 0; i <= top_of_p_table; i++) {
                 if (!str_cmp((player_table + i)->name, 
                              GET_NAME(d->character))) {
@@ -3728,7 +3728,7 @@ void nanny(struct descriptor_data *d, char *arg)
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
                 sprintf(buf, "Loading %s's equipment", 
                         d->character->player.name);
-                log(buf);
+                Log(buf);
             }
 
             count_players = 1;
@@ -3929,7 +3929,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
     default:
         sprintf(buf, "Nanny: illegal state of con'ness (%d)", STATE(d));
-        log(buf);
+        Log(buf);
         abort();
         break;
     }

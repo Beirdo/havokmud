@@ -30,9 +30,9 @@ INSTALLATION INSTRUCTIONS
     system is active or not.  Include mail.h in db.c.  Somewhere in the mud's
     bootup sequence, call the mail system's boot-up function like this:
 
-        log("Booting mail system.");
+        Log("Booting mail system.");
         if (!scan_file()) {
-           log("   Mail system error -- mail system disabled!");
+           Log("   Mail system error -- mail system disabled!");
            no_mail = 1;
         }
 
@@ -140,7 +140,7 @@ mail_index_type *find_char_in_index(char *searchee)
     mail_index_type *temp_rec;
 
     if (!searchee) {
-        log("SYSERR: Mail system -- non fatal error #1.");
+        Log("SYSERR: Mail system -- non fatal error #1.");
         return 0;
     }
 
@@ -162,7 +162,7 @@ void write_to_file(void *buf, int size, long filepos)
     mail_file = fopen(MAIL_FILE, "r+b");
 
     if (filepos % BLOCK_SIZE) {
-        log("SYSERR: Mail system -- fatal error #2!!!");
+        Log("SYSERR: Mail system -- fatal error #2!!!");
         no_mail = 1;
         return;
     }
@@ -185,7 +185,7 @@ void read_from_file(void *buf, int size, long filepos)
     mail_file = fopen(MAIL_FILE, "r+b");
 
     if (filepos % BLOCK_SIZE) {
-        log("SYSERR: Mail system -- fatal error #3!!!");
+        Log("SYSERR: Mail system -- fatal error #3!!!");
         no_mail = 1;
         return;
     }
@@ -204,7 +204,7 @@ void index_mail(char *raw_name_to_index, long pos)
     int             i;
 
     if (!raw_name_to_index || !*raw_name_to_index) {
-        log("SYSERR: Mail system -- non-fatal error #4.");
+        Log("SYSERR: Mail system -- non-fatal error #4.");
         return;
     }
 
@@ -251,7 +251,7 @@ int scan_mail_file(void)
     char            buf[100];
 
     if (!(mail_file = fopen(MAIL_FILE, "r"))) {
-        log("Mail file non-existant... creating new file.");
+        Log("Mail file non-existant... creating new file.");
         mail_file = fopen(MAIL_FILE, "w");
         fclose(mail_file);
         return 1;
@@ -270,15 +270,15 @@ int scan_mail_file(void)
     file_end_pos = ftell(mail_file);
     fclose(mail_file);
     sprintf(buf, "   %ld bytes read.", file_end_pos);
-    log(buf);
+    Log(buf);
     if (file_end_pos % BLOCK_SIZE) {
-        log("SYSERR: Error booting mail system -- Mail file corrupt!");
-        log("SYSERR: Mail disabled!");
+        Log("SYSERR: Error booting mail system -- Mail file corrupt!");
+        Log("SYSERR: Mail disabled!");
         return 0;
     }
 
     sprintf(buf, "   Mail file read -- %d messages.", total_messages);
-    log(buf);
+    Log(buf);
     return 1;
 }
 
@@ -313,7 +313,7 @@ void store_mail(char *to, char *from, char *message_pointer)
     assert(sizeof(header_block_type) == BLOCK_SIZE);
 
     if (!*from || !*to || !*message_pointer) {
-        log("SYSERR: Mail system -- non-fatal error #5.");
+        Log("SYSERR: Mail system -- non-fatal error #5.");
         return;
     }
 
@@ -439,17 +439,17 @@ char           *read_delete(char *recipient, char *recipient_formatted)
      */
 
     if (!*recipient || !*recipient_formatted) {
-        log("SYSERR: Mail system -- non-fatal error #6.");
+        Log("SYSERR: Mail system -- non-fatal error #6.");
         return 0;
     }
 
     if (!(mail_pointer = find_char_in_index(recipient))) {
-        log("SYSERR: Mail system -- post office spec_proc error?  Error #7.");
+        Log("SYSERR: Mail system -- post office spec_proc error?  Error #7.");
         return 0;
     }
 
     if (!(position_pointer = mail_pointer->list_start)) {
-        log("SYSERR: Mail system -- non-fatal error #8.");
+        Log("SYSERR: Mail system -- non-fatal error #8.");
         return 0;
     }
 
@@ -512,9 +512,9 @@ char           *read_delete(char *recipient, char *recipient_formatted)
     read_from_file(&header, BLOCK_SIZE, mail_address);
 
     if (header.block_type != HEADER_BLOCK) {
-        log("SYSERR: Oh dear.");
+        Log("SYSERR: Oh dear.");
         no_mail = 1;
-        log("SYSERR: Mail system disabled!  -- Error #9.");
+        Log("SYSERR: Mail system disabled!  -- Error #9.");
         return 0;
     }
 

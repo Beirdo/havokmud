@@ -735,7 +735,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     stop_fighting(ch);
                 }
                 if (ch->attackers) {
-                    log("fleeing dude still being attacked?! Could be bad.");
+                    Log("fleeing dude still being attacked?! Could be bad.");
                 }
                 if (IS_PC(ch)) {
                     if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) &&
@@ -1042,7 +1042,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                         (obj->item_number >= 0) ?
                          obj_index[obj->item_number].virtual :
                          0);
-                log(buf);
+                Log(buf);
                 return;
             }
             if (obj->obj_flags.value[0] >= obj->obj_flags.value[1]) {
@@ -1089,7 +1089,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                              "value: %s, vnum %d.",
                         GET_NAME(ch), obj->short_description,
                         obj->item_number);
-                log(buf);
+                Log(buf);
                 return;
             }
             cmp = read_object(obj->item_number, REAL);
@@ -1098,7 +1098,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                              "value: %s, vnum %d.",
                         GET_NAME(ch), obj->short_description,
                         obj->item_number);
-                log(buf);
+                Log(buf);
                 extract_obj(cmp);
                 return;
             }
@@ -1534,7 +1534,7 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
         if (count < 1) {
             sprintf(buf, "monster %s has no breath weapons",
                     ch->player.short_descr);
-            log(buf);
+            Log(buf);
             send_to_char("Hey, why don't you have any breath weapons!?\n\r",
                          ch);
             return;
@@ -2388,7 +2388,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
         sprintf(arg1, "(%s) can't load (%s) because it requires (%d) strength "
                       "to wield",
                 GET_NAME(ch), fw->name, fw->obj_flags.value[0]);
-        log(arg1);
+        Log(arg1);
         send_to_char("You aren't strong enough to draw such a mighty "
                      "weapon.\n\r", ch);
         return;
@@ -2680,6 +2680,7 @@ void do_induct(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     char            name[256];
+
     dlog("in do_induct");
 
     if (!ch->skills) {
@@ -2720,6 +2721,7 @@ void do_expel(struct char_data *ch, char *argument, int cmd)
 
     struct char_data *victim;
     char            name[256];
+
     dlog("in do_expel");
 
     if (!ch->skills) {
@@ -2764,6 +2766,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
     struct descriptor_data *i;
     extern int      Silence;
     int             clannum = 0;
+
     dlog("in do_chat");
 
     if ((!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) ||

@@ -445,7 +445,7 @@ void ObjEdit(struct char_data *ch, char *arg)
         ChangeObjSpecials(ch, arg, 0);
         break;
     default:
-        log("Got to bad spot in ObjEdit");
+        Log("Got to bad spot in ObjEdit");
         break;
     }
 }

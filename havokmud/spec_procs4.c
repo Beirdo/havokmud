@@ -841,7 +841,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         t = ch->specials.fighting;
         if (t->in_room == ch->in_room) {
 #if 0
-            log("woah, you dare fight me? dead you are");
+            Log("woah, you dare fight me? dead you are");
 #endif
             act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
             act("You are engulfed by $n, and are quickly disassembled.",
@@ -856,7 +856,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
              */
             rp = real_roomp(ch->in_room);
             if (!rp) {
-                log("invalid room in creeping death?! oddness!");
+                Log("invalid room in creeping death?! oddness!");
                 return (FALSE);
             }
 
@@ -879,7 +879,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
 
         if (GET_HIT(ch) < 0) {
 #if 0
-            log("death due to lack of hps");
+            Log("death due to lack of hps");
 #endif
             act("$n dissipates, you breathe a sigh of relief.", FALSE, ch,
                 0, 0, TO_ROOM);
@@ -924,7 +924,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
          */
         for (t = real_roomp(ch->in_room)->people; t; t = next) {
             if (!t) {
-                log("found no mobiles in creeping death?! oddness!");
+                Log("found no mobiles in creeping death?! oddness!");
                 return (FALSE);
             }
 
@@ -944,7 +944,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                  */
                 rp = real_roomp(ch->in_room);
                 if (!rp) {
-                    log("invalid room called in creeping death?! oddness!");
+                    Log("invalid room called in creeping death?! oddness!");
                     return (FALSE);
                 }
 
@@ -973,7 +973,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
             }
         }
 #if 0
-        log("finished finding targets, wait for next func call");
+        Log("finished finding targets, wait for next func call");
 #endif
     }
 }
@@ -1277,11 +1277,11 @@ int generate_legend_statue(void)
                                     "slayer.", GET_NAME(tmp));
                 }
                 if (itype == 0) {
-                    log("Oddness in statue generation, no type found");
+                    Log("Oddness in statue generation, no type found");
                     return (TRUE);
                 }
                 if (rnum == 0) {
-                    log("Oddness in statue generation, no rnum found");
+                    Log("Oddness in statue generation, no rnum found");
                     return (TRUE);
                 }
 
@@ -1308,7 +1308,7 @@ int generate_legend_statue(void)
                     }
 
                     if (obj->ex_description) {
-                        log("trying to string invalid item in statue "
+                        Log("trying to string invalid item in statue "
                             "generation");
                         return (TRUE);
                     } else {
@@ -1340,13 +1340,13 @@ int generate_legend_statue(void)
             }
             free(tmp);
         } else {
-            log("screw up bigtime in load_char");
+            Log("screw up bigtime in load_char");
             return (TRUE);
         }
     }
     sprintf(buf, "processed %d pfiles for legend statue check", 
                  top_of_p_table + 1);
-    log(buf);
+    Log(buf);
     return( TRUE );
 }
 
@@ -1405,7 +1405,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
                 obj = read_object(berry, VIRTUAL);
                 obj_to_char(obj, ch);
             } else {
-                log("no berries found for pick_berries");
+                Log("no berries found for pick_berries");
             }
         } else {
             act("You try to pick some berries, but hurt yourself on a thorn.",
@@ -1443,7 +1443,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
             if (obj = read_object(ACORN, VIRTUAL)) {
                 obj_to_char(obj, ch);
             } else {
-                log("no acorns found for pick_acorns");
+                Log("no acorns found for pick_acorns");
             }
         } else {
             act("You try to pick an acorn, but the one you want hangs just out"
@@ -1616,7 +1616,7 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
                          "expecting something.\n\r", ch);
             return (TRUE);
         } else {
-            log("could not find GNOME_MOB in gnome_home proc");
+            Log("could not find GNOME_MOB in gnome_home proc");
         }
     }
     return (FALSE);
@@ -1654,12 +1654,12 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room) {
         rp = real_roomp(ch->in_room);
     } else {
-        log("weirdness in gnome_collector, char not in a room");
+        Log("weirdness in gnome_collector, char not in a room");
         return (FALSE);
     }
 
     if (!rp) {
-        log("weirdness in gnome_collector, char's room does not exist");
+        Log("weirdness in gnome_collector, char's room does not exist");
         return (FALSE);
     }
 
@@ -1672,17 +1672,17 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     if (!(gnome = get_char_room("gnome female collector", ch->in_room))) {
         sprintf(buf, "gnome_collector proc is attached to a mob without "
                      "proper name, in room %d", ch->in_room);
-        log(buf);
+        Log(buf);
         return (FALSE);
     }
 
     if (!gnome) {
-        log("weirdness in gnome_collector, gnome found but not assigned");
+        Log("weirdness in gnome_collector, gnome found but not assigned");
         return (FALSE);
     }
 
     if (!IS_NPC(gnome)) {
-        log("weirdness in gnome_collector, gnome is not a mob");
+        Log("weirdness in gnome_collector, gnome is not a mob");
         return (FALSE);
     }
 
@@ -2098,12 +2098,12 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                                  "value: %s, vnum %d.",
                             GET_NAME(ch), obj->short_description,
                             obj->item_number);
-                    log(buf);
+                    Log(buf);
                     return;
                 }
 
                 if (!(cmp = read_object(obj->item_number, REAL))) {
-                    log("Could not load comparison weapon in do_sharpen");
+                    Log("Could not load comparison weapon in do_sharpen");
                     return;
                 }
 
@@ -2112,7 +2112,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                                  "value: %s, vnum %d.",
                             GET_NAME(ch), obj->short_description,
                             obj->item_number);
-                    log(buf);
+                    Log(buf);
                     extract_obj(cmp);
                     return;
                 }
@@ -2301,7 +2301,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                  */
                 rp = real_roomp(CHESTS_ROOM);
                 if (!rp) {
-                    log("no room found for chest storage in cog_room proc");
+                    Log("no room found for chest storage in cog_room proc");
                     return (TRUE);
                 }
 
@@ -2319,7 +2319,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                         return (TRUE);
                     }
                 }
-                log("Couldn't find appropriate chest in CHESTS_ROOM");
+                Log("Couldn't find appropriate chest in CHESTS_ROOM");
             } else {
                 cog_sequence = -1;
                 send_to_room("As the cog moves into place, the hum of of the "
@@ -2327,7 +2327,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
             }
             break;
         default:
-            log("got to bad spot in cog_room");
+            Log("got to bad spot in cog_room");
             break;
         }
         return (TRUE);
@@ -2479,7 +2479,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
         if (time_info.hours == 9) {
             spawnroom = real_roomp(SPAWNROOM);
             if (!spawnroom) {
-                log("No nightwalker spawnroom found, blame Ash.");
+                Log("No nightwalker spawnroom found, blame Ash.");
                 return (FALSE);
             }
 
@@ -2581,19 +2581,19 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
     rp = real_roomp(WAITROOM);
 
     if (!rp) {
-        log("No room found for timed_door proc");
+        Log("No room found for timed_door proc");
         return (FALSE);
     }
 
     exitp = rp->dir_option[doordir];
 
     if (!exitp) {
-        log("No exitp in said dir? Make that exit, Ash!");
+        Log("No exitp in said dir? Make that exit, Ash!");
         return (FALSE);
     }
 
     if (!exitp->exit_info) {
-        log("No exit_info in said dir? Ash must have made a really weird "
+        Log("No exit_info in said dir? Ash must have made a really weird "
             "room.");
         return (FALSE);
     }
@@ -2635,11 +2635,11 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
              */
             spawnroom = real_roomp(SPAWNROOM);
             if (!spawnroom) {
-                log("No nightwalker spawnroom found, blame Ash.");
+                Log("No nightwalker spawnroom found, blame Ash.");
                 return (FALSE);
             }
 #if 0
-            log("transferring nightwalkers");
+            Log("transferring nightwalkers");
 #endif
             while (spawnroom->people) {
                 nightwalker = spawnroom->people;
@@ -2727,7 +2727,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     if (!(yeelorn = FindMobInRoomWithFunction(ch->in_room, master_smith))) {
-        log("proc assigned to a mob that cannot be found?!");
+        Log("proc assigned to a mob that cannot be found?!");
         return (FALSE);
     }
 
@@ -3009,7 +3009,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                     obj_from_obj(i);
                     obj_to_char(i, ch);
                 } else {
-                    log("where is this item!?! bad spot in master_smith");
+                    Log("where is this item!?! bad spot in master_smith");
                     send_to_char("Ugh, something wrong with this proc, "
                                  "sorry.\n\r", ch);
                     return (TRUE);
@@ -3083,7 +3083,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 send_to_char("'Bout time yeh got on with yer adventuring' he "
                              "says, as he winks at you.\n\r", ch);
             } else {
-                log("could not load up prize for master_smith proc");
+                Log("could not load up prize for master_smith proc");
                 send_to_char("Ugh, something wrong with this proc, "
                              "sorry..\n\r", ch);
             }
@@ -4889,12 +4889,12 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room) {
         rp = real_roomp(ch->in_room);
     } else {
-        log("weirdness in shopkeeper, char not in a room");
+        Log("weirdness in shopkeeper, char not in a room");
         return (FALSE);
     }
 
     if (!rp) {
-        log("weirdness in shopkeeper, char's room does not exist");
+        Log("weirdness in shopkeeper, char's room does not exist");
         return (FALSE);
     }
 
@@ -4913,12 +4913,12 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
     shopkeep = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 
     if (!shopkeep) {
-        log("weirdness in shopkeeper, shopkeeper assigned but not found");
+        Log("weirdness in shopkeeper, shopkeeper assigned but not found");
         return (FALSE);
     }
 
     if (!IS_NPC(shopkeep)) {
-        log("weirdness in shopkeeper, shopkeeper is not a mob");
+        Log("weirdness in shopkeeper, shopkeeper is not a mob");
         return (FALSE);
     }
 
@@ -5173,7 +5173,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
     long            curr_time;
     struct tm      *t_info;
 
-    log("Knockproc");
+    Log("Knockproc");
     if (cmd != 429) {
         return (FALSE);
     }

@@ -9,7 +9,7 @@
 #define DIMD_CLOSED     3
 #define DIMD_CLOSING    4
 
-#define DIMDLOG(msg) log(msg)
+#define DIMDLOG(msg) Log(msg)
 
 #define UNDEFINED -1
 #define GET_KEYNAME(ch) GET_NAME(ch)

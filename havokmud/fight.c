@@ -256,7 +256,7 @@ void load_messages()
         fscanf(f1, " %d\n", &type);
 
         if (i >= MAX_MESSAGES) {
-            log("Too many combat messages.");
+            Log("Too many combat messages.");
             exit(0);
         }
 
@@ -341,14 +341,14 @@ int check_peaceful(struct char_data *ch, char *msg)
 void set_fighting(struct char_data *ch, struct char_data *vict)
 {
     if (ch->specials.fighting) {
-        log("Fighting character set to fighting another.");
+        Log("Fighting character set to fighting another.");
         return;
     }
 
     if (vict->attackers <= 5) {
         vict->attackers += 1;
     } else {
-        log("more than 6 people attacking one target");
+        Log("more than 6 people attacking one target");
     }
 
     if (A_NOASSIST(ch, vict)) {
@@ -408,14 +408,14 @@ void stop_fighting(struct char_data *ch)
     if (!ch->specials.fighting) {
         sprintf(buf, "%s not fighting at invocation of stop_fighting",
                 GET_NAME(ch));
-        log(buf);
+        Log(buf);
         return;
     }
 
     ch->specials.fighting->attackers -= 1;
 
     if (ch->specials.fighting->attackers < 0) {
-        log("too few people attacking");
+        Log("too few people attacking");
         ch->specials.fighting->attackers = 0;
     }
 
@@ -444,7 +444,7 @@ void stop_fighting(struct char_data *ch)
              */
         }
         if (!tmp) {
-            log("Char fighting not found Error (fight.c, stop_fighting)");
+            Log("Char fighting not found Error (fight.c, stop_fighting)");
             abort();
         }
         tmp->next_fighting = ch->next_fighting;
@@ -1590,7 +1590,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
      */
 
     if (!GET_POS(victim) > POSITION_DEAD) {
-        log("!GET_POS(victim) > POSITION_DEAD in fight.c");
+        Log("!GET_POS(victim) > POSITION_DEAD in fight.c");
         return (TRUE);
     }
 
@@ -1599,7 +1599,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type)
         type != SPELL_DISEASE && type != SPELL_DECAY && 
         type != SPELL_HEAT_STUFF && type != TYPE_SUFFERING) {
         sprintf(buf, "damage(,,,%d) called in PEACEFUL room", type);
-        log(buf);
+        Log(buf);
         return (TRUE);          
         /* 
          * true, they are denied from fighting 
@@ -1771,7 +1771,7 @@ void WeaponSkillCheck(struct char_data *ch)
             ch->weaponskills.grade8 = 1;
             ch->weaponskills.slot8 = weapontype;
         } else {
-            log("got to bad spot in WeaponSkillCheck");
+            Log("got to bad spot in WeaponSkillCheck");
             return;
         }
 
@@ -1825,7 +1825,7 @@ void WeaponSkillCheck(struct char_data *ch)
                 }
                 break;
             default:
-                log("odd spot in weapon increase");
+                Log("odd spot in weapon increase");
                 break;
             }
             send_to_char("Practice makes perfect!\n\r", ch);
@@ -2472,7 +2472,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
                             sprintf(buf, "Setting MURDER bit on %s for "
                                          "killing %s.",
                                     GET_NAME(ch), GET_NAME(victim));
-                            log(buf);
+                            Log(buf);
                         }
                     }
                     if (IS_PC(ch) && IS_PC(victim) && 
@@ -2709,7 +2709,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
     rp = real_roomp(ch->in_room);
     if (rp && rp->room_flags & PEACEFUL && PeacefulWorks) {
         sprintf(buf, "hit() called in PEACEFUL room");
-        log(buf);
+        Log(buf);
         stop_fighting(ch);
         return (TRUE);
     }
@@ -2724,7 +2724,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
         (ch != victim) && !CanFightEachOther(ch, victim)) {
         sprintf(buf, "%s was found fighting %s!", GET_NAME(ch),
                 GET_NAME(victim));
-        log(buf);
+        Log(buf);
         act("You get an eerie feeling you should not be doing this, you FLEE!",
             FALSE, ch, 0, victim, TO_CHAR);
         act("$n seems about to attack you, then looks very scared!", FALSE,
@@ -2736,7 +2736,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
     if ((ch->in_room != victim->in_room) && !DistanceWeapon) {
         sprintf(buf, "NOT in same room when fighting : %s, %s",
                 ch->player.name, victim->player.name);
-        log(buf);
+        Log(buf);
         stop_fighting(ch);
         return (TRUE);
     }
@@ -3301,13 +3301,13 @@ void perform_violence(int pulse)
          * assert(ch->specials.fighting); 
          */
         if (!ch->specials.fighting) {
-            log("!ch->specials.fighting in perform violence fight.c");
+            Log("!ch->specials.fighting in perform violence fight.c");
             return;
         } else if (rp && rp->room_flags & PEACEFUL) {
             sprintf(buf, "perform_violence() found %s fighting in a PEACEFUL "
                          "room.", ch->player.name);
             stop_fighting(ch);
-            log(buf);
+            Log(buf);
         } else if (ch == ch->specials.fighting) {
             stop_fighting(ch);
         } else {
@@ -3863,7 +3863,7 @@ struct char_data *FindVictim(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("/* No room??? Crash??? */");
+        Log("/* No room??? Crash??? */");
 #endif        
         return (0);
     }
@@ -4054,7 +4054,7 @@ struct char_data *FindVictim(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("No room data in FindVictim ??Crash???");
+        Log("No room data in FindVictim ??Crash???");
 #endif        
         return (0);
     }
@@ -4249,7 +4249,7 @@ struct char_data *FindAnyVictim(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("No room data in FindMetaVictim ??Crash???");
+        Log("No room data in FindMetaVictim ??Crash???");
 #endif        
         return (0);
     }
@@ -4833,7 +4833,7 @@ void DamageAllStuff(struct char_data *ch, int dam_type)
                 if ((obj = unequip_char(ch, j)) != NULL) {
                     MakeScrap(ch, NULL, obj);
                 } else {
-                    log("hmm, really wierd in DamageAllStuff!");
+                    Log("hmm, really wierd in DamageAllStuff!");
                 }
             }
         }
@@ -5284,7 +5284,7 @@ struct char_data *FindAnAttacker(struct char_data *ch)
         return (0);
     }
     if (!ch) {
-        log("Findanattacker!!!");
+        Log("Findanattacker!!!");
         return (0);
     }
 
@@ -5547,7 +5547,7 @@ struct char_data *FindMetaVictim(struct char_data *ch)
 
     rp = real_roomp(ch->in_room);
     if (!rp) {
-        // log("No room data in FindMetaVictim ??Crash???");
+        // Log("No room data in FindMetaVictim ??Crash???");
         return (0);
     }
 
@@ -5641,7 +5641,7 @@ void NailThisSucker(struct char_data *ch)
     if (IS_SET(rp->room_flags, DEATH)) {
         sprintf(buf, "%s hit a DeathTrap in room %s[%ld]\r\n",
                 GET_NAME(ch), real_roomp(room_num)->name, room_num);
-        log(buf);
+        Log(buf);
         for (obj = real_roomp(room_num)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
 #if 0            

@@ -244,7 +244,7 @@ void RoomEdit(struct char_data *ch, char *arg)
         ChangeExitNumber(real_roomp(ch->in_room), ch, arg, 0);
         break;
     default:
-        log("Got to bad spot in RoomEdit");
+        Log("Got to bad spot in RoomEdit");
         break;
     }
 }

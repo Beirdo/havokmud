@@ -986,7 +986,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
              */
 
             if (GetMaxLevel(tmp) <= 1) {
-                log("Strahd tried to drain char below level 1");
+                Log("Strahd tried to drain char below level 1");
             } else {
                 /*
                  * fix this later...  
@@ -1041,7 +1041,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                  * randomise the locations! 
                  */
 
-                log("Loading Ravenloft random location items.");
+                Log("Loading Ravenloft random location items.");
                 /*
                  * place sun sword ... 
                  */
@@ -1094,7 +1094,7 @@ int banshee(struct char_data *ch, int cmd, char *arg,
         } else {
             tmp = ch->specials.fighting;
             if (GetMaxLevel(tmp) <= 1) {
-                log("Banshee tried to drain char below level 1");
+                Log("Banshee tried to drain char below level 1");
             } else {
                 act("$n bites $N who looks drained!", FALSE, ch, 0, tmp,
                     TO_ROOM);
@@ -3005,7 +3005,7 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
 
         vict = ch->specials.fighting;
         if (!vict) {
-            log("!vict in paladin");
+            Log("!vict in paladin");
             return (FALSE);
         }
 
@@ -3599,7 +3599,7 @@ int BerserkerItem(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!IS_SET(ch->specials.affected_by2, AFF2_BERSERK)) {
-            log("trying to berserk because of item ");
+            Log("trying to berserk because of item ");
             /*
              * not berserked go berserk! 
              */
@@ -5633,7 +5633,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
                          "%d xps, %d gold.",
                     GET_NAME(ch), tmp_con, GET_RCON(ch),
                     GET_RCON(ch) * 5000000, test);
-            log(buf);
+            Log(buf);
         }
         return (TRUE);
     } else {
@@ -7072,7 +7072,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 obj2 = read_object(itemgranted, VIRTUAL);
 
                 if (!obj2) {
-                    log("/* Error in questor mob.. Please report or make "
+                    Log("/* Error in questor mob.. Please report or make "
                         "the items.*/");
                     do_say(vict, "Blah.. Guess i don't have that.. Take this "
                                  "instead.", 0);
@@ -7835,12 +7835,12 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
                  */
                 obj = read_object(47914, VIRTUAL);
                 if (!obj) {
-                    log("No obj found in Vaelhar's proc");
+                    Log("No obj found in Vaelhar's proc");
                     return (FALSE);
                 }
 
                 if (!hero) {
-                    log("No hero found in Vaelhar's proc");
+                    Log("No hero found in Vaelhar's proc");
                     return (FALSE);
                 }
                 obj_to_char(obj, hero);
@@ -8087,7 +8087,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
          */
         win = read_object(randomitem(), VIRTUAL);
         if (!win) {
-            log("Invalid item in lennyas altar proc");
+            Log("Invalid item in lennyas altar proc");
             return (FALSE);
         }
         obj_to_obj(win, obj);
@@ -8252,7 +8252,7 @@ int applepie(struct char_data *ch, int cmd, char *argument,
         hambre = get_char_vis_world(ch, "guardian gluttony Hambre 14000", NULL);
 
         if (!hambre) {
-            log("No Hambre found in applepie proc.");
+            Log("No Hambre found in applepie proc.");
             return (FALSE);
         }
 
@@ -8261,7 +8261,7 @@ int applepie(struct char_data *ch, int cmd, char *argument,
 
         if (!apple) {
 #if 0            
-            log("No apple found in applepie proc.");
+            Log("No apple found in applepie proc.");
 #endif            
             return (TRUE);
         }
@@ -8434,7 +8434,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
         toRoom = 51868;
     }
     if (toRoom == 0) {
-        log("Screwup in finding the right room to transport to, trinketlooter");
+        Log("Screwup in finding the right room to transport to, trinketlooter");
         return (FALSE);
     }
 

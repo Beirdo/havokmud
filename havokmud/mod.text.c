@@ -192,7 +192,7 @@ void TfdEdit(struct char_data *ch, char *arg)
         ChangeTfdBody(ch, arg, 0);
         break;
     default:
-        log("Got to bad spot in TfdEdit");
+        Log("Got to bad spot in TfdEdit");
         break;
     }
 }

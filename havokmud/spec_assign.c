@@ -1471,7 +1471,7 @@ void assign_mobiles()
         if (rnum < 0) {
             sprintf(buf, "mobile_assign: Mobile %d not found in database.",
                     specials[i].vnum);
-            log(buf);
+            Log(buf);
         } else {
             mob_index[rnum].func = specials[i].proc;
         }
@@ -1547,7 +1547,7 @@ void assign_objects()
         if (rnum < 0) {
             sprintf(buf, "object_assign: Object %d not found in database.",
                     specials[i].vnum);
-            log(buf);
+            Log(buf);
         } else {
             obj_index[rnum].func = specials[i].proc;
         }
@@ -1760,7 +1760,7 @@ void assign_rooms()
     for (i = 0; specials[i].vnum >= 0; i++) {
         rp = real_roomp(specials[i].vnum);
         if (rp == NULL) {
-            log("assign_rooms: unknown room");
+            Log("assign_rooms: unknown room");
         } else
             rp->funct = specials[i].proc;
     }

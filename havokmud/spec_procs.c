@@ -2210,7 +2210,7 @@ int Ringwraith(struct char_data *ch, int cmd, char *arg,
         obj_to_char(ring, ch);
         act("$n gets the Ring.", FALSE, ch, NULL, 0, TO_ROOM);
     } else {
-        log("a One Ring was completely disconnected!?");
+        Log("a One Ring was completely disconnected!?");
         wh->ringnumber = 0;
     }
     return TRUE;
@@ -4263,7 +4263,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
              */
             GET_HIT(targ) = 0;
             sprintf(buf, "%s killed by being swallowed whole", GET_NAME(targ));
-            log(buf);
+            Log(buf);
             die(targ, '\0');
 
             /*
@@ -5098,7 +5098,7 @@ int trapper(struct char_data *ch, int cmd, char *arg,
             act("$n is dead!", FALSE, ch->specials.fighting, 0, ch, TO_ROOM);
             sprintf(buf, "%s has suffocated to death.",
                     GET_NAME(ch->specials.fighting));
-            log(buf);
+            Log(buf);
 
             die(ch->specials.fighting, '\0');
             ch->specials.fighting = 0x0;
@@ -5794,7 +5794,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         vict->generic = Valik_Wandering;
         break;
     default:
-        log("Ack! Foo! Heimdall screws up!");
+        Log("Ack! Foo! Heimdall screws up!");
         return (FALSE);
     }
     return (TRUE);
@@ -5835,7 +5835,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
          * Open the file, read the names into an array in the act pointer 
          */
         if (!(pass = fopen(RHYODIN_FILE, "r"))) {
-            log("Rhyodin access file unreadable or non-existant");
+            Log("Rhyodin access file unreadable or non-existant");
             ch->generic = -1;
             return (FALSE);
         }
@@ -5914,7 +5914,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
 
                 if (!IS_NPC(ch)) {
                     if (!(pass = fopen(RHYODIN_FILE, "a"))) {
-                        log("Couldn't open file for writing permanent Rhyodin "
+                        Log("Couldn't open file for writing permanent Rhyodin "
                             "passlist.");
                         return (FALSE);
                     }

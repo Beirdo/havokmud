@@ -819,7 +819,7 @@ int open_door(struct char_data *ch, int dir)
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
         sprintf(buf, "NULL rp in open_door() for %s.", PERS(ch, ch));
-        log(buf);
+        Log(buf);
     }
 
     exitp = rp->dir_option[dir];
@@ -866,7 +866,7 @@ int raw_open_door(struct char_data *ch, int dir)
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
         sprintf(buf, "NULL rp in open_door() for %s.", PERS(ch, ch));
-        log(buf);
+        Log(buf);
     }
 
     exitp = rp->dir_option[dir];
@@ -917,7 +917,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
     if (!cmdname) {
         sprintf(buf, "something really wrong happen in do_open_exit, "
                      "cmd:%d\r\n", cmd);
-        log(buf);
+        Log(buf);
         return;
     }
 
@@ -1164,7 +1164,7 @@ void raw_unlock_door(struct char_data *ch,
     } else {
         sprintf(buf, "Inconsistent door locks in rooms %ld->%ld",
                 ch->in_room, exitp->to_room);
-        log(buf);
+        Log(buf);
     }
 }
 
@@ -1186,7 +1186,7 @@ void raw_lock_door(struct char_data *ch,
     } else {
         sprintf(buf, "Inconsistent door locks in rooms %ld->%ld",
                 ch->in_room, exitp->to_room);
-        log(buf);
+        Log(buf);
     }
 }
 
@@ -1437,8 +1437,8 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                     rp = 0;
                     sprintf(tmp, "Bad ObjValue1 for portal object, vnum %ld",
                             obj_index[portal->item_number].virtual);
-                    log(tmp);
-                    log("char sent to void (room 0)");
+                    Log(tmp);
+                    Log("char sent to void (room 0)");
                 }
                 act("You step into $p and emerge elsewhere.\n\r", FALSE,
                     ch, portal, 0, TO_CHAR);

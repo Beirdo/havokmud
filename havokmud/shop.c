@@ -702,7 +702,7 @@ void assign_the_shopkeepers(void)
         if (shop_index[temp1].keeper == -1) {
             sprintf(buf, "Shop in room %d has NO shopkeeper\n",
                     shop_index[temp1].in_room);
-            log(buf);
+            Log(buf);
         } else {
             mob_index[shop_index[temp1].keeper].func = shop_keeper;
         }

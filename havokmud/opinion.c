@@ -470,7 +470,7 @@ struct char_data *FindAHatee(struct char_data *ch)
          tmp_ch =tmp_ch->next_in_room) {
 #endif
     if (!ch) {
-        log("2NO CHAR!!!");
+        Log("2NO CHAR!!!");
         return (0);
     }
     if (ch->in_room < 0) {
@@ -479,7 +479,7 @@ struct char_data *FindAHatee(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("No room data in FindAHatee ??Crash???");
+        Log("No room data in FindAHatee ??Crash???");
 #endif
         return (0);
     }

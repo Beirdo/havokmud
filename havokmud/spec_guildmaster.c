@@ -121,7 +121,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 break;
             default:
                 sprintf(buf, "Strangeness in sailor (%d)", number);
-                log(buf);
+                Log(buf);
                 send_to_char("'Ack!  I feel faint!'\n\r", ch);
                 return;
                 break;
@@ -292,7 +292,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 break;
             default:
                 sprintf(buf, "Strangeness in hunter (%d)", number);
-                log(buf);
+                Log(buf);
                 send_to_char("'Ack!  I feel faint!'\n\r", ch);
                 return (FALSE);
             }
@@ -1920,12 +1920,12 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
     }
 
     if (!guildmaster) {
-        log("weirdness in generic_guildmaster, assigned but not found");
+        Log("weirdness in generic_guildmaster, assigned but not found");
         return (FALSE);
     }
 
     if (!IS_NPC(guildmaster)) {
-        log("weirdness in guildmaster, is not a mob");
+        Log("weirdness in guildmaster, is not a mob");
         return (FALSE);
     }
 
@@ -1958,7 +1958,7 @@ int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
     } else if (IS_SET(guildmaster->specials.act, ACT_NECROMANCER)) {
         NecromancerGuildMaster(ch, cmd, 0, guildmaster, 0);
     } else {
-        log("guildmaster proc attached to mobile without a class, autoset to"
+        Log("guildmaster proc attached to mobile without a class, autoset to"
             " warrior");
         SET_BIT(guildmaster->specials.act, ACT_WARRIOR);
     }

@@ -60,10 +60,10 @@ void weight_change_object(struct obj_data *obj, int weight)
         if (obj->carried_by) {
             sprintf(buf, "Bad weight change on %s, carried by %s.", obj->name, 
                     obj->carried_by->player.name);
-            log(buf);
+            Log(buf);
         } else {
             sprintf(buf, "Bad weight change on %s.", obj->name);
-            log(buf);
+            Log(buf);
         }
     }
 
@@ -78,7 +78,7 @@ void weight_change_object(struct obj_data *obj, int weight)
         GET_OBJ_WEIGHT(obj) += weight;
         obj_to_obj(obj, tmp_obj);
     } else {
-        log("Unknown attempt to subtract weight from an object.");
+        Log("Unknown attempt to subtract weight from an object.");
     }
 }
 
@@ -1171,7 +1171,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         }
         break;
     default:{
-            log("Unknown type called in wear.");
+            Log("Unknown type called in wear.");
         }
         break;
     }
@@ -1599,11 +1599,11 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     if (minbid > 0) {
         if (auctioneer) {
             if (!(auctionobj = auctioneer->specials.auction)) {
-                log("weird in do_auction");
+                Log("weird in do_auction");
                 return;
             }
         } else {
-            log("weirder in do_auction");
+            Log("weirder in do_auction");
             return;
         }
         if (!bidder) {
@@ -1719,7 +1719,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(auctionobj = auctioneer->specials.auction)) {
-        log("auctionobj not found in do_bid");
+        Log("auctionobj not found in do_bid");
         return;
     }
 
@@ -1803,7 +1803,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
             if (bidder->specials.minbid > 0) {
                 GET_GOLD(bidder) += bidder->specials.minbid;
             } else {
-                log("previous bidder had a bid of less than 1 coin?!");
+                Log("previous bidder had a bid of less than 1 coin?!");
             }
             bidder->specials.minbid = 0;
             do_save(bidder, "", 0);
@@ -1848,7 +1848,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
                 if (bidder->specials.minbid > 0) {
                     GET_GOLD(bidder) += bidder->specials.minbid;
                 } else {
-                    log("previous bidder had a bid of less than 1 coin?!");
+                    Log("previous bidder had a bid of less than 1 coin?!");
                 }
                 bidder->specials.minbid = 0;
                 send_to_char("You are returned your deposit for this "

@@ -1353,7 +1353,7 @@ void night_watchman(void)
 
     if (t_info->tm_hour == 8 && t_info->tm_wday > 0 && t_info->tm_wday < 6) {
         if (t_info->tm_min > 50) {
-            log("Leaving the scene for the serious folks.");
+            Log("Leaving the scene for the serious folks.");
             send_to_all("Closing down. Thank you for flying DikuMUD.\n\r");
             mudshutdown = 1;
         } else if (t_info->tm_min > 40) {
@@ -1380,12 +1380,12 @@ void check_reboot()
     if ((t_info->tm_hour + 1) == REBOOT_AT && t_info->tm_min > 30) {
         if (boot = fopen("./reboot", "r")) {
             if (t_info->tm_min > 50) {
-                log("Reboot exists.");
+                Log("Reboot exists.");
                 fread(&dummy, sizeof(dummy), 1, boot);
                 if (!feof(boot)) {
-                    log("Reboot is nonempty.");
+                    Log("Reboot is nonempty.");
                     if (system("./reboot")) {
-                        log("Reboot script terminated abnormally");
+                        Log("Reboot script terminated abnormally");
                         send_to_all("The reboot was cancelled.\n\r");
                         system("mv ./reboot reboot.FAILED");
                         fclose(boot);
@@ -1491,7 +1491,7 @@ char           *nogames()
     FILE           *fl;
 
     if (fl = fopen("lib/nogames", "r")) {
-        log("/usr/games/nogames exists");
+        Log("/usr/games/nogames exists");
         fgets(text, fl);
         return (text);
         fclose(fl);

@@ -2045,7 +2045,7 @@ int ValidRoom(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("/* no room? BLAH!!! least it never crashed */");
+        Log("/* no room? BLAH!!! least it never crashed */");
 #endif        
         return (FALSE);
     }
@@ -2471,7 +2471,7 @@ void stop_memorizing(struct char_data *ch)
              */
         }
         if (!tmp) {
-            log("Char memorize not found Error (spell_parser.c, "
+            Log("Char memorize not found Error (spell_parser.c, "
                 "stop_memorizing)");
             SpellWearOff(SKILL_MEMORIZE, ch);
             affect_from_char(ch, SKILL_MEMORIZE);
@@ -2685,7 +2685,7 @@ bool circle_follow(struct char_data *ch, struct char_data *victim)
             return (TRUE);
         }
         if (counter > 20) {
-            log("Possible infinite Loop in circle follower?");
+            Log("Possible infinite Loop in circle follower?");
             return (TRUE);
         }
     }
@@ -2857,7 +2857,7 @@ void add_follower(struct char_data *ch, struct char_data *leader)
             TO_CHAR);
         sprintf(buf, "%s cannot follow %s for some reason", GET_NAME(ch),
                 GET_NAME(leader));
-        log(buf);
+        Log(buf);
         return;
     }
 
@@ -3019,7 +3019,7 @@ bool saves_spell(struct char_data *ch, sh_int save_type)
             saving_throws[BestMagicClass(ch)][save_type]
             [GET_LEVEL(ch,BestMagicClass(ch))], 
             ch->specials.apply_saving_throw[save_type], saveroll, didsave);
-    log(buf); return(didsave);
+    Log(buf); return(didsave);
 #endif
 }
 
@@ -3291,7 +3291,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
             if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch) < 59) {
                 sprintf(buf, "%s cast %s", GET_NAME(ch), ori_argument);
-                log(buf);
+                Log(buf);
             }
 
             if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
@@ -5442,7 +5442,7 @@ int check_falling(struct char_data *ch)
                 if (!IS_IMMORTAL(ch)) {
                     GET_HIT(ch) = 0;
                     sprintf(buf, "%s has fallen to death", GET_NAME(ch));
-                    log(buf);
+                    Log(buf);
 
                     if (!ch->desc) {
                         GET_GOLD(ch) = 0;
@@ -5517,7 +5517,7 @@ int check_falling(struct char_data *ch)
                 if (!IS_IMMORTAL(ch)) {
                     GET_HIT(ch) = 0;
                     sprintf(buf, "%s has fallen to death", GET_NAME(ch));
-                    log(buf);
+                    Log(buf);
                     
                     if (!ch->desc) {
                         GET_GOLD(ch) = 0;
@@ -5547,7 +5547,7 @@ int check_falling(struct char_data *ch)
     }
 
     if (count >= 100) {
-        log("Someone messed up an air room.");
+        Log("Someone messed up an air room.");
         char_from_room(ch);
         char_to_room(ch, 2);
         do_look(ch, "", 0);
@@ -5576,7 +5576,7 @@ void check_drowning(struct char_data *ch)
 
         if (GET_HIT(ch) < -10) {
             sprintf(buf, "%s killed by drowning", GET_NAME(ch));
-            log(buf);
+            Log(buf);
 
             if (!ch->desc) {
                 GET_GOLD(ch) = 0;
@@ -5594,7 +5594,7 @@ void check_falling_obj(struct obj_data *obj, int room)
                     count;
 
     if (obj->in_room != room) {
-        log("unusual object information in check_falling_obj");
+        Log("unusual object information in check_falling_obj");
         return;
     }
 
@@ -5680,7 +5680,7 @@ void check_falling_obj(struct obj_data *obj, int room)
     }
 
     if (count >= 100) {
-        log("Someone screwed up an air room.");
+        Log("Someone screwed up an air room.");
         obj_from_room(obj);
         obj_to_room(obj, 4);
         return;

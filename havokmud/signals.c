@@ -51,7 +51,7 @@ void checkpointing(int signal)
 
 #if 1
     if (!tics) {
-        log("CHECKPOINT shutdown: tics not updated");
+        Log("CHECKPOINT shutdown: tics not updated");
         /*
          * abort(); temp removal for debug 
          */
@@ -60,7 +60,7 @@ void checkpointing(int signal)
     }
 #else
     if (!tics) {
-        log("CHECKPOINT tics not updated, setting to 1, be very wary");
+        Log("CHECKPOINT tics not updated, setting to 1, be very wary");
         tics = 1;
     } else {
         tics = 0;
@@ -73,7 +73,7 @@ void shutdown_request(int signal)
 {
     extern int      mudshutdown;
 
-    log("Received USR2 - shutdown request");
+    Log("Received USR2 - shutdown request");
     mudshutdown = 1;
 }
 
@@ -86,7 +86,7 @@ void hupsig(int signal)
     extern int      mudshutdown,
                     reboot;
 
-    log("Received SIGHUP, SIGINT, or SIGTERM. Shutting down");
+    Log("Received SIGHUP, SIGINT, or SIGTERM. Shutting down");
 
     raw_force_all("return");
     raw_force_all("save");
@@ -100,7 +100,7 @@ void hupsig(int signal)
 
 void logsig(int signal)
 {
-    log("Signal received. Ignoring.");
+    Log("Signal received. Ignoring.");
 }
 
 /*

@@ -207,7 +207,7 @@ void MobScavenge(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0
-        log("No room data in MobScavenge ??Crash???");
+        Log("No room data in MobScavenge ??Crash???");
 #endif        
         return;
     } else if ((real_roomp(ch->in_room))->contents && number(0, 4)) {
@@ -290,8 +290,8 @@ void mobile_activity(struct char_data *ch)
     if ((ch->in_room < 0) || !room_find(&room_db, ch->in_room)) {
 #endif
 
-        log("/----- Char not in correct room.  moving to 50");
-        log(GET_NAME(ch));
+        Log("/----- Char not in correct room.  moving to 50");
+        Log(GET_NAME(ch));
 
         /* 
          * if they are in a - room, assume an error 
@@ -333,7 +333,7 @@ void mobile_activity(struct char_data *ch)
         if (!mob_index[ch->nr].func) {
             sprintf(buf, "Attempting to call a non-existing mob func on %s",
                     GET_NAME(ch));
-            log(buf);
+            Log(buf);
             REMOVE_BIT(ch->specials.act, ACT_SPEC);
         } else if ((*mob_index[ch->nr].func) (ch, 0, "", ch, PULSE_TICK)) {
             return;
@@ -597,7 +597,7 @@ int UseViolentHeldItem(struct char_data *ch)
             sprintf(buf, "%s attempting to use %s on %d.%s",
                     GET_NAME(ch), tmp, tokillnum,
                     GET_NAME(ch->specials.fighting));
-            log(buf);
+            Log(buf);
 #endif
 
             if (tokillnum > 0) {
@@ -655,7 +655,7 @@ int AssistFriend(struct char_data *ch)
     rp = real_roomp(ch->in_room);
     if (!rp) {
 #if 0        
-        log("No room data in AssistFriend ??Crash???");
+        Log("No room data in AssistFriend ??Crash???");
 #endif        
         return (0);
     }
@@ -671,7 +671,7 @@ int AssistFriend(struct char_data *ch)
 #else
     if (ch->in_room < 0) {
         sprintf(buf, "Mob %sin negative room", ch->player.name);
-        log(buf);
+        Log(buf);
         ch->in_room = 0;
         extract_char(ch);
         return (0);
@@ -1050,7 +1050,7 @@ void sgoto(char *arg, struct char_data *ch)
     } else {
         sprintf(buf, "Error in script %s, no destination for goto",
                 script_data[ch->script].filename);
-        log(buf);
+        Log(buf);
         ch->commandp++;
         return;
     }
@@ -1109,7 +1109,7 @@ void do_jmp(char *arg, struct char_data *ch)
 
     sprintf(buf, "Label %s undefined in script assigned to %s.  Ignoring.",
             arg, GET_NAME(ch));
-    log(buf);
+    Log(buf);
 
     ch->commandp++;
 }
@@ -1133,7 +1133,7 @@ void do_jsr(char *arg, struct char_data *ch)
 
     sprintf(buf, "Label %s undefined in script assigned to %s.  Ignoring.",
             arg, GET_NAME(ch));
-    log(buf);
+    Log(buf);
 
     ch->commandp++;
 }

@@ -2668,7 +2668,7 @@ void spell_portal(byte level, struct char_data *ch,
 
     if (!(nrp = real_roomp(tmp_ch->in_room))) {
         sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
-        log(str);
+        Log(str);
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }
@@ -3928,7 +3928,7 @@ void spell_cavorting_bones(byte level, struct char_data *ch,
         return;
     }
     if (!ch) {
-        log("screw up in cavorting bones, no caster found");
+        Log("screw up in cavorting bones, no caster found");
         return;
     }
 
@@ -3961,7 +3961,7 @@ void spell_cavorting_bones(byte level, struct char_data *ch,
     mob = read_mobile(CB_TEMPLATE, VIRTUAL);
 
     if (!mob) {
-        log("No template found for cavorting bones spells (no mobile with "
+        Log("No template found for cavorting bones spells (no mobile with "
             "vnum 4)");
         send_to_char("Screw up in this spell, no cavorting bones template "
                      "found\n\r", ch);
@@ -4336,7 +4336,7 @@ void spell_darktravel(byte level, struct char_data *ch,
 
     if (!(nrp = real_roomp(tmp_ch->in_room))) {
         sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
-        log(str);
+        Log(str);
         send_to_char("The magic cannot locate the target.\n\r", ch);
         return;
     }
@@ -4457,7 +4457,7 @@ void spell_bind_affinity(byte level, struct char_data *ch,
     }
     rp = real_roomp(roomnr);
     if (!rp) {
-        log("some player got lost in a non existent room");
+        Log("some player got lost in a non existent room");
         return;
     }
 
@@ -4612,7 +4612,7 @@ void spell_scourge_warlock(byte level, struct char_data *ch,
                          "p$c000go$c000Gi$c000gso$c0008n flow through your "
                          "veins.\n\r", ch);
         } else {
-            log("screw up in scourge of warlock, cannot load the dark lord's "
+            Log("screw up in scourge of warlock, cannot load the dark lord's "
                 "boon");
             send_to_char("Alas, something's not quite right with this spell "
                          "yet. Notify imms, use the bug command.\n\r", ch);
@@ -4686,7 +4686,7 @@ void spell_flesh_golem(byte level, struct char_data *ch,
         return;
     }
     if (!ch) {
-        log("screw up in flesh golem, no caster found");
+        Log("screw up in flesh golem, no caster found");
         return;
     }
 
@@ -4725,7 +4725,7 @@ void spell_flesh_golem(byte level, struct char_data *ch,
 
     mob = read_mobile(FG_TEMPLATE, VIRTUAL);
     if (!mob) {
-        log("No template found for flesh golem spell (no mobile with vnum 6)");
+        Log("No template found for flesh golem spell (no mobile with vnum 6)");
         send_to_char("Screw up in this spell, no flesh golem template "
                      "found\n\r", ch);
         return;

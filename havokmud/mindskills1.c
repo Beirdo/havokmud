@@ -260,12 +260,12 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
     int             percent = 0;
 
     if (!ch) {
-        log("!ch in telekenisis");
+        Log("!ch in telekenisis");
         return;
     }
 
     if (!victim) {
-        log("!victim in telekenisis");
+        Log("!victim in telekenisis");
         return;
     }
 
@@ -386,7 +386,7 @@ void mind_cell_adjustment(byte level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
     if (!ch) {
-        log("!ch in cell_adjustment");
+        Log("!ch in cell_adjustment");
         return;
     }
 

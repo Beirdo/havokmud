@@ -141,7 +141,7 @@ void cast_resurrection(byte level, struct char_data *ch, char *arg,
         spell_resurrection(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious problem in 'resurrection'");
+        Log("Serious problem in 'resurrection'");
         break;
     }
 }
@@ -181,7 +181,7 @@ void cast_major_track(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious problem in major track");
+        Log("Serious problem in major track");
         break;
     }
 }
@@ -221,7 +221,7 @@ void cast_minor_track(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious problem in minor track");
+        Log("Serious problem in minor track");
         break;
     }
 }
@@ -247,7 +247,7 @@ void cast_mana(byte level, struct char_data *ch, char *arg, int type,
                 spell_mana(level, ch, tar_ch, 0);
             }
     default:
-        log("Serious problem in 'mana'");
+        Log("Serious problem in 'mana'");
         break;
     }
 }
@@ -294,7 +294,7 @@ void cast_armor(byte level, struct char_data *ch, char *arg, int type,
         spell_armor(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in armor!");
+        Log("Serious screw-up in armor!");
         break;
     }
 }
@@ -336,7 +336,7 @@ void cast_stone_skin(byte level, struct char_data *ch, char *arg, int type,
         spell_stone_skin(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in stone_skin!");
+        Log("Serious screw-up in stone_skin!");
         break;
     }
 }
@@ -364,7 +364,7 @@ void cast_astral_walk(byte level, struct char_data *ch, char *arg,
             }
         break;
     default:
-        log("Serious screw-up in astral walk!");
+        Log("Serious screw-up in astral walk!");
         break;
     }
 }
@@ -398,7 +398,7 @@ void cast_teleport(byte level, struct char_data *ch, char *arg, int type,
         break;
 
     default:
-        log("Serious screw-up in teleport!");
+        Log("Serious screw-up in teleport!");
         break;
     }
 }
@@ -456,7 +456,7 @@ void cast_bless(byte level, struct char_data *ch, char *arg, int type,
         spell_bless(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in bless!");
+        Log("Serious screw-up in bless!");
         break;
     }
 }
@@ -509,7 +509,7 @@ void cast_infravision(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in infravision!");
+        Log("Serious screw-up in infravision!");
         break;
     }
 }
@@ -559,7 +559,7 @@ void cast_true_seeing(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in true_seeing!");
+        Log("Serious screw-up in true_seeing!");
         break;
     }
 }
@@ -614,7 +614,7 @@ void cast_blindness(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in blindness!");
+        Log("Serious screw-up in blindness!");
         break;
     }
 }
@@ -639,7 +639,7 @@ void cast_light(byte level, struct char_data *ch, char *arg, int type,
         spell_light(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in light!");
+        Log("Serious screw-up in light!");
         break;
     }
 }
@@ -664,7 +664,7 @@ void cast_cont_light(byte level, struct char_data *ch, char *arg, int type,
         spell_cont_light(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in continual light!");
+        Log("Serious screw-up in continual light!");
         break;
     }
 }
@@ -701,7 +701,7 @@ void cast_calm(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in continual light!");
+        Log("Serious screw-up in continual light!");
         break;
     }
 }
@@ -740,7 +740,7 @@ void cast_web(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in web!");
+        Log("Serious screw-up in web!");
         break;
     }
 }
@@ -826,7 +826,7 @@ void cast_control_weather(byte level, struct char_data *ch, char *arg,
         break;
 
     default:
-        log("Serious screw-up in control weather!");
+        Log("Serious screw-up in control weather!");
         break;
     }
 }
@@ -850,7 +850,7 @@ void cast_create_food(byte level, struct char_data *ch, char *arg,
         spell_create_food(level, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in create food!");
+        Log("Serious screw-up in create food!");
         break;
     }
 }
@@ -869,7 +869,7 @@ void cast_create_water(byte level, struct char_data *ch, char *arg,
         spell_create_water(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious screw-up in create water!");
+        Log("Serious screw-up in create water!");
         break;
     }
 }
@@ -891,7 +891,7 @@ void cast_water_breath(byte level, struct char_data *ch, char *arg,
         break;
 
     default:
-        log("Serious screw-up in water breath");
+        Log("Serious screw-up in water breath");
         break;
     }
 }
@@ -912,7 +912,7 @@ void cast_flying(byte level, struct char_data *ch, char *arg, int type,
         break;
 
     default:
-        log("Serious screw-up in fly");
+        Log("Serious screw-up in fly");
         break;
     }
 }
@@ -931,7 +931,7 @@ void cast_fly_group(byte level, struct char_data *ch, char *arg, int type,
         spell_fly(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in fly");
+        Log("Serious screw-up in fly");
         break;
     }
 }
@@ -948,7 +948,7 @@ void cast_heroes_feast(byte level, struct char_data *ch, char *arg,
         spell_heroes_feast(level, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in heroes feast");
+        Log("Serious screw-up in heroes feast");
         break;
     }
 }
@@ -973,7 +973,7 @@ void cast_cure_blind(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in cure blind!");
+        Log("Serious screw-up in cure blind!");
         break;
     }
 }
@@ -1007,7 +1007,7 @@ void cast_cure_critic(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in cure critic!");
+        Log("Serious screw-up in cure critic!");
         break;
     }
 }
@@ -1038,7 +1038,7 @@ void cast_cure_light(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in cure light!");
+        Log("Serious screw-up in cure light!");
         break;
     }
 }
@@ -1070,7 +1070,7 @@ void cast_cure_serious(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in cure serious!");
+        Log("Serious screw-up in cure serious!");
         break;
     }
 }
@@ -1101,7 +1101,7 @@ void cast_refresh(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in refresh!");
+        Log("Serious screw-up in refresh!");
         break;
     }
 }
@@ -1129,7 +1129,7 @@ void cast_second_wind(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in second_wind!");
+        Log("Serious screw-up in second_wind!");
         break;
     }
 }
@@ -1160,7 +1160,7 @@ void cast_shield(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in shield!");
+        Log("Serious screw-up in shield!");
         break;
     }
 }
@@ -1216,7 +1216,7 @@ void cast_curse(byte level, struct char_data *ch, char *arg, int type,
         break;
     default:
         sprintf(buf, "Serious screw up in curse! Char = %s.", ch->player.name);
-        log(buf);
+        Log(buf);
         break;
     }
 }
@@ -1249,7 +1249,7 @@ void cast_detect_evil(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in detect evil!");
+        Log("Serious screw-up in detect evil!");
         break;
     }
 }
@@ -1282,7 +1282,7 @@ void cast_detect_good(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in detect good!");
+        Log("Serious screw-up in detect good!");
         break;
     }
 }
@@ -1316,7 +1316,7 @@ void cast_detect_invisibility(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in detect invisibility!");
+        Log("Serious screw-up in detect invisibility!");
         break;
     }
 }
@@ -1349,7 +1349,7 @@ void cast_detect_magic(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in detect magic!");
+        Log("Serious screw-up in detect magic!");
         break;
     }
 }
@@ -1376,7 +1376,7 @@ void cast_detect_poison(byte level, struct char_data *ch, char *arg,
         spell_detect_poison(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in detect poison!");
+        Log("Serious screw-up in detect poison!");
         break;
     }
 }
@@ -1416,7 +1416,7 @@ void cast_dispel_evil(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in dispel evil!");
+        Log("Serious screw-up in dispel evil!");
         break;
     }
 }
@@ -1456,7 +1456,7 @@ void cast_dispel_good(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in dispel good!");
+        Log("Serious screw-up in dispel good!");
         break;
     }
 }
@@ -1496,7 +1496,7 @@ void cast_faerie_fire(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in dispel good!");
+        Log("Serious screw-up in dispel good!");
         break;
     }
 }
@@ -1517,7 +1517,7 @@ void cast_enchant_weapon(byte level, struct char_data *ch, char *arg,
         spell_enchant_weapon(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious screw-up in enchant weapon!");
+        Log("Serious screw-up in enchant weapon!");
         break;
     }
 }
@@ -1552,7 +1552,7 @@ void cast_heal(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in heal!");
+        Log("Serious screw-up in heal!");
         break;
     }
 }
@@ -1617,7 +1617,7 @@ void cast_invisibility(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in invisibility!");
+        Log("Serious screw-up in invisibility!");
         break;
     }
 }
@@ -1631,7 +1631,7 @@ void cast_locate_object(byte level, struct char_data *ch, char *arg,
         spell_locate_object(level, ch, NULL, arg);
         break;
     default:
-        log("Serious screw-up in locate object!");
+        Log("Serious screw-up in locate object!");
         break;
     }
 }
@@ -1656,7 +1656,7 @@ void cast_poison(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in poison!");
+        Log("Serious screw-up in poison!");
         break;
     }
 }
@@ -1690,7 +1690,7 @@ void cast_protection_from_evil(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in protection from evil!");
+        Log("Serious screw-up in protection from evil!");
         break;
     }
 }
@@ -1725,7 +1725,7 @@ void cast_protection_from_evil_group(byte level, struct char_data *ch,
         }
         break;
     default:
-        log("Serious screw-up in protection from evil!");
+        Log("Serious screw-up in protection from evil!");
         break;
     }
 }
@@ -1759,7 +1759,7 @@ void cast_protection_from_good(byte level, struct char_data *ch, char
         }
         break;
     default:
-        log("Serious screw-up in protection from good!");
+        Log("Serious screw-up in protection from good!");
         break;
     }
 }
@@ -1794,7 +1794,7 @@ void cast_protection_from_good_group(byte level, struct char_data *ch,
         }
         break;
     default:
-        log("Serious screw-up in protection from good group!");
+        Log("Serious screw-up in protection from good group!");
         break;
     }
 }
@@ -1829,7 +1829,7 @@ void cast_remove_curse(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in remove curse!");
+        Log("Serious screw-up in remove curse!");
         break;
     }
 }
@@ -1854,7 +1854,7 @@ void cast_remove_poison(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in remove poison!");
+        Log("Serious screw-up in remove poison!");
         break;
     }
 }
@@ -1885,7 +1885,7 @@ void cast_remove_paralysis(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in remove paralysis!");
+        Log("Serious screw-up in remove paralysis!");
         break;
     }
 }
@@ -1920,7 +1920,7 @@ void cast_sanctuary(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in sanctuary!");
+        Log("Serious screw-up in sanctuary!");
         break;
     }
 }
@@ -1955,7 +1955,7 @@ void cast_fireshield(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in fireshield!");
+        Log("Serious screw-up in fireshield!");
         break;
     }
 }
@@ -1994,7 +1994,7 @@ void cast_sleep(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in sleep!");
+        Log("Serious screw-up in sleep!");
         break;
     }
 }
@@ -2028,7 +2028,7 @@ void cast_strength(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in strength!");
+        Log("Serious screw-up in strength!");
         break;
     }
 }
@@ -2043,7 +2043,7 @@ void cast_ventriloquate(byte level, struct char_data *ch, char *arg,
     char            buf3[MAX_STRING_LENGTH];
 
     if (type != SPELL_TYPE_SPELL) {
-        log("Attempt to ventriloquate by non-cast-spell.");
+        Log("Attempt to ventriloquate by non-cast-spell.");
         return;
     }
     for (; *arg && (*arg == ' '); arg++);
@@ -2108,7 +2108,7 @@ void cast_word_of_recall(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in word of recall!");
+        Log("Serious screw-up in word of recall!");
         break;
     }
 }
@@ -2123,7 +2123,7 @@ void cast_summon(byte level, struct char_data *ch, char *arg, int type,
         spell_summon(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in summon!");
+        Log("Serious screw-up in summon!");
         break;
     }
 }
@@ -2151,7 +2151,7 @@ void cast_charm_person(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in charm person!");
+        Log("Serious screw-up in charm person!");
         break;
     }
 }
@@ -2179,7 +2179,7 @@ void cast_charm_monster(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in charm monster!");
+        Log("Serious screw-up in charm monster!");
         break;
     }
 }
@@ -2204,7 +2204,7 @@ void cast_sense_life(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in sense life!");
+        Log("Serious screw-up in sense life!");
         break;
     }
 }
@@ -2226,7 +2226,7 @@ void cast_identify(byte level, struct char_data *ch, char *arg, int type,
         spell_identify(level, ch, tar_ch, tar_obj);
         break;
     default:
-        log("Serious screw-up in identify!");
+        Log("Serious screw-up in identify!");
         break;
     }
 }
@@ -2271,7 +2271,7 @@ void cast_dragon_breath(byte level, struct char_data *ch, char *arg,
         send_to_char("Hey, this potion isn't in my list!\n\r", ch);
         sprintf(buf, "unlisted breath potion %s %d", potion->short_description,
                 obj_index[potion->item_number].virtual);
-        log(buf);
+        Log(buf);
         return;
     }
 
@@ -2317,7 +2317,7 @@ void cast_fire_breath(byte level, struct char_data *ch, char *arg,
         spell_fire_breath(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in firebreath!");
+        Log("Serious screw-up in firebreath!");
         break;
     }
 }
@@ -2334,7 +2334,7 @@ void cast_frost_breath(byte level, struct char_data *ch, char *arg,
         spell_frost_breath(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in frostbreath!");
+        Log("Serious screw-up in frostbreath!");
         break;
     }
 }
@@ -2351,7 +2351,7 @@ void cast_acid_breath(byte level, struct char_data *ch, char *arg,
         spell_acid_breath(level, ch, tar_ch, 0);
         break; 
     default:
-        log("Serious screw-up in acidbreath!");
+        Log("Serious screw-up in acidbreath!");
         break;
     }
 }
@@ -2367,7 +2367,7 @@ void cast_gas_breath(byte level, struct char_data *ch, char *arg, int type,
         spell_gas_breath(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in gasbreath!");
+        Log("Serious screw-up in gasbreath!");
         break;
     }
 }
@@ -2384,7 +2384,7 @@ void cast_lightning_breath(byte level, struct char_data *ch, char *arg,
         spell_lightning_breath(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in lightningbreath!");
+        Log("Serious screw-up in lightningbreath!");
         break;
     }
 }
@@ -2459,7 +2459,7 @@ void cast_knock(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("serious error in Knock.");
+        Log("serious error in Knock.");
         break;
     }
 }
@@ -2482,7 +2482,7 @@ void cast_know_alignment(byte level, struct char_data *ch, char *arg,
         spell_know_alignment(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in know alignment!");
+        Log("Serious screw-up in know alignment!");
         break;
     }
 }
@@ -2516,7 +2516,7 @@ void cast_weakness(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in weakness!");
+        Log("Serious screw-up in weakness!");
         break;
     }
 }
@@ -2553,7 +2553,7 @@ void cast_dispel_magic(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in dispel magic");
+        Log("Serious screw-up in dispel magic");
         break;
     }
 }
@@ -2597,7 +2597,7 @@ void cast_animate_dead(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in animate_dead!");
+        Log("Serious screw-up in animate_dead!");
         break;
     }
 }
@@ -2648,7 +2648,7 @@ void cast_paralyze(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in paralyze");
+        Log("Serious screw-up in paralyze");
         break;
     }
 }
@@ -2690,7 +2690,7 @@ void cast_fear(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in fear");
+        Log("Serious screw-up in fear");
         break;
     }
 }
@@ -2729,7 +2729,7 @@ void cast_turn(byte level, struct char_data *ch, char *arg, int type,
         }
         break;
     default:
-        log("Serious screw-up in turn");
+        Log("Serious screw-up in turn");
         break;
     }
 }
@@ -2744,7 +2744,7 @@ void cast_faerie_fog(byte level, struct char_data *ch, char *arg, int type,
         spell_faerie_fog(level, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in faerie fog!");
+        Log("Serious screw-up in faerie fog!");
         break;
     }
 }
@@ -2798,7 +2798,7 @@ void cast_poly_self(byte level, struct char_data *ch, char *arg, int type,
         break;
 
     default:
-        log("Problem in poly_self");
+        Log("Problem in poly_self");
         break;
     }
 }
@@ -2849,7 +2849,7 @@ void cast_minor_creation(byte level, struct char_data *ch, char *arg,
         spell_minor_create(level, ch, 0, o);
         break;
     default:
-        log("serious screw-up in minor_create.");
+        Log("serious screw-up in minor_create.");
         break;
     }
 }
@@ -2927,7 +2927,7 @@ void cast_conjure_elemental(byte level, struct char_data *ch, char *arg,
         spell_conjure_elemental(level, ch, el, sac);
         break;
     default:
-        log("serious screw-up in conjure_elemental.");
+        Log("serious screw-up in conjure_elemental.");
         break;
     }
 }
@@ -3046,7 +3046,7 @@ void cast_cacaodemon(byte level, struct char_data *ch, char *arg, int type,
         spell_cacaodemon(level, ch, el, sac);
         break;
     default:
-        log("serious screw-up in cacaodemon.");
+        Log("serious screw-up in cacaodemon.");
         break;
     }
 }
@@ -3066,7 +3066,7 @@ void cast_mon_sum1(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(5, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3085,7 +3085,7 @@ void cast_mon_sum2(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(7, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3104,7 +3104,7 @@ void cast_mon_sum3(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(9, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3123,7 +3123,7 @@ void cast_mon_sum4(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(11, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3142,7 +3142,7 @@ void cast_mon_sum5(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(13, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3161,7 +3161,7 @@ void cast_mon_sum6(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(15, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3180,7 +3180,7 @@ void cast_mon_sum7(byte level, struct char_data *ch, char *arg, int type,
         spell_Create_Monster(17, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in monster_summoning_1");
+        Log("Serious screw-up in monster_summoning_1");
         break;
     }
 }
@@ -3197,7 +3197,7 @@ void cast_tree_travel(byte level, struct char_data *ch, char *arg,
         spell_tree_travel(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in tree travel");
+        Log("Serious screw-up in tree travel");
         break;
     }
 }
@@ -3216,7 +3216,7 @@ void cast_speak_with_plants(byte level, struct char_data *ch, char *arg,
         spell_speak_with_plants(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious screw-up in speak_with_plants");
+        Log("Serious screw-up in speak_with_plants");
         break;
     }
 }
@@ -3234,7 +3234,7 @@ void cast_transport_via_plant(byte level, struct char_data *ch, char *arg,
         spell_transport_via_plant(level, ch, 0, arg);
         break;
     default:
-        log("Serious screw-up in transport_via_plant");
+        Log("Serious screw-up in transport_via_plant");
         break;
     }
 }
@@ -3252,7 +3252,7 @@ void cast_plant_gate(byte level, struct char_data *ch, char *arg,
         spell_plant_gate(level, ch, 0, arg);
         break;
     default:
-        log("Serious screw-up in plant gate");
+        Log("Serious screw-up in plant gate");
         break;
     }
 }
@@ -3293,7 +3293,7 @@ void cast_haste(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in haste");
+        Log("Serious screw-up in haste");
         break;
     }
 }
@@ -3333,7 +3333,7 @@ void cast_slow(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in slow");
+        Log("Serious screw-up in slow");
         break;
     }
 }
@@ -3359,7 +3359,7 @@ void cast_reincarnate(byte level, struct char_data *ch, char *arg,
         spell_reincarnate(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious problem in 'reincarnate'");
+        Log("Serious problem in 'reincarnate'");
         break;
     }
 }
@@ -3387,7 +3387,7 @@ void cast_changestaff(byte level, struct char_data *ch, char *arg,
         spell_changestaff(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in changestaff.");
+        Log("serious screw-up in changestaff.");
         break;
     }
 }
@@ -3405,7 +3405,7 @@ void cast_pword_kill(byte level, struct char_data *ch, char *arg,
         spell_pword_kill(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in pword_kill.");
+        Log("serious screw-up in pword_kill.");
         break;
     }
 }
@@ -3423,7 +3423,7 @@ void cast_pword_blind(byte level, struct char_data *ch, char *arg,
         spell_pword_blind(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in pword_blind.");
+        Log("serious screw-up in pword_blind.");
         break;
     }
 }
@@ -3443,7 +3443,7 @@ void cast_chain_lightn(byte level, struct char_data *ch, char *arg,
         spell_chain_lightn(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in chain lightn.");
+        Log("serious screw-up in chain lightn.");
         break;
     }
 }
@@ -3463,7 +3463,7 @@ void cast_scare(byte level, struct char_data *ch, char *arg,
         spell_scare(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in scare.");
+        Log("serious screw-up in scare.");
         break;
     }
 }
@@ -3492,7 +3492,7 @@ void cast_familiar(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("serious screw-up in familiar.");
+        Log("serious screw-up in familiar.");
         break;
     }
 }
@@ -3511,7 +3511,7 @@ void cast_aid(byte level, struct char_data *ch, char *arg,
         spell_aid(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in scare.");
+        Log("serious screw-up in scare.");
         break;
     }
 }
@@ -3526,7 +3526,7 @@ void cast_holyword(byte level, struct char_data *ch, char *arg,
         spell_holyword(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in holy word.");
+        Log("serious screw-up in holy word.");
         break;
     }
 }
@@ -3541,7 +3541,7 @@ void cast_unholyword(byte level, struct char_data *ch, char *arg,
         spell_holyword(-level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in unholy word.");
+        Log("serious screw-up in unholy word.");
         break;
     }
 }
@@ -3559,7 +3559,7 @@ void cast_golem(byte level, struct char_data *ch, char *arg,
         spell_golem(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in golem.");
+        Log("serious screw-up in golem.");
         break;
     }
 }
@@ -3579,7 +3579,7 @@ void cast_command(byte level, struct char_data *ch, char *arg,
     case SPELL_TYPE_SCROLL:
         break;
     default:
-        log("serious screw-up in command.");
+        Log("serious screw-up in command.");
         return;
         break;
     }
@@ -3675,7 +3675,7 @@ void cast_change_form(byte level, struct char_data *ch, char *arg,
         break;
 
     default:
-        log("Problem in change form");
+        Log("Problem in change form");
         break;
     }
 }
@@ -3690,7 +3690,7 @@ void cast_shillelagh(byte level, struct char_data *ch, char *arg,
         spell_shillelagh(level, ch, ch, tar_obj);
         break;
     default:
-        log("serious screw-up in shillelagh.");
+        Log("serious screw-up in shillelagh.");
         break;
     }
 }
@@ -3705,7 +3705,7 @@ void cast_goodberry(byte level, struct char_data *ch, char *arg,
         spell_goodberry(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in goodberry.");
+        Log("serious screw-up in goodberry.");
         break;
     }
 }
@@ -3720,7 +3720,7 @@ void cast_flame_blade(byte level, struct char_data *ch, char *arg,
         spell_flame_blade(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in flame blade.");
+        Log("serious screw-up in flame blade.");
         break;
     }
 }
@@ -3736,7 +3736,7 @@ void cast_animal_growth(byte level, struct char_data *ch, char *arg,
         spell_animal_growth(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in animal_growth.");
+        Log("serious screw-up in animal_growth.");
         break;
     }
 }
@@ -3752,7 +3752,7 @@ void cast_insect_growth(byte level, struct char_data *ch, char *arg,
         spell_insect_growth(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in insect_growth.");
+        Log("serious screw-up in insect_growth.");
         break;
     }
 }
@@ -3795,7 +3795,7 @@ void cast_creeping_death(byte level, struct char_data *ch, char *arg,
         break;
 
     default:
-        log("serious screw-up in creeping_death.");
+        Log("serious screw-up in creeping_death.");
         break;
     }
 }
@@ -3810,7 +3810,7 @@ void cast_commune(byte level, struct char_data *ch, char *arg,
         spell_commune(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in commune.");
+        Log("serious screw-up in commune.");
         break;
     }
 }
@@ -3831,7 +3831,7 @@ void cast_feeblemind(byte level, struct char_data *ch, char *arg,
         spell_feeblemind(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in feeblemind.");
+        Log("serious screw-up in feeblemind.");
         break;
     }
 }
@@ -3849,7 +3849,7 @@ void cast_animal_summon_1(byte level, struct char_data *ch, char *arg,
         spell_animal_summon(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in animal summon.");
+        Log("serious screw-up in animal summon.");
         break;
     }
 }
@@ -3867,7 +3867,7 @@ void cast_animal_summon_2(byte level, struct char_data *ch, char *arg,
         spell_animal_summon(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in animal summon.");
+        Log("serious screw-up in animal summon.");
         break;
     }
 }
@@ -3885,7 +3885,7 @@ void cast_animal_summon_3(byte level, struct char_data *ch, char *arg,
         spell_animal_summon(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in animal summon.");
+        Log("serious screw-up in animal summon.");
         break;
     }
 }
@@ -3901,7 +3901,7 @@ void cast_fire_servant(byte level, struct char_data *ch, char *arg,
         spell_elemental_summoning(level, ch, 0, SPELL_FIRE_SERVANT);
         break;
     default:
-        log("serious screw-up in fire servant.");
+        Log("serious screw-up in fire servant.");
         break;
     }
 }
@@ -3917,7 +3917,7 @@ void cast_earth_servant(byte level, struct char_data *ch, char *arg,
         spell_elemental_summoning(level, ch, 0, SPELL_EARTH_SERVANT);
         break;
     default:
-        log("serious screw-up in earth servant.");
+        Log("serious screw-up in earth servant.");
         break;
     }
 }
@@ -3933,7 +3933,7 @@ void cast_water_servant(byte level, struct char_data *ch, char *arg,
         spell_elemental_summoning(level, ch, 0, SPELL_WATER_SERVANT);
         break;
     default:
-        log("serious screw-up in water servant.");
+        Log("serious screw-up in water servant.");
         break;
     }
 }
@@ -3949,7 +3949,7 @@ void cast_wind_servant(byte level, struct char_data *ch, char *arg,
         spell_elemental_summoning(level, ch, 0, SPELL_WIND_SERVANT);
         break;
     default:
-        log("serious screw-up in wind servant.");
+        Log("serious screw-up in wind servant.");
         break;
     }
 }
@@ -3965,7 +3965,7 @@ void cast_veggie_growth(byte level, struct char_data *ch, char *arg,
         spell_veggie_growth(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in veggie_growth.");
+        Log("serious screw-up in veggie_growth.");
         break;
     }
 }
@@ -3993,7 +3993,7 @@ void cast_charm_veggie(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in charm veggie!");
+        Log("Serious screw-up in charm veggie!");
         break;
     }
 }
@@ -4015,7 +4015,7 @@ void cast_tree(byte level, struct char_data *ch, char *arg, int type,
         spell_tree(level, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in tree");
+        Log("Serious screw-up in tree");
         break;
     }
 }
@@ -4034,7 +4034,7 @@ void cast_animate_rock(byte level, struct char_data *ch, char *arg,
         spell_animate_rock(level, ch, 0, tar_obj);
         break;
     default:
-        log("serious screw-up in animate_rock.");
+        Log("serious screw-up in animate_rock.");
         break;
     }
 }
@@ -4052,7 +4052,7 @@ void cast_travelling(byte level, struct char_data *ch, char *arg,
         spell_travelling(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in travelling.");
+        Log("serious screw-up in travelling.");
         break;
     }
 }
@@ -4068,7 +4068,7 @@ void cast_animal_friendship(byte level, struct char_data *ch, char *arg,
         spell_animal_friendship(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in animal friendship.");
+        Log("serious screw-up in animal friendship.");
         break;
     }
 }
@@ -4084,7 +4084,7 @@ void cast_invis_to_animals(byte level, struct char_data *ch, char *arg,
         spell_invis_to_animals(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in invis to animals.");
+        Log("serious screw-up in invis to animals.");
         break;
     }
 }
@@ -4104,7 +4104,7 @@ void cast_slow_poison(byte level, struct char_data *ch, char *arg,
         spell_slow_poison(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in slow_poison.");
+        Log("serious screw-up in slow_poison.");
         break;
     }
 }
@@ -4131,7 +4131,7 @@ void cast_entangle(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("serious screw-up in entangle.");
+        Log("serious screw-up in entangle.");
         break;
     }
 }
@@ -4158,7 +4158,7 @@ void cast_snare(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("serious screw-up in snare.");
+        Log("serious screw-up in snare.");
         break;
     }
 }
@@ -4175,7 +4175,7 @@ void cast_gust_of_wind(byte level, struct char_data *ch, char *arg,
         spell_gust_of_wind(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in snare.");
+        Log("serious screw-up in snare.");
         break;
     }
 }
@@ -4202,7 +4202,7 @@ void cast_barkskin(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("serious screw-up in barkskin.");
+        Log("serious screw-up in barkskin.");
         break;
     }
 }
@@ -4221,7 +4221,7 @@ void cast_warp_weapon(byte level, struct char_data *ch, char *arg,
         spell_warp_weapon(level, ch, tar_ch, tar_obj);
         break;
     default:
-        log("serious screw-up in warp_weapon.");
+        Log("serious screw-up in warp_weapon.");
         break;
     }
 }
@@ -4240,7 +4240,7 @@ void cast_heat_stuff(byte level, struct char_data *ch, char *arg,
         spell_heat_stuff(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in heat_stuff.");
+        Log("serious screw-up in heat_stuff.");
         break;
     }
 }
@@ -4259,7 +4259,7 @@ void cast_sunray(byte level, struct char_data *ch, char *arg,
         spell_sunray(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in sunray.");
+        Log("serious screw-up in sunray.");
         break;
     }
 }
@@ -4279,7 +4279,7 @@ void cast_find_traps(byte level, struct char_data *ch, char *arg,
         spell_find_traps(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in find_traps.");
+        Log("serious screw-up in find_traps.");
         break;
     }
 }
@@ -4295,7 +4295,7 @@ void cast_firestorm(byte level, struct char_data *ch, char *arg,
         spell_firestorm(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in firestorm.");
+        Log("serious screw-up in firestorm.");
         break;
     }
 }
@@ -4311,7 +4311,7 @@ void cast_dust_devil(byte level, struct char_data *ch, char *arg,
         spell_dust_devil(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in dust_devil.");
+        Log("serious screw-up in dust_devil.");
         break;
     }
 }
@@ -4330,7 +4330,7 @@ void cast_know_monster(byte level, struct char_data *ch, char *arg,
         spell_know_monster(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in know_monster.");
+        Log("serious screw-up in know_monster.");
         break;
     }
 }
@@ -4359,7 +4359,7 @@ void cast_silence(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("serious screw-up in silence.");
+        Log("serious screw-up in silence.");
         break;
     }
 }
@@ -4377,7 +4377,7 @@ void cast_dragon_ride(byte level, struct char_data *ch, char *arg,
         spell_dragon_ride(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in dragon_ride.");
+        Log("serious screw-up in dragon_ride.");
         break;
     }
 }
@@ -4393,7 +4393,7 @@ void cast_mount(byte level, struct char_data *ch, char *arg,
         spell_mount(level, ch, ch, 0);
         break;
     default:
-        log("serious screw-up in mount.");
+        Log("serious screw-up in mount.");
         break;
     }
 }
@@ -4420,7 +4420,7 @@ void cast_portal(byte level, struct char_data *ch, char *arg,
         spell_portal(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in portal");
+        Log("serious screw-up in portal");
         break;
     }
 }
@@ -4442,7 +4442,7 @@ void cast_teleport_wo_error(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in teleport without error!");
+        Log("Serious screw-up in teleport without error!");
         break;
     }
 }
@@ -4460,7 +4460,7 @@ void cast_globe_darkness(byte level, struct char_data *ch, char *arg,
         spell_globe_darkness(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in globe of darkness.");
+        Log("serious screw-up in globe of darkness.");
         break;
     }
 }
@@ -4477,7 +4477,7 @@ void cast_globe_minor_inv(byte level, struct char_data *ch, char *arg,
         spell_globe_minor_inv(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in minor globe.");
+        Log("serious screw-up in minor globe.");
         break;
     }
 }
@@ -4494,7 +4494,7 @@ void cast_globe_major_inv(byte level, struct char_data *ch, char *arg,
         spell_globe_major_inv(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in major globe.");
+        Log("serious screw-up in major globe.");
         break;
     }
 }
@@ -4511,7 +4511,7 @@ void cast_prot_energy_drain(byte level, struct char_data *ch, char *arg,
         spell_prot_energy_drain(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-energy drain.");
+        Log("serious screw-up in prot-energy drain.");
         break;
     }
 }
@@ -4528,7 +4528,7 @@ void cast_prot_dragon_breath(byte level, struct char_data *ch, char *arg,
         spell_prot_dragon_breath(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath.");
+        Log("serious screw-up in prot-dragon breath.");
         break;
     }
 }
@@ -4555,7 +4555,7 @@ void cast_anti_magic_shell(byte level, struct char_data *ch, char *arg,
         spell_anti_magic_shell(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_anti_magic_shell!");
+        Log("Serious screw-up in cast_anti_magic_shell!");
         break;
     }
 }
@@ -4584,7 +4584,7 @@ void cast_comp_languages(byte level, struct char_data *ch, char *arg,
         spell_comp_languages(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in comprehend languages!");
+        Log("Serious screw-up in comprehend languages!");
         break;
     }
 }
@@ -4610,7 +4610,7 @@ void cast_prot_fire(byte level, struct char_data *ch, char *arg, int type,
         spell_prot_fire(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_prot_fire!");
+        Log("Serious screw-up in cast_prot_fire!");
         break;
     }
 }
@@ -4636,7 +4636,7 @@ void cast_prot_cold(byte level, struct char_data *ch, char *arg, int type,
         spell_prot_cold(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_prot_cold!");
+        Log("Serious screw-up in cast_prot_cold!");
         break;
     }
 }
@@ -4663,7 +4663,7 @@ void cast_prot_energy(byte level, struct char_data *ch, char *arg,
         spell_prot_energy(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_prot_energy!");
+        Log("Serious screw-up in cast_prot_energy!");
         break;
     }
 }
@@ -4689,7 +4689,7 @@ void cast_prot_elec(byte level, struct char_data *ch, char *arg, int type,
         spell_prot_elec(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_prot_elec!");
+        Log("Serious screw-up in cast_prot_elec!");
         break;
     }
 }
@@ -4709,7 +4709,7 @@ void cast_enchant_armor(byte level, struct char_data *ch, char *arg,
         spell_enchant_armor(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious screw-up in enchant armor!");
+        Log("Serious screw-up in enchant armor!");
         break;
     }
 }
@@ -4733,7 +4733,7 @@ void cast_prot_dragon_breath_fire(byte level, struct char_data *ch,
         spell_prot_dragon_breath_fire(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath_fire.");
+        Log("serious screw-up in prot-dragon breath_fire.");
         break;
     }
 }
@@ -4751,7 +4751,7 @@ void cast_prot_dragon_breath_frost(byte level, struct char_data *ch,
         spell_prot_dragon_breath_frost(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath_frost.");
+        Log("serious screw-up in prot-dragon breath_frost.");
         break;
     }
 }
@@ -4769,7 +4769,7 @@ void cast_prot_dragon_breath_elec(byte level, struct char_data *ch,
         spell_prot_dragon_breath_elec(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath_elec.");
+        Log("serious screw-up in prot-dragon breath_elec.");
         break;
     }
 }
@@ -4787,7 +4787,7 @@ void cast_prot_dragon_breath_acid(byte level, struct char_data *ch,
         spell_prot_dragon_breath_acid(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath_acid.");
+        Log("serious screw-up in prot-dragon breath_acid.");
         break;
     }
 }
@@ -4805,7 +4805,7 @@ void cast_prot_dragon_breath_gas(byte level, struct char_data *ch,
         spell_prot_dragon_breath_gas(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in prot-dragon breath_gas.");
+        Log("serious screw-up in prot-dragon breath_gas.");
         break;
     }
 }
@@ -4840,7 +4840,7 @@ void cast_holy_strength(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in holy strength!");
+        Log("Serious screw-up in holy strength!");
         break;
     }
 }
@@ -4889,7 +4889,7 @@ void cast_holy_armor(byte level, struct char_data *ch, char *arg, int type,
         spell_holy_armor(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in holy armor!");
+        Log("Serious screw-up in holy armor!");
         break;
     }
 }
@@ -4906,7 +4906,7 @@ void cast_aura_power(byte level, struct char_data *ch, char *arg,
         spell_aura_power(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in aura of power.");
+        Log("serious screw-up in aura of power.");
         break;
     }
 }
@@ -4938,7 +4938,7 @@ void cast_pacifism(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in pacifism!");
+        Log("Serious screw-up in pacifism!");
         break;
     }
 }
@@ -4968,7 +4968,7 @@ void cast_wrath_god(byte level, struct char_data *ch, char *arg,
         }
         break;
     default:
-        log("Serious screw-up in wrath of god!");
+        Log("Serious screw-up in wrath of god!");
         break;
     }
 }
@@ -4985,7 +4985,7 @@ void cast_circle_protection(byte level, struct char_data *ch, char *arg,
         spell_circle_protection(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in circle of protection.");
+        Log("serious screw-up in circle of protection.");
         break;
     }
 }
@@ -5002,7 +5002,7 @@ void cast_enlightenment(byte level, struct char_data *ch, char *arg,
         spell_enlightenment(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in enlightenment.");
+        Log("serious screw-up in enlightenment.");
         break;
     }
 }
@@ -5023,7 +5023,7 @@ void cast_giant_growth(byte level, struct char_data *ch, char *arg,
         spell_giant_growth(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in giant growth.");
+        Log("serious screw-up in giant growth.");
         break;
     }
 }
@@ -5043,7 +5043,7 @@ void cast_numb_dead(byte level, struct char_data *ch, char *arg,
         spell_numb_dead(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_numb_dead");
+        Log("Serious screw-up in cast_numb_dead");
         break;
     }
 }
@@ -5065,7 +5065,7 @@ void cast_binding(byte level, struct char_data *ch, char *arg,
         spell_binding(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_binding");
+        Log("Serious screw-up in cast_binding");
         break;
     }
 }
@@ -5083,7 +5083,7 @@ void cast_decay(byte level, struct char_data *ch, char *arg,
         spell_decay(level, ch, tar_ch, 0);
         break;
     default:
-        log("Serious screw-up in cast_decay");
+        Log("Serious screw-up in cast_decay");
         break;
     }
 }
@@ -5100,7 +5100,7 @@ void cast_shadow_step(byte level, struct char_data *ch, char *arg,
         spell_shadow_step(level, ch, 0, 0);
         break;
     default:
-        log("Serious screw-up in cast_shadow_step");
+        Log("Serious screw-up in cast_shadow_step");
         break;
     }
 }
@@ -5117,7 +5117,7 @@ void cast_cavorting_bones(byte level, struct char_data *ch, char *arg,
         spell_cavorting_bones(level, ch, 0, tar_obj);
         break;
     default:
-        log("Serious screw-up in cast_cavorting_bones");
+        Log("Serious screw-up in cast_cavorting_bones");
         break;
     }
 }
@@ -5134,7 +5134,7 @@ void cast_mist_of_death(byte level, struct char_data *ch, char *arg,
         spell_mist_of_death(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_mist_of_death");
+        Log("serious screw-up in cast_mist_of_death");
         break;
     }
 }
@@ -5152,7 +5152,7 @@ void cast_nullify(byte level, struct char_data *ch, char *arg,
         spell_nullify(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_nullify");
+        Log("serious screw-up in cast_nullify");
         break;
     }
 }
@@ -5169,7 +5169,7 @@ void cast_dark_empathy(byte level, struct char_data *ch, char *arg,
         spell_dark_empathy(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_dark_empathy");
+        Log("serious screw-up in cast_dark_empathy");
         break;
     }
 }
@@ -5187,7 +5187,7 @@ void cast_eye_of_the_dead(byte level, struct char_data *ch, char *arg,
         spell_eye_of_the_dead(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_eye_of_the_dead");
+        Log("serious screw-up in cast_eye_of_the_dead");
         break;
     }
 }
@@ -5204,7 +5204,7 @@ void cast_soul_steal(byte level, struct char_data *ch, char *arg,
         spell_soul_steal(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_soul_steal");
+        Log("serious screw-up in cast_soul_steal");
         break;
     }
 }
@@ -5221,7 +5221,7 @@ void cast_life_leech(byte level, struct char_data *ch, char *arg,
         spell_life_leech(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_life_leech");
+        Log("serious screw-up in cast_life_leech");
         break;
     }
 }
@@ -5239,7 +5239,7 @@ void cast_dark_pact(byte level, struct char_data *ch, char *arg,
         spell_dark_pact(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_dark_pact");
+        Log("serious screw-up in cast_dark_pact");
         break;
     }
 }
@@ -5259,7 +5259,7 @@ void cast_darktravel(byte level, struct char_data *ch, char *arg,
         spell_darktravel(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_darktravel");
+        Log("serious screw-up in cast_darktravel");
         break;
     }
 }
@@ -5277,7 +5277,7 @@ void cast_vampiric_embrace(byte level, struct char_data *ch, char *arg,
         spell_vampiric_embrace(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_vampiric_embrace");
+        Log("serious screw-up in cast_vampiric_embrace");
         break;
     }
 }
@@ -5295,7 +5295,7 @@ void cast_bind_affinity(byte level, struct char_data *ch, char *arg,
         spell_bind_affinity(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_bind_affinity");
+        Log("serious screw-up in cast_bind_affinity");
         break;
     }
 }
@@ -5312,7 +5312,7 @@ void cast_scourge_warlock(byte level, struct char_data *ch, char *arg,
         spell_scourge_warlock(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_scourge_warlock");
+        Log("serious screw-up in cast_scourge_warlock");
         break;
     }
 }
@@ -5329,7 +5329,7 @@ void cast_finger_of_death(byte level, struct char_data *ch, char *arg,
         spell_finger_of_death(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cast_finger_of_death");
+        Log("serious screw-up in cast_finger_of_death");
         break;
     }
 }
@@ -5346,7 +5346,7 @@ void cast_flesh_golem(byte level, struct char_data *ch, char *arg,
         spell_flesh_golem(level, ch, 0, tar_obj);
         break;
     default:
-        log("serious screw-up in cast_flesh_golem");
+        Log("serious screw-up in cast_flesh_golem");
         break;
     }
 }
@@ -5364,7 +5364,7 @@ void cast_chillshield(byte level, struct char_data *ch, char *arg,
         spell_chillshield(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_chillshield");
+        Log("serious screw-up in cast_chillshield");
         break;
     }
 }
@@ -5400,7 +5400,7 @@ void cast_wall_of_thought(byte level, struct char_data *ch, char *arg,
         spell_wall_of_thought(level, ch, ch, 0);
         break;
     default:
-        log("Serious screw-up in stone_skin!");
+        Log("Serious screw-up in stone_skin!");
         break;
     }
 }
@@ -5420,7 +5420,7 @@ void cast_cold_light(byte level, struct char_data *ch, char *arg,
         spell_cold_light(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in cold light.");
+        Log("serious screw-up in cold light.");
         break;
     }
 }
@@ -5441,7 +5441,7 @@ void cast_disease(byte level, struct char_data *ch, char *arg,
         spell_disease(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in disease.");
+        Log("serious screw-up in disease.");
         break;
     }
 }
@@ -5462,7 +5462,7 @@ void cast_invis_to_undead(byte level, struct char_data *ch, char *arg,
         spell_invis_to_undead(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in invis_to_undead.");
+        Log("serious screw-up in invis_to_undead.");
         break;
     }
 }
@@ -5482,7 +5482,7 @@ void cast_life_tap(byte level, struct char_data *ch, char *arg,
         spell_life_tap(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in _life_tap.");
+        Log("serious screw-up in _life_tap.");
         break;
     }
 }
@@ -5503,7 +5503,7 @@ void cast_suit_of_bone(byte level, struct char_data *ch, char *arg,
         spell_suit_of_bone(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in suit_of_bone.");
+        Log("serious screw-up in suit_of_bone.");
         break;
     }
 }
@@ -5524,7 +5524,7 @@ void cast_spectral_shield(byte level, struct char_data *ch, char *arg,
         spell_spectral_shield(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in spectral_shield.");
+        Log("serious screw-up in spectral_shield.");
         break;
     }
 }
@@ -5544,7 +5544,7 @@ void cast_clinging_darkness(byte level, struct char_data *ch, char *arg,
         spell_clinging_darkness(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in clinging_darkness.");
+        Log("serious screw-up in clinging_darkness.");
         break;
     }
 }
@@ -5564,7 +5564,7 @@ void cast_dominate_undead(byte level, struct char_data *ch, char *arg,
         spell_dominate_undead(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in dominate_undead.");
+        Log("serious screw-up in dominate_undead.");
         break;
     }
 }
@@ -5584,7 +5584,7 @@ void cast_unsummon(byte level, struct char_data *ch, char *arg,
         spell_unsummon(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in unsummon.");
+        Log("serious screw-up in unsummon.");
         break;
     }
 }
@@ -5604,7 +5604,7 @@ void cast_siphon_strength(byte level, struct char_data *ch, char *arg,
         spell_siphon_strength(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in siphon_strength.");
+        Log("serious screw-up in siphon_strength.");
         break;
     }
 }
@@ -5625,7 +5625,7 @@ void cast_gather_shadows(byte level, struct char_data *ch, char *arg,
         spell_gather_shadows(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in gather_shadows.");
+        Log("serious screw-up in gather_shadows.");
         break;
     }
 }
@@ -5645,7 +5645,7 @@ void cast_mend_bones(byte level, struct char_data *ch, char *arg,
         spell_mend_bones(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in mend_bones.");
+        Log("serious screw-up in mend_bones.");
         break;
     }
 }
@@ -5662,7 +5662,7 @@ void cast_trace_corpse(byte level, struct char_data *ch, char *arg,
         spell_trace_corpse(level, ch, 0, arg);
         break;
     default:
-        log("serious screw-up in trace_corpse.");
+        Log("serious screw-up in trace_corpse.");
         break;
     }
 }
@@ -5683,7 +5683,7 @@ void cast_endure_cold(byte level, struct char_data *ch, char *arg,
         spell_endure_cold(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in endure_cold.");
+        Log("serious screw-up in endure_cold.");
         break;
     }
 }
@@ -5703,7 +5703,7 @@ void cast_life_draw(byte level, struct char_data *ch, char *arg,
         spell_life_draw(level, ch, tar_ch, 0);
         break;
     default:
-        log("serious screw-up in life_draw.");
+        Log("serious screw-up in life_draw.");
         break;
     }
 }
@@ -5721,7 +5721,7 @@ void cast_blade_barrier(byte level, struct char_data *ch, char *arg,
         spell_blade_barrier(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_blade_barrier");
+        Log("serious screw-up in cast_blade_barrier");
         break;
     }
 }
@@ -5739,7 +5739,7 @@ void cast_mana_shield(byte level, struct char_data *ch, char *arg,
         spell_mana_shield(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_mana_shield");
+        Log("serious screw-up in cast_mana_shield");
         break;
     }
 }
@@ -5756,7 +5756,7 @@ void cast_group_heal(byte level, struct char_data *ch, char *arg,
         spell_group_heal(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_group_heal");
+        Log("serious screw-up in cast_group_heal");
         break;
     }
 }
@@ -5774,7 +5774,7 @@ void cast_iron_skins(byte level, struct char_data *ch, char *arg,
         spell_iron_skins(level, ch, 0, 0);
         break;
     default:
-        log("serious screw-up in cast_iron_skins");
+        Log("serious screw-up in cast_iron_skins");
         break;
     }
 }

@@ -595,7 +595,7 @@ void advance_level(struct char_data *ch, int class)
     char            bufx[50];
 
     if (class > MAX_CLASS) {
-        log("Bad advance class.. no such class");
+        Log("Bad advance class.. no such class");
         return;
     }
     add_move = GET_MAX_MOVE(ch);
@@ -605,7 +605,7 @@ void advance_level(struct char_data *ch, int class)
         /*
          * they can't advance here 
          */
-        log("Bad advance_level, can't advance in this class.");
+        Log("Bad advance_level, can't advance in this class.");
         return;
     }
 
@@ -1199,7 +1199,7 @@ void check_idling(struct char_data *ch)
         } else {
             sprintf(buf, "%s had a failed recp_offer, they are losing EQ!",
                     GET_NAME(ch));
-            log(buf);
+            Log(buf);
             slog(buf);
         }
 
@@ -1236,7 +1236,7 @@ int ObjFromCorpse(struct obj_data *c)
              * don't extract it.
              */
             c->contains = 0;
-            log("Memory lost in ObjFromCorpse.");
+            Log("Memory lost in ObjFromCorpse.");
             return (TRUE);
         }
     }

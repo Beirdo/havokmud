@@ -121,7 +121,7 @@ extern struct skillset mainpsiskills[];
  */
 
 void            abort(void);
-void            log(char *s);
+void            Log(char *s);
 int             GET_RADIUS(struct char_data *ch);
 int             IS_UNDERGROUND(struct char_data *ch);
 int             MobLevBonus(struct char_data *ch);
@@ -694,7 +694,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
     int             k = 0;
 
     if (!ch || !i) {
-        log("!ch || !i in act.info.c show_char_to_char");
+        Log("!ch || !i in act.info.c show_char_to_char");
         return;
     }
 
@@ -1142,7 +1142,7 @@ void glance_at_char(struct char_data *i, struct char_data *ch)
     struct affected_type *aff;
 
     if (!ch || !i) {
-        log("!ch || !i in act.info.c show_char_to_char");
+        Log("!ch || !i in act.info.c show_char_to_char");
         return;
     }
     /*
@@ -2402,6 +2402,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 void do_read(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[100];
+
     dlog("in do_read");
 
     /*
@@ -2417,6 +2418,7 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
                     buf[1000];
     struct char_data *tmp_char;
     struct obj_data *tmp_object;
+
     dlog("in do_examine");
 
     sprintf(buf, "at %s", argument);
@@ -2448,6 +2450,7 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
     int             door;
     char            buf[1000];
     struct room_direction_data *exitdata;
+
     dlog("in do_exits");
     *buf = '\0';
 
@@ -2579,6 +2582,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     int             x;
     char            color[10],
                     color2[10];
+
     dlog("in do_score");
 
     if (IS_SET(ch->player.user_flags, OLD_COLORS)) {
@@ -2890,9 +2894,9 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                  strn_cmp(argument, help_index[mid].keyword, minlen))) {
                 /*
                  * sprintf(buf, "indexnr = %d", mid);
-                 * log(buf);
+                 * Log(buf);
                  * sprintf(buf, "linenr = %d", help_index[mid].pos);
-                 * log(buf);
+                 * Log(buf);
 				 */
                 rewind(help_fl);
                 fseek(help_fl, help_index[mid].pos, 0);
@@ -2936,7 +2940,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                  * ADD_HELP
                  */
                 if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                    log("Could not open the ADD_HELP-file.\n\r");
+                    Log("Could not open the ADD_HELP-file.\n\r");
                     return;
                 }
                 sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
@@ -3070,7 +3074,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                             GET_NAME(ch), argument,
                             (GET_SEX(ch) == SEX_MALE ? "him" :
                              (GET_SEX(ch) == SEX_FEMALE ? "her" : "it")));
-                    log(buf);
+                    Log(buf);
                     return;
                 }
             }
@@ -3105,12 +3109,12 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                         GET_NAME(ch), argument,
                         (GET_SEX(ch) == SEX_MALE ? "him" :
                          (GET_SEX(ch) == SEX_FEMALE ? "her" : "it")));
-                log(buf);
+                Log(buf);
                 /*
                  * add query to ADD_HELP
                  */
                 if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                    log("Could not open the ADD_HELP-file.\n\r");
+                    Log("Could not open the ADD_HELP-file.\n\r");
                     return;
                 }
                 sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
@@ -3118,7 +3122,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 fclose(fl);
                 return;
             } else {
-                log("got to bad spot in do_help");
+                Log("got to bad spot in do_help");
                 return;
             }
         } else {
@@ -4451,35 +4455,30 @@ void do_equipment(struct char_data *ch, char *argument, int cmd)
 
 void do_credits(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_credits");
     page_string(ch->desc, credits, 0);
 }
 
 void do_news(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_news");
     page_string(ch->desc, news, TRUE);
 }
 
 void do_info(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_info");
     page_string(ch->desc, info, 0);
 }
 
 void do_iwizlist(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_iwizlist");
     page_string(ch->desc, iwizlist, TRUE);
 }
 
 void do_wizlist(struct char_data *ch, char *argument, int cmd)
 {
-
     dlog("in do_wizlist");
     page_string(ch->desc, wizlist, TRUE);
 }
@@ -4506,6 +4505,7 @@ char           *numbered_person(struct char_data *ch,
                                 struct char_data *person)
 {
     static char     buf[MAX_STRING_LENGTH];
+
     if (IS_NPC(person) && IS_IMMORTAL(ch)) {
         sprintf(buf, "%d.%s", which_number_mobile(ch, person),
                 fname(person->player.name));
@@ -5079,7 +5079,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
             spell_info[i].min_level_cleric < ABS_MAX_LVL) {
             if (!spells[spl]) {
                 sprintf(tbuf, "!spells[spl] on %d, do_spells in act.info.c", i);
-                log(tbuf);
+                Log(tbuf);
             } else {
                 sprintf(buf + strlen(buf),
                         "[%3d] %-30s  <%3d> %2d %3d %3d %3d %3d %3d %3d %3d "
@@ -6675,6 +6675,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
     struct char_data *spud;
     long            CalcPowerLevel(struct char_data *ch);
     char           *PowerLevelDesc(long a);
+
     dlog("in do_scan");
 
     /*
@@ -7090,10 +7091,10 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
                     total,
                     classn;
     long            bit;
+
     dlog("in do_whoarena");
 
-    sprintf(buffer,
-            "$c0005                        Havok Arena Players\n\r");
+    sprintf(buffer, "$c0005                        Havok Arena Players\n\r");
     strcat(buffer, "                           -------------\n\r");
 
     count = 0;
@@ -7439,7 +7440,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
                         }
                         free(tmp);
                     } else {
-                        log("screw up bigtime in load_char, saint part, "
+                        Log("screw up bigtime in load_char, saint part, "
                             "in clanlist");
                         return;
                     }

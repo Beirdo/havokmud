@@ -33,7 +33,7 @@ void save_board(struct bulletin_board *bd, int vnum)
 
     sprintf(buf, "boards/%05d", vnum);
     if ((fl = fopen(buf, "w")) == NULL) {
-        log("Unable to save board");
+        Log("Unable to save board");
         return;
     }
     
@@ -132,7 +132,7 @@ void write_board_message(struct char_data *ch, char *arg,
                 "Bugginess in board %ld", 
                 obj_index[board->item_number].virtual);
 #endif    
-        log("SOmething is wrong in a board");
+        Log("SOmething is wrong in a board");
         return;
     }
     
@@ -185,7 +185,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
                 "Bugginess in board %ld", 
                 obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in reply_board_message - bd = 0");
+        Log("Something went wrong in reply_board_message - bd = 0");
         return TRUE;
     }
     if ((bd->num_posts == 0) || (tmessage < 0) || (tmessage > bd->num_posts)) {
@@ -209,7 +209,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
                 "Bugginess in board %ld", 
                 obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in reply_board_message - msg = 0");
+        Log("Something went wrong in reply_board_message - msg = 0");
         return TRUE;
     }
     
@@ -288,7 +288,7 @@ void delete_board_message(struct bulletin_board *bd, short message_id)
         mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, 
                 "Bugginess in board %ld", bd->board_num);
 #endif 
-        log("Something went wrong in delete_board_message - msg = 0");
+        Log("Something went wrong in delete_board_message - msg = 0");
     return;
     }
     
@@ -342,7 +342,7 @@ bool remove_board_message(struct char_data *ch, char *arg,
             "Bugginess in board %ld",
             obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in remove_board_message - bd = 0");
+        Log("Something went wrong in remove_board_message - bd = 0");
         return TRUE;
     }
 
@@ -363,7 +363,7 @@ bool remove_board_message(struct char_data *ch, char *arg,
             "Bugginess in board %ld",
             obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in reply_board_message - msg = 0");
+        Log("Something went wrong in reply_board_message - msg = 0");
         return TRUE;
     }
 
@@ -387,7 +387,7 @@ bool remove_board_message(struct char_data *ch, char *arg,
     sprintf(buf, "%s just removed message %d from board %ld",
             GET_NAME(ch), tmessage,
             obj_index[board->item_number].virtual);
-    log(buf);
+    Log(buf);
     save_board(bd, obj_index[board->item_number].virtual);
     return TRUE;
 }
@@ -426,7 +426,7 @@ bool display_board_message(struct char_data * ch, char *arg,
         mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess "
                 "in board %ld", obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in display_board_message - bd = 0");
+        Log("Something went wrong in display_board_message - bd = 0");
         return TRUE;
     }
 
@@ -450,7 +450,7 @@ bool display_board_message(struct char_data * ch, char *arg,
         mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
                 "board %ld", obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in display_board_message - msg = 0");
+        Log("Something went wrong in display_board_message - msg = 0");
         return TRUE;
     }
     
@@ -601,7 +601,7 @@ bool show_board(struct char_data *ch, char *arg, struct obj_data *board)
         mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
                 "board %ld", obj_index[board->item_number].virtual);
 #endif
-        log("Something went wrong in show_board - bd = 0");
+        Log("Something went wrong in show_board - bd = 0");
         return TRUE;
     }
 
@@ -647,7 +647,7 @@ void free_board(int board_num)
         mprintf(line_log, LOG_BEEP, SEV_ALL, "Bulletin board #%d is "
                 "non-existant according to free_board", board_num);
 #endif
-        log("Something went wrong in free_board - bd = 0");
+        Log("Something went wrong in free_board - bd = 0");
         return;
     }
     
@@ -824,7 +824,7 @@ int board(struct char_data *ch, int cmd, char *arg,
             mprintf(line_log, 0, SEV_LOW, "%s just reset bulletin board #%ld", 
                     GET_NAME(ch), obj_index[obj->item_number].virtual);
 #endif
-            log("Someone just reset a board");
+            Log("Someone just reset a board");
             return TRUE;
         }
         return FALSE;

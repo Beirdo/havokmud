@@ -1527,7 +1527,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     extern int      top_of_world;
     struct room_data *room;
 #if 0
-    log("entered druid proc");
+    Log("entered druid proc");
 #endif
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -1595,7 +1595,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (!ch->specials.fighting) {
 #if 0        
-        log("not fighting");
+        Log("not fighting");
 #endif        
         if (GET_HIT(ch) < GET_MAX_HIT(ch) - 10) {
             /*
@@ -1856,33 +1856,33 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
 
     if (vict == ch) {
-        log("victim same as char");
+        Log("victim same as char");
         return (FALSE);
     }
 
     if (!vict->in_room) {
-        log("vict not in room");
+        Log("vict not in room");
         return (FALSE);
     }
 
     if (!real_roomp(vict->in_room)) {
-        log("vict in bad room");
+        Log("vict in bad room");
         return (FALSE);
     }
 
     if (vict->in_room != ch->in_room) {
-        log("ch and vict in different rooms");
+        Log("ch and vict in different rooms");
         return (FALSE);
     }
 
     if (GET_POS(vict) <= POSITION_DEAD) {
-        log("trying to cast a spell on dead victim");
+        Log("trying to cast a spell on dead victim");
         return (FALSE);
     }
 
     if (number(1, 9) > 3) {
 #if 0        
-        log("pester em");
+        Log("pester em");
 #endif        
         /*
          * pester them 
@@ -2000,7 +2000,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         return (TRUE);
     } else {
 #if 0        
-        log("better heal up");
+        Log("better heal up");
 #endif        
         /*
          * do heal 
@@ -3221,7 +3221,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                     REMOVE_BIT(t->player.user_flags, STOLE_1);
                     sprintf(buf, "Removing MURDER and STOLE bit from %s.",
                             GET_NAME(t));
-                    log(buf);
+                    Log(buf);
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
                     do_look(t, "", 0);
@@ -3246,7 +3246,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                     REMOVE_BIT(t->player.user_flags, MURDER_1);
                     sprintf(buf, "Removing STOLE and MURDER bit from %s.",
                             GET_NAME(t));
-                    log(buf);
+                    Log(buf);
 
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
@@ -3862,7 +3862,7 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
 #if 0                           /* always true, find out why! */
             rp = real_roomp(HOLDING_TANK);
             if (MobCountInRoom(rp->people) >= HOLDING_MAX) {
-                log("Catcher room was full");
+                Log("Catcher room was full");
                 return (FALSE);
             }
 #endif
@@ -4191,7 +4191,7 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         if (scan->vnum < 0) {
             sprintf(buf, "monster %s tries to breath, but isn't listed.",
                     ch->player.short_descr);
-            log(buf);
+            Log(buf);
             return FALSE;
         }
 
@@ -4204,7 +4204,7 @@ int BreathWeapon(struct char_data *ch, int cmd, char *arg,
         if (count < 1) {
             sprintf(buf, "monster %s has no breath weapons",
                     ch->player.short_descr);
-            log(buf);
+            Log(buf);
             return FALSE;
         }
 
@@ -5852,7 +5852,7 @@ int arena_prep_room(struct char_data *ch, int cmd, char *arg,
             do_look(ch, "", 0);
             return (TRUE);
         default:
-            log("Major Screw Up In Arena Prep. Room!!");
+            Log("Major Screw Up In Arena Prep. Room!!");
             return (TRUE);
         }
         return (TRUE);

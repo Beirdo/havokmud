@@ -449,7 +449,7 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
     }
 #if 0
     if (top_of_world > MAX_ROOMS) {
-        log("TRACK Is disabled, too many rooms.\n\rContact Loki soon.\n\r");
+        Log("TRACK Is disabled, too many rooms.\n\rContact Loki soon.\n\r");
         return -1;
     }
 #endif
@@ -2323,7 +2323,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
         for (f_list = leader->followers; f_list; f_list = f_list->next) {
             follower = f_list->follower;
             if (!follower) {
-                log("pointer error in portal follower loop");
+                Log("pointer error in portal follower loop");
                 return;
             }
 
@@ -4208,7 +4208,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(obj = read_object(EMPTY_SCROLL, VIRTUAL))) {
-        log("no default scroll could be found for scribe");
+        Log("no default scroll could be found for scribe");
         send_to_char("woops, something's wrong.\n\r", ch);
         return;
     }
@@ -4416,7 +4416,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!(obj = read_object(EMPTY_POTION, VIRTUAL))) {
-        log("no default potion could be found for brew");
+        Log("no default potion could be found for brew");
         send_to_char("woops, something's wrong.\n\r", ch);
         return;
     }
@@ -4678,7 +4678,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (!ch->skills) {
-        log("Char without skills trying to call a steed");
+        Log("Char without skills trying to call a steed");
         return;
     }
     if (!ch->skills[SKILL_STEED].learned) {
@@ -4728,7 +4728,7 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
                 RIDDEN(steed) = ch;
                 GET_POS(ch) = POSITION_MOUNTED;
             } else {
-                log("No mount found for paladin's call steed skill");
+                Log("No mount found for paladin's call steed skill");
                 send_to_char("Woops, code screwup, can't find your horse. Use "
                              "the bug command.\n\r", ch);
                 return;
@@ -4753,7 +4753,7 @@ void do_flurry(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (!ch->skills) {
-        log("Char without skills trying to flurry");
+        Log("Char without skills trying to flurry");
         return;
     }
     if (!ch->skills[SKILL_FLURRY].learned) {
@@ -4812,7 +4812,7 @@ void do_flowerfist(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!ch->skills) {
-        log("Char without skills trying to flowerfist");
+        Log("Char without skills trying to flowerfist");
         return;
     }
 

@@ -62,7 +62,7 @@ char           *formatNum(int foo);
 void            insert_mobile(struct char_data *obj, long vnum);
 int             write_obj_to_file(struct obj_data *obj, FILE * f);
 void            insert_object(struct obj_data *obj, long vnum);
-void            log(char *s);
+void            Log(char *s);
 void            abort(void);
 time_t          time(time_t * tloc);
 char           *crypt(const char *key, const char *salt);
@@ -177,13 +177,13 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
             d->character->generic = NEWBIE_START;
             sprintf(buf2, "%s has just accepted %s into the game.",
                     ch->player.name, name);
-            log(buf2);
+            Log(buf2);
             SEND_TO_Q("You have been accepted.  Press enter\n\r", d);
         } else if (str_cmp(word, "no") == 0) {
             SEND_TO_Q("You have been denied.  Press enter\n\r", d);
             sprintf(buf2, "%s has just denied %s from the game.",
                     ch->player.name, name);
-            log(buf2);
+            Log(buf2);
             d->character->generic = NEWBIE_AXE;
         } else {
             SEND_TO_Q(argument, d);
@@ -245,7 +245,7 @@ void do_imptest(struct char_data *ch, char *arg, int cmd)
     int             x;
     char           *tmp;
     char            buff[256];
-    log("loading all zones");
+    Log("loading all zones");
 
     for (x = 0; x < 40000; x += 200) {
         sprintf(buff, "%d", x);
@@ -673,13 +673,13 @@ void do_silence(struct char_data *ch, char *argument, int cmd)
         send_to_char("You have now silenced polyed mobles.\n\r", ch);
         sprintf(buf, "%s has stopped Polymophed characters from shouting.",
                 ch->player.name);
-        log(buf);
+        Log(buf);
     } else {
         Silence = 0;
         send_to_char("You have now unsilenced mobles.\n\r", ch);
         sprintf(buf, "%s has allowed Polymophed characters to shout.",
                 ch->player.name);
-        log(buf);
+        Log(buf);
     }
 }
 
@@ -747,7 +747,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
         strcpy(hostlist[numberhosts], buf);
         sprintf(buf, "%s has added host %s to the access denied list.",
                 GET_NAME(ch), hostlist[numberhosts]);
-        log(buf);
+        Log(buf);
         numberhosts++;
     } else if (str_cmp(buf, "rem") == 0) {
         if (numberhosts <= 0) {
@@ -782,7 +782,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s has removed host %s from the access denied "
                              "list.",
                         GET_NAME(ch), hostlist[numberhosts]);
-                log(buf);
+                Log(buf);
                 numberhosts--;
                 return;
             }
@@ -1002,7 +1002,7 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
         }
     }
 #else
-    log("enter");
+    Log("enter");
     i = 0;
     j = 0;
     k = 0;
@@ -1018,12 +1018,12 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
     sprintf(oriarg, "%s",arg);
 
     if(!*arg) {
-        log("no arg");
+        Log("no arg");
         send_to_char("Yes, but what?\n\r",ch);
         return;
     }
     while(*arg && arg[0] != '*'&& arg[1] != ' ') {
-        log("processing words before asterisk");
+        Log("processing words before asterisk");
         half_chop(arg, buf, arg);
         sprintf(part1, "%s %s",part1, buf);
     }
@@ -1074,20 +1074,20 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
          * stick remainder into arg
          */
         found = 1;
-        log("found legal asterisk");
+        Log("found legal asterisk");
     }
     if(found) {
-        log("entered the complicated emote");
+        Log("entered the complicated emote");
         /*
          * see if there's a dude in the room with this name
          */
         if (!(vict = get_char_room_vis(ch, name))) {
-            log("no target found");
+            Log("no target found");
             sprintf(buf, "Noone here by the name of %s.\n\r",name);
             send_to_char(buf, ch);
             return;
         } else {
-        log("target found");
+        Log("target found");
         /*
          * now fix up buffers, do the acts
          */
@@ -1106,7 +1106,7 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
         act(buf, FALSE, ch, 0, vict, TO_VICT);
         }
     } else {
-        log("entered the simple emote");
+        Log("entered the simple emote");
         for (i = 0; *(oriarg + i) == ' '; i++) {
             /*
              * Empty loop
@@ -1541,7 +1541,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
      */
 
     if (!real_roomp(location)) {
-        log("Massive error in do_goto. Everyone Off NOW.");
+        Log("Massive error in do_goto. Everyone Off NOW.");
         return;
     }
     if (IS_SET(real_roomp(location)->room_flags, PRIVATE)) {
@@ -2103,7 +2103,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                          */
                         sprintf(buf, "<%s> had a bogus aff->type act.wizard, "
                                      "do_stat", GET_NAME(k));
-                        log(buf);
+                        Log(buf);
                     }
                 }
             }
@@ -3133,7 +3133,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
             sprintf(buf, "Peaceful rooms and Easy Summon enabled by %s",
                     GET_NAME(ch));
         }
-        log(buf);
+        Log(buf);
     } else if (!strcmp(field, "mana")) {
         sscanf(parmstr, "%d", &parm);
         mob->points.mana = parm;
@@ -3186,12 +3186,12 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
     if (!*arg) {
         sprintf(buf, "Shutdown by %s.", GET_NAME(ch));
         send_to_all(buf);
-        log(buf);
+        Log(buf);
         mudshutdown = 1;
     } else if (!str_cmp(arg, "reboot")) {
         sprintf(buf, "Reboot by %s.", GET_NAME(ch));
         send_to_all(buf);
-        log(buf);
+        Log(buf);
         mudshutdown = reboot = 1;
     } else {
         send_to_char("Go shut down someone your own size.\n\r", ch);
@@ -3223,7 +3223,7 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "caught %s snooping %s who didn't have a "
                              "descriptor!",
                         ch->player.name, ch->desc->snoop.snooping->player.name);
-                log(buf);
+                Log(buf);
             }
             ch->desc->snoop.snooping = 0;
         }
@@ -3246,7 +3246,7 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "caught %s snooping %s who didn't have a "
                              "descriptor!",
                         ch->player.name, ch->desc->snoop.snooping->player.name);
-                log(buf);
+                Log(buf);
                 /*
                  * logically.. this person has returned from being a
                  * creature?
@@ -3750,7 +3750,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             act("$n disintegrates $N.", FALSE, ch, 0, vict, TO_NOTVICT);
 
             if (IS_NPC(ch) && IS_NPC(vict)) {
-                log("npc just purged a mob! COOL!");
+                Log("npc just purged a mob! COOL!");
             }
 
             if (IS_NPC(vict)) {
@@ -5663,7 +5663,7 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
                 if ((GetMaxLevel(victim) > 51) && !(ch == victim)) {
                     sprintf(buf, "%s just disconnected %s!", GET_NAME(ch),
                             GET_NAME(victim));
-                    log(buf);
+                    Log(buf);
                 }
                 close_socket(d);
                 send_to_char("Ok.\n\r", ch);
@@ -5672,7 +5672,7 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    log("Descriptor not found, do_disconnect");
+    Log("Descriptor not found, do_disconnect");
     send_to_char("Descriptor not found!\n\r", ch);
 }
 
@@ -5818,7 +5818,7 @@ void do_god_interven(struct char_data *ch, char *argument, int cmd)
                          ch);
             send_to_outdoor("The planets return to their normal orbit, slowly"
                             " the light will return.\n");
-            log("The world is enlightend");
+            Log("The world is enlightend");
         } else {
             SET_BIT(SystemFlags, SYS_ECLIPS);
             weather_info.sunlight = SUN_DARK;
@@ -5826,105 +5826,105 @@ void do_god_interven(struct char_data *ch, char *argument, int cmd)
             send_to_char("You summon the planets and force an eclipse!\n", ch);
             send_to_outdoor("The planets eclipse and hide the sun spreading "
                             "darkness through out the land!\n");
-            log("World has been darkened");
+            Log("World has been darkened");
         }
     } else if (!strcmp("req", arg)) {
         if (!IS_SET(SystemFlags, 128)) {
             SET_BIT(SystemFlags, 128);
             send_to_char("Newbie character approval required.\n\r", ch);
-            log("New character approval REQUIRED");
+            Log("New character approval REQUIRED");
         } else {
             REMOVE_BIT(SystemFlags, 128);
             send_to_char("Newbie character approval REMOVED.\n\r", ch);
-            log("New character approval REMOVED");
+            Log("New character approval REMOVED");
         }
     } else if (!strcmp("color", arg)) {
         if (!IS_SET(SystemFlags, SYS_NOANSI)) {
             SET_BIT(SystemFlags, SYS_NOANSI);
             send_to_char("Color codes disabled world wide.\n\r", ch);
-            log("Global colors disabled");
+            Log("Global colors disabled");
         } else {
             REMOVE_BIT(SystemFlags, SYS_NOANSI);
             send_to_char("Color codes enabled for everyone that uses "
                          "them.\n\r", ch);
-            log("Global colors enabled");
+            Log("Global colors enabled");
         }
     } else if (!strcmp("dns", arg)) {
         if (IS_SET(SystemFlags, SYS_SKIPDNS)) {
             REMOVE_BIT(SystemFlags, SYS_SKIPDNS);
             send_to_char("Domain name searches enabled.\n\r", ch);
-            log("DNS Enabled");
+            Log("DNS Enabled");
         } else {
             SET_BIT(SystemFlags, SYS_SKIPDNS);
             send_to_char("Domain name searches Disabled.\n\r", ch);
-            log("DNS Disabled");
+            Log("DNS Disabled");
         }
     } else if (!strcmp("portal", arg)) {
         if (IS_SET(SystemFlags, SYS_NOPORTAL)) {
             REMOVE_BIT(SystemFlags, SYS_NOPORTAL);
             send_to_char("You sort out the planes and allow portaling.\n", ch);
-            log("Portaling enabled");
+            Log("Portaling enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NOPORTAL);
             send_to_char("You scramble the planes to make portaling "
                          "impossible.\n", ch);
-            log("Portaling disabled");
+            Log("Portaling disabled");
         }
     } else if (!strcmp("astral", arg)) {
         if (IS_SET(SystemFlags, SYS_NOASTRAL)) {
             REMOVE_BIT(SystemFlags, SYS_NOASTRAL);
             send_to_char("You shift the planes and allow astral travel.\n", ch);
-            log("Astral enabled");
+            Log("Astral enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NOASTRAL);
             send_to_char("You shift the astral planes and make astral travel "
                          "impossible.\n", ch);
-            log("Astral disabled");
+            Log("Astral disabled");
         }
     } else if (!strcmp("summon", arg)) {
         if (IS_SET(SystemFlags, SYS_NOSUMMON)) {
             REMOVE_BIT(SystemFlags, SYS_NOSUMMON);
             send_to_char("You clear the fog to enable summons.\n", ch);
-            log("Summons enabled");
+            Log("Summons enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NOSUMMON);
             send_to_char("A magical fog spreads throughout the land making "
                          "summons impossible.\n", ch);
-            log("Summons disabled");
+            Log("Summons disabled");
         }
     } else if (!strcmp("kill", arg)) {
         if (IS_SET(SystemFlags, SYS_NOKILL)) {
             REMOVE_BIT(SystemFlags, SYS_NOKILL);
             send_to_char("You let the anger lose inside you and the people of"
                          " the land fight.\n", ch);
-            log("Killing enabled");
+            Log("Killing enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NOKILL);
             send_to_char("You spread thoughts of peace through the people of "
                          "the land.\n", ch);
-            log("Killing disabled");
+            Log("Killing disabled");
         }
     } else if (!strcmp("logall", arg)) {
         if (IS_SET(SystemFlags, SYS_LOGALL)) {
             REMOVE_BIT(SystemFlags, SYS_LOGALL);
             send_to_char("You fire the scribe writting the history for poor "
                          "workmanship.\n\r", ch);
-            log("Logging all disabled.");
+            Log("Logging all disabled.");
         } else {
             SET_BIT(SystemFlags, SYS_LOGALL);
             send_to_char("You hire a scribe to write the history of the "
                          "world.\n\r", ch);
-            log("Logging all enabled");
+            Log("Logging all enabled");
         }
     } else if (!strcmp("wizlock", arg)) {
         if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
             REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
             send_to_char("You open the world to the mortals\n\r", ch);
-            log("System is no longer wizlocked");
+            Log("System is no longer wizlocked");
         } else {
             SET_BIT(SystemFlags, SYS_WIZLOCKED);
             send_to_char("Only the Gods will be able to log on\n\r", ch);
-            log("System is now Wizlocked");
+            Log("System is now Wizlocked");
             send_to_all("$c0009System is now locked for repair! Please log "
                         "out!");
         }
@@ -5932,23 +5932,23 @@ void do_god_interven(struct char_data *ch, char *argument, int cmd)
         if (IS_SET(SystemFlags, SYS_NO_POLY)) {
             REMOVE_BIT(SystemFlags, SYS_NO_POLY);
             send_to_char("All people may now polymorph\n\r", ch);
-            log("Polymorph is now permitted");
+            Log("Polymorph is now permitted");
         } else {
             SET_BIT(SystemFlags, SYS_NO_POLY);
             send_to_char("People now can't polymorph\n\r", ch);
-            log("Polymorphing powers have been removed");
+            Log("Polymorphing powers have been removed");
         }
     } else if (!strcmp("rp", arg)) {
         if (IS_SET(SystemFlags, SYS_NOOOC)) {
             REMOVE_BIT(SystemFlags, SYS_NOOOC);
             send_to_char("OOC channel re-enabled\n\r", ch);
-            log("OOC channel has been re-enabled");
+            Log("OOC channel has been re-enabled");
             send_to_all("OOC channel has been re-enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NOOOC);
             send_to_char("OOC channel disabled, RP is now strictly "
                          "enforced\n\r", ch);
-            log("OOC channel disabled");
+            Log("OOC channel disabled");
             send_to_all("The power of the OOC channel has been disabled...");
             send_to_all("RPing is now enforced on every channel");
         }
@@ -5956,51 +5956,51 @@ void do_god_interven(struct char_data *ch, char *argument, int cmd)
         if (IS_SET(SystemFlags, SYS_LOCOBJ)) {
             REMOVE_BIT(SystemFlags, SYS_LOCOBJ);
             send_to_char("Locate Object enabled\n\r", ch);
-            log("Locate object has been enabled");
+            Log("Locate object has been enabled");
         } else {
             SET_BIT(SystemFlags, SYS_LOCOBJ);
             send_to_char("Locate Object disabled\n\r", ch);
-            log("Locate Object disabled");
+            Log("Locate Object disabled");
         }
     } else if (!strcmp("worldarena", arg)) {
         if (IS_SET(SystemFlags, SYS_WLD_ARENA)) {
             REMOVE_BIT(SystemFlags, SYS_WLD_ARENA);
             send_to_char("World arena disabled\n\r", ch);
-            log("World Arena has been disabled");
+            Log("World Arena has been disabled");
         } else {
             SET_BIT(SystemFlags, SYS_WLD_ARENA);
             send_to_char("World Arena enabled\n\r", ch);
-            log("World Arena enabled");
+            Log("World Arena enabled");
         }
     } else if (!strcmp("deinit", arg)) {
         if (IS_SET(SystemFlags, SYS_NO_DEINIT)) {
             REMOVE_BIT(SystemFlags, SYS_NO_DEINIT);
             send_to_char("Deinit zones enabled\n\r", ch);
-            log("Deinit Zones has been enabled");
+            Log("Deinit Zones has been enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NO_DEINIT);
             send_to_char("Deinit zones disabled\n\r", ch);
-            log("Deinit zones disabled");
+            Log("Deinit zones disabled");
         }
     } else if (!strcmp("tweak", arg)) {
         if (IS_SET(SystemFlags, SYS_NO_TWEAK)) {
             REMOVE_BIT(SystemFlags, SYS_NO_TWEAK);
             send_to_char("Tweaking items enabled\n\r", ch);
-            log("Tweaking items have been enabled");
+            Log("Tweaking items have been enabled");
         } else {
             SET_BIT(SystemFlags, SYS_NO_TWEAK);
             send_to_char("Tweaking items disabled\n\r", ch);
-            log("Tweaking items disabled");
+            Log("Tweaking items disabled");
         }
     } else if (!strcmp("zonelocate", arg)) {
         if (IS_SET(SystemFlags, SYS_ZONELOCATE)) {
             REMOVE_BIT(SystemFlags, SYS_ZONELOCATE);
             send_to_char("Zone only locating has been enabled\n\r", ch);
-            log("Zone only locating has been disabled");
+            Log("Zone only locating has been disabled");
         } else {
             SET_BIT(SystemFlags, SYS_ZONELOCATE);
             send_to_char("Zone only locating has been enabled\n\r", ch);
-            log("Zone only locating has been enabled");
+            Log("Zone only locating has been enabled");
         }
     } else {
         send_to_char("Godly powers you have, but how do you wanna use them?\n",
@@ -6051,7 +6051,7 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
         return;
     } else {
         sprintf(buf, "%s just nuked %s!", GET_NAME(ch), GET_NAME(victim));
-        log(buf);
+        Log(buf);
         act("$n calls forth the wrath of the gods and destroys $N!", FALSE,
             ch, 0, victim, TO_NOTVICT);
         act("$n reaches into $N and pulls out a fighting soul!", FALSE, ch,
@@ -6147,7 +6147,7 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
                     } else {
                         sprintf(buf, "%s had a failed recp_offer, they are "
                                      "losing EQ!", GET_NAME(victim));
-                        log(buf);
+                        Log(buf);
                     }
                     extract_char(victim);
                 }
@@ -6187,7 +6187,7 @@ void do_force_rent(struct char_data *ch, char *argument, int cmd)
         } else {
             sprintf(buf, "%s had a failed recp_offer, they are losing EQ!",
                     GET_NAME(victim));
-            log(buf);
+            Log(buf);
         }
         extract_char(victim);
     }
@@ -6667,7 +6667,7 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
         mob_index[nr].pos = -1;
     }
     sprintf(buf, "Mobile %s saved as vnum %ld", mob->player.name, vnum);
-    log(buf);
+    Log(buf);
     sprintf(buf, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
     send_to_char(buf, ch);
 }
@@ -6768,7 +6768,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     }
 
     sprintf(buf, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
-    log(buf);
+    Log(buf);
     send_to_char(buf, ch);
 }
 
@@ -7038,7 +7038,7 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
         }
         fclose(fl);
         sprintf(buf, "%s just cleaned the bug file!", GET_NAME(ch));
-        log(buf);
+        Log(buf);
 
     } else if (!strcmp("cleanidea", arg)) {
         send_to_char("Cleaning the mortal idea file NOW!\n", ch);
@@ -7048,7 +7048,7 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
         }
         fclose(fl);
         sprintf(buf, "%s just cleaned the idea file!", GET_NAME(ch));
-        log(buf);
+        Log(buf);
     } else if (!strcmp("cleantypo", arg)) {
         send_to_char("Cleaning the mortal typo file NOW!\n", ch);
         if (!(fl = fopen(TYPO_FILE, "wt"))) {
@@ -7057,7 +7057,7 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
         }
         fclose(fl);
         sprintf(buf, "%s just cleaned the typo file!", GET_NAME(ch));
-        log(buf);
+        Log(buf);
     } else {
         send_to_char("What do you wanna do?!?!?\n", ch);
     }
@@ -7735,7 +7735,7 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "$c000cThe $c000CArena $c000cis now closed!\n\r");
         send_to_all(buf);
         sprintf(buf, "%s closed the arena!\n\r", GET_NAME(ch));
-        log(buf);
+        Log(buf);
     } else {
         /*
          * first set flags to be FALSE
@@ -7841,7 +7841,7 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
         send_to_all(buf);
         sprintf(buf, "%s opened an arena for level %d to %d in quadrant %d",
                 GET_NAME(ch), MinArenaLevel, MaxArenaLevel, Quadrant);
-        log(buf);
+        Log(buf);
     }
 }
 
@@ -8559,7 +8559,7 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
     if (reimb_char_objs(victim)) {
         sprintf(buf, "%s just granted %s a reimbursement", GET_NAME(ch),
                 GET_NAME(victim));
-        log(buf);
+        Log(buf);
 
         sprintf(buf, "You reimbursed %s, resetting his gold and equipment to "
                      "the point when they last rented.\n\r", GET_NAME(victim));

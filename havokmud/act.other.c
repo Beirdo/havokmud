@@ -471,7 +471,7 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
     if (GET_POS(ch) < POSITION_STUNNED) {
         send_to_char("You die before your time!\n\r", ch);
         sprintf(buf, "%s dies via quit.", GET_NAME(ch));
-        log(buf);
+        Log(buf);
         die(ch, '\0');
         return;
     }
@@ -810,7 +810,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
         send_to_char("Steal from a God?!?  Oh the thought!\n\r", ch);
         sprintf(buf, "NOTE: %s tried to steal from GOD %s", GET_NAME(ch),
                 GET_NAME(victim));
-        log(buf);
+        Log(buf);
         return;
     }
     WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -4881,7 +4881,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
             if ((r_num = real_object(SEVERED_HEAD)) >= 0) {
                 head = read_object(r_num, REAL);
                 if (!head) {
-                    log("ERROR IN BEhead.. make head object");
+                    Log("ERROR IN BEhead.. make head object");
                     return;
 
                 }
@@ -4986,7 +4986,7 @@ void do_top10(struct char_data *ch, char *arg, int cmd)
             }
             free(tmp);
         } else {
-            log("screw up bigtime in load_char, saint part, in clanlist");
+            Log("screw up bigtime in load_char, saint part, in clanlist");
             return;
         }
     }

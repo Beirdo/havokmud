@@ -517,7 +517,7 @@ void MobEdit(struct char_data *ch, char *arg)
         ChangeMobCoinage(ch, arg, 0);
         break;
     default:
-        log("Got to bad spot in MobEdit");
+        Log("Got to bad spot in MobEdit");
         break;
     }
 }

@@ -61,7 +61,7 @@ void            NailThisSucker(struct char_data *ch);
 int             IS_UNDERGROUND(struct char_data *ch);
 FILE           *log_f;
 
-void log(char *s)
+void Log(char *s)
 {
     log_sev(s, 1);
 }
@@ -2736,7 +2736,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
 #endif
 
     if (!ch || !tch) {
-        log("!ch || !tch in SetHunting");
+        Log("!ch || !tch in SetHunting");
         return;
     }
 
@@ -2849,7 +2849,7 @@ void MakeNiftyAttack(struct char_data *ch)
     }
 
     if (!ch || !ch->skills) {
-        log("!or !ch-skills in MakeNiftyAttack() in utility.c");
+        Log("!or !ch-skills in MakeNiftyAttack() in utility.c");
         return;
     }
 
@@ -3177,7 +3177,7 @@ void TeleportPulseStuff(int pulse)
         if (IS_MOB(ch)) {
             if (ch->specials.tick == tick && !ch->specials.fighting) {
 #if 0
-                log("through here");
+                Log("through here");
 #endif
                 mobile_activity(ch);
             }
@@ -3188,7 +3188,7 @@ void TeleportPulseStuff(int pulse)
 
                 dest = real_roomp(rp->tele_targ);
                 if (!dest) {
-                    log("invalid tele_targ");
+                    Log("invalid tele_targ");
                     continue;
                 }
 
@@ -3453,7 +3453,7 @@ void traveling_qp(int pulse)
             extract_obj(travelqp);
             f = 0;
         } else if (!(ch = travelqp->carried_by)) {
-            log("not carried, extracting");
+            Log("not carried, extracting");
             extract_obj(travelqp);
             f = 0;
         } else if (!IS_NPC(ch)) {
@@ -3466,7 +3466,7 @@ void traveling_qp(int pulse)
             if (qt = read_object(QUEST_POTION, VIRTUAL)) {
                 obj_to_char(qt, ch);
             }
-            log("carried by player, gained a QT");
+            Log("carried by player, gained a QT");
             sprintf(buf, "%s just found a quest token.\n\r", GET_NAME(ch));
             qlog(buf);
             extract_obj(travelqp);
@@ -3538,7 +3538,7 @@ void ArenaPulseStuff(int pulse)
             if (!i->connected) {
                 ch = i->character;
                 if (!ch) {
-                    log("Weirdness. Found a char in arena, but now he's gone?");
+                    Log("Weirdness. Found a char in arena, but now he's gone?");
                 }
 
                 if (IS_PC(ch) && real_roomp(ch->in_room)->zone == ARENA_ZONE) {
@@ -3563,7 +3563,7 @@ void ArenaPulseStuff(int pulse)
         }
 
         if (!ch) {
-            log("Weirdness. Found a char in arena, but now he's gone?");
+            Log("Weirdness. Found a char in arena, but now he's gone?");
         }
     }
 }
@@ -4921,7 +4921,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
     return (TRUE);
 #else
     if (!obj || !ch) {
-        log("!obj || !ch in CheckEgo, utility.c");
+        Log("!obj || !ch in CheckEgo, utility.c");
         return (FALSE);
     }
 
@@ -5248,7 +5248,7 @@ int IS_MURDER(struct char_data *ch)
     if (IS_PC(ch) && IS_SET(ch->player.user_flags, MURDER_1) &&
         !IS_IMMORTAL(ch)) {
         sprintf(buf, "%s has the MURDER set.", GET_NAME(ch));
-        log(buf);
+        Log(buf);
         return (TRUE);
     }
 #endif
@@ -5263,7 +5263,7 @@ int IS_STEALER(struct char_data *ch)
     if (IS_PC(ch) && IS_SET(ch->player.user_flags, STOLE_1) && 
         !IS_IMMORTAL(ch)) {
         sprintf(buf, "%s has STOLE set.", GET_NAME(ch));
-        log(buf);
+        Log(buf);
         return (TRUE);
     }
 #endif
@@ -5963,7 +5963,7 @@ void qlog(char *desc)
     *(tmstr + strlen(tmstr) - 1) = '\0';
 
     if (!(fl = fopen(QUESTLOG_FILE, "a"))) {
-        log("Could not open the QuestLog-file.\n\r");
+        Log("Could not open the QuestLog-file.\n\r");
     } else {
         sprintf(buf, "**:%s-> %s", tmstr, desc);
         fputs(buf, fl);
@@ -6402,7 +6402,7 @@ void tweak(struct obj_data *obj)
     dlog("in tweak");
 
     if (!obj) {
-        log("No object found in tweak func?!");
+        Log("No object found in tweak func?!");
         return;
     }
 
@@ -6521,17 +6521,17 @@ int MobCastCheck(struct char_data *ch, int psi)
     struct char_data *vict;
 
     if (!ch) {
-        log("no char in MobCastCheck");
+        Log("no char in MobCastCheck");
         return (FALSE);
     }
 
     if (ch->in_room < 1) {
-        log("invalid room in MobCastCheck");
+        Log("invalid room in MobCastCheck");
         return (FALSE);
     }
 
     if (!(real_roomp(ch->in_room))) {
-        log("non-existant room for MobCastCheck");
+        Log("non-existant room for MobCastCheck");
         return (FALSE);
     }
 

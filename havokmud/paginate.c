@@ -223,7 +223,7 @@ void list_init(struct descriptor_data *d)
         // SEV_ALL,
         // "list_init called for %s when d->list_string already
         // allocated", d->account.account_name);
-        log("List_ijnit called before");
+        Log("List_ijnit called before");
     }
     d->list_size = ONE_PAGE;
     CREATE(d->list_string, char, d->list_size);
@@ -244,7 +244,7 @@ void list_append(struct descriptor_data *d, char *fmt, ...)
         // SEV_ALL,
         // "list_append called for %s before list_init",
         // d->account.account_name);
-        log("List_ijnit bedfore list_init");
+        Log("List_ijnit bedfore list_init");
     }
 
     *listbuf = '\0';
@@ -272,7 +272,7 @@ void list_end(struct descriptor_data *d)
         // SEV_ALL,
         // "list_end called for %s before list_init",
         // d->account.account_name);
-        log("List_ijnit called before list_init");
+        Log("List_ijnit called before list_init");
     }
 
     page_string(d, d->list_string, TRUE);
