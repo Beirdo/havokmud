@@ -1097,19 +1097,19 @@ void spell_energy_drain(int level, struct char_data *ch,
                    !saves_spell(ch, SAVING_SPELL)) {
             send_to_char("Your spell backfires!\n\r", ch);
             dam = 1;
-            damage(ch, victim, dam, SPELL_ENERGY_DRAIN);
+            damage(ch, ch, dam, SPELL_ENERGY_DRAIN);
             if (!IS_NPC(ch)) {
                 ch->old_exp = GET_EXP(ch);
                 drop_level(ch, BestClassIND(ch), FALSE);
                 set_title(ch);
             } else {
-                tmp = GET_MAX_HIT(victim) / GetMaxLevel(victim);
-                victim->points.max_hit -= tmp;
-                GET_HIT(victim) -= tmp;
-                victim->points.hitroll += 1;
-                tmp = GET_EXP(victim) / GetMaxLevel(victim);
+                tmp = GET_MAX_HIT(ch) / GetMaxLevel(ch);
+                ch->points.max_hit -= tmp;
+                GET_HIT(ch) -= tmp;
+                ch->points.hitroll += 1;
+                tmp = GET_EXP(ch) / GetMaxLevel(ch);
                 GET_EXP(ch) += tmp;
-                GET_EXP(victim) -= tmp;
+                GET_EXP(ch) -= tmp;
             }
         } else {
             send_to_char("Your spell fails utterly.\n\r", ch);
