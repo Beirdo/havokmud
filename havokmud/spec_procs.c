@@ -2640,7 +2640,7 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
             return (TRUE);
         }
 
-        if (!arg || !money <= 0) {
+        if (!arg || money <= 0) {
             send_to_char("Go away, you bother me.\n\r", ch);
             return (TRUE);
         } 
