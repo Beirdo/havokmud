@@ -1316,6 +1316,7 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 	char name[256];
 	char buf[MAX_STRING_LENGTH],buf2[256];
 	int j, found = 0;
+	struct char_data *target;
 
 	assert(ch);
 	sprintf(name,"%s",arg);
@@ -1335,17 +1336,23 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 			if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
 				found = 1; /* we found at least one item */
 				if(i->carried_by) {
-					if (strlen(PERS_LOC(i->carried_by, ch))>0) {
+					target = i->carried_by;
+	            	if(!IS_IMMORTAL(target)) {
+					  if (strlen(PERS_LOC(i->carried_by, ch))>0) {
 						sprintf(buf2,"%s carried by %s.\n\r",i->short_description,PERS(i->carried_by,ch));
 						strcat(buf,buf2);
 						j--;
+				      }
 					}
 				} else if(i->equipped_by) {
-					if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
+					target = i->equipped_by;
+					if(!IS_IMMORTAL(target)){
+					  if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
 						sprintf(buf2,"%s equipped by %s.\n\r",i->short_description,PERS(i->equipped_by,ch));
 						strcat(buf,buf2);
 						j--;
-					}
+					  }
+				    }
 				} else if (i->in_obj) {
 					sprintf(buf2,"%s in %s.\n\r",i->short_description,i->in_obj->short_description);
 					strcat(buf,buf2);
