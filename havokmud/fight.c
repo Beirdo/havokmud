@@ -1698,7 +1698,7 @@ char buf[255];
     }
 #endif
 
-if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
+if (affected_by_spell(v,SPELL_MANA_SHIELD) && dam > 0) {
 	while(GET_MANA(v) && dam) {
 		GET_MANA(v) -= 1;
 		dam -= 1;
@@ -1722,7 +1722,7 @@ if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
 	}
 }
 
-if (affected_by_spell(v,SPELL_IRON_SKINS)) {
+if (affected_by_spell(v,SPELL_IRON_SKINS) && dam > 0) {
 	struct affected_type *aff;
 
 	// locate the right affect.. is this laggy? probably.

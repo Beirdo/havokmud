@@ -1499,25 +1499,46 @@ if (i->pc)
     next_thing = j->next; /* Next in object list */
 
     /* If this is a corpse */
-    if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) &&
-	(j->obj_flags.value[3]) ) {
-      /* timer count down */
-      if (j->obj_flags.timer > 0) j->obj_flags.timer--;
+	if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) && (j->obj_flags.value[3]) ) {
+		/* timer count down */
+		if (j->obj_flags.timer > 0)
+			j->obj_flags.timer--;
 
-      if (!j->obj_flags.timer) {
-	if (j->carried_by)
-      act("$p biodegrades in your hands. Everything in it falls to the floor",
-	      FALSE, j->carried_by, j, 0, TO_CHAR);
-	else if ((j->in_room != NOWHERE) &&
-		 (real_roomp(j->in_room)->people)){
-	  act("$p dissolves into a fertile soil.",
-	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
-	  act("$p dissolves into a fertile soil.",
-	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
-	}
-	ObjFromCorpse(j);
-      }
-    } else {
+		if (!j->obj_flags.timer) {
+			if (j->carried_by)
+				act("$p biodegrades in your hands. Everything in it falls to the floor", FALSE, j->carried_by, j, 0, TO_CHAR);
+			else if ((j->in_room != NOWHERE) && (real_roomp(j->in_room)->people)){
+				act("$p dissolves into a fertile soil.", TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+				act("$p dissolves into a fertile soil.",TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+			}
+			ObjFromCorpse(j);
+		}
+
+	} else if(obj_index[j->item_number].virtual == EMPTY_SCROLL) {
+		if (j->obj_flags.timer > 0)
+			j->obj_flags.timer--;
+		if (!j->obj_flags.timer) {
+			if (j->carried_by)
+				act("$p crumbles to dust.", FALSE, j->carried_by, j, 0, TO_CHAR);
+			else if ((j->in_room != NOWHERE) && (real_roomp(j->in_room)->people)){
+				act("$p crumbles to dust.", TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+				act("$p crumbles to dust.",TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+			}
+			extract_obj(j);
+		}
+	} else if(obj_index[j->item_number].virtual == EMPTY_POTION) {
+		if (j->obj_flags.timer > 0)
+			j->obj_flags.timer--;
+		if (!j->obj_flags.timer) {
+			if (j->carried_by)
+				act("$p dissolves into nothingness.", FALSE, j->carried_by, j, 0, TO_CHAR);
+			else if ((j->in_room != NOWHERE) && (real_roomp(j->in_room)->people)){
+				act("$p dissolves into nothingness.", TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
+				act("$p dissolves into nothingness.",TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
+			}
+			extract_obj(j);
+		}
+	} else {
 
       /*
        *  Sound objects

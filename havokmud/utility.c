@@ -4797,9 +4797,15 @@ int MaxDexForRace(struct char_data *ch)
 			break;
 	case RACE_DWARF:
 	case RACE_HALF_OGRE:
+	case RACE_GIANT_CLOUD:
+	case RACE_GIANT_HILL:
 			return(17);
 			break;
 	case RACE_HALF_GIANT:
+	case RACE_GIANT_FROST:
+	case RACE_GIANT_FIRE:
+	case RACE_GIANT_STORM:
+	case RACE_GIANT_STONE:
 			return(16);
 			break;
 	default:return(18);
@@ -4847,7 +4853,9 @@ int MaxConForRace(struct char_data *ch)
 	switch(GET_RACE(ch)) {
 	 case RACE_HALF_ORC:
 	 case RACE_DWARF:
-	 case RACE_HALF_OGRE:return(19);
+	 case RACE_HALF_OGRE:
+	 case RACE_DARK_DWARF
+	 	return(19);
 	 			break;
 	 case RACE_MOON_ELF:
 	 case RACE_GOLD_ELF:
