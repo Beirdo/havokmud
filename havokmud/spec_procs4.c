@@ -2492,7 +2492,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	struct room_data *currroom; // temporary var
 	int k = 1;
 	struct obj_data *remobj;
-	struct obj_data *tempobj, *parentobj;
+	struct obj_data *parentobj;
 	int GoodItemReal;
 	int whatundead = 1;
 	int realcorpseid;
@@ -2897,6 +2897,8 @@ int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 	struct char_data *tempchar;
 	char buf[MAX_INPUT_LENGTH];
 	char newdesc[400];
+	int trapdam = 0;
+	int trapdamsave = 0;
 
 	if(cmd != 15) {
 		return(FALSE);
@@ -2919,8 +2921,8 @@ int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 			act("As $N leans over to look at the strange powder, $E jerks back suddenly!", FALSE, ch, 0, 0, TO_ROOM);
 			act("$c000RThere is a flash, and the room bursts into flames!", FALSE, ch, 0, 0, TO_ROOM);
 
-			int trapdam = dice(50,5);  // randomize it, but average 150
-			int trapdamsave = trapdam >> 1;
+			trapdam = dice(50,5);  // randomize it, but average 150
+			trapdamsave = trapdam >> 1;
 
 			for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
 				if(!IS_IMMORTAL(tempchar)) {
@@ -3076,7 +3078,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 		// prevent them from going north, hit character with trap damage
 			act("You head north, but as you pass through the jaws, they suddenly slam down upon you, cutting you badly!", FALSE, ch, 0, 0, TO_CHAR);
 			act("$n starts to head north through the jaws, but they clamp down just as $e passes through them, slicing $m badly!", FALSE, ch, 0, ch, TO_ROOM);
-			int dam = dice(30,8);
+			dam = dice(30,8);
 			if(GET_DEX(ch) < dice(4,6)) {
 				dam = dam >> 1;
 			}
@@ -3163,7 +3165,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 				}
 			}
 			if(makethemflee) {
-				 = tempchar->in_room;
+				currroomnum = tempchar->in_room;
 				act("You gaze into $n's eyes and suddenly get frightened for no reason!", FALSE, mob, 0, tempchar, TO_VICT);
 				act("$n stares at $N and they suddenly look very scared!  They've even stopped fighting back!", FALSE, mob, 0, tempchar, TO_NOTVICT);
 				// mages teleport
@@ -3522,6 +3524,9 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	struct obj_file_u st;
 	struct obj_data *tempobj;
 	int total_equip_cost;
+	char buf1[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+	FILE *fl;
 
 	if(obj->in_room == -1) {
 		return(FALSE);
@@ -3532,9 +3537,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	if(IS_IMMORTAL(ch)) {
 		return(FALSE);
 	}
-
-	char buf1[MAX_INPUT_LENGTH];
-	char buf2[MAX_INPUT_LENGTH];
 
 	argument_interpreter(arg,buf1,buf2);
 
@@ -3582,7 +3584,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	GET_RINT(mob) = GET_RINT(ch);
 	GET_RCHR(mob) = GET_RCHR(ch);
 
-	FILE *fl;
 	sprintf(buf1, "reimb/%s", lower(ch->player.name));
 	if (!(fl = fopen(buf1, "r+b")))  {
 		act("The figure looks around, and promptly disappears!.", TRUE, mob, 0, 0, TO_ROOM);
