@@ -4070,13 +4070,13 @@ void do_world(struct char_data *ch, char *argument, int cmd)
                  "$c000w", VERSION);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
     ot = Uptime;
-    otmstr = asctime(localtime(&ot));
+    otmstr = asctime(localtime((const time_t *)&ot));
     *(otmstr + strlen(otmstr) - 1) = '\0';
     sprintf(buf, "$c000BStart time was: $c000W%s $c000B(PST)$c000w", otmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
     ct = time(0);
-    tmstr = asctime(localtime(&ct));
+    tmstr = asctime(localtime((const time_t *)&ct));
     *(tmstr + strlen(tmstr) - 1) = '\0';
     sprintf(buf, "$c000BCurrent time is: $c000W%s $c000B(PST)$c000w", tmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
