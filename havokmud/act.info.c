@@ -3160,25 +3160,25 @@ void do_wizhelp(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    sprintf(buf, "Wizhelp <keyword>\n\r"
-                 "Wizard Commands Available To You:\n\r\n\r");
+    strcpy(buf, "Wizhelp <keyword>\n\r"
+                "Wizard Commands Available To You:\n\r\n\r");
 
     for (i = 0; i < 27; i++) {
         n = radix_head[i].next;
         while (n) {
-            if (n->min_level <= GetMaxLevel(ch)
-                && n->min_level >= LOW_IMMORTAL) {
+            if (n->min_level <= GetMaxLevel(ch) && 
+                n->min_level >= LOW_IMMORTAL) {
                 if (n->min_level == GetMaxLevel(ch)) {
                     sprintf((buf + strlen(buf)),
-                            "$c000BL:$c000Y%d $c000w%-11s", n->min_level,
+                            "$c000BL:$c000Y%d $c000w%-14s", n->min_level,
                             n->name);
                 } else {
                     sprintf((buf + strlen(buf)),
-                            "$c000BL:$c000Y%d $c000w%-11s", n->min_level,
+                            "$c000BL:$c000Y%d $c000w%-14s", n->min_level,
                             n->name);
 				}
-                if (!(j % 5)) {
-                    sprintf((buf + strlen(buf)), "\n\r");
+                if (!(j % 4)) {
+                    strcat(buf, "\n\r");
                 }
                 j++;
             }

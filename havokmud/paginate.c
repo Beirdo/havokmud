@@ -66,6 +66,11 @@ char           *next_page(char *str)
              * Newline puts us on the next line.
              */
             line++;
+        } else if (*str == '$') {
+            /*
+             * Skip ANSI commands in the width calculations
+             */
+            str += 5;
         } else if (col++ > PAGE_WIDTH) {
             /*
              * We need to check here and see if we are over the page
@@ -177,7 +182,8 @@ void paginate_string(char *str, struct descriptor_data *d)
     }
 
     for (i = 1; i < d->showstr_count && str; i++) {
-        str = d->showstr_vector[i] = next_page(str);
+        str = next_page(str);
+        d->showstr_vector[i] = str;
     }
 
     d->showstr_page = 0;
