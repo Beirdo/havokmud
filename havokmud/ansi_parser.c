@@ -14,11 +14,11 @@
 
 extern long SystemFlags;
 
-/*	
-    $CMBFG, where M is modier, B is back group color and FG is fore 
+/*
+    $CMBFG, where M is modier, B is back group color and FG is fore
     $C0001 would be normal, black back, red fore.
-    $C1411 would be bold, blue back, light yellow fore 
-*/    
+    $C1411 would be bold, blue back, light yellow fore
+*/
 
 char *ansi_parse(char *code )
 {
@@ -51,6 +51,7 @@ if (!code)
   	 	break;
   	}
 
+
 	/* do back ground color */
   	switch(code[1]) {
   		case '0': sprintf(b,"%s",BK_BLACK);
@@ -72,45 +73,75 @@ if (!code)
   		default:sprintf(b,"%s",BK_BLACK);
   	 		break;
   	}
-  	
-	/* do foreground color */
-  	switch(code[2]) {     
+
+	/* do foreground color $c0000 */
+
+  	switch(code[3]) {  		/* 10-15 */
+	  	 			case 'G':
+	  	 			case 'Y':
+	  	 			case 'B':
+	  	 			case 'P':
+	  	 			case 'C':
+	  	 			case 'W':
+	  	 				code[2] = '1';
+	 	 			default:
+	  	 				break;
+	  				}
+
+
+  	switch(code[2]) {
 	 case '0':  	switch(code[3]) {  		/* 00-09 */
+	 			case 'X':
 	 			case '0': sprintf(f,"%s",FG_BLACK);
   	 				break;
+	 			case 'r':
 	 			case '1': sprintf(f,"%s",FG_RED);
   	 				break;
+	 			case 'g':
 	 			case '2': sprintf(f,"%s",FG_GREEN);
   	 				break;
+	 			case 'y':
 	 			case '3': sprintf(f,"%s",FG_BROWN);
   	 				break;
+	 			case 'b':
 	 			case '4': sprintf(f,"%s",FG_BLUE);
   	 				break;
+	 			case 'p':
 	 			case '5': sprintf(f,"%s",FG_MAGENTA);
   	 				break;
+	 			case 'c':
 	 			case '6': sprintf(f,"%s",FG_CYAN);
   	 				break;
+	 			case 'w':
 	 			case '7': sprintf(f,"%s",FG_LT_GRAY);
   	 				break;
+	 			case 'x':
 	 			case '8': sprintf(f,"%s",FG_DK_GRAY);
   	 				break;
+	 			case 'R':
 	 			case '9': sprintf(f,"%s",FG_LT_RED);
   	 				break;
 	 			default: sprintf(f,"%s",FG_DK_GRAY);
   	 				break;
   				} break;
 
-  	 case '1':  	switch(code[3]) {  		/* 10-15 */
+  	 case '1':  switch(code[3]) {  		/* 10-15 */
+  	 			case 'G':
   	 			case '0': sprintf(f,"%s",FG_LT_GREEN);
   	 				break;
+  	 			case 'Y':
   	 			case '1': sprintf(f,"%s",FG_YELLOW);
   	 				break;
+  	 			case 'B':
   	 			case '2': sprintf(f,"%s",FG_LT_BLUE);
   	 				break;
+  	 			case 'P':
   	 			case '3': sprintf(f,"%s",FG_LT_MAGENTA);
   	 				break;
+  	 			case 'C':
   	 			case '4': sprintf(f,"%s",FG_LT_CYAN);
   	 				break;
+  	 			case 'W':
   	 			case '5': sprintf(f,"%s",FG_WHITE);
   	 				break;
   	 			default: sprintf(f,"%s",FG_LT_GREEN);
@@ -118,9 +149,9 @@ if (!code)
   				} break;
 
 	default : sprintf(f,"%s",FG_LT_RED);
-  	 	  break;  				
+  	 	  break;
   	}
-  	
+
 
    strcat(m,b); /* add back ground */
    strcat(m,f); /* add foreground */

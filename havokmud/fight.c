@@ -3718,6 +3718,7 @@ int WeaponSpell( struct char_data *c, struct char_data *v,
 
 struct char_data *FindAnAttacker(struct char_data *ch)
 {
+	struct room_data *rp;
   struct char_data *tmp_ch;
   unsigned char found=FALSE;
   unsigned short ftot=0,ttot=0,ctot=0,ntot=0,mtot=0, ktot=0, dtot=0;
@@ -3726,8 +3727,26 @@ struct char_data *FindAnAttacker(struct char_data *ch)
 
   if (ch->in_room < 0) return(0);
 
-  for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch;
-       tmp_ch=tmp_ch->next_in_room) {
+  if(!ch){
+	log("Findanattacker!!!");
+  	return (0);
+  }
+  if (ch->in_room < 0) return(0);
+
+   rp = real_roomp(ch->in_room);
+	if(!rp) {
+		log("No room data in FindAvictim ??Crash???");
+		return(0);
+	}
+
+  tmp_ch = rp->people;
+	if (!tmp_ch) {
+		return (0);
+	}
+
+  while(tmp_ch) {
+
+  //for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_room) {
        if (ch!=tmp_ch) {
 	  if (tmp_ch->specials.fighting == ch) {
 	      found = TRUE;  /* a potential victim has been found */
@@ -3750,7 +3769,8 @@ struct char_data *FindAnAttacker(struct char_data *ch)
 	      }
 	    }
 	}
-     }
+  	tmp_ch = tmp_ch->next_in_room;
+  }
 
   /* if no legal enemies have been found, return 0 */
 

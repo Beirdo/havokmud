@@ -2002,7 +2002,7 @@ int clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 }
 
-#define NEWSETUP 1
+#define NEWSETUP 1  //used for old style dale objects
 int read_obj_from_file(struct obj_data *obj, FILE *f)
 {
 

@@ -1763,25 +1763,43 @@ char *ParseAnsiColors(int UsingAnsi, char *txt)
 
   buf[0]=0;
   for(i=0,l=0;*txt;) {
-    if(*txt=='$' && (toupper(*(txt+1)) == 'C' ||
-		    (*(txt+1)=='$' && toupper(*(txt+2)) == 'C'))) {
+    if(*txt=='$' && (toupper(*(txt+1)) == 'C' || (*(txt+1)=='$' && toupper(*(txt+2)) == 'C'))) {
       if(*(txt+1)=='$')
-	txt+=3;
+		txt+=3;
       else
-	txt+=2;
+		txt+=2;
       str2ansi(tmp,txt,0,3);
 
       /* if using ANSI */
       if (UsingAnsi)
-	   strcat(buf,ansi_parse(tmp));
-	   else
-      /* if not using ANSI   */
-	  strcat(buf,"");
+	     strcat(buf,ansi_parse(tmp));
+	  else
+        /* if not using ANSI   */
+	    strcat(buf,"");
 
-      txt+=4;
-      l=strlen(buf);
-      f++;
-    }
+       txt+=4;
+       l=strlen(buf);
+       f++;
+    } /* else
+    if(*txt=='$' && (toupper(*(txt+1)) == 'K' || (*(txt+1)=='$' && toupper(*(txt+2)) == 'K'))) {
+		switch (*text+1) {
+		 	case 'G':
+			case 'X':
+			case 'B':
+			case 'W':
+			case 'P':
+			case 'C':
+			case 'g':
+			case 'x':
+			case 'b':
+			case 'w':
+			case 'p':
+			case 'c':
+			default:
+		}
+
+
+	}*/
     else {
       buf[l++]=*txt++;
     }

@@ -4989,7 +4989,7 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
    }
 
 
-  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1\n\r$");
+  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1\n\r%");
 
    fclose(fp);
 
