@@ -2084,133 +2084,202 @@ dlog("in do_quaff");
 
 void do_recite(struct char_data *ch, char *argument, int cmd)
 {
-  char buf[100],buf2[100],buf3[100];
-  struct obj_data *scroll, *obj;
-  struct char_data *victim;
-  int i, bits;
-  bool equipped;
+	char buf[100],buf2[100],buf3[100], buffer[120];
+	struct obj_data *scroll, *obj;
+	struct char_data *victim;
+	int i, bits, spl;
+	bool equipped;
+	bool target_ok;
+	int target = 0;
 
-  equipped = FALSE;
-  obj = 0;
-  victim = 0;
+	target_ok = FALSE;
+	equipped = FALSE;
+	obj = 0;
+	victim = 0;
 
 dlog("in do_recite");
 
-  if (!ch->skills)
-    return;
+	if (!ch->skills)
+		return;
 
 	if(A_NOMAGIC(ch)) {
 		send_to_char("The arena rules do not allow you to use spells!\n\r", ch);
 		return;
 	}
 
-  three_arg(argument,buf,buf2,buf3);
+	three_arg(argument,buf,buf2,buf3);
 
-  argument = one_argument(argument,buf);
+	argument = one_argument(argument,buf);
 
-  if (!(scroll = get_obj_in_list_vis(ch,buf,ch->carrying))) {
-    scroll = ch->equipment[HOLD];
-    equipped = TRUE;
-    if ((scroll==0) || !isname(buf, scroll->name)) {
-      act("You do not have that item.",FALSE,ch,0,0,TO_CHAR);
-      return;
-    }
-  }
-
-  if (scroll->obj_flags.type_flag!=ITEM_SCROLL)  {
-    act("Recite is normally used for scrolls.",FALSE,ch,0,0,TO_CHAR);
-    return;
-  }
-
-  if (*buf2) {
-	if (str_cmp(buf2,"self")==0) {
-		sprintf(buf2,"%s",GET_NAME(ch));
+	if (!(scroll = get_obj_in_list_vis(ch,buf,ch->carrying))) {
+		scroll = ch->equipment[HOLD];
+		equipped = TRUE;
+		if ((scroll==0) || !isname(buf, scroll->name)) {
+			act("You do not have that item.",FALSE,ch,0,0,TO_CHAR);
+			return;
+		}
 	}
-    bits = generic_find(buf2, FIND_OBJ_INV | FIND_OBJ_ROOM |
-			FIND_OBJ_EQUIP | FIND_CHAR_ROOM, ch, &victim, &obj);
-    if (bits == 0) {
-      send_to_char("No such thing around to recite the scroll on.\n\r", ch);
-      return;
-    }
-  } else {
-    victim = ch;
-  }
 
-  if (!HasClass(ch, CLASS_MAGIC_USER) &&
-      !HasClass(ch, CLASS_CLERIC) &&
-      !HasClass(ch, CLASS_DRUID) &&
-      !HasClass(ch, CLASS_NECROMANCER) &&
-      !HasClass(ch, CLASS_SORCERER)) {
- if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned ||
-      ch->skills[SKILL_READ_MAGIC].learned == 0) {
-      	WAIT_STATE(ch, PULSE_VIOLENCE*3);
-	send_to_char(
-"After several seconds of study, your head hurts trying to understand.\n\r",ch);
-	return;
-      }
-  }
-
-  act("$n recites $p.", TRUE, ch, scroll, 0, TO_ROOM);
-  act("You recite $p which bursts into flame.",FALSE,ch,scroll,0,TO_CHAR);
-
-  for (i=1; i<4; i++) {
-    if (scroll->obj_flags.value[0] > 0) {  /* spells for casting */
-      if (scroll->obj_flags.value[i] >= 1)
-      {
-	if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,
-		   TAR_VIOLENT) && check_peaceful(ch,
-		   "Impolite magic is banned here."))
-	  continue;
-
-	if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r",
-			  "The magic dissolves powerlessly"))
-	  continue;
-
-
-    /*Scroll is recited at scroll level (value 0) this way*/
-//	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-//	 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL,victim, obj));
-
-	 /* Scroll is recited at best caster level regardless of scroll level*/
-	//	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-	// This was crashing mud.	 (BestMagicClass(ch), ch, "", SPELL_TYPE_SCROLL,victim, obj));
-
-	//      }
-	//    } else {
-
-
-	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-	 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
-      }
-    } else {
-       /* this is a learning scroll */
-      if (scroll->obj_flags.value[0] < -30)  /* max learning is 30% */
-	scroll->obj_flags.value[0] = -30;
-
-      if (scroll->obj_flags.value[i] > 0) {  /* positive learning */
-	if (ch->skills) {
-	  if (ch->skills[scroll->obj_flags.value[i]].learned < 45)
-	    ch->skills[scroll->obj_flags.value[i]].learned +=
-	      (-scroll->obj_flags.value[0]);
+	if (scroll->obj_flags.type_flag!=ITEM_SCROLL)  {
+		act("Recite is normally used for scrolls.",FALSE,ch,0,0,TO_CHAR);
+		return;
 	}
-      } else {  /* negative learning (cursed */
-	if (scroll->obj_flags.value[i] < 0) {  /* 0 = blank */
-	  if (ch->skills) {
-	    if (ch->skills[-scroll->obj_flags.value[i]].learned > 0)
-	      ch->skills[-scroll->obj_flags.value[i]].learned +=
-		scroll->obj_flags.value[0];
-	    ch->skills[-scroll->obj_flags.value[i]].learned =
-	      MAX(0, ch->skills[scroll->obj_flags.value[i]].learned);
-	  }
+
+	if (*buf2) {
+		if (str_cmp(buf2,"self")==0) {
+			sprintf(buf2,"%s",GET_NAME(ch));
+		}
+
+		/* Multiple spells can still crash if they don't have the same spellinfo[i].target
+		 * This will have to do for now  -Lennya */
+		spl = scroll->obj_flags.value[1];
+
+		if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
+			if ((victim = get_char_room_vis(ch, buf2)) || (str_cmp(GET_NAME(ch),buf2)==0)) {
+				if (str_cmp(GET_NAME(ch),buf2)==0)
+					victim = ch;
+				if (victim == ch || victim == ch->specials.fighting ||
+						victim->attackers < 6 || victim->specials.fighting == ch) {
+					target_ok = TRUE;
+					target = TAR_CHAR_ROOM;
+				} else {
+					send_to_char("Too much fighting, you can't get a clear shot.\n\r", ch);
+					target_ok = FALSE;
+				}
+			} else {
+				target_ok = FALSE;
+			}
+		}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+			if (victim = get_char_vis(ch, buf2)) {
+				target_ok = TRUE;
+				target = TAR_CHAR_WORLD;
+			}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+			if (obj = get_obj_in_list_vis(ch, buf2, ch->carrying)) {
+				target = TAR_OBJ_INV;
+				target_ok = TRUE;
+			}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+			if (obj = get_obj_in_list_vis(ch, buf2, real_roomp(ch->in_room)->contents)) {
+				target_ok = TRUE;
+				target = TAR_OBJ_ROOM;
+			}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD)) {
+//			if (tar_obj = get_obj_vis(ch, name))
+				target_ok = TRUE;
+				sprintf(argument,"%s",buf2);
+				target = TAR_OBJ_WORLD;
+		}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
+			for(i=0; i<MAX_WEAR && !target_ok; i++)
+				if (ch->equipment[i] && str_cmp(buf2, ch->equipment[i]->name) == 0) {
+					obj = ch->equipment[i];
+					target_ok = TRUE;
+					target = TAR_OBJ_EQUIP;
+				}
+		}
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY))
+			if (str_cmp(GET_NAME(ch), buf2) == 0) {
+				victim = ch;
+				target_ok = TRUE;
+				target = TAR_SELF_ONLY;
+			}
+		/* name spells (?) */
+		if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
+			obj = (void*)buf2;
+			target_ok = TRUE;
+			target = TAR_NAME;
+		}
+		if (victim) {
+			if (IS_NPC(victim))
+				if (IS_SET(victim->specials.act, ACT_IMMORTAL)) {
+					send_to_char("You can't recite magic on that!",ch);
+					return;
+				}
+		}
+		if (target_ok == 0) {
+			send_to_char("No such thing around to recite the scroll on.\n\r", ch);
+			return;
+		}
+	} else {
+		if (IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
+			send_to_char("You can not recite this scroll upon yourself.\n\r", ch);
+			return;
+		} else {
+			victim = ch;
+		}
 	}
-      }
-    }
-  }
-  if (equipped)
-    scroll = unequip_char(ch, HOLD);
 
-  extract_obj(scroll);
+	if (!HasClass(ch, CLASS_MAGIC_USER) &&
+		!HasClass(ch, CLASS_CLERIC) &&
+		!HasClass(ch, CLASS_DRUID) &&
+		!HasClass(ch, CLASS_NECROMANCER) &&
+		!HasClass(ch, CLASS_SORCERER)) {
+		if (number(1,95) > ch->skills[SKILL_READ_MAGIC].learned ||
+				ch->skills[SKILL_READ_MAGIC].learned == 0) {
+			WAIT_STATE(ch, PULSE_VIOLENCE*3);
+			send_to_char("After several seconds of study, your head hurts trying to understand.\n\r",ch);
+			return;
+		}
+	}
 
+	act("$n recites $p.", TRUE, ch, scroll, 0, TO_ROOM);
+	act("You recite $p which bursts into flame.",FALSE,ch,scroll,0,TO_CHAR);
+
+	for (i=1; i<4; i++) {
+		if (scroll->obj_flags.value[0] > 0) {  /* spells for casting */
+			if (scroll->obj_flags.value[i] >= 1)
+			{
+				if (!IS_SET(spell_info[scroll->obj_flags.value[i]].targets, target))
+									/* this should keep 2nd and 3rd spells */
+					continue;		/* from crashing with the wrong target */
+				if (IS_SET(spell_info[scroll->obj_flags.value[i]].targets,TAR_VIOLENT) &&
+						check_peaceful(ch,"Impolite magic is banned here."))
+					continue;
+				if (check_nomagic(ch,"The magic is blocked by unknown forces.\n\r","The magic dissolves powerlessly"))
+					continue;
+
+/* Scroll is recited at scroll level (value 0) this way */
+//				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
+//				((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL,victim, obj));
+/* Scroll is recited at best caster level regardless of scroll level*/
+//				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)(BestMagicClass(ch), ch, "", SPELL_TYPE_SCROLL,victim, obj));
+/* This was crashing mud */
+//
+
+//			}
+//		} else {
+				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
+				((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
+sprintf(buffer,"d", target);
+log(buffer);
+			}
+		} else {
+/* this is a learning scroll */
+			if (scroll->obj_flags.value[0] < -30)  /* max learning is 30% */
+				scroll->obj_flags.value[0] = -30;
+
+			if (scroll->obj_flags.value[i] > 0) {  /* positive learning */
+				if (ch->skills) {
+					if (ch->skills[scroll->obj_flags.value[i]].learned < 45)
+						ch->skills[scroll->obj_flags.value[i]].learned += (-scroll->obj_flags.value[0]);
+				}
+			} else {  /* negative learning (cursed) */
+				if (scroll->obj_flags.value[i] < 0) {  /* 0 = blank */
+					if (ch->skills) {
+						if (ch->skills[-scroll->obj_flags.value[i]].learned > 0)
+							ch->skills[-scroll->obj_flags.value[i]].learned += scroll->obj_flags.value[0];
+						ch->skills[-scroll->obj_flags.value[i]].learned =
+											MAX(0, ch->skills[scroll->obj_flags.value[i]].learned);
+					}
+				}
+			}
+		}
+	}
+	if (equipped)
+		scroll = unequip_char(ch, HOLD);
+	extract_obj(scroll);
 }
 
 

@@ -5682,9 +5682,9 @@ dlog("in tweak");
 				case APPLY_HIT_REGEN:
 				case APPLY_MOVE_REGEN:
 				case APPLY_SPELLFAIL:
-					{ /* +/- 1..75% */
+					{ /* +/- 1..40% */
 						if(number(0,4)) {
-							roll = (number(1,75));
+							roll = (number(1,40));
 							mod = (int)obj->affected[i].modifier*roll/100;
 							if (number(0,1)) {
 								obj->affected[i].modifier += mod;

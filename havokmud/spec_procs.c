@@ -414,7 +414,7 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[CLERIC_LEVEL_IND][GET_LEVEL(ch,CLERIC_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain
@@ -531,7 +531,7 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[THIEF_LEVEL_IND][GET_LEVEL(ch,THIEF_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain
@@ -650,7 +650,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[WARRIOR_LEVEL_IND][GET_LEVEL(ch,WARRIOR_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain
@@ -831,7 +831,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[WARRIOR_LEVEL_IND][GET_LEVEL(ch,WARRIOR_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain

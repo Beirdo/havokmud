@@ -4034,7 +4034,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[MONK_LEVEL_IND][GET_LEVEL(ch,MONK_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain
@@ -4244,7 +4244,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[DRUID_LEVEL_IND][GET_LEVEL(ch,DRUID_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!",ch);
+			send_to_char("You're not ready to gain yet!\n\r",ch);
 			return (FALSE);
 		} else {
 			if(cmd == 243) {  //gain
