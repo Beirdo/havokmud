@@ -4355,7 +4355,7 @@ dlog("in do_show");
 				oi = which_i + objn;
 				obj = read_object(oi->virtual, VIRTUAL);
 				if(obj) {
-					if(ITEM_TYPE(obj) == wearslot) {
+					if(IS_SET(obj->obj_flags.wear_flags, wearslot)) {
 						if(eval(obj) < -5)
 							sprintf(color,"%s","$c0008");
 						else if(eval(obj) < 20)
