@@ -770,28 +770,46 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 		for (i = object_list; i; i = i->next) {
 			if (isname(name, i->name)) {
 				if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
-					found = 1; /* we found at least one item */
 					if (i->carried_by) {
 					  target = i->carried_by;
-	                    if(!IS_IMMORTAL(target)) {
+	                    if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+						&& (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					    || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+	                      if(!IS_IMMORTAL(target)) {
 							 if (!(IS_SET(target->specials.act,ACT_PSI) && (GetMaxLevel(target) > GetMaxLevel(ch)))){
-						       room = target->in_room;
-											    }
-				      }
-
+						       if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+							   && (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					           || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+						         room = target->in_room;
+							   }
+							 }
+				          }
+						}
 
 					} else if (i->equipped_by) {
 						target = i->equipped_by;
 						if(!IS_IMMORTAL(target)){
 							if (!(IS_SET(target->specials.act,ACT_PSI) && (GetMaxLevel(target) > GetMaxLevel(ch)))){
-						       room = target->in_room;
-					}
+						       if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+							   && (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					           || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+						         room = target->in_room;
+							   }
+					        }
 						}
 					} else if (i->in_obj) {
-						room = (i->in_obj->in_room);
+						if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+						&& (real_roomp(ch->in_room)->zone == real_roomp(i->in_obj->in_room)->zone))
+					    || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+						  room = (i->in_obj->in_room);
+						}
 					} else {
 						if(i->in_room) {
-							room = (i->in_room);
+						   if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+						   && (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					       || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+							 room = (i->in_room);
+							}
 						}
 					}
 				}
