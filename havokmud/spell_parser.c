@@ -2108,13 +2108,19 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	  return;
 	}
 
+	if (tar_char == ch) {
+	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
+	    act("Your magic fizzles against your own anti-magic shell!", FALSE, ch, 0, 0, TO_CHAR);
+	    act("$n wastes a spell on their own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
+	    return;
+	 }
+	}
+
         if (tar_char) {
 
-	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL) &&
-	/* psi shit ain't magic */
-	     spell_info[spl].min_level_psi == 0) {
+	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
 	    act("Your magic fizzles against $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_CHAR);
-	    act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_ROOM);
+	    act("$n wastes a spell on $N's anti-magic shell!",FALSE,ch,0,tar_char,TO_NOTVICT);
 	    act("$n casts a spell and growls as it fizzles against your anti-magic shell!",FALSE,ch,0,tar_char,TO_VICT);
 	    return;
 	   }
@@ -2125,9 +2131,7 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	  }
 	}
 
-if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
-	/* psi shit ain't magic */
-	     spell_info[spl].min_level_psi == 0) {
+if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
 	act("Your magic fizzles against your anti-magic shell!",FALSE,ch,0,0,TO_CHAR);
 	act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
 	return;

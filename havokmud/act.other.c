@@ -304,7 +304,7 @@ dlog("in do_quit");
   }
 
   //act("Goodbye, friend.. Come back soon!", FALSE, ch, 0, 0, TO_CHAR);
-  do_mobTell(ch,"A tiny Voice","Goodbye Friend.. Come Back Soon!");
+  do_mobTell(ch,"A Tiny Voice","Goodbye Friend.. Come Back Soon!");
   act("$n has left the game.", TRUE, ch,0,0,TO_ROOM);
   zero_rent(ch);
   extract_char(ch); /* Char is saved in extract char */
