@@ -2109,7 +2109,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
                 for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
                     if (HasClass(d->character, pc_num_class(chosen))) {
-                        sprintf(bufx, "[%2d] %s\n\r", chosen,
+                        sprintf(bufx, "[%2d] %s\n\r", chosen + 1,
                                 classes[chosen].name);
                         send_to_char(bufx, d->character);
                     }
@@ -2893,8 +2893,8 @@ void nanny(struct descriptor_data *d, char *arg)
         d->character->specials.remortclass = 0;
 
         if (arg && (pick = atoi(arg)) &&
-            HasClass(d->character, pc_num_class(pick))) {
-            d->character->specials.remortclass = pick + 1;
+            HasClass(d->character, pc_num_class(pick-1))) {
+            d->character->specials.remortclass = pick;
             STATE(d) = CON_CREATION_MENU;
             show_menu(d);
         } else {
@@ -2904,7 +2904,8 @@ void nanny(struct descriptor_data *d, char *arg)
                       d);
             for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
                 if (HasClass(d->character, pc_num_class(chosen))) {
-                    sprintf(bufx, "[%2d] %s\n\r", chosen, classes[chosen].name);
+                    sprintf(bufx, "[%2d] %s\n\r", chosen + 1, 
+                            classes[chosen].name);
                     send_to_char(bufx, d->character);
                 }
             }
