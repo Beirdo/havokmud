@@ -1322,7 +1322,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"life tap", SPELL_LIFE_TAP, 2, 45},
         {"major invulnerbility", SPELL_GLOBE_MAJOR_INV, 30, 45},
         {"mend bones", SPELL_MEND_BONES, 10, 45},
-        {"minor invulnerbility", SPELL_GLOBE_MINOR_INV, 26, 45},
+        {"minor invulnerability", SPELL_GLOBE_MINOR_INV, 26, 45},
         {"mist of death", SPELL_MIST_OF_DEATH, 28, 45},
         {"nullify", SPELL_NULLIFY, 23, 45},
         {"numb the dead", SPELL_NUMB_DEAD, 15, 45},
