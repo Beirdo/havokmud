@@ -5220,7 +5220,7 @@ if (IS_NPC(ch))
 	  return;
  if (!*arg) {
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
-  send_to_char("interven [type] (Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena,deinit,tweak)\n\r",ch);
+  send_to_char("interven <portal|summon|astral|locobj|kill|logall|eclipse|dns|color|wizlock|nopoly|req|rp|worldarena|deinit|tweak>\n\r",ch);
   return;
  }
 
