@@ -687,7 +687,8 @@ void mind_kinolock( byte level, struct char_data *ch, char *arg, int type,
 
 	argument_interpreter(arg, otype, dir);
 
-	if (!otype) {
+
+     if (!*arg) {
 		send_to_char("Kinolock what?\n\r",ch);
 		return;
 	}
@@ -721,4 +722,4 @@ void mind_kinolock( byte level, struct char_data *ch, char *arg, int type,
 			}
 		}
 	}
-}
+

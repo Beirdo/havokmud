@@ -383,10 +383,10 @@ void mind_use_kinolock( byte level, struct char_data *ch, char *arg, int type,
 	  		case SPELL_TYPE_SPELL:
 	  	        case SPELL_TYPE_STAFF:
 	                  case SPELL_TYPE_SCROLL:
-	  			mind_kinolock (level, ch, tar_ch, 0);
+	  			mind_kinolock (level, ch, arg, 0, tar_ch, tar_obj);
 	  			break;
 	                  default :
-	                       log("Serious screw-up in mind_telekenetic_knock");
+	                       log("Serious screw-up in mind_kinolock");
 	                  break;
 	         }
 }
