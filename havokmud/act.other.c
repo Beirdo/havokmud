@@ -838,7 +838,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                     act("$n steals $p from $N.", FALSE, ch, obj, victim,
                         TO_NOTVICT);
                     obj_to_char(unequip_char(victim, eq_pos), ch);
-#if NODUPLICATES
+#ifdef NODUPLICATES
                     do_save(ch, "", 0);
                     do_save(victim, "", 0);
 #endif
@@ -879,7 +879,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
                         obj_from_char(obj);
                         obj_to_char(obj, ch);
                         send_to_char("Got it!\n\r", ch);
-#if NODUPLICATES
+#ifdef NODUPLICATES
                         do_save(ch, "", 0);
                         do_save(victim, "", 0);
 #endif

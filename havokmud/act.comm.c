@@ -223,7 +223,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
                       !IS_SET(i->character->specials.act, PLR_NOGOSSIP)))
                     && !check_soundproof(i->character)) {
 
-#if ZONE_COMM_ONLY
+#ifdef ZONE_COMM_ONLY
                     if (i->character->in_room != NOWHERE) {
                         if (real_roomp(ch->in_room)->zone ==
                             real_roomp(i->character->in_room)->zone
@@ -367,7 +367,7 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
         send_to_char("In a silenced room, try again later.\n\r", ch);
         return;
     }
-#if ZONE_COMM_ONLY
+#ifdef ZONE_COMM_ONLY
     if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
         !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
         send_to_char("That person is not near enough for you to tell.\n\r",
@@ -1399,7 +1399,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
         send_to_char("In a silenced room, try again later.\n\r", ch);
         return;
     }
-#if ZONE_COMM_ONLY
+#ifdef ZONE_COMM_ONLY
     if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
         !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
         send_to_char("That person is not near enough for you to reply.\n\r",

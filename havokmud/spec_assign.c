@@ -1687,7 +1687,7 @@ struct special_proc_entry objSpecials[] = {
     {21130, soap},
     {27038, BerserkerItem},
 
-#if 0    /*EGO*/
+#if 0    /*USE_EGOS*/
     {11447, marbles},
     {11509, marbles},
     {35000, EvilBlade},

@@ -137,28 +137,6 @@ struct QuestItem {
 };
 
 /*
- * tailoring stuff
- */
-                /*
-                 * I define all these as TRUE, see makefile for more info
-                 */
-
-#define LIMITED_ITEMS 1
-#define SITELOCK      1
-#define NODUPLICATES  1
-#define EGO           1
-#define LEVEL_LOSS      1
-#define NEWEXP          1
-#define NEWGAIN         1
-#define LOW_GOLD        1
-#define ZONE_COMM_ONLY  1
-#define PREVENT_PKILL 1
-#define PERSONAL_PERM_LOCKOUTS  1
-#define LAG_MOBILES     1
-
-#define WEAPONSKLZ 1
-
-/*
  * efficiency stuff
  */
 #define MIN_GLOB_TRACK_LEV 31   /* mininum level for global track */

@@ -21,9 +21,6 @@ void load_one_room(FILE * fl, struct room_data *rp);
 void            log_sev(char *s, int i);
 extern char    *exits[];
 extern long     SystemFlags;
-#if 0
-extern struct time_data time_info;
-#endif
 extern struct descriptor_data *descriptor_list;
 extern struct char_data *character_list;
 extern struct index_data *mob_index,
@@ -32,7 +29,7 @@ extern struct chr_app_type chr_apply[];
 extern struct zone_data *zone_table;
 extern const struct race_type race_list[];
 
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;      /* In db.c */
 #else
 extern struct room_data *room_db[];     /* In db.c */
@@ -65,9 +62,11 @@ void Log(char *s)
 }
 
 
-#if EGO
 int EgoBladeSave(struct char_data *ch)
 {
+#ifndef USE_EGOS
+    return( TRUE );
+#else
     int             total;
 
     if (GetMaxLevel(ch) <= 10) {
@@ -83,8 +82,8 @@ int EgoBladeSave(struct char_data *ch)
     } else {
         return (TRUE);
     }
-}
 #endif
+}
 
 int MIN(int a, int b)
 {
@@ -2173,7 +2172,7 @@ void RoomLoad(struct char_data *ch, int start, int end)
             if (rp) {
                 bzero(rp, sizeof(struct room_data));
             }
-#if HASH
+#ifdef HASH
             /*
              * this still does not work and needs work by someone
              */
@@ -2713,7 +2712,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     int             persist,
                     dist;
 
-#if NOTRACK
+#ifdef NOTRACK
     return;
 #endif
 
@@ -4740,7 +4739,7 @@ int ItemAlignClash(struct char_data *ch, struct obj_data *obj)
 
 int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 {
-#ifndef EGO
+#ifndef USE_EGOS
     return (FALSE);
 #else
     int             obj_ego,
@@ -4896,7 +4895,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
 {
     int             j = 0;
 
-#if DISABLE_EGO
+#ifndef USE_EGOS
     return (TRUE);
 #else
     if (!obj || !ch) {
@@ -4957,7 +4956,7 @@ int CheckEgoGive(struct char_data *ch, struct char_data *vict,
 {
     int             j = 0;
 
-#if DISABLE_EGO
+#ifndef USE_EGOS
     return (TRUE);
 #else
     /*
@@ -5068,7 +5067,7 @@ int MaxLimited(int lev)
 
 int SiteLock(char *site)
 {
-#if SITELOCK
+#ifdef SITELOCK
     int             i,
                     length;
     extern int      numberhosts;
@@ -5852,7 +5851,7 @@ int opdir(int dir)
  */
 void memory_check(char *p)
 {
-#if DEBUG
+#ifdef DEBUG
     if (!malloc_verify()) {
         /*
          * some systems might not have this lib
@@ -5866,7 +5865,7 @@ void memory_check(char *p)
 
 void dlog(char *s)
 {
-#if DEBUG_LOG
+#ifdef DEBUG_LOG
     slog(s);
 #endif
 }
@@ -6596,29 +6595,6 @@ char           *skip_word(char *string)
 
     return (string);
 }
-
-#if 0
-/*
- * put in support for GNU-specific system calls that are missing in Cygwin
- */
-#if defined(__CYGWIN__)
-
-size_t strnlen(const char *s, size_t maxlen)
-{
-    int             i;
-
-    for (i = 0; *s && i < maxlen; s++, i++) {
-        /*
-         * Empty loop 
-         */
-    }
-
-    return (i);
-}
-
-#endif
-#endif
-
 
 
 /*

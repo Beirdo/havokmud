@@ -604,8 +604,7 @@ void spell_poly_self(int level, struct char_data *ch,
     buf = (char *) malloc(strlen(GET_NAME(mob)) + strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), GET_NAME(mob));
 
-#if TITAN
-#else
+#ifndef TITAN
     /*
      * this code crashes ardent titans
      */
@@ -619,7 +618,7 @@ void spell_poly_self(int level, struct char_data *ch,
                           strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), mob->player.short_descr);
 
-#if TITAN
+#ifdef TITAN
     if (mob->player.short_descr) {
         free(mob->player.short_descr);
     }
@@ -629,8 +628,7 @@ void spell_poly_self(int level, struct char_data *ch,
     buf = (char *)malloc(strlen(mob->player.short_descr)+12);
     sprintf(buf, "%s is here\n\r", mob->player.short_descr);
 #endif
-#if TITAN
-#else
+#ifndef TITAN
     if (mob->player.long_descr) {
         free(mob->player.long_descr);
     }

@@ -37,7 +37,7 @@ extern const char *languagelist[];
 extern char    *system_flag_types[];
 extern struct zone_data *zone_table;
 extern int      top_of_zone_table;
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db[];
@@ -658,7 +658,7 @@ void do_silence(struct char_data *ch, char *argument, int cmd)
 
 void do_wizlock(struct char_data *ch, char *argument, int cmd)
 {
-#if SITELOCK
+#ifdef SITELOCK
     int             a,
                     length,
                     b;
@@ -676,7 +676,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-#if SITELOCK
+#ifdef SITELOCK
     /*
      * all, add (place), list, rem (place)
      */
@@ -1262,15 +1262,13 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
                 send_to_char("No room exists with that number.\n\r", ch);
                 return;
             } else {
-#if HASH
-#else
+#ifndef HASH
                 if (loc_nr < WORLD_SIZE) {
 #endif
                     send_to_char("You form order out of chaos.\n\r", ch);
                     CreateOneRoom(loc_nr);
 
-#if HASH
-#else
+#ifndef HASH
                 } else {
                     send_to_char("Sorry, that room # is too large.\n\r",
                                  ch);
@@ -3457,7 +3455,7 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
     }
 
     completely_cleanout_room(rp);
-#if HASH
+#ifdef HASH
     hash_remove(&room_db, rnum);
 #else
     room_remove(room_db, rnum);
@@ -3552,7 +3550,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
                     send_to_char("usage: purge room start [end]\n\r", ch);
                     return;
                 }
-#if HASH
+#ifdef HASH
                 hash_iterate(&room_db, purge_one_room, range);
 #else
                 if (range[0] >= WORLD_SIZE || range[1] >= WORLD_SIZE) {
@@ -4753,13 +4751,13 @@ void do_show(struct char_data *ch, char *argument, int cmd)
         only_argument(argument, zonenum);
         append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
         if (is_abbrev(zonenum, "death")) {
-#if HASH
+#ifdef HASH
             hash_iterate(&room_db, print_death_room, &sb);
 #else
             room_iterate(room_db, print_death_room, &sb);
 #endif
         } else if (is_abbrev(zonenum, "private")) {
-#if HASH
+#ifdef HASH
             hash_iterate(&room_db, print_private_room, &sb);
 #else
             room_iterate(room_db, print_private_room, &sb);
@@ -4773,7 +4771,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             srzs.top = zone_table[zone].top;
             srzs.blank = 0;
             srzs.sb = &sb;
-#if HASH
+#ifdef HASH
             hash_iterate(&room_db, show_room_zone, &srzs);
 #else
             room_iterate(room_db, show_room_zone, &srzs);
@@ -6845,7 +6843,7 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
                       !IS_SET(i->character->specials.act, PLR_NOGOSSIP))) &&
                     !check_soundproof(i->character)) {
 
-#if ZONE_COMM_ONLY
+#ifdef ZONE_COMM_ONLY
                     /*
                      * gossip in zone only
                      */

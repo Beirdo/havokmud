@@ -2966,7 +2966,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
         return (FALSE);
     }
 
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
     if (count > MaxLimited(GetMaxLevel(ch))) {
         send_to_char("I'm sorry, but you to many limited items.\n\r", ch);
         return (FALSE);

@@ -480,9 +480,6 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     argument = one_argument(argument, arg);
     if (is_number(arg)) {
         amount = advatoi(arg);
-#if 0
-        atoi(arg);
-#endif
         argument = one_argument(argument, arg);
 
         if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0) {
@@ -542,7 +539,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                 act("You drop everything you own.", 1, ch, 0, 0, TO_CHAR);
                 act("$n drops everything $e owns.", 1, ch, 0, 0, TO_ROOM);
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         } else {
@@ -591,7 +588,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                     num--;
                 }
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         }
@@ -684,13 +681,8 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                 }
             } else {
                 while (num != 0) {
-#if 1
                     bits = generic_find(arg1, FIND_OBJ_INV, ch, &tmp_char,
                                         &obj_object);
-#else
-                    obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
-#endif
-
                     if (obj_object) {
                         if (IS_OBJ_STAT(obj_object, ITEM_NODROP)) {
                             if (singular(obj_object)) {
@@ -736,17 +728,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                             }
                                             obj_to_obj(obj_object, sub_object);
                                         }
-#if 0
-                                        else {
-                                            /*
-                                             * This isn't used
-                                             */
-                                             obj_from_room(obj_object);
-                                             obj_to_obj(obj_object,
-                                             sub_object);
 
-                                        }
-#endif
                                         act("$n puts $p in $P", TRUE, ch,
                                             obj_object, sub_object, TO_ROOM);
                                         num--;
@@ -789,7 +771,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         num = 0;
                     }
                 }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
                 do_save(ch, "", 0);
 #endif
             }
@@ -802,15 +784,6 @@ void do_put(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-#if 0
-int newstrlen(char *p)
-{
-    int             i;
-
-    for (i = 0; i < 10 && *p; i++, p++);
-    return (i);
-}
-#endif
 
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
@@ -976,7 +949,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             }
 
         }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
         do_save(ch, "", 0);
         do_save(vict, "", 0);
 #endif
@@ -1040,7 +1013,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     0, 0, TO_CHAR);
                 act("$n donates everything he carries!.", 1, ch, 0, 0, TO_ROOM);
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         } else {
@@ -1095,7 +1068,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     num--;
                 }
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
             /*

@@ -16,9 +16,6 @@
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
 
-#define OLD_ZONE_STUFF TRUE     /* for temp testing of reset_zon */
-
-#define NEW_ZONE_SYSTEM
 #define killfile "killfile"
 
 #define OBJ_DIR "objects"
@@ -35,7 +32,7 @@ int             no_mail = 0;
 int             top_of_scripts = 0;
 int             top_of_world = 99999;   /* ref to the top element of world
                                          */
-#if HASH
+#ifdef HASH
 struct hash_header room_db;
 #else
 struct room_data *room_db[WORLD_SIZE];
@@ -217,20 +214,16 @@ void boot_db()
         wizhelp_index = build_help_index(wizhelp_fl, &top_of_wizhelpt);
     }
 
-#if CLEAN_AT_BOOT
+#ifdef CLEAN_AT_BOOT
     Log("Clearing inactive players");
     clean_playerfile();
 #endif
 
-#if 1
     Log("Booting mail system.");
     if (!scan_mail_file()) {
         Log("   Mail system error -- mail system disabled!");
         no_mail = 1;
     }
-#else
-    no_mail = 1;
-#endif
 
     Log("Loading zone table.");
     boot_zones();
@@ -288,9 +281,10 @@ void boot_db()
     ReloadRooms();
 #endif
 
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
     PrintLimitedItems();
 #endif
+
     for (i = 0; i <= top_of_zone_table; i++) {
         s = zone_table[i].name;
         d = (i ? (zone_table[i - 1].top + 1) : 0);
@@ -1330,7 +1324,7 @@ void load_one_room(FILE * fl, struct room_data *rp)
              * end of current room
              */
 
-#if BYTE_COUNT
+#ifdef BYTE_COUNT
             if (bc >= 1000) {
                 fprintf(stderr, "Byte count for this room[%ld]: %d\n",
                         rp->number, bc);
@@ -1373,7 +1367,7 @@ void boot_world(void)
                     last;
     struct room_data *rp;
 
-#if HASH
+#ifdef HASH
     init_hash_table(&room_db, sizeof(struct room_data), 2048);
 #else
     init_world(room_db);
@@ -1394,21 +1388,7 @@ void boot_world(void)
          * do we need to to_of_world++ in here somewhere? msw
          */
         rp = real_roomp(virtual_nr);
-        /*
-         * lets see what this does, old style allocations msw
-         */
-#if 0
-        if (rp) {
-            bzero(rp, sizeof(struct room_data)
-#if 0
-                  bzero(rp, sizeof(*rp));
-#endif
-                  else {
-                  fprintf(stderr, "Error, room %d not in database!(%d)\n",
-                          virtual_nr, last); assert(0);}
-#else
         memset(rp, 0, sizeof(*rp));
-#endif
 
         rp->number = virtual_nr;
         load_one_room(fl, rp);
@@ -1423,7 +1403,7 @@ void allocate_room(long room_number)
     if (room_number > top_of_world) {
         top_of_world = room_number;
     }
-#if HASH
+#ifdef HASH
     hash_find_or_create(&room_db, room_number);
 #else
     room_find_or_create(room_db, room_number);
@@ -1538,13 +1518,9 @@ void boot_saved_rooms()
                  */
                 rp = (void *) malloc(sizeof(struct room_data));
                 if (rp) {
-#if 0
-                    bzero(rp, sizeof(struct room_data));
-#else
                     memset(rp, 0, sizeof(*rp));
                 }
-#endif
-#if HASH
+#ifdef HASH
                 room_enter(&room_db, vnum, rp);
 #else
                 room_enter(room_db, vnum, rp);
@@ -2433,7 +2409,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob->next = character_list;
     character_list = mob;
 
-#if LOW_GOLD
+#ifdef LOW_GOLD
     if (mob->points.gold >= 50) {
         mob->points.gold /= 5;
     } else if (mob->points.gold < 10) {
@@ -2487,7 +2463,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     }
     mob_index[nr].number++;
 
-#if BYTE_COUNT
+#ifdef BYTE_COUNT
     fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
 #endif
     return (bc);
@@ -2760,7 +2736,7 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     }
     mob_index[nr].number++;
 
-#if BYTE_COUNT
+#ifdef BYTE_COUNT
     fprintf(stderr, "Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
 #endif
     return (bc);
@@ -2901,7 +2877,7 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
     fscanf(f, " %ld \n", &ltmp);
     obj->modified = ltmp;
 
-#if NEWSETUP
+#ifdef NEWSETUP
     fscanf(f, " %d \n", &tmp);
     obj->speed = tmp;
 
@@ -3470,7 +3446,7 @@ struct obj_data *read_object(int nr, int type)
     obj->level = 0;
 #endif
     obj_count++;
-#if BYTE_COUNT
+#ifdef BYTE_COUNT
     fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);
 #endif
     total_obc += bc;
@@ -3672,7 +3648,6 @@ int does_Load(int num, int max)
     }
     return TRUE;
 
-#if 1
     sprintf(buff, "num=%d  max=%d", num, max);
     Log(buff);
     if (max == 0) {
@@ -3698,7 +3673,6 @@ int does_Load(int num, int max)
         Log("ITEM NEVER LOADED");
         return FALSE;
     }
-#endif
 }
 
 
@@ -3732,7 +3706,7 @@ void reset_zone(int zone, int cmd)
         cog_sequence = 0;
     }
 
-#if OLD_ZONE_STUFF
+#ifdef OLD_ZONE_STUFF
 #if 0
     if (zone == 0 && !done) {
         done = 1;
@@ -4120,7 +4094,7 @@ void reset_zone(int zone, int cmd)
 
     if (zone == 0 && !done) {
         done = 1;
-#if N_SAVE_WORLD
+#ifdef N_SAVE_WORLD
         for (i = 0; i < 30000; i += 1000) {
             sprintf(buf, "world/mobs.%d", i);
             fl = fopen(buf, "r");
@@ -5723,7 +5697,7 @@ void init_char(struct char_data *ch)
  */
 struct room_data *real_roomp(long virtual)
 {
-#if HASH
+#ifdef HASH
     return hash_find(&room_db, virtual);
 #else
     return ((virtual < WORLD_SIZE && virtual > -1) ? room_db[virtual] : 0);
@@ -6027,9 +6001,9 @@ void ReloadRooms()
     }
 }
 
-void SaveTheWorld()
+void SaveTheWorld( void )
 {
-#if SAVEWORLD
+#ifdef SAVEWORLD
 
     static int      ctl = 0;
     char            cmd,
@@ -6592,7 +6566,7 @@ void clean_playerfile(void)
                         j++;
                     }
 
-#if CHECK_RENT_INACTIVE
+#ifdef CHECK_RENT_INACTIVE
                     /*
                      * Purge rent files! after inactivity of 1 month
                      */

@@ -1388,7 +1388,7 @@ int snake_guardians(struct char_data *ch, int cmd, char *arg,
 int EvilBlade(struct char_data *ch, int cmd, char *arg,
               struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     extern struct str_app_type str_app[];
     struct obj_data *obj,
                    *blade;
@@ -1680,7 +1680,7 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
 int GoodBlade(struct char_data *ch, int cmd, char *arg,
               struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     extern struct str_app_type str_app[];
     struct obj_data *obj,
                    *blade;
@@ -2043,7 +2043,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
 int NeutralBlade(struct char_data *ch, int cmd, char *arg,
                  struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     return (FALSE);
 #endif
 }

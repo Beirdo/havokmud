@@ -55,7 +55,7 @@ char            DestroyedItems; /* set in MakeScraps */
 /*
  * External structures
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -1025,7 +1025,7 @@ void die(struct char_data *ch, int killedbytype)
                  */
             }
         }
-#if LEVEL_LOSS
+#ifdef LEVEL_LOSS
         
         for (i = 0; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) > 1) {
@@ -1062,7 +1062,7 @@ void die(struct char_data *ch, int killedbytype)
 
         GET_LEADERSHIP_EXP(ch) -= GET_LEADERSHIP_EXP(ch) / 2;
 
-#if LEVEL_LOSS
+#ifdef LEVEL_LOSS
 
         /*
          * warn people if their next death will result in a level loss
@@ -1925,11 +1925,11 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
         REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
     }
 
-#if PREVENT_PKILL
+#ifdef PREVENT_PKILL
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         (IS_PC(v) || IS_SET(v->specials.act, ACT_POLYSELF)) &&
         (ch != v) && !CanFightEachOther(ch, v)) {
-        act("Your attack seems usless against $N!", FALSE, ch, 0, v, TO_CHAR);
+        act("Your attack seems useless against $N!", FALSE, ch, 0, v, TO_CHAR);
         act("The attack from $n is futile!", FALSE, ch, 0, v, TO_VICT);
         dam = -1;
     }
@@ -2714,7 +2714,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
         return (TRUE);
     }
 
-#if PREVENT_PKILL
+#ifdef PREVENT_PKILL
     /*
      * this should help stop pkills
      */
@@ -3524,7 +3524,6 @@ void perform_violence(int pulse)
                     }
 
                     if (x > .01) {
-#if 1
                         /*
                          * check to see if the chance to make the last
                          * attack is successful
@@ -3534,14 +3533,6 @@ void perform_violence(int pulse)
                             ch->specials.fighting) {
                             hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
                         }
-#else
-                        /*
-                         * lets give them the hit
-                         */
-                        if (ch->specials.fighting) {
-                            hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-                        }
-#endif
                     }
 
                     if (tmp) {
@@ -3551,7 +3542,6 @@ void perform_violence(int pulse)
                         equip_char(ch, tmp2, HOLD);
                     }
 
-#if 1
                     /*
                      * check for the second attack
                      */
@@ -3695,7 +3685,6 @@ void perform_violence(int pulse)
                             }
                         }
                     }
-#endif
                 } else {
                     /*
                      * We are a NPC
@@ -5191,7 +5180,7 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
     if (IS_NPC(v) && (IS_SET(v->specials.act, ACT_IMMORTAL))) {
         amnt = -1;
     }
-#if 1
+
     if (IS_PC(v) && IS_LINKDEAD(v) &&
         (attacktype == TYPE_SUFFERING || attacktype == SPELL_DECAY ||
          attacktype == SPELL_DISEASE || attacktype == SPELL_POISON ||
@@ -5201,7 +5190,6 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
          */
         amnt = -1;
     }
-#endif
 
     return (amnt);
 
@@ -5976,8 +5964,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                 if (rng == 0) {
                     hit(targ, ch, TYPE_UNDEFINED);
                 } else {
-
-#if 1
                     cdir = can_see_linear(targ, ch, &rang, &cdr);
                     if (!(targ->specials.charging) && number(1, 10) < 4 &&
                         cdir != -1 && GET_POS(targ) == POSITION_STANDING) {
@@ -5990,7 +5976,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                         targ->specials.charging = ch;
                         targ->specials.charge_dir = cdr;
                     }
-#endif
                 }
             }
         }
@@ -6012,7 +5997,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
             WeaponSpell(ch, targ, missile, TYPE_RANGE_WEAPON);
         }
 
-#if 1
         if (GET_POS(targ) != POSITION_FIGHTING &&
             GET_POS(targ) > POSITION_STUNNED && IS_NPC(targ) &&
             !targ->specials.charging) {
@@ -6030,9 +6014,9 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                 }
             }
         }
-#endif
         return 1;
     }
+    return 0;
 }
 
 void raw_kill_arena(struct char_data *ch)
