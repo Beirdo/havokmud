@@ -383,6 +383,8 @@ struct QuestItem {
 #define MIN_INIT_TQP 22
 #define TQP_AMOUNT    3 // max number of tqps out and about
 #define TRAVELQP     26 // vnum
+#define EMPTY_POTION 29
+#define EMPTY_SCROLL 32
 
 struct nodes
 {

@@ -3827,9 +3827,6 @@ void do_sending( struct char_data *ch, char *argument, int cmd)
 
 #if 1
 
-#define EMPTY_POTION 29
-#define EMPTY_SCROLL 32
-
 void do_scribe( struct char_data *ch, char *argument, int cmd)
 {
 	char buf[MAX_INPUT_LENGTH];

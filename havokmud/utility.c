@@ -4854,7 +4854,7 @@ int MaxConForRace(struct char_data *ch)
 	 case RACE_HALF_ORC:
 	 case RACE_DWARF:
 	 case RACE_HALF_OGRE:
-	 case RACE_DARK_DWARF
+	 case RACE_DARK_DWARF:
 	 	return(19);
 	 			break;
 	 case RACE_MOON_ELF:
