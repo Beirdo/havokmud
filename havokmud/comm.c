@@ -676,6 +676,11 @@ memory_check("end 5, begin 6");
 		memory_check("arena pulse");
 	      ArenaPulseStuff(pulse);
     }
+	if (!(pulse % PULSE_AUCTION)) {
+		dlog("Before auction pulse");
+		memory_check("auction pulse");
+	      AuctionPulseStuff(pulse);
+    }
 
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");

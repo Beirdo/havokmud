@@ -113,6 +113,8 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
   int discount = 0,nbdays,i,ii,limited_items=0;
   char buf[MAX_INPUT_LENGTH];
   struct obj_data *tmp, *tmp_next_obj;
+  extern struct char_data *auctioneer;
+  extern struct char_data *bidder;
 
   cost->total_cost = 100; /* Minimum cost */
   cost->no_carried = 0;
@@ -122,6 +124,16 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
    sprintf(buf,"%s is being force rented!",GET_NAME(ch));
    log_sev(buf,3);
   }
+
+	if(ch == auctioneer) {
+		send_to_char("But you are currently auctioning an item!\n\r",ch);
+		return(FALSE);
+	}
+	if(ch == bidder) {
+		send_to_char("But you are currently bidding on an item!\n\r",ch);
+		return(FALSE);
+	}
+
 
   add_obj_cost(ch, receptionist, ch->carrying, cost);
   limited_items +=CountLims(ch->carrying);
@@ -134,7 +146,6 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
 
   if (!cost->ok)
     return(FALSE);
-
 
   if (cost->no_carried == 0) {
     if (receptionist)

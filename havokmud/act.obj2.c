@@ -18,6 +18,36 @@ extern char *drinks[];
 extern int drink_aff[][3];
 extern struct spell_info_type spell_info[];
 
+/* auction stuff */
+	int auct_loop = 0;
+		/* if 0, nothing up for sale
+		   if 1, something up for auction, no bids received
+		   if 1, something up for auction, still no bids received
+		   if 3, a bid received
+		   if 4, going once
+		   if 5, going twice, about to be gone.
+		*/
+	long intbid = 0;	/* if intbid == 0, there's nothing up for auction */
+	long minbid = 0;
+	struct char_data *auctioneer; /* who is auctioning junk? */
+	struct char_data *bidder; /* who currently has the highest bid? */
+	struct obj_data *auctionobj; /* the item itself */
+	extern const struct skillset weaponskills[];
+	struct time_info_data age(struct char_data *ch);
+	/* Spell Names */
+	extern char *spells[];
+	/* For Objects */
+	extern char *AttackType[];
+	extern struct index_data *obj_index;
+	extern char *item_types[];
+	extern char *extra_bits[];
+	extern char *apply_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *wear_bits[];
+
+
 
 void weight_change_object(struct obj_data *obj, int weight)
 {
@@ -223,7 +253,7 @@ dlog("in do_eat");
         }
 
         act("$n eats $p",TRUE,ch,temp,0,TO_ROOM);
-        act("You eat the $o.",FALSE,ch,temp,0,TO_CHAR);
+        act("You eat the $p.",FALSE,ch,temp,0,TO_CHAR);
 
 	if(!IS_IMMORTAL(ch)) {
         gain_condition(ch,FULL,temp->obj_flags.value[0]);
@@ -400,7 +430,7 @@ dlog("in do_sip");
       return;
     }
 
-  act("$n sips from the $o",TRUE,ch,temp,0,TO_ROOM);
+  act("$n sips from the $p",TRUE,ch,temp,0,TO_ROOM);
   sprintf(buf,"It tastes like %s.\n\r",drinks[temp->obj_flags.value[2]]);
   send_to_char(buf,ch);
 
@@ -479,8 +509,8 @@ dlog("in do_taste");
       return;
     }
 
-  act("$n tastes the $o", FALSE, ch, temp, 0, TO_ROOM);
-  act("You taste the $o", FALSE, ch, temp, 0, TO_CHAR);
+  act("$n tastes the $p", FALSE, ch, temp, 0, TO_ROOM);
+  act("You taste the $p", FALSE, ch, temp, 0, TO_CHAR);
 
   gain_condition(ch,FULL,1);
 
@@ -1412,3 +1442,387 @@ dlog("in do_remove");
 
   check_falling(ch);
 }
+
+void do_auction(struct char_data *ch, char *argument, int cmd)
+{
+#if 1
+
+//	struct auction_data *auctioneditem;
+	char item[50], bid[20], buf[MAX_INPUT_LENGTH];
+	extern int Silence;
+//	struct obj_data *auctionobj;
+
+dlog("in do_auction");
+
+	/* first see if noone else is auctioning stuff */
+	if (minbid > 0) {
+		if(!bidder) {
+			sprintf(buf, "%s is currently auctioning %s, minimum bid set at %d. Wait your turn.\n\r",
+					GET_NAME(auctioneer), auctionobj->short_description, minbid);
+		} else {
+			sprintf(buf, "%s is currently auctioning %s, current bid of %d by %s. Wait your turn.\n\r",
+					GET_NAME(auctioneer), auctionobj->short_description, intbid, GET_NAME(bidder));
+		}
+		send_to_char(buf, ch);
+		return;
+	}
+
+	if(!*argument) {
+		send_to_char("What did you want to auction?\n\r",ch);
+		return;
+	}
+
+	half_chop(argument,item,bid);
+
+	if (!(auctionobj = get_obj_in_list_vis(ch, item, ch->carrying))) {
+		send_to_char("You don't seem to have that item.\n\r",ch);
+		return;
+	}
+
+	if(!(minbid=atoi(bid)))
+		minbid=1; /* min bid is 1 coin, and we got an auction runnin. */
+	else if(minbid > 50000000) {
+		send_to_char("Sorry, maximum starting bid is 50,000,000 coins.",ch);
+		minbid = 0;
+		return;
+	}
+
+
+	sprintf(buf,"$c000cAuction:  $c000w%s$c000c auctions $c000w%s$c000c. Minimum bid set at $c000w%d$c000c coins.\n\r"
+			,GET_NAME(ch), auctionobj->short_description, intbid);
+	send_to_all(buf);
+
+	send_to_char("Your item is taken away from you.\n\r",ch);
+
+	auct_loop = 1;
+
+	auctioneer = ch;
+//	ch->specials.auction=auctionobj;
+	obj_from_char(auctionobj);
+	obj_to_room(auctionobj,4);
+//	ch->specials.minbid=intbid;
+
+#endif
+}
+
+
+
+void do_bid(struct char_data *ch, char *argument, int cmd)
+{
+#if 1
+
+//	struct auction_data *auctioneditem;
+	char item[50], buf[MAX_INPUT_LENGTH], arg[254];
+//	struct descriptor_data *i;
+	long bid = 0;
+	long newminbid = 0;
+	float fnewminbid = 0;
+
+//	struct obj_data *auctionobj;
+
+dlog("in do_bid");
+
+
+	if(!*argument) {  /* show help bid */
+		send_to_char("Usage:   bid ?            to see stats on item currently up for auction..\n\r",ch);
+		send_to_char("         bid <amount>     to place a bid on the item currently up for auction.\n\r",ch);
+		if(IS_IMMORTAL(ch))
+			send_to_char("         bid cancel       to cancel an auction.\n\r",ch);
+		return;
+	}
+
+	if(minbid < 1) {
+		send_to_char("But there's nothing up for sale!\n\r",ch);
+		return;
+	}
+
+//	if(!(auctionobj = auctioneer->specials.auction)) {
+	if(!auctionobj) {
+		log("auctionobj not found in do_bid");
+		return;
+	}
+
+	only_argument(argument,arg);
+
+	if(isdigit(*arg)) {
+		/* can't bid on your own auctions */
+		if(auctioneer == ch && !IS_IMMORTAL(ch)) {
+			send_to_char("Meh, stop bidding on your own stuff, punk!\n\r",ch);
+			return;
+		}
+		/* can't bid higher than your own bid */
+		if(bidder == ch && !IS_IMMORTAL(ch)) {
+			send_to_char("You already have the highest bid.\n\r",ch);
+			return;
+		}
+		if(!(bid = atoi(arg))) {
+			send_to_char("That is not a valid number.\n\r",ch);
+			return;
+		}
+		/* Is the bid 5% higher than the current? */
+		fnewminbid = 1.05 * intbid;
+		newminbid = (int) fnewminbid;
+		if(newminbid == intbid)
+			newminbid++;
+		if(bid < newminbid) {
+			sprintf(buf,"Sorry, your bid has to be at least 5%s higher (min. %d).\n\r","%",newminbid);
+			send_to_char(buf,ch);
+			return;
+		}
+		if(bid < minbid) {
+			sprintf(buf,"Sorry, your bid has to be at least the minimum bid (%d).\n\r","%",minbid);
+			send_to_char(buf,ch);
+			return;
+		}
+		/* does player have the coin on hand? */
+		if(GET_GOLD(ch)<bid) {
+			send_to_char("You don't have that many coins in your pocket.\n\r",ch);
+			return;
+		}
+		/* bid seems to be okay. take his coin as a precaution (in case he dies or something), make him bidder */
+		GET_GOLD(ch)-=bid;
+		intbid = bid;
+		bidder = ch;
+
+		sprintf(buf,"$c000cAuction:  $c000w%s$c000c places a bid of $c000w%d$c000c coins for $c000w%s$c000c.\n\r"
+				,GET_NAME(ch), intbid, auctionobj->short_description);
+		send_to_all(buf);
+		/* reset auction loop to 4 */
+		auct_loop = 4;
+		return;
+
+	} else {
+		if(!strcmp(arg,"?")) {
+			/* show player the item stats */
+			auction_id(50, ch, 0, auctionobj);
+			return;
+		}
+		if(IS_IMMORTAL(ch) && !strcmp(arg,"cancel")) {
+			/* cancel this auction */
+			send_to_all("$c000cAuction: the auction has been cancelled.\n\r");
+			if(bidder) {
+				GET_GOLD(bidder) += intbid;
+				send_to_char("You are returned your deposit for this auction.\n\r",ch);
+			}
+			intbid = 0;
+			minbid = 0;
+			if(auctionobj) {
+				obj_from_room(auctionobj);
+				obj_to_char(auctionobj, auctioneer);
+//				free(auctioneer->specials.auction);
+				send_to_char("Your item is returned to you.\n\r",ch);
+			}
+			auct_loop = 0;
+			return;
+		}
+		send_to_char("That is not a valid argument. Type bid without arguments for help.\n\r",ch);
+	}
+#endif
+}
+
+void auction_id(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	char buf[256], buf2[256];
+	int i;
+	bool found;
+	extern const struct skillset weaponskills[];
+	struct time_info_data age(struct char_data *ch);
+
+	extern char *spells[];
+	extern char *RaceName[];
+
+	extern char *AttackType[];
+	extern struct index_data *obj_index;
+	extern char *item_types[];
+	extern char *extra_bits[];
+	extern char *apply_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *wear_bits[];
+
+	assert(ch && obj);
+
+	if (obj) {
+	send_to_char("$c000cThe item currently on auction has the following stats:\n\r\n\r", ch);
+
+	sprintf(buf, "$c000cObject '$c000w%s$c000c', Item type: $c000w", obj->name);
+	sprinttype(GET_ITEM_TYPE(obj),item_types,buf2);
+	strcat(buf,buf2);
+
+	if(IS_WEAPON(obj)) {
+		if(IS_IMMORTAL(ch))
+			sprintf(buf2,"$c000c, Weapon Speed: $c000w%s$c000c($c000w%.2f$c000c)",SpeedDesc(obj->speed),(float)obj->speed/100);
+		else
+			sprintf(buf2,"$c000c, Weapon Speed: $c000w%s$c000c",SpeedDesc(obj->speed));
+
+		strcat(buf,buf2);
+	}
+	strcat(buf,"\n\r");
+	send_to_char(buf, ch);
+
+	if (GetMaxLevel(ch)>LOW_IMMORTAL) {
+		sprintf(buf, "$c000cR-number: [$c00w%d$c000c], V-number: [$c000w%d$c000c]",
+			obj->item_number, (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0);
+		if (obj->max==0)
+			sprintf(buf2,"$c000w%s","unlimited");
+		else
+			sprintf(buf2,"$c000w%d$c000c", obj->max,obj->level);
+		sprintf(buf,"%s $c000cObjMax: [$c000w%s$c000c], Tweak Rate: [$c000w%d$c000c]\n\r", buf, buf2, obj->tweak);
+		send_to_char(buf, ch);
+
+		if(obj->level==0)
+			sprintf(buf2,"$c000cEgo: $c000wNone$c000c, ");
+		else
+			sprintf(buf2,"$c000cEgo: $c000wLevel %d$c000c, ",obj->level);
+		send_to_char(buf2,ch);
+
+		sprintf(buf2,"$c000cLast modified by $c000w%s $c000con $c000w%s",obj->modBy,asctime(localtime(&obj->modified)));
+		send_to_char(buf2,ch);
+	}
+
+	if (obj->obj_flags.bitvector) {
+		send_to_char("$c000cItem will give you following abilities:$c000w  ", ch);
+		sprintbit((unsigned)obj->obj_flags.bitvector,affected_bits,buf);
+		strcat(buf,"\n\r");
+		send_to_char(buf, ch);
+	}
+
+	send_to_char("$c000cItem is:$c000w ", ch);
+	sprintbit( (unsigned)obj->obj_flags.extra_flags,extra_bits,buf);
+	sprintf(buf2,"$c000w");
+	strcat(buf2,buf);
+	strcat(buf2,"\n\r");
+	send_to_char(buf2,ch);
+
+	sprintf(buf,"$c000cWeight:$c000w %d$c000c, Value: $c000w%d,$c000c Rent cost: $c000w %d  %s\n\r",
+			obj->obj_flags.weight, obj->obj_flags.cost,
+			obj->obj_flags.cost_per_day
+			, IS_RARE(obj)? "$c000c[$c00wRARE$c000c]":" ");
+
+	send_to_char(buf, ch);
+
+	send_to_char("$c000cCan be worn on :$c000w", ch);
+	sprintbit((unsigned)obj->obj_flags.wear_flags,wear_bits,buf);
+	sprintf(buf2,"$c000w");
+	strcat(buf2,buf);
+	strcat(buf2,"\n\r");
+	send_to_char(buf2, ch);
+
+	switch (GET_ITEM_TYPE(obj)) {
+
+		case ITEM_SCROLL :
+		case ITEM_POTION :
+			sprintf(buf, "$c000cLevel$c000w %d $c000cspells of:$c000w\n\r",obj->obj_flags.value[0]);
+			send_to_char(buf, ch);
+			if (obj->obj_flags.value[1] >= 1) {
+				sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+				sprintf(buf2,"$c000w%s",buf);
+				strcat(buf2,"\n\r");
+				send_to_char(buf2, ch);
+			}
+			if (obj->obj_flags.value[2] >= 1) {
+				sprinttype(obj->obj_flags.value[2]-1,spells,buf);
+				sprintf(buf2,"$c000w%s",buf);
+				strcat(buf2,"\n\r");
+				send_to_char(buf2, ch);
+			}
+			if (obj->obj_flags.value[3] >= 1) {
+				sprinttype(obj->obj_flags.value[3]-1,spells,buf);
+				sprintf(buf2,"$c000w%s",buf);
+				strcat(buf2,"\n\r");
+				send_to_char(buf2, ch);
+			}
+			break;
+		case ITEM_WAND :
+		case ITEM_STAFF :
+			sprintf(buf, "$c000cCosts $c000w%d $c000cmana to use, with$c000w %d$c000c charges left.\n\r",
+					obj->obj_flags.value[1], obj->obj_flags.value[2]);
+			send_to_char(buf, ch);
+			sprintf(buf, "$c000cLevel $c000w%d $c000cspell of:$c000w\n\r", obj->obj_flags.value[0]);
+			send_to_char(buf, ch);
+			if (obj->obj_flags.value[3] >= 1) {
+				sprinttype(obj->obj_flags.value[3]-1,spells,buf);
+				sprintf(buf2,"$c000w%s",buf);
+				strcat(buf2,"\n\r");
+				send_to_char(buf2, ch);
+			}
+			break;
+		case ITEM_WEAPON :
+			sprintf(buf, "$c000cDamage Dice is '$c000w%dD%d$c000c' [$c000w%s$c000c] [$c000w%s$c000c]\n\r",
+					obj->obj_flags.value[1], obj->obj_flags.value[2], AttackType[obj->obj_flags.value[3]/*-1*/],
+					weaponskills[obj->weapontype].name);
+			send_to_char(buf, ch);
+			break;
+		case ITEM_ARMOR :
+			sprintf(buf, "$c000cAC-apply is: $c000w%d,   ", obj->obj_flags.value[0]);
+			send_to_char(buf, ch);
+			sprintf(buf, "$c000cSize of armor is: $c000w%s\n\r", ArmorSize(obj->obj_flags.value[2]));
+			send_to_char(buf, ch);
+			break;
+	}
+
+	found = FALSE;
+
+	for (i=0;i<MAX_OBJ_AFFECT;i++) {
+		if ((obj->affected[i].location != APPLY_NONE) && (obj->affected[i].modifier != 0)) {
+			if (!found) {
+				send_to_char("$c000cCan affect you as :$c000w\n\r", ch);
+				found = TRUE;
+			}
+			sprinttype(obj->affected[i].location,apply_types,buf2);
+			sprintf(buf," $c000c   Affects :$c000w %s$c000c by $c000w", buf2);
+			send_to_char(buf,ch);
+			switch(obj->affected[i].location) {
+				case APPLY_M_IMMUNE:
+				case APPLY_IMMUNE:
+				case APPLY_SUSC:
+					sprintbit(obj->affected[i].modifier,immunity_names,buf2);
+					sprintf(buf,"$c000w");
+					strcat(buf,buf2);
+					sprintf(buf2,buf);
+					strcat(buf2,"\n\r");
+					break;
+				case APPLY_ATTACKS:
+					sprintf(buf2,"$c000w%f\n\r", obj->affected[i].modifier/10);
+					break;
+				case APPLY_WEAPON_SPELL:
+				case APPLY_EAT_SPELL:
+					sprintf(buf2,"$c000w%s\n\r", spells[obj->affected[i].modifier-1]);
+					break;
+				case APPLY_SPELL:
+					sprintbit(obj->affected[i].modifier,affected_bits, buf2);
+					sprintf(buf,"$c000w");
+					strcat(buf,buf2);
+					strcat(buf,"\n\r");
+					sprintf(buf2,buf);
+					break;
+				case APPLY_SPELL2:
+					sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
+					sprintf(buf,"$c000w");
+					strcat(buf,buf2);
+					strcat(buf,"\n\r");
+					sprintf(buf2,buf);
+					break;
+				case APPLY_RACE_SLAYER:
+					sprintf(buf2,"$c000w%s\n\r", RaceName[obj->affected[i].modifier]);
+					break;
+				case APPLY_ALIGN_SLAYER:
+					if (obj->affected[i].modifier > 1 )
+						sprintf(buf2,"$c000wSLAY GOOD\n\r");
+					else if (obj->affected[i].modifier == 1 )
+						sprintf(buf2,"$c000wSLAY NEUTRAL\n\r");
+					else /* less than 1 == slay evil */
+						sprintf(buf2,"$c000wSLAY EVIL\n\r");
+					break;
+				default:
+					sprintf(buf2,"$c000w%d\n\r", obj->affected[i].modifier);
+					break;
+			}
+			send_to_char(buf2,ch);
+		}
+	}
+
+	}
+}
+

@@ -2740,12 +2740,12 @@ strcat(buf,"\n\r");
     }
   }
 
-if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+  if (GetMaxLevel(ch)<LOW_IMMORTAL) {
 //  act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
 //  act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
-  WAIT_STATE(ch,PULSE_VIOLENCE*2);//*12);
+    WAIT_STATE(ch,PULSE_VIOLENCE*2);//*12);
 //  GET_POS(ch) = POSITION_STUNNED;
- }
+  }
 
 }
 
@@ -2868,7 +2868,7 @@ if (level <0 || level >ABS_MAX_LVL)
 	     burn=burn->next_content) {
 	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
        		if (burn)  {
-       			act("$o burns into cinders.",0,victim,burn,0,TO_CHAR);
+       			act("$p burns into cinders.",0,victim,burn,0,TO_CHAR);
        			extract_obj(burn);
        		}
 	     }
@@ -3222,7 +3222,7 @@ if (level <0 || level >ABS_MAX_LVL)
 	     burn=burn->next_content) {
 	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
        		if (burn)  {
-       			act("$o is destroyed by the projectiles",0,victim,burn,0,TO_CHAR);
+       			act("$p is destroyed by the projectiles",0,victim,burn,0,TO_CHAR);
        			extract_obj(burn);
        		}
 	     }
@@ -3306,7 +3306,7 @@ if (level <0 || level >ABS_MAX_LVL)
 	     burn=burn->next_content) {
 	     if (!saves_spell(victim, SAVING_BREATH) ) 	{
        		if (burn)  {
-       			act("$o is burnt to a crisp by the blinding light",0,victim,burn,0,TO_CHAR);
+       			act("$p is burnt to a crisp by the blinding light",0,victim,burn,0,TO_CHAR);
        			extract_obj(burn);
        		}
 	     }

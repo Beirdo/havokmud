@@ -3148,6 +3148,77 @@ void ArenaPulseStuff(int pulse)
 		} /* not enough or too many people in arena */
 	} /* arena not closed */
 }
+void AuctionPulseStuff(int pulse)
+{
+	extern int auct_loop;
+	extern long minbid;
+	extern long intbid;
+	extern struct char_data *auctioneer;
+	extern struct char_data *bidder;
+	extern struct obj_data *auctionobj;
+	char buf[MAX_STRING_LENGTH];
+
+	if (pulse < 0)
+		return;
+
+	switch(auct_loop) {
+		case 1:
+		case 2:
+			sprintf(buf,"$c000cAuction:  $c000w%s$c000c.  Minimum bid set at $c000w%d$c000c coins.\n\r", auctionobj->short_description, minbid);
+			send_to_all(buf);
+			auct_loop++;
+			break;
+		case 3:
+			sprintf(buf,"$c000cAuction:  No interest in $c000w%s$c000c.  Item withdrawn.\n\r", auctionobj->short_description);
+			send_to_all(buf);
+			auct_loop = 0;
+			intbid = 0;
+			minbid = 0;
+			/* return item to auctioneer */
+			obj_from_room(auctionobj);
+			obj_to_char(auctionobj, auctioneer);
+			send_to_char("Your item is returned to you.\n\r.",auctioneer);
+
+			break;
+
+		case 4:
+			sprintf(buf,"$c000cAuction:  $c000w%s$c000c, current bid of $c000w%d$c000c coins, to $c000w%s$c000c.  Going once..\n\r"
+						, auctionobj->short_description, intbid, GET_NAME(bidder));
+			send_to_all(buf);
+			auct_loop++;
+			break;
+
+		case 5:
+			sprintf(buf,"$c000cAuction:  $c000w%s$c000c, current bid of $c000w%d$c000c coins, to $c000w%s$c000c.  Going twice...\n\r"
+						, auctionobj->short_description, intbid, GET_NAME(bidder));
+			send_to_all(buf);
+			auct_loop++;
+			break;
+
+		case 6:
+			sprintf(buf,"$c000cAuction:  Gone!  $c000w%s$c000c was sold to $c000w%d$c000c coins to $c000w%s$c000c.\n\r", auctionobj->short_description, intbid, GET_NAME(bidder));
+			send_to_all(buf);
+			/* return money to auctioneer */
+			GET_GOLD(auctioneer) += intbid;
+			ch_printf(auctioneer, "You receive %d coins for the item you auctioned.\n\r.",intbid);
+			/* return item to bidder */
+			ch_printf(bidder, "You receive %s.\n\r",auctionobj->short_description);
+			obj_from_room(auctionobj);
+			obj_to_char(auctionobj, bidder);
+
+			auct_loop = 0;
+			intbid = 0;
+			minbid = 0;
+
+			auctionobj = 0;
+			bidder = 0;
+			auctioneer = 0;
+			break;
+
+		default:
+			return;
+	}
+}
 
 void RiverPulseStuff(int pulse)
 {
