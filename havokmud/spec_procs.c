@@ -3379,6 +3379,9 @@ int Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
     case 22648:
       strncpy(container,"brook",20);
       break;
+    case 53025:
+      strncpy(container,"well",20);
+      break;
     default:
       strncpy(container,"fountain",20);
     };
