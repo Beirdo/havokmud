@@ -4017,6 +4017,7 @@ int getFreeAffSlot(struct obj_data *obj)
     }
 
     assert(0);
+    return(0);
 }
 
 void SetRacialStuff(struct char_data *mob)
