@@ -5361,6 +5361,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg,
     destination[21] = 13423;
     destination[22] = 44980;    /* mob 2737 */
     destination[23] = 31908;    /* Ash's winterfell */
+    destination[24] = 49302;    /* Tarantis Bazaar */
     /*
      * To add another color pool, create another mobile (2733, etc) and
      * add another destination.  

@@ -406,6 +406,7 @@ void assign_mobiles()
         {2736, astral_portal},
         {2737, astral_portal},
         {2738, astral_portal},  /* Ash's new winterfell pool */
+        {2739, astral_portal},
         {2703, fighter},
         {2702, magic_user},
         {2701, fighter},
