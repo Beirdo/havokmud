@@ -1311,8 +1311,20 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 	assert(ch);
 	sprintf(name,"%s",arg);
 
+
+
+
+
+
+
 	/* when starting out, no object has been found yet */
 	found = 0;
+
+	if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
+		  send_to_char("Some powerful magic interference provide you from finding this object\n",ch);
+		  return;
+    }
+
 
 	j=level>>2;
 	if(j<2)

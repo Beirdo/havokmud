@@ -760,7 +760,13 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 	if (!ch->skills[SKILL_SENSE_OBJECT].learned)   {
 		send_to_char ("You have not trained your mind to do this\n\r",ch);
 		return;
-	} else {
+	}
+
+
+	if (IS_SET(SystemFlags,SYS_LOCOBJ)) {
+			  send_to_char("Some powerful magic interference provide you from finding this object\n",ch);
+			  return;
+    }else {
 		for (i = object_list; i; i = i->next) {
 			if (isname(name, i->name)) {
 				if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
