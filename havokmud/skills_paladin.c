@@ -611,6 +611,8 @@ void spell_holy_strength(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
+    int alignfraction = 0;
+    int strmod;
 
     assert(victim);
 
@@ -621,19 +623,28 @@ void spell_holy_strength(int level, struct char_data *ch,
 
         af.type = SPELL_HOLY_STRENGTH;
         af.duration = 2 * level;
-        if (level >= CREATOR) {
+
+
+        alignfraction = GET_ALIGNMENT(victim) / 100;
+        if(alignfraction == 0) {
             af.modifier = 0;
+        } else if(alignfraction < 0) { /* shouldn't be necessary,
+                                      spell is self (paladin) only */
+           alignfraction = 0 - alignfraction;
+           af.modifier = 0 - number(1, alignfraction);
         } else {
-            af.modifier = number(1, 8);
+           strmod = alignfraction >> 1;
+           strmod += number(1, strmod);
+           af.modifier = strmod;
         }
         af.location = APPLY_STR;
         af.bitvector = 0;
         affect_to_char(victim, &af);
+
     } else {
         act("Nothing seems to happen.", FALSE, ch, 0, 0, TO_CHAR);
     }
 }
-
 void cast_holy_strength(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,
                         struct obj_data *tar_obj)
