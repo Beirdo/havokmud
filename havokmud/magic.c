@@ -2885,7 +2885,6 @@ void spell_enchant_armor(int level, struct char_data *ch,
                 count++;
             }
             if (obj->affected[i].location == APPLY_ARMOR ||
-                obj->affected[i].location == APPLY_SAVE_ALL ||
                 obj->affected[i].location == APPLY_SAVING_PARA ||
                 obj->affected[i].location == APPLY_SAVING_ROD ||
                 obj->affected[i].location == APPLY_SAVING_PETRI ||
