@@ -6456,11 +6456,11 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             } else {
                 test = 1;
             }
-            sprintf(buf, "give %s %s", obj_name, vict_name);
-            command_interpreter(ch, buf);
+            sprintf(buf, "%s %s", obj_name, vict_name);
+            do_give(ch, buf, 0);
         } else {
-            sprintf(buf, "give %s %s", obj_name, vict_name);
-            command_interpreter(ch, buf);
+            sprintf(buf, "%s %s", obj_name, vict_name);
+            do_give(ch, buf, 0);
             if (obj->obj_flags.type_flag == ITEM_FOOD) {
                 test = 1;
             }
