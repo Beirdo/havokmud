@@ -1783,6 +1783,7 @@ void nanny(struct descriptor_data *d, char *arg)
  			return;
       	    break;
       	  case '5':
+      	  	d->character->reroll=20;
  			if (d->character->player.class !=0) {
 			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
 	     	SEND_TO_Q("Seperated y spaces.. don't duplicate\n\r", d);
@@ -1878,7 +1879,7 @@ void nanny(struct descriptor_data *d, char *arg)
   }
 
   case CON_QRACE:
-    d->character->reroll=9;
+    d->character->reroll=20;
     for (; isspace(*arg); arg++)  ;
     if (!*arg)
     {
@@ -2309,9 +2310,9 @@ if (GET_NAME(d->character))
       STATE(d) = CON_STAT_LIST;
       break;
     } else {
-		printf("\n\rROLL THIS FUCKER\n\r");
+		//printf("\n\rROLL THIS FUCKER\n\r");
       roll_abilities(d->character);
-      printf("\n\rBLASTED!!\n\r");
+      //printf("\n\rBLASTED!!\n\r");
       SEND_TO_Q("Your current stats are:\n\r", d);
       sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
       SEND_TO_Q(buf,d);
@@ -2352,8 +2353,11 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
  if (*arg!='r' &&  *arg!='R'){
     SEND_TO_Q("Stats chosen!\n\r", d);
 
-    STATE(d)= CON_RMOTD;
-    if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
+    //STATE(d)= CON_RMOTD;
+   show_menu(d);
+   	  STATE(d) = CON_CREATION_MENU;
+
+   if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
       //STATE(d) = CON_AUTH;
       //SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
       show_menu(d);
@@ -2404,7 +2408,10 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
       sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
       SEND_TO_Q(buf,d);
       SEND_TO_Q("Stats chosen!", d);
-    STATE(d)= CON_RMOTD;
+    //STATE(d)= CON_RMOTD;
+    	show_menu(d);
+	  STATE(d) = CON_CREATION_MENU;
+	   break;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
       STATE(d) = CON_AUTH;
       SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
