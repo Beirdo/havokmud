@@ -24,7 +24,7 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	spec_assign.c spec_guildmaster.c spec_procs2.c spec_procs3.c \
 	spec_procs4.c spec_procs.c spell_parser.c spells1.c spells2.c trap.c \
 	utility.c weather.c
-EXE =	havokmud
+EXE =	havokmud@EXEEXT@
 
 OBJS = ${SRCS:.c=.o}
 DEPS = ${SRCS:.c=.d}
