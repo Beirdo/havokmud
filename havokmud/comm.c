@@ -508,10 +508,8 @@ int game_loop(int s)
         /*
          * New connection? 
          */
-        if (FD_ISSET(s, &input_set)) {
-            if (new_descriptor(s) < 0) {
-                perror("New connection");
-            }
+        if (FD_ISSET(s, &input_set) && new_descriptor(s) < 0) {
+            perror("New connection");
         }
 
         /*
@@ -525,6 +523,7 @@ int game_loop(int s)
                 close_socket(point);
             }
         }
+
         for (point = descriptor_list; point; point = next_point) {
             next_point = point->next;
             if (FD_ISSET(point->descriptor, &input_set)) {
@@ -593,11 +592,9 @@ int game_loop(int s)
             next_point = point->next;
 
 #ifndef BLOCK_WRITE
-            if (FD_ISSET(point->descriptor, &output_set)
-                && point->output.head)
+            if (FD_ISSET(point->descriptor, &output_set) && point->output.head)
 #else
-            if (FD_ISSET(point->descriptor, &output_set)
-                && *(point->output))
+            if (FD_ISSET(point->descriptor, &output_set) && *(point->output))
 #endif
             {
                 if (process_output(point) < 0) {
@@ -612,92 +609,91 @@ int game_loop(int s)
          * give the people some prompts 
          */
         memory_check("end 5, begin 6");
-        for (point = descriptor_list; point; point = point->next) 
+        for (point = descriptor_list; point; point = point->next) {
             if (point->prompt_mode) {
                 if (point->str) {
                     write_to_descriptor(point->descriptor, "-> ");
-                } else if (!point->connected) 
-                    if (point->showstr_count) {
+                } else if (!point->connected) {
+                    if (point->showstr_count) 
 #if 0
-                if (point->showstr_point) {
+                if (point->showstr_point) 
 #endif               
-                    sprintf(promptbuf, "[ Enter to continue, (q)uit, "
-                                       "(r)efresh, (b)ack, or page "
-                                       "number (%d/%d) ]\n\r",
-                            point->showstr_page, point->showstr_count);
-                    write_to_descriptor(point->descriptor, promptbuf);
+                    {
+                        sprintf(promptbuf, "[ Enter to continue, (q)uit, "
+                                           "(r)efresh, (b)ack, or page "
+                                           "number (%d/%d) ]\n\r",
+                                point->showstr_page, point->showstr_count);
+                        write_to_descriptor(point->descriptor, promptbuf);
 #if 0
-                    write_to_descriptor(point->descriptor,"[Return "
-                            "to continue/Q to quit]");
+                        write_to_descriptor(point->descriptor,"[Return "
+                                "to continue/Q to quit]");
 #endif
-                } else {
-                    if (point->character->term == VT100) {
-                        ch = point->character;
-
-                        if (GET_MOVE(ch) != ch->last.move) {
-                            SET_BIT(update, INFO_MOVE);
-                            ch->last.move = GET_MOVE(ch);
-                        }
-                        if (GET_MAX_MOVE(ch) != ch->last.mmove) {
-                            SET_BIT(update, INFO_MOVE);
-                            ch->last.mmove = GET_MAX_MOVE(ch);
-                        }
-                        if (GET_HIT(ch) != ch->last.hit) {
-                            SET_BIT(update, INFO_HP);
-                            ch->last.hit = GET_HIT(ch);
-                        }
-                        if (GET_MAX_HIT(ch) != ch->last.mhit) {
-                            SET_BIT(update, INFO_HP);
-                            ch->last.mhit = GET_MAX_HIT(ch);
-                        }
-                        if (GET_MANA(ch) != ch->last.mana) {
-                            SET_BIT(update, INFO_MANA);
-                            ch->last.mana = GET_MANA(ch);
-                        }
-                        if (GET_MAX_MANA(ch) != ch->last.mmana) {
-                            SET_BIT(update, INFO_MANA);
-                            ch->last.mmana = GET_MAX_MANA(ch);
-                        }
-                        if (GET_GOLD(ch) != ch->last.gold) {
-                            SET_BIT(update, INFO_GOLD);
-                            ch->last.gold = GET_GOLD(ch);
-                        }
-                        if (GET_EXP(ch) != ch->last.exp) {
-                            SET_BIT(update, INFO_EXP);
-                            ch->last.exp = GET_EXP(ch);
-                        }
-                        if (update) {
-                            UpdateScreen(ch, update);
-                        }
-                        sprintf(promptbuf, "> ");
                     } else {
-                        construct_prompt(promptbuf, point->character);
-                    }
+                        if (point->character->term == VT100) {
+                            ch = point->character;
 
-                    if (point->character->player.has_mail) {
-                        write_to_descriptor(point->descriptor, 
-                                            ParseAnsiColors( \
-                                IS_SET(point->character->player.user_flags, 
-                                       USE_ANSI), \
-                                       "$c0003[MAIL] "));
-                    }
+                            if (GET_MOVE(ch) != ch->last.move) {
+                                SET_BIT(update, INFO_MOVE);
+                                ch->last.move = GET_MOVE(ch);
+                            }
+                            if (GET_MAX_MOVE(ch) != ch->last.mmove) {
+                                SET_BIT(update, INFO_MOVE);
+                                ch->last.mmove = GET_MAX_MOVE(ch);
+                            }
+                            if (GET_HIT(ch) != ch->last.hit) {
+                                SET_BIT(update, INFO_HP);
+                                ch->last.hit = GET_HIT(ch);
+                            }
+                            if (GET_MAX_HIT(ch) != ch->last.mhit) {
+                                SET_BIT(update, INFO_HP);
+                                ch->last.mhit = GET_MAX_HIT(ch);
+                            }
+                            if (GET_MANA(ch) != ch->last.mana) {
+                                SET_BIT(update, INFO_MANA);
+                                ch->last.mana = GET_MANA(ch);
+                            }
+                            if (GET_MAX_MANA(ch) != ch->last.mmana) {
+                                SET_BIT(update, INFO_MANA);
+                                ch->last.mmana = GET_MAX_MANA(ch);
+                            }
+                            if (GET_GOLD(ch) != ch->last.gold) {
+                                SET_BIT(update, INFO_GOLD);
+                                ch->last.gold = GET_GOLD(ch);
+                            }
+                            if (GET_EXP(ch) != ch->last.exp) {
+                                SET_BIT(update, INFO_EXP);
+                                ch->last.exp = GET_EXP(ch);
+                            }
+                            if (update) {
+                                UpdateScreen(ch, update);
+                            }
+                            sprintf(promptbuf, "> ");
+                        } else {
+                            construct_prompt(promptbuf, point->character);
+                        }
 
-                    if (IS_AFFECTED2(point->character, AFF2_AFK)) {
-                        write_to_descriptor(point->descriptor, 
-                                            ParseAnsiColors( \
+                        if (point->character->player.has_mail) {
+                            write_to_descriptor(point->descriptor, 
+                                ParseAnsiColors( 
+                                    IS_SET(point->character->player.user_flags, 
+                                           USE_ANSI), "$c0003[MAIL] "));
+                        }
+
+                        if (IS_AFFECTED2(point->character, AFF2_AFK)) {
+                            write_to_descriptor(point->descriptor, 
+                                ParseAnsiColors(
+                                    IS_SET(point->character->player.user_flags,
+                                           USE_ANSI), "$c0006[AFK] "));
+                        }
+
+                        write_to_descriptor(point->descriptor, ParseAnsiColors( 
                                 IS_SET(point->character->player.user_flags,
-                                       USE_ANSI), \
-                                       "$c0006[AFK] "));
+                                USE_ANSI), promptbuf));
                     }
-
-                    write_to_descriptor(point->descriptor, 
-                                        ParseAnsiColors( \
-                            IS_SET(point->character->player.user_flags,
-                            USE_ANSI), \
-                                   promptbuf));
                 }
                 point->prompt_mode = 0;
             }
+        }
         
 
         /*
