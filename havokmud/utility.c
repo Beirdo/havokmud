@@ -4977,12 +4977,13 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
    sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
    send_to_char(buf,ch);
 
-   for (i=rstart;i<=rend;i++) {
+   for (i=rstart;i<=WORLD_SIZE;i++) {
 		obj = read_object(i, VIRTUAL);
      if (obj) {
 
 	  fprintf(fp,"#%ld\n",i);
-	  write_obj_to_file(obj,fp);
+		save_new_object_structure(obj,fp);
+		//write_obj_to_file(obj,fp);
 		count++;
  	 }
    }
