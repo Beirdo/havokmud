@@ -617,23 +617,22 @@ void spell_holyword(int level, struct char_data *ch,
 
     for (t = real_roomp(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
-        if (!IS_IMMORTAL(t) && !IS_AFFECTED(t, AFF_SILENCE)) {
-            if (level > 0) {
-                if (GET_ALIGNMENT(t) <= t_align) {
-                    if ((lev = GetMaxLevel(t)) <= 4) {
-                        damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_HOLY_WORD);
-                    } else if (lev <= 8) {
-                        damage(ch, t, 1, SPELL_HOLY_WORD);
-                        spell_paralyze(level, ch, t, 0);
-                    } else if (lev <= 12) {
-                        damage(ch, t, 1, SPELL_HOLY_WORD);
-                        spell_blindness(level, ch, t, 0);
-                    } else if (lev <= 16) {
-                        damage(ch, t, 0, SPELL_HOLY_WORD);
-                        GET_POS(t) = POSITION_STUNNED;
-                    }
+        
+        if (!IS_IMMORTAL(t)) {
+            if (GET_ALIGNMENT(t) <= t_align) {
+                if ((lev = GetMaxLevel(t)) <= 4) {
+                    damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_HOLY_WORD);
+                } else if (lev <= 8) {
+                    damage(ch, t, 1, SPELL_HOLY_WORD);
+                    spell_paralyze(level, ch, t, 0);
+                } else if (lev <= 12) {
+                    damage(ch, t, 1, SPELL_HOLY_WORD);
+                    spell_blindness(level, ch, t, 0);
+                } else if (lev <= 16) {
+                    damage(ch, t, 0, SPELL_HOLY_WORD);
+                    GET_POS(t) = POSITION_STUNNED;
                 }
-            } else if (GET_ALIGNMENT(t) >= t_align) {
+            } else if (GET_ALIGNMENT(t) > t_align) {
                 if ((lev = GetMaxLevel(t)) <= 4) {
                     damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_UNHOLY_WORD);
                 } else if (lev <= 8) {
@@ -650,7 +649,6 @@ void spell_holyword(int level, struct char_data *ch,
         }
     }
 }
-
 
 void spell_golem(int level, struct char_data *ch,
                  struct char_data *victim, struct obj_data *obj)
@@ -2911,18 +2909,9 @@ void spell_holy_strength(int level, struct char_data *ch,
         af.duration = 2 * level;
         if (IS_NPC(victim)) {
             if (level >= CREATOR) {
-                af.modifier = 25 - GET_STR(victim);
+                af.modifier = 0;
             } else {
-                af.modifier = number(1, 6);
-            }
-        } else {
-            if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_BARBARIAN)) {
                 af.modifier = number(1, 8);
-            } else if (HasClass(ch, CLASS_CLERIC)
-                       || HasClass(ch, CLASS_THIEF)) {
-                af.modifier = number(1, 6);
-            } else {
-                af.modifier = number(1, 4);
             }
         }
         af.location = APPLY_STR;
