@@ -646,7 +646,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     int             field,
                     dflags,
                     dir,
-                    exroom,
+                    exroom = -1,
                     dkey,
                     rspeed,
                     rdir,
@@ -908,6 +908,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             rp->dir_option[dir]->open_cmd = open_cmd;
 
             if (real_roomp(exroom) != NULL) {
+                Log("we think we have a room");
                 rp->dir_option[dir]->to_room = exroom;
             } else {
                 send_to_char("Deleting exit.\n\r", ch);
