@@ -291,7 +291,7 @@ void spell_haste(byte level, struct char_data *ch,
 
 
   af.type      = SPELL_HASTE;
-  af.duration  = level;
+  af.duration  = (level<LOW_IMMORTAL) ? level : 99;
   af.modifier  = 1;
   //af.location  = APPLY_HASTE;
   //af.bitvector = 0;
