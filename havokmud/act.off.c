@@ -1543,7 +1543,9 @@ void do_breath(struct char_data *ch, char *argument, int cmd)
 
     for (count = FIRST_BREATH_WEAPON;
          count <= LAST_BREATH_WEAPON && !affected_by_spell(ch, count);
-         count++);
+         count++) {
+        /* Empty Loop */
+    }
 
     if (count > LAST_BREATH_WEAPON) {
         for (scan = breath_monsters;
