@@ -4350,8 +4350,8 @@ dlog("in do_show");
 							sprintf(color,"%s","$c000W");
 						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 						append_to_string_block(&sb, buf);
-						extract_obj(obj);
 					}
+					extract_obj(obj);
 				}
 			}
 		}
@@ -4409,8 +4409,8 @@ dlog("in do_show");
 							sprintf(color,"%s","$c000W");
 						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 						append_to_string_block(&sb, buf);
-						extract_obj(obj);
 					}
+					extract_obj(obj);
 				}
 			}
 		}

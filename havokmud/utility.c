@@ -5578,7 +5578,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 			}
 
 			fprintf(vnum_f,"#%ld\n",i);
-			save_new_mobile_structure(mob, vnum_f);//, HpBonus);
+			save_new_mobile_structure(mob, vnum_f);
 			fclose(vnum_f);
 			if (nr == -1)
 				insert_mobile(mob, i);
@@ -5587,7 +5587,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
 
 
 			fprintf(mob_file,"#%ld\n",i);
-			save_new_mobile_structure(mob,mob_file);//, HpBonus);
+			save_new_mobile_structure(mob,mob_file);
 			count++;
 			extract_char(mob);
 		}
@@ -5637,16 +5637,16 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
    sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
    send_to_char(buf,ch);
 
-   for (i=rstart;i<=WORLD_SIZE;i++) {
+	for (i=rstart;i<=WORLD_SIZE;i++) {
 		obj = read_object(i, VIRTUAL);
-     if (obj) {
-
-	  fprintf(fp,"#%ld\n",i);
-		save_new_object_structure(obj,fp);
-		//write_obj_to_file(obj,fp);
-		count++;
- 	 }
-   }
+		if (obj) {
+			fprintf(fp,"#%ld\n",i);
+			save_new_object_structure(obj,fp);
+			//write_obj_to_file(obj,fp);
+			count++;
+			extract_obj(obj);
+		}
+	}
 
 
   fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 0\n\r%");
