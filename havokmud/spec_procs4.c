@@ -2490,14 +2490,21 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	struct obj_data *nextobj;  // another temporary var
 	struct char_data *tempchar; // another temporary var
 	struct room_data *currroom; // temporary var
+	int k = 1;
+	struct obj_data *remobj;
+	struct obj_data *tempobj, *parentobj;
+	int GoodItemReal;
+	int whatundead = 1;
+	int realcorpseid;
+	int ventobjrnum = 0;
 
 	if(cmd) {
 		return(FALSE);
 	}
 
-	int realcorpseid = real_object(CORPSEOBJVNUM);  // For the corpse that we toss around
+	realcorpseid = real_object(CORPSEOBJVNUM);  // For the corpse that we toss around
 	ventroom = real_roomp(VENTROOMVNUM);
-	int ventobjrnum = real_object(VENTOBJVNUM);
+	ventobjrnum = real_object(VENTOBJVNUM);
 	ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
 	if(ventobj == NULL) {  // no ventobj = no tome, no tome = no mob, kill him
 		act("$n suddenly screams in agony and falls into a pile of dust.", FALSE, mob, 0, 0, TO_ROOM);
@@ -2532,8 +2539,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 	if(mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
 
-		if(!number(0,3)) { // 1 in 4 chance of summoning an undead helper - the special caster types load with zone in a dark-no-everything room, then get transferred in, so that they are spelled up
-			int whatundead = number(1,75);
+		if(!number(0,3)) { // 1 in 4 chance of summoning an undead helper - the special caster types load with zone in
+							// a dark-no-everything room, then get transferred in, so that they are spelled up
+			whatundead = number(1,75);
 
 			switch(whatundead) {
 				case 1: {  // demi-lich v25000 r2069 in DEMILICHSTORAGE
@@ -2641,7 +2649,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 		return(necromancer(mob, cmd, arg, mob, type));
 	}
 
-	int GoodItemReal = real_object(PHYLOBJVNUM);
+	GoodItemReal = real_object(PHYLOBJVNUM);
   	for (curritem = object_list; curritem; curritem = curritem->next) {
     	if (curritem->item_number == GoodItemReal) {
 			theitem = curritem;
@@ -2824,7 +2832,6 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 					}
 					else { // in container, in room -> how about moving outermost container to room, then moving some items out of it, until the item is out
 						if(theitem->in_obj != NULL && theitem->in_obj != ventobj) {
-							struct obj_data *tempobj, *parentobj;
 							parentobj = theitem->in_obj;
 							while(parentobj->in_obj != NULL) {
 								parentobj = parentobj->in_obj;
@@ -2855,11 +2862,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 		}
 		else if(i > 1) {
 			// I say randomly remove all but one, then hunt it
-			int j = number(1,i);
-			int k = 1;
+			j = number(1,i);
 			for (curritem = object_list; curritem;) {
 				if (curritem->item_number == GoodItemReal) {
-					struct obj_data *remobj;
 					remobj = curritem;
 					curritem = curritem->next;
 					if(k != j) {
@@ -2891,6 +2896,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
 	struct char_data *tempchar;
 	char buf[MAX_INPUT_LENGTH];
+	char newdesc[400];
 
 	if(cmd != 15) {
 		return(FALSE);
@@ -2934,7 +2940,6 @@ int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 			// Now do room description change, and set a flag to indicate no more damage can be done
 			rp->special = 1;
 
-			char newdesc[400];
 			strcpy(newdesc,"");
 			strcat(newdesc,"  This room has been completely stripped by fire.  Scorch\n\r");
 			strcat(newdesc,"marks are now the only thing of note.  The fact that every\n\r");
@@ -2965,6 +2970,8 @@ int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
 	struct char_data *tempchar;
 	int i = 0;
+	int j = 0;
+	int numbertocreate = 1;
 
 	if(cmd == 1 && rp->special < 1) {
 		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
@@ -2995,8 +3002,7 @@ int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 		if(i >= 1) {
 			if(rp->special % 3 == 0) {
 				// create more mobs
-				int numbertocreate = MAX(1, i>>1);
-				int j = 0;
+				numbertocreate = MAX(1, i>>1);
 				for(j; j < numbertocreate; j++) {
 					CreateAMob(ch,GUARDIANMOBVNUM,4, "Another relief jumps off the wall, becoming real and deadly!");
 				}
@@ -3018,6 +3024,7 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_dat
 	struct char_data *tempchar;
 	int i = 0;
 	struct room_data *rp;
+	struct char_data *next_v;
 
 	if(ch->in_room != GUARDIANHOMEROOMVNUM) {
 		return(FALSE);
@@ -3032,7 +3039,6 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_dat
 		}
 	}
 	if(i == 0) {
-		struct char_data *next_v;
 		for (tempchar = rp->people; tempchar; tempchar=next_v) {
 			next_v=tempchar->next_in_room;
 			if (IS_NPC(tempchar) && (!IS_SET(tempchar->specials.act, ACT_POLYSELF))) {
@@ -3051,6 +3057,12 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_dat
  * @Assigned to obj/mob/room: room(37857)
  */
 int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+
+	char buf[MAX_INPUT_LENGTH];
+	char newdesc[400];
+	struct obj_data *tossitem;
+	struct char_data *tempchar;
+	int dam = 0;
 
 	if((cmd != 1) && (cmd != 459) && (cmd != 258)) {
 		return(FALSE);
@@ -3076,9 +3088,6 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
 	}
 	else if(cmd == 459) {
-		char buf[MAX_INPUT_LENGTH];
-		struct obj_data *tossitem;
-		struct char_data *tempchar;
 		// toss object, disarm trap, scrap object
 		// toss person, ouch, hit them with big trap damage
 
@@ -3092,7 +3101,6 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 			// scrap item
 			MakeScrap(ch, NULL, tossitem);
 
-			char newdesc[400];
 			strcpy(newdesc,"");
 			strcat(newdesc,"  This room's former skull shape has been completely ruined\n\r");
 			strcat(newdesc,"by the collapse of the jaw.  The broken pieces of the jaw\n\r");
@@ -3116,7 +3124,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 				act("$n grabs you and tosses you in the air, you fly too close to the jaws of the doorway and they slam shut, cutting you!", FALSE, ch, 0, tempchar, TO_VICT);
 				act("$n tosses $N in the air, but the jaws suddenly slam down on $M, slashing $M terribly!.", FALSE, ch, 0, tempchar, TO_NOTVICT);
 				// slice up character badly
-				int dam = dice(40,8);
+				dam = dice(40,8);
 				doroomdamage(tempchar, dam, SPELL_BLADE_BARRIER);
 			}
 			return(TRUE);
@@ -3139,8 +3147,11 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 // Ideally, I'd like this to force characters to do semi-random commands instead of fleeing
 // (maybe 3 out of 4 are random, 1 is user choice), but that would probably mean adding an affect, blah blah
 int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
 	struct char_data *tempchar;
 	int makethemflee = 1;
+	int currroomnum = 0;
+
 	if(tempchar = mob->specials.fighting) {
 		if(number(0,4) > 0) {
 		    if(dice(4,6) < GET_CHR(tempchar))  { // three saves to avoid it fail any of the three, and it's time to flee, this one is charisma
@@ -3152,7 +3163,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 				}
 			}
 			if(makethemflee) {
-				int currroomnum = tempchar->in_room;
+				 = tempchar->in_room;
 				act("You gaze into $n's eyes and suddenly get frightened for no reason!", FALSE, mob, 0, tempchar, TO_VICT);
 				act("$n stares at $N and they suddenly look very scared!  They've even stopped fighting back!", FALSE, mob, 0, tempchar, TO_NOTVICT);
 				// mages teleport
@@ -3197,6 +3208,11 @@ int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob
  */
 int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
 
+	char buf1[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+	struct obj_data *ventobj;
+	struct room_data *ventroom;
+
 	if(!cmd) {
 		return(FALSE);
 	}
@@ -3204,12 +3220,6 @@ int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 	if((cmd != 99) && (cmd != 15) && (cmd != 10) && (cmd != 167) && (cmd != 67)) { // open, look, get, take, put
 		return(FALSE);
 	}
-
-	char buf1[MAX_INPUT_LENGTH];
-	char buf2[MAX_INPUT_LENGTH];
-
-	struct obj_data *ventobj;
-	struct room_data *ventroom;
 
 	ventroom = real_roomp(VENTROOMVNUM);
 	ventobj = get_obj_in_list_num(VENTOBJVNUM,ventroom->contents);
@@ -3296,6 +3306,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 
 	struct char_data *tempchar;
+	struct affected_type af;
 	struct room_data *rp;
 
 	if(GET_POS(mob) < POSITION_FIGHTING) {
@@ -3310,7 +3321,6 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 	if(mob->specials.fighting)
 	{
-		struct affected_type af;
 		af.type      = SPELL_DISEASE;
 		af.duration  = 6;
 		af.modifier  = 0;
@@ -3321,7 +3331,8 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
 			if(!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
-				act("A wave of stench rolls out from $n, if a skunk's spray is like a dagger, \n\rthis is like a claymore.  You immediately feel incredibly sick.", TRUE, mob, 0, tempchar, TO_VICT);
+				act("A wave of stench rolls out from $n, if a skunk's spray is like a dagger, \n\r
+				     this is like a claymore.  You immediately feel incredibly sick.", TRUE, mob, 0, tempchar, TO_VICT);
 				if(!saves_spell(tempchar, SAVING_BREATH)) {
 					affect_join(tempchar, &af, TRUE, FALSE);
 				}
@@ -3361,18 +3372,21 @@ int ghoultouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
  */
 // shadow touch which does -str and -move
 int shadowtouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
-	struct char_data *opponent;
-	opponent = mob->specials.fighting;
 
+	struct char_data *opponent;
 	struct affected_type af;
+	int oppstr = 4;
+	int mod = 0;
+
+	opponent = mob->specials.fighting;
 
 	if(opponent && number(0,1) && !IS_IMMUNE(opponent,IMM_DRAIN)) {
 		act("$n reaches out and touches you, your limbs lose all their strength!", FALSE, mob, 0, opponent, TO_VICT);
 		act("$n reaches out and touches $N, suddenly they look exhausted.", FALSE, mob, 0, opponent, TO_NOTVICT);
 	  	if (!affected_by_spell(opponent,SPELL_WEAKNESS)) {
-			int oppstr = GET_RSTR(opponent);
-			int mod = oppstr - 3; // basically take their natural strength and subtract enough to leave them with 3, anything magical added afterwards is ok
-
+			oppstr = GET_RSTR(opponent);
+			mod = oppstr - 3; // basically take their natural strength and subtract enough to leave them with 3,
+							  // anything magical added afterwards is ok
 			af.type      = SPELL_WEAKNESS;
 			af.duration  = 3;
 			af.modifier  = 0 - mod;
@@ -3393,13 +3407,14 @@ int shadowtouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 // mold, which is fine if left alone, and blows up and poisons everybody in room if it dies : type == EVENT_DEATH
 int moldexplosion(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 
+	struct char_data *tempchar;
+	struct affected_type af;
+
 	if(type != EVENT_DEATH || cmd) {
 		return(FALSE);
 	}
 
 	if(type == EVENT_DEATH) {
-		struct char_data *tempchar;
-		struct affected_type af;
 	    af.type = SPELL_POISON;
 	    af.duration = 3;
         af.modifier = 0;
@@ -3426,16 +3441,17 @@ int moldexplosion(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 // bone golem (breathe bone shards!)
 int boneshardbreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 
+	struct char_data *tempchar;
+	int dam;
+
 	if(cmd) {
 		return(FALSE);
 	}
 
 	if(mob->specials.fighting && !number(0,3)) {
 		act("The dragon skull embedded in the bone golem's chest opens wide\n\rand spews out shards of bones that slice like the sharpest of daggers!", FALSE, mob, 0, 0, TO_ROOM);
-		struct char_data *tempchar;
 		for(tempchar = real_roomp(mob->in_room)->people; tempchar; tempchar = tempchar->next_in_room) {
 			if(!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
-				int dam;
 				dam = dice(25,10);
 				if(saves_spell(tempchar, SAVING_SPELL)) {
 					dam = dam >> 1;
@@ -3456,13 +3472,15 @@ int boneshardbreather(struct char_data *ch, int cmd, char *arg, struct char_data
 // mist golem (sucks somebody in, teleports them to a room "The Mist" where can't get out until mist golem dies)
 int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 
+	struct char_data *opponent;
+	struct char_data *tempchar;
+	struct char_data *nextchar;
+
 	if(cmd) {
 		return(FALSE);
 	}
 
 	if(type == EVENT_DEATH) {
-		struct char_data *tempchar;
-		struct char_data *nextchar;
 		for(tempchar = real_roomp(MISTROOMVNUM)->people; tempchar; tempchar = nextchar) {
 			nextchar = tempchar->next_in_room;
 			char_from_room(tempchar);
@@ -3474,7 +3492,6 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	}
 
 	if(mob->specials.fighting && !number(0,1)) {
-		struct char_data *opponent;
 		opponent = mob->specials.fighting;
 		act("The mist golem suddenly leans forward and engulfs you!\n\rYou find yourself in another place.", TRUE, opponent, 0, 0, TO_CHAR);
 		act("The mist golem suddenly leans forward and engulfs $n!\n\rThey disappear into the body of the golem.", TRUE, opponent, 0, 0, TO_ROOM);
@@ -3497,6 +3514,15 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 */
 int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
+	struct affected_type af2;
+	struct char_data *mob;
+	int i;
+	int maxlevel;
+	struct affected_type *af;
+	struct obj_file_u st;
+	struct obj_data *tempobj;
+	int total_equip_cost;
+
 	if(obj->in_room == -1) {
 		return(FALSE);
 	}
@@ -3516,7 +3542,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 		return(FALSE);
 	}
 	// CreateAMob -> generic mob (naked) -> no follower, no random attack
-	struct char_data *mob;
 	mob = CreateAMob(ch, GENERICMOBVNUM, 0, "A figure suddenly steps out of the mirror.");
 
 	// start doing pc info:
@@ -3527,13 +3552,11 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	sprintf(buf1,"%s is standing here.",ch->player.title);
 	mob->player.long_descr = (char *)strdup(buf1);
 	mob->player.class = ch->player.class;
-	int i;
 
 	for(i = 0;i < 12;i++) {
 		mob->player.level[i] = ch->player.level[i];
 	}
 
-	int maxlevel;
 	maxlevel = GetMaxLevel(mob);
 	GET_HITROLL(mob) = MAX(1,20 - (maxlevel>>1));
 	// max (hp, mana, move) current (stats, race, spell affects)
@@ -3546,7 +3569,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	mob->mult_att = ch->mult_att;
 	GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
 
-	struct affected_type *af;
 	for(af = ch->affected;af;af = af->next) {
 		affect_to_char(mob,af);
 	}
@@ -3560,8 +3582,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	GET_RINT(mob) = GET_RINT(ch);
 	GET_RCHR(mob) = GET_RCHR(ch);
 
-	struct obj_file_u st;
-	struct obj_data *tempobj;
 	FILE *fl;
 	sprintf(buf1, "reimb/%s", lower(ch->player.name));
 	if (!(fl = fopen(buf1, "r+b")))  {
@@ -3594,7 +3614,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 
 	// set all equipment to useless somehow (anti_everything? anti_gne? norent? anti_sun? Organic_decay?)
 	// lennya said maybe that timer could be used for any equipment, not just specific equipment
-	int total_equip_cost;
 	total_equip_cost = 0;
 	for(i = 0; i < MAX_WEAR; i++) {
 		if(mob->equipment[i]) {
@@ -3609,7 +3628,6 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data
 	}
 
 	// if has class to have 'normal' spells (sanc, fs, bb), add the affect (like casting, not by setting perma-flag)
-	struct affected_type af2;
 	if(IS_SET(mob->player.class,CLASS_NECROMANCER)) {
 		if(!affected_by_spell(mob,SPELL_CHILLSHIELD)) {
 			af2.type       = SPELL_CHILLSHIELD;
