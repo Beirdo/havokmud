@@ -620,6 +620,22 @@ void spell_feeblemind(byte level, struct char_data *ch,
        send_to_char("They are already dumb enough as it is!\n\r", ch);
        return;
     }
+    if(IS_IMMORTAL(victim)) {
+       send_to_char("Dur, that was stupid!\n\r", ch);
+     af.type      = SPELL_FEEBLEMIND;
+    af.duration  = 24;
+    af.modifier  = -5;
+    af.location  = APPLY_INT;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+
+    af.type      = SPELL_FEEBLEMIND;
+    af.duration  = 24;
+    af.modifier  = 70;
+    af.location  = APPLY_SPELLFAIL;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+    } else {
 
     send_to_char("You feel really really dumb\n\r", victim);
 
@@ -659,6 +675,7 @@ void spell_feeblemind(byte level, struct char_data *ch,
       return;
     }
 */
+}
   } else        /* they saved */
 	if (!victim->specials.fighting) {
 	 set_fighting(victim,ch);
