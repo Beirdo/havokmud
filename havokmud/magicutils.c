@@ -95,7 +95,7 @@ void SwitchStuff(struct char_data *giver, struct char_data *taker)
 
 void FailCharm(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER)) &&
         number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
@@ -120,7 +120,7 @@ void FailCharm(struct char_data *victim, struct char_data *ch)
 
 void FailSnare(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER)) &&
         number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
@@ -140,7 +140,7 @@ void FailSnare(struct char_data *victim, struct char_data *ch)
 
 void FailSleep(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER)) &&
         number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
@@ -160,7 +160,7 @@ void FailSleep(struct char_data *victim, struct char_data *ch)
 
 void FailPara(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER)) &&
         number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
@@ -181,7 +181,7 @@ void FailPara(struct char_data *victim, struct char_data *ch)
 
 void FailCalm(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER)) &&
         number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
@@ -199,8 +199,8 @@ void FailCalm(struct char_data *victim, struct char_data *ch)
 
 void FailPoison(struct char_data *victim, struct char_data *ch)
 {
-    if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER | CLASS_NECROMANCER) &&
-        number(1, 100) > 50) {
+    if ((OnlyClass(ch, CLASS_MAGIC_USER) || OnlyClass(ch, CLASS_SORCERER) ||
+        OnlyClass(ch, CLASS_NECROMANCER)) && number(1, 100) > 50) {
         /* 
          * give single classed mages a break. 
          */
