@@ -2837,6 +2837,7 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                     level,
                     dam = 0;
     struct affected_type af;
+    char            buf[256];
 
     if (!ch->skills) {
         return;
@@ -3145,11 +3146,19 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
             af.bitvector = AFF_PARALYSIS;
             affect_join(victim, &af, FALSE, FALSE);
             send_to_char("Your brain is turned to jelly!\n\r", victim);
+
             act("You turn $N's brain to jelly!", FALSE, ch, 0, victim,
                 TO_CHAR);
             break;
         }
     }
+
+    if (GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) ||
+        IS_SET(ch->specials.act, PLR_LEGEND)) {
+        sprintf(buf, "You do $c0015%d$c0007 damage", dam);
+        act(buf, FALSE, ch, NULL, NULL, TO_CHAR);
+    }
+
     if (!damage(ch, victim, dam, SKILL_PSIONIC_BLAST)) {
 #if 0
         if (GET_POS(victim) == POSITION_DEAD)   /* never get here */
