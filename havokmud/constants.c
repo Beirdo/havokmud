@@ -3317,8 +3317,13 @@ const char *system_flag_types [] = {
 	"NO-DNS",
 	"REQ-APPROVAL",
 	"NO-COLOR",
-        "WIZLOCKED",
-        "NO_POLY",
+    "WIZLOCKED",
+    "NO_POLY",
+	"NO-OOC",
+	"NO-LOCOBJ",
+	"WLD-ARENA",
+	"NO-DEINIT",
+	"NO-TWEAK",
 	"\n"
 	};
 

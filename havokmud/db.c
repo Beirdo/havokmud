@@ -3509,7 +3509,7 @@ void reset_zone(int zone, int cmd)
 	      if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
 		obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3553,7 +3553,7 @@ void reset_zone(int zone, int cmd)
 	  if (obj_to && obj) {
             obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3587,7 +3587,7 @@ void reset_zone(int zone, int cmd)
 	    (obj = read_object(ZCMD.arg1, REAL)) && mob) {
 	  obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3633,7 +3633,7 @@ void reset_zone(int zone, int cmd)
 	  if (!mob->equipment[ZCMD.arg3]) {
 	     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3822,7 +3822,7 @@ void reset_zone(int zone, int cmd)
 	      (ZCMD.if_flag<=0&&ObjRoomCount(ZCMD.arg1,rp)<(-ZCMD.if_flag)+1)){
 	      if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3857,7 +3857,7 @@ void reset_zone(int zone, int cmd)
 	  obj_to = get_obj_num(ZCMD.arg3);
 	  if (obj_to && obj) {
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3882,7 +3882,7 @@ void reset_zone(int zone, int cmd)
 	if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 || obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;
@@ -3919,7 +3919,7 @@ void reset_zone(int zone, int cmd)
 	if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2  || obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
 
-	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	if(!IS_SET(SystemFlags,SYS_NO_TWEAK)) {
 	  tweakroll = number(1,100);
 	  if(obj->tweak < tweakmin) {
 		  tweakrate = tweakmin;

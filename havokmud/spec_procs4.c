@@ -644,6 +644,16 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					}
 				 	break;
 			 	case 2://5:
+				 	if (affected_by_spell(ch,SPELL_STRENGTH)){
+				 		ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",name ,traininglist[stat-1].name,name);
+						break;
+					}
+
+				 	if (affected_by_spell(ch,SPELL_HOLY_STRENGTH)){
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",name ,traininglist[stat-1].name,name);
+						break;
+					}
+
 				 	if(GET_RSTR(ch) >= 18) {
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name ,traininglist[stat-1].name,name);
 						break;
