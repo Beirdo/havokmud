@@ -2117,12 +2117,9 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 		for (x=0; x < MAX_CLASS; x++) {
   			if (HasClass(ch, pc_num_class(x))) {
 
-    			sprintf(buf2, "%-5s%sLevel:%s%-2d  %-15s%s", " ",color,GET_LEVEL(ch, x),color2, class_names[x],color);
+    			sprintf(buf2, "%s     Level: %s%2d  %-15s%s",color, color2, GET_LEVEL(ch, x), class_names[x], color);
     			strcat(buf, buf2);
-    			if (GetMaxLevel(ch)<MAX_IMMORT)
-    	   			sprintf(buf2,"%s%s:%s%s%s \n\r",color," ","Xp needed", color2,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
-    			else
-    	   			sprintf(buf2,"%s:0  %ld", class_names[x],(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
+    			sprintf(buf2,"Exp needed: %s%s\n\r", color2,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
     			strcat(buf,buf2);
   			}
 		}
@@ -2142,13 +2139,13 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 
     /* Drow fight -4 in lighted rooms! */
 	if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && !IS_AFFECTED(ch,AFF_DARKNESS) && !IS_UNDERGROUND(ch))   {
-       ch_printf(ch,"$c0011The light is the area causes you great pain$c0009!\n\r");
+       ch_printf(ch,"$c0015The light is the area causes you great pain!\n\r");
 	}
 	if (IS_SET(ch->specials.affected_by2,AFF2_WINGSBURNED)) {
-	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.%s\n\r",ch);
+	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.\n\r",ch);
 	}
 	if (IS_SET(ch->specials.act,PLR_NOFLY))   {
-   		ch_printf(ch,"%sYou are on the ground in spite of your fly item.%s\n\r",color);
+   		ch_printf(ch,"%sYou are on the ground in spite of your fly item.\n\r",color2);
 	}
 
 	if(IS_PC(ch)) {
@@ -2159,7 +2156,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	if(GET_CLAN(ch) == 0) {
 		ch_printf(ch,"%sYou do not belong to a clan.\n\r",color);
 	} else if (GET_CLAN(ch) == 1) {
-		ch_printf(ch, "%sYou have recently been %sexiled%s from a clan.\n\r",color, color2,color );
+		ch_printf(ch, "%sYou have recently been %sexiled%s from a clan.\n\r",color, color2, color);
 	} else {
 		ch_printf(ch,"%sYou belong to %s%s%s.\n\r",color, color2, clan_list[GET_CLAN(ch)].name, color);
 	}
@@ -2613,13 +2610,14 @@ char *PrintTitle(struct char_data *person,char type) {
 		  return buffer;
 
 		case 'l':
-		  sprintf(buffer,"%s Level:[%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d] ", GET_NAME(person),
+		  sprintf(buffer,"%s has levels:[m%-2d.c%-2d.w%-2d.t%-2d.d%-2d.k%-2d.b%-2d.s%-2d.p%-2d.r%-2d.i%-2d.a%-2d.n%-2d] ", GET_NAME(person),
 			person->player.level[0],person->player.level[1],
 			person->player.level[2],person->player.level[3],
 			person->player.level[4],person->player.level[5],
 			person->player.level[6],person->player.level[7],
 			person->player.level[8],person->player.level[9],
-			person->player.level[10],person->player.level[11]);
+			person->player.level[10],person->player.level[11],
+			person->player.level[12]);
 		  	return buffer;
 
 		case 'h':
@@ -2628,12 +2626,12 @@ char *PrintTitle(struct char_data *person,char type) {
 		  return buffer;
 
 		case 's':
-		  if (GET_STR(person) != 18)
-		    sprintf(buffer,"%s [S:%-2d I:%-2d W:%-2d C:%-2d D:%-2d CH:%-2d] ", GET_NAME(person),
+		  if (GET_STR(person) < 18)
+		    sprintf(buffer,"%s [STR:%-2d  INT:%-2d  WIS:%-2d  CON:%-2d  DEX:%-2d  CHR:%-2d] ", GET_NAME(person),
 		       GET_STR(person),GET_INT(person),GET_WIS(person),
 		       GET_CON(person),GET_DEX(person),GET_CHR(person));
 		  else
-		    sprintf(buffer,"%s [S:%-2d(%1d) I:%-2d W:%-2d C:%-2d D:%-2d CH:%-2d] ", GET_NAME(person),
+		    sprintf(buffer,"%s [STR:%-2d(%1d)  INT:%-2d  WIS:%-2d  CON:%-2d  DEX:%-2d  CHR:%-2d] ", GET_NAME(person),
 		       GET_STR(person),GET_ADD(person),GET_INT(person),
 		       GET_WIS(person),GET_CON(person),GET_DEX(person),
 		       GET_CHR(person));
@@ -2673,6 +2671,7 @@ char *PrintTitle(struct char_data *person,char type) {
   char name_mask[40]="";
   char tmpname1[80],tmpname2[80];
   char buf[256];
+  char levelimm[127], immbuf[127];
 
 	char levels[40]="", classes[20]="";
 					extern char *classname[];
@@ -2689,12 +2688,13 @@ char *PrintTitle(struct char_data *person,char type) {
 
 	/* Header for who */
 	if( IS_IMMORTAL(ch) ) {  //Title
-		ch_printf(ch,"%sPlayers [God Version -? for Help]\n\r--------\n\r",color);
+		ch_printf(ch,"%s         Havok Players [God Version | 'who -?' for help]\n\r"
+				       "         -----------------------------------------------\n\r",color);
 	} else if(cmd==234) {
 			ch_printf(ch,"%sPlayers\n\r------------\n\r", color);
 	} else {
-		ch_printf(ch,"%s                        Havok Players\n\r"
-					 "                        -------------\n\r",color);
+		ch_printf(ch,"%s                       Havok Players\n\r"
+					   "                       -------------\n\r",color);
 	}
 
 
@@ -2702,10 +2702,10 @@ char *PrintTitle(struct char_data *person,char type) {
 	if (cmd==234) { //(gh) says zone name in whoz
 				rm = real_roomp(ch->in_room);  //new stuff for whoz(GH)
 				zd = zone_table+rm->zone;
-				sprintf(buf, "$c0005Zone: $c0015%s",zd->name);
+				sprintf(buf, "%sZone: $c0015%s",color, zd->name);
 				strcat(buffer,buf);
 			if(IS_IMMORTAL(ch)) {
-				sprintf(buf,"$c0005($c0015%ld$c0005)",rm->zone);
+				sprintf(buf,"%s($c0015%ld%s)",color, rm->zone, color);
 				strcat(buffer,buf);
 			}
 		strcat(buffer,"\n\r\n\r");
@@ -2715,95 +2715,96 @@ char *PrintTitle(struct char_data *person,char type) {
 
 
 argument = one_argument(argument,tbuf);
-	if(tbuf[0]=='-' && tbuf[1]!='\0')
-		type=tbuf[1];
-	else
+	if(IS_IMMORTAL(ch)) {
+		if(tbuf[0]=='-' && tbuf[1]!='\0' && tbuf[1]!='?') {
+			type=tbuf[1];
+		} else if(tbuf[0]=='-' && tbuf[1] == '?') {
+			send_to_char("\n\rUsage:  who -r    for race\n\r",ch);
+			send_to_char("            -i    for idle time\n\r",ch);
+			send_to_char("            -l    for levels\n\r",ch);
+			send_to_char("            -h    for hps/mana/moves\n\r",ch);
+			send_to_char("            -s    for stats\n\r",ch);
+			send_to_char("            -t    for title\n\r",ch);
+			send_to_char("            -v    for visibility level\n\r\n\r",ch);
+			ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",color, total_connections);
+			ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",color, total_max_players);
+			return;
+		} else {
+			type = 't';
+		}
+	} else
 		type='t';
 
-
-	//ch_printf(ch," ARGUMENTS: %c",type);
-
-	//Loops through all players in descriptor
 	for (d = descriptor_list; d; d = d->next) {
 		person=(d->original?d->original:d->character);
-
-//<<<<<<< act.info.c
-		//if (CAN_SEE(ch, d->character) && (real_roomp(person->in_room)) &&
-		//		(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone || cmd!=234 )
-		//		|| IS_IMMORTAL(person)) {
-//		if(person && CAN_SEE(ch, person)) {
-//=======
-//if(strstr(CAP(buf2),GET_NAME(ch)))
 		if(person) {
-			if(GetMaxLevel(person)) { /* class reset during who/char_generation   bug fix -Lennya */
-
-				if(cmd==234) { /* whozone*/
-					if(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone) {
-						if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
-							ch_printf(ch,"$c000w%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
-							if (GetMaxLevel(ch) >= LOW_IMMORTAL)
-								ch_printf(ch," [%ld]", person->in_room);
-							count++;
+			if(GetMaxLevel(person)) { /* Avoid class reset during who/char_generation   bug fix -Lennya */
+				if(CAN_SEE(ch, person)) {
+					if(cmd==234) { /* whozone */
+						if(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone) {
+							if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
+								ch_printf(ch,"$c000w%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
+								if (GetMaxLevel(ch) >= LOW_IMMORTAL)
+									ch_printf(ch," [%ld]", person->in_room);
+								send_to_char("\n\r",ch);
+								count++;
+							}
 						}
-					}
-				} else {
-
-
-				/*Get mortal class titles */
-				if(!IS_IMMORTAL(person)) {
-					sprintf(classes,"");
-					for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
-						if(HasClass(person,bit)) {
-							classn++;
-							total+=person->player.level[i];
-							if(strlen(classes)!=0)
-								strcat(classes,"/");
-							sprintf(classes+strlen(classes),"%s",classname[i]);
+					} else {
+						/*Get mortal class titles */
+						if(!IS_IMMORTAL(person)) {
+							sprintf(classes,"");
+							for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
+								if(HasClass(person,bit)) {
+									classn++;
+									total+=person->player.level[i];
+									if(strlen(classes)!=0)
+										strcat(classes,"/");
+									sprintf(classes+strlen(classes),"%s",classname[i]);
+								}
+							}
 						}
+						/* Split off into the different groups */
+						if(IS_IMMORTAL(person)) {
+							sprintf(immbuf, "%s",person->specials.immtitle ? person->specials.immtitle: GetLevelTitle(person));
+							sprintf(levelimm, "%34s","");
+							strcpy(levelimm+18-((strlen(immbuf))/2),immbuf);
+							sprintf(buf,"%s%-34s %s:$c000w %s%s\n\r"
+								,"$c000Y", levelimm, color, PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
+
+							if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals */
+								strcat(quest, buf);
+							else
+								strcat(immortals, buf);
+						} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
+							sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+							strcat(quest, buf);
+						} else {
+							sprintf(buf,"%25s $c0012%-8s %s:$c000w %s%s\n\r", GetLevelTitle(person), classes, color, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+							strcat(mortals, buf);
+						}
+						count++;
 					}
-
-		  		}
-
-		  	/* Split off into the different groups */
-			if(IS_IMMORTAL(person)) {
-				sprintf(buf,"$c000Y%s $c000p:$c000w %s%s\n\r"
-					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
-
-				if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals*/
-					strcat(quest, buf);
-				else
-					strcat(immortals, buf);
-			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
-
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s%s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
-				strcat(quest, buf);
-			} else {
-
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s%s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
-				strcat(mortals, buf);
+				}
 			}
-			count++;
 		}
-	}
 	}
 
 	/* Print the different groups*/
-   }
-
-	if(cmd!=234) { /*If its a whozone.. don't show groups*/
+	if(cmd!=234) { /* If its a whozone.. don't show groups */
 		if(strlen(immortals) != 0)
-		   ch_printf(ch,"%-32s%sImmortals\n\r$c000w%s","",color, immortals);
+		   ch_printf(ch,"%-25s%sImmortals\n\r$c000w%s","",color, immortals);
 		if(strlen(quest)  != 0)
-		   ch_printf(ch,"\n\r%-34s%sQuest\n\r$c000w%s","",color, quest);
+		   ch_printf(ch,"\n\r%-27s%sQuest\n\r$c000w%s","",color, quest);
 		if(strlen(mortals)  != 0)
-		   ch_printf(ch,"\n\r%-33s%sMortals\n\r$c000w%s", "",color, mortals);
-
-}
+		   ch_printf(ch,"\n\r%-26s%sMortals\n\r$c000w%s", "",color, mortals);
+	}
 	/* Footer */
     ch_printf(ch, "\n\r%sTotal visible players: $c0015%d\n\r",color, count);
     ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",color, total_connections);
     ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",color, total_max_players);
 }
+
 #else
 void do_who(struct char_data *ch, char *argument, int cmd)
 {
@@ -3071,10 +3072,6 @@ dlog("in do_who");
     lcount=0;
     if(index(flags,'?')) {
 	send_to_char(buffer,ch);
-	send_to_char("$c0007[-]i=idle l=levels t=title h=hit/mana/move s=stats r=race\n\r",ch);
-	send_to_char("[-]d=linkdead g=God o=Mort [1]Mage[2]Cleric[3]War[4]Thief[5]Druid\n\r",ch);
-	send_to_char("[-][6]Monk[7]Barb[8]Sorc[9]Paladin[!]Ranger[@]Psi\n\r", ch);
-	return;
     }
 
     for (person = character_list; person; person = person->next) {
