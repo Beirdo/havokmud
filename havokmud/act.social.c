@@ -95,7 +95,7 @@ char           *fread_action(FILE * fl)
     return (0);
 }
 
-void boot_social_messages()
+void boot_social_messages(void)
 {
     FILE           *fl;
     int             tmp,
@@ -263,38 +263,35 @@ void do_insult(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "You insult %s.\n\r", GET_NAME(victim));
                 send_to_char(buf, ch);
 
-                switch (random() % 3) {
-                case 0:{
-                        if (GET_SEX(ch) == SEX_MALE) {
-                            if (GET_SEX(victim) == SEX_MALE) {
-                                act("$n accuses you of fighting like a woman!",
-                                    FALSE, ch, 0, victim, TO_VICT);
-                            } else {
-                                act("$n says that women can't fight.",
-                                    FALSE, ch, 0, victim, TO_VICT);
-                            }
+                switch (number(0,2)) {
+                case 0:
+                    if (GET_SEX(ch) == SEX_MALE) {
+                        if (GET_SEX(victim) == SEX_MALE) {
+                            act("$n accuses you of fighting like a woman!",
+                                FALSE, ch, 0, victim, TO_VICT);
                         } else {
-                            if (GET_SEX(victim) == SEX_MALE) {
-                                act("$n accuses you of having the smallest...."
-                                    " (brain?)", FALSE, ch, 0, victim,
-                                    TO_VICT);
-                            } else {
-                                act("$n tells you that you'd loose a beauty "
-                                    "contest against a troll.", FALSE, ch, 0,
-                                    victim, TO_VICT);
-                            }
+                            act("$n says that women can't fight.",
+                                FALSE, ch, 0, victim, TO_VICT);
+                        }
+                    } else {
+                        if (GET_SEX(victim) == SEX_MALE) {
+                            act("$n accuses you of having the smallest...."
+                                " (brain?)", FALSE, ch, 0, victim,
+                                TO_VICT);
+                        } else {
+                            act("$n tells you that you'd loose a beauty "
+                                "contest against a troll.", FALSE, ch, 0,
+                                victim, TO_VICT);
                         }
                     }
                     break;
-                case 1:{
-                        act("$n calls you a punk!",
-                            FALSE, ch, 0, victim, TO_VICT);
-                    }
+                case 1:
+                    act("$n calls you a punk!",
+                        FALSE, ch, 0, victim, TO_VICT);
                     break;
-                default:{
-                        act("$n tells you to get lost!", FALSE, ch, 0,
-                            victim, TO_VICT);
-                    }
+                default:
+                    act("$n tells you to get lost!", FALSE, ch, 0,
+                        victim, TO_VICT);
                     break;
                 }
                 act("$n insults $N.", TRUE, ch, 0, victim, TO_NOTVICT);
@@ -306,7 +303,7 @@ void do_insult(struct char_data *ch, char *argument, int cmd)
         send_to_char("Sure you don't want to insult everybody.\n\r", ch);
 }
 
-void boot_pose_messages()
+void boot_pose_messages(void)
 {
     FILE           *fl;
     byte            counter;
