@@ -2381,257 +2381,305 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
 /* control the fights going on */
 void perform_violence(int pulse)
 {
-  struct char_data *ch, *vict;
-  struct obj_data *tmp,*tmp2;
-  int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
-  float x;
-  int perc;
+   struct char_data *ch, *vict;
+   struct obj_data *tmp,*tmp2;
+   int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
+   float x;
+   int perc;
 
-  for (ch = combat_list; ch; ch=combat_next_dude)	{
-    struct room_data *rp;
+   for(ch = combat_list; ch; ch=combat_next_dude)
+   {
+      struct room_data *rp;
 
-    combat_next_dude = ch->next_fighting;
+      combat_next_dude = ch->next_fighting;
+      rp = real_roomp(ch->in_room);
 
-
-
-    rp = real_roomp(ch->in_room);
-
-/*    assert(ch->specials.fighting); */
-if (!ch->specials.fighting) {	/* rather this than assert, msw 8/31/94*/
-	log("!ch->specials.fighting in perform violence fight.c");
-	return;
-	} else
-
-    if (rp && rp->room_flags&PEACEFUL) {
-      char	buf[MAX_INPUT_LENGTH+40];
-      sprintf(buf,"perform_violence() found %s fighting in a PEACEFUL room.",
-	      ch->player.name);
-      stop_fighting(ch);
-      log(buf);
-    } else if (ch == ch->specials.fighting) {
-      stop_fighting(ch);
-    } else {
-
-
-      if (IS_NPC(ch)) {
-	struct char_data *rec;
-	DevelopHatred(ch, ch->specials.fighting);
-	rec = ch->specials.fighting;
-	if (!IS_PC(ch->specials.fighting)) {
-	  while (rec->master) {
-	    if (rec->master->in_room == ch->in_room) {
-	      AddHated(ch, rec->master);
-	      rec = rec->master;
-	    } else {
-	      break;
-	    }
-	  }
-	}
+      /* assert(ch->specials.fighting); */
+      if(!ch->specials.fighting) /* rather this than assert, msw 8/31/94 */
+      {
+         log("!ch->specials.fighting in perform violence fight.c");
+         return;
       }
+      else if(rp && rp->room_flags&PEACEFUL)
+      {
+         char buf[MAX_INPUT_LENGTH+40];
 
-      if (AWAKE(ch) && (ch->in_room==ch->specials.fighting->in_room) &&
-	  (!IS_AFFECTED(ch, AFF_PARALYSIS))) {
+         sprintf(buf,"perform_violence() found %s fighting in a PEACEFUL room.",
+                 ch->player.name);
+         stop_fighting(ch);
+         log(buf);
+      }
+      else if(ch == ch->specials.fighting)
+      {
+         stop_fighting(ch);
+      }
+      else
+      {
+         if(IS_NPC(ch))
+         {
+            struct char_data *rec;
 
-	if (!IS_NPC(ch)) {
+            DevelopHatred(ch, ch->specials.fighting);
+            rec = ch->specials.fighting;
+            if(!IS_PC(ch->specials.fighting))
+            {
+               while(rec->master)
+               {
+                  if(rec->master->in_room == ch->in_room)
+                  {
+                     AddHated(ch, rec->master);
+                     rec = rec->master;
+                  }
+                  else
+                  {
+                     break;
+                  }
+               }
+            }
+         }
 
-	  /* set x = # of attacks */
-	  x = ch->mult_att;
+         if(AWAKE(ch) && (ch->in_room==ch->specials.fighting->in_room)
+            && (!IS_AFFECTED(ch, AFF_PARALYSIS)))
+         {
+            if(!IS_NPC(ch))
+            {
+               /* set x = # of attacks */
+               x = ch->mult_att;
 
-	  /* if dude is a monk, and is wielding something */
+               /* if dude is a monk, and is wielding something */
 
-	  if (HasClass(ch, CLASS_MONK)) {
-	    if (ch->equipment[WIELD]) {
-	      /* set it to one, they only get one attack */
-	      x = 1.000;
-	    }
-	  }
+               if (HasClass(ch, CLASS_MONK))
+               {
+                  if (ch->equipment[WIELD])
+                  {
+                     /* set it to one, they only get one attack */
+                     x = 1.000;
+                  }
+               }
 
-	  if (MOUNTED(ch)) {
-	      x /= 2.0;
-	  }
+               if (MOUNTED(ch))
+               {
+                  x /= 2.0;
+               }
 
 #if 0
-	  /* heavy woundage = fewer attacks */
-	  x -= WoundWearyness(ch);
+     /* heavy woundage = fewer attacks */
+     x -= WoundWearyness(ch);
 #endif
 
-	  /* work through all of their attacks, until there is not
-	     a full attack left */
+               /* work through all of their attacks, until there is not
+                * a full attack left */
 
-	  tmp = 0;
-	  tmp2 = 0;
+               tmp = 0;
+               tmp2 = 0;
 
-	  if (DUAL_WIELD(ch)) {
-	    tmp = unequip_char(ch, HOLD);
-	  }
+               if(DUAL_WIELD(ch))
+               {
+                  tmp = unequip_char(ch, HOLD);
+               }
 
-	  /* have to check for monks holding things. */
-	  if(ch->equipment[HOLD] && !(ch->equipment[WIELD]) &&
-	     ITEM_TYPE(ch->equipment[HOLD])==ITEM_WEAPON &&
-	     HasClass(ch, CLASS_MONK)) {
-	    tmp2 = unequip_char(ch, HOLD);
-	  }
+               /* have to check for monks holding things. */
+               if(ch->equipment[HOLD] && !(ch->equipment[WIELD])
+                  && ITEM_TYPE(ch->equipment[HOLD])==ITEM_WEAPON
+                  && HasClass(ch, CLASS_MONK))
+               {
+                 tmp2 = unequip_char(ch, HOLD);
+               }
 
-	  while (x > 0.999) {
-	    if (ch->specials.fighting)
-	      hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	    else {
-	      x = 0.0;
-	      break;
-	    }
-	    x -= 1.0;
-	  }
+               while(x > 0.999)
+               {
+                  if(ch->specials.fighting)
+                     hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+                  else
+                  {
+                     x = 0.0;
+                     break;
+                  }
+                  x -= 1.0;
+               }
 #if 0
-	  if(GET_RACE(ch) == RACE_MFLAYER && ch->specials.fighting)
-	    MindflayerAttack(ch, ch->specials.fighting);
+     if(GET_RACE(ch) == RACE_MFLAYER && ch->specials.fighting)
+       MindflayerAttack(ch, ch->specials.fighting);
 #endif
-	  if (x > .01) {
+               if(x > .01)
+               {
 #if 0
     /* check to see if the chance to make the last attack
-       is successful 	       */
-	    perc = number(1,100);
-	    if (perc <= (int)(x*100.0)) {
-	      if (ch->specials.fighting)
-		hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	    }
+       is successful           */
+       perc = number(1,100);
+       if (perc <= (int)(x*100.0)) {
+         if (ch->specials.fighting)
+      hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+       }
 #endif
-          	/* lets give them the hit */
-	      if (ch->specials.fighting)
-		hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	  }
+             /* lets give them the hit */
+                  if (ch->specials.fighting)
+                     hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+               }
 
-	  if (tmp)
-	    equip_char(ch, tmp, HOLD);
-	  if(tmp2)
-	    equip_char(ch, tmp2, HOLD);
-
+               if(tmp)
+                  equip_char(ch, tmp, HOLD);
+               if(tmp2)
+                  equip_char(ch, tmp2, HOLD);
 
 #if 1
-
-	  /* check for the second attack */
-	  if (DUAL_WIELD(ch) && ch->skills) {
-	    struct obj_data *weapon;
-	    int perc;
-	    /* check the skill */
-	    if ((perc = number(1,101)) <
-		ch->skills[SKILL_DUAL_WIELD].learned){
-	    /* if a success, remove the weapon in the wielded hand,
-	       place the weapon in the off hand in the wielded hand.
-	     */
-	      weapon = unequip_char(ch, WIELD);
-	      tmp = unequip_char(ch, HOLD);
-	      equip_char(ch, tmp, WIELD);
-	      /* adjust to_hit based on dex */
-	      if (ch->specials.fighting) {
-		hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	      }
-	      /* get rid of the to_hit adjustment */
-	      /* put the weapons back, checking for destroyed items */
-	      if (ch->equipment[WIELD]) {
-		tmp = unequip_char(ch, WIELD);
-		equip_char(ch, tmp, HOLD);
-		equip_char(ch, weapon, WIELD);
-	      }
-			else
-			{
-				equip_char(ch, weapon, WIELD);
-			}
-	    } else {
-    if (!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch)) {
-		tmp = unequip_char(ch, HOLD);
-		obj_to_room(tmp, ch->in_room);
-		act("$c0014You fumble and drop $p", 0, ch, tmp, tmp, TO_CHAR);
-		act("$c0014$n fumbles and drops $p", 0, ch, tmp, tmp, TO_ROOM);
-		if (number(1,20) > GET_DEX(ch)) {
-		  tmp = unequip_char(ch, WIELD);
-		  obj_to_room(tmp, ch->in_room);
-		  act("$c0015and you fumble and drop $p too!",
-		      0, ch, tmp, tmp, TO_CHAR);
-		  act("$c0015and then fumbles and drops $p as well!",
-		      0, ch, tmp, tmp, TO_ROOM);
-      if (HasClass(ch,CLASS_RANGER)) {
-          LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
-          }
-
-		}
-	      }
-	    }
-	  }
-#endif
-	} else {
-	  x = ch->mult_att;
-
-	  while (x > 0.999) {
-	    if (ch->specials.fighting)
-	      hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	    else {
-	      if ((vict = FindAHatee(ch)) != NULL) {
-		if (vict->attackers < 6)
-		  hit(ch, vict, TYPE_UNDEFINED);
-	      } else if ((vict = FindAnAttacker(ch)) != NULL) {
-		if (vict->attackers < 6)
-		  hit(ch, vict, TYPE_UNDEFINED);
-	      }
-	    }
-	    x -= 1.0;
-	  }
-#if 0
-	  if(GET_RACE(ch) == RACE_MFLAYER && ch->specials.fighting)
-	    MindflayerAttack(ch, ch->specials.fighting);
-#endif
-	  if (x > .01)
-	  {
-	    /* check to see if the chance to make the last attack
-	       is successful
-	       */
-	    perc = number(1,100);
-	    if (perc <= (int)(x*100.0))
-	   {
-	      if (ch->specials.fighting)
-	      {
-		hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-	      } else
-	    {
-		if ((vict = FindAHatee(ch)) != NULL)
+               /* check for the second attack */
+               if(DUAL_WIELD(ch) && ch->skills)
                {
-		  if (vict->attackers < 6)
-		    hit(ch, vict, TYPE_UNDEFINED);
-	       } else if ((vict = FindAnAttacker(ch)) != NULL)
-	       {
-		  if (vict->attackers < 6)
-		    hit(ch, vict, TYPE_UNDEFINED);
-	       }
-	    } /* was not fighting */
-	   } /* made percent check */
+                  struct obj_data *weapon;
+                  int perc;
 
-	  }
-	}
-      } else { /* Not in same room or not awake */
-	stop_fighting(ch);
+                  /* check the skill */
+                  if((perc = number(1,101)) < ch->skills[SKILL_DUAL_WIELD].learned)
+                  {
+                     /* if a success, remove the weapon in the wielded hand,
+                        place the weapon in the off hand in the wielded hand. */
+                     weapon = unequip_char(ch, WIELD);
+                     tmp = unequip_char(ch, HOLD);
+                     equip_char(ch, tmp, WIELD);
+
+                     /* adjust to_hit based on dex */
+                     if(ch->specials.fighting)
+                     {
+                        hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+                     }
+
+                     /* get rid of the to_hit adjustment */
+                     /* put the weapons back, checking for destroyed items */
+                     if(ch->equipment[WIELD])
+                     {
+                        tmp = unequip_char(ch, WIELD);
+                        equip_char(ch, tmp, HOLD);
+                        equip_char(ch, weapon, WIELD);
+                     }
+                     else
+                     {
+                        equip_char(ch, weapon, WIELD);
+                     }
+                  }
+                  else
+                  {
+                     if(!HasClass(ch,CLASS_RANGER) || number(1,20) > GET_DEX(ch))
+                     {
+                        tmp = unequip_char(ch, HOLD);
+                        obj_to_room(tmp, ch->in_room);
+                        act("$c0014You fumble and drop $p", 0, ch, tmp, tmp, TO_CHAR);
+                        act("$c0014$n fumbles and drops $p", 0, ch, tmp, tmp, TO_ROOM);
+
+                        /* Moved this here. -bwise */
+                        if(HasClass(ch,CLASS_RANGER))
+                        {
+                           LearnFromMistake(ch,SKILL_DUAL_WIELD,FALSE,95);
+                        }
+
+                        if(number(1,20) > GET_DEX(ch))
+                        {
+                           tmp = unequip_char(ch, WIELD);
+                           obj_to_room(tmp, ch->in_room);
+                           act("$c0015and you fumble and drop $p too!",
+                               0, ch, tmp, tmp, TO_CHAR);
+                           act("$c0015and then fumbles and drops $p as well!",
+                               0, ch, tmp, tmp, TO_ROOM);
+                        }
+                     }
+                  }
+               }
+#endif
+            } /* End of if !IS_NPC(ch) */
+            else
+            {
+               /* We are a NPC */
+               x = ch->mult_att;
+
+               while(x > 0.999)
+               {
+                  if(ch->specials.fighting)
+                     hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+                  else
+                  {
+                     if((vict = FindAHatee(ch)) != NULL)
+                     {
+                        if(vict->attackers < 6)
+                           hit(ch, vict, TYPE_UNDEFINED);
+                     }
+                     else if((vict = FindAnAttacker(ch)) != NULL)
+                     {
+                        if (vict->attackers < 6)
+                           hit(ch, vict, TYPE_UNDEFINED);
+                     }
+                  }
+                  x -= 1.0;
+               }
+#if 0
+               if(GET_RACE(ch) == RACE_MFLAYER && ch->specials.fighting)
+                  MindflayerAttack(ch, ch->specials.fighting);
+#endif
+               if(x > .01)
+               {
+                  /* check to see if the chance to make the last attack
+                   * is successful */
+                  perc = number(1,100);
+                  if(perc <= (int)(x*100.0))
+                  {
+                     if(ch->specials.fighting)
+                     {
+                        hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
+                     }
+                     else
+                     {
+                        if((vict = FindAHatee(ch)) != NULL)
+                        {
+                           if(vict->attackers < 6)
+                              hit(ch, vict, TYPE_UNDEFINED);
+                        }
+                        else if((vict = FindAnAttacker(ch)) != NULL)
+                        {
+                           if(vict->attackers < 6)
+                              hit(ch, vict, TYPE_UNDEFINED);
+                        }
+                     } /* was not fighting */
+                  } /* made percent check */
+               }
+            } /* End of if ch was a NPC */
+         }
+         else
+         { /* Not in same room, not awake, or paralyzed */
+            stop_fighting(ch);
+         }
       }
-    }
-  }
-	  /* charging loop */
-  for (ch=character_list;ch;ch=ch->next) {
-                        /* If charging deal with that */
-      if (ch->specials.charging) {
+   }
+
+   /* charging loop */
+   for(ch=character_list;ch;ch=ch->next)
+   {
+      /* If charging deal with that */
+      if(ch->specials.charging)
+      {
          caught = 0;
          max_cmv = 2;
          cmv = 0;
-         while ((cmv<max_cmv)&&(caught==0)) {
-            if (ch->in_room==ch->specials.charging->in_room) {
+         while((cmv<max_cmv)&&(caught==0))
+         {
+            if(ch->in_room==ch->specials.charging->in_room)
+            {
                caught = 1;
-            } else {
+            }
+            else
+            {
                /* Continue in a straight line */
-               if (clearpath(ch, ch->in_room, ch->specials.charge_dir)) {
+               if(clearpath(ch, ch->in_room, ch->specials.charge_dir))
+               {
                   do_move(ch,"\0",ch->specials.charge_dir+1);
                   cmv++;
-               } else {
+               }
+               else
+               {
                   caught = 2;
                }
             }
          }
-         switch (caught) {
+         switch(caught)
+         {
             case 1 : /* Caught him */
                act("$n sees $N, and attacks!",TRUE,ch,0,ch->specials.charging,TO_NOTVICT);
                act("$n sees you, and attacks!",TRUE,ch,0,ch->specials.charging,TO_VICT);
@@ -2641,9 +2689,12 @@ if (!ch->specials.fighting) {	/* rather this than assert, msw 8/31/94*/
                break;
             case 2 : /* End of line and didn't catch him */
                tdir = can_see_linear(ch,ch->specials.charging,&rng,&tdr);
-               if (tdir>-1) {
+               if(tdir>-1)
+               {
                   ch->specials.charge_dir = tdr;
-               } else {
+               }
+               else
+               {
                   ch->specials.charging = NULL;
                   act("$n looks around, and sighs dejectedly.",FALSE,ch,0,0,TO_ROOM);
                }
@@ -2651,11 +2702,8 @@ if (!ch->specials.fighting) {	/* rather this than assert, msw 8/31/94*/
             default : /* Still charging */
                break;
          }
-     }
-  }
-
-	  /* end charge */
-
+      }
+   } /* end charge */
 }
 
 
