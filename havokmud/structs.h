@@ -1609,7 +1609,7 @@ struct char_file_u
 	long m_kills;
 
 	int remortclass;
-
+/*
 	int slot1;
 	int slot2;
 	int slot3;
@@ -1626,7 +1626,7 @@ struct char_file_u
 	int grade6;
 	int grade7;
 	int grade8;
-
+*/
 };
 
 /* ***********************************************************************

@@ -1544,28 +1544,28 @@ void WeaponSkillCheck(struct char_data *ch)
 			lowest = ch->weaponskills.grade8;
 
 		if(lowest == ch->weaponskills.grade1) {
-			ch->weaponskills.grade1 = 0;
+			ch->weaponskills.grade1 = 1;
 			ch->weaponskills.slot1 = weapontype;
 		} else if(lowest == ch->weaponskills.grade2) {
-			ch->weaponskills.grade2 = 0;
+			ch->weaponskills.grade2 = 1;
 			ch->weaponskills.slot2 = weapontype;
 		} else if(lowest == ch->weaponskills.grade3) {
-			ch->weaponskills.grade3 = 0;
+			ch->weaponskills.grade3 = 1;
 			ch->weaponskills.slot3 = weapontype;
 		} else if(lowest == ch->weaponskills.grade4) {
-			ch->weaponskills.grade4 = 0;
+			ch->weaponskills.grade4 = 1;
 			ch->weaponskills.slot4 = weapontype;
 		} else if(lowest == ch->weaponskills.grade5) {
-			ch->weaponskills.grade5 = 0;
+			ch->weaponskills.grade5 = 1;
 			ch->weaponskills.slot5 = weapontype;
 		} else if(lowest == ch->weaponskills.grade6) {
-			ch->weaponskills.grade6 = 0;
+			ch->weaponskills.grade6 = 1;
 			ch->weaponskills.slot6 = weapontype;
 		} else if(lowest == ch->weaponskills.grade7) {
-			ch->weaponskills.grade7 = 0;
+			ch->weaponskills.grade7 = 1;
 			ch->weaponskills.slot7 = weapontype;
 		} else if(lowest == ch->weaponskills.grade8) {
-			ch->weaponskills.grade8 = 0;
+			ch->weaponskills.grade8 = 1;
 			ch->weaponskills.slot8 = weapontype;
 		} else {
 			log("got to bad spot in WeaponSkillCheck");
