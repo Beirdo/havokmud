@@ -919,10 +919,16 @@ void do_feign_death( struct char_data *ch, char *arg, int cmd)
   }
 
 if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
-  if (!HasClass(ch, CLASS_MONK)) {
-    send_to_char("You're no monk!\n\r", ch);
+  if (!HasClass(ch, CLASS_MONK) && !HasClass(ch, CLASS_NECROMANCER) ) {
+    send_to_char("You're not a monk!\n\r", ch);
     return;
   }
+
+	if(!(ch->skills[SKILL_FEIGN_DEATH].learned)) {
+		send_to_char("Derr.. what's that?\n\r", ch);
+		return;
+	}
+
 
   if (MOUNTED(ch)) {
     send_to_char("Yeah... right... while mounted\n\r", ch);
