@@ -7369,9 +7369,14 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
             for (j = 1; j <= clength; j++) {
                 strcat(name, " ");
             }
+#ifdef FUCKING_DUMB_COMPILER
             sprintf(buf, "$c000c[$c000w%2d$c000c] $c000w%s   $c000c"
-                         "[$c000w%s$c000c]\n\r",
+                         "[$c000w%s$c000c]\n\r", 
                     x, name, clan_list[x].shortname);
+#endif
+            sprintf(buf, "$c000c[$c000w%2d%s] $c000w%s   $c000c"
+                         "[$c000w %s $c000c]\n\r", 
+                    x, "$c000c", name, clan_list[x].shortname);
             send_to_char(buf, ch);
             x++;
         }
@@ -7393,9 +7398,9 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
                 ch_printf(ch, "    $c000c-=* $c000w%s $c000wClan info "
                               "$c000c*=-\n\r",
                           clan_list[clan].name);
-                sprintf(saints, "%s", "");
-                sprintf(leaders, "%s", "");
-                sprintf(members, "%s", "");
+                saints[0] = '\0';
+                leaders[0] = '\0';
+                members[0] = '\0';
                 /*
                  * loop through pfiles, check for [clan]
                  */
