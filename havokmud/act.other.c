@@ -792,6 +792,7 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
+    extern struct skillset necromancerskills[];
   extern struct skillset monkskills[];
   extern struct skillset warmonkskills[];
   extern struct skillset mageskills[];
@@ -1329,6 +1330,48 @@ dlog("in do_practice");
   		return;
   	}
   	break;
+    case 'n':
+    case 'N':
+      {
+        if (!HasClass(ch, CLASS_NECROMANCER)) {
+  	send_to_char("I bet you think you're a necromancer.\n\r", ch);
+  	return;
+        }
+  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+  		while(necromancerskills[i].level != -1) {
+  			if (IS_SET(ch->skills[necromancerskills[i].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",necromancerskills[i].level,
+  						necromancerskills[i].name,how_good(ch->skills[necromancerskills[i].skillnum].learned));
+  				if (IsSpecialized(ch->skills[necromancerskills[i].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
+  		}
+  		i=0;
+ 		while(loreskills[i].level != -1) {
+ 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
+ 				sprintf(buf,"[%-2d] %-30s %-15s",loreskills[i].level,
+ 						loreskills[i].name,how_good(ch->skills[loreskills[i].skillnum].learned));
+ 				if (IsSpecialized(ch->skills[loreskills[i].skillnum].special))
+ 					strcat(buf," (special)");
+ 				strcat(buf," \n\r");
+ 				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+ 					break;
+ 				strcat(buffer, buf);
+ 				strcat(buffer, "\r");
+ 			}
+ 			i++;
+		}
+  		page_string(ch->desc, buffer, 1);
+  		return;
+  	}
+  	break;
+
 
   case 'R':
   case 'r': {

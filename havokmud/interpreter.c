@@ -115,7 +115,7 @@ const int moon_elf_class_choice[]= {
 	CLASS_PALADIN,
 	CLASS_RANGER,
 	CLASS_PSI,
-//	CLASS_BARD,
+	CLASS_BARD,
 	CLASS_WARRIOR+CLASS_MAGIC_USER,
 	CLASS_WARRIOR+CLASS_THIEF,
 	CLASS_MAGIC_USER+CLASS_THIEF,
@@ -186,7 +186,7 @@ CLASS_WARRIOR,
 CLASS_THIEF,
 CLASS_PALADIN,
 CLASS_RANGER,
-//CLASS_BARD,
+CLASS_BARD,
 CLASS_WARRIOR+CLASS_THIEF,
 CLASS_WARRIOR+CLASS_CLERIC,
 	/* NEW CLASS SELECTIONS HERE */
@@ -198,7 +198,7 @@ CLASS_MAGIC_USER,
 CLASS_CLERIC,
 CLASS_WARRIOR,
 CLASS_THIEF,
-//CLASS_BARD,
+CLASS_BARD,
 CLASS_THIEF+CLASS_WARRIOR,
 	/* NEW CLASS SELECTIONS HERE */
 0
@@ -242,7 +242,8 @@ CLASS_BARBARIAN,
 CLASS_PALADIN,
 CLASS_RANGER,
 CLASS_PSI,
-//CLASS_BARD,
+CLASS_BARD,
+CLASS_NECROMANCER,
 CLASS_WARRIOR+CLASS_DRUID,
 CLASS_WARRIOR+CLASS_THIEF,
 CLASS_WARRIOR+CLASS_MAGIC_USER,
@@ -344,7 +345,7 @@ CLASS_BARBARIAN,
 CLASS_PALADIN,
 CLASS_RANGER,
 CLASS_PSI,
-//CLASS_BARD,
+CLASS_BARD,
 /* new clases below here */
 
 0
@@ -498,8 +499,7 @@ void command_interpreter(struct char_data *ch, char *argument)
   char buf1[255], buf2[255];
 
 if (HasClass(ch,TempDis) && GetMaxLevel(ch) < 58 && IS_PC(ch)) {
-	send_to_char("Sorry, we are tracking down a bug and this class or one of
-your classes is disabled.\n\r",ch);
+	send_to_char("Sorry, we are tracking down a bug and this class or one of your classes is disabled.\n\r",ch);
 	return;
 }
 
@@ -599,9 +599,7 @@ POSITION_STUNNED))
 	    break;
 	  case POSITION_INCAP:
 	  case POSITION_MORTALLYW:
-	    send_to_char(
-		"You are in a pretty bad shape, unable to do anything!\n\r",
-			 ch);
+	    send_to_char("You are in a pretty bad shape, unable to do anything!\n\r", ch);
 	    break;
 
 	  case POSITION_STUNNED:
@@ -633,8 +631,7 @@ POSITION_STUNNED))
 
 if (IS_SET(ch->specials.act, PLR_FREEZE) ) {
    if (IS_SET(ch->specials.act, ACT_POLYSELF) || IS_PC(ch)) {
-     send_to_char("You have been frozen in your steps, you cannot do a
-thing!\n\r",ch);
+     send_to_char("You have been frozen in your steps, you cannot do a thing!\n\r",ch);
      return;
     }
    }
@@ -1775,7 +1772,7 @@ void show_menu(struct descriptor_data *d) {
 	  char classes[50];
 
 	sprintf(classes,"");
-	for(bit = 0; bit <= BARD_LEVEL_IND;bit++) {
+	for(bit = 0; bit <= NECROMANCER_LEVEL_IND;bit++) {
 		if(HasClass(d->character, pc_num_class(bit))) {
 		  strcat(classes,classname[bit]);
 		}
@@ -1786,29 +1783,24 @@ void show_menu(struct descriptor_data *d) {
 #if 0
 	sprintf(bufx, "Welcome to Havoks Character Creation Screen!!\n\r");
 	strcat(bufx, " $c0015_________________________________________\n\r");
-	sprintf(buf, "/\\  $c0009%-15s$c0015
-\\\n\r",GET_NAME(d->character));
+	sprintf(buf, "/\\  $c0009%-15s$c0015\\\n\r",GET_NAME(d->character));
 	strcat(bufx, buf);
 	strcat(bufx, "\\_|                                        |\n\r");
-	sprintf(buf, "  |  1.$c0012Sex$c0015[$c0011%-7s$c0015%-1s
-2.$c0012Color$c0015[$c0011%s$c0015]       |   O\n\r"
+	sprintf(buf, "  |  1.$c0012Sex$c0015[$c0011%-7s$c0015%-1s2.$c0012Color$c0015[$c0011%s$c0015]       |   O\n\r"
 			,Sex[GET_SEX(d->character)],"]"
 			,((IS_SET(d->character->player.user_flags,USE_ANSI)) ? "X" : " "));
 	strcat(bufx, buf);
 	strcat(bufx, "  |                                        |   O\n\r");
-	sprintf(buf, "  |  3.$c0012Race$c0015[$c0011%-12s$c0015%s
-4.$c0012Class$c0015[$c0011%-6s$c0015]  |   *\n\r"
+	sprintf(buf, "  |  3.$c0012Race$c0015[$c0011%-12s$c0015%s4.$c0012Class$c0015[$c0011%-6s$c0015]  |   *\n\r"
 			,RaceName[GET_RACE(d->character)],"]", classes);
 	strcat(bufx, buf);
 	strcat(bufx, "-=|                                        |==>0////O\n\r");
 	if(!GET_CON(d->character) || GET_CON(d->character)==0)
 		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]       |   *\n\r");
 	 else
-		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]
-       |   *\n\r");
+		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]       |   *\n\r");
 	strcat(bufx, "  |                                        |   O\n\r");
-	strcat(bufx, "  |              D.$c0012Done$c0015                    |
-O\n\r");
+	strcat(bufx, "  |              D.$c0012Done$c0015                    |O\n\r");
 	strcat(bufx, "  |    ____________________________________|\n\r");
 	strcat(bufx, "   \\_/____________________________________/\n\r");
 	strcat(bufx, "Please pick the number you'd like to change:\n\r");
@@ -1955,7 +1947,7 @@ void nanny(struct descriptor_data *d, char *arg)
       	  case 'd':
       	  case 'D':
 			count_players=0;
-			for(bit = 0; bit <= BARD_LEVEL_IND;bit++) {
+			for(bit = 0; bit <= NECROMANCER_LEVEL_IND;bit++) {
 				if(HasClass(d->character, pc_num_class(bit))) {
 				  count_players++;
 				}
@@ -2238,8 +2230,7 @@ if (GET_NAME(d->character))
             case 0:
               SEND_TO_Q("Security check reveals invalid site\n\r", d);
               SEND_TO_Q("Speak to an implementor to fix problem\n\r", d);
-              SEND_TO_Q("If you are an implementor, add yourself to
-the\n\r",d);
+              SEND_TO_Q("If you are an implementor, add yourself to the\n\r",d);
               SEND_TO_Q("Security directory (lib/security)\n\r",d);
               close_socket(d);
               break;
@@ -2507,13 +2498,10 @@ the\n\r",d);
 	  d->stat[index++] = 'h';
 	} else {
 	  SEND_TO_Q("That was an invalid choice.\n\r",d);
-	  SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to
-lowest\n\r",d);
+	  SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
 	  SEND_TO_Q("Seperated by spaces.  don't duplicate letters \n\r", d);
-	  SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in
-Strength, \n\r",d);
-	  SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly
-Charisma\n\r",d);
+	  SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
+	  SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly Charisma\n\r",d);
 	  SEND_TO_Q("Your choice? ",d);
 	  STATE(d) = CON_STAT_LIST;
 	  break;
@@ -2525,13 +2513,10 @@ Charisma\n\r",d);
     if (index < MAX_STAT) {
       SEND_TO_Q("You did not enter enough legal stats\n\r", d);
       SEND_TO_Q("That was an invalid choice.\n\r",d);
-      SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest
-to lowest\n\r",d);
+      SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
       SEND_TO_Q("Seperated by spaces, don't duplicate letters \n\r", d);
-      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in
-Strength, \n\r",d);
-      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly
-Charisma\n\r",d);
+      SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
+      SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly Charisma\n\r",d);
       SEND_TO_Q("Your choice? ",d);
       STATE(d) = CON_STAT_LIST;
       break;
@@ -3200,8 +3185,7 @@ case CON_CHECK_MAGE_TYPE:{
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host))  {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
-	sprintf(buf, "Sorry, the game is locked up for repair or your site is
-bannedr\n\r");
+	sprintf(buf, "Sorry, the game is locked up for repair or your site is bannedr\n\r");
 	SEND_TO_Q(buf,d);
 	STATE(d) = CON_WIZLOCK;
       }
@@ -3215,8 +3199,7 @@ bannedr\n\r");
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
-	sprintf(buf, "Sorry, the game is locked up for repair or your site is
-banned.\n\r");
+	sprintf(buf, "Sorry, the game is locked up for repair or your site is banned.\n\r");
 	SEND_TO_Q(buf,d);
 	STATE(d) = CON_WIZLOCK;
       }
@@ -3560,8 +3543,7 @@ if ((player_table+i)->name)
       break;
 
     case '2':
-      SEND_TO_Q("Enter a text you'd like others to see when they look at
-you.\n\r", d);
+      SEND_TO_Q("Enter a text you'd like others to see when they look at you.\n\r", d);
       SEND_TO_Q("Terminate with a '~'.\n\r", d);
       if (d->character->player.description)     {
 	  SEND_TO_Q("Old description :\n\r", d);
@@ -3880,8 +3862,8 @@ int show_race_choice(struct descriptor_data *d)
 	char buf[255],buf2[254];
 
 SEND_TO_Q(  "                                  Level Limits\n\r",d);
-sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
-	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","bd");
+sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
+	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","bd","ne");
 	SEND_TO_Q(buf,d);
 
 	while (race_choice[i]!=-1) {
@@ -3904,7 +3886,7 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %
 	 }
 
 send_to_char("$c000gma=magic user, cl=cleric, wa=warrior,th=thief,dr=druid,mk=monk\n\r",d->character);
-send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d->character);
+send_to_char("$c000gba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard, ne=necromancer\n\r\n\r",d->character);
 }
 
 

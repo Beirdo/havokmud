@@ -129,6 +129,13 @@ int mana_limit(struct char_data *ch)
   if (HasClass(ch,CLASS_BARD)) {
     max +=100;
   }
+  if (HasClass(ch, CLASS_NECROMANCER)) {
+    max += 100;
+    max += (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)/3) * 5;
+  }
+
+
+
   max /= HowManyClasses(ch);
 
 /*
@@ -601,6 +608,14 @@ void advance_level(struct char_data *ch, int class)
     else
       add_hp += 2;
     break;
+
+  case NECROMANCER_LEVEL_IND:
+  	if (GET_LEVEL(ch,  NECROMANCER_LEVEL_IND) < 15)
+		add_hp += number(2,13);
+	else
+	    add_hp += 3;
+	break;
+
   }
 
   add_hp /= HowManyClasses(ch);

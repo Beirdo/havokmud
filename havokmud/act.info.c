@@ -88,6 +88,7 @@ extern long SystemFlags;
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
+    extern struct skillset necromancerskills[];
   extern struct skillset monkskills[];
   extern struct skillset mageskills[];
   extern struct skillset sorcskills[];
@@ -2463,36 +2464,43 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
   return(strncmp(n1,n2,strlen(mask))==0);
 }
 */
+
 char *GetLevelTitle(struct char_data *ch) {
-	extern const char *ImmortalLevel[11][3];
-	extern const char *MortalLevel[7][3];
-	char buf[25];
-
-	return "$c000BLevelTitle";
+	char color[25];
+	int level = GET_LEVEL(ch,BestMagicClass(ch)); //This will change to main class
+	static char buf[256]="";
 
 
-	if(IS_IMMORTAL(ch)) {
+/*get color of title */
+	if( level < 11 )
+		sprintf(color,"$c0008");
+	else if( level < 21 )
+			sprintf(color,"$c0004");
+		else if( level < 31 )
+				sprintf(color,"$c0006");
+			else if( level < 41 )
+					sprintf(color,"$c0014");
+				else if (level < 50)
+						sprintf(color,"$c000W");
+					else if (level < 51)
+						sprintf(color,"$c000B");
+						else
+							sprintf(color,"$c000Y");
 
-		sprintf(buf,"%s", ImmortalLevel[GetMaxLevel(ch)][GET_SEX(ch)]);
+
+	if(GET_SEX(ch)==SEX_FEMALE) {
+		sprintf(buf,"%s%s", color, titles[BestMagicClass(ch)][level].title_f);
 		return buf;
 	} else {
-		sprintf(buf,"%s",MortalLevel[GetMaxLevel(ch)][GET_SEX(ch)]);
+		sprintf(buf,"%s%s", color, titles[BestMagicClass(ch)][level].title_m);
 		return buf;
 	}
-/*
-	if(!strcmp(GET_NAME(person), "Tsaron"))       // Hardcoded the names of the current
-		sprintf(levels, "Supreme Dictator");      // High council members, this should be
-	else if(!strcmp(GET_NAME(person), "Banon"))   // fixxed with new immortal system code
-		sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
-	else if(!strcmp(GET_NAME(person), "Keirstad"))
-		sprintf(levels, "Lord of Building");
-	else if(!str_cmp(GET_NAME(person), "Ignatius"))
-		sprintf(levels, "Dragon Lord");
-	else if(!str_cmp(GET_NAME(person), "Pentak"))
-		sprintf(levels, "Creator");
-*/
 }
 
+
+
+
+#if 0
  void do_who(struct char_data *ch, char *argument, int cmd) {
 
   struct zone_data    *zd;
@@ -2531,8 +2539,10 @@ char *GetLevelTitle(struct char_data *ch) {
 
 		if(person) {
 
+				/*Get mortal class titles */
 				if(!IS_IMMORTAL(person)) {
-					for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
+					sprintf(classes,"");
+					for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
 						if(HasClass(person,bit)) {
 							classn++;
 							total+=person->player.level[i];
@@ -2545,13 +2555,15 @@ char *GetLevelTitle(struct char_data *ch) {
 
 		  }
 			if(IS_IMMORTAL(person)) {
-				sprintf(buf,"$c000Y%-32s : %s", GetLevelTitle(person), GET_TITLE(person) );
+
+				sprintf(buf,"%25s $c000w%-8s $c000p:$c000w %s\n\r"," "
+					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), GET_TITLE(person) );
 				strcat(immortals, buf);
 			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
-				sprintf(buf,"%s $c0012%s : %s", GetLevelTitle(person), classes, GET_TITLE(person) );
+				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
 				strcat(quest, buf);
 			} else {
-				sprintf(buf,"%s $c0012%s : %s", GetLevelTitle(person), classes, GET_TITLE(person) );
+				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
 				strcat(mortals, buf);
 			}
 			count++;
@@ -2562,6 +2574,8 @@ char *GetLevelTitle(struct char_data *ch) {
 				sprintf(levels,"%32s","");
 				strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
 				sprintf(tbuf, "%-32s $c0005: $c0007%s",	levels,person->player.title);
+
+				sprintf(tbuf, "%-32s $c0005: $c0007%s", levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 				*/
 	}
 
@@ -2578,17 +2592,16 @@ char *GetLevelTitle(struct char_data *ch) {
 
 
 
+
+
 	/* Footer */
     ch_printf(ch, "\n\r$c0005Total visible players: $c0015%d\n\r", count);
     ch_printf(ch, "$c0005Connects since last reboot: $c0015%ld\n\r", total_connections);
     ch_printf(ch, "$c0005Players online since last reboot: $c0015%ld\n\r", total_max_players);
-
-
-
-
-
 }
-/*
+#else
+
+
 void do_who(struct char_data *ch, char *argument, int cmd)
 {
   struct zone_data    *zd;
@@ -2605,9 +2618,9 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   char buf[256];
 
 dlog("in do_who");
-*/
+
 	/*  check for an arg */
-/*	argument = one_argument(argument,tbuf);
+	argument = one_argument(argument,tbuf);
 	if(tbuf[0]=='-' && tbuf[1]!='\0')
 		strcpy(flags,tbuf+1);
 	else
@@ -2645,9 +2658,9 @@ dlog("in do_who");
 	count=0;
 	for (d = descriptor_list; d; d = d->next) {
 		person=(d->original?d->original:d->character);
-//		if(!person->in_room) *//* Let's not show people who sit at menu   -Lennya */
+//		if(!person->in_room) /* Let's not show people who sit at menu   -Lennya */
 //			return;
-/*
+
 		if (CAN_SEE(ch, d->character) && (real_roomp(person->in_room)) &&
 				(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone || cmd!=234 ) &&
 				(!index(flags,'g') || IS_IMMORTAL(person))) {
@@ -2655,7 +2668,7 @@ dlog("in do_who");
 				count++;
 				color_cnt = (color_cnt++ % 9);
 
-				if (cmd==234) {*/ /* it's a whozone command */ /*
+				if (cmd==234) { /* it's a whozone command */
 					if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
 						sprintf(tbuf,"$c0012%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
 						if (GetMaxLevel(ch) >= LOW_IMMORTAL)
@@ -2667,7 +2680,7 @@ dlog("in do_who");
 					int i,total,classn; long bit;
 #if 1
 					if(!IS_IMMORTAL(person)) {
-		for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
+		for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
 			if(HasClass(person,bit)) {
 				classn++;
 				total+=person->player.level[i];
@@ -2697,7 +2710,7 @@ dlog("in do_who");
 
 		sprintf(tbuf, "%-32s $c0005: $c0007%s",
 				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-				*/
+
 /* commented this out becuz %-10s uses up its space for color codes as well,
  * thus making it necessary to use the same amount of colors for each clan, too
  * much of a bother imo.   -Lennya
@@ -2718,7 +2731,7 @@ dlog("in do_who");
 //		}
 //		sprintf(tbuf, "%-32s %s $c0005: $c0007%s",
 //				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-/*
+
 	} else {
 		switch(GetMaxLevel(person)) {
 		case 51: sprintf(levels, "Lesser Deity"); break;
@@ -2983,10 +2996,9 @@ dlog("in do_who");
   }
   page_string(ch->desc,buffer,TRUE);
 }
+
+
 #endif
-
-*/
-
 
 
 void do_users(struct char_data *ch, char *argument, int cmd)
@@ -4498,6 +4510,33 @@ dlog("in do_show_skill");
 	}
     break;
 
+  case 'n':
+  case 'N':
+    {
+      if (!HasClass(ch, CLASS_NECROMANCER)) {
+	send_to_char("I bet you think you're a necromancer.\n\r", ch);
+	return;
+      }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(necromancerskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",necromancerskills[i].level,
+						necromancerskills[i].name,how_good(ch->skills[necromancerskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[necromancerskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+    break;
+
+
+
   case 'S':
   case 's':
     {
@@ -5123,7 +5162,7 @@ dlog("in do_whoarena");
 #if 1
 	   if(!IS_IMMORTAL(person)) {
          char classes[20]="";
-	      for(bit=1,i=total=classn=0;i<BARD_LEVEL_IND+1;i++, bit<<=1) {
+	      for(bit=1,i=total=classn=0;i<CLASS_COUNT+1;i++, bit<<=1) {
 
 		if(HasClass(person,bit)) {
 /*                  if(strlen(levels)!=0) strcat(levels,"/");

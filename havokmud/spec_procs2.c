@@ -3720,7 +3720,8 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 					if (loreskills[x].skillnum == SKILL_READ_MAGIC) {
 						if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_MAGIC_USER)
 									 || HasClass(ch, CLASS_DRUID) || HasClass(ch, CLASS_SORCERER)
-									  || HasClass(ch, CLASS_PSI) || HasClass(ch, CLASS_BARD)) {
+									  || HasClass(ch, CLASS_PSI) || HasClass(ch, CLASS_BARD)
+									  || HasClass(ch, CLASS_NECROMANCER)) {
 							send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
 									" 'Heeheehee, you wanna pay me for knowledge you already posess?'",ch);
 							if (ch->skills)

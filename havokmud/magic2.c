@@ -2762,3 +2762,32 @@ void spell_prot_dragon_breath_gas(byte level, struct char_data *ch,
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
+
+void spell_wall_of_thought(byte level, struct char_data *ch,  struct char_data *victim, struct obj_data *obj)
+{
+  struct affected_type af;
+
+  assert(ch);
+
+  if (!affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
+    act("$n's wall of thought.", TRUE, ch, 0, 0, TO_ROOM);
+    act("A wall of thought comes up.", TRUE, ch, 0, 0, TO_CHAR);
+
+    af.type      = SPELL_WALL_OF_THOUGHT;
+    af.duration  = level;
+    af.modifier  = -40;
+    af.location  = APPLY_AC;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+
+    /* resistance to piercing weapons */
+
+    af.type      = SPELL_WALL_OF_THOUGHT;
+    af.duration  = level;
+    af.modifier  = IMM_BLUNT;
+    af.location  = APPLY_IMMUNE;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+  }
+}
+

@@ -1980,23 +1980,23 @@ if (!*item)
 
 if (!strcmp(item,"help"))
  {
-send_to_char("Help for Oedit. Command line Parameters OEDIT <NAME> <FIELD> <VALUE>\r
-List of Fields :\r
-ldesc  = Long Item description | sdesc  = Short description\r
-extra  = Extra descriptions*NI*| name   = Item name\r
-wflags = wear flags            | afflags= affect flags\r
-exflags= extra flags           | weight = item weight\r
-cost   = item cost to rent per day\r
-value  = Item value if sold    | timer  = item timer\r
-type   = item type\r
-v0     = value[0] of item      | v1     = value[1] of item\r
-v2     = value[2] of item      | v3     = value[3] of item\r
-aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\r
-aff2   = special affect 2      | aff3   = special affect 3\r
-aff4   = special affect 4      | aff5   = special affect 5\r
-speed  = speed of weapon       | ego    = level of item \r
-max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\r
-\rNote: NI = Not implemented.\n\r",ch);
+send_to_char("Help for Oedit. Command line Parameters OEDIT <NAME> <FIELD> <VALUE>\r"
+"List of Fields :\r"
+"ldesc  = Long Item description | sdesc  = Short description\r"
+"extra  = Extra descriptions*NI*| name   = Item name\r"
+"wflags = wear flags            | afflags= affect flags\r"
+"exflags= extra flags           | weight = item weight\r"
+"cost   = item cost to rent per day\r"
+"value  = Item value if sold    | timer  = item timer\r"
+"type   = item type\r"
+"v0     = value[0] of item      | v1     = value[1] of item\r"
+"v2     = value[2] of item      | v3     = value[3] of item\r"
+"aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\r"
+"aff2   = special affect 2      | aff3   = special affect 3\r"
+"aff4   = special affect 4      | aff5   = special affect 5\r"
+"speed  = speed of weapon       | ego    = level of item \r"
+"max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\r"
+"\rNote: NI = Not implemented.\n\r",ch);
   return;
  } /* End Help! */
 
@@ -2251,86 +2251,86 @@ dlog("in do_set");
 
 /* New @ help - 9-30-01 - Mythos */
     if (!strcmp(field, "help")) {
-	send_to_char("
-	@\n\r
-	Usage :@ <field> <user name> <value>\r
-	\r
-	align - Sets Alignment\r
-	class - Sets Class\r
-		  1 = Mage	 2 = Cleric  	 4 = Warrior  	  8 = Thief\r
-		 16 = Druid	32 = Monk  	64 = Barbarian	128 = Sorceror\r
-		256 = Paladin  512 = Ranger   1024 = Psionist  2048 = Bard(Not Done)\r
-	For Multi-class characters add the numbers of the required classes together\r
-	ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\r
-	\r
-	clan - Clan number\r
-	exp - Total Experience\r
-	lev - Level (only sets Mage level, use advance for other classes)\r
-	sex - Sex  0 = Neutral   1 = Male   2 = Female\r
-	race - Race of character or mob.  Use 'help allrace' for listing\r
-	hunger - Hunger level of PC\r
-	thirst - Thirst level of PC\r
-	zone - Gives editing access to a zone\r
-	hit - Current Hitpoints\r
-	mhit - Max Hitpoints\r
-	tohit - To hit modifier\r
-	todam - Damange modifier\r
-	ac - Armor Class of PC\r
-	bank - Amount of coins in bank\r
-	gold - Amount of coins on PC\r
-	age - Age of PC.  Postive numbers will add to age.  Negative will subtract.\r
-	prac - Number of Practices\r
-	str - Strength of PC\r
-	add - Strength Modifier (ie 18/75 using this one could change the 75)\r
-	saves - Saving throws (doesn't work)\r
-	skills - how learned a skill is. @ skills <target> <skill number> <level> - See allspells for skill and spell list.\r
-	stadd - Strength Modifier (ie 18/75 using this one could change the 75)\r
-	int - Intelligence\r
-	wis - Wisdom\r
-	dex - Dexterity\r
-	con - Constitution\r
-	chr - Charisma\r
-	pkill - Enable and Disable Player killing\r
-	mana - Set current and max Mana\r
-	start - Set starting room\r
-	murder - Flag PC as murderer\r
-	stole - Flag PC as thief\r
-	known - Make spell or skill known to PC.  @ known <target> <skill number> - See allspells for listing.\r
-	nodelete - Set NODELETE flag on PC.\r
-	specflags - Does nothing.\r
-	racewar - Flag PC as part of race wars\r
-	numatks - Number of attacks PC has.\r
-	objedit - Enable or Disable an Immortals ability to edit objects.\r
-	mobedit - Enable or disable an Immortals ability to edit mobiles.\r
-	remaffect - Remove all affects from target.\r
-	wizreport - Set wizreport flag on target.\r
-	nofly - Flag target as not being able to fly.\r
-	wingsburn - Flag target as not being able to fly.  Burns wings of winged mobiles/PCs.\r
-	move - Set current Movement.\r
-	mmove - Set Max Movement.\r
-	mkills - Set number of mobs killed.\r
-	mdeaths - Set number of deaths by mobiles.\r
-	akills - Set number of arena kills.\r
-	adeaths - Set number of arena deaths.\r
+	send_to_char("@"
+	"\n\r"
+	"Usage :@ <field> <user name> <value>\r"
+	"\r"
+	"align - Sets Alignment\r"
+	"class - Sets Class\r"
+	"	  1 = Mage	 2 = Cleric  	 4 = Warrior  	  8 = Thief\r"
+	"	 16 = Druid	32 = Monk  	64 = Barbarian	128 = Sorceror\r"
+	"	256 = Paladin  512 = Ranger   1024 = Psionist  2048 = Bard(Not Done)\r"
+	"  4096 = necromancer\r"
+	"For Multi-class characters add the numbers of the required classes together\r"
+	"ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\r"
+	"\r"
+	"clan - Clan number\r"
+	"exp - Total Experience\r"
+	"lev - Level (only sets Mage level, use advance for other classes)\r"
+	"sex - Sex  0 = Neutral   1 = Male   2 = Female\r"
+	"race - Race of character or mob.  Use 'help allrace' for listing\r"
+	"hunger - Hunger level of PC\r"
+	"thirst - Thirst level of PC\r"
+	"zone - Gives editing access to a zone\r"
+	"hit - Current Hitpoints\r"
+	"mhit - Max Hitpoints\r"
+	"tohit - To hit modifier\r"
+	"todam - Damange modifier\r"
+	"ac - Armor Class of PC\r"
+	"bank - Amount of coins in bank\r"
+	"gold - Amount of coins on PC\r"
+	"age - Age of PC.  Postive numbers will add to age.  Negative will subtract.\r"
+	"prac - Number of Practices\r"
+	"str - Strength of PC\r"
+	"add - Strength Modifier (ie 18/75 using this one could change the 75)\r"
+	"saves - Saving throws (doesn't work)\r"
+	"skills - how learned a skill is. @ skills <target> <skill number> <level> - See allspells for skill and spell list.\r"
+	"stadd - Strength Modifier (ie 18/75 using this one could change the 75)\r"
+	"int - Intelligence\r"
+	"wis - Wisdom\r"
+	"dex - Dexterity\r"
+	"con - Constitution\r"
+	"chr - Charisma\r"
+	"pkill - Enable and Disable Player killing\r"
+	"mana - Set current and max Mana\r"
+	"start - Set starting room\r"
+	"murder - Flag PC as murderer\r"
+	"stole - Flag PC as thief\r"
+	"known - Make spell or skill known to PC.  @ known <target> <skill number> - See allspells for listing.\r"
+	"nodelete - Set NODELETE flag on PC.\r"
+	"specflags - Does nothing.\r"
+	"racewar - Flag PC as part of race wars\r"
+	"numatks - Number of attacks PC has.\r"
+	"objedit - Enable or Disable an Immortals ability to edit objects.\r"
+	"mobedit - Enable or disable an Immortals ability to edit mobiles.\r"
+	"remaffect - Remove all affects from target.\r"
+	"wizreport - Set wizreport flag on target.\r"
+	"nofly - Flag target as not being able to fly.\r"
+	"wingsburn - Flag target as not being able to fly.  Burns wings of winged mobiles/PCs.\r"
+	"move - Set current Movement.\r"
+	"mmove - Set Max Movement.\r"
+	"mkills - Set number of mobs killed.\r"
+	"mdeaths - Set number of deaths by mobiles.\r"
+	"akills - Set number of arena kills.\r"
+	"adeaths - Set number of arena deaths.\r"
 
-	Remember, be careful how you use this command!\n\r",ch);
+	"Remember, be careful how you use this command!\n\r",ch);
 
     } else if ((mob = get_char_vis(ch, name)) == NULL)
     {
-send_to_char("
-@\n\r
-Usage :@ <field> <user name> <value>\r
-\r
-This is a Implementor command and should be used with care as it can\r
-change any ability/skill/attr of a character. Here is a list of fields,\r
-the value types will differ with each (i.e. number/alpha char)\r
-For more help type '@ help'\r
-\r
-align class exp lev sex race hunger thirst zone hit mhit tohit todam\r
-ac bank gold age prac str add saves skills stadd int wis dex con chr\r
-pkill mana start murder stole known zone nodelete specflags racewar \r
-numatks objedit mobedit remaffect wizreport nofly wingsburn move mmove\r
-Remember, be careful how you use this command!\n\r",ch);
+send_to_char("@\n\r"
+	"Usage :@ <field> <user name> <value>\r"
+	"\r"
+	"This is a Implementor command and should be used with care as it can\r"
+	"change any ability/skill/attr of a character. Here is a list of fields,\r"
+	"the value types will differ with each (i.e. number/alpha char)\r"
+	"For more help type '@ help'\r"
+	"\r"
+	"align class exp lev sex race hunger thirst zone hit mhit tohit todam\r"
+	"ac bank gold age prac str add saves skills stadd int wis dex con chr\r"
+	"pkill mana start murder stole known zone nodelete specflags racewar \r"
+	"numatks objedit mobedit remaffect wizreport nofly wingsburn move mmove\r"
+	"Remember, be careful how you use this command!\n\r",ch);
       return;
     }
 
@@ -3867,9 +3867,13 @@ dlog("in do_advance");
 	case 'a' :
 	  lin_class = BARD_LEVEL_IND;
 	  break;
+	case 'N' :
+	case 'n' :
+	  lin_class = NECROMANCER_LEVEL_IND;
+	  break;
 
 	default:
-	  send_to_char("Must supply a class (M C W T D K B P R I S A)\n\r", ch);
+	  send_to_char("Must supply a class (M C W T D K B P R I S A N)\n\r", ch);
 	  return;
 	  break;
 
@@ -5036,11 +5040,10 @@ if (IS_NPC(ch))
 
      /* do it here! */
 
-send_to_char(
-"You are struck by a black beam from above, it hurts!\r
-The life force from your body fades and you feel yourself lose\r
-memories of old times and battles.\r
-The feeling fades and you shiver at a cold gust of wind.\n\r",victim);
+send_to_char("You are struck by a black beam from above, it hurts!\r"
+	"The life force from your body fades and you feel yourself lose\r"
+	"memories of old times and battles.\r"
+	"The feeling fades and you shiver at a cold gust of wind.\n\r",victim);
 
    sprintf(buf,"You drain %d level(s) How Evil!\n\r",numtolose);
    send_to_char(buf,ch);
@@ -5075,8 +5078,7 @@ if (IS_NPC(ch))
 	  return;
  if (!*arg) {
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
-  send_to_char("interven [type]
-(Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena, deinit )\n\r\n\r",ch);
+  send_to_char("interven [type] (Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena, deinit )\n\r\n\r",ch);
   return;
  }
 
@@ -5084,8 +5086,7 @@ if (IS_NPC(ch))
     if (IS_SET(SystemFlags,SYS_ECLIPS)) {
 	REMOVE_BIT(SystemFlags,SYS_ECLIPS);
 	 send_to_char("You part the planets and the sun shines through!\n",ch);
-	 send_to_outdoor("The planets return to their normal orbit, slowly
-the light will return.\n");
+	 send_to_outdoor("The planets return to their normal orbit, slowly the light will return.\n");
 	 log("The world is enlightend");
        } else {
 	 SET_BIT(SystemFlags,SYS_ECLIPS);

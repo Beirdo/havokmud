@@ -4623,3 +4623,37 @@ void cast_giant_growth( byte level, struct char_data *ch, char *arg,
   }
 }
 
+
+void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type,
+		     struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch (type) {
+  case SPELL_TYPE_SPELL:
+    if ( affected_by_spell(ch, SPELL_WALL_OF_THOUGHT) ){
+      send_to_char("Nothing seems to happen.\n\r", ch);
+      return;
+    }
+    spell_wall_of_thought(level,ch,ch,0);
+    break;
+  case SPELL_TYPE_POTION:
+    if ( affected_by_spell(ch, SPELL_WALL_OF_THOUGHT) )
+      return;
+    spell_wall_of_thought(level,ch,ch,0);
+    break;
+  case SPELL_TYPE_SCROLL:
+    if (tar_obj) return;
+    if ( affected_by_spell(ch, SPELL_WALL_OF_THOUGHT) )
+      return;
+    spell_wall_of_thought(level,ch,ch,0);
+    break;
+  case SPELL_TYPE_WAND:
+    if (tar_obj) return;
+    if ( affected_by_spell(ch, SPELL_WALL_OF_THOUGHT) )
+      return;
+    spell_wall_of_thought(level,ch,ch,0);
+    break;
+    default :
+      log("Serious screw-up in stone_skin!");
+    break;
+  }
+}

@@ -399,7 +399,14 @@
 #define SPELL_FLESH_GOLEM		337 // 14
 #define SPELL_DOMINATE_UNDEAD	338
 
-#define MAX_EXIST_SPELL         338   /* max number of skills/spells */
+
+/*PSI Spells */
+#define SPELL_WALL_OF_THOUGHT   339
+#define SKILL_MIND_TAP          340
+
+
+
+#define MAX_EXIST_SPELL         340   /* max number of skills/spells */
 
 
 
@@ -568,9 +575,11 @@ struct spell_info_type
 	byte min_level_ranger;
 	byte min_level_psi;
 	       byte min_level_bard;
-	       sh_int targets;         /* See below for use with TAR_XXX  */
+
+	sh_int targets;         /* See below for use with TAR_XXX  */
         sh_int spellfail;       /* modifier for spell failure      */
     byte brewable;
+    byte min_level_necromancer;
 };
 
 /* Possible Targets:

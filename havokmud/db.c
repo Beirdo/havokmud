@@ -3691,8 +3691,8 @@ void save_char(struct char_data *ch, sh_int load_room)
       }
     tmp = 0;
   }
-  //GET_LEVEL(ch,BARD_LEVEL_IND) = 0;
-  //ch->levels[11] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
+  GET_LEVEL(ch,NECROMANCER_LEVEL_IND) = 0;
+  //ch->level[12] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
   if (expand = (ch->desc->pos > top_of_p_file)) {
     strcpy(mode, "a");
     top_of_p_file++;
@@ -3984,7 +3984,7 @@ void reset_char(struct char_data *ch)
 
   /* Setting Bard level (GH) */
   GET_LEVEL(ch, 11) = 0;
-
+GET_LEVEL(ch, 12) = 0;
   SET_BIT(ch->specials.act, PLR_ECHO);
 
   ch->hunt_dist = 0;
@@ -4182,7 +4182,8 @@ if (!HasClass(ch,CLASS_PSI))
    ch->player.level[10]=0;
 if (!HasClass(ch,CLASS_BARD))
    ch->player.level[11]=0;
-
+if (!HasClass(ch,CLASS_NECROMANCER))
+   ch->player.level[12]=0;
 
 
 ch->player.has_mail=FALSE;
@@ -4239,7 +4240,7 @@ void init_char(struct char_data *ch)
 	  }/* for */
 
 /* set all classes */
-	  for (i=1;i<=CLASS_BARD;i*=2) {
+	  for (i=1;i<=CLASS_NECROMANCER;i*=2) {
 	    if (!HasClass(ch,i))
 	       ch->player.class +=i;
 	  } /* for */

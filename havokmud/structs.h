@@ -64,7 +64,7 @@ typedef struct alias_type {
 #define PREP_ROOM_EXITS 13
 #define ARENA_ENTRANCE 39900
 
-#define MAX_CLASS 12
+#define MAX_CLASS 13
 #define OLD_MAX_CLASS 4
 
 #define ABS_MAX_CLASS 20   	  /* USER FILE, DO NOT CHANGE! */
@@ -203,6 +203,10 @@ struct QuestItem {
 #define RANGER_LEVEL_IND    9
 #define PSI_LEVEL_IND	    10
 #define BARD_LEVEL_IND      11
+#define NECROMANCER_LEVEL_IND 12
+
+#define CLASS_COUNT  12
+
 
 /* user flags */
 #define NO_DELETE	BV00//1	/* do not delete me, well until 6 months pass! */
@@ -500,7 +504,10 @@ typedef struct {
 #define ITEM_INVISIBLE      BV05//32
 #define ITEM_MAGIC          BV06//64
 #define ITEM_NODROP         BV07//128
+
 #define ITEM_BLESS         BV08//256
+#define ITEM_ANTI_NECROMANCER    BV08   /*New necro class.. uses old bless field */
+
 #define ITEM_ANTI_GOOD     BV09//512 /* not usable by good people    */
 #define ITEM_ANTI_EVIL     BV10//1024 /* not usable by evil people    */
 #define ITEM_ANTI_NEUTRAL  BV11//2048 /* not usable by neutral people */
@@ -995,19 +1002,22 @@ struct room_data
 #define APPLY_T_MOVE		63
 #define APPLY_T_MANA		64
 
+
 /* 'class' for PC's */
-#define CLASS_MAGIC_USER  1
-#define CLASS_CLERIC      2
-#define CLASS_WARRIOR     4
-#define CLASS_THIEF       8
-#define CLASS_DRUID      16
-#define CLASS_MONK       32
-#define CLASS_BARBARIAN  64
-#define CLASS_SORCERER   128
-#define CLASS_PALADIN    256
-#define CLASS_RANGER 	 512
-#define CLASS_PSI	 1024
-#define CLASS_BARD       2048
+#define CLASS_MAGIC_USER  BV00//1
+#define CLASS_CLERIC      BV01//2
+#define CLASS_WARRIOR     BV02//4
+#define CLASS_THIEF       BV03//8
+#define CLASS_DRUID      BV04//16
+#define CLASS_MONK       BV05//32
+#define CLASS_BARBARIAN  BV06//64
+#define CLASS_SORCERER   BV07//128
+#define CLASS_PALADIN    BV08//256
+#define CLASS_RANGER  	 BV09//512
+#define CLASS_PSI	     BV10//1024
+#define CLASS_BARD       BV11//    2048
+#define CLASS_NECROMANCER BV12
+
 //#define CLASS_NECRO		4096
 
 /* sex */
@@ -1266,6 +1276,7 @@ struct char_special_data
   char *prompt;
   char *bprompt;
   char *email;			/* email address in aux */
+  char *immtitle;
 
   char *clan;
   int *clanNum;
@@ -1304,22 +1315,22 @@ struct char_special_data
   };
 
 /* skill_data flags */
-#define SKILL_KNOWN    		1
-#define SKILL_KNOWN_CLERIC	2
-#define SKILL_KNOWN_MAGE	4
-#define SKILL_KNOWN_SORCERER	8
-#define SKILL_KNOWN_THIEF	16
-#define SKILL_KNOWN_MONK	32
-#define SKILL_KNOWN_DRUID	64
-#define SKILL_KNOWN_WARRIOR	128
-
+#define SKILL_KNOWN    		    BV00//1
+#define SKILL_KNOWN_CLERIC	    BV01//2
+#define SKILL_KNOWN_MAGE	    BV02//4
+#define SKILL_KNOWN_SORCERER    BV03//	8
+#define SKILL_KNOWN_THIEF	    BV04//16
+#define SKILL_KNOWN_MONK	    BV05//32
+#define SKILL_KNOWN_DRUID	    BV06//64
+#define SKILL_KNOWN_WARRIOR	    BV07//128
 /* need to make byte flags, to long or int flags in char_skill_data */
-#define SKILL_KNOWN_BARBARIAN	256
-#define SKILL_KNOWN_PALADIN	512
-#define SKILL_KNOWN_RANGER	1024
-#define SKILL_KNOWN_PSI		2048
-#define SKILL_KNOWN_BARD    4096
-//#define SKILL_KNOWN_NECRO	8192
+#define SKILL_KNOWN_BARBARIAN	BV08//256
+#define SKILL_KNOWN_PALADIN	    BV09//512
+#define SKILL_KNOWN_RANGER	    BV10//1024
+#define SKILL_KNOWN_PSI		    BV11//2048
+#define SKILL_KNOWN_BARD        BV12//4096
+#define SKILL_KNOWN_NECROMANCER BV13//8192
+
 /* end */
 
 /* skill_data special */
@@ -1796,3 +1807,12 @@ struct clan {
 
 };
 
+
+
+struct class_titles {
+	char *male;
+	char *female;
+	char *neutral;
+
+
+};

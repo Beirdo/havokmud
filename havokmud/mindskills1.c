@@ -720,3 +720,28 @@ void mind_domination(byte level, struct char_data *ch,
 {
 }
 
+
+
+void mind_mind_tap(byte level, struct char_data *ch,
+		struct char_data *victim, struct obj_data *obj)
+{
+  int mana, hit;
+
+  assert(victim && ch);
+
+
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+  mana = dice(0,GET_INT(ch)/2);
+  hit = dice(0,GET_INT(ch)/2);
+
+
+	ch_printf(ch,"You seem to tap his mind of vital energy!!");
+
+
+  if (IS_PC(ch))
+    GET_ALIGNMENT(ch)-=4;
+
+}
+

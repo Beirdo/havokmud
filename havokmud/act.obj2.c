@@ -578,7 +578,7 @@ int IsRestricted(int Mask, int Class)
 {
   long i;
 
-for (i = CLASS_MAGIC_USER; i<= CLASS_BARD; i*=2) {
+for (i = CLASS_MAGIC_USER; i<= CLASS_NECROMANCER; i*=2) {
     if (IS_SET(i, Mask) && (!IS_SET(i, Class))) {
       Mask -= i;
     } /* if */

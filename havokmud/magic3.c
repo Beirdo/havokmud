@@ -2840,4 +2840,3 @@ void spell_giant_growth(byte level, struct char_data *ch,
 
 
 }
-

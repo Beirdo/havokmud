@@ -1593,7 +1593,7 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,
 	    byte slev, byte plev, byte rlev, byte ilev,
 	    ubyte mana, sh_int tar, void *func, sh_int sf,
-	    byte brewable);
+	    byte brewable, byte nlev);
 
 int SPELL_LEVEL(struct char_data *ch, int sn);
 void affect_update( int pulse );
@@ -2223,6 +2223,7 @@ void do_flag_status(struct char_data *ch,char *argument,int cmd);
 /*Spec_procs.c*/
 int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 /*Spec_procs3*/
 int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2315,3 +2316,9 @@ void do_induct(struct char_data *ch, char *argument, int cmd);
 void do_chat(struct char_data *ch, char *argument, int cmd);
 void do_qchat(struct char_data *ch, char *argument, int cmd);
 void do_clanlist(struct char_data *ch, char *arg, int cmd);
+
+
+
+
+void spell_wall_of_thought(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
