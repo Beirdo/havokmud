@@ -244,40 +244,38 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch, int mode)
       else
 	strcat(buffer,"..They hum with power");
     }
-    if (singular(object) && object->obj_flags.type_flag == ITEM_CONTAINER)
-       {
-
-             for(i=object->contains;i;i=i->next_content)
-                {weight +=(float)i->obj_flags.weight;
-                }
-	     /*calculate how much stuff is in this bag*/
-            fullperc = ((float) weight /
-              ((float) object->obj_flags.value[0] -
-              ((float)object->obj_flags.weight - weight)-1));
-
-        /* 0% <= fullperc < 5  Empty*/
-       if(fullperc < .05)
-         strcat(buffer, "..It is empty");
-       /* 5 <= fullperc < 20 Almost Empty*/
-       else if(fullperc < .2)
-         strcat(buffer, "..It is almost empty");
-       /* 20 <= fullperc < 40 Less than Half*/
-       else if(fullperc < .4)
-         strcat(buffer, "..Its less than half full");
-       /* 40 <= fullperc < 60 About Half*/
-       else if(fullperc < .6)
-         strcat(buffer, "..Its about half full");
-       /* 60 <= fullperc < 80 More than half*/
-       else if(fullperc < .8)
-         strcat(buffer, "..Its more than half full");
-       /* 80 <= fullperc < 95 Almost full*/
-      else if(fullperc < .95)
-         strcat(buffer, "..It is almost full");
-       /* 95 <= fullperc < 100 Full*/
-      else if(fullperc >= .95)
-         strcat(buffer, "..It is full");
-
-     }
+    if (singular(object) && object->obj_flags.type_flag == ITEM_CONTAINER) {
+	  if (!object->obj_flags.value[2] && !object->obj_flags.value[3]) { /* check for ShowFull, IsCorpse */
+		for(i=object->contains;i;i=i->next_content) {
+			weight +=(float)i->obj_flags.weight;
+		}
+		/*calculate how much stuff is in this bag*/
+		fullperc = ((float) weight /
+		((float) object->obj_flags.value[0] -
+		((float)object->obj_flags.weight - weight)-1));
+		/* 0% <= fullperc < 5  Empty*/
+				if(fullperc < .05)
+			strcat(buffer, "..It is empty");
+		/* 5 <= fullperc < 20 Almost Empty*/
+		else 	if(fullperc < .2)
+			strcat(buffer, "..It is almost empty");
+		/* 20 <= fullperc < 40 Less than Half*/
+		else 	if(fullperc < .4)
+			strcat(buffer, "..Its less than half full");
+		/* 40 <= fullperc < 60 About Half*/
+		else 	if(fullperc < .6)
+			strcat(buffer, "..Its about half full");
+		/* 60 <= fullperc < 80 More than half*/
+		else 	if(fullperc < .8)
+			strcat(buffer, "..Its more than half full");
+		/* 80 <= fullperc < 95 Almost full*/
+		else 	if(fullperc < .95)
+			strcat(buffer, "..It is almost full");
+		/* 95 <= fullperc < 100 Full*/
+		else 	if(fullperc >= .95)
+			strcat(buffer, "..It is full");
+	  }
+	}
     if (object->obj_flags.type_flag == ITEM_ARMOR) {
       if (object->obj_flags.value[0] <
 	  (object->obj_flags.value[1] / 4)) {
@@ -549,10 +547,10 @@ if (!ch || !i) {
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos.*/
       if (!IS_NPC(i)) {
-		if (!GET_TITLE(i)) {
+		//if (!GET_TITLE(i)) {
 		  //strcpy(buffer,GET_NAME(i));
 			//strcat(buffer," ");
-		}
+		//}
 		if (GET_TITLE(i))
 		  strcat(buffer,GET_TITLE(i));
     	  } else {
@@ -649,32 +647,27 @@ if (!ch || !i) {
 
 	act(buffer,FALSE, ch,0,0,TO_CHAR);
     } else {  /* npc with long */
+		sprintf(buffer,"%s",(i->player.long_descr));
 
-      if (IS_AFFECTED(i,AFF_INVISIBLE))
-	strcpy(buffer,"*");
-      else
-	*buffer = '\0';
-
-      if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
+		if (IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
+			strcat(buffer," (Hiding)");
+		if (IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
+			strcat(buffer," (invisible)");
+		if (IS_AFFECTED(i,AFF_CHARM))
+			strcat(buffer," (pet)$c0007");
+		if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
 			if (IS_EVIL(i))
-	  			strcat(buffer, "$c0009 (Red Aura)");
-      }
-
-      if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-      	if (IS_GOOD(i))
-         	strcat(buffer, "$c0015 (White Aura) $c0011");
-      }
-
-if (IS_AFFECTED2(i,AFF2_AFK))
-	strcat(buffer,"$c0006 (AFK)$c0007");
-
-if (IS_LINKDEAD(i))
-	strcat(buffer,"$c0015 (Linkdead)$c0007");
-
-      strcat(buffer, i->player.long_descr);
-
-
-	/* strip \n\r's off */
+	  			strcat(buffer, "$c0009 (Red Aura)$c0007");
+		}
+		if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
+			if (IS_GOOD(i))
+				strcat(buffer, "$c0015 (White Aura)$c0007");
+		}
+		if (IS_AFFECTED2(i,AFF2_AFK))
+			strcat(buffer,"$c0006 (AFK)$c0007");
+		if (IS_LINKDEAD(i))
+			strcat(buffer,"$c0015 (Linkdead)$c0007");
+		/* strip \n\r's off */
 	while ((buffer[strlen(buffer)-1]=='\r') ||
 	       (buffer[strlen(buffer)-1]=='\n') ||
 	       (buffer[strlen(buffer)-1]==' ')) {
@@ -905,7 +898,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
   struct obj_data *tmp_obj;
 
   if (mode == 0) {
-    if (IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) {
+    if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) && !IS_IMMORTAL(ch)) {
       if (IS_AFFECTED(ch, AFF_SENSE_LIFE) && !IS_IMMORTAL(i)) {
 	if (num==1)
 	  act("$c0002You sense a hidden life form in the room.",FALSE, ch,0,0,TO_CHAR);
@@ -917,7 +910,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
        return;
       }
     }
-
+	sprintf(buffer,"");
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos. */
       if (!IS_NPC(i)) {
@@ -930,10 +923,12 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
 	CAP(buffer);
       }
 
-      if ( IS_AFFECTED(i,AFF_INVISIBLE))
-	strcat(buffer,"$c0011 (invisible)");
-      if ( IS_AFFECTED(i,AFF_CHARM))
-	strcat(buffer,"$c0010 (pet)$c0007");
+	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
+	  strcat(buffer," (Hiding)");
+	if ( IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
+	  strcat(buffer," (invisible)");
+    if ( IS_AFFECTED(i,AFF_CHARM))
+	  strcat(buffer," (pet)$c0007");
 
       switch(GET_POS(i)) {
       case POSITION_STUNNED  :
@@ -1011,30 +1006,26 @@ if (IS_LINKDEAD(i))
       }
       act(buffer,FALSE, ch,0,0,TO_CHAR);
     } else {  /* npc with long */
+		sprintf(buffer,"%s",(i->player.long_descr));
 
-      if (IS_AFFECTED(i,AFF_INVISIBLE))
-	strcpy(buffer,"*");
-      else
-	*buffer = '\0';
-
-      if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
+		if (IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
+			strcat(buffer," (Hiding)");
+		if (IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
+			strcat(buffer," (invisible)");
+		if (IS_AFFECTED(i,AFF_CHARM))
+			strcat(buffer," (pet)$c0007");
+		if (IS_AFFECTED(ch, AFF_DETECT_EVIL)) {
 			if (IS_EVIL(i))
-	  			strcat(buffer, "$c0009 (Red Aura)");
-      }
-
-      if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
-      	if (IS_GOOD(i))
-         	strcat(buffer, "$c0015 (White Aura)");
-      }
-
-      if (IS_AFFECTED2(i,AFF2_AFK))
+	  			strcat(buffer, "$c0009 (Red Aura)$c0007");
+		}
+		if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
+			if (IS_GOOD(i))
+				strcat(buffer, "$c0015 (White Aura)$c0007");
+		}
+		if (IS_AFFECTED2(i,AFF2_AFK))
 			strcat(buffer,"$c0006 (AFK)$c0007");
-
 		if (IS_LINKDEAD(i))
 			strcat(buffer,"$c0015 (Linkdead)$c0007");
-
-      strcat(buffer, i->player.long_descr);
-
       /* this gets a little annoying */
 
       if (num > 1) {
@@ -1407,62 +1398,60 @@ dlog("in do_look");
       break;
 
       /* look 'in'      */
-    case 6: {
-      if (*arg2) {
-	/* Item carried */
-	bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
-			    FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
-
-	if (bits) { /* Found something */
-	  if (GET_ITEM_TYPE(tmp_object)== ITEM_DRINKCON)        {
-	    if (tmp_object->obj_flags.value[1] <= 0) {
-	      act("It is empty.", FALSE, ch, 0, 0, TO_CHAR);
-	    } else {
-	      temp=((tmp_object->obj_flags.value[1]*3)/tmp_object->obj_flags.value[0]);
-	      sprintf(buffer,"It's %sfull of a %s liquid.\n\r",
-		      fullness[temp],color_liquid[tmp_object->obj_flags.value[2]]);
-	      send_to_char(buffer, ch);
-	    }
-	  } else if (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER) {
-
-             for(i=tmp_object->contains;i;i=i->next_content)
-                {
-		weight +=(float)i->obj_flags.weight;
-                }
-	     /*calculate how much stuff is in this bag*/
-            fullperc = (((float) weight /
-              ((float) tmp_object->obj_flags.value[0] -
-              ((float)tmp_object->obj_flags.weight - weight)-1)) * 100.0);
-	    if (!IS_SET(tmp_object->obj_flags.value[1],CONT_CLOSED)) {
-	      //send_to_char(fname(tmp_object->name), ch);
-              sprintf(buffer, "%s %.0f%s full", fname(tmp_object->name),
-               fullperc, "%");
-              send_to_char(buffer, ch);
-	      switch (bits) {
-	      case FIND_OBJ_INV :
-		send_to_char(" (carried) : \n\r", ch);
-		break;
-	      case FIND_OBJ_ROOM :
-		send_to_char(" (here) : \n\r", ch);
-		break;
-	      case FIND_OBJ_EQUIP :
-		send_to_char(" (used) : \n\r", ch);
-		break;
-	      }
-	      list_obj_in_heap(tmp_object->contains, ch);
-	    } else
-	      send_to_char("It is closed.\n\r", ch);
-	  } else {
-	    send_to_char("That is not a container.\n\r", ch);
-	  }
-	} else { /* wrong argument */
-	  send_to_char("You do not see that item here.\n\r", ch);
+	case 6: {
+		if (*arg2) {
+			/* Item carried */
+			bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
+			if (bits) { /* Found something */
+				if (GET_ITEM_TYPE(tmp_object)== ITEM_DRINKCON) {
+					if (tmp_object->obj_flags.value[1] <= 0) {
+						act("It is empty.", FALSE, ch, 0, 0, TO_CHAR);
+					} else {
+						temp=((tmp_object->obj_flags.value[1]*3)/tmp_object->obj_flags.value[0]);
+						sprintf(buffer,"It's %sfull of a %s liquid.\n\r",fullness[temp],
+											color_liquid[tmp_object->obj_flags.value[2]]);
+						send_to_char(buffer, ch);
+					}
+				} else if (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER) {
+					if (!IS_SET(tmp_object->obj_flags.value[1],CONT_CLOSED)) {
+						if (!IS_CORPSE(tmp_object)) {
+							/* If it's not a corpse, calculate how much stuff is in this container */
+							for (i=tmp_object->contains;i;i=i->next_content) {
+								weight +=(float)i->obj_flags.weight;
+							}
+							fullperc = (((float) weight / ((float) tmp_object->obj_flags.value[0] -
+										((float)tmp_object->obj_flags.weight - weight)-1)) * 100.0);
+							sprintf(buffer, "%s %.0f%s full", fname(tmp_object->name),fullperc, "%");
+						} else { /* it's a corpse - Lennya 20030320 */
+							sprintf(buffer, "%s ", fname(tmp_object->name));
+						}
+						send_to_char(buffer, ch);
+						switch (bits) {
+							case FIND_OBJ_INV :
+								send_to_char(" (carried) : \n\r", ch);
+								break;
+							case FIND_OBJ_ROOM :
+								send_to_char(" (here) : \n\r", ch);
+								break;
+							case FIND_OBJ_EQUIP :
+								send_to_char(" (used) : \n\r", ch);
+								break;
+						}
+						list_obj_in_heap(tmp_object->contains, ch);
+					} else {
+						send_to_char("It is closed.\n\r", ch);
+					}
+				} else {
+					send_to_char("That is not a container.\n\r", ch);
+				}
+			} else { /* wrong argument */
+				send_to_char("You do not see that item here.\n\r", ch);
+			}
+		} else { /* no argument */
+			send_to_char("Look in what?!\n\r", ch);
+		}
 	}
-      } else { /* no argument */
-	send_to_char("Look in what?!\n\r", ch);
-      }
-    }
-      break;
+	break;
 
       /* look 'at'      */
     case 7 : {
@@ -2449,17 +2438,17 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
   case POSITION_DEAD :
     send_to_char("$c0009You are DEAD!\n\r", ch); break;
   case POSITION_MORTALLYW :
-    send_to_char("$c0009You are mortally wounded!, you should seek help!",ch); break;
+    send_to_char("$c0009You are mortally wounded!, you should seek help!\n\r",ch); break;
   case POSITION_INCAP :
-    send_to_char("$c0009You are incapacitated, slowly fading away",ch); break;
+    send_to_char("$c0009You are incapacitated, slowly fading away.\n\r",ch); break;
   case POSITION_STUNNED :
-    send_to_char("$c0011You are stunned! You can't move", ch); break;
+    send_to_char("$c0011You are stunned! You can't move.\n\r", ch); break;
   case POSITION_SLEEPING :
-    send_to_char("$c0010You are $c000Wsleeping.",ch); break;
+    send_to_char("$c0010You are $c000Wsleeping.\n\r",ch); break;
   case POSITION_RESTING  :
-    send_to_char("$c0012You are $c000Wresting.",ch); break;
+    send_to_char("$c0012You are $c000Wresting.\n\r",ch); break;
   case POSITION_SITTING  :
-    send_to_char("$c0013You are $c000Wsitting.",ch); break;
+    send_to_char("$c0013You are $c000Wsitting.\n\r",ch); break;
   case POSITION_FIGHTING :
     if (ch->specials.fighting)
       act("$c1009You are fighting $N.", FALSE, ch, 0, ch->specials.fighting, TO_CHAR);//<---------------ACT
@@ -2467,10 +2456,10 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
       send_to_char("$c1009You are fighting thin air.\n\r",ch);
     break;
   case POSITION_STANDING :
-    send_to_char("$c0005You are $c000Wstanding.",ch); break;
+    send_to_char("$c0005You are $c000Wstanding.\n\r",ch); break;
   case POSITION_MOUNTED:
     if (MOUNTED(ch)) {
-	sprintf(buf,"$c0005You are riding on $c0015%s\n\r",MOUNTED(ch)->player.short_descr);
+	sprintf(buf,"$c0005You are riding on $c0015%s.\n\r",MOUNTED(ch)->player.short_descr);
 	send_to_char(buf,ch);
     } else {
       send_to_char("$c0005You are $c000Wstanding.\n\r",ch);break;
@@ -2479,7 +2468,7 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
     default :
       send_to_char("$c0005You are $c000Wfloating.\n\r",ch); break;
   }
-	//send_to_char("\n\r\n\r$c000pType '$c000Wpinfo$c000p' to see list of current character flags.",ch);
+	//send_to_char("\n\r\n\r$c000pType '$c000Wpinfo$c000p' to see list of current character flags.\n\r",ch);
 }
 
 
@@ -3926,6 +3915,8 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
    struct obj_data *j=0, *p=0;
    extern char *apply_types[];
    extern char *affected_bits[];
+   extern char *affected_bits2[];
+
    dlog("in do_attrib");
 
    age2(ch, &my_age);
@@ -4019,6 +4010,13 @@ $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
             {
                case APPLY_SPELL:
                   sprintbit(j->affected[i].modifier,affected_bits,buf2);
+                  if(strcmp(buf2, "NOBITS")==0)
+                     break;
+                  sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
+                  send_to_char(buf, ch);
+                  break;
+               case APPLY_SPELL2:
+                  sprintbit(j->affected[i].modifier,affected_bits2,buf2);
                   if(strcmp(buf2, "NOBITS")==0)
                      break;
                   sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
@@ -4433,8 +4431,18 @@ int MobLevBonus(struct char_data *ch)
 void do_show_skill(struct char_data *ch, char *arg, int cmd)
 {
   char buf[254], buffer[MAX_STRING_LENGTH];
-  int i;
-
+  int i=0;
+  extern struct skillset warriorskills[];
+  extern struct skillset thiefskills[];
+  extern struct skillset barbskills[];
+  extern struct skillset bardskills[];
+  extern struct skillset monkskills[];
+  extern struct skillset mageskills[];
+  extern struct skillset clericskills[];
+  extern struct skillset druidskills[];
+  extern struct skillset paladinskills[];
+  extern struct skillset rangerskills[];
+  extern struct skillset psiskills[];
 dlog("in do_show_skill");
 
   buffer[0]='\0';
@@ -4455,46 +4463,76 @@ dlog("in do_show_skill");
   case 'f':
   case 'F':
     {
-      if (!HasClass(ch, CLASS_WARRIOR)) {
-	send_to_char("I bet you think you're a warrior.\n\r", ch);
-	return;
-      }
-      send_to_char("Not implemented for warriors yet\n\r", ch);
-    }
+		if (!HasClass(ch, CLASS_WARRIOR)) {
+			send_to_char("I bet you think you're a fighter.\n\r", ch);
+			return;
+		}
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(warriorskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",warriorskills[i].level,
+						warriorskills[i].name,how_good(ch->skills[warriorskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[warriorskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
-  case 't':
-  case 'T':
-    {
-      if (!HasClass(ch, CLASS_THIEF)) {
-	send_to_char("I bet you think you're a thief.\n\r", ch);
-	return;
-      }
-      send_to_char("Not implemented for thieves yet\n\r", ch);
-    } break;
-  case 'M':
-  case 'm':
-    {
-      if (!HasClass(ch, CLASS_MAGIC_USER)) {
-	send_to_char("I bet you think you're a magic-user.\n\r", ch);
-	return;
-      }
-      send_to_char("Your class can learn these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_magic<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_magic,
-		  spells[i],how_good(ch->skills[i+1].learned));
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+	case 't':
+	case 'T': {
+		if (!HasClass(ch, CLASS_THIEF)) {
+			send_to_char("I bet you think you're a thief.\n\r", ch);
+			return;
+		}
+		send_to_char("Your class can learn these skills:\n\r\n\r", ch);
+		while(thiefskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",thiefskills[i].level, thiefskills[i].name,
+				/* kludged a bit to get rid of the dex bonus to five skills */
+				(IS_SET(ch->skills[thiefskills[i].skillnum].flags,SKILL_KNOWN)) ?
+				(how_good(ch->skills[thiefskills[i].skillnum].learned)):" (not learned)");
+			if (IsSpecialized(ch->skills[thiefskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
+	case 'M':
+	case 'm': {
+		if (!HasClass(ch, CLASS_MAGIC_USER)) {
+			send_to_char("I bet you think you're a magic-user.\n\r", ch);
+			return;
+		}
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(mageskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",mageskills[i].level,
+						mageskills[i].name,how_good(ch->skills[mageskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[mageskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
   case 'C':
   case 'c':
     {
@@ -4502,18 +4540,18 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_magic<51) {
 	send_to_char("I bet you think you're a cleric.\n\r", ch);
 	return;
       }
-      send_to_char("Your class can learn these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer &&  spell_info[i+1].min_level_cleric<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_cleric,
-		  spells[i],how_good(ch->skills[i+1].learned));
-   strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
+		while(clericskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",clericskills[i].level,
+						clericskills[i].name,how_good(ch->skills[clericskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[clericskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
       page_string(ch->desc, buffer, 1);
       return;
     }
@@ -4526,18 +4564,19 @@ if (spell_info[i+1].spell_pointer &&  spell_info[i+1].min_level_cleric<51) {
 	send_to_char("I bet you think you're a druid.\n\r", ch);
 	return;
       }
-      send_to_char("Your class can learn any of these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_druid<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_druid,
-		  spells[i],how_good(ch->skills[i+1].learned));
-	strcat(buf," \n\r"  );
-	  if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(druidskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",druidskills[i].level,
+						druidskills[i].name,how_good(ch->skills[druidskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[druidskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
       page_string(ch->desc, buffer, 1);
       return;
     }
@@ -4549,9 +4588,24 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_druid<51) {
 	send_to_char("I bet you think you're a monk.\n\r", ch);
 	return;
       }
-
-      send_to_char("Not implemented for monks yet\n\r", ch);
-    }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(monkskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",monkskills[i].level, monkskills[i].name,
+				/* kludged a bit to get rid of the dex bonus to five skills */
+				(IS_SET(ch->skills[monkskills[i].skillnum].flags,SKILL_KNOWN)) ?
+				(how_good(ch->skills[monkskills[i].skillnum].learned)):" (not learned)");
+			if (IsSpecialized(ch->skills[monkskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
   case 'b':
@@ -4561,8 +4615,47 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_druid<51) {
 	send_to_char("I bet you think you're a Barbarian.\n\r", ch);
 	return;
       }
-      send_to_char("Not implemented for barbs yet:\n\r", ch);
-    }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(barbskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",barbskills[i].level,
+						barbskills[i].name,how_good(ch->skills[barbskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[barbskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+    break;
+
+  case 'a':
+  case 'A':
+    {
+      if (!HasClass(ch, CLASS_BARD)) {
+	send_to_char("I bet you think you're a Bard.\n\r", ch);
+	return;
+      }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(bardskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",bardskills[i].level,
+						bardskills[i].name,how_good(ch->skills[bardskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[bardskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
   case 'S':
@@ -4572,18 +4665,18 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_druid<51) {
 	send_to_char("I bet you think you're a sorcerer.\n\r", ch);
 	return;
       }
-      send_to_char("Your class can learn these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_magic<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_magic,
-		  spells[i],how_good(ch->skills[i+1].learned));
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
+		while(mageskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",mageskills[i].level,
+						mageskills[i].name,how_good(ch->skills[mageskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[mageskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
       page_string(ch->desc, buffer, 1);
       return;
     }
@@ -4596,45 +4689,47 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_magic<51) {
 	send_to_char("I bet you think you're a paladin.\n\r", ch);
 	return;
       }
-      send_to_char("Your class can learn these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_paladin<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_paladin,
-		  spells[i],how_good(ch->skills[i+1].learned));
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
+		send_to_char("Your class can learn these skills:\n\r", ch);
+		while(paladinskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",paladinskills[i].level,
+						paladinskills[i].name,how_good(ch->skills[paladinskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[paladinskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
 
   case 'R':
-  case 'r': {
-      if (!HasClass(ch, CLASS_RANGER)) {
-	send_to_char("I bet you think you're a ranger.\n\r", ch);
-	return;
-      }
-      send_to_char("Your class can learn these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_ranger<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_ranger,
-		  spells[i],how_good(ch->skills[i+1].learned));
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
+	case 'r': {
+		if (!HasClass(ch, CLASS_RANGER)) {
+			send_to_char("I bet you think you're a ranger.\n\r", ch);
+			return;
+		}
+		send_to_char("Your class can learn these spells:\n\r", ch);
+		while(rangerskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",rangerskills[i].level,
+						rangerskills[i].name,how_good(ch->skills[rangerskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[rangerskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
 
@@ -4644,25 +4739,26 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_ranger<51) {
 	send_to_char("I bet you think you're a psionist.\n\r", ch);
 	return;
       }
-      send_to_char("Your class can learn these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_psi<51) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_psi,
-		  spells[i],how_good(ch->skills[i+1].learned));
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
+		send_to_char("Your class can learn these spells:\n\r", ch);
+		while(psiskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",psiskills[i].level,
+						psiskills[i].name,how_good(ch->skills[psiskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[psiskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+				break;
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
     break;
 
   default:
-    send_to_char("Which class???\n\r", ch);
+    send_to_char("Which class? (skill [m s c w t d r p k i a])\n\r", ch);
   }
 
 }

@@ -1817,13 +1817,18 @@ void spell_summon(byte level, struct char_data *ch,
     return;
   }
 
-  if (check_peaceful(ch, "Ancient powers obstruct thy magik\n"))
+  if (check_peaceful(ch, "Ancient powers obstruct thy magik.\n"))
     return;
 
   if (check_peaceful(victim, "")) {
     send_to_char("You cannot get past the magical defenses.\n\r", ch);
     return;
   }
+
+ if (IS_PC(victim) && IS_LINKDEAD(victim)) {
+	 send_to_char("Nobody playing by that name.\n\r", ch);
+	 return;
+ }
 
   if (IS_SET(real_roomp(victim->in_room)->room_flags, NO_SUM)) {
     send_to_char("Ancient Magiks bar your path.\n\r", ch);
@@ -1841,7 +1846,7 @@ void spell_summon(byte level, struct char_data *ch,
   }
 
 if (IS_SET(SystemFlags,SYS_NOSUMMON)) {
-   send_to_char("A mistical fog blocks your attemps!\n",ch);
+   send_to_char("A mystical fog blocks your attemps!\n",ch);
   return;
  }
 
@@ -2999,72 +3004,70 @@ void spell_wizard_eye(byte level, struct char_data *ch,
 
 void spell_disintegrate(byte level, struct char_data *ch,  struct char_data *victim, struct obj_data *obj)
 {
-int i,damage, found=FALSE;
-struct obj_data *x;
+	int i,damage, found=FALSE;
+	struct obj_data *x;
+	char buf[MAX_STRING_LENGTH +30];
 
-if (!ch) {
-    log("!ch in spell_disintegrate");
-    return;
-   }
+	if (!ch) {
+    	log("!ch in spell_disintegrate");
+    	return;
+	}
 
-if (!victim) {
-   log("!victim in spell_disintegrate");
-   return;
-  }
+	if (!victim) {
+		log("!victim in spell_disintegrate");
+		return;
+	}
 
-damage = dice(level,10);
-  if ( !saves_spell(victim, SAVING_SPELL) )       {
-
-/* frag thier EQ */
-
-       i=0;
-       if(!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM))
-       do {	/* could make this check the carried EQ as well... */
-       if (victim->equipment[i])
-         {
-      obj=victim->equipment[i];
-   if (!ItemSave(obj,SPELL_DISINTERGRATE))     {
-      act("$p turns red hot, $N screams, then it disappears in a puff of smoke!", TRUE, ch, obj, victim, TO_CHAR);
-   if (obj->equipped_by || obj->carried_by)
-      act("$p, held by $N, disappears in a puff of smoke!", TRUE, ch, obj, victim, TO_ROOM);
-   if (obj->carried_by) {		/* remove the obj */
-           obj_from_char(obj);
-  	 } else
-   if (obj->equipped_by)   	 {
-          obj = unequip_char(obj->equipped_by, obj->eq_pos);
-  	 } else
-   if (obj->in_obj) 	{
-          obj_from_obj(obj);
-          obj_to_room(obj,ch->in_room);
-        } else
-   if (obj->contains)         {
-         while (obj->contains) {
-         x = obj->contains;
-         obj_from_obj(x);
-         obj_to_room(x, ch->in_room);
-       } /* end while */
-      }  /* end contains */
-
-    if (obj)
-       extract_obj(obj);
-    }  else    /* saved */     {
-   if (obj) {
-       act("$c0010$p resists the disintegration ray completely!", TRUE, ch, obj, victim, TO_VICT);
-       act("$c0010$p carried by $N, resists $n's disintegration ray!", TRUE, ch, obj, victim, TO_ROOM);
-      }
-    } /* end saved obj */
-
-   }
- i++;
- } while (i<MAX_WEAR);
-
-      } else {	/* we saved ! 1/2 dam and no EQ frag */
-	  damage>>=1;
-      }
-   MissileDamage(ch, victim, damage, SPELL_DISINTERGRATE);
-
-    if (IS_PC(ch) && IS_PC(victim))
-      GET_ALIGNMENT(ch)-=2;
+	damage = dice(level,10);
+	if (!saves_spell(victim, SAVING_SPELL)) {
+		i=0;
+		if (!(IS_PC(ch) && IS_PC(victim))) { /* get rid of player-player scrappage, Lennya20030320 */
+			if(!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
+				/* frag their EQ */
+				while (i<MAX_WEAR) {
+					if (victim->equipment[i]) {
+						obj=victim->equipment[i];
+						if (!ItemSave(obj,SPELL_DISINTEGRATE)) {
+							act("$p turns red hot, $N screams, then it disappears in a puff of smoke!", TRUE, ch, obj, victim, TO_CHAR);
+							if (obj->equipped_by || obj->carried_by)
+								act("$p, held by $N, disappears in a puff of smoke!", TRUE, ch, obj, victim, TO_ROOM);
+							if (obj->carried_by) {		/* remove the obj */
+								obj_from_char(obj);
+							} else if (obj->equipped_by) {
+								obj = unequip_char(obj->equipped_by, obj->eq_pos);
+							} else if (obj->in_obj) {
+								obj_from_obj(obj);
+								obj_to_room(obj,ch->in_room);
+							} else if (obj->contains) {
+								while (obj->contains) {
+									x = obj->contains;
+									obj_from_obj(x);
+									obj_to_room(x, ch->in_room);
+								} /* end while */
+							}  /* end contains */
+							if (obj) {
+								extract_obj(obj);
+							}
+						}  else { /* obj saved */
+							if (obj) {
+								act("$c0010$p resists the disintegration ray completely!", TRUE, ch, obj, victim, TO_VICT);
+								act("$c0010$p carried by $N, resists $n's disintegration ray!", TRUE, ch, obj, victim, TO_ROOM);
+							}
+						} /* end saved obj */
+					}
+					i++;
+				}
+			} /* was arena room */
+		} else { /* player hitting player with disint outside arena */
+			sprintf(buf, "%s just hit %s with a disintegrate outside the arena!",ch,victim);
+			log(buf);
+		}
+	} else { /* we saved ! 1/2 dam and no EQ frag */
+		damage>>=1;
+	}
+	MissileDamage(ch, victim, damage, SPELL_DISINTEGRATE);
+	if (IS_PC(ch) && IS_PC(victim))
+		GET_ALIGNMENT(ch)-=2;
 }
 
 void spell_dehydration_breath(byte level, struct char_data *ch,

@@ -212,7 +212,7 @@ if (!ch->skills)
   }
 
   if (victim->skills && victim->skills[SKILL_AVOID_BACK_ATTACK].learned &&
-      GET_POS(victim) > POSITION_SITTING)    {
+      GET_POS(victim) > POSITION_SITTING && !IS_AFFECTED(victim, AFF_PARALYSIS))    {
       percent=number(1,101); /* 101% is a complete failure */
       if (percent < victim->skills[SKILL_AVOID_BACK_ATTACK].learned)       {
            act("You sense a back attack from $N and avoid it skillfully!",

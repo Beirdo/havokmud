@@ -292,7 +292,7 @@
 #define SPELL_PRISMATIC_SPRAY	   243 /* msw */
 #define SPELL_INCENDIARY_CLOUD	   244
 
-#define SPELL_DISINTERGRATE	   245	/* not complete */
+#define SPELL_DISINTEGRATE	   245	/* not complete */
 
 /* language skills */
 #define LANG_COMMON		246
@@ -321,7 +321,7 @@
 #define SKILL_MIND_BURN		268	/* flamer like Fire Starter */
 #define SKILL_CLAIRVOYANCE	269	/* spy into the next room */
 #define SKILL_DANGER_SENSE	270	/* sense dt's */
-#define SKILL_DISINTERGRATE	271	/* not effective when used against minor or major globe */
+#define SKILL_DISINTEGRATE	271	/* not effective when used against minor or major globe */
 #define SKILL_TELEKINESIS	272	/* shove mob form room, if fighting, like bash */
 #define SKILL_LEVITATION	273	/* fly for psi's */
 #define SKILL_CELL_ADJUSTMENT	274	/* 100 mana,stunned, get 100 HPS back */

@@ -938,8 +938,9 @@ void do_at(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_at");
 
-  if (IS_NPC(ch))
-    return;
+/*  this command is used for scrying.. mobiles should be able to scry, in case of switch/poly - Lennya */
+//  if (IS_NPC(ch))
+//    return;
 
   half_chop(argument, loc_str, command);
   if (!*loc_str)
@@ -1713,9 +1714,10 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		j->obj_flags.value[3]);
 	break;
       case ITEM_CONTAINER :
-	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rCorpse : %s",
+	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rShow-contains: %s\n\rCorpse : %s",
 		j->obj_flags.value[0],
 		j->obj_flags.value[1],
+		(j->obj_flags.value[2]? "No" : "Yes"),
 		j->obj_flags.value[3]?"Yes":"No");
 	break;
       case ITEM_DRINKCON :
@@ -1787,7 +1789,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
       send_to_char("Can affect char :\n\r", ch);
       for (i=0;i<MAX_OBJ_AFFECT;i++) {
 	sprinttype(j->affected[i].location,apply_types,buf2);
-	sprintf(buf,"    Affects : %s By ",i, buf2);
+	sprintf(buf,"    Affects : %s By ",/*i,*/ buf2);
 	send_to_char(buf, ch);
 
         switch(j->affected[i].location) {
@@ -2738,12 +2740,13 @@ if (GET_POS(ch) == POSITION_FIGHTING && GetMaxLevel(ch) < LOW_IMMORTAL) {
       mob = ch;
       per = ch->desc->original;
 
-      act("$n turns liquid, and reforms as $N", TRUE, mob, 0, per, TO_ROOM);
+      act("$n turns liquid, and reforms as $N.", TRUE, mob, 0, per, TO_ROOM);
 
       char_from_room(per);
       char_to_room(per,mob->in_room);
 
       SwitchStuff(mob, per);
+
     }
 
     ch->desc->character = ch->desc->original;

@@ -811,7 +811,7 @@ int open_door(struct char_data *ch, int dir)
       if (back->keyword && (strcmp("secret", fname(back->keyword))))	{
 	sprintf(buf, "The %s is opened from the other side.\n\r",
 		fname(back->keyword));
-	send_to_room(buf, exitp->to_room);
+	send_to_room(buf,exitp->to_room);
       } else {
 	send_to_room("The door is opened from the other side.\n\r",
 		     exitp->to_room);
@@ -1666,7 +1666,7 @@ dlog("in do_follow");
 
 void do_run(struct char_data *ch, char *argument, int cmd)
 {
-  char buff[MAX_INPUT_LENGTH+80];
+  char buff[MAX_INPUT_LENGTH+80],buf[MAX_INPUT_LENGTH+80];
   int keyno, was_in;
   struct room_direction_data *exitdata;
   static char *keywords[]= {
@@ -1722,8 +1722,9 @@ dlog("in do_run");
   }
 
   send_to_char("You take off, running as fast as you can!\n\r", ch);
-  act("$n suddenly takes off, running as fast as they can!",
-      FALSE,ch,0,0,TO_ROOM);
+  sprintf(buf,"%s suddenly takes off, running %s.",GET_NAME(ch),dirs[keyno]);
+  act(buf,FALSE,ch,0,0,TO_ROOM);
+
   was_in=ch->in_room;
   while ((CAN_GO(ch, keyno)) && (GET_MOVE(ch) > 20) && (RawMove(ch, keyno))) {
     DisplayOneMove(ch, keyno, was_in);
@@ -1732,15 +1733,14 @@ dlog("in do_run");
   }
 
   if (GET_MOVE(ch) > 25) {
-    act("$n slows down to a screeching halt, exhausted from their run.",
+    act("$n slows down to a screeching halt, exhausted from $s run.",
         FALSE,ch,0,0,TO_ROOM);
     send_to_char("Sorry, but you can not run in this direction any further.\n\r", ch);
   } else {
-      act("$n slows down to a screeching halt, panting heavily from their run.",
+      act("$n slows down to a screeching halt, panting heavily from $s run.",
           FALSE,ch,0,0,TO_ROOM);
       send_to_char("You feel too tired to run any further.\n\r", ch);
-    }
-
+  }
 }
 
 void do_land(struct char_data *ch)

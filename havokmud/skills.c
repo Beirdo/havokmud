@@ -286,21 +286,21 @@ void do_track(struct char_data *ch, char *argument, int cmd)
 
    WAIT_STATE(ch, PULSE_VIOLENCE*1);
 
-   if (code == -1) {
-    send_to_char("You are unable to find traces of one.\n\r", ch);
-     return;
-   } else {
-     if (IS_LIGHT(ch->in_room)) {
-        SET_BIT(ch->specials.act, PLR_HUNTING);
-       sprintf(buf, "You see traces of your quarry to the %s\n\r", dirs[code]);
-        send_to_char(buf,ch);
-      } else {
-      ch->specials.hunting = 0;
-	send_to_char("It's too dark in here to track...\n\r",ch);
-	return;
-      }
-   }
- }
+	if (code == -1) {
+		send_to_char("You are unable to find traces of one.\n\r", ch);
+		return;
+	} else {
+		if (IS_LIGHT(ch->in_room) || IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
+			SET_BIT(ch->specials.act, PLR_HUNTING);
+			sprintf(buf, "You see traces of your quarry to the %s\n\r", dirs[code]);
+			send_to_char(buf,ch);
+		} else {
+			ch->specials.hunting = 0;
+			send_to_char("It's too dark in here to track...\n\r",ch);
+			return;
+		}
+	}
+}
 
 int track( struct char_data *ch, struct char_data *vict)
 {
@@ -1995,10 +1995,17 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
     return;
   }
 
-if (GetMaxLevel(target)>=LOW_IMMORTAL) {
-   send_to_char("You mind does not have the power to doorway to this person\n\r",ch);
-   return;
-  }
+ if (IS_PC(target) && IS_LINKDEAD(target)) {
+	 send_to_char("Nobody playing by that name.\n\r", ch);
+	 return;
+ }
+
+ if (IS_PC(target) && IS_IMMORTAL(target)) {
+	 send_to_char("You can't doorway to someone of that magnitude!\n\r", ch);
+	 return;
+ }
+
+
    if ((GET_MANA(ch) < 20) && GetMaxLevel(ch) < LOW_IMMORTAL)    {
       send_to_char ("You have a headache. Better rest before you try this again.\n\r",ch);
       return;
@@ -2083,6 +2090,16 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
     send_to_char("They're on an extra-dimensional plane!\n\r", ch);
     return;
   }
+
+	 if (IS_PC(target) && IS_LINKDEAD(target)) {
+		 send_to_char("Nobody playing by that name.\n\r", ch);
+		 return;
+	 }
+
+	 if (IS_PC(target) && IS_IMMORTAL(target)) {
+		 send_to_char("You can't portal to someone of that magnitude!\n\r", ch);
+		 return;
+	 }
 
 
    if ((GET_MANA(ch) < 75) && GetMaxLevel(ch) < LOW_IMMORTAL)    {
@@ -2243,6 +2260,15 @@ if (IS_SET(SystemFlags,SYS_NOSUMMON)) {
     	send_to_char("You cannot seem to focus correctly here.\n\r",ch);
 	 return;
     	}
+ if (IS_PC(target) && IS_LINKDEAD(target)) {
+	 send_to_char("Nobody playing by that name.\n\r", ch);
+	 return;
+ }
+
+ if (IS_PC(target) && IS_IMMORTAL(target)) {
+	 send_to_char("You can't summon someone of that magnitude!\n\r", ch);
+	 return;
+ }
 
 				/* we check hps on mobs summons */
 

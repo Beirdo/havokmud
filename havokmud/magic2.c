@@ -518,7 +518,7 @@ void spell_poly_self(byte level, struct char_data *ch,
    */
 
    if (IS_SET(SystemFlags, SYS_NO_POLY)) {
-      send_to_char("The gods provides you from changing your shape", ch);
+      send_to_char("The gods prevent you from changing your shape", ch);
       extract_char(mob);
       return;
     }
@@ -550,10 +550,10 @@ void spell_poly_self(byte level, struct char_data *ch,
    *  move char to storage
    */
 
-  act("$n's flesh melts and flows into the shape of $N",
+  act("$n's flesh melts and flows into the shape of $N.",
       TRUE, ch, 0, mob, TO_ROOM);
 
-  act("Your flesh melts and flows into the shape of $N",
+  act("Your flesh melts and flows into the shape of $N.",
       TRUE, ch, 0, mob, TO_CHAR);
 
   char_from_room(ch);
@@ -583,7 +583,7 @@ void spell_poly_self(byte level, struct char_data *ch,
   REMOVE_BIT(mob->specials.act, ACT_META_AGG);
   REMOVE_BIT(mob->specials.act, ACT_SCAVENGER);
 
-  GET_MANA(mob) = MIN((GET_MANA(mob)-15), 85);
+  GET_MANA(mob) = MIN((GET_MANA(mob)-15), 85); /* Why set current mana at max 85? Look in to this. -Lennya */
   WAIT_STATE(mob, PULSE_VIOLENCE*2);
 
 
@@ -609,8 +609,8 @@ void spell_poly_self(byte level, struct char_data *ch,
 #endif
   mob->player.short_descr = buf;
 
-  buf = (char *)malloc(strlen(mob->player.short_descr)+12);
-  sprintf(buf, "%s is here\n\r", mob->player.short_descr);
+//  buf = (char *)malloc(strlen(mob->player.short_descr)+12);
+//  sprintf(buf, "%s is here\n\r", mob->player.short_descr);
 
 #if TITAN
 #else
@@ -618,8 +618,9 @@ void spell_poly_self(byte level, struct char_data *ch,
     free(mob->player.long_descr);
 #endif
 
-  mob->player.long_descr = buf;
-
+//  mob->player.long_descr = buf;
+    /* prettied up the way polies look in the room -Lennya */
+    mob->player.long_descr = NULL;
 }
 
 void spell_minor_create(byte level, struct char_data *ch,
@@ -1394,63 +1395,63 @@ void spell_know_alignment(byte level, struct char_data *ch,
 void spell_dispel_magic(byte level, struct char_data *ch,
    struct char_data *victim, struct obj_data *obj)
 {
-   int yes=0;
-   int i;
+	int yes=0;
+	int i;
+	int check_falling( struct char_data *ch);
 
-   int check_falling( struct char_data *ch);
+	assert(ch && (victim || obj));
 
-   assert(ch && (victim || obj));
+	if (obj) {
+		if ( IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE) )
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
 
-   if (obj) {
-     if ( IS_SET(obj->obj_flags.extra_flags, ITEM_INVISIBLE) )
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
+		if ( IS_SET(obj->obj_flags.extra_flags, ITEM_BLESS))
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_BLESS);
 
+		if (level >= 45) {              /* if level 45> then they can do this */
+			if ( IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC))
+				REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
+			/* strip off everything */
+			for (i=0;i<MAX_OBJ_AFFECT;i++) {
+				obj->affected[i].location = 0;
+			}
+		}
 
-     if ( IS_SET(obj->obj_flags.extra_flags, ITEM_BLESS))
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_BLESS);
+		if (level >= IMMORTAL) {
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_GLOW);
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_HUM);
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD);
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_EVIL);
+			REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_NEUTRAL);
+		}
+		return;
+	}
 
-if (level >= 45) {              /* if level 45> then they can do this */
-     if ( IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC))
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
-       /* strip off everything */
-       for (i=0;i<MAX_OBJ_AFFECT;i++) {
-	 obj->affected[i].location = 0;
-       }
-  }
+	/* gets rid of infravision, invisibility, detect, etc */
+	if (GetMaxLevel(victim)<=level) /* Changed so it's actually using scroll level (GH) */
+		yes = TRUE;
+	else
+		yes = FALSE;
 
-  if (level >= IMMORTAL) {
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_GLOW);
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_HUM);
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_GOOD);
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_EVIL);
-       REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_ANTI_NEUTRAL);
-     }
-
-     return;
-   }
-
-/* gets rid of infravision, invisibility, detect, etc */
-
-   if (GetMaxLevel(victim)<=level) /*Changed so its actually using scroll level (GH)*/
-      yes = TRUE;
-   else
-     yes = FALSE;
-
-    if (affected_by_spell(victim,SPELL_INVISIBLE))
+	if (affected_by_spell(victim,SPELL_INVISIBLE))
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_INVISIBLE);
+			send_to_char("You feel exposed.\n\r",victim);
+		}
+	if (affected_by_spell(victim,SPELL_DETECT_INVISIBLE))
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_DETECT_INVISIBLE);
+			send_to_char("You feel less perceptive.\n\r",victim);
+		}
+	if (affected_by_spell(victim,SPELL_DETECT_EVIL))
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_DETECT_EVIL);
+			send_to_char("You feel less morally alert.\n\r",victim);
+		}
+    if (affected_by_spell(victim,SPELL_DETECT_GOOD))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	 affect_from_char(victim,SPELL_INVISIBLE);
-	 send_to_char("You feel exposed.\n\r",victim);
-    }
-
-    if (affected_by_spell(victim,SPELL_DETECT_INVISIBLE))
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	 affect_from_char(victim,SPELL_DETECT_INVISIBLE);
-	 send_to_char("You feel less perceptive.\n\r",victim);
-    }
-    if (affected_by_spell(victim,SPELL_DETECT_EVIL))
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	 affect_from_char(victim,SPELL_DETECT_EVIL);
-	 send_to_char("You feel less morally alert.\n\r",victim);
+	 affect_from_char(victim,SPELL_DETECT_GOOD);
+	 send_to_char("You can't sense the goodness around you anymore.\n\r",victim);
     }
     if (affected_by_spell(victim,SPELL_DETECT_MAGIC))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
@@ -1463,24 +1464,22 @@ if (level >= 45) {              /* if level 45> then they can do this */
 	send_to_char("You feel less in touch with living things.\n\r",victim);
     }
     if (affected_by_spell(victim,SPELL_SANCTUARY)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_SANCTUARY);
-	send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-	act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
-      }
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	    (IS_NPC(victim))) {
-	  set_fighting(victim, ch);
-	}
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_SANCTUARY);
+			send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
+			act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		}
+      	/* aggressive Act. */
+		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+			set_fighting(victim, ch);
+		}
     }
     if (IS_AFFECTED(victim, AFF_SANCTUARY)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	REMOVE_BIT(victim->specials.affected_by, AFF_SANCTUARY);
 	send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-	act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);      }
+	act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+	}
       /*
        *  aggressive Act.
        */
@@ -1494,6 +1493,11 @@ if (level >= 45) {              /* if level 45> then they can do this */
 	affect_from_char(victim,SPELL_PROTECT_FROM_EVIL);
 	send_to_char("You feel less morally protected.\n\r",victim);
     }
+    if (affected_by_spell(victim,SPELL_PROTECT_FROM_GOOD))
+      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+	affect_from_char(victim,SPELL_PROTECT_FROM_EVIL);
+	send_to_char("Some of your evilness dissipates into the ether.\n\r",victim);
+	}
     if (affected_by_spell(victim,SPELL_INFRAVISION))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	affect_from_char(victim,SPELL_INFRAVISION);
@@ -1756,40 +1760,109 @@ if (level >= 45) {              /* if level 45> then they can do this */
   }
 
    if (affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
+	   if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	affect_from_char(victim,SPELL_GIANT_GROWTH);
 	send_to_char("You feel less powerful.\n\r",
 		     victim);
+	}
   }
-   if (level >= IMPLEMENTOR)  {
 
-    if (affected_by_spell(victim,SPELL_ANTI_MAGIC_SHELL)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_ANTI_MAGIC_SHELL);
-	send_to_char("Your anti-magic shell fizzles out.\n\r",victim);
-      }
+   if (affected_by_spell(victim, SPELL_FIND_TRAPS)) {
+	   if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+	affect_from_char(victim,SPELL_FIND_TRAPS);
+	send_to_char("Your sense of traps just left you.\n\r",
+		     victim);
     }
+  }
+	/*
+	 * Easily dispelling stone skin may not be a good idea, since
+	 * thieves are already kings and queens of Arena. So stone skin
+	 * always gets a save.							- Lennya 20030320
+	 */
+	if (affected_by_spell(victim, SPELL_STONE_SKIN)) {
+		if (!saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_STONE_SKIN);
+			send_to_char("You skin softens considerably.\n\r",
+		     victim);
+		}
+	}
 
-    if (affected_by_spell(victim,SPELL_BLINDNESS)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_BLINDNESS);
-	send_to_char("Your vision returns.\n\r",victim);
-      }
-    }
+	/* New paladin skills here  -Lennya 20030320 */
+	/* holy armor */
+	if (affected_by_spell(victim, SPELL_HOLY_ARMOR)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_HOLY_ARMOR);
+			send_to_char("Your Deity's protection has left you.\n\r",victim);
+	    }
+	}
 
-    if (affected_by_spell(victim,SPELL_PARALYSIS)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_PARALYSIS);
-	send_to_char("You feel freedom of movement.\n\r",victim);
-      }
-    }
+	/* holy strength */
+	if (affected_by_spell(victim, SPELL_HOLY_STRENGTH)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_HOLY_STRENGTH);
+			send_to_char("Your divine strength drains away.\n\r",victim);
+	    }
+	}
+
+	/* enlightenment */
+	if (affected_by_spell(victim, SPELL_ENLIGHTENMENT)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_ENLIGHTENMENT);
+			send_to_char("You don't feel so terribly smart anymore.\n\r",victim);
+	    }
+	}
+	/* circle protection */
+	if (affected_by_spell(victim, SPELL_CIRCLE_PROTECTION)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_CIRCLE_PROTECTION);
+			send_to_char("You don't have a clue what you just lost, since it doesn't do anything yet.\n\r",victim);
+	    }
+	}
+
+	/* aura of power */
+	if (affected_by_spell(victim, SPELL_AURA_POWER)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_AURA_POWER);
+			send_to_char("You lose the strength granted by your Deity.\n\r",victim);
+	    }
+	}
 
 
-    if (affected_by_spell(victim,SPELL_POISON)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_POISON);
-      }
-    }
-   }
+	if (level >= IMPLEMENTOR)  {
+
+		if (affected_by_spell(victim,SPELL_ANTI_MAGIC_SHELL)) {
+			affect_from_char(victim,SPELL_ANTI_MAGIC_SHELL);
+			send_to_char("Your anti-magic shell fizzles out.\n\r",victim);
+		}
+
+		if (affected_by_spell(victim,SPELL_BLINDNESS)) {
+			affect_from_char(victim,SPELL_BLINDNESS);
+			send_to_char("Your vision returns.\n\r",victim);
+		}
+
+		if (affected_by_spell(victim,SPELL_PARALYSIS)) {
+			affect_from_char(victim,SPELL_PARALYSIS);
+			send_to_char("You feel freedom of movement.\n\r",victim);
+		}
+
+		if(affected_by_spell(victim,COND_WINGS_FLY))
+			affect_from_char(victim,COND_WINGS_FLY);
+
+		if(IS_AFFECTED(victim,AFF_WINGSBURNED))
+			affect_from_char(victim,AFF_WINGSBURNED);
+
+		if(IS_AFFECTED(victim,AFF_WINGSTIRED))
+			affect_from_char(victim,AFF_WINGSTIRED);
+
+		if(IS_AFFECTED(victim,COND_WINGS_BURNED))
+			affect_from_char(victim,COND_WINGS_BURNED);
+
+		if(IS_AFFECTED(victim,COND_WINGS_TIRED))
+			affect_from_char(victim,COND_WINGS_TIRED);
+
+		if (affected_by_spell(victim,SPELL_POISON))
+			affect_from_char(victim,SPELL_POISON);
+	}
 }
 
 

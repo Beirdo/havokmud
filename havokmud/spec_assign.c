@@ -969,6 +969,7 @@ void assign_mobiles()
     { 3021, ClericGuildMaster },
     { 3022, ThiefGuildMaster },
     { 3023, WarriorGuildMaster },
+    { 3051, SorcGuildMaster },
 
     { 3007, sailor },    /* Sailor */
     { 3024, guild_guard },
@@ -1392,7 +1393,6 @@ void assign_mobiles()
 
 /* Heximal's new zone */
 	{50998, Deshima },
-
 
 #endif
 

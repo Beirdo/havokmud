@@ -7,8 +7,18 @@
 
 /*   external vars  */
 /*   external vars  */
-extern struct skillset bardskills[];
-extern struct skillset styleskillset[];
+  extern struct skillset warriorskills[];
+  extern struct skillset thiefskills[];
+  extern struct skillset barbskills[];
+  extern struct skillset bardskills[];
+  extern struct skillset monkskills[];
+  extern struct skillset mageskills[];
+  extern struct skillset clericskills[];
+  extern struct skillset druidskills[];
+  extern struct skillset paladinskills[];
+  extern struct skillset rangerskills[];
+  extern struct skillset psiskills[];
+  extern struct skillset styleskillset[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;

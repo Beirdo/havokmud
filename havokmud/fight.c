@@ -416,7 +416,9 @@ if (cp->description)
 
   cp->obj_flags.type_flag = ITEM_CONTAINER;
   cp->obj_flags.wear_flags = ITEM_TAKE;
-  cp->obj_flags.value[0] = 0; /* You can't store stuff in a corpse */
+  cp->obj_flags.value[0] = 0; /* You can't store stuff in a corpse.
+  							   * Lennya: this makes corpses return a negative fullness %
+  							   */
   cp->affected[0].modifier=GET_RACE(ch);     /* race of corpse NOT USED HERE*/
   cp->affected[1].modifier=GetMaxLevel(ch);  /* level of corpse NOT USED HERE*/
   cp->obj_flags.value[3] = 1; /* corpse identifier */
@@ -3333,7 +3335,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case SPELL_COLOUR_SPRAY:
   case SPELL_GAS_BREATH:
   case SPELL_SUNRAY:
-  case SPELL_DISINTERGRATE:
+  case SPELL_DISINTEGRATE:
 
     Our_Bit = IMM_ENERGY;
     break;
@@ -3401,25 +3403,22 @@ int DamageOneItem( struct char_data *ch, int dam_type, struct obj_data *obj)
   char buf[256];
   struct room_data *rp;
 
-rp = real_roomp(ch->in_room);
-if (!IS_SET(rp->room_flags, ARENA_ROOM)){
-  num = DamagedByAttack(obj, dam_type);
-  if (num != 0) {
-    sprintf(buf, "%s is %s.\n\r",obj->short_description,
-	    ItemDamType[dam_type-1]);
-    send_to_char(buf,ch);
-    if (num == -1) {  /* destroy object*/
-      return(TRUE);
-
-    } else {   /* "damage item"  (armor), (weapon) */
-      if (DamageItem(ch, obj, num)) {
-	return(TRUE);
-      }
-    }
-  }
- }
-  return(FALSE);
-
+	rp = real_roomp(ch->in_room);
+	if (!IS_SET(rp->room_flags, ARENA_ROOM)) {
+		num = DamagedByAttack(obj, dam_type);
+		if (num != 0) {
+			sprintf(buf, "%s is %s.\n\r",obj->short_description,ItemDamType[dam_type-1]);
+			send_to_char(buf,ch);
+			if (num == -1) {  /* destroy object*/
+				return(TRUE);
+			} else {   /* "damage item"  (armor), (weapon) */
+				if (DamageItem(ch, obj, num)) {
+					return(TRUE);
+				}
+    		}
+  		}
+	}
+	return(FALSE);
 }
 
 
@@ -3487,7 +3486,7 @@ void DamageAllStuff( struct char_data *ch, int dam_type)
 
   /* equipment */
 
-  if (dam_type == FIRESHIELD) return;
+  if (dam_type == FIRESHIELD) return; /* oddly enough, fireshield is not dam_type == FIRESHIELD */
 
   for (j = 0; j < MAX_WEAR; j++) {
     if (ch->equipment[j] && ch->equipment[j]->item_number>=0) {
@@ -3588,23 +3587,51 @@ if (IS_OBJ_STAT(i,ITEM_BRITTLE)) {
 
 int DamagedByAttack( struct obj_data *i, int dam_type)
 {
-  int num = 0;
+	int num = 0;
 
-  if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)){
-    while (!ItemSave(i,dam_type)) {
-      num+=1;
-      if (num > 75)
-	return(num);  /* so anything with over 75 ac points will not be
-			 destroyed */
-    }
-    return(num);
-  } else {
-    if (ItemSave(i, dam_type)) {
-      return(0);
-    } else {
-      return(-1);
-    }
-  }
+	if (dam_type == FIRE_DAMAGE) {
+		/* fireshield should scrap less -Lennya 20030322*/
+		if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
+			while (!ItemSave(i,dam_type)) {
+				/* missed its save, give it another chance */
+				if (!ItemSave(i,dam_type)) { /* failed two saves, let's dent it */
+					num+=1;
+					if (num > 75)
+						return(num);
+				}
+			}
+			return(num);
+		} else {
+			if (ItemSave(i, dam_type)) {
+				return(0);
+			} else { /* let's give it another chance to save */
+				if (ItemSave(i, dam_type)) {
+					return(0);
+				} else { /* last chance to save */
+					if (ItemSave(i, dam_type)) {
+						return(0);
+					} else {/* failed three saves, scrap it */
+						return(-1);
+					}
+				}
+			}
+		}
+	} else { /* not fireshield */
+		if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
+			while (!ItemSave(i,dam_type)) {
+				num+=1;
+				if (num > 75)
+					return(num);  /* so anything with over 75 ac points will not be destroyed */
+			}
+			return(num);
+		} else {
+			if (ItemSave(i, dam_type)) {
+				return(0);
+			} else {
+				return(-1);
+			}
+		}
+	}
 }
 
 int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
@@ -3691,35 +3718,34 @@ int DamageStuff(struct char_data *v, int type, int dam)
 /* spell right here I would think */
 
 
-  if (type >= TYPE_HIT && type <= TYPE_RANGE_WEAPON) {
-    num = number(3,17);  /* wear_neck through hold */
-    if (v->equipment[num]) {
-      if ((type == TYPE_BLUDGEON && dam > 10) ||
-	  (type == TYPE_CRUSH && dam > 5) ||
-	  (type == TYPE_SMASH && dam > 10) ||
-	  (type == TYPE_BITE && dam > 15) ||
-	  (type == TYPE_CLAW && dam > 20) ||
-	  (type == TYPE_SLASH && dam > 30) ||
-	  (type == TYPE_SMITE && dam > 10) ||
-	  (type == TYPE_HIT && dam > 20)) {
-	if (DamageOneItem(v, BLOW_DAMAGE, v->equipment[num])) {
-	  if ((obj = unequip_char(v,num))!=NULL) {
-	    MakeScrap(v,NULL, obj);
-	  }
+	if (type >= TYPE_HIT && type <= TYPE_RANGE_WEAPON) {
+		num = number(3,17);  /* wear_neck through hold */
+		if (v->equipment[num]) {
+			if ((type == TYPE_BLUDGEON && dam > 10) ||
+					(type == TYPE_CRUSH && dam > 5) ||
+					(type == TYPE_SMASH && dam > 10) ||
+					(type == TYPE_BITE && dam > 15) ||
+					(type == TYPE_CLAW && dam > 20) ||
+					(type == TYPE_SLASH && dam > 30) ||
+					(type == TYPE_SMITE && dam > 10) ||
+					(type == TYPE_HIT && dam > 20)) {
+				if (DamageOneItem(v, BLOW_DAMAGE, v->equipment[num])) {
+					if ((obj = unequip_char(v,num))!=NULL) {
+						MakeScrap(v,NULL, obj);
+					}
+				}
+			}
+		}
+	} else {
+		dam_type = GetItemDamageType(type);
+		if (dam_type) {
+			num = number(1,50);	/* as this number increases or decreases
+			     				 * the chance of item damage decreases
+								 * or increases */
+			if (dam >= num)
+				DamageAllStuff(v, dam_type);
+		}
 	}
-      }
-    }
-  } else {
-    dam_type = GetItemDamageType(type);
-    if (dam_type) {
-      num = number(1,50); /* as this number increases or decreases
-			     the chance of item damage decreases
-			     or increases */
-      if (dam >= num)
-	DamageAllStuff(v, dam_type);
-    }
-  }
-
 }
 
 
@@ -3754,7 +3780,7 @@ int GetItemDamageType( int type)
 
   case SPELL_COLOUR_SPRAY:
   case SPELL_GAS_BREATH:
-  case SPELL_DISINTERGRATE:
+  case SPELL_DISINTEGRATE:
     return(BLOW_DAMAGE);
     break;
 

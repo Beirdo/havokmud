@@ -2010,14 +2010,12 @@ void send_to_room(char *messg, int room)
 {
   struct char_data *i;
 
-  if (messg)
-    for (i = real_roomp(room)->people; i; i = i->next_in_room)
-      if (i->desc)
-/*      SEND_TO_Q(messg, &i->desc->output);*/
-	SEND_TO_Q(
-	 ParseAnsiColors(IS_SET(i->player.user_flags, USE_ANSI),messg),
-	  i->desc);
-
+	if (messg)
+		for (i = real_roomp(room)->people; i; i = i->next_in_room)
+			if (i->desc)
+				if (GET_POS(i)>POSITION_SLEEPING)
+//					SEND_TO_Q(messg, &i->desc->output);
+					SEND_TO_Q(ParseAnsiColors(IS_SET(i->player.user_flags, USE_ANSI),messg),i->desc);
 }
 
 
@@ -2030,6 +2028,7 @@ void send_to_room_except(char *messg, int room, struct char_data *ch)
   if (messg)
     for (i = real_roomp(room)->people; i; i = i->next_in_room)
       if (i != ch && i->desc)
+      	if (GET_POS(i)>POSITION_SLEEPING)
 /*      SEND_TO_Q(messg, &i->desc->output); */
 	SEND_TO_Q(
 	 ParseAnsiColors(IS_SET(i->player.user_flags, USE_ANSI),messg),
@@ -2045,6 +2044,7 @@ void send_to_room_except_two
   if (messg)
     for (i = real_roomp(room)->people; i; i = i->next_in_room)
       if (i != ch1 && i != ch2 && i->desc)
+      	if (GET_POS(i)>POSITION_SLEEPING)
 /*      SEND_TO_Q(messg, &i->desc->output); */
 	SEND_TO_Q(
 	 ParseAnsiColors(IS_SET(i->player.user_flags, USE_ANSI),messg),

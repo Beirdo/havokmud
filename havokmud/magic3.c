@@ -2112,46 +2112,50 @@ void spell_dust_devil(byte level, struct char_data *ch,
 
 }
 
-void spell_sunray(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_sunray(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-   struct char_data *t, *n;
-   int dam;
+	struct char_data *t, *n;
+	int dam=0, j=0;
+	char buf[MAX_STRING_LENGTH +30];
 
-  /*
-    blind all in room
-  */
-  for (t= real_roomp(ch->in_room)->people;t;t=n) {
-     n = t->next_in_room;
-     if (!in_group(ch, t) && !IS_IMMORTAL(t)) {
-	spell_blindness(level, ch, t, obj);
-	/*
-	 hit undead target
-	 */
-	if (t == victim) {
-	  if (IsUndead(victim) ||
-	      GET_RACE(victim) == RACE_VEGMAN){
-	    dam = dice(6,8);
-	    if (saves_spell(victim, SAVING_SPELL)&&
-		(GET_RACE(victim)!=RACE_VEGMAN))
-	      dam >>= 1;
-	    damage(ch, victim, dam, SPELL_SUNRAY);
-	  }
-	} else {
-	  /*
-	    damage other undead in room
-	    */
-	  if (IsUndead(t) ||
-	      GET_RACE(t) == RACE_VEGMAN) {
-	    dam = dice(3,6);
-	    if (saves_spell(t, SAVING_SPELL)&&
-		(GET_RACE(t)!=RACE_VEGMAN))
-	      dam = 0;
-	    damage(ch, t, dam, SPELL_SUNRAY);
-	  }
+	/* blind all in room */
+	for (t= real_roomp(ch->in_room)->people;t;t=n) {
+		n = t->next_in_room;
+		if (!in_group(ch, t) && !IS_IMMORTAL(t)) {
+			spell_blindness(level, ch, t, obj);
+			/* if not arena, scrap any ANTI-SUN equipment worn by ungroupies */
+			if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+				for (j = 0; j <= (MAX_WEAR - 1); j++) {
+					if (t->equipment[j] && t->equipment[j]->item_number>=0)  {
+						if (IS_SET(t->equipment[j]->obj_flags.extra_flags,ITEM_ANTI_SUN)) {
+							obj = t->equipment[j];
+							act("$n's sunray strikes your $p, causing it to fall apart!",FALSE,ch,0,0,TO_VICT);
+							act("$n's sunray strikes $N's $p, causing it to fall apart!",FALSE,ch,obj,t,TO_NOTVICT);
+							act("Your sunray strikes $N's $p, causing it to fall apart!",FALSE,ch,obj,t,TO_CHAR);
+							MakeScrap(t,0,obj);
+						}
+					}
+				}
+			}
+			/* hit undead target */
+			if (t == victim) {
+				if (IsUndead(victim) || GET_RACE(victim) == RACE_VEGMAN) {
+					dam = dice(6,8);
+					if (saves_spell(victim, SAVING_SPELL) && (GET_RACE(victim)!=RACE_VEGMAN))
+						dam >>= 1;
+					damage(ch, victim, dam, SPELL_SUNRAY);
+				}
+			} else {
+	  			/* damage other undead in room */
+				if (IsUndead(t) || GET_RACE(t) == RACE_VEGMAN) {
+					dam = dice(3,6);
+					if (saves_spell(t, SAVING_SPELL) && (GET_RACE(t)!=RACE_VEGMAN))
+						dam = 0;
+					damage(ch, t, dam, SPELL_SUNRAY);
+				}
+			}
+		}
 	}
-      }
-   }
 }
 
 void spell_know_monster(byte level, struct char_data *ch,
@@ -2392,7 +2396,7 @@ void spell_portal(byte level, struct char_data *ch,
   }
 
   if (IS_SET(rp->room_flags, TUNNEL)) {
-    send_to_char("There is no room in here to summon!\n\r", ch);
+    send_to_char("There is no room in here to portal!\n\r", ch);
     return;
   }
 
@@ -2400,7 +2404,7 @@ void spell_portal(byte level, struct char_data *ch,
     char str[180];
     sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
     log(str);
-    send_to_char("The magic cannot locate the target\n", ch);
+    send_to_char("The magic cannot locate the target.\n\r", ch);
     return;
   }
 
@@ -2422,6 +2426,16 @@ void spell_portal(byte level, struct char_data *ch,
 if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
   send_to_char("The planes are fuzzy, you cannot portal!\n",ch);
   return;
+ }
+
+ if (IS_PC(tmp_ch) && IS_LINKDEAD(tmp_ch)) {
+	 send_to_char("Nobody playing by that name.\n\r", ch);
+	 return;
+ }
+
+ if (IS_PC(tmp_ch) && IS_IMMORTAL(tmp_ch)) {
+	 send_to_char("You can't portal to someone of that magnitude!\n\r", ch);
+	 return;
  }
 
   sprintf(buf, "Through the mists of the portal, you can faintly see %s", nrp->name);

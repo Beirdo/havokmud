@@ -1555,7 +1555,8 @@ AddCommand("style",do_style, 572, POSITION_STANDING,0);
 AddCommand("fight",do_style, 572, POSITION_STANDING,0);
 
   AddCommand("iwizlist",do_iwizlist,573,POSITION_DEAD,0);
-  AddCommand("flux",do_flux,574,POSITION_STANDING,53); /* fluxtest lennya */
+AddCommand("flux",do_flux,574,POSITION_STANDING,53);
+AddCommand("bs",do_backstab,575,POSITION_STANDING,1);
 
 
 /*

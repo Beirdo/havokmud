@@ -15,31 +15,31 @@ SwitchStuff( struct char_data *giver, struct char_data *taker)
   struct obj_data *obj, *next;
   float ratio;
   int j;
-  
+
   /*
    *  take all the stuff from the giver, put in on the
    *  taker
    */
-  
+
   for (j = 0; j< MAX_WEAR; j++) {
     if (giver->equipment[j]) {
       obj = unequip_char(giver, j);
       obj_to_char(obj, taker);
     }
   }
-  
+
   for (obj = giver->carrying; obj; obj = next) {
     next = obj->next_content;
     obj_from_char(obj);
     obj_to_char(obj, taker);
   }
-  
+
   /*
    *    gold...
    */
 
   GET_GOLD(taker) = GET_GOLD(giver);
-  
+
   /*
    *   hit point ratio
    */
@@ -74,11 +74,16 @@ SwitchStuff( struct char_data *giver, struct char_data *taker)
       taker->skills[j].flags = giver->skills[j].flags;
       taker->skills[j].special= giver->skills[j].special;
       taker->skills[j].nummem = giver->skills[j].nummem;
+
     }
     for (j = MAGE_LEVEL_IND;j<MAX_CLASS;j++) {
       taker->player.level[j] = giver->player.level[j];
     }
   }
+
+  /* bring along special flags (like ansi, pagepause) & prompt -Lennya */
+  taker->player.user_flags = giver->player.user_flags;
+  taker->specials.prompt = giver->specials.prompt;
 
   GET_MANA(taker) = GET_MANA(giver);
   GET_ALIGNMENT(taker) = GET_ALIGNMENT(giver);
@@ -90,8 +95,8 @@ FailCharm(struct char_data *victim, struct char_data *ch)
 {
  if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER) && (number(1,100)>50) )
     return;  /* give single classed mages a break. */
-    
-  if (!IS_PC(victim)) { 
+
+  if (!IS_PC(victim)) {
 
     AddHated(victim, ch);
 
@@ -114,9 +119,9 @@ FailSnare(struct char_data *victim, struct char_data *ch)
 
   if (!IS_PC(victim)) {
     if (!victim->specials.fighting) {
-	AddHated(victim,ch); 
+	AddHated(victim,ch);
 	set_fighting(victim, ch);
-    } 
+    }
   } else {
     send_to_char("You feel ensnared, but the feeling fades.\n\r",victim);
   }
@@ -126,7 +131,7 @@ FailSleep(struct char_data *victim, struct char_data *ch)
 {
  if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER) && (number(1,100)>50) )
     return;  /* give single classed mages a break. */
-  
+
   send_to_char("You feel sleepy for a moment,but then you recover\n\r",
 	       victim);
   if (!IS_PC(victim)) {
@@ -169,20 +174,20 @@ FailPoison(struct char_data *victim, struct char_data *ch)
  if (OnlyClass(ch,CLASS_MAGIC_USER|CLASS_SORCERER) && (number(1,100)>50) )
     return;  /* give single classed mages a break. */
 
-  if (!IS_PC(victim)) 
+  if (!IS_PC(victim))
   {
     AddHated(victim, ch);
-    if (!victim->specials.fighting) 
+    if (!victim->specials.fighting)
     {
       if (GET_POS(victim) > POSITION_SLEEPING)
 	set_fighting(victim, ch);
-      else if (number(0,1)) 
+      else if (number(0,1))
       {
 	set_fighting(victim, ch);
       }
     }
-  } else 
-  
+  } else
+
   {
     send_to_char("You feel sick, but the feeling fades.\n\r",victim);
   }

@@ -1265,6 +1265,7 @@ char *how_good(int percent);
 int GainLevel(struct char_data *ch, int class);
 struct char_data *FindMobInRoomWithFunction(int room, int (*func)());
 int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) ;
+int SorcGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) ;
 int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) ;
 int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) ;
 int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) ;

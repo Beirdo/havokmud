@@ -3658,9 +3658,9 @@ if (GET_POS(ch) <= POSITION_DEAD)
 	pretend that this is the smash room.
 	*/
       if (IS_SET(rp->room_flags, ARENA_ROOM)) {  // Volcano part of the Arena
-         send_to_char("You are enveloped in a see of burning flames and molten rock\n\r", ch);
-         send_to_char("Soon, you are nothing but ashes\n\r", ch);
-         sprintf(buf, "%s dissapears beneath a sea of flame with a loud hiss and lot of smoke\n\r", GET_NAME(ch));
+         send_to_char("You are enveloped in a see of burning flames and molten rock.\n\r", ch);
+         send_to_char("Soon, you are nothing but ashes.\n\r", ch);
+         sprintf(buf, "%s disappears beneath a sea of flame with a loud hiss and lot of smoke.\n\r", GET_NAME(ch));
          send_to_room_except(buf, ch->in_room, ch);
          sprintf(buf, "%s killed by burning in ARENA!\n\r", GET_NAME(ch));
          send_to_all(buf);

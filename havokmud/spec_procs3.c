@@ -1795,7 +1795,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0009A massive cone of fire shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
      spell_fire_breath(GetMaxLevel(ch),ch,tar_char,0);
    } /* end for */
 
@@ -1815,7 +1815,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0014A cone of blistering frost shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_frost_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
  } /* end for */
    return(TRUE);
@@ -1834,7 +1834,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0010A stream of hot acid bursts forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_acid_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -1854,7 +1854,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0002A cloud of poisonous gas billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_gas_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -1875,7 +1875,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0012A bolt of lightning streaks forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
     spell_lightning_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
    }
    return(TRUE);
@@ -2941,8 +2941,8 @@ int Psionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob, in
 /*ATTACK -- TYPE SPELLS BEGIN HERE*/
      if (PSI_CAN(SKILL_MIND_BURN,PML))
         mob->skills[SKILL_MIND_BURN].learned = MIN(95,33+dice(2,PML));
-     if (PSI_CAN(SKILL_DISINTERGRATE,PML))
-        mob->skills[SKILL_DISINTERGRATE].learned = MIN(95,33+dice(3,PML));
+     if (PSI_CAN(SKILL_DISINTEGRATE,PML))
+        mob->skills[SKILL_DISINTEGRATE].learned = MIN(95,33+dice(3,PML));
      if (PSI_CAN(SKILL_MIND_WIPE,PML))
 	mob->skills[SKILL_MIND_WIPE].learned = MIN(95,45+dice(2,PML));
      if (PSI_CAN(SKILL_PSIONIC_BLAST,PML))
@@ -3087,7 +3087,7 @@ int Psionist(struct char_data *ch, int cmd, char *arg, struct char_data *mob, in
             	/*special attack for fighter subtypes & thieves*/
 	   else if ((GetMaxLevel(targ) < 20) && (dice(1,2)-1))
                    CAST_OR_BLAST(mob,targ,SKILL_PSI_TELEPORT);
-                 else CAST_OR_BLAST(mob,targ,SKILL_DISINTERGRATE);
+                 else CAST_OR_BLAST(mob,targ,SKILL_DISINTEGRATE);
           }
         else C_OR_B(mob,targ); /* norm attack, psychic crush or psionic blast*/
        }
@@ -3218,21 +3218,19 @@ log("trying to berserk because of item ");
 
 int AntiSunItem(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
+	if (type != PULSE_COMMAND)
+  		return(FALSE);
 
- if (type != PULSE_COMMAND)
-  return(FALSE);
-
-  if (OUTSIDE(ch) && weather_info.sunlight == SUN_LIGHT
-     && weather_info.sky<= SKY_CLOUDY &&
-     !IS_AFFECTED2(ch,AFF2_DARKNESS)) {
+	if (OUTSIDE(ch) && weather_info.sunlight == SUN_LIGHT
+		&& weather_info.sky<= SKY_CLOUDY &&
+		!IS_AFFECTED2(ch,AFF2_DARKNESS)) {
   			/* frag the item! */
-	act("The sun strikes $p, causing it to fall apart!",FALSE,ch,obj,0,TO_CHAR);
-	act("The sun strikes $p worn by $n, causing it to fall apart!",FALSE,ch,obj,0,TO_ROOM);
-	    MakeScrap(ch,0,obj);
-	    return(TRUE); /* if not TRUE mud will CRASH! */
-	  }
-
- return(FALSE);
+		act("The sun strikes $p, causing it to fall apart!",FALSE,ch,obj,0,TO_CHAR);
+		act("The sun strikes $p worn by $n, causing it to fall apart!",FALSE,ch,obj,0,TO_ROOM);
+		MakeScrap(ch,0,obj);
+		return(TRUE); /* if not TRUE mud will CRASH! */
+	}
+	return(FALSE);
 }
 
 int Beholder(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
@@ -4795,7 +4793,7 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 	char tbuf[80];
 	struct char_data *vict;
 	struct obj_data *obj;
-	int test=0, r_num=0;
+	int test=0, r_num=0, tmp_con=0;
 	struct obj_data *i;
 
 	if(!AWAKE(ch)) return(FALSE);
@@ -4849,19 +4847,35 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 			return (TRUE);
 		}
 		else {
-
+		log("entering the goblin_chuirgeon proc, warning, added con point won't stick after save.");
+		sprintf(buf,"1. Char: %s. Current con = %d",GET_NAME(ch),GET_CON(ch));
+		log(buf);
+		tmp_con = GET_CON(ch);
+		sprintf(buf,"2. temp con = %d",tmp_con);
+		log(buf);
+		tmp_con = tmp_con + 1;
+		sprintf(buf,"3. increased temp con : %d",tmp_con);
+		log(buf);
 		act("$n says, 'Vewy good.  I begin now.'", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n pushes you to the floor.", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n walks over to one of the cages and pulls a small bunny out.", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n slowly returns, gutting the bunny then quickly slicing your stomach open.", FALSE, mob, 0, 0, TO_ROOM);
 		WAIT_STATE(ch,PULSE_VIOLENCE*12);
 		GET_POS(ch) = POSITION_STUNNED;
-       		GET_MANA(ch) = 1;
+		GET_MANA(ch) = 1;
 		GET_MOVE(ch) = 1;
 		GET_HIT(ch) = 1;
-		GET_CON(ch) += 1;
+		log ("set mana/move/hitpoints to 1");
+		GET_CON(ch) = tmp_con;
+		sprintf(buf,"4. set con to temp con = %d",GET_CON(ch));
+		log(buf);
 		GET_GOLD(ch) -= test;
-		GET_EXP(ch) -= GET_CON(ch)*5000000;
+		GET_EXP(ch) -= ((GET_CON(ch))*5000000);
+		sprintf(buf,"money and xps taken away, con = %d",GET_CON(ch));
+		log(buf);
+		do_save(ch, "", 0);
+		sprintf(buf,"saved, con = %d",GET_CON(ch));
+		log(buf);
 		return (TRUE);
 		}
 	}
@@ -6203,7 +6217,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0005A searing cone of dehydration billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_dehydration_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6222,7 +6236,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0006A cloud of scalding vapor surges forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_vapor_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6241,7 +6255,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0013A sonic vibration booms forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_sound_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6260,7 +6274,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0015A cone of glowing shards bursts forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_shard_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6279,7 +6293,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0003A cloud of sleeping gas billows forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_sleep_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6298,7 +6312,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0011A beam of bright yellow light shoots forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_light_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6317,7 +6331,7 @@ struct char_data *tar_char;
    act("$n rears back and inhales",FALSE,ch,0,0,TO_ROOM);
    act("$c0008A cloud of oppressive darkness surges forth from $n's mouth!",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
-   if (!IS_IMMORTAL(tar_char))
+   if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char))
    spell_dark_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
@@ -6345,7 +6359,7 @@ int rope_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 		{
 			if(!(str_cmp("up", buf)) || !(str_cmp("u", buf)) || !(str_cmp("Up", buf)))
 			{
-				send_to_char("All you can see up there is a cliff wall\n\r",ch);
+				send_to_char("All you can see up there is a cliff wall.\n\r",ch);
 				return(TRUE);
 			}
 		}
@@ -6830,7 +6844,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 }
 
 int randomitem(void) {
-  switch(number(0, 116)) {
+  switch(number(0, 119)) {
 	case 0:
 	case 1:
 	case 2:
@@ -6861,6 +6875,8 @@ int randomitem(void) {
 	case 25:
 	case 26:
 	case 27:
+	case 117:
+	case 118:
 		return 51811;
 	case 28:
 	case 29:
@@ -6914,7 +6930,6 @@ int randomitem(void) {
 	case 70:
 	case 71:
 	case 72:
-
 	case 73:
 		return 51819;
 	case 74:
@@ -6931,6 +6946,7 @@ int randomitem(void) {
 	case 85:
 		return 51820;
 	case 86:
+	case 119:
 		return 51821;
 	case 87:
 	case 88:

@@ -783,10 +783,22 @@ dlog("in do_steal");
 
 void do_practice(struct char_data *ch, char *arg, int cmd)
 {
-  char buf[MAX_STRING_LENGTH*2], buffer[MAX_STRING_LENGTH*2], temp[20];
-  int i;
+  char buf[254], buffer[MAX_STRING_LENGTH], temp[20];
+  int i = 0;
   extern char *spells[];
   extern struct spell_info_type spell_info[MAX_SPL_LIST];
+    extern struct skillset warriorskills[];
+    extern struct skillset thiefskills[];
+    extern struct skillset barbskills[];
+    extern struct skillset bardskills[];
+    extern struct skillset monkskills[];
+    extern struct skillset mageskills[];
+    extern struct skillset clericskills[];
+    extern struct skillset druidskills[];
+    extern struct skillset paladinskills[];
+    extern struct skillset rangerskills[];
+    extern struct skillset psiskills[];
+
 
 dlog("in do_practice");
 
@@ -805,88 +817,89 @@ dlog("in do_practice");
     return;
   }
 
-  switch(*arg) {
-  case 'w':
-  case 'W':
-  case 'f':
-  case 'F':
-    {
-      if (!HasClass(ch, CLASS_WARRIOR))
-      {
-	send_to_char("I bet you think you're a warrior.\n\r", ch);
-	return;
-      }
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
-	&& IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )
-      {	  sprintf(buf,"%-30s %s",spells[i],
-		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-  strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    } break;
+	switch(*arg) {
+	case 'w':
+	case 'W':
+	case 'f':
+	case 'F': {
+		if (!HasClass(ch, CLASS_WARRIOR)) {
+			send_to_char("I bet you think you're a warrior.\n\r", ch);
+			return;
+		}
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(warriorskills[i].level != -1) {
+			if (IS_SET(ch->skills[warriorskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",warriorskills[i].level,
+						warriorskills[i].name,how_good(ch->skills[warriorskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[warriorskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
 
-  case 't':
-  case 'T':
-    {
+	case 't':
+	case 'T': {
+		if (!HasClass(ch, CLASS_THIEF)) {
+			send_to_char("I bet you think you're a thief.\n\r", ch);
+			return;
+		}
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(thiefskills[i].level != -1) {
+			if (IS_SET(ch->skills[thiefskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",thiefskills[i].level,
+						thiefskills[i].name,how_good(ch->skills[thiefskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[thiefskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
 
-      if (!HasClass(ch, CLASS_THIEF)) {
-	send_to_char("I bet you think you're a thief.\n\r", ch);
-	return;
-      }
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
-	  sprintf(buf,"%-30s %s",spells[i],
-		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    } break;
   case 'M':
-  case 'm':
-    {
-      if (!HasClass(ch, CLASS_MAGIC_USER)) {
-	send_to_char("I bet you think you're a magic-user.\n\r", ch);
-	return;
-      }
-      send_to_char("Your spellbook holds these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-	if (spell_info[i+1].spell_pointer &&
-	    (spell_info[i+1].min_level_magic<=GET_LEVEL(ch,MAGE_LEVEL_IND))
-             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_magic,
-		  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+  case 'm': {
+		if (!HasClass(ch, CLASS_MAGIC_USER)) {
+			send_to_char("I bet you think you're a mage.\n\r", ch);
+			return;
+		}
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(mageskills[i].level != -1) {
+			if (IS_SET(ch->skills[mageskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mageskills[i].level,
+						mageskills[i].name,how_good(ch->skills[mageskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mageskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
 
   case 'S':
-  case 's':
-    {
+  case 's': {
       if (!HasClass(ch, CLASS_SORCERER)) {
 	send_to_char("I bet you think you're a sorcerer.\n\r", ch);
 	return;
@@ -930,26 +943,25 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a cleric.\n\r", ch);
 	return;
       }
-      send_to_char("You can attempt any of these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-	if (spell_info[i+1].spell_pointer &&
-	   (spell_info[i+1].min_level_cleric<=GET_LEVEL(ch,CLERIC_LEVEL_IND))
-             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_cleric,
-		  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-  if (MEMORIZED(ch,i+1)) strcat(buf," (memorized)");
-   strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(clericskills[i].level != -1) {
+			if (IS_SET(ch->skills[clericskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",clericskills[i].level,
+						clericskills[i].name,how_good(ch->skills[clericskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[clericskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
 
   case 'D':
   case 'd':
@@ -958,51 +970,50 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a druid.\n\r", ch);
 	return;
       }
-      send_to_char("You can attempt any of these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-	if (spell_info[i+1].spell_pointer &&
-	   (spell_info[i+1].min_level_druid<=GET_LEVEL(ch, DRUID_LEVEL_IND))
-             && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) ) {
-	  sprintf(buf,"[%d] %s %s",
-		  spell_info[i+1].min_level_druid,
-		  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-	strcat(buf," \n\r"  );
-	  if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
-
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(druidskills[i].level != -1) {
+			if (IS_SET(ch->skills[druidskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",druidskills[i].level,
+						druidskills[i].name,how_good(ch->skills[druidskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[druidskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
   case 'K':
   case 'k': {
       if (!HasClass(ch, CLASS_MONK)) {
 	send_to_char("I bet you think you're a monk.\n\r", ch);
 	return;
       }
-
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
-	  sprintf(buf,"%-30s %s",spells[i],
-		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
-
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(monkskills[i].level != -1) {
+			if (IS_SET(ch->skills[monkskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",monkskills[i].level,
+						monkskills[i].name,how_good(ch->skills[monkskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[monkskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
   case 'b':
   case 'B':
     {
@@ -1010,23 +1021,52 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a Barbarian.\n\r", ch);
 	return;
       }
-      send_to_char("You know the following skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (!spell_info[i+1].spell_pointer && ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
+		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+		while(barbskills[i].level != -1) {
+			if (IS_SET(ch->skills[barbskills[i].skillnum].flags,SKILL_KNOWN)) {
+				sprintf(buf,"[%-2d] %-30s %-15s",barbskills[i].level,
+						barbskills[i].name,how_good(ch->skills[barbskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[barbskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+			}
+			i++;
+		}
+		page_string(ch->desc, buffer, 1);
+		return;
+	}
+	break;
 
-  sprintf(buf,"%-30s %s",spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-      strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+    case 'a':
+    case 'A':
+      {
+        if (!HasClass(ch, CLASS_BARD)) {
+  	send_to_char("I bet you think you're a bard.\n\r", ch);
+  	return;
+        }
+  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+  		while(bardskills[i].level != -1) {
+  			if (IS_SET(ch->skills[bardskills[i].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",bardskills[i].level,
+  						bardskills[i].name,how_good(ch->skills[bardskills[i].skillnum].learned));
+  				if (IsSpecialized(ch->skills[bardskills[i].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
+  		}
+  		page_string(ch->desc, buffer, 1);
+  		return;
+  	}
+  	break;
 
   case 'R':
   case 'r': {
@@ -1034,26 +1074,25 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a ranger.\n\r", ch);
 	return;
       }
-
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
-
-	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_ranger,
-	  spells[i],how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+  		while(rangerskills[i].level != -1) {
+  			if (IS_SET(ch->skills[rangerskills[i].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",rangerskills[i].level,
+  						rangerskills[i].name,how_good(ch->skills[rangerskills[i].skillnum].learned));
+  				if (IsSpecialized(ch->skills[rangerskills[i].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
+  		}
+  		page_string(ch->desc, buffer, 1);
+  		return;
+  	}
+  	break;
 
   case 'i':
   case 'I': {
@@ -1061,25 +1100,25 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a psionist.\n\r", ch);
 	return;
       }
-
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
-	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_psi,
-	spells[i], how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
+  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+  		while(psiskills[i].level != -1) {
+  			if (IS_SET(ch->skills[psiskills[i].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",psiskills[i].level,
+  						psiskills[i].name,how_good(ch->skills[psiskills[i].skillnum].learned));
+  				if (IsSpecialized(ch->skills[psiskills[i].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
+  		}
+  		page_string(ch->desc, buffer, 1);
+  		return;
+  	}
+  	break;
 
   case 'P':
   case 'p': {
@@ -1087,28 +1126,27 @@ dlog("in do_practice");
 	send_to_char("I bet you think you're a paladin.\n\r", ch);
 	return;
       }
-
-      send_to_char("You have knowledge of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n' && i < MAX_SPL_LIST; i++)
-	if (ch->skills[i+1].learned
-	    && IS_SET(ch->skills[i+1].flags,SKILL_KNOWN) )  {
-	  sprintf(buf,"[%d] %-30s %s",
-	  spell_info[i+1].min_level_paladin,
-	  spells[i],		  how_good(ch->skills[i+1].learned));
-  if (IsSpecialized(ch->skills[i+1].special)) strcat(buf," (special)");
-    strcat(buf," \n\r");
-	  if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-	    break;
-	  strcat(buffer, buf);
-	  strcat(buffer, "\r");
-      }
-      page_string(ch->desc, buffer, 1);
-      return;
-    }
-    break;
-
+  		sprintf(buffer,"You have knowledge of these skills:\n\r\n\r");
+  		while(paladinskills[i].level != -1) {
+  			if (IS_SET(ch->skills[paladinskills[i].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",paladinskills[i].level,
+  						paladinskills[i].name,how_good(ch->skills[paladinskills[i].skillnum].learned));
+  				if (IsSpecialized(ch->skills[paladinskills[i].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
+  		}
+  		page_string(ch->desc, buffer, 1);
+  		return;
+  	}
+  	break;
   default:
-    send_to_char("Which class???\n\r", ch);
+    send_to_char("Which class?\n\r", ch);
   }
 
   send_to_char("Go to your guildmaster to see the spells you don't have.\n\r", ch);
@@ -1236,6 +1274,7 @@ void do_brief(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_breif");
 
+/* for some reason mobs with a func keep setting themselves to brief mode  -Lennya */
   if (IS_NPC(ch))
     return;
 
@@ -2824,7 +2863,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     load_char_extra(finger); /*Load Clan and email fields*/
 
     if (IS_NPC(finger)) {
-      send_to_char("No person by that name\n\r",ch);
+      send_to_char("No person by that name.\n\r",ch);
       return;
     }
     /*Display Character information*/
