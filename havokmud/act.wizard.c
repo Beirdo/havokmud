@@ -8393,16 +8393,16 @@ void do_zonesummary(struct char_data *ch, char *argument, int cmd)
             zd=zone_table + zone;
             end=zd->top;
 
-ch_printf(ch,"\n\rZone: %d (%d-%d) %s\n\r",rm->zone, start,end, zd->name);
+    ch_printf(ch,"\n\rZone: %d (%d-%d) %s\n\r",rm->zone, start,end, zd->name);
 
 
-for (x=start;x <=end;x++) {
-    counter=counter+linker(ch, x);
+    for (x=start;x <=end;x++) {
+      counter=counter+linker(ch, x);
 
-}
+    }
 
-if (counter==0)
-   ch_printf(ch,"No linker rooms found.\n\r");
+    if (counter==0)
+      ch_printf(ch,"No linker rooms found.\n\r");
 
 
 }
@@ -8422,7 +8422,8 @@ int linker(struct char_data *ch, int room) {
            if(!tmp)
              return 0;
            if(rm->zone!=tmp->zone) {
-              ch_printf(ch,"%d links to room %d (zone:%d).\n\r", rm->zone, rm->number, tmp->number, tmp->zone);
+              ch_printf(ch,"%d links to room %d (zone:%d).\n\r"
+                    ,rm->zone, rm->number, tmp->number, tmp->zone);
               count++;
            }
        }
