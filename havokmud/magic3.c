@@ -3760,6 +3760,7 @@ void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *vic
 {
 	int dam;
 	struct char_data *t, *next;
+	char *tmp;
 
 	assert(ch);
 	if (level <0 || level >ABS_MAX_LVL)
@@ -3771,16 +3772,20 @@ void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *vic
 	for (t = real_roomp(ch->in_room)->people; t; t=next) {
 		next = t->next_in_room;
 		if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
-			/* 1% chance of instakill */
-			if(number(1,100) == 100  && !IS_IMMUNE(victim,IMM_DRAIN)) { /* woop, instant death is cool */
-				dam = GET_HIT(victim)+25;
-				damage(ch, t, dam, SPELL_MIST_OF_DEATH);
-			} else {
-				dam = dice(level,7);
-				if (saves_spell(t, SAVING_PETRI)) /* save for half damage */
-					dam >>= 1;
-				damage(ch, t, dam, SPELL_MIST_OF_DEATH);
-			}
+		  /* 1% chance of instakill */
+		  /* Start Change Jan 22, 2004 Odin
+		     Fixxed crash bug related to mist of death.  Was set to affect victim instead of t and was hitting a null */
+		  if(number(1,100) == 100  && !IS_IMMUNE(t,IMM_DRAIN)) { /* woop, instant death is cool */
+		  /* End Change Jan 22, 2004 Odin */
+		    dam = GET_HIT(t)+25;
+		    damage(ch, t, dam, SPELL_MIST_OF_DEATH);
+		    act(t->player.name,FALSE,ch,0,0,TO_CHAR);
+		  } else {
+		    dam = dice(level,7);
+		    if (saves_spell(t, SAVING_PETRI)) /* save for half damage */
+		      dam >>= 1;
+		    damage(ch, t, dam, SPELL_MIST_OF_DEATH);
+		  }
 		}
 	}
 }
