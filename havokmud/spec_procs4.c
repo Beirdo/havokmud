@@ -279,6 +279,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 	if (ch->specials.fighting && IS_SET(ch->specials.act,ACT_SPEC)) {  /* kill */
 		t = ch->specials.fighting;
 		if (t->in_room == ch->in_room) {
+			log("woah, you dare fight me? dead you are");
 			act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
 			act("You are engulfed by $n, and are quickly disassembled",FALSE,ch,0,t,TO_VICT);
 			act("$N is quickly reduced to a bloody pile of bones by $n",FALSE,ch,0,t,TO_NOTVICT);
@@ -286,8 +287,10 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 			die(t,NULL);
 			/* find the corpse and destroy it */
 			rp = real_roomp(ch->in_room);
-			if (!rp)
+			if (!rp) {
+				log("invalid room in creeping death?! oddness!");
 				return(FALSE);
+			}
 			for (co = rp->contents; co; co = co->next_content) {
 				if (IS_CORPSE(co))  {  /* assume 1st corpse is victim's */
 					while (co->contains) {
@@ -300,6 +303,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 			}
 		}
 		if (GET_HIT(ch) < 0) {
+			log("death due to lack of hps");
 			act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
 			extract_char(ch);
 			return(TRUE);
@@ -309,38 +313,36 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 
 	/* the generic is the direction of travel */
 	if (number(0,1)==0) {  /* move */
-		log("creep should try to move");
-		if (!ValidMove(ch, ch->generic)) {
-			log("no valid move");
-			act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
-			extract_char(ch);
-			return(FALSE);
+		if (!ValidMove(ch, (ch->generic)-1)) {
+			/* not sure why generic is dir+1, but the -1 fixes it -Lennya 20030405 */
+			if(number(0,2)!=0) { /* 66% chance it dies */
+				act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
+				extract_char(ch);
+				return(FALSE);
+			} else
+				return(FALSE);
 		} else {
-			log("move called for creeping death");
-//			do_move(ch, "\0", ch->generic);
+			do_move(ch, "\0", ch->generic);
 			return(FALSE);
 		}
 	} else {
-		log("creep not moving, let em flee");
 		/* make everyone with any brains flee */
 		for (t = real_roomp(ch->in_room)->people; t; t = next) {
 			next = t->next_in_room;
 			if (t != ch) {
-//				if (!saves_spell(t, SAVING_PETRI)) {
+				if (!saves_spell(t, SAVING_PETRI)) {
 					do_flee(t, "", 0);
-//				}
+				}
 			}
 		}
-		log("all in room had chance to flee, looking for target");
 		/* find someone in the room to flay */
 		for (t = real_roomp(ch->in_room)->people; t; t = next) {
-			if (t)
-				log("found a mobile");
-			else
-				log("no mobiles found in room??");
+			if (!t) {
+				log("found no mobiles in creeping death?! oddness!");
+				return(FALSE);
+			}
 			next = t->next_in_room;
-			if (!IS_IMMORTAL(t) && t != ch /* && number(0,2)==0 */ && IS_SET(ch->specials.act,ACT_SPEC)) {
-				log("these are killable. let's eat 'em");
+			if (!IS_IMMORTAL(t) && t != ch  && number(0,1)==0  && IS_SET(ch->specials.act,ACT_SPEC)) {
 				act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
 				act("You are engulfed by $n, and are quickly disassembled.",FALSE,ch,0,t,TO_VICT);
 				act("$N is quickly reduced to a bloody pile of bones by $n.",FALSE,ch,0,t,TO_NOTVICT);
@@ -348,8 +350,10 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 				die(t,NULL);
 				/* find the corpse and destroy it */
 				rp = real_roomp(ch->in_room);
-				if (!rp)
+				if (!rp) {
+					log("invalid room called in creeping death?! oddness!");
 					return(FALSE);
+				}
 				for (co = rp->contents; co; co = co->next_content) {
 					if (IS_CORPSE(co))  {  /* assume 1st corpse is victim's */
 						while (co->contains) {
@@ -368,7 +372,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 				break;  /* end the loop */
 			}
 		}
-		log("finished finding targets");
+		log("finished finding targets, wait for next func call");
 	}
 }
 

@@ -946,10 +946,10 @@ void spell_creeping_death(byte level, struct char_data *ch, struct char_data *vi
 		return;
 	}
 
-	if (GetMaxLevel(ch) < IMPLEMENTOR) {
-		send_to_char("Spell disabled.",ch);
-		return;
-	}
+//	if (GetMaxLevel(ch) < IMPLEMENTOR) {
+//		send_to_char("Spell disabled.",ch);
+//		return;
+//	}
 
 	/* obj is really the direction that the death wishes to travel in */
 

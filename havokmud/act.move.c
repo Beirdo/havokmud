@@ -56,110 +56,96 @@ switch(number(0,5)) {
 }
 int ValidMove( struct char_data *ch, int cmd)
 {
-  char tmp[256];
-  struct room_direction_data	*exitp;
+	char tmp[256];
+	struct room_direction_data	*exitp;
 
-  exitp = EXIT(ch, cmd);
+	exitp = EXIT(ch, cmd);
 
-  if (affected_by_spell(ch, SPELL_WEB)) {
-    if (!saves_spell(ch, SAVING_PARA)) {
-      send_to_char("You are entrapped in sticky webs!\n\r", ch);
-      send_to_char("Your struggles only entrap you further!\n\r", ch);
-      WAIT_STATE(ch, PULSE_VIOLENCE*5);
-      if (!IS_PC(ch))
-	GET_MOVE(ch)=0;
-      return(FALSE);
-    } else {
-      WAIT_STATE(ch, PULSE_VIOLENCE);
-      GET_MOVE(ch)-=50;
-      send_to_char("You briefly pull free from the sticky webbing!\n\r", ch);
-    }
-  }
+	if (affected_by_spell(ch, SPELL_WEB)) {
+		if (!saves_spell(ch, SAVING_PARA)) {
+			send_to_char("You are entrapped in sticky webs!\n\r", ch);
+			send_to_char("Your struggles only entrap you further!\n\r", ch);
+			WAIT_STATE(ch, PULSE_VIOLENCE*5);
+			if (!IS_PC(ch))
+				GET_MOVE(ch)=0;
+			return(FALSE);
+		} else {
+			WAIT_STATE(ch, PULSE_VIOLENCE);
+			GET_MOVE(ch)-=50;
+			send_to_char("You briefly pull free from the sticky webbing!\n\r", ch);
+		}
+	}
 
-
-  if (MOUNTED(ch)) {
-    if (GET_POS(MOUNTED(ch)) < POSITION_FIGHTING) {
-      send_to_char("Your mount must be standing\n\r", ch);
-      return(FALSE);
-    }
-    if (ch->in_room != MOUNTED(ch)->in_room) {
-      Dismount(ch, MOUNTED(ch), POSITION_STANDING);
-    }
-  }
+	if (MOUNTED(ch)) {
+		if (GET_POS(MOUNTED(ch)) < POSITION_FIGHTING) {
+			send_to_char("Your mount must be standing\n\r", ch);
+			return(FALSE);
+		}
+		if (ch->in_room != MOUNTED(ch)->in_room) {
+			Dismount(ch, MOUNTED(ch), POSITION_STANDING);
+		}
+	}
 /*
-  if (RIDDEN(ch)) {
-    if (ch->in_room != RIDDEN(ch)->in_room) {
-      Dismount(RIDDEN(ch), ch, POSITION_STANDING);
-    }
-  }
+	if (RIDDEN(ch)) {
+		if (ch->in_room != RIDDEN(ch)->in_room) {
+			Dismount(RIDDEN(ch), ch, POSITION_STANDING);
+		}
+	}
 */
-  /*Wizset fast.. (GH)*/
-  if (!exit_ok(exitp,NULL))  {
-    if (!make_exit_ok(ch,real_roomp(ch->in_room),cmd)) {
-      NotLegalMove(ch);
-      return(FALSE);
-    }
-    else
-      return(FALSE);
-  } else
-
-      if (IS_SET(exitp->exit_info, EX_CLOSED)) {
-	if (exitp->keyword) {
-	  if (!IS_SET(exitp->exit_info, EX_SECRET) &&
-	      (strcmp(fname(exitp->keyword), "secret"))) {
-	    sprintf(tmp, "The %s seems to be closed.\n\r",
-		    fname(exitp->keyword));
-	    send_to_char(tmp, ch);
-	    return(FALSE);
-	  } else {
-	    NotLegalMove(ch);
-	    return(FALSE);
-	  }
+	/*Wizset fast.. (GH)*/
+	if (!exit_ok(exitp,NULL))  {
+		if (!make_exit_ok(ch,real_roomp(ch->in_room),cmd)) {
+			NotLegalMove(ch);
+			return(FALSE);
+		} else
+			return(FALSE);
+	} else if (IS_SET(exitp->exit_info, EX_CLOSED)) {
+		if (exitp->keyword) {
+			if (!IS_SET(exitp->exit_info, EX_SECRET) && (strcmp(fname(exitp->keyword), "secret"))) {
+				sprintf(tmp, "The %s seems to be closed.\n\r",fname(exitp->keyword));
+				send_to_char(tmp, ch);
+				return(FALSE);
+			} else {
+				NotLegalMove(ch);
+				return(FALSE);
+			}
+		} else {
+			NotLegalMove(ch);
+			return(FALSE);
+		}
+	} else if (IS_SET(exitp->exit_info,EX_CLIMB) && !IS_AFFECTED(ch,AFF_FLYING)) {
+		send_to_char("Sorry, you'd either have to be flying or climbing to get there!\n\r", ch);
+		return(FALSE);
 	} else {
-	  NotLegalMove(ch);
-	  return(FALSE);
+		struct room_data *rp;
+		rp = real_roomp(exitp->to_room);
+		if (IS_SET(rp->room_flags, TUNNEL)) {
+			if ((MobCountInRoom(rp->people) >= rp->moblim) && (!IS_IMMORTAL(ch))) {
+				send_to_char("Sorry, there is no room to get in there.\n\r", ch);
+				return(FALSE);
+			}
+		}
+		if (IS_SET(rp->room_flags, PRIVATE)) {
+			if (MobCountInRoom(rp->people) > 2) {
+				send_to_char("Sorry, that room is private.\n\r", ch);
+				return(FALSE);
+			}
+		}
+		if (IS_SET(rp->room_flags, INDOORS)) {
+			if (MOUNTED(ch)) {
+				send_to_char("Your mount refuses to go that way\n\r", ch);
+				return(FALSE);
+			}
+		}
+		if (IS_SET(rp->room_flags, DEATH)) {
+			if (MOUNTED(ch)) {
+				send_to_char("Your mount refuses to go that way\n\r", ch);
+				return(FALSE);
+			}
+		}
+		return(TRUE);
 	}
-      }
-      else if (IS_SET(exitp->exit_info, EX_CLIMB) &&
-	       !IS_AFFECTED(ch, AFF_FLYING) ) {
-	send_to_char("Sorry, you'd either have to be flying or climbing to get there!\n\r", ch);
-	return(FALSE);
-
-      }
-
-      else {
-	struct room_data *rp;
-	rp = real_roomp(exitp->to_room);
-	if (IS_SET(rp->room_flags, TUNNEL)) {
-	  if ((MobCountInRoom(rp->people) >= rp->moblim) &&
-	      (!IS_IMMORTAL(ch))) {
-	    send_to_char("Sorry, there is no room to get in there.\n\r", ch);
-	    return(FALSE);
-	  }
-	}
-	if (IS_SET(rp->room_flags, PRIVATE)) {
-	  if (MobCountInRoom(rp->people) > 2) {
-	    send_to_char("Sorry, that room is private.\n\r", ch);
-	    return(FALSE);
-	  }
-	}
-	if (IS_SET(rp->room_flags, INDOORS)) {
-	  if (MOUNTED(ch)) {
-	    send_to_char("Your mount refuses to go that way\n\r", ch);
-	    return(FALSE);
-	  }
-	}
-	if (IS_SET(rp->room_flags, DEATH)) {
-	  if (MOUNTED(ch)) {
-	    send_to_char("Your mount refuses to go that way\n\r", ch);
-	    return(FALSE);
-	  }
-	}
-	return(TRUE);
-      }
-  }
-
-
+}
 
 int RawMove(struct char_data *ch, int dir)
 {
