@@ -1891,11 +1891,11 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                                 color1, color2, spells[aff->type - 1],
                                 color1, color2, aff->type, color1);
                         act(buf, FALSE, ch, 0, 0, TO_CHAR);
-                        
+
                         if (aff->location == APPLY_IMMUNE) {
                             sprintf(buf, "     %sModifies %s%s%s by %s",
-                                color1, color2, apply_types[aff->location], 
-                                color1, color2); 
+                                color1, color2, apply_types[aff->location],
+                                color1, color2);
                             sprintbit(aff->modifier, immunity_names, buf2);
                             strcat(buf, buf2);
                             sprintf(buf2, "%s", color1);
@@ -1903,9 +1903,9 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                             act(buf, FALSE, ch, 0, 0, TO_CHAR);
                         } else {
                             sprintf(buf, "     %sModifies %s%s%s by %s%ld%s "
-                                         "points", color1, color2, 
+                                         "points", color1, color2,
                                     apply_types[aff->location], color1, color2,
-                                    aff->modifier, color1); 
+                                    aff->modifier, color1);
                             act(buf, FALSE, ch, 0, 0, TO_CHAR);
                         }
                         if (aff->location == APPLY_BV2 ||
@@ -4126,7 +4126,7 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
     if (level == 0) {
         do_start(victim);
     } else if (level < IMPLEMENTOR) {
-        gain_exp_regardless(victim, 
+        gain_exp_regardless(victim,
                             (classes[lin_class].levels[newlevel].exp -
                              GET_EXP(victim)),
                             lin_class);
@@ -4697,7 +4697,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             if (!zonenum || zone < 0 || zone > top_of_zone_table) {
                 send_to_char("That is not a valid zone_number\n\r",ch);
                 return;
-		    }
+            }
         }
 
         if (zone >= 0) {
@@ -8375,3 +8375,57 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
+
+
+void do_zonesummary(struct char_data *ch, char *argument, int cmd)
+{
+     struct zone_data *zd;
+     struct room_data *rm = 0;
+     int linker(struct char_data *ch, int room);
+     int zone=0, start=0, end=0;
+     int counter=0, x=0;
+     rm = real_roomp(ch->in_room);
+    zone=rm->zone;
+
+            zd = zone_table + (zone - 1);
+            start= zd->top + 1;
+
+            zd=zone_table + zone;
+            end=zd->top;
+
+ch_printf(ch,"\n\rZone: %d (%d-%d) %s\n\r",rm->zone, start,end, zd->name);
+
+
+for (x=start;x <=end;x++) {
+    counter=counter+linker(ch, x);
+
+}
+
+if (counter==0)
+   ch_printf(ch,"No linker rooms found.\n\r");
+
+
+}
+
+int linker(struct char_data *ch, int room) {
+    /*char buf[MAX_STRING_LENGTH];*/
+    struct room_data *rm = 0, *tmp = 0;
+    int i, count = 0;
+
+    rm = real_roomp(room);
+    if(!rm)
+      return 0;
+
+    for (i = 0; i <= 5; i++) {
+       if (rm->dir_option[i]) {
+           tmp = real_roomp(rm->dir_option[i]->to_room);
+           if(!tmp)
+             return 0;
+           if(rm->zone!=tmp->zone) {
+              ch_printf(ch,"%d links to room %d (zone:%d).\n\r", rm->zone, rm->number, tmp->number, tmp->zone);
+              count++;
+           }
+       }
+    }
+    return count;
+}

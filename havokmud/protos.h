@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 /*
- * From Heap.c 
+ * From Heap.c
  */
 
 void            SmartStrCpy(char *s1, const char *s2);
@@ -31,7 +31,7 @@ void            DisplayStringHeap(struct StrHeap *Heap,
                                   struct char_data *ch, int type, int d);
 
 /*
- * From Opinion.c 
+ * From Opinion.c
  */
 
 void            FreeHates(struct char_data *ch);
@@ -52,7 +52,7 @@ void            ZeroFeared(struct char_data *ch, struct char_data *v);
 void            DeleteFears(struct char_data *ch);
 
 /*
- * From Sound.c 
+ * From Sound.c
  */
 
 int             RecGetObjRoom(struct obj_data *obj);
@@ -60,7 +60,7 @@ void            MakeNoise(int room, char *local_snd, char *distant_snd);
 void            MakeSound(int pulse);
 
 /*
- * From Trap.c 
+ * From Trap.c
  */
 
 void            do_settrap(struct char_data *ch, char *arg, int cmd);
@@ -80,7 +80,7 @@ void            TrapSleep(struct char_data *v);
 void            InformMess(struct char_data *v);
 
 /*
- * From act.comm.c 
+ * From act.comm.c
  */
 void            do_telepathy(struct char_data *ch, char *argument,
                              int cmd);
@@ -123,7 +123,7 @@ void            do_leave(struct char_data *ch, char *argument, int cmd);
 void            do_talk(struct char_data *ch, char *argument, int cmd);
 
 /*
- * From act.info.c 
+ * From act.info.c
  */
 void            do_sea_commands(struct char_data *ch, char *argument,
                                 int cmd);
@@ -218,7 +218,7 @@ char           *DescAttacks(float a);
 char           *SpeedDesc(int a);
 
 /*
- * From act.obj1.c 
+ * From act.obj1.c
  */
 
 void            get(struct char_data *ch, struct obj_data *obj_object,
@@ -230,7 +230,7 @@ int             newstrlen(char *p);
 void            do_give(struct char_data *ch, char *argument, int cmd);
 
 /*
- * From act.obj2.c 
+ * From act.obj2.c
  */
 
 void            weight_change_object(struct obj_data *obj, int weight);
@@ -255,7 +255,7 @@ int             make_severed_head(struct char_data *beheader,
                                   struct char_data *beheadee,
                                   struct obj_data *corpse);
 /*
- * From act.off.c 
+ * From act.off.c
  */
 void            do_weapon_load(struct char_data *ch, char *argument,
                                int cmd);
@@ -294,7 +294,7 @@ void            kick_messages(struct char_data *ch,
 void            do_disengage(struct char_data *ch, char *argument,
                              int cmd);
 /*
- * From act.other.c 
+ * From act.other.c
  */
 void            do_set_bprompt(struct char_data *ch, char *argument,
                                int cmd);
@@ -346,7 +346,7 @@ void            do_mount(struct char_data *ch, char *arg, int cmd);
 void            do_promote(struct char_data *ch, char *arg, int cmd);
 
 /*
- * From act.social.c 
+ * From act.social.c
  */
 
 void            boot_social_messages(void);
@@ -357,7 +357,7 @@ void            boot_pose_messages(void);
 void            do_pose(struct char_data *ch, char *argument, int cmd);
 
 /*
- * From act.wizard.c 
+ * From act.wizard.c
  */
 void            do_osave(struct char_data *ch, char *argument, int cmd);
 void            do_finger(struct char_data *ch, char *argument, int cmd);
@@ -434,6 +434,7 @@ void            print_death_room(int rnum, struct room_data *rp,
 void            print_private_room(int r, struct room_data *rp,
                                    struct string_block *sb);
 void            do_show(struct char_data *ch, char *argument, int cmd);
+void            do_zonesummary(struct char_data *ch, char *argument, int cmd);
 void            do_debug(struct char_data *ch, char *argument, int cmd);
 void            do_invis(struct char_data *ch, char *argument, int cmd);
 void            do_create(struct char_data *ch, char *argument, int cmd);
@@ -456,7 +457,7 @@ void            do_setsound(struct char_data *ch, char *argument, int cmd);
 void            do_tweak(struct char_data *ch, char *argument, int cmd);
 
 /*
- * From board.c 
+ * From board.c
  */
 
 void            board_write_msg(struct char_data *ch, char *arg, int bnum);
@@ -474,7 +475,7 @@ char           *fix_returns(char *text_string);
 int             board_check_locks(int bnum, struct char_data *ch);
 
 /*
- * From comm.c 
+ * From comm.c
  */
 
 int             __main(void);
@@ -528,11 +529,11 @@ void            act2(char *str, int hide_invisible, struct char_data *ch,
 void             raw_force_all(char *to_force);
 
 /*
- * From constants.c 
+ * From constants.c
  */
 
 /*
- * From db.c 
+ * From db.c
  */
 void            SaveTheWorld(void);
 void            boot_db(void);
@@ -582,7 +583,7 @@ void            ReloadRooms(void);
 void            FreeZone(int zone_nr);
 
 /*
- * From fight.c 
+ * From fight.c
  */
 
 void            appear(struct char_data *ch);
@@ -700,7 +701,7 @@ int             SmithShield(struct char_data *ch, struct char_data *v,
 void            BurnWings(struct char_data *ch);
 
 /*
- * From handler.c 
+ * From handler.c
  */
 
 char           *fname(char *namelist);
@@ -770,7 +771,7 @@ int             generic_find(char *arg, int bitvector,
 void            AddAffects(struct char_data *ch, struct obj_data *o);
 
 /*
- * From hash.c 
+ * From hash.c
  */
 
 void            init_hash_table(struct hash_header *ht, int rec_size,
@@ -793,7 +794,7 @@ void            hash_iterate(struct hash_header *ht, void (*func) (),
                              void *cdata);
 
 /*
- * From interpreter.c 
+ * From interpreter.c
  */
 void            do_clone(struct char_data *ch, char *argument, int cmd);
 void            do_mforce(struct char_data *ch, char *argument, int cmd);
@@ -817,7 +818,7 @@ int             _parse_name(char *arg, char *name);
 void            nanny(struct descriptor_data *d, char *arg);
 
 /*
- * From limits.c 
+ * From limits.c
  */
 
 char           *ClassTitles(struct char_data *ch);
@@ -840,7 +841,7 @@ void            gain_condition(struct char_data *ch, int condition,
 void            check_idling(struct char_data *ch);
 
 /*
- * From magic.c 
+ * From magic.c
  */
 
 void            heat_blind(struct char_data *ch);
@@ -1036,7 +1037,7 @@ void            spell_lozenge_breath(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
 /*
- * Fom magic2.c 
+ * Fom magic2.c
  */
 
 void            spell_resurrection(int level, struct char_data *ch,
@@ -1179,7 +1180,7 @@ void            spell_green_slime(int level, struct char_data *ch,
                                   struct obj_data *obj);
 
 /*
- * From magic3.c 
+ * From magic3.c
  */
 
 void            spell_tree_travel(int level, struct char_data *ch,
@@ -1329,7 +1330,7 @@ void            spell_dragon_ride(int level, struct char_data *ch,
                                   struct obj_data *obj);
 
 /*
- * New Paladin spells 
+ * New Paladin spells
  */
 void            spell_holy_strength(int level, struct char_data *ch,
                                     struct char_data *victim,
@@ -1353,7 +1354,7 @@ void            spell_circle_protection(int level, struct char_data *ch,
                                         struct char_data *victim,
                                         struct obj_data *obj);
 /*
- * From magicutils.c 
+ * From magicutils.c
  */
 
 void            SwitchStuff(struct char_data *giver,
@@ -1365,7 +1366,7 @@ void            FailPara(struct char_data *victim, struct char_data *ch);
 void            FailCalm(struct char_data *victim, struct char_data *ch);
 
 /*
- * From mobact.c 
+ * From mobact.c
  */
 int             UseViolentHeldItem(struct char_data *ch);
 void            mobile_guardian(struct char_data *ch);
@@ -1396,7 +1397,7 @@ void            do_rts(char *arg, struct char_data *ch);
 void            MobHit(struct char_data *, struct char_data *, int);
 
 /*
- * From modify.c 
+ * From modify.c
  */
 
 void            string_add(struct descriptor_data *d, char *str);
@@ -1415,7 +1416,7 @@ void            night_watchman(void);
 void            check_reboot(void);
 
 /*
- * From multiclass.c 
+ * From multiclass.c
  */
 
 int             GetClassLevel(struct char_data *ch, int class);
@@ -1438,7 +1439,7 @@ int             BestClassIND(struct char_data *ch);
 int             BestClassBIT(struct char_data *ch);
 
 /*
- * From reception.c 
+ * From reception.c
  */
 
 void            add_obj_cost(struct char_data *ch, struct char_data *re,
@@ -1477,13 +1478,13 @@ void            load_room_objs(int room);
 void            save_room(int room);
 
 /*
- * From security.c 
+ * From security.c
  */
 
 int             SecCheck(char *arg, char *site);
 
 /*
- * From shop.c 
+ * From shop.c
  */
 
 int             is_ok(struct char_data *keeper, struct char_data *ch,
@@ -1506,7 +1507,7 @@ void            boot_the_shops(void);
 void            assign_the_shopkeepers(void);
 
 /*
- * From signals.c 
+ * From signals.c
  */
 
 void            signal_setup(void);
@@ -1516,7 +1517,7 @@ void            hupsig(int signal);
 void            logsig(int signal);
 
 /*
- * From skills.c 
+ * From skills.c
  */
 void            do_sending(struct char_data *ch, char *argument, int cmd);
 void            do_esp(struct char_data *ch, char *argument, int cmd);
@@ -1578,7 +1579,7 @@ int             FSkillCheck(struct char_data *ch, int fskill);
 void            do_flowerfist(struct char_data *ch, char *argument, int cmd);
 void            do_flurry(struct char_data *ch, char *argument, int cmd);
 /*
- * From spec_assign.c 
+ * From spec_assign.c
  */
 int             is_murdervict(struct char_data *ch);
 void            assign_mobiles(void);
@@ -1602,7 +1603,7 @@ int             arena_dispel_trap(struct char_data *ch, int cmd, char *arg,
                                   struct room_data *rp, int type);
 
 /*
- * From spec_procs.c 
+ * From spec_procs.c
  */
 
 int             is_target_room_p(int room, void *tgt_room);
@@ -1814,7 +1815,7 @@ int             web_slinger(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
 
 /*
- * From spec_procs2.c 
+ * From spec_procs2.c
  */
 int             snake_avt(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type);
@@ -2011,7 +2012,7 @@ int             fiery_alley(struct char_data *ch, int cmd, char *arg,
                             struct room_data *rp, int type);
 
 /*
- * From spec_procs3.c 
+ * From spec_procs3.c
  */
 int             archer_instructor(struct char_data *ch, int cmd, char *arg,
                                   struct char_data *mob, int type);
@@ -2086,7 +2087,7 @@ int             NeutralBlade(struct char_data *ch, int cmd, char *arg,
                              struct obj_data *tobj, int type);
 
 /*
- * Procs for lennyas sin zone 
+ * Procs for lennyas sin zone
  */
 int             sinpool(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type);
@@ -2132,7 +2133,7 @@ int             pride_remover_seven(struct char_data *ch, int cmd,
 int             lust_sinner(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
 /*
- * mermaid's lagoon 
+ * mermaid's lagoon
  */
 int             mermaid(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type);
@@ -2142,7 +2143,7 @@ int             preperationproc(struct char_data *ch, int cmd, char *arg,
 int             chestproc(struct char_data *ch, int cmd, char *argument,
                           struct obj_data *obj, int type);
 /*
- * Assigns for the Town of Sundhaven 
+ * Assigns for the Town of Sundhaven
  */
 int             sund_earl(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type);
@@ -2164,7 +2165,7 @@ int             marbles(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type);
 
 /*
- * Assigns for Thunder Mountain Keep 
+ * Assigns for Thunder Mountain Keep
  */
 int             bahamut_home(struct char_data *ch, int cmd, char *arg,
                              struct room_data *rp, int type);
@@ -2206,19 +2207,19 @@ int             grayswandir(struct char_data *ch, int cmd, char *arg,
                             struct room_data *rp, int type);
 
 /*
- * Assigns for Sentinel's The Estate 
+ * Assigns for Sentinel's The Estate
  */
 int             janaurius(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob);
 
 /*
- * necro spell procedure 
+ * necro spell procedure
  */
 int             vampiric_embrace(struct char_data *ch,
                                  struct char_data *vict);
 
 /*
- * Assigns for Leaves of Silver 
+ * Assigns for Leaves of Silver
  */
 int             Jessep(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob);
@@ -2226,7 +2227,7 @@ int             Tysha(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob);
 
 /*
- * From spell_parser.c 
+ * From spell_parser.c
  */
 void            spello(int nr, byte beat, byte pos, byte mlev, byte clev,
                        byte dlev, byte slev, byte plev, byte rlev,
@@ -2261,7 +2262,7 @@ void            check_falling_obj(struct obj_data *obj, int room);
 int             check_nature(struct char_data *i);
 
 /*
- * From spells1.c 
+ * From spells1.c
  */
 
 void            cast_burning_hands(int level, struct char_data *ch,
@@ -2346,7 +2347,7 @@ void            cast_green_slime(int level, struct char_data *ch,
                                  struct obj_data *tar_obj);
 
 /*
- * From spells2.c 
+ * From spells2.c
  */
 
 void            cast_resurrection(int level, struct char_data *ch,
@@ -2867,7 +2868,7 @@ void            cast_teleport_wo_error(int level, struct char_data *ch,
                                        struct obj_data *tar_obj);
 
 /*
- * New Paladin Spells (GH) 
+ * New Paladin Spells (GH)
  */
 void            cast_holy_armor(int level, struct char_data *ch,
                                 char *arg, int type,
@@ -2906,7 +2907,7 @@ void            do_legend_lore(struct char_data *ch, char *argument, int cmd);
 void            do_ventriloquate(struct char_data *ch, char *argument, int cmd);
 
 /*
- * From utility.c 
+ * From utility.c
  */
 void            Log(char *s);
 int             advatoi(const char *s);
@@ -3073,7 +3074,7 @@ int             MobCastCheck(struct char_data *ch, int psi);
 struct obj_data *find_tqp(int tqp_nr);
 int             count_tqp(void);
 /*
- * From weather.c 
+ * From weather.c
  */
 
 void            weather_and_time(int mode);
@@ -3085,7 +3086,7 @@ void            GetMonth(int month);
 void            switch_light(byte why);
 
 /*
- * From create.c 
+ * From create.c
  */
 
 void            ChangeRoomFlags(struct room_data *rp, struct char_data *ch,
@@ -3112,7 +3113,7 @@ void            DeleteExit(struct room_data *rp, struct char_data *ch,
                            char *arg, int type);
 
 /*
- * From parser.c 
+ * From parser.c
  */
 
 void            GenerateHash(void);
@@ -3124,12 +3125,12 @@ int             FindCommandNumber(char *cmd);
 char           *FindCommandName(int num);
 
 /*
- * ansi_parser.c 
+ * ansi_parser.c
  */
 char           *ansi_parse(char *code);
 
 /*
- * mail.c 
+ * mail.c
  */
 
 int             mail_ok(struct char_data *ch);
@@ -3143,7 +3144,7 @@ void            postmaster_receive_mail(struct char_data *ch, int cmd,
 int             scan_mail_file(void);
 
 /*
- * create.*.c 
+ * create.*.c
  */
 void            do_ooedit(struct char_data *ch, char *argument, int cmd);
 void            do_medit(struct char_data *ch, char *argument, int cmd);
@@ -3219,13 +3220,13 @@ int             board_ship(struct char_data *ch, int cmd, char *arg,
 int             CorsairPush(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
 /*
- * act.comm.c - used for mobs to tell people stuff 
+ * act.comm.c - used for mobs to tell people stuff
  */
 void            do_mobTell(struct char_data *ch, char *mob,
                            char *sentence);
 
 /*
- * Utilities 
+ * Utilities
  */
 void            qlog(char *desc);
 void            do_orebuild(struct char_data *ch, char *argument,
@@ -3234,7 +3235,7 @@ void            do_mrebuild(struct char_data *ch, char *argument,
                             int cmd);
 
 /*
- * Leaves of Silver 
+ * Leaves of Silver
  */
 int             Vaelhar(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob);
@@ -3274,7 +3275,7 @@ long            NewExpCap(struct char_data *ch, long total);
 int             ValidRoom(struct char_data *ch);
 
 /*
- * Spec_procs4.c 
+ * Spec_procs4.c
  */
 int             TrainingGuild(struct char_data *ch, int cmd, char *arg,
                               struct char_data *mob, int type);
@@ -3306,7 +3307,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
 int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
                   struct obj_data *obj, int type);
 /*
- * King's Grove 
+ * King's Grove
  */
 int             climb_room(struct char_data *ch, int cmd, char *arg,
                            struct room_data *rp, int type);
@@ -3324,13 +3325,13 @@ int             gnome_collector(struct char_data *ch, int cmd, char *arg,
 void            do_sharpen(struct char_data *ch, char *argument, int cmd);
 
 /*
- * Sentinel's Zone 
+ * Sentinel's Zone
  */
 int             cog_room(struct char_data *ch, int cmd, char *arg,
                          struct room_data *rp, int type);
 
 /*
- * Talesian's zone 
+ * Talesian's zone
  */
 int             sageactions(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
@@ -3364,7 +3365,7 @@ int             mirrorofopposition(struct char_data *ch, int cmd,
                                    int type);
 
 /*
- * Citystate of Tarantis 
+ * Citystate of Tarantis
  */
 int             nightwalker(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
@@ -3376,7 +3377,7 @@ int             portal_regulator(struct char_data *ch,
                                  struct room_data *rp, int cmd);
 
 /*
- * Heximal's zone 
+ * Heximal's zone
  */
 int             riddle_exit(struct char_data *ch, int cmd, char *arg,
                             struct room_data *rp, int type);
@@ -3584,7 +3585,7 @@ void mind_clairvoyance(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
 void mind_disintegrate(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj);
-void mind_telekinesis(int level, struct char_data *ch, 
+void mind_telekinesis(int level, struct char_data *ch,
                       struct char_data *victim, int dir_num);
 void mind_levitation(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj);
@@ -3727,9 +3728,9 @@ void            DamageAllStuff(struct char_data *ch, int dam_type);
 void            cast_calm(int level, struct char_data *ch, char *arg,
                           int si, struct char_data *tar_ch,
                           struct obj_data *tar_obj);
-void            cast_energy_restore(int level, struct char_data *ch, 
-                                    char *arg, int type, 
-                                    struct char_data *victim, 
+void            cast_energy_restore(int level, struct char_data *ch,
+                                    char *arg, int type,
+                                    struct char_data *victim,
                                     struct obj_data *tar_obj);
 void            cast_protection_from_good(int level, struct char_data *ch, char
                                           *arg, int si,
@@ -4080,7 +4081,7 @@ void            mind_use_kinolock(int level, struct char_data *ch,
                                   struct obj_data *tar_obj);
 
 void mind_use_sense_object(int level, struct char_data *ch, char *arg,
-                           int type, struct char_data *tar_ch, 
+                           int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
 
 
@@ -4091,7 +4092,7 @@ char *procGetNameByFunc( int_func func, proc_type type );
 
 void show_class_skills(struct char_data *ch, char *buffer, int classnum,
                        int skills);
-void show_skills(struct char_data *ch, char *buffer, 
+void show_skills(struct char_data *ch, char *buffer,
                  const struct skillset *skills);
 
 void            do_mobTell2(struct char_data *ch,
@@ -4109,7 +4110,7 @@ void sprintclasses(unsigned long vektor, char *result);
 struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
                                      struct obj_data *equipment[], int *j);
 
-int dragon(struct char_data *ch, int cmd, char *arg, 
+int dragon(struct char_data *ch, int cmd, char *arg,
            struct char_data *mob, int type);
 void do_find_traps(struct char_data *ch, char *arg, int cmd);
 /*************************************************************************
@@ -4120,7 +4121,7 @@ void do_find_traps(struct char_data *ch, char *arg, int cmd);
 char *crypt(const char *key, const char *salt);
 #endif
 
-#ifndef HAVE_STRNLEN 
+#ifndef HAVE_STRNLEN
 /* FreeBSD and Solaris seem to be missing strnlen */
 size_t strnlen(const char *s, size_t maxlen);
 #endif

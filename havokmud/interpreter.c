@@ -31,10 +31,10 @@ char *newbie_note[] = {
     "    fun as possible, as well as ensuring that Havok is a stable and\n\r"
     "    reliable place to play.  They deserve your respect and courtesy\n\r"
     "    and by playing Havok you agree to show them both.\n\r",
-    " 2) We try to get people to role play, but we do not force you. If\n\r" 
-    "    you enjoy role playing please do so, if you do not please do not\n\r" 
+    " 2) We try to get people to role play, but we do not force you. If\n\r"
+    "    you enjoy role playing please do so, if you do not please do not\n\r"
     "    interfere with those that do.\n\r",
-    " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r" 
+    " 3) Some commands for newbies are HELP, NEWS, and COMMANDS. Use help\n\r"
     "    for solving most of your questions. If you are still confused feel\n\r"
     "    free to ask.\n\r",
     " 3) PLEASE do not curse over public channels including GOSSIP, SHOUT\n\r"
@@ -45,7 +45,7 @@ char *newbie_note[] = {
     "    communicate world wide if you need them. SHOUT and OOC are world\n\r"
     "    wide and cost you MANA and VITIALITY points.\n\r",
     " 5) Please do not use 'funny' or 'wacky' names. We try to encourage\n\r "
-    "    role-playing and if you use those type of names it does not help\n\r" 
+    "    role-playing and if you use those type of names it does not help\n\r"
     "    matters. Do not use a name that is used in the Forgotten Realms\n\r"
     "    setting (such as Elminster, Drizzit etc..).  There are NPC's that\n\r"
     "    use these names and it will cause confusion. If you do not abide\n\r"
@@ -870,6 +870,7 @@ struct command_def commandList[] = {
      * new commands for skills sort
      */
     { "stalk", do_stalk, 626, POSITION_STANDING, 1 },
+    { "zonesummary", do_zonesummary, 627, POSITION_STANDING, 51 },
 };
 int commandCount = NELEMS(commandList);
 
@@ -1087,8 +1088,8 @@ void command_interpreter(struct char_data *ch, char *argument)
 
     if (!argument || !*argument || *argument == '\n' || *argument == '\r' ) {
         return;
-    } 
-    
+    }
+
     if (!isalpha((int)*argument)) {
         arg = (char *)malloc(strlen(argument) + 2);
         if( !arg ) {
@@ -1104,7 +1105,7 @@ void command_interpreter(struct char_data *ch, char *argument)
             return;
         }
     }
-    
+
     tmparg = arg;
     arg = get_argument_nofill(arg, &arg1);
     arg2 = skip_spaces( arg );
@@ -1195,8 +1196,8 @@ void command_interpreter(struct char_data *ch, char *argument)
             free(tmparg);
         }
         return;
-    } 
-    
+    }
+
     if (n->log) {
         sprintf(buf, "%s:%s", ch->player.name, argument);
         slog(buf);
@@ -1294,7 +1295,7 @@ char *get_argument_common(char *line_in, char **arg_out, int do_fill,
             *arg_out = NULL;
             return( NULL );
         }
-        
+
         if( delim && *line == delim ) {
             /* Found a delimiter, skip past it, then match the other one rather
              * than a space
@@ -1628,7 +1629,7 @@ void show_menu(struct descriptor_data *d)
        /*
         * remort == 0 means none picked
         */
-        strcat(mainclass, 
+        strcat(mainclass,
                classes[(d->character->specials.remortclass - 1)].abbrev);
     }
     if (!(strcmp(mainclass, ""))) {
@@ -2067,16 +2068,16 @@ void nanny(struct descriptor_data *d, char *arg)
         if (!arg) {
             EnterState(d, CON_QRACE);
             return;
-        } 
-        
+        }
+
        if (*arg == '?') {
             for( i = 0; racehelp[i]; i++ ) {
                 SEND_TO_Q(racehelp[i], d);
             }
             EnterState(d, CON_QRACE);
             return;
-        } 
-       
+        }
+
         tmpi = atoi(arg);
         if (tmpi >= 1 && tmpi <= race_choice_count) {
             GET_RACE(d->character) = race_choice[tmpi - 1].raceNum;
@@ -2101,8 +2102,8 @@ void nanny(struct descriptor_data *d, char *arg)
         if (!arg) {
             close_socket(d);
             return;
-        } 
-        
+        }
+
         if (_parse_name(arg, tmp_name)) {
             SEND_TO_Q("Illegal name, please try another.\r\n", d);
             SEND_TO_Q("Name: ", d);
@@ -2283,7 +2284,7 @@ void nanny(struct descriptor_data *d, char *arg)
                                 GET_NAME(d->character), d->host);
                         Log(buf);
                     }
-                    
+
                     if (d->character->specials.hostip) {
                         free(d->character->specials.hostip);
                     }
@@ -2359,7 +2360,7 @@ void nanny(struct descriptor_data *d, char *arg)
             SEND_TO_Q("Passwords don't match.\n\r", d);
             EnterState(d, CON_PWDGET);
             return;
-        } 
+        }
 
         write(d->descriptor, echo_on, 6);
         EnterState(d, CON_ANSI);
@@ -2432,7 +2433,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 } else if (tolower(*arg) == 'h') {
                     d->stat[index++] = 'h';
                     break;
-                } 
+                }
                 /* If neither Co or Ch, fall through to default */
             default:
                 SEND_TO_Q("That was an invalid choice.\n\r", d);
@@ -2454,8 +2455,8 @@ void nanny(struct descriptor_data *d, char *arg)
             SEND_TO_Q("That was an invalid choice.\n\r", d);
             EnterState(d, CON_STAT_LIST);
             return;
-        } 
-        
+        }
+
         roll_abilities(d->character);
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             /*
@@ -2482,14 +2483,14 @@ void nanny(struct descriptor_data *d, char *arg)
                 EnterState(d, CON_CREATION_MENU);
             }
             return;
-        } 
-        
+        }
+
         roll_abilities(d->character);
         if (d->character->reroll != 0) {
             EnterState(d, CON_REROLL);
             return;
-        } 
-        
+        }
+
         SEND_TO_Q("Your final stats are:\n\r", d);
         sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
         SEND_TO_Q(buf, d);
@@ -2521,8 +2522,8 @@ void nanny(struct descriptor_data *d, char *arg)
             d->character->specials.remortclass = pick;
             EnterState(d, CON_CREATION_MENU);
             return;
-        } 
-        
+        }
+
         SEND_TO_Q("\n\rInvalid class picked.\n\r", d);
         EnterState(d, CON_MCLASS);
         break;
@@ -2569,12 +2570,12 @@ void nanny(struct descriptor_data *d, char *arg)
                 }
 
                 /* Class choice is valid */
-                d->character->player.class = 
+                d->character->player.class =
                     race_choice[i].classesAvail[class - 1];
                 found = TRUE;
             }
         }
-                    
+
         if (d->character->player.class == 0) {
             SEND_TO_Q("Invalid selection!\n\r", d);
             EnterState(d, CON_QCLASS);
@@ -2589,7 +2590,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
             EnterState(d, CON_CREATION_MENU);
         } else {
-            SEND_TO_Q("Your race seems to be incorrect, please reselect\n\r", 
+            SEND_TO_Q("Your race seems to be incorrect, please reselect\n\r",
                       d);
             Log("Couldn't find a race in creation, screwy!!");
             EnterState(d, CON_CREATION_MENU);
@@ -2609,8 +2610,8 @@ void nanny(struct descriptor_data *d, char *arg)
             save_char(d->character, AUTO_RENT);
             EnterState(d, CON_RMOTD);
             return;
-        } 
-        
+        }
+
         if (d->character->generic >= NEWBIE_REQUEST) {
             sprintf(buf, "%s [%s] new player.", GET_NAME(d->character),
                     d->host);
@@ -2702,7 +2703,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_DELETE_ME:
         arg = skip_spaces(arg);
-        if (arg && !strcasecmp(arg, "yes") && 
+        if (arg && !strcasecmp(arg, "yes") &&
             strcasecmp("Guest", GET_NAME(d->character))) {
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
             Log(buf);
@@ -3009,13 +3010,13 @@ void show_race_choice(struct descriptor_data *d)
     SEND_TO_Q(buf, d);
 
     for (i = 0; i < race_choice_count; i++) {
-        sprintf(buf, "%s$c000W%-3d)$c0007 %-15s", 
+        sprintf(buf, "%s$c000W%-3d)$c0007 %-15s",
                 (race_choice[i].raceNum == RACE_DROW ?
                  "$c000WThe Races Listed below may have some racials hatreds."
                  "  Advanced players only.\n\r" : ""),
                 i + 1, RaceName[race_choice[i].raceNum]);
         /*
-         * show level limits 
+         * show level limits
          */
         for (j = 0; j < MAX_CLASS; j++) {
             sprintf(buf2, " %-3d", RacialMax[race_choice[i].raceNum][j]);
