@@ -2526,8 +2526,13 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
 
 char *GetLevelTitle(struct char_data *ch) {
 	char color[25];
-	int level = GET_LEVEL(ch,BestMagicClass(ch)); //This will change to main class
+	int level = GetMaxLevel(ch);
 	static char buf[256]="";
+	char buf2[256];
+	int i;
+	int high=0;
+	int class=0;
+	int exp = 0;
 
 
 /*get color of title */
@@ -2549,12 +2554,25 @@ char *GetLevelTitle(struct char_data *ch) {
 	if(!IS_IMMORTAL(ch) && (GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND))) {
 		sprintf(buf,"%s","$c0008L$c000we$c000Wge$c000wn$c0008d");
 		return buf;
-	} else if(GET_SEX(ch)==SEX_FEMALE) {
-		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_f);
-		return buf;
 	} else {
-		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_m);
-		return buf; //BestMagicClass(ch)
+		/* determine the highest xp value gained level */
+		exp = GET_EXP(ch);
+		for (i=1;i<=CLASS_NECROMANCER;i*=2) {
+			if (HasClass(ch, i)) {
+				if (titles[i][GET_LEVEL(ch, i)].exp >= high) {
+					high = titles[i][GET_LEVEL(ch, i)].exp;
+					class = i;
+				}
+			}
+		}
+
+		if(GET_SEX(ch)==SEX_FEMALE) {
+			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_f);
+			return buf;
+		} else {
+			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_m);
+			return buf; //BestMagicClass(ch)
+		}
 	}
 }
 
@@ -2741,16 +2759,16 @@ argument = one_argument(argument,tbuf);
 							} else {
 								/*Get mortal class titles */
 								if(!IS_IMMORTAL(person)) {
-									sprintf(classes,"");
-									for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
-										if(HasClass(person,bit)) {
-											classn++;
-											total+=person->player.level[i];
-											if(strlen(classes)!=0)
-												strcat(classes,"/");
-											sprintf(classes+strlen(classes),"%s",classname[i]);
+										sprintf(classes,"");
+										for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
+											if(HasClass(person,bit)) {
+												classn++;
+												total+=person->player.level[i];
+												if(strlen(classes)!=0)
+													strcat(classes,"/");
+												sprintf(classes+strlen(classes),"%s",classname[i]);
+											}
 										}
-									}
 								}
 								/* Split off into the different groups */
 								if(IS_IMMORTAL(person)) {
