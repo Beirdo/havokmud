@@ -2970,6 +2970,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                         strcat(tbuf, (i > 1) ? "B" : "b");
                     } else if (s_flag) {
                         strcat(tbuf, "-");
+                    }
                     if ((i = _affected_by_s(ch, SPELL_SANCTUARY)) != -1) {
                         strcat(tbuf, (i > 1) ? "S" : "s");
                     } else if (s_flag) {
