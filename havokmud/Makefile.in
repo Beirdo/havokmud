@@ -17,16 +17,15 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	classes.c comm.c constants.c create.c create.help.c create.mob.c \
 	create.obj.c db.c fight.c handler.c hash.c heap.c interpreter.c \
 	limits.c magicutils.c mail.c mobact.c modify.c mod.text.c \
-        multiclass.c opinion.c paginate.c parser.c reception.c security.c \
-        shop.c signals.c skills_breath.c skills_barbarian.c skills_cleric.c \
-        skills_druid.c skills_generic_fighter.c skills_generic_wizard.c \
-        skills_generic_rogue.c skills_generic_priest.c skills_mage.c \
-        skills_monk.c skills_necromancer.c skills_proficiencies.c\
-        skills_paladin.c skills_psionist.c skills_ranger.c skills_thief.c \
-        skills_warrior.c sound.c spec_assign.c spec_guildmaster.c \
-        spec_procs2.c spec_procs3.c \
-	spec_procs4.c spec_procs.c spell_parser.c trap.c utility.c \
-        weather.c
+	multiclass.c opinion.c paginate.c parser.c reception.c security.c \
+	shop.c signals.c skills_breath.c skills_barbarian.c skills_cleric.c \
+	skills_druid.c skills_generic_fighter.c skills_generic_wizard.c \
+	skills_generic_rogue.c skills_generic_priest.c skills_mage.c \
+	skills_monk.c skills_necromancer.c skills_proficiencies.c\
+	skills_paladin.c skills_psionist.c skills_ranger.c skills_thief.c \
+	skills_warrior.c sound.c spec_assign.c spec_guildmaster.c \
+	spec_procs2.c spec_procs3.c spec_procs4.c spec_procs.c \
+	spell_parser.c trap.c utility.c weather.c
 EXE =	havokmud@EXEEXT@
 
 OBJS = ${SRCS:.c=.o}
