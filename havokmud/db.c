@@ -248,8 +248,8 @@ void boot_db()
 
 	reset_q.head = reset_q.tail = 0;
 
-	/* cycle through pfiles to see if anyone get a statue */
-	generate_legend_statue();
+//	/* cycle through pfiles to see if anyone get a statue */
+//	generate_legend_statue();
 
 	log("Boot db -- DONE.");
 }

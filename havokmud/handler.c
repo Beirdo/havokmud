@@ -818,7 +818,7 @@ void char_from_room(struct char_data *ch)
   ch->next_in_room = 0;
 }
 
-
+#define STATUE_ZONE 4
 /* place a character in a room */
 void char_to_room(struct char_data *ch, long room)
 {
@@ -879,6 +879,9 @@ void char_to_room(struct char_data *ch, long room)
 	start up the zone.
 	*/
       reset_zone(rp->zone);
+      if(rp->zone == STATUE_ZONE)
+      	generate_legend_statue();
+
     }
   }
 }
