@@ -1253,6 +1253,16 @@ dlog("in do_stat");
       strcat(buf, "\n\r");
       send_to_char(buf, ch);
 
+	  if(rm->tele_time > 0) {
+	      send_to_char("--------- Teleport ---------\n\r",ch);
+
+		  ch_printf(ch," Teleport to room %d after %d seconds.(%d)\n\r",
+	  	  	rm->tele_targ,
+	  		rm->tele_time/10,
+	  		rm->tele_cnt);
+
+	 }
+
       send_to_char("------- Exits defined -------\n\r", ch);
       for (i = 0; i <= 5; i++) {
 	if (rm->dir_option[i]) {

@@ -2246,23 +2246,20 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 
     if (!wielded) {
       if (IS_NPC(ch) || HasClass(ch, CLASS_MONK ))
-	dam += dice(ch->specials.damnodice, ch->specials.damsizedice);
+		dam += dice(ch->specials.damnodice, ch->specials.damsizedice);
       else
-	dam += number(0,2);  /* Max. 2 dam with bare hands */
+		dam += number(0,2);  /* Max. 2 dam with bare hands */
     } else {
-      if (wielded->obj_flags.value[2] > 0)
-      {
-
-        dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
-
-      }  /* !v[2]>0 */ else
+        if (wielded->obj_flags.value[2] > 0) {
+          dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
+        }  /* !v[2]>0 */ else
       {
         act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_CHAR);
-	act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_ROOM);
-	if ((obj = unequip_char(ch, WIELD))!=NULL) {
-	  MakeScrap(ch,v, obj);
-	  dam += 1;
-	}
+	    act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_ROOM);
+	    if ((obj = unequip_char(ch, WIELD))!=NULL) {
+	       MakeScrap(ch,v, obj);
+	       dam += 1;
+	    }
       }
 /* aarcerak bug fix..get_str(ch) can't be used because of additional str */
       if (wielded->obj_flags.weight > str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
@@ -2281,21 +2278,20 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 
 
       for(j=0; j<MAX_OBJ_AFFECT; j++)       {
-	if (wielded->affected[j].location == APPLY_RACE_SLAYER)         {
-	  if (wielded->affected[j].modifier == GET_RACE(v)) {
-	     dam *= 2;
-	    }
-	}
+		if (wielded->affected[j].location == APPLY_RACE_SLAYER)         {
+		  if (wielded->affected[j].modifier == GET_RACE(v)) {
+		     dam *= 2;
+		  }
+		}
 
-	if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
-	  if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
-	    dam *= 2;
-	  else if ( wielded->affected[j].modifier == 1
-               && (!IS_GOOD(v) && !IS_EVIL(v)))
-	    dam *=2;
-	  else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
-	    dam *= 2;
-	}
+		if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
+		  if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
+		    dam *= 2;
+		  else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
+		    dam *=2;
+		  else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
+		    dam *= 2;
+		}
       }
     }
 
@@ -2414,6 +2410,7 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 void root_hit(struct char_data *ch, struct char_data *victim, int type,
 	      int (*dam_func)(), int DistanceWeapon)
 {
+	int temp;
   int w_type, thaco, dam;
   struct obj_data *wielded=0;  /* this is rather important. */
 
@@ -2430,6 +2427,13 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type,
 
   if (HitOrMiss(ch, victim, thaco)) {
     if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
+		//lets add resistances
+		temp = PreProcDam(victim,w_type,dam); //Lets see if the victim is resist or immune to the attack
+		if(temp == -1)
+			ch_printf(ch,"Your attack against %s is futile.\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
+		else if(temp < dam)
+			ch_printf(ch,"%s seems to resist your attack!\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
+
        HitVictim(ch, victim, dam, type, w_type, dam_func);
     } else {
        MissVictim(ch, victim, type, w_type, dam_func);
@@ -3664,17 +3668,14 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
   }
   else
   {
-    if (type == TYPE_HIT || IS_NPC(ch))
-    {
-  if (GetMaxLevel(ch) > ((Immunity+1)*(Immunity+1))+6 ||
-     (HasClass(ch,CLASS_BARBARIAN)  && BarbarianToHitMagicBonus(ch) >= Immunity))
-      {
-	return(dam);
+    if (type == TYPE_HIT || IS_NPC(ch)) {
+  		if (GetMaxLevel(ch) > ((Immunity+1)*(Immunity+1))+6 ||
+     	(HasClass(ch,CLASS_BARBARIAN)  && BarbarianToHitMagicBonus(ch) >= Immunity)) {
+			return(dam);
       }
-        else
-      {
-	act("$N ignores your puny attack", FALSE, ch, 0, v, TO_CHAR);
-	return(0);
+        else {
+		  act("$N ignores your puny attack", FALSE, ch, 0, v, TO_CHAR);
+		  return(0);
       } /* was not TYPE_HIT or NPC */
 
     } else
@@ -3684,26 +3685,21 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 	return(0);
 
       for(j=0; j<MAX_OBJ_AFFECT; j++)
-	if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
-	    (ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))
-        {
-	  total += ch->equipment[WIELD]->affected[j].modifier;
-	}
+		if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
+	    	(ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))  {
+	  		total += ch->equipment[WIELD]->affected[j].modifier;
+		}
 
-  if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)
-     {
-      total = BarbarianToHitMagicBonus(ch);
-     }
+  		if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)  {
+      		total = BarbarianToHitMagicBonus(ch);
+     	}
 
-      if (total > Immunity)
-      {
-	return(dam);
-      }
-       else
-      {
-	act("$N ignores your puny weapon", FALSE, ch, 0, v, TO_CHAR);
-	return(0);
-      }
+      	if (total > Immunity)  {
+			return(dam);
+      	} else {
+			act("$N ignores your puny weapon", FALSE, ch, 0, v, TO_CHAR);
+			return(0);
+      	}
     }
   }
 }
