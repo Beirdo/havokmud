@@ -1,3 +1,5 @@
+#ifndef _interpreter_h
+#define _interpreter_h
 
 #define MENU         \
 "\n\r$c0009Welcome $c0009to -=$c0015Havok $c0015MUD$c0009=-\n\r\n\
@@ -10,44 +12,42 @@ $c00154) $c0012Change password.\n\r\
 $c0015K) $c0012Kill this character!\n\r\n\r\
    $c0011Make your choice: "
 
-
 #define RACEHELP          \
 "\n\r\
 Dwarves:   Shorter. Less Movement. Infravision. Higher con, Lower dex,\n\r\
            faster hit point gain.  less damage from poison, racial hatreds\n\r\
 Moon Elf:  More Movement. Faster Mana gain, Higher dex, Lower con\n\r\
-	   Detect secret doors, racial hatreds, Infra vision\n\r\
+           Detect secret doors, racial hatreds, Infra vision\n\r\
 Gold Elf:  Same as Moon, except more intellengent and less wisdom.\n\r\
 Wild Elf:  Same as Moon except stronger, less intellengent.\n\r\
 Sea Elf:   Same as moon except healthier and stronger, less dexterious.\n\r\
 Dark Elf:  Same as elves, but higher dex, infravision, class limits are\n\r\
-	   different. Minus to hit in lighted rooms.\n\r\
+           different. Minus to hit in lighted rooms.\n\r\
 Humans:    Average...Unlimited in all classes only race that is.\n\r\
-  	   Least amount of racial hatreds than all classes.\n\r\
-	   Most class selections in the multi-class ranges.\n\r\
-	   Humans can be Barbarians.\n\r\
+           Least amount of racial hatreds than all classes.\n\r\
+           Most class selections in the multi-class ranges.\n\r\
+           Humans can be Barbarians.\n\r\
 Halflings: Very short.  Higher dex, Lower str.  Less move, faster hit \n\r\
            point gain, less damage from poison. faster move gain\n\r\
 Rock Gnomes:    Short. Higher intel, Lower wis.. Less move, infravision, faster\n\r\
            mana gain\\n\r\n\r\
 Forest Gnomes: Same as Rock Gnome, except High Wis, Dex, Low Int, Str\n\r\
 Half-Elves:Infravision, detect secret doors, good move and mana gain, large\n\r\
-	   multi-class selection. Only race that can multi-class\n\r\
-	   the Druid class.\n\r\
+           multi-class selection. Only race that can multi-class\n\r\
+           the Druid class.\n\r\
 Half-Orcs: Infravision, high con, low charisma Good move point gain.\n\r\
 Half-Ogres:Infravision, high strength and con, low dex and intel. Good move\n\r\
-	   and hit point gain. Large size and weight. Cleric, warrior classes\n\r\
-	   only.\n\r\
+           and hit point gain. Large size and weight. Cleric, warrior classes\n\r\
+           only.\n\r\
 Half-Giants:Infravision, highest strength bonus, high con, low intel, wis and\n\r\
-	    dex. Good hit point and move gain. Very large. Warrior\n\r\
-	    and Barbarian class ONLY. Giants get a hit point boost\n\r\
-	    at level 1.\n\r\
+            dex. Good hit point and move gain. Very large. Warrior\n\r\
+            and Barbarian class ONLY. Giants get a hit point boost\n\r\
+            at level 1.\n\r\
 \n\r\n\r"
 
 #define WELC_MESSG \
 "\n\rWelcome to the land of Havok MUD. May you enjoy your visit.\
 \n\r\n\r"
-
 
 #define STORY     \
 " Dale mud is a creation of the Public broadcasting System. \n \
@@ -64,11 +64,11 @@ Barbarians:   Strong fighters, trackers and survivers. More move, faster\n\r\
               hit point regeneration. Limited magic use. Single class only and\n\r\
               only Humans and Half-Giants can be Barbarians.\n\r\
 Paladins:     Holy warriors, defenders of good. Good fighters, some cleric\n\r\
-	      abilities.\n\r\
+              abilities.\n\r\
 Rangers:      Woodland hunters. These guys are one with the ways of the\n\r\
-	      the forest life. Some druid type skills and warrior.\n\r\
+              the forest life. Some druid type skills and warrior.\n\r\
 Psionists:    Mind benders, they use the power of the mind to do\n\r\
-	      unthought-of things\n\r\
+              unthought-of things\n\r\
 \n\rREMEMBER single class characters have a better hit point ratio than multi's.\n\r\
 \n\r\n\r"
 
@@ -109,3 +109,8 @@ do not want to be a Sorcerer (yes/no) :"
  6) Remember that we try to add a bit of realizem (not to much though:)\n\r\
     and things such as starving to death or dieing of thirst CAN happen.\n\r\
 \n\r\n\r"
+
+#endif
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
