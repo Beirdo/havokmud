@@ -3245,16 +3245,16 @@ void zone_update()
 		tmp2 = update_u->next;
 
 		if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_ALWAYS) ||
+			IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT) ||
 			(IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_EMPTY) &&
 			is_empty(update_u->zone_to_reset))) {
-
 /* Lennya's deinit of zones stuff */
 			//IS_SET(SystemFlags,SYS_NO_DEINIT)
 			if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT)) {
 				/* this should never deinit, or set back to 0 */
 				reset_zone(update_u->zone_to_reset,0);
 			} else if (!is_empty(update_u->zone_to_reset)) {
-				/* ALWAYS should just reset, not cleaned when there's people in it */
+				/* just reset, not cleaned when there's people in it */
 				reset_zone(update_u->zone_to_reset,0);
 			} else {
 				CleanZone(update_u->zone_to_reset);
@@ -3262,11 +3262,10 @@ void zone_update()
 				sprintf(buf, "zone %d just deinited",update_u->zone_to_reset);
 				log(buf);
 			}
-
 			/* dequeue */
-			if (update_u == reset_q.head)
+			if (update_u == reset_q.head) {
 				reset_q.head = reset_q.head->next;
-			else {
+			} else {
 				for (temp = reset_q.head; temp->next != update_u; temp = temp->next)
 					;
 				if (!update_u->next)
