@@ -1708,7 +1708,12 @@ void spell_dispel_magic(int level, struct char_data *ch,
         affect_from_char(victim, SPELL_SENSE_LIFE);
         send_to_char("You feel less in touch with living things.\n\r", victim);
     }
-
+    
+    if (affected_by_spell(victim, SPELL_ENTANGLE)) {
+        affect_from_char(victim, SPELL_ENTANGLE);
+        send_to_char("The magical vines holding you wither away.\n\r", victim);
+    }
+    
     if (IS_AFFECTED(victim, AFF_SANCTUARY)) {
         if (yes || !saves_spell(victim, SAVING_SPELL)) {
             REMOVE_BIT(victim->specials.affected_by, AFF_SANCTUARY);
