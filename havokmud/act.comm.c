@@ -1,6 +1,6 @@
 /*
  * DaleMUD v2.0 Released 2/1994 See license.doc for distribution terms.
- * DaleMUD is based on DIKUMUD 
+ * DaleMUD is based on DIKUMUD
  */
 #include <stdio.h>
 #include <string.h>
@@ -8,7 +8,7 @@
 #include "protos.h"
 
 /*
- * extern variables 
+ * extern variables
  */
 
 extern struct room_data *world;
@@ -60,13 +60,14 @@ void do_report(struct char_data *ch, char *argument, int cmd)
      * Commented out this check, don't see why one shouldn't be able to
      * report in this case -Lennya 20030407
      */
-    // if (GET_HIT(ch) > GET_MAX_HIT(ch) || /* bug fix */
-    // GET_MANA(ch) > GET_MAX_MANA(ch) ||
-    // GET_MOVE(ch) > GET_MAX_MOVE(ch)) {
-    // send_to_char("Sorry, cannot do that right now.\n\r",ch);
-    // return;
-    // }
-
+#if 0
+    if (GET_HIT(ch) > GET_MAX_HIT(ch) ||
+       GET_MANA(ch) > GET_MAX_MANA(ch) ||
+       GET_MOVE(ch) > GET_MAX_MOVE(ch)) {
+        send_to_char("Sorry, cannot do that right now.\n\r",ch);
+        return;
+     }
+#endif
     sprintf(buf,
             "$c0014[$c0015$n$c0014] reports 'HP:%2.0f%% MANA:%2.0f%% "
             "MV:%2.0f%%'",
@@ -206,21 +207,21 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * I really hate when people gossip about lag and it is not 
-         * caused by this machine NOR IS IT ON this machine. This 
-         * should grab all the gossips about it and make them think 
-         * that is was punched over the wire to everyone else! 
+         * I really hate when people gossip about lag and it is not
+         * caused by this machine NOR IS IT ON this machine. This
+         * should grab all the gossips about it and make them think
+         * that is was punched over the wire to everyone else!
          */
 
         if (strstr(argument, "lag") || strstr(argument, "LAG")
             || strstr(argument, "Lag") || strstr(argument, "LAg")
             || strstr(argument, "laG") || strstr(argument, "lAG")) {
             /*
-             * do nothing.... 
+             * do nothing....
              */
         } else
             /*
-             * end lag checks 
+             * end lag checks
              */
 
         {
@@ -234,7 +235,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
 
 #if ZONE_COMM_ONLY
                     /*
-                     * yell in zone only 
+                     * yell in zone only
                      */
                     if (i->character->in_room != NOWHERE) {
                         if (real_roomp(ch->in_room)->zone ==
@@ -382,8 +383,8 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
         return;
     }
 #if ZONE_COMM_ONLY
-    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone && 
-        GetMaxLevel(ch) < LOW_IMMORTAL && GetMaxLevel(vict) < LOW_IMMORTAL) {   
+    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
+        GetMaxLevel(ch) < LOW_IMMORTAL && GetMaxLevel(vict) < LOW_IMMORTAL) {
         send_to_char("That person is not near enough for you to tell.\n\r",
                      ch);
         return;
@@ -529,7 +530,7 @@ void do_write(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * ok.. now let's see what kind of stuff we've found 
+     * ok.. now let's see what kind of stuff we've found
      */
     if (pen->obj_flags.type_flag != ITEM_PEN) {
         act("$p is no good for writing with.", FALSE, ch, pen, 0, TO_CHAR);
@@ -540,7 +541,7 @@ void do_write(struct char_data *ch, char *argument, int cmd)
         return;
     } else {
         /*
-         * we can write - hooray! 
+         * we can write - hooray!
          */
         send_to_char("Ok.. go ahead and write.. Use /? for help on editing "
                      "strings.\n\r", ch);
@@ -640,9 +641,9 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
         }
 
         strcpy(buf, argument + i);
-        buf2[0] = '\0';         /* 
+        buf2[0] = '\0';         /*
                                  * work through the argument, word by
-                                 * word.  if you fail your skill roll, the 
+                                 * word.  if you fail your skill roll, the
                                  * word comes out garbled. */
         p = strtok(buf, " ");   /* first word */
 
@@ -662,11 +663,11 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
             p = strtok(0, " "); /* next word */
         }
         /*
-         * if a recipient fails a roll, a word comes out garbled. 
+         * if a recipient fails a roll, a word comes out garbled.
          */
 
         /*
-         * buf2 is now the "corrected" string. 
+         * buf2 is now the "corrected" string.
          */
 
         sprintf(buf, "$n signs '%s'", buf2);
@@ -691,7 +692,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 }
 
 /*
- * speak elvish, speak dwarvish, etc...  
+ * speak elvish, speak dwarvish, etc...
  */
 void do_speak(struct char_data *ch, char *argument, int cmd)
 {
@@ -753,7 +754,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * set language that we're gonna speak 
+     * set language that we're gonna speak
      */
     ch->player.speaks = i;
     sprintf(buf, "You concentrate on speaking %s.\n\r", lang_list[i - 1]);
@@ -761,7 +762,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
 }
 
 /*
- * this is where we do the language says 
+ * this is where we do the language says
  */
 void do_new_say(struct char_data *ch, char *argument, int cmd)
 {
@@ -800,7 +801,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
             skill_num = LANG_COMMON;
         } else {
             /*
-             * find the language we are speaking 
+             * find the language we are speaking
              */
 
             switch (ch->player.speaks) {
@@ -851,13 +852,13 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
         buf2[0] = '\0';
 
         /*
-         * we use this for ESP and immortals and comprehend lang 
+         * we use this for ESP and immortals and comprehend lang
          */
         sprintf(buf3, "$c0015[$c0005$n$c0015] says '%s'", buf);
 
         /*
          * work through the argument, word by word.  if you fail your
-         * skill roll, the word comes out garbled. 
+         * skill roll, the word comes out garbled.
          */
         p = strtok(buf, " ");   /* first word */
 
@@ -870,8 +871,8 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
             } else {
                 /*
                  * add case statement here to use random words from clips
-                 * of elvish, dwarvish etc so the words look like they came 
-                 * from that language 
+                 * of elvish, dwarvish etc so the words look like they came
+                 * from that language
                  */
                 strcat(buf2, RandomWord());
             }
@@ -880,11 +881,11 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
             p = strtok(0, " "); /* next word */
         }
         /*
-         * if a recipient fails a roll, a word comes out garbled. 
+         * if a recipient fails a roll, a word comes out garbled.
          */
 
         /*
-         * buf2 is now the "corrected" string. 
+         * buf2 is now the "corrected" string.
          */
         if (!*buf2 || !buf2) {
             send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
@@ -902,14 +903,14 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
                     || affected_by_spell(t, SPELL_COMP_LANGUAGES)
                     || ch->player.speaks == 9) {
                     /*
-                     * these guys always understand 
+                     * these guys always understand
                      */
-                    if (GetMaxLevel(t) >= LOW_IMMORTAL || 
-                        affected_by_spell(t, SKILL_ESP) || 
-                        affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
+                    if (GetMaxLevel(t) >= LOW_IMMORTAL ||
+                        affected_by_spell(t, SKILL_ESP) ||
+                        affected_by_spell(t, SPELL_COMP_LANGUAGES) ||
                         IS_NPC(t) || ch->player.speaks == SPEAK_ALL)
                         act(buf3, FALSE, ch, 0, t, TO_VICT);
-                    else        /* otherwise */
+                    else
                         act(buf, FALSE, ch, 0, t, TO_VICT);
                 } else {
                     act("$c0010$n speaks in a language you can't quite "
@@ -958,11 +959,11 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
             if (IS_AFFECTED(f->follower, AFF_GROUP))
                 if (!f->follower->desc) {
                     /*
-                     * link dead 
+                     * link dead
                      */
                 } else if (ch == f->follower) {
                     /*
-                     * can't tell yourself! 
+                     * can't tell yourself!
                      */
                 } else if (!check_soundproof(f->follower)) {
                     sprintf(buf,
@@ -974,17 +975,17 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
         }
 
         /*
-         * send to master now 
+         * send to master now
          */
         if (ch->master) {
             if (IS_AFFECTED(ch->master, AFF_GROUP))
                 if (!ch->master->desc) {
                     /*
-                     * link dead 
+                     * link dead
                      */
                 } else if (ch == ch->master) {
                     /*
-                     * can't tell yourself! 
+                     * can't tell yourself!
                      */
                 } else if (!check_soundproof(ch->master)) {
                     sprintf(buf,
@@ -1211,8 +1212,8 @@ void do_telepathy(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * if (check_soundproof(vict)) { send_to_char("In a silenced room, try 
-     * again later.\n\r",ch); return; } 
+     * if (check_soundproof(vict)) { send_to_char("In a silenced room, try
+     * again later.\n\r",ch); return; }
      */
 
     if (!IS_AFFECTED(ch, AFF_TELEPATHY))
@@ -1346,10 +1347,10 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd)
     }
 
     for (i = descriptor_list; i; i = i->next)
-        if (i->character != ch && !i->connected && 
-            (IS_NPC(i->character) || 
-             (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-              !IS_SET(i->character->specials.act, PLR_NOOOC) && 
+        if (i->character != ch && !i->connected &&
+            (IS_NPC(i->character) ||
+             (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+              !IS_SET(i->character->specials.act, PLR_NOOOC) &&
               !IS_SET(i->character->specials.act, PLR_WIZNOOOC)))
             && !check_soundproof(i->character)) {
             act(buf1, 0, ch, 0, i->character, TO_VICT);
@@ -1399,7 +1400,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
         return;
     }
 #if ZONE_COMM_ONLY
-    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone && 
+    if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
         GetMaxLevel(ch) < LOW_IMMORTAL && GetMaxLevel(vict) < LOW_IMMORTAL) {
         send_to_char
             ("That person is not near enough for you to reply, bad :(.\n\r",
