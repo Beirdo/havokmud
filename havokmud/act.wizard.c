@@ -1890,12 +1890,23 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                                 color1, color2, spells[aff->type - 1],
                                 color1, color2, aff->type, color1);
                         act(buf, FALSE, ch, 0, 0, TO_CHAR);
-
-                        sprintf(buf, "     %sModifies %s%s%s by %s%ld%s points",
-                                color1, color2, apply_types[aff->location],
-                                color1, color2, aff->modifier, color1);
-                        act(buf, FALSE, ch, 0, 0, TO_CHAR);
-
+                        
+                        if (aff->location == APPLY_IMMUNE) {
+                            sprintf(buf, "     %sModifies %s%s%s by %s",
+                                color1, color2, apply_types[aff->location], 
+                                color1, color2); 
+                            sprintbit(aff->modifier, immunity_names, buf2);
+                            strcat(buf, buf2);
+                            sprintf(buf2, "%s", color1);
+                            strcat(buf, buf2);
+                            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+                        } else {
+                            sprintf(buf, "     %sModifies %s%s%s by %s%ld%s "
+                                         "points", color1, color2, 
+                                    apply_types[aff->location], color1, color2,
+                                    aff->modifier, color1); 
+                            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+                        }
                         if (aff->location == APPLY_BV2 ||
                             aff->location == APPLY_SPELL2) {
                             sprintbit((unsigned) aff->bitvector,
