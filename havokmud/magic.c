@@ -1659,45 +1659,50 @@ void spell_sanctuary(byte level, struct char_data *ch,
 
 
 
-void spell_sleep(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_sleep(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  struct affected_type af;
-
+	struct affected_type af;
 	assert(victim);
 
-  if (IsImmune(victim, IMM_SLEEP)) {
-    FailSleep(victim, ch);
-    return;
-  }
-  if (IsResist(victim, IMM_SLEEP)) {
-    if (saves_spell(victim, SAVING_SPELL)) {
-       FailSleep(victim, ch);
-       return;
-     }
-    if (saves_spell(victim, SAVING_SPELL)) {
-       FailSleep(victim, ch);
-       return;
-     }
-  } else if (!IsSusc(victim, IMM_SLEEP)) {
-    if (saves_spell(victim, SAVING_SPELL)) {
-       FailSleep(victim, ch);
-       return;
-     }
-  }
+	if (IsImmune(victim, IMM_SLEEP)) {
+		FailSleep(victim, ch);
+		return;
+	}
+	if (IsResist(victim, IMM_SLEEP)) {
+		if (saves_spell(victim, SAVING_SPELL)) {
+			FailSleep(victim, ch);
+			return;
+		}
+		if (saves_spell(victim, SAVING_SPELL)) {
+			FailSleep(victim, ch);
+			return;
+		}
+	} else if (!IsSusc(victim, IMM_SLEEP)) {
+		if (saves_spell(victim, SAVING_SPELL)) {
+			FailSleep(victim, ch);
+			return;
+		}
+	}
 
-    af.type      = SPELL_SLEEP;
-    af.duration  = 4+level;
-    af.modifier  = 0;
-    af.location  = APPLY_NONE;
-    af.bitvector = AFF_SLEEP;
-    affect_join(victim, &af, FALSE, FALSE);
+	af.type      = SPELL_SLEEP;
+	af.duration  = 4+level;
+	af.modifier  = 0;
+	af.location  = APPLY_NONE;
+	af.bitvector = AFF_SLEEP;
+	affect_join(victim, &af, FALSE, FALSE);
 
-    if (GET_POS(victim)>POSITION_SLEEPING)    {
-      act("You feel very sleepy ..... zzzzzz",FALSE,victim,0,0,TO_CHAR);
-      act("$n go to sleep.",TRUE,victim,0,0,TO_ROOM);
-	    GET_POS(victim)=POSITION_SLEEPING;
-    }
+	if (GET_POS(victim)>POSITION_SLEEPING)    {
+		act("You feel very sleepy ..... zzzzzz",FALSE,victim,0,0,TO_CHAR);
+		act("$n goes to sleep.",TRUE,victim,0,0,TO_ROOM);
+		GET_POS(victim)=POSITION_SLEEPING;
+	}
+
+	/* make fighting between ch and victim stop, so ws:sleep items have a use  -Lennya 20031031 */
+	if(victim->specials.fighting)
+		stop_fighting(victim);
+	if(ch->specials.fighting == victim)
+		stop_fighting(ch);
+
 }
 
 
