@@ -69,9 +69,9 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     int             charge,
                     sk_num;
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (!cmd) {
         if (ch->specials.fighting) {
             return (fighter(ch, cmd, arg, mob, type));
@@ -79,14 +79,16 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         return (FALSE);
     }
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
+    }
     for (; *arg == ' '; arg++) {
-        /* ditch spaces */
+        /* 
+         * ditch spaces 
+         */
     }
 
     if ((cmd == 164) || (cmd == 170)) {
@@ -164,10 +166,12 @@ int loremaster(struct char_data *ch, int cmd, char *arg,
                     skillnum = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise,
+    }
+    /* 
+     * 170->Practice,164->Practise,
+     */
     if (cmd == 164 || cmd == 170 || cmd == 582) {
         if (!*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
@@ -204,9 +208,9 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     int             charge,
                     sk_num;
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (!cmd) {
         if (ch->specials.fighting) {
             return (fighter(ch, cmd, arg, mob, type));
@@ -214,14 +218,16 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         return (FALSE);
     }
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
+    }
     for (; *arg == ' '; arg++) {
-        /* ditch spaces */
+        /* 
+         * ditch spaces 
+         */
     }
 
     if ((cmd == 164) || (cmd == 170)) {
@@ -347,10 +353,12 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg,
     int             i = 0,
                     charge = 0;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170) {
         if (!HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN | CLASS_RANGER |
                           CLASS_PALADIN)) {
@@ -390,10 +398,12 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 243->gain
+    }
+    /* 
+     * 243->gain
+     */
     if (cmd == 243) {
         if (!HasClass(ch, CLASS_MONK)) {
             send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
@@ -501,10 +511,12 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_DRUID)) {
             send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
@@ -588,10 +600,12 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_BARBARIAN)) {
             send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells"
@@ -613,7 +627,9 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if ( GET_EXP(ch) <
                  titles[BARBARIAN_LEVEL_IND]
@@ -677,7 +693,9 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
 
-    // 170->Practice,164->Practise, 243->gain
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_RANGER)) {
             send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
@@ -699,7 +717,9 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) <
                 titles[RANGER_LEVEL_IND]
@@ -762,10 +782,12 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_PSI)) {
             send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
@@ -787,7 +809,9 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) <
                 titles[PSI_LEVEL_IND][GET_LEVEL(ch, PSI_LEVEL_IND) + 1].exp) {
@@ -847,10 +871,12 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_PALADIN)) {
             send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
@@ -872,7 +898,9 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) <
                 titles[PALADIN_LEVEL_IND]
@@ -932,9 +960,9 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     extern char    *spells[];
     extern struct spell_info_type spell_info[MAX_SPL_LIST];
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (!cmd) {
         if (ch->specials.fighting) {
             return (magic_user(ch, cmd, arg, ch, 0));
@@ -942,20 +970,22 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
+    }
     guildmaster = FindMobInRoomWithFunction(ch->in_room,
                                             mage_specialist_guildmaster);
 
-    if (!guildmaster)
+    if (!guildmaster) {
         return (FALSE);
-
+    }
     for (; *arg == ' '; arg++) {
-        /* ditch spaces */
+        /* 
+         * ditch spaces 
+         */
     }
 
     if ((cmd == 164) || (cmd == 170) || cmd == 243 || cmd == 582) {
@@ -998,7 +1028,9 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
@@ -1067,9 +1099,9 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     extern char    *spells[];
     extern struct spell_info_type spell_info[MAX_SPL_LIST];
 
-    if (!AWAKE(ch))
+    if (!AWAKE(ch)) {
         return (FALSE);
-
+    }
     if (!cmd) {
         if (ch->specials.fighting) {
             return (cleric(ch, cmd, arg, ch, 0));
@@ -1077,20 +1109,22 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return (FALSE);
-
-    if (check_soundproof(ch))
+    }
+    if (check_soundproof(ch)) {
         return (FALSE);
-
+    }
     guildmaster = FindMobInRoomWithFunction(ch->in_room,
                                             cleric_specialist_guildmaster);
 
-    if (!guildmaster)
+    if (!guildmaster) {
         return (FALSE);
-
+    }
     for (; *arg == ' '; arg++) {
-        /* ditch spaces */
+        /* 
+         * ditch spaces 
+         */
     }
 
     if ((cmd == 164) || (cmd == 170) || cmd == 243 || cmd == 582) {
@@ -1133,7 +1167,9 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
         }
 
         for (; isspace(*arg); arg++) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
@@ -1206,10 +1242,12 @@ int ninja_master(struct char_data *ch, int cmd, char *arg,
                     skillnum = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise,
+    }
+    /* 
+     * 170->Practice,164->Practise,
+     */
     if (cmd == 164 || cmd == 170 || cmd == 582) {
         if (!*arg) {
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
@@ -1341,8 +1379,9 @@ int LearnSkill(struct char_data *ch, struct skillset *skills, char *arg,
             }
 
             if (ch->skills[skills[i].skillnum].learned >= 95) {
-                ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I can taught "
-                              "you all I can about that skill.'\n\r", teacher);
+                ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'I have "
+                              "taught you all I can about that skill.'\n\r", 
+                          teacher);
                 return (TRUE);
             }
 

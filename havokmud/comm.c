@@ -1,6 +1,6 @@
 /*
- *** DaleMUD     comm.c main communication routines. Based on DIKU and
- ***                    SillyMUD.
+ ** DaleMUD     comm.c main communication routines. Based on DIKU and
+ **             SillyMUD.
  */
 
 #include <errno.h>
