@@ -172,70 +172,70 @@ char buff[256];
 
 void do_passwd(struct char_data *ch, char *argument, int cmdnum)
 {
-   int player_i, pos;
-   char name[30], npasswd[20], pass[20];
-   struct char_file_u tmp_store;
-   FILE *fl;
+	int player_i, pos;
+	char name[30], npasswd[20], pass[20];
+	struct char_file_u tmp_store;
+	FILE *fl;
 
 dlog("in do_passwd");
    /*
     *  sets the specified user's password.
     */
 	if (IS_NPC(ch))
-	  return;
+		return;
    /*
     *  get user's name:
     */
-   argument = one_argument(argument, name);
-   argument = one_argument(argument, npasswd);
+	argument = one_argument(argument, name);
+	argument = one_argument(argument, npasswd);
 
    /*
     *   Look up character
     */
 
-   if ((player_i = load_char(name, &tmp_store)) > -1)  {
+	if ((player_i = load_char(name, &tmp_store)) > -1)  {
 
    /*
     *  encrypt new password.
     */
 
-      if (!*npasswd || strlen(npasswd) > 10) {
-	send_to_char("Illegal password\n\r", ch);
-	return;
-      }
+		if (!*npasswd || strlen(npasswd) > 10) {
+			send_to_char("Illegal password\n\r", ch);
+			return;
+		}
 
-      strncpy(pass,(char *)crypt(npasswd, tmp_store.name), 10);
+		strncpy(pass,(char *)crypt(npasswd, tmp_store.name), 10);
 
    /*
     *  put new password in place of old password
     */
 
-      *(pass+10) = '\0';
-      strcpy(tmp_store.pwd, pass);
+		*(pass+10) = '\0';
+		strcpy(tmp_store.pwd, pass);
 
    /*
     *   save char to file
     */
 
-      pos = player_table[player_i].nr;
+		pos = player_table[player_i].nr;
 
-      if (!(fl = fopen(PLAYER_FILE, "r+")))     {
-	perror("do_passwd");
-	assert(0);
-      }
+		if (!(fl = fopen(PLAYER_FILE, "r+"))) {
+			perror("do_passwd");
+			assert(0);
+		}
 
-      rewind(fl);
-      fseek(fl, pos * sizeof(struct char_file_u), 0);
+		rewind(fl);
+		fseek(fl, pos * sizeof(struct char_file_u), 0);
 
-      fwrite(&tmp_store, sizeof(struct char_file_u), 1, fl);
+		fwrite(&tmp_store, sizeof(struct char_file_u), 1, fl);
 
-      fclose(fl);
+		fclose(fl);
 
-     return;
-   } else {
-     send_to_char("I don't recognize that name\n\r", ch);
-     return;
-   }
+		return;
+	} else {
+		send_to_char("I don't recognize that name\n\r", ch);
+		return;
+	}
 }
 
 void do_setsev(struct char_data *ch, char *arg, int cmd)
@@ -1724,10 +1724,10 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		j->obj_flags.value[3]);
 	break;
       case ITEM_CONTAINER :
-	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rShow-contains: %s\n\rCorpse : %s",
+	sprintf(buf, "Max-contains : %d\n\rLocktype : %d\n\rKey to unlock: %d\n\rCorpse : %s",
 		j->obj_flags.value[0],
 		j->obj_flags.value[1],
-		(j->obj_flags.value[2]? "No" : "Yes"),
+		(j->obj_flags.value[2]/*? "No" : "Yes" commented out for key value*/),
 		j->obj_flags.value[3]?"Yes":"No");
 	break;
       case ITEM_DRINKCON :
@@ -2201,6 +2201,10 @@ dlog("in do_set");
 	wingsburn - Flag target as not being able to fly.  Burns wings of winged mobiles/PCs.\r
 	move - Set current Movement.\r
 	mmove - Set Max Movement.\r
+	mkills - Set number of mobs killed.\r
+	mdeaths - Set number of deaths by mobiles.\r
+	akills - Set number of arena kills.\r
+	adeaths - Set number of arena deaths.\r
 
 	Remember, be careful how you use this command!\n\r",ch);
 
@@ -2447,6 +2451,23 @@ Remember, be careful how you use this command!\n\r",ch);
       sscanf(parmstr, "%d", &parm);
       mob->abilities.chr = parm;
       mob->tmpabilities.chr = parm;
+
+    } else if (!strcmp(field, "mkills")) {
+	  sscanf(parmstr, "%d", &parm);
+	  mob->specials.m_kills = parm;
+
+    } else if (!strcmp(field, "mdeaths")) {
+	  sscanf(parmstr, "%d", &parm);
+	  mob->specials.m_deaths = parm;
+
+    } else if (!strcmp(field, "akills")) {
+	  sscanf(parmstr, "%d", &parm);
+	  mob->specials.a_kills = parm;
+
+    } else if (!strcmp(field, "adeaths")) {
+	  sscanf(parmstr, "%d", &parm);
+	  mob->specials.a_deaths = parm;
+
     }else
 	if (!strcmp(field,"nodelete"))
 	{
@@ -2796,6 +2817,40 @@ if (GET_POS(ch) == POSITION_FIGHTING && GetMaxLevel(ch) < LOW_IMMORTAL) {
     }
   }
 }
+
+void do_genstatue(struct char_data *ch, char *argument, int cmd)
+{
+	struct char_data *victim;
+	struct descriptor_data *i;
+	char name[100], to_flux[100],buf[100];
+	void update_pos( struct char_data *victim );
+
+dlog("in do_stgen");
+
+	if (IS_NPC(ch))
+		return;
+
+	only_argument(argument, buf);
+
+	if (!*buf) {
+		sprintf(buf,"%s just did a genstatue.",GET_NAME(ch)); /* want to keep an eye on how often it's used */
+		log_sev(buf,0);
+		generate_legend_statue(ch, 0, "", victim, 0);
+
+//		send_to_char("You send a warm aura resonating throughout the lands.\n\r", ch);
+//		act("A warm aura emanates from $n.", TRUE, ch, 0, 0, TO_ROOM);
+//		for (i = descriptor_list; i; i = i->next)
+//			if (!i->connected && !IS_IMMORTAL(i->character)) {  /* only connected mortals will be fluxxed */
+//				GET_MANA(victim) = GET_MAX_MANA(victim); /* flux restores hp, ma, mv */
+//				GET_HIT(victim) = GET_MAX_HIT(victim);
+//				GET_MOVE(victim) = GET_MAX_MOVE(victim);
+//				update_pos( victim );
+//				act("The resonance of a higher being surges through your soul, leaving you $c0006r$c0002ef$c0010res$c0002he$c0006d$c0007.",FALSE,victim,0,ch,TO_CHAR);
+//			}
+	} else
+		send_to_char("No need to add an argument, Usage: 'genstatue'.\n\r",ch);
+}
+
 
 /* Flux, restores hps/mana/mv for all mortals
  * Lennya

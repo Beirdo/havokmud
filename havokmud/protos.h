@@ -334,6 +334,9 @@ void do_switch(struct char_data *ch, char *argument, int cmd);
 void do_return(struct char_data *ch, char *argument, int cmd);
 void do_force(struct char_data *ch, char *argument, int cmd);
 void do_flux(struct char_data *ch, char *argument, int cmd);
+
+void do_genstatue(struct char_data *ch, char *argument, int cmd);
+
 void do_mend(struct char_data *ch, char *argument, int cmd);
 void do_load(struct char_data *ch, char *argument, int cmd);
 void purge_one_room(int rnum, struct room_data *rp, int *range);
@@ -1555,6 +1558,11 @@ int athos(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 int stu(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 #endif
+
+/* King's Grove */
+int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int generate_legend_statue(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
 
 /*Assigns for Thunder Mountain Keep */
 int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

@@ -1328,7 +1328,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else if(value==1)
        send_to_char("\n\rValue2 is the locktype.\n\r\n\r",ch);
      else if(value==2)
-       send_to_char("\n\rValue3 determines whether fullness is shown(0=yes, 1=no).",ch);
+       send_to_char("\n\rValue3 is the vnum of the key needed to unlock container, 0 for none.",ch);
      else
        send_to_char("\n\rValue4 determines whether the container is a corpse (1=yes, 0=no).",ch);
      break;

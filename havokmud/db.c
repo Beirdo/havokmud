@@ -410,41 +410,34 @@ void build_player_index()
   for(j = 0; j < MAX_CLASS; j++)
      list_wiz.number[j] = 0;
 
-  if (!(fl = fopen(PLAYER_FILE, "rb+")))        {
-     perror("build player index");
-     exit(0);
-  }
+	if (!(fl = fopen(PLAYER_FILE, "rb+")))        {
+		perror("build player index");
+		exit(0);
+	}
 
-  for (; !feof(fl);)    {
-    fread(&dummy, sizeof(struct char_file_u), 1, fl);
-    if (!feof(fl))   /* new record */           {
-      /* Create new entry in the list */
-      if (nr == -1) {
-	CREATE(player_table,
-	       struct player_index_element, 1);
-	nr = 0;
-      } else {
-	if (!(player_table = (struct player_index_element *)
-	      realloc(player_table, (++nr + 1) *
-		      sizeof(struct player_index_element))))
-	  {
-	    perror("generate index");
-	    exit(0);
-	  }
-      }
+	for (; !feof(fl);)    {
+		fread(&dummy, sizeof(struct char_file_u), 1, fl);
+		if (!feof(fl))   /* new record */           {
+			/* Create new entry in the list */
+			if (nr == -1) {
+				CREATE(player_table, struct player_index_element, 1);
+				nr = 0;
+			} else {
+				if (!(player_table = (struct player_index_element *)
+					realloc(player_table, (++nr + 1) * sizeof(struct player_index_element))))
+				{
+					perror("generate index");
+					exit(0);
+				}
+			}
 
-      player_table[nr].nr = nr;
+			player_table[nr].nr = nr;
 
-      CREATE(player_table[nr].name, char,
-	     strlen(dummy.name) + 1);
-      for (i = 0; *(player_table[nr].name + i) =
-	   LOWER(*(dummy.name + i)); i++);
-
-
-
-      for (j=0;j<ABS_MAX_CLASS;j++)
-	   if (dummy.level[j] > 60)
-	      dummy.level[j] = 0;
+			CREATE(player_table[nr].name, char, strlen(dummy.name) + 1);
+			for (i = 0; *(player_table[nr].name + i) = LOWER(*(dummy.name + i)); i++);
+			for (j=0;j<ABS_MAX_CLASS;j++)
+				if (dummy.level[j] > 60)
+					dummy.level[j] = 0;
 
 #if 1
 			/* was 5 */

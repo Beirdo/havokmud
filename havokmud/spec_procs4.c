@@ -705,9 +705,197 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 	} /* feh, noone here to harass */
 }
 
+/* procs for the King's Grove */
+#define LEGEND_STATUE 701
+#define LEGEND_PAINTING 703
+#define LEGEND_BIOGRAPHY 702
+int generate_legend_statue(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct obj_data *obj;
+	struct char_data *player;
+	struct extra_descr_data *ed;
+	char buf[254],name[254],shdesc[254],desc[254],exkey[254],exdesc[500];
+	int itype = 0, rnum = 0, ammt = 0;
+	FILE *fl;
+	struct my_char_data {
+		struct char_file_u grunt;  		/* contained in structs.h */
+//	struct char_file_u dummy;
+//		struct char_file_u_new grunt2;	/* contained here */
+//		short AXE;
+	}**dummy;
 
 
+	printf("Does this run??");
 
+	log("start proc");
+
+	/* seems easiest to let this place update each time the zone inits */
+	/* cycle through this for every player found in playerfile? */
+	if (!(fl = fopen(PLAYER_FILE, "r"))) {
+		log("Can not open playerfile in statue generation proc.");
+		return(TRUE);
+	}
+
+	log("opened pfile");
+
+	dummy=(struct my_char_data **)malloc(5500 * sizeof(dummy));
+	if(dummy==NULL) {
+		log("empty dummy in statue generation");
+		return(TRUE);
+	}
+
+	log("shaped dummy?");
+
+	for (;!feof(fl);) {
+//		fread(&dummy, sizeof(struct char_file_u), 1, fl);
+
+		sprintf(buf,"ammt: %d",ammt);
+		log(buf);
+
+		dummy[ammt]=(struct my_char_data *)malloc(sizeof(struct my_char_data));
+		log("dummied again");
+		if (!feof(fl)) {
+			if(strcmp(dummy[ammt]->grunt.name,"111111") && strcmp(dummy[ammt]->grunt.name,"")) {
+				/* determine if this player has a 10, 20 or 40k kill count */
+				sprintf(buf,"found dummy: %s",dummy[ammt]->grunt.name);
+				log(buf);
+				if(dummy[ammt]->grunt./*specials.*/m_kills >= 10000) {
+					if(dummy[ammt]->grunt./*specials.*/m_kills >= 40000) {
+						itype = LEGEND_BIOGRAPHY;
+						rnum = number(701,724);
+						sprintf(name,"biography tome %s",dummy[ammt]->grunt.name);
+						sprintf(shdesc,"a biography of %s",dummy[ammt]->grunt.name);
+						sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",dummy[ammt]->grunt.name);
+						sprintf(exkey,"biography tome %s",dummy[ammt]->grunt.name);
+						sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.\n\r",dummy[ammt]->grunt.name);
+					} else if(dummy[ammt]->grunt./*specials.*/m_kills >= 20000) {
+						itype = LEGEND_PAINTING;
+						rnum = number(726,735);
+						sprintf(name,"painting %s",dummy[ammt]->grunt.name);
+						sprintf(shdesc,"a painting of %s",dummy[ammt]->grunt.name);
+						sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",dummy[ammt]->grunt.name);
+						sprintf(exkey,"painting %s",dummy[ammt]->grunt.name);
+						sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greaters of these times.\n\r",dummy[ammt]->grunt.name,dummy[ammt]->grunt.name);
+					} else {
+						itype = LEGEND_STATUE;
+						rnum = number(726,735);
+						sprintf(name,"statue %s",dummy[ammt]->grunt.name);
+						sprintf(shdesc,"a statue of %s",dummy[ammt]->grunt.name);
+						sprintf(desc,"A statue of the legendary %s has been erected here.",dummy[ammt]->grunt.name);
+						sprintf(exkey,"statue %s",dummy[ammt]->grunt.name);
+						sprintf(exdesc,"This is a statue of %s, the legendary slayer.\n\r",dummy[ammt]->grunt.name);
+					}
+					if(type == 0) {
+						log("Oddness in statue generation, no type found");
+						return(TRUE);
+					}
+					if(rnum == 0) {
+						log("Oddness in statue generation, no rnum found");
+						return(TRUE);
+					}
+					/* load the generic item */
+					obj = read_object(itype, REAL);
+					/* and string it up a bit */
+					if(obj->short_description) {
+						free(obj->short_description);
+						obj->short_description = strdup(shdesc);
+					}
+					if(obj->description) {
+						free(obj->description);
+						obj->description = strdup(desc);
+					}
+					if(obj->name) {
+						free(obj->name);
+						obj->name = strdup(name);
+					}
+					if(obj->ex_description) {
+						log("trying to string invalid item in statue generation");
+						return(TRUE);
+					} else {
+						/* create an extra desc structure for the object */
+						CREATE(ed, struct extra_descr_data, 1);
+						obj->ex_description = ed;
+						/* define the keywords */
+						CREATE(ed->keyword, char, strlen(exkey) + 1);
+						strcpy(ed->keyword, exkey);
+						/* define the description */
+						CREATE(ed->description, char, strlen(exdesc) + 1);
+						strcpy(ed->description, exdesc);
+					}
+					/* and finally place it in a room */
+					obj_to_room(obj,rnum);
+				log("dummy had enough kills");
+				}
+				ammt++;
+			}
+		}
+	}
+	log("end for.. exit func");
+}
+
+#define CLIMB_ROOM 696
+int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[254], buffer[254];
+	struct obj_data *obj;
+
+	if (cmd == 5) { /*up*/
+		act("How did ya want to get up there?",FALSE,ch,0,0,TO_CHAR);
+		return(TRUE);
+	}
+
+	if (cmd == 15) { /*look*/
+		only_argument(arg,buf);
+		if(*buf) {
+			if(!(str_cmp("up", buf)) || !(str_cmp("u", buf)) || !(str_cmp("Up", buf))) {
+				send_to_char("One would have a marvellous view when high up in the canopy.\n\r",ch);
+				return(TRUE);
+			}
+		}
+	}
+
+	if (cmd == 287) { /* climb */
+		only_argument(arg,buf);
+  		if(*buf) {
+    		if(!(str_cmp("tree",buf)) || !(str_cmp("Tree",buf))) { /* climb tree */
+				act("Freeing your hands, you climb up the tree.\n\r", FALSE, ch, 0, 0, TO_CHAR);
+				act("$n stows away his weaponry and climbs up the tree.", FALSE, ch, 0, 0, TO_ROOM);
+				/* remove weapon */
+				if (ch->equipment[WIELD]) {
+					obj=ch->equipment[WIELD];
+					if ((obj = unequip_char(ch,WIELD))!=NULL)   {
+						obj_to_char(obj, ch);
+					}
+				}
+				/* remove held */
+				if (ch->equipment[HOLD]) {
+					obj=ch->equipment[HOLD];
+					if ((obj = unequip_char(ch,HOLD))!=NULL)   {
+						obj_to_char(obj, ch);
+					}
+				}
+				/* remove light */
+				if (ch->equipment[WEAR_LIGHT]) {
+				obj=ch->equipment[WEAR_LIGHT];
+					if ((obj = unequip_char(ch,WEAR_LIGHT))!=NULL)   {
+						obj_to_char(obj, ch);
+					}
+				}
+          		char_from_room(ch);
+          		char_to_room(ch,CLIMB_ROOM);
+          		act("$n climbs up from below.", FALSE, ch, 0, 0, TO_ROOM);
+          		do_look(ch, "", 0);
+          		return(TRUE);
+			}
+			sprintf(buffer,"You don't see any %s to climb around here.\n\r",buf);
+			send_to_char(buffer,ch);
+			return(TRUE);
+		}
+		send_to_char("Climb what?\n\r",ch);
+		return(TRUE);
+	}
+	return(FALSE);
+}
 
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {

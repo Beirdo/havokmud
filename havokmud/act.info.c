@@ -260,38 +260,37 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch, int mode)
       else
 	strcat(buffer,"..They hum with power");
     }
-    if (singular(object) && object->obj_flags.type_flag == ITEM_CONTAINER) {
-	  if (!object->obj_flags.value[2] && !object->obj_flags.value[3]) { /* check for ShowFull, IsCorpse */
-		for(i=object->contains;i;i=i->next_content) {
-			weight +=(float)i->obj_flags.weight;
-		}
-		/*calculate how much stuff is in this bag*/
-		fullperc = ((float) weight /
-		((float) object->obj_flags.value[0] -
-		((float)object->obj_flags.weight - weight)-1));
-		/* 0% <= fullperc < 5  Empty*/
-				if(fullperc < .05)
-			strcat(buffer, "..It is empty");
-		/* 5 <= fullperc < 20 Almost Empty*/
-		else 	if(fullperc < .2)
-			strcat(buffer, "..It is almost empty");
-		/* 20 <= fullperc < 40 Less than Half*/
-		else 	if(fullperc < .4)
-			strcat(buffer, "..Its less than half full");
-		/* 40 <= fullperc < 60 About Half*/
-		else 	if(fullperc < .6)
-			strcat(buffer, "..Its about half full");
-		/* 60 <= fullperc < 80 More than half*/
-		else 	if(fullperc < .8)
-			strcat(buffer, "..Its more than half full");
-		/* 80 <= fullperc < 95 Almost full*/
-		else 	if(fullperc < .95)
-			strcat(buffer, "..It is almost full");
-		/* 95 <= fullperc < 100 Full*/
-		else 	if(fullperc >= .95)
-			strcat(buffer, "..It is full");
-	  }
-	}
+/* Commented out for now.. no more container fullness -Lennya 20030408*/
+//	if (singular(object) && object->obj_flags.type_flag == ITEM_CONTAINER) {
+//		if (!object->obj_flags.value[2] && !object->obj_flags.value[3]) { /* check for ShowFull, IsCorpse */
+//			for(i=object->contains;i;i=i->next_content) {
+//				weight +=(float)i->obj_flags.weight;
+//			}
+//			/*calculate how much stuff is in this bag*/
+//			fullperc = ((float) weight / ((float) object->obj_flags.value[0] -((float)object->obj_flags.weight - weight)-1));
+//			/* 0% <= fullperc < 5  Empty*/
+//			if(fullperc < .05)
+//				strcat(buffer, "..It is empty");
+//			/* 5 <= fullperc < 20 Almost Empty*/
+//	else 	if(fullperc < .2)
+//				strcat(buffer, "..It is almost empty");
+//			/* 20 <= fullperc < 40 Less than Half*/
+//	else 	if(fullperc < .4)
+//				strcat(buffer, "..Its less than half full");
+//			/* 40 <= fullperc < 60 About Half*/
+//	else 	if(fullperc < .6)
+//				strcat(buffer, "..Its about half full");
+//			/* 60 <= fullperc < 80 More than half*/
+//	else 	if(fullperc < .8)
+//				strcat(buffer, "..Its more than half full");
+//			/* 80 <= fullperc < 95 Almost full*/
+//	else 	if(fullperc < .95)
+//				strcat(buffer, "..It is almost full");
+//			/* 95 <= fullperc < 100 Full*/
+//	else 	if(fullperc >= .95)
+//				strcat(buffer, "..It is full");
+//		}
+//	}
     if (object->obj_flags.type_flag == ITEM_ARMOR) {
       if (object->obj_flags.value[0] <
 	  (object->obj_flags.value[1] / 4)) {

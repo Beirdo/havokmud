@@ -1599,6 +1599,9 @@ void assign_rooms()
  {50963, riddle_exit },
  {50964, riddle_exit },
 
+/* The King's Grove */
+ { 706, climb_room },
+
    /* Cthol (Xenon) */
    {40233, dispel_room},
    //{40285, fiery_alley},
