@@ -5204,7 +5204,7 @@ const struct skillset psiskills[] = {
 };
 const struct skillset maindruidskills[] = {
 	{"creeping death",			SPELL_CREEPING_DEATH		,45},
-	{"iron skin",				SPELL_IRON_SKIN				,20},
+	{"iron skins",				SPELL_IRON_SKINS				,20},
 	{"protection acid breath",	SPELL_PROT_BREATH_ACID		,40},
 	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
 	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},

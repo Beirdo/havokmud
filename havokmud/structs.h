@@ -1990,8 +1990,8 @@ Thief
 	successful retreat/flee does a (two?) hide skillcheck, for being hidden right after.
 
 Druid
-	iron skin, duration level*2, takes off one tick per damage point taken. damage soaker, ignores resist/suscept/sanc
-	creeping death becomes a primary druid spell.
+//	iron skin, duration level*2, takes off one tick per damage point taken. damage soaker, ignores resist/suscept/sanc
+//	creeping death becomes a primary druid spell.
 //	+5 mana regen
 
 Monk

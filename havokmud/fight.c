@@ -1501,10 +1501,47 @@ if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
 		act("$N's mana shield absorbs part of your blow, and is fully drained.",FALSE, ch, 0, v, TO_CHAR);
 		act("$N's mana shield absorbs part of the blow, and is fully drained.",FALSE, ch, 0, v, TO_NOTVICT);
 		affect_from_char(v,SPELL_MANA_SHIELD);
+	}else if(!dam && !GET_MANA(v)) {
+		act("Your mana shield absorbs the blow, but is fully drained.",FALSE, ch, 0, v, TO_VICT);
+		act("$N's mana shield absorbs the blow, but is fully drained.",FALSE, ch, 0, v, TO_CHAR);
+		act("$N's mana shield absorbs the blow, but is fully drained.",FALSE, ch, 0, v, TO_NOTVICT);
+		affect_from_char(v,SPELL_MANA_SHIELD);
 	} else {
 		act("Your mana shield absorbs the blow!",FALSE, ch, 0, v, TO_VICT);
 		act("$N's mana shield absorbs your blow!",FALSE, ch, 0, v, TO_CHAR);
 		act("$N's mana shield absorbs $n's blow!",FALSE, ch, 0, v, TO_NOTVICT);
+	}
+}
+
+if (affected_by_spell(v,SPELL_IRON_SKINS)) {
+	struct affected_type *aff;
+
+	// locate the right affect.. is this laggy? probably.
+	for(aff = v->affected; aff; aff = aff->next) {
+		if (aff->type == SPELL_IRON_SKINS)
+			break;
+	}
+
+	if (aff->type == SPELL_IRON_SKINS) { // make sure we found it
+		while(aff->duration && dam) {
+			aff->duration -= 1;
+			dam -= 1;
+		}
+		if(dam && !aff->duration) {
+			act("Your last iron skin is flayed, and $n hits you.",FALSE, ch, 0, v, TO_VICT);
+			act("$N's last iron skin is flayed, and you manage to hit $M.",FALSE, ch, 0, v, TO_CHAR);
+			act("$N's last iron skin is flayed, and $n manages to get a hit in.",FALSE, ch, 0, v, TO_NOTVICT);
+			affect_from_char(v,SPELL_IRON_SKINS);
+		} else if(dam && !aff->duration) {
+			act("Your last iron skin is flayed, keeping you from harm one last time.",FALSE, ch, 0, v, TO_VICT);
+			act("$N's last iron skin is flayed, keeping $M from harm one more time.",FALSE, ch, 0, v, TO_CHAR);
+			act("$N's last iron skin is flayed, keeping $M from harm one more time.",FALSE, ch, 0, v, TO_NOTVICT);
+			affect_from_char(v,SPELL_IRON_SKINS);
+		} else {
+			act("Some of your iron skins crumble to dust, leaving you unharmed!",FALSE, ch, 0, v, TO_VICT);
+			act("Some of $N's iron skins crumble to dust, leaving $M unharmed!",FALSE, ch, 0, v, TO_CHAR);
+			act("Some of $N's iron skins crumble to dust, leaving $M unharmed!",FALSE, ch, 0, v, TO_NOTVICT);
+		}
 	}
 }
 

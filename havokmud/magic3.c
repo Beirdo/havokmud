@@ -4532,3 +4532,23 @@ void spell_group_heal(byte level, struct char_data *ch, struct char_data *victim
 		}
 	}
 }
+
+void spell_iron_skins(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+// put up some iron skinned barriers that will absorb (duration) hps.
+	struct affected_type af;
+
+	if (!affected_by_spell(ch, SPELL_MANA_SHIELD)) {
+		act("$n invokes the earthen forces, and surrounds $mself with iron skins.",TRUE,ch,0,0,TO_ROOM);
+		act("You invoke the earthen forces, and surround yourself with iron skins.",TRUE,ch,0,0,TO_CHAR);
+
+		af.type      = SPELL_IRON_SKINS;
+		af.duration  = level;
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = 0;
+		affect_to_char(ch, &af);
+	} else {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+	}
+}

@@ -562,6 +562,8 @@ void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
 //main class spells
 void cast_mana_shield( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_iron_skins( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
 void cast_group_heal( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
@@ -3822,30 +3824,30 @@ void assign_spell_pointers()
 	spello(342,36,POSITION_STANDING, 14, LOW_IMMORTAL,  LOW_IMMORTAL,
 	14,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
 	50, TAR_IGNORE , cast_mana_shield, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);
-/*
-	spello(343,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
-	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	30, TAR_IGNORE | TAR_ROOM, cast_iron_skin, 0,0, 14, LOW_IMMORTAL);
 
-	spello(344,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	spello(343,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  20,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 35, LOW_IMMORTAL);// sense item
+	65, TAR_IGNORE | TAR_ROOM, cast_iron_skins, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);
+
+/*	spello(344,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// sense item
 
 	spello(345,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 35, LOW_IMMORTAL);// kinolock
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// kinolock
 
 	spello(346,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	25, TAR_IGNORE  | TAR_ROOM, 0, 0,0, 37, LOW_IMMORTAL);// flowerfist
+	25, TAR_IGNORE  | TAR_ROOM, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// flowerfist
 
 	spello(347,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, 40, LOW_IMMORTAL);// flurry of blows
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// flurry of blows
 
 	spello(348,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	80, TAR_CHAR_ROOM | TAR_GROUP, 0, 0,0, 50, LOW_IMMORTAL);// scribe
+	80, TAR_CHAR_ROOM | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// scribe
 */
 	spello(349,12,POSITION_FIGHTING, LOW_IMMORTAL, 29,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,

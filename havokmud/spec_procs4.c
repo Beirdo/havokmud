@@ -2339,15 +2339,15 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		cmd !=  93 &&	/* offer */
 		cmd !=  57)		/* sell */
 		return(FALSE);
-
-	for(j = rp->people; j; next) {
+shopkeeper = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
+/*	for(j = rp->people; j; next) {
 		next = j->next_in_room;
 		if(j->specials.proc == PROC_SHOPKEEPER) {
 			shopkeeper = j;
 			break;
 		}
 	}
-
+*/
 	if(!shopkeeper) {
 		log("weirdness in shopkeeper, shopkeeper assigned but not found");
 		return(FALSE);
