@@ -157,7 +157,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     act("$p rustles slightly, and $n magically steps from within!", FALSE,
         ch, obj, 0, TO_ROOM);
     act("You are instantly transported to $p!", FALSE, ch, obj, 0, TO_CHAR);
-    do_look(ch, "\0", 0);
+    do_look(ch, NULL, 0);
 }
 
 void spell_plant_gate(int level, struct char_data *ch,
@@ -241,7 +241,7 @@ void spell_plant_gate(int level, struct char_data *ch,
                 FALSE, tch, obj, 0, TO_ROOM);
             act("You are instantly transported to $p!", FALSE, tch, obj, 0,
                 TO_CHAR);
-            do_look(tch, "\0", 0);
+            do_look(tch, NULL, 0);
             has_companions++;
         }
     }
@@ -264,7 +264,7 @@ void spell_plant_gate(int level, struct char_data *ch,
     }
 
     act("You are instantly transported to $p!", FALSE, ch, obj, 0, TO_CHAR);
-    do_look(ch, "\0", 0);
+    do_look(ch, NULL, 0);
     act("$n steps through the magical gate in $p and the gate closes "
         "behind $m!", FALSE, ch, obj, 0, TO_ROOM);
 }
@@ -2615,7 +2615,7 @@ void spell_teleport_wo_error(int level, struct char_data *ch,
         char_to_room(ch, location);
         act("You are blinded for a moment as $n appears in a flash of light!",
             FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         check_falling(ch);
 
         if (IS_SET(real_roomp(ch->in_room)->room_flags, DEATH) &&
@@ -3613,7 +3613,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
             "minute,", FALSE, ch, 0, 0, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, corpse_loc);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         char_from_room(ch);
         char_to_room(ch, player_loc);
     }
@@ -3788,7 +3788,7 @@ void spell_binding(int level, struct char_data *ch,
     char_to_room(ch, location);
     act("A smell of death and decay wafts by as $n emerges from nothingness.",
         TRUE, ch, 0, 0, TO_ROOM);
-    do_look(ch, "", 15);
+    do_look(ch, NULL, 15);
 }
 
 void spell_decay(int level, struct char_data *ch,
@@ -3881,7 +3881,7 @@ void spell_shadow_step(int level, struct char_data *ch,
 #if 0
             EXIT(ch, attempt)->to_room);
 #endif
-            do_look(ch, "\0", 15);
+            do_look(ch, NULL, 15);
             return;
         }
     }
@@ -4384,7 +4384,7 @@ void spell_darktravel(int level, struct char_data *ch,
     char_from_room(ch);
     char_to_room(ch, location);
     act("$c0008$n steps out of the shadows.", FALSE, ch, 0, 0, TO_ROOM);
-    do_look(ch, "", 15);
+    do_look(ch, NULL, 15);
 }
 
 void spell_vampiric_embrace(int level, struct char_data *ch,

@@ -33,7 +33,6 @@ extern int      rev_dir[];
 /*
  * extern procedures 
  */
-void            do_group(struct char_data *ch, char *arg, int cmd);
 int             choose_exit_global(int a, int b, int c);
 void            hit(struct char_data *ch, struct char_data *victim, int type);
 void            gain_exp(struct char_data *ch, int gain);
@@ -41,7 +40,6 @@ void            gain_exp(struct char_data *ch, int gain);
 struct char_data *FindVictim(struct char_data *ch);
 struct char_data *char_holding(struct obj_data *obj);
 void            send_to_all(char *messg);
-void            do_shout(struct char_data *ch, char *argument, int cmd);
 int             IsUndead(struct char_data *ch);
 struct time_info_data age(struct char_data *ch);
 int             CountLims(struct obj_data *obj);
@@ -50,11 +48,6 @@ void            NailThisSucker(struct char_data *ch);
 int             NumCharmedFollowersInRoom(struct char_data *ch);
 struct char_data *FindMobDiffZoneSameRace(struct char_data *ch);
 struct char_data *FindMobInRoomWithFunction(int room, int (*func) ());
-void            do_stand(struct char_data *ch, char *arg, int cmd);
-void            do_sit(struct char_data *ch, char *arg, int cmd);
-void            do_shout(struct char_data *ch, char *arg, int cmd);
-void            do_emote(struct char_data *ch, char *arg, int cmd);
-void            do_say(struct char_data *ch, char *arg, int cmd);
 void            add_follower(struct char_data *ch,
                              struct char_data *leader);
 void            stop_follower(struct char_data *ch);
@@ -449,42 +442,46 @@ int chess_game(struct char_data *ch, int cmd, char *arg,
     }
 
     if (move_found && rp) {
-        do_emote(ch, "leaves the room.", 0);
+        command_interpreter(ch, "emote leaves the room.");
         char_from_room(ch);
         char_to_room(ch, rp->number);
-        do_emote(ch, "has arrived.", 0);
+        command_interpreter(ch, "emote has arrived.");
 
         if (ep) {
             if (side) {
                 switch (number(0, 3)) {
                 case 0:
-                    do_emote(ch, "grins evilly and says, 'ONLY EVIL shall "
-                                 "rule!'", 0);
+                    command_interpreter(ch, "emote grins evilly and says, "
+                                            "'ONLY EVIL shall rule!'");
                     break;
                 case 1:
-                    do_emote(ch, "leers cruelly and says, 'You will die now!'",
-                             0);
+                    command_interpreter(ch, "emote leers cruelly and says, "
+                                            "'You will die now!'");
                     break;
                 case 2:
-                    do_emote(ch, "issues a bloodcurdling scream.", 0);
+                    command_interpreter(ch, "emote issues a bloodcurdling "
+                                            "scream.");
                     break;
                 case 3:
-                    do_emote(ch, "glares with black anger.", 0);
+                    command_interpreter(ch, "emote glares with black anger.");
                     break;
                 }
             } else {
                 switch (number(0, 3)) {
                 case 0:
-                    do_emote(ch, "glows an even brighter pristine white.", 0);
+                    command_interpreter(ch, "emote glows an even brighter "
+                                            "pristine white.");
                     break;
                 case 1:
-                    do_emote(ch, "chants a prayer and begins battle.", 0);
+                    command_interpreter(ch, "emote chants a prayer and begins "
+                                            "battle.");
                     break;
                 case 2:
-                    do_emote(ch, "says, 'Black shall lose!", 0);
+                    command_interpreter(ch, "emote says, 'Black shall lose!");
                     break;
                 case 3:
-                    do_emote(ch, "shouts, 'For the Flame! The Flame!'", 0);
+                    command_interpreter(ch, "emote shouts, 'For the Flame! The"
+                                            " Flame!'");
                     break;
                 }
             }
@@ -579,24 +576,27 @@ int lizardman_shaman(struct char_data *ch, int cmd, char *arg,
             return (fighter(mob, cmd, arg, mob, type));
             break;
         case 3:
-            do_emote(ch, "leers cruelly and says, 'You will die now!'", 0);
+            command_interpreter(ch, "emote leers cruelly and says, 'You will "
+                                    "die now!'");
             break;
         case 4:
-            do_emote(ch, "hisses in anger, 'Leave our home now or die!'", 0);
+            command_interpreter(ch, "emote hisses in anger, 'Leave our home "
+                                    "now or die!'");
             break;
         }
     } else if (number(1, 4) == 4) {
         switch (number(1, 3)) {
         case 1:
-            do_emote(ch, "waves his hands about uttering some slurred words.",
-                     0);
+            command_interpreter(ch, "emote waves his hands about uttering "
+                                    "some slurred words.");
             break;
         case 2:
-            do_emote(ch, "looks upwards and calls to some unseen god.", 0);
+            command_interpreter(ch, "emote looks upwards and calls to some "
+                                    "unseen god.");
             break;
         case 3:
-            do_emote(ch, "grabs his chest and screams 'Death to all that "
-                         "oppose you!'", 0);
+            command_interpreter(ch, "emote grabs his chest and screams 'Death"
+                                    " to all that oppose you!'");
             break;
         }
     }
@@ -620,7 +620,7 @@ int baby_bear(struct char_data *ch, int cmd, char *arg,
         }
         for (t = rp->people; t; t = t->next_in_room) {
             if (GET_POS(t) == POSITION_SLEEPING && number(0, 1)) {
-                do_wake(t, "", 0);
+                do_wake(t, NULL, 0);
             }
         }
     }
@@ -776,7 +776,7 @@ int winger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
              * As per request of Alfred, if we are fighting and they
              * aren't affected by fly, then eek, we flee! 
              */
-            do_flee(ch, "", 0);
+            do_flee(ch, NULL, 0);
             return (TRUE);
         }
     }
@@ -922,7 +922,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                 SET_BIT(mobtmp->specials.affected_by, AFF_CHARM);
                 AddHated(mobtmp, tmp);
             }
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "order followers guard on");
             return (TRUE);
             break;
 
@@ -999,7 +999,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                     ch, 0, tmp, TO_ROOM);
                 drop_level(tmp, BestClassBIT(tmp), FALSE);
                 set_title(tmp);
-                do_save(tmp, "", 0);
+                do_save(tmp, NULL, 0);
             }
             break;
 
@@ -1015,9 +1015,9 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
 
             act("$n summons one of his faithful followers, $N!", FALSE,
                 ch, 0, mobtmp, TO_ROOM);
-            do_order(ch, "followers guard on", 0);
-            sprintf(buf, "followers kill %s", GET_NAME(tmp));
-            do_order(ch, buf, 0);
+            command_interpreter(ch, "order followers guard on");
+            sprintf(buf, "order followers kill %s", GET_NAME(tmp));
+            command_interpreter(ch, buf);
             return (TRUE);
             break;
         }
@@ -1106,7 +1106,7 @@ int banshee(struct char_data *ch, int cmd, char *arg,
                 drop_level(tmp, BestClassBIT(tmp), FALSE);
             }
             set_title(tmp);
-            do_save(tmp, "", 0);
+            do_save(tmp, NULL, 0);
         }
     }
     return (FALSE);
@@ -1659,7 +1659,8 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
                     sprintf(buf, "%s jumps for $n's neck!",
                             obj->short_description);
                     act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
-                    do_hit(holder, lowjoe->player.name, 0);
+                    sprintf(buf, "hit %s", GET_NAME(lowjoe));
+                    command_interpreter(holder, buf);
                     return (TRUE);
                 } else {
                     return (FALSE);
@@ -2025,7 +2026,8 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                                 obj->short_description);
                         act(buf, FALSE, lowjoe, 0, 0, TO_ROOM);
 
-                        do_hit(holder, lowjoe->player.name, 0);
+                        sprintf(buf, "hit %s", GET_NAME(lowjoe));
+                        command_interpreter(holder, buf);
                         return (TRUE);
                     } else {
                         return (FALSE);
@@ -2212,7 +2214,7 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
                         0, TO_ROOM);
                     cast_mon_sum7(GetMaxLevel(ch), ch, "",
                                   SPELL_TYPE_SPELL, ch, 0);
-                    do_order(ch, "followers guard on", 0);
+                    command_interpreter(ch, "order followers guard on");
                     return (TRUE);
                 }
             }
@@ -2227,7 +2229,7 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         GET_POS(ch) < POSITION_FIGHTING) {
         StandUp(ch);
         if (GET_HIT(ch) <= GET_HIT(ch->specials.fighting) / 2) {
-            do_flee(ch, "\0", 0);
+            do_flee(ch, NULL, 0);
         }
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
         return (TRUE);
@@ -2274,8 +2276,8 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
      */
 
     if (IS_AFFECTED(ch, AFF_BLIND) && lspell > 15) {
-        sprintf(buf, " 'remove blind' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'remove blind' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return TRUE;
     }
 
@@ -2284,15 +2286,15 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
     }
     if (IS_AFFECTED(vict, AFF_SANCTUARY) && lspell > 10 &&
         GetMaxLevel(ch) > GetMaxLevel(vict)) {
-        sprintf(buf, " 'dispel magic' %s", GET_NAME(vict));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'dispel magic' %s", GET_NAME(vict));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
     if (IS_AFFECTED(vict, AFF_FIRESHIELD) && lspell > 10 &&
         GetMaxLevel(ch) > GetMaxLevel(vict)) {
-        sprintf(buf, " 'dispel magic' %s", GET_NAME(vict));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'dispel magic' %s", GET_NAME(vict));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
@@ -2306,15 +2308,15 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 #endif
-        sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
     if (!IS_PC(ch) && GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && lspell > 15 &&
         !IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
-        sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
@@ -2327,48 +2329,47 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
          */
 
         if (lspell > 8 && lspell < 50 && !number(0, 6)) {
-            sprintf(buf, " 'web' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'web' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 5 && lspell < 10 && !number(0, 6)) {
-            sprintf(buf, " 'weakness' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'weakness' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 5 && lspell < 10 && !number(0, 7)) {
-            sprintf(buf, " 'armor' %s", GET_NAME(ch));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'armor' %s", GET_NAME(ch));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 12 && lspell < 20 && !number(0, 7)) {
-            sprintf(buf, " 'curse' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'curse' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 10 && lspell < 20 && !number(0, 5)) {
-            sprintf(buf, " 'blind' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'blind' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 8 && lspell < 40 && !number(0, 5) &&
             vict->specials.fighting != ch) {
-            sprintf(buf, " 'charm monster' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'charm monster' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             if (IS_AFFECTED(vict, AFF_CHARM)) {
                 if (!vict->specials.fighting) {
-                    sprintf(buf, "%s kill %s",
+                    sprintf(buf, "order %s kill %s",
                             GET_NAME(vict), GET_NAME(ch->specials.fighting));
-                    do_order(ch, buf, 0);
                 } else {
-                    sprintf(buf, "%s remove all", GET_NAME(vict));
-                    do_order(ch, buf, 0);
+                    sprintf(buf, "order %s remove all", GET_NAME(vict));
                 }
+                command_interpreter(ch, buf);
             }
         }
 
@@ -2386,97 +2387,83 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 8:
         case 9:
         case 10:
-            sprintf(buf, " 'monsum one'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum one'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 11:
         case 12:
         case 13:
-            sprintf(buf, " 'monsum two'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum two'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 14:
         case 15:
-            sprintf(buf, " 'monsum three'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum three'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 16:
         case 17:
         case 18:
-            sprintf(buf, " 'monsum four'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum four'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 19:
         case 20:
         case 21:
         case 22:
-            sprintf(buf, " 'monsum five'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum five'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 23:
         case 24:
         case 25:
-            sprintf(buf, " 'monsum six'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum six'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 26:
         default:
-            sprintf(buf, " 'monsum seven'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum seven'");
+            command_interpreter(ch, "order followers guard on");
             break;
         }
         return (TRUE);
     } else {
+        buf[0] = '\0';
         switch (lspell) {
         case 1:
         case 2:
-            sprintf(buf, " 'magic missle' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'magic missle' %s", GET_NAME(vict));
             break;
         case 3:
         case 4:
         case 5:
-            sprintf(buf, " 'shocking grasp' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'shocking grasp' %s", GET_NAME(vict));
             break;
         case 6:
         case 7:
         case 8:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'web' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'web' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'burning hands' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'burning hands' %s", GET_NAME(vict));
             }
             break;
         case 9:
         case 10:
-            sprintf(buf, " 'acid blast' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'acid blast' %s", GET_NAME(vict));
             break;
         case 11:
         case 12:
         case 13:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'lightning bolt' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'lightning bolt' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'ice storm' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'ice storm' %s", GET_NAME(vict));
             }
             break;
         case 14:
         case 15:
-            sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
             break;
         case 16:
         case 17:
@@ -2493,11 +2480,9 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 28:
         case 29:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'colour spray' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'colour spray' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'cone of cold' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'cone of cold' %s", GET_NAME(vict));
             }
             break;
         case 30:
@@ -2508,27 +2493,26 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 35:
         case 36:
         case 37:
-            sprintf(buf, " 'fireball' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'fireball' %s", GET_NAME(vict));
             break;
         case 38:
         case 39:
         case 40:
         case 41:
             if (IS_EVIL(ch)) {
-                sprintf(buf, " 'energy drain' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'energy drain' %s", GET_NAME(vict));
             }
             break;
         default:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'meteor swarm' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'meteor swarm' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'fireball' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'fireball' %s", GET_NAME(vict));
             }
             break;
+        }
+        if( *buf ) {
+            command_interpreter(ch, buf);
         }
     }
     return TRUE;
@@ -2926,7 +2910,8 @@ int TreeThrowerMob(struct char_data *ch, int cmd, char *arg,
                 /* north+1 */
                 act("$n blocks your way!", FALSE, mob, 0, ch, TO_VICT);
                 act("$n blocks $N's way.", FALSE, mob, 0, ch, TO_NOTVICT);
-                do_say(mob, "In order to pass, you must first defeat me!", 1);
+                command_interpreter(mob, "say In order to pass, you must "
+                                         "first defeat me!");
                 /* evil grin ;) */
                 do_action(mob, NULL, 97);
                 return (TRUE);
@@ -3013,7 +2998,7 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
     if (ch->specials.fighting && ch->specials.fighting != ch) {
         if (GET_POS(ch) == POSITION_SITTING || 
             GET_POS(ch) == POSITION_RESTING) {
-            do_stand(ch, "", 0);
+            do_stand(ch, NULL, 0);
             return (TRUE);
         }
 
@@ -3028,13 +3013,15 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
          */
         if (!affected_by_spell(ch, SKILL_BLESSING)) {
             /* bless myself */
-            do_blessing(ch, GET_NAME(ch), 0);
+            sprintf(buf, "blessing %s", GET_NAME(ch)); 
+            command_interpreter(ch, buf);
             return (TRUE);
         }
 
         if (!affected_by_spell(ch, SKILL_LAY_ON_HANDS) && 
             GET_HIT(ch) < GET_MAX_HIT(ch) / 2) {
-            do_lay_on_hands(ch, GET_NAME(ch), 0);
+            sprintf(buf, "lay %s", GET_NAME(ch));
+            command_interpreter(ch, buf);
             return (TRUE);
         }
 
@@ -3043,22 +3030,22 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
             /* intellegent kick/bash.. hmm */
             if (HasClass(vict, CLASS_SORCERER | CLASS_MAGIC_USER) || 
                 HasClass(vict, CLASS_CLERIC | CLASS_PSI)) {
-                do_bash(ch, "", 0);
+                do_bash(ch, NULL, 0);
             } else {
-                do_kick(ch, "", 0);
+                do_kick(ch, NULL, 0);
             }
             return (TRUE);
             break;
         case 2:
-            do_bash(ch, "", 0);
+            do_bash(ch, NULL, 0);
             return (TRUE);
             break;
         case 3:
-            do_kick(ch, "", 0);
+            do_kick(ch, NULL, 0);
             return (TRUE);
             break;
         case 4:
-            do_holy_warcry(ch, "", 0);
+            do_holy_warcry(ch, NULL, 0);
             return (TRUE);
             break;
         default:
@@ -3071,8 +3058,8 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
          */
         if (GET_HIT(ch) < GET_MAX_HIT(ch) / 2 && 
             !affected_by_spell(ch, SKILL_LAY_ON_HANDS)) {
-            sprintf(buf, "%s", GET_NAME(ch));
-            do_lay_on_hands(ch, buf, 0);
+            sprintf(buf, "lay %s", GET_NAME(ch));
+            command_interpreter(ch, buf);
             return (TRUE);
         }
 
@@ -3116,42 +3103,47 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
                         sprintf(buf, "bow %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
                         if (tch->player.sex == SEX_FEMALE) {
-                            do_say(ch, "Greetings, noble lady!", 0);
+                            command_interpreter(ch, "say Greetings, noble "
+                                                    "lady!");
                         } else {
-                            do_say(ch, "Greetings, noble sir!", 0);
+                            command_interpreter(ch, "say Greetings, noble "
+                                                    "sir!");
                         }
                     } else if (GET_ALIGNMENT(tch) >= 350) {
                         sprintf(buf, "smile %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
-                        do_say(ch, "Greetings, adventurer.", 0);
+                        command_interpreter(ch, "say Greetings, adventurer.");
                     } else if (GET_ALIGNMENT(tch) >= -350) {
                         sprintf(buf, "wink %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
-                        do_say(ch, "You're doing well on your path of "
-                                   "Neutrality", 0);
+                        command_interpreter(ch, "say You're doing well on "
+                                                "your path of Neutrality");
                     } else if (GET_ALIGNMENT(tch) >= -750) {
                         sprintf(buf, "nod %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
-                        do_say(ch, "May the prophet smile upon you", 0);
+                        command_interpreter(ch, "say May the prophet smile "
+                                                "upon you");
                     } else if (GET_ALIGNMENT(tch) >= -900) {
                         sprintf(buf, "frown %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
-                        do_say(ch, "You're falling in hands of evil, beware!",
-                               0);
+                        command_interpreter(ch, "say You're falling in hands "
+                                                "of evil, beware!");
                     } else {
                         /*
                          * hmm, not nice guy.. 
                          */
                         sprintf(buf, "glare %s", GET_NAME(tch));
                         command_interpreter(ch, buf);
-                        do_say(ch, "I sense great evil here!", 0);
+                        command_interpreter(ch, "say I sense great evil here!");
                     }
                     SET_BIT(ch->specials.act, ACT_GREET);
                     break;
                 }
             } else if (IsUndead(tch) || IsDiabolic(tch)) {
-                do_say(ch, "Praise the Light, meet thine maker!", 0);
-                do_holy_warcry(ch, GET_NAME(tch), 0);
+                command_interpreter(ch, "say Praise the Light, meet thine "
+                                        "maker!");
+                sprintf(buf, "warcry %s", GET_NAME(tch));
+                command_interpreter(ch, buf);
             }
         }
     }
@@ -3207,7 +3199,7 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
     int             Qmana;      /* psi mob's 1/4 mana */
     int             cmana;      /* psi mob's current mana level */
     int             hpcan;      /* safe to canibalize/summon */
-    char            buf[100];   /* all purpose buffer */
+    char            buf[MAX_STRING_LENGTH];   /* all purpose buffer */
     struct char_data *targ;     /* who the psi_mob is fighting */
     int             group;      /* does targ have followers or is grouped? 
                                  */
@@ -3371,14 +3363,14 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
 
     if (GET_POS(mob) == POSITION_SITTING ||
         GET_POS(mob) == POSITION_RESTING) {
-        do_stand(mob, "", 0);
+        do_stand(mob, NULL, 0);
         return (TRUE);
     }
 
     PML = GET_LEVEL(mob, PSI_LEVEL_IND);
 
     if (NOTAFF_N_LEARNED(mob, SPELL_FIRESHIELD, SKILL_FLAME_SHROUD)) {
-        do_flame_shroud(mob, mob->player.name, 1);
+        command_interpreter(mob, "flame");
         return (TRUE);
     }
 
@@ -3404,7 +3396,7 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
     if (!mob->specials.fighting) {
         if (PSI_CAN(SKILL_CELL_ADJUSTMENT, PML) && cmana > Qmana &&
             mob->points.hit < hpcan) {
-            do_say(mob, "That was too close for comfort.", 1);
+            command_interpreter(mob, "say That was too close for comfort.");
             mind_teleport(PML, mob, mob, NULL);
             mind_cell_adjustment(PML, mob, mob, NULL);
             return (TRUE);
@@ -3416,40 +3408,41 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
                 if (cmana + 2 * (mob->points.hit - hpcan) >=
                     mob->points.max_mana) {
                     /* Qmana=51>=cm, cm+(2*24) <= 99 */
-                    sprintf(buf, "24"); 
+                    sprintf(buf, "canibalize 24"); 
                 } else {
-                    sprintf(buf, "%d", (mob->points.hit - hpcan - 1));
+                    sprintf(buf, "canibalize %d", 
+                            (mob->points.hit - hpcan - 1));
                 }
-                do_canibalize(mob, buf, 1);
+                command_interpreter(mob, buf);
             } else if (mob->skills[SKILL_MEDITATE].learned) {
-                do_meditate(mob, mob->player.name, 1);
+                command_interpreter(mob, "meditate");
             }
             return (TRUE);
         }
 
         if (NOTAFF_N_LEARNED(mob, SKILL_PSI_SHIELD, SKILL_PSI_SHIELD)) {
-            do_psi_shield(mob, mob->player.name, 1);
+            command_interpreter(mob, "shield");
         } else if (NOTAFF_N_LEARNED(mob, SKILL_MINDBLANK, SKILL_MINDBLANK)) {
-            mind_mindblank(PML, mob, mob, NULL);
+            command_interpreter(mob, "mind 'mindblank'");
         } else if (NOTAFF_N_LEARNED(mob, SKILL_TOWER_IRON_WILL,
                                     SKILL_TOWER_IRON_WILL)) {
-            mind_tower_iron_will(PML, mob, mob, NULL);
+            command_interpreter(mob, "mind 'tower of iron will'");
         } else if (NOTAFF_N_LEARNED(mob, SPELL_SENSE_LIFE, SKILL_GREAT_SIGHT)) {
-            do_great_sight(mob, mob->player.name, 1);
+            command_interpreter(mob, "sight");
         } else if (NOTAFF_N_LEARNED(mob, SKILL_PSI_STRENGTH, 
                                     SKILL_PSI_STRENGTH)) {
-            mind_psi_strength(PML, mob, mob, NULL);
+            command_interpreter(mob, "mind 'psionic strength' self");
         } else if (IS_SET(mob->hatefield, HATE_CHAR) && 
                    mob->points.hit > hpcan) {
-            do_say(mob, "It's payback time!", 1);
+            command_interpreter(mob, "say It's payback time!");
             mob->points.mana = 100;
             if (PSI_CAN(SKILL_PORTAL, PML) || PSI_CAN(SKILL_SUMMON, PML)) {
                 return (Summoner(mob, 0, NULL, mob, 0));
             }
         } else if (NOTAFF_N_LEARNED(mob, SPELL_INVISIBLE, SKILL_INVIS)) {
-            do_invisibililty(mob, mob->player.name, 1);
+            command_interpreter(mob, "psionic");
         } else if (mob->skills[SKILL_CHAMELEON].learned) {
-            mind_chameleon(PML, mob, mob, NULL);
+            command_interpreter(mob, "mind 'chameleon'");
         }
         return (TRUE);
     } else {
@@ -3469,7 +3462,7 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
 
             act("$n screams defiantly, 'I'll get you yet, $N!'", 0, mob, 0,
                 targ, TO_ROOM);
-            mind_teleport(PML, mob, mob, 0);
+            command_interpreter(mob, "mind 'psionic teleport' self");
             return (TRUE);
         }
 
@@ -3506,7 +3499,8 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
         } else if (mob->skills[SKILL_MIND_BURN].learned) {
             mind_burn(PML, mob, targ, NULL);
         } else {
-            do_blast(mob, targ->player.name, 1);
+            sprintf(buf, "blast %s", GET_NAME(targ));
+            command_interpreter(mob, buf);
         }
     }
     return (TRUE);
@@ -3560,7 +3554,7 @@ int Slavalis(struct char_data *ch, int cmd, char *arg,
                     ch, TO_ROOM);
                 char_from_room(v);
                 char_to_room(v, SLAV_DEAD_DONE_ROOM);
-                do_look(v, "\0", 0);
+                do_look(v, NULL, 0);
             }
         }
 
@@ -3618,7 +3612,7 @@ int BerserkerItem(struct char_data *ch, int cmd, char *arg,
             /*
              * not berserked go berserk! 
              */
-            do_berserk(ch, "", 0);
+            do_berserk(ch, NULL, 0);
             return (FALSE);
         } else {
             /*
@@ -3668,7 +3662,7 @@ int Beholder(struct char_data *ch, int cmd, char *arg,
     }
     if (mob->specials.fighting) {
         if (GET_POS(mob) == POSITION_SITTING) {
-            do_stand(mob, "", 0);
+            do_stand(mob, NULL, 0);
             return (TRUE);
         }
 
@@ -3891,7 +3885,8 @@ int archer_sub(struct char_data *ch)
              */
             r = range_estimate(ch, missile, 0);
             if (pick_archer_target(ch, r, &td, &a, &b)) {
-                do_fire(ch, td->player.name, 0);
+                sprintf( buf, "fire %s", td->player.name );
+                command_interpreter(ch, buf);
                 return TRUE;
             } else {
                 return FALSE;
@@ -3957,8 +3952,8 @@ int archer_sub(struct char_data *ch)
      */
     r = range_estimate(ch, thrown, 1);
     if (pick_archer_target(ch, r, &td, &a, &b)) {
-        sprintf(buf, "%s %s", thrown->name, td->player.name);
-        do_throw(ch, buf, 0);
+        sprintf(buf, "throw %s %s", thrown->name, td->player.name);
+        command_interpreter(ch, buf);
         return TRUE;
     } else {
         return FALSE;
@@ -4112,8 +4107,8 @@ int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
                     if (affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                         ch->followers) {
-                        do_order(ch, "followers guard on", 0);
-                        do_group(ch, "all", 0);
+                        command_interpreter(ch, "order followers guard on");
+                        command_interpreter(ch, "group all");
                         act("$n utters the words 'instant growth'.",
                             FALSE, ch, 0, 0, TO_ROOM);
 
@@ -4191,36 +4186,38 @@ int sund_earl(struct char_data *ch, int cmd, char *arg,
     }
     switch (number(0, 20)) {
     case 0:
-        do_say(ch, "Lovely weather today.", 0);
+        command_interpreter(ch, "say Lovely weather today.");
         return (TRUE);
     case 1:
         act("$n practices a lunge with an imaginary foe.", FALSE, ch, 0, 0,
             TO_ROOM);
         return (TRUE);
     case 2:
-        do_say(ch, "Hot performance at the gallows tonight.", 0);
+        command_interpreter(ch, "say Hot performance at the gallows tonight.");
         act("$n winks suggestively.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     case 3:
-        do_say(ch, "Must remember to up the taxes at my convenience.", 0);
+        command_interpreter(ch, "say Must remember to up the taxes at my "
+                                "convenience.");
         return (TRUE);
     case 4:
-        do_say(ch, "Sundhaven is impermeable to the enemy!", 0);
+        command_interpreter(ch, "say Sundhaven is impermeable to the enemy!");
         act("$n growls menacingly.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     case 5:
-        do_say(ch, "Decadence is the credence of the abominable.", 0);
+        command_interpreter(ch, "say Decadence is the credence of the "
+                                "abominable.");
         return (TRUE);
     case 6:
-        do_say(ch, "I look at you and get a wonderful sense of impending doom.",
-               0);
+        command_interpreter(ch, "say I look at you and get a wonderful sense "
+                                "of impending doom.");
         act("$n chortles merrily.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     case 7:
         act("$n touches his goatee ponderously.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     case 8:
-        do_say(ch, "It's Mexican Madness night at Maynards!", 0);
+        command_interpreter(ch, "say It's Mexican Madness night at Maynards!");
         act("$n bounces around.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     default:
@@ -4244,8 +4241,8 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
         switch (number(0, 30)) {
         case 0:
             act("$n eyes a passing woman.", FALSE, ch, 0, 0, TO_ROOM);
-            do_say(ch, "Come, m'lady, and have a look at this precious silk!",
-                   0);
+            command_interpreter(ch, "say Come, m'lady, and have a look at this"
+                                    " precious silk!");
             break;
         case 1:
             act("$n says to you, 'Wouldn't you look lovely in this!'",
@@ -4264,20 +4261,21 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
             act("$n smirks.", FALSE, ch, 0, 0, TO_ROOM);
             break;
         case 4:
-            do_say(ch, "Step forward, my pretty locals!", 0);
+            command_interpreter(ch, "say Step forward, my pretty locals!");
             break;
         case 5:
             act("$n shades his eyes with his hand.", FALSE, ch, 0, 0, TO_ROOM);
             break;
         case 6:
-            do_say(ch, "Have you ever seen an ogre in a silken gown?", 0);
-            do_say(ch, "I didn't *think* so!", 0);
+            command_interpreter(ch, "say Have you ever seen an ogre in a "
+                                    "silken gown?");
+            command_interpreter(ch, "say I didn't *think* so!");
             act("$n throws his head back and cackles with insane glee!",
                 FALSE, ch, 0, 0, TO_ROOM);
             break;
         case 7:
             act("$n hands you a glass of wine.", FALSE, ch, 0, 0, TO_ROOM);
-            do_say(ch, "Come, have a seat and view my wares.", 0);
+            command_interpreter(ch, "say Come, have a seat and view my wares.");
             break;
         case 8:
             act("$n looks at you.", FALSE, ch, 0, 0, TO_ROOM);
@@ -4287,12 +4285,12 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
             act("$n fiddles with some maps.", FALSE, ch, 0, 0, TO_ROOM);
             break;
         case 10:
-            do_say(ch, "Here here! Beggars and nobles alike come forward and "
-                       "make your bids!", 0);
+            command_interpreter(ch, "say Here here! Beggars and nobles alike "
+                                    "come forward and make your bids!");
             break;
         case 11:
-            do_say(ch, "I am in this bourgeois hamlet for a limited time only!",
-                   0);
+            command_interpreter(ch, "say I am in this bourgeois hamlet for a "
+                                    "limited time only!");
             act("$n swirls some wine in a glass.", FALSE, ch, 0, 0, TO_ROOM);
             break;
         default:
@@ -4304,17 +4302,19 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
     
     switch (number(0, 20)) {
     case 0:
-        do_say(ch, "Ah! Fellow travellers! Come have a look at the finest silk"
-                   " this side of the infamous Ched Razimtheth!", 0);
+        command_interpreter(ch, "say Ah! Fellow travellers! Come have a look "
+                                "at the finest silk this side of the infamous "
+                                "Ched Razimtheth!");
         return (FALSE);
     case 1:
         act("$n looks at you.", FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "You are feebly attired for the danger that lies ahead.", 0);
-        do_say(ch, "Silk is the way to go.", 0);
+        command_interpreter(ch, "say You are feebly attired for the danger "
+                                "that lies ahead.");
+        command_interpreter(ch, "say Silk is the way to go.");
         act("$n smiles warmly.", FALSE, ch, 0, 0, TO_ROOM);
         return (FALSE);
     case 2:
-        do_say(ch, "Worthy adventurers, hear my call!", 0);
+        command_interpreter(ch, "say Worthy adventurers, hear my call!");
         return (FALSE);
     case 3:
         act("$n adjusts his cloak.", FALSE, ch, 0, 0, TO_ROOM);
@@ -4325,24 +4325,26 @@ int silktrader(struct char_data *ch, int cmd, char *arg,
         act("$n bows respectfully.", FALSE, ch, 0, 0, TO_ROOM);
         return (FALSE);
     case 5:
-        do_say(ch, "Can you direct me to the nearest tavern?", 0);
+        command_interpreter(ch, "say Can you direct me to the nearest tavern?");
         return (FALSE);
     case 6:
-        do_say(ch, "Heard the latest ogre joke?", 0);
+        command_interpreter(ch, "say Heard the latest ogre joke?");
         act("$n snickers to himself.", FALSE, ch, 0, 0, TO_ROOM);
         return (FALSE);
     case 7:
-        do_say(ch, "What ho, traveller! Rest your legs here for a spell and "
-                   "peruse the latest in fashion!", 0);
+        command_interpreter(ch, "say What ho, traveller! Rest your legs here "
+                                "for a spell and peruse the latest in "
+                                "fashion!");
         return (FALSE);
     case 8:
-        do_say(ch, "Beware ye, traveller, lest ye come to live in Exile!", 0);
+        command_interpreter(ch, "say Beware ye, traveller, lest ye come to "
+                                "live in Exile!");
         act("$n grins evilly.", FALSE, ch, 0, 0, TO_ROOM);
         return (FALSE);
     case 9:
         act("$n touches your shoulder.", FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "A word of advice. Beware of any ale labled 'mushroom' or "
-                   "'pumpkin'.", 0);
+        command_interpreter(ch, "say A word of advice. Beware of any ale "
+                                "labeled 'mushroom' or 'pumpkin'.");
         act("$n shivers uncomfortably.", FALSE, ch, 0, 0, TO_ROOM);
         return (FALSE);
     default:
@@ -4369,24 +4371,26 @@ int athos(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     case 2:
         act("$n asks you, 'Have you seen the lady, pale and fair, with a heart"
             " of stone?'", FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "That monster will be the death of us all.", 0);
+        command_interpreter(ch, "say That monster will be the death of us "
+                                "all.");
         break;
     case 3:
-        do_say(ch, "God save the King!", 0);
+        command_interpreter(ch, "say God save the King!");
         break;
     case 4:
-        do_say(ch, "All for one and .. one for...", 0);
+        command_interpreter(ch, "say All for one and .. one for...");
         act("$n drowns himself in a swig of wine.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 5:
         act("$n looks up with a philosophical air.", FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "Women - God's eternal punishment on man.", 0);
+        command_interpreter(ch, "say Women - God's eternal punishment on man.");
         break;
     case 6:
         act("$n downs his glass and leans heavily on the oaken table.",
             FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "You know, we would best band together and wrestle the "
-                   "monstrous woman from her lair and home!", 0);
+        command_interpreter(ch, "say You know, we would best band together and"
+                                " wrestle the monstrous woman from her lair "
+                                "and home!");
         break;
     default:
         return (FALSE);
@@ -4405,17 +4409,17 @@ int hangman(struct char_data *ch, int cmd, char *arg,
     case 0:
         act("$n whirls his noose like a lasso and it lands neatly around your "
             "neck.", FALSE, ch, 0, 0, TO_ROOM);
-        do_say(ch, "You're next, you ugly rogue!", 0);
-        do_say(ch, "Just kidding.", 0);
+        command_interpreter(ch, "say You're next, you ugly rogue!");
+        command_interpreter(ch, "say Just kidding.");
         act("$n pats you on your head.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 1:
-        do_say(ch, "I was conceived in Exile and have been integrated into "
-                   "society!", 0);
-        do_say(ch, "Muahaha!", 0);
+        command_interpreter(ch, "say I was conceived in Exile and have been "
+                                "integrated into society!");
+        command_interpreter(ch, "say Muahaha!");
         break;
     case 2:
-        do_say(ch, "Anyone have a butterknife I can borrow?", 0);
+        command_interpreter(ch, "say Anyone have a butterknife I can borrow?");
         break;
     case 3:
         act("$n suddenly pulls a lever.", FALSE, ch, 0, 0, TO_ROOM);
@@ -4444,7 +4448,7 @@ int butcher(struct char_data *ch, int cmd, char *arg,
     }
     switch (number(0, 40)) {
     case 0:
-        do_say(ch, "I need a Union.", 0);
+        command_interpreter(ch, "say I need a Union.");
         act("$n glares angrily.", FALSE, ch, 0, 0, TO_ROOM);
         act("$n rummages about for an axe.", FALSE, ch, 0, 0, TO_ROOM);
         break;
@@ -4457,7 +4461,7 @@ int butcher(struct char_data *ch, int cmd, char *arg,
         act("$n grins evilly.", FALSE, ch, 0, 0, TO_ROOM);
         return (TRUE);
     case 3:
-        do_say(ch, "Pork for sale!", 0);
+        command_interpreter(ch, "say Pork for sale!");
         break;
     case 4:
         act("$n whispers to you, 'I've got some great damage eq in the back "
@@ -4484,10 +4488,11 @@ int butcher(struct char_data *ch, int cmd, char *arg,
         act("$n chuckles.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 10:
-        do_say(ch, "Hi, Alice.", 0);
+        command_interpreter(ch, "say Hi, Alice.");
         break;
     case 11:
-        do_say(ch, "Everyone looks like food to me these days.", 0);
+        command_interpreter(ch, "say Everyone looks like food to me these "
+                                "days.");
         act("$n sighs loudly.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 12:
@@ -4496,7 +4501,8 @@ int butcher(struct char_data *ch, int cmd, char *arg,
         act("$n shouts, 'Bring out your dead!'", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 13:
-        do_say(ch, "The worms crawl in, the worms crawl out..", 0);
+        command_interpreter(ch, "say The worms crawl in, the worms crawl "
+                                "out..");
         break;
     case 14:
         act("$n sings 'Brave, brave Sir Patton...'", FALSE, ch, 0, 0, TO_ROOM);
@@ -4504,8 +4510,9 @@ int butcher(struct char_data *ch, int cmd, char *arg,
         act("$n smirks.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 15:
-        do_say(ch, "Get Lurch to bring me over a case and I'll sport you a "
-                   "year's supply of grilled ogre.", 0);
+        command_interpreter(ch, "say Get Lurch to bring me over a case and "
+                                "I'll sport you a year's supply of grilled "
+                                "ogre.");
         break;
     default:
         return (FALSE);
@@ -4522,52 +4529,55 @@ int stu(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     switch (number(0, 60)) {
     case 0:
-        do_say(ch, "I'm so damn cool, I'm too cool to hang out with myself!",
-               0);
+        command_interpreter(ch, "say I'm so damn cool, I'm too cool to hang "
+                                "out with myself!");
         break;
     case 1:
-        do_say(ch, "I'm really the NICEST guy you ever MEET!", 0);
+        command_interpreter(ch, "say I'm really the NICEST guy you ever MEET!");
         break;
     case 2:
-        do_say(ch, "Follow me for exp, gold and lessons in ADVANCED C!", 0);
+        command_interpreter(ch, "say Follow me for exp, gold and lessons in "
+                                "ADVANCED C!");
         break;
     case 3:
-        do_say(ch, "Mind if I upload 200 megs of pregnant XXX gifs with no "
-                   "descriptions to your bbs?", 0);
+        command_interpreter(ch, "say Mind if I upload 200 megs of pregnant XXX"
+                                " gifs with no descriptions to your bbs?");
         break;
     case 4:
-        do_say(ch, "Sex? No way! I'd rather jog 20 miles!", 0);
+        command_interpreter(ch, "say Sex? No way! I'd rather jog 20 miles!");
         break;
     case 5:
-        do_say(ch, "I'll take you OUT!!   ...tomorrow", 0);
+        command_interpreter(ch, "say I'll take you OUT!!   ...tomorrow");
         break;
     case 6:
-        do_say(ch, "I invented Mud you know...", 0);
+        command_interpreter(ch, "say I invented Mud you know...");
         break;
     case 7:
-        do_say(ch, "Can I have a cup of water?", 0);
+        command_interpreter(ch, "say Can I have a cup of water?");
         break;
     case 8:
-        do_say(ch, "I'll be jogging down ventnor ave in 10 minutes if you want"
-                   " some!", 0);
+        command_interpreter(ch, "say I'll be jogging down ventnor ave in 10 "
+                                "minutes if you want some!");
         break;
     case 9:
-        do_say(ch, "Just let me pull a few strings and I'll get ya a site, "
-                   "they love me! - doesnt everyone?", 0);
+        command_interpreter(ch, "say Just let me pull a few strings and I'll "
+                                "get ya a site, they love me! - doesn't "
+                                "everyone?");
         break;
     case 10:
-        do_say(ch, "Pssst! Someone tell Manwe to sport me some levels.", 0);
+        command_interpreter(ch, "say Pssst! Someone tell Manwe to sport me "
+                                "some levels.");
         act("$n nudges you with his elbow.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 11:
-        do_say(ch, "Edgar! Buddy! Let's group and hack some ogres to tiny "
-                   "quivering bits!", 0);
+        command_interpreter(ch, "say Edgar! Buddy! Let's group and hack some "
+                                "ogres to tiny quivering bits!");
         break;
     case 12:
         act("$n tells you, 'Xenon has bad taste in women!'", FALSE, ch, 0,
             0, TO_ROOM);
         act("$n screams in terror!", FALSE, ch, 0, 0, TO_ROOM);
-        do_flee(ch, "", 0);
+        do_flee(ch, NULL, 0);
         break;
     case 13:
         if (number(0, 32767) < 10) {
@@ -4621,9 +4631,9 @@ int idiot(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     switch (number(0, 40)) {
     case 0:
-        do_say(ch, "even if idiot = god", 0);
-        do_say(ch, "and Stu = idiot", 0);
-        do_say(ch, "Stu could still not = god.", 0);
+        command_interpreter(ch, "say even if idiot = god");
+        command_interpreter(ch, "say and Stu = idiot");
+        command_interpreter(ch, "say Stu could still not = god.");
         act("$n smiles.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 1:
@@ -4635,7 +4645,7 @@ int idiot(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             ch, 0, 0, TO_ROOM);
         break;
     case 3:
-        do_say(ch, "Rome really was built in a day.", 0);
+        command_interpreter(ch, "say Rome really was built in a day.");
         act("$n snickers.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 4:
@@ -4646,12 +4656,13 @@ int idiot(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         act("$n cartwheels around the room.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 6:
-        do_say(ch, "How many ogres does it take to screw in a light bulb?", 0);
+        command_interpreter(ch, "say How many ogres does it take to screw in a"
+                                " light bulb?");
         act("$n stops and whaps himself upside the head.", FALSE, ch, 0, 0,
             TO_ROOM);
         break;
     case 7:
-        do_say(ch, "Uh huh. Uh huh huh.", 0);
+        command_interpreter(ch, "say Uh huh. Uh huh huh.");
         break;
     case 8:
         act("$n looks at you.", FALSE, ch, 0, 0, TO_ROOM);
@@ -4665,12 +4676,12 @@ int idiot(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 11:
-        do_say(ch, "All this and I am just a number.", 0);
+        command_interpreter(ch, "say All this and I am just a number.");
         act("$n cries on your shoulder.", FALSE, ch, 0, 0, TO_ROOM);
         break;
     case 12:
-        do_say(ch, "A certain hunchback I know dresses very similar to you, "
-                   "very similar...", 0);
+        command_interpreter(ch, "say A certain hunchback I know dresses very "
+                                "similar to you, very similar...");
         break;
     default:
         return FALSE;
@@ -4937,7 +4948,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
 
         arg = get_argument(arg, &buf);
 #if 0
-        if (str_cmp(buf, "fountain") && str_cmp(buf, "water")) {
+        if (strcasecmp(buf, "fountain") && strcasecmp(buf, "water")) {
             return(FALSE); 
         }
 #endif         
@@ -4967,7 +4978,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
                 0, TO_ROOM);
             char_from_room(ch);
             char_to_room(ch, 46201);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             break;
         default:
             send_to_char("The water tastes so good, you are tempted to try "
@@ -4991,6 +5002,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
 {
     char           *obj_name,
                    *vict_name,
+                   *temp,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -5086,15 +5098,20 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
          */
         if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != MARBLES)) {
-                sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
-                do_tell(vict, buf, 19);
+                sprintf(buf, "tell %s That is not the item I seek.", 
+                        GET_NAME(ch));
+                command_interpreter(vict, buf);
                 return (TRUE);
             }
             test = 1;
-            do_give(ch, "bag-marbles braxis-swamp-dragon", 0);
+            temp = strdup("bag-marbles braxis-swamp-dragon");
+            do_give(ch, temp, 0);
+            if( temp ) {
+                free( temp );
+            }
         } else {
-            sprintf(buf, "%s %s", obj_name, vict_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, vict_name);
+            command_interpreter(ch, buf);
             if (obj_index[obj->item_number].virtual == MARBLES) {
                 test = 1;
             } else {    
@@ -5170,108 +5187,119 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg,
 
     switch (number(0, 60)) {
     case 0:
-        do_emote(ch, "turns himself into a box.", 0);
+        command_interpreter(ch, "emote turns himself into a box.");
         break;
     case 1:
-        do_emote(ch, "starts to climb an invisible rope.", 0);
+        command_interpreter(ch, "emote starts to climb an invisible rope.");
         break;
     case 2:
-        do_emote(ch, "is stuck inside a box that you can't see. Weird!", 0);
+        command_interpreter(ch, "emote is stuck inside a box that you can't "
+                                "see. Weird!");
         break;
     case 3:
-        do_emote(ch, "is crawling around on the floor like a dog.", 0);
+        command_interpreter(ch, "emote is crawling around on the floor like a "
+                                "dog.");
         break;
     case 4:
-        do_emote(ch, "is lying on the floor playing dead.", 0);
+        command_interpreter(ch, "emote is lying on the floor playing dead.");
         break;
     case 5:
-        do_emote(ch, "pretends like he's riding a big stallion.", 0);
+        command_interpreter(ch, "emote pretends like he's riding a big "
+                                "stallion.");
         break;
     case 6:
-        do_emote(ch, "is stuck under an enormous rock....or so he thinks.", 0);
+        command_interpreter(ch, "emote is stuck under an enormous rock....or "
+                                "so he thinks.");
         break;
     case 7:
-        do_emote(ch, "mimics your every move.", 0);
+        command_interpreter(ch, "emote mimics your every move.");
         break;
     case 8:
-        do_emote(ch, "begins to eat some imaginary cheese.", 0);
+        command_interpreter(ch, "emote begins to eat some imaginary cheese.");
         break;
     case 9:
-        do_emote(ch, "sniffs your behind.", 0);
+        command_interpreter(ch, "emote sniffs your behind.");
         break;
     case 10:
-        do_emote(ch, "would like a kiss from you.", 0);
+        command_interpreter(ch, "emote would like a kiss from you.");
         break;
     case 11:
-        do_emote(ch, "flexes his muscles and pretends like he's the great Lord"
-                     " Ignatius.", 0);
+        command_interpreter(ch, "emote flexes his muscles and pretends like "
+                                "he's the great Lord Ignatius.");
         break;
     case 12:
-        do_emote(ch, "sticks his nose in your crotch and won't go away.", 0);
+        command_interpreter(ch, "emote sticks his nose in your crotch and "
+                                "won't go away.");
         break;
     case 13:
-        do_emote(ch, "rolls up in a tiny ball for you to kick him.", 0);
+        command_interpreter(ch, "emote rolls up in a tiny ball for you to "
+                                "kick him.");
         break;
     case 14:
-        do_emote(ch, "takes a black magic marker and begins to give you a "
-                     "cute mustache.", 0);
+        command_interpreter(ch, "emote takes a black magic marker and begins "
+                                "to give you a cute mustache.");
         break;
     case 15:
-        do_emote(ch, "worships Abagor as his patron saint of stupidity.", 0);
+        command_interpreter(ch, "emote worships Abagor as his patron saint of "
+                                "stupidity.");
         break;
     case 16:
-        do_emote(ch, "wishes he could be just like you.", 0);
+        command_interpreter(ch, "emote wishes he could be just like you.");
         break;
     case 17:
-        do_emote(ch, "pees his pants every time that meanie Tsaron shows up.",
-                 0);
+        command_interpreter(ch, "emote pees his pants every time that meanie "
+                                "Tsaron shows up.");
         break;
     case 18:
-        do_emote(ch, "begins falling and falling and falling and falling "
-                     "and....", 0);
+        command_interpreter(ch, "emote begins falling and falling and falling "
+                                "and falling and....");
         break;
     case 19:
-        do_emote(ch, "is head over heels in love....no, he's just head over "
-                     "heels.", 0);
+        command_interpreter(ch, "emote is head over heels in love....no, he's "
+                                "just head over heels.");
         break;
     case 20:
-        do_emote(ch, "moshes wildly with you and tries to steal your wallet.",
-                 0);
+        command_interpreter(ch, "emote moshes wildly with you and tries to "
+                                "steal your wallet.");
         break;
     case 21:
-        do_emote(ch, "begs for a couple of cents with those poor puppy dog "
-                     "eyes.", 0);
+        command_interpreter(ch, "emote begs for a couple of cents with those "
+                                "poor puppy dog eyes.");
         break;
     case 22:
-        do_emote(ch, "is sitting with no chair...Amazing!", 0);
+        command_interpreter(ch, "emote is sitting with no chair...Amazing!");
         break;
     case 23:
-        do_emote(ch, "shows you his wallet and the pictures of all his kids.",
-                 0);
+        command_interpreter(ch, "emote shows you his wallet and the pictures "
+                                "of all his kids.");
         break;
     case 24:
-        do_emote(ch, "would like it if you would give him a massage.", 0);
+        command_interpreter(ch, "emote would like it if you would give him a "
+                                "massage.");
         break;
     case 25:
-        do_emote(ch, "would shave his butt and learn to walk backwards if he "
-                     "looked like you!", 0);
+        command_interpreter(ch, "emote would shave his butt and learn to walk "
+                                "backwards if he looked like you!");
         break;
     case 26:
-        do_emote(ch, "is gradually getting squished tighter and tighter into a"
-                     " magical force field!", 0);
+        command_interpreter(ch, "emote is gradually getting squished tighter "
+                                "and tighter into a magical force field!");
         break;
     case 27:
-        do_emote(ch, "is climbing a ladder, but going nowhere.", 0);
+        command_interpreter(ch, "emote is climbing a ladder, but going "
+                                "nowhere.");
         break;
     case 28:
-        do_emote(ch, "writhes on the floor doing strange undulating motions.",
-                 0);
+        command_interpreter(ch, "emote writhes on the floor doing strange "
+                                "undulating motions.");
         break;
     case 29:
-        do_emote(ch, "begins to do laps around the room on his hands.", 0);
+        command_interpreter(ch, "emote begins to do laps around the room on "
+                                "his hands.");
         break;
     case 30:
-        do_emote(ch, "sits down at his computer and starts to MUD.", 0);
+        command_interpreter(ch, "emote sits down at his computer and starts "
+                                "to MUD.");
         break;
     default:
         return (FALSE);
@@ -5361,8 +5389,8 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
                 if (vict->equipment[HOLD]) {
                     do_remove(vict, vict->equipment[HOLD]->name, 0);
-                    sprintf(buf, "green-key %s", GET_NAME(ch));
-                    do_give(vict, buf, 0);
+                    sprintf(buf, "give green-key %s", GET_NAME(ch));
+                    command_interpreter(vict, buf);
                     act("$n says, 'Here is the key to the west wing.  You'll "
                         "need it.'", FALSE, vict, 0, 0, TO_ROOM);
                     return (TRUE);
@@ -5371,8 +5399,8 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         } else if (has_key == 1) {
             act("$n says, 'Here is the key.  I will tell you no more.  Go, "
                 "before I change my mind.'", FALSE, vict, 0, 0, TO_ROOM);
-            sprintf(buf, "key-elamin %s", GET_NAME(ch));
-            do_give(vict, buf, 0);
+            sprintf(buf, "give key-elamin %s", GET_NAME(ch));
+            command_interpreter(vict, buf);
             return (TRUE);
         }
     }
@@ -5387,6 +5415,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 {
     char           *obj_name,
                    *vict_name,
+                   *temp,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -5467,8 +5496,8 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     }
                 }
                 if (has_key == 1) {
-                    sprintf(buf, "skeleton-key %s", GET_NAME(ch));
-                    do_give(vict, buf, 0);
+                    sprintf(buf, "give skeleton-key %s", GET_NAME(ch));
+                    command_interpreter(vict, buf);
                 }
 
             }
@@ -5502,15 +5531,20 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
         if (!IS_IMMORTAL(ch)) {
             if (obj_index[obj->item_number].virtual != PEN_MIGHT) {
-                sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
-                do_tell(vict, buf, 19);
+                sprintf(buf, "tell %s That is not the item I seek.", 
+                        GET_NAME(ch));
+                command_interpreter(vict, buf);
                 return (TRUE);
             }
             test = 1;
-            do_give(ch, "pen-might elamin", 0);
+            temp = strdup("pen-might elamin");
+            do_give(ch, temp, 0);
+            if( temp ) {
+                free( temp );
+            }
         } else {
-            sprintf(buf, "%s %s", obj_name, vict_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, vict_name);
+            command_interpreter(ch, buf);
             if (obj_index[obj->item_number].virtual == PEN_MIGHT) {
                 test = 1;
             } else {
@@ -5622,7 +5656,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
             GET_RCON(ch) = (GET_RCON(ch) + 1);
             GET_GOLD(ch) -= test;
             GET_EXP(ch) -= ((GET_RCON(ch)) * 5000000);
-            do_save(ch, "", 0);
+            do_save(ch, NULL, 0);
             sprintf(buf, "Player %s just bought a CON point, %d to %d. Payed "
                          "%d xps, %d gold.",
                     GET_NAME(ch), tmp_con, GET_RCON(ch),
@@ -6112,7 +6146,7 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
 
                 char_from_room(tmp);
                 char_to_room(tmp, CALM_BEFORE_STORM);
-                do_look(tmp, "\0", 0);
+                do_look(tmp, NULL, 0);
             }
         }
         return (TRUE);
@@ -6413,18 +6447,18 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         
         if (!IS_IMMORTAL(ch)) {
             if (obj->obj_flags.type_flag != ITEM_FOOD) {
-                sprintf(buf, "%s Thank you, but that is not what I desire.",
-                        GET_NAME(ch));
-                do_tell(vict, buf, 19);
+                sprintf(buf, "tell %s Thank you, but that is not what I "
+                             "desire.", GET_NAME(ch));
+                command_interpreter(vict, buf);
                 return (TRUE);
             } else {
                 test = 1;
             }
-            sprintf(buf, "%s %s", obj_name, vict_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, vict_name);
+            command_interpreter(ch, buf);
         } else {
-            sprintf(buf, "%s %s", obj_name, vict_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, vict_name);
+            command_interpreter(ch, buf);
             if (obj->obj_flags.type_flag == ITEM_FOOD) {
                 test = 1;
             }
@@ -6435,16 +6469,16 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
 
     if (test == 1) {
         if (vict->equipment[WIELD]) {
-            sprintf(buf, "%s Thank you mighty hero.  Take this as a token of "
-                         "my appreciation.", GET_NAME(ch));
-            do_tell(vict, buf, 19);
+            sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
+                         "token of my appreciation.", GET_NAME(ch));
+            command_interpreter(vict, buf);
             do_remove(vict, vict->equipment[WIELD]->name, 0);
-            sprintf(buf, "Staff %s", GET_NAME(ch));
-            do_give(vict, buf, 0);
+            sprintf(buf, "give Staff %s", GET_NAME(ch));
+            command_interpreter(vict, buf);
         } else {
-            sprintf(buf, "%s You are indeed a generous person, but I have "
+            sprintf(buf, "tell %s You are indeed a generous person, but I have "
                          "nothing to offer you in return.", GET_NAME(ch));
-            do_tell(vict, buf, 19);
+            command_interpreter(vict, buf);
         }
     }
     return (TRUE);
@@ -6761,7 +6795,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, key_room);
 
         act("$n suddenly appears.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return TRUE;
     }
 
@@ -6824,7 +6858,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
             return(FALSE);
         }
 
-        if (!(strcmp(lower(arg), " what is the quest?"))) {
+        if (!(strcasecmp(arg, " what is the quest?"))) {
             send_to_char("$c0006You ask him 'What is the quest?'\n\r", ch);
             do_say(vict, "Solve my quest and you shall be rewarded!", 0);
             do_say(vict, QuestList[questNumber2][questNumber].where, 0);
@@ -6891,8 +6925,9 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
         if (GetMaxLevel(ch) < 99) {
             if (obj_index[obj->item_number].virtual != 
                 QuestList[questNumber2][questNumber].item) {
-                sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
-                do_tell(vict, buf, 19);
+                sprintf(buf, "tell %s That is not the item I seek.", 
+                        GET_NAME(ch));
+                command_interpreter(vict, buf);
             } else {
 #if 0                
                 if(!(strcmp(questwinner,GET_NAME(ch)))) { 
@@ -7116,7 +7151,7 @@ int godsay(struct char_data *ch, int cmd, char *argument,
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
         return( TRUE );
     }
@@ -7147,8 +7182,8 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
     if (buf) {
-        if (!str_cmp("pool", buf) || !str_cmp("color", buf) ||
-            !str_cmp("color pool", buf)) {
+        if (!strcasecmp("pool", buf) || !strcasecmp("color", buf) ||
+            !strcasecmp("color pool", buf)) {
             if ((portal = get_char_room("pool", ch->in_room))) {
                 send_to_char("\n\r", ch);
                 send_to_char("You attempt to enter the pool, and it "
@@ -7164,7 +7199,7 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
                 char_to_room(ch, BAHAMUT_HOME);
                 act("$n appears in a dazzling explosion of light!", FALSE,
                     ch, 0, 0, TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return (TRUE);
             }
         }
@@ -7365,8 +7400,8 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
          * look 
          */
         arg = get_argument(arg, &buf);
-        if (buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
-                    !str_cmp("Up", buf))) {
+        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) || 
+                    !strcasecmp("Up", buf))) {
             send_to_char("All you can see up there is a cliff wall.\n\r", ch);
             return (TRUE);
         }
@@ -7377,7 +7412,7 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
          * pull 
          */
         buf = get_argument(arg, &buf);
-        if (buf && (!str_cmp("rope", buf) || !str_cmp("Rope", buf))) {
+        if (buf && (!strcasecmp("rope", buf) || !strcasecmp("Rope", buf))) {
             act("You grab the rope and give it a tug, but can't",
                 FALSE, ch, 0, 0, TO_CHAR);
             send_to_char("let go.  The rope jerks back and pulls you up\n\r",
@@ -7391,7 +7426,7 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
 
             act("$n suddenly appears from below.", FALSE, ch, 0, 0,
                 TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         }
     }
@@ -7462,13 +7497,13 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
         if (obj_index[obj->item_number].virtual != universal) {
             if (!strcmp(vict->specials.quest_no, "")) {
                 if (IS_GOOD(vict)) {
-                    sprintf(buf, "%s Oh.. You must be mistakened, I'm not "
+                    sprintf(buf, "tell %s Oh.. You must be mistaken, I'm not "
                                  "looking for that object.", GET_NAME(ch));
                 } else {
-                    sprintf(buf, "%s Blah.. Quit wasting my time with this "
-                                 "garbage.", GET_NAME(ch));
+                    sprintf(buf, "tell %s Blah.. Quit wasting my time with "
+                                 "this garbage.", GET_NAME(ch));
                 }
-                do_tell(vict, buf, 19);
+                command_interpreter(vict, buf);
             } else {
                 send_to_room(vict->specials.quest_no, ch->in_room);
             }
@@ -7623,8 +7658,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
          */
         if (obj != get_obj_in_list_vis(ch, "head of Matron Singh",
                                        ch->carrying)) {
-            sprintf(buf, "%s %s", obj_name, tgt_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, tgt_name);
+            command_interpreter(ch, buf);
             sprintf(buf, "Why, thank you very much, that will make a nice "
                          "addition to my collection of rarities.");
             do_say(tgt, buf, 19);
@@ -7633,8 +7668,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
             /*
              * if object IS the head of Matron Singh 
              */
-            sprintf(buf, "%s %s", obj_name, tgt_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, tgt_name);
+            command_interpreter(ch, buf);
 
             /*
              * if Jessep has the Laurel of Leaves, give it to the pc 
@@ -7647,8 +7682,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
                 do_say(tgt, buf, 19);
                 do_remove(tgt, tgt->equipment[WEAR_HEAD]->name, 0);
 
-                sprintf(buf, "laurel-leaves-myrrhal %s", GET_NAME(ch));
-                do_give(tgt, buf, 0);
+                sprintf(buf, "give laurel-leaves-myrrhal %s", GET_NAME(ch));
+                command_interpreter(tgt, buf);
 
                 sprintf(buf, "I wish you well.");
                 do_say(tgt, buf, 19);
@@ -7837,8 +7872,8 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
 
-    if (buf && (!str_cmp("portal", buf) || !str_cmp("gate", buf) ||
-                 !str_cmp("gate portal", buf)) && 
+    if (buf && (!strcasecmp("portal", buf) || !strcasecmp("gate", buf) ||
+                 !strcasecmp("gate portal", buf)) && 
         (portal = get_char_room("portal", ch->in_room))) {
 
         send_to_char("\n\r", ch);
@@ -7853,7 +7888,7 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
 
         act("Proven a true sinner, $n materializes from one of the "
             "altar's seven sides.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -7872,7 +7907,7 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &buf);
 
-    if (buf && !str_cmp("mirror", buf) && 
+    if (buf && !strcasecmp("mirror", buf) && 
         (portal = get_char_room("mirror", ch->in_room))) {
 
         send_to_char("\n\r", ch);
@@ -7889,7 +7924,7 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, 51835);
         act("$n steps out of one of the mirroring surfaces in the room, "
             "smiling.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -7923,7 +7958,7 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg,
 
             act("$n madly rages about, then calms down when there's no more "
                 "quarries about.", FALSE, ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
 
             send_to_char("You rage about, then realize there's noone to fight "
                          "and calm down.\n\r", ch);
@@ -7967,7 +8002,7 @@ int sinbarrel(struct char_data *ch, int cmd, char *arg,
 
             act("$n climbs out of the barrel, swaying slightly.", FALSE,
                 ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
 
             send_to_char("\n\r", ch);
             send_to_char("You feel a bit dizzy from so much mead.\n\r", ch);
@@ -7998,8 +8033,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
     dlog("in altar");
 
     argument = get_argument(argument, &buf);
-    if (buf && (!str_cmp("altar", buf) || !str_cmp("Altar", buf) || 
-                !str_cmp("ALTAR", buf))) {
+    if (buf && !strcasecmp("altar", buf)) {
         /*
          * rub altar 
          */
@@ -8282,7 +8316,8 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
     if (count < 10) {
         return (TRUE);
     }
-    do_system(ch, "A large gong sound echoes through-out the lands.", 1);
+    command_interpreter(ch, "system A large gong sound echoes through-out the "
+                            "lands.");
 
     /*
      * Send all in group too room 51878 
@@ -8291,7 +8326,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         char_from_room(ch);
         char_to_room(ch, 51878);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     } else {
         if (ch->master) {
@@ -8307,7 +8342,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
                  */
                 char_from_room(f->follower);
                 char_to_room(f->follower, 51878);
-                do_look(f->follower, "", 0);
+                do_look(f->follower, NULL, 0);
             }
         }
 
@@ -8321,7 +8356,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
              */
             char_from_room(ch->master);
             char_to_room(ch->master, 51878);
-            do_look(ch->master, "", 0);
+            do_look(ch->master, NULL, 0);
         }
 
         /*
@@ -8329,7 +8364,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
          */
         char_from_room(ch);
         char_to_room(ch, 51878);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
     }
     return (TRUE);
 }
@@ -8400,7 +8435,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
         0, TO_ROOM);
     act("$n gets a shiny trinket from $s pocket and smiles gleefully.",
         FALSE, ch, 0, 0, TO_ROOM);
-    do_put(mob, "trinket stash", 0);
+    command_interpreter(mob, "put trinket stash");
     return( TRUE );
 }
 
@@ -8736,8 +8771,8 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                                 /*
                                  * and replace it by something more comfy 
                                  */
-                                sprintf(buf, "comfortable-robe");
-                                do_wear(i, buf, WEAR_BODY);
+                                sprintf(buf, "wear comfortable-robe");
+                                command_interpreter(i, buf);
                                 return (TRUE);
                             } else {
                                 /*
@@ -8799,8 +8834,8 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg,
                             /*
                              * and replace it by something more comfy 
                              */
-                            sprintf(buf, "comfortable-robe");
-                            do_wear(i, buf, WEAR_BODY);
+                            sprintf(buf, "wear comfortable-robe");
+                            command_interpreter(i, buf);
                             return (TRUE);
                         }
                     }
@@ -8900,7 +8935,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the north.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -8959,7 +8994,7 @@ int pride_remover_two(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the east.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9018,7 +9053,7 @@ int pride_remover_three(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the north.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9077,7 +9112,7 @@ int pride_remover_four(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from above.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9184,7 +9219,7 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the south.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9243,7 +9278,7 @@ int pride_remover_six(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the west.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9299,7 +9334,7 @@ int pride_remover_seven(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, 51836);        /* move char to The Naked Truth */
 
         act("$n strides in from the south.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);

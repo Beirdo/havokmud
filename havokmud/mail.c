@@ -146,7 +146,7 @@ mail_index_type *find_char_in_index(char *searchee)
     }
 
     for (temp_rec = mail_index;
-         temp_rec && str_cmp(temp_rec->recipient, searchee);
+         temp_rec && strcasecmp(temp_rec->recipient, searchee);
          temp_rec = temp_rec->next) {
         /*
          * Empty loop
@@ -617,7 +617,7 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
             return;
         }
     }
-    if (!*arg) {
+    if (!arg || !*arg) {
         act("$N tells you, 'Who did you want me to send this to?'",
             FALSE, ch, 0, mailman, TO_CHAR);
         return;

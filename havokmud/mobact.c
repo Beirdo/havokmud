@@ -8,7 +8,7 @@
 
 extern struct char_data *character_list;
 extern struct index_data *mob_index;
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -129,7 +129,7 @@ void MobHunt(struct char_data *ch)
     int             res,
                     k;
 
-#if NOTRACK
+#ifdef NOTRACK
     /* too much CPU useage for some machines. */
     return;
 #endif
@@ -167,7 +167,7 @@ void MobHunt(struct char_data *ch)
         if (ch->hunt_dist <= 50) {
             ch->hunt_dist = 100;
         }
-#if FAST_TRACK
+#ifdef FAST_TRACK
         for (k = 1; k <= 3 && ch->specials.hunting; k++) {
             ch->persist -= 1;
             res = dir_track(ch, ch->specials.hunting);
@@ -218,8 +218,8 @@ void MobScavenge(struct char_data *ch)
             if (IS_CORPSE(obj)) {
                 cc++;
                 if (obj->contains && IsHumanoid(ch) && !number(0, 4)) {
-                    sprintf(buf, " all %d.corpse", cc);
-                    do_get(ch, buf, 0);
+                    sprintf(buf, "get all %d.corpse", cc);
+                    command_interpreter(ch, buf);
                     return;
                 }
             }
@@ -237,7 +237,7 @@ void MobScavenge(struct char_data *ch)
         }
     } else if (IsHumanoid(ch) && real_roomp(ch->in_room)->contents && 
                !number(0, 4)) {
-        do_get(ch, "all", 0);
+        command_interpreter(ch, "get all");
     }
 
 #if 0
@@ -251,8 +251,7 @@ void MobScavenge(struct char_data *ch)
 #endif
 
     if (!number(0, 3) && IsHumanoid(ch) && ch->carrying) {
-        sprintf(buf, "all");
-        do_wear(ch, buf, 0);
+        command_interpreter(ch, "wear all");
     }
 }
 
@@ -286,7 +285,7 @@ void mobile_activity(struct char_data *ch)
      * some status checking for errors 
      */
 
-#if HASH
+#ifdef HASH
     if ((ch->in_room < 0) || !hash_find(&room_db, ch->in_room)) {
 #else
     if ((ch->in_room < 0) || !room_find(&room_db, ch->in_room)) {
@@ -574,7 +573,7 @@ int UseViolentHeldItem(struct char_data *ch)
                     tokillnum = 0;
     struct char_data *v;
 
-#if  LOG_DEBUG
+#ifdef  LOG_DEBUG
     slog("begin UseViolentHeld");
 #endif
     if (ch->equipment[HOLD] && HasHands(ch) && ch->specials.fighting) {
@@ -626,14 +625,14 @@ int UseViolentHeldItem(struct char_data *ch)
             do_use(ch, buf, 0);
             free( objname );
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             slog("end UseViolentHeld");
 #endif
             return (TRUE);
         }
     }
 
-#if  LOG_DEBUG
+#ifdef  LOG_DEBUG
     slog("end UseViolentHeld");
 #endif
 
@@ -734,6 +733,7 @@ int FindABetterWeapon(struct char_data * mob)
 {
     struct obj_data *o,
                    *best;
+    char            buf[MAX_STRING_LENGTH];
 
     /*
      * pick up and wield weapons Similar code for armor, etc. 
@@ -811,7 +811,8 @@ int FindABetterWeapon(struct char_data * mob)
              */
             return (TRUE);
         } else {
-            do_get(mob, best->name, 0);
+            sprintf( buf, "get %s", best->name );
+            command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
         do_remove(mob, mob->equipment[WIELD]->name, 0);
@@ -1021,7 +1022,7 @@ void noop(char *arg, struct char_data *ch)
         return;
     }
 
-    if (*arg) {
+    if (arg && *arg) {
         i = atoi(arg);
 
         if (i <= 0) {

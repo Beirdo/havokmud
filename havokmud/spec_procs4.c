@@ -483,9 +483,6 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
 int preperationproc(struct char_data *ch, int cmd, char *arg,
                     struct room_data *rp, int type)
 {
-
-    void            do_close(struct char_data *ch, char *argument,
-                             int cmd);
     struct char_data *i;
     int             count = 0,
                     randnum = 0,
@@ -516,7 +513,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
 
         if (!IS_SET(rp->dir_option[2]->exit_info, EX_LOCKED) || 
             !IS_SET(rp->dir_option[2]->exit_info, EX_CLOSED)) {
-            do_close(ch, "door", 0);
+            command_interpreter(ch, "close door");
             raw_lock_door(ch, EXIT(ch, 2), 2);
         }
 
@@ -540,7 +537,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
                              "elsewhere.\n\r", i);
 
                 char_to_room(i, number(51153, 51158));
-                do_look(i, "", 0);
+                do_look(i, NULL, 0);
                 return (TRUE);
             }
             x++;
@@ -551,7 +548,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
                      "room:%d",zone, count);
 #endif
         ch_printf(ch, "You ring the gong but nothing happens.\n\r");
-        do_zload(ch, "188", 0);
+        command_interpreter(ch, "zload 188");
     }
 
     return (TRUE);
@@ -626,7 +623,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &buffer);
         if (buffer) {
-            if (str_cmp(buffer, doorname)) {
+            if (strcasecmp(buffer, doorname)) {
                 return (FALSE);
             } else {
                 /* 
@@ -653,7 +650,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
          * say 
          */
         arg = get_argument(arg, &guess);
-        if (guess && !str_cmp(guess, answer)) {
+        if (guess && !strcasecmp(guess, answer)) {
             /*
              * open the exit in this room 
              */
@@ -847,7 +844,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 extract_char(ch);
             }
         } else {
-            do_move(ch, "\0", ch->generic);
+            do_move(ch, NULL, ch->generic);
         }
         return (FALSE);
     } else {
@@ -857,7 +854,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         for (t = real_roomp(ch->in_room)->people; t; t = next) {
             next = t->next_in_room;
             if (t != ch && !saves_spell(t, SAVING_PETRI)) {
-                do_flee(t, "", 0);
+                do_flee(t, NULL, 0);
             }
         }
 
@@ -1128,8 +1125,8 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
                     ch, 0, i, TO_NOTVICT);
                 act("When it's finished, $N gives $m a round of applause and "
                     "hands over some coins.", TRUE, ch, 0, i, TO_NOTVICT);
-                sprintf(buf, "20 coins %s", GET_NAME(ch));
-                do_give(i, buf, 0);
+                sprintf(buf, "give 20 coins %s", GET_NAME(ch));
+                command_interpreter(i, buf);
             }
         }
     }
@@ -1307,7 +1304,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && (!str_cmp("berry", buf) || !str_cmp("berries", buf))) {
+    if (buf && (!strcasecmp("berry", buf) || !strcasecmp("berries", buf))) {
         if (number(0, 4)) {
             switch (GET_WIS(ch) + number(0, 10)) {
             case 1:
@@ -1373,7 +1370,7 @@ int pick_acorns(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && (!str_cmp("acorn", buf) || !str_cmp("acorns", buf))) {
+    if (buf && (!strcasecmp("acorn", buf) || !strcasecmp("acorns", buf))) {
         if (number(0, 2)) {
             act("You pick a delicious looking acorn.", FALSE, ch,
                 0, 0, TO_CHAR);
@@ -1532,8 +1529,8 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
     }
     arg = get_argument(arg, &buf);
 
-    if (buf && (!str_cmp("door", buf) || !str_cmp("Door", buf) || 
-                !str_cmp("DOOR", buf))) {
+    if (buf && (!strcasecmp("door", buf) || !strcasecmp("Door", buf) || 
+                !strcasecmp("DOOR", buf))) {
         /* 
          * knock door 
          */
@@ -1831,7 +1828,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
         sprintf(buf, "%s just quaffed a quest potion.\n\r", GET_NAME(ch));
         qlog(buf);
         ch->player.q_points++;
-        do_save(ch, "", 0);
+        do_save(ch, NULL, 0);
         extract_obj(obj);
         return (TRUE);
     }
@@ -1859,8 +1856,8 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
          * look 
          */
         arg = get_argument(arg, &buf);
-        if (buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
-                    !str_cmp("Up", buf))) {
+        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) || 
+                    !strcasecmp("Up", buf))) {
             send_to_char("One would have a marvelous view when high up in the"
                          " canopy.\n\r", ch);
             return (TRUE);
@@ -1873,7 +1870,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &buf);
         if (buf) {
-            if (!str_cmp("tree", buf) || !str_cmp("Tree", buf)) {
+            if (!strcasecmp("tree", buf) || !strcasecmp("Tree", buf)) {
                 /* 
                  * climb tree 
                  */
@@ -1915,7 +1912,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 char_from_room(ch);
                 char_to_room(ch, CLIMB_ROOM);
                 act("$n climbs up from below.", FALSE, ch, 0, 0, TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return (TRUE);
             }
             sprintf(buffer, "You don't see any %s to climb around here.\n\r",
@@ -2066,7 +2063,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 
                 obj->obj_flags.value[2] = cmp->obj_flags.value[2];
                 if (GET_POS(ch) > POSITION_RESTING) {
-                    do_rest(ch, "", -1);
+                    do_rest(ch, NULL, -1);
                 }
                 sprintf(buf, "%s diligently starts to sharpen %s.",
                         GET_NAME(ch), obj->short_description);
@@ -2128,7 +2125,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
     char           *cogname;
 
-    if (!cmd || !ch || cmd != 374 || !ch->in_room || !*arg) {
+    if (!cmd || !ch || cmd != 374 || !ch->in_room || !arg || !*arg) {
         return (FALSE);
     }
 
@@ -3069,7 +3066,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room && ch->in_room == WAITROOM && (rp = real_roomp(WAITROOM))) {
         for (obj = rp->contents; obj; obj = obj->next_content) {
             if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
-                do_enter(ch, "portal", 7);
+                command_interpreter(ch, "enter portal");
                 return (FALSE);
             }
         }
@@ -3789,7 +3786,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &buf);
     }
 
-    if (buf && (!str_cmp("green", buf) || !strcmp("powder", buf) || 
+    if (buf && (!strcasecmp("green", buf) || !strcmp("powder", buf) || 
                 !strcmp("powder-green", buf) || !strcmp("green-powder", buf))) {
         act("As you lean over to look at the strange powder, a drop of your "
             "sweat falls.", FALSE, ch, 0, 0, TO_CHAR);
@@ -4189,20 +4186,20 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                      */
                     act("You panic and attempt to doorway to safety!",
                         FALSE, tempchar, 0, 0, TO_CHAR);
-                    do_doorway(tempchar, "Zifnab", 0);
+                    command_interpreter(tempchar, "doorway zifnab");
                 } else {
                     /* 
                      * warriors types, druids, thieves, sorcerers flee
                      */
                     act("You panic and attempt to run away!", FALSE,
                         tempchar, 0, 0, TO_CHAR);
-                    do_flee(tempchar, "", 0);
+                    do_flee(tempchar, NULL, 0);
                 }
 
                 if (tempchar->in_room == currroomnum) {
                     act("You failed to get away, run!  RUN AWAY NOW!",
                         FALSE, tempchar, 0, 0, TO_CHAR);
-                    do_flee(tempchar, "", 0);
+                    do_flee(tempchar, NULL, 0);
                 }
             }
         }
@@ -4619,7 +4616,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
                 " else!", TRUE, tempchar, 0, 0, TO_CHAR);
             act("Suddenly, $n appears, looking bewildered.", TRUE,
                 tempchar, 0, 0, TO_ROOM);
-            do_look(tempchar, "", 15);
+            do_look(tempchar, NULL, 15);
         }
     }
 
@@ -4635,7 +4632,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
         stop_fighting(mob);
         char_from_room(opponent);
         char_to_room(opponent, MISTROOMVNUM);
-        do_look(opponent, "", 15);
+        do_look(opponent, NULL, 15);
         AttackRandomChar(mob);
     }
     return (FALSE);
@@ -5299,7 +5296,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
 #endif
     if (t_info->tm_hour != THE_HOUR && 
         IS_SET(rp->dir_option[0]->exit_info, EX_LOCKED)) {
-        do_zload(ch, "188", 0);
+        command_interpreter(ch, "zload 188");
         raw_unlock_door(ch, EXIT(ch, 0), 0);
         open_door(ch, 0);
         ch_printf(ch, "You knock on the big wooden door and then slowly, it "
@@ -5359,7 +5356,7 @@ int disembark_ship(struct char_data *ch, int cmd, char *argument,
                     map_coords[x].x == GET_YCOORD(obj)) {
                     char_from_room(ch);
                     char_to_room(ch, map_coords[x].room);
-                    do_look(ch, "", 0);
+                    do_look(ch, NULL, 0);
                     return (TRUE);
                 }
 
@@ -5722,7 +5719,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
     }
 
     arg = get_argument(arg, &buf);
-    if (buf && !str_cmp("ship", buf) &&
+    if (buf && !strcasecmp("ship", buf) &&
         (ship = get_char_room("", ch->in_room))) {
         j = mob_index[ship->nr].virtual;
 
@@ -5732,7 +5729,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, j);
 
         act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
 

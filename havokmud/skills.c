@@ -248,7 +248,7 @@ void do_track(struct char_data *ch, char *argument, int cmd)
     struct char_data *scan;
     extern struct char_data *character_list;
 
-#if NOTRACK
+#ifdef NOTRACK
     send_to_char("Sorry, tracking is disabled. Try again after reboot.\n\r",
                  ch);
     return;
@@ -733,7 +733,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
         was_in = ch->in_room;
         char_from_room(ch);
         char_to_room(ch, exitp->to_room);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
 
         DisplayMove(ch, dir, was_in, 1);
         if (check_falling(ch)) {
@@ -797,7 +797,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
 
                     char_from_room(ch);
                     char_to_room(ch, exitp->to_room);
-                    do_look(ch, "", 0);
+                    do_look(ch, NULL, 0);
 
                     DisplayMove(ch, dir, was_in, 1);
                     if (check_falling(ch)) {
@@ -1228,7 +1228,7 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
 
                 char_from_room(ch);
                 char_to_room(ch, exitp->to_room);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 DisplayMove(ch, dir, was_in, 1);
                 if (!check_falling(ch) && 
                     IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
@@ -1266,7 +1266,7 @@ void slip_in_climb(struct char_data *ch, int dir, int room)
         i += number(1, 6);
         char_from_room(ch);
         char_to_room(ch, room);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
     }
 
     GET_POS(ch) = POSITION_SITTING;
@@ -2206,7 +2206,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
         char_to_room(ch, location);
         act("A portal appears before you and $n steps through!", FALSE, ch,
             0, 0, TO_ROOM);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
                      "your abilities.$c0007\n\r", ch);
         gain_exp(ch, 100);
@@ -2326,7 +2326,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
             char_to_room(leader, location);
             act("$n steps out of a portal before you!", FALSE, leader, 0,
                 0, TO_ROOM);
-            do_look(leader, "", 15);
+            do_look(leader, NULL, 15);
         }
 
         for (f_list = leader->followers; f_list; f_list = f_list->next) {
@@ -2349,7 +2349,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
                 char_to_room(follower, location);
                 act("$n steps out of a portal before you!", FALSE,
                     follower, 0, 0, TO_ROOM);
-                do_look(follower, "", 15);
+                do_look(follower, NULL, 15);
             }
         }
 
@@ -2361,7 +2361,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
             ch, 0, 0, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, location);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         act("$n appears out of the portal as it disappears!", FALSE, ch, 0,
             0, TO_ROOM);
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
@@ -2526,7 +2526,7 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     }
     char_from_room(target);
     char_to_room(target, ch->in_room);
-    do_look(target, "", 0);
+    command_interpreter(target, "look");
     act("$n summons $N from nowhere!", TRUE, ch, 0, target, TO_NOTVICT);
 
     if (GetMaxLevel(target) < GetMaxLevel(ch) + 2 && !IS_PC(target)) {
@@ -2859,7 +2859,10 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
         send_to_char("Blast yourself? Your mother would be sad!\n\r", ch);
         return;
     }
-
+    if (!IS_NPC(victim)) {
+        send_to_char("You can't use this on other players!\n\r", ch);
+        return;
+    }
     if (check_peaceful(ch, 
                        "You feel too peaceful to contemplate violence.\n\r")) {
         return;
@@ -3351,7 +3354,7 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
         send_to_char("You close your eyes and envision your target.\n\r", ch);
         char_from_room(ch);
         char_to_room(ch, location);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         char_from_room(ch);
         char_to_room(ch, old_location);
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "

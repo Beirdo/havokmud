@@ -2041,7 +2041,12 @@ void cast_ventriloquate(int level, struct char_data *ch, char *arg,
         Log("Attempt to ventriloquate by non-cast-spell.");
         return;
     }
-    for (; *arg && (*arg == ' '); arg++);
+
+    arg = skip_spaces(arg);
+    if( !arg ) {
+        return;
+    }
+
     if (tar_obj) {
         sprintf(buf1, "The %s says '%s'\n\r", fname(tar_obj->name), arg);
         sprintf(buf2, "Someone makes it sound like the %s says '%s'.\n\r",
@@ -2770,7 +2775,7 @@ void cast_poly_self(int level, struct char_data *ch, char *arg, int type,
             if (PolyList[X].level > level) {
                 X--;
             } else {
-                if (!str_cmp(PolyList[X].name, buffer)) {
+                if (!strcasecmp(PolyList[X].name, buffer)) {
                     mobn = PolyList[X].number;
                     found = TRUE;
                 } else {
@@ -2823,17 +2828,17 @@ void cast_minor_creation(int level, struct char_data *ch, char *arg,
         return;
     }
 
-    if (!str_cmp(buffer, "sword")) {
+    if (!strcasecmp(buffer, "sword")) {
         obj = LONG_SWORD;
-    } else if (!str_cmp(buffer, "shield")) {
+    } else if (!strcasecmp(buffer, "shield")) {
         obj = SHIELD;
-    } else if (!str_cmp(buffer, "raft")) {
+    } else if (!strcasecmp(buffer, "raft")) {
         obj = RAFT;
-    } else if (!str_cmp(buffer, "bag")) {
+    } else if (!strcasecmp(buffer, "bag")) {
         obj = BAG;
-    } else if (!str_cmp(buffer, "barrel")) {
+    } else if (!strcasecmp(buffer, "barrel")) {
         obj = WATER_BARREL;
-    } else if (!str_cmp(buffer, "bread")) {
+    } else if (!strcasecmp(buffer, "bread")) {
         obj = BREAD;
     } else {
         send_to_char("There is nothing of that available\n\r", ch);
@@ -2887,16 +2892,16 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
         return;
     }
 
-    if (!str_cmp(buffer, "fire")) {
+    if (!strcasecmp(buffer, "fire")) {
         mob = FIRE_ELEMENTAL;
         obj = RED_STONE;
-    } else if (!str_cmp(buffer, "water")) {
+    } else if (!strcasecmp(buffer, "water")) {
         mob = WATER_ELEMENTAL;
         obj = PALE_BLUE_STONE;
-    } else if (!str_cmp(buffer, "air")) {
+    } else if (!strcasecmp(buffer, "air")) {
         mob = AIR_ELEMENTAL;
         obj = CLEAR_STONE;
-    } else if (!str_cmp(buffer, "earth")) {
+    } else if (!strcasecmp(buffer, "earth")) {
         mob = EARTH_ELEMENTAL;
         obj = GREY_STONE;
     } else {
@@ -2975,22 +2980,22 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
         return;
     }
 
-    if (!str_cmp(buffer, "one")) {
+    if (!strcasecmp(buffer, "one")) {
         mob = DEMON_TYPE_I;
         obj = TYPE_I_ITEM;
-    } else if (!str_cmp(buffer, "two")) {
+    } else if (!strcasecmp(buffer, "two")) {
         mob = DEMON_TYPE_II;
         obj = TYPE_II_ITEM;
-    } else if (!str_cmp(buffer, "three")) {
+    } else if (!strcasecmp(buffer, "three")) {
         mob = DEMON_TYPE_III;
         obj = TYPE_III_ITEM;
-    } else if (!str_cmp(buffer, "four")) {
+    } else if (!strcasecmp(buffer, "four")) {
         mob = DEMON_TYPE_IV;
         obj = TYPE_IV_ITEM;
-    } else if (!str_cmp(buffer, "five")) {
+    } else if (!strcasecmp(buffer, "five")) {
         mob = DEMON_TYPE_V;
         obj = TYPE_V_ITEM;
-    } else if (!str_cmp(buffer, "six")) {
+    } else if (!strcasecmp(buffer, "six")) {
         mob = DEMON_TYPE_VI;
         obj = TYPE_VI_ITEM;
     } else {
@@ -3238,7 +3243,7 @@ void cast_transport_via_plant(int level, struct char_data *ch, char *arg,
                               int type, struct char_data *tar_ch,
                               struct obj_data *tar_obj)
 {
-    if (!*arg) {
+    if (!arg || !*arg) {
         return;
     }
     switch (type) {
@@ -3256,7 +3261,7 @@ void cast_plant_gate(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
 {
-    if (!*arg) {
+    if (!arg || !*arg) {
         return;
     }
     switch (type) {
@@ -3594,13 +3599,8 @@ void cast_command(int level, struct char_data *ch, char *arg,
         break;
     }
 
-    for (; *arg == ' '; arg++) {
-        /* 
-         * Empty Loop 
-         */
-    }
-
-    if (arg && *arg) {
+    arg = skip_spaces(arg);
+    if (arg) {
         p = fname(arg);
 
         if (((GetMaxLevel(tar_ch) < 6 && GET_INT(tar_ch) < 13) ||
@@ -3654,7 +3654,7 @@ void cast_change_form(int level, struct char_data *ch, char *arg,
             if (DruidList[X].level > level) {
                 X--;
             } else {
-                if (!str_cmp(DruidList[X].name, buffer)) {
+                if (!strcasecmp(DruidList[X].name, buffer)) {
                     mobn = DruidList[X].number;
                     found = TRUE;
                 } else {
@@ -3785,7 +3785,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
          * get the argument, parse it into a direction 
          */
         arg = skip_spaces(arg);
-        if (!*arg) {
+        if (!arg) {
             send_to_char("you must supply a direction!\n\r", ch);
             return;
         }
@@ -4408,12 +4408,6 @@ void cast_mount(int level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_sending(int level, struct char_data *ch, char *arg,
-                  int type, struct char_data *tar_ch,
-                  struct obj_data *tar_obj)
-{
-}
-
 void cast_portal(int level, struct char_data *ch, char *arg,
                  int type, struct char_data *tar_ch,
                  struct obj_data *tar_obj)
@@ -4722,11 +4716,6 @@ void cast_enchant_armor(int level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_messenger(int level, struct char_data *ch, char *arg,
-                    int type, struct char_data *tar_ch,
-                    struct obj_data *tar_obj)
-{
-}
 
 void cast_prot_dragon_breath_fire(int level, struct char_data *ch,
                                   char *arg, int type,

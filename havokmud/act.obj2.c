@@ -362,7 +362,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(arg2, "out")) {
+    if (!strcasecmp(arg2, "out")) {
         act("$n empties $p", TRUE, ch, from_obj, 0, TO_ROOM);
         act("You empty the $p.", FALSE, ch, from_obj, 0, TO_CHAR);
 
@@ -1635,7 +1635,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         send_to_char("What did you want to auction?\n\r", ch);
         return;
     }
@@ -1712,7 +1712,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*argument) {
+    if (!argument || !*argument) {
         /* 
          * show help bid 
          */

@@ -150,7 +150,7 @@ char           *one_lc_dimd_argument(char *argument, char *first_arg)
     do {
         argument = skip_spaces(argument);
         scan = first_arg;
-        while (*argument && *argument != '^') {
+        while (argument && *argument && *argument != '^') {
             *scan++ = LOWER(*argument), argument++;
         }
         *scan = 0;
@@ -172,7 +172,7 @@ char           *one_dimd_argument(char *argument, char *first_arg)
 
     argument = skip_spaces(argument);
     scan = first_arg;
-    while (*argument && *argument != '^') {
+    while (argument && *argument && *argument != '^') {
         *scan++ = *argument++;
     }
     *scan = 0;
@@ -323,7 +323,7 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
                 write_to_descriptor(muds[i].desc, buf);
             }
         }
-#if USE_COLOR
+#ifdef USE_COLOR
         sprintf(buf, "$c0015$n $c0011dimension gossips, '%s'", argument);
 #else
         sprintf(buf, "$n dimension gossips, '%s'", argument);
@@ -353,7 +353,7 @@ void do_dlink(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
+    if (!argument || (mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
     if (IS_SET(muds[mud].flags, DD_CONNECTED)) {
@@ -385,7 +385,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
+    if (!argument || (mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
     if (!IS_SET(muds[mud].flags, DD_CONNECTED)) {
@@ -454,7 +454,7 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
     char            buf[MAX_STRING_LENGTH];
     int             i;
 
-#if USE_COLOR
+#ifdef USE_COLOR
     strcpy(buf, " $c0015Cond  $c0011Mud Name                  $c0012Nicknames"
                 "              $c0013Restricted\n\r"
                 "------ ------------------------- ----------------------"
@@ -489,8 +489,12 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
 void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
     argument = skip_spaces(argument);
+    if( !argument ) {
+        msg("Use either on, off, gossip, muse, or think.", ch);
+        return;
+    }
 
-    if (!str_cmp(argument, "on")) {
+    if (!strcasecmp(argument, "on")) {
         if (dimd_on) {
             msg("The server was already activated.", ch);
             return;
@@ -501,7 +505,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "off")) {
+    if (!strcasecmp(argument, "off")) {
         if (!dimd_on) {
             msg("The server was already deactivated.", ch);
             return;
@@ -512,7 +516,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "gossip")) {
+    if (!strcasecmp(argument, "gossip")) {
         if (dimd_gossip) {
             msg("Dimensional gossips will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rg\n\r");
@@ -525,7 +529,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "muse")) {
+    if (!strcasecmp(argument, "muse")) {
         if (dimd_muse) {
             msg("Dimensional muses will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rm\n\r");
@@ -538,7 +542,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!str_cmp(argument, "think")) {
+    if (!strcasecmp(argument, "think")) {
         if (dimd_think) {
             msg("Dimensional thinking will now be rejected.", ch);
             dimd_broadcast("^DIMD^DIMD^110^rt\n\r");
@@ -605,7 +609,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
                 write_to_descriptor(muds[i].desc, buf);
             }
         }
-#if USE_COLOR
+#ifdef USE_COLOR
         sprintf(buf, "$kW$n $kLdimension muses, '%s'", argument);
 #else
         sprintf(buf, "$n dimension muses, '%s'", argument);
@@ -695,7 +699,7 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
                 write_to_descriptor(muds[i].desc, buf);
             }
         }
-#if USE_COLOR
+#ifdef USE_COLOR
         sprintf(buf, "$c0015$n $c0012dimension thinks, '%s'", argument);
 #else
         sprintf(buf, "$n dimension thinks, '%s'", argument);
@@ -846,7 +850,7 @@ bool answer_a_mud(void)
         printhost(&sock.sin_addr, host);
     }
     for (mud = 0; muds[mud].address; mud++) {
-        if (!str_cmp(host, muds[mud].address) && mud != dimd_local_mud) {
+        if (!strcasecmp(host, muds[mud].address) && mud != dimd_local_mud) {
             break;
         }
     }
@@ -1026,7 +1030,7 @@ void dimd_loop(void)
             if (IS_SET(muds[i].flags, DD_CONNECTED)) {
                 while (get_from_q(&muds[i].input, comm)) {
                     if (!IS_SET(muds[i].flags, DD_VERIFIED)) {
-                        if (str_cmp(comm, DIMD_PASSWORD)) {
+                        if (strcasecmp(comm, DIMD_PASSWORD)) {
                             sprintf(buf, "The mud is located at port %d.\n\r",
                                     dimd_port - 2);
                             write_to_descriptor(muds[i].desc, buf);
@@ -1152,11 +1156,11 @@ void dimd_loop(void)
                             scan = one_lc_dimd_argument(scan, toname);
                             scan = skip_spaces(scan);
 
-                            if (!(vict = get_char(toname)) || 
+                            if (!scan || !(vict = get_char(toname)) || 
                                 !dimd_can_see(fromgodlevel, vict)) {
                                 strcpy(buf, "No char by that name.");
                             } else {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$c0015%s $c0013from $c0015%s "
                                              "$c0015tells you '%s'.",
                                         fromname, muds[i].formalname, scan);
@@ -1166,7 +1170,7 @@ void dimd_loop(void)
 #endif
                                 cmsg(buf, vict, CLR_TELL);
                                 if (IS_SET(vict->pc->comm, COMM_AFK)) {
-#if USE_COLOR
+#ifdef USE_COLOR
                                     sprintf(buf, "$c0013You tell "
                                                  "$c0015%s$c0015 (who is "
                                                  "AFK), '%s'", PER(vict), scan);
@@ -1176,7 +1180,7 @@ void dimd_loop(void)
 
 #endif
                                 } else {
-#if USE_COLOR
+#ifdef USE_COLOR
                                     sprintf(buf, "$c0013You tell $c0015%s"
                                                  "$c0013, '%s'",
                                             PER(vict), scan);
@@ -1199,7 +1203,7 @@ void dimd_loop(void)
                             }
 
                             if (*(dcommand + 1) == 'g') {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$c0015%s $c0011from $c0015%s "
                                              "$c0013dimension gossips, '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1209,7 +1213,7 @@ void dimd_loop(void)
                                         fromname, muds[i].formalname, scan);
 #endif
                             } else {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$c0015%s $c0011from $c0015%s "
                                              "$c0011gossips, '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1228,7 +1232,7 @@ void dimd_loop(void)
                                 }
                             }
 
-#if USE_COLOR
+#ifdef USE_COLOR
                             sprintf(buf, "$c0011You gossip on $c0015%s$c0011,"
                                          " '%s'",
                                     muds[dimd_local_mud].formalname, scan);
@@ -1250,7 +1254,7 @@ void dimd_loop(void)
                             }
 
                             if (*(dcommand + 1) == 'g') {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$kW%s $kLfrom $kW%s "
                                              "$kLdimension muses, '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1260,7 +1264,7 @@ void dimd_loop(void)
                                         fromname, muds[i].formalname, scan);
 #endif
                             } else {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$kW%s $kLfrom $kW%s $kLmuses,"
                                              " '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1279,7 +1283,7 @@ void dimd_loop(void)
                                 }
                             }
 
-#if USE_COLOR
+#ifdef USE_COLOR
                             sprintf(buf, "$kLYou muse on $kW%s$kL, '%s'",
                                     muds[dimd_local_mud].formalname, scan);
 #else
@@ -1298,7 +1302,7 @@ void dimd_loop(void)
                                 break;
                             }
                             if (*(dcommand + 1) == 'g') {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$c0015%s $c0012from $c0015%s "
                                              "$c0012dimension thinks, '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1309,7 +1313,7 @@ void dimd_loop(void)
 
 #endif
                             } else {
-#if USE_COLOR
+#ifdef USE_COLOR
                                 sprintf(buf, "$c0015%s $c0012from $c0015%s "
                                              "$c0012thinks, '%s'",
                                         fromname, muds[i].formalname, scan);
@@ -1328,7 +1332,7 @@ void dimd_loop(void)
                                 }
                             }
 
-#if USE_COLOR
+#ifdef USE_COLOR
                             sprintf(buf, "$c0012You think on $c0015%s$c0012,"
                                          " '%s'",
                                     muds[dimd_local_mud].formalname, scan);
@@ -1340,7 +1344,7 @@ void dimd_loop(void)
                             break;
 
                         default:
-#if USE_COLOR
+#ifdef USE_COLOR
                             sprintf(buf, "$c0015%s $c0009from $c0015%s "
                                          "$c0009issued invalid command '%s'.",
                                     fromname, muds[i].formalname, dcommand);
@@ -1350,7 +1354,7 @@ void dimd_loop(void)
                                     fromname, muds[i].formalname, dcommand);
 #endif
                             DIMDLOG(buf);
-#if USE_COLOR
+#ifdef USE_COLOR
                             strcpy(buf, "Your server isn't functioning"
                                         " properly.");
 #else
@@ -1568,7 +1572,7 @@ bool isname_iter(const char *namelist)
 
     for (i = 0; i < is_argc; i++) {
         for (j = 0; j < is_xargc; j++) {
-            if (!str_cmp(is_argv[i], is_xargv[j])) {
+            if (!strcasecmp(is_argv[i], is_xargv[j])) {
                 is_xargv[j] = NULL;
                 break;
             }

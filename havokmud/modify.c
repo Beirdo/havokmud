@@ -427,7 +427,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                 return;
             }
 
-            if (!*string) {
+            if (!string) {
                 send_to_char("You have to supply a name!\n\r", ch);
                 return;
             }
@@ -442,7 +442,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                 send_to_char("That field is for monsters only.\n\r", ch);
                 return;
             }
-            if (!*string) {
+            if (!string) {
                 send_to_char("You have to supply a description!\n\r", ch);
                 return;
             }
@@ -502,7 +502,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         switch (field) {
 
         case 1:
-            if (!*string) {
+            if (!string) {
                 send_to_char("You have to supply a keyword.\n\r", ch);
                 return;
             } else {
@@ -510,7 +510,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
             }
             break;
         case 2:
-            if (!*string) {
+            if (!string) {
                 send_to_char("You have to supply a keyword.\n\r", ch);
                 return;
             } else {
@@ -521,7 +521,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
             ch->desc->str = &obj->description;
             break;
         case 4:
-            if (!*string) {
+            if (!string) {
                 send_to_char("You have to supply a keyword.\n\r", ch);
                 return;
             }
@@ -539,7 +539,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     ch->desc->str = &ed->description;
                     send_to_char("New field.\n\r", ch);
                     break;
-                } else if (!str_cmp(ed->keyword, string)) {
+                } else if (!strcasecmp(ed->keyword, string)) {
                     /* 
                      * the field exists 
                      */
@@ -562,7 +562,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
             /* 
              * deletion 
              */
-            if (!*string) {
+            if (!string) {
                 send_to_char("You must supply a field name.\n\r", ch);
                 return;
             }
@@ -573,7 +573,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                 if (!ed) {
                     send_to_char("No field with that keyword.\n\r", ch);
                     return;
-                } else if (!str_cmp(ed->keyword, string)) {
+                } else if (!strcasecmp(ed->keyword, string)) {
                     if (ed->keyword) {
                         free(ed->keyword);
                     }
@@ -615,7 +615,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         free(*ch->desc->str);
     }
 
-    if (*string) {
+    if (string) {
         /* 
          * there was a string in the argument array 
          */
@@ -723,6 +723,26 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         ch->desc->str = &rp->description;
         break;
     case 3:
+        if( !string ) {
+            send_to_char("Didn't quite get those, please try again.\n\r", ch);
+            send_to_char("Flags must be 0 or positive, and sectors must be "
+                         "from 0 (inside) to 22 (empty).\n\r", ch);
+            send_to_char("  edit fs <startroom> <endroom> <flags> "
+                         "<sector_type>\n\r", ch);
+            send_to_char("For current room only, use\n\r", ch);
+            send_to_char("  edit fs 0 0 <flags> <sector_type>\n\r", ch);
+            /* 
+             * damn that's a big number.  
+             * mebbe move it up a bit?
+             */
+            maproom = 1 << 28;
+            ch_printf(ch, "Bitvector for map rooms = %ld\n\r", maproom);
+            send_to_char("If room is unnamed, the default sector name will be "
+                         "assigned.\n\r", ch);
+
+            return;
+        }
+
         sscanf(string, "%d %d %u %d ", &r_start, &r_end, &r_flags, &s_type);
         if (r_start < 0 || r_end < 0 || r_flags < 0 || s_type < 0 ||
             s_type > 22) {
@@ -812,6 +832,11 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
          * no cmd by default 
          */
         open_cmd = -1;
+        if( !string ) {
+            send_to_char("You need to supply arguments, numbskull!\n\r", ch);
+            return;
+        }
+
         sscanf(string, "%d %s %d %d %d", &dir, sdflags, &dkey, &exroom,
                &open_cmd);
 
@@ -908,8 +933,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 
     case 5:
         dir = -1;
-        sscanf(string, "%d", &dir);
-        if ((dir >= 0) && (dir <= 5)) {
+        if (string && (dir = atoi(string)) && (dir >= 0) && (dir <= 5)) {
             send_to_char("Enter text, term. with '/w' on a blank line", ch);
             string[0] = 0;
             if (rp->dir_option[dir]) {
@@ -928,7 +952,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         /*
          * extra descriptions 
          */
-        if (!*string) {
+        if (!string) {
             send_to_char("You have to supply a keyword.\n\r", ch);
             return;
         }
@@ -946,7 +970,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 ch->desc->str = &ed->description;
                 send_to_char("New field.\n\r", ch);
                 break;
-            } else if (!str_cmp(ed->keyword, string)) {
+            } else if (!strcasecmp(ed->keyword, string)) {
                 /*
                  * the field exists 
                  */
@@ -969,6 +993,11 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
          */
         rspeed = 0;
         rdir = 0;
+        if( !string ) {
+            send_to_char("Illegal dir. : edit riv <speed> <dir>\n\r", ch);
+            return;
+        }
+
         sscanf(string, "%d %d ", &rspeed, &rdir);
         if ((rdir >= 0) && (rdir <= 5)) {
             rp->river_speed = rspeed;
@@ -986,6 +1015,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         tele_room = -1;
         tele_time = -1;
         tele_mask = -1;
+
+        if( !string ) {
+            send_to_char(" edit tele <time> <room_nr> <tele-flags> "
+                         "[tele-count]\n\r", ch);
+            return;
+        }
         sscanf(string, "%d %d %d", &tele_time, &tele_room, &tele_mask);
 
         if (tele_room < 0 || tele_time < 0 || tele_mask < 0) {
@@ -1011,7 +1046,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         return;
         break;
     case 9:
-        if (sscanf(string, "%d", &moblim) < 1) {
+        if (!string || (moblim = atoi(string)) < 1) {
             send_to_char("edit tunn <mob_limit>\n\r", ch);
         } else {
             real_roomp(ch->in_room)->moblim = moblim;
@@ -1024,7 +1059,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         /*
          * deletion 
          */
-        if (!*string) {
+        if (!string) {
             send_to_char("You must supply the name of an extra "
                          "description.\n\r", ch);
             return;
@@ -1038,7 +1073,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 send_to_char("No field with that keyword. Make sure to use the"
                              " exact keywords.\n\r", ch);
                 return;
-            } else if (!str_cmp(ed->keyword, string)) {
+            } else if (!strcasecmp(ed->keyword, string)) {
                 if (ed->keyword) {
                     free(ed->keyword);
                 }
@@ -1080,7 +1115,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         free(*ch->desc->str);
     }
 
-    if (*string) {
+    if (string) {
         /* 
          * there was a string in the argument array 
          */
@@ -1176,7 +1211,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
     do {
         issorted = 1;
         for (i = 0; i < nr; i++) {
-            if (str_cmp(list[i].keyword, list[i + 1].keyword) > 0) {
+            if (strcasecmp(list[i].keyword, list[i + 1].keyword) > 0) {
                 mem = list[i];
                 list[i] = list[i + 1];
                 list[i + 1] = mem;

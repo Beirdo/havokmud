@@ -415,7 +415,7 @@ void do_order(struct char_data *ch, char *argument, int cmd)
     if (!name || !message) {
         send_to_char("Order who to do what?\n\r", ch);
     } else if (!(victim = get_char_room_vis(ch, name)) &&
-             str_cmp("follower", name) && str_cmp("followers", name)) {
+             strcasecmp("follower", name) && strcasecmp("followers", name)) {
         send_to_char("That person isn't here.\n\r", ch);
     } else if (ch == victim) {
         send_to_char("You obviously suffer from Multiple Personality "
@@ -506,8 +506,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     die,
                     percent,
                     charm;
-    void            gain_exp(struct char_data *ch, int gain);
-    int             special(struct char_data *ch, int cmd, char *arg);
     struct room_data *rp;
     int             panic,
                     j;
@@ -1297,12 +1295,13 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     int             percent;
     char            buf[256];
 
-    if (strcmp(argument, "-skill") == 0) {
+    if (argument && strcmp(argument, "-skill") == 0) {
         sprintf(buf, "Disengage Skill----->%s.\n\r",
                 how_good(ch->skills[SKILL_DISENGAGE].learned));
         send_to_char(buf, ch);
         return;
     }
+
     if ((GET_POS(ch) == POSITION_FIGHTING) && !ch->specials.fighting) {
         stop_fighting(ch);
         send_to_char("You realize you look silly fighting nothing, and "
@@ -1312,6 +1311,7 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
         WAIT_STATE(ch, PULSE_VIOLENCE);
         return;
     }
+
     if (!ch->specials.fighting) {
         send_to_char("You are not fighting.\n\r", ch);
         return;
@@ -1324,11 +1324,13 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
         ch->skills[SKILL_DISENGAGE].learned = 50;
 #endif
     }
+
     percent = number(1, 101);
     percent += (GET_DEX(ch) - GET_DEX(ch->specials.fighting));
     if (IS_AFFECTED(ch->specials.fighting, AFF_PARALYSIS)) {
         percent = 0;
     }
+
     if (percent > ch->skills[SKILL_DISENGAGE].learned) {
         send_to_char("You can't seem to get away.\n\r", ch);
         act("$n tries to back out of combat with $N, but seems to stumble.",
@@ -1679,7 +1681,7 @@ void do_shoot(struct char_data *ch, char *argument, int cmd)
             }
 
             argument = get_argument(argument, &name);
-            if (name && strn_cmp(name, "at", 2) && isspace(name[2])) {
+            if (name && strncasecmp(name, "at", 2) && isspace(name[2])) {
                 argument = get_argument(argument, &name);
             }
             if (!exit_ok(EXIT_NUM(i, dir), NULL)) {
@@ -2424,8 +2426,7 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *fw,
                    *ms;
-    char           *arg1,
-                   *arg2;
+    char           *arg1;
 
     dlog("in do_weapon_load");
 
@@ -2457,8 +2458,6 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &arg1);
-    arg2 = skip_spaces(argument);
-
     if (!arg1) {
         send_to_char("You must specify the projectile to load!\n\r", ch);
         return;
@@ -2861,15 +2860,14 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
-
     if ((ch->master && IS_AFFECTED(ch, AFF_CHARM)) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!(*argument)) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("Hrm... normally, you should CHAT something...\n\r", ch);
         return;
     }
@@ -2938,15 +2936,14 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
-
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!(*argument)) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("Your fellow questees aren't interested in hearing "
                      "nothing.\n\r", ch);
         return;

@@ -108,7 +108,7 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
     char            buf[255];
     int             totalActionFlags = 32;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -161,7 +161,7 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
     long            i,
                     check = 0;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -284,7 +284,7 @@ void UpdateMobMenu(struct char_data *ch)
 void MobEdit(struct char_data *ch, char *arg)
 {
     if (ch->specials.medit == MOB_MAIN_MENU) {
-        if (!*arg || *arg == '\n') {
+        if (!arg || !*arg || *arg == '\n') {
             ch->desc->connected = CON_PLYNG;
             act("$n has returned from editing a mobile.", FALSE, ch, 0, 0,
                 TO_ROOM);
@@ -521,7 +521,7 @@ void ChangeMobName(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct char_data *mob;
 
-    if (type != ENTER_CHECK&& (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -551,7 +551,7 @@ void ChangeMobShort(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct char_data *mob;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -582,7 +582,7 @@ void ChangeMobLong(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct char_data *mob;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -643,7 +643,7 @@ void ChangeMobAlign(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     long            change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -678,7 +678,7 @@ void ChangeMobArmor(struct char_data *ch, char *arg, int type)
     signed int      change;
 
     mob = ch->specials.mobedit;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -711,7 +711,7 @@ void ChangeMobDamplus(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -743,7 +743,7 @@ void ChangeMobDamsize(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -776,7 +776,7 @@ void ChangeMobDamnumb(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -815,7 +815,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
 
     if (type != ENTER_CHECK &&  
-        (!*arg || *arg == '\n' || mob->specials.mobtype == 'S')) {
+        (!arg || !*arg || *arg == '\n' || mob->specials.mobtype == 'S')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -829,7 +829,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
          * #s -Lennya 
          */
 #endif       
-        change = arg_to_float(arg);
+        change = (float)strtod(arg, NULL);
         if (change < 0.0) {
             change = 0.0;
         }
@@ -872,7 +872,7 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
     long            change,
                     expamount;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -932,7 +932,7 @@ void ChangeMobDpos(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -970,7 +970,7 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
     int             update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1011,7 +1011,7 @@ void ChangeMobResist(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1066,7 +1066,7 @@ void ChangeMobImmune(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1121,7 +1121,7 @@ void ChangeMobSuscep(struct char_data *ch, char *arg, int type)
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1259,7 +1259,7 @@ void ChangeMobLevel(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     long            change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1291,7 +1291,7 @@ void ChangeMobSex(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     char           *Sex[] = { "Neutral", "Male", "Female" };
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1338,7 +1338,7 @@ void ChangeMobHitplus(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1370,7 +1370,7 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1535,7 +1535,7 @@ void ChangeMobHps(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;
@@ -1568,7 +1568,7 @@ void ChangeMobCoinage(struct char_data *ch, char *arg, int type)
     struct char_data *mob;
     int             change;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
         return;

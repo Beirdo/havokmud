@@ -109,7 +109,7 @@ void UpdateTfdMenu(struct char_data *ch)
 void TfdEdit(struct char_data *ch, char *arg)
 {
     if (ch->specials.tfd == TFD_MAIN_MENU) {
-        if (!*arg || *arg == '\n') {
+        if (!arg || !*arg || *arg == '\n') {
             send_to_char("Please enter a choice from the above.\n\r", ch);
             return;
         }
@@ -284,7 +284,7 @@ void ChangeTfdFile(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct edit_txt_msg *tfd;
 
-    if (type != ENTER_CHECK && (!*arg || (*arg == '\n'))) {
+    if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
         ch->specials.tfd = TFD_MAIN_MENU;
         UpdateTfdMenu(ch);
         return;
@@ -346,7 +346,7 @@ void ViewOldTfd(struct char_data *ch, char *arg, int type)
         break;
     }
 
-    if (type != ENTER_CHECK && (!*arg || (*arg == '\n'))) {
+    if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
         ch->specials.tfd = TFD_MAIN_MENU;
         UpdateTfdMenu(ch);
         return;
@@ -377,7 +377,7 @@ void ChangeTfdDate(struct char_data *ch, char *arg, int type)
 
     tfd = ch->specials.txtedit;
 
-    if (type != ENTER_CHECK && (!*arg || (*arg == '\n'))) {
+    if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
         ch->specials.tfd = TFD_MAIN_MENU;
         UpdateTfdMenu(ch);
         return;

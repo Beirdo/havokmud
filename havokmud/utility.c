@@ -770,61 +770,7 @@ char           *strip_cr(char *newbuf, const char *orig, size_t maxlen)
     return newbuf;
 }
 
-/*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
- */
-/*
- * scan 'till found different or end of both
- */
-int str_cmp(char *arg1, char *arg2)
-{
-#if 1
-    int             chk,
-                    i;
 
-    if ((!arg2) || (!arg1)) {
-        return (1);
-    }
-    for (i = 0; *(arg1 + i) || *(arg2 + i); i++) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-#else
-    return (strcmp(arg1, arg2));
-#endif
-}
-
-/*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
- * scan 'till found different, end of both, or n reached
- */
-int strn_cmp(char *arg1, char *arg2, int n)
-{
-#if 1
-    int             chk,
-                    i;
-
-    for (i = 0; (*(arg1 + i) || *(arg2 + i)) && (n > 0); i++, n--) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-#else
-    return (strncmp(arg1, arg2, n));
-#endif
-
-}
 
 /*
  * writes a string to the log
@@ -1807,9 +1753,9 @@ void down_river(int pulse)
                         char_to_room(ch,
                                      real_roomp(or)->dir_option[rd]->to_room);
 
-                        do_look(ch, "\0", 15);
+                        do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
-                            do_look(RIDDEN(ch), "\0", 15);
+                            do_look(RIDDEN(ch), NULL, 15);
                         }
                     }
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
@@ -2823,6 +2769,7 @@ void StandUp(struct char_data *ch)
 void MakeNiftyAttack(struct char_data *ch)
 {
     int             num;
+    char           *name;
 
     if (!ch->skills) {
         SpaceForSkills(ch);
@@ -2838,39 +2785,46 @@ void MakeNiftyAttack(struct char_data *ch)
         return;
     }
     num = number(1, 4);
+    name = strdup(GET_NAME(ch->specials.fighting));
+
     switch (num) {
     case 1:
     case 2:
         if (!ch->skills[SKILL_BASH].learned) {
             ch->skills[SKILL_BASH].learned = 10 + GetMaxLevel(ch) * 4;
         }
-        do_bash(ch, GET_NAME(ch->specials.fighting), 0);
+        do_bash(ch, name, 0);
         break;
     case 3:
         if (ch->equipment[WIELD]) {
             if (!ch->skills[SKILL_DISARM].learned) {
                 ch->skills[SKILL_DISARM].learned = 10 + GetMaxLevel(ch) * 4;
             }
-            do_disarm(ch, GET_NAME(ch->specials.fighting), 0);
+            do_disarm(ch, name, 0);
         } else {
             if (!ch->skills[SKILL_KICK].learned) {
                 ch->skills[SKILL_KICK].learned = 10 + GetMaxLevel(ch) * 4;
             }
-            do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+            do_kick(ch, name, 0);
         }
         break;
     case 4:
         if (!ch->skills[SKILL_KICK].learned) {
             ch->skills[SKILL_KICK].learned = 10 + GetMaxLevel(ch) * 4;
         }
-        do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+        do_kick(ch, name, 0);
         break;
+    }
+
+    if( name ) {
+        free( name );
     }
 }
 
 void FighterMove(struct char_data *ch)
 {
     struct char_data *friend;
+    char           *name;
 
     if (!ch->skills) {
         SET_BIT(ch->player.class, CLASS_WARRIOR);
@@ -2892,7 +2846,11 @@ void FighterMove(struct char_data *ch)
                         ch->skills[SKILL_RESCUE].learned =
                             GetMaxLevel(ch) * 3 + 30;
                     }
-                    do_rescue(ch, GET_NAME(friend), 0);
+                    name = strdup(GET_NAME(friend));
+                    do_rescue(ch, name, 0);
+                    if( name ) {
+                        free( name );
+                    }
                 } else {
                     MakeNiftyAttack(ch);
                 }
@@ -2906,6 +2864,7 @@ void FighterMove(struct char_data *ch)
 void MonkMove(struct char_data *ch)
 {
     char            buf[100];
+    char           *name;
 
     if (!ch->skills) {
         SpaceForSkills(ch);
@@ -2916,12 +2875,14 @@ void MonkMove(struct char_data *ch)
     if (!ch->specials.fighting) {
         return;
     }
+
+    name = strdup(GET_NAME(ch->specials.fighting));
     if (GET_POS(ch) < POSITION_FIGHTING) {
         if (!ch->skills[SKILL_SPRING_LEAP].learned) {
             ch->skills[SKILL_SPRING_LEAP].learned =
                 (GetMaxLevel(ch) * 3) / 2 + 25;
         }
-        do_springleap(ch, GET_NAME(ch->specials.fighting), 0);
+        do_springleap(ch, name, 0);
         return;
     } else {
         /*
@@ -2947,7 +2908,7 @@ void MonkMove(struct char_data *ch)
                     ch->skills[SKILL_QUIV_PALM].learned =
                         GetMaxLevel(ch) * 2 - 5;
                 }
-                do_quivering_palm(ch, GET_NAME(ch->specials.  fighting), 0);
+                do_quivering_palm(ch, name, 0);
                 return;
             }
 
@@ -2956,7 +2917,7 @@ void MonkMove(struct char_data *ch)
                     ch->skills[SKILL_DISARM].learned =
                         (GetMaxLevel(ch) * 3) / 2 + 25;
                 }
-                do_disarm(ch, GET_NAME(ch->specials.fighting), 0);
+                do_disarm(ch, name, 0);
                 return;
             }
 
@@ -2964,8 +2925,12 @@ void MonkMove(struct char_data *ch)
                 ch->skills[SKILL_KICK].learned =
                     (GetMaxLevel(ch) * 3) / 2 + 25;
             }
-            do_kick(ch, GET_NAME(ch->specials.fighting), 0);
+            do_kick(ch, name, 0);
         }
+    }
+
+    if( name ) {
+        free( name );
     }
 }
 
@@ -3200,7 +3165,7 @@ void TeleportPulseStuff(int pulse)
                     char_to_room(tmp, rp->tele_targ);
 
                     if (IS_SET(TELE_LOOK, rp->tele_mask) && IS_PC(tmp)) {
-                        do_look(tmp, "\0", 15);
+                        do_look(tmp, NULL, 15);
                     }
 
                     if (IS_SET(dest->room_flags, DEATH) && !IS_IMMORTAL(tmp)) {
@@ -3531,7 +3496,7 @@ void ArenaPulseStuff(int pulse)
                                      "back home.\n\r\n\r", ch);
                         act("$n appears in the middle of the room.",
                             TRUE, ch, 0, 0, TO_ROOM);
-                        do_look(ch, "", 15);
+                        do_look(ch, NULL, 15);
                         send_to_char("\n\r", ch);
                     }
                     sprintf(buf, "%s has been declared winner of this "
@@ -3751,9 +3716,9 @@ void RiverPulseStuff(int pulse)
                         }
                         char_to_room(ch,
                                      real_roomp(or)->dir_option[rd]->to_room);
-                        do_look(ch, "\0", 15);
+                        do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
-                            do_look(RIDDEN(ch), "\0", 15);
+                            do_look(RIDDEN(ch), NULL, 15);
                         }
 
                         if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
@@ -5622,25 +5587,6 @@ int fighting_in_room(int room_n)
     return FALSE;
 }
 
-int str_cmp2(char *arg1, char *arg2)
-{
-    int             chk,
-                    i;
-
-    if (!arg2 || !arg1 || !strlen(arg1)) {
-        return (1);
-    }
-    for (i = 0; i < strlen(arg1); i++) {
-        if ((chk = LOWER(*(arg1 + i)) - LOWER(*(arg2 + i)))) {
-            if (chk < 0) {
-                return (-1);
-            } else {
-                return (1);
-            }
-        }
-    }
-    return (0);
-}
 
 int CheckSquare(struct char_data *ch, int dir)
 {
@@ -5759,7 +5705,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
             new_rm = real_roomp(ch->in_room);
             new_rm->room_flags = ROOM_WILDERNESS;
 
-            do_look(ch, "", 15);
+            do_look(ch, NULL, 15);
 
             return (TRUE);
         }
@@ -5809,7 +5755,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
                 new_rm = real_roomp(ch->in_room);
                 new_rm->room_flags = ROOM_WILDERNESS;
             }
-            do_look(ch, "", 15);
+            do_look(ch, NULL, 15);
             return (TRUE);
         }
     }
@@ -6106,12 +6052,9 @@ void do_orebuild(struct char_data *ch, char *argument, int cmd)
 
 int advatoi(const char *s)
 {
-    char            string[MAX_INPUT_LENGTH];   /* a buffer to hold a copy
-                                                 * of the argument */
-    char           *stringptr = string; /* a pointer to the buffer so we
-                                         * can move around */
-    char            tempstring[2];      /* a small temp buffer to pass to
-                                         * atoi */
+    char           *string;   /* a buffer to hold a copy of the argument */
+    char           *stringptr; /* a pointer to the buffer so we
+                               * can move around */
     int             number = 0; /* number to be returned */
     int             multiplier = 0;     /* multiplier used to get the
                                          * extra digits right */
@@ -6122,21 +6065,22 @@ int advatoi(const char *s)
      * hell, it works:) (read: it seems to work:)
      */
 
-    strcpy(string, s);          /* working copy */
+    if( !s ) {
+        return( 0 );
+    }
+
+    string = strdup(s);
+    if( !string ) {
+        return( 0 );
+    }
+    stringptr = string;
 
     while (isdigit(*stringptr)) {
         /*
          * as long as the current character is a digit
          */
 
-        /*
-         * copy first digit
-         */
-        strncpy(tempstring, stringptr, 1);
-        /*
-         * add to current * number
-         */
-        number = (number * 10) + atoi(tempstring);
+        number = (number * 10) + (int)(*stringptr - 0x30);
         /*
          * advance
          */
@@ -6157,6 +6101,7 @@ int advatoi(const char *s)
     case '\0':
         break;
     default:
+        free( string );
         return 0;
         /*
          * not k nor m nor NUL - return 0!
@@ -6166,16 +6111,10 @@ int advatoi(const char *s)
     while (isdigit(*stringptr) && (multiplier > 1)) {
         /*
          * if any digits follow k/m, add those too
-         */
-        /*
-         * copy first digit
-         */
-        strncpy(tempstring, stringptr, 1);
-        /*
          * the further we get to right, the less are the digit 'worth'
          */
         multiplier = multiplier / 10;
-        number = number + (atoi(tempstring) * multiplier);
+        number = number + ((int)(*stringptr - 0x30) * multiplier);
         stringptr++;
     }
 
@@ -6185,132 +6124,12 @@ int advatoi(const char *s)
          * If a digit is found, it means the multiplier is 1 - i.e. extra
          * digits that just have to be ignore, liked 14k4443 -> 3 is ignored
          */
+        free( string );
         return 0;
     }
 
+    free( string );
     return (number);
-}
-
-/*
- * Lennya 20030730 A little gadget to convert a string to a floating
- * number. Maybe it already exists, but I couldn't find it. It works,
- * anyway.
- */
-float arg_to_float(char *arg)
-{
-#if 0
-    /* There is a system call to do exactly this! */
-    char            buf[120];   /* a buffer to hold a copy of the argument */
-    float           number = 0.0;       /* number to be returned */
-    int             multiplier = 1;     /* multiplier used to get the
-                                         * extra digits right */
-    int             abs = 0,
-                    i = 0,
-                    tmp = 0,
-                    x = 0,
-                    y = 10;
-
-    if (!*arg)
-        return (0.0);
-
-    abs = strlen(arg);
-
-    while (isdigit(arg[i])) {
-        switch (arg[i]) {
-        case '1':
-            tmp = 1;
-            break;
-        case '2':
-            tmp = 2;
-            break;
-        case '3':
-            tmp = 3;
-            break;
-        case '4':
-            tmp = 4;
-            break;
-        case '5':
-            tmp = 5;
-            break;
-        case '6':
-            tmp = 6;
-            break;
-        case '7':
-            tmp = 7;
-            break;
-        case '8':
-            tmp = 8;
-            break;
-        case '9':
-            tmp = 9;
-            break;
-        case '0':
-            tmp = 0;
-            break;
-        default:
-            tmp = 0;
-            break;
-        }
-        number = (number * 10) + tmp;
-        i++;
-    }
-    if (arg[i]) {
-        if (arg[i] == '\0') {   /* just an integer, not a float */
-            return (number);
-        }
-        if (arg[i] != '.') {    /* this aint no float, mate! */
-            return (0.0);
-        }
-    }
-    i++;
-    while (isdigit(arg[i])) {
-        switch (arg[i]) {
-        case '1':
-            tmp = 1;
-            break;
-        case '2':
-            tmp = 2;
-            break;
-        case '3':
-            tmp = 3;
-            break;
-        case '4':
-            tmp = 4;
-            break;
-        case '5':
-            tmp = 5;
-            break;
-        case '6':
-            tmp = 6;
-            break;
-        case '7':
-            tmp = 7;
-            break;
-        case '8':
-            tmp = 8;
-            break;
-        case '9':
-            tmp = 9;
-            break;
-        case '0':
-            tmp = 0;
-            break;
-        default:
-            tmp = 0;
-            break;
-        }
-        y = 1;
-        for (x = 1; x <= multiplier; x++) {
-            y *= 10;
-        }
-        number = number + (float) tmp / y;
-        multiplier++;
-        i++;
-    }
-    return (number);
-#else
-    return ((float)strtod(arg, NULL));
-#endif
 }
 
 /**********************************************************************
@@ -6584,6 +6403,10 @@ char           *skip_spaces(char *string)
         /* 
          * Empty loop 
          */
+    }
+
+    if( !*string ) {
+        return( NULL );
     }
 
     return (string);

@@ -2965,8 +2965,8 @@ void do_id(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[256];
 
-    sprintf(buf, "'id' %s", argument);
-    do_cast(ch, buf, 0);
+    sprintf(buf, "cast 'id' %s", argument);
+    command_interpreter(ch, buf);
 }
 
 /*
@@ -3030,8 +3030,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && 
-        !IS_EVIL(ch)) {
+    if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && !IS_EVIL(ch)) {
         /*
          * necro too GOOD to cast 
          */
@@ -3041,16 +3040,18 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    ori_argument = strdup(argument);
-    if( !ori_argument ) {
-        Log( "Out of memory in cast!\n\r" );
-        return;
+    if( argument ) {
+        ori_argument = strdup(argument);
+        if( !ori_argument ) {
+            Log( "Out of memory in cast!\n\r" );
+            return;
+        }
     }
 
     /*
      * If there is no chars in argument 
      */
-    if (!*argument) {
+    if (!argument || !*argument) {
         if (cmd != 600) {
             send_to_char("Cast which what where?\n\r", ch);
         } else {
@@ -3154,11 +3155,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 send_to_char("Sorry, you can't do that.\n\r", ch);
                 return;
             }
-            /* 
-             * Point to the last ' 
-             */
 
-            argument = skip_spaces(argument);
             /*
              **************** Locate targets **************** */
             target_ok = FALSE;
@@ -3185,18 +3182,21 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             if (!IS_SET(spell_info[index].targets, TAR_IGNORE)) {
                 argument = get_argument(argument, &name);
 
-                if (name && strcmp(name, "self") == 0) {
-                    sprintf(name, "%s", GET_NAME(ch));
-                }
-
                 if (name) {
+                    if (!strcmp(name, "self")) {
+                        ori_argument = strdup(GET_NAME(ch));
+                        name = ori_argument;
+                    } else {
+                        ori_argument = NULL;
+                    }
+
                     /*
                      * room char spells 
                      */
                     if (IS_SET(spell_info[index].targets, TAR_CHAR_ROOM)) {
                         if ((tar_char = get_char_room_vis(ch, name)) || 
-                            !str_cmp(GET_NAME(ch), name)) {
-                            if (!str_cmp(GET_NAME(ch), name)) {
+                            !strcasecmp(GET_NAME(ch), name)) {
+                            if (!strcasecmp(GET_NAME(ch), name)) {
                                 tar_char = ch;
                             }
 
@@ -3251,7 +3251,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     if (!target_ok && IS_SET(spell_info[index].targets,
                                              TAR_OBJ_WORLD)) {
                         target_ok = TRUE;
-                        sprintf(argument, "%s", name);
+                        argument = name;
                     }
 
                     /*
@@ -3261,7 +3261,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                                              TAR_OBJ_EQUIP)) {
                         for (i = 0; i < MAX_WEAR && !target_ok; i++) {
                             if (ch->equipment[i] && 
-                                !str_cmp(name, ch->equipment[i]->name)) {
+                                !strcasecmp(name, ch->equipment[i]->name)) {
                                 tar_obj = ch->equipment[i];
                                 target_ok = TRUE;
                             }
@@ -3273,7 +3273,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                      */
                     if (!target_ok && 
                         IS_SET(spell_info[index].targets, TAR_SELF_ONLY) &&
-                        !str_cmp(GET_NAME(ch), name)) {
+                        !strcasecmp(GET_NAME(ch), name)) {
                         tar_char = ch;
                         target_ok = TRUE;
                     }
@@ -3304,6 +3304,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                         IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
                         send_to_char("You can't cast magic on that!", ch);
                         return;
+                    }
+
+                    if( ori_argument ) {
+                        free( ori_argument );
                     }
                 } else {
                     /* 
@@ -3844,7 +3848,7 @@ int check_falling(struct char_data *ch)
         act("$n falls from the sky", FALSE, ch, 0, 0, TO_ROOM);
         count++;
 
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
 
         if (IS_SET(targ->room_flags, DEATH) && !IS_IMMORTAL(ch)) {
             NailThisSucker(ch);
@@ -3922,7 +3926,7 @@ int check_falling(struct char_data *ch)
         Log("Someone messed up an air room.");
         char_from_room(ch);
         char_to_room(ch, 2);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
     }
     return (FALSE);
 }

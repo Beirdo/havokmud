@@ -140,7 +140,7 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -154,19 +154,19 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (argument) {
-        argument = skip_spaces(argument);
+    argument = skip_spaces(argument);
 
+    if (argument) {
         /*
          * get response (rest of argument)
          */
-        if (str_cmp(argument, "yes") == 0) {
+        if (strcasecmp(argument, "yes") == 0) {
             d->character->generic = NEWBIE_START;
             sprintf(buf2, "%s has just accepted %s into the game.",
                     ch->player.name, name);
             Log(buf2);
             SEND_TO_Q("You have been accepted.  Press enter\n\r", d);
-        } else if (str_cmp(argument, "no") == 0) {
+        } else if (strcasecmp(argument, "no") == 0) {
             SEND_TO_Q("You have been denied.  Press enter\n\r", d);
             sprintf(buf2, "%s has just denied %s from the game.",
                     ch->player.name, name);
@@ -372,7 +372,7 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg) {
         send_to_char("Your current bamfin is:\n\r", ch);
         act(ch->specials.poofin, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfin <bamf definition>\n\r", ch);
@@ -422,7 +422,7 @@ void do_bamfout(struct char_data *ch, char *arg, int cmd)
      * pass all those spaces
      */
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg) {
         send_to_char("Your current bamfout is:\n\r", ch);
         act(ch->specials.poofout, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfout <bamf definition>\n\r", ch);
@@ -464,8 +464,10 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
     int             start_room,
                     end_room,
                     zone;
-    char            c;
     FILE           *fp;
+    char           *arg1,
+                   *arg2,
+                   *arg3;
 
     dlog("in do_zsave");
 
@@ -475,14 +477,17 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
     /*
      *   read in parameters (room #s)
      */
-    zone = start_room = end_room = -1;
-    sscanf(argument, "%d%c%d%c%d", &zone, &c, &start_room, &c, &end_room);
 
-    if ((zone == -1)) {
-        send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r",
-                     ch);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+    argument = get_argument(argument, &arg3);
+
+    if( !arg1 ) {
+        send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r", ch);
         return;
     }
+    zone = atoi(arg1);
+
     if (zone > top_of_zone_table) {
         send_to_char("Invalid zone number\r\n", ch);
         return;
@@ -499,10 +504,15 @@ void do_zsave(struct char_data *ch, char *argument, int cmdnum)
         send_to_char("Sorry, that zone isn't initialized yet\r\n", ch);
         return;
     }
-    if (start_room == -1 || end_room == -1) {
+
+    if( !arg2 || !arg3 ) {
         start_room = zone ? (zone_table[zone - 1].top + 1) : 0;
         end_room = zone_table[zone].top;
+    } else {
+        start_room = atoi(arg2);
+        end_room   = atoi(arg3);
     }
+
     fp = (FILE *) MakeZoneFile(ch, zone);
     if (!fp) {
         send_to_char("Couldn't make file.. try again later\n\r", ch);
@@ -530,9 +540,9 @@ void do_zload(struct char_data *ch, char *argument, int cmdnum)
      *   read in parameters (room #s)
      */
     zone = -1;
-    sscanf(argument, "%d", &zone);
 
-    if (zone < 1) {
+    argument = skip_spaces(argument);
+    if (!argument || (zone = atoi(argument)) < 1) {
         send_to_char("Zload <zone_number>\n\r", ch);
         return;
     }
@@ -587,9 +597,9 @@ void do_zclean(struct char_data *ch, char *argument, int cmdnum)
     if (IS_NPC(ch)) {
         return;
     }
-    sscanf(argument, "%d", &zone);
 
-    if (zone < 1) {
+    argument = skip_spaces(argument);
+    if (!argument || (zone = atoi(argument)) < 1) {
         send_to_char("Zclean <zone_number> (and don't even think about "
                      "cleaning Void)\n\r", ch);
         return;
@@ -697,7 +707,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (str_cmp(arg1, "add") == 0) {
+    if (strcasecmp(arg1, "add") == 0) {
         if (!arg2) {
             send_to_char("Siteban add <host_name>\n\r", ch);
             return;
@@ -721,7 +731,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
                 GET_NAME(ch), hostlist[numberhosts]);
         Log(buf);
         numberhosts++;
-    } else if (str_cmp(arg1, "rem") == 0) {
+    } else if (strcasecmp(arg1, "rem") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
@@ -752,7 +762,7 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
             }
         }
         send_to_char("Host is not in database\n\r", ch);
-    } else if (str_cmp(buf, "list") == 0) {
+    } else if (strcasecmp(buf, "list") == 0) {
         if (numberhosts <= 0) {
             send_to_char("Host list is empty.\n\r", ch);
             return;
@@ -771,8 +781,10 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
 void do_rload(struct char_data *ch, char *argument, int cmd)
 {
     int             i;
-    int             start = -1,
-                    end = -2;
+    int             start,
+                    end;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_rload");
 
@@ -784,17 +796,25 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("rload <start> [<end>]\n\r", ch);
         return;
     }
-    sscanf(argument, "%d %d", &start, &end);
-    if (start == -1) {
+
+    argument = get_argument( argument, &arg1 );
+    argument = get_argument( argument, &arg2 );
+
+    if( !arg1 ) {
         return;
     }
-    if (end == -2) {
+    start = atoi(arg1);
+
+    if( !arg2 ) {
         end = start;
+    } else {
+        end = atoi(arg2);
     }
+
     if (end < start) {
         send_to_char("Hey, end room must be >= start room\r\n", ch);
         return;
@@ -823,9 +843,11 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
 
 void do_rsave(struct char_data *ch, char *argument, int cmd)
 {
-    long            start = -1,
-                    end = -2,
+    long            start,
+                    end,
                     i;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_rsave");
 
@@ -837,21 +859,30 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         start = ch->in_room;
+        end   = ch->in_room;
         if (!(start > 0 && start < WORLD_SIZE)) {
             send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
             return;
         }
     } else {
-        sscanf(argument, "%ld %ld", &start, &end);
+        argument = get_argument(argument, &arg1);
+        argument = get_argument(argument, &arg2);
+
+        if( !arg1 ) {
+            return;
+        }
+
+        start = atol(arg1);
+
+        if( !arg2 ) {
+            end = start;
+        } else {
+            end = atol(arg2);
+        }
     }
-    if (start == -1) {
-        return;
-    }
-    if (end == -2) {
-        end = start;
-    }
+
     if (end < start) {
         send_to_char("Hey, end room must be >= start room\r\n", ch);
         return;
@@ -887,7 +918,7 @@ void do_emote(struct char_data *ch, char *arg, int cmd)
     }
 
     arg = skip_spaces(arg);
-    if (!*arg) {
+    if (!arg) {
         send_to_char("Yes.. But what?\n\r", ch);
         return;
     }
@@ -913,7 +944,7 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         if (IS_SET(ch->specials.act, PLR_ECHO)) {
             send_to_char("echo off\n\r", ch);
             REMOVE_BIT(ch->specials.act, PLR_ECHO);
@@ -941,7 +972,7 @@ void do_system(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("That must be a mistake...\n\rTry arguments 1-8 (Info, "
                      "Ann, Upd, sys, warn, reb, wel, note)\n\r", ch);
         return;
@@ -1037,7 +1068,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &buf);
     if (!buf) {
         send_to_char("Who do you wich to transfer?\n\r", ch);
-    } else if (str_cmp("all", buf)) {
+    } else if (strcasecmp("all", buf)) {
         if (!(victim = get_char_vis_world(ch, buf, NULL))) {
             send_to_char("No-one by that name around.\n\r", ch);
         } else {
@@ -1049,7 +1080,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
             act("$n arrives from a puff of smoke.", FALSE, victim, 0, 0,
                 TO_ROOM);
             act("$n has transferred you!", FALSE, ch, 0, victim, TO_VICT);
-            do_look(victim, "", 15);
+            do_look(victim, NULL, 15);
             send_to_char("Ok.\n\r", ch);
         }
     } else {
@@ -1067,7 +1098,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
                 act("$n arrives from a puff of smoke.", FALSE, victim, 0,
                     0, TO_ROOM);
                 act("$n has transferred you!", FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
             }
         }
         send_to_char("Ok.\n\r", ch);
@@ -1095,7 +1126,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &buf);
     if (!buf) {
         send_to_char("Usage: qtrans <name/all>\n\r", ch);
-    } else if (str_cmp("all", buf)) {
+    } else if (strcasecmp("all", buf)) {
         if (!(victim = get_char_vis_world(ch, buf, NULL))) {
             send_to_char("No-one by that name around.\n\r", ch);
         } else {
@@ -1109,7 +1140,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
                     FALSE, victim, 0, 0, TO_ROOM);
                 act("$n has called upon your help, you're unable to resist!",
                     FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
                 send_to_char("Ok.\n\r", ch);
             } else {
                 send_to_char("Alas, this person does not wish to aid you in "
@@ -1133,7 +1164,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
                     FALSE, victim, 0, 0, TO_ROOM);
                 act("$n has called upon your help, you're unable to resist!",
                     FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
             }
         }
         send_to_char("Ok.\n\r", ch);
@@ -1382,7 +1413,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
             command_interpreter(ch, (ch->specials.poofin + 1));
         }
     }
-    do_look(ch, "", 15);
+    do_look(ch, NULL, 15);
 }
 
 void do_stat(struct char_data *ch, char *argument, int cmd)
@@ -1433,7 +1464,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         send_to_char("Stats on who or what?\n\r", ch);
         return;
     } else {
-        if (!str_cmp("room", arg1)) {
+        if (!strcasecmp("room", arg1)) {
             /*
              * stats on room
              */
@@ -1612,8 +1643,10 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-            ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
-                      classes[k->specials.remortclass - 1].name, color1);
+            if( IS_PC(k) ) {
+                ch_printf(ch, "%sRemort Class: %s%s%s.\n\r", color1, color2,
+                          classes[k->specials.remortclass - 1].name, color1);
+            }
 
             sprintf(buf, "%sBirth : [%s%ld%s]secs, Logon[%s%ld%s]secs, "
                          "Played[%s%d%s]secs",
@@ -2231,13 +2264,12 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+    argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("Oedit what?!? I need a <num/change>!(oedit <item> "
                      "<field> <num>)\n\r", ch);
         return;
     }
-
-    argument = skip_spaces(argument);
 
     /*
      * object
@@ -2902,7 +2934,7 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
         send_to_all(buf);
         Log(buf);
         mudshutdown = 1;
-    } else if (!str_cmp(arg, "reboot")) {
+    } else if (!strcasecmp(arg, "reboot")) {
         sprintf(buf, "Reboot by %s.", GET_NAME(ch));
         send_to_all(buf);
         Log(buf);
@@ -3127,7 +3159,7 @@ void do_flux(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     struct descriptor_data *i;
-    char           *buf;
+    char            buf[MAX_STRING_LENGTH];
 
     dlog("in do_flux");
 
@@ -3135,8 +3167,7 @@ void do_flux(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = get_argument(argument, &buf);
-    if (!buf) {
+    if (!argument) {
         sprintf(buf, "%s just did a flux.", GET_NAME(ch));
         /*
          * want to keep an eye on how often it's used
@@ -3185,7 +3216,7 @@ void do_force(struct char_data *ch, char *argument, int cmd)
     to_force = skip_spaces(argument);
     if (!name || !to_force) {
         send_to_char("Who do you wish to force to do what?\n\r", ch);
-    } else if (str_cmp("all", name)) {
+    } else if (strcasecmp("all", name)) {
         if (!(vict = get_char_vis(ch, name))) {
             send_to_char("No-one by that name here..\n\r", ch);
         } else if (GetMaxLevel(ch) <= GetMaxLevel(vict) && !IS_NPC(vict)) {
@@ -3223,6 +3254,8 @@ void do_load(struct char_data *ch, char *argument, int cmd)
     struct obj_data *obj;
     char           *type,
                    *num,
+                   *arg1,
+                   *arg2,
                     buf[100];
     int             number;
     int             start,
@@ -3350,23 +3383,22 @@ void do_load(struct char_data *ch, char *argument, int cmd)
         if (GetMaxLevel(ch) < CREATOR) {
             return;
         }
-        switch (sscanf(num, "%d %d", &start, &end)) {
-        case 2:
-            /*
-             * we got both numbers
-             */
-            RoomLoad(ch, start, end);
-            break;
-        case 1:
-            /*
-             * we only got one, load it
-             */
-            RoomLoad(ch, start, start);
-            break;
-        default:
+
+        num = get_argument(num, &arg1);
+        num = get_argument(num, &arg2);
+
+        if( !arg1 ) {
             send_to_char("Load? Fine!  Load we must, But what?\n\r", ch);
-            break;
+            return;
         }
+        start = atoi(arg1);
+
+        if( !arg2 ) {
+            end = start;
+        } else {
+            end = atoi(arg2);
+        }
+        RoomLoad(ch, start, end);
     } else {
         send_to_char("Usage: load (object|mobile) (number|name)\n\r"
                      "       load room start [end]\n\r", ch);
@@ -3396,7 +3428,7 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
          * send character to the void
          */
         char_to_room(ch, 0);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         act("$n tumbles into the Void.", TRUE, ch, 0, 0, TO_ROOM);
     }
 
@@ -3481,7 +3513,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             obj_index[obj->item_number].number--;
 #endif
             extract_obj(obj);
-        } else if (!str_cmp("room", name)) {
+        } else if (!strcasecmp("room", name)) {
             if (GetMaxLevel(ch) < IMPLEMENTOR) {
                 send_to_char("I'm sorry, I can't let you do that.\n\r", ch);
                 return;
@@ -5061,9 +5093,10 @@ void do_invis(struct char_data *ch, char *argument, int cmd)
 void do_create(struct char_data *ch, char *argument, int cmd)
 {
     int             i,
-                    count,
                     start,
                     end;
+    char           *arg1,
+                   *arg2;
 
     dlog("in do_create");
 
@@ -5071,11 +5104,18 @@ void do_create(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    count = sscanf(argument, "%d %d", &start, &end);
-    if (count < 2) {
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
+    if(!arg1 || !arg2) {
         send_to_char(" create <start> <end>\n\r", ch);
         return;
     }
+
+
+    start = atoi(arg1);
+    end   = atoi(arg2);
+
     if (start > end) {
         send_to_char(" create <start> <end>\n\r", ch);
         return;
@@ -5380,7 +5420,7 @@ void do_disconnect(struct char_data *ch, char *argument, int cmd)
         victim = d->character;
         if (d->character) {
             if (GET_NAME(d->character) &&
-                (str_cmp(GET_NAME(d->character), arg) == 0)) {
+                (strcasecmp(GET_NAME(d->character), arg) == 0)) {
 
                 if ((GetMaxLevel(victim) > 51) && !(ch == victim)) {
                     sprintf(buf, "%s just disconnected %s!", GET_NAME(ch),
@@ -5792,7 +5832,7 @@ void do_nuke(struct char_data *ch, char *argument, int cmd)
         act("You rip the heart and soul from $N condeming $M to instant "
             "death.", FALSE, ch, 0, victim, TO_CHAR);
         for (i = 0; i <= top_of_p_table; i++) {
-            if (!str_cmp(player_table[i].name, GET_NAME(victim))) {
+            if (!strcasecmp(player_table[i].name, GET_NAME(victim))) {
                 if (player_table[i].name) {
                     free(player_table[i].name);
                 }
@@ -5996,7 +6036,7 @@ void do_mforce(struct char_data *ch, char *argument, int cmd)
 
     if (!name || !to_force) {
         send_to_char("Who do you wish to force to do what?\n\r", ch);
-    } else if (str_cmp("all", name)) {
+    } else if (strcasecmp("all", name)) {
         if (!(vict = get_char_room_vis(ch, name))) {
             send_to_char("No-one by that name here..\n\r", ch);
         } else if (IS_PC(vict)) {
@@ -6579,7 +6619,7 @@ void do_home(struct char_data *ch, char *argument, int cmd)
         char_to_room(ch,ch->specials.start_room);
         act("A whirling vortex appears and $n arrives.",FALSE,ch,0,0,TO_ROOM);
 #endif
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
     } else {
         send_to_char("You ain't got a home buddy!\n\r", ch);
     }
@@ -6810,17 +6850,17 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (apply_soundproof(ch))
+    if (apply_soundproof(ch)) {
         return;
-
-    argument = skip_spaces(argument);
+    }
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) && !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!(*argument)) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         send_to_char("yell? Yes! but what!\n\r", ch);
     } else {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
@@ -6928,7 +6968,7 @@ void do_reward(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7018,7 +7058,7 @@ void do_punish(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7108,7 +7148,7 @@ void do_spend(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7194,7 +7234,7 @@ void do_see_points(struct char_data *ch, char *argument, int cmd)
      */
     for (d = descriptor_list; d && !done; d = d->next) {
         if (d->character && GET_NAME(d->character) &&
-            str_cmp(GET_NAME(d->character), name) == 0) {
+            strcasecmp(GET_NAME(d->character), name) == 0) {
             done = TRUE;
             break;
         }
@@ -7649,8 +7689,10 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
     int             start_room,
                     end_room,
                     zone;
-    char            c;
     FILE           *fp = NULL;
+    char           *arg1,
+                   *arg2,
+                   *arg3;
 
     dlog("in do_zconv");
 
@@ -7660,13 +7702,16 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
     /*
      *   read in parameters (room #s)
      */
-    zone = start_room = end_room = -1;
-    sscanf(argument, "%d%c%d%c%d", &zone, &c, &start_room, &c, &end_room);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+    argument = get_argument(argument, &arg3);
 
-    if ((zone == -1)) {
+    if( !arg1 ) {
         send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r", ch);
         return;
     }
+    zone = atoi(arg1);
+
 
     if (zone > top_of_zone_table) {
         send_to_char("Invalid zone number\r\n", ch);
@@ -7687,9 +7732,12 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
         return;
     }
 
-    if (start_room == -1 || end_room == -1) {
+    if( !arg2 || !arg3 ) {
         start_room = zone ? (zone_table[zone - 1].top + 1) : 0;
         end_room = zone_table[zone].top;
+    } else {
+        start_room = atoi(arg2);
+        end_room   = atoi(arg3);
     }
 
     /*

@@ -4979,7 +4979,7 @@ void save_char(struct char_data *ch, sh_int load_room)
 int compare(struct player_index_element *arg1, struct player_index_element
             *arg2)
 {
-    return (str_cmp(arg1->name, arg2->name));
+    return (strcasecmp(arg1->name, arg2->name));
 }
 
 /************************************************************************
@@ -6439,7 +6439,7 @@ void clean_playerfile(void)
              */
             num_processed++;
             grunt.AXE = FALSE;
-            if (!str_cmp(grunt.dummy.name, "111111")) {
+            if (!strcasecmp(grunt.dummy.name, "111111")) {
                 sprintf(buf, "%s was deleted (111111 name hopefully).",
                         grunt.dummy.name);
                 Log(buf);
@@ -6559,7 +6559,7 @@ void clean_playerfile(void)
              */
             num_processed++;
             grunt.AXE = FALSE;
-            if (!str_cmp(grunt.dummy.name, "111111")) {
+            if (!strcasecmp(grunt.dummy.name, "111111")) {
                 sprintf(buf, "%s was deleted (111111 name hopefully).",
                         grunt.dummy.name);
                 Log(buf);

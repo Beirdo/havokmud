@@ -87,7 +87,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
             act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
             send_to_char("You relax.\n\r", ch);
@@ -100,7 +100,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
             send_to_char("You snap to attention\n\r", ch);
         }
     } else {
-        if (!str_cmp(argument, "on")) {
+        if (!strcasecmp(argument, "on")) {
             if (!IS_SET(ch->specials.act, ACT_GUARDIAN)) {
                 SET_BIT(ch->specials.act, ACT_GUARDIAN);
                 act("$n alertly watches you.", FALSE, ch, 0, ch->master,
@@ -109,7 +109,7 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
                     TO_NOTVICT);
                 send_to_char("You snap to attention\n\r", ch);
             }
-        } else if (!str_cmp(argument, "off")) {
+        } else if (!strcasecmp(argument, "off")) {
             if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
                 act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
                 send_to_char("You relax.\n\r", ch);
@@ -241,7 +241,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -320,7 +320,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
 #endif
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
                 send_to_char("Eh?\r\n", ch);
@@ -388,10 +388,10 @@ void do_title(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if (strlen(argument) > 150) {
             send_to_char("Line too long, truncated\n", ch);
-            *(argument + 151) = '\0';
+            argument[151] = '\0';
         }
 
         temp = strdup( argument );
@@ -427,7 +427,7 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM)) {
         return;
     }
-    if (!*argument || strcmp(argument, "now")) {
+    if (!argument || !*argument || strcmp(argument, "now")) {
         do_mobTell(ch, "A Tiny Voice",
                    "Psst. You should really rent at an Inn Keeper.");
         do_mobTell(ch, "A Tiny Voice",
@@ -589,7 +589,7 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
     act("$n appears in the middle of the room.", TRUE, victim, 0, 0, TO_ROOM);
     send_to_char("You close your eyes and think of home!  Suddenly, you find "
                  "yourself in a familiar location.\n\r", victim);
-    do_look(victim, "", 15);
+    do_look(victim, NULL, 15);
     GET_MOVE(victim) = 0;
     send_to_char("\n\rYou feel rather tired now!\n\r", victim);
 }
@@ -823,7 +823,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
          */
     }
 
-    if (str_cmp(obj_name, "coins") && str_cmp(obj_name, "gold")) {
+    if (strcasecmp(obj_name, "coins") && strcasecmp(obj_name, "gold")) {
         if (!(obj = get_obj_in_list_vis(victim, obj_name, victim->carrying))) {
             for (eq_pos = 0; (eq_pos < MAX_WEAR); eq_pos++) {
                 if (victim->equipment[eq_pos] &&
@@ -980,7 +980,7 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
         return;
@@ -1014,7 +1014,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("I beg your pardon?\n\r", ch);
         return;
     }
@@ -1046,7 +1046,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
      * skip whites
      */
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         send_to_char("Pardon?\n\r", ch);
         return;
     }
@@ -1232,7 +1232,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
     /*
      * ----- Start of the group all functions -----
      */
-    if (str_cmp(name, "self") == 0) {
+    if (strcasecmp(name, "self") == 0) {
         sprintf(name, "%s", GET_NAME(ch));
     }
 
@@ -1437,12 +1437,14 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
      * set ch->specials.group_name to the argument
      */
     arg = skip_spaces(arg);
-
-    send_to_char("Setting your group name to: ", ch);
-    send_to_char(arg, ch);
-    send_to_char("\n\r", ch);
-    ch->specials.group_name = strdup(arg);
-
+    if( arg ) {
+        send_to_char("Setting your group name to: ", ch);
+        send_to_char(arg, ch);
+        send_to_char("\n\r", ch);
+        ch->specials.group_name = strdup(arg);
+    } else {
+        send_to_char("Clearing your group name\n\r", ch);
+    }
 }
 
 void do_quaff(struct char_data *ch, char *argument, int cmd)
@@ -1458,7 +1460,7 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
     dlog("in do_quaff");
 
     argument = get_argument(argument, &buf);
-    if( buf ) {
+    if( !buf ) {
         send_to_char( "Quaff whar?\n\r", ch );
         return;
     }
@@ -1537,7 +1539,8 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
 void do_recite(struct char_data *ch, char *argument, int cmd)
 {
     char           *buf,
-                   *buf2;
+                   *buf2,
+                   *tempname;
     struct obj_data *scroll,
                    *obj;
     struct char_data *victim;
@@ -1596,8 +1599,11 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
     }
 
     if (buf2) {
-        if (str_cmp(buf2, "self") == 0) {
-            buf2 = GET_NAME(ch);
+        if (strcasecmp(buf2, "self") == 0) {
+            tempname = strdup(GET_NAME(ch));
+            buf2 = tempname;
+        } else {
+            tempname = NULL;
         }
 
         /*
@@ -1606,8 +1612,8 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
          */
         if (IS_SET(spell_info[index].targets, TAR_CHAR_ROOM)) {
             if ((victim = get_char_room_vis(ch, buf2)) ||
-                str_cmp(GET_NAME(ch), buf2) == 0) {
-                if (str_cmp(GET_NAME(ch), buf2) == 0) {
+                strcasecmp(GET_NAME(ch), buf2) == 0) {
+                if (strcasecmp(GET_NAME(ch), buf2) == 0) {
                     victim = ch;
                 }
                 if (victim == ch || victim == ch->specials.fighting ||
@@ -1655,7 +1661,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_OBJ_EQUIP)) {
             for (i = 0; i < MAX_WEAR && !target_ok; i++) {
                 if (ch->equipment[i] && 
-                    str_cmp(buf2, ch->equipment[i]->name) == 0) {
+                    strcasecmp(buf2, ch->equipment[i]->name) == 0) {
                     obj = ch->equipment[i];
                     target_ok = TRUE;
                     target = TAR_OBJ_EQUIP;
@@ -1664,7 +1670,7 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
         }
 
         if (!target_ok && IS_SET(spell_info[index].targets, TAR_SELF_ONLY)) {
-            if (str_cmp(GET_NAME(ch), buf2) == 0) {
+            if (strcasecmp(GET_NAME(ch), buf2) == 0) {
                 victim = ch;
                 target_ok = TRUE;
                 target = TAR_SELF_ONLY;
@@ -1675,6 +1681,10 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             obj = (void *) buf2;
             target_ok = TRUE;
             target = TAR_NAME;
+        }
+
+        if( tempname ) {
+            free( tempname );
         }
 
         if (victim && IS_NPC(victim) &&
@@ -1803,7 +1813,8 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 {
     char           *buf,
                    *buf2,
-                   *buf3;
+                   *buf3,
+                   *tempname;
     struct char_data *tmp_char;
     struct obj_data *tmp_object,
                    *stick;
@@ -1864,7 +1875,10 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         }
     } else if (buf2 && stick->obj_flags.type_flag == ITEM_WAND) {
         if (!strcmp(buf2, "self")) {
-            buf2 = GET_NAME(ch);
+            tempname = strdup(GET_NAME(ch));
+            buf2 = tempname;
+        } else {
+            tempname = NULL;
         }
 
         bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
@@ -1963,6 +1977,10 @@ void do_use(struct char_data *ch, char *argument, int cmd)
             } else {
                 send_to_char("What should the wand be pointed at?\n\r", ch);
             }
+        }
+
+        if( tempname ) {
+            free( tempname );
         }
     } else {
         send_to_char("Use is normally only for wands and staves.\n\r", ch);
@@ -2078,7 +2096,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
     if (cmd == 260) {
         arg = skip_spaces(arg);
 
-        if (!*arg) {
+        if (!arg) {
             /*
              * print list of current aliases
              */
@@ -2173,8 +2191,8 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
         if (ch->specials.A_list) {
             if (GET_ALIAS(ch, num)) {
                 strcpy(buf, GET_ALIAS(ch, num));
-                if (*arg) {
-                    sprintf(buf2, "%s%s", buf, arg);
+                if (arg) {
+                    sprintf(buf2, "%s %s", buf, arg);
                     command_interpreter(ch, buf2);
                 } else {
                     command_interpreter(ch, buf);
@@ -2332,7 +2350,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
     /*
      * If there is no chars in argument
      */
-    if (!argument || !*argument) {
+    if (!argument) {
         send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r",
                      ch);
 
@@ -2849,54 +2867,54 @@ void do_auto(struct char_data *ch, char *argument, int cmd)
     switch (cmd) {
     case 576:
         if (IS_SET(ch->specials.act, PLR_AUTOASSIST)) {
-            do_set_flags(ch, "autoassist disable", 0);
+            command_interpreter(ch, "set autoassist disable");
         } else {
-            do_set_flags(ch, "autoassist enable", 0);
+            command_interpreter(ch, "set autoassist enable");
         }
         break;
 
     case 577:
         if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
-            do_set_flags(ch, "autoloot disable", 0);
+            command_interpreter(ch, "set autoloot disable");
         } else {
-            do_set_flags(ch, "autoloot enable", 0);
+            command_interpreter(ch, "set autoloot enable");
         }
         break;
 
     case 578:
         if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
-            do_set_flags(ch, "autogold disable", 0);
+            command_interpreter(ch, "set autogold disable");
         } else {
-            do_set_flags(ch, "autogold enable", 0);
+            command_interpreter(ch, "set autogold enable");
         }
         break;
 
     case 579:
         if (IS_SET(ch->specials.act, PLR_AUTOSPLIT)) {
-            do_set_flags(ch, "autosplit disable", 0);
+            command_interpreter(ch, "set autosplit disable");
         } else {
-            do_set_flags(ch, "autosplit enable", 0);
+            command_interpreter(ch, "set autosplit enable");
         }
         break;
 
     case 580:
         if (IS_SET(ch->specials.act, PLR_AUTOSAC)) {
-            do_set_flags(ch, "autosac disable", 0);
+            command_interpreter(ch, "set autosac disable");
         } else {
-            do_set_flags(ch, "autosac enable", 0);
+            command_interpreter(ch, "set autosac enable");
         }
         break;
 
     case 581:
         if (IS_SET(ch->specials.act, PLR_AUTOEXIT)) {
-            do_set_flags(ch, "autoexits disable", 0);
+            command_interpreter(ch, "set autoexits disable");
         } else {
-            do_set_flags(ch, "autoexits enable", 0);
+            command_interpreter(ch, "set autoexits enable");
         }
         break;
 
     default:
-        do_set_flags(ch, "", 0);
+        command_interpreter(ch, "set");
 
         break;
     }
@@ -2906,7 +2924,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 {
     char           *type,
                    *field,
-                   *name;
+                   *newfield,
+                   *temp;
 
     dlog("in do_set_flags");
 
@@ -2915,7 +2934,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &type);
-    argument = get_argument(argument, &field);
+    field = skip_spaces(argument);
 
     if (!type) {
         send_to_char("Set, but set what?!?!? type help set for further "
@@ -2970,6 +2989,20 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
            field[strlen(field) - 1] == '\n' ||
            field[strlen(field) - 1] == ' ') {
         field[strlen(field) - 1] = '\0';
+    }
+
+    newfield = strdup(field);
+    if( !newfield ) {
+        Log( "Out of memory in do_set" );
+        return;
+    }
+    temp = newfield;
+
+    temp = get_argument(temp, &field);
+    if(!field) {
+        Log("Strangeness in do_set");
+        free( newfield );
+        return;
     }
 
     if (!strcmp(type, "sound")) {
@@ -3038,8 +3071,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "groupname")) {
-        name = skip_spaces(field);
-        do_group_name(ch, name, 0);
+        do_group_name(ch, newfield, 0);
     } else if (!strcmp(type, "autoexits")) {
         if (strstr(field, "enable")) {
             act("Setting autodisplay exits on.", FALSE, ch, 0, 0, TO_CHAR);
@@ -3124,31 +3156,26 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
             return;
         }
-        if (*field) {
-            /*
-             * set email to field
-             */
-            if (ch->specials.email) {
-                free(ch->specials.email);
-            }
 
-            while( strchr( field, '\n' ) ) {
-                *(strchr( field, '\n' )) = '\0';
-            }
+        /*
+         * set email to field
+         */
+        if (ch->specials.email) {
+            free(ch->specials.email);
+        }
 
-            while( strchr( field, '\r' ) ) {
-                *(strchr( field, '\r' )) = '\0';
-            }
+        while( strchr( field, '\n' ) ) {
+            *(strchr( field, '\n' )) = '\0';
+        }
 
-            ch->specials.email = strdup(field);
-            if (cmd) {
-                write_char_extra(ch);
-                send_to_char("Email address set.\n\r", ch);
-            }
-        } else {
-            if (cmd) {
-                send_to_char("Set email address to what?\n\r", ch);
-            }
+        while( strchr( field, '\r' ) ) {
+            *(strchr( field, '\r' )) = '\0';
+        }
+
+        ch->specials.email = strdup(field);
+        if (cmd) {
+            write_char_extra(ch);
+            send_to_char("Email address set.\n\r", ch);
         }
     } else {
         send_to_char("Unknown type to set.\n\r", ch);
@@ -3372,7 +3399,7 @@ void do_arena(struct char_data *ch, char *argument, int cmd)
     char_to_room(ch, ARENA_ENTRANCE);
     sprintf(buf, "%s appears in the room!\n\r", GET_NAME(ch));
     send_to_room_except(buf, ch->in_room, ch);
-    do_look(ch, "", 0);
+    do_look(ch, NULL, 0);
     return;
 }
 

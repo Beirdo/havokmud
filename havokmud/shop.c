@@ -46,7 +46,7 @@ struct shop_data {
                     close2;     /* When does the shop close? */
 };
 
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;

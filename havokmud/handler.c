@@ -7,7 +7,7 @@
 
 #include "protos.h"
 
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -22,8 +22,6 @@ extern struct dex_app_type dex_app[];
 extern struct zone_data *zone_table;
 
 extern long     SystemFlags;
-
-int             str_cmp2(char *arg1, char *arg2);
 
 int             GoodBlade(struct char_data *ch, int cmd, char *arg,
                           struct obj_data *tobj, int type);
@@ -109,7 +107,7 @@ int isname(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (0 == str_cmp(argv[i], xargv[j])) {
+            if (argv[i] && xargv[j] && !strcasecmp(argv[i], xargv[j])) {
                 xargv[j] = NULL;
                 break;
             }
@@ -161,7 +159,8 @@ int isname2(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (0 == str_cmp2(argv[i], xargv[j])) {
+            if (argv[i] && xargv[j] &&
+                !strncasecmp(argv[i], xargv[j], strlen(argv[i]))) {
                 xargv[j] = NULL;
                 break;
             }
@@ -457,7 +456,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             break;
         default:
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             Log("Unknown apply adjust attempt on a mob in (handler.c, "
                 "affect_modify).");
 #endif
@@ -867,7 +866,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             break;
         default:
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             Log("Unknown apply adjust attempt (handler.c, affect_modify).");
             Log(ch->player.name);
 #endif
@@ -2707,8 +2706,11 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     /*
      * Eliminate spaces and "ignore" words 
      */
-    while (*arg && !found) {
+    while (arg && *arg && !found) {
         arg = skip_spaces(arg);
+        if( !arg ) {
+            break;
+        }
 
         for (i = 0; (name[i] = arg[i]) && (name[i] != ' '); i++) {
             /* 
@@ -2745,7 +2747,7 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
     if (IS_SET(bitvector, FIND_OBJ_EQUIP)) {
         for (found = FALSE, i = 0; i < MAX_WEAR && !found; i++) {
             if (ch->equipment[i] && 
-                str_cmp(name, ch->equipment[i]->name) == 0) {
+                strcasecmp(name, ch->equipment[i]->name) == 0) {
                 *tar_obj = ch->equipment[i];
                 found = TRUE;
             }

@@ -6,13 +6,14 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
 /*
  * external vars 
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -210,7 +211,7 @@ int RawMove(struct char_data *ch, int dir)
         char_to_room(ch, 0);
         send_to_char("Uh-oh.  The ground melts beneath you as you fall into "
                      "the swirling chaos.\n\r", ch);
-        do_look(ch, "\0", 15);
+        do_look(ch, NULL, 15);
         if (IS_SET(ch->player.user_flags, SHOW_EXITS)) {
             act("$c0015-----------------", FALSE, ch, 0, 0, TO_CHAR);
             do_exits(ch, "", 8);
@@ -223,7 +224,7 @@ int RawMove(struct char_data *ch, int dir)
         (!MOUNTED(ch))) {
         char_from_room(ch);
         char_to_room(ch, new_r);
-        do_look(ch, "\0", 15);
+        do_look(ch, NULL, 15);
         if (IS_SET(ch->player.user_flags, SHOW_EXITS)) {
             act("$c0015-----------------", FALSE, ch, 0, 0, TO_CHAR);
             do_exits(ch, "", 8);
@@ -384,7 +385,7 @@ int RawMove(struct char_data *ch, int dir)
         char_from_room(ch);
         char_to_room(ch, new_r);
     }
-    do_look(ch, "\0", 15);
+    do_look(ch, NULL, 15);
     if (IS_SET(to_here->room_flags, DEATH) && !IS_IMMORTAL(ch)) {
         if (MOUNTED(ch)) {
             NailThisSucker(MOUNTED(ch));
@@ -753,7 +754,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
     struct room_direction_data *exitp;
 
     /* a direction was specified */
-    if (*dir) {
+    if (dir && *dir) {
         /* Partial Match */
         if ((door = search_block(dir, dirs, FALSE)) == -1) {    
             send_to_char("That's not a direction.\n\r", ch);
@@ -991,12 +992,23 @@ void do_open(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
     char           *type,
+                   *arg,
                    *dir;
     struct obj_data *obj;
     struct char_data *victim;
     struct room_direction_data *exitp;
 
     dlog("in do_open");
+
+    if( argument ) {
+        arg = strdup(argument);
+        if( !arg ) {
+            Log( "Serious buggerup in open" );
+            return;
+        }
+    } else {
+        arg = NULL;
+    }
 
     argument = get_argument(argument, &type);
     argument = get_argument(argument, &dir);
@@ -1006,8 +1018,8 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                     &obj)) {
+    if (arg && generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                            &obj)) {
         /*
          * this is an object 
          */
@@ -1042,6 +1054,10 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         } else {
             send_to_char("You can't OPEN that.\r\n", ch);
         }
+    }
+
+    if( arg ) {
+        free(arg);
     }
 }
 
@@ -1463,13 +1479,13 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                 char_to_room(ch, to_room);
                 act("$n materializes out of thin air!", FALSE, ch, 0, 0,
                     TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return;
             }
         } else {
             for (door = 0; door <= 5; door++) {
                 if (exit_ok(exitp = EXIT(ch, door), NULL) && exitp->keyword && 
-                    !str_cmp(exitp->keyword, buf)) {
+                    !strcasecmp(exitp->keyword, buf)) {
                     do_move(ch, "", ++door);
                     return;
                 }
@@ -1746,7 +1762,7 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &name);
     if (name) {
-        if (str_cmp(name, "self") == 0) {
+        if (strcasecmp(name, "self") == 0) {
             sprintf(name, "%s", GET_NAME(ch));
         }
 

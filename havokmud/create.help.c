@@ -221,7 +221,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
     }
     
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return (FALSE);
@@ -232,7 +232,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
          */
         for (i = 0; i <= top_of_helpt; i++) {
             minlen = strlen(argument);
-            if (!(strn_cmp(argument, help_index[i].keyword, minlen))) {
+            if (!(strncasecmp(argument, help_index[i].keyword, minlen))) {
                 if (!(hlp = ch->specials.help)) {
                     return (FALSE);
                 }
@@ -290,7 +290,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         }
         for (i = 0; i <= top_of_wizhelpt; i++) {
             minlen = strlen(argument);
-            if (!(strn_cmp(argument, wizhelp_index[i].keyword, minlen))) {
+            if (!(strncasecmp(argument, wizhelp_index[i].keyword, minlen))) {
                 if (!(hlp = ch->specials.help)) {
                     return (FALSE);
                 }
@@ -400,7 +400,7 @@ void UpdateHelpMenu(struct char_data *ch)
 void HelpEdit(struct char_data *ch, char *arg)
 {
     if (ch->specials.hedit == HELP_MAIN_MENU) {
-        if (!*arg || *arg == '\n') {
+        if (!arg || !*arg || *arg == '\n') {
             send_to_char("Please enter a choice from the above.\n\r", ch);
             return;
         }
@@ -829,7 +829,7 @@ void ChangeHelpName(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct help_file_u *hlp;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
         return;
@@ -862,7 +862,7 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->usage) {
             free(hlp->usage);
         }
@@ -898,7 +898,7 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->accumulative) {
             free(hlp->accumulative);
         }
@@ -935,7 +935,7 @@ void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->duration) {
             free(hlp->duration);
         }
@@ -974,7 +974,7 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct help_file_u *hlp;
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || (*arg == '\n'))) {
+    if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
         if (hlp->level) {
             free(hlp->level);
         }
@@ -1013,7 +1013,7 @@ void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->damagetype) {
             free(hlp->damagetype);
         }
@@ -1051,7 +1051,7 @@ void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->saves) {
             free(hlp->saves);
         }
@@ -1119,7 +1119,7 @@ void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         if (hlp->references) {
             free(hlp->references);
         }
@@ -1157,7 +1157,7 @@ void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct help_file_u *hlp;
 
-    if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
+    if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
         return;

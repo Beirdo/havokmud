@@ -20,7 +20,7 @@
  * extern variables
  */
 extern struct zone_data *zone_table;
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -2300,8 +2300,8 @@ void do_read(struct char_data *ch, char *argument, int cmd)
     /*
      * This is just for now - To be changed later.!
      */
-    sprintf(buf, "at %s", argument);
-    do_look(ch, buf, 15);
+    sprintf(buf, "look at %s", argument);
+    command_interpreter(ch, buf);
 }
 
 void do_examine(struct char_data *ch, char *argument, int cmd)
@@ -2313,8 +2313,8 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_examine");
 
-    sprintf(buf, "at %s", argument);
-    do_look(ch, buf, 15);
+    sprintf(buf, "look at %s", argument);
+    command_interpreter(ch, buf);
 
     argument = get_argument(argument, &name);
 
@@ -2330,8 +2330,8 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
         if ((GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) ||
             (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER)) {
             send_to_char("When you look inside, you see:\n\r", ch);
-            sprintf(buf, "in %s", argument);
-            do_look(ch, buf, 15);
+            sprintf(buf, "look in %s", name);
+            command_interpreter(ch, buf);
         }
     }
 }
@@ -2764,15 +2764,14 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     spellcheck = 0;
 
     argument = skip_spaces(argument);
-
-    if (*argument) {
+    if (argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return;
         }
 
         for (i = 0; i <= top_of_helpt; i++) {
-            if (!str_cmp(argument, help_index[i].keyword)) {
+            if (!strcasecmp(argument, help_index[i].keyword)) {
                 rewind(help_fl);
                 fseek(help_fl, help_index[i].pos, 0);
                 *buffer = '\0';
@@ -2886,19 +2885,23 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                  */
                 send_to_char("No remote or exact matches found.\n\r", ch);
                 send_to_char("Try a different query.\n\r", ch);
-                sprintf(buf, "%s is looking for a help on \"%s\". Can someone "
-                             "help %s?", GET_NAME(ch), argument, HMHR(ch));
-                Log(buf);
-                /*
-                 * add query to ADD_HELP
-                 */
-                if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                    Log("Could not open the ADD_HELP-file.\n\r");
-                    return;
+                if( argument ) {
+                    sprintf(buf, "%s is looking for a help on \"%s\". Can "
+                                 "someone help %s?", GET_NAME(ch), argument, 
+                            HMHR(ch));
+                    Log(buf);
+
+                    /*
+                     * add query to ADD_HELP
+                     */
+                    if (!(fl = fopen(NEWHELP_FILE, "a"))) {
+                        Log("Could not open the ADD_HELP-file.\n\r");
+                        return;
+                    }
+                    sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
+                    fputs(buf, fl);
+                    fclose(fl);
                 }
-                sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
-                fputs(buf, fl);
-                fclose(fl);
                 return;
             } 
             
@@ -2908,8 +2911,9 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         
         send_to_char("No remote or exact matches found.\n\r", ch);
         return;
+
+        send_to_char(help, ch);
     }
-    send_to_char(help, ch);
 }
 
 
@@ -2985,7 +2989,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 	}
 
     argument = skip_spaces(argument);
-    if (*argument) {
+    if (argument) {
         if (!wizhelp_index) {
             send_to_char("No wizhelp available.\n\r", ch);
             return;
@@ -2998,7 +3002,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
             minlen = strlen(argument);
 
             if (!(chk =
-                  strn_cmp(argument, wizhelp_index[mid].keyword, minlen))) {
+                  strncasecmp(argument, wizhelp_index[mid].keyword, minlen))) {
                 rewind(wizhelp_fl);
                 fseek(wizhelp_fl, wizhelp_index[mid].pos, 0);
                 *buffer = '\0';
@@ -3933,8 +3937,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
      */
 
     argument = skip_spaces(argument);
-
-    if (!*argument) {
+    if (!argument) {
         send_to_char("You must supply a class!\n\r", ch);
         return;
     }
@@ -4181,7 +4184,7 @@ void do_world(struct char_data *ch, char *argument, int cmd)
                 tbuf);
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
-#if HASH
+#ifdef HASH
     sprintf(buf, "$c000BTotal number of rooms in world: [$c000W%d$c000B]"
                  "$c000w", room_db.klistlen);
 #else
@@ -4919,6 +4922,9 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     }
 
     arg = skip_spaces(arg);
+    if( !arg ) {
+        send_to_char("Which class? (skill [m s c w t d r p k i n])\n\r", ch);
+    }
 
     switch (*arg) {
     case 'w':
@@ -5574,7 +5580,6 @@ void do_glance(struct char_data *ch, char *argument, int cmd)
     } 
 
     send_to_char("Try to glance at someone...", ch);
-    return;
 }
 
 void do_whoarena(struct char_data *ch, char *argument, int cmd)
@@ -5833,7 +5838,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    if (!*arg) {
+    if (!arg || !*arg) {
         /*
          * list the clans
          */

@@ -619,7 +619,7 @@ void load_char_objs(struct char_data *ch)
         return;
     }
 
-    if (str_cmp(st.owner, GET_NAME(ch)) != 0) {
+    if (strcasecmp(st.owner, GET_NAME(ch)) != 0) {
         Log("Hmm.. bad item-file write. someone is losing their objects");
         fclose(fl);
         return;
@@ -650,7 +650,7 @@ void load_char_objs(struct char_data *ch)
             (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
             Log("Char reconnecting after autorent");
         }
-#if NEW_RENT
+#ifdef NEW_RENT
         timegold = (int) ((100 * ((float) time(0) - st.last_update)) /
                    (SECS_PER_REAL_DAY));
 #else
@@ -747,7 +747,7 @@ int reimb_char_objs(struct char_data *ch)
         return (FALSE);
     }
 
-    if (str_cmp(st.owner, GET_NAME(ch)) != 0) {
+    if (strcasecmp(st.owner, GET_NAME(ch)) != 0) {
         Log("Incompatible names in char file and reimb file. Aborting");
         fclose(fl);
         return (FALSE);
@@ -1108,7 +1108,7 @@ void update_obj_file(void)
          * r+b is for Binary Reading/Writing 
          */
         if ((fl = fopen(buf, "r+b")) != '\0' && ReadObjs(fl, &st)) {
-            if (str_cmp(st.owner, player_table[i].name) != 0) {
+            if (strcasecmp(st.owner, player_table[i].name) != 0) {
                 sprintf(buf, "Ack!  Wrong person written into object file!"
                              " (%s/%s)", st.owner, player_table[i].name);
                 Log(buf);
@@ -1512,13 +1512,14 @@ void load_char_extra(struct char_data *ch)
             if( s ) {
                 /* eat leading spaces and trailing carriage return/linefeed */
                 s = skip_spaces(s);
+                if( s ) {
+                    while(strchr(s, '\n')) {
+                        *(strchr(s, '\n')) = '\0';
+                    }
 
-                while(strchr(s, '\n')) {
-                    *(strchr(s, '\n')) = '\0';
-                }
-
-                while(strchr(s, '\r')) {
-                    *(strchr(s, '\r')) = '\0';
+                    while(strchr(s, '\r')) {
+                        *(strchr(s, '\r')) = '\0';
+                    }
                 }
             }
 
