@@ -3845,6 +3845,7 @@ void spell_darktravel(byte level, struct char_data *ch, struct char_data *tmp_ch
 {
 	struct room_data *rp, *nrp, *room;
 	char buf[512];
+	int location = 0, tmp = 0;
 
 	assert(ch);
 	assert((level >= 0) && (level <= ABS_MAX_LVL));
@@ -3905,7 +3906,6 @@ void spell_darktravel(byte level, struct char_data *ch, struct char_data *tmp_ch
 	}
 
 	/* target ok, let's travel */
-	int location =0, tmp = 0;
 	send_to_char("$c0008You step into the shadows and are relocated.\n\r",ch);
 	act("$c0008$n closes $s eyes and steps into the shadows.",FALSE,ch,0,0,TO_ROOM);
 	if(number(1,33) == 33) { /* 3% chance of a mislocate */
