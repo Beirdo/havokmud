@@ -2084,7 +2084,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     if (aff->type <= MAX_EXIST_SPELL) {
                         sprintf(buf, "%sSpell : '%s%s%s (spell number %s%d%s)'",
                                 color1, color2, spells[aff->type - 1],
-                                color1, color2, (aff->type), color1);
+                                color1, color2, aff->type, color1);
                         act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
                         sprintf(buf, "     %sModifies %s%s%s by %s%ld%s points",
@@ -2210,7 +2210,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                         j->obj_flags.value[2]);
                 break;
             case ITEM_SCROLL:
-                sprintf(buf, "Spells : %d, %d, %d, %d",
+            case ITEM_POTION:
+                sprintf(buf, "Spells (level %d): %d, %d, %d",
                         j->obj_flags.value[0], j->obj_flags.value[1],
                         j->obj_flags.value[2], j->obj_flags.value[3]);
                 break;
@@ -2240,11 +2241,6 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "AC-apply : [%d]\n\rFull Strength : [%d]",
                         j->obj_flags.value[0], j->obj_flags.value[1]);
 
-                break;
-            case ITEM_POTION:
-                sprintf(buf, "Spells : %d, %d, %d, %d",
-                        j->obj_flags.value[0], j->obj_flags.value[1],
-                        j->obj_flags.value[2], j->obj_flags.value[3]);
                 break;
             case ITEM_TRAP:
                 sprintf(buf,
