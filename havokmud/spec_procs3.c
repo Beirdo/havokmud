@@ -4093,7 +4093,9 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
       for (x = 0;x < 13;x++) {
 	temp = questitems[x][0];
 	obj = read_object(temp, VIRTUAL);
+	if (obj) {
 
+     /*crashes Here (GH)*/
 	if(isname(arg,obj->name)) {
 	  temp = questitems[x][2];
 	  if (temp <= ch->player.q_points) {
@@ -4112,7 +4114,8 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 	  return TRUE;
 	}
-      }
+}
+   }
       act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
 	  " 'I don't have that item.'",FALSE,ch,0,0,TO_CHAR);
       return TRUE;

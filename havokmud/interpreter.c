@@ -2118,7 +2118,11 @@ if (GET_NAME(d->character))
 	  sprintf(buf, "%s[%s] has connected./n/rLast connected from[%s]"
       	, GET_NAME(d->character), d->host, d->character->specials.hostip);
 
-	  d->character->specials.hostip = d->host;
+
+		if (d->character->specials.hostip)
+		   free(d->character->specials.hostip);
+	  d->character->specials.hostip = strdup(d->host);
+
       log(buf);
       SEND_TO_Q(motd, d);
       SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);

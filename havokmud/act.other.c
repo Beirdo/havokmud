@@ -2591,6 +2591,9 @@ dlog("in do_set_flags");
 	   if (!strcmp(type,"email")) {
 	     if (*field) {
 	       /* set email to field */
+
+			if (ch->specials.email)
+				free(ch->specials.email);
 	       ch->specials.email= strdup(field);
 
 	       if (cmd){
@@ -2604,6 +2607,8 @@ dlog("in do_set_flags");
 	   } else
 	     if(!strcmp(type, "clan")) {
 	       if(*field) {
+			   if (ch->specials.clan)
+			   		free(ch->specials.clan);
 		 ch->specials.clan = strdup(field);
 		 if(cmd==280) {
 		   write_char_extra(ch);
@@ -2690,7 +2695,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 
     if(IS_IMMORTAL(ch)) {
 		if(finger->specials.hostip==NULL)
-		   sprintf(buf,"$c0005HOstIP          : $c0014None");
+		   sprintf(buf,"$c0005HostIP          : $c0014None");
 		 else
 		   sprintf(buf,"$c0005HostIP          : $c0014%-50s",finger->specials.hostip);
 		 strcat(buf,"\n\r");
