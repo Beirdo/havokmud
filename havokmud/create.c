@@ -63,7 +63,7 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg, int 
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
-    if(update < 0 || update > 27)
+    if(update < 0 || update > 28)
        return;
     i = 1<<update;
 
@@ -79,7 +79,7 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg, int 
  send_to_char(buf, ch);
 
  row = 0;
- for(i = 0; i < 28; i++) {
+ for(i = 0; i < 29; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -299,7 +299,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
 
  if(type != ENTER_CHECK) {
     switch(ch->specials.edit) {
-    case CHANGE_TYPE: if(update < 0 || update > 11)
+    case CHANGE_TYPE: if(update < 0 || update > 22)
                          return;
                       else {
                          rp->sector_type = update;
@@ -335,7 +335,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
  send_to_char(buf, ch);
 
  row = 0;
- for(i = 0; i < 12; i++) {
+ for(i = 0; i < 23; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -344,7 +344,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg, int t
     send_to_char(buf, ch);
   }
 
- sprintf(buf, VT_CURSPOS, 20, 1);
+ sprintf(buf, VT_CURSPOS, 22, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to set to, <C/R> to return to main menu.\n\r--> ", ch);
 }

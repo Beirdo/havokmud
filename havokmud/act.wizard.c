@@ -4182,6 +4182,9 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 	char buf2[256];
 	char temp1[128], temp2[128];
 
+	int objn;
+		struct index_data *oi;
+
 	int   zone;
 	char buf[MAX_STRING_LENGTH], zonenum[MAX_INPUT_LENGTH];
 	struct obj_data *obj;
@@ -4302,8 +4305,6 @@ dlog("in do_show");
 			send_to_char("Alas, the report option is only viewable for level 56 and higher.\n\r",ch);
 			return;
 		}
-		int objn;
-		struct index_data *oi;
 
 		only_argument(argument, zonenum);
 		zone = -1;

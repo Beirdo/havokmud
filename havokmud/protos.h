@@ -116,6 +116,7 @@ void do_talk(struct char_data *ch, char *argument, int cmd);
 
 
 /* From act.info.c */
+void do_map(struct char_data *ch, char *argument, int cmd);
 void list_groups(struct char_data *ch);
 void do_command_list(struct char_data *ch, char *arg, int cmd);
 void do_show_skill(struct char_data *ch, char *arg, int cmd);

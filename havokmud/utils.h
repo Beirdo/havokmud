@@ -8,9 +8,13 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #endif
 
+#define URANGE(a, b, c)          ((b) < (a) ? (a) : ((b) > (c) ? (c) : (b)))
+
+
 #define TRUE  1
 
 #define FALSE 0
+
 
 #define LOWER(c) (((c)>='A'  && (c) <= 'Z') ? ((c)+('a'-'A')) : (c))
 

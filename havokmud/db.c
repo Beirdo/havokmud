@@ -46,6 +46,8 @@ long total_mbc=0;
 long total_obc=0;
 long total_connections=0;
 long total_max_players=0;
+
+int map[7][7];
 /*
 **  distributed monster stuff
 */

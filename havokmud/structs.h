@@ -660,6 +660,8 @@ struct obj_data
 #define NO_SPY			BV26 /* spying into this room not possible */
 #define EVER_LIGHT		BV27 /* on Xenon's request, a flag that sets a room to light, regardless of weather/time/place */
 
+#define ROOM_WILDERNESS BV28
+
 /* For 'dir_option' */
 
 #define NORTH          0
@@ -691,6 +693,24 @@ struct obj_data
 #define SECT_UNDERWATER      9
 #define SECT_DESERT          10
 #define SECT_TREE            11
+#define SECT_SEA             12 //New ascii sea
+#define SECT_BLANK			 13
+#define SECT_ROCK_MOUNTAIN   14
+#define SECT_SNOW_MOUNTAIN   15
+#define SECT_RUINS           16
+#define SECT_JUNGLE          17
+#define SECT_SWAMP           18
+#define SECT_LAVA            19
+#define SECT_ENTRANCE        20
+#define SECT_FARM            21
+#define SECT_EMPTY           22
+
+#define SECT_MAX             22
+
+
+
+
+
 
 #define TELE_LOOK            1
 #define TELE_COUNT           2
