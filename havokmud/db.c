@@ -3219,7 +3219,7 @@ void zone_update()
   int to_room = 0;
   struct room_data *room;
   struct obj_data *travelqp, *tmp;
-
+  extern long SystemFlags;
   /* enqueue zones */
 
 	for (i = 0; i <= top_of_zone_table; i++) {
