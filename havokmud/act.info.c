@@ -781,7 +781,9 @@ if (IS_LINKDEAD(i))
       for (j=0; j< MAX_WEAR; j++) {
 	if (i->equipment[j]) {
 	  if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[12] &&
-	      !(j==0 || j==5 || j==6 || j==8 || j==9 || j==11 || j==12 || j==21)
+	      !(j==WEAR_LIGHT || j==WEAR_HEAD || j==WEAR_HANDS ||
+		j==WEAR_SHIELD || j==WEAR_ABOUT || j==WEAR_EAR_R || j==WEAR_EAR_L ||
+		j==WEAR_EYES)
 	      && !IS_IMMORTAL(ch) && (i!=ch) ) {
 	    /* Do nothing */
 	  } else
