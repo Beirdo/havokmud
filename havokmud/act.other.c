@@ -37,6 +37,7 @@ extern struct time_info_data time_info;
 extern char    *spells[];
 extern int      MaxArenaLevel,
                 MinArenaLevel;
+extern int spell_info_count;
 struct char_data *mem_list = 0;
 extern int      top_of_p_table;
 extern struct player_index_element *player_table;
@@ -2362,7 +2363,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
                 TotalMemorized(ch));
         send_to_char(buf, ch);
         send_to_char("Your spellbook holds these spells:\n\r", ch);
-        for (i = 0; *spells[i] != '\n'; i++) {
+        for (i = 0; i < spell_info_count; i++) {
             index = spell_index[i + 1];
             if( index == -1 ) {
                 continue;
