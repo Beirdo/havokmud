@@ -1987,7 +1987,7 @@ Warrior
 
 Thief
 //	plain backstab bonus (lower bonusses other thief types)       //done by gordon
-	successful retreat/flee does a (two?) hide skillcheck, for being hidden right after.
+	successful retreat/flee does a (two?) hide skillcheck, for being hidden right after.  //done by gordon
 
 Druid
 //	iron skin, duration level*2, takes off one tick per damage point taken. damage soaker, ignores resist/suscept/sanc
