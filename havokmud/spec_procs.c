@@ -744,9 +744,11 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 				while(thiefskills[i].level != -1) {
 					if (thiefskills[i].level == x) {
 						sprintf(buf,"[%-2d] %-30s %-15s",thiefskills[i].level,thiefskills[i].name,
-							/* kludged a bit to get rid of the dex bonus to five skills */
+							/* Start Change Jan 22, 2004 Odin
+							   Fixxed theif skills so that only steal shows up with a default level based on dex.*/
 							((IS_SET(ch->skills[thiefskills[i].skillnum].flags,SKILL_KNOWN)) || (!strcmp(thiefskills[i].name,"steal"))) ?
 							(how_good(ch->skills[thiefskills[i].skillnum].learned)):" (not learned)");
+						        /* End change Jan 22, 2004 Odin*/
 						if (IsSpecialized(ch->skills[thiefskills[i].skillnum].special))
 							strcat(buf," (special)");
 						strcat(buf," \n\r");
