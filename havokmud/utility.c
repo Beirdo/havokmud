@@ -3244,7 +3244,6 @@ void traveling_qp(int pulse)
 	qp_patience++; /* 20 secs have passed */
 
 	if(init_counter()<MIN_INIT_TQP) {
-		log("not enough inited zones, extracting");
 		extract_obj(travelqp);
 		return;
 	}
@@ -3262,6 +3261,8 @@ void traveling_qp(int pulse)
 			obj_to_char(qt, ch);
 		}
 		log("carried by player, gained a QT");
+		sprinft(buf,"%s just found a quest token", GET_NAME(ch));
+		qlog(buf);
 		extract_obj(travelqp);
 		return;
 	}
@@ -3293,7 +3294,6 @@ void traveling_qp(int pulse)
 	obj_to_char(travelqp, newch);
 	act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!",FALSE,newch,0,0,TO_ROOM);
 	qp_patience=0;
-	log("travelqp moved");
 
 }
 
