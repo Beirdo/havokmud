@@ -4541,7 +4541,7 @@ return;
 
 
 #define BAHAMUT 45461
-#define BAHAMUT_ARMOR 45495
+#define BAHAMUT_ARMOR 45503
 #define GUARDIAN_SIN 51821
 void specdamage(struct char_data *ch, struct char_data *v)
 {

@@ -2024,6 +2024,13 @@ if (!*argument)
 		 j->max=atol(parmstr);
 		 return;
 	}
+	if (!strcmp(field,"rent"))
+		{
+		 argument = one_argument(argument,parmstr);
+		 j->obj_flags.cost_per_day=atol(parmstr);
+		 return;
+	}
+
 	if (!strcmp(field,"timer"))
 	{
 	 argument = one_argument(argument,parmstr);

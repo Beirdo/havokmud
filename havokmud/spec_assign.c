@@ -64,7 +64,7 @@ void assign_mobiles()
 
   static struct special_proc_entry specials[] = {
 
-    { 1, puff },
+    { 1, TrainingGuild },//puff },
     { 2, Ringwraith },
     { 3, tormentor },
     { 4, Inquisitor},
@@ -1397,7 +1397,7 @@ void assign_mobiles()
  {3959, mermaid }, /* roaming mermaids */
 /* Heximal's new zone */
 	{50998, Deshima },
-
+	//{1    , TrainingGuildTrainingGuild },
 #endif
 
     { -1, NULL },
@@ -1453,7 +1453,7 @@ void assign_objects()
    {45481, thunder_sceptre_two},
    {45492, thunder_black_pill},
    {45493, thunder_blue_pill},
-   {45494, grayswandir},
+   {45504, grayswandir},
 
 /* Temple of Sin */
    {51831, altarofsin },

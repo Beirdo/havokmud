@@ -2467,7 +2467,7 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
 
 	if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
 	  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
-		obj->obj_flags.extra_flags+ITEM_RARE, obj->obj_flags.wear_flags);
+		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
 	else
 	  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
 				obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
@@ -2479,10 +2479,10 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
 
  	if(IS_WEAPON(obj)) {
 		fprintf(f,"%d %d %d %d %d %ld 25 0\n", obj->obj_flags.weight, \
-			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified);
 	} else {
 		fprintf(f,"%d %d %d %d %d %ld 0 0\n", obj->obj_flags.weight, \
-		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified);
 	}
 
 

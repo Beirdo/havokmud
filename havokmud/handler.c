@@ -209,13 +209,14 @@ if (!ch)
   } else if (loc == APPLY_WEAPON_SPELL) {
     return;
   } else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
+	ch_printf(ch,"bitv?%d   mod?%d\n\r",bitv,mod);
     if (add) {
 		/* do em both? this creates odd combinations, may not be the solution */
       SET_BIT(ch->specials.affected_by2, bitv);//mod); /* bitv takes care of the spells fomr cast */
-      SET_BIT(ch->specials.affected_by2, mod); /* mod takes care fo the spells from items */
+      //SET_BIT(ch->specials.affected_by2, mod); /* mod takes care fo the spells from items */
     } else {
       REMOVE_BIT(ch->specials.affected_by2, bitv);//mod);
-      REMOVE_BIT(ch->specials.affected_by2, mod);
+      //REMOVE_BIT(ch->specials.affected_by2, mod);
     }
     return;
   } else {

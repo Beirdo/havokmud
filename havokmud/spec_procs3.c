@@ -4203,8 +4203,8 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 #define GATEKEEPER_KEY 45491
 #define BLACK_PILL 45492
 #define BLUE_PILL 45493
-#define GRAYSWANDIR 45494
-#define BAHAMUT_SKIN 45495
+#define GRAYSWANDIR 45504
+#define BAHAMUT_SKIN 45503
 #define WEST_WING_KEY 45500
 
 #define BAHAMUT 45461

@@ -5571,10 +5571,10 @@ const struct affect_list oedit_list[] = {
 
 
 const struct skillset styleskillset[] = {
-  { "aggressive",        STYLE_AGGRESSIVE,             10},
+  { "standard",          STYLE_STANDARD,          1},
   { "berserked",         STYLE_BERSERKED,        10},
+  { "aggressive",        STYLE_AGGRESSIVE,             10},
   { "defensive",         STYLE_DEFENSIVE,         10},
   { "evasive",           STYLE_EVASIVE,      10},
-  { "standard",          STYLE_STANDARD,          1},
   { "None",				-1					,-1}
 };

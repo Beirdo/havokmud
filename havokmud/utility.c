@@ -4160,6 +4160,7 @@ if (!obj || !ch) {
     ego.. if it is, proceed.. otherwise, deny.
     */
     #if 1
+    if(obj->level!=0) {
    		if((obj->level <= GetMaxLevel(ch)) || IS_IMMORTAL(ch)) {
    			return(TRUE);
    		} else {
@@ -4167,9 +4168,9 @@ if (!obj || !ch) {
 			return(FALSE);
 		}
 
+	}
 
-
-    #else
+    //#else
 
 
 

@@ -142,7 +142,7 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #define GET_RCON(ch)     ((ch)->abilities.con)
 
-#define GET_RCHR(ch)     ((ch)->abilities.chr);
+#define GET_RCHR(ch)     ((ch)->abilities.chr)
 
 #define STRENGTH_APPLY_INDEX(ch) \
         ( ((GET_ADD(ch)==0) || (GET_STR(ch) != 18)) ? GET_STR(ch) :\
@@ -173,6 +173,8 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 #define GET_ZONE(ch)    ((ch)->specials.permissions)
 
 #define GET_EXP(ch)     ((ch)->points.exp)
+
+#define GET_PRAC(ch)     ((ch)->specials.spells_to_learn)
 
 #define GET_HEIGHT(ch)  ((ch)->player.height)
 

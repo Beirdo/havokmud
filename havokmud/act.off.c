@@ -2157,7 +2157,7 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 	extern struct skillset styleskillset[];
 
   	only_argument(argument, style);
-
+	sprintf(buffer,"");
 	if(!*style) { /* If no style, list all styles and how good*/
 		sprintf(buffer,"You currently know the following fighting styles.\n\r");
   		while(styleskillset[x].level != -1) {
@@ -2179,6 +2179,7 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 		ch_printf(ch,"You are currently fighting $c000W%s$c000w.\n\r",fight_styles[ch->style]);
 		return;
 	} else {
+			x=0;
 		while (styleskillset[x].level != -1) {
 			if(is_abbrev(style,styleskillset[x].name) && ch->skills[x+298].learned > 0) {
 				ch_printf(ch,"You change your stance and adopt %s %s style of fighting.\n\r", style[0]=='A'|| style[0]=='E' ? "an": "a", fight_styles[x]);

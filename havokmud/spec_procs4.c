@@ -297,7 +297,148 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 			/* Found no valid victim to switch to, let's continue clobbering this paralyzed vict */
 		}
 	}
+
 }
+
+/*
+#define GET_RSTR(ch)     ((ch)->abilities.str)
+
+#define GET_RADD(ch)     ((ch)->abilities.str_add)
+
+#define GET_RDEX(ch)     ((ch)->abilities.dex)
+
+#define GET_RINT(ch)     ((ch)->abilities.intel)
+
+#define GET_RWIS(ch)     ((ch)->abilities.wis)
+
+#define GET_RCON(ch)     ((ch)->abilities.con)
+
+#define GET_RCHR(ch)     ((ch)->abilities.chr);
+*/
+
+int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	const struct skillset traininglist[] = {
+	  { "hitpoints",    1,      2},
+	  { "movement",  	2,      1},
+	  { "mana",         3,      2},
+
+	  { "constitution",	4,		 10},
+	  { "strength",     5,      10},
+	  { "dexterity",    6,      10},
+	  { "charisma",     7,      5},
+	  { "intelligence", 8,      10},
+	  { "wisdom",       9,      10},
+	  { "None",		    10,	    -1}
+
+	};
+	int x=0, stat=0;
+
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
+
+	if(cmd!=582 && cmd!=59)
+		return(FALSE);
+
+
+
+	if(cmd==582 && !*arg) { //list if no argument
+		ch_printf(ch,"$c000B%-15s        %-3s\n\r------------------------\n\r","Stat","Cost");
+		while(traininglist[x].level!=-1) {
+		   ch_printf(ch,"$c000W %-15s     %-3d\n\r",traininglist[x].name, traininglist[x].level);
+			x++;
+		}
+
+	} else
+		if(cmd==582) { //train
+
+			ch_printf(ch," Lets train your stats\n\r");
+
+			while(traininglist[x].level!=-1) {
+				if(is_abbrev(arg,traininglist[x].name)) {
+					stat= x+1;
+						if(GET_PRAC(ch) - traininglist[x].level < 0) {
+							ch_printf(ch,"You don't have enough practice sessions to learn %s.\n\r",traininglist[x].name);
+							return (TRUE);
+						}
+
+					break;
+				}
+
+				x++;
+
+			}
+
+
+			switch(stat) {
+			 	case 1:
+			 		GET_PRAC(ch) -= traininglist[stat-1].level;
+			 		//GET_MAX_HIT(ch) +=1;
+			 		ch_printf(ch,"Lets train your hitpoints!!!\n\r");
+			 		break;
+			 	case 2:
+				 	GET_PRAC(ch)-= traininglist[stat-1].level;
+					//GET_MAX_MOVE(ch) +=1;
+
+				 	ch_printf(ch,"Lets train your movement!!!\n\r");
+				 	break;
+			 	case 3:
+				 	GET_PRAC(ch)-= traininglist[stat-1].level;
+					//GET_MAX_MANA(ch) +=1;
+
+				 	ch_printf(ch,"Lets train your mana!!!\n\r");
+				 	break;
+			 	case 4:
+				 	if(GET_RCON(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+					 	ch_printf(ch,"Lets train your con!!!\n\r");
+					}
+				 	break;
+			 	case 5:
+				 	if(GET_RSTR(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+				 		ch_printf(ch,"Lets train your strength!!!\n\r");
+					}
+				 	break;
+			 	case 6:
+				 	if(GET_RDEX(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+					 	ch_printf(ch,"Lets train your dex!!!\n\r");
+					}
+					break;
+			 	case 7:
+					if(GET_RCHR(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+					 	ch_printf(ch,"Lets train your Char!!!\n\r");
+					}
+					break;
+
+			 	case 8:
+			 		if(GET_RINT(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+			 			ch_printf(ch,"Lets train your int!!\n\r");
+					}
+				 	break;
+			 	case 9:
+			 		if(GET_RWIS(ch) > 18) {
+						ch_printf(ch,"I cannot train your %s any further.\n\r",traininglist[stat-1].name);
+					} else {
+					 	ch_printf(ch,"Lets train your wis!!\n\r");
+					}
+				 	break;
+			 	default:
+					ch_printf(ch,"Invalid stat!!\n\r");
+					break;
+			}
+
+	}
+
+  }
 
 int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -365,3 +506,4 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 		} /* end for */
 	} /* feh, noone here to harass */
 }
+

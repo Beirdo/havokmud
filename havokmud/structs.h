@@ -226,7 +226,8 @@ struct QuestItem {
 #define CHAR_PRIVATE   BV18//262144
 #define CLAN_LEADER    BV19
 #define NEW_USER       BV20
-
+#define HERO_STATUS    BV21
+#define GHOST          BV22
 
 
 

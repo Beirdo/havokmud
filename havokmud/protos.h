@@ -2231,10 +2231,6 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 
-/* Heximal's zone */
-int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
 
 bool dimd_can_see(int slev, struct char_data *o);
 void dimd_broadcast(char *buf);
@@ -2271,3 +2267,9 @@ long NewExpCap(struct char_data *ch, long total);
 
 int ValidRoom(struct char_data *ch );
 
+/* Spec_procs4.c */
+int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+				/* Heximal's zone */
+int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
