@@ -2315,6 +2315,7 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
+int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeeper, int type);
 
 void do_top10(struct char_data *ch, char *arg, int cmd);
 

@@ -1452,6 +1452,256 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 /* End Tarantis */
 
+/* start shopkeeper .. this to make shops easier to build  -Lennya  20030731*/
+int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeeper, int type)
+{
+	struct room_data *rp;
+	struct obj_data *obj, *cond_ptr[50], *store_obj;
+	char buf[120], itemname[120], newarg[100];
+	float modifier = 1.0;
+	int cost = 0, chr = 1, k, i = 0, stop = 0, num = 1, rnum = 0;
+	int tot_cost = 0, cond_top = 0, cond_tot[50], found=FALSE;
+
+	extern struct str_app_type str_app[];
+
+
+	if(!ch)
+		return(FALSE);
+
+	if(!cmd)
+		return(FALSE);
+
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
+
+	/* define the shopkeeper */
+	if(ch->in_room)
+		rp = real_roomp(ch->in_room);
+	else {
+		log("weirdness in shopkeeper, char not in a room");
+		return(FALSE);
+	}
+
+	if(!rp) {
+		log("weirdness in shopkeeper, char's room does not exist");
+		return(FALSE);
+	}
+
+	/* let's make sure shopkeepers don't get killed or robbed */
+	if(!IS_SET(rp->room_flags,PEACEFUL))
+		SET_BIT(rp->room_flags, i);
+
+	if (cmd !=  59 &&	/* list */
+		cmd !=  56 &&	/* buy */
+		cmd !=  93 &&	/* offer */
+		cmd !=  57)		/* sell */
+		return(FALSE);
+
+	if(!(shopkeeper = get_char_room("shopkeeper",ch->in_room))) {
+		sprintf(buf,"shopkeeper proc is attached to a mob without shopkeeper in its name, in room %d",ch->in_room);
+		log(buf);
+		return(FALSE);
+	}
+
+	if(!shopkeeper) {
+		log("weirdness in shopkeeper, shopkeeper found but not assigned");
+		return(FALSE);
+	}
+
+	if(!IS_NPC(shopkeeper)) {
+		log("weirdness in shopkeeper, shopkeeper is not a mob");
+		return(FALSE);
+	}
+
+	/* players with 14 chr pay avg price */
+	chr = GET_CHR(ch);
+	if(chr < 1)
+		chr = 1;
+	modifier = (float)14/chr;
+
+	/* list */
+	if(cmd == 59) {
+		ch_printf(ch,"This is what %s currently has on store:\n\r\n\r",shopkeeper->player.short_descr);
+		send_to_char("  Count  Item                                       Price\n\r",ch);
+		    send_to_char("$c0008*---------------------------------------------------------*\n\r",ch);
+		obj = shopkeeper->carrying;
+		if(!obj) {
+			send_to_char("$c0008|$c0007        Nothing.                                         $c0008|\n\r",ch);
+		} else {
+
+			for (obj=shopkeeper->carrying; obj; obj = obj->next_content) {
+				if (CAN_SEE_OBJ(ch, obj)) {
+					if (cond_top < 50) {
+						found = FALSE;
+						for (k=0;(k < cond_top && !found); k++) {
+							if (cond_top > 0) {
+								if ((obj->item_number == cond_ptr[k]->item_number) &&
+									(obj->short_description && cond_ptr[k]->short_description &&
+									(!strcmp(obj->short_description,cond_ptr[k]->short_description)))) {
+									cond_tot[k] += 1;
+									found=TRUE;
+								}
+							}
+						}
+						if (!found) {
+							cond_ptr[cond_top] = obj;
+							cond_tot[cond_top] = 1;
+							cond_top+=1;
+						}
+					} else {
+						cost = (int) obj->obj_flags.cost * modifier;
+						if(cost <0)
+							cost = 0;
+						cost += 1000; /* Trader's fee = 1000 */
+						ch_printf(ch,"$c0008|$c0007    1   %-41s %6d $c0008|\n\r",obj->short_description, cost);
+					}
+				}
+			}
+
+			if (cond_top) {
+				for (k=0; k<cond_top; k++) {
+					if (cond_tot[k] > 1) {
+						cost = (int) cond_ptr[k]->obj_flags.cost * modifier;
+						if(cost <0)
+							cost = 0;
+						cost += 1000; /* Trader's fee = 1000 */
+						ch_printf(ch,"$c0008|$c0007 %4d   %-41s %6d $c0008|\n\r",cond_tot[k],cond_ptr[k]->short_description, cost);
+					} else {
+						cost = (int) cond_ptr[k]->obj_flags.cost * modifier;
+						if(cost <0)
+							cost = 0;
+						cost += 1000; /* Trader's fee = 1000 */
+						ch_printf(ch,"$c0008|$c0007    1   %-41s %6d $c0008|\n\r",cond_ptr[k]->short_description, cost);
+					}
+				}
+			}
+		}
+		send_to_char("$c0008*---------------------------------------------------------*\n\r",ch);
+	}
+
+	/* buy */
+	if(cmd == 56) {
+		only_argument(arg,itemname);
+		if(!*itemname) {
+			send_to_char("Buy what?\n\r",ch);
+			return(TRUE);
+		} else {
+			if ((num = getabunch(itemname,newarg))!=FALSE) {
+				strcpy(itemname,newarg);
+			}
+			if (num < 1)
+				num = 1;
+			rnum = 0;
+			stop = 0;
+			i = 1;
+
+			while (i <= num && stop == 0) {
+				if (obj = get_obj_in_list_vis(ch, itemname, shopkeeper->carrying)) {
+					cost = (int) obj->obj_flags.cost * modifier;
+					if(cost <0)
+						cost = 0;
+					cost += 1000; /* Trader's Fee is 1000 */
+
+					if(GET_GOLD(ch) < cost) {
+						send_to_char("Alas, you cannot afford that.\n\r",ch);
+						stop = 1;
+					} else if ((IS_CARRYING_N(ch) + 1) > (CAN_CARRY_N(ch))) {
+						ch_printf(ch,"%s : You can't carry that many items.\n\r", obj->short_description);
+						stop = 1;
+					} else if ((IS_CARRYING_W(ch) + (obj->obj_flags.weight)) > CAN_CARRY_W(ch)) {
+						ch_printf(ch,"%s : You can't carry that much weight.\n\r", obj->short_description);
+						stop = 1;
+					} else {
+						obj_from_char(obj);
+						obj_to_char(obj, ch);
+						GET_GOLD(ch) -= cost;
+						GET_GOLD(shopkeeper) += cost;
+						store_obj = obj;
+						i++;
+						tot_cost += cost;
+						rnum++;
+					}
+				} else if (rnum > 0) {
+					ch_printf(ch,"Alas, %s only seems to have %d %ss on store.\n\r",shopkeeper->player.short_descr, rnum, itemname);
+					stop = 1;
+				} else {
+					ch_printf(ch,"Alas, %s doesn't seem to stock any %ss..\n\r",shopkeeper->player.short_descr, itemname);
+					stop = 1;
+
+				}
+			}
+		}
+
+		if(rnum == 1) {
+			ch_printf(ch,"You just bought %s for %d coins.\n\r",store_obj->short_description, cost);
+			act("$n buys $p from $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+		} else if(rnum > 1) {
+			ch_printf(ch,"You just bought %d items for %d coins.\n\r", rnum, tot_cost);
+			act("$n buys some stuff from $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+		}
+	}
+
+	/* sell */
+	if(cmd == 57) {
+		only_argument(arg,itemname);
+		if(!*itemname) {
+			send_to_char("Sell what?\n\r",ch);
+			return(TRUE);
+		} else {
+			if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
+				cost = (int) obj->obj_flags.cost/(3*modifier);
+				if(cost < 400) {
+					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeeper->player.short_descr);
+					return(TRUE);
+				} else {
+					if(GET_GOLD(shopkeeper) < cost) {
+						ch_printf(ch, "Alas, %s cannot afford that right now.\n\r",shopkeeper->player.short_descr);
+						return(TRUE);
+					} else {
+						obj_from_char(obj);
+						obj_to_char(obj, shopkeeper);
+						ch_printf(ch,"You just sold %s for %d coins.\n\r",obj->short_description, cost);
+						act("$n sells $p to $N.", FALSE, ch, obj, shopkeeper, TO_ROOM);
+						GET_GOLD(ch) += cost;
+						GET_GOLD(shopkeeper) -= cost;
+						return(TRUE);
+					}
+				}
+			} else {
+				ch_printf(ch,"Alas, you don't seem to have any %ss to sell.\n\r",itemname);
+				return(TRUE);
+			}
+		}
+	}
+
+	/* offer */
+	if(cmd == 93) {
+		only_argument(arg,itemname);
+		if(!*itemname) {
+			ch_printf(ch,"What would you like to offer to %s?\n\r",shopkeeper->player.short_descr);
+			return(TRUE);
+		} else {
+			if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
+				cost = (int) obj->obj_flags.cost/(3*modifier);
+				if(cost < 400) {
+					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeeper->player.short_descr);
+					return(TRUE);
+				} else {
+					ch_printf(ch,"%s is willing to pay you %d coins for %s.\n\r",shopkeeper->player.short_descr,cost,obj->short_description);
+					return(TRUE);
+				}
+			} else {
+				ch_printf(ch,"You don't seem to have any %ss.\n\r",itemname);
+				return(TRUE);
+			}
+		}
+	}
+	return(TRUE);
+}
+
+
+/* end shopkeeper */
+
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	extern const struct skillset weaponskills[];

@@ -1412,6 +1412,7 @@ void assign_mobiles()
 
 /* King's Grove */
 	{702, DruidGuildMaster },
+	{703, shopkeeper },
 
 
 

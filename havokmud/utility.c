@@ -5501,9 +5501,13 @@ float arg_to_float (char *arg)
 		number = (number * 10) + tmp;
 		i++;
 	}
-	if(arg[i] != '.') { /* this aint no float, mate! */
-		log("is not a floating number");
-		return(0.0);
+	if(arg[i]) {
+		if(arg[i] == '\0') { /* just an integer, not a float */
+			return(number);
+		}
+		if(arg[i] != '.') { /* this aint no float, mate! */
+			return(0.0);
+		}
 	}
 	i++;
 	while(isdigit(arg[i])) {

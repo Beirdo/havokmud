@@ -801,14 +801,16 @@ if (!CheckEgoGive(ch,vict,obj)) {
 	return;
       }
 
-      if ((1+IS_CARRYING_N(vict)) > CAN_CARRY_N(vict))	{
-	act("$N seems to have $S hands full.", 0, ch, 0, vict, TO_CHAR);
-	return;
-      }
-      if (obj->obj_flags.weight+IS_CARRYING_W(vict)>CAN_CARRY_W(vict))   {
-	act("$E can't carry that much weight.", 0, ch, 0, vict, TO_CHAR);
-	return;
-      }
+	if(!IS_IMMORTAL(ch)) {  /* I hate it when I want to give stuff to mobiles/players and they cannot carry it  -Lennya */
+		  if ((1+IS_CARRYING_N(vict)) > CAN_CARRY_N(vict))	{
+		act("$N seems to have $S hands full.", 0, ch, 0, vict, TO_CHAR);
+		return;
+		  }
+		  if (obj->obj_flags.weight+IS_CARRYING_W(vict)>CAN_CARRY_W(vict))   {
+		act("$E can't carry that much weight.", 0, ch, 0, vict, TO_CHAR);
+		return;
+		  }
+	}
 
       if ( (IS_OBJ_STAT(obj, ITEM_NODROP) ) && ( !IS_IMMORTAL(ch) ) ) {
    	if (singular(obj)){

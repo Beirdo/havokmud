@@ -822,8 +822,8 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 			if(ch->equipment[i]->obj_flags.cost_per_day != -1) {
 				st.objects[st.number].wearpos=i+1;
 			} else {
-				sprintf(buf, "unrentable (%s) equipped, not storing the wear position", ch->equipment[i]->name);
-				log(buf);
+//				sprintf(buf, "unrentable (%s) equipped, not storing the wear position", ch->equipment[i]->name);
+//				log(buf);
 			}
 		if (delete) {
 			obj_to_store(unequip_char(ch, i), &st, ch, delete);
