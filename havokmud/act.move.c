@@ -1767,7 +1767,7 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &name);
     if (name) {
         if (strcasecmp(name, "self") == 0) {
-            sprintf(name, "%s", GET_NAME(ch));
+            name = GET_NAME(ch);
         }
 
         if (!(leader = get_char_room_vis(ch, name))) {
