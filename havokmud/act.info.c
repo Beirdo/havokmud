@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "version.h"
 #define NEWHELP_FILE      "ADD_HELP"    /* New help to add (In db.h too) */
 
 /*
