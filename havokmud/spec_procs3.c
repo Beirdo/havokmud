@@ -4156,6 +4156,7 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
 #define BLACK_PILL 45492
 #define BLUE_PILL 45493
 #define GRAYSWANDIR 45494
+#define BAHAMUT_SKIN 45495
 
 #define BAHAMUT 45400
 #define TMK_GUARD_ONE 45401
@@ -5238,7 +5239,7 @@ room_data *rp, int type)
 	return(FALSE);
 }
 
-int bahamut(struct char_data *ch, struct char_data *vict)
+int bahamut_prayer(struct char_data *ch, struct char_data *vict)
 {
   char buf[256];
   int hitp = 0;
@@ -5615,3 +5616,89 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 
 	return(TRUE);
 }
+
+int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+  int r_num = 0, test = 0, percent = 0;
+  struct obj_data *object, *bahamut;
+  char itemname[256],itemtype[80],hidetype[80],buf[256];
+
+	if (cmd == 330)
+	{
+		if (MOUNTED(ch)) {
+        		send_to_char("Not from this mount you cannot!\n\r",ch);
+        		return(TRUE);
+			}
+
+		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+			if (!HasClass(ch,CLASS_BARBARIAN|CLASS_WARRIOR|CLASS_RANGER)) {
+        			send_to_char("What do you think you are, A tanner?\n\r",ch);
+        			return(TRUE);
+			}
+		}
+
+		bahamut = get_obj_vis(ch, "corpse corpse of Bahamut, The Ancient Platinum Dragon is");
+
+	      	argument_interpreter(arg, itemname, itemtype);
+
+		if (!*itemname) {
+ 			send_to_char("Tan what?\n\r",ch);
+ 			return(TRUE);
+		}
+
+		if (!*itemtype) {
+ 			send_to_char("I see that, but what do you wanna make?\n\r",ch);
+ 			return(TRUE);
+		}
+
+  		if (!(object= get_obj_in_list_vis(ch, itemname,real_roomp(ch->in_room)->contents)))
+    		{
+      			send_to_char("Where did that carcass go?\n\r",ch);
+      			return(TRUE);
+		}
+
+		if (bahamut != object) return(FALSE);
+
+        	if (object->affected[0].modifier != 0 && object->affected[1].modifier != 0) 
+		{
+	
+ 			percent = number(1,101); /* 101% is a complete failure */
+
+			if (ch->skills && ch->skills[SKILL_TAN].learned && GET_POS(ch) > POSITION_SLEEPING) {
+ 				if (percent > ch->skills[SKILL_TAN].learned) {
+   					object->affected[1].modifier=0; /* make corpse unusable for another tan */
+					sprintf(buf,"You hack at %s but manage to only destroy the hide.\n\r", object->short_description);
+   					send_to_char(buf,ch);
+					sprintf(buf,"%s tries to skins %s for it's hide, but destroys it.", GET_NAME(ch),object->short_description);
+   					act(buf,TRUE, ch, 0, 0, TO_ROOM);
+   					LearnFromMistake(ch, SKILL_TAN, 0, 95);
+   					WAIT_STATE(ch, PULSE_VIOLENCE*3);
+  					return(TRUE);
+ 				}
+				else 
+				{
+           				if ((r_num = real_object(BAHAMUT_SKIN)) >= 0)
+           				{
+	   					object->affected[1].modifier=0; /* make corpse unusable for another tan */
+						sprintf(buf, "It seems you are able to make some very stylish body armor.");
+						send_to_char(buf, ch);
+             					sprintf(buf, "%s fashions some very fine body armor out of the %s.", GET_NAME(ch), object->short_description);
+						act(buf,TRUE, ch, 0, 0, TO_ROOM);
+						object = read_object(r_num, REAL);
+             					obj_to_char(object,ch);
+						return(TRUE);
+           				}
+				}
+			}
+			else return(FALSE);			
+		}
+		else
+		{
+      			send_to_char("Sorry, nothing left of the carcass to make an item with.\n\r",ch);
+      			return(TRUE);
+		}
+	}
+
+return(FALSE);
+}
+

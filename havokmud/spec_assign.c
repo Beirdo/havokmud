@@ -1447,6 +1447,7 @@ void assign_rooms()
 
     /*Thunder Mountain Keep */
     {45450, Thunder_Fountain},
+    {46378, bahamut_home},
 
     {31860, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */

@@ -1466,7 +1466,8 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 #endif
 
 /*Assigns for Thunder Mountain Keep */
-int bahamut(struct char_data *ch, struct char_data *vict);
+int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int bahamut_prayer(struct char_data *ch, struct char_data *vict);
 int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

@@ -1511,7 +1511,7 @@ if (affected_by_spell(v,SPELL_ANTI_MAGIC_SHELL) && IsMagicSpell(type)) {
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
   /*This was added solely for Bahamut.  Its a cludge, but it works.*/
-  if (mob_index[ch->nr].virtual == BAHAMUT) bahamut(ch, v); 
+  if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v); 
 
   if (dam >= 0) {
     GET_HIT(v)-=dam;
