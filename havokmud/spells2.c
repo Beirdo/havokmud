@@ -3437,41 +3437,39 @@ void cast_insect_growth( byte level, struct char_data *ch, char *arg,
 
 
 
-void cast_creeping_death( byte level, struct char_data *ch, char *arg,
-     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+void cast_creeping_death( byte level, struct char_data *ch, char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  char *p;
-  int i;
+	char *p;
+	int i;
 
+	switch(type) {
+		case SPELL_TYPE_SPELL:
+		case SPELL_TYPE_SCROLL:
 
-  switch(type) {
-  case SPELL_TYPE_SPELL:
-  case SPELL_TYPE_SCROLL:
+		/* get the argument, parse it into a direction */
+		for (;*arg==' ';arg++);
+			if (!*arg) {
+				send_to_char("you must supply a direction!\n\r", ch);
+				return;
+			}
+			p = fname(arg);
+			for (i=0;i<6;i++) {
+				if (strncmp(p,dirs[i],strlen(p))==0) {
+					i++;
+					break;
+				}
+				if (i == 6) {
+					send_to_char("you must supply a direction!\n\r", ch);
+					return;
+				}
+			}
+			spell_creeping_death(level, ch, 0, i);
+		break;
 
-    /* get the argument, parse it into a direction */
-    for (;*arg==' ';arg++);
-    if (!*arg) {
-      send_to_char("you must supply a direction!\n\r", ch);
-      return;
-    }
-    p = fname(arg);
-    for (i=0;i<6;i++) {
-      if (strncmp(p,dirs[i],strlen(p))==0) {
-	i++;
-	break;
-      }
-      if (i == 6) {
-	send_to_char("you must supply a direction!\n\r", ch);
-	return;
-      }
-    }
-
-    spell_creeping_death(level, ch, 0, i);
-    break;
-  default:
-    log("serious screw-up in creeping_death.");
-    break;
-  }
+		default:
+		log("serious screw-up in creeping_death.");
+		break;
+	}
 }
 
 void cast_commune( byte level, struct char_data *ch, char *arg,

@@ -229,6 +229,149 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 	return(FALSE);
 }
 
+int greed_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+
+	if (cmd == 60) { /* drop */
+   		act("Just when $n is about to drop something, $e seems to change $s mind.", FALSE, ch, 0, 0, TO_ROOM);
+        act("Drop something, with all these filthy thieves around? Better not, they're bound to steal it!",FALSE,ch,0,0,TO_CHAR);
+        return (TRUE);
+	}
+	return(FALSE);
+}
+
+int lag_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+	char buf[MAX_STRING_LENGTH +30];
+
+//	if (IS_NPC(ch) || IS_IMMORTAL(ch))
+//		return(FALSE);
+
+	if (cmd) { /* if a player enters ANY command, they'll experience two rounds of lag */
+		if (IS_NPC(ch) || IS_IMMORTAL(ch))
+			return(FALSE);
+   		act("$n yawns and stretches $s muscles, such activity!", FALSE, ch, 0, 0, TO_ROOM);
+        act("Yawning, you decide it's time to put in a bit of effort.",FALSE,ch,0,0,TO_CHAR);
+        act("Though you sure are entitled to some rest after this.",FALSE,ch,0,0,TO_CHAR);
+   		WAIT_STATE(ch, PULSE_VIOLENCE*2);
+   		return(FALSE);
+	}
+}
+
+int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *t, *next;
+	struct room_data *rp;
+	struct obj_data *co, *o;
+
+	if (cmd)
+		return(FALSE);
+
+	if (check_peaceful(ch,0)) {
+		act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
+		extract_char(ch);
+		return(TRUE);
+	}
+
+	if (ch->specials.fighting && IS_SET(ch->specials.act,ACT_SPEC)) {  /* kill */
+		t = ch->specials.fighting;
+		if (t->in_room == ch->in_room) {
+			act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
+			act("You are engulfed by $n, and are quickly disassembled",FALSE,ch,0,t,TO_VICT);
+			act("$N is quickly reduced to a bloody pile of bones by $n",FALSE,ch,0,t,TO_NOTVICT);
+			GET_HIT(ch) -= GET_HIT(t);
+			die(t,NULL);
+			/* find the corpse and destroy it */
+			rp = real_roomp(ch->in_room);
+			if (!rp)
+				return(FALSE);
+			for (co = rp->contents; co; co = co->next_content) {
+				if (IS_CORPSE(co))  {  /* assume 1st corpse is victim's */
+					while (co->contains) {
+						o = co->contains;
+						obj_from_obj(o);
+						obj_to_room(o, ch->in_room);
+					}
+					extract_obj(co);  /* remove the corpse */
+				}
+			}
+		}
+		if (GET_HIT(ch) < 0) {
+			act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
+			extract_char(ch);
+			return(TRUE);
+		}
+		return(TRUE);
+	}
+
+	/* the generic is the direction of travel */
+	if (number(0,1)==0) {  /* move */
+		log("creep should try to move");
+		if (!ValidMove(ch, ch->generic)) {
+			log("no valid move");
+			act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
+			extract_char(ch);
+			return(FALSE);
+		} else {
+			log("move called for creeping death");
+//			do_move(ch, "\0", ch->generic);
+			return(FALSE);
+		}
+	} else {
+		log("creep not moving, let em flee");
+		/* make everyone with any brains flee */
+		for (t = real_roomp(ch->in_room)->people; t; t = next) {
+			next = t->next_in_room;
+			if (t != ch) {
+//				if (!saves_spell(t, SAVING_PETRI)) {
+					do_flee(t, "", 0);
+//				}
+			}
+		}
+		log("all in room had chance to flee, looking for target");
+		/* find someone in the room to flay */
+		for (t = real_roomp(ch->in_room)->people; t; t = next) {
+			if (t)
+				log("found a mobile");
+			else
+				log("no mobiles found in room??");
+			next = t->next_in_room;
+			if (!IS_IMMORTAL(t) && t != ch /* && number(0,2)==0 */ && IS_SET(ch->specials.act,ACT_SPEC)) {
+				log("these are killable. let's eat 'em");
+				act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
+				act("You are engulfed by $n, and are quickly disassembled.",FALSE,ch,0,t,TO_VICT);
+				act("$N is quickly reduced to a bloody pile of bones by $n.",FALSE,ch,0,t,TO_NOTVICT);
+				GET_HIT(ch) -= GET_HIT(t);
+				die(t,NULL);
+				/* find the corpse and destroy it */
+				rp = real_roomp(ch->in_room);
+				if (!rp)
+					return(FALSE);
+				for (co = rp->contents; co; co = co->next_content) {
+					if (IS_CORPSE(co))  {  /* assume 1st corpse is victim's */
+						while (co->contains) {
+							o = co->contains;
+							obj_from_obj(o);
+							obj_to_room(o, ch->in_room);
+						}
+						extract_obj(co);  /* remove the corpse */
+					}
+				}
+				if (GET_HIT(ch) < 0) {
+					act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
+					extract_char(ch);
+					return(TRUE);
+				}
+				break;  /* end the loop */
+			}
+		}
+		log("finished finding targets");
+	}
+}
+
 int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	struct char_data *vict, *next, *i;

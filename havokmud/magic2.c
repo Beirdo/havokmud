@@ -57,7 +57,7 @@ void spell_resurrection(byte level, struct char_data *ch,
 	should be charmed and follower ch
 	*/
 
-      if (IsImmune(victim, IMM_CHARM) || IsResist(victim, IMM_CHARM)) {
+      if (IsImmune(victim, IMM_CHARM) || IsResist(victim, IMM_CHARM) || (GetMaxLevel(victim)>50)) {
 	act("$n says 'Thank you'", FALSE, ch, 0, victim, TO_ROOM);
 
       } else if(too_many_followers(ch)){

@@ -1526,6 +1526,8 @@ int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj
 int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int guardian_sin(struct char_data *ch, struct char_data *vict);
+int lag_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int greed_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pride_disabler(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pride_remover_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pride_remover_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

@@ -548,157 +548,140 @@ void do_put(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_put");
 
-  argument_interpreter(argument, arg1, arg2);
+	argument_interpreter(argument, arg1, arg2);
 
-  if (*arg1) {
-    if (*arg2) {
+	if (*arg1) {
+		if (*arg2) {
+			if (getall(arg1,newarg)==TRUE) {
+				num = -1;
+				strcpy(arg1,newarg);
+			} else if ((p = getabunch(arg1,newarg))!='\0') {
+				num = p;
+				strcpy(arg1,newarg);
+			} else {
+				num = 1;
+			}
 
-      if (getall(arg1,newarg)==TRUE) {
-	num = -1;
-	strcpy(arg1,newarg);
-      } else if ((p = getabunch(arg1,newarg))!='\0') {
-	num = p;
-	strcpy(arg1,newarg);
-      } else {
-	num = 1;
-      }
-
-      if (!strcmp(arg1,"all")) {
-      bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,
-             ch, &tmp_char, &sub_object);
-
-       if(sub_object){
-         if(IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED))
-           {send_to_char("But its closed.\n\r",ch);
-            return;
-           }
-
-     /*put all bag*/
-         for(tmp_object = ch->carrying;
-             tmp_object;
-             tmp_object = next_object){
-             next_object = tmp_object->next_content;
-        if (IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
-            sprintf(buffer,"%s : CURSED!\n\r",tmp_object->short_description);
-            send_to_char(buffer,ch);
-            }else{
-        if(tmp_object == sub_object);
-            else{
-              if((tmp_object->obj_flags.weight +
-                 sub_object->obj_flags.weight)
-                   > sub_object->obj_flags.value[0] - 1)
-		{
-            sprintf(buffer,"%s : It won't fit.\n\r",tmp_object->short_description);
-                  send_to_char(buffer,ch);
-                  /*return;*/}
-           else{
-           sprintf(buffer,"%s : OK\n\r",tmp_object->short_description);
-           send_to_char(buffer,ch);
-           obj_from_char(tmp_object);
-           obj_to_obj(tmp_object,sub_object);
-            }/*end else*/
-           } /*end if bag = tmp_obj if */
-          }/*end Cursed else*/
-        }/*end for*/
-	 act("$n tries to fit as much stuff as $e can into $p."
-	     , FALSE, ch, sub_object, 0, TO_ROOM);
-	 return;
-       }
-	/*end all*/
-      } else {
-	while (num != 0) {
+			if (!strcmp(arg1,"all")) {
+				bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,ch, &tmp_char, &sub_object);
+				if(sub_object) {
+					if(IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED)) {
+						send_to_char("But its closed.\n\r",ch);
+						return;
+					}
+					/*put all bag*/
+					for(tmp_object = ch->carrying; tmp_object; tmp_object = next_object) {
+						next_object = tmp_object->next_content;
+						if (IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
+							sprintf(buffer,"%s : CURSED!\n\r",tmp_object->short_description);
+							send_to_char(buffer,ch);
+						} else {
+							if(tmp_object == sub_object);
+							else {
+								if((tmp_object->obj_flags.weight + sub_object->obj_flags.weight) > sub_object->obj_flags.value[0] - 1) {
+									sprintf(buffer,"%s : It won't fit.\n\r",tmp_object->short_description);
+									send_to_char(buffer,ch);
+									/*return;*/
+								} else {
+									sprintf(buffer,"%s : OK\n\r",tmp_object->short_description);
+									send_to_char(buffer,ch);
+									obj_from_char(tmp_object);
+									/* 'put all bag' weight bug -Lennya 20030404 */
+									if (sub_object->carried_by)
+										IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(tmp_object);
+									obj_to_obj(tmp_object,sub_object);
+								}/*end else*/
+							} /*end if bag = tmp_obj if */
+						}/*end Cursed else*/
+					}/*end for*/
+					act("$n tries to fit as much stuff as $e can into $p.",FALSE,ch,sub_object,0,TO_ROOM);
+					return;
+				}
+			/*end all*/
+			} else {
+				while (num != 0) {
 #if 1
-	  bits = generic_find(arg1, FIND_OBJ_INV,
-			      ch, &tmp_char, &obj_object);
+					bits = generic_find(arg1, FIND_OBJ_INV, ch, &tmp_char, &obj_object);
 #else
-	  obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
+					obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
 #endif
 
-	  if (obj_object) {
-	    if (IS_OBJ_STAT(obj_object,ITEM_NODROP)) {
-	      if (singular(obj_object))
-		send_to_char
-		  ("You can't let go of it, it must be CURSED!\n\r", ch);
-	      else
-		send_to_char
-		  ("You can't let go of them, they must be CURSED!\n\r", ch);
-	      return;
-	    }
-	    bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,
-				ch, &tmp_char, &sub_object);
-	    if (sub_object) {
-	      if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
-		if (!IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED)) {
-		  if (obj_object == sub_object) {
-		    if (singular(obj_object))
-		      send_to_char("You attempt to fold it into itself, but fail.\n\r", ch);
-		    else
-		      send_to_char("You attempt to fold them inside out, but fail.\n\r", ch);
-
-		    return;
-		  }
-		  if (((sub_object->obj_flags.weight) +
-		       (obj_object->obj_flags.weight)) <
-		      (sub_object->obj_flags.value[0])) {
-		    act("You put $p in $P",TRUE, ch, obj_object, sub_object, TO_CHAR);
-		    if (bits==FIND_OBJ_INV) {
-		      obj_from_char(obj_object);
-
-		      /* make up for above line */
-		      if (sub_object->carried_by)
-			IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(obj_object);
-
-		      obj_to_obj(obj_object, sub_object);
-		    } else {
-	/*This isn't  obj_from_room(obj_object);
-	  used.	      obj_to_obj(obj_object, sub_object);  */
-		    }
-
-		    act("$n puts $p in $P",TRUE, ch, obj_object, sub_object, TO_ROOM);
-		    num--;
-		  } else {
-		    if (singular(sub_object))
-		      send_to_char("It won't fit.\n\r", ch);
-		    else
-		      send_to_char("They won't fit.\n\r", ch);
-		    num = 0;
-		  }
-		} else {
-		  if (singular(obj_object))
-		    send_to_char("It seems to be closed.\n\r", ch);
-		  else
-		    send_to_char("They seem to be closed.\n\r", ch);
-		  num = 0;
-		}
-	      } else {
-		sprintf(buffer,"%s is not a container.\n\r", sub_object->short_description);
-		send_to_char(buffer, ch);
-		num = 0;
-	      }
-	    } else {
-	      sprintf(buffer, "You don't have the %s.\n\r", arg2);
-	      send_to_char(buffer, ch);
-	      num = 0;
-	    }
-	  } else {
-	    if ((num > 0) || (num == -1)) {
-	      sprintf(buffer, "You don't have the %s.\n\r", arg1);
-	      send_to_char(buffer, ch);
-	    }
-	    num = 0;
-	  }
-	}
+					if (obj_object) {
+						if (IS_OBJ_STAT(obj_object,ITEM_NODROP)) {
+							if (singular(obj_object))
+								send_to_char("You can't let go of it, it must be CURSED!\n\r", ch);
+							else
+								send_to_char("You can't let go of them, they must be CURSED!\n\r", ch);
+							return;
+						}
+						bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,ch, &tmp_char, &sub_object);
+						if (sub_object) {
+							if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+								if (!IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED)) {
+									if (obj_object == sub_object) {
+										if (singular(obj_object))
+											send_to_char("You attempt to fold it into itself, but fail.\n\r", ch);
+										else
+											send_to_char("You attempt to fold them inside out, but fail.\n\r", ch);
+										return;
+									}
+									if ((sub_object->obj_flags.weight + obj_object->obj_flags.weight) < (sub_object->obj_flags.value[0])) {
+										act("You put $p in $P",TRUE, ch, obj_object, sub_object, TO_CHAR);
+										if (bits==FIND_OBJ_INV) {
+											obj_from_char(obj_object);
+											/* make up for above line */
+											if (sub_object->carried_by)
+												IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(obj_object);
+											obj_to_obj(obj_object,sub_object);
+										} else {
+				/*This isn't used			obj_from_room(obj_object);
+											obj_to_obj(obj_object, sub_object);  */
+										}
+										act("$n puts $p in $P",TRUE, ch, obj_object, sub_object, TO_ROOM);
+										num--;
+									} else {
+										if (singular(sub_object))
+											send_to_char("It won't fit.\n\r", ch);
+										else
+											send_to_char("They won't fit.\n\r", ch);
+										num = 0;
+									}
+								} else {
+									if (singular(obj_object))
+										send_to_char("It seems to be closed.\n\r", ch);
+									else
+										send_to_char("They seem to be closed.\n\r", ch);
+									num = 0;
+								}
+							} else {
+								sprintf(buffer,"%s is not a container.\n\r", sub_object->short_description);
+								send_to_char(buffer, ch);
+								num = 0;
+							}
+						} else {
+							sprintf(buffer, "You don't have the %s.\n\r", arg2);
+							send_to_char(buffer, ch);
+							num = 0;
+						}
+					} else {
+						if ((num > 0) || (num == -1)) {
+							sprintf(buffer, "You don't have the %s.\n\r", arg1);
+							send_to_char(buffer, ch);
+						}
+						num = 0;
+					}
+				}
 #if   NODUPLICATES
-      do_save(ch, "", 0);
+				do_save(ch, "", 0);
 #endif
-      }
-    } else {
-      sprintf(buffer, "Put %s in what?\n\r", arg1);
-      send_to_char(buffer, ch);
-    }
-  } else {
-    send_to_char("Put what in what?\n\r",ch);
-  }
+			}
+		} else {
+			sprintf(buffer, "Put %s in what?\n\r", arg1);
+			send_to_char(buffer, ch);
+		}
+	} else {
+		send_to_char("Put what in what?\n\r",ch);
+	}
 }
 
 int newstrlen(char *p) {

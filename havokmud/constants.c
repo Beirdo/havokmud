@@ -137,7 +137,7 @@ const char *spell_wear_off_msg[] = {
   "spell 124 please report.",
   "spell 125 please report.",
   "spell 126 please report.",
-  "spell 127 please report.",
+  "Your head clears and you feel you can shape your spell energies again.",
   "spell 128 please report.",
   "The bond breaks, and your animal friends go their own way.",
   "The bond breaks, and your animal friends go their own way.",
@@ -440,7 +440,7 @@ const char *spell_wear_off_room_msg[] = {
   "spell 124 please report.",
   "spell 125 please report.",
   "spell 126 please report.",
-  "spell 127 please report.",
+  "", /* no message for creep wearing off */
   "spell 128 please report.",
   "", /*Animal Summon One*/
   "", /*Animal Summon Two*/
@@ -750,7 +750,7 @@ const char *spell_wear_off_soon_msg[] = {
   "spell 124 please report.",
   "spell 125 please report.",
   "spell 126 please report.",
-  "spell 127 please report.",
+  "Your head begins to clear, but your mind isn't up to shaping spell energies yet.",
   "spell 128 please report.",
   "You feel your bond to the animals begin to slip.",
   "You feel your bond to the animals begin to slip.",
@@ -1060,7 +1060,7 @@ const char *spell_wear_off_soon_room_msg[] = {
   "spell 124 please report.",
   "spell 125 please report.",
   "spell 126 please report.",
-  "spell 127 please report.",
+  "", /* no message for creeping death */
   "spell 128 please report.",
   "",
   "",

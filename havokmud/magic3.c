@@ -935,63 +935,53 @@ void spell_insect_growth(byte level, struct char_data *ch,
 
 #define CREEPING_DEATH 39
 
-void spell_creeping_death(byte level, struct char_data *ch,
-  struct char_data *victim, int dir)
+void spell_creeping_death(byte level, struct char_data *ch, struct char_data *victim, int dir)
 {
-  struct affected_type af;
-  struct char_data *cd;
+	char buf[254];
+	struct affected_type af;
+	struct char_data *cd;
 
-  if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
-    send_to_char("You can't cast this spell indoors!\n\r",ch);
-    return;
-  }
+	if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+		send_to_char("You can't cast this spell indoors!\n\r",ch);
+		return;
+	}
 
+	if (GetMaxLevel(ch) < IMPLEMENTOR) {
+		send_to_char("Spell disabled.",ch);
+		return;
+	}
 
-if (GetMaxLevel(ch) < IMPLEMENTOR) {
-	send_to_char("Spell disabled.",ch);
-	return;
-}
+	/* obj is really the direction that the death wishes to travel in */
 
+	cd = read_mobile(CREEPING_DEATH, VIRTUAL);
+	if (!cd) {
+		send_to_char("None available\n\r", ch);
+		return;
+	}
 
+	char_to_room(cd, ch->in_room);
+	cd->points.max_hit += (number(1,4)*100)+600;
+	cd->points.hit = cd->points.max_hit;
 
-  /* obj is really the direction that the death wishes to travel in */
-
-  cd = read_mobile(CREEPING_DEATH, VIRTUAL);
-  if (!cd) {
-    send_to_char("None available\n\r", ch);
-    return;
-  }
-
-  char_to_room(cd, ch->in_room);
-  cd->points.max_hit += (number(1,4)*100)+600;
-
-  cd->points.hit = cd->points.max_hit;
-
-  act("$n makes a horrid coughing sound", FALSE, ch, 0, 0, TO_ROOM);
-  send_to_char("You feel an incredibly nasty feeling inside\n\r", ch);
-
-  act("A huge gout of poisonous insects spews forth from $n's mouth!",
-      FALSE, ch, 0, 0, TO_ROOM);
-  send_to_char("A huge gout of insects spews out of your mouth!\n\r",ch);
-
-  act("The insects coalesce into a solid mass - $n", FALSE, ch, 0, 0, TO_ROOM);
-
-  cd->generic = dir;
-
-  /* move the creeping death in the proper direction */
-
-  do_move(cd, "\0", dir);
-
-if (GetMaxLevel(ch) < LOW_IMMORTAL)
-    GET_POS(ch) = POSITION_STUNNED;
-
-  af.type      = SPELL_CREEPING_DEATH;
-  af.duration  = 2;
-  af.modifier  = 10500;
-  af.location  = APPLY_SPELLFAIL;
-  af.bitvector = 0;
-  affect_to_char(ch, &af);
-
+	act("$n makes a horrid coughing sound.", FALSE, ch, 0, 0, TO_ROOM);
+	send_to_char("You feel an incredibly nasty feeling inside.\n\r", ch);
+	act("A huge gout of poisonous insects spews forth from $n's mouth!",FALSE, ch, 0, 0, TO_ROOM);
+	send_to_char("A huge gout of insects spews out of your mouth!\n\r",ch);
+	act("The insects coalesce into a solid mass - the creeping death.", FALSE, ch, 0, 0, TO_ROOM);
+	cd->generic = dir;
+	/* move the creeping death in the proper direction */
+	do_move(cd, "\0", dir);
+	act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
+	act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
+	if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+		GET_POS(ch) = POSITION_STUNNED;
+		af.type      = SPELL_CREEPING_DEATH;
+		af.duration  = 2;
+		af.modifier  = 10500;
+		af.location  = APPLY_SPELLFAIL;
+		af.bitvector = 0;
+		affect_to_char(ch, &af);
+	}
 }
 
 
