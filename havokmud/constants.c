@@ -3096,6 +3096,23 @@ const char *pc_class_types[] = {
 	"\n"
 };
 
+const char *class_names[] = {
+    "Magic User",
+	"Cleric",
+	"Warrior",
+	"Thief",
+	"Druid",
+	"Monk",
+	"Barbarian",
+	"Sorcerer",
+	"Paladin",
+	"Ranger",
+	"Psionist",
+	"Bard",
+	"\n"
+};
+
+
 const char *npc_class_types[] = {
 	"Normal",
 	"Undead",
@@ -5795,4 +5812,22 @@ const struct clan clan_list[MAX_CLAN] = {
   {-1, "Null", "Null", "Null", 3003 }
 };
 
+
+
+const char *languagelist[] = {
+  "???",
+  "Common",
+  "Elvish",
+  "Halfling",
+  "Dwarvish",
+  "Orcish",
+  "Giantish",
+  "Ogre",
+  "Gnomish",
+  "All",
+  "GodLike"
+};
+
+
+char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
 //NOne, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Dragon's Dawn, Returns

@@ -1585,7 +1585,7 @@ void construct_who_list(char *buf, int cmd,
     struct char_data *person;
     struct descriptor_data *d;
     char levels[40]="", classes[20]="";
-    char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps"};
+    extern char *classname[];
     char buffer[MAX_STRING_LENGTH],tbuf[MAX_STRING_LENGTH];
     int i,total,classn,count,color_cnt=0; long bit;
 

@@ -270,7 +270,7 @@ if (!receptionist && forcerent) {
 	}
       if(discount==100) {
         sprintf(buf,"$n quivers in fear and then offers you to stay for free.");
-	  	cost->total_cost=0;
+	  	cost->total_cost=1;
 	  	act(buf,FALSE,receptionist,0,ch,TO_VICT);
 
 	  }

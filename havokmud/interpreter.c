@@ -1716,8 +1716,7 @@ if(strlen(name) > MAX_NAME_LENGTH)
   return(0);
 }
 
-char
-*classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
+extern char *classname[];
 char *Sex[] = {"Neutral","Male","Female"};
 /* deal with newcomers and other non-playing sockets */
 int pc_num_class(int clss);

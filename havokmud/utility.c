@@ -4902,6 +4902,66 @@ int str_cmp2(char *arg1, char *arg2)
   return (1);
   return(0);
 }
+
+
+int CheckSquare(struct char_data *ch, int dir)  {
+	struct room_data *rm;
+	int room=0;
+
+	if(dir==0 || dir==2) { // go east and check
+		if((real_roomp(ch->in_room)->dir_option[1])) {
+			room=real_roomp(ch->in_room)->dir_option[1]->to_room;
+			if((real_roomp(room)->dir_option[dir])) {
+				room=real_roomp(room)->dir_option[dir]->to_room;
+				if((real_roomp(room)->dir_option[3])) {
+					room=real_roomp(room)->dir_option[3]->to_room;
+					return room;
+				}
+			}
+		}
+		if((real_roomp(ch->in_room)->dir_option[3])) {
+			room=real_roomp(ch->in_room)->dir_option[3]->to_room;
+			if((real_roomp(room)->dir_option[dir])) {
+				room=real_roomp(room)->dir_option[dir]->to_room;
+				if((real_roomp(room)->dir_option[1])) {
+					room=real_roomp(room)->dir_option[1]->to_room;
+					return room;
+				}
+			}
+		}
+	}
+
+
+
+	if(dir==1 || dir==3) { //go north and check
+		if((real_roomp(ch->in_room)->dir_option[0])) {
+			room=real_roomp(ch->in_room)->dir_option[0]->to_room;
+			if((real_roomp(room)->dir_option[dir])) {
+				room=real_roomp(room)->dir_option[dir]->to_room;
+				if((real_roomp(room)->dir_option[2])) {
+					room=real_roomp(room)->dir_option[2]->to_room;
+					return room;
+				}
+			}
+		}
+		if((real_roomp(ch->in_room)->dir_option[2])) {
+			room=real_roomp(ch->in_room)->dir_option[2]->to_room;
+			if((real_roomp(room)->dir_option[dir])) {
+				room=real_roomp(room)->dir_option[dir]->to_room;
+				if((real_roomp(room)->dir_option[0])) {
+					room=real_roomp(room)->dir_option[0]->to_room;
+					return room;
+				}
+			}
+		}
+	}
+
+
+	return NOWHERE;
+
+}
+
+
 /* Edit Fast rewriten by Greg Hovey(GH)
    makes an exit to a new room and back
 */
@@ -4913,7 +4973,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 	char buf[255];
 	struct zone_data *zd;
 	struct room_data *rm=0, *new_rm= 0;
-
+	int square = 0;
 	if (GetMaxLevel(ch) < 53 || !rpp || !ch->desc ||
 			!IS_SET(ch->player.user_flags,FAST_AREA_EDIT))
 		return(FALSE);
@@ -4928,6 +4988,35 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 		send_to_char("Sorry, you are not authorized to edit this zone. Get one assigned to you.\n\r", ch);
 		return(TRUE);
 	}
+
+
+
+	if(IS_SET(ch->player.user_flags,FAST_MAP_EDIT)) {
+		square = CheckSquare(ch, dir);
+
+		if(square!=NOWHERE) {
+			sprintf(buf,"exit %d 0 0 %d",dir,square);
+			do_edit(ch,buf,0);  //make exit in desired direction..
+
+			char_from_room(ch);
+			char_to_room(ch,square);
+			dir = opdir(dir);
+
+			sprintf(buf,"exit %d 0 0 %d",dir,current);
+			do_edit(ch,buf,0);  //make exit in desired direction..
+			send_to_char("Reconnecting to existing room\n\r",ch);
+
+			new_rm = real_roomp(ch->in_room);
+			new_rm->room_flags = ROOM_WILDERNESS;
+
+			do_look(ch,"",15);
+
+			return(TRUE);
+
+		}
+	}
+
+
 
 	x = zd->top;
 	zd = zone_table+rm->zone;
