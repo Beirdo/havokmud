@@ -1779,6 +1779,7 @@ void show_menu(struct descriptor_data *d) {
 	char buf[100];
 	  char bufx[1000];
 	  char classes[50];
+	  char mainclass[50];
 
 	sprintf(classes,"");
 	for(bit = 0; bit <= NECROMANCER_LEVEL_IND;bit++) {
@@ -1786,34 +1787,15 @@ void show_menu(struct descriptor_data *d) {
 		  strcat(classes,classname[bit]);
 		}
 	}
-
 	if(!(strcmp(classes,"")))
-	  sprintf(classes,"None");
-#if 0
-	sprintf(bufx, "Welcome to Havoks Character Creation Screen!!\n\r");
-	strcat(bufx, " $c0015_________________________________________\n\r");
-	sprintf(buf, "/\\  $c0009%-15s$c0015\\\n\r",GET_NAME(d->character));
-	strcat(bufx, buf);
-	strcat(bufx, "\\_|                                        |\n\r");
-	sprintf(buf, "  |  1.$c0012Sex$c0015[$c0011%-7s$c0015%-1s2.$c0012Color$c0015[$c0011%s$c0015]       |   O\n\r"
-			,Sex[GET_SEX(d->character)],"]"
-			,((IS_SET(d->character->player.user_flags,USE_ANSI)) ? "X" : " "));
-	strcat(bufx, buf);
-	strcat(bufx, "  |                                        |   O\n\r");
-	sprintf(buf, "  |  3.$c0012Race$c0015[$c0011%-12s$c0015%s4.$c0012Class$c0015[$c0011%-6s$c0015]  |   *\n\r"
-			,RaceName[GET_RACE(d->character)],"]", classes);
-	strcat(bufx, buf);
-	strcat(bufx, "-=|                                        |==>0////O\n\r");
-	if(!GET_CON(d->character) || GET_CON(d->character)==0)
-		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]       |   *\n\r");
-	 else
-		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]       |   *\n\r");
-	strcat(bufx, "  |                                        |   O\n\r");
-	strcat(bufx, "  |              D.$c0012Done$c0015                    |O\n\r");
-	strcat(bufx, "  |    ____________________________________|\n\r");
-	strcat(bufx, "   \\_/____________________________________/\n\r");
-	strcat(bufx, "Please pick the number you'd like to change:\n\r");
-#else
+	  sprintf(classes,"None Selected");
+
+	sprintf(mainclass,"");
+	if(d->character->specials.remortclass) { // remort == 0 means none picked
+		strcat(mainclass,classname[(d->character->specials.remortclass - 1)]);
+	}
+	if(!(strcmp(mainclass,"")))
+	  sprintf(mainclass,"None Selected");
 
 sprintf(bufx,"$c0009-=$c0015Havok Character Creation Menu [%s]$c0009=-\n\r\n\r",GET_NAME(d->character));
 
@@ -1836,22 +1818,22 @@ if (GET_RACE(d->character) != 0) {
 sprintf(buf,"$c00154) $c0012Class.[$c0015%s$c0012]\n\r",classes);
 strcat(bufx, buf);
 
-if(!GET_CON(d->character) || GET_CON(d->character)==0)
-	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015None Picked$c0012]\n\r");
- else
-	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015Done$c0012]\n\r");
+sprintf(buf,"$c00155) $c0012Main Class.[$c0015%s$c0012]\n\r",mainclass);
+strcat(bufx, buf);
 
-sprintf(buf,"$c00156) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r", (GET_ALIGNMENT(d->character)?AlignDesc(GET_ALIGNMENT(d->character)):"None"));
+
+if(!GET_CON(d->character) || GET_CON(d->character)==0)
+	strcat(bufx,"$c00156) $c0012Character Stats.[$c0015None Picked$c0012]\n\r");
+ else
+	strcat(bufx,"$c00156) $c0012Character Stats.[$c0015Done$c0012]\n\r");
+
+sprintf(buf,"$c00157) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r", (GET_ALIGNMENT(d->character)?AlignDesc(GET_ALIGNMENT(d->character)):"None"));
 strcat(bufx, buf);
 
 
 strcat(bufx,"$c0015D) $c0012Done!\n\r\n\r");
 
 strcat(bufx,"$c0011Please pick an option: \n\r");
-
-
-
-#endif
 
 	send_to_char(bufx,d->character);
 }
@@ -1864,7 +1846,7 @@ void nanny(struct descriptor_data *d, char *arg)
   char bufx[1000];
   char temp[256];
   char *s;
-  int player_i, count=0, oops=FALSE, index=0;
+  int player_i, count=0, oops=FALSE, index=0, chosen=0;
   char tmp_name[20];
   struct char_file_u tmp_store;
   struct char_data *tmp_ch;
@@ -1874,6 +1856,7 @@ void nanny(struct descriptor_data *d, char *arg)
   extern int plr_tick_count;
   extern long total_connections;
   extern long total_max_players;
+  extern const char *class_names[];
   void do_look(struct char_data *ch, char *argument, int cmd);
   void load_char_objs(struct char_data *ch);
   int load_char(char *name, struct char_file_u *char_element);
@@ -1920,6 +1903,22 @@ void nanny(struct descriptor_data *d, char *arg)
 			return;
       	    break;
       	  case '5':
+			if (d->character->player.class !=0) {
+				SEND_TO_Q("\n\rSelect your main class from the options below.\n\r",d);
+				for(chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
+					if(HasClass(d->character, pc_num_class(chosen))) {
+						sprintf(bufx, "[%2d] %s\n\r",chosen, class_names[chosen]);
+						send_to_char(bufx, d->character);
+					}
+				}
+				SEND_TO_Q("\n\rMain Class :", d);
+				STATE(d) = CON_MCLASS;
+			} else
+				SEND_TO_Q("\nPlease select a class first.\n\r",d);
+
+      	  	return;
+      	  	break;
+      	  case '6':
       	  	d->character->reroll=20;
 			if (d->character->player.class !=0) {
 			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
@@ -1931,7 +1930,7 @@ void nanny(struct descriptor_data *d, char *arg)
 			} else SEND_TO_Q("\nPlease select a class first.\n\r",d);
       	    return;
       	    break;
-		case '6':
+		case '7':
 
 			sprintf(bufx,"Your alignment is an indication of how well or badly you have morally\n\r"
 					"conducted yourself in the game. It ranges numerically, from -1000\n\r"
@@ -1976,6 +1975,12 @@ void nanny(struct descriptor_data *d, char *arg)
 				return;
 				break;
 			}
+			if(d->character->specials.remortclass <= 0){
+				SEND_TO_Q("Please enter a valid main class.",d);
+				return;
+				break;
+			}
+
 			if(GET_SEX(d->character)==0){
 				SEND_TO_Q("Please enter a proper sex.",d);
 				return;
@@ -2672,6 +2677,40 @@ case CON_PRESS_ENTER:
 	 SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
 	 STATE(d) = CON_RMOTD;
          break;
+
+	case CON_MCLASS :
+	{
+		int pick = 0;
+
+		for (; isspace(*arg); arg++);
+
+		d->character->specials.remortclass = 0;
+
+		pick = atoi(arg);
+
+		if(HasClass(d->character, pc_num_class(pick))) {
+			d->character->specials.remortclass = pick + 1;
+			STATE(d) = CON_CREATION_MENU;
+			show_menu(d);
+		} else {
+			SEND_TO_Q("\n\rInvalid class picked.\n\r", d);
+			d->character->specials.remortclass = 0;
+			SEND_TO_Q("\n\rSelect your main class from the options below.\n\r",d);
+			for(chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
+				if(HasClass(d->character, pc_num_class(chosen))) {
+					sprintf(bufx, "[%2d] %s\n\r",chosen, class_names[chosen]);
+					send_to_char(bufx, d->character);
+				}
+			}
+			SEND_TO_Q("\n\rMain Class :", d);
+			STATE(d) = CON_MCLASS;
+
+		}
+		break;
+	}
+
+
+
 
   case CON_QCLASS :
 {

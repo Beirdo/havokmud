@@ -106,6 +106,8 @@ struct char_file_u_new
 	int m_deaths;
 	long m_kills;
 
+	int remortclass;
+
 };
 #endif
 

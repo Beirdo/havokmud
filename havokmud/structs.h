@@ -1592,6 +1592,8 @@ struct char_file_u
 	int m_deaths;
 	long m_kills;
 
+	int remortclass;
+
 };
 
 /* ***********************************************************************
@@ -1756,6 +1758,7 @@ struct txt_q
 #define CON_HELP_EDITING    35
 #define CON_EMAILREG            36
 #define CON_TFD_EDITING    37
+#define CON_MCLASS 38
 
 struct snoop_data
 {
