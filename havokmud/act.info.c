@@ -2557,7 +2557,7 @@ char *GetLevelTitle(struct char_data *ch) {
 	} else {
 		/* determine the highest xp value gained level */
 		exp = GET_EXP(ch);
-		for (i=1;i<=CLASS_COUNT;i++) {
+		for (i=0;i<=CLASS_COUNT;i++) {
 			if (HasClass(ch, i)) {
 				if (titles[i][GET_LEVEL(ch, i)].exp >= high) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
