@@ -6709,8 +6709,8 @@ dlog("in do_setsound");
 	}
 }
 
-#define GOODIE_START 718 //3931
-#define GOODIE_BAG   720 //3960
+#define GOODIE_START 3931
+#define GOODIE_BAG   3960
 void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
