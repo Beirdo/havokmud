@@ -45,7 +45,7 @@ void            identd_test(struct sockaddr_in in_addr);
 #define STATE(d) ((d)->connected)
 
 #if defined(__CYGWIN__)
-  static _Sigprocmask( int how, int mask ) {
+  static int _Sigprocmask( int how, int mask ) {
     sigset_t newset=mask, oldset;
     int ccode = sigprocmask( how, &newset, &oldset );
     return ( ccode < 0 )? ccode : oldset;
