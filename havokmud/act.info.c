@@ -2693,6 +2693,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
     int             i,
                     match,
+                    toomany,
                     possible;
     char            buf[256],
                     buffer[MAX_STRING_LENGTH],
@@ -2717,6 +2718,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
     match = -1;
     possible = 0;
+    toomany = 0;
 
     /* Look for an exact match */
     for (i = 0; i <= top_of_helpt && match == -1; i++) {
@@ -2729,7 +2731,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     if( match == -1 ) {
         *buffer = '\0';
 
-        for (i = 0; i <= top_of_helpt; i++) {
+        for (i = 0; i <= top_of_helpt && !toomany; i++) {
             keywordtopic = skip_spaces(skip_word(help_index[i].keyword));
             if (is_abbrev(argument, help_index[i].keyword) ||
                 is_abbrev(argument, keywordtopic) ||
@@ -2739,49 +2741,37 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 if (!possible) {
                     match = i;
                 }
-
-                if (possible > 10) {
-                    send_to_char("Too many matches found. Please be more "
-                                 "specific.\n\r", ch);
-                    send_to_char("If you wish to see a listing of all help "
-                                 "topics in a particular category, try: \n\r"
-                                 "help <topic> list\n\r\n\r", ch);
-                    send_to_char("No exact match found. Possible matches "
-                                 "are:\n\r\n\r", ch);
-                    send_to_char(buffer, ch);
-                    return;
-                }
                 possible++;
+
                 sprintf(buf, "help %s\n\r", help_index[i].keyword);
+
+                if(strlen(buffer) + strlen(buf) <= MAX_STRING_LENGTH - 2) {
+                    strcat(buffer, buf);
+                } else {
+                    toomany = 1;
+                }
             }
-
-            if(strlen(buffer) + strlen(buf) > MAX_STRING_LENGTH - 2) {
-                send_to_char("Your help request produced too many returns, "
-                             "please try to narrow it down.\n\r", ch);
-                send_to_char(buffer, ch);
-                send_to_char("\n\rPlease specify. Only exact matches will "
-                             "work.\n\r", ch);
-                return;
-            } 
-
-            strcat(buffer, buf);
         }
     } 
 
     if( possible > 1 ) {
         /* We found several close matches */
-        send_to_char("No exact match found. Possible matches are:\n\r\n\r",
+        if( toomany ) {
+            send_to_char("Your help request produced too many returns, "
+                         "please try to narrow it down.\n\r", ch);
+        }
+
+        send_to_char("No exact match found.  Please specify which one you "
+                     "wanted.\n\r"
+                     "Only exact matches will work.  Possible matches are:\n\r",
                      ch);
-        send_to_char(buffer, ch);
-        send_to_char("\n\rPlease specify. Only exact matches will work.\n\r",
-                     ch);
+        page_string(ch->desc, buffer, 1);
         return;
     }
 
     if( possible ) {
         /* we found exactly one close match, warn that it's a close match */
-        send_to_char("No exact match found.  Possible match is:\n\r\n\r",
-                     ch);
+        send_to_char("No exact match found.  Possible match is:\n\r\n\r", ch);
     }
 
     if( !possible && match == -1 ) {
@@ -2824,7 +2814,6 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         }
 
         strcat(buffer, buf);
-        strcat(buffer, "\n\r");
     }
 
     page_string(ch->desc, buffer, 1);
