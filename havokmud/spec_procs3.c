@@ -4994,3 +4994,146 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 
 return(0);
 }
+
+int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+  char buf[MAX_INPUT_LENGTH];
+  struct obj_data *i;
+  struct obj_data *obj;
+  int pillrnum = 0;
+  int has_pill = 0;
+  int r_num = 0;
+  extern int gLightLevel;
+
+  	if (cmd == 12) /*Eat*/
+	{
+		only_argument(arg,buf);
+
+        	if(!(obj = get_obj_in_list_vis(ch,buf,ch->carrying)))  {
+	                act("You can't find it!",FALSE,ch,0,0,TO_CHAR);
+        	        return (TRUE);
+        	}
+
+		pillrnum = real_object(BLUE_PILL);
+		for (i = ch->carrying; i; i = i->next_content) {
+			if (has_pill != 1) {
+				if (i->item_number == pillrnum) has_pill = 1;
+				else has_pill = 0;
+	                }
+		}
+
+		if (has_pill == 1)
+		{
+			if (obj->item_number != pillrnum) return(FALSE);
+
+	        	act("$n eats $p",TRUE,ch,obj,0,TO_ROOM);
+			act("You eat the $o.",FALSE,ch,obj,0,TO_CHAR);
+			extract_obj(obj);
+
+			if (time_info.hours > 6)
+			{	
+				if (time_info.hours < 20)
+				{
+				if ((r_num = real_object(PEN_MIGHT)) >= 0) {
+					obj = read_object(r_num, REAL);
+					obj_to_char(obj, ch);
+					send_to_char("Elamin's Pen of Might bursts out of thin air and lands in your hands.\n\r", ch);
+					act("Elamin's Pen of Might bursts out of thin air and lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
+				}
+				}
+				else
+				{
+				send_to_char("You realize too late that you chose the wrong pill.\n\r", ch);
+				act("$n realizes too late that they chose the wrong pill as they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+				GET_HIT(ch) = -1;
+				die(ch, '\0');
+				}
+			}
+			else
+			{
+				send_to_char("You realize too late that you chose the wrong pill.\n\r", ch);
+				act("$n realizes too late that they chose the wrong pill as they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+				GET_HIT(ch) = -1;
+				die(ch, '\0');
+			}
+		return(TRUE);
+		}
+
+	}
+
+	return(FALSE);
+}	
+
+int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+
+  char buf[MAX_INPUT_LENGTH];
+  struct obj_data *i;
+  struct obj_data *obj;
+  int pillrnum = 0;
+  int has_pill = 0;
+  int r_num = 0;
+  extern int gLightLevel;
+
+  	if (cmd == 12) /*Eat*/
+	{
+		only_argument(arg,buf);
+
+        	if(!(obj = get_obj_in_list_vis(ch,buf,ch->carrying)))  {
+	                act("You can't find it!",FALSE,ch,0,0,TO_CHAR);
+        	        return (TRUE);
+        	}
+
+		pillrnum = real_object(BLACK_PILL);
+		for (i = ch->carrying; i; i = i->next_content) {
+			if (has_pill != 1) {
+				if (i->item_number == pillrnum) has_pill = 1;
+				else has_pill = 0;
+	                }
+		}
+
+		if (has_pill == 1)
+		{
+			if (obj->item_number != pillrnum) return(FALSE);
+
+	        	act("$n eats $p",TRUE,ch,obj,0,TO_ROOM);
+			act("You eat the $o.",FALSE,ch,obj,0,TO_CHAR);
+			extract_obj(obj);
+
+			if (time_info.hours < 7)
+			{
+				if ((r_num = real_object(PEN_MIGHT)) >= 0) {
+					obj = read_object(r_num, REAL);
+					obj_to_char(obj, ch);
+					send_to_char("Elamin's Pen of Might bursts out of thin air and lands in your hands.\n\r", ch);
+					act("Elamin's Pen of Might bursts out of thin air and lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
+				}
+
+			}
+			else
+			{
+				if (time_info.hours > 19)
+				{
+				if ((r_num = real_object(PEN_MIGHT)) >= 0) {
+					obj = read_object(r_num, REAL);
+					obj_to_char(obj, ch);
+					send_to_char("Elamin's Pen of Might bursts out of thin air and lands in your hands.\n\r", ch);
+					act("Elamin's Pen of Might bursts out of thin air and lands in $n's hands.", FALSE, ch, 0, 0, TO_ROOM);
+				}
+				}
+				else
+				{
+				send_to_char("You realize too late that you chose the wrong pill.\n\r", ch);
+				act("$n realizes too late that they chose the wrong pill as they fall to the ground.", FALSE, ch, 0, 0, TO_ROOM);
+				GET_HIT(ch) = -1;
+				die(ch,'\0');
+				}
+			}
+			return(TRUE);
+		}
+
+	}
+
+	return(FALSE);
+}				

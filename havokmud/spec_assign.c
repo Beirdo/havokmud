@@ -1368,6 +1368,12 @@ void assign_objects()
     {35001, GoodBlade},
     {35002, NeutralBlade},
 #endif
+
+/*Thunder Mountain Keep Objects*/
+   {45492, thunder_black_pill},
+   {45493, thunder_blue_pill},
+/*End Thunder Mountain Keep Objects*/
+
     { -1, NULL },
   };
 
