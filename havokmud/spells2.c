@@ -394,6 +394,7 @@ void cast_heroes_feast(int level, struct char_data *ch, char *arg,
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_WAND:
     case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_POTION:
     case SPELL_TYPE_STAFF:
         spell_heroes_feast(level, ch, 0, 0);
         break;
