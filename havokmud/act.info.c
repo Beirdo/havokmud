@@ -20,7 +20,7 @@
  * extern variables
  */
 extern struct zone_data *zone_table;
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -4181,7 +4181,7 @@ void do_world(struct char_data *ch, char *argument, int cmd)
                 tbuf);
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
-#if HASH
+#ifdef HASH
     sprintf(buf, "$c000BTotal number of rooms in world: [$c000W%d$c000B]"
                  "$c000w", room_db.klistlen);
 #else

@@ -2849,7 +2849,7 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
               char *arg, int cmd)
 {
-#if EASY_LEVELS
+#ifdef EASY_LEVELS
     if (GET_LEVEL(ch, Class) > 0 && cmd == GAIN) {
         /* 
          * for now.. so as not to give it away 

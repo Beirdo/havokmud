@@ -650,7 +650,7 @@ void load_char_objs(struct char_data *ch)
             (!IS_IMMORTAL(ch) || ch->invis_level <= 58)) {
             Log("Char reconnecting after autorent");
         }
-#if NEW_RENT
+#ifdef NEW_RENT
         timegold = (int) ((100 * ((float) time(0) - st.last_update)) /
                    (SECS_PER_REAL_DAY));
 #else

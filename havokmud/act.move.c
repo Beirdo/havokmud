@@ -13,7 +13,7 @@
 /*
  * external vars 
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;

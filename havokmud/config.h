@@ -69,7 +69,7 @@
 #define USE_EGOS
 
 /* logs all mob command sent to command_interpreter */
-#undef LOG_MOB
+#define LOG_MOB
 
 
 /* This will add a bit more info to the logs */

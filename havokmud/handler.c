@@ -7,7 +7,7 @@
 
 #include "protos.h"
 
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -455,7 +455,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             break;
         default:
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             Log("Unknown apply adjust attempt on a mob in (handler.c, "
                 "affect_modify).");
 #endif
@@ -865,7 +865,7 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
             break;
         default:
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             Log("Unknown apply adjust attempt (handler.c, affect_modify).");
             Log(ch->player.name);
 #endif

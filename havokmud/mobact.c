@@ -8,7 +8,7 @@
 
 extern struct char_data *character_list;
 extern struct index_data *mob_index;
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -129,7 +129,7 @@ void MobHunt(struct char_data *ch)
     int             res,
                     k;
 
-#if NOTRACK
+#ifdef NOTRACK
     /* too much CPU useage for some machines. */
     return;
 #endif
@@ -167,7 +167,7 @@ void MobHunt(struct char_data *ch)
         if (ch->hunt_dist <= 50) {
             ch->hunt_dist = 100;
         }
-#if FAST_TRACK
+#ifdef FAST_TRACK
         for (k = 1; k <= 3 && ch->specials.hunting; k++) {
             ch->persist -= 1;
             res = dir_track(ch, ch->specials.hunting);
@@ -286,7 +286,7 @@ void mobile_activity(struct char_data *ch)
      * some status checking for errors 
      */
 
-#if HASH
+#ifdef HASH
     if ((ch->in_room < 0) || !hash_find(&room_db, ch->in_room)) {
 #else
     if ((ch->in_room < 0) || !room_find(&room_db, ch->in_room)) {
@@ -574,7 +574,7 @@ int UseViolentHeldItem(struct char_data *ch)
                     tokillnum = 0;
     struct char_data *v;
 
-#if  LOG_DEBUG
+#ifdef  LOG_DEBUG
     slog("begin UseViolentHeld");
 #endif
     if (ch->equipment[HOLD] && HasHands(ch) && ch->specials.fighting) {
@@ -626,14 +626,14 @@ int UseViolentHeldItem(struct char_data *ch)
             do_use(ch, buf, 0);
             free( objname );
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
             slog("end UseViolentHeld");
 #endif
             return (TRUE);
         }
     }
 
-#if  LOG_DEBUG
+#ifdef  LOG_DEBUG
     slog("end UseViolentHeld");
 #endif
 

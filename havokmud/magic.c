@@ -10,7 +10,7 @@
 /*
  * Extern structures
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -1247,7 +1247,7 @@ void spell_locate_object(int level, struct char_data *ch,
         if (isname(name, i->name)) {
             if (i->carried_by) {
                 if (strlen(PERS_LOC(i->carried_by, ch)) > 0
-#if ZONE_LOCATE
+#ifdef ZONE_LOCATE
                     && (real_roomp(ch->in_room)->zone ==
                         real_roomp(i->in_room)->zone)
 #endif
@@ -1259,7 +1259,7 @@ void spell_locate_object(int level, struct char_data *ch,
                 }
             } else if (i->equipped_by) {
                 if (strlen(PERS_LOC(i->equipped_by, ch)) > 0
-#if ZONE_LOCATE
+#ifdef ZONE_LOCATE
                     && (real_roomp(ch->in_room)->zone ==
                         real_roomp(i->in_room)->zone)
 #endif
@@ -1270,7 +1270,7 @@ void spell_locate_object(int level, struct char_data *ch,
                     strcat(buf, buf2);
                 }
             } else if (i->in_obj
-#if ZONE_LOCATE
+#ifdef ZONE_LOCATE
                        && (real_roomp(ch->in_room)->zone ==
                            real_roomp(i->in_room)->zone)
 #endif
@@ -1279,7 +1279,7 @@ void spell_locate_object(int level, struct char_data *ch,
                         i->in_obj->short_description);
                 strcat(buf, buf2);
             } else
-#if ZONE_LOCATE
+#ifdef ZONE_LOCATE
             if (IS_IMMORTAL(ch) ||
                     real_roomp(ch->in_room)->zone ==
                     real_roomp(i->in_room)->zone) {
@@ -1291,7 +1291,7 @@ void spell_locate_object(int level, struct char_data *ch,
                          name));
                 strcat(buf, buf2);
                 j--;
-#if ZONE_LOCATE
+#ifdef ZONE_LOCATE
             }
 #endif
 

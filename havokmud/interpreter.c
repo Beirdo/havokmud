@@ -879,7 +879,7 @@ extern int      top_of_p_table;
 extern struct index_data *mob_index;
 extern struct index_data *obj_index;
 extern char    *pc_class_types[];
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -1549,9 +1549,9 @@ void command_interpreter(struct char_data *ch, char *argument)
     /*
      * so you can log mobs if ya need to
      */
-#if LOG_MOB
+#ifdef LOG_MOB
     if (!IS_PC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF)) {
-        sprintf(buf, "[%d] <%s>:%s", ch->in_room, ch->player.name, argument);
+        sprintf(buf, "[%ld] <%s>:%s", ch->in_room, ch->player.name, argument);
         slog(buf);
     }
 #endif
@@ -2459,7 +2459,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 close_socket(d);
                 return;
             }
-#if IMPL_SECURITY
+#ifdef IMPL_SECURITY
             if (top_of_p_table > 0) {
                 if (GetMaxLevel(d->character) >= 58) {
                     switch (SecCheck(GET_NAME(d->character), d->host)) {
