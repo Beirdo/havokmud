@@ -3080,6 +3080,10 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
   fwrite_string(f, obj->modBy);
 /* obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN         obj->obj_flags.extra_flags */
 
+// let's get rid of the !bard flags, remove this when assigning a decent flag here
+	if(IS_SET(i->obj_flags.extra_flags, ITEM_UNUSED))
+		REMOVE_BIT(i->obj_flags.extra_flags, ITEM_UNUSED));
+
 
 	if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
 	  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\

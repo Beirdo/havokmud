@@ -1687,28 +1687,30 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
 /* end King's Grove */
 
 /* Sentinel's Zone */
+int janaurius(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
+{
 
-/* chests in room 51161
-they type push cog in each of the room numbers in the right order will open
-a different chest.
+   	struct char_data *guard, *i, *next, *target;
 
-1. push cog in r#s 51195, 51204, 51231, 51258, 51300 opens vnum 51168.
-2. push cog in r#s 51204, 51231, 51258, 51300, 51195 opens vnum 51169.
-3. push cog in r#s 51231, 51258, 51300, 51195, 51204 opens vnum 51170.
-4. push cog in r#s 51258, 51300, 51195, 51204, 51231 opens vnum 51171.
-5. push cog in r#s 51300, 51258, 51231, 51204, 51195 opens vnum 51172.
+   	if(!ch->specials.fighting && !ch->attackers)
+		ch->generic = 0;
 
-If they push the cogs in the wrong order, then they have to come back after
-repop and try again.
 
-After they push each cog, should make some noise like: As the cog moves
-into place, the hum of the machinery grows deafening.
+   	if (cmd || !AWAKE(ch))
+        	return(FALSE);
 
-If they push in wrong order, should have some message saying they failed
-like: As the cog moves into place, the hum of the machinery ceases.
+	if(ch->generic)
+  		 return(FALSE);
 
-Sentinel
-*/
+	if(target = ch->specials.fighting) {
+		ch->generic = 1;
+		for (i = character_list; i; i = i->next)
+			if (mob_index[i->nr].virtual == 51166) {
+				AddHated(i, target);
+				SetHunting(i, target);
+			}
+	}
+}
 
 #define CHESTS_ROOM 51161
 int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
@@ -1847,7 +1849,6 @@ int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
 	}
 	return(FALSE); /* trying to push something else than cog */
 }
-
 /* End Sentinel's Zone */
 
 /* Rocky's Zone Stuff */
@@ -3765,15 +3766,9 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		cmd !=  93 &&	/* offer */
 		cmd !=  57)		/* sell */
 		return(FALSE);
-shopkeep = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
-/*	for(j = rp->people; j; next) {
-		next = j->next_in_room;
-		if(j->specials.proc == PROC_SHOPKEEPER) {
-			shopkeep = j;
-			break;
-		}
-	}
-*/
+
+	shopkeep = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
+
 	if(!shopkeep) {
 		log("weirdness in shopkeeper, shopkeeper assigned but not found");
 		return(FALSE);
@@ -4483,32 +4478,6 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	return(TRUE);
 
 }
-/* proc makes guards (51166) assist janaurius (51300) for Sentinel's
-   The Estate, zone 189 */
-int janaurius(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
-{
-
-   	struct char_data *guard, *i, *next, *target;
-
-   	if(!ch->specials.fighting && !ch->attackers)
-		ch->generic = 0;
-
-
-   	if (cmd || !AWAKE(ch))
-        	return(FALSE);
-
-	if(ch->generic)
-  		 return(FALSE);
-
-	if(target = ch->specials.fighting){
-		 ch->generic = 1;
-		 for (i = character_list; i; i = i->next)
-		      if (mob_index[i->nr].virtual == 51166) {
-		          AddHated(i, target);
-		          SetHunting(i, target);
-		      }
-		  }
-	  }
 
 /*
 AddCommand("board", do_sea_commands, 620, POSITION_RESTING, 1);
