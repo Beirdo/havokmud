@@ -6161,8 +6161,10 @@ int dragon(struct char_data *ch, int cmd, char *arg,
    int              i,
                     j,
                     level;
+     
     
-    if (cmd || GET_POS(ch) < POSITION_FIGHTING) {
+    if (IS_AFFECTED(ch, AFF_PARALYSIS) || cmd || 
+        GET_POS(ch) < POSITION_FIGHTING) {
         return( FALSE );
     }
 
