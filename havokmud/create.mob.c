@@ -210,7 +210,7 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
 
 void do_medit(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[20];
+    char           *name;
     struct char_data *mob;
 
     if (IS_NPC(ch)) {
@@ -227,13 +227,11 @@ void do_medit(struct char_data *ch, char *argument, int cmd)
         return;                 
     }
 
-    argument = skip_spaces(argument);
-    if (!*argument) {
+    argument = get_argument(argument, &name);
+    if (!name) {
         send_to_char("Medit who?\n\r", ch);
         return;
     }
-
-    argument = one_argument(argument, name);
 
     if (!(mob = (struct char_data *) get_char_room_vis(ch, name))) {
         send_to_char("I don't see that mobile here.\n\r", ch);

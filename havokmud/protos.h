@@ -802,14 +802,12 @@ int             search_block(char *arg, char **list, bool exact);
 int             old_search_block(char *argument, int begin, int length,
                                  char **list, int mode);
 void            command_interpreter(struct char_data *ch, char *argument);
-void            argument_interpreter(char *argument, char *first_arg,
-                                     char *second_arg);
+char           *get_argument(char *line_in, char **arg_out);
+char           *get_argument_nofill(char *line_in, char **arg_out);
+char           *get_argument_delim(char *line_in, char **arg_out, char delim);
 int             is_number(char *str);
-char           *one_argument(char *argument, char *first_arg);
-void            only_argument(char *argument, char *dest);
 int             fill_word(char *argument);
 int             is_abbrev(char *arg1, char *arg2);
-void            half_chop(char *string, char *arg1, char *arg2);
 int             special(struct char_data *ch, int cmd, char *arg);
 void            assign_command_pointers(void);
 int             find_name(char *name);
@@ -1394,7 +1392,6 @@ void            bisect_arg(char *arg, int *field, char *string);
 void            do_edit(struct char_data *ch, char *arg, int cmd);
 
 void            do_setskill(struct char_data *ch, char *arg, int cmd);
-char           *one_word(char *argument, char *first_arg);
 void            page_string(struct descriptor_data *d, char *str,
                             int keep_internal);
 
@@ -1874,7 +1871,7 @@ int             Summoner(struct char_data *ch, int cmd, char *arg,
                          struct char_data *mob, int type);
 int             monk(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type);
-void            invert(char *arg1, char *arg2);
+char           *invert(char *arg1);
 int             jive_box(struct char_data *ch, int cmd, char *arg,
                          struct obj_data *obj, int type);
 int             godsay(struct char_data *ch, int cmd, char *argument,
@@ -3519,8 +3516,6 @@ int clearpath(struct char_data *ch, long room, int direc);
 long            CalcPowerLevel(struct char_data *ch);
 char           *PowerLevelDesc(long a);
 int find_door(struct char_data *ch, char *type, char *dir);
-void three_arg(char *argument, char *first_arg, char *second_arg,
-               char *third_arg);
 int TotalMemorized(struct char_data *ch);
 int TotalMaxCanMem(struct char_data *ch);
 void list_init(struct descriptor_data *d);

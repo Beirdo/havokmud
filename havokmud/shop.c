@@ -123,7 +123,7 @@ int shop_producing(struct obj_data *item, int shop_nr)
 void shopping_buy(char *arg, struct char_data *ch,
                   struct char_data *keeper, int shop_nr)
 {
-    char            argm[100],
+    char           *argm,
                     buf[MAX_STRING_LENGTH],
                     newarg[100];
     int             num = 1;
@@ -157,8 +157,8 @@ void shopping_buy(char *arg, struct char_data *ch,
         }
     }
 
-    only_argument(arg, argm);
-    if (!(*argm)) {
+    arg = get_argument(arg, &argm);
+    if (!argm) {
         sprintf(buf, "%s what do you want to buy??", GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
@@ -250,7 +250,7 @@ void shopping_buy(char *arg, struct char_data *ch,
 void shopping_sell(char *arg, struct char_data *ch,
                    struct char_data *keeper, int shop_nr)
 {
-    char            argm[100],
+    char           *argm,
                     buf[MAX_STRING_LENGTH];
     int             cost,
                     cost2,
@@ -261,6 +261,7 @@ void shopping_sell(char *arg, struct char_data *ch,
     if (!(is_ok(keeper, ch, shop_nr))) {
         return;
     }
+
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE && 
@@ -283,9 +284,9 @@ void shopping_sell(char *arg, struct char_data *ch,
         }
     }
 
-    only_argument(arg, argm);
+    arg = get_argument(arg, &argm);
 
-    if (!(*argm)) {
+    if (!argm) {
         sprintf(buf, "%s What do you want to sell??", GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
@@ -365,7 +366,7 @@ void shopping_sell(char *arg, struct char_data *ch,
 void shopping_value(char *arg, struct char_data *ch,
                     struct char_data *keeper, int shop_nr)
 {
-    char            argm[100],
+    char           *argm,
                     buf[MAX_STRING_LENGTH];
     struct obj_data *temp1;
     int             i;
@@ -397,9 +398,9 @@ void shopping_value(char *arg, struct char_data *ch,
         }
     }
 
-    only_argument(arg, argm);
+    arg = get_argument(arg, &argm);
 
-    if (!(*argm)) {
+    if (!argm) {
         sprintf(buf, "%s What do you want me to evaluate??", GET_NAME(ch));
         do_tell(keeper, buf, 19);
         return;
@@ -521,7 +522,7 @@ void shopping_kill(char *arg, struct char_data *ch,
 
 int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
 {
-    char            argm[100];
+    char           *argm;
     struct char_data *temp_char;
     struct char_data *keeper;
     int             shop_nr;
@@ -591,9 +592,9 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
         /* 
          * Kill or Hit 
          */
-        only_argument(arg, argm);
+        arg = get_argument(arg, &argm);
 
-        if (keeper == get_char_room(argm, ch->in_room)) {
+        if (argm && keeper == get_char_room(argm, ch->in_room)) {
             shopping_kill(arg, ch, keeper, shop_nr);
             return (TRUE);
         }

@@ -1717,15 +1717,14 @@ void list_exits_in_room(struct char_data *ch)
 	}
 }
 
+void            generate_map(struct char_data *ch, int size, int x, int y);
+void            print_map(struct char_data *ch);
+
 void do_look(struct char_data *ch, char *argument, int cmd)
 {
-
-    void            generate_map(struct char_data *ch, int size, int x,
-                                 int y);
-    void            print_map(struct char_data *ch);
     char            buffer[MAX_STRING_LENGTH];
-    char            arg1[MAX_INPUT_LENGTH + 80];
-    char            arg2[MAX_INPUT_LENGTH + 80];
+    char           *arg1;
+    char           *arg2;
     int             keyword_no,
                     res;
     float           fullperc;
@@ -1739,6 +1738,9 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                    *i;
     struct char_data *tmp_char;
     char           *tmp_desc;
+    struct room_direction_data *exitp;
+    struct room_data *tmprp;
+    struct room_data *rp;
     static char    *keywords[] = {
         "north",
         "east",
@@ -1769,29 +1771,29 @@ void do_look(struct char_data *ch, char *argument, int cmd)
     } else if (IS_AFFECTED(ch, AFF_BLIND)) {
         send_to_char("You can't see a damn thing, you're blinded!\n\r",
                      ch);
-    } else if ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch))
-             && (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
+    } else if ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) && 
+               (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
         send_to_char("It is very dark in here.. Find a lightsource to "
                      "see.\n\r", ch);
         if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
             list_char_in_room(real_roomp(ch->in_room)->people, ch);
         }
     } else {
-        only_argument(argument, arg1);
-
-        if (0 == strn_cmp(arg1, "at", 2) && isspace(arg1[2])) {
-            only_argument(argument + 3, arg2);
+        argument = get_argument_nofill( argument, &arg1 );
+        argument = get_argument( argument, &arg2 );
+        if( !arg1 ) {
+            keyword_no = 9;
+        } else if (!strcmp(arg1, "at") && arg2) {
             keyword_no = 7;
-        } else if (0 == strn_cmp(arg1, "in", 2) && isspace(arg1[2])) {
-            only_argument(argument + 3, arg2);
+        } else if (!strcmp(arg1, "in") && arg2) {
             keyword_no = 6;
         } else {
             keyword_no = search_block(arg1, keywords, FALSE);
         }
 
-        if ((keyword_no == -1) && *arg1) {
+        if (arg1 && keyword_no == -1) {
             keyword_no = 7;
-            only_argument(argument, arg2);
+            arg2 = arg1;
         }
 
         found = FALSE;
@@ -1808,92 +1810,78 @@ void do_look(struct char_data *ch, char *argument, int cmd)
         case 2:
         case 3:
         case 4:
-        case 5:{
-                struct room_direction_data *exitp;
-                exitp = EXIT(ch, keyword_no);
-                if (exitp) {
-                    if (exitp->general_description) {
-                        send_to_char(exitp->general_description, ch);
-                    } else {
-                        send_to_char("You see nothing special.\n\r", ch);
-                    }
-
-                    if (affected_by_spell(ch, SKILL_DANGER_SENSE)) {
-                        struct room_data *tmprp;
-                        tmprp = real_roomp(exitp->to_room);
-                        if (tmprp && IS_SET(tmprp->room_flags, DEATH)) {
-                            send_to_char("You sense great dangers in that "
-                                         "direction.\n\r", ch);
-						}
-                    }
-					if (IS_SET(exitp->exit_info, EX_CLOSED) &&
-                        (exitp->keyword)) {
-                        if ((strcmp(fname(exitp->keyword), "secret")) &&
-                            (!IS_SET(exitp->exit_info, EX_SECRET))) {
-                            sprintf(buffer, "The %s is closed.\n\r",
-                                    fname(exitp->keyword));
-                            send_to_char(buffer, ch);
-                        }
-                    } else {
-                        if (IS_SET(exitp->exit_info, EX_ISDOOR) &&
-                            exitp->keyword) {
-                            sprintf(buffer, "The %s is open.\n\r",
-                                    fname(exitp->keyword));
-                            send_to_char(buffer, ch);
-                        }
-                    }
+        case 5:
+            exitp = EXIT(ch, keyword_no);
+            if (exitp) {
+                if (exitp->general_description) {
+                    send_to_char(exitp->general_description, ch);
                 } else {
                     send_to_char("You see nothing special.\n\r", ch);
                 }
 
-                if (exitp && exitp->to_room
-                    && (!IS_SET(exitp->exit_info, EX_ISDOOR) ||
-                        !IS_SET(exitp->exit_info, EX_CLOSED))) {
+                if (affected_by_spell(ch, SKILL_DANGER_SENSE)) {
+                    tmprp = real_roomp(exitp->to_room);
+                    if (tmprp && IS_SET(tmprp->room_flags, DEATH)) {
+                        send_to_char("You sense great dangers in that "
+                                     "direction.\n\r", ch);
+                    }
+                }
 
-                    if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch)) {
-                        struct room_data *rp;
-                        sprintf(buffer, "You look %swards.\n\r",
-                                dirs[keyword_no]);
+                if (IS_SET(exitp->exit_info, EX_CLOSED) && exitp->keyword) {
+                    if ((strcmp(fname(exitp->keyword), "secret")) &&
+                        (!IS_SET(exitp->exit_info, EX_SECRET))) {
+                        sprintf(buffer, "The %s is closed.\n\r",
+                                fname(exitp->keyword));
                         send_to_char(buffer, ch);
+                    }
+                } else {
+                    if (IS_SET(exitp->exit_info, EX_ISDOOR) && exitp->keyword) {
+                        sprintf(buffer, "The %s is open.\n\r",
+                                fname(exitp->keyword));
+                        send_to_char(buffer, ch);
+                    }
+                }
+            } else {
+                send_to_char("You see nothing special.\n\r", ch);
+            }
 
-                        sprintf(buffer, "$n looks %swards.",
-                                dirs[keyword_no]);
-                        act(buffer, FALSE, ch, 0, 0, TO_ROOM);
+            if (exitp && exitp->to_room && 
+                (!IS_SET(exitp->exit_info, EX_ISDOOR) ||
+                 !IS_SET(exitp->exit_info, EX_CLOSED))) {
 
-                        rp = real_roomp(exitp->to_room);
-                        if (!rp) {
-                            send_to_char("You see swirling chaos.\n\r",
-                                         ch);
-                        } else if (exitp) {
+                if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch)) {
+                    sprintf(buffer, "You look %swards.\n\r", dirs[keyword_no]);
+                    send_to_char(buffer, ch);
+
+                    sprintf(buffer, "$n looks %swards.", dirs[keyword_no]);
+                    act(buffer, FALSE, ch, 0, 0, TO_ROOM);
+
+                    rp = real_roomp(exitp->to_room);
+                    if (!rp) {
+                        send_to_char("You see swirling chaos.\n\r", ch);
+                    } else if (exitp) {
+                        /*
+                         * NO_SPY flag on rooms, Lennya 20030602
+                         */
+                        if (IS_SET(real_roomp(exitp->to_room)->room_flags,
+                                   NO_SPY)) {
+                            sprintf(buffer,
+                                    "A strange magic blurs your vision as "
+                                    "you attempt to look into %s.\n\r",
+                                    rp->name);
+                            send_to_char(buffer, ch);
                             /*
-                             * NO_SPY flag on rooms, Lennya 20030602
+                             * imms should be able to see through the
+                             * blur:
                              */
-                            if (IS_SET
-                                (real_roomp(exitp->to_room)->room_flags,
-                                 NO_SPY)) {
-                                int             immcheck = 1;
-                                sprintf(buffer,
-                                        "A strange magic blurs your vision as "
-                                        "you attempt to look into %s.\n\r",
-                                        rp->name);
-                                send_to_char(buffer, ch);
-                                /*
-                                 * imms should be able to see through the
-                                 * blur:
-                                 */
-                                if (IS_IMMORTAL(ch)) {
-                                    immcheck = 0;
-								}
-                                if (immcheck) {
-                                    return;
-								}
+                            if (!IS_IMMORTAL(ch)) {
+                                return;
                             }
-                            sprintf(buffer, "%ld look", exitp->to_room);
-                            do_at(ch, buffer, 0);
-                        } else {
-                            send_to_char("You see nothing special.\n\r",
-                                         ch);
                         }
+                        sprintf(buffer, "%ld look", exitp->to_room);
+                        do_at(ch, buffer, 0);
+                    } else {
+                        send_to_char("You see nothing special.\n\r", ch);
                     }
                 }
             }
@@ -1902,278 +1890,255 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             /*
              * look 'in'
              */
-        case 6:{
-                if (*arg2) {
+        case 6:
+            if (arg2) {
+                /*
+                 * Item carried
+                 */
+                bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
+                                          FIND_OBJ_EQUIP, ch, &tmp_char,
+                                    &tmp_object);
+                if (bits) {
                     /*
-                     * Item carried
+                     * Found something
                      */
-                    bits = generic_find(arg2,
-                                        FIND_OBJ_INV | FIND_OBJ_ROOM |
-                                        FIND_OBJ_EQUIP, ch, &tmp_char,
-                                        &tmp_object);
-                    if (bits) {
-						/*
-						 * Found something
-						 */
-                        if (GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) {
-                            if (tmp_object->obj_flags.value[1] <= 0) {
-                                act("It is empty.", FALSE, ch, 0, 0,
-                                    TO_CHAR);
-                            } else {
-                                temp =
-                                    ((tmp_object->obj_flags.value[1] * 3) /
-                                     tmp_object->obj_flags.value[0]);
-                                sprintf(buffer,
-                                  "It's %sfull of a %s liquid.\n\r",
-                                  fullness[temp],
-                                  color_liquid[tmp_object->obj_flags.value[2]]);
-                                send_to_char(buffer, ch);
-                            }
-                        } else if (GET_ITEM_TYPE(tmp_object) ==
-                                   ITEM_CONTAINER) {
-                            if (!IS_SET(tmp_object->obj_flags.value[1],
-                                        CONT_CLOSED)) {
-                                if (!IS_CORPSE(tmp_object)) {
-                                    /*
-                                     * If it's not a corpse, calculate how
-                                     * much stuff is in this container
-                                     */
-                                    for (i = tmp_object->contains; i;
-                                         i = i->next_content) {
-                                        weight +=
-                                            (float) i->obj_flags.weight;
-                                    }
-                                    fullperc =
-                                        (((float) weight /
-                                          ((float) tmp_object->obj_flags.
-                                           value[0] -
-                                           ((float) tmp_object->obj_flags.
-                                            weight - weight) -
-                                           1)) * 100.0);
-                                    sprintf(buffer, "%s %.0f%s full",
-                                            fname(tmp_object->name),
-                                            fullperc, "%");
-                                } else {
-                                    /*
-                                     * it's a corpse - Lennya 20030320
-                                     */
-                                    sprintf(buffer, "%s ",
-                                            fname(tmp_object->name));
-                                }
-                                send_to_char(buffer, ch);
-                                switch (bits) {
-                                case FIND_OBJ_INV:
-                                    send_to_char(" (carried) : \n\r", ch);
-                                    break;
-                                case FIND_OBJ_ROOM:
-                                    send_to_char(" (here) : \n\r", ch);
-                                    break;
-                                case FIND_OBJ_EQUIP:
-                                    send_to_char(" (used) : \n\r", ch);
-                                    break;
-                                }
-                                list_obj_in_heap(tmp_object->contains, ch);
-                            } else {
-                                send_to_char("It is closed.\n\r", ch);
-                            }
+                    if (GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) {
+                        if (tmp_object->obj_flags.value[1] <= 0) {
+                            act("It is empty.", FALSE, ch, 0, 0, TO_CHAR);
                         } else {
-                            send_to_char("That is not a container.\n\r",
-                                         ch);
+                            temp = ((tmp_object->obj_flags.value[1] * 3) /
+                                    tmp_object->obj_flags.value[0]);
+                            sprintf(buffer, "It's %sfull of a %s liquid.\n\r",
+                                 fullness[temp],
+                                 color_liquid[tmp_object->obj_flags.value[2]]);
+                            send_to_char(buffer, ch);
+                        }
+                    } else if (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER) {
+                        if (!IS_SET(tmp_object->obj_flags.value[1],
+                                    CONT_CLOSED)) {
+                            if (!IS_CORPSE(tmp_object)) {
+                                /*
+                                 * If it's not a corpse, calculate how
+                                 * much stuff is in this container
+                                 */
+                                for (i = tmp_object->contains; i;
+                                     i = i->next_content) {
+                                    weight += (float) i->obj_flags.weight;
+                                }
+                                fullperc = (((float) weight /
+                                            ((float) tmp_object->obj_flags.
+                                                     value[0] -
+                                             ((float) tmp_object->obj_flags.
+                                                      weight - weight) - 1)) *
+                                            100.0);
+                                sprintf(buffer, "%s %.0f%s full",
+                                        fname(tmp_object->name), fullperc, "%");
+                            } else {
+                                /*
+                                 * it's a corpse - Lennya 20030320
+                                 */
+                                sprintf(buffer, "%s ", fname(tmp_object->name));
+                            }
+                            send_to_char(buffer, ch);
+
+                            switch (bits) {
+                            case FIND_OBJ_INV:
+                                send_to_char(" (carried) : \n\r", ch);
+                                break;
+                            case FIND_OBJ_ROOM:
+                                send_to_char(" (here) : \n\r", ch);
+                                break;
+                            case FIND_OBJ_EQUIP:
+                                send_to_char(" (used) : \n\r", ch);
+                                break;
+                            }
+                            list_obj_in_heap(tmp_object->contains, ch);
+                        } else {
+                            send_to_char("It is closed.\n\r", ch);
                         }
                     } else {
-						/*
-						 * wrong argument
-						 */
-                        send_to_char("You do not see that item here.\n\r",
-                                     ch);
+                        send_to_char("That is not a container.\n\r", ch);
                     }
                 } else {
-					/*
-					 * no argument
-					 */
-                    send_to_char("Look in what?!\n\r", ch);
+                    /*
+                     * wrong argument
+                     */
+                    send_to_char("You do not see that item here.\n\r", ch);
                 }
+            } else {
+                /*
+                 * no argument
+                 */
+                send_to_char("Look in what?!\n\r", ch);
             }
             break;
 
             /*
              * look 'at'
              */
-        case 7:{
-                if (*arg2) {
-                    bits =
-                        generic_find(arg2,
-                                     FIND_OBJ_INV | FIND_OBJ_ROOM |
-                                     FIND_OBJ_EQUIP | FIND_CHAR_ROOM, ch,
-                                     &tmp_char, &found_object);
-                    if (tmp_char) {
-                        show_char_to_char(tmp_char, ch, 1);
-                        if (ch != tmp_char) {
-                            act("$n looks at you.", TRUE, ch, 0, tmp_char,
-                                TO_VICT);
-                            act("$n looks at $N.", TRUE, ch, 0, tmp_char,
-                                TO_NOTVICT);
-                        }
+        case 7:
+            if (arg2) {
+                bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
+                                          FIND_OBJ_EQUIP | FIND_CHAR_ROOM, ch,
+                                    &tmp_char, &found_object);
+                if (tmp_char) {
+                    show_char_to_char(tmp_char, ch, 1);
+                    if (ch != tmp_char) {
+                        act("$n looks at you.", TRUE, ch, 0, tmp_char, TO_VICT);
+                        act("$n looks at $N.", TRUE, ch, 0, tmp_char,
+                            TO_NOTVICT);
+                    }
+                    return;
+                }
+                /*
+                 * Search for Extra Descriptions in room and items
+                 */
+
+                /*
+                 * Extra description in room??
+                 */
+                if (!found) {
+                    tmp_desc = find_ex_description(arg2,
+                                      real_roomp(ch->in_room)->ex_description);
+                    if (tmp_desc) {
+                        page_string(ch->desc, tmp_desc, 0);
                         return;
                     }
-                    /*
-                     * Search for Extra Descriptions in room and items
-                     */
-
-                    /*
-                     * Extra description in room??
-                     */
-                    if (!found) {
-                        tmp_desc = find_ex_description(arg2,
-                                     real_roomp(ch->in_room)->ex_description);
-                        if (tmp_desc) {
-                            page_string(ch->desc, tmp_desc, 0);
-                            return;
-                        }
-                    }
-
-                    /*
-                     * extra descriptions in items
-                     */
-
-                    /*
-                     * Equipment Used
-                     */
-                    if (!found) {
-                        for (j = 0; j < MAX_WEAR && !found; j++) {
-                            if (ch->equipment[j] &&
-                                CAN_SEE_OBJ(ch, ch->equipment[j])) {
-                                tmp_desc = find_ex_description(arg2,
-                                            ch->equipment[j]->ex_description);
-
-                                if (tmp_desc) {
-                                    page_string(ch->desc, tmp_desc, 1);
-                                    found = TRUE;
-                                }
-                            }
-                        }
-                    }
-                    /*
-                     * In inventory
-                     */
-                    if (!found) {
-                        for (tmp_object = ch->carrying;
-                             tmp_object && !found;
-                             tmp_object = tmp_object->next_content) {
-                            if (CAN_SEE_OBJ(ch, tmp_object)) {
-                                tmp_desc = find_ex_description(arg2,
-                                                   tmp_object->ex_description);
-                                if (tmp_desc) {
-                                    page_string(ch->desc, tmp_desc, 1);
-                                    found = TRUE;
-                                }
-                            }
-                        }
-                    }
-                    /*
-                     * Object In room
-                     */
-
-                    if (!found) {
-                        for (tmp_object =
-                             real_roomp(ch->in_room)->contents;
-                             tmp_object && !found;
-                             tmp_object = tmp_object->next_content) {
-                            if (CAN_SEE_OBJ(ch, tmp_object)) {
-                                tmp_desc = find_ex_description(arg2,
-                                                   tmp_object->ex_description);
-                                if (tmp_desc) {
-                                    page_string(ch->desc, tmp_desc, 1);
-                                    found = TRUE;
-                                }
-                            }
-                        }
-                    }
-                    /*
-                     * wrong argument
-                     */
-                    if (bits) {
-						/*
-						 *If an object was found
-						 */
-                        if (!found) {
-                            show_obj_to_char(found_object, ch, 5);
-						} else {
-                            show_obj_to_char(found_object, ch, 6);
-						}
-                        /*
-                         * Find hum, glow etc
-                         */
-                    } else if (!found) {
-                        send_to_char("You do not see that here.\n\r", ch);
-                    }
-                } else {
-                    /*
-                     * no argument
-                     */
-                    send_to_char("Look at what?\n\r", ch);
                 }
+
+                /*
+                 * Equipment Used
+                 */
+                if (!found) {
+                    for (j = 0; j < MAX_WEAR && !found; j++) {
+                        if (ch->equipment[j] &&
+                            CAN_SEE_OBJ(ch, ch->equipment[j])) {
+                            tmp_desc = find_ex_description(arg2,
+                                        ch->equipment[j]->ex_description);
+
+                            if (tmp_desc) {
+                                page_string(ch->desc, tmp_desc, 1);
+                                found = TRUE;
+                            }
+                        }
+                    }
+                }
+                /*
+                 * In inventory
+                 */
+                if (!found) {
+                    for (tmp_object = ch->carrying;
+                         tmp_object && !found;
+                         tmp_object = tmp_object->next_content) {
+                        if (CAN_SEE_OBJ(ch, tmp_object)) {
+                            tmp_desc = find_ex_description(arg2,
+                                               tmp_object->ex_description);
+                            if (tmp_desc) {
+                                page_string(ch->desc, tmp_desc, 1);
+                                found = TRUE;
+                            }
+                        }
+                    }
+                }
+                /*
+                 * Object In room
+                 */
+
+                if (!found) {
+                    for (tmp_object = real_roomp(ch->in_room)->contents;
+                         tmp_object && !found;
+                         tmp_object = tmp_object->next_content) {
+                        if (CAN_SEE_OBJ(ch, tmp_object)) {
+                            tmp_desc = find_ex_description(arg2,
+                                               tmp_object->ex_description);
+                            if (tmp_desc) {
+                                page_string(ch->desc, tmp_desc, 1);
+                                found = TRUE;
+                            }
+                        }
+                    }
+                }
+                /*
+                 * wrong argument
+                 */
+                if (bits) {
+                    /*
+                     *If an object was found
+                     */
+                    if (!found) {
+                        show_obj_to_char(found_object, ch, 5);
+                    } else {
+                        show_obj_to_char(found_object, ch, 6);
+                    }
+                    /*
+                     * Find hum, glow etc
+                     */
+                } else if (!found) {
+                    send_to_char("You do not see that here.\n\r", ch);
+                }
+            } else {
+                /*
+                 * no argument
+                 */
+                send_to_char("Look at what?\n\r", ch);
             }
             break;
 
             /*
              * look ''
              */
-        case 8:{
+        case 8:
+            ch_printf(ch, "$c000W%s", real_roomp(ch->in_room)->name);
 
-                ch_printf(ch, "$c000W%s", real_roomp(ch->in_room)->name);
-
-                send_to_char("\n\r", ch);
-                if (!IS_SET(ch->specials.act, PLR_BRIEF)) {
-                    send_to_char(real_roomp(ch->in_room)->description, ch);
-				}
-                if (!IS_NPC(ch)) {
-                    if (IS_SET(ch->specials.act, PLR_HUNTING)) {
-                        if (ch->specials.hunting) {
-                            res = track(ch, ch->specials.hunting);
-                            if (!res) {
-                                ch->specials.hunting = 0;
-                                ch->hunt_dist = 0;
-                                REMOVE_BIT(ch->specials.act, PLR_HUNTING);
-                            }
-                        } else {
+            send_to_char("\n\r", ch);
+            if (!IS_SET(ch->specials.act, PLR_BRIEF)) {
+                send_to_char(real_roomp(ch->in_room)->description, ch);
+            }
+            if (!IS_NPC(ch)) {
+                if (IS_SET(ch->specials.act, PLR_HUNTING)) {
+                    if (ch->specials.hunting) {
+                        res = track(ch, ch->specials.hunting);
+                        if (!res) {
+                            ch->specials.hunting = 0;
                             ch->hunt_dist = 0;
                             REMOVE_BIT(ch->specials.act, PLR_HUNTING);
                         }
+                    } else {
+                        ch->hunt_dist = 0;
+                        REMOVE_BIT(ch->specials.act, PLR_HUNTING);
                     }
-                } else {
-                    if (IS_SET(ch->specials.act, ACT_HUNTING)) {
-                        if (ch->specials.hunting) {
-                            res = track(ch, ch->specials.hunting);
-                            if (!res) {
-                                ch->specials.hunting = 0;
-                                ch->hunt_dist = 0;
-                                REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-                            }
-                        } else {
+                }
+            } else {
+                if (IS_SET(ch->specials.act, ACT_HUNTING)) {
+                    if (ch->specials.hunting) {
+                        res = track(ch, ch->specials.hunting);
+                        if (!res) {
+                            ch->specials.hunting = 0;
                             ch->hunt_dist = 0;
                             REMOVE_BIT(ch->specials.act, ACT_HUNTING);
                         }
+                    } else {
+                        ch->hunt_dist = 0;
+                        REMOVE_BIT(ch->specials.act, ACT_HUNTING);
                     }
                 }
-
-                if (ValidRoom(ch) == TRUE
-                    && !IS_SET(ch->specials.act, PLR_BRIEF)) {
-					if (IS_SET
-                        (real_roomp(ch->in_room)->room_flags,
-                         ROOM_WILDERNESS)) {
-						generate_map(ch, GET_RADIUS(ch), 3, 3);
-                        /*
-                         *char, radius, x, y
-                         */
-                        print_map(ch);
-                    }
-                }
-                list_exits_in_room(ch);
-                list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
-                list_char_in_room(real_roomp(ch->in_room)->people, ch);
-
             }
+
+            if (ValidRoom(ch) == TRUE && !IS_SET(ch->specials.act, PLR_BRIEF)) {
+                if (IS_SET(real_roomp(ch->in_room)->room_flags, 
+                           ROOM_WILDERNESS)) {
+                    generate_map(ch, GET_RADIUS(ch), 3, 3);
+                    /*
+                     *char, radius, x, y
+                     */
+                    print_map(ch);
+                }
+            }
+
+            list_exits_in_room(ch);
+            list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
+            list_char_in_room(real_roomp(ch->in_room)->people, ch);
+
             break;
 
             /*
@@ -2186,46 +2151,43 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             /*
              * look 'room'
              */
-        case 9:{
+        case 9:
+            send_to_char(real_roomp(ch->in_room)->name, ch);
+            send_to_char("\n\r", ch);
+            send_to_char(real_roomp(ch->in_room)->description, ch);
 
-                send_to_char(real_roomp(ch->in_room)->name, ch);
-                send_to_char("\n\r", ch);
-                send_to_char(real_roomp(ch->in_room)->description, ch);
-
-                if (!IS_NPC(ch)) {
-                    if (IS_SET(ch->specials.act, PLR_HUNTING)) {
-                        if (ch->specials.hunting) {
-                            res = track(ch, ch->specials.hunting);
-                            if (!res) {
-                                ch->specials.hunting = 0;
-                                ch->hunt_dist = 0;
-                                REMOVE_BIT(ch->specials.act, PLR_HUNTING);
-                            }
-                        } else {
+            if (!IS_NPC(ch)) {
+                if (IS_SET(ch->specials.act, PLR_HUNTING)) {
+                    if (ch->specials.hunting) {
+                        res = track(ch, ch->specials.hunting);
+                        if (!res) {
+                            ch->specials.hunting = 0;
                             ch->hunt_dist = 0;
                             REMOVE_BIT(ch->specials.act, PLR_HUNTING);
                         }
+                    } else {
+                        ch->hunt_dist = 0;
+                        REMOVE_BIT(ch->specials.act, PLR_HUNTING);
                     }
-                } else {
-                    if (IS_SET(ch->specials.act, ACT_HUNTING)) {
-                        if (ch->specials.hunting) {
-                            res = track(ch, ch->specials.hunting);
-                            if (!res) {
-                                ch->specials.hunting = 0;
-                                ch->hunt_dist = 0;
-                                REMOVE_BIT(ch->specials.act, ACT_HUNTING);
-                            }
-                        } else {
+                }
+            } else {
+                if (IS_SET(ch->specials.act, ACT_HUNTING)) {
+                    if (ch->specials.hunting) {
+                        res = track(ch, ch->specials.hunting);
+                        if (!res) {
+                            ch->specials.hunting = 0;
                             ch->hunt_dist = 0;
                             REMOVE_BIT(ch->specials.act, ACT_HUNTING);
                         }
+                    } else {
+                        ch->hunt_dist = 0;
+                        REMOVE_BIT(ch->specials.act, ACT_HUNTING);
                     }
                 }
-                list_exits_in_room(ch);
-                list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
-                list_char_in_room(real_roomp(ch->in_room)->people, ch);
-
             }
+            list_exits_in_room(ch);
+            list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
+            list_char_in_room(real_roomp(ch->in_room)->people, ch);
             break;
         }
     }
@@ -2392,7 +2354,7 @@ void do_read(struct char_data *ch, char *argument, int cmd)
 
 void do_examine(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[1000],
+    char           *name,
                     buf[1000];
     struct char_data *tmp_char;
     struct obj_data *tmp_object;
@@ -2402,9 +2364,9 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
     sprintf(buf, "at %s", argument);
     do_look(ch, buf, 15);
 
-    one_argument(argument, name);
+    argument = get_argument(argument, &name);
 
-    if (!*name) {
+    if (!name) {
         send_to_char("Examine what?\n\r", ch);
         return;
     }
@@ -2825,114 +2787,6 @@ void do_list_zones(struct char_data *ch, char *argument, int cmd)
     do_help(ch, "areas", 0);
 }
 
-#if 0
-
-void do_help(struct char_data *ch, char *argument, int cmd)
-{
-    FILE           *fl;
-    int             chk,
-                    bot,
-                    top,
-                    mid,
-                    minlen;
-    char            buf[MAX_STRING_LENGTH],
-                    buffer[MAX_STRING_LENGTH];
-
-    dlog("in do_help");
-
-    if (!ch->desc) {
-        return;
-	}
-
-    argument = skip_spaces(argument);
-
-    if (*argument) {
-        if (!help_index) {
-            send_to_char("No help available.\n\r", ch);
-            return;
-        }
-
-        bot = 0;
-        top = top_of_helpt;
-
-        for (;;) {
-            mid = (bot + top) / 2;
-            minlen = strlen(argument);
-
-            if (!
-                (chk =
-                 strn_cmp(argument, help_index[mid].keyword, minlen))) {
-                /*
-                 * sprintf(buf, "indexnr = %d", mid);
-                 * Log(buf);
-                 * sprintf(buf, "linenr = %d", help_index[mid].pos);
-                 * Log(buf);
-				 */
-                rewind(help_fl);
-                fseek(help_fl, help_index[mid].pos, 0);
-                *buffer = '\0';
-                for (;;) {
-                    fgets(buf, 80, help_fl);
-                    if (*buf == '#') {
-                        break;
-					}
-                    if (strlen(buf) + strlen(buffer) >
-                        MAX_STRING_LENGTH - 2) {
-                        break;
-					}
-                    if (buf[strlen(buf) - 1] == '~') {
-                        buf[strlen(buf) - 1] = '\0';
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                }
-                page_string(ch->desc, buffer, 1);
-                return;
-            } else if (bot >= top) {
-                if (cmd == 38) {
-                    sprintf(buf, "spell %s", argument);
-                    do_help(ch, buf, 1);
-                    return;
-                } else if (cmd == 1) {
-                    half_chop(argument, buf, buffer);
-                    sprintf(buf, "skill %s", buffer);
-                    do_help(ch, buf, 0);
-                    return;
-                }
-
-                send_to_char("There is no help on that word.\n\r", ch);
-                send_to_char
-                    ("Perhaps try help skill <skill> or help spell <spell>.\n\r",
-                     ch);
-
-                /*
-                 * (GH)NO help so add that key word to a file called
-                 * ADD_HELP
-                 */
-                if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                    Log("Could not open the ADD_HELP-file.\n\r");
-                    return;
-                }
-                sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
-                fputs(buf, fl);
-                fclose(fl);
-                return;
-            } else if (chk > 0) {
-                bot = ++mid;
-            } else {
-                top = --mid;
-			}
-        }
-        return;
-    }
-    send_to_char(help, ch);
-}
-
-#else
-
-/*
- * A new way for looking at helpfiles. Lennya 20040207
- */
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
@@ -2943,6 +2797,8 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                     spellcheck;
     char            buf[MAX_STRING_LENGTH],
                     buffer[MAX_STRING_LENGTH],
+                   *arg1,
+                   *arg2,
                     keyword[256];
 
     dlog("in do_help");
@@ -2985,16 +2841,20 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 }
                 page_string(ch->desc, buffer, 1);
                 return;
-            } else if (is_abbrev(argument, help_index[i].keyword)) {
+            } 
+            
+            if (is_abbrev(argument, help_index[i].keyword)) {
                 if (!possible) {
                     send_to_char("No exact match found. Possible matches "
                                  "are:\n\r\n\r", ch);
                 }
+
                 if (possible > 10) {
                     send_to_char("Too many matches found. Please be more "
                                  "specific.\n\r", ch);
                     return;
                 }
+
                 possible++;
                 sprintf(buf, "help %s\n\r", help_index[i].keyword);
                 send_to_char(buf, ch);
@@ -3016,33 +2876,29 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                     send_to_char(buf, ch);
                 }
             }
-
         }
+
         if (possible) {
-            send_to_char
-                ("\n\rPlease specify. Only exact matches will work.\n\r",
-                 ch);
+            send_to_char("\n\rPlease specify. Only exact matches will "
+                         "work.\n\r", ch);
             return;
-        } else if (!found) {
+        } 
+        
+        if (!found) {
             /*
              * see if dude already did spell/skill in his query
              */
-            if (strlen(argument) > 3 && cmd == 38) {
-                if (argument[0] == 's' && argument[3] == 'l' &&
-                    argument[4] == 'l') {
-                    /*
-                     * s..ll likely to be in order
-                     */
-                    send_to_char("No remote or exact matches found.\n\r",
-                                 ch);
-                    sprintf(buf, "%s is looking for a help on \"%s\". Can "
-                                 "someone help %s?",
-                            GET_NAME(ch), argument,
-                            (GET_SEX(ch) == SEX_MALE ? "him" :
-                             (GET_SEX(ch) == SEX_FEMALE ? "her" : "it")));
-                    Log(buf);
-                    return;
-                }
+            if (strlen(argument) > 5 && cmd == 38 && argument[0] == 's' && 
+                argument[3] == 'l' && argument[4] == 'l') {
+                /*
+                 * s..ll likely to be in order
+                 */
+                send_to_char("No remote or exact matches found.\n\r", ch);
+                sprintf(buf, "%s is looking for a help on \"%s\". Can "
+                             "someone help %s?",
+                        GET_NAME(ch), argument, HMHR(ch));
+                Log(buf);
+                return;
             }
 
             /*
@@ -3052,29 +2908,34 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "spell %s", argument);
                 do_help(ch, buf, 1);
                 return;
-            } else if (cmd == 1) {
-                half_chop(argument, buf, buffer);
+            } 
+            
+            if (cmd == 1) {
+                argument = get_argument(argument, &arg1);
+                arg2 = skip_spaces(argument);
                 /*
                  * remove spell
                  */
-                sprintf(buf, "skill %s", buffer);
-                /*
-                 * add skill
-                 */
-                do_help(ch, buf, 0);
+                if( arg2 ) {
+                    sprintf(buf, "skill %s", arg2);
+                    /*
+                     * add skill
+                     */
+                    do_help(ch, buf, 0);
+                }
                 return;
-            } else if (cmd == 0) {
-                half_chop(argument, buf, argument);
+            } 
+            
+            if (cmd == 0) {
+                argument = get_argument(argument, &arg1);
+                argument = skip_spaces(argument);
                 /*
                  * remove skill
                  */
                 send_to_char("No remote or exact matches found.\n\r", ch);
                 send_to_char("Try a different query.\n\r", ch);
                 sprintf(buf, "%s is looking for a help on \"%s\". Can someone "
-                             "help %s?",
-                        GET_NAME(ch), argument,
-                        (GET_SEX(ch) == SEX_MALE ? "him" :
-                         (GET_SEX(ch) == SEX_FEMALE ? "her" : "it")));
+                             "help %s?", GET_NAME(ch), argument, HMHR(ch));
                 Log(buf);
                 /*
                  * add query to ADD_HELP
@@ -3087,24 +2948,23 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 fputs(buf, fl);
                 fclose(fl);
                 return;
-            } else {
-                Log("got to bad spot in do_help");
-                return;
-            }
-        } else {
-            send_to_char("No remote or exact matches found.\n\r", ch);
+            } 
+            
+            Log("got to bad spot in do_help");
             return;
-        }
+        } 
+        
+        send_to_char("No remote or exact matches found.\n\r", ch);
         return;
     }
     send_to_char(help, ch);
 }
 
-#endif
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
     char            buf[MAX_STRING_LENGTH];
+    char           *keyword;
 
     int             i,
                     j = 1;
@@ -3116,12 +2976,12 @@ void do_wizhelp(struct char_data *ch, char *arg, int cmd)
         return;
 	}
 
-    one_argument(arg, buf);
-    if (*arg) {
+    arg = get_argument(arg, &keyword);
+    if (keyword) {
         /*
          * asking for help on keyword, try looking in file
          */
-        do_actual_wiz_help(ch, arg, cmd);
+        do_actual_wiz_help(ch, keyword, cmd);
         return;
     }
 
@@ -3173,7 +3033,6 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 	}
 
     argument = skip_spaces(argument);
-
     if (*argument) {
         if (!wizhelp_index) {
             send_to_char("No wizhelp available.\n\r", ch);
@@ -3186,9 +3045,8 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
             mid = (bot + top) / 2;
             minlen = strlen(argument);
 
-            if (!
-                (chk =
-                 strn_cmp(argument, wizhelp_index[mid].keyword, minlen))) {
+            if (!(chk =
+                  strn_cmp(argument, wizhelp_index[mid].keyword, minlen))) {
                 rewind(wizhelp_fl);
                 fseek(wizhelp_fl, wizhelp_index[mid].pos, 0);
                 *buffer = '\0';
@@ -3533,7 +3391,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
     struct descriptor_data *d;
     struct char_data *person;
     char            buffer[MAX_STRING_LENGTH * 3] = "",
-                    tbuf[1024];
+                   *tbuf;
     int             count = 0,
                     temp = 0;
     char            type;
@@ -3588,11 +3446,11 @@ void do_who(struct char_data *ch, char *argument, int cmd)
         sprintf(buffer, "%s", "");
     }
 
-    argument = one_argument(argument, tbuf);
+    argument = get_argument(argument, &tbuf);
     if (IS_IMMORTAL(ch)) {
-        if (tbuf[0] == '-' && tbuf[1] != '\0' && tbuf[1] != '?') {
+        if (tbuf && tbuf[0] == '-' && tbuf[1] != '\0' && tbuf[1] != '?') {
             type = tbuf[1];
-        } else if (tbuf[0] == '-' && tbuf[1] == '?') {
+        } else if (tbuf && tbuf[0] == '-' && tbuf[1] == '?') {
             send_to_char("\n\rUsage:  who -r    for race\n\r", ch);
             send_to_char("            -i    for idle time\n\r", ch);
             send_to_char("            -l    for levels\n\r", ch);
@@ -3605,20 +3463,21 @@ void do_who(struct char_data *ch, char *argument, int cmd)
             send_to_char("            -a    for alignment\n\r\n\r", ch);
             ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",
                       color, total_connections);
-            ch_printf(ch,
-                      "%sPlayers online since last reboot: $c0015%ld\n\r",
+            ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",
                       color, total_max_players);
             return;
         } else {
             type = 't';
         }
-    } else
+    } else {
         type = 't';
+    }
 
-    if (tbuf[0] != '-' && tbuf && tbuf[0] != ' ' && tbuf[0] != '\0') {
+    if (tbuf && tbuf[0] != '-' && tbuf && tbuf[0] != ' ' && tbuf[0] != '\0') {
         temp = 1;
         ch_printf(ch, "$c000WPartial name search for $c000Y%s.\n\r", tbuf);
     }
+
     for (d = descriptor_list; d; d = d->next) {
         person = (d->original ? d->original : d->character);
         if (person && person->in_room && real_roomp(person->in_room) &&
@@ -3978,7 +3837,7 @@ void do_where_object(struct char_data *ch, struct obj_data *obj,
 
 void do_where(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[MAX_INPUT_LENGTH + 80],
+    char           *name,
                     buf[MAX_STRING_LENGTH];
     char           *nameonly;
     register struct char_data *i;
@@ -3990,45 +3849,43 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_where");
 
-    only_argument(argument, name);
-
-    if (!*name) {
+    argument = get_argument(argument, &name);
+    if (!name) {
         if (!IS_IMMORTAL(ch)) {
             send_to_char("What are you looking for?\n\r", ch);
             return;
-        } else {
-            init_string_block(&sb);
-            append_to_string_block(&sb, "$c000BPlayers:\n\r--------\n\r");
-
-            for (d = descriptor_list; d; d = d->next) {
-                if (d->character && d->connected == CON_PLYNG &&
-                    d->character->in_room != NOWHERE &&
-                    CAN_SEE(ch, d->character)) {
-                    if (d->original) {
-                    /*
-                     * If switched
-                     */
-                        sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
-                                     "$c000B[$c000W%ld$c000B] In body of: "
-                                     "[$c000W%s$c000B]$c000w\n\r",
-                                d->original->player.name,
-                                real_roomp(d->character->in_room)->name,
-                                d->character->in_room,
-                                fname(d->character->player.name));
-                    } else {
-                        sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
-                                     "$c000B[$c000W%ld$c000B]$c000w\n\r",
-                                d->character->player.name,
-                                real_roomp(d->character->in_room)->name,
-                                d->character->in_room);
-					}
-                    append_to_string_block(&sb, buf);
-                }
-            }
-            page_string_block(&sb, ch);
-            destroy_string_block(&sb);
-            return;
         }
+
+        init_string_block(&sb);
+        append_to_string_block(&sb, "$c000BPlayers:\n\r--------\n\r");
+
+        for (d = descriptor_list; d; d = d->next) {
+            if (d->character && d->connected == CON_PLYNG &&
+                d->character->in_room != NOWHERE && CAN_SEE(ch, d->character)) {
+                if (d->original) {
+                /*
+                 * If switched
+                 */
+                    sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
+                                 "$c000B[$c000W%ld$c000B] In body of: "
+                                 "[$c000W%s$c000B]$c000w\n\r",
+                            d->original->player.name,
+                            real_roomp(d->character->in_room)->name,
+                            d->character->in_room,
+                            fname(d->character->player.name));
+                } else {
+                    sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
+                                 "$c000B[$c000W%ld$c000B]$c000w\n\r",
+                            d->character->player.name,
+                            real_roomp(d->character->in_room)->name,
+                            d->character->in_room);
+                }
+                append_to_string_block(&sb, buf);
+            }
+        }
+        page_string_block(&sb, ch);
+        destroy_string_block(&sb);
+        return;
     }
 
     if (isdigit(*name)) {
@@ -4044,9 +3901,9 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
     for (i = character_list; i; i = i->next) {
         if (isname(name, i->player.name) && CAN_SEE(ch, i)) {
-            if (i->in_room != NOWHERE && (IS_IMMORTAL(ch) || 
-                real_roomp(i->in_room)->zone == 
-                real_roomp(ch->in_room)->zone)) {
+            if (i->in_room != NOWHERE && 
+                (IS_IMMORTAL(ch) || real_roomp(i->in_room)->zone == 
+                                    real_roomp(ch->in_room)->zone)) {
                 if (number == 0 || (--count) == 0) {
                     if (number == 0) {
                         sprintf(buf, "[%2d] ", ++count);
@@ -4213,14 +4070,14 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
 void do_consider(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
-    char            name[256];
+    char           *name;
     int             diff;
 
     dlog("in do_consider");
 
-    only_argument(argument, name);
+    argument = get_argument(argument, &name);
 
-    if (!(victim = get_char_room_vis(ch, name))) {
+    if (!name || !(victim = get_char_room_vis(ch, name))) {
         send_to_char("Consider killing who?\n\r", ch);
         return;
     }
@@ -4231,8 +4088,7 @@ void do_consider(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!IS_NPC(victim)) {
-        send_to_char("Would you like to borrow a cross and a shovel?\n\r",
-                     ch);
+        send_to_char("Would you like to borrow a cross and a shovel?\n\r", ch);
         return;
     }
 
@@ -4266,8 +4122,8 @@ void do_consider(struct char_data *ch, char *argument, int cmd)
     } else if (diff <= 2) {
         send_to_char("You would need a lot of luck!\n\r", ch);
     } else if (diff <= 3) {
-        send_to_char
-            ("You would need a lot of luck and great equipment!\n\r", ch);
+        send_to_char("You would need a lot of luck and great equipment!\n\r",
+                     ch);
     } else if (diff <= 5) {
         send_to_char("Do you feel lucky, punk?\n\r", ch);
     } else if (diff <= 10) {
@@ -4278,160 +4134,6 @@ void do_consider(struct char_data *ch, char *argument, int cmd)
         send_to_char("Why don't I just kill you right now and save you the "
                      "trouble?\n\r", ch);
 	}
-#if 0
-
-    if (ch->skills) {
-        int             skill = 0;
-        int             learn = 0;
-        int             num,
-                        num2;
-        float           fnum;
-
-        if (IsAnimal(victim) && ch->skills[SKILL_CONS_ANIMAL].learned) {
-            skill = SKILL_CONS_ANIMAL;
-            learn = ch->skills[skill].learned;
-            act("$N seems to be an animal", FALSE, ch, 0, victim, TO_CHAR);
-        }
-        if (IsVeggie(victim) && ch->skills[SKILL_CONS_VEGGIE].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_VEGGIE;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_VEGGIE].learned);
-            act("$N seems to be an ambulatory vegetable",
-                FALSE, ch, 0, victim, TO_CHAR);
-        }
-        if (IsDiabolic(victim) && ch->skills[SKILL_CONS_DEMON].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_DEMON;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_DEMON].learned);
-            act("$N seems to be a demon!", FALSE, ch, 0, victim, TO_CHAR);
-        }
-        if (IsReptile(victim) && ch->skills[SKILL_CONS_REPTILE].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_REPTILE;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_REPTILE].learned);
-            act("$N seems to be a reptilian creature",
-                FALSE, ch, 0, victim, TO_CHAR);
-        }
-        if (IsUndead(victim) && ch->skills[SKILL_CONS_UNDEAD].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_UNDEAD;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_UNDEAD].learned);
-            act("$N seems to be undead", FALSE, ch, 0, victim, TO_CHAR);
-        }
-
-        if (IsGiantish(victim) && ch->skills[SKILL_CONS_GIANT].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_GIANT;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_GIANT].learned);
-            act("$N seems to be a giantish creature", FALSE, ch, 0, victim,
-                TO_CHAR);
-        }
-        if (IsPerson(victim) && ch->skills[SKILL_CONS_PEOPLE].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_PEOPLE;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_PEOPLE].learned);
-            act("$N seems to be a human or demi-human",
-                FALSE, ch, 0, victim, TO_CHAR);
-        }
-        if (IsOther(victim) && ch->skills[SKILL_CONS_OTHER].learned) {
-            if (!skill) {
-                skill = SKILL_CONS_OTHER;
-			}
-            learn = MAX(learn, ch->skills[SKILL_CONS_OTHER].learned / 2);
-            act("$N seems to be a monster you know about",
-                FALSE, ch, 0, victim, TO_CHAR);
-        }
-
-        if (learn > 95) {
-            learn = 95;
-		}
-        if (learn == 0) {
-            return;
-		}
-        WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-
-#if 1
-
-        num = (int) GetApprox(GET_MAX_HIT(victim), learn);
-        num2 = (int) GET_MAX_HIT(ch);
-        if (!num2) {
-            num2 = 1;
-		}
-        fnum = ((int) num / (int) num2);
-        sprintf(buf, "Est Max hits are: %s\n\r", DescRatio(fnum));
-        send_to_char(buf, ch);
-
-        num = (int) GetApprox(GET_AC(victim), learn);
-        num2 = (int) GET_AC(ch);
-        if (!num2) {
-            num2 = 1;
-		}
-        fnum = ((int) num / (int) num2);
-
-        sprintf(buf, "Est. armor class is : %s\n\r", DescRatio(fnum));
-        send_to_char(buf, ch);
-
-        if (learn > 60) {
-            sprintf(buf, "Est. # of attacks: %s\n\r",
-                    DescAttacks((int) GetApprox((int) victim->mult_att,
-                                                learn)));
-            send_to_char(buf, ch);
-        }
-
-        if (learn > 70) {
-
-            num = (int) GetApprox((int) victim->specials.damnodice, learn);
-            num2 = (int) GetApprox((int) victim->specials.damsizedice,
-                                   learn);
-            if (!num2) {
-                num2 = 1;
-			}
-            fnum = (int) num *(num2 / 2.0);
-            sprintf(buf, "Est. damage of attacks is %s\n\r",
-                    DescDamage(fnum));
-
-            send_to_char(buf, ch);
-        }
-
-        if (learn > 80) {
-
-            num = (int) GetApprox(GET_HITROLL(victim), learn);
-            num2 = ((int) 21 - CalcThaco(ch));
-            if (!num2) {
-                num2 = 1;
-			}
-            if (num2 > 0) {
-                fnum = ((int) num / (int) num2);
-            } else {
-                fnum = 2.0;
-			}
-            sprintf(buf, "Est. Thaco: %s\n\r", DescRatio(fnum));
-
-            send_to_char(buf, ch);
-
-            num = GetApprox(GET_DAMROLL(victim), learn);
-            num2 = GET_DAMROLL(ch);
-            if (!num2) {
-                num2 = 1;
-			}
-            fnum = ((int) num / (int) num2);
-
-            sprintf(buf, "Est. Dam bonus is: %s\n\r", DescRatio(fnum));
-
-            send_to_char(buf, ch);
-
-        }
-#endif
-
-    }
-#endif
-
 }
 
 void do_spells(struct char_data *ch, char *argument, int cmd)
@@ -4439,9 +4141,6 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
     int             spl,
                     index,
                     i;
-                    /*
-                     * 16384
-                     */
     char            buf[MAX_STRING_LENGTH],
                     tbuf[255];
 
@@ -4751,7 +4450,7 @@ void do_value(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[1000],
                     buf2[1000],
-                    name[1000];
+                   *name;
     struct obj_data *obj = 0;
     struct char_data *vict = 0;
 
@@ -4762,21 +4461,24 @@ void do_value(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = one_argument(argument, name);
+    argument = get_argument(argument, &name);
 
-    if ((obj = get_obj_in_list_vis(ch, name, ch->carrying)) == 0) {
-        if ((vict = get_char_room_vis(ch, name)) == 0) {
+    if( !name ) {
+        send_to_char("Who, or what are you talking about?\n\r", ch);
+        return;
+    }
+
+    if (!(obj = get_obj_in_list_vis(ch, name, ch->carrying))) {
+        if (!(vict = get_char_room_vis(ch, name))) {
             send_to_char("Who, or what are you talking about?\n\r", ch);
             return;
-        } else {
-            only_argument(argument, name);
-            if ((obj = get_obj_in_list_vis(ch, name, vict->carrying)) == 0) {
-                act("You can't see that on $M", FALSE, ch, obj, vict,
-                    TO_CHAR);
-                act("$n looks you over", FALSE, ch, 0, vict, TO_VICT);
-                act("$n looks $N over", FALSE, ch, 0, vict, TO_NOTVICT);
-                return;
-            }
+        } 
+        
+        if (!(obj = get_obj_in_list_vis(ch, argument, vict->carrying))) {
+            act("You can't see that on $M", FALSE, ch, obj, vict, TO_CHAR);
+            act("$n looks you over", FALSE, ch, 0, vict, TO_VICT);
+            act("$n looks $N over", FALSE, ch, 0, vict, TO_NOTVICT);
+            return;
         }
     }
 
@@ -5522,8 +5224,8 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
     };
     char            buf[MAX_STRING_LENGTH],
                     buf2[MAX_STRING_LENGTH];
-    char            arg1[MAX_STRING_LENGTH],
-                    arg2[MAX_STRING_LENGTH];
+    char           *arg1,
+                   *arg2;
     int             sd,
                     smin,
                     smax,
@@ -5573,13 +5275,11 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
     /*
      * was mortal
      */
-    argument_split_2(argument, arg1, arg2);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
     sd = search_block(arg1, keywords, FALSE);
 
-    /*
-     * only_argument(argument, name);
-     * Find char in room
-     */
     if ((spud = get_char_room_vis(ch, arg1))) {
 
         sprintf(buf, "$n peers intently at $N.");
@@ -5638,8 +5338,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                 rm = real_roomp(rm)->dir_option[i]->to_room;
                 for (spud = real_roomp(rm)->people; spud;
                      spud = spud->next_in_room) {
-                    if ((CAN_SEE(ch, spud))
-                        &&
+                    if ((CAN_SEE(ch, spud)) &&
                         (!(IS_SET(spud->specials.affected_by, AFF_HIDE))))
                     {
                         if (IS_NPC(spud)) {
@@ -5903,33 +5602,29 @@ struct char_data *get_char_linear(struct char_data *ch, char *arg, int *rf,
 
 void do_glance(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg[MAX_INPUT_LENGTH + 30];
+    char           *arg;
     int             bits;
     struct char_data *tmp_char;
     struct obj_data *found_object;
 
-    only_argument(argument, arg);
-
-    if (*arg) {
-        bits =
-            generic_find(arg, FIND_CHAR_ROOM, ch, &tmp_char,
-                         &found_object);
+    arg = skip_spaces(argument);
+    if (arg) {
+        bits = generic_find(arg, FIND_CHAR_ROOM, ch, &tmp_char, &found_object);
         if (tmp_char) {
             glance_at_char(tmp_char, ch);
             if (ch != tmp_char) {
                 act("$n glances at you.", TRUE, ch, 0, tmp_char, TO_VICT);
-                act("$n glances at $N.", TRUE, ch, 0, tmp_char,
-                    TO_NOTVICT);
+                act("$n glances at $N.", TRUE, ch, 0, tmp_char, TO_NOTVICT);
             }
             return;
-        } else {
-            send_to_char("They are not here...", ch);
-            return;
-        }
-    } else {
-        send_to_char("Try to glance at someone...", ch);
+        } 
+        
+        send_to_char("They are not here...", ch);
         return;
-    }
+    } 
+
+    send_to_char("Try to glance at someone...", ch);
+    return;
 }
 
 void do_whoarena(struct char_data *ch, char *argument, int cmd)

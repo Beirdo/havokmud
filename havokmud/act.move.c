@@ -893,8 +893,8 @@ int raw_open_door(struct char_data *ch, int dir)
 void do_open_exit(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH],
+    char           *type,
+                   *dir,
                     buf[MAX_STRING_LENGTH + 40];
     struct room_direction_data *exitp,
                    *back;
@@ -902,7 +902,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
 
     char           *cmdname = FindCommandName(cmd);
 
-    char           *dir_desc[] = {
+    static char    *dir_desc[] = {
         "to the north",         /* 0 */
         "to the east",          /* 1 */
         "to the south",         /* 2 */
@@ -920,15 +920,17 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
-    if (!*type) {
+    if (!type) {
         sprintf(buf, "%s what?!\r\n", cmdname);
         *buf = toupper(*buf);   /* ;-) */
         send_to_char(buf, ch);
         return;
-    } else if ((door = find_door(ch, type, dir)) >= 0) {
-
+    }
+        
+    if ((door = find_door(ch, type, dir)) >= 0) {
         /*
          * perhaps it is a something like door 
          */
@@ -988,21 +990,24 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
 void do_open(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH];
+    char           *type,
+                   *dir;
     struct obj_data *obj;
     struct char_data *victim;
     struct room_direction_data *exitp;
 
     dlog("in do_open");
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
-    if (!*type) {
+    if (!type) {
         send_to_char("Open what?\n\r", ch);
-    } else if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM,
-                          ch, &victim, &obj)) {
-
+        return;
+    } 
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
         /*
          * this is an object 
          */
@@ -1043,8 +1048,8 @@ void do_open(struct char_data *ch, char *argument, int cmd)
 void do_close(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH],
+    char           *type,
+                   *dir,
                     buf[MAX_STRING_LENGTH + 60];
     struct room_direction_data *back,
                    *exitp;
@@ -1054,13 +1059,16 @@ void do_close(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_close");
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
-    if (!*type) {
+    if (!type) {
         send_to_char("Close what?\n\r", ch);
-    } else if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM,
-                          ch, &victim, &obj)) {
-
+        return;
+    } 
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
         /*
          * this is an object 
          */
@@ -1191,20 +1199,24 @@ void raw_lock_door(struct char_data *ch,
 void do_lock(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH];
+    char           *type,
+                   *dir;
     struct room_direction_data *exitp;
     struct obj_data *obj;
     struct char_data *victim;
 
     dlog("in do_lock");
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
-    if (!*type) {
+    if (!type) {
         send_to_char("Lock what?\n\r", ch);
-    } else if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM,
-                           ch, &victim, &obj)) {
+        return;
+    } 
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
         /*
          * this is an object 
          */
@@ -1256,24 +1268,27 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
 void do_unlock(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH];
+    char           *type,
+                   *dir;
     struct room_direction_data *exitp;
     struct obj_data *obj;
     struct char_data *victim;
 
     dlog("in do_unlock");
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
-    if (!*type) {
+    if (!type) {
         send_to_char("Unlock what?\n\r", ch);
-    }else if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM,
-                           ch, &victim, &obj)) {
+        return;
+    }
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
         /*
          * this is an object 
          */
-
         if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (obj->obj_flags.value[2] < 0) {
@@ -1320,15 +1335,16 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
 {
     byte            percent;
     int             door;
-    char            type[MAX_INPUT_LENGTH],
-                    dir[MAX_INPUT_LENGTH];
+    char           *type,
+                   *dir;
     struct room_direction_data *exitp;
     struct obj_data *obj;
     struct char_data *victim;
 
     dlog("in do_pick");
 
-    argument_interpreter(argument, type, dir);
+    argument = get_argument(argument, &type);
+    argument = get_argument(argument, &dir);
 
     percent = number(1, 101);   /* 101% is a complete failure */
 
@@ -1351,14 +1367,16 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*type) {
+    if (!type) {
         send_to_char("Pick what?\n\r", ch);
-    } else if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM,
-                            ch, &victim, &obj)) {
+        return;
+    } 
+    
+    if (generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                     &obj)) {
         /*
          * this is an object 
          */
-
         if (obj->obj_flags.type_flag != ITEM_CONTAINER) {
             send_to_char("That's not a container.\n\r", ch);
         } else if (!IS_SET(obj->obj_flags.value[1], CONT_CLOSED)) {
@@ -1403,7 +1421,7 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
 void do_enter(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char            buf[MAX_INPUT_LENGTH + 80],
+    char           *buf,
                     tmp[MAX_STRING_LENGTH];
     struct room_direction_data *exitp;
     struct room_data *rp;
@@ -1413,13 +1431,13 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_enter");
 
-    one_argument(argument, buf);
+    argument = get_argument(argument, &buf);
 
     /* 
      * an argument was supplied, search for PORTAL items in room with keywords
      * first 
      */
-    if (*buf) {
+    if (buf) {
         /*
          * check inventory too, maybe people will be able to carry portal
          * items in the future? 
@@ -1669,12 +1687,12 @@ void do_sleep(struct char_data *ch, char *argument, int cmd)
 void do_wake(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *tmp_char;
-    char            arg[MAX_STRING_LENGTH];
+    char           *arg;
 
     dlog("in do_wake");
 
-    one_argument(argument, arg);
-    if (*arg) {
+    argument = get_argument(argument, &arg);
+    if (arg) {
         if (GET_POS(ch) == POSITION_SLEEPING) {
             act("You can't wake people up if you are asleep yourself!",
                 FALSE, ch, 0, 0, TO_CHAR);
@@ -1684,45 +1702,40 @@ void do_wake(struct char_data *ch, char *argument, int cmd)
                 if (tmp_char == ch) {
                     act("If you want to wake yourself up, just type 'wake'", 
                         FALSE, ch, 0, 0, TO_CHAR);
-                } else {
-                    if (GET_POS(tmp_char) == POSITION_SLEEPING) {
-                        if (IS_AFFECTED(tmp_char, AFF_SLEEP)) {
-                            act("You can not wake $M up!", FALSE, ch, 0,
-                                tmp_char, TO_CHAR);
-                        } else {
-                            act("You wake $M up.", FALSE, ch, 0, tmp_char,
-                                TO_CHAR);
-                            GET_POS(tmp_char) = POSITION_SITTING;
-                            act("You are awakened by $n.", FALSE, ch, 0,
-                                tmp_char, TO_VICT);
-                        }
+                } else if (GET_POS(tmp_char) == POSITION_SLEEPING) {
+                    if (IS_AFFECTED(tmp_char, AFF_SLEEP)) {
+                        act("You can not wake $M up!", FALSE, ch, 0,
+                            tmp_char, TO_CHAR);
                     } else {
-                        act("$N is already awake.", FALSE, ch, 0, tmp_char,
-                            TO_CHAR);
+                        act("You wake $M up.", FALSE, ch, 0, tmp_char, TO_CHAR);
+                        GET_POS(tmp_char) = POSITION_SITTING;
+                        act("You are awakened by $n.", FALSE, ch, 0,
+                            tmp_char, TO_VICT);
                     }
+                } else {
+                    act("$N is already awake.", FALSE, ch, 0, tmp_char,
+                        TO_CHAR);
                 }
             } else {
                 send_to_char("You do not see that person here.\n\r", ch);
             }
         }
+    } else if (IS_AFFECTED(ch, AFF_SLEEP)) {
+        send_to_char("You can't wake up!\n\r", ch);
     } else {
-        if (IS_AFFECTED(ch, AFF_SLEEP)) {
-            send_to_char("You can't wake up!\n\r", ch);
+        if (GET_POS(ch) > POSITION_SLEEPING) {
+            send_to_char("You are already awake...\n\r", ch);
         } else {
-            if (GET_POS(ch) > POSITION_SLEEPING) {
-                send_to_char("You are already awake...\n\r", ch);
-            } else {
-                send_to_char("You wake, and sit up.\n\r", ch);
-                act("$n awakens.", TRUE, ch, 0, 0, TO_ROOM);
-                GET_POS(ch) = POSITION_SITTING;
-            }
+            send_to_char("You wake, and sit up.\n\r", ch);
+            act("$n awakens.", TRUE, ch, 0, 0, TO_ROOM);
+            GET_POS(ch) = POSITION_SITTING;
         }
     }
 }
 
 void do_follow(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[160];
+    char           *name;
     struct char_data *leader;
 
     void            stop_follower(struct char_data *ch);
@@ -1731,9 +1744,8 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_follow");
 
-    only_argument(argument, name);
-
-    if (*name) {
+    argument = get_argument(argument, &name);
+    if (name) {
         if (str_cmp(name, "self") == 0) {
             sprintf(name, "%s", GET_NAME(ch));
         }
@@ -1748,31 +1760,12 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
     }
 
     if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master)) {
-
         act("But you only feel like following $N!",
             FALSE, ch, 0, ch->master, TO_CHAR);
-
     } else {                    
         /* 
          * Not Charmed follow person
-         *       
-         * victim stronger?? 
          */
-#if 0                           
-        if ((GetMaxLevel(leader) - GetMaxLevel(ch)) > 8) {
-            act("$N looks to be too strong to join you.", FALSE, ch, 0,
-                leader, TO_CHAR);
-            return;
-        }
-        /*
-         * your stronger?? 
-         */
-        if ((GetMaxLevel(ch) - GetMaxLevel(leader)) > 8) {
-            act("$N looks to be too puny and weak to join you.", FALSE, ch,
-                0, leader, TO_CHAR);
-            return;
-        }
-#endif
         if (leader == ch) {
             if (!ch->master) {
                 send_to_char("You are already following yourself.\n\r", ch);
@@ -1798,7 +1791,7 @@ void do_follow(struct char_data *ch, char *argument, int cmd)
 
 void do_run(struct char_data *ch, char *argument, int cmd)
 {
-    char            buff[MAX_INPUT_LENGTH + 80],
+    char           *buff,
                     buf[MAX_INPUT_LENGTH + 80];
     int             keyno,
                     was_in;
@@ -1815,9 +1808,8 @@ void do_run(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_run");
 
-    only_argument(argument, buff);
-
-    if (!*buff) {
+    argument = get_argument(argument, &buff);
+    if (!buff) {
         send_to_char("The proper format for this command is RUN "
                      "<DIRECTION>.\n\r", ch);
         return;

@@ -1799,8 +1799,6 @@ void spell_word_of_recall(int level, struct char_data *ch,
 {
     int             location;
 
-    void            do_look(struct char_data *ch, char *argument, int cmd);
-
     assert(victim);
 
     if (IS_NPC(victim)) {

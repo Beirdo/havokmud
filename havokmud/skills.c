@@ -80,7 +80,7 @@ int             named_object_on_ground(int room, void *c_data);
 
 void do_disarm(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[30];
+    char           *name;
     int             percent;
     struct char_data *victim;
     struct obj_data *w,
@@ -99,8 +99,8 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
     /*
      *   get victim
      */
-    only_argument(argument, name);
-    if (!(victim = get_char_room_vis(ch, name))) {
+    argument = get_argument(argument, &name);
+    if (!name || !(victim = get_char_room_vis(ch, name))) {
         if (ch->specials.fighting) {
             victim = ch->specials.fighting;
         } else {
@@ -239,7 +239,7 @@ int named_mobile_in_room(int room, struct hunting_data *c_data)
 
 void do_track(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[256],
+    char           *name,
                     buf[256],
                     found = FALSE;
     int             dist,
@@ -254,7 +254,12 @@ void do_track(struct char_data *ch, char *argument, int cmd)
     return;
 #endif
 
-    only_argument(argument, name);
+    argument = get_argument(argument, &name);
+    if( !name ) {
+        send_to_char("You are unable to find traces of one.\n\r", ch);
+        return;
+    }
+
 
     found = FALSE;
     for (scan = character_list; scan; scan = scan->next) {
@@ -662,8 +667,8 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
     int             was_in,
                     roll;
     char            buf[256],
-                    type[128],
-                    direction[128];
+                   *type,
+                   *direction;
 
     if (!ch->skills) {
         return;
@@ -681,8 +686,8 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
     /*
      * make sure that the argument is a direction, or a keyword. 
      */
-    arg = skip_spaces(arg);
-    argument_interpreter(arg, type, direction);
+    arg = get_argument(arg, &type);
+    arg = get_argument(arg, &direction);
 
     if ((dir = find_door(ch, type, direction)) >= 0) {
         ok = TRUE;
@@ -1157,7 +1162,7 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
     extern char    *dirs[];
 
     char            buf[256],
-                    direction[128];
+                   *direction;
 
     if (GET_MOVE(ch) < 10) {
         send_to_char("You're too tired to do that\n\r", ch);
@@ -1173,10 +1178,8 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
      * make sure that the argument is a direction, or a keyword. 
      */
 
-    arg = skip_spaces(arg);
-    only_argument(arg, direction);
-
-    if ((dir = search_block(direction, dirs, FALSE)) < 0) {
+    arg = get_argument(arg, &direction);
+    if (!direction || (dir = search_block(direction, dirs, FALSE)) < 0) {
         send_to_char("You can't climb that way.\n\r", ch);
         return;
     }
@@ -1278,8 +1281,8 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
 {
     struct obj_data *j = 0;
     struct obj_data *hide;
-    char            itemname[80],
-                    itemtype[80],
+    char           *itemname,
+                   *itemtype,
                     hidetype[80],
                     buf[MAX_STRING_LENGTH];
     int             percent = 0;
@@ -1305,15 +1308,15 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    arg = one_argument(arg, itemname);
-    arg = one_argument(arg, itemtype);
+    arg = get_argument(arg, &itemname);
+    arg = get_argument(arg, &itemtype);
 
-    if (!*itemname) {
+    if (!itemname) {
         send_to_char("Tan what?\n\r", ch);
         return;
     }
 
-    if (!*itemtype) {
+    if (!itemtype) {
         send_to_char("I see that, but what do you wanna make?\n\r", ch);
         return;
     }
@@ -1323,6 +1326,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         send_to_char("Where did that carcass go?\n\r", ch);
         return;
     }
+
     if ((strcmp(itemtype, "shield")) &&
         (strcmp(itemtype, "jacket")) &&
         (strcmp(itemtype, "boots")) &&
@@ -1335,6 +1339,7 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
                      "gloves, leggings, sleeves, helmet, or bag.\n\r", ch);
         return;
     }
+
     /*
      * affect[0] == race of corpse, affect[1] == level of corpse 
      */
@@ -1904,12 +1909,17 @@ void do_find_traps(struct char_data *ch, char *arg, int cmd)
 
 void do_find(struct char_data *ch, char *arg, int cmd)
 {
-    char            findwhat[30];
+    char           *findwhat;
 
     if (!ch->skills) {
         return;
     }
-    arg = one_argument(arg, findwhat);
+    arg = get_argument(arg, &findwhat);
+
+    if( !findwhat ) {
+        send_to_char("Find what?\n\r", ch);
+        return;
+    }
 
     if (!strcmp(findwhat, "water")) {
         do_find_water(ch, arg, cmd);
@@ -2025,8 +2035,7 @@ void do_bellow(struct char_data *ch, char *arg, int cmd)
  */
 void do_carve(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[MAX_STRING_LENGTH];
-    char            arg2[MAX_STRING_LENGTH];
+    char           *arg1;
     char            buffer[MAX_STRING_LENGTH];
     struct obj_data *corpse;
     struct obj_data *food;
@@ -2038,7 +2047,6 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
     }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_RANGER)) {
-        send_to_char("Hum, you wonder how you would do this...\n\r", ch);
         return;
     }
 
@@ -2047,10 +2055,11 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    half_chop(argument, arg1, arg2);
-    corpse = get_obj_in_list_vis(ch, arg1, (real_roomp(ch->in_room)->contents));
+    argument = get_argument(argument, &arg1);
 
-    if (!corpse) {
+    if( !arg1 || 
+        !(corpse = get_obj_in_list_vis(ch, arg1, 
+                                       real_roomp(ch->in_room)->contents))) {
         send_to_char("That's not here.\n\r", ch);
         return;
     }
@@ -2090,8 +2099,8 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         sprintf(buffer, "a Ration%s", corpse->short_description + 10);
         food->short_description = (char *) strdup(buffer);
         food->action_description = (char *) strdup(buffer);
-        sprintf(arg2, "%s is lying on the ground.", buffer);
-        food->description = (char *) strdup(arg2);
+        sprintf(buffer, "%s is lying on the ground.", food->short_description);
+        food->description = (char *) strdup(buffer);
         corpse->obj_flags.weight = corpse->obj_flags.weight - 50;
 
         i = number(1, 6);
@@ -2105,7 +2114,7 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
 
 void do_doorway(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *target;
     int             location;
     struct room_data *rp;
@@ -2129,8 +2138,8 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    if (!(target = get_char_vis_world(ch, target_name, NULL))) {
+    argument = get_argument(argument, &target_name);
+    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
         return;
     }
@@ -2207,7 +2216,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
 
 void do_psi_portal(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *target;
     struct char_data *follower;
     struct char_data *leader;
@@ -2235,8 +2244,8 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    if (!(target = get_char_vis_world(ch, target_name, NULL))) {
+    argument = get_argument(argument, &target_name);
+    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
         return;
     }
@@ -2364,7 +2373,7 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
 
 void do_mindsummon(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *target;
     int             location;
     struct room_data *rp;
@@ -2388,8 +2397,8 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    if (!(target = get_char_vis_world(ch, target_name, NULL))) {
+    argument = get_argument(argument, &target_name);
+    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
         return;
     }
@@ -2536,7 +2545,7 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
 {
     long            hit_points,
                     mana_points;
-    char            number[80];
+    char           *number;
     int             count;
     bool            num_found = TRUE;
 
@@ -2554,12 +2563,11 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, number);
-
-    /*
-     * polax version of number validation 
-     * NOTE: i changed num_found to be initially TRUE 
-     */
+    argument = get_argument(argument, &number);
+    if( !number ) {
+        send_to_char("Please include a number after the command.\n\r", ch);
+        return;
+    }
 
     for (count = 0; num_found && (count < 9) && (number[count] != '\0');
          count++) {
@@ -2571,24 +2579,15 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    /*
-     * polax modification ends 
-     */
-
-    /*
-     * for (count=0;(!num_found) && (count<9);count++) if
-     * ((number[count]>='1') && (number[count]<='9')) num_found=TRUE; 
-     */
-
     if (!num_found) {
         send_to_char("Please include a number after the command.\n\r", ch);
         return;
-    } else {
-        /* 
-         * forced the string to be proper length 
-         */
-        number[count] = '\0';
-    }
+    } 
+    
+    /* 
+     * forced the string to be proper length 
+     */
+    number[count] = '\0';
 
     /* 
      * long int conversion 
@@ -2823,7 +2822,7 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
 void do_blast(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
-    char            name[240];
+    char           *name;
     int             potency = 0,
                     level,
                     dam = 0;
@@ -2833,7 +2832,8 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills) {
         return;
     }
-    only_argument(argument, name);
+
+    argument = get_argument(argument, &name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PSI)) {
@@ -2848,12 +2848,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
 
     if (ch->specials.fighting) {
         victim = ch->specials.fighting;
-    } else {
-        victim = get_char_room_vis(ch, name);
-        if (!victim) {
-            send_to_char("Exactly whom did you wish to blast?\n\r", ch);
-            return;
-        }
+    } else if ( !name || !(victim = get_char_room_vis(ch, name))) {
+        send_to_char("Exactly whom did you wish to blast?\n\r", ch);
+        return;
     }
 
     if (victim == ch) {
@@ -3165,7 +3162,7 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
 
 void do_hypnosis(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *victim;
     struct affected_type af;
 
@@ -3194,10 +3191,9 @@ void do_hypnosis(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    victim = get_char_room_vis(ch, target_name);
+    argument = get_argument(argument, &target_name);
 
-    if (!victim) {
+    if( !target_name || !(victim = get_char_room_vis(ch, target_name))) {
         send_to_char("There's no one here by that name.\n\r", ch);
         return;
     }
@@ -3299,7 +3295,7 @@ void do_hypnosis(struct char_data *ch, char *argument, int cmd)
 
 void do_scry(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *target;
     int             location,
                     old_location;
@@ -3324,8 +3320,8 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    if (!(target = get_char_vis_world(ch, target_name, NULL))) {
+    argument = get_argument(argument, &target_name);
+    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
         return;
     }
@@ -3414,7 +3410,7 @@ void do_invisibililty(struct char_data *ch, char *argument, int cmd)
 
 void do_adrenalize(struct char_data *ch, char *argument, int cmd)
 {
-    char            target_name[140];
+    char           *target_name;
     struct char_data *target;
     struct affected_type af;
     char            strength;
@@ -3438,8 +3434,8 @@ void do_adrenalize(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, target_name);
-    if (!(target = get_char_room_vis(ch, target_name))) {
+    argument = get_argument(argument, &target_name);
+    if (!target_name || !(target = get_char_room_vis(ch, target_name))) {
         send_to_char("You can't seem to find that person anywhere.\n\r", ch);
         return;
     }
@@ -3660,12 +3656,13 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
     struct char_data *test,
                    *dude;
     struct affected_type af;
-    char            dude_name[140];
+    char           *dude_name;
 
     if (!ch->skills) {
         return;
     }
-    only_argument(argument, dude_name);
+
+    argument = get_argument(argument, &dude_name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PALADIN)) {
@@ -3692,7 +3689,7 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(dude = get_char_room_vis(ch, dude_name))) {
+    if (!dude_name || !(dude = get_char_room_vis(ch, dude_name))) {
         send_to_char("WHO do you wish to bless?\n\r", ch);
         return;
     }
@@ -3805,19 +3802,21 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
     struct affected_type af;
     int             wounds,
                     healing;
-    char            victim_name[240];
+    char           *victim_name;
 
     if (!ch->skills) {
         return;
     }
-    only_argument(argument, victim_name);
+
+    argument = get_argument(argument, &victim_name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PALADIN)) {
         send_to_char("You are not a holy warrior!\n\r", ch);
         return;
     }
-    if (!(victim = get_char_room_vis(ch, victim_name))) {
+
+    if (!victim_name || !(victim = get_char_room_vis(ch, victim_name))) {
         send_to_char("Your hands cannot reach that person\n\r", ch);
         return;
     }
@@ -3876,7 +3875,7 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
 
 void do_holy_warcry(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[140];
+    char            *name;
     int             dam,
                     dif,
                     level;
@@ -3885,25 +3884,29 @@ void do_holy_warcry(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills) {
         return;
     }
-    only_argument(argument, name);
+
+    argument = get_argument(argument, &name);
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PALADIN)) {
         send_to_char("Your feeble attempt at a war cry makes your victim "
                      "laugh at you.\n\r", ch);
         return;
     }
+
     if (GET_ALIGNMENT(ch) < 350) {
         send_to_char("You're too ashamed of your behavior to warcry.\n\r",
                      ch);
         return;
     }
+
     if (check_peaceful(ch, "You warcry is completely silenced by the "
                            "tranquility of this room.\n\r")) {
         return;
     }
+
     if (ch->specials.fighting) {
         dude = ch->specials.fighting;
-    } else if (!(dude = get_char_room_vis(ch, name))) {
+    } else if (!name || !(dude = get_char_room_vis(ch, name))) {
         send_to_char("You bellow at the top of your lungs, to bad your victim"
                      " wasn't here to hear it.\n\r", ch);
         return;
@@ -4081,9 +4084,9 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *target;
     int             skill_check = 0;
-    char            target_name[140],
+    char           *target_name,
                     buf[1024],
-                    message[MAX_INPUT_LENGTH + 20];
+                   *message;
 
     if (!ch->skills) {
         return;
@@ -4128,8 +4131,11 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
     if (!IS_IMMORTAL(ch)) {
         GET_MANA(ch) -= 5;
     }
-    half_chop(argument, target_name, message);
-    if (!(target = get_char_vis_world(ch, target_name, NULL))) {
+
+    argument = get_argument(argument, &target_name);
+    message = skip_spaces(argument);
+
+    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
         return;
     }
@@ -4149,6 +4155,11 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
+    if( !message ) {
+        send_to_char("You seem to want to send a message, but what?\n\r", ch);
+        return;
+    }
+
     sprintf(buf, "$n sends you a mystic message:$c0013 %s", message);
     act(buf, TRUE, ch, 0, target, TO_VICT);
     sprintf(buf, "You send $N%s the message:$c0013 %s",
@@ -4164,13 +4175,13 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 void do_scribe(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
-    char            arg[MAX_INPUT_LENGTH];
+    char            arg[MAX_INPUT_LENGTH],
+                   *spellnm;
     struct obj_data *obj;
     int             sn = -1,
                     x,
                     index,
-                    formula = 0,
-                    qend;
+                    formula = 0;
 
     if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
         send_to_char("Der, what is that?\n\r", ch);
@@ -4210,30 +4221,17 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
-
+    argument = get_argument_delim(argument, &spellnm, '\'');
     /*
      * Check for beginning quote 
      */
-    if (*argument != '\'') {
+    if (!spellnm || spellnm[-1] != '\'') {
         send_to_char("Magic must always be enclosed by the holy magic symbols :"
                      " '\n\r", ch);
         return;
     }
 
-    /*
-     * Locate the last quote && lowercase the magic words (if any) 
-     */
-    for (qend = 1; argument[qend] && argument[qend] != '\''; qend++)
-        argument[qend] = LOWER(argument[qend]);
-
-    if (argument[qend] != '\'') {
-        send_to_char("Magic must always be enclosed by the holy magic symbols :"
-                     " '\n\r", ch);
-        return;
-    }
-
-    sn = old_search_block(argument, 1, qend - 1, spells, 0);
+    sn = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
     sn = sn - 1;
 
     /* 
@@ -4371,12 +4369,12 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
 
 void do_brew(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char            buf[MAX_INPUT_LENGTH],
+                   *spellnm;
     struct obj_data *obj;
     int             sn = -1,
                     index,
-                    formula = 0,
-                    qend;
+                    formula = 0;
 
     if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
         send_to_char("Der, what is that?\n\r", ch);
@@ -4416,29 +4414,18 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = skip_spaces(argument);
+    argument = get_argument_delim(argument, &spellnm, '\'');
 
     /*
      * Check for beginning qoute 
      */
-    if (*argument != '\'') {
+    if (!spellnm || spellnm[-1] != '\'') {
         send_to_char("Magic must always be enclosed by the holy magic symbols :"
                      " '\n\r", ch);
         return;
     }
 
-    /*
-     * Locate the last quote && lowercase the magic words (if any) 
-     */
-    for (qend = 1; argument[qend] && argument[qend] != '\''; qend++)
-        argument[qend] = LOWER(argument[qend]);
-    if (argument[qend] != '\'') {
-        send_to_char("Magic must always be enclosed by the holy magic symbols :"
-                     " '\n\r", ch);
-        return;
-    }
-
-    sn = old_search_block(argument, 1, qend - 1, spells, 0);
+    sn = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
     sn = sn - 1;
 
     if (sn == -1) {
@@ -4559,7 +4546,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
 void do_charge(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
-    char            name[256];
+    char           *name;
     byte            percent;
 
     dlog("in do_charge");
@@ -4570,12 +4557,14 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
     if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r")) {
         return;
     }
-    only_argument(argument, name);
 
-    if (!(victim = get_char_room_vis(ch, name))) {
+    argument = get_argument(argument, &name);
+
+    if (!name || !(victim = get_char_room_vis(ch, name))) {
         send_to_char("charge who?\n\r", ch);
         return;
     }
+
     if (victim == ch) {
         send_to_char("How can you charge yourself?\n\r", ch);
         return;

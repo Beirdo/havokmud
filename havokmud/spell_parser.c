@@ -2977,10 +2977,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     char            buf[254];
     struct obj_data *tar_obj;
     struct char_data *tar_char;
-    char            name[MAX_INPUT_LENGTH];
-    char            ori_argument[256];
-    int             qend,
-                    spl,
+    char           *name;
+    char           *ori_argument,
+                   *spellnm;
+    int             spl,
                     index,
                     i,
                     exp;
@@ -3041,15 +3041,16 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    for (i = 0; argument[i] && (i < 255); i++) {
-        ori_argument[i] = argument[i];
+    ori_argument = strdup(argument);
+    if( !ori_argument ) {
+        Log( "Out of memory in cast!\n\r" );
+        return;
     }
-    ori_argument[i] = '\0';
 
     /*
      * If there is no chars in argument 
      */
-    if (!(*argument)) {
+    if (!*argument) {
         if (cmd != 600) {
             send_to_char("Cast which what where?\n\r", ch);
         } else {
@@ -3058,7 +3059,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (*argument != '\'') {
+    argument = get_argument_delim(argument, &spellnm, '\'');
+    if (!spellnm || spellnm[-1] != '\'') {
         if (cmd != 600) {
             send_to_char("Magic must always be enclosed by the holy magic "
                          "symbols : '\n\r", ch);
@@ -3068,26 +3070,9 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         }
         return;
     }
+     
 
-    /*
-     * Locate the last quote && lowercase the magic words (if any) 
-     */
-    for (qend = 1; *(argument + qend) && (*(argument + qend) != '\''); qend++) {
-        *(argument + qend) = LOWER(*(argument + qend));
-    }
-
-    if (*(argument + qend) != '\'') {
-        if (cmd != 600) {
-            send_to_char("Magic must always be enclosed by the holy magic "
-                         "symbols : '\n\r", ch);
-        } else {
-            send_to_char("Songs must always be enclosed by the vibrant symbols"
-                         " : '\n\r", ch);
-        }
-        return;
-    }
-
-    spl = old_search_block(argument, 1, qend - 1, spells, 0);
+    spl = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
 
     if (!spl) {
         send_to_char("Nothing seems to happen! Wow! \n\r", ch);
@@ -3169,7 +3154,6 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 send_to_char("Sorry, you can't do that.\n\r", ch);
                 return;
             }
-            argument += qend + 1;       
             /* 
              * Point to the last ' 
              */
@@ -3196,15 +3180,16 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s cast %s", GET_NAME(ch), ori_argument);
                 Log(buf);
             }
+            free(ori_argument);
 
             if (!IS_SET(spell_info[index].targets, TAR_IGNORE)) {
-                argument = one_argument(argument, name);
+                argument = get_argument(argument, &name);
 
-                if (str_cmp(name, "self") == 0) {
+                if (name && strcmp(name, "self") == 0) {
                     sprintf(name, "%s", GET_NAME(ch));
                 }
 
-                if (*name) {
+                if (name) {
                     /*
                      * room char spells 
                      */

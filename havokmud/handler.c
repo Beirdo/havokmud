@@ -2684,8 +2684,7 @@ struct obj_data *create_money(int amount)
  * ch      This is the person that is trying to "find" 
  * *tar_ch Will be NULL if no character was found, otherwise points
  * *tar_obj Will be NULL if no object was found, otherwise points 
- * The routine returns a pointer to the next word in *arg (just like the 
- * one_argument routine).  
+ * The routine returns a pointer to the next word in *arg 
  */
 
 int generic_find(char *arg, int bitvector, struct char_data *ch,

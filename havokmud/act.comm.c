@@ -321,8 +321,8 @@ void do_mobTell2(struct char_data *ch, struct char_data *mob,
 void do_tell(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
-    char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
+    char           *name,
+                   *message,
                     buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_tell");
@@ -331,34 +331,49 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    half_chop(argument, name, message);
+    argument = get_argument(argument, &name);
+    message = skip_spaces(argument);
 
-    if (!*name || !*message) {
+    if (!name || !message) {
         send_to_char("Who do you wish to tell what??\n\r", ch);
         return;
-    } else if (!(vict = get_char_vis(ch, name))) {
+    } 
+    
+    if (!(vict = get_char_vis(ch, name))) {
         send_to_char("No-one by that name here..\n\r", ch);
         return;
-    } else if (ch == vict) {
+    } 
+    
+    if (ch == vict) {
         send_to_char("You try to tell yourself something.\n\r", ch);
         return;
-    } else if (GET_POS(vict) == POSITION_SLEEPING && !IS_IMMORTAL(ch)) {
+    } 
+    
+    if (GET_POS(vict) == POSITION_SLEEPING && !IS_IMMORTAL(ch)) {
         act("$E is asleep, shhh.", FALSE, ch, 0, vict, TO_CHAR);
         return;
-    } else if (IS_NPC(vict) && !(vict->desc)) {
+    } 
+    
+    if (IS_NPC(vict) && !(vict->desc)) {
         send_to_char("No-one by that name here..\n\r", ch);
         return;
-    } else if (!IS_IMMORTAL(ch) && IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } 
+    
+    if (!IS_IMMORTAL(ch) && IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for tells right now.", FALSE, ch, 0, vict,
             TO_CHAR);
         return;
-    } else if (IS_IMMORTAL(vict) && IS_IMMORTAL(ch) && 
-               GetMaxLevel(ch) < GetMaxLevel(vict) && 
-               IS_SET(vict->specials.act, PLR_NOTELL)) {
+    } 
+    
+    if (IS_IMMORTAL(vict) && IS_IMMORTAL(ch) && 
+        GetMaxLevel(ch) < GetMaxLevel(vict) && 
+        IS_SET(vict->specials.act, PLR_NOTELL)) {
         act("$N is not listening for tells right now!", FALSE, ch, 0, vict,
             TO_CHAR);
         return;
-    } else if (!vict->desc) {
+    } 
+    
+    if (!vict->desc) {
         send_to_char("They can't hear you, link dead.\n\r", ch);
         return;
     }
@@ -367,11 +382,11 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
         send_to_char("In a silenced room, try again later.\n\r", ch);
         return;
     }
+
 #ifdef ZONE_COMM_ONLY
     if (real_roomp(ch->in_room)->zone != real_roomp(vict->in_room)->zone &&
         !IS_IMMORTAL(ch) && !IS_IMMORTAL(vict)) {
-        send_to_char("That person is not near enough for you to tell.\n\r",
-                     ch);
+        send_to_char("That person is not near enough for you to tell.\n\r", ch);
         return;
     }
 #endif
@@ -380,10 +395,10 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
             (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)), message);
     act(buf, FALSE, vict, 0, 0, TO_CHAR);
 
-    strncpy(vict->last_tell, GET_NAME(ch), 80);
     /*
      * Used for reply
      */
+    strncpy(vict->last_tell, GET_NAME(ch), 80);
 
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
         sprintf(buf, "$c0013You tell %s %s'%s'",
@@ -392,14 +407,13 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
                 message);
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
-
 }
 
 void do_whisper(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
-    char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
+    char           *name,
+                   *message,
                     buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_whisper");
@@ -408,24 +422,23 @@ void do_whisper(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    half_chop(argument, name, message);
+    argument = get_argument(argument, &name);
+    message = skip_spaces(argument);
 
-    if (!*name || !*message) {
+    if (!name || !message) {
         send_to_char("Who do you want to whisper to.. and what??\n\r", ch);
     } else if (!(vict = get_char_room_vis(ch, name))) {
         send_to_char("No-one by that name here..\n\r", ch);
     } else if (vict == ch) {
         act("$n whispers quietly to $mself.", FALSE, ch, 0, 0, TO_ROOM);
-        send_to_char
-            ("You can't seem to get your mouth close enough to your ear...\n\r",
-             ch);
+        send_to_char("You can't seem to get your mouth close enough to your "
+                     "ear...\n\r", ch);
     } else {
 		if (check_soundproof(vict)) {
             return;
 		}
 
-        sprintf(buf, "$c0005[$c0015$n$c0005] whispers to you, '%s'",
-                message);
+        sprintf(buf, "$c0005[$c0015$n$c0005] whispers to you, '%s'", message);
         act(buf, FALSE, ch, 0, vict, TO_VICT);
         if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
             sprintf(buf, "$c0005You whisper to %s%s, '%s'",
@@ -442,8 +455,8 @@ void do_whisper(struct char_data *ch, char *argument, int cmd)
 void do_ask(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
-    char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
+    char           *name,
+                   *message,
                     buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_ask");
@@ -452,11 +465,11 @@ void do_ask(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    half_chop(argument, name, message);
+    argument = get_argument(argument, &name);
+    message = skip_spaces(argument);
 
-    if (!*name || !*message) {
-        send_to_char("Who do you want to ask something.. and what??\n\r",
-                     ch);
+    if (!name || !message) {
+        send_to_char("Who do you want to ask something.. and what??\n\r", ch);
     } else if (!(vict = get_char_room_vis(ch, name))) {
         send_to_char("No-one by that name here..\n\r", ch);
     } else if (vict == ch) {
@@ -479,8 +492,8 @@ void do_ask(struct char_data *ch, char *argument, int cmd)
                     message);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
         }
-        act("$c0006$n asks $N a question.", FALSE, ch, 0, vict,
-            TO_NOTVICT);
+
+        act("$c0006$n asks $N a question.", FALSE, ch, 0, vict, TO_NOTVICT);
     }
 }
 
@@ -493,19 +506,20 @@ void do_write(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *paper = 0,
                    *pen = 0;
-    char            papername[MAX_INPUT_LENGTH],
-                    penname[MAX_INPUT_LENGTH],
+    char           *papername,
+                   *penname,
                     buf[MAX_STRING_LENGTH + 80];
 
     dlog("in do_write");
-
-    argument_interpreter(argument, papername, penname);
 
     if (!ch->desc) {
         return;
 	}
 
-    if (!*papername) {
+    argument = get_argument(argument, &papername);
+    argument = get_argument(argument, &penname);
+
+    if (!papername) {
 		/*
 		 * nothing was delivered
 		 */
@@ -513,7 +527,7 @@ void do_write(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*penname) {
+    if (!penname) {
         send_to_char("write (on) papername (with) penname.\n\r", ch);
         return;
     }
@@ -696,6 +710,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 void do_speak(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[255];
+    char           *arg;
     int             i;
 
 #define MAX_LANGS 10
@@ -715,32 +730,31 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_speak");
 
-    only_argument(argument, buf);
-
-    if (buf[0] == '\0') {
+    arg = skip_spaces(argument);
+    if (!arg) {
         send_to_char("Speak what language?\n\r", ch);
         return;
     }
 
-    if (strstr(buf, "common")) {
+    if (strstr(arg, "common")) {
         i = SPEAK_COMMON;
-    } else if (strstr(buf, "elvish")) {
+    } else if (strstr(arg, "elvish")) {
         i = SPEAK_ELVISH;
-    } else if (strstr(buf, "halfling")) {
+    } else if (strstr(arg, "halfling")) {
         i = SPEAK_HALFLING;
-    } else if (strstr(buf, "dwarvish")) {
+    } else if (strstr(arg, "dwarvish")) {
         i = SPEAK_DWARVISH;
-    } else if (strstr(buf, "orcish")) {
+    } else if (strstr(arg, "orcish")) {
         i = SPEAK_ORCISH;
-    } else if (strstr(buf, "giantish")) {
+    } else if (strstr(arg, "giantish")) {
         i = SPEAK_GIANTISH;
-    } else if (strstr(buf, "ogre")) {
+    } else if (strstr(arg, "ogre")) {
         i = SPEAK_OGRE;
-    } else if (strstr(buf, "gnomish")) {
+    } else if (strstr(arg, "gnomish")) {
         i = SPEAK_GNOMISH;
-    } else if (strstr(buf, "all") && IS_IMMORTAL(ch)) {
+    } else if (strstr(arg, "all") && IS_IMMORTAL(ch)) {
         i = SPEAK_ALL;
-    } else if (strstr(buf, "godlike") && IS_IMMORTAL(ch)) {
+    } else if (strstr(arg, "godlike") && IS_IMMORTAL(ch)) {
         i = SPEAK_GODLIKE;
     } else {
         i = -1;
@@ -1015,7 +1029,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
                                   struct char_data *bch);
 
     char            buf[MAX_STRING_LENGTH + 40];
-    char            arg[MAX_INPUT_LENGTH + 80];
+    char           *arg;
     struct char_data *gch;
     int             members,
                     amount,
@@ -1024,9 +1038,9 @@ void do_split(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_split");
 
-    one_argument(argument, arg);
+    argument = get_argument(argument, &arg);
 
-    if (arg[0] == '\0') {
+    if (!arg) {
         send_to_char("Split how much?\n\r", ch);
         return;
     }
@@ -1039,8 +1053,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
     }
 
     if (amount == 0) {
-        send_to_char("You hand out zero coins, but no one notices.\n\r",
-                     ch);
+        send_to_char("You hand out zero coins, but no one notices.\n\r", ch);
         return;
     }
 
@@ -1073,8 +1086,7 @@ void do_split(struct char_data *ch, char *argument, int cmd)
     ch->points.gold -= amount;
     ch->points.gold += share + extra;
 
-    sprintf(buf,
-            "You split %d gold coins.  Your share is %d gold coins.\n\r",
+    sprintf(buf, "You split %d gold coins.  Your share is %d gold coins.\n\r",
             amount, share + extra);
     send_to_char(buf, ch);
 
@@ -1165,13 +1177,14 @@ bool is_same_group(struct char_data * ach, struct char_data * bch)
 void do_telepathy(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
-    char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
+    char           *name,
+                   *message,
                     buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_telepathy");
 
-    half_chop(argument, name, message);
+    argument = get_argument(argument, &name);
+    message = skip_spaces(argument);
 
     if (!HasClass(ch, CLASS_PSI) && !IS_AFFECTED(ch, AFF_TELEPATHY)) {
         send_to_char("What do you think you are? A Telepath?\n\r", ch);
@@ -1184,7 +1197,7 @@ void do_telepathy(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*name || !*message) {
+    if (!name || !message) {
         send_to_char("Who do you wish to bespeak what??\n\r", ch);
         return;
     } else if (!(vict = get_char_vis(ch, name))) {
@@ -1429,17 +1442,17 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
 void do_talk(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
-    char            name[100],
-                    message[MAX_INPUT_LENGTH + 80];
+    char           *name;
 
     dlog("in do_talk");
 
     if (apply_soundproof(ch)) {
         return;
 	}
-    half_chop(argument, name, message);
 
-    if (!*name) {
+    argument = get_argument(argument, &name);
+
+    if (!name) {
         send_to_char("Who do you want to talk to??\n\r", ch);
     } else if (!(vict = get_char_room_vis(ch, name))) {
         send_to_char("No-one by that name here..\n\r", ch);

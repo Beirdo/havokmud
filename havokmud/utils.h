@@ -9,6 +9,7 @@
 #endif
 
 #define NELEMS(x)   (sizeof(x) / sizeof(x[0]))
+#define OFFSETOF(type,elem) ((int)&(((type *)NULL)->elem))
 
 #define URANGE(a, b, c)          ((b) < (a) ? (a) : ((b) > (c) ? (c) : (b)))
 

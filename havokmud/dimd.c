@@ -274,7 +274,7 @@ int getmud(struct char_data *ch, char *mudname, bool checkforup)
 void do_dgossip(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                    *mudname;
     struct descriptor_data *d;
     int             i;
 
@@ -288,16 +288,15 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED &&
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         msg("Surely you have something to gossip!", ch);
         return;
     }
@@ -305,6 +304,7 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
     if (!dimd_credit(ch, 2 + 3 * (i == UNDEFINED))) {
         return;
     }
+
     if (i != UNDEFINED) {
         if (IS_SET(muds[i].flags, DD_NOGOSSIP)) {
             msg("They are no longer listening to remote gossips.", ch);
@@ -318,8 +318,8 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "^%s^%s^%d^gg^%s\n\r",
                 PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
         for (i = 0; muds[i].address; i++) {
-            if (IS_SET(muds[i].flags, DD_VERIFIED) 
-                && !IS_SET(muds[i].flags, DD_NOGOSSIP)) {
+            if (IS_SET(muds[i].flags, DD_VERIFIED) && 
+                !IS_SET(muds[i].flags, DD_NOGOSSIP)) {
                 write_to_descriptor(muds[i].desc, buf);
             }
         }
@@ -401,6 +401,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
 void do_drestrict(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
+    char           *arg;
     int             i,
                     mud;
 
@@ -409,12 +410,16 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = one_argument(argument, buf);
-    if ((mud = getmud(ch, buf, FALSE)) == UNDEFINED) {
+    argument = get_argument(argument, &arg);
+    if (!arg || (mud = getmud(ch, arg, FALSE)) == UNDEFINED) {
         return;
     }
 
     argument = skip_spaces(argument);
+    if( !argument ) {
+        send_to_char( "You need to specify refuse, accept or a level\n\r", ch );
+        return;
+    }
 
     if (is_abbrev(argument, "refuse")) {
         SET_BIT(muds[mud].flags, DD_REFUSE);
@@ -424,6 +429,7 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
         DIMDLOG(buf);
         return;
     }
+
     if (is_abbrev(argument, "accept")) {
         REMOVE_BIT(muds[mud].flags, DD_REFUSE);
         sprintf(buf, "Now accepting new connections with %s.",
@@ -551,7 +557,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 void do_dmuse(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                   *mudname;
     struct descriptor_data *d;
     int             i;
 
@@ -565,16 +571,15 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED && 
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         msg("Sure you have something to muse!", ch);
         return;
     }
@@ -618,8 +623,8 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 
 void do_dtell(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH],
+    char           *name,
+                   *mudname,
                     buf[MAX_STRING_LENGTH];
     int             i;
 
@@ -627,15 +632,15 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
      * for (i=0;i<MAX_MOBOBJ;i++) { sprintf(buf,"%s has pos
      * %d",mob_index[i].name, mob_index[i].pos); slog(buf); }
      */
-    argument = one_argument(argument, name);
-    argument = one_argument(argument, mudname);
+    argument = get_argument(argument, &name);
+    argument = get_argument(argument, &mudname);
 
-    if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
+    if ( !name || ! mudname || (i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
         return;
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         msg("Surely you have SOMETHING to say ... ?", ch);
         return;
     }
@@ -643,6 +648,7 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
     if (!dimd_credit(ch, 1)) {
         return;
     }
+
     sprintf(buf, "^%s^%s^%d^t^%s^%s\n\r",
             PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), name, argument);
     write_to_descriptor(muds[i].desc, buf);
@@ -651,20 +657,19 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
 void do_dthink(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                   *mudname;
     struct descriptor_data *d;
     int             i;
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED && 
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
     argument = skip_spaces(argument);
-    if (!*argument) {
+    if (!argument) {
         msg("Sure you have something to think!", ch);
         return;
     }
@@ -708,16 +713,23 @@ void do_dwho(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
     int             i;
+    char           *arg;
 
-    argument = one_argument(argument, buf);
-    if ((i = getmud(ch, buf, TRUE)) == UNDEFINED) {
+    argument = get_argument(argument, &arg);
+    if (!arg || (i = getmud(ch, arg, TRUE)) == UNDEFINED) {
         return;
     }
+
     if (!dimd_credit(ch, 2)) {
         return;
     }
 
     argument = skip_spaces(argument);
+    if( !argument ) {
+        send_to_char( "DWHO who?\n\r", ch );
+        return;
+    }
+
     sprintf(buf, "^%s^%s^%d^w^%s\n\r",
             PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
     write_to_descriptor(muds[i].desc, buf);

@@ -6576,6 +6576,10 @@ int count_People_in_room(int room)
 
 char           *skip_spaces(char *string)
 {
+    if( !string ) {
+        return( NULL );
+    }
+
     for (; *string && isspace(*string); string++) {
         /* 
          * Empty loop 

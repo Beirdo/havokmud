@@ -749,14 +749,15 @@ void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
-    char            dir[MAX_INPUT_LENGTH];
-    char            otype[MAX_INPUT_LENGTH];
+    char           *dir;
+    char           *otype;
     struct obj_data *obj;
     struct char_data *victim;
 
-    argument_interpreter(arg, otype, dir);
+    arg = get_argument(arg, &otype);
+    arg = get_argument(arg, &dir);
 
-    if (!*arg) {
+    if (!otype) {
         send_to_char("Kinolock what?\n\r", ch);
         return;
     }

@@ -2059,7 +2059,8 @@ void assign_rooms( void )
     }
 }
 
-int procIsRegistered( int_func func, proc_type type ) {
+int procIsRegistered( int_func func, proc_type type ) 
+{
     int i;
 
     for( i = 0; i < specProcCount; i++ ) {
@@ -2070,7 +2071,8 @@ int procIsRegistered( int_func func, proc_type type ) {
     return( FALSE );
 }
 
-char *procGetNameByFunc( int_func func, proc_type type ) {
+char *procGetNameByFunc( int_func func, proc_type type ) 
+{
     int i;
 
     if( !func ) {
@@ -2085,7 +2087,8 @@ char *procGetNameByFunc( int_func func, proc_type type ) {
     return( NULL );
 }
 
-int_func procGetFuncByName( char *name, proc_type type ) {
+int_func procGetFuncByName( char *name, proc_type type ) 
+{
     int i;
 
     if( !name ) {

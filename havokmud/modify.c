@@ -353,71 +353,63 @@ void string_add(struct descriptor_data *d, char *str)
 /*
  * interpret an argument for do_string 
  */
-void quad_arg(char *arg, int *type, char *name, int *field, char *string)
-{
-    char            buf[MAX_STRING_LENGTH];
-
-    /*
-     * determine type 
-     */
-    arg = one_argument(arg, buf);
-    if (is_abbrev(buf, "char")) {
-        *type = TP_MOB;
-    } else if (is_abbrev(buf, "obj")) {
-        *type = TP_OBJ;
-    } else {
-        *type = TP_ERROR;
-        return;
-    }
-
-    /*
-     * find name 
-     */
-    arg = one_argument(arg, name);
-
-    /*
-     * field name and number 
-     */
-    arg = one_argument(arg, buf);
-    if (!(*field = old_search_block(buf, 0, strlen(buf), string_fields, 0))) {
-        return;
-    }
-    /*
-     * string 
-     */
-    arg = skip_spaces(arg);
-    strcpy(string, arg);
-}
-
 /*
  * modification of malloc'ed strings in chars/objects 
  */
 void do_string(struct char_data *ch, char *arg, int cmd)
 {
-
-    char            name[MAX_STRING_LENGTH],
-                    string[MAX_STRING_LENGTH];
+    char           *buf;
+    char           *name,
+                   *string;
     struct extra_descr_data *ed,
                    *tmp;
     int             field,
                     type;
     struct char_data *mob;
     struct obj_data *obj;
+
     if (IS_NPC(ch)) {
         return;
     }
-    quad_arg(arg, &type, name, &field, string);
 
-    if (type == TP_ERROR) {
+    /*
+     * determine type 
+     */
+    arg = get_argument(arg, &buf);
+    if (buf && is_abbrev(buf, "char")) {
+        type = TP_MOB;
+    } else if (buf && is_abbrev(buf, "obj")) {
+        type = TP_OBJ;
+    } else {
         send_to_char("Syntax:\n\rstring ('obj'|'char') <name> <field> "
                      "[<string>].", ch);
         return;
     }
 
-    if (!field) {
+    /*
+     * find name 
+     */
+    arg = get_argument(arg, &name);
+
+    /*
+     * field name and number 
+     */
+    arg = get_argument(arg, &buf);
+    if( !buf || !name ) {
+        send_to_char( "Read help rstring....  Your arguments are buggered\n\r",
+                      ch );
+        return;
+    }
+
+    if (!(field = old_search_block(buf, 0, strlen(buf), string_fields, 0))) {
         send_to_char("No field by that name. Try 'help string'.\n\r", ch);
         return;
     }
+
+    /*
+     * string 
+     */
+    string = skip_spaces(arg);
 
     if (type == TP_MOB) {
         /*
@@ -645,23 +637,6 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 }
 
-void bisect_arg(char *arg, int *field, char *string)
-{
-    char            buf[MAX_INPUT_LENGTH + 40];
-
-    /*
-     * field name and number 
-     */
-    arg = one_argument(arg, buf);
-    if (!(*field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
-        return;
-    }
-    /*
-     * string 
-     */
-    arg = skip_spaces(arg);
-    strcpy(string, arg);
-}
 
 void do_edit(struct char_data *ch, char *arg, int cmd)
 {
@@ -684,9 +659,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     int             s_type,
                     i;
     char            name[MAX_INPUT_LENGTH],
-                    string[512],
-                    buf[132],
+                   *string,
                     sdflags[30];
+    char           *buf;
     struct extra_descr_data *ed,
                    *tmp;
     struct room_data *rp,
@@ -715,7 +690,19 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    bisect_arg(arg, &field, string);
+    /*
+     * field name and number 
+     */
+    arg = get_argument(arg, &buf);
+    if (!buf ||
+        !(field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
+        return;
+    }
+
+    /*
+     * string 
+     */
+    string = skip_spaces(arg);
 
     if (!field) {
         send_to_char("No field by that name. Try 'help edit'.\n\r", ch);
@@ -1131,50 +1118,6 @@ void do_setskill(struct char_data *ch, char *arg, int cmd)
  * db stuff *********************************************** 
  */
 
-/*
- * One_Word is like one_argument, execpt that words in quotes "" are 
- * regarded as ONE word 
- */
-
-char           *one_word(char *argument, char *first_arg)
-{
-    int             begin,
-                    look_at;
-
-    begin = 0;
-
-    do {
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        if (argument[begin] == '\"') {
-            /* 
-             * is it a quote 
-             */
-            begin++;
-
-            for (look_at = 0; argument[begin + look_at] >= ' ' &&
-                 argument[begin + look_at] != '\"'; look_at++) {
-                first_arg[look_at] = LOWER(argument[begin + look_at]);
-             }
-
-            if (argument[begin + look_at] == '\"') {
-                begin++;
-            }
-        } else {
-            for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-                first_arg[look_at] = LOWER(argument[begin + look_at]);
-            }
-        }
-
-        first_arg[look_at] = '\0';
-        begin += look_at;
-    } while (fill_word(first_arg));
-
-    return (&(argument[begin]));
-}
-
 struct help_index_element *build_help_index(FILE * fl, int *num)
 {
     int             nr = -1,
@@ -1183,7 +1126,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
     struct help_index_element *list = 0,
                     mem;
     char            buf[81],
-                    tmp[81],
+                   *tmp,
                    *scan;
     long            pos;
 
@@ -1197,11 +1140,12 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
             /*
              * extract the keywords 
              */
-            scan = one_word(scan, tmp);
+            scan = get_argument_delim(scan, &tmp, '\"');
 
-            if (!*tmp) {
+            if (!tmp) {
                 break;
             }
+
             if (!list) {
                 CREATE(list, struct help_index_element, 1);
                 nr = 0;
@@ -1245,81 +1189,6 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
     return (list);
 }
 
-#if 0
-void page_string(struct descriptor_data *d, char *str, int keep_internal)
-{
-    if (!d)
-        return;
-
-    if (keep_internal) {
-        CREATE(d->showstr_head, char, strlen(str) + 1);
-        strcpy(d->showstr_head, str);
-        d->showstr_point = d->showstr_head;
-    } else
-        d->showstr_point = str;
-
-    show_string(d, "");
-}
-
-void show_string(struct descriptor_data *d, char *input)
-{
-    char            buffer[MAX_STRING_LENGTH],
-                    buf[MAX_INPUT_LENGTH + 50];
-    register char  *scan,
-                   *chk;
-    int             lines = 0,
-                    toggle = 1;
-    int             i;
-    one_argument(input, buf);
-
-    if (*buf) {
-        if (d->showstr_head) {
-            free(d->showstr_head);
-            d->showstr_head = 0;
-        }
-        d->showstr_point = 0;
-        return;
-    }
-
-    if (IS_SET(d->character->player.user_flags, USE_PAGING)) {
-        if (d->character->term == 0)
-            i = 30;
-        else
-            i = d->character->size - 7;
-    } else {
-        i = 3000;
-    }
-    /*
-     * show a chunk 
-     */
-    for (scan = buffer;; scan++, d->showstr_point++) {
-        if ((((*scan = *d->showstr_point) == '\n') || (*scan == '\r')) &&
-            ((toggle = -toggle) < 0)) {
-            lines++;
-            if (strlen(buffer) > MAX_STRING_LENGTH - 265)
-                i = lines;
-        } else if (!*scan || (lines >= i)) {
-            *scan = '\0';
-            SEND_TO_Q(ParseAnsiColors
-                      (IS_SET(d->character->player.user_flags, USE_ANSI),
-                       buffer), d);
-
-            /*
-             * see if this is the end (or near the end) of the string 
-             */
-            chk = skip_spaces(d->showstr_point);
-            if (!*chk) {
-                if (d->showstr_head) {
-                    free(d->showstr_head);
-                    d->showstr_head = 0;
-                }
-                d->showstr_point = 0;
-            }
-            return;
-        }
-    }
-}
-#endif
 
 void night_watchman(void)
 {

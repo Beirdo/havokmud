@@ -1696,14 +1696,14 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
                     choose = -1,
                     avg = 0;
 
-    char            classname[128];
+    char           *classname;
 
     if (cmd != 605) {
         return (FALSE);
     }
-    only_argument(arg, classname);
 
-    if (!*classname) {
+    arg = get_argument(arg, &classname);
+    if (!classname) {
         do_mobTell2(ch, mob, "A class you must choose!");
         return (TRUE);
     }

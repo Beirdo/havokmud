@@ -19,6 +19,8 @@
                            "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
 #define ASSHOLE_FNAME "asshole.list"
 
+char *get_argument_common(char *line_in, char **arg_out, int do_fill,
+                          char delim);
 
 char *newbie_note[] = {
     "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
@@ -1304,37 +1306,29 @@ int color_strlen(struct char_data *ch, char *arg, int cmd)
 
 int search_block(char *arg, char **list, bool exact)
 {
-    register int    i,
-                    l;
+    int length;
+    int i;
 
-    /*
-     * Make into lower case, and get length of string
-     */
-    for (l = 0; *(arg + l); l++) {
-        *(arg + l) = LOWER(*(arg + l));
-    }
     if (exact) {
-        for (i = 0; **(list + i) != '\n'; i++) {
-            if (!strcmp(arg, *(list + i))) {
-                return (i);
+        for( i = 0; *list[i] != '\n'; i++ ) {
+            if( !strcasecmp( arg, list[i] ) ) {
+                return( i );
             }
         }
     } else {
-        if (!l) {
-            /*
-             * Avoid "" to match the first available string
-             */
-            l = 1;
+        length = strlen( arg );
+        if( length == 0 ) {
+            return( -1 );
         }
 
-        for (i = 0; **(list + i) != '\n'; i++) {
-            if (!strncmp(arg, *(list + i), l)) {
-                return (i);
+        for( i = 0; *list[i] != '\n'; i++ ) {
+            if( !strncasecmp( arg, list[i], length ) ) {
+                return( i );
             }
         }
     }
 
-    return (-1);
+    return( -1 );
 }
 
 int old_search_block(char *argument, int begin, int length, char **list,
@@ -1383,8 +1377,9 @@ void command_interpreter(struct char_data *ch, char *argument)
     char            buf[200];
     extern int      no_specials;
     NODE           *n;
-    char            buf1[255],
-                    buf2[255];
+    char           *arg,
+                   *arg1,
+                   *arg2;
     int             i,
                     found;
 
@@ -1444,302 +1439,225 @@ void command_interpreter(struct char_data *ch, char *argument)
             return;
         }
     }
-    if (!*argument || *argument == '\n') {
+
+    if (!argument || !*argument || *argument == '\n') {
         return;
-    } else if (!isalpha(*argument)) {
-        buf1[0] = *argument;
-        buf1[1] = '\0';
-        if ((argument + 1)) {
-            strcpy(buf2, (argument + 1));
-        } else {
-            buf2[0] = '\0';
+    } 
+    
+    if (!isalpha(*argument)) {
+        arg = (char *)malloc(strlen(argument) + 2);
+        if( !arg ) {
+            Log( "Nasty error in command_interpreter!!!" );
+            return;
         }
+
+        sprintf(arg, "%c %s", *argument, &(argument[1]));
     } else {
-        half_chop(argument, buf1, buf2);
-        i = 0;
-        while (buf1[i] != '\0') {
-            buf1[i] = LOWER(buf1[i]);
-            i++;
+        arg = strdup( argument );
+        if( !arg ) {
+            Log( "Nasty error in command_interpreter!!!" );
+            return;
         }
     }
+    
+    argument = get_argument_nofill(arg, &arg1);
+    arg2 = skip_spaces( argument );
 
     /*
      * New parser by DM
      */
-    if (*buf1) {
-        n = FindValidCommand(buf1);
+    if (arg1 && *arg1) {
+        n = FindValidCommand(arg1);
     } else {
         n = NULL;
     }
+
     /*
      * cmd = old_search_block(argument,begin,look_at,command,0);
      */
-    if (!n) {
+    if (!n || GetMaxLevel(ch) < n->min_level) {
         send_to_char("Pardon?\n\r", ch);
+        free(arg);
         return;
     }
 
-    if (GetMaxLevel(ch) < n->min_level) {
-        send_to_char("Pardon?\n\r", ch);
+    if (!n->func) {
+        send_to_char("Sorry, but that command has yet to be implemented...\n\r",
+                     ch);
+        free(arg);
         return;
     }
 
-    if ((n->func != 0)) {
-        if ((!IS_AFFECTED(ch, AFF_PARALYSIS)) || (n->min_pos <=
-                                                  POSITION_STUNNED)) {
-            if (GET_POS(ch) < n->min_pos) {
-                switch (GET_POS(ch)) {
-                case POSITION_DEAD:
-                    send_to_char("Lie still; you are DEAD!!! :-( \n\r", ch);
-                    break;
-                case POSITION_INCAP:
-                case POSITION_MORTALLYW:
-                    send_to_char("You are in a pretty bad shape, unable to "
-                                 "do anything!\n\r", ch);
-                    break;
+    if (IS_AFFECTED(ch, AFF_PARALYSIS) && n->min_pos > POSITION_STUNNED) {
+        send_to_char(" You are paralyzed, you can't do much!\n\r", ch);
+        free(arg);
+        return;
+    }
 
-                case POSITION_STUNNED:
-                    send_to_char("All you can do right now, is think about "
-                                 "the stars!\n\r", ch);
-                    break;
-                case POSITION_SLEEPING:
-                    send_to_char("In your dreams, or what?\n\r", ch);
-                    break;
-                case POSITION_RESTING:
-                    send_to_char("Nah... You feel too relaxed to do that..\n\r",
-                                 ch);
-                    break;
-                case POSITION_SITTING:
-                    send_to_char("Maybe you should get on your feet first?\n\r",
-                                 ch);
-                    break;
-                case POSITION_FIGHTING:
-                    send_to_char("No way! You are fighting for your life!\n\r",
-                                 ch);
-                    break;
-                case POSITION_STANDING:
-                    send_to_char("Fraid you can't do that\n\r", ch);
-                    break;
-                }
-            } else {
-                /*
-                 * They can't move, must have pissed off an immo!
-                 * make sure polies can move, some mobs have this bit set
-                 */
+    if (IS_SET(ch->specials.act, PLR_FREEZE) && IS_PC(ch)) {
+        /*
+         * They can't move, must have pissed off an immo!
+         * make sure polies can move, some mobs have this bit set
+         */
+        send_to_char("You have been frozen in your steps, you cannot do a "
+                     "thing!\n\r", ch);
+        free(arg);
+        return;
+    }
 
-                if (IS_SET(ch->specials.act, PLR_FREEZE) &&
-                    (IS_SET(ch->specials.act, ACT_POLYSELF) || IS_PC(ch))) {
-                    send_to_char("You have been frozen in your steps, you"
-                                 " cannot do a thing!\n\r", ch);
-                    return;
-                }
+    if (GET_POS(ch) < n->min_pos) {
+        switch (GET_POS(ch)) {
+        case POSITION_DEAD:
+            send_to_char("Lie still; you are DEAD!!! :-( \n\r", ch);
+            break;
+        case POSITION_INCAP:
+        case POSITION_MORTALLYW:
+            send_to_char("You are in a pretty bad shape, unable to do "
+                         "anything!\n\r", ch);
+            break;
 
-                if (!no_specials && special(ch, n->number, buf2)) {
-                    return;
-                }
+        case POSITION_STUNNED:
+            send_to_char("All you can do right now, is think about the "
+                         "stars!\n\r", ch);
+            break;
+        case POSITION_SLEEPING:
+            send_to_char("In your dreams, or what?\n\r", ch);
+            break;
+        case POSITION_RESTING:
+            send_to_char("Nah... You feel too relaxed to do that..\n\r", ch);
+            break;
+        case POSITION_SITTING:
+            send_to_char("Maybe you should get on your feet first?\n\r", ch);
+            break;
+        case POSITION_FIGHTING:
+            send_to_char("No way! You are fighting for your life!\n\r", ch);
+            break;
+        case POSITION_STANDING:
+            send_to_char("Fraid you can't do that\n\r", ch);
+            break;
+        }
+        free(arg);
+        return;
+    } 
+    
+    if (n->log) {
+        sprintf(buf, "%s:%s", ch->player.name, argument);
+        slog(buf);
+    }
 
-                if (n->log) {
-                    sprintf(buf, "%s:%s", ch->player.name, argument);
-                    slog(buf);
-                }
-
-                /*
-                 * so you can log mobs if ya need to
-                 */
+    /*
+     * so you can log mobs if ya need to
+     */
 #if LOG_MOB
-                if (!IS_PC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF)) {
-                    sprintf(buf, "[%d] <%s>:%s", ch->in_room,
-                            ch->player.name, argument);
-                    slog(buf);
-                }
+    if (!IS_PC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF)) {
+        sprintf(buf, "[%d] <%s>:%s", ch->in_room, ch->player.name, argument);
+        slog(buf);
+    }
 #endif
 
-#if 1
-                /*
-                 * to log all pc's
-                 */
-                if (IS_SET(SystemFlags, SYS_LOGALL)) {
-                    if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
-                        sprintf(buf, "[%ld] %s:%s", ch->in_room,
-                                ch->player.name, argument);
-                        slog(buf);
-                    }
-                } else if (IS_AFFECTED2(ch, AFF2_LOG_ME)) {
-                    /*
-                     * user flagged as log person
-                     */
-                    sprintf(buf, "[%ld] %s:%s", ch->in_room,
-                            ch->player.name, argument);
-                    slog(buf);
-                } else if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
-                    /*
-                     * we log ALL immortals
-                     */
-                    sprintf(buf, "[%ld] %s:%s", ch->in_room,
-                            ch->player.name, argument);
-                    slog(buf);
-                }
+    /*
+     * to log all pc's
+     */
+    if (IS_SET(SystemFlags, SYS_LOGALL)) {
+        if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
+            sprintf(buf, "[%ld] %s:%s", ch->in_room, ch->player.name, argument);
+            slog(buf);
+        }
+    } else if (IS_AFFECTED2(ch, AFF2_LOG_ME)) {
+        /*
+         * user flagged as log person
+         */
+        sprintf(buf, "[%ld] %s:%s", ch->in_room, ch->player.name, argument);
+        slog(buf);
+    } else if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
+        /*
+         * we log ALL immortals
+         */
+        sprintf(buf, "[%ld] %s:%s", ch->in_room, ch->player.name, argument);
+        slog(buf);
+    }
 
-                /*
-                 * end logging stuff
-                 */
-#endif
+    if (GET_GOLD(ch) > 2000000) {
+        sprintf(buf, "%s:%s", fname(ch->player.name), argument);
+        slog(buf);
+    }
 
-                if (GET_GOLD(ch) > 2000000) {
-                    sprintf(buf, "%s:%s", fname(ch->player.name), argument);
-                    slog(buf);
-                }
+    if (no_specials || !special(ch, n->number, arg2)) {
+        (*n->func)(ch, arg2, n->number);
+    }
+    free(arg);
+}
 
-                ((*n->func) (ch, buf2, n->number));
-            }
-            return;
+char *get_argument(char *line_in, char **arg_out)
+{
+    return( get_argument_common(line_in, arg_out, TRUE, '\0') );
+}
+
+char *get_argument_nofill(char *line_in, char **arg_out)
+{
+    return( get_argument_common(line_in, arg_out, FALSE, '\0') );
+}
+
+char *get_argument_delim(char *line_in, char **arg_out, char delim)
+{
+    return( get_argument_common(line_in, arg_out, TRUE, delim) );
+}
+
+char *get_argument_common(char *line_in, char **arg_out, int do_fill,
+                          char delim)
+{
+    char           *arg;
+    char           *line;
+    int             i;
+    int             length;
+    char            delimstr[2];
+
+    line = line_in;
+    if( !line || !*line ) {
+        *arg_out = NULL;
+        return( NULL );
+    }
+
+    if( delim ) {
+        delimstr[0] = delim;
+        delimstr[1] = '\0';
+    }
+
+    /* Split out the first argument into arg_out */
+    do {
+        if( !line ) {
+            *arg_out = NULL;
+            return( NULL );
+        }
+        line = skip_spaces( line );
+        
+        if( delim && *line == delim ) {
+            /* Found a delimiter, skip past it, then match the other one rather
+             * than a space
+             */
+            line++;
+            arg = strsep( &line, delimstr );
         } else {
-            send_to_char(" You are paralyzed, you can't do much!\n\r", ch);
-            return;
+            arg = strsep( &line, " " );
         }
+
+        /* Now arg points to the first argument, and *line points at the rest
+         */
+        *arg_out = arg;
+
+        /* Skip the "fill" words */
+    } while (do_fill && fill_word(*arg_out));
+
+    /* Convert the argument to lower case */
+    length = strlen( *arg_out );
+    for( i = 0; i < length; i++ ) {
+        (*arg_out)[i] = tolower((*arg_out)[i]);
     }
-    if (n && (n->func == 0)) {
-        send_to_char
-            ("Sorry, but that command has yet to be implemented...\n\r", ch);
-    } else {
-        send_to_char("Pardon? \n\r", ch);
-    }
+
+    return( line );
 }
 
-void argument_interpreter(char *argument, char *first_arg, char *second_arg)
-{
-    int             look_at,
-                    begin;
 
-    begin = 0;
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to first_arg
-             */
-            first_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        first_arg[look_at] = '\0';
-        begin += look_at;
-
-    } while (fill_word(first_arg));
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to second_arg
-             */
-            second_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        second_arg[look_at] = '\0';
-        begin += look_at;
-
-    } while (fill_word(second_arg));
-}
-
-/*
- * Return three arguments from initial string
- */
-void three_arg(char *argument, char *first_arg, char *second_arg,
-               char *third_arg)
-{
-    int             look_at,
-                    begin;
-
-    begin = 0;
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin]) ) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to first_arg
-             */
-            first_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        first_arg[look_at] = '\0';
-        begin += look_at;
-
-    } while (fill_word(first_arg));
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to second_arg
-             */
-            second_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        second_arg[look_at] = '\0';
-        begin += look_at;
-
-    } while (fill_word(second_arg));
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to third_arg
-             */
-            third_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        third_arg[look_at] = '\0';
-        begin += look_at;
-
-    } while (fill_word(third_arg));
-}
 
 int is_number(char *str)
 {
@@ -1754,63 +1672,6 @@ int is_number(char *str)
     }
 }
 
-/*
- * Quinn substituted a new one-arg for the old one.. I thought returning a
- * char pointer would be neat, and avoiding the func-calls would save a
- * little time... If anyone feels pissed, I'm sorry.. Anyhow, the code is
- * snatched from the old one, so it outta work..
- */
- #if 0
- void one_argument(char *argument,char *first_arg )
- {
-    static char
-
-    dummy[MAX_STRING_LENGTH];
-    argument_interpreter(argument,first_arg,dummy);
- }
- #endif
-
-/*
- * find the first sub-argument of a string, return pointer to first char
- * in primary argument, following the sub-arg
- */
-char           *one_argument(char *argument, char *first_arg)
-{
-    int             begin,
-                    look_at;
-
-    begin = 0;
-
-    do {
-        /*
-         * Find first non blank
-         */
-        while (isspace(argument[begin])) {
-            begin++;
-        }
-
-        /*
-         * Find length of first word
-         */
-        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
-            /*
-             * Make all letters lower case, AND copy them to first_arg
-             */
-            first_arg[look_at] = LOWER(argument[begin + look_at]);
-        }
-
-        first_arg[look_at] = '\0';
-        begin += look_at;
-    } while (fill_word(first_arg));
-
-    return (&argument[begin]);
-}
-
-void only_argument(char *argument, char *dest)
-{
-    argument = skip_spaces(argument);
-    strcpy(dest, argument);
-}
 
 int fill_word(char *argument)
 {
@@ -1833,24 +1694,6 @@ int is_abbrev(char *arg1, char *arg2)
     return (1);
 }
 
-/*
- * return first 'word' plus trailing substring of input string
- */
-void half_chop(char *string, char *arg1, char *arg2)
-{
-    string = skip_spaces(string);
-
-    while (!isspace(*arg1 = *string) && *string ) {
-        string++;
-        arg1++;
-    }
-
-    *arg1 = '\0';
-
-    string = skip_spaces(string);
-
-    strcpy( arg2, string );
-}
 
 int special(struct char_data *ch, int cmd, char *arg)
 {
@@ -1860,10 +1703,6 @@ int special(struct char_data *ch, int cmd, char *arg)
 
     if (ch->in_room == NOWHERE) {
         char_to_room(ch, 3001);
-        /*
-         * added 0 here.. had no returning
-         * value in Int function (GH'04)
-         */
         return (0);
     }
 

@@ -195,7 +195,7 @@ int find_action(int cmd)
 void do_action(struct char_data *ch, char *argument, int cmd)
 {
     int             act_nr;
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
     struct social_messg *action;
     struct char_data *vict;
     struct obj_data *objx = 0;
@@ -210,12 +210,12 @@ void do_action(struct char_data *ch, char *argument, int cmd)
     action = &soc_mess_list[act_nr];
 
     if (action->char_found) {
-        only_argument(argument, buf);
+        argument = get_argument(argument, &buf);
     } else {
-        *buf = '\0';
+        buf = NULL;
     }
 
-    if (!*buf) {
+    if (!buf) {
         send_to_char(action->char_no_arg, ch);
         send_to_char("\n\r", ch);
         act(action->others_no_arg, action->hide, ch, 0, 0, TO_ROOM);
@@ -249,14 +249,14 @@ void do_action(struct char_data *ch, char *argument, int cmd)
 void do_insult(struct char_data *ch, char *argument, int cmd)
 {
     static char     buf[100];
-    static char     arg[MAX_STRING_LENGTH];
+    char           *arg;
     struct char_data *victim;
 
     dlog("in do_insult");
 
-    only_argument(argument, arg);
+    argument = get_argument(argument, &arg);
 
-    if (*arg) {
+    if (arg) {
         if (!(victim = get_char_room_vis(ch, arg))) {
             send_to_char("Can't hear you!\n\r", ch);
         } else {
@@ -371,19 +371,20 @@ void do_pose(struct char_data *ch, char *argument, int cmd)
 }
 
 
+#define CMD_OOC     497
+#define CMD_GOSSIP  302
+#define CMD_SHOUT   18
+
 /*
  * Not quite sure what i'm doing here yet but lets hope that this will be
  * OOC socials
  */
 void do_OOCaction(struct char_data *ch, char *argument, int cmd)
 {
-    int             CMD_OOC = 497,
-                    CMD_GOSSIP = 302,
-                    CMD_SHOUT = 18;
     struct descriptor_data *i;
     int             act_nr;
-    char            name[MAX_INPUT_LENGTH + 80];
-    char            buf[100],
+    char           *name;
+    char           *buf,
                     buf2[MAX_INPUT_LENGTH];
     struct social_messg *action;
     struct char_data *vict;
@@ -402,10 +403,11 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
     } else {
         sprintf(command, "$c000p[$c000WWORLD$c000p]$c000w");
     }
-    argument++;
-    half_chop(argument, buf, name);
 
-    if ((act_nr = find_action(FindCommandNumber(buf))) < 0) {
+    argument = get_argument(argument, &buf);
+    name = skip_spaces(argument);
+
+    if (!buf || (act_nr = find_action(FindCommandNumber(buf))) < 0) {
         send_to_char("That action is not supported.\n\r", ch);
         return;
     }
@@ -413,18 +415,20 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
     action = &soc_mess_list[act_nr];
 
     if (action->char_found) {
-        half_chop(argument, buf, name);
-    } else
-        *buf = '\0';
+        argument = get_argument(argument, &buf);
+        name = skip_spaces(argument);
+    } else {
+        buf = NULL;
+    }
 
 #if 0
-    if(!*buf) {
+    if(!buf) {
         send_to_char("ooc %<Social name> <Person/object/noarg>.\n\r",ch);
         return;
     }
 #endif
 
-    if (!*name) {
+    if (!name) {
         /*
          * No arguments
          */
