@@ -432,6 +432,7 @@ struct spell_info_type
 	       byte min_level_bard;
 	       sh_int targets;         /* See below for use with TAR_XXX  */
         sh_int spellfail;       /* modifier for spell failure      */
+    byte brewable;
 };
 
 /* Possible Targets:

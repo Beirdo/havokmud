@@ -1504,7 +1504,8 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,
 	    byte slev, byte plev, byte rlev, byte ilev,
-	    ubyte mana, sh_int tar, void *func, sh_int sf);
+	    ubyte mana, sh_int tar, void *func, sh_int sf,
+	    byte brewable);
 
 int SPELL_LEVEL(struct char_data *ch, int sn);
 void affect_update( int pulse );

@@ -235,11 +235,17 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 
 
 	    if (spell_info[i+1].min_level_magic == GET_LEVEL(ch,MAGE_LEVEL_IND))
-	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else
+	      sprintf(buf,"%s [New Spell] ",buf);
+
+	  	if (spell_info[i+1].brewable ==1) {
+			sprintf(buf,"%s [Brewable]\n\r",buf);
+		}else
 	      sprintf(buf,"%s \n\r",buf);
-	    send_to_char(buf, ch);
+
+
+	  	send_to_char(buf, ch);
 	}
+
 	} else
 	if (HasClass(ch,CLASS_SORCERER))
 	if (spell_info[i+1].spell_pointer &&
@@ -405,15 +411,21 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 		  how_good(ch->skills[i+1].learned));
 
 	    if (spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
-	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else
+	      sprintf(buf,"%s [New Spell] ",buf);
+
+	  if (spell_info[i+1].brewable ==1) {
+	  			sprintf(buf,"%s [Brewable]\n\r",buf);
+	  }else
 	      sprintf(buf,"%s \n\r",buf);
+
+
 	  send_to_char(buf, ch);
 	}
 	/*Ugly fix but quick*/
 	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"messenger",how_good(ch->skills[SPELL_MESSENGER].learned));
 	send_to_char(buf,ch);
-
+	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"brew",how_good(ch->skills[SPELL_MESSENGER].learned));
+	send_to_char(buf,ch);
       return(TRUE);
     }
     for (;isspace(*arg);arg++);
