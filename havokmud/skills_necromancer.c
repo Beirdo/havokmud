@@ -399,18 +399,45 @@ void cast_cavorting_bones(int level, struct char_data *ch, char *arg,
     }
 }
 
+void spell_chill_touch(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
+{
+    struct affected_type af;
+    int             dam;
 
+    assert(victim && ch);
+    if (level < 0 || level > ABS_MAX_LVL) {
+        return;
+    }
+    dam = number(level, 3 * level);
 
+    if (!saves_spell(victim, SAVING_SPELL)) {
+        af.type = SPELL_CHILL_TOUCH;
+        af.duration = 6;
+        af.modifier = -1;
+        af.location = APPLY_STR;
+        af.bitvector = 0;
+        affect_join(victim, &af, TRUE, FALSE);
+    } else {
+        dam >>= 1;
+    }
+    damage(ch, victim, dam, SPELL_CHILL_TOUCH);
+}
 
-
-
-
-
-/*
- * vim:ts=4:sw=4:ai:et:si:sts=4
- */
-
-
+void cast_chill_touch(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *victim,
+                      struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_WAND:
+        spell_chill_touch(level, ch, victim, 0);
+        break;
+    default:
+        Log("Serious screw-up in chill touch!");
+        break;
+    }
+}
 
 void spell_chillshield(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
@@ -2380,7 +2407,157 @@ void cast_eye_of_the_dead(int level, struct char_data *ch, char *arg,
         break;
     }
 }
+#define FG_TEMPLATE 6
+void spell_flesh_golem(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
+{
+    struct affected_type af;
+    struct room_data *rp;
+    struct char_data *mob;
+    int             lev = 1,
+                    mlev,
+                    mhps,
+                    mtohit;
 
+    if ((rp = real_roomp(ch->in_room)) == NULL) {
+        return;
+    }
+    if (!ch) {
+        Log("screw up in flesh golem, no caster found");
+        return;
+    }
+
+    if (!obj) {
+        send_to_char("What would you use for a component?\n\r", ch);
+        return;
+    }
+
+    if (!IS_CORPSE(obj)) {
+        send_to_char("That's not a corpse.\n\r", ch);
+        return;
+    }
+
+    if (affected_by_spell(ch, SPELL_FLESH_GOLEM)) {
+        send_to_char("You do not yet have the mental reserves to create "
+                     "another flesh golem.\n\r", ch);
+        return;
+    }
+
+    if (IS_SET(rp->room_flags, TUNNEL)) {
+        send_to_char("There's no room to create a flesh golem.\n\r", ch);
+        return;
+    }
+
+    if (A_NOPETS(ch)) {
+        send_to_char("The arena rules do not permit you to animate "
+                     "corpses!\n\r", ch);
+        return;
+    }
+
+    act("$n stares at $p while phrasing some arcane incantations.", TRUE,
+        ch, obj, 0, TO_ROOM);
+    act("You stare at $p while mumbling some arcane incantations.", TRUE,
+        ch, obj, 0, TO_CHAR);
+    lev = GetMaxLevel(ch);
+
+    mob = read_mobile(FG_TEMPLATE, VIRTUAL);
+    if (!mob) {
+        Log("No template found for flesh golem spell (no mobile with vnum 6)");
+        send_to_char("Screw up in this spell, no flesh golem template "
+                     "found\n\r", ch);
+        return;
+    }
+
+    if (lev > 45) {
+        mlev = number(30, 40);
+        mhps = number(140, 200);
+        mtohit = 8;
+    } else if (lev > 37) {
+        mlev = number(25, 35);
+        mhps = number(90, 120);
+        mtohit = 6;
+    } else if (lev > 29) {
+        mlev = number(20, 29);
+        mhps = number(30, 60);
+        mtohit = 4;
+    } else if (lev > 21) {
+        mlev = number(14, 20);
+        mhps = number(10, 40);
+        mtohit = 2;
+    } else {
+        mlev = number(4, 6);
+        mhps = number(0, 20);
+        mtohit = 0;
+    }
+
+    mob->player.level[2] = mlev;
+    mob->points.max_hit = mob->points.max_hit + mhps;
+    mob->points.hit = mob->points.max_hit;
+    mob->points.hitroll = mob->points.hitroll + mtohit;
+    char_to_room(mob, ch->in_room);
+    extract_obj(obj);
+
+    act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0,
+        TO_ROOM);
+
+    if (too_many_followers(ch)) {
+        act("$N takes one look at the size of your posse and just says no!",
+            TRUE, ch, 0, mob, TO_CHAR);
+        act("$N takes one look at the size of $n's posse and just says no!",
+            TRUE, ch, 0, mob, TO_NOTVICT);
+        act("You take one look at the size of $n's posse and just say no!",
+            TRUE, ch, 0, mob, TO_VICT);
+    } else {
+        /*
+         * charm it for a while
+         */
+        if (mob->master) {
+            stop_follower(mob);
+        }
+        add_follower(mob, ch);
+        af.type = SPELL_CHARM_PERSON;
+        if (IS_PC(ch) || ch->master) {
+            af.duration = GET_CHR(ch);
+            af.modifier = 0;
+            af.location = 0;
+            af.bitvector = AFF_CHARM;
+            affect_to_char(mob, &af);
+        } else {
+            SET_BIT(mob->specials.affected_by, AFF_CHARM);
+        }
+    }
+    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+        REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+    }
+    if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+        SET_BIT(mob->specials.act, ACT_SENTINEL);
+    }
+
+    af.type = SPELL_FLESH_GOLEM;
+    af.duration = 12;
+    af.modifier = 0;
+    af.location = 0;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+}
+
+
+void cast_flesh_golem(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *tar_ch,
+                      struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:
+    case SPELL_TYPE_STAFF:
+        spell_flesh_golem(level, ch, 0, tar_obj);
+        break;
+    default:
+        Log("serious screw-up in cast_flesh_golem");
+        break;
+    }
+}
 
 void spell_invis_to_undead(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj)
@@ -4416,3 +4593,9 @@ void cast_weakness(int level, struct char_data *ch, char *arg, int type,
     }
 }
 #endif
+
+
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
