@@ -97,4 +97,68 @@
 #define RACE_FOREST_GNOME 85
 #define RACE_AVARIEL      86
 
-#define MAX_RACE      86
+/* New Races by Greg Hovey */
+#define RACE_ETTIN        87
+#define RACE_COCKATRICE   88
+#define RACE_COCODILE     89
+#define RACE_BASILISK     90
+#define RACE_GARGOYLE     91
+#define RACE_DRIDER       92
+#define RACE_DISPLACER_BEAST 93
+#define RACE_GRIFFON      94
+#define RACE_HELL_HOUND   95
+#define RACE_HYDRA        96
+#define RACE_MARGOYLE     97
+#define RACE_MASTODON     98
+#define RACE_MEDUSA       99
+#define RACE_MINOTAUR     100
+#define RACE_MOBAT        101
+#define RACE_OTYUGH       102
+#define RACE_NEO_OTYUGH   103
+#define RACE_REMORHAZ     104
+#define RACE_PURPLE_WORM  105
+#define RACE_PHASE_SPIDER 106
+#define RACE_SPHINX       107
+#define RACE_WARG         108
+#define RACE_WYVERN       109
+#define RACE_UMBER_HULK   110
+#define RACE_SLUG         111
+#define RACE_BULETTE      112
+#define RACE_CARRION_CRAWLER 113
+#define RACE_DRACOLISK    114
+#define RACE_BANSHEE      115
+#define RACE_BEHOLDER     116
+#define RACE_DEATH_TYRANT 117
+#define RACE_DRACOLICH    118
+#define RACE_RAKSHASA     119
+#define RACE_BANE_MINION  120
+#define RACE_ANKHEGS      121
+#define RACE_BUGBEARS     122
+#define RACE_EFREET       123
+#define RACE_HARPIES      124
+#define RACE_MANTICORES   125
+#define RACE_SCRAGS       126
+#define RACE_OWLBEARS     127
+#define RACE_SQUID        128
+#define RACE_TIGER        129
+#define RACE_WIGHTS       130
+#define RACE_YETI         131
+
+#define MAX_RACE      131
+
+
+
+struct race_type
+{
+  int race;
+  char *racename;
+
+  int start;
+  int young;
+  int mature;
+  int middle;
+  int old;
+  int ancient;
+  int venerable;
+
+};
