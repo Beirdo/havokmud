@@ -483,9 +483,6 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
 int preperationproc(struct char_data *ch, int cmd, char *arg,
                     struct room_data *rp, int type)
 {
-
-    void            do_close(struct char_data *ch, char *argument,
-                             int cmd);
     struct char_data *i;
     int             count = 0,
                     randnum = 0,
@@ -516,7 +513,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
 
         if (!IS_SET(rp->dir_option[2]->exit_info, EX_LOCKED) || 
             !IS_SET(rp->dir_option[2]->exit_info, EX_CLOSED)) {
-            do_close(ch, "door", 0);
+            command_interpreter(ch, "close door");
             raw_lock_door(ch, EXIT(ch, 2), 2);
         }
 
@@ -551,7 +548,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
                      "room:%d",zone, count);
 #endif
         ch_printf(ch, "You ring the gong but nothing happens.\n\r");
-        do_zload(ch, "188", 0);
+        command_interpreter(ch, "zload 188");
     }
 
     return (TRUE);
@@ -847,7 +844,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 extract_char(ch);
             }
         } else {
-            do_move(ch, "\0", ch->generic);
+            do_move(ch, NULL, ch->generic);
         }
         return (FALSE);
     } else {
@@ -857,7 +854,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         for (t = real_roomp(ch->in_room)->people; t; t = next) {
             next = t->next_in_room;
             if (t != ch && !saves_spell(t, SAVING_PETRI)) {
-                do_flee(t, "", 0);
+                do_flee(t, NULL, 0);
             }
         }
 
@@ -1128,8 +1125,8 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
                     ch, 0, i, TO_NOTVICT);
                 act("When it's finished, $N gives $m a round of applause and "
                     "hands over some coins.", TRUE, ch, 0, i, TO_NOTVICT);
-                sprintf(buf, "20 coins %s", GET_NAME(ch));
-                do_give(i, buf, 0);
+                sprintf(buf, "give 20 coins %s", GET_NAME(ch));
+                command_interpreter(i, buf);
             }
         }
     }
@@ -1831,7 +1828,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
         sprintf(buf, "%s just quaffed a quest potion.\n\r", GET_NAME(ch));
         qlog(buf);
         ch->player.q_points++;
-        do_save(ch, "", 0);
+        do_save(ch, NULL, 0);
         extract_obj(obj);
         return (TRUE);
     }
@@ -2066,7 +2063,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 
                 obj->obj_flags.value[2] = cmp->obj_flags.value[2];
                 if (GET_POS(ch) > POSITION_RESTING) {
-                    do_rest(ch, "", -1);
+                    do_rest(ch, NULL, -1);
                 }
                 sprintf(buf, "%s diligently starts to sharpen %s.",
                         GET_NAME(ch), obj->short_description);
@@ -3069,7 +3066,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     if (ch->in_room && ch->in_room == WAITROOM && (rp = real_roomp(WAITROOM))) {
         for (obj = rp->contents; obj; obj = obj->next_content) {
             if (obj_index[obj->item_number].virtual == TARANTIS_PORTAL) {
-                do_enter(ch, "portal", 7);
+                command_interpreter(ch, "enter portal");
                 return (FALSE);
             }
         }
@@ -4189,20 +4186,20 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                      */
                     act("You panic and attempt to doorway to safety!",
                         FALSE, tempchar, 0, 0, TO_CHAR);
-                    do_doorway(tempchar, "Zifnab", 0);
+                    command_interpreter(tempchar, "doorway zifnab");
                 } else {
                     /* 
                      * warriors types, druids, thieves, sorcerers flee
                      */
                     act("You panic and attempt to run away!", FALSE,
                         tempchar, 0, 0, TO_CHAR);
-                    do_flee(tempchar, "", 0);
+                    do_flee(tempchar, NULL, 0);
                 }
 
                 if (tempchar->in_room == currroomnum) {
                     act("You failed to get away, run!  RUN AWAY NOW!",
                         FALSE, tempchar, 0, 0, TO_CHAR);
-                    do_flee(tempchar, "", 0);
+                    do_flee(tempchar, NULL, 0);
                 }
             }
         }
@@ -5299,7 +5296,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
 #endif
     if (t_info->tm_hour != THE_HOUR && 
         IS_SET(rp->dir_option[0]->exit_info, EX_LOCKED)) {
-        do_zload(ch, "188", 0);
+        command_interpreter(ch, "zload 188");
         raw_unlock_door(ch, EXIT(ch, 0), 0);
         open_door(ch, 0);
         ch_printf(ch, "You knock on the big wooden door and then slowly, it "
