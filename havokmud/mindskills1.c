@@ -663,10 +663,8 @@ void mind_ultra_blast(int level, struct char_data *ch,
         if (count >= 7) {
             break;
         }
-        if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
-            if (IS_IMMORTAL(tmp_victim)) {
-                return;
-            }
+        if (ch->in_room == tmp_victim->in_room && ch != tmp_victim &&
+            !IS_IMMORTAL(tmp_victim)) {
             if (!in_group(ch, tmp_victim)) {
                 
                 count ++; 
