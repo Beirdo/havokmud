@@ -3862,7 +3862,7 @@ void do_start(struct char_data *ch)
 
     ch->skills[STYLE_STANDARD].learned = 95;
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
-        do_group(ch, "all", 202);
+        command_interpreter(ch, "group all");
     }
     
     if (HasClass(ch,
