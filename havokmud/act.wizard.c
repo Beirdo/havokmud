@@ -1324,8 +1324,8 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
                              "room.\n\r", ch);
                 return;
             } else {
-                send_to_char("There is a private converstion but your a level "
-                             "60\n\r", ch);
+                send_to_char("There is a private converstion but you're a "
+                             "level 60\n\r", ch);
             }
         }
     }
@@ -1415,13 +1415,13 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (IS_SET(ch->player.user_flags, OLD_COLORS)) {
-        sprintf(color1, "$c000p");
-        sprintf(color2, "$c000C");
-        sprintf(color3, "$c000W");
+        strcpy(color1, "$c000p");
+        strcpy(color2, "$c000C");
+        strcpy(color3, "$c000W");
     } else {
-        sprintf(color1, "$c000B");
-        sprintf(color2, "$c000w");
-        sprintf(color3, "$c000Y");
+        strcpy(color1, "$c000B");
+        strcpy(color2, "$c000w");
+        strcpy(color3, "$c000Y");
     }
 
     argument = get_argument(argument, &arg1);
