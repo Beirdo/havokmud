@@ -659,7 +659,8 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
   if (delete) {
      if (obj->in_obj)
        obj_from_obj(obj);
-     obj_index[obj->item_number].number++;
+     if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+     	obj_index[obj->item_number].number++;
      extract_obj(obj);
   }
 
@@ -1264,9 +1265,9 @@ void obj_store_to_room(int room, struct obj_file_u *st)
   for(i=0; i<st->number; i++) {
     if (st->objects[i].item_number > -1 &&
 	real_object(st->objects[i].item_number) > -1) {
-      if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
-      obj = read_object(st->objects[i].item_number, VIRTUAL);
 
+      obj = read_object(st->objects[i].item_number, VIRTUAL);
+	if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
       obj_index[obj->item_number].number--;
       obj->obj_flags.value[0] = st->objects[i].value[0];
       obj->obj_flags.value[1] = st->objects[i].value[1];
