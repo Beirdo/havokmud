@@ -1033,7 +1033,7 @@ int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *r
 
 		send_to_char("You drink from the Fountain of Legends.\n\r", ch);
 		act("$n drinks from the Fountain of Legends.", FALSE, ch, 0, 0, TO_ROOM);
-//		GET_COND(ch,THIRST) = 24;
+		GET_COND(ch,THIRST) = 20;
 		GET_COND(ch,FULL)+=1;
 		if(GET_COND(ch,FULL)>18) {
 			act("Too much water has sated your appetite.",FALSE,ch,0,0,TO_CHAR);

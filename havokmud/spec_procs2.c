@@ -4628,6 +4628,46 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 				}
 				x++;
 			}
+			x=0;
+			while (maindruidskills[x].level != -1) {
+				if(is_abbrev(arg,maindruidskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+					if(maindruidskills[x].level > GET_LEVEL(ch,DRUID_LEVEL_IND)) {
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
+
+					if(ch->skills[maindruidskills[x].skillnum].learned > 45) {
+						//check if skill already practiced
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+									 " 'You must learn from experience and practice to get"
+									 " any better at that skill.'\n\r",ch);
+						return(TRUE);
+					}
+
+					if(ch->specials.spells_to_learn <=0) {
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
+
+					sprintf(buf,"You practice %s for a while.\n\r",maindruidskills[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn--;
+
+					if(!IS_SET(ch->skills[maindruidskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[maindruidskills[x].skillnum].flags,SKILL_KNOWN);
+						SET_BIT(ch->skills[maindruidskills[x].skillnum].flags,SKILL_KNOWN_DRUID);
+					}
+					percent=ch->skills[maindruidskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[maindruidskills[x].skillnum].learned = MIN(95,percent);
+
+					if(ch->skills[maindruidskills[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
 			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
 			return(TRUE);
