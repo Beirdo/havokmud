@@ -5039,6 +5039,7 @@ const struct skillset maindruidskills[] = {
 	{"protection acid breath",	SPELL_PROT_BREATH_ACID		,40},
 	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
 	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},
+	{"protection frost breath",	SPELL_PROT_BREATH_FROST		,38},
  {"None", 				-1							,-1}
 };
 const struct skillset druidskills[] = {
@@ -5097,7 +5098,6 @@ const struct skillset druidskills[] = {
 	{"protection from cold",	SPELL_PROT_COLD				,20},
 	{"protection from electricity",SPELL_PROT_ELEC			,18},
 	{"protection from fire",	SPELL_PROT_FIRE				,21},
-	{"protection frost breath",	SPELL_PROT_BREATH_FROST		,38},
 	{"refresh",					SPELL_REFRESH				,4},
 	{"reincarnate",				SPELL_REINCARNATE			,39},
 	{"remove paralysis",		SPELL_REMOVE_PARALYSIS		,9},

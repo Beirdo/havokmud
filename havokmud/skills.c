@@ -3910,7 +3910,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (spell_info[sn+1].brewable == 0){
+	if (spell_info[sn+1].brewable == 0 && !IS_IMMORTAL(ch)){
 		send_to_char("You can't scribe this spell.\n\r",ch);
 		return;
 	}
@@ -3974,7 +3974,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 			obj->level = GetMaxLevel(ch);  //set ego to level.
 		}
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
-		obj->obj_flags.timer = 4;
+		obj->obj_flags.timer = 12;
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
@@ -4070,7 +4070,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (spell_info[sn+1].brewable == 0){
+	if (spell_info[sn+1].brewable == 0 && !IS_IMMORTAL(ch)){
 		send_to_char("You can't brew that spell.\n\r",ch);
 		return;
 	}
@@ -4129,7 +4129,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		else
 			obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
-		obj->obj_flags.timer = 6;
+		obj->obj_flags.timer = 18;
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
