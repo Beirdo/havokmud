@@ -447,22 +447,40 @@ int AddFears( struct char_data *ch, int parm_type, int parm)
 struct char_data *FindAHatee( struct char_data *ch)
 {
    struct char_data *tmp_ch;
+	struct room_data *rp;
+    //for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch; tmp_ch = tmp_ch->next_in_room) {
 
-   if (ch->in_room < 0)
-     return(0);
+  if(!ch){
+	log("2NO CHAR!!!");
+  	return (0);
+  }
+  if (ch->in_room < 0) return(0);
 
-    for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch; tmp_ch = tmp_ch->next_in_room) {
+   rp = real_roomp(ch->in_room);
+	if(!rp) {
+		log("No room data in FindAHatee ??Crash???");
+		return(0);
+	}
+
+  tmp_ch = rp->people;
+	if (!tmp_ch) {
+		return (0);
+	}
+
+  while(tmp_ch) {
        if (Hates(ch, tmp_ch) && (CAN_SEE(ch, tmp_ch))) {
     	  if (ch->in_room == tmp_ch->in_room) {
-	    if (ch != tmp_ch) {
-	       return(tmp_ch);
-	     } else {
-	       RemHated(ch,tmp_ch);
-	       return(0);
-	     }
-	  }
-	}
-     }
+	    	if (ch != tmp_ch) {
+	    	   return(tmp_ch);
+	    	} else {
+	       		RemHated(ch,tmp_ch);
+	       		return(0);
+	     	}
+	   	  }
+
+	   }
+       tmp_ch = tmp_ch->next_in_room;
+  }
      return(0);
 }
 #else

@@ -701,7 +701,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
 char buf[255];
 int i,ii;
 
-#define MAX_LANGS 9
+#define MAX_LANGS 10
 
 char *lang_list[MAX_LANGS] = {
 "common",
@@ -712,7 +712,8 @@ char *lang_list[MAX_LANGS] = {
 "giantish",
 "ogre",
 "gnomish",
-"all languages"
+"all languages",
+"godlike"
 };
 
 dlog("in do_speak");
@@ -742,6 +743,9 @@ if (strstr(buf,"gnomish"))
     i = SPEAK_GNOMISH; else
 if (strstr(buf,"all") && (GetMaxLevel(ch)>=51))  // Added this so immorts can be
    i = SPEAK_ALL; else                         // uderstood correctly... part 1
+if (strstr(buf,"godlike") && (GetMaxLevel(ch)>=51))  // Added this so immorts can be
+   i = SPEAK_GODLIKE; else                         // uderstood correctly... part 1
+
    i = -1;                                     // - Manwe Windmaster 200697
 
 if (i == -1) {

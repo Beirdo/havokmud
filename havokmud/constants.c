@@ -3804,8 +3804,8 @@ const char *spell_desc[] = {
 #if 1
 const struct QuestItem QuestList[4][IMMORTAL] = {
   {  /* magic user */
-    {0, ""},
-    {2, "It can be found in the donation room, or on your head\n\r"},
+    {2402, "An unusual way of looking at things."},
+    {1, "It can be found in the donation room, or on your head\n\r"},
     {1410, "Its a heavy bag of white powder\n\r"},
     {6010, "You can make pies out of them, deer seem to like them too\n\r"},
     {3013, "Its a yummy breakfast food, they go great with eggs and cheese\n\r"},
@@ -3957,7 +3957,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
     {13762, "Once in Hades, the key to getting out lies with a long dead warrior."}, /* Skeletal Warrior, Hades */
     {20005, "This usurper will think you very tasty, defeat him for the thing you need."}, /* Yevaud, AR */
     {5019, "A nasty potion in the hands of an even nastier desert worm."}, /* Worm, GED */
-    {10002, "These can be found in the zoo, on 'Al'"}, /* On Corpse, DCE */
+    {10002, "This item can be found on 'Al'"}, /* On Corpse, DCE */
 /* 40 */
     {5221,"Weapons are the keys to the remaining quests. First, bring me a Stone golem's sword"},
     {9442,"The weapon of the largest giant in the rift"},

@@ -5056,7 +5056,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
   char name_mask[40]="";
   char tmpname1[80],tmpname2[80];
   char levels[40]="", classes[20]="";
-  char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps"};
+  char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
   int i,total,classn; long bit;
 dlog("in do_whoarena");
 

@@ -409,7 +409,7 @@ int game_loop(int s)
     else
       cap += 20;
 #else
-       // dimd_loop();
+       //dimd_loop();
     for (point = descriptor_list; point; point = point->next)  {
       FD_SET(point->descriptor, &input_set);
       FD_SET(point->descriptor, &exc_set);
@@ -2224,7 +2224,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     int i,s_flag=0;
     long curr_time=0;
     *outbuf=0;
-    
+
     if(ch->specials.prompt==NULL) { /* use default prompts */
 	if(IS_IMMORTAL(ch))
 	    mask="Havok: (type help prompt) H:%h R:%R i%iI+> ";

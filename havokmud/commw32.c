@@ -20,7 +20,7 @@
 
 #include "protos.h"
 
-
+void dimd_loop(void);
 void str2ansi(char *p2, char *p1, int start, int stop);
 char *ParseAnsiColors(int UsingAnsi, char *txt);
 int construct_prompt(char *buf, struct char_data *ch);
@@ -413,7 +413,7 @@ int game_loop(int s)
     else
       cap += 20;
 #else
-       // dimd_loop();
+       //dimd_loop();
     for (point = descriptor_list; point; point = point->next)  {
       FD_SET(point->descriptor, &input_set);
       FD_SET(point->descriptor, &exc_set);

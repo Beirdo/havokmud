@@ -1551,7 +1551,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
           {BurnWings(ch);}
 	lev = GetMaxLevel(v);
 	dam = dice(1,6)+(lev/2);
-	if (damage(v, ch, dam, SPELL_FIRESHIELD)) 	{
+	if (damage(v, ch, dam, SPELL_FIREBALL)) 	{
 	  if (GET_POS(ch) == POSITION_DEAD)
 	    return(TRUE);
 	}
@@ -2747,20 +2747,36 @@ void perform_violence(int pulse)
    } /* end charge */
 }
 
-
-
+#if 1
+/*This crashes the mud too */
 struct char_data *FindVictim( struct char_data *ch)
 {
+	char buf[24];
   struct char_data *tmp_ch;
+  struct room_data *rp;
   unsigned char found=FALSE;
   unsigned short ftot=0,ttot=0,ctot=0,ntot=0,mtot=0, ktot=0, dtot=0;
   unsigned short total;
   unsigned short fjump=0,njump=0,cjump=0,mjump=0,tjump=0,kjump=0,djump=0;
+  if(!ch){
+  	return (0);
+  }
 
   if (ch->in_room < 0) return(0);
 
-  for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch;
-       tmp_ch=tmp_ch->next_in_room) {
+   rp = real_roomp(ch->in_room);
+	if(!rp) {
+		log("/* No room??? Crash??? */");
+		return(0);
+	}
+
+  tmp_ch = rp->people;
+	if (!tmp_ch) {
+		return (0);
+	}
+
+  while(tmp_ch) {
+
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&&
 	(!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch!=tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
@@ -2799,6 +2815,7 @@ if (affected_by_spell(tmp_ch,SKILL_DISGUISE) ||
 	}
       }
     }
+  	tmp_ch=tmp_ch->next_in_room;
   }
 
   /* if no legal enemies have been found, return 0 */
@@ -2873,6 +2890,122 @@ if (affected_by_spell(tmp_ch,SKILL_DISGUISE) ||
 
   return(0);
 }
+#else
+//Stockmuds version
+struct char_data *FindVictim(struct char_data *ch)
+{
+  struct char_data *vict;
+  struct room_data *rp = ch->in_room;
+  unsigned char found=FALSE;
+  unsigned short ftot=0,ttot=0,ctot=0,ntot=0,mtot=0, ktot=0, dtot=0;
+  unsigned short total;
+  unsigned short fjump=0,njump=0,cjump=0,mjump=0,tjump=0,kjump=0,djump=0;
+
+for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_room) {
+    if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch!=tmp_ch)) {
+      if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
+ 		if ((tmp_ch->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
+	    IS_SET(tmp_ch->specials.act, ACT_ANNOYING))
+
+
+
+  for (vict = rp->people; vict; vict = vict->next_in_room) {
+    if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
+        (!IS_AFFECTED(vict, AFF_SNEAK)) && (ch != vict)) {
+      if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
+		if ((vict->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races,
+            GET_RACE(vict))) || IS_SET(vict->specials.act, ACT_ANNOYING)) {
+          if (!in_group(ch, vict)) {
+	    	found = TRUE;  /* a potential victim has been found */
+            if (!IS_NPC(vict)) {
+              if (affected_by_spell(vict, SKILL_DISGUISE) ||
+                  affected_by_spell(vict, SKILL_PSYCHIC_IMPERSONATION)) {
+                if (number(1, 101) > 50) /* 50/50 chance to not attack disguised person */
+                  return NULL;
+              }
+
+              if (HasClass(vict, CLASS_WARRIOR | CLASS_BARBARIAN | CLASS_PALADIN | CLASS_RANGER))
+                ftot++;
+              else if (HasClass(vict, CLASS_CLERIC))
+                ctot++;
+              else if (HasClass(vict, CLASS_MAGIC_USER) || HasClass(vict, CLASS_SORCERER))
+                mtot++;
+              else if (HasClass(vict, CLASS_THIEF|CLASS_PSI))
+                ttot++;
+              else if (HasClass(vict, CLASS_DRUID))
+                dtot++;
+              else if (HasClass(vict, CLASS_MONK))
+                ktot++;
+            } else {
+              ntot++;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* if no legal enemies have been found, return 0 */
+  if (!found)
+    return NULL;
+
+  /*
+   * give higher priority to fighters, clerics, thieves,magic users if int <= 12
+   * give higher priority to fighters, clerics, magic users thieves is int > 12
+   * give higher priority to magic users, fighters, clerics, thieves if int > 15
+   */
+
+  if (ch->abilities.intel <= 3) {
+    fjump = 2; cjump = 2; tjump = 2; njump = 2; mjump = 2; kjump = 2; djump = 0;
+  } else if (ch->abilities.intel <= 9) {
+    fjump = 4; cjump = 3; tjump = 2; njump = 2; mjump = 1; kjump = 2; djump =2;
+  } else if (ch->abilities.intel <= 12) {
+    fjump = 3; cjump = 3; tjump = 2; njump = 2; mjump = 2; kjump = 3; djump = 2;
+  } else if (ch->abilities.intel <= 15) {
+    fjump = 3; cjump = 3; tjump = 2; njump = 2; mjump = 3; kjump = 2; djump = 2;
+  } else {
+    fjump = 3; cjump = 3; tjump = 2; njump = 1; mjump = 3; kjump = 3; djump = 2;
+  }
+
+  total = (fjump * ftot) + (cjump * ctot) + (tjump * ttot) + (njump * ntot) + (mjump * mtot) +
+          (djump * dtot) + (kjump * ktot);
+
+  total = (int) number(1, (int) total);
+
+  for (vict = rp->people; vict; vict = vict->next_in_room) {
+    if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
+        (!IS_AFFECTED(vict, AFF_SNEAK)) && (ch != vict)) {
+      if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
+        if ((vict->specials.zone != ch->specials.zone &&
+	    !strchr(zone_table[ch->specials.zone].races, GET_RACE(vict))) ||
+            IS_SET(vict->specials.act, ACT_ANNOYING)) {
+          if (!in_group(ch, vict)) {
+            if (IS_NPC(vict)) {
+              total -= njump;
+            } else if (HasClass(vict, CLASS_WARRIOR | CLASS_BARBARIAN | CLASS_PALADIN | CLASS_RANGER)) {
+              total -= fjump;
+            } else if (HasClass(vict, CLASS_CLERIC)) {
+              total -= cjump;
+            } else if (HasClass(vict, CLASS_MAGIC_USER) || HasClass(vict,CLASS_SORCERER)) {
+              total -= mjump;
+            } else if (HasClass(vict, CLASS_THIEF | CLASS_PSI)) {
+              total -= tjump;
+            } else if (HasClass(vict, CLASS_DRUID)) {
+              total -= djump;
+            } else if (HasClass(vict, CLASS_MONK)) {
+              total -= kjump;
+            }
+            if (total <= 0)
+              return vict;
+          }
+        }
+      }
+    }
+  }
+
+  return ch->specials.fighting;
+}
+#endif
 
 struct char_data *FindAnyVictim( struct char_data *ch)
 {
@@ -2910,6 +3043,7 @@ struct char_data *FindAnyVictim( struct char_data *ch)
       }
     }
   }
+
 
   /* if no legal enemies have been found, return 0 */
 
@@ -2976,6 +3110,7 @@ struct char_data *FindAnyVictim( struct char_data *ch)
   return(0);
 
 }
+
 
 int BreakLifeSaverObj( struct char_data *ch)
 {

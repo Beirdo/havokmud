@@ -5052,9 +5052,9 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
     return(0);
 	}
 
-	if (temp_ch->player.title)
-          free(temp_ch->player.title);
-    sprintf(temp_ch->player.title,"%s %s",GET_NAME(temp_ch),argument);
+	//if (temp_ch->player.title)
+    //      free(temp_ch->player.title);
+    //sprintf(temp_ch->player.title,"%s %s",GET_NAME(temp_ch),argument);
     return(1);
 	}
 
@@ -6071,8 +6071,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 				 	itemgranted = 1002; /* questpoint token */
 		         	break;
 		         default:
-		       	 	do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
-		       	 	itemgranted = 4050;  /*sanc potion */
+		       	 	do_say(vict, "Thanks!!  Damn!! You are good!!",0);
+		       	 	itemgranted = 1002;  /*sanc potion */
 					break;
 		     }
 		       obj2 = read_object(itemgranted, VIRTUAL);
@@ -6461,7 +6461,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
    	char tbuf[80];
    	struct char_data *tgt;
    	struct obj_data *obj;
-   	
+
  	if (cmd == 72) { /* 72 = give command */
  		arg=one_argument(arg,obj_name);
  		/* if object not in pc's inventory */
@@ -6490,9 +6490,9 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
       		}
  		/* if receiver is another pc */
  		if IS_PC(tgt)
- 			return(FALSE);  		
+ 			return(FALSE);
  		/* if receiver isn't Jessep */
- 		if (mob_index[tgt->nr].virtual != 47951) 
+ 		if (mob_index[tgt->nr].virtual != 47951)
  			return(FALSE);
   		/* if object IS NOT the head of Matron Singh */
  		if (obj != get_obj_in_list_vis(ch, "head of Matron Singh", ch->carrying)) {
@@ -6507,7 +6507,7 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
          		sprintf(buf,"%s %s",obj_name,tgt_name);
       			do_give(ch,buf,0);
       			/*if Jessep has the Laurel of Leaves, give it to the pc */
-      			if (tgt->equipment[WEAR_HEAD]) { 
+      			if (tgt->equipment[WEAR_HEAD]) {
       				sprintf(buf, "Ah, she's dead, is she? Serves her right. Though she's shown me that I'm not fit to lead my people. Perhaps you would be a better choice.",GET_NAME(ch));
     				do_say(tgt,buf,19);
    	   			do_remove(tgt,tgt->equipment[WEAR_HEAD]->name,0);
@@ -6516,24 +6516,24 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
       				sprintf(buf, "I wish you well.",GET_NAME(ch));
       				do_say(tgt,buf,19);
          			return(TRUE);
-         		} 
+         		}
          		/* if he doesn't, then give no prize and keep the head anyway. that bastard! */
-         		else {  
+         		else {
       				sprintf(buf, "Hrm, you killed her, eh? Well, I don't lead this village anymore. Go find the current leader, and leave me alone.", GET_NAME(ch));
          			do_say(tgt,buf,19);
          			return(TRUE);
       			}
    		}
    	}
-   	else 
-   		return(FALSE); 
+   	else
+   		return(FALSE);
 }
 
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
 	char tgt_name[80], buf[MAX_INPUT_LENGTH];
 	struct char_data *tgt;
 	struct affected_type af;
-	
+
 	if (cmd == 533) /* 533 = beckon */ {
       		/* if target doesn't exist */
   		arg=one_argument(arg, tgt_name);
@@ -6559,22 +6559,22 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
  		/* if the target is Tysha */
  		else {
 			sprintf(buf, "I wanna go home!");
-			do_say(tgt,buf,19);		
+			do_say(tgt,buf,19);
 			/* make her follow the first pc that beckons her... */
 			add_follower(tgt, ch);
 			af.type 	= SPELL_CHARM_PERSON;
 			af.duration	= 24*18;
 			af.modifier  = 0;
     			af.location  = 0;
-    			af.bitvector = AFF_CHARM;				
-		}		
- 	}			
+    			af.bitvector = AFF_CHARM;
+		}
+ 	}
  	else
  		return (FALSE);
  }
- 
+
  /* int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob) { */
- 	
+
  	/* scan room for people every tick */
  		/* if tysha (vnum 47975) is in the room AND vaelhar is carrying brynn'ath (vnum 47914) */
  			/* give tysha's master brynn'ath */

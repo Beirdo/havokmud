@@ -200,7 +200,7 @@ struct QuestItem {
 #define SYS_WIZLOCKED   512     /* System is Wizlocked for all -Manwe Windmaster 030697 */
 #define SYS_NO_POLY     1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */
 #define SYS_NOOOC       2048    /* Provide from OOCing worldwird - Manwe */
-#define SYS_LOCOBJ      4096    /* Disbale Locate Object - Manwe Windmaster 1311197
+#define SYS_LOCOBJ      4096    /* Disbale Locate Object - Manwe Windmaster 1311197 */
 /* end sys flags */
 
 #define SPEAK_COMMON		1

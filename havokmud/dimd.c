@@ -81,9 +81,9 @@ static int	is_argc,is_xargc,is_exact;
 struct mud_data muds[] =		/*			   /-No Idea	*/
 {					/*		      /Mud|  /---/--/---No Idea? */
 /*   /- Mud Name      /-- Aliases        /-Address to site   |Port|  ?  ? ?	*/
-  {"Zodiac MUD","zodiac horpo","zodiacmud",4002,2,100,1,DD_AUTOTRY},
-  {"Havok Build Site","havok build code","modemcable074.230.mmtl.VIDEOTRON.net",7000,2,100,1,DD_AUTOTRY},
-  {"Havok Play Site","play main havok","modemcable074.230.mmtl.VIDEOTRON.net",6969,2,100,1,DD_AUTOTRY},
+  {"HOMEX","THUNDER","localhost",4000,2,100,1,DD_AUTOTRY},
+  {"HOME2","THUNDER2","localhost",7000,2,100,1,DD_AUTOTRY},
+  {"Havok Play Site","play main havok","199.184.188.84",6969,2,100,1,DD_AUTOTRY},
   { NULL, NULL, NULL, UNDEFINED } /* this must be here */
 };
 

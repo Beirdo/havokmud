@@ -54,7 +54,7 @@ struct mud_data
   int min_level;
   int immort_level;
   int immort_level_mult;
-  
+
   unsigned long flags;
 
   int desc;
@@ -71,7 +71,7 @@ struct mud_data
 
 /* Only options that have a plus(+) in their comments should be used in the
    mud table.  All other options are basically internal. */
-#define DD_CONNECTED	0x00000001	
+#define DD_CONNECTED	0x00000001
 #define DD_VERIFIED	0x00000002
 #define DD_AUTOTRY	0x00000004	/* +Try to connect at bootup? */
 #define DD_REFUSE	0x00000008	/* +Refuse connections to this mud? */
@@ -81,31 +81,5 @@ struct mud_data
 
 
 /* functions */
-bool dimd_can_see(int slev, struct char_data *o);
-void dimd_broadcast(char *buf);
-char *one_lc_dimd_argument(char *argument, char *first_arg);
-char *one_dimd_argument(char *argument, char *first_arg);
-bool dimd_credit(struct char_data *ch, int credits);
-int matchmud(char *mudname);
-int getlocalmud(void);
-int getmud(struct char_data *ch, char *mudname, bool checkforup);
-void do_dgossip(struct char_data *ch, char *argument, int cmd);
-void do_dlist(struct char_data *ch, char *argument, int cmd);
-void do_dmanage(struct char_data *ch, char *argument, int cmd);
-void do_dlink(struct char_data *ch, char *argument, int cmd);
-void do_dunlink(struct char_data *ch, char *argument, int cmd);
-void do_dmuse(struct char_data *ch, char *argument, int cmd);
-void do_dtell(struct char_data *ch, char *argument, int cmd);
-void do_dwho(struct char_data *ch, char *argument, int cmd);
-void do_drestrict(struct char_data *ch, char *argument, int cmd);
-void do_dthink(struct char_data *ch, char *argument, int cmd);
-
-bool call_a_mud(int mud);
-bool answer_a_mud(void);
-void hangup_on_a_mud(int mud);
-void close_dimd(void);
-void dimd_loop(void);
-int process_dimd_output(int mud);
-int process_dimd_input(int mud);
 
 

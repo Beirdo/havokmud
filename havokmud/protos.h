@@ -19,6 +19,9 @@
 #include "mail.h"
 #include "dimd.h"
 
+
+
+
 /* From Heap.c */
 
 void SmartStrCpy(char *s1, const char *s2);
@@ -2182,3 +2185,32 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd);
 /* Leaves of Silver */
 int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
+
+
+
+bool dimd_can_see(int slev, struct char_data *o);
+void dimd_broadcast(char *buf);
+char *one_lc_dimd_argument(char *argument, char *first_arg);
+char *one_dimd_argument(char *argument, char *first_arg);
+bool dimd_credit(struct char_data *ch, int credits);
+int matchmud(char *mudname);
+int getlocalmud(void);
+int getmud(struct char_data *ch, char *mudname, bool checkforup);
+void do_dgossip(struct char_data *ch, char *argument, int cmd);
+void do_dlist(struct char_data *ch, char *argument, int cmd);
+void do_dmanage(struct char_data *ch, char *argument, int cmd);
+void do_dlink(struct char_data *ch, char *argument, int cmd);
+void do_dunlink(struct char_data *ch, char *argument, int cmd);
+void do_dmuse(struct char_data *ch, char *argument, int cmd);
+void do_dtell(struct char_data *ch, char *argument, int cmd);
+void do_dwho(struct char_data *ch, char *argument, int cmd);
+void do_drestrict(struct char_data *ch, char *argument, int cmd);
+void do_dthink(struct char_data *ch, char *argument, int cmd);
+
+bool call_a_mud(int mud);
+bool answer_a_mud(void);
+void hangup_on_a_mud(int mud);
+void close_dimd(void);
+void dimd_loop(void);
+int process_dimd_output(int mud);
+int process_dimd_input(int mud);

@@ -2012,7 +2012,7 @@ int clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 }
 
-#define NEWSETUP 0
+#define NEWSETUP 1
 int read_obj_from_file(struct obj_data *obj, FILE *f)
 {
 
@@ -2037,13 +2037,15 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
     if (obj->action_description && *obj->action_description) {
       bc += strlen(obj->action_description);
     }
+
 #if NEWSETUP
+
     obj->modBy = fread_string(f);
     if (obj->modBy && *obj->modBy) {
       bc += strlen(obj->modBy);
     }
-#endif
 
+#endif
     /* *** numeric data *** */
 
     fscanf(f, " %d ", &tmp);
@@ -2069,14 +2071,16 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
 
 
 #if NEWSETUP
+
     fscanf(f, " %d \n", &tmp);
     obj->level = tmp;
     fscanf(f, " %d \n", &tmp);
     obj->max = tmp;
 	fscanf(f, " %ld \n", &tmp);
 	obj->modified = tmp;
+
 #endif
-    /* *** extra descriptions *** */
+/* *** extra descriptions *** */
 
     obj->ex_description = 0;
 
@@ -2469,12 +2473,13 @@ void zone_update()
 
 
 int does_Load(int num, int max ) {
-  int temp;
-  int temp2;
+  float temp = 0.0;
+  float temp2 = 0.0;
   char buff[200];
 
+	if (max == 0)
   return (TRUE);
-#if 0
+#if 1
   sprintf(buff,"num=%d  max=%d", num, max);
   log(buff);
   if (max == 0)
@@ -2483,8 +2488,11 @@ int does_Load(int num, int max ) {
   if (num > max) { /* Maxxed.. but there is a slight chance of loading (GH)*/
     temp = (max / 2) + 1;  /* 20/2 would be a 10% chance of loading..*/
   }else
-    temp = 100 - (num / 2*max) * 100;
+    temp = 100 - ((num / (2*max)) * 100.0);
   temp2 = number(1,101);
+
+  sprintf(buff,"Chance to laod:%d    <=? Dice roll: %d",temp, temp2);
+  log(buff);
   if (temp2 <= temp)
     return TRUE;
   else {
@@ -2624,13 +2632,18 @@ void reset_zone(int zone)
 
       case 'O': /* read an object */ /*On ground load (GH) */
 
-	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE) {
+	if (TRUE) {
 	  if (ZCMD.arg3 >= 0 && ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
 	    if((ZCMD.if_flag>0&&ObjRoomCount(ZCMD.arg1,rp)<ZCMD.if_flag) ||
 	      (ZCMD.if_flag<=0&&ObjRoomCount(ZCMD.arg1,rp)<(-ZCMD.if_flag)+1)){
 	      if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
 		obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
-		obj_to_room(obj, ZCMD.arg3);
+
+		if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+			obj_to_room(obj, ZCMD.arg3);
+		else
+		   extract_obj(obj);
+
 		last_cmd = 1;
 	      } else {
 		last_cmd = 0;
@@ -2649,12 +2662,16 @@ void reset_zone(int zone)
 	break;
 
       case 'P': /* object to object */
-	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE )  {
+	if (TRUE)  {
 	  obj = read_object(ZCMD.arg1, REAL);
 	  obj_to = get_obj_num(ZCMD.arg3);
 	  if (obj_to && obj) {
             obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
-	    obj_to_obj(obj, obj_to);
+	    if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+			obj_to_obj(obj, obj_to);
+		else
+		   extract_obj(obj);
+
 	    last_cmd = 1;
 	  } else {
 	    last_cmd = 0;
@@ -2665,10 +2682,14 @@ void reset_zone(int zone)
 	break;
 
       case 'G': /* obj_to_char */
-	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE  &&
+	if (TRUE  &&
 	    (obj = read_object(ZCMD.arg1, REAL)) && mob) {
 	  obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
-          obj_to_char(obj, mob);
+        if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+			obj_to_char(obj, mob);
+		else
+		   extract_obj(obj);
+
 	  last_cmd = 1;
 	} else
 	  last_cmd = 0;
@@ -2691,11 +2712,16 @@ void reset_zone(int zone)
 	break;
 
       case 'E': /* object to equipment list */
-	if (does_Load(obj_index[ZCMD.arg1].number ,ZCMD.arg2)==TRUE &&
+	if (TRUE &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
 	  if (!mob->equipment[ZCMD.arg3]) {
 	     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
-             equip_char(mob, obj, ZCMD.arg3);
+
+		if(does_Load(obj_index[ZCMD.arg1].number,(int) obj->max)==TRUE)
+		   equip_char(mob, obj, ZCMD.arg3);
+		else
+		   extract_obj(obj);
+
 	  } else {
 	    sprintf(buf, "eq error - zone %d, cmd %d, item %d, mob %d, loc %d\n", zone, cmd_no,
 		    obj_index[ZCMD.arg1].virtual, mob_index[mob->nr].virtual, ZCMD.arg3);

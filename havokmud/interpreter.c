@@ -5,7 +5,6 @@
 #include <arpa/telnet.h>
 
 #include "protos.h"
-
 #define NOT !
 #define AND &&
 #define OR ||
@@ -1437,7 +1436,7 @@ AddCommand("whap",do_action,467,POSITION_RESTING,0);
 AddCommand("wedge",do_action,468,POSITION_RESTING,0);
 AddCommand("apologize",do_action,469,POSITION_RESTING,0);
 
-#if USE_DIMD
+#if 0 //1//USE_DIMD
 AddCommand("dmanage",do_dmanage,480,POSITION_RESTING,IMPLEMENTOR);
 AddCommand("drestrict",do_drestrict,481,POSITION_RESTING,55);
 AddCommand("dlink",do_dlink,482,POSITION_RESTING,55);

@@ -1490,7 +1490,7 @@ void assign_rooms()
     { 2000,  bank },
     { 13521, bank },
     { 18224, bank},
-	{ 22733, bank }, /* Order Bank */
+	{ 22738, bank }, /* Order Bank */
 /* sundhaven bank */
     {11558, bank},
 	{3422,ChurchBell},

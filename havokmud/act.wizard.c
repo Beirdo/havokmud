@@ -110,12 +110,24 @@ dlog("in do_auth");
 
 void do_imptest(struct char_data *ch, char *arg, int cmd)
 {
+	int x;
 char *tmp;
-dlog("in do_imptest");
-	tmp= (char *) malloc(10);
-	strcpy(tmp,"AAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaHHHHHHHHHH!");
-	if (tmp)
-		free(tmp);
+char buff[256];
+//dlog("in do_imptest");
+	//tmp= (char *) malloc(10);
+	//strcpy(tmp,"AAAAAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaHHHHHHHHHH!");
+	//log(tmp);
+	//if (tmp)
+	//	free(tmp);
+	log("loading all zoens");
+	//sprintf(buff,"%d",x);
+
+	for(x=0;x < 40000;x+=200){
+		sprintf(buff,"%d",x);
+		//do_zload(ch,buff,0);
+		do_goto(ch, buff, 0);
+
+	}
 }
 
 void do_passwd(struct char_data *ch, char *argument, int cmdnum)
@@ -3923,7 +3935,9 @@ dlog("in do_show");
 	    mode = "#always";
 	  else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
 	    mode = "#empty";
-	  else
+	  else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
+	  	mode = "#closed";
+	  	else
 	    mode = "#never";
 
 	} else {
