@@ -416,8 +416,9 @@
 #define SKILL_SCRIBE			348
 #define SPELL_GROUP_HEAL		349
 
+#define SPELL_PLANT_GATE		350
 
-#define MAX_EXIST_SPELL         349   /* max number of skills/spells */
+#define MAX_EXIST_SPELL         350   /* max number of skills/spells */
 
 
 

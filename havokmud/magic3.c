@@ -111,6 +111,106 @@ void spell_transport_via_plant(byte level, struct char_data *ch,
 
 }
 
+/*begin change 20040202 -gordon- */
+void spell_plant_gate(byte level, struct char_data *ch,
+		     struct char_data *victim, char *arg)
+{
+  struct room_data *rp;
+  struct obj_data *o, *i, *obj;
+  struct char_data *tch, *tch2;
+  int has_companions = 0;
+  char name[254], buf[200];
+  /* find the tree in the room */
+
+  rp = real_roomp(ch->in_room);
+  for (o = rp->contents; o; o = o->next_content)
+  {
+    if (ITEM_TYPE(o) == ITEM_TREE)
+      break;
+  }
+
+  if (!o)
+  {
+    send_to_char("You need to have a tree nearby.\n\r", ch);
+    return;
+  }
+
+  sprintf(name,"%s",arg);
+  	/* find the target tree */
+  	for (i = object_list; i ; i = i->next) {
+  		if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
+  			/* we found a druid tree with the right name */
+  			obj = i;
+  			break;
+  		}
+	}
+
+
+
+  if (ITEM_TYPE(obj) != ITEM_TREE)
+  {
+    send_to_char("Thats not a tree!\n\r", ch);
+    return;
+  }
+
+  if (obj->in_room < 0)
+  {
+    send_to_char("That tree is nowhere to be found!\n\r", ch);
+    return;
+  }
+
+  if (!real_roomp(obj->in_room))
+  {
+    send_to_char("That tree is nowhere to be found!\n\r", ch);
+    return;
+  }
+
+  act("$n places $s hand on $p and its surface wavers as a large gate opens within it!",
+     FALSE, ch, o, 0, TO_ROOM);
+  act("You place a hand on $p and its surface wavers as a large gate opens within it!",
+     FALSE, ch, o, 0, TO_CHAR);
+  for (tch=real_roomp(ch->in_room)->people; tch; tch=tch2)
+  {
+    tch2=tch->next_in_room;
+    if ((in_group(tch, ch)) && (GET_POS(tch) > POSITION_SLEEPING) && tch!=ch)
+    {
+      act("$n holds open the magical gateway in $p and ushers you through it.",
+         FALSE, ch, o, tch, TO_VICT);
+      act("$N steps inside the magical gate in $p and vanishes!",
+         FALSE, ch, o, tch, TO_NOTVICT);
+      act("You hold open the plant gate as $N steps inside and vanishes!",
+         FALSE, ch, o, tch, TO_CHAR);
+      char_from_room(tch);
+      char_to_room(tch, obj->in_room);
+      if(!has_companions)
+        act("$p rustles and a large gate opens within it!",FALSE, tch, obj, 0, TO_ROOM);
+      act("$n suddenly appears as $e steps from the gate in $p!",
+         FALSE, tch, obj, 0, TO_ROOM);
+      act("You are instantly transported to $p!", FALSE, tch, obj, 0, TO_CHAR);
+      do_look(tch, "\0", 0);
+      has_companions++;
+    }
+  }
+  if(has_companions)
+    send_to_char("After your companions are safely through the gate, "
+                 "you step within and join forms!\n\r",ch);
+  else
+    send_to_char("You step within the gate and your forms merge!\n\r",ch);
+  act("$n steps within the magical gate in $p and vanishes just before it closes!",
+     FALSE, ch, o, 0, TO_ROOM);
+  char_from_room(ch);
+  char_to_room(ch, obj->in_room);
+  if(!has_companions)
+    act("$p rustles and a large gate opens within it!",
+       FALSE, ch, obj, 0, TO_ROOM);
+  act("You are instantly transported to $p!",
+     FALSE, ch, obj, 0, TO_CHAR);
+  do_look(ch, "\0", 0);
+  act("$n steps through the magical gate in $p and the gate closes behind $m!",
+     FALSE, ch, obj, 0, TO_ROOM);
+}
+ /*end change 20040202 -gordon- */
+
 void spell_speak_with_plants(byte level, struct char_data *ch,
 		     struct char_data *victim, struct obj_data *obj)
 {

@@ -2983,6 +2983,23 @@ void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
   }
 }
 
+void cast_plant_gate( byte level, struct char_data *ch, char *arg,
+		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!*arg)
+    return;
+
+  switch(type) {
+   case SPELL_TYPE_SPELL:
+   case SPELL_TYPE_SCROLL:
+    spell_plant_gate(level, ch, 0, arg);
+    break;
+  default:
+  	log("Serious screw-up in plant gate");
+    break;
+  }
+}
+
 void cast_haste( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
 {

@@ -336,7 +336,8 @@ void cast_speak_with_plants( byte level, struct char_data *ch, char *arg,
 void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
 
-
+void cast_plant_gate( byte level, struct char_data *ch, char *arg,
+		int type, struct char_data *tar_ch, struct obj_data *tar_obj); /*20040202 -gordon-*/
 
 
 void cast_changestaff( byte level, struct char_data *ch, char *arg,
@@ -933,6 +934,11 @@ char *spells[]=
 	"flurry of blows",
 	"scribe", //348
 	"group heal",
+
+
+
+
+	"plant gate",//350
   "\n"
 };
 
@@ -3883,6 +3889,10 @@ void assign_spell_pointers()
 	spello(349,12,POSITION_FIGHTING, LOW_IMMORTAL, 29,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
 	75, TAR_IGNORE, cast_group_heal, 60,0, LOW_IMMORTAL, LOW_IMMORTAL);// group heal
+
+	spello(350,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 40,
+	LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL,
+	75, TAR_OBJ_WORLD, cast_plant_gate, 0,0, LOW_IMMORTAL, LOW_IMMORTAL); // plant gate
 
 }
 

@@ -962,6 +962,8 @@ void spell_tree_travel(byte level, struct char_data *ch,
 		     struct char_data *victim, struct obj_data *obj);
 void spell_transport_via_plant(byte level, struct char_data *ch,
 		     struct char_data *victim, char *arg);//struct obj_data *obj);
+void spell_plant_gate(byte level, struct char_data *ch,
+		     struct char_data *victim, char *arg); /*20040202 gordon*/
 void spell_speak_with_plants(byte level, struct char_data *ch,
 		     struct char_data *victim, struct obj_data *obj);
 void spell_changestaff(byte level, struct char_data *ch,
@@ -1883,6 +1885,9 @@ void cast_tree_travel( byte level, struct char_data *ch, char *arg, int type,
 void cast_speak_with_plants( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
+		int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
+ /*20040202 -gordon-*/
+void cast_plant_gate( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_haste( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj );

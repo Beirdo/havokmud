@@ -5076,7 +5076,8 @@ const struct skillset maindruidskills[] = {
 	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
 	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},
 	{"protection frost breath",	SPELL_PROT_BREATH_FROST		,38},
- {"None", 				-1							,-1}
+    {"plant gate",				SPELL_PLANT_GATE			,40},
+	{"None", 				-1							,-1}
 };
 const struct skillset druidskills[] = {
 	{"animal friendship",		SPELL_ANIMAL_FRIENDSHIP		,5},
