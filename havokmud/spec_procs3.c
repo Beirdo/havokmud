@@ -6941,7 +6941,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 }
 
 int randomitem(void) {
-  switch(number(0, 119)) {
+  switch(number(0, 118)) {
 	case 0:
 	case 1:
 	case 2:
@@ -7043,7 +7043,6 @@ int randomitem(void) {
 	case 85:
 		return 51820;
 	case 86:
-	case 119:
 		return 51821;
 	case 87:
 	case 88:

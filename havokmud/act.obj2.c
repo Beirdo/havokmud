@@ -1638,6 +1638,10 @@ dlog("in do_bid");
 			send_to_char("Your item is returned to you.\n\r",auctioneer);
 			do_save(auctioneer, "", 0);
 			auct_loop = 0;
+			intbid = 0;
+			minbid = 0;
+			bidder = 0;
+			auctioneer = 0;
 			return;
 		}
 		send_to_char("That is not a valid argument. Type bid without arguments for help.\n\r",ch);
