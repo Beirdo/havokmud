@@ -1630,7 +1630,7 @@ AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
  AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
 AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
-AddCommand("showpoofs", do_showpoofs, 620, POSITION_SITTING, 1);
+
 
 }
 
