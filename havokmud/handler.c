@@ -107,7 +107,7 @@ int isname(const char *str, const char *namelist)
     }
     for (i = 0; i < argc; i++) {
         for (j = 0; j < xargc; j++) {
-            if (!strcasecmp(argv[i], xargv[j])) {
+            if (argv[i] && xargv[j] && !strcasecmp(argv[i], xargv[j])) {
                 xargv[j] = NULL;
                 break;
             }
