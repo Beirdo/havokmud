@@ -4907,12 +4907,6 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     page_string(ch->desc, buffer, 1);
 }
 
-/*
- * this command will only be used for immorts as I am using it as a way
- * to figure out how to look into rooms next to this room. Will be using
- * the code for throwing items. I figure there is no IC reason for a PC
- * to have a command like this. Do what ya want on your on MUD
- */
 void do_spot(struct char_data *ch, char *argument, int cmd)
 {
     static char    *keywords[] = {
@@ -4956,11 +4950,8 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
                     rm,
                     nfnd;
     struct char_data *spud;
-    /*
-     * char *PowerLevelDesc(long a);
-     */
 
-    dlog("in do_scan");
+    dlog("in do_spot");
 
     /*
      * Check mortals spot skill, and give THEM a max scan of 2 rooms.
@@ -5093,8 +5084,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
     };
     char            buf[MAX_STRING_LENGTH],
                     buf2[MAX_STRING_LENGTH];
-    char           *arg1,
-                   *arg2;
+    char           *arg1;
     int             sd,
                     smin,
                     smax,
@@ -5108,11 +5098,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_scan");
 
-    /*
-     * sprintf(buf,"In scan - Room #%d, %s scanning.",
-     * ch->in_room,GET_NAME(ch)); slog(buf);
-     *
-     *
+     /*
      * Check mortals spot skill, and give THEM a max scan of 2 rooms.
      */
 
@@ -5132,40 +5118,25 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
             WAIT_STATE(ch, 2);
             return;
         }
-        /*
-         * failed
-         */
         max_range = 2;
-        /*
-         * morts can only spot two rooms away
-         */
 
     }
-    /*
-     * was mortal
-     */
+
     argument = get_argument(argument, &arg1);
-    argument = get_argument(argument, &arg2);
 
-    sd = search_block(arg1, keywords, FALSE);
-
-    if ((spud = get_char_room_vis(ch, arg1))) {
-
-        sprintf(buf, "$n peers intently at $N.");
-        sprintf(buf2, "You peer intently at $N.  You sense an aura power "
-                "of %ld",
-                CalcPowerLevel(spud));
-        act(buf, FALSE, ch, 0, spud, TO_ROOM);
-        act(buf2, FALSE, ch, 0, spud, TO_CHAR);
-
-        return;
-    }
-    if (sd == -1) {
+    if( !arg1 || (sd = search_block(arg1, keywords, FALSE)) == -1 ) {
         smin = 0;
         smax = 5;
         swt = 3;
         sprintf(buf, "$n peers intently all around.");
         sprintf(buf2, "You peer intently all around, and see :\n\r");
+    } else if ((spud = get_char_room_vis(ch, arg1))) {
+        sprintf(buf, "$n peers intently at $N.");
+        sprintf(buf2, "You peer intently at $N.  You sense an aura power "
+                      "of %ld", CalcPowerLevel(spud));
+        act(buf, FALSE, ch, 0, spud, TO_ROOM);
+        act(buf2, FALSE, ch, 0, spud, TO_CHAR);
+        return;
     } else {
         smin = sd;
         smax = sd;
