@@ -149,7 +149,7 @@ int             qp_patience;
 /*
  * body of the booting system
  */
-void boot_db()
+void boot_db(void)
 {
     int             i;
 
@@ -298,7 +298,7 @@ void boot_db()
 /*
  * reset the time in the game from file
  */
-void reset_time()
+void reset_time(void)
 {
     long            beginning_of_time = 650336715;
 
@@ -393,7 +393,7 @@ void reset_time()
 /*
  * update the time file
  */
-void update_time()
+void update_time(void)
 {
     return;
 }
@@ -441,7 +441,7 @@ int wizcenter(char *buf)
 /*
  * generate index table for the player file
  */
-void build_player_index()
+void build_player_index(void)
 {
     int             nr = -1,
                     i;
@@ -1425,7 +1425,7 @@ void setup_dir(FILE * fl, long room, int dir)
     rp->dir_option[dir]->open_cmd = tmp;
 }
 
-void boot_saved_zones()
+void boot_saved_zones(void)
 {
     DIR            *dir;
     FILE           *fp;
@@ -1459,7 +1459,7 @@ void boot_saved_zones()
     closedir(dir);
 }
 
-void boot_saved_rooms()
+void boot_saved_rooms(void)
 {
     DIR            *dir;
     FILE           *fp;
@@ -3387,7 +3387,7 @@ struct obj_data *read_object(int nr, int type)
 /*
  * counts the number of inited zones
  */
-int init_counter()
+int init_counter(void)
 {
     int             i,
                     j = 0;
@@ -3404,7 +3404,7 @@ int init_counter()
  * update zone ages, queue for reset if necessary, and dequeue when
  * possible
  */
-void zone_update()
+void zone_update(void)
 {
     int             i,
                     j;
@@ -5897,7 +5897,7 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
     }
 }
 
-void InitScripts()
+void InitScripts(void)
 {
     char            buf[255],
                     buf2[255];
@@ -6033,7 +6033,7 @@ int CheckKillFile(long virtual)
     return (0);
 }
 
-void ReloadRooms()
+void ReloadRooms(void)
 {
     int             i;
 

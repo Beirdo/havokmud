@@ -5,7 +5,7 @@ AC_INIT(havokmud, [1.10/1.11], [gjhurlbu@users.sourceforge.net])
 AC_CONFIG_SRCDIR([act.comm.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([scripts])
-AC_REVISION($Revision: 1.1.2.4 $)
+AC_REVISION($Revision: 1.1.2.5 $)
 
 AC_ARG_VAR(AWK, [location of the awk command])
 AC_PROG_AWK
@@ -104,6 +104,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
+AC_FUNC_CLOSEDIR_VOID
 AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname gethostname getpagesize gettimeofday inet_ntoa isascii memset select socket strcasecmp strchr strdup strncasecmp strstr strsep])
 
 dnl HAVOK_SWITCH(arg-name, arg_name, ARG_NAME, help_LHS, help_RHS, cache_string,

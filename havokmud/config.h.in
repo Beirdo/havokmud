@@ -10,6 +10,9 @@
    time */
 #undef CLEAN_AT_BOOT
 
+/* Define to 1 if the `closedir' function returns void instead of `int'. */
+#undef CLOSEDIR_VOID
+
 /* To add some extra debugging stuff */
 #undef DEBUG
 
