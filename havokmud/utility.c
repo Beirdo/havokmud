@@ -200,8 +200,13 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
   if (IS_AFFECTED2(o, AFF2_INVIS_TO_UNDEAD) && IsUndead(s))
     return(FALSE);
 
-  if (IS_AFFECTED(o, AFF_HIDE))
-    return(FALSE);
+  if (IS_AFFECTED(o, AFF_HIDE)){
+  	if(IS_AFFECTED(s, AFF_SENSE_LIFE)){
+      return(TRUE);
+    }else{
+	  return(FALSE);
+}
+}
 
   if (IS_AFFECTED(s, AFF_TRUE_SIGHT))
     return(TRUE);
