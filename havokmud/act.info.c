@@ -2557,7 +2557,7 @@ char *GetLevelTitle(struct char_data *ch) {
 	} else {
 		/* determine the highest xp value gained level */
 		exp = GET_EXP(ch);
-		for (i=1;i<=CLASS_NECROMANCER;i*=2) {
+		for (i=1;i<=CLASS_COUNT;i++) {
 			if (HasClass(ch, i)) {
 				if (titles[i][GET_LEVEL(ch, i)].exp >= high) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
@@ -2571,7 +2571,7 @@ char *GetLevelTitle(struct char_data *ch) {
 			return buf;
 		} else {
 			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_m);
-			return buf; //BestMagicClass(ch)
+			return buf;
 		}
 	}
 }
