@@ -2368,6 +2368,8 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
                 TotalMemorized(ch));
         send_to_char(buf, ch);
         send_to_char("Your spellbook holds these spells:\n\r", ch);
+
+        buffer[0] = '\0';
         for (i = 0; i < spell_info_count; i++) {
             index = spell_index[i + 1];
             if( index == -1 ) {
@@ -2401,7 +2403,6 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
             }
         }
         page_string(ch->desc, buffer, 0);
-        buffer[0] = '\0';
         return;
     }
 

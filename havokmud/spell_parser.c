@@ -2986,7 +2986,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     exp;
     bool            target_ok;
     int             max,
-                    cost;
+                    cost = 0;
 
     if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
         send_to_char("Der, what is that?\n\r", ch);
@@ -3409,7 +3409,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             } 
             
             if (!IS_IMMORTAL(ch) && (GET_MANA(ch) < USE_MANA(ch, spl) || 
-                                     GET_MANA(ch) <= 0)) {
+                                     GET_MANA(ch) <= 0) && cmd != 283 ) {
                 send_to_char("You can't summon enough energy!\n\r", ch);
                 return;
             }
@@ -3571,7 +3571,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, 
                      SPELL_TYPE_SPELL, tar_char, tar_obj);
 
-                cost = USE_MANA(ch, spl);
+                if( cmd != 283 ) {
+                    cost = USE_MANA(ch, spl);
+                }
+
                 exp = NewExpCap(ch, cost * 50);
 
                 if (cmd == 283) {
