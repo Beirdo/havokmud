@@ -4520,8 +4520,10 @@ if(GET_RACE(ch) == RACE_AVARIEL)   /*Races with fire prone wings*/
 return;
 }
 
+
 #define BAHAMUT 45461
 #define BAHAMUT_ARMOR 45495
+#define GUARDIAN_SIN 51821
 void specdamage(struct char_data *ch, struct char_data *v)
 {
   struct obj_data *object;
@@ -4531,6 +4533,9 @@ void specdamage(struct char_data *ch, struct char_data *v)
 	object = ch->equipment[WEAR_BODY];
   	if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR) bahamut_armor(ch, v);
   }
-
+  if (ch->equipment[WIELD]) {
+  	object = ch->equipment[WIELD];
+    	if (obj_index[object->item_number].virtual == GUARDIAN_SIN) guardian_sin(ch, v);
+  }
 return;
 }

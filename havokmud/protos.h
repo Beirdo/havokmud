@@ -332,6 +332,7 @@ void do_snoop(struct char_data *ch, char *argument, int cmd);
 void do_switch(struct char_data *ch, char *argument, int cmd);
 void do_return(struct char_data *ch, char *argument, int cmd);
 void do_force(struct char_data *ch, char *argument, int cmd);
+void do_flux(struct char_data *ch, char *argument, int cmd);
 void do_load(struct char_data *ch, char *argument, int cmd);
 void purge_one_room(int rnum, struct room_data *rp, int *range);
 void do_purge(struct char_data *ch, char *argument, int cmd);
@@ -1520,6 +1521,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 int applepie(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int guardian_sin(struct char_data *ch, struct char_data *vict);
 
 
 int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
@@ -2251,4 +2253,3 @@ long NewExpCap(struct char_data *ch, long total);
 
 int ValidRoom(struct char_data *ch );
 
-void do_objectreport(struct char_data *ch, char *argument, int cmd);

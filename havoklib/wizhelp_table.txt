@@ -585,7 +585,7 @@ RESTORE
 Using this command on someone that is level 51 will set all classes and
 levels to 51, also setting all skills to good.
 
-Also see : -
+Also see : FLUX
 #
 RSAVE
 	
@@ -1158,11 +1158,20 @@ use your good judgement.  That is, for those of you who HAVE good judgement.
 For the rest of you, ask someone, or tell the mortal that you're simply not
 allowed to give out that kind of information.
 #
+FLUX
+
+  Usage : flux
+
+This command does a restore for all connected mortal players. Use sparingly. 
+
+Also see : RESTORE
+#
 HELP
 
 Please use wizlist to see avaible help.
 
 Also see : RULES, INFO
+
 #~
 
 

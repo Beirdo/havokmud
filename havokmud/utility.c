@@ -2993,7 +2993,7 @@ char *advicelist[] = {
 	"Before attacking someone, use the $c000WCONSIDER$c000w command to determine how strong they are.",
 	"To see a list of people in the same zone as you, type $c000WWHOZONE$c000w.",
 	"Some items have ego which means you have to be a certain level to use the item.",
-	"See our discussion board, go 2 east & 1 north of meeting square. ($c000WLook board, read<Message#>",
+	"See our discussion board, go 2 east & 1 north of meeting square. ($c000Wlook board, read <message#>$c0007)",
 	"At times, you may see our resident bot Seth on, whom will spell you up and summon you when needed.",
 	"Typing $c000WQUIT$c000w will not save your character's equipment. Try $c0015HELP RENT$c0007.",//27
 	"Bug the immortals to add more help and advice to this list.",

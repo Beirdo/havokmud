@@ -7080,7 +7080,155 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   	do_put(mob,"trinket stash",0);
 
 
+
 }
+
+int guardian_sin(struct char_data *ch, struct char_data *vict)
+{
+	struct affected_type af;
+	struct obj_data *obj;
+	char buf[240];
+	int gold;
+
+
+	obj=ch->equipment[WIELD];
+
+	/* I'm thinking 1% chance for each spec to happen  Try 0-8 to test specs. may have to tweak the rate */
+	switch (number(0, 20)) {
+ 	case 1:
+ 		/* cool! let's berserk the wielder of the mace, regardless of class. */
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008Roaring at $n, he invokes the Wrath of Raiva.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		act("$c0008Roaring at you, he invokes the Wrath of Raiva.$c0007", FALSE, vict, 0, 0, TO_VICT);
+ 		SET_BIT(ch->specials.affected_by2,AFF2_BERSERK); /* berserk ch */
+        act("$c1012$n growls at $mself, and whirls into a killing frenzy!", FALSE, ch, 0, vict, TO_ROOM);
+        act("$c1012The madness overtakes you quickly!",FALSE,ch,0,0,TO_CHAR);
+        if(obj->short_description) {
+			free(obj->short_description);
+		    sprintf(buf,"%s","Guardian of Wrath");
+		    obj->short_description = strdup(buf);
+		}
+ 		break;
+ 	case 2:
+ 		if (IS_NPC(ch)) /* since slow doesn't really affect mobs, check here if wielder is PC */
+ 		return(FALSE);
+ 		if (IsImmune(ch, IMM_HOLD)) /* immune PCs shouldn't be affected. */
+ 		return(FALSE);
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008He giggles at $n while invoking the Leviathon of Laethargio.$c0007", 1, ch, 0, 0, TO_ROOM);
+ 		act("$c0008He giggles at you while invoking the Leviathon of Laethargio.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		SET_BIT(ch->specials.affected_by2, AFF2_SLOW);
+ 		act("$c0008$n seems very slow.$c0007", 1, ch, 0, 0, TO_ROOM);
+ 		send_to_char("$c0008You feel very slow!$c0007\r\n", ch);
+ 		if(obj->short_description) {
+			free(obj->short_description);
+			sprintf(buf,"%s","Guardian of Sloth");
+			obj->short_description = strdup(buf);
+		}
+
+ 		break;
+	case 3:
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008Pointing, he sends the Essence of Neid towards $n.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		act("$c0008Pointing, he sends the Essence of Neid towards you.$c0007", FALSE, vict, 0, 0, TO_VICT);
+ 		SET_BIT(vict->specials.affected_by, AFF_BLIND);
+ 		act("$c0008$n's eyes glaze over.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		send_to_char("$c0008You blink, and the world has turned dark.$c0007\r\n", vict);
+ 		if(obj->short_description) {
+			free(obj->short_description);
+			sprintf(buf,"%s","Guardian of Envy");
+			obj->short_description = strdup(buf);
+		}
+		break;
+ 	case 4:
+ 		/* This one is funky: dispel magic, dependant on wielder's level. Good stuff,
+ 		   in most cases. However, dispelling fsd mobs when you got your own fs running,
+ 		   this may prove scrappish. Cool! */
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008Looking disdainfully at $n, he chants to Lord Orgulho.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		act("$c0008Looking disdainfully at you, he chants to Lord Orgulho.$c0007", FALSE, vict, 0, 0, TO_VICT);
+ 		cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+        if(obj->short_description) {
+ 			free(obj->short_description);
+ 		    sprintf(buf,"%s","Guardian of Pride");
+ 		    obj->short_description = strdup(buf);
+ 		}
+
+ 		break;
+ 	case 5:
+ 		if (IS_PC(vict)) /* don't steal from other players, not even in arena. */
+ 		return(FALSE);
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008Cackling gleefully, he sends Ginayro through $n's pockets.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		act("$c0008Your pockets seem a little lighter as Ginayro's Spirit visits them.$c0007", FALSE, vict, 0, 0, TO_VICT);
+ 		/* steal monies from vict, spoils go to ch */
+ 		gold = (int) ((GET_GOLD(vict)*number(1,10))/100);
+		gold = MIN(number(10000,30000), gold);
+		if (gold > 0) {
+			GET_GOLD(ch) += gold;
+			GET_GOLD(vict) -= gold;
+			sprintf(buf, "$c0008Ginayro rewarded you with %d gold coins.$c0007\r\n", gold);
+			send_to_char(buf, ch);
+		} else {
+			send_to_char("$c0008Ginayro couldn't grab you any gold.$c0007\r\n", ch);
+		}
+        if(obj->short_description) {
+			free(obj->short_description);
+		    sprintf(buf,"%s","Guardian of Greed");
+		    obj->short_description = strdup(buf);
+		}
+ 		break;
+ 	case 6:
+ 		if (affected_by_spell(ch,SKILL_ADRENALIZE)) /* don't get multiple adrenalizes */
+ 		return(FALSE);
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008He bestows the Spirit of Luhuria upon $n, who gets an excited look in his eye.$c0007", 1, ch, 0, 0, TO_ROOM);
+ 		act("$c0008He bestows the Spirit of Luhuria upon you, setting your loins afire.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		/* set adrenalize */
+ 		af.type       = SKILL_ADRENALIZE;
+		af.location   = APPLY_HITROLL;
+		af.modifier   = -4;
+		af.duration   = 7;
+		af.bitvector  = 0;
+		affect_to_char (ch,&af);
+
+		af.location   = APPLY_DAMROLL;
+		af.modifier   = 4;
+		affect_to_char (ch,&af);
+
+		af.location   = APPLY_AC;
+		af.modifier   = 20;
+		affect_to_char (ch,&af);
+
+        if(obj->short_description) {
+			free(obj->short_description);
+		    sprintf(buf,"%s","Guardian of Lust");
+		    obj->short_description = strdup(buf);
+		}
+ 		break;
+ 	case 7:
+ 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+ 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+ 		act("$c0008An enormous maw takes a big bite out of $n, sating Hambre's appetite.$c0007", 1, vict, 0, 0, TO_ROOM);
+ 		act("$c0008You've just become life bait for Hambre, who sinks his teeth deep into your flesh.$c0007", FALSE, vict, 0, 0, TO_VICT);
+ 		/* take big bite outta vict: 20% of current hp damage, that's gotta hurt! */
+ 		GET_HIT(vict) -= (GET_HIT(vict)/5);
+        if(obj->short_description) {
+			free(obj->short_description);
+		    sprintf(buf,"%s","Guardian of Gluttony");
+		    obj->short_description = strdup(buf);
+		}
+		break;
+  }
+return(FALSE);
+}
+
 
 
 /* part of royal rumble proc */
@@ -7145,3 +7293,4 @@ int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *
 
  	return(FALSE);
 }
+
