@@ -419,7 +419,7 @@ typedef struct {
 
 
 /* We were getting purify hits on MAX_STRING_LENGTH */
-#define MAX_STRING_LENGTH   20480
+#define MAX_STRING_LENGTH   40960//increase size.. allspells is crasching on us.20480
 #define MAX_INPUT_LENGTH     160
 
 #define SMALL_BUFSIZE	512

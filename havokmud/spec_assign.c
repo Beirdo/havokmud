@@ -1414,7 +1414,27 @@ void assign_mobiles()
 	{702, DruidGuildMaster },
 
 
+
+
+
 #endif
+#if 1 /* Heximals procs */
+    {50806,  MageGuildMaster },
+    {50808,  PsiGuildmaster },
+    //{, BardGuildMaster },
+    {50805,  ThiefGuildMaster },
+    {50807,  ClericGuildMaster },
+    {50801,  PaladinGuildmaster },
+    {50804,  barbarian_guildmaster },
+    {50803,  WarriorGuildMaster },
+    {50810,  DruidGuildMaster },
+    {50809,  monk_master },
+    {50890, receptionist },
+    {50802, RangerGuildmaster},
+
+
+#endif
+
 
     { -1, NULL },
   };
