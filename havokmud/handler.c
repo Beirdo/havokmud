@@ -229,6 +229,129 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv, bool add
 			mod = -mod;
 		}
 	}
+//start change by gordon feb 15 2004
+/*This is for affects to apply to mobs, like the affects from blind, and blast*/
+	if (!IS_PC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))
+  switch(loc)
+
+  	{
+
+	case APPLY_AC:
+	      GET_AC(ch) += mod;
+	      break;
+	case APPLY_HITROLL:
+	      GET_HITROLL(ch) += mod;
+	      break;
+	case APPLY_DAMROLL:
+	      GET_DAMROLL(ch) += mod;
+	      break;
+
+	 /* negatives make saving throws better */
+
+	    case APPLY_SAVING_PARA:
+	      ch->specials.apply_saving_throw[0] += mod;
+	      break;
+
+	    case APPLY_SAVING_ROD:
+	      ch->specials.apply_saving_throw[1] += mod;
+	      break;
+
+	    case APPLY_SAVING_PETRI:
+	      ch->specials.apply_saving_throw[2] += mod;
+	      break;
+
+	    case APPLY_SAVING_BREATH:
+	      ch->specials.apply_saving_throw[3] += mod;
+	      break;
+
+	    case APPLY_SAVING_SPELL:
+	      ch->specials.apply_saving_throw[4] += mod;
+	      break;
+
+	    case APPLY_SAVE_ALL:       {
+		for (i=0;i<MAX_SAVES;i++)
+		  ch->specials.apply_saving_throw[i] += mod;
+	      }
+	      break;
+	    case APPLY_HITNDAM:
+			      GET_HITROLL(ch) += mod;
+			      GET_DAMROLL(ch) += mod;
+	      break;
+	    case APPLY_NONE:
+		case APPLY_STR:
+		case APPLY_DEX:
+		case APPLY_INT:
+		case APPLY_WIS:
+		case APPLY_CON:
+		case APPLY_SEX:
+		case APPLY_CHR:
+		case APPLY_LEVEL:
+		case APPLY_AGE:
+		case APPLY_CHAR_WEIGHT:
+		case APPLY_CHAR_HEIGHT:
+		case APPLY_MANA:
+		case APPLY_HIT:
+		case APPLY_MOVE:
+		case APPLY_GOLD:
+		case APPLY_IMMUNE:
+	    case APPLY_SUSC:
+	    case APPLY_M_IMMUNE:
+	    case APPLY_SPELL:
+	    case APPLY_WEAPON_SPELL:
+	    case APPLY_EAT_SPELL:
+	    case APPLY_BACKSTAB:
+	    case APPLY_KICK:
+	    case APPLY_SNEAK:
+	    case APPLY_HIDE:
+	    case APPLY_BASH:
+	    case APPLY_PICK:
+	    case APPLY_STEAL:
+	    case APPLY_TRACK:
+	    case APPLY_SPELLFAIL:
+	    case APPLY_HASTE:
+	    case APPLY_SLOW:
+	    case APPLY_ATTACKS:
+	    case APPLY_FIND_TRAPS:
+	    case APPLY_RIDE:
+	    case APPLY_RACE_SLAYER:
+	    case APPLY_ALIGN_SLAYER:
+	    case APPLY_MANA_REGEN:
+	    case APPLY_HIT_REGEN:
+	    case APPLY_MOVE_REGEN:
+	    case APPLY_MOD_THIRST:
+		case APPLY_MOD_HUNGER:
+		case APPLY_MOD_DRUNK:
+		case APPLY_T_STR:
+		case APPLY_T_INT:
+		case APPLY_T_DEX:
+		case APPLY_T_WIS:
+		case APPLY_T_CON:
+		case APPLY_T_CHR:
+		case APPLY_T_HPS:
+		case APPLY_T_MOVE:
+		case APPLY_T_MANA:
+			break;
+
+			break;
+	    default:
+
+	#if LOG_DEBUG
+	      log("Unknown apply adjust attempt on a mob in (handler.c, affect_modify).");
+	#endif
+	      break;
+
+    } /* switch */
+
+
+
+
+
+
+
+
+
+
+
 
 	if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
   switch(loc)

@@ -2739,20 +2739,20 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
          dam=1;
          break;
        case 1:
-         dam=number(1,4);
+         dam=dice(2,4);
          break;
        case 2:
-         dam=number(2,10);
+         dam=dice(2,5);
          break;
        case 3:
-         dam=number(3,12);
+         dam=dice(3,5);
          break;
        case 4:
-         dam=number(4,16);
+         dam=dice(4,5);
          break;
        case 5:
-         dam=20;
-         if (!IS_AFFECTED(ch,AFF_BLIND))         {
+         dam=25;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
            af.type = SPELL_BLINDNESS;
            af.duration = 5;
            af.modifier = -4;
@@ -2765,11 +2765,11 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
          }
          break;
        case 6:
-         dam=20;
+         dam=25;
          break;
        case 7:
-         dam=35;
-         if (!IS_AFFECTED(ch,AFF_BLIND))         {
+         dam=40;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
            af.type = SPELL_BLINDNESS;
            af.duration = 5;
            af.modifier = -4;
@@ -2787,7 +2787,18 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
          dam=50;
          break;
        case 9:
-         dam=70;
+         dam=80;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
+		            af.type = SPELL_BLINDNESS;
+		            af.duration = 5;
+		            af.modifier = -4;
+		            af.location = APPLY_HITROLL;
+		            af.bitvector = AFF_BLIND;
+		            affect_to_char(victim, &af);
+		            af.location = APPLY_AC;
+		            af.modifier = 20;
+		            affect_to_char(victim, &af);
+         }
          if (GET_POS(victim)>POSITION_STUNNED)
            GET_POS(victim)=POSITION_STUNNED;
          if (GET_HITROLL(victim)>-50)         {
@@ -2800,10 +2811,21 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
          }
          break;
        case 10:
-         dam=75;
+         dam=80;
          break;
        case 11:
          dam=100;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
+		            af.type = SPELL_BLINDNESS;
+		            af.duration = 5;
+		            af.modifier = -4;
+		            af.location = APPLY_HITROLL;
+		            af.bitvector = AFF_BLIND;
+		            affect_to_char(victim, &af);
+		            af.location = APPLY_AC;
+		            af.modifier = 20;
+		            affect_to_char(victim, &af);
+         }
          if (GET_POS(victim)>POSITION_STUNNED)
            GET_POS(victim)=POSITION_STUNNED;
          if (GET_HITROLL(victim)>-50)         {
@@ -2816,18 +2838,48 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
          }
          break;
        case 12:
-         dam=100;
+         dam=150;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
+		            af.type = SPELL_BLINDNESS;
+		            af.duration = 5;
+		            af.modifier = -4;
+		            af.location = APPLY_HITROLL;
+		            af.bitvector = AFF_BLIND;
+		            affect_to_char(victim, &af);
+		            af.location = APPLY_AC;
+		            af.modifier = 20;
+		            affect_to_char(victim, &af);
+         }
          if (GET_HITROLL(victim)>-50)         {
            af.type = SKILL_PSIONIC_BLAST;
            af.duration = 5;
-           af.modifier = -5;
+           af.modifier = -10;
            af.location = APPLY_HITROLL;
            af.bitvector = 0;
            affect_join(victim, &af, FALSE, FALSE);
          }
          break;
        case 13:
-         dam=150;
+         dam=200;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
+		            af.type = SPELL_BLINDNESS;
+		            af.duration = 5;
+		            af.modifier = -4;
+		            af.location = APPLY_HITROLL;
+		            af.bitvector = AFF_BLIND;
+		            affect_to_char(victim, &af);
+		            af.location = APPLY_AC;
+		            af.modifier = 20;
+		            affect_to_char(victim, &af);
+         }
+         if (GET_HITROLL(victim)>-50){
+			 af.type = SKILL_PSIONIC_BLAST;
+			 af.duration = 5;
+			 af.modifier = -10;
+			 af.location = APPLY_HITROLL;
+			 af.bitvector = 0;
+			 affect_join(victim, &af, FALSE, FALSE);
+			}
          if (GET_POS(victim)>POSITION_STUNNED)
            GET_POS(victim)=POSITION_STUNNED;
          if ((!IsImmune(victim,IMM_HOLD)) &&
@@ -2844,6 +2896,27 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
        case 15:
        case 16:
        case 17:
+         dam=200;
+         if (!IS_AFFECTED(victim,AFF_BLIND))         {
+		            af.type = SPELL_BLINDNESS;
+		            af.duration = 5;
+		            af.modifier = -4;
+		            af.location = APPLY_HITROLL;
+		            af.bitvector = AFF_BLIND;
+		            affect_to_char(victim, &af);
+		            af.location = APPLY_AC;
+		            af.modifier = 20;
+		            affect_to_char(victim, &af);
+         }
+         if (GET_HITROLL(victim)>-50){
+		 			 af.type = SKILL_PSIONIC_BLAST;
+		 			 af.duration = 5;
+		 			 af.modifier = -5;
+		 			 af.location = APPLY_HITROLL;
+		 			 af.bitvector = 0;
+		 			 affect_join(victim, &af, FALSE, FALSE);
+			}
+
          if (GET_POS(victim)>POSITION_STUNNED)
            GET_POS(victim)=POSITION_STUNNED;
          af.type = SPELL_PARALYSIS;
