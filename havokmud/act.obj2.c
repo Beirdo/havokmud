@@ -1543,6 +1543,11 @@ dlog("in do_bid");
 	only_argument(argument,arg);
 
 	if(isdigit(*arg)) {
+		/* check for ego */
+		if(auctionobj->level > GetMaxLevel(ch) && !IS_IMMORTAL(ch)) {
+			send_to_char("Alas, that item seems a tad too powerful for the likes of you.\n\r",ch);
+			return;
+		}
 		/* can't bid on your own auctions */
 		if(auctioneer == ch && !IS_IMMORTAL(ch)) {
 			send_to_char("Meh, stop bidding on your own stuff, punk!\n\r",ch);
