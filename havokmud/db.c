@@ -1755,6 +1755,11 @@ struct char_data *read_mobile(int nr, int type)
 			}
 			if (!IS_SET(mob->specials.act, ACT_SENTINEL))
 				SET_BIT(mob->specials.act, ACT_SENTINEL);
+		} else if (mob->specials.proc == PROC_REPAIRGUY) {
+			if(mob_index[mob->nr].func != RepairGuy) {
+				mob_index[mob->nr].func = *RepairGuy;
+				log("assigning repair guy proc");
+			}
 		}
 	}
 	return(mob);

@@ -1332,7 +1332,7 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
 	mob=ch->specials.mobedit;
 	if(type != ENTER_CHECK) {
 		change=atoi(arg);
-		if(change < 0 || change > 19)
+		if(change < 0 || change > 20)
 			change=0;
 
 		mob->specials.proc = change;
@@ -1356,6 +1356,7 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
 	send_to_char(" 14) Sound Breather                  15) Shard Breather\n\r",ch);
 	send_to_char(" 16) Sleep Breather                  17) Light Breather\n\r",ch);
 	send_to_char(" 18) Dark Breather                   19) Receptionist\n\r",ch);
+	send_to_char(" 20) Repair Guy\n\r",ch);
 
 	send_to_char("\n\r", ch);
 	send_to_char("For Guildmasters: set (one!) class in Action Flags, and mob\n\r", ch);

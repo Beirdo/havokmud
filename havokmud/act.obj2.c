@@ -1476,6 +1476,12 @@ dlog("in do_auction");
 		return;
 	}
 
+	/* don't auction corpses */
+	if(IS_CORPSE(auctionobj)) {
+		send_to_char("Hey now, none of that!\n\r",ch);
+		return;
+	}
+
 	if(!(minbid=atoi(bid)))
 		minbid=1; /* min bid is 1 coin, and we got an auction runnin. */
 	else if(minbid > 50000000) {

@@ -335,13 +335,6 @@ void mobile_activity(struct char_data *ch)
 
 	}
 
-	if (IS_SET(ch->specials.proc, PROC_SHOPKEEPER)) {
-		if (shopkeeper(ch,0,"",ch,PULSE_TICK)) {
-			return;
-        }
-    }
-
-
 if (!no_specials) {		/* do not run these if disabled */
 
  if (IS_SET(ch->specials.act,ACT_NECROMANCER)) {

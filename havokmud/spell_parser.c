@@ -1021,10 +1021,10 @@ char *spells[]=
 	"ventriloquate",
 	"song of comprehension",
 	"song of biting words",
-	"song of the lulaby",
+	"song of the lullaby",
 	"song of charming",
 	"song of the freezing north",//350
-	"entrhallment",
+	"song of enthrallment",
 	"song of calming",
 	"song of the guardian",
 	"song of muscle",
@@ -1053,7 +1053,7 @@ char *spells[]=
 	"song of the wanderer",
 	"sounds of fear",
 	"song of battle",
-	"hero's chant",//380
+	"heroes chant",//380
    "\n"
 };
 
@@ -2808,7 +2808,6 @@ void assign_spell_pointers()
   /* From spells1.c */
 
   /* mage only 	    */
-
 	spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,
 	1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
 	15,TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_magic_missile,10,0, LOW_IMMORTAL, LOW_IMMORTAL);
@@ -2824,7 +2823,6 @@ void assign_spell_pointers()
   spello(37,12,POSITION_FIGHTING, 2, LOW_IMMORTAL,  LOW_IMMORTAL,
   2,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM|TAR_FIGHT_VICT|TAR_VIOLENT, cast_shocking_grasp,0,0, LOW_IMMORTAL, LOW_IMMORTAL);
-
 
   spello( 30, 24, POSITION_FIGHTING,
   10,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -2928,11 +2926,11 @@ void assign_spell_pointers()
 
   spello(19,12,POSITION_STANDING, 2,  5, 7,
   2,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  5,	 TAR_CHAR_ROOM, cast_detect_invisibility,0,1, LOW_IMMORTAL, 8);
+  5,	 TAR_CHAR_ROOM, cast_detect_invisibility,0,1, 6, 8);
 
   spello(20,12,POSITION_STANDING, 1,  3, 5,
   1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  5,	 TAR_CHAR_ROOM, cast_detect_magic,0,1, LOW_IMMORTAL, 3);
+  5,	 TAR_CHAR_ROOM, cast_detect_magic,0,1, 5, 3);
 
   spello(21,12,POSITION_STANDING,LOW_IMMORTAL,  LOW_IMMORTAL, 1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  3,  LOW_IMMORTAL,
@@ -3103,7 +3101,7 @@ void assign_spell_pointers()
 
   spello(73,24,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,
   1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  1,	 TAR_CHAR_ROOM, cast_shield, 15,1, LOW_IMMORTAL, LOW_IMMORTAL);
+  1,	 TAR_CHAR_ROOM, cast_shield, 15,1, 5, LOW_IMMORTAL);
 
   spello(74,24,POSITION_STANDING, 4, LOW_IMMORTAL, LOW_IMMORTAL,
   4,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3195,7 +3193,7 @@ void assign_spell_pointers()
 
   spello(96,12,POSITION_STANDING, 5, 4, 1,
   5,  LOW_IMMORTAL, 7,  LOW_IMMORTAL,
-  10,	 TAR_CHAR_ROOM | TAR_SELF_NONO | TAR_VIOLENT, cast_faerie_fire,0,1, LOW_IMMORTAL, LOW_IMMORTAL);
+  10,	 TAR_CHAR_ROOM | TAR_SELF_NONO | TAR_VIOLENT, cast_faerie_fire,0,1, 9, LOW_IMMORTAL);
 
   spello(97,24,POSITION_STANDING, 16, 11, 10,
   16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,

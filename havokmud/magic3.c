@@ -4519,7 +4519,7 @@ void song_of_comprehension(byte level, struct char_data *ch, struct char_data *v
 			act("As you play, your ears become truly open.", FALSE, ch, 0, victim, TO_CHAR);
 		}
 		af.type      = SONG_OF_COMPREHENSION;
-		af.duration  = (level<LOW_IMMORTAL) ? (int)level/2 : level;  				/* one tic only! */
+		af.duration  = 24;
 		af.modifier  = 0;
 		af.location  = APPLY_NONE;
 		af.bitvector = 0;
@@ -5391,7 +5391,7 @@ This is a sustained song.  Cost: 25% of the caster’s max (every tick).
 		if(ch->in_room)
 			rp = real_roomp(ch->in_room);
 		if(!rp) {
-			log("fuckup in hero's chant");
+			log("fuckup in heroes chant");
 			return;
 		}
 		for (tmp = rp->people;tmp;tmp=tmp2) {

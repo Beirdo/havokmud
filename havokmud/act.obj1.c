@@ -878,6 +878,7 @@ dlog("in do_donate");
 	  tmp_object = next_obj) {
 	next_obj = tmp_object->next_content;
 	if (! IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
+
 	  obj_from_char(tmp_object);
 	  obj_to_room(tmp_object,((number(0,1)==1)) ? donations1 : donations2);//99);
 	  value +=((tmp_object->obj_flags.cost)*10/100);
