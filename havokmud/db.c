@@ -3270,11 +3270,13 @@ void zone_update()
 			} else if (!is_empty(update_u->zone_to_reset)) {
 				/* just reset, not cleaned when there's people in it */
 				reset_zone(update_u->zone_to_reset,0);
-			} else {
+			} else if(!IS_SET(SystemFlags, SYS_NO_DEINIT)) {
 				CleanZone(update_u->zone_to_reset);
 				zone_table[update_u->zone_to_reset].start=0;
 				sprintf(buf, "zone %d just deinited",update_u->zone_to_reset);
 				log(buf);
+			} else { // we're in no-deinit mode, just reset it
+				reset_zone(update_u->zone_to_reset,0);
 			}
 			/* dequeue */
 			if (update_u == reset_q.head) {
