@@ -5040,7 +5040,7 @@ int SiteLock(char *site)
     length = strlen(site);
 
     for (i = 0; i < numberhosts; i++) {
-        if (!strncmp(hostlist[i], site, length)) {
+        if (!strncasecmp(hostlist[i], site, length)) {
             return (TRUE);
         }
     }
