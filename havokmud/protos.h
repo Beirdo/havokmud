@@ -1269,6 +1269,9 @@ void do_carve( struct char_data *ch, char *arg, int cmd);
 
 void do_find( struct char_data *ch, char *arg, int cmd) ;
 int FSkillCheck(struct char_data *ch, int fskill) ;
+void do_flowerfist(struct char_data *ch, char *argument, int cmd);
+void do_flurry(struct char_data *ch, char *argument, int cmd);
+
 
 
 /* From spec_assign.c */
