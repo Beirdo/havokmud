@@ -45,9 +45,9 @@ int LearnSkill(struct char_data *ch, const struct skillset *skills, char *arg,
  **/
 
 int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
-                          struct char_data *mob, int type
-                          , int class_bit, int level_ind) /* proc_type proc) */
-{
+                         struct char_data *mob, int type, int class_bit,
+                         int level_ind)
+{                               /* proc_type proc) */
 
     char            guildmastername[128];
     char            buf[256],
@@ -62,27 +62,32 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
      * 170->Practice,164->Practise, 243->gain
      */
     if (cmd == 170 || cmd == 164 || cmd == 243) {
-		ch_printf(ch,"Gain:%d  Study:%d Practice:%d", CMD_gain, CMD_study, CMD_practice);
+        ch_printf(ch, "Gain:%d  Study:%d Practice:%d", CMD_gain, CMD_study,
+                  CMD_practice);
 
-
-        sprintf(guildmastername,"%s",classes[level_ind].name);
-
+        sprintf(guildmastername, "%s", classes[level_ind].name);
 
         if (!mob) {
-		   /* will there ever be a time that there is no mob? we need to fix below*/
-		   guildmaster = FindMobInRoomWithFunction(ch->in_room,barbarian_guildmaster);
-		} else {
-		   guildmaster = mob;
+            /*
+             * will there ever be a time that there is no mob? we need to
+             * fix below
+             */
+            guildmaster = FindMobInRoomWithFunction(ch->in_room,
+                                                    barbarian_guildmaster);
+        } else {
+            guildmaster = mob;
         }
 
         if (!HasClass(ch, class_bit)) {
-			sprintf(buf, "You're not a %s!", guildmastername);
-			do_mobTell2(ch, guildmaster, buf);
+            sprintf(buf, "You're not a %s!", guildmastername);
+            do_mobTell2(ch, guildmaster, buf);
             return (TRUE);
         }
 
         if (GET_LEVEL(ch, level_ind) > GetMaxLevel(guildmaster)) {
-            do_mobTell2(ch, guildmaster, "You must learn from another, I can no longer train you");
+            do_mobTell2(ch, guildmaster,
+                        "You must learn from another, I can no longer train "
+                        "you");
             return (TRUE);
         }
 
@@ -90,27 +95,33 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
          * gain
          */
         if (cmd == 243) {
-            if ( GET_EXP(ch) <
-            	classes[level_ind].
-                    titles[GET_LEVEL(ch, level_ind) + 1].exp) {
-						do_mobTell2(ch, guildmaster,
-						"Your not ready to gain yet!");
-                /* send_to_char("Your not ready to gain yet!", ch);*/
+            if (GET_EXP(ch) <
+                classes[level_ind].titles[GET_LEVEL(ch, level_ind) + 1].exp) {
+                do_mobTell2(ch, guildmaster, "You're not ready to gain yet!");
+                /*
+                 * send_to_char("Your not ready to gain yet!", ch);
+                 */
                 return (FALSE);
             } else {
-				  /*Special case: Monks have to do a challenge to gain after level 9*/
-				 if (level_ind==MONK_LEVEL_IND) {
-					 if(GET_LEVEL(ch, MONK_LEVEL_IND) <= 9) {
-				            GainLevel(ch, MONK_LEVEL_IND);
-				     } else {
-				          send_to_char("You must fight another monk for this title.\n\r", ch);
-				     }
-        			 return (TRUE);
-			     } else {
-			        /*else just gain the level */
-				    GainLevel(ch, level_ind);
+                /*
+                 * Special case: Monks have to do a challenge to gain
+                 * after level 9
+                 */
+                if (level_ind == MONK_LEVEL_IND) {
+                    if (GET_LEVEL(ch, MONK_LEVEL_IND) <= 9) {
+                        GainLevel(ch, MONK_LEVEL_IND);
+                    } else {
+                        send_to_char("You must fight another monk for this "
+                                     "title.\n\r", ch);
+                    }
                     return (TRUE);
-			 	}
+                } else {
+                    /*
+                     * else just gain the level 
+                     */
+                    GainLevel(ch, level_ind);
+                    return (TRUE);
+                }
 
             }
         }
@@ -124,27 +135,26 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                         classes[level_ind].skills, buffer);
             if (ch->specials.remortclass == level_ind + 1) {
                 sprintf(buf, "\n\rSince you picked %s as your main "
-                             "class, you get these bonus skills:\n\r\n\r", guildmastername);
+                        "class, you get these bonus skills:\n\r\n\r",
+                        guildmastername);
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, level_ind),
                             classes[level_ind].mainskills, buffer);
             }
             page_string(ch->desc, buffer, 1);
         } else {
-            if( LearnSkill(ch, classes[level_ind].skills, arg,
-                           GET_LEVEL(ch, level_ind),
-                           guildmastername, 0) ) {
-                return( TRUE );
+            if (LearnSkill(ch, classes[level_ind].skills, arg,
+                           GET_LEVEL(ch, level_ind), guildmastername, 0)) {
+                return (TRUE);
             }
 
             if (ch->specials.remortclass == level_ind + 1 &&
                 LearnSkill(ch, classes[level_ind].mainskills, arg,
-                           GET_LEVEL(ch, level_ind),
-                           guildmastername, 0) ) {
-                return( TRUE );
+                           GET_LEVEL(ch, level_ind), guildmastername, 0)) {
+                return (TRUE);
             }
 
-			do_mobTell2(ch, guildmaster,"I do not know of that skill!");
+            do_mobTell2(ch, guildmaster, "I do not know of that skill!");
         }
         return (TRUE);
     }
@@ -577,39 +587,40 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
 int DruidGuildMaster(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-    return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_DRUID, DRUID_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_DRUID,
+                                DRUID_LEVEL_IND);
 }
-
-void do_mobTell2(struct char_data *ch, struct char_data *mob,
-                 char *sentence);
-
-int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
-                          struct char_data *mob, int type
-                          , int class_bit, int level_ind); /*, struct spec_proc proc);*/
 
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg,
                           struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_BARBARIAN, BARBARIAN_LEVEL_IND);/*, barbarian_guildmaster );*/
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_BARBARIAN,
+                                BARBARIAN_LEVEL_IND);
+    /*
+     * , * barbarian_guildmaster * ); 
+     */
 
 }
 
 int RangerGuildmaster(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type)
 {
-return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_RANGER, RANGER_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_RANGER,
+                                RANGER_LEVEL_IND);
 }
 
 int PsiGuildmaster(struct char_data *ch, int cmd, char *arg,
                    struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_PSI, PSI_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_PSI,
+                                PSI_LEVEL_IND);
 }
 
 int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_PALADIN, PALADIN_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_PALADIN,
+                                PALADIN_LEVEL_IND);
 }
 
 int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
@@ -1236,7 +1247,8 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
 int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
                            struct char_data *mob, int type)
 {
-    return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_NECROMANCER, NECROMANCER_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_NECROMANCER,
+                                NECROMANCER_LEVEL_IND);
 }
 
 int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
@@ -1485,7 +1497,8 @@ int GainLevel(struct char_data *ch, int class)
 int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_MAGIC_USER, MAGE_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_MAGIC_USER,
+                                MAGE_LEVEL_IND);
 }
 
 int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
@@ -1568,19 +1581,22 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
 int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_CLERIC, CLERIC_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_CLERIC,
+                                CLERIC_LEVEL_IND);
 }
 
 int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_THIEF, THIEF_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_THIEF,
+                                THIEF_LEVEL_IND);
 }
 
 int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
                        struct char_data *mob, int type)
 {
-	return guildmaster_skeleton(ch, cmd, arg, mob,type, CLASS_WARRIOR, WARRIOR_LEVEL_IND);
+    return guildmaster_skeleton(ch, cmd, arg, mob, type, CLASS_WARRIOR,
+                                WARRIOR_LEVEL_IND);
 }
 
 int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
