@@ -3691,7 +3691,7 @@ void save_char(struct char_data *ch, sh_int load_room)
       }
     tmp = 0;
   }
-  GET_LEVEL(ch,NECROMANCER_LEVEL_IND) = 0;
+  //GET_LEVEL(ch,NECROMANCER_LEVEL_IND) = 0;
   //ch->level[12] = 0; /* Added temporary to fix bard (GH) probabaly don'st work*/
   if (expand = (ch->desc->pos > top_of_p_file)) {
     strcpy(mode, "a");
@@ -3983,8 +3983,6 @@ void reset_char(struct char_data *ch)
   }
 
   /* Setting Bard level (GH) */
-  GET_LEVEL(ch, 11) = 0;
-GET_LEVEL(ch, 12) = 0;
 
   SET_BIT(ch->specials.act, PLR_ECHO);
 

@@ -2933,7 +2933,37 @@ void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *v
 }
 
 
-void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  struct affected_type af;
+
+	  assert(ch && victim);
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+
+	  if (saves_spell(victim, SAVING_SPELL) ||
+		   affected_by_spell(victim, SPELL_BLINDNESS))
+			return;
+
+	  act("Darkness seems to overcome $n eyes!", TRUE, victim, 0, 0, TO_ROOM);
+	  send_to_char("The darkness blinds you!!\n\r", victim);
+
+	  af.type      = SPELL_CLINGING_DARKNESS;
+	  af.location  = APPLY_HITROLL;
+	  af.modifier  = -4;  /* Make hitroll worse */
+	  af.duration  = level / 2;
+	  af.bitvector = AFF_BLIND;
+	  affect_to_char(victim, &af);
+
+
+	  af.location = APPLY_AC;
+	  af.modifier = +20; /* Make AC Worse! */
+	  affect_to_char(victim, &af);
+
+	  if ((!victim->specials.fighting)&&(victim!=ch))
+	     set_fighting(victim,ch);
+
+}
 void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	  char buf[MAX_INPUT_LENGTH];
 	  struct affected_type af;
@@ -3033,8 +3063,44 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 
   }
 }
-void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+
+void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	int healpoints;
+
+	if ( (victim->master==ch) && IsUndead(victim) ) {
+
+		act("$N corpse crumbles to the ground.", FALSE, ch, 0,victim, TO_ROOM);
+		send_to_char("You point at the undead creature, and then it suddently crumbles to the ground.\n\r\n\r", ch);
+
+
+		  healpoints = dice(3,8)+3;
+
+
+		  if ( (healpoints + GET_HIT(ch)) > hit_limit(ch) )
+		    GET_HIT(ch) = hit_limit(ch);
+		  else
+		    GET_HIT(ch) += healpoints;
+
+		  healpoints = dice(3,8)+3;
+
+		  if ( (healpoints + GET_MANA(ch)) > mana_limit(ch) )
+		    GET_MANA(ch) = mana_limit(ch);
+		  else
+		    GET_MANA(ch) += healpoints;
+
+			GET_HIT(victim) = -1;
+			die(victim, '\0');
+
+
+
+	} else {
+		send_to_char("You can't unsummon other people's dead or people that are still alive.",ch);
+	}
+
+}
 void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+
+
 void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	  struct affected_type af;
 
@@ -3057,6 +3123,7 @@ void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *vi
 	  	}
 	 }
 }
+
 void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 
 	  int healpoints;
@@ -3084,6 +3151,7 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 
 }
 void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+
 void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
   struct affected_type af;
   char buf[254];

@@ -54,13 +54,45 @@ void DamageAllStuff( struct char_data *ch, int dam_type);
 
 
 
-void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
+void cast_cold_light( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_disease(byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_invis_to_undead( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
 void cast_suit_of_bone( byte level, struct char_data *ch
 	,char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
-void cast_cold_light( byte level, struct char_data *ch, char *arg,
+void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_clinging_darkness ( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_dominate_undead( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_unsummon( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_siphon_strength( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_gather_shadows( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_mend_bones( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_trace_corpse( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_endure_cold( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_life_draw( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
 
@@ -3649,11 +3681,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(306,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_disease, 0,1, 1);
-
+*/
   spello(307,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_invis_to_undead, 0,1, 2);
-
+/*
   spello(308,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_tap, 0,0, 2);
@@ -3666,7 +3698,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(310,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_spectral_shield, 0,1, 4);
-/*
+
   spello(311,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_clinging_darkness, 0,0, 5);
@@ -3678,11 +3710,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(313,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_unsummon, 0,0, 7);
-
+/*
   spello(314,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_siphon_strength, 0,0, 8);
-
+*/
   spello(315,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_gather_shadows, 0,0, 8);
@@ -3690,15 +3722,15 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(316,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_mend_bones, 0,0, 10);
-
+/*
   spello(317,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_OBJ_WORLD , cast_trace_corpse, 0,0, 11);
-
+*/
   spello(318,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_endure_cold, 0,0, 12);
-
+/*
   spello(319,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_draw, 0,0, 15);
