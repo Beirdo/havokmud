@@ -2859,7 +2859,10 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
         send_to_char("Blast yourself? Your mother would be sad!\n\r", ch);
         return;
     }
-
+    if (!IS_NPC(victim)) {
+        send_to_char("You can't use this on other players!\n\r", ch);
+        return;
+    }
     if (check_peaceful(ch, 
                        "You feel too peaceful to contemplate violence.\n\r")) {
         return;
