@@ -2654,31 +2654,18 @@ char *GetLevelTitle(struct char_data *ch) {
 #if 0
 // Now that we have a working main class, we may as welluse the main class for title
 
-#if 0
-//Conflict.. my quick solution.... lennyas is better....just in case tho.. i'll leave..
-		exp = GET_EXP(ch);
-		for (i=1,h=0;i<=CLASS_NECROMANCER;i*=2, h++) {
-			if (HasClass(ch, i)) {
-				if (titles[h][GET_LEVEL(ch, h)].exp >= high) {
-					high = titles[h][GET_LEVEL(ch, h)].exp;
-					class = h;
-
-#else
-//		exp = GET_EXP(ch);
 		for (i=0;i < MAX_CLASS;i++) {
-//			if (HasClass(ch, i)) {
 			if(GET_LEVEL(ch, i)) {
 				if(titles[i][GET_LEVEL(ch, i)].exp > high) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
 					class = i;
-#endif
 				}
 			}
 		}
 #else
-	class = ch->specials.remortclass;
-	if(class < 0)
-		class = 0;
+		class = ch->specials.remortclass - 1;
+		if(class < 0)
+			class = 0;
 #endif
 		if(GET_SEX(ch)==SEX_FEMALE) {
 			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_f);
