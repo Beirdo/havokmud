@@ -64,9 +64,9 @@ int CheckForInsideTrap(struct char_data *ch, struct obj_data *i)
 
 int CheckForAnyTrap(struct char_data *ch, struct obj_data *i)
 {
-    if ((ITEM_TYPE(i) == ITEM_TRAP) && (GET_TRAP_CHARGES(i) > 0))
+    if ((ITEM_TYPE(i) == ITEM_TRAP) && (GET_TRAP_CHARGES(i) > 0)) {
         return (TriggerTrap(ch, i));
-
+    }
     return (FALSE);
 }
 
@@ -129,14 +129,14 @@ void TrapDamage(struct char_data *v, int damtype, int amnt,
         return;
     }
 
-    if (IS_AFFECTED(v, AFF_SANCTUARY))
+    if (IS_AFFECTED(v, AFF_SANCTUARY)) {
         amnt = MAX((int) (amnt / 2), 0);
-
+    }
     amnt = PreProcDam(v, damtype, amnt);
 
-    if (saves_spell(v, SAVING_PETRI))
+    if (saves_spell(v, SAVING_PETRI)) {
         amnt = MAX((int) (amnt / 2), 0);
-
+    }
     DamageStuff(v, damtype, amnt);
 
     amnt = MAX(amnt, 0);
