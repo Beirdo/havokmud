@@ -187,7 +187,7 @@ struct QuestItem {
 #define LIM_ITEM_COST_MIN  10000    /* mininum rent cost of a lim. item */
 				    /*  makes it a limited item... */
 
-#define MAX_LIM_ITEMS 23 /* max number of limited items you can rent with*/
+#define MAX_LIM_ITEMS 25 /* max number of limited items you can rent with*/
 
 /*
 **  distributed monster stuff
