@@ -2815,7 +2815,7 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
     if (affected_by_spell(ch, SPELL_DETECT_INVISIBLE) &&
 	affected_by_spell(ch, SPELL_SENSE_LIFE) &&
 	affected_by_spell(ch, SPELL_TRUE_SIGHT)) {
-        send_to_char("You cannot seem to benifit anything from this.\n\r",
+        send_to_char("You cannot seem to benefit anything from this.\n\r",
 		     ch);
         return;
     }
