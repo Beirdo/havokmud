@@ -223,7 +223,7 @@ void mind_disintegrate(byte level, struct char_data *ch,
 	/* if not fighting, shove the mob/pc out'a the room if suffcient */
 	/* level and they do not save, otherwise set fighting. If fighting */
 	/* then if they fail, treat as bashed and the mobs/pc sits */
-	
+#if 1	
 void mind_telekinesis(byte level, struct char_data *ch,
   struct char_data *victim, int dir_num)
 {
@@ -283,7 +283,80 @@ void mind_telekinesis(byte level, struct char_data *ch,
      
  
 }
+#endif
+#if 0
+void mind_telekinesis(byte level, struct char_data *ch, struct char_data
+*victim, int dir_num)
+{
+  int percent = 0;
 
+ if (!ch) {
+  log("!ch in telekenisis");
+  return;
+  }
+
+  if (!victim)  {
+ 	log("!victim in telekenisis");
+ 	return;
+ 	}
+
+  if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+ 	if (!HasClass(ch, CLASS_PSI)) {
+     send_to_char("You're no psionist!\n\r", ch);
+     return;
+    }
+
+
+ 
+  if (!CAN_SEE(ch, victim)) {
+	send_to_char("Who do you wish to move with your mind?\n\r", ch);
+	return;
+  }
+  if (victim == ch) {
+	send_to_char("Aren't we funny today...\n\r", ch);
+	return;
+  }
+
+	percent = number(1,101); /* 101% is a complete failure */
+
+	/* not fighting, shove him */
+ if (!ch->specials.fighting && dir_num > -1) {
+   	    
+  	if (percent > ch->skills[SKILL_TELEKINESIS].learned) {
+		act("Your mind suffers a breif weakness that forces you to drop $N!",FALSE,ch,0,victim,TO_CHAR);
+		act("$n tries to telekinesis you, but your mind resists!",FALSE,ch,0,victim,TO_VICT);
+		act("$n tries to telekinesis $N out of the area, but FAILS!",FALSE,ch,0,victim,TO_ROOM);
+        	hit(victim,ch,TYPE_UNDEFINED);
+    	} 
+    	else {
+		act("You lift $N with a thought and force $M from the area!",FALSE,ch,0,victim,TO_CHAR);
+		act("$n lifts you with $s mind, flinging you out the area!",FALSE,ch,0,victim,TO_VICT);
+		act("$n summons great mental powers and lifts $N, only to toss $M from the area!",FALSE,ch,0,victim,TO_ROOM);
+	    	do_move(victim,"\0",dir_num);		  
+    }
+ } /* end was not fighting */
+      
+ else {
+	if (percent > ch->skills[SKILL_TELEKINESIS].learned) {
+		act("You cannot seem to focus your mind enough for the telekinetic force.",FALSE,ch,0,victim,TO_CHAR);
+		act("$n fails to lift you with $s mind!",FALSE,ch,0,victim,TO_VICT);
+		act("$n attemps to use $s telekinetic powers on $N, but fails!",FALSE,ch,0,victim,TO_ROOM);
+    	} 
+    	else {
+     		act("You slam $N to the ground with a single thought!",FALSE,ch,0,victim,TO_CHAR);
+		act("$n lifts you with $s mind, then slams you to the ground!",FALSE,ch,0,victim,TO_VICT);
+		act("$n slams $N to the ground with $s telekinetic powers!",FALSE,ch,0,victim,TO_ROOM);
+
+  		GET_POS(victim) = POSITION_SITTING;
+		if (!victim->specials.fighting) 
+     			set_fighting(victim,ch);
+    	}
+ } /* end was fighting */
+     
+ 
+}
+
+#endif
 	/* same as fly */
 void mind_levitation(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)

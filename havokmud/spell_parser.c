@@ -66,7 +66,7 @@ void mind_use_clairvoyance( byte level, struct char_data *ch, char *arg, int typ
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_disintegrate( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
-void mind_use_telekinesis( byte level, struct char_data *ch, char *arg, int type,
+void mind_use_telekinesis( byte level, struct char_data *ch, char *arg, int type, 
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_levitation( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
@@ -1967,6 +1967,7 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	target_ok = TRUE; /* No target, is a good target */
       }
 
+
       if (!target_ok) {
 	if (*name) {
 	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
@@ -3070,7 +3071,7 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
 
   spello(272,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 35,
-  35,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_telekinesis,20);
+  15,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_telekinesis,20);
 
   spello(273,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  10,

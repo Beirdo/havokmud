@@ -125,8 +125,8 @@ if (!ch->specials.fighting) {
     /* get the argument, parse it into a direction */
     for (;*arg==' ';arg++);
     if (!*arg) {
-      send_to_char("You must supply a direction!\n\r", ch);
-      return;
+	mind_telekinesis(level, ch, victim, i);
+      	return;
     }
     p = fname(arg);
     for (i=0;i<6;i++) {

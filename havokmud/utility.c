@@ -144,10 +144,13 @@ int CAN_SEE(struct char_data *s, struct char_data *o)
     return(FALSE);
     }
 
+  if (IS_AFFECTED(s, AFF_BLIND))
+    return(FALSE);
+
   if (IS_AFFECTED(s, AFF_TRUE_SIGHT))
     return(TRUE);
 
-  if (IS_AFFECTED(s, AFF_BLIND) || IS_AFFECTED(o, AFF_HIDE))
+  if (IS_AFFECTED(o, AFF_HIDE))
     return(FALSE);
 
   if (IS_AFFECTED(o, AFF_INVISIBLE)) {
@@ -189,14 +192,14 @@ if ((ITEM_TYPE(obj) == ITEM_TRAP) && (GET_TRAP_CHARGES(obj) > 0))
         } /* not a trap */
 #endif
 
+  if (IS_AFFECTED(ch, AFF_BLIND))
+    return(0);
+
   if (IS_AFFECTED(ch, AFF_TRUE_SIGHT))
     return(1);
 
 
   if (IS_DARK(ch->in_room) && !IS_OBJ_STAT(obj, ITEM_GLOW))
-    return(0);
-
-  if (IS_AFFECTED(ch, AFF_BLIND))
     return(0);
 
   if (IS_AFFECTED(ch, AFF_DETECT_INVISIBLE))

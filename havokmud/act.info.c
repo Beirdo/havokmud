@@ -3857,6 +3857,38 @@ dlog("in do_attrib");
   **   by popular demand -- affected stuff
   */
   send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
+
+
+  if (ch->affected) {
+    for(aff = ch->affected; aff; aff = aff->next) {
+      if (aff->type <= MAX_EXIST_SPELL) {
+	switch(aff->type) {
+	case SKILL_SNEAK:
+	case SPELL_PRAYER:
+	case SKILL_HIDE:
+	case SKILL_QUIV_PALM:
+	case SKILL_HUNT:
+	case SKILL_DISGUISE:
+	case SKILL_SWIM:
+	case SKILL_SPY:
+	case SKILL_FIRST_AID:   
+	case SKILL_LAY_ON_HANDS:
+	case SKILL_MEDITATE:
+	  break;
+	case SKILL_MEMORIZE:
+	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.\n\r",spells[aff->modifier-1], (aff->duration*4));
+	  send_to_char(buf,ch);
+	  break;
+
+	default:
+	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
+	  send_to_char(buf,ch);
+	  break;
+	}
+      }
+    }
+  }
+
   	for (Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++) {
     		if (ch->equipment[j2]){
 			j = ch->equipment[j2];
@@ -3877,33 +3909,8 @@ dlog("in do_attrib");
   	}
 
 
-  if (ch->affected) {
-    for(aff = ch->affected; aff; aff = aff->next) {
-      if (aff->type <= MAX_EXIST_SPELL) {
-	switch(aff->type) {
-	case SKILL_SNEAK:
-	case SPELL_PRAYER:
-	case SKILL_SWIM:
-	case SKILL_SPY:
-	case SKILL_FIRST_AID:   
-	case SKILL_LAY_ON_HANDS:
-	case SKILL_MEDITATE:
-	  sprintf(buf, "$c0005Skill : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
-	  send_to_char(buf,ch);
-	  break;
-	case SKILL_MEMORIZE:
-	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.\n\r",spells[aff->modifier-1], (aff->duration*4));
-	  send_to_char(buf,ch);
-	  break;
 
-	default:
-	  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
-	  send_to_char(buf,ch);
-	  break;
-	}
-      }
-    }
-  }
+
 }
 
 void do_value(struct char_data *ch, char *argument, int cmd)
