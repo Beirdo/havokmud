@@ -1704,7 +1704,7 @@ void show_menu(struct descriptor_data *d) {
 
 	if(!(strcmp(classes,"")))
 	  sprintf(classes,"None");
-
+#if 0
 	sprintf(bufx, "Welcome to Havoks Character Creation Screen!!\n\r");
 	strcat(bufx, " $c0015_________________________________________\n\r");
 	sprintf(buf, "/\\  $c0009%-15s$c0015
@@ -1733,9 +1733,36 @@ void show_menu(struct descriptor_data *d) {
 O\n\r");
 	strcat(bufx, "  |    ____________________________________|\n\r");
 	strcat(bufx, "   \\_/____________________________________/\n\r");
-
-
 	strcat(bufx, "Please pick the number you'd like to change:\n\r");
+#else
+sprintf(bufx,"$c0009-=$c0015Havok Character Creaton Menu %s$c0009=-\n\r\n\r",GET_NAME(d->character));
+
+sprintf(buf,"$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",Sex[GET_SEX(d->character)]);
+strcat(bufx, buf);
+
+sprintf(buf,"$c00152) $c0012Ansi Colors.\n\r");
+strcat(bufx, buf);
+
+sprintf(buf,"$c00153) $c0012Race. [$c0015%s$c0012]\n\r",RaceName[GET_RACE(d->character)]);
+strcat(bufx, buf);
+
+sprintf(buf,"$c00154) $c0012Class.[$c0015%s$c0012]\n\r",classes);
+strcat(bufx, buf);
+
+if(!GET_CON(d->character) || GET_CON(d->character)==0)
+	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015None Picked$c0012]\n\r\n\r");
+ else
+	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015Done$c0012]\n\r\n\r");
+
+
+strcat(bufx,"$c0015D) $c0012Done!\n\r\n\r");
+
+strcat(bufx,"$c0011Please pick an option: \n\r");
+
+
+
+#endif
+
 	send_to_char(bufx,d->character);
 }
 
@@ -1804,13 +1831,10 @@ void nanny(struct descriptor_data *d, char *arg)
       	  case '5':
       	  	d->character->reroll=20;
 			if (d->character->player.class !=0) {
-			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to
-lowest\n\r",d);
+			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
 	     	SEND_TO_Q("Seperated y spaces.. don't duplicate\n\r", d);
-            SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest
-roll in Strength, \n\r",d);
-            SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly
-charisma\n\r",d);
+            SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
+            SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
             SEND_TO_Q("Your choices? ",d);
       	    STATE(d) = CON_STAT_LIST;
 			} else SEND_TO_Q("\nPlease select a class first.\n\r",d);
@@ -2363,8 +2387,7 @@ Charisma\n\r",d);
       SEND_TO_Q(buf,d);
       sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
       SEND_TO_Q(buf,d);
-      sprintf(buf, "\n\rYou have 9 rerolls left, press R to reroll, any
-other key to keep.\n\r");
+      sprintf(buf, "\n\rYou have 9 rerolls left, press R to reroll, any other key to keep.\n\r");
       SEND_TO_Q(buf, d);
 	if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
 	      /* set the AUTH flags */
@@ -2392,7 +2415,7 @@ if (*arg!='r' &&  *arg!='R'){
     SEND_TO_Q("Stats chosen!\n\r", d);
 
     //STATE(d)= CON_RMOTD;
-   show_menu(d);
+   //show_menu(d);
    	  STATE(d) = CON_CREATION_MENU;
 
    if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
@@ -2426,8 +2449,7 @@ if (*arg!='r' &&  *arg!='R'){
       SEND_TO_Q(buf,d);
       sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
       SEND_TO_Q(buf,d);
-      sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any
-other key to keep.\n\r", d->character->reroll);
+      sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any other key to keep.\n\r", d->character->reroll);
       SEND_TO_Q(buf, d);
       STATE(d)= CON_REROLL;
       break;
@@ -2448,7 +2470,7 @@ other key to keep.\n\r", d->character->reroll);
       SEND_TO_Q(buf,d);
       SEND_TO_Q("Stats chosen!", d);
     //STATE(d)= CON_RMOTD;
-    	show_menu(d);
+    	//show_menu(d);
 	  STATE(d) = CON_CREATION_MENU;
 	   break;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
@@ -3690,8 +3712,7 @@ int show_race_choice(struct descriptor_data *d)
 	char buf[255],buf2[254];
 
 SEND_TO_Q(  "                                  Level Limits\n\r",d);
-sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s
-%-3s %-3s\n\r",
+sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
 	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","bd");
 	SEND_TO_Q(buf,d);
 
@@ -3709,10 +3730,8 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s
 	  i++;
 	 }
 
-SEND_TO_Q("ma=magic user, cl=cleric, wa=warrior,
-th=thief,dr=druid,mk=monk\n\r",d);
-SEND_TO_Q("ba=barbarian,
-so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d);
+SEND_TO_Q("ma=magic user, cl=cleric, wa=warrior,th=thief,dr=druid,mk=monk\n\r",d);
+SEND_TO_Q("ba=barbarian,so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d);
 }
 
 

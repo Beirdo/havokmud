@@ -4042,18 +4042,18 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
   int questitems[13][3] = {
     {871,CLASS_CLERIC,     6},
-    {872,CLASS_MAGIC_USER, 6},
+    {872,CLASS_MAGIC_USER, 7},
     {873,CLASS_DRUID,      6},
-    {874,CLASS_WARRIOR,    6},
-    {875,CLASS_RANGER,     6},
-	{876,CLASS_CLERIC,     6},
-    {877,CLASS_MAGIC_USER, 6},
-    {878,CLASS_DRUID,      6},
-    {879,CLASS_WARRIOR,    6},
-    {880,CLASS_RANGER,     6},
+    {874,CLASS_WARRIOR,    7},
+    {875,CLASS_RANGER,     8},
+	{876,CLASS_CLERIC,     11},
+    {877,CLASS_MAGIC_USER, 9},
+    {878,CLASS_DRUID,      7},
+    {879,CLASS_WARRIOR,    7},
+    {880,CLASS_RANGER,     7},
     {881,CLASS_BARBARIAN,  7},
 	{882,CLASS_MAGIC_USER, 6},
-	{883,CLASS_DRUID,      6}
+	{883,CLASS_DRUID,      7}
 
   };
   //*pc_class_types[]
@@ -4105,7 +4105,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	    sprintf(buf,"The QPSalesman gives you %s\n\r",obj->short_description);
 	    send_to_char(buf,ch);
 	    obj_to_char(obj,ch);
-	  	sprintf(buf,"$s just bought %s\n\r",GET_NAME(ch), obj->short_description);
+	  	sprintf(buf," $s just bought %s\n\r",GET_NAME(ch), obj->short_description);
 	  	qlog(buf);
 	  } else
 	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
@@ -5900,8 +5900,10 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	//extern struct QuestItem QuestList[4][IMMORTAL];
    char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
    char tbuf[80];
+
    struct char_data *vict;
    struct obj_data *obj;
+   struct obj_data *obj2;
    int test;
    int itemgranted = 0;
    static time_t time_diff = 50;
@@ -5995,28 +5997,112 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 			}
 
 
-			do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+			//do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
 
-
-		     switch(number(0,10)+questwon) {
+#if 1  /* Lets reward them!!! */
+		     switch(number(0,20+questwon)) {
 				 case 0:
-		       		itemgranted = 9611;
+				 case 1:
+				 case 2:
+		       		do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+		       		itemgranted = 9611;  /*grant Heal potion */
 		       		break;
-		       	 case 1:
-		       	 	itemgranted = 4050;
+				 case 3:
+				 case 4:
+				   do_say(vict, "Thanks!! Little mana potion for your troubles.",0);
+				   itemgranted = 15811;  /*blistering red mana */
+				   break;
+				 case 5:
+				 case 6:
+				   do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+				   itemgranted = 4050; /* Purple potion */
 		       	 	break;
-		       	 default:
-		       	 	itemgranted = 4050;
-
+				 case 7:
+				 case 8:
+		       		do_say(vict, "Thanks Again! My skin is already rock hard.. You take it",0);
+		       		itemgranted = 3417; /* Stone skin */
+		       		break;
+				 case 9:
+				 case 10:
+		       	 	do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+		       	 	itemgranted = 41277; /*tiny copper ring */
+		       	 	break;
+				 case 11:
+		       	 case 12:
+			   		do_say(vict, "Dankes!! I should be giving this to Heximal, he needs it bad.",0);
+			   		itemgranted = 40124; /* 1k coins */
+		       	 	break;
+				 case 13:
+				 case 14:
+		       	 case 15:
+				 	do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+				 	itemgranted = 40125; /* 2.5k coins */
+		       	 	break;
+				 case 16:
+				 case 17:
+				 	do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+				 	itemgranted = 41273; /*Special copper bracers */
+		       	 	break;
+		       	 case 18:
+				 case 19:
+		       		do_say(vict, "Thanks again!  Just pocket change to me!! Go buy a beer will ya",0);
+		       		itemgranted = 40126;  /* 5k coins */
+		       		break;
+				 case 20:
+				 case 21:
+		       	 	do_say(vict, "Thanks Again! Just pocket change to me!! Go buy a beer will ya",0);
+		       	 	itemgranted = 40127;  /* 10k coins */
+		       	 	break;
+				 case 22:
+		       	 case 23:
+			   		do_say(vict, "Thanks!  Go buy your mom something nice.",0);
+			   		itemgranted = 40128;  /* 20k coins */
+		       	 	break;
+		       	 case 24:
+				 	do_say(vict, "Thanks....Ahh.. it was worth it!! Here ya go",0);
+				 	itemgranted = 40129;  /* 30k coins */
+		       	 	break;
+		       	 case 25:
+					do_say(vict, "Your good!!  Ya like to be different don't you!! Here ya go",0);
+					itemgranted = 1003; /* restring token */
+		         	break;
+		         case 26:
+				 	do_say(vict, "Don't you think your special!! Here ya go",0);
+				 	itemgranted = 1002; /* questpoint token */
+		         	break;
+		         default:
+		       	 	do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+		       	 	itemgranted = 4050;  /*sanc potion */
+					break;
 		     }
-		       obj = read_object(itemgranted, VIRTUAL);
-    		   obj_to_char(obj, ch);
+		       obj2 = read_object(itemgranted, VIRTUAL);
 
-		 	   act("$N gives you $p.",TRUE,ch,obj,vict,TO_CHAR);
-    		   act("$N gives $p to $n.",TRUE,ch,obj,vict,TO_ROOM);
+    		   if (!obj2) {
+				   log("/* SHit.. error in questor mob.. Tell banon or make the items.*/");
+			  		do_say(vict, "Blah.. Guess i don't have that.. Take this instead.",0);
+			  		itemgranted = 4050;
 
+			  		obj2 = read_object(itemgranted, VIRTUAL);
+			   		if(!obj2)
+			   			return(FALSE);
+			   }
+
+				sprintf(buf,"%s just won a quest.. Received item %s\n\r",GET_NAME(ch), obj2->name);
+				qlog(buf);
+
+    		   obj_to_char(obj2, ch);
+
+		 	   act("$N gives you $p.",TRUE,ch,obj2,vict,TO_CHAR);
+    		   act("$N gives $p to $n.",TRUE,ch,obj2,vict,TO_ROOM);
+#endif
 				do_say(vict, "Hey.. I got something else for you to get too.",0);
-				do_junk(vict, obj->name,0);
+				act("$N waves $s hands and makes $p disappear.",TRUE,ch,obj,vict,TO_ROOM);
+				act("$N waves $s hands and makes $p disappear.",TRUE,ch,obj,vict,TO_CHAR);
+				obj_from_char(obj);
+				//obj_index[tmp_object->item_number].number--;
+			    extract_obj(obj);
+
+				//do_junk(vict, obj->name,0);
 
 
 			/*pick new quest */
@@ -6025,7 +6111,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 			//do_say(vict, "Hey.. I got something else for you to get too.",0);
 			time_diff = 201;
-
+			return(TRUE);
 		}
 
    	}
@@ -6101,7 +6187,7 @@ return(FALSE);
 int DehydBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6120,7 +6206,7 @@ struct char_data *tar_char;
 int VaporBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6128,7 +6214,7 @@ struct char_data *tar_char;
    act("$n breaths...",FALSE,ch,0,0,TO_ROOM);
    for(tar_char=real_roomp(ch->in_room)->people;tar_char;tar_char=tar_char->next_in_room) {
    if (!IS_IMMORTAL(tar_char))
-   spell_vapor_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);    
+   spell_vapor_breath(GetMaxLevel(ch),ch,ch->specials.fighting,0);
   }
    return(TRUE);
  }
@@ -6139,7 +6225,7 @@ struct char_data *tar_char;
 int SoundBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6158,7 +6244,7 @@ struct char_data *tar_char;
 int ShardBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6177,7 +6263,7 @@ struct char_data *tar_char;
 int SleepBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6196,7 +6282,7 @@ struct char_data *tar_char;
 int LightBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6215,7 +6301,7 @@ struct char_data *tar_char;
 int DarkBreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 struct char_data *tar_char;
- if (cmd) 
+ if (cmd)
     return(FALSE);
 
  if (ch->specials.fighting && number(0,2)) {
@@ -6259,9 +6345,9 @@ int rope_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 	if (cmd == 224) /*pull*/
 	{
     		only_argument(arg,buf);
-  		if(*buf) 
+  		if(*buf)
 		{
-    			if(!(str_cmp("rope",buf)) || !(str_cmp("Rope",buf))) 
+    			if(!(str_cmp("rope",buf)) || !(str_cmp("Rope",buf)))
 			{
 				act("You grab the rope and give it a tug, but can't", FALSE, ch, 0, 0, TO_CHAR);
 				send_to_char("let go.  The rope jerks back and pulls you up\n\r", ch);
