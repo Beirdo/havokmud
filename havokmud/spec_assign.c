@@ -1376,7 +1376,7 @@ void assign_objects()
   static struct special_proc_entry specials[] = {
     {15, SlotMachine},
     {30, scraps},
-    {23, jive_box},
+    {23, godsay},
     {31, portal},
     {3097, board},
     {3098, board},

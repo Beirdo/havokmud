@@ -1368,6 +1368,7 @@ int Summoner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, in
 int monk(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 void invert(char *arg1, char *arg2);
 int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type);
+int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

@@ -5972,3 +5972,34 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   }
 	return(FALSE);
 }
+
+/* Toy for Banon.. a new say for him (GH) April 2002 */
+int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
+{
+
+
+   int i;
+     char buf[MAX_INPUT_LENGTH+80];
+
+  if(cmd != 17)
+    return(FALSE);
+
+   dlog("in godsay");
+
+     if (apply_soundproof(ch))
+       return;
+
+     for (i = 0; *(argument + i) == ' '; i++);
+
+     if (!*(argument + i))
+       send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
+     else	{
+       sprintf(buf,"$c0012-=$c0015$n$c0012=-$c0011 says '$c0014%s$c0011'", argument + i);
+       act(buf,FALSE,ch,0,0,TO_ROOM);
+       if (IS_NPC(ch)||(IS_SET(ch->specials.act, PLR_ECHO))) {
+         sprintf(buf,"$c0015You say '$c0014%s$c0015'\n\r", argument + i);
+         send_to_char(buf, ch);
+       }
+  }
+
+}
