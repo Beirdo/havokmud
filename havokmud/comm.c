@@ -25,16 +25,22 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
 int             construct_prompt(char *buf, struct char_data *ch);
 void            identd_test(struct sockaddr_in in_addr);
 
-#define MAX_CONNECTS 256        /* max number of descriptors (connections) 
-                                 */
-                          /*
-                           * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
-                           */
+#define MAX_CONNECTS 256        
+/* 
+ * max number of descriptors (connections) 
+ */
+                          
+/*
+ * THIS IS SYSTEM DEPENDANT, use 64 is not sure! 
+ */
 
 #define DFLT_PORT 4000          /* default port */
 #define MAX_HOSTNAME   256
-#define OPT_USEC 250000         /* time delay corresponding to 4
-                                 * passes/sec */
+#define OPT_USEC 250000         
+/* 
+ * time delay corresponding to 4
+ * passes/sec 
+ */
 
 #define STATE(d) ((d)->connected)
 
@@ -258,8 +264,9 @@ int main(int argc, char **argv)
 
 #if SITELOCK
     log("Blanking denied hosts.");
-    for (a = 0; a < MAX_BAN_HOSTS; a++)
+    for (a = 0; a < MAX_BAN_HOSTS; a++) {
         strcpy(hostlist[a], " \0\0\0\0");
+    }
     numberhosts = 0;
 
 #if LOCKGROVE
@@ -435,7 +442,9 @@ int game_loop(int s)
             cap += 20;
         }
 #else
-        // dimd_loop();
+#if 0
+        dimd_loop();
+#endif
         for (point = descriptor_list; point; point = point->next) {
             FD_SET(point->descriptor, &input_set);
             FD_SET(point->descriptor, &exc_set);
@@ -552,7 +561,9 @@ int game_loop(int s)
                     string_add(point, comm);
                 } else if (!point->connected) {
                     if (point->showstr_count) { 
-                        // point->showstr_point)
+#if 0
+                    if (point->showstr_point) {
+#endif                   
                         show_string(point, comm);
                     } else {
                         command_interpreter(point->character, comm);
@@ -608,14 +619,18 @@ int game_loop(int s)
                 }
             } else if (!point->connected) {
                 if (point->showstr_count) {
-                    // point->showstr_point)
+#if 0
+                if (point->showstr_point) {
+#endif               
                     sprintf(promptbuf, "[ Enter to continue, (q)uit, "
                                        "(r)efresh, (b)ack, or page "
                                        "number (%d/%d) ]\n\r",
                             point->showstr_page, point->showstr_count);
                     write_to_descriptor(point->descriptor, promptbuf);
-                    // write_to_descriptor(point->descriptor,"[Return
-                    // to continue/Q to quit]");
+#if 0
+                    write_to_descriptor(point->descriptor,"[Return "
+                            "to continue/Q to quit]");
+#endif
                 } else {
                     if (point->character->term == VT100) {
                         ch = point->character;
@@ -715,7 +730,9 @@ int game_loop(int s)
             memory_check("Pulse violence");
             check_mobile_activity(pulse);
             perform_violence(pulse);
-            /* update memorizing spells */
+            /* 
+             * update memorizing spells 
+             */
             update_mem(pulse);
         }
 
@@ -786,7 +803,9 @@ int game_loop(int s)
             check_reboot();
         }
 
-        /* tics since last checkpoint signal */
+        /* 
+         * tics since last checkpoint signal 
+         */
         tics++;
     }
 }
@@ -844,8 +863,9 @@ void write_to_q(char *txt, struct txt_q *queue)
 
     if (strl < 0 || strl > 35000) {
         log("strlen returned bogus length in write_to_q, string was: ");
-        for (strl = 0; strl < 120; strl++)
+        for (strl = 0; strl < 120; strl++) {
             tbuf[strl] = txt[strl];
+        }
         tbuf[strl] = 0;
         log(tbuf);
         if (new) {
@@ -938,7 +958,9 @@ void write_to_output(char *txt, struct descriptor_data *t)
         t->bufspace -= size;
         t->bufptr += size;
     } else {
-        /* otherwise, try to switch to a large buffer */
+        /* 
+         * otherwise, try to switch to a large buffer 
+         */
         if (t->large_outbuf || ((size + strlen(t->output)) > LARGE_BUFSIZE)) {
             /*
              * we're already using large buffer, or even the large buffer
@@ -957,7 +979,9 @@ void write_to_output(char *txt, struct descriptor_data *t)
             t->large_outbuf = bufpool;
             bufpool = bufpool->next;
         } else {
-            /* else create one */
+            /* 
+             * else create one 
+             */
             CREATE(t->large_outbuf, struct txt_block, 1);
             CREATE(t->large_outbuf->text, char, LARGE_BUFSIZE);
             buf_largecount++;
@@ -1548,15 +1572,21 @@ int process_input(struct descriptor_data *t)
         if (!ISNEWL(*(t->buf + i)) && 
             !(flag = (k >= (MAX_INPUT_LENGTH - 2)))) {
             if (*(t->buf + i) == '\b') {
-                /* backspace */
+                /* 
+                 * backspace 
+                 */
                 if (k) {
-                    /* more than one char ? */
+                    /* 
+                     * more than one char ? 
+                     */
                     if (*(tmp + --k) == '$') {
                         k--;
                     }
                     i++;
                 } else {
-                    /* no or just one char.. Skip backsp */
+                    /* 
+                     * no or just one char.. Skip backsp 
+                     */
                     i++;
                 }
             } else {
@@ -1600,7 +1630,9 @@ int process_input(struct descriptor_data *t)
                  * skip the rest of the line 
                  */
                 for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* Empty loop */
+                    /* 
+                     * Empty loop 
+                     */
                 }
             }
 
@@ -1608,7 +1640,9 @@ int process_input(struct descriptor_data *t)
              * find end of entry 
              */
             for (; ISNEWL(*(t->buf + i)); i++) {
-                /* Empty loop */
+                /* 
+                 * Empty loop 
+                 */
             }
 
             /*
@@ -1685,15 +1719,21 @@ int process_input(struct descriptor_data *t)
         if (!ISNEWL(*(t->buf + i)) &&
             !(flag = (k >= (MAX_INPUT_LENGTH - 2)))) {
             if (*(t->buf + i) == '\b') {
-                /* backspace */
+                /* 
+                 * backspace 
+                 */
                 if (k) {
-                    /* more than one char ? */
+                    /* 
+                     * more than one char ? 
+                     */
                     if (*(tmp + --k) == '$') {
                         k--;
                     }
                     i++;
                 } else {
-                    /* no or just one char.. Skip backsp */
+                    /* 
+                     * no or just one char.. Skip backsp 
+                     */
                     i++;
                 }
             } else {
@@ -1735,7 +1775,9 @@ int process_input(struct descriptor_data *t)
                  * skip the rest of the line 
                  */
                 for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* Empty loop */
+                    /* 
+                     * Empty loop 
+                     */
                 }
             }
 
@@ -1743,7 +1785,9 @@ int process_input(struct descriptor_data *t)
              * find end of entry 
              */
             for (; ISNEWL(*(t->buf + i)); i++) {
-                /* Empty loop */
+                /* 
+                 * Empty loop 
+                 */
             }
 
             /*
@@ -1809,7 +1853,9 @@ void close_socket(struct descriptor_data *d)
 
     if (d->character) {
         if (d->connected == CON_PLYNG) {
-            // Disallow energy restore after link close - MW
+            /* 
+             * Disallow energy restore after link close - MW
+             */
             d->character->old_exp = 0;
             do_save(d->character, "", 0);
             act("$n has lost $s touch with reality.", TRUE, d->character,
@@ -1820,7 +1866,9 @@ void close_socket(struct descriptor_data *d)
                 log(buf);
             }
 
-            /* poly, or switched god */
+            /* 
+             * poly, or switched god 
+             */
             if (IS_NPC(d->character) && d->character->desc) {
                 d->character->orig = d->character->desc->original;
             }
@@ -1847,12 +1895,16 @@ void close_socket(struct descriptor_data *d)
     }
 
     if (next_to_process == d) {
-        /* to avoid crashing the process loop */
+        /* 
+         * to avoid crashing the process loop 
+         */
         next_to_process = next_to_process->next;
     }
 
     if (d == descriptor_list) {
-        /* this is the head of the list */
+        /* 
+         * this is the head of the list 
+         */
         descriptor_list = descriptor_list->next;
     } else {
         /* 
@@ -1860,7 +1912,9 @@ void close_socket(struct descriptor_data *d)
          * Locate the previous element 
          */
         for (tmp = descriptor_list; tmp && tmp->next != d; tmp = tmp->next) {
-            /* Empty loop */
+            /* 
+             * Empty loop 
+             */
         }
 
         if (tmp != NULL) {
@@ -1879,7 +1933,9 @@ void close_socket(struct descriptor_data *d)
     }
 
     if (d->showstr_head) {
-        /* this piece of code causes core dumps on ardent titans */
+        /* 
+         * this piece of code causes core dumps on ardent titans 
+         */
         free(d->showstr_head);  
     }
 
@@ -1971,7 +2027,8 @@ void coma(int s)
 /*
  ****************************************************************
  *       Public routines for system-to-player-communication
- **************************************************************** */
+ **************************************************************** 
+ */
 
 char           *ParseAnsiColors(int UsingAnsi, char *txt)
 {
@@ -2250,11 +2307,15 @@ void str2ansi(char *p2, char *p1, int start, int stop)
                     j;
 
     if ((start > stop) || (start < 0)) {
-        /* null terminate string */
+        /* 
+         * null terminate string 
+         */
         p2[0] = '\0';
     } else {
         if (start == stop) {
-            /* will copy only 1 char at pos=start */
+            /* 
+             * will copy only 1 char at pos=start 
+             */
             p2[0] = p1[start];
             p2[1] = '\0';
         } else {
@@ -2269,13 +2330,18 @@ void str2ansi(char *p2, char *p1, int start, int stop)
             for (i = start; i <= stop; i++) {
                 p2[j++] = p1[i];
             }
-            /* null terminate the string */
+            /* 
+             * null terminate the string 
+             */
             p2[j] = '\0';
         }
     }
 
     if (strlen(p2) + 1 > 5) {
-        log("DOH!");            /* remove this after test period */
+        log("DOH!");            
+        /* 
+         * remove this after test period 
+         */
     }
 }
 
@@ -2299,14 +2365,15 @@ void act(char *str, int hide_invisible, struct char_data *ch,
 
     extern long     SystemFlags;
 
-    if (!str)
+    if (!str) {
         return;
-    if (!*str)
+    }
+    if (!*str) {
         return;
-
-    if (ch->in_room <= -1)
+    }
+    if (ch->in_room <= -1) {
         return;
-
+    }
     if (type == TO_VICT) {
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
@@ -2326,9 +2393,11 @@ void act(char *str, int hide_invisible, struct char_data *ch,
             for (strp = str, point = buf;;) {
                 if (*strp == '$') { 
                     switch (*(++strp)) {
-                        // Let's forget about direct color parsing for
-                        // now... we a proc to
-                        // do that after all...  - Manwe
+                       /* 
+                        * Let's forget about direct color parsing for
+                        * now... we a proc to
+                        * do that after all...  - Manwe
+                        */
 
                         /*
                          * parse ansi colors here $CMBFG, where M is
@@ -2353,8 +2422,9 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                         break;
                         /*
                          * case 'C': case 'c': break; 
-                         */// Let's just forget about the $c for now... -
-                        // Manwe
+                         * Let's just forget about the $c for now... -
+                         * Manwe
+                         */
                     case 'n':
                         i = PERS(ch, to);
                         break;
@@ -2408,8 +2478,10 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                             isdigit(*(strp + 2)) && isdigit(*(strp + 3))) {
                             strp++;
                             goto act_switch_c;
-                        }       // we don't want to parse ANS that way...
-                                // -Manwe
+                        }       /*
+                                 * we don't want to parse ANS that way...
+                                 * -Manwe
+                                 */
                         i = "$";
                         break;
                     default:
@@ -2434,8 +2506,8 @@ void act(char *str, int hide_invisible, struct char_data *ch,
             /*
              * technically at that point, buf should be the string parsed, 
              * but with remaining color codes -Manwe 
+             * I hope this will work... -Manwe
              */
-            // I hope this will work... -Manwe
             SEND_TO_Q(ParseAnsiColors(IS_SET(to->player.user_flags, USE_ANSI),
                                       CAP(buf)), to->desc);
 
@@ -2467,14 +2539,15 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
 
     extern long     SystemFlags;
 
-    if (!str)
+    if (!str) {
         return;
-    if (!*str)
+    }
+    if (!*str) {
         return;
-
-    if (ch->in_room <= -1)
+    }
+    if (ch->in_room <= -1) {
         return;
-
+    }
     if (type == TO_VICT) {
         to = (struct char_data *) vict_obj;
     } else if (type == TO_CHAR) {
@@ -2495,11 +2568,10 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                 if (*strp == '$') {
                     switch (*(++strp)) {
 
-                        // Let's forget about direct color parsing for
-                        // now... we a proc to
-                        // do that after all...  - Manwe
-
-                        /*
+                        /* Let's forget about direct color parsing for
+                         * now... we a proc to
+                         * do that after all...  - Manwe
+                         *   
                          * parse ansi colors here $CMBFG, where M is
                          * modier, B is back ground color and FG is fore
                          * $C0001 would be normal, black back, red fore.
@@ -2522,8 +2594,10 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                         break;
                         /*
                          * case 'C': case 'c': break; 
-                         */// Let's just forget about the $c for now... -
-                        // Manwe
+                         *
+                         * Let's just forget about the $c for now... -
+                         * Manwe
+                         */
                     case 'n':
                         i = PERS(ch, to);
                         break;
@@ -2577,8 +2651,10 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                             isdigit(*(strp + 2)) && isdigit(*(strp + 3))) {
                             strp++;
                             goto act_switch_c;
-                        }       // we don't want to parse ANS that way...
-                                // -Manwe
+                        }       /* 
+                                 * we don't want to parse ANS that way...
+                                 * -Manwe
+                                 */
                         i = "$";
                         break;
                     default:
@@ -2605,8 +2681,9 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
             /*
              * technically at that point, buf should be the string parsed, 
              * but with remaining color codes -Manwe 
+             *
+             * I hope this will work... -Manwe
              */
-            // I hope this will work... -Manwe
 
             if (vict) {
                 SEND_TO_Q(ParseAnsiColors(IS_SET(to->player.user_flags, 
@@ -2649,48 +2726,59 @@ int _affected_by_s(struct char_data *ch, int skill)
 
     switch (skill) {
     case SPELL_BLADE_BARRIER:
-        if (IS_AFFECTED(ch, AFF_BLADE_BARRIER))
+        if (IS_AFFECTED(ch, AFF_BLADE_BARRIER)) {
             fa = 1;
+        }
         break;
     case SPELL_CHILLSHIELD:
-        if (IS_AFFECTED(ch, AFF_CHILLSHIELD))
+        if (IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
             fa = 1;
+        }
         break;
     case SPELL_FIRESHIELD:
-        if (IS_AFFECTED(ch, AFF_FIRESHIELD))
+        if (IS_AFFECTED(ch, AFF_FIRESHIELD)) {
             fa = 1;
+        }
         break;
     case SPELL_SANCTUARY:
-        if (IS_AFFECTED(ch, AFF_SANCTUARY))
+        if (IS_AFFECTED(ch, AFF_SANCTUARY)) {
             fa = 1;
+        }
         break;
     case SPELL_GATHER_SHADOWS:
     case SPELL_INVISIBLE:
-        if (IS_AFFECTED(ch, AFF_INVISIBLE))
+        if (IS_AFFECTED(ch, AFF_INVISIBLE)) {
             fa = 1;
+        }
         break;
     case SPELL_TRUE_SIGHT:
-        if (IS_AFFECTED(ch, AFF_TRUE_SIGHT))
+        if (IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
             fa = 1;
+        }
         break;
     case SPELL_PROT_ENERGY_DRAIN:
-        if (IS_SET(ch->M_immune, IMM_DRAIN))
+        if (IS_SET(ch->M_immune, IMM_DRAIN)) {
             fa = 1;
+        }
         break;
     case IMM_DRAIN:
-        if (IS_SET(ch->immune, IMM_DRAIN))
+        if (IS_SET(ch->immune, IMM_DRAIN)) {
             fa = 1;
+        }
         break;
     case SPELL_FLY:
-        if (IS_AFFECTED(ch, AFF_FLYING))
+        if (IS_AFFECTED(ch, AFF_FLYING)) {
             fa = 1;
+        }
         break;
     }
 
     if (ch->affected) {
         for (hjp = ch->affected; hjp; hjp = hjp->next) {
             if (hjp->type == skill) {
-                /* in case it's 0 */
+                /* 
+                 * in case it's 0 
+                 */
                 fs = (hjp->duration + 1);
             }
         }
@@ -2723,7 +2811,9 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     *outbuf = 0;
 
     if (ch->specials.prompt == NULL) {
-        /* use default prompts */
+        /* 
+         * use default prompts 
+         */
         if (IS_IMMORTAL(ch)) {
             mask = "Havok: (type help prompt) H:%h R:%R i%iI+> ";
         } else {
@@ -2777,7 +2867,9 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     sprintf(tbuf, "%ld", GET_EXP(ch));
                     break;
                 case 'x':
-                    /* xp left to level (any level, btw..) */
+                    /* 
+                     * xp left to level (any level, btw..) 
+                     */
                     for (l = 1, i = 0, exp = 999999999;
                          i <= NECROMANCER_LEVEL_IND; i++, l <<= 1) {
                         if (HasClass(ch, l)) {
@@ -2791,36 +2883,41 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     sprintf(tbuf, "%ld", exp);
                     break;
                 case 'C':
-                    /* mob condition */
+                    /* 
+                     * mob condition 
+                     */
                     if (ch->specials.fighting) {
                         if (GET_MAX_HIT(ch->specials.fighting) == 0) {
                             strcpy(tbuf, "unknown");
                         } else {
                             i = (100 * GET_HIT(ch->specials.fighting)) /
                                 GET_MAX_HIT(ch->specials.fighting);
-                            if (i >= 100)
+                            if (i >= 100) {
                                 strcpy(tbuf, "excellent");
-                            else if (i >= 90)
+                            } else if (i >= 90) {
                                 strcpy(tbuf, "few scratches");
-                            else if (i >= 75)
+                            } else if (i >= 75) {
                                 strcpy(tbuf, "small wounds");
-                            else if (i >= 50)
+                            } else if (i >= 50) {
                                 strcpy(tbuf, "wounded");
-                            else if (i >= 30)
+                            } else if (i >= 30) {
                                 strcpy(tbuf, "big nasty");
-                            else if (i >= 15)
+                            } else if (i >= 15) {
                                 strcpy(tbuf, "badly wounded");
-                            else if (i >= 0)
+                            } else if (i >= 0) {
                                 strcpy(tbuf, "awful");
-                            else
+                            } else {
                                 strcpy(tbuf, "bleeding");
+                            }
                         }
                     } else {
                         strcpy(tbuf, "*");
                     }
                     break;
                 case 'c':
-                    /* tank condition */
+                    /* 
+                     * tank condition 
+                     */
                     if (ch->specials.fighting && 
                         ch->specials.fighting->specials.fighting) {
                         if (GET_MAX_HIT(ch->specials.fighting->
@@ -2832,22 +2929,23 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                                          fighting)) /
                                 GET_MAX_HIT(ch->specials.fighting->
                                             specials.fighting);
-                            if (i >= 100)
+                            if (i >= 100) {
                                 strcpy(tbuf, "excellent");
-                            else if (i >= 90)
+                            } else if (i >= 90) {
                                 strcpy(tbuf, "few scratches");
-                            else if (i >= 75)
+                            } else if (i >= 75) {
                                 strcpy(tbuf, "small wounds");
-                            else if (i >= 50)
+                            } else if (i >= 50) {
                                 strcpy(tbuf, "wounded");
-                            else if (i >= 30)
+                            } else if (i >= 30) {
                                 strcpy(tbuf, "big nasty");
-                            else if (i >= 15)
+                            } else if (i >= 15) {
                                 strcpy(tbuf, "badly wounded");
-                            else if (i >= 0)
+                            } else if (i >= 0) {
                                 strcpy(tbuf, "awful");
-                            else
+                            } else {
                                 strcpy(tbuf, "bleeding");
+                            }
                         }
                     } else {
                         strcpy(tbuf, "*");
@@ -2858,61 +2956,80 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     s_flag = 1;
                 case 'S':       /* affected spells */
                     *tbuf = 0;
-                    if ((i = _affected_by_s(ch, SPELL_FIRESHIELD)) != -1)
+                    if ((i = _affected_by_s(ch, SPELL_FIRESHIELD)) != -1) {
                         strcat(tbuf, (i > 1) ? "F" : "f");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_CHILLSHIELD)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_CHILLSHIELD)) != -1) {
                         strcat(tbuf, (i > 1) ? "C" : "c");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_BLADE_BARRIER)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_BLADE_BARRIER)) != -1) {
                         strcat(tbuf, (i > 1) ? "B" : "b");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_SANCTUARY)) != -1)
+                    if ((i = _affected_by_s(ch, SPELL_SANCTUARY)) != -1) {
                         strcat(tbuf, (i > 1) ? "S" : "s");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
+                    }
                     if ((i = _affected_by_s(ch, SPELL_INVISIBLE)) != -1 || 
-                        (i = _affected_by_s(ch, SPELL_GATHER_SHADOWS)) != -1)
+                        (i = _affected_by_s(ch, SPELL_GATHER_SHADOWS)) != -1) {
                         strcat(tbuf, (i > 1) ? "I" : "i");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_TRUE_SIGHT)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_TRUE_SIGHT)) != -1) {
                         strcat(tbuf, (i > 1) ? "T" : "t");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_PROT_ENERGY_DRAIN)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_PROT_ENERGY_DRAIN)) != 
+                            -1) {
                         strcat(tbuf, (i > 1) ? "D" : "d");
-                    else if ((i = _affected_by_s(ch, IMM_DRAIN)) != -1)
+                    } else if ((i = _affected_by_s(ch, IMM_DRAIN)) != -1) {
                         strcat(tbuf, (i > 1) ? "R" : "r");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_ANTI_MAGIC_SHELL)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_ANTI_MAGIC_SHELL)) != 
+                            -1) {
                         strcat(tbuf, (i > 1) ? "A" : "a");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
-                    if ((i = _affected_by_s(ch, SPELL_FLY)) != -1)
+                    }
+                    if ((i = _affected_by_s(ch, SPELL_FLY)) != -1) {
                         strcat(tbuf, (i > 1) ? "L" : "l");
-                    else if (s_flag)
+                    } else if (s_flag) {
                         strcat(tbuf, "-");
+                    }
                     break;
                 case 't':
-                    /* Mud time */
+                    /* 
+                     * Mud time 
+                     */
                     sprintf(tbuf, "%d%s", 
                             ((time_info.hours % 12 == 0) ? 12 : 
                              ((time_info.hours) % 12)),
                             ((time_info.hours >= 12) ? "pm" : "am"));
                     break;
                 case 'T':
-                    /* System Time */
-                    // curr_time = time(NULL);
-                    // sprintf(tbuf,"%02d:%02d",
-                    // localtime(&curr_time)->tm_hour,localtime(&curr_time)->tm_min);
+                    /* 
+                     * System Time 
+                     */
+#if 0
+                    curr_time = time(NULL);
+                    sprintf(tbuf,"%02d:%02d",
+                    localtime(&curr_time)->tm_hour,
+                            localtime(&curr_time)->tm_min);
+#endif
                     break;
                 case 'R':
-                    /* room number for immortals */
+                    /* 
+                     * room number for immortals 
+                     */
                     if (IS_IMMORTAL(ch)) {
                         rm = real_roomp(ch->in_room);
                         if (!rm) {
@@ -2925,7 +3042,9 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     }
                     break;
                 case 'z':
-                    /* zone number for immortals */
+                    /* 
+                     * zone number for immortals 
+                     */
                     if (IS_IMMORTAL(ch)) {
                         rm = real_roomp(ch->in_room);
                         if (!rm) {
@@ -2938,7 +3057,9 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     }
                     break;
                 case 'i':
-                    /* immortal stuff going */
+                    /* 
+                     * immortal stuff going 
+                     */
                     pr_scan++;
                     if (!IS_IMMORTAL(ch)) {
                         *tbuf = 0;
@@ -2946,16 +3067,22 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     }
                     switch (*pr_scan) {
                     case 'I':
-                        /* invisible status */
+                        /* 
+                         * invisible status 
+                         */
                         sprintf(tbuf, "%d", ch->invis_level);
                         break;
                     case 'S':
-                        /* stealth mode */
+                        /* 
+                         * stealth mode 
+                         */
                         strcpy(tbuf, IS_SET(ch->specials.act, PLR_STEALTH) ? 
                                      "On" : "Off");
                         break;
                     case 'N':
-                        /* snoop name */
+                        /* 
+                         * snoop name 
+                         */
                         if (ch->desc->snoop.snooping) {
                             strcpy(tbuf, ch->desc->snoop.snooping->player.name);
                         } else {
@@ -2963,19 +3090,20 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                         }
                         break;
                     default:
-                        /*
-                         * sprintf(tbuf,"Invalid Immmortal Prompt code
-                         * '%c'",*pr_scan); log(tbuf); 
-                         */
+#if 0
+                        sprintf(tbuf,"Invalid Immmortal Prompt code '%c'",
+                               *pr_scan); 
+                        log(tbuf); 
+#endif
                         *tbuf = 0;
                         break;
                     }
                     break;
                 default:
-                    /*
-                     * sprintf(tbuf,"Invalid Prompt code '%c'",*pr_scan);
-                     * log(tbuf); 
-                     */
+#if 0
+                     sprintf(tbuf,"Invalid Prompt code '%c'",*pr_scan);
+                     log(tbuf); 
+#endif
                     *tbuf = 0;
                     break;
                 }
