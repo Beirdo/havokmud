@@ -587,7 +587,10 @@ void HelpEdit(struct char_data *ch, char *arg)
 					send_to_char("File save unsuccessful. Something went pear shaped :(\n\r", ch);
 				if(ch->specials.help->wizard) {
 					send_to_char("Reindexing wizhelp table...\n\r", ch);
-					wizhelp_index = build_help_index(wizhelp_fl, &top_of_wizhelpt);
+					wizhelp_index =
+					build_help_index(
+						wizhelp_fl,
+						&top_of_wizhelpt);
 					send_to_char("Done.\n\r", ch);
 				} else {
 					send_to_char("Reindexing help table...\n\r", ch);

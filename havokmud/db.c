@@ -152,7 +152,7 @@ void boot_db()
 	if (!(help_fl = fopen(HELP_KWRD_FILE, "r")))
 	  log("   Could not open help file.");
 	else
-	  help_index = build_help_index(help_fl, &top_of_helpt);
+	  help_index = build_help_index(help_fl,&top_of_helpt);
 
 	if (!(wizhelp_fl = fopen(WIZ_HELP_FILE, "r")))
 	  log("   Could not open wizhelp file.");
