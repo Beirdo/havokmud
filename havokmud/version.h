@@ -1,7 +1,7 @@
 #ifndef _version_h
 #define _version_h
 
-#define VERSION "1.11.4 Apr. 8th, 2004"
+#define VERSION "1.11.5 Apr. 9th, 2004"
 
 #endif
 
