@@ -4241,7 +4241,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 	extern char *affected_bits2[];
 	extern char *immunity_names[];
 	extern char *wear_bits[];
-	char buf2[256];
+	char buf2[256], color[10];
 	char temp1[128], temp2[128];
 
 	int objn;
@@ -4298,15 +4298,47 @@ dlog("in do_show");
 			append_to_string_block(&sb, buf);
 			bottom = zd->top+1;
 		}
-	} else if (is_abbrev(buf, "objects") &&	(which_i=obj_index,topi=top_of_objt) ||
-				is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
+	} else if (is_abbrev(buf, "objects") &&	(which_i=obj_index,topi=top_of_objt)) {
 		int objn;
 		struct index_data   *oi;
 
 		only_argument(argument, zonenum);
 		zone = -1;
-		if (1==sscanf(zonenum,"%i", &zone) &&
-					( zone<0 || zone>top_of_zone_table )) {
+		if (1==sscanf(zonenum,"%i", &zone) && ( zone<0 || zone>top_of_zone_table )) {
+			append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+			return;
+		}
+		if (zone>=0) {
+			bottom = zone ? (zone_table[zone-1].top+1) : 0;
+			top = zone_table[zone].top;
+		}
+		append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
+		for (objn=0; objn<topi; objn++) {
+			oi = which_i + objn;
+			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
+								zone<0 && !isname(zonenum, oi->name))
+				continue; /* optimize later*/
+			obj = read_object(oi->virtual, VIRTUAL);
+			if(eval(obj) < -5)
+				sprintf(color,"%s","$c0008");
+			else if(eval(obj) < 20)
+				sprintf(color,"%s","");
+			else
+				sprintf(color,"%s","$c000W");
+
+			if(obj) {
+				sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+				append_to_string_block(&sb, buf);
+				extract_obj(obj);
+			}
+		}
+	} else if (is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
+		int objn;
+		struct index_data   *oi;
+
+		only_argument(argument, zonenum);
+		zone = -1;
+		if (1==sscanf(zonenum,"%i", &zone) && ( zone<0 || zone>top_of_zone_table )) {
 			append_to_string_block(&sb, "That is not a valid zone_number\n\r");
 			return;
 		}

@@ -3323,7 +3323,7 @@ void reset_zone(int zone)
   mob = 0;
 
 	if(zone == 189) {
-		log("resetting cog sequence to 0 for Sentinel's Zone (189)");
+//		log("resetting cog sequence to 0 for Sentinel's Zone (189)");
 		cog_sequence = 0;
 	}
 

@@ -7293,38 +7293,48 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
 	/* I'm thinking 1% chance for each spec to happen  Try 0-8 to test specs. may have to tweak the rate */
 	switch (number(0, 100)) {
  	case 1:
- 		/* cool! let's berserk the wielder of the mace, regardless of class. */
- 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
- 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
- 		act("$c0008Roaring at $n, he invokes the Wrath of Raiva.$c0007", 1, vict, 0, 0, TO_ROOM);
- 		act("$c0008Roaring at you, he invokes the Wrath of Raiva.$c0007", FALSE, vict, 0, 0, TO_VICT);
- 		SET_BIT(ch->specials.affected_by2,AFF2_BERSERK); /* berserk ch */
-        act("$c1012$n growls at $mself, and whirls into a killing frenzy!", FALSE, ch, 0, vict, TO_ROOM);
-        act("$c1012The madness overtakes you quickly!",FALSE,ch,0,0,TO_CHAR);
-        if(obj->short_description) {
-			free(obj->short_description);
-		    sprintf(buf,"%s","Guardian of Wrath");
-		    obj->short_description = strdup(buf);
+ 		if(!SET_BIT(ch->specials.affected_by2,AFF2_BERSERK)) { /* berserk ch */
+			/* cool! let's berserk the wielder of the mace, regardless of class. */
+			act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+			act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+			act("$c0008Roaring at $n, he invokes the Wrath of Raiva.$c0007", 1, vict, 0, 0, TO_ROOM);
+			act("$c0008Roaring at you, he invokes the Wrath of Raiva.$c0007", FALSE, vict, 0, 0, TO_VICT);
+			SET_BIT(ch->specials.affected_by2,AFF2_BERSERK); /* berserk ch */
+			act("$c1012$n growls at $mself, and whirls into a killing frenzy!", FALSE, ch, 0, vict, TO_ROOM);
+			act("$c1012The madness overtakes you quickly!",FALSE,ch,0,0,TO_CHAR);
+			if(obj->short_description) {
+				free(obj->short_description);
+				sprintf(buf,"%s","Guardian of Wrath");
+				obj->short_description = strdup(buf);
+			}
 		}
  		break;
  	case 2:
  		if (IS_NPC(ch)) /* since slow doesn't really affect mobs, check here if wielder is PC */
- 		return(FALSE);
+ 			return(FALSE);
  		if (IsImmune(ch, IMM_HOLD)) /* immune PCs shouldn't be affected. */
- 		return(FALSE);
- 		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
- 		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
- 		act("$c0008He giggles at $n while invoking the Leviathon of Laethargio.$c0007", 1, ch, 0, 0, TO_ROOM);
- 		act("$c0008He giggles at you while invoking the Leviathon of Laethargio.$c0007", FALSE, ch, 0, 0, TO_CHAR);
- 		SET_BIT(ch->specials.affected_by2, AFF2_SLOW);
- 		act("$c0008$n seems very slow.$c0007", 1, ch, 0, 0, TO_ROOM);
- 		send_to_char("$c0008You feel very slow!$c0007\r\n", ch);
- 		if(obj->short_description) {
-			free(obj->short_description);
-			sprintf(buf,"%s","Guardian of Sloth");
-			obj->short_description = strdup(buf);
-		}
+ 			return(FALSE);
+		if (!affected_by_spell(ch, SPELL_SLOW)) {
+			act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
+			act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
+			act("$c0008He giggles at $n while invoking the Leviathon of Laethargio.$c0007", 1, ch, 0, 0, TO_ROOM);
+			act("$c0008He giggles at you while invoking the Leviathon of Laethargio.$c0007", FALSE, ch, 0, 0, TO_CHAR);
 
+			af.type      = SPELL_SLOW;
+			af.duration  = 2;
+			af.modifier  = 1;
+			af.location  = APPLY_BV2;
+			af.bitvector = AFF2_SLOW;
+			affect_to_char(ch, &af);
+
+			act("$c0008$n seems very slow.$c0007", 1, ch, 0, 0, TO_ROOM);
+			send_to_char("$c0008You feel very slow!$c0007\r\n", ch);
+			if(obj->short_description) {
+				free(obj->short_description);
+				sprintf(buf,"%s","Guardian of Sloth");
+				obj->short_description = strdup(buf);
+			}
+		}
  		break;
 	case 3:
  		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
@@ -7358,7 +7368,7 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
  		break;
  	case 5:
  		if (IS_PC(vict)) /* don't steal from other players, not even in arena. */
- 		return(FALSE);
+ 			return(FALSE);
  		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
  		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
  		act("$c0008Cackling gleefully, he sends Ginayro through $n's pockets.$c0007", 1, vict, 0, 0, TO_ROOM);
@@ -7382,7 +7392,7 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
  		break;
  	case 6:
  		if (affected_by_spell(ch,SKILL_ADRENALIZE)) /* don't get multiple adrenalizes */
- 		return(FALSE);
+ 			return(FALSE);
  		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
  		act("$c0008The Guardian of Sin leaps up to defend $n.$c0007",FALSE, ch, 0, 0, TO_ROOM);
  		act("$c0008He bestows the Spirit of Luhuria upon $n, who gets an excited look in his eye.$c0007", 1, ch, 0, 0, TO_ROOM);
@@ -7422,8 +7432,10 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
 		    obj->short_description = strdup(buf);
 		}
 		break;
-  }
-return(FALSE);
+	default:
+		break;
+	}
+	return(FALSE);
 }
 
 #define COMFY_ROBE 51840

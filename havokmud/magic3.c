@@ -337,7 +337,7 @@ void spell_slow(byte level, struct char_data *ch,
   }
 
   af.type      = SPELL_SLOW;
-  af.duration  = level;
+  af.duration  = 10;
   af.modifier  = 1;//-1;
 
   af.location  = APPLY_BV2;
