@@ -239,7 +239,7 @@ void ChangeTfdFile(struct char_data *ch, char *arg, int type)
 
 	if(type != ENTER_CHECK)
 		if(!*arg || (*arg == '\n')) {
-			ch->specials.hedit = TFD_MAIN_MENU;
+			ch->specials.tfd = TFD_MAIN_MENU;
 			UpdateTfdMenu(ch);
 			return;
 		}
