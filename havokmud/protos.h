@@ -564,7 +564,6 @@ int             compare(struct player_index_element *arg1,
                         struct player_index_element *arg2);
 void            free_char(struct char_data *ch);
 void            free_obj(struct obj_data *obj);
-int             file_to_string(char *name, char *buf);
 void            ClearDeadBit(struct char_data *ch);
 void            reset_char(struct char_data *ch);
 void            clear_char(struct char_data *ch);
@@ -4215,6 +4214,9 @@ void            mind_use_kinolock(int level, struct char_data *ch,
 void mind_use_sense_object(int level, struct char_data *ch, char *arg,
                            int si, int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj);
+
+
+char *file_to_string(char *name);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()

@@ -70,6 +70,7 @@ extern struct hash_header room_db;      /* In db.c */
 #else
 extern struct room_data *room_db;       /* In db.c */
 #endif
+extern char     *login;
 
 /*
  * extern int top_of_world; In db.c 
@@ -107,6 +108,7 @@ int             numberhosts;
 int             maxdesc,
                 avail_descs;
 int             tics = 0;       /* for extern checkpointing */
+
 
 /*
  *********************************************************************
@@ -1204,7 +1206,6 @@ int new_descriptor(int s)
     struct sockaddr_in sock;
     char            buf[200],
                     buf2[200];
-    extern char     login[];
 
     if ((desc = new_connection(s)) < 0) {
         return (-1);

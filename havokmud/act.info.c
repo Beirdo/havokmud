@@ -36,9 +36,9 @@ extern int      top_of_objt;
 extern int      top_of_p_table;
 
 extern char    *exits[];
-extern char     credits[MAX_STRING_LENGTH];
-extern char     news[MAX_STRING_LENGTH];
-extern char     info[MAX_STRING_LENGTH];
+extern char    *credits;
+extern char    *news;
+extern char    *info;
 
 extern char     wizlist[MAX_STRING_LENGTH];
 extern char     iwizlist[MAX_STRING_LENGTH];

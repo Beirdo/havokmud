@@ -53,6 +53,8 @@ extern struct wis_app_type wis_app[26];
 extern struct player_index_element *player_table;
 extern char    *room_bits[];
 extern struct str_app_type str_app[];
+extern char    *motd;
+extern char    *wmotd;
 
 void           *malloc(size_t size);
 void            free(void *ptr);
@@ -6505,9 +6507,7 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
 void do_viewfile(struct char_data *ch, char *argument, int cmd)
 {
     char            namefile[20];
-    char            bigbuf[32000];
-    extern char     motd[MAX_STRING_LENGTH];
-    extern char     wmotd[MAX_STRING_LENGTH];
+    char           *buf;
 
     /*
      * extern char titlescreen[MAX_STRING_LENGTH];
@@ -6517,53 +6517,39 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
 
     only_argument(argument, namefile);
     if (!strcmp(namefile, "help")) {
-        file_to_string(NEWHELP_FILE, bigbuf);
+        buf = file_to_string(NEWHELP_FILE);
     } else if (!strcmp(namefile, "quest")) {
-        file_to_string(QUESTLOG_FILE, bigbuf);
+        buf = file_to_string(QUESTLOG_FILE);
     } else if (!strcmp(namefile, "bug")) {
-        file_to_string(WIZBUG_FILE, bigbuf);
+        buf = file_to_string(WIZBUG_FILE);
     } else if (!strcmp(namefile, "idea")) {
-        file_to_string(WIZIDEA_FILE, bigbuf);
+        buf = file_to_string(WIZIDEA_FILE);
     } else if (!strcmp(namefile, "typo")) {
-        file_to_string(WIZTYPO_FILE, bigbuf);
+        buf = file_to_string(WIZTYPO_FILE);
     } else if (!strcmp(namefile, "morttypo")) {
-        /*
-         * This is for wizreport...
-         */
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(TYPO_FILE, bigbuf);
+        buf = file_to_string(TYPO_FILE);
     } else if (!strcmp(namefile, "mortbug")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(BUG_FILE, bigbuf);
+        buf = file_to_string(BUG_FILE);
     } else if (!strcmp(namefile, "mortidea")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        file_to_string(IDEA_FILE, bigbuf);
+        buf = file_to_string(IDEA_FILE);
     } else if (!strcmp(namefile, "motd")) {
-#if 0
-        page_string(ch->desc,motd,0);
-#endif
         send_to_char(motd, ch);
         return;
     }
-#if 0
-    else if(!strcmp(namefile,"title")) {
-        page_string(ch->desc,titlescreen,0); return;
-    }
-#endif
     else if (!strcmp(namefile, "wmotd")) {
         send_to_char(wmotd, ch);
-#if 0
-        page_string(ch->desc,wmotd,0);
-#endif
         return;
     } else {
         send_to_char("Commands: view <bug|typo|idea|mortbug|morttypo|"
@@ -6571,7 +6557,8 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    page_string(ch->desc, bigbuf, 1);
+    page_string(ch->desc, buf, 1);
+    free( buf );
 }
 
 void do_msave(struct char_data *ch, char *argument, int cmd)
