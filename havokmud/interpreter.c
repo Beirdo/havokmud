@@ -1697,22 +1697,6 @@ int fill_word(char *argument)
     return (search_block(argument, fill, TRUE) >= 0);
 }
 
-/*
- * determine if a given string is an abbreviation of another
- */
-int is_abbrev(char *arg1, char *arg2)
-{
-    if (!arg1 || !*arg1 || !arg2 || !*arg2) {
-        return (0);
-    }
-    for (; *arg1; arg1++, arg2++) {
-        if (LOWER(*arg1) != LOWER(*arg2)) {
-            return (0);
-        }
-    }
-    return (1);
-}
-
 
 int special(struct char_data *ch, int cmd, char *arg)
 {

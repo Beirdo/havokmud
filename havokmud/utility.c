@@ -6422,6 +6422,23 @@ char           *skip_word(char *string)
     return (string);
 }
 
+/*
+ * determine if a given string is an abbreviation of another
+ */
+int is_abbrev(char *arg1, char *arg2)
+{
+    if (!arg1 || !*arg1 || !arg2 || !*arg2) {
+        return (0);
+    }
+
+    if( strncasecmp(arg1, arg2, strlen(arg1)) ) {
+        /* No match */
+        return( 0 );
+    }
+    return (1);
+}
+
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
