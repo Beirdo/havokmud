@@ -4674,3 +4674,294 @@ void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type
     break;
   }
 }
+
+
+
+
+//#define SPELL_COLD_LIGHT		305
+
+void cast_cold_light( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_cold_light(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in cold light.");
+      break;
+  }
+}
+
+//#define SPELL_DISEASE			306	// 1 aff
+void cast_disease(byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_disease(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in disease.");
+      break;
+  }
+}
+
+//#define SPELL_INVIS_TO_UNDEAD	307	// 2
+void cast_invis_to_undead( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_invis_to_undead(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in invis_to_undead.");
+      break;
+  }
+}
+
+//#define SPELL_LIFE_TAP			308
+void cast_life_tap( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_life_tap(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in _life_tap.");
+      break;
+  }
+}
+
+//#define SPELL_SUIT_OF_BONE		309	// 3
+
+void cast_suit_of_bone( byte level, struct char_data *ch
+	,char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_suit_of_bone(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in suit_of_bone.");
+      break;
+  }
+}
+
+//#define SPELL_SPECTRAL_SHIELD	310 // 4
+void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_spectral_shield(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in spectral_shield.");
+      break;
+  }
+}
+
+//#define SPELL_CLINGING_DARKNESS	311 // 5
+void cast_clinging_darkness ( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_clinging_darkness(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in clinging_darkness.");
+      break;
+  }
+}
+
+//#define SPELL DONIMATE_UNDEAD	312
+void cast_dominate_undead( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_dominate_undead(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in dominate_undead.");
+      break;
+  }
+}
+
+//#define SPELL_UNSUMMON			313
+void cast_unsummon( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_unsummon(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in unsummon.");
+      break;
+  }
+}
+
+//#define SPELL_SIPHON_STRENGTH	314 // 6
+void cast_siphon_strength( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_siphon_strength(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in siphon_strength.");
+      break;
+  }
+}
+
+//#define SPELL_GATHER_SHADOWS	315 // 7
+void cast_gather_shadows( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_gather_shadows(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in gather_shadows.");
+      break;
+  }
+}
+
+//#define SPELL_MEND_BONES		316
+void cast_mend_bones( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_mend_bones(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in mend_bones.");
+      break;
+  }
+}
+
+//#define SPELL_TRACE_CORPSE		317
+void cast_trace_corpse( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_trace_corpse(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in trace_corpse.");
+      break;
+  }
+}
+
+//#define	SPELL_ENDURE_COLD		318 // 8
+void cast_endure_cold( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_endure_cold(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in endure_cold.");
+      break;
+  }
+}
+
+//#define SPELL_LIFE_DRAW			319
+void cast_life_draw( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  if (!tar_ch) tar_ch = ch;
+
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+      spell_life_draw(level, ch, tar_ch, 0);
+      break;
+  default:
+      log("serious screw-up in life_draw.");
+      break;
+  }
+}
+

@@ -378,7 +378,7 @@
 #define SPELL_MEND_BONES		316
 #define SPELL_TRACE_CORPSE		317
 #define	SPELL_ENDURE_COLD		318 // 8
-#define SPELL_LIFE_DRAW			319
+#define SPELL_LIFE_DRAW			319  /*first 15 by (GH) */
 #define SPELL_NUMB_DEAD		    320
 #define SPELL_BINDING			321
 #define SPELL_DECAY				322 // 9

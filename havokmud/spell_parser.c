@@ -53,6 +53,18 @@ void do_look( struct char_data *ch, char *arg, int cmd);
 void DamageAllStuff( struct char_data *ch, int dam_type);
 
 
+
+void cast_spectral_shield( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_suit_of_bone( byte level, struct char_data *ch
+	,char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_cold_light( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+
+
+
 /* Extern procedures */
 
 /* psi stuff */
@@ -818,7 +830,6 @@ char *spells[]=
 	"finger of death",
 	"flesh golem",
 	"dominate undead", //338
-
    "wall of thought",
    "mind tap",
    "\n"
@@ -911,6 +922,21 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {17,15,15,14,14,12,12,11,11, 9, 9, 8, 8, 6, 6, 5, 5, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {20,17,17,16,16,13,13,12,12, 9, 9, 8, 8, 5, 5, 4, 4, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {19,17,17,16,16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 6, 6, 6, 6, 4, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+},
+/* bard */
+{
+  {16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 5, 5, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {18,16,16,15,15,13,13,12,12,10,10, 9, 9, 7, 7, 6, 6, 5, 5, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {17,15,15,14,14,12,12,11,11, 9, 9, 8, 8, 6, 6, 5, 5, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {20,17,17,16,16,13,13,12,12, 9, 9, 8, 8, 5, 5, 4, 4, 4, 4, 4, 4, 3, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {19,17,17,16,16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 6, 6, 6, 6, 4, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+}, /* Necromancer */
+{
+  {11,10,10,10, 9, 9, 9, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 4, 2, 2, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
+  {16,14,14,14,13,13,13,11,11,11,10,10,10, 9, 9, 9, 8, 8, 8, 6, 6, 5, 4, 3, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0},
+  {15,13,13,13,12,12,12,10,10,10, 9, 9, 9, 8, 8, 8, 7, 7, 7, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {18,16,16,16,15,15,15,13,13,13,12,12,12,11,11,11,10,10,10, 8, 8, 7, 6, 5, 4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {17,15,15,15,14,14,14,12,12,12,11,11,11,10,10,10, 9, 9, 9, 7, 7, 6, 5, 4, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 }
 };
 
@@ -2470,6 +2496,7 @@ void assign_spell_pointers()
      spell_info[i].min_level_paladin  = 0;
      spell_info[i].min_level_ranger   = 0;
      spell_info[i].min_level_psi      = 0;
+     spell_info[i].min_level_bard     = 0;
      spell_info[i].brewable      = 0;
      spell_info[i].min_level_necromancer = 0;
     }
@@ -3614,11 +3641,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 /* Necromancer stuff goes here */
 
 /* commented out due to non-existent func calls, comment in when you got one done
-
+*/
   spello(305,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_cold_light, 0,0, 1);
-
+/*
   spello(306,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_disease, 0,1, 1);
@@ -3631,6 +3658,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_tap, 0,0, 2);
 
+*/
   spello(309,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_suit_of_bone, 0,1, 3);
@@ -3638,7 +3666,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(310,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_spectral_shield, 0,1, 4);
-
+/*
   spello(311,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_clinging_darkness, 0,0, 5);
@@ -3751,6 +3779,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_chillshield, 0,0, 45);
 */
+
 
 }
 void SpellWearOffSoon(int s, struct char_data *ch)

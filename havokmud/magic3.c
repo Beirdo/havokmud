@@ -2810,8 +2810,7 @@ if (level <0 || level >ABS_MAX_LVL)
 }
 
 
-void spell_giant_growth(byte level, struct char_data *ch,
-		 struct char_data *victim, struct obj_data *obj)
+void spell_giant_growth(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
   /* +3 to hit +3 dam */
   struct affected_type af;
@@ -2837,9 +2836,94 @@ void spell_giant_growth(byte level, struct char_data *ch,
   af.location = APPLY_DAMROLL;
   af.modifier = 3;                 /* Make better */
   affect_to_char(victim, &af);
+}
 
+void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+	/*
+	   creates a cold light .
+	*/
+	  struct obj_data *tmp_obj;
+
+	  assert(ch);
+	  assert((level >= 0) && (level <= ABS_MAX_LVL));
+
+
+			/*Change it to the new item.. */
+	  tmp_obj = read_object(20, VIRTUAL);  /* this is all you have to do */
+	  if (tmp_obj) {
+	      tmp_obj->obj_flags.value[2] = 24+level;
+	      obj_to_char(tmp_obj,ch);
+	  } else {
+	    send_to_char("Sorry, I can't create the cold ball of ice\n\r", ch);
+	    return;
+	  }
+
+	  act("$n thrusts $s hands through the ground, and pulls out $p.",TRUE,ch,tmp_obj,0,TO_ROOM);
+	  act("You thrust your hands through the ground, and pull out $p.",TRUE,ch,tmp_obj,0,TO_CHAR);
 
 }
+
+void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  struct affected_type af;
+
+	assert(victim);
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	  if (!affected_by_spell(victim, SPELL_SUIT_OF_BONE)) {
+	    af.type      = SPELL_SUIT_OF_BONE;
+	    af.duration  = 24;
+	    af.modifier  = -20;
+	    af.location  = APPLY_AC;
+	    af.bitvector = 0;
+
+	    affect_to_char(victim, &af);
+	    send_to_char("Bones start forming around your armor, making it stronger than ever.\n\r", victim);
+	  } else {
+	    send_to_char("Nothing New seems to happen\n\r", ch);
+	  }
+}
+
+void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	  struct affected_type af;
+
+	  assert(victim && ch);
+
+	  if (!affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
+	    act("A spectral shield forms around $N.",TRUE, ch, 0, victim, TO_NOTVICT);
+	    if (ch != victim) {
+	       act("A spectral shield forms around $N.", TRUE, ch, 0, victim, TO_CHAR);
+	       act("A spectral shield forms around you.", TRUE, ch, 0, victim, TO_VICT);
+	    } else {
+	       act("A spectral shield forms around you.", TRUE, ch, 0, 0, TO_CHAR);
+	     }
+
+	    af.type      = SPELL_SPECTRAL_SHIELD;
+	    af.duration  = 8+level;
+	    af.modifier  = -10;
+	    af.location  = APPLY_AC;
+	    af.bitvector = 0;
+	    affect_to_char(victim, &af);
+	  }
+}
+
+
+void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+
 
 /* Necromancer Spells */
 void spell_shadow_step(byte level, struct char_data *ch,
@@ -2875,4 +2959,5 @@ void spell_shadow_step(byte level, struct char_data *ch,
 	} /* end for, no exits found. too bad, kiddo! */
 	send_to_char("The shadows in the vicinity didn't serve your purpose.\n\r", ch);
 }
+
 

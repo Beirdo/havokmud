@@ -2322,3 +2322,20 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd);
 
 void spell_wall_of_thought(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void cast_wall_of_thought( byte level, struct char_data *ch, char *arg, int type,  struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+

@@ -3985,6 +3985,7 @@ void reset_char(struct char_data *ch)
   /* Setting Bard level (GH) */
   GET_LEVEL(ch, 11) = 0;
 GET_LEVEL(ch, 12) = 0;
+
   SET_BIT(ch->specials.act, PLR_ECHO);
 
   ch->hunt_dist = 0;

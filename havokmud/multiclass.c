@@ -172,13 +172,16 @@ int BestFightingClass(struct char_data *ch)
    return(MONK_LEVEL_IND);
  if (GET_LEVEL(ch, THIEF_LEVEL_IND))
    return(THIEF_LEVEL_IND);
-
+if (GET_LEVEL(ch, BARD_LEVEL_IND))
+   return(BARD_LEVEL_IND);
  if (GET_LEVEL(ch, PSI_LEVEL_IND))
    return(PSI_LEVEL_IND);
  if (GET_LEVEL(ch, MAGE_LEVEL_IND))
    return(MAGE_LEVEL_IND);
  if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
    return(SORCERER_LEVEL_IND);
+ if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
+   return(NECROMANCER_LEVEL_IND);
   log("Massive error.. character has no recognized class.");
   log(GET_NAME(ch));
   assert(0);
