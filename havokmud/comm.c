@@ -2256,17 +2256,13 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 		    mask="Havok: (type help prompt) H:%h M:%m V:%v> ";
     } else {
 		if(ch->specials.fighting) {
-			send_to_char("FIGHTINGXXXX",ch);
-
 			if(ch->specials.bprompt==NULL) {
-				send_to_char("Battle prompt is null",ch);
 				mask=ch->specials.prompt;
 			} else {
-				send_to_char("Here is the battle prompt",ch);
-				 mask=ch->specials.bprompt;
+				mask=ch->specials.bprompt;
 		 	}
-		}
-
+		} else
+			mask=ch->specials.prompt;
     }
 
 
