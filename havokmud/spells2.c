@@ -5297,3 +5297,19 @@ void cast_mana_shield( byte level, struct char_data *ch, char *arg,
       break;
   }
 }
+void cast_group_heal( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_POTION:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_group_heal(level, ch, 0, 0);
+    break;
+  default:
+      log("serious screw-up in cast_group_heal");
+      break;
+  }
+}

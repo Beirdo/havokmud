@@ -99,6 +99,18 @@ extern long SystemFlags;
   extern struct skillset thfninjaskills[];
   extern struct skillset allninjaskills[];
   extern struct skillset loreskills[];
+  extern struct skillset mainwarriorskills[];
+  extern struct skillset mainthiefskills[];
+  extern struct skillset mainbarbskills[];
+  extern struct skillset mainnecroskills[];
+  extern struct skillset mainmonkskills[];
+  extern struct skillset mainmageskills[];
+  extern struct skillset mainsorcskills[];
+  extern struct skillset mainclericskills[];
+  extern struct skillset maindruidskills[];
+  extern struct skillset mainpaladinskills[];
+  extern struct skillset mainrangerskills[];
+  extern struct skillset mainpsiskills[];
 
 /* extern functions */
 
@@ -761,11 +773,25 @@ if (!ch || !i) {
 			send_to_char(buffer,ch);
 		}
 	}
+	if (affected_by_spell(i, SPELL_MANA_SHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"A $c000Ygolden $c000yball floats close to %s's ear.\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000y%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
 	if  (IS_AFFECTED(i,AFF_DARKNESS)){
 		sprintf(buffer,"%s is surrounded by darkness!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
 		sprintf(buf,"%s", CAP(buffer));
 		sprintf(buffer,"$c0008%s",buf);
 			send_to_char(buffer,ch);
+	}
+	if  (IS_AFFECTED(i,AFF_BLADE_BARRIER)){
+		sprintf(buffer,"%s is surrounded by whirling blades!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c000B%s",buf);
+		send_to_char(buffer,ch);
 	}
 	if  (IS_AFFECTED(i,AFF_BLADE_BARRIER)){
 		sprintf(buffer,"%s is surrounded by whirling blades!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
@@ -1169,6 +1195,14 @@ if (IS_LINKDEAD(i))
 			sprintf(buffer,"%s is surrounded by cold flames!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
 			sprintf(buf,"%s", CAP(buffer));
 			sprintf(buffer,"$c000C%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if (affected_by_spell(i, SPELL_MANA_SHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"A $c000Ygolden $c000yball floats close to %s's ear.\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000y%s",buf);
 			send_to_char(buffer,ch);
 		}
 	}
@@ -2618,6 +2652,9 @@ char *GetLevelTitle(struct char_data *ch) {
 	} else {
 		/* determine the highest xp value gained level */
 #if 0
+// Now that we have a working main class, we may as welluse the main class for title
+
+#if 0
 //Conflict.. my quick solution.... lennyas is better....just in case tho.. i'll leave..
 		exp = GET_EXP(ch);
 		for (i=1,h=0;i<=CLASS_NECROMANCER;i*=2, h++) {
@@ -2638,7 +2675,11 @@ char *GetLevelTitle(struct char_data *ch) {
 				}
 			}
 		}
-
+#else
+	class = ch->specials.remortclass;
+	if(class < 0)
+		class = 0;
+#endif
 		if(GET_SEX(ch)==SEX_FEMALE) {
 			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_f);
 			return buf;
@@ -4616,12 +4657,13 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
-/*		i = 0;
-		if(OnlyClass(ch,CLASS_WARRIOR)) {
-			while(scwarskills[i].level != -1) {
-				sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
-							scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
-				if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+		i = 0;
+		if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked warrior as your main class, you get these bonus skills:\n\r");
+			while(mainwarriorskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainwarriorskills[i].level,
+							mainwarriorskills[i].name,how_good(ch->skills[mainwarriorskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainwarriorskills[i].skillnum].special))
 					strcat(buf," (special)");
 				strcat(buf," \n\r");
 				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
@@ -4630,7 +4672,7 @@ dlog("in do_show_skill");
 				strcat(buffer, "\r");
 				i++;
 			}
-		} */
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4657,6 +4699,22 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
+		i = 0;
+		if(ch->specials.remortclass == THIEF_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked thief as your main class, you get these bonus skills:\n\r");
+			while(mainthiefskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainthiefskills[i].level,
+							mainthiefskills[i].name,how_good(ch->skills[mainthiefskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainthiefskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4680,6 +4738,22 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
+		i = 0;
+		if(ch->specials.remortclass == MAGE_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked mage as your main class, you get these bonus skills:\n\r");
+			while(mainmageskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainmageskills[i].level,
+							mainmageskills[i].name,how_good(ch->skills[mainmageskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainmageskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4702,6 +4776,22 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(ch->specials.remortclass == CLERIC_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked cleric as your main class, you get these bonus skills:\n\r");
+			while(mainclericskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainclericskills[i].level,
+							mainclericskills[i].name,how_good(ch->skills[mainclericskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainclericskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
       page_string(ch->desc, buffer, 1);
       return;
@@ -4727,6 +4817,22 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(ch->specials.remortclass == DRUID_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked druid as your main class, you get these bonus skills:\n\r");
+			while(maindruidskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",maindruidskills[i].level,
+							maindruidskills[i].name,how_good(ch->skills[maindruidskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[maindruidskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
       page_string(ch->desc, buffer, 1);
       return;
@@ -4754,6 +4860,22 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
+		i = 0;
+		if(ch->specials.remortclass == MONK_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked monk as your main class, you get these bonus skills:\n\r");
+			while(mainmonkskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainmonkskills[i].level,
+							mainmonkskills[i].name,how_good(ch->skills[mainmonkskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainmonkskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4779,6 +4901,22 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
+		i = 0;
+		if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked barbarian as your main class, you get these bonus skills:\n\r");
+			while(mainbarbskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainbarbskills[i].level,
+							mainbarbskills[i].name,how_good(ch->skills[mainbarbskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainbarbskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4803,6 +4941,22 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked necromancer as your main class, you get these bonus skills:\n\r");
+			while(mainnecroskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainnecroskills[i].level,
+							mainnecroskills[i].name,how_good(ch->skills[mainnecroskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainnecroskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
 		page_string(ch->desc, buffer, 1);
 		return;
@@ -4830,7 +4984,23 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
-      page_string(ch->desc, buffer, 1);
+ 		i = 0;
+		if(ch->specials.remortclass == SORCERER_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked sorcerer as your main class, you get these bonus skills:\n\r");
+			while(mainsorcskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainsorcskills[i].level,
+							mainsorcskills[i].name,how_good(ch->skills[mainsorcskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainsorcskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
+     page_string(ch->desc, buffer, 1);
       return;
     }
     break;
@@ -4854,6 +5024,22 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked paladin as your main class, you get these bonus skills:\n\r");
+			while(mainpaladinskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainpaladinskills[i].level,
+							mainpaladinskills[i].name,how_good(ch->skills[mainpaladinskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainpaladinskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
 		page_string(ch->desc, buffer, 1);
 		return;
@@ -4880,6 +5066,22 @@ dlog("in do_show_skill");
 			strcat(buffer, "\r");
 			i++;
 		}
+		i = 0;
+		if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked ranger as your main class, you get these bonus skills:\n\r");
+			while(mainrangerskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainrangerskills[i].level,
+							mainrangerskills[i].name,how_good(ch->skills[mainrangerskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainrangerskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		}
 		page_string(ch->desc, buffer, 1);
 		return;
 	}
@@ -4904,6 +5106,22 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(ch->specials.remortclass == PSI_LEVEL_IND + 1) {
+			strcat(buffer,"\n\rSince you picked psi as your main class, you get these bonus skills:\n\r");
+			while(mainpsiskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",mainpsiskills[i].level,
+							mainpsiskills[i].name,how_good(ch->skills[mainpsiskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[mainpsiskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
 		page_string(ch->desc, buffer, 1);
 		return;

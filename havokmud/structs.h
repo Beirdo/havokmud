@@ -1965,26 +1965,28 @@ struct class_titles {
 
 /* Changes to be made for the remort bonusses, decided upon by Gordon and Lennya, 20040111
 
+Updated prac, skill and guildmasters to also display the main class skills for main classers
+
+
 Mage
 //	brew, create potions of mage spells
-	mana shield, lets mana soak up damage (ignoring resist, suscept, sanc) before hps
+//	mana shield, lets mana soak up damage (ignoring resist, suscept, sanc) before hps
 //	+10 mana regen
 
 Cleric
 //	+1 tick on blade barrier and sanctuary durations					//done by Gordon
-	group heal
+//	group heal
 //  scribe, creates scrolls with cleric spells							//done by Lennya
-
 
 Warrior
 	more weapon proficiencies
 	bellow becomes an area affect bash
 //	+8 hitpoint regen
 //	+5 move regen
-	mend, skill to repair damage armor/weaponry
+//	mend, skill to repair damage armor/weaponry
 
 Thief
-	plain backstab bonus (lower bonusses other thief types)       //done by gordon
+//	plain backstab bonus (lower bonusses other thief types)       //done by gordon
 	successful retreat/flee does a (two?) hide skillcheck, for being hidden right after.
 
 Druid
@@ -2030,9 +2032,9 @@ Necromancer
 	+ 5% damage vs. neutral
 	-20% damage vs. evil
 
-	(lower hp gain for necros in general)
+//	(lower hp gain for necros in general)
 
-slay: does +50% damage, rather than twice as much						// done by Gordon
-haste: adds +1.5 attacks to base. adds +1 attacks to offhand weapon.	// done by gordon
+//	slay: does +50% damage, rather than twice as much						// done by Gordon
+//	haste: adds +1.5 attacks to base. adds +1 attacks to offhand weapon.	// done by gordon
 
 */

@@ -4511,3 +4511,24 @@ void spell_mana_shield(byte level, struct char_data *ch, struct char_data *victi
 		send_to_char("Nothing new seems to happen.\n\r",ch);
 	}
 }
+
+void spell_group_heal(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+// heal everyone in group
+	struct char_data *tch;
+
+	if (real_roomp(ch->in_room) == NULL)  {
+		return;
+	}
+
+	if (!IS_AFFECTED(ch, AFF_GROUP)) {
+		send_to_char("You cannot cast this spell when you're not in a group!\n\r",ch);
+		return;
+	}
+
+	for (tch=real_roomp(ch->in_room)->people; tch; tch=tch->next_in_room) {
+		if (in_group(tch, ch)) {
+			spell_heal(level,ch,tch,0);
+		}
+	}
+}

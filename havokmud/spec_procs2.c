@@ -23,6 +23,18 @@
   extern struct skillset warmonkskills[];
   extern struct skillset archerskills[];
   extern struct skillset loreskills[];
+  extern struct skillset mainwarriorskills[];
+  extern struct skillset mainthiefskills[];
+  extern struct skillset mainbarbskills[];
+  extern struct skillset mainnecroskills[];
+  extern struct skillset mainmonkskills[];
+  extern struct skillset mainmageskills[];
+  extern struct skillset mainsorcskills[];
+  extern struct skillset mainclericskills[];
+  extern struct skillset maindruidskills[];
+  extern struct skillset mainpaladinskills[];
+  extern struct skillset mainrangerskills[];
+  extern struct skillset mainpsiskills[];
 
 extern struct room_data *world;
 extern struct char_data *character_list;
@@ -4252,6 +4264,29 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 					i=0;
 					x--;
 				}
+				if(ch->specials.remortclass == MONK_LEVEL_IND + 1) {
+					sprintf(buf,"\n\rSince you picked monk as your main class, you get these bonus skills:\n\r\n\r");
+					strcat(buffer,buf);
+					x = GET_LEVEL(ch,MONK_LEVEL_IND);
+					while (x != 0) {
+						while(mainmonkskills[i].level != -1) {
+							if (mainmonkskills[i].level == x) {
+								sprintf(buf,"[%-2d] %-30s %-15s",mainmonkskills[i].level,
+										mainmonkskills[i].name,how_good(ch->skills[mainmonkskills[i].skillnum].learned));
+								if (IsSpecialized(ch->skills[mainmonkskills[i].skillnum].special))
+									strcat(buf," (special)");
+								strcat(buf," \n\r");
+								if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+									break;
+								strcat(buffer, buf);
+								strcat(buffer, "\r");
+							}
+							i++;
+						}
+						i=0;
+						x--;
+					}
+				}
 				page_string(ch->desc, buffer, 1);
 				return(TRUE);
 			} else {
@@ -4470,6 +4505,29 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 				}
 				i=0;
 				x--;
+			}
+			if(ch->specials.remortclass == DRUID_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked druid as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,DRUID_LEVEL_IND);
+				while (x != 0) {
+					while(maindruidskills[i].level != -1) {
+						if (maindruidskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",maindruidskills[i].level,
+									maindruidskills[i].name,how_good(ch->skills[maindruidskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[maindruidskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
 			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
@@ -6042,6 +6100,29 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 				i=0;
 				x--;
 			}
+			if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked barbarian as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,BARBARIAN_LEVEL_IND);
+				while (x != 0) {
+					while(mainbarbskills[i].level != -1) {
+						if (mainbarbskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",mainbarbskills[i].level,
+									mainbarbskills[i].name,how_good(ch->skills[mainbarbskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[mainbarbskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -6083,6 +6164,43 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 					return(TRUE);
 				}
 				x++;
+			}
+			if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1) {
+				x=0;
+				while (mainbarbskills[x].level != -1) {
+					if(is_abbrev(arg,mainbarbskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(mainbarbskills[x].level > GET_LEVEL(ch,BARBARIAN_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+						if(ch->skills[mainbarbskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+						sprintf(buf,"You practice %s for a while.\n\r",mainbarbskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+						if(!IS_SET(ch->skills[mainbarbskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[mainbarbskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[mainbarbskills[x].skillnum].flags,SKILL_KNOWN_BARBARIAN);
+						}
+						percent=ch->skills[mainbarbskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[mainbarbskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[mainbarbskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
@@ -6159,6 +6277,29 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 				i=0;
 				x--;
 			}
+			if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked ranger as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,RANGER_LEVEL_IND);
+				while (x != 0) {
+					while(mainrangerskills[i].level != -1) {
+						if (mainrangerskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",mainrangerskills[i].level,
+									mainrangerskills[i].name,how_good(ch->skills[mainrangerskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[mainrangerskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -6201,6 +6342,43 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 				}
 				x++;
 			}
+			if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
+				x=0;
+				while (mainrangerskills[x].level != -1) {
+					if(is_abbrev(arg,mainrangerskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(mainrangerskills[x].level > GET_LEVEL(ch,RANGER_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+						if(ch->skills[mainrangerskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+						sprintf(buf,"You practice %s for a while.\n\r",mainrangerskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+						if(!IS_SET(ch->skills[mainrangerskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[mainrangerskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[mainrangerskills[x].skillnum].flags,SKILL_KNOWN_RANGER);
+						}
+						percent=ch->skills[mainrangerskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[mainrangerskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[mainrangerskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
+			}
 			send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
 			return(TRUE);
@@ -6208,141 +6386,6 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	}
 	return (FALSE);
 }
-
-/* Old GM code:
-
-int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
-{
-
-  int number, i, percent;
-  char buf[MAX_INPUT_LENGTH];
-  struct char_data *guildmaster;
-  extern char *spells[];
-  extern struct spell_info_type spell_info[MAX_SPL_LIST];
-
-  if (!ch->skills) return(FALSE);
-
-  if (check_soundproof(ch)) return(FALSE);
-
-  guildmaster = FindMobInRoomWithFunction(ch->in_room, RangerGuildmaster);
-
-  if (!guildmaster) return(FALSE);
-
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
-      return(FALSE);
-
-  if (IS_NPC(ch)) {
-    act("$N tells you 'What do i look like, an animal trainer?'", FALSE,
-	ch, 0, guildmaster, TO_CHAR);
-    return(FALSE);
-  }
-
-  for (;*arg == ' '; arg++);
-
-  if (HasClass(ch, CLASS_RANGER)) {
-	if (cmd == 243)   {
-       if (GET_LEVEL(ch,RANGER_LEVEL_IND) < GetMaxLevel(guildmaster)-10)
-       {
-     if (GET_EXP(ch)<
-	 titles[RANGER_LEVEL_IND][GET_LEVEL(ch, RANGER_LEVEL_IND)+1].exp)
-	 {
-          send_to_char("You are not yet ready to gain.\n\r", ch);
-          return(FALSE);
-         } else if(GET_LEVEL(ch, RANGER_LEVEL_IND)==50)
-	     {
-	 		send_to_char("You are far too powerful for me to train you... Seek an implementor to help you", ch);
-			return(FALSE);
-	     }
-         else {
-          GainLevel(ch,RANGER_LEVEL_IND);
-	  return(TRUE);
-         }
-	} else {
-	  send_to_char("I cannot train you.. You must find another.\n\r",ch);
-	}
-        return(TRUE);
-     }
-
-
-    if (!*arg) {
-      sprintf(buf,"You have got %d practice sessions left.\n\r",
-	      ch->specials.spells_to_learn);
-      send_to_char(buf, ch);
-      send_to_char("You can practise any of these skills:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-	if (spell_info[i+1].min_level_ranger &&
-	   (spell_info[i+1].min_level_ranger <=
-	    GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
-	    (spell_info[i+1].min_level_ranger <=
-	     GetMaxLevel(guildmaster)-10)) {
-	  sprintf(buf,"[%-2d] %-25s %-15s ",
-		  spell_info[i+1].min_level_ranger,spells[i],
-		  how_good(ch->skills[i+1].learned));
-
-	  if (spell_info[i+1].min_level_ranger == GET_LEVEL(ch,RANGER_LEVEL_IND))
-	    sprintf(buf,"%s [New Spell] \n\r",buf);
-	  else
-	    sprintf(buf,"%s \n\r",buf);
-
-	  send_to_char(buf, ch);
-	}
-      return(TRUE);
-    }
-    for (;isspace(*arg);arg++);
-    number = old_search_block(arg,0,strlen(arg),spells,FALSE);
-    if(number == -1) {
-      send_to_char("You do not know of that skill...\n\r", ch);
-      return(TRUE);
-    }
-    if (GET_LEVEL(ch,RANGER_LEVEL_IND) < spell_info[number].min_level_ranger) {
-      send_to_char("You do not know of this skill...\n\r", ch);
-      return(TRUE);
-    }
-    if (GetMaxLevel(guildmaster)-10 < spell_info[number].min_level_ranger) {
-      do_say(guildmaster, "I don't know of this skill.", 0);
-      return(TRUE);
-    }
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char("You do not seem to be able to practice now.\n\r", ch);
-      return(TRUE);
-    }
-
-    if (number == SKILL_HUNT || number == SKILL_FIND_TRAP) {
-     if (ch->skills[number].learned >= 95) {
-      send_to_char("You are a master at this art.\n\r", ch);
-      return(TRUE);
-     }
-    }
-
-    if (number != SKILL_HUNT && number != SKILL_FIND_TRAP &&
-       ch->skills[number].learned >= 45) {
-      send_to_char("You must use this skill to get any better.  I cannot train you further.\n\r", ch);
-      return(TRUE);
-    }
-
-    send_to_char("You Practice for a while...\n\r", ch);
-    ch->specials.spells_to_learn--;
-
-
-if (!IS_SET(ch->skills[number].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[number].flags, SKILL_KNOWN);
-     SET_BIT(ch->skills[number].flags, SKILL_KNOWN_RANGER);
-    }
-
-    percent = ch->skills[number].learned+int_app[GET_RINT(ch)].learn;
-    ch->skills[number].learned = MIN(95, percent);
-
-    if (ch->skills[number].learned >= 95) {
-      send_to_char("You are now learned in this area.\n\r", ch);
-      return(TRUE);
-    }
-  } else {
-    send_to_char("What do you think you are, a ranger!??\n\r", ch);
-    return(FALSE);
-  }
-
-}
-*/
 
 int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -6410,6 +6453,29 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 				i=0;
 				x--;
 			}
+			if(ch->specials.remortclass == PSI_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked psi as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,PSI_LEVEL_IND);
+				while (x != 0) {
+					while(mainpsiskills[i].level != -1) {
+						if (mainpsiskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",mainpsiskills[i].level,
+									mainpsiskills[i].name,how_good(ch->skills[mainpsiskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[mainpsiskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -6451,6 +6517,43 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 					return(TRUE);
 				}
 				x++;
+			}
+			if(ch->specials.remortclass == PSI_LEVEL_IND + 1) {
+				x=0;
+				while (mainpsiskills[x].level != -1) {
+					if(is_abbrev(arg,mainpsiskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(mainpsiskills[x].level > GET_LEVEL(ch,PSI_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+						if(ch->skills[mainpsiskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+						sprintf(buf,"You practice %s for a while.\n\r",mainpsiskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+						if(!IS_SET(ch->skills[mainpsiskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[mainpsiskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[mainpsiskills[x].skillnum].flags,SKILL_KNOWN_PSI);
+						}
+						percent=ch->skills[mainpsiskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[mainpsiskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[mainpsiskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
@@ -6526,6 +6629,29 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 				i=0;
 				x--;
 			}
+			if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked paladin as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,PALADIN_LEVEL_IND);
+				while (x != 0) {
+					while(mainpaladinskills[i].level != -1) {
+						if (mainpaladinskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",mainpaladinskills[i].level,
+									mainpaladinskills[i].name,how_good(ch->skills[mainpaladinskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[mainpaladinskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -6567,6 +6693,43 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 					return(TRUE);
 				}
 				x++;
+			}
+			if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
+				x=0;
+				while (mainpaladinskills[x].level != -1) {
+					if(is_abbrev(arg,mainpaladinskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(mainpaladinskills[x].level > GET_LEVEL(ch,PALADIN_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+						if(ch->skills[mainpaladinskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+						sprintf(buf,"You practice %s for a while.\n\r",mainpaladinskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+						if(!IS_SET(ch->skills[mainpaladinskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[mainpaladinskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[mainpaladinskills[x].skillnum].flags,SKILL_KNOWN_PALADIN);
+						}
+						percent=ch->skills[mainpaladinskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[mainpaladinskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[mainpaladinskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);

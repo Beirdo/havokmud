@@ -849,7 +849,7 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
   extern struct skillset warriorskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
-    extern struct skillset necroskills[];
+  extern struct skillset necroskills[];
   extern struct skillset monkskills[];
   extern struct skillset warmonkskills[];
   extern struct skillset mageskills[];
@@ -859,6 +859,18 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
   extern struct skillset paladinskills[];
   extern struct skillset rangerskills[];
   extern struct skillset psiskills[];
+  extern struct skillset mainwarriorskills[];
+  extern struct skillset mainthiefskills[];
+  extern struct skillset mainbarbskills[];
+  extern struct skillset mainnecroskills[];
+  extern struct skillset mainmonkskills[];
+  extern struct skillset mainmageskills[];
+  extern struct skillset mainsorcskills[];
+  extern struct skillset mainclericskills[];
+  extern struct skillset maindruidskills[];
+  extern struct skillset mainpaladinskills[];
+  extern struct skillset mainrangerskills[];
+  extern struct skillset mainpsiskills[];
   extern struct skillset warninjaskills[];
   extern struct skillset thfninjaskills[];
   extern struct skillset allninjaskills[];
@@ -907,13 +919,13 @@ dlog("in do_practice");
 			}
 			i++;
 		}
-/*		i=0;
-		if(OnlyClass(ch,CLASS_WARRIOR)) {
-	  		while(scwarskills[i].level != -1) {
-				if (IS_SET(ch->skills[scwarskills[i].skillnum].flags,SKILL_KNOWN)) {
-					sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
-							scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
-					if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+		i=0;
+		if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
+	  		while(mainwarriorskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainwarriorskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainwarriorskills[i].level,
+							mainwarriorskills[i].name,how_good(ch->skills[mainwarriorskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainwarriorskills[i].skillnum].special))
 						strcat(buf," (special)");
 					strcat(buf," \n\r");
 					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
@@ -923,7 +935,7 @@ dlog("in do_practice");
 				}
 				i++;
 			}
-		}*/
+		}
 		i=0;
 		while(warninjaskills[i].level != -1) {
 			if (IS_SET(ch->skills[warninjaskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1011,6 +1023,23 @@ dlog("in do_practice");
 			i++;
 		}
 		i=0;
+		if(ch->specials.remortclass == THIEF_LEVEL_IND + 1) {
+	  		while(mainthiefskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainthiefskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainthiefskills[i].level,
+							mainthiefskills[i].name,how_good(ch->skills[mainthiefskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainthiefskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
+		i=0;
 		while(thfninjaskills[i].level != -1) {
 			if (IS_SET(ch->skills[thfninjaskills[i].skillnum].flags,SKILL_KNOWN)) {
 				sprintf(buf,"[%-2d] %-30s %-15s",thfninjaskills[i].level,
@@ -1081,6 +1110,23 @@ dlog("in do_practice");
 			}
 			i++;
 		}
+		i=0;
+		if(ch->specials.remortclass == MAGE_LEVEL_IND + 1) {
+	  		while(mainmageskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainmageskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainmageskills[i].level,
+							mainmageskills[i].name,how_good(ch->skills[mainmageskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainmageskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
 		while(loreskills[i].level != -1) {
 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1131,6 +1177,23 @@ dlog("in do_practice");
 			}
 			i++;
 		}
+		i=0;
+		if(ch->specials.remortclass == SORCERER_LEVEL_IND + 1) {
+	  		while(mainsorcskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainsorcskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainsorcskills[i].level,
+							mainsorcskills[i].name,how_good(ch->skills[mainsorcskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainsorcskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
 		while(loreskills[i].level != -1) {
 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1173,7 +1236,24 @@ dlog("in do_practice");
 			}
 			i++;
 		}
-  		i=0;
+ 		i=0;
+		if(ch->specials.remortclass == CLERIC_LEVEL_IND + 1) {
+	  		while(mainclericskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainclericskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainclericskills[i].level,
+							mainclericskills[i].name,how_good(ch->skills[mainclericskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainclericskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
+ 		i=0;
 		while(loreskills[i].level != -1) {
 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
 				sprintf(buf,"[%-2d] %-30s %-15s",loreskills[i].level,
@@ -1215,6 +1295,23 @@ dlog("in do_practice");
 			}
 			i++;
 		}
+		i=0;
+		if(ch->specials.remortclass == DRUID_LEVEL_IND + 1) {
+	  		while(maindruidskills[i].level != -1) {
+				if (IS_SET(ch->skills[maindruidskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",maindruidskills[i].level,
+							maindruidskills[i].name,how_good(ch->skills[maindruidskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[maindruidskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
 		while(loreskills[i].level != -1) {
 			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1254,6 +1351,23 @@ dlog("in do_practice");
 				strcat(buffer, "\r");
 			}
 			i++;
+		}
+		i=0;
+		if(ch->specials.remortclass == MONK_LEVEL_IND + 1) {
+	  		while(mainmonkskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainmonkskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainmonkskills[i].level,
+							mainmonkskills[i].name,how_good(ch->skills[mainmonkskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainmonkskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
 		}
   		i=0;
 		while(loreskills[i].level != -1) {
@@ -1310,6 +1424,23 @@ dlog("in do_practice");
 				strcat(buffer, "\r");
 			}
 			i++;
+		}
+		i=0;
+		if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1) {
+	  		while(mainbarbskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainbarbskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainbarbskills[i].level,
+							mainbarbskills[i].name,how_good(ch->skills[mainbarbskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainbarbskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
 		}
   		i=0;
 		while(loreskills[i].level != -1) {
@@ -1368,6 +1499,23 @@ dlog("in do_practice");
   			}
   			i++;
   		}
+		i=0;
+		if(ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+	  		while(mainnecroskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainnecroskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainnecroskills[i].level,
+							mainnecroskills[i].name,how_good(ch->skills[mainnecroskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainnecroskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
  		while(loreskills[i].level != -1) {
  			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1410,6 +1558,23 @@ dlog("in do_practice");
   			}
   			i++;
   		}
+		i=0;
+		if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
+	  		while(mainrangerskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainrangerskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainrangerskills[i].level,
+							mainrangerskills[i].name,how_good(ch->skills[mainrangerskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainrangerskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
   		while(loreskills[i].level != -1) {
   			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1466,6 +1631,23 @@ dlog("in do_practice");
   			}
   			i++;
   		}
+		i=0;
+		if(ch->specials.remortclass == PSI_LEVEL_IND + 1) {
+	  		while(mainpsiskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainpsiskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainpsiskills[i].level,
+							mainpsiskills[i].name,how_good(ch->skills[mainpsiskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainpsiskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
   		while(loreskills[i].level != -1) {
   			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {
@@ -1507,6 +1689,23 @@ dlog("in do_practice");
   			}
   			i++;
   		}
+		i=0;
+		if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
+	  		while(mainpaladinskills[i].level != -1) {
+				if (IS_SET(ch->skills[mainpaladinskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",mainpaladinskills[i].level,
+							mainpaladinskills[i].name,how_good(ch->skills[mainpaladinskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[mainpaladinskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
+		}
   		i=0;
   		while(loreskills[i].level != -1) {
   			if (IS_SET(ch->skills[loreskills[i].skillnum].flags,SKILL_KNOWN)) {

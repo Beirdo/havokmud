@@ -563,6 +563,8 @@ void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
 void cast_mana_shield( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
+void cast_group_heal( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
 
 struct spell_info_type spell_info[MAX_SPL_LIST];
@@ -3844,12 +3846,11 @@ void assign_spell_pointers()
 	spello(348,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
 	80, TAR_CHAR_ROOM | TAR_GROUP, 0, 0,0, 50, LOW_IMMORTAL);// scribe
-
-	spello(349,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+*/
+	spello(349,12,POSITION_FIGHTING, LOW_IMMORTAL, 29,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	80, TAR_CHAR_ROOM | TAR_GROUP, 0, 0,0, 50, LOW_IMMORTAL);// scribe
+	75, TAR_IGNORE, cast_group_heal, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// group heal
 
-	*/
 }
 
 void SpellWearOffSoon(int s, struct char_data *ch)

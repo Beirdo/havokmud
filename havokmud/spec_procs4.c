@@ -19,6 +19,18 @@
   extern struct skillset psiskills[];
   extern struct skillset styleskillset[];
   extern struct skillset necroskills[];
+  extern struct skillset mainwarriorskills[];
+  extern struct skillset mainthiefskills[];
+  extern struct skillset mainbarbskills[];
+  extern struct skillset mainnecroskills[];
+  extern struct skillset mainmonkskills[];
+  extern struct skillset mainmageskills[];
+  extern struct skillset mainsorcskills[];
+  extern struct skillset mainclericskills[];
+  extern struct skillset maindruidskills[];
+  extern struct skillset mainpaladinskills[];
+  extern struct skillset mainrangerskills[];
+  extern struct skillset mainpsiskills[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
@@ -2741,6 +2753,29 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 				i=0;
 				x--;
 			}
+			if(ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+				sprintf(buf,"\n\rSince you picked necromancer as your main class, you get these bonus skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,NECROMANCER_LEVEL_IND);
+				while (x != 0) {
+					while(mainnecroskills[i].level != -1) {
+						if (mainnecroskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",mainnecroskills[i].level,
+									mainnecroskills[i].name,how_good(ch->skills[mainnecroskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[mainnecroskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -2782,6 +2817,43 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 					return(TRUE);
 				}
 				x++;
+			}
+			if(ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+				x=0;
+				while (mainnecroskills[x].level != -1) {
+					if(is_abbrev(arg,mainnecroskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(mainnecroskills[x].level > GET_LEVEL(ch,NECROMANCER_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+						if(ch->skills[mainnecroskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+						sprintf(buf,"You practice %s for a while.\n\r",mainnecroskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+						if(!IS_SET(ch->skills[mainnecroskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[mainnecroskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[mainnecroskills[x].skillnum].flags,SKILL_KNOWN_NECROMANCER);
+						}
+						percent=ch->skills[mainnecroskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[mainnecroskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[mainnecroskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
