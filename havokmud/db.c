@@ -140,7 +140,8 @@ void            setup_dir(FILE * fl, long room, int dir);
 struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                                     int *alloc_top, char *dirname);
 struct help_index_element *build_help_index(FILE *fl, int *num);
-
+void load_asciimap();
+char            oceanmap2[200][200];
 
 int             qp_patience;
 
@@ -292,6 +293,9 @@ void boot_db()
     assign_command_pointers();
     Log("   Spells.");
     assign_spell_pointers();
+
+    Log("Loading ascii map.");
+    load_asciimap();
 
     Log("Updating characters with saved items:");
     update_obj_file();
@@ -550,7 +554,7 @@ void build_player_index()
              * was 5
              */
             for (i = 0; i < MAX_CLASS; i++) {
-                if (dummy.level[i] >= IMMORTAL && 
+                if (dummy.level[i] >= IMMORTAL &&
                     strcmp(dummy.name, "111111")) {
                     sprintf(buf,
                             "GOD: %s, Levels [%d][%d][%d][%d][%d][%d][%d][%d]",
@@ -1955,7 +1959,7 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     if( !mob ) {
         return( -1 );
     }
-    
+
     memset( mob, 0, sizeof(struct char_data) );
 
 #if 0
@@ -3306,7 +3310,7 @@ void write_obj_to_file(struct obj_data *obj, FILE * f)
 
     fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
             obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
-            obj->max, (long)obj->modified, obj->speed, obj->weapontype, 
+            obj->max, (long)obj->modified, obj->speed, obj->weapontype,
             obj->tweak);
 
     /*
@@ -5591,7 +5595,7 @@ void init_char(struct char_data *ch)
     /*
      * make favors for sex
      */
-#if 1    
+#if 1
     if (GET_RACE(ch) == RACE_HUMAN) {
         if (ch->player.sex == SEX_MALE) {
             ch->player.weight = 140 + dice(6,10);
@@ -5748,7 +5752,7 @@ void init_char(struct char_data *ch)
             /* Between 5 and 6 feet tall (5.5 avg) */
         }
     }
-#else    
+#else
     if (GET_RACE(ch) == RACE_HUMAN) {
         if (ch->player.sex == SEX_MALE) {
             ch->player.weight = number(120, 180);
@@ -6856,3 +6860,67 @@ void clean_playerfile(void)
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
+
+void load_asciimap() {
+   extern char            oceanmap2[200][200];
+   char buffer[200];
+
+   int count = 0;
+   FILE *fp;
+   int x, row=0;
+
+   if (!(fp = fopen( "map.bmp", "rb" ) ) ) {
+      printf("No Map.bmp file: place map.bmp file in lib folder" );
+      return;
+   }
+
+
+   /* check to see if it is a valid bitmap file */
+   if (fgetc(fp)!='B' || fgetc(fp)!='M')
+   {
+       fclose(fp);
+       printf("Invalid Bitmap file");
+       return;
+   }
+
+   fseek( fp, 1074, SEEK_CUR );
+
+   while(!feof(fp) ) {
+      switch(fgetc( fp )) {
+         case 4:
+            strcat(buffer, " ");
+            break;
+         case 'ü':
+            strcat(buffer, "~");
+             break;
+         case 252:
+            strcat(buffer, ".");
+            break;
+         case 164:
+            strcat(buffer, "X");
+            break;
+         case 20:
+            strcat(buffer, "#");
+            break;
+         case '':
+            strcat(buffer, "^");
+            break;
+
+         default:
+            strcat(buffer, "?");
+            break;
+      }
+      if(count%100==0){
+         sprintf(oceanmap2[row],buffer);
+         sprintf(buffer, " ");
+         row++;
+      }
+      count++;
+   }
+   x=1;
+   for (x=0;x<=100;x++)
+      printf("%s\n\r",oceanmap2[x]);
+
+   fclose( fp );
+
+}

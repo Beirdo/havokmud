@@ -175,12 +175,18 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
 
 void do_imptest(struct char_data *ch, char *arg, int cmd)
 {
+    extern char            oceanmap2[200][200];
+
     int             bot,
                     top,
                     x;
     char            buf[100],
                     buf2[200];
 
+    for(x=0;x<100;x++) {
+        ch_printf(ch,"\n\r%s", oceanmap2[x]);
+    }
+    return;
     bot = 0;
     top = top_of_helpt;
 
@@ -4462,11 +4468,11 @@ int show_zones(struct char_data *ch)
     struct  string_block sb;
     char    *mode;
     char    buf[MAX_STRING_LENGTH];
-    
+
     if (!ch) {
         return FALSE;
     }
-    
+
     init_string_block(&sb);
     append_to_string_block(&sb, "\n\r$c000R* Zone / name / lifespan / age / "
                                 "rooms / deinit / reset *$c000w\n\r\n\r");
@@ -4506,13 +4512,13 @@ int show_zones(struct char_data *ch)
             }
         }
         sprintf(buf, "$c000Y%4d $c000W%-40s $c000Y%2d$c000Bm $c000W%2d$c000Bm "
-                     "$c000W%6d$c000B-$c000W%-6ld %s\n\r", zone, zd->name, 
+                     "$c000W%6d$c000B-$c000W%-6ld %s\n\r", zone, zd->name,
                 zd->lifespan, zd->age, bottom, zd->top, mode);
-        
+
         append_to_string_block(&sb, buf);
         bottom = zd->top + 1;
-        
-        
+
+
     }
     page_string_block(&sb, ch);
     destroy_string_block(&sb);
@@ -4525,15 +4531,15 @@ int do_show_rooms(struct char_data *ch, char *zonenum)
     struct          show_room_zone_struct srzs;
     struct          string_block sb;
     char            buf[MAX_STRING_LENGTH];
-    
+
     init_string_block(&sb);
     zone = atoi(zonenum);
-    
+
     if (zone < 0 || zone > top_of_zone_table) {
         send_to_char("That is not a valid zone number!\n\r", ch);
         return FALSE;
     }
-    
+
     append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
 
     if (is_abbrev(zonenum, "$c000Rdeath")) {
@@ -4576,7 +4582,7 @@ int do_show_objects_in_zone (struct char_data *ch, char *zonenum)
                                 *which_i;
     struct      obj_data        *obj;
     struct      string_block    sb;
-    
+
     char        buf     [MAX_STRING_LENGTH];
     char        color   [10];
     int         topi    = 0,
@@ -4584,23 +4590,23 @@ int do_show_objects_in_zone (struct char_data *ch, char *zonenum)
                 bottom  = 0,
                 top     = 0,
                 objn    = 0;
-    
-    
-    
+
+
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
     zone = atoi(zonenum);
-    
+
     if (zone <= 0 || zone > top_of_zone_table) {
         send_to_char("That is not a valid zone number.\n\r", ch);
         return FALSE;
     }
-    
+
     bottom = zone_table[zone - 1].top + 1;
     top = zone_table[zone].top;
     append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
-    
+
     for (objn = 0; objn < topi; objn++) {
         oi = which_i + objn;
         if (oi->virtual < bottom || oi->virtual > top) {
@@ -4640,22 +4646,22 @@ int do_show_objects_name (struct char_data *ch, char *objname)
                 top     = 0,
                 objn    = 0,
                 found   = 0;
-    
-    
-    
+
+
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
     bottom = zone_table[0].top + 1;
     top = zone_table[1].top;
-    
+
     append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
-    
+
     for (objn = 0; objn < topi; objn++) {
         oi = which_i + objn;
         if (!isname(objname, oi->name)) {
             if (objn == topi - 1 && found == 0) {
-                sprintf(buf, "\n\rNo \"%s\" found in object database.\n\r", 
+                sprintf(buf, "\n\rNo \"%s\" found in object database.\n\r",
                         objname);
                 send_to_char(buf, ch);
                 return FALSE;
@@ -4686,7 +4692,7 @@ int do_show_objects_name (struct char_data *ch, char *objname)
 
 int do_show_mobiles(struct char_data *ch, char *arg)
 {
-    
+
     struct      index_data      *oi,
                                 *which_i;
     struct      char_data       *mob;
@@ -4698,15 +4704,15 @@ int do_show_mobiles(struct char_data *ch, char *arg)
                 mobn    = 0,
                 found   = 0,
                 zone    = -1;
-    
-    
-        
+
+
+
     which_i = mob_index;
     topi = top_of_mobt;
     bottom = zone_table[0].top + 1;
     top = zone_table[1].top;
     init_string_block(&sb);
-    
+
     if (isdigit((int)*arg)) {
         zone = atoi(arg);
         if (zone < 0 || zone > top_of_zone_table) {
@@ -4714,21 +4720,21 @@ int do_show_mobiles(struct char_data *ch, char *arg)
             return FALSE;
         }
     }
-    
+
     if (zone >= 0) {
         bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
         top = zone_table[zone].top;
     }
-    
+
     append_to_string_block(&sb, "VNUM  rnum count names\n\r");
-    
+
     for (mobn = 0; mobn < topi; mobn++) {
         oi = which_i + mobn;
         if ((zone >= 0 && (oi->virtual < bottom || oi->virtual > top)) ||
             (zone < 0 && !isname(arg, oi->name))) {
             if (mobn == topi - 1 && found == 0) {
                 if(isdigit((int)*arg)) {
-                    sprintf(buf, "\n\rNo mobiles found in zone %s.\n\r", 
+                    sprintf(buf, "\n\rNo mobiles found in zone %s.\n\r",
                             arg);
                 } else {
                     sprintf(buf, "\n\rNo \"%s\" found in mobile database.\n\r",
@@ -4740,13 +4746,13 @@ int do_show_mobiles(struct char_data *ch, char *arg)
             continue;
         }
         mob = read_mobile(oi->virtual, VIRTUAL);
-        
+
         if (mob) {
             found = 1;
         }
         extract_char(mob);
-        
-        sprintf(buf, "$c000Y%5ld$c000w %4d %3d  $c000W%s\n\r", 
+
+        sprintf(buf, "$c000Y%5ld$c000w %4d %3d  $c000W%s\n\r",
                 oi->virtual, mobn, oi->number, oi->name);
         append_to_string_block(&sb, buf);
     }
@@ -4765,13 +4771,13 @@ int do_show_wearslot(struct char_data *ch, int wearslot)
     char    color   [10];
     int     topi    = 0,
             objn    = 0;
-    
-    
-    
+
+
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
-    
+
     if (wearslot < 0) {
         append_to_string_block(&sb, "Usage:\n\r"
                                     "  show wearslot #\n\r"
@@ -4812,7 +4818,7 @@ int do_show_wearslot(struct char_data *ch, int wearslot)
                         sprintf(color, "%s", "$c000W");
                     }
                     sprintf(buf, "$c000Y%5ld$c000w %4d %3d %s%7d   "
-                                 "$c000W%s\n\r", oi->virtual, objn, 
+                                 "$c000W%s\n\r", oi->virtual, objn,
                             (oi->number - 1), color, eval(obj), oi->name);
                     append_to_string_block(&sb, buf);
                 }
@@ -4836,12 +4842,12 @@ int do_show_itemtype(struct char_data *ch, int itemtype)
     int     topi    = 0,
             objn    = 0;
 
-    
-    
+
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
-        
+
     if (itemtype < 0) {
         append_to_string_block(&sb, "Usage:\n\r"
                                     "  show itemtype #\n\r"
@@ -4903,23 +4909,23 @@ int do_show_itemtype(struct char_data *ch, int itemtype)
     page_string_block(&sb, ch);
     destroy_string_block(&sb);
     return TRUE;
-} 
+}
 
 int do_show_zone_summary(struct char_data *ch, char *zonenum)
 {
     struct  index_data  *which_i;
     struct  zone_data   *zd;
-    int     start       = 0, 
+    int     start       = 0,
             end         = 0,
             counter     = 0,
-            counter2    = 0, 
+            counter2    = 0,
             x           = 0,
-            avg         = 0, 
+            avg         = 0,
             temp        = 0,
             zone        = -1,
             topi        = 0;
-    
-        
+
+
     which_i = obj_index;
     topi = top_of_objt;
 
@@ -4930,12 +4936,12 @@ int do_show_zone_summary(struct char_data *ch, char *zonenum)
     if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
         send_to_char("That is not a valid zone number\n\r", ch);
         return FALSE;
-    }   
+    }
     zd = zone_table + (zone - 1);
     start = zd->top + 1;
     zd = zone_table + zone;
     end = zd->top;
-    
+
     ch_printf(ch,"\n\rZone Summary:\n\r"
                  "$c000BZone: $c000W%d $c000w($c000B%d-%d$c000w) %s\n\r",
               zone, start, end, zd->name);
@@ -4957,7 +4963,7 @@ int do_show_zone_summary(struct char_data *ch, char *zonenum)
     if (counter == 0) {
         ch_printf(ch,"No linker rooms found.\n\r");
     }
-   return TRUE; 
+   return TRUE;
 }
 
 int do_show_report(struct char_data *ch, char *zonenum)
@@ -4976,17 +4982,17 @@ int do_show_report(struct char_data *ch, char *zonenum)
     struct          obj_data *obj;
     struct          index_data *which_i;
     struct          string_block sb;
-        
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
-    
+
     if (GetMaxLevel(ch) < 56) {
         send_to_char("Alas, the report option is only viewable for level "
                      "56 and higher.\n\r", ch);
         return FALSE;
     }
-    
+
     if( zonenum && isdigit((int)*zonenum) ) {
         zone = atoi(zonenum);
     }
@@ -4994,7 +5000,7 @@ int do_show_report(struct char_data *ch, char *zonenum)
     if ( !zonenum || zone < 0 || zone > top_of_zone_table) {
         send_to_char("That is not a valid zone number.\n\r", ch);
         return FALSE;
-    }   
+    }
 
     bottom = zone ? (zone_table[zone - 1].top + 1) : 0;
     top = zone_table[zone].top;
@@ -5157,17 +5163,17 @@ int do_show_loadrates(struct char_data *ch, char *zonenum)
             bottom = 0,
             top = 0,
             topi = 0;
-    
+
     struct          index_data *oi;
     char            buf[MAX_STRING_LENGTH];
     struct          obj_data *obj;
     struct          index_data *which_i;
     struct          string_block sb;
-    
+
     init_string_block(&sb);
     which_i = obj_index;
     topi = top_of_objt;
-    
+
     if( zonenum && isdigit((int)*zonenum) ) {
         zone = atoi(zonenum);
     }
@@ -5212,8 +5218,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
     struct      string_block sb;
     char        *arg1;
     char        *arg2;
-    
-            
+
+
     dlog("in do_show");
 
     if (!ch || IS_NPC(ch)) {
@@ -5221,7 +5227,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = get_argument(argument, &arg1);
-    
+
     if( !arg1 ) {
         send_to_char( "Show what?  Type \"show help\" for help.\n\r", ch );
         return;
@@ -5240,7 +5246,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             send_to_char ("You must provide a zone number with this "
                           "command.\n\r", ch);
             return;
-        } 
+        }
     } else if (is_abbrev(arg1, "objects")) {
         arg2 = skip_spaces(argument);
         if (!arg2) {
@@ -5264,7 +5270,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
         do_show_wearslot(ch, wearslot);
         return;
     } else if (is_abbrev(arg1, "itemtype")) {
-        
+
         arg2 = skip_spaces(argument);
         if (!arg2 || !(isdigit((int)*arg2))) {
             itemtype = -1;
@@ -8710,11 +8716,11 @@ void do_reimb(struct char_data *ch, char *argument, int cmd)
  * List the exits of a room if it links to another zone (GH)
  */
 int list_zone_exits_in_room(struct char_data *ch, int room) {
-    struct  room_data *rm = 0, 
+    struct  room_data *rm = 0,
             *tmp = 0;
     struct  char_data *t;
-    int     i, 
-            count = 0, 
+    int     i,
+            count = 0,
             mobcount = 0;
 
     rm = real_roomp(room);
@@ -8730,7 +8736,7 @@ int list_zone_exits_in_room(struct char_data *ch, int room) {
             }
             if(rm->zone!=tmp->zone) {
                 ch_printf(ch,"$c000W- $c000w%d links to room %d"
-                             " (zone: %d).$c000w\n\r", 
+                             " (zone: %d).$c000w\n\r",
                           rm->number, tmp->number, tmp->zone);
                 count++;
             }
@@ -8754,11 +8760,11 @@ int list_zone_exits_in_room(struct char_data *ch, int room) {
 int list_average_mob_power_in_room(struct char_data *ch, int room) {
     struct  room_data *rm = 0;
     struct  char_data *t;
-    int     pwrlevel = 0, 
+    int     pwrlevel = 0,
             count=0;
 
     rm = real_roomp(room);
-    
+
     if(!rm) {
         return 0;
     }
