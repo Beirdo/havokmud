@@ -122,6 +122,9 @@
 /* Log all actions */
 #define LOG_ALL
 
+/* Limit monks to 20 items */
+#undef MONK_ITEM_LIMIT
+
 #undef BYTE_COUNT
 #define OLD_ZONE_STUFF          /* for temp testing of reset_zon */
 #undef N_SAVE_WORLD
