@@ -380,7 +380,7 @@ struct QuestItem {
 #define FIGHTING_STYLE_EVASIVE    4
 
 /*minimum # of zones needed to keep tqp alive */
-#define MIN_INIT_TQP 15
+#define MIN_INIT_TQP 25
 #define TRAVELQP 26
 
 struct nodes
