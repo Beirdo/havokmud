@@ -2559,6 +2559,7 @@ char *GetLevelTitle(struct char_data *ch) {
 		person=(d->original?d->original:d->character);
 
 		if(person) {
+			if(GetMaxLevel(person)) { /* class reset during who/char_generation   bug fix */
 
 				/*Get mortal class titles */
 				if(!IS_IMMORTAL(person)) {
@@ -2577,14 +2578,14 @@ char *GetLevelTitle(struct char_data *ch) {
 		  }
 			if(IS_IMMORTAL(person)) {
 
-				sprintf(buf,"%15s $c000Y%-8s $c000p:$c000w %s\n\r",""
+				sprintf(buf,"%15s $c000Y%-8s $c000B:$c000w %s\n\r",""
 					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), GET_TITLE(person) );
 				strcat(immortals, buf);
 			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
+				sprintf(buf,"%25s $c0012%-8s $c000B:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
 				strcat(quest, buf);
 			} else {
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
+				sprintf(buf,"%25s $c0012%-8s $c000B:$c000w %s\n\r", GetLevelTitle(person), classes, GET_TITLE(person) );
 				strcat(mortals, buf);
 			}
 			count++;
@@ -2598,6 +2599,7 @@ char *GetLevelTitle(struct char_data *ch) {
 
 				sprintf(tbuf, "%-32s $c0005: $c0007%s", levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 				*/
+		}
 	}
 
 	/* Print the different groups*/

@@ -153,7 +153,6 @@ int HowManyClasses(struct char_data *ch)
 int BestFightingClass(struct char_data *ch)
 {
 
-
  if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
    return(WARRIOR_LEVEL_IND);
  if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
