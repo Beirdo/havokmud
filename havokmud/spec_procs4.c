@@ -328,7 +328,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 	if (ch->specials.fighting && IS_SET(ch->specials.act,ACT_SPEC)) {  /* kill */
 		t = ch->specials.fighting;
 		if (t->in_room == ch->in_room) {
-			log("woah, you dare fight me? dead you are");
+//			log("woah, you dare fight me? dead you are");
 			act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
 			act("You are engulfed by $n, and are quickly disassembled",FALSE,ch,0,t,TO_VICT);
 			act("$N is quickly reduced to a bloody pile of bones by $n",FALSE,ch,0,t,TO_NOTVICT);
@@ -352,7 +352,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 			}
 		}
 		if (GET_HIT(ch) < 0) {
-			log("death due to lack of hps");
+//			log("death due to lack of hps");
 			act("$n dissipates, you breathe a sigh of relief.",FALSE,ch,0,0,TO_ROOM);
 			extract_char(ch);
 			return(TRUE);
@@ -421,7 +421,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 				break;  /* end the loop */
 			}
 		}
-		log("finished finding targets, wait for next func call");
+//		log("finished finding targets, wait for next func call");
 	}
 }
 
