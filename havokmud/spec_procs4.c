@@ -7,30 +7,11 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 /*
  * external vars 
  */
-/*
- * external vars 
- */
-extern const struct map_coord map_coords[];
-extern struct room_data *world;
-extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
-extern struct index_data *obj_index;
-extern struct time_info_data time_info;
-extern struct index_data *mob_index;
-extern struct weather_data weather_info;
-extern int      top_of_world;
-extern struct int_app_type int_app[26];
-extern int      RacialMax[][MAX_CLASS];
-
-extern char    *dirs[];
-extern int      rev_dir[];
-extern struct zone_data *zone_table;
-
-extern const struct class_def classes[MAX_CLASS];
 
 struct riddle_answer {
     char   *answer;
@@ -681,7 +662,7 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
              * gotta open the exit at the other side as well 
              */
             if (exit_ok(exitp, &rp) && 
-                (back = rp->dir_option[rev_dir[doordir]]) && 
+                (back = rp->dir_option[direction[doordir].rev]) && 
                 back->to_room == ch->in_room) {
                 REMOVE_BIT(back->exit_info, EX_CLOSED);
                 send_to_room(buf, exitp->to_room);
@@ -2344,12 +2325,12 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
          * other side closes too, but not locked 
          */
         if (exit_ok(exitp, &rp) && 
-            (back = rp->dir_option[rev_dir[doordir]]) && 
+            (back = rp->dir_option[direction[doordir].rev]) && 
             back->to_room == ch->in_room) {
 
             SET_BIT(back->exit_info, EX_CLOSED);
             sprintf(buf, "The %s %s slams shut.\n\r", doorname,
-                    dir_name[rev_dir[doordir]]);
+                    dir_name[direction[doordir].rev]);
             send_to_room(buf, exitp->to_room);
         }
     }
@@ -5671,7 +5652,7 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
                 continue;
             }
 
-            for (k = 0; classes[j].skills[k].level != -1; k++) {
+            for (k = 0; k < classes[j].skillCount; k++) {
                 if (classes[j].skills[k].skillnum != i) {
                     continue;
                 }
@@ -5691,7 +5672,7 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
                 }
             }
 
-            for (n = 0; classes[j].skills[n].level != -1; n++) {
+            for (n = 0; n < classes[j].mainskillCount; n++) {
                 if (classes[j].mainskills[n].skillnum != i) {
                     continue;
                 }

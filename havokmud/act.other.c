@@ -12,47 +12,13 @@
 #include <time.h>
 
 #include "protos.h"
+#include "externs.h"
 
 /*
  * extern variables
  */
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
-extern struct str_app_type str_app[];
-extern struct descriptor_data *descriptor_list;
-extern struct dex_skill_type dex_app_skill[];
-extern struct spell_info_type spell_info[];
-extern int       spell_index[MAX_SPL_LIST];
-extern struct char_data *character_list;
-extern struct index_data *obj_index;
-extern struct time_info_data time_info;
-extern char    *spells[];
-extern int      MaxArenaLevel,
-                MinArenaLevel;
-extern int spell_info_count;
+
 struct char_data *mem_list = 0;
-extern int      top_of_p_table;
-extern struct player_index_element *player_table;
-/*
- * head for the list of memorizers
- */
-extern struct skillset warmonkskills[];
-extern struct skillset warninjaskills[];
-extern struct skillset thfninjaskills[];
-extern struct skillset allninjaskills[];
-extern struct skillset loreskills[];
-extern struct skillset styleskillset[];
-extern const struct clan clan_list[MAX_CLAN];
-extern const struct class_def classes[MAX_CLASS];
 
 void            stop_follower(struct char_data *ch);
 void            do_mobTell(struct char_data *ch, char *mob,
@@ -970,9 +936,6 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
 
 void do_idea(struct char_data *ch, char *argument, int cmd)
 {
-    FILE           *fl;
-    char            str[MAX_INPUT_LENGTH + 20];
-
     dlog("in do_idea");
 
     if (IS_NPC(ch)) {
@@ -980,33 +943,20 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    /*
-     * skip whites
-     */
     argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
         return;
     }
-    if (!(fl = fopen(IDEA_FILE, "a"))) {
-        perror("do_idea");
-        send_to_char("Could not open the idea-file.\n\r", ch);
-        return;
-    }
 
-    sprintf(str, "**%s: %s\n", GET_NAME(ch), argument);
+    db_report_entry( REPORT_IDEA, ch, argument );
 
-    fputs(str, fl);
-    fclose(fl);
     send_to_char("Ok. Thanks.\n\r", ch);
 }
 
 void do_typo(struct char_data *ch, char *argument, int cmd)
 {
-    FILE           *fl;
-    char            str[MAX_INPUT_LENGTH + 20];
-
     dlog("in do_typo");
 
     if (IS_NPC(ch)) {
@@ -1014,30 +964,20 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    /*
-     * skip whites
-     */
     argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("I beg your pardon?\n\r", ch);
         return;
     }
-    if (!(fl = fopen(TYPO_FILE, "a"))) {
-        perror("do_typo");
-        send_to_char("Could not open the typo-file.\n\r", ch);
-        return;
-    }
 
-    sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
-    fputs(str, fl);
-    fclose(fl);
+    db_report_entry( REPORT_TYPO, ch, argument );
+
     send_to_char("Ok. thanks.\n\r", ch);
 }
 
 void do_bug(struct char_data *ch, char *argument, int cmd)
 {
-    FILE           *fl;
-    char            str[MAX_STRING_LENGTH];
+    char            buf[MAX_STRING_LENGTH];
 
     dlog("in do_bug");
 
@@ -1046,27 +986,17 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    /*
-     * skip whites
-     */
     argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("Pardon?\n\r", ch);
         return;
     }
-    if (!(fl = fopen(BUG_FILE, "a"))) {
-        perror("do_bug");
-        send_to_char("Could not open the bug-file.\n\r", ch);
-        return;
-    }
 
-    sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
-    fputs(str, fl);
-    fclose(fl);
+    db_report_entry( REPORT_BUG, ch, argument );
 
-    sprintf(str, "BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room,
-            argument);
-    Log(str);
+    sprintf(buf, "BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room,
+                 argument);
+    Log(buf);
 
     send_to_char("Ok.\n\r", ch);
 }
@@ -1115,19 +1045,14 @@ char           *Condition(struct char_data *ch)
                     b,
                     t;
     int             c;
-    static char     buf[100];
-    static char    *p;
 
     a = (float) GET_HIT(ch);
     b = (float) GET_MAX_HIT(ch);
 
     t = a / b;
-    c = (int) 100.0 *t;
+    c = (int) 100.0 * t;
 
-    strcpy(buf, how_good(c));
-    p = buf;
-    return (p);
-
+    return(how_good(c));
 }
 
 char           *Tiredness(struct char_data *ch)
@@ -1136,8 +1061,6 @@ char           *Tiredness(struct char_data *ch)
                     b,
                     t;
     int             c;
-    static char     buf[100];
-    static char    *p;
 
     a = (float) GET_MOVE(ch);
     b = (float) GET_MAX_MOVE(ch);
@@ -1145,10 +1068,7 @@ char           *Tiredness(struct char_data *ch)
     t = a / b;
     c = (int) 100.0 *t;
 
-    strcpy(buf, how_good(c));
-    p = buf;
-    return (p);
-
+    return (how_good(c));
 }
 
 void do_group(struct char_data *ch, char *argument, int cmd)

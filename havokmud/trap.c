@@ -9,18 +9,8 @@
 #include <string.h>
 
 #include "protos.h"
+#include "externs.h"
 
-extern struct char_data *character_list;
-
-/*
- * struct room_data *real_roomp(int); 
- */
-
-extern int      TrapDir[];
-extern struct dex_app_type dex_app[];
-extern int      top_of_world;       /* ref to the top element of world */
-
-void            NailThisSucker(struct char_data *ch);
 
 void            TrapPoison(struct char_data *v, struct obj_data *i);
 
@@ -43,7 +33,7 @@ int CheckForMoveTrap(struct char_data *ch, int dir)
 
     for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
         if (ITEM_TYPE(i) == ITEM_TRAP && GET_TRAP_CHARGES(i) > 0 &&
-            IS_SET(GET_TRAP_EFF(i), TrapDir[dir]) &&
+            IS_SET(GET_TRAP_EFF(i), direction[dir].trap) &&
             IS_SET(GET_TRAP_EFF(i), TRAP_EFF_MOVE)) {
             return (TriggerTrap(ch, i));
         }

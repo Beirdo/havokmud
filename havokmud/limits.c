@@ -7,20 +7,8 @@
 #include <limits.h>
 
 #include "protos.h"
+#include "externs.h"
 
-extern struct index_data *obj_index;
-extern struct char_data *character_list;
-extern struct obj_data *object_list;
-extern const struct class_def classes[MAX_CLASS];
-extern struct room_data *world;
-extern const char *RaceName[];
-extern int      RacialMax[][MAX_CLASS];
-
-extern struct wis_app_type wis_app[];
-extern struct con_app_type con_app[];
-
-
-void            do_save(struct char_data *ch, char *argument, int cmd);
 
 #define VOID_PULL_TIME   30
 #define FORCE_RENT_TIME  40
@@ -57,30 +45,26 @@ char           *ClassTitles(struct char_data *ch)
 int graf(int age, int race, int p0, int p1, int p2, int p3, int p4, int
          p5, int p6)
 {
-    extern const struct race_type race_list[];
-
-    if (age < race_list[race].start) {
+    if (age < races[race].start) {
         return (p0);
-    } else if (age <= race_list[race].mature) {
-        return (int) (p1 + (((age - race_list[race].start) * (p2 - p1)) /
-                            (race_list[race].mature - race_list[race].start)));
-    } else if (age <= race_list[race].middle) {
-        return (int) (p2 + (((age - race_list[race].mature) * (p3 - p2)) /
-                            (race_list[race].middle - race_list[race].mature)));
-    } else if (age <= race_list[race].old) {
-        return (int) (p3 + (((age - race_list[race].middle) * (p4 - p3)) /
-                            (race_list[race].old - race_list[race].middle)));
-    } else if (age <= race_list[race].ancient) {
-        return (int) (p4 + (((age - race_list[race].old) * (p5 - p4)) /
-                            (race_list[race].ancient - race_list[race].old)));
-    } else if (age <= race_list[race].venerable) {
-        return (int) (p5 + (((age - race_list[race].ancient) * (p6 - p5)) /
-                            (race_list[race].venerable - 
-                             race_list[race].ancient)));
+    } else if (age <= races[race].mature) {
+        return (int) (p1 + (((age - races[race].start) * (p2 - p1)) /
+                            (races[race].mature - races[race].start)));
+    } else if (age <= races[race].middle) {
+        return (int) (p2 + (((age - races[race].mature) * (p3 - p2)) /
+                            (races[race].middle - races[race].mature)));
+    } else if (age <= races[race].old) {
+        return (int) (p3 + (((age - races[race].middle) * (p4 - p3)) /
+                            (races[race].old - races[race].middle)));
+    } else if (age <= races[race].ancient) {
+        return (int) (p4 + (((age - races[race].old) * (p5 - p4)) /
+                            (races[race].ancient - races[race].old)));
+    } else if (age <= races[race].venerable) {
+        return (int) (p5 + (((age - races[race].ancient) * (p6 - p5)) /
+                            (races[race].venerable - races[race].ancient)));
     } else {
-        return (int) (p6 + (((age - race_list[race].ancient) * (p6 - p6 - p5)) /
-                            (race_list[race].venerable -
-                             race_list[race].ancient)));
+        return (int) (p6 + (((age - races[race].ancient) * (p6 - p6 - p5)) /
+                            (races[race].venerable - races[race].ancient)));
     }
 }
 
@@ -891,8 +875,8 @@ void set_title(struct char_data *ch)
 
     char            buf[256];
 
-    sprintf(buf, "%s the %s %s", GET_NAME(ch), RaceName[ch->race],
-            ClassTitles(ch));
+    sprintf(buf, "%s the %s %s", GET_NAME(ch), races[ch->race].racename,
+                 ClassTitles(ch));
 
     if (GET_TITLE(ch)) {
         free(GET_TITLE(ch));
@@ -946,7 +930,8 @@ void gain_exp(struct char_data *ch, int gain)
 
         for (i = 0; i < MAX_CLASS; i++) {
             level = GET_LEVEL(ch, i);
-            if (level && level < RacialMax[chrace][i] && level < MAX_MORT) {
+            if (level && level < races[chrace].racialMax[i] && 
+                level < MAX_MORT) {
                 if (GET_EXP(ch) >= classes[i].levels[level + 2].exp - 1) {
                     /* 
                      * is already maxxed 
@@ -1010,7 +995,8 @@ void gain_exp(struct char_data *ch, int gain)
         
         for (i = 0; i < MAX_CLASS; i++) {
             level = GET_LEVEL(ch, i);
-            if (level && level < RacialMax[chrace][i] && level < MAX_MORT &&
+            if (level && level < races[chrace].racialMax[i] && 
+                level < MAX_MORT &&
                 GET_EXP(ch) > classes[i].levels[level + 2].exp) {
                 /* Max the XP to one less than 2 levels above current, unless
                  * the level is MAX_MORT

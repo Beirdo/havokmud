@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "protos.h"
+#include "externs.h"
 #include "utils.h"
 
 void            identd_test(struct sockaddr_in in_addr);
@@ -54,25 +55,6 @@ void            identd_test(struct sockaddr_in in_addr);
 #define STATE(d) ((d)->connected)
 
 int             mud_port;
-
-extern int      errno;
-extern struct time_info_data time_info;
-
-/*
- * extern struct char_data *character_list; 
- */
-#ifdef HASH
-extern struct hash_header room_db;      /* In db.c */
-#else
-extern struct room_data *room_db;       /* In db.c */
-#endif
-extern char     *login;
-extern char     *sector_types[];
-extern char     *room_bits[];
-extern const struct class_def classes[MAX_CLASS];
-/*
- * extern int top_of_world; In db.c 
- */
 
 struct descriptor_data *descriptor_list,
                *next_to_process;
@@ -290,6 +272,9 @@ int main(int argc, char **argv)
      */
     close(0);
 
+    db_setup();
+    db_initial_load();
+
     run_the_game(mud_port);
     fclose(log_f);
     return (0);
@@ -353,20 +338,11 @@ void game_loop(int s)
     fd_set          input_set,
                     output_set,
                     exc_set;
-#if 0
-    fd_set          tin,
-                    tout,
-                    tex;
-    fd_set          mtin,
-                    mtout,
-                    mtex;
-#endif
     struct timeval  last_time,
                     now,
                     timespent,
                     timeout,
                     null_time;
-    static struct timeval opt_time;
     char            comm[MAX_INPUT_LENGTH];
     char            promptbuf[180];
     struct descriptor_data *point,
@@ -374,13 +350,11 @@ void game_loop(int s)
     struct char_data *ch;
     int             update = 0;
 
+    static struct timeval opt_time;
     static int      sigs[] = { SIGUSR1, SIGUSR2, SIGINT, SIGPIPE, SIGALRM, 
                                SIGTERM, SIGHUP };
     static int      sigcount = NELEMS(sigs);
 
-    /*
-     * extern struct descriptor_data *descriptor_list; 
-     */
     extern int      pulse;
     extern int      maxdesc;
     extern struct time_info_data time_info;     /* In db.c */
@@ -529,9 +503,6 @@ void game_loop(int s)
                     string_add(point, comm);
                 } else if (!point->connected) {
                     if (point->showstr_count) 
-#if 0
-                    if (point->showstr_point) 
-#endif                   
                     {
                         show_string(point, comm);
                     } else {
@@ -1020,62 +991,6 @@ void flush_queues(struct descriptor_data *d)
  *  socket handling
  ****************************************************************** */
 
-#if 0
-/*
- * trying merc code out 
- */
-int init_socket(int port)
-{
-    int             s;
-    char           *opt;
-    char            hostname[MAX_HOSTNAME + 1];
-    struct sockaddr_in sa;
-    struct hostent *hp;
-    struct linger   ld;
-
-    bzero(&sa, sizeof(struct sockaddr_in));
-    gethostname(hostname, MAX_HOSTNAME);
-
-    hp = gethostbyname(hostname);
-    if (hp == NULL) {
-        perror("gethostbyname");
-        assert(0);
-    }
-
-    sa.sin_family = hp->h_addrtype;
-    sa.sin_port = htons(port);
-    s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s < 0) {
-        perror("Init-socket");
-        assert(0);
-    }
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, 
-                   (char *) &opt, sizeof(opt)) < 0) {
-        perror("setsockopt REUSEADDR");
-        exit(1);
-    }
-
-    ld.l_onoff = 1;
-    ld.l_linger = 100;
-    if (setsockopt(s, SOL_SOCKET, SO_LINGER, &ld, sizeof(ld)) < 0) {
-        perror("setsockopt LINGER");
-        assert(0);
-    }
-
-#ifdef NETBSD
-    if (bind(s, (struct sockaddr *) &sa, sizeof(sa)) < 0)
-#else
-    if (bind(s, &sa, sizeof(sa), 0) < 0)
-#endif
-    {
-        perror("bind");
-        exit(0);
-    }
-
-    listen(s, 5);
-    return (s);
-}
-#else
 int init_socket(int port)
 {
     static struct sockaddr_in sa_zero;
@@ -1112,7 +1027,6 @@ int init_socket(int port)
 
     return fd;
 }
-#endif
 
 int new_connection(int s)
 {
@@ -1347,7 +1261,7 @@ int process_output(struct descriptor_data *t)
  */
 int process_output(struct descriptor_data *t)
 {
-    static char     i[LARGE_BUFSIZE + 20];
+    char     buf[MAX_STRING_LENGTH];
     struct descriptor_data *point,
                    *next_point;
 
@@ -1355,30 +1269,30 @@ int process_output(struct descriptor_data *t)
      * start writing at the 2nd space so we can prepend "% " for snoop 
      */
     if (!t->prompt_mode && !t->connected) {
-        strcpy(i + 2, "\n\r");
-        strcat(i + 2, t->output);
+        strcpy(&buf[2], "\n\r");
+        strcat(&buf[2], t->output);
     } else {
-        strcpy(i + 2, t->output);
+        strcpy(&buf[2], t->output);
     }
 
     if (t->bufptr < 0) {
         Log("***** OVER FLOW **** in process_output, comm.c");
-        strcat(i + 2, "**OVERFLOW**");
+        strcat(&buf[2], "**OVERFLOW**");
     }
 
     if (!t->connected && !t->character && !IS_NPC(t->character) && 
         IS_SET(t->character->specials.act, PLR_COMPACT)) {
-        strcat(i + 2, "\n\r");
+        strcat(&buf[2], "\n\r");
     }
 
-    if (write_to_descriptor(t->descriptor, i + 2) < 0) {
+    if (write_to_descriptor(t->descriptor, &buf[2]) < 0) {
         return -1;
     }
 
     if (t->snoop.snoop_by) {
-        i[0] = '%';
-        i[1] = ' ';
-        SEND_TO_Q(i, t->snoop.snoop_by->desc);
+        buf[0] = '%';
+        buf[1] = ' ';
+        SEND_TO_Q(buf, t->snoop.snoop_by->desc);
     }
 
     /*
@@ -1999,14 +1913,14 @@ void coma(int s)
 
 char           *ParseAnsiColors(int UsingAnsi, char *txt)
 {
-    static char     buf[MAX_STRING_LENGTH] = "";
+    static char     buf[MAX_STRING_LENGTH];
     char            tmp[MAX_INPUT_LENGTH + 40];
 
     register int    i,
                     l,
                     f = 0;
 
-    buf[0] = 0;
+    buf[0] = '\0';
     for (i = 0, l = 0; *txt;) {
         if (*txt == '$' && 
             (toupper(*(txt + 1)) == 'C' || 
@@ -3037,7 +2951,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                         if( !rm ) {
                             strcpy( tbuf, "UNKNOWN" );
                         } else {
-                            sprinttype(rm->sector_type, sector_types, tbuf);
+                            strcpy( tbuf, sectors[rm->sector_type].type );
                         }
                         break;
                     case 'F':

@@ -1,93 +1,144 @@
-/*
- *****************************************************************************
- * board.c
- * Part of DaleMUD 3.? Millenium Edition
- * Re-written and re-released by Chris Lack (psycho_driver@yahoo.com)
- * You are obliged to follow the DaleMUD and Diku licenses if you use any
- * portion of this source code.
- *****************************************************************************/
 
 #include "config.h"
 #include "platform.h"
 #include <string.h>
-#include <stdio.h>
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
 
 #include "protos.h"
-#include "utils.h"
+#include "externs.h"
 
-#define MAX_MESSAGE_LENGTH 2048
+struct board_def *find_board(struct obj_data *obj);
+int show_board(struct char_data *ch, char *arg, struct board_def *board);
+int display_board_message(struct char_data * ch, char *arg,
+                          struct board_def * board);
+int remove_board_message(struct char_data *ch, char *arg,
+                         struct board_def *board);
+int reply_board_message(struct char_data *ch, char *arg,
+                        struct board_def *board);
+void write_board_message(struct char_data *ch, char *arg,
+                         struct board_def *board);
+void new_board_message(struct char_data *ch, struct board_def *board, 
+                       char *title, int reply_to);
+void list_board_messages(struct board_def *board, struct descriptor_data *d,
+                         int message_id, short depth);
 
-struct bulletin_board *bboards = NULL;
-extern struct index_data *obj_index;
-
-char *fread_string(FILE *fl);
-
-void save_board(struct bulletin_board *bd, int vnum)
+int board(struct char_data *ch, int cmd, char *arg,
+          struct obj_data *obj, int type)
 {
-    FILE * fl;
-    struct bulletin_board_message *msg;
-    char           buf[256],
-                   msg_txt[MAX_MESSAGE_LENGTH];
+    char           *argument;
+    char           *arg1;
+    int             ret = FALSE;
+    struct board_def *board = NULL;
 
-    sprintf(buf, "boards/%05d", vnum);
-    if ((fl = fopen(buf, "w")) == NULL) {
-        Log("Unable to save board");
-        return;
+    if (type != PULSE_COMMAND || !ch || !ch->desc || !obj) {
+        return( FALSE );
     }
 
-        /*
-         * Don't bother if the board is empty
-         */
-        if (bd->num_posts == 0) {
-        fclose(fl);
-        unlink(buf);
-        return;
+    /* So we don't bugger it up if the proc returns FALSE */
+    if( arg ) {
+        argument = strdup(arg);
+    } else {
+        argument = NULL;
     }
-    fprintf(fl, "%d\n", bd->num_posts);
 
-    for (msg = bd->messages; msg; msg = msg->next) {
-        fwrite_string(fl, msg->author);
-        fwrite_string(fl, msg->title);
-        fwrite_string(fl, strip_cr(msg_txt, msg->text, MAX_MESSAGE_LENGTH));
-        fprintf(fl, "%ld %d %d %d\n", (long)msg->date, msg->char_id,
-                 msg->reply_to, msg->language);
+    /* leave the original argument for the caller */
+    arg = argument;
+
+    switch( cmd ) {
+    case CMD_LOOK:
+        arg = get_argument(arg, &arg1);
+        if (!arg1 || !isname(arg1, "board bulletin")) {
+            return( FALSE );
+        }
+
+        board = find_board(obj);
+        if( board ) {
+            ret = show_board(ch, arg, board);
+        }
+        break;
+    case CMD_READ:
+        board = find_board(obj);
+        if( board ) {
+            ret = display_board_message(ch, arg, board);
+        }
+        break;
+    case CMD_REMOVE:
+        board = find_board(obj);
+        if( board ) {
+            ret = remove_board_message(ch, arg, board);
+        }
+        break;
+    case CMD_REPLY:
+        board = find_board(obj);
+        if( board ) {
+            ret = reply_board_message(ch, arg, board);
+        }
+
+        /* so it doesn't get freed below */
+        board = NULL;
+        break;
+    case CMD_WRITE:
+        board = find_board(obj);
+        if( board ) {
+            write_board_message(ch, arg, board);
+            ret = TRUE;
+        }
+
+        /* so it doesn't get freed below */
+        board = NULL;
+        break;
     }
-    fclose(fl);
+
+    if( board ) {
+        free( board );
+    }
+
+    /* Get rid of our local argument */
+    free( argument );
+    return( ret );
 }
 
-void new_board_message(struct char_data *ch, struct bulletin_board *bd,
-                       char *title, short reply_to)
-{
-    char           buf[128];
 
+struct board_def *find_board(struct obj_data *obj)
+{
+    int             vnum;
+    struct board_def *board;
+
+    /* Look up the board ID */
+    vnum = obj_index[obj->item_number].virtual;
+    board = db_lookup_board(vnum);
+    if( board ) {
+        board->obj = obj;
+        board->vnum = vnum;
+    }
+
+    return( board );
+}
+
+
+void new_board_message(struct char_data *ch, struct board_def *board, 
+                       char *title, int reply_to)
+{
     CREATE(ch->desc->msg, struct bulletin_board_message, 1);
     ch->desc->msg->author = strdup(GET_NAME(ch));
-    if (IS_IMMORTAL(ch)) {
-        if (reply_to == -1) {
-            sprintf(buf, "%s", (title && *title) ? title : "Untitled");
-        } else {
-            sprintf(buf, "%s", (title && *title) ? title : "Untitled");
-        }
-    } else if (reply_to == -1) {
-        sprintf(buf, "%s", (title && *title) ? title : "Untitled");
-    } else {
-        strncpy(buf, (title && *title) ? title : "Untitled", 128);
-    }
-    ch->desc->msg->title = strdup(buf);
-    ch->desc->msg->char_id = ch->desc->pos;
     ch->desc->msg->reply_to = reply_to;
-    ch->desc->msg->language = 0;
+
+    title = skip_spaces(title);
+    if( title ) {
+        ch->desc->msg->title = strdup(title);
+    } else {
+        ch->desc->msg->title = strdup("Untitled");
+    }
 
     /*
-     *  Save a pointer to this board in the character's descriptor so
+     * Save a pointer to this board in the character's descriptor so
      * we can add the message when $e is done writing.
      */
 
-    ch->desc->board = bd;
+    ch->desc->board = board;
 
     send_to_char("Write your message.\r\n"
                  "Type /? and hit enter for help on using the editor.\r\n\r\n",
@@ -99,112 +150,49 @@ void new_board_message(struct char_data *ch, struct bulletin_board *bd,
      */
     ch->desc->str = &ch->desc->msg->text;
     ch->desc->max_str = MAX_MESSAGE_LENGTH;
-    SET_BIT(ch->specials.act, PLR_NODIMD);
-    /*
-     * should be plr_posting
-     */
+    SET_BIT(ch->specials.act, PLR_POSTING);
 }
 
 
 void write_board_message(struct char_data *ch, char *arg,
-                         struct obj_data *board)
+                         struct board_def *board)
 {
-    struct bulletin_board *bd;
-
-    if (GetMaxLevel(ch) < board->obj_flags.value[1]) {
+    if (GetMaxLevel(ch) < board->minLevel) {
         act("You start to write a message upon $p but quickly pull away as "
-            "flames engulf your hand.", TRUE, ch, board, NULL, TO_CHAR);
+            "flames engulf your hand.", TRUE, ch, board->obj, NULL, TO_CHAR);
         act("$n started to write upon $p but quickly pulled back in pain.",
-            TRUE, ch, board, NULL, TO_ROOM);
+            TRUE, ch, board->obj, NULL, TO_ROOM);
         return;
     }
-
-    /*
-     * Find the board we're dealing with
-     */
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == obj_index[board->item_number].virtual) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        sprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-                "Bugginess in board %ld",
-                obj_index[board->item_number].virtual);
-#endif
-        Log("SOmething is wrong in a board");
-        return;
-    }
-
-    arg = skip_spaces(arg);
-    new_board_message(ch, bd, arg, -1);
+    
+    new_board_message(ch, board, arg, -1);
 }
 
-bool reply_board_message(struct char_data *ch, char *arg,
-                         struct obj_data *board)
+int reply_board_message(struct char_data *ch, char *arg,
+                        struct board_def *board)
 {
-    struct bulletin_board *bd;
     struct bulletin_board_message *msg;
-    short          tmessage;
-    char           buf[128];
-    char          *a1;
+    int             tmessage;
+    char            buf[128];
+    char           *arg1;
 
-    arg = get_argument(arg, &a1);
-    if (!a1 || !(tmessage = atoi(a1))) {
-        return FALSE;
+    arg = get_argument(arg, &arg1);
+    if (!arg1 || !(tmessage = atoi(arg1))) {
+        return( FALSE );
     }
 
-    if (GetMaxLevel(ch) < board->obj_flags.value[1]) {
+    if (GetMaxLevel(ch) < board->minLevel) {
         act("You start to write a message upon $p but quickly pull away as "
-            "flames engulf your hand.", TRUE, ch, board, NULL, TO_CHAR);
+            "flames engulf your hand.", TRUE, ch, board->obj, NULL, TO_CHAR);
         act("$n started to write upon $p but quickly pulled back in pain.",
-            TRUE, ch, board, NULL, TO_ROOM);
-        return TRUE;
+            TRUE, ch, board->obj, NULL, TO_ROOM);
+        return( TRUE );
     }
 
-    /*
-     * Find the board we're dealing with
-     */
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == obj_index[board->item_number].virtual) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-                "Bugginess in board %ld",
-                obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in reply_board_message - bd = 0");
-        return TRUE;
-    }
-    if ((bd->num_posts == 0) || (tmessage < 0) || (tmessage > bd->num_posts)) {
+    msg = db_get_board_message(board->boardId, tmessage);
+    if( !msg ) {
         send_to_char("That message exists only in your imagination.\r\n", ch);
-        return TRUE;
-    }
-
-    /*
-     * Need to find the message we're replying to in order to get the
-     * title
-     */
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id == tmessage) {
-            break;
-        }
-    }
-
-    if (msg == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-                "Bugginess in board %ld",
-                obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in reply_board_message - msg = 0");
-        return TRUE;
+        return( TRUE );
     }
 
     /*
@@ -213,236 +201,82 @@ bool reply_board_message(struct char_data *ch, char *arg,
     arg = skip_spaces(arg);
     if (!arg) {
         sprintf(buf, "re: %s", msg->title);
-#if 0
-        sprintf(buf, "re: %s", strip_ansi(ansi_buf, msg->title, 128) );
-#endif
     } else {
         strncpy(buf, arg, 128);
     }
-    new_board_message(ch, bd, buf, tmessage);
-    return TRUE;
+
+    db_free_board_message(msg);
+    new_board_message(ch, board, buf, tmessage);
+    return( TRUE );
 }
 
-/*
- * Step through the messages and renumber them after one has been
- * removed.
- */
-void renumber_board(struct bulletin_board *bd, short message_id)
+
+int remove_board_message(struct char_data *ch, char *arg,
+                         struct board_def *board)
 {
-    struct bulletin_board_message *msg;
-
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id > message_id) {
-            msg->message_id--;
-        }
-        if (msg->reply_to > message_id) {
-            msg->reply_to--;
-        }
-    }
-    bd->num_posts--;
-}
-
-/*
- *  Recursively delete a post and all it's replies.
- */
-void delete_board_message(struct bulletin_board *bd, short message_id)
-{
-    struct bulletin_board_message *msg,
-                   *temp;
-
-    /*
-     * First check to see if we have a reply to this message -- if so
-     * axe it
-     */
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->reply_to == message_id) {
-            /*
-             * we do, delete it as well
-             */
-            delete_board_message(bd, msg->message_id);
-        }
-    }
-
-    /*
-     * Now find this message within the list
-     */
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id == message_id) {
-            break;
-        }
-    }
-
-    if (msg == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-                "Bugginess in board %ld", bd->board_num);
-#endif
-        Log("Something went wrong in delete_board_message - msg = 0");
-    return;
-    }
-
-    /*
-     * remove it from the list of messages on this board
-     */
-    if (msg == bd->messages) {
-        bd->messages = msg->next;
-    } else {
-        temp = bd->messages;
-        while (temp && (temp->next != msg)) {
-            temp = temp->next;
-        }
-        if (temp) {
-            temp->next = msg->next;
-        }
-    }
-    free(msg->author);
-    free(msg->title);
-    free(msg->text);
-    free(msg);
-    renumber_board(bd, message_id);
-}
-
-bool remove_board_message(struct char_data *ch, char *arg,
-                          struct obj_data *board)
-{
-    struct bulletin_board *bd;
     struct bulletin_board_message *msg;
     int            tmessage;
-    char          *a1,
+    char          *arg1,
                    buf[MAX_STRING_LENGTH];
 
-    arg = get_argument(arg, &a1);
-    if (!a1 || !(tmessage = atoi(a1))) {
-        return FALSE;
+    arg = get_argument(arg, &arg1);
+    if (!arg1 || !(tmessage = atoi(arg1))) {
+        return( FALSE );
     }
 
-    /*
-     * Find the board we're dealing with
-     */
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == obj_index[board->item_number].virtual) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-            "Bugginess in board %ld",
-            obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in remove_board_message - bd = 0");
-        return TRUE;
-    }
-
-    if ((bd->num_posts == 0) || (tmessage < 0) || (tmessage > bd->num_posts)) {
+    msg = db_get_board_message(board->boardId, tmessage);
+    if( !msg ) {
         send_to_char("That message exists only in your imagination.\r\n", ch);
-        return TRUE;
+        return( TRUE );
     }
 
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id == tmessage) {
-            break;
-        }
-    }
 
-    if (msg == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-            "Bugginess in board %ld",
-            obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in reply_board_message - msg = 0");
-        return TRUE;
-    }
-
-    if (GetMaxLevel(ch) < board->obj_flags.value[2] &&
-        ch->desc->pos != msg->char_id) {
+    if (GetMaxLevel(ch) < board->minLevel &&
+        strcasecmp(GET_NAME(ch), msg->author) ) {
         act("You try to grab one of the notes off $p but only end up getting a"
-            " nasty shock.", TRUE, ch, board, NULL, TO_CHAR);
+            " nasty shock.", TRUE, ch, board->obj, NULL, TO_CHAR);
         act("$n tried to remove a note from $p but only received a "
-            "hair-styling shock!", TRUE, ch, board, NULL, TO_ROOM);
-        return TRUE;
+            "hair-styling shock!", TRUE, ch, board->obj, NULL, TO_ROOM);
+        db_free_board_message(msg);
+        return( TRUE );
     }
+    db_free_board_message(msg);
 
-    delete_board_message(bd, tmessage);
+    db_delete_board_message(board, tmessage);
     send_to_char("Message removed.\r\n", ch);
     sprintf(buf, "$n just removed message %d.", tmessage);
     act(buf, FALSE, ch, NULL, NULL, TO_ROOM);
-#if 0
-    mprintf(line_log, 0, SEV_LOW, "%s just removed message %d from board %ld",
-        GET_NAME(ch), tmessage, obj_index[board->item_number].virtual);
-#endif
-    sprintf(buf, "%s just removed message %d from board %ld",
-            GET_NAME(ch), tmessage,
-            obj_index[board->item_number].virtual);
+    sprintf(buf, "%s just removed message %d from board %d",
+            GET_NAME(ch), tmessage, board->boardId);
     Log(buf);
-    save_board(bd, obj_index[board->item_number].virtual);
-    return TRUE;
+    return( TRUE );
 }
 
-bool display_board_message(struct char_data * ch, char *arg,
-                           struct obj_data * board)
+int display_board_message(struct char_data * ch, char *arg,
+                           struct board_def * board)
 {
-    struct bulletin_board *bd;
     struct bulletin_board_message *msg;
-    char           buffer[MAX_MESSAGE_LENGTH + 512];
+    char           buffer[MAX_STRING_LENGTH];
     int            tmessage;
-    char          *a1;
+    char          *arg1;
 
-    arg = get_argument(arg, &a1);
-    if (!a1 || !(tmessage = atoi(a1))) {
-        return FALSE;
+    arg = get_argument(arg, &arg1);
+    if (!arg1 || !(tmessage = atoi(arg1))) {
+        return( FALSE );
     }
 
-    if (GetMaxLevel(ch) < board->obj_flags.value[0]) {
+    if (GetMaxLevel(ch) < board->minLevel) {
         act("You simply cannot comprehend the alien markings upon $p.",
-            TRUE, ch, board, NULL, TO_CHAR);
-        act("$n tries to read $p, but looks bewildered.", TRUE, ch, board,
+            TRUE, ch, board->obj, NULL, TO_CHAR);
+        act("$n tries to read $p, but looks bewildered.", TRUE, ch, board->obj,
             NULL, TO_ROOM);
-        return TRUE;
+        return( TRUE );
     }
 
-    /*
-     * Find out which board we're looking at
-     */
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == obj_index[board->item_number].virtual) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess "
-                "in board %ld", obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in display_board_message - bd = 0");
-        return TRUE;
-    }
-
-    if ((bd->num_posts == 0) || (tmessage < 0) || (tmessage > bd->num_posts)) {
+    msg = db_get_board_message(board->boardId, tmessage);
+    if( !msg ) {
         send_to_char("That message exists only in your imagination.\r\n", ch);
-        return TRUE;
-    }
-
-    /*
-     * Now we need to find which message it is the person it trying to
-     * look at
-     */
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->message_id == tmessage) {
-            break;
-        }
-    }
-
-    if (msg == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
-                "board %ld", obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in display_board_message - msg = 0");
-        return TRUE;
+        return( TRUE );
     }
 
     /*
@@ -455,383 +289,108 @@ bool display_board_message(struct char_data * ch, char *arg,
             tmessage, msg->author, asctime(localtime(&msg->date)),
             msg->title, msg->text ? msg->text : "N/M\r\n");
     page_string(ch->desc, buffer, 1);
-    act("$n examines one of the posts on $p.", TRUE, ch, board, NULL, TO_ROOM);
-    return TRUE;
+
+    act("$n examines one of the posts on $p.", TRUE, ch, board->obj, NULL,
+        TO_ROOM);
+
+    db_free_board_message(msg);
+    return( TRUE );
 }
 
 /*
  *  Recursively display all the replies to a top level post.
  */
-void list_board_replies(struct bulletin_board *bd,
-                        struct descriptor_data *d, short message_id,
-                        short depth)
+void list_board_messages(struct board_def *board, struct descriptor_data *d,
+                         int message_id, short depth)
 {
     struct bulletin_board_message *msg;
-    short          i;
-    char           buf[128],
-                   buf2[255];
+    int             i,
+                    j;
+    char            buf[128],
+                    buf2[255];
+    int             count;
 
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->reply_to == message_id) {
-            /*
-             * found a reply to an upper post
-             *
-             * indent the reply according to depth
-             */
-            for (i = 0; i < depth; i++) {
-                list_append(d, " ");
-            }
-            /*
-             *  asctime has to be difficult and return a newline in
-             *  it's output, we need to get rid of it
-             */
-            strncpy(buf, asctime(localtime(&msg->date)), 128);
-
-            for (i = 0; (i < 128) && *(buf + i); i++) {
-                if ((buf[i] == '\n') || (buf[i] == '\r')) {
-                    buf[i] = '\0';
-                    break;
-                }
-            }
-
-            /*
-             * chop the last characters to make it line out pretty
-             */
-            sprintf(buf2, "%-33s", msg->title);
-
-            for (i = 0; i < depth; i++) {
-                buf2[strlen(buf2) - 1] = '\0';
-            }
-
-            list_append(d, "$c000x%3d$c000w : $c000w%s$c000x %-12s  "
-                           "$c000x-$c000w%s$c000x-\r\n",
-                       msg->message_id, buf2, msg->author, buf);
-
-            list_board_replies(bd, d, msg->message_id, depth + 1);
+    count = db_get_board_replies(board, message_id, &msg);
+    for( i = 0; i < count; i++ ) {
+        /*
+         * found a reply to an upper post
+         * indent the reply according to depth
+         */
+        for (j = 0; j < depth; j++) {
+            list_append(d, " ");
         }
-    }
-}
 
-/*
- *  This function lists the top-level posts and farms out to
- *  list_board_replies for a recursive listing of the replies to these
- *  posts.
- */
-void list_board_messages(struct bulletin_board *bd,
-                         struct descriptor_data *d)
-{
-    struct bulletin_board_message *msg;
-    short          i;
-    char           buf[128];
+        /*
+         *  asctime has to be difficult and return a newline in
+         *  it's output, we need to get rid of it
+         */
+        strncpy(buf, asctime(localtime(&msg[i].date)), 128);
 
-    for (msg = bd->messages; msg; msg = msg->next) {
-        if (msg->reply_to == -1) {
-            /*
-             *  top-level post
-             *
-             *  asctime has to be difficult and return a newline in
-             *  it's output, we need to get rid of it
-             */
-            strncpy(buf, asctime(localtime(&msg->date)), 128);
+        while( buf[strlen(buf)-1] == '\n' || buf[strlen(buf)-1] == '\r' ) {
+            buf[strlen(buf)-1] = '\0';
+        }
 
-            for (i = 0; (i < 128) && *(buf + i); i++) {
-                if ((buf[i] == '\n') || (buf[i] == '\r')) {
-                    buf[i] = '\0';
-                    break;
-                }
-            }
+        /*
+         * chop the last characters to make it line out pretty
+         */
+        sprintf(buf2, "%-32s", msg[i].title);
 
-            list_append(d, "$c000w%3d$c000w : $c000w%-33s$c000w %-12s  "
+        for (j = 0; j < depth; j++) {
+            buf2[strlen(buf2) - 1] = '\0';
+        }
+
+        if( message_id == -1 ) {
+            list_append(d, "$c000w%3d$c000w : $c000w%s$c000w %-12s "
                            "$c000x[$c000w%s$c000x]\r\n",
-                        msg->message_id, msg->title, msg->author, buf);
-
-            list_board_replies(bd, d, msg->message_id, 1);
+                           msg[i].message_id, buf2, msg[i].author, buf);
+        } else {
+            list_append(d, "$c000x%3d$c000w : $c000w%s$c000x %-12s "
+                           "$c000x-$c000w%s$c000x-\r\n",
+                           msg[i].message_id, buf2, msg[i].author, buf);
         }
+
+        list_board_messages(board, d, msg[i].message_id, depth + 1);
     }
+    db_free_board_replies(msg, count);
 }
+
 
 /*
  *  Show topics and their replies in a threaded format.
  */
-bool show_board(struct char_data *ch, char *arg, struct obj_data *board)
+int show_board(struct char_data *ch, char *arg, struct board_def *board)
 {
-    struct bulletin_board *bd;
-    char          *a1;
-
-    arg = get_argument(arg, &a1);
-    if (!a1 || !isname(a1, "board bulletin")) {
-        return FALSE;
-    }
-
     /*
      * See if character's level is high enough to read board
      */
-    if (GetMaxLevel(ch) < board->obj_flags.value[0]) {
+    if (GetMaxLevel(ch) < board->minLevel) {
         act("You simply cannot comprehend the alien markings upon $p.",
-             TRUE, ch, board, NULL, TO_CHAR);
-        act("$n tries to read $p, but looks bewildered.", TRUE, ch, board,
+             TRUE, ch, board->obj, NULL, TO_CHAR);
+        act("$n tries to read $p, but looks bewildered.", TRUE, ch, board->obj,
              NULL, TO_ROOM);
-        return TRUE;
+        return( TRUE );
     }
 
-    /*
-     * Find out which board we're looking at
-     */
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == obj_index[board->item_number].virtual) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP | LOG_ASSERT, SEV_ALL, "Bugginess in "
-                "board %ld", obj_index[board->item_number].virtual);
-#endif
-        Log("Something went wrong in show_board - bd = 0");
-        return TRUE;
-    }
-
-    act("$n studies $p.", TRUE, ch, board, NULL, TO_ROOM);
+    act("$n studies $p.", TRUE, ch, board->obj, NULL, TO_ROOM);
     list_init(ch->desc);
     list_append(ch->desc, "This is a bulletin board.\r\n"
                           "Usage: READ/REMOVE <#>, WRITE <title>, "
                           "REPLY <#> [title]\r\n");
-    if (bd->num_posts == 0) {
+
+    if (board->messageCount == 0) {
         list_append(ch->desc, "%s appears to be empty.\r\n",
-                     CAP(OBJS(board, ch)));
+                     CAP(OBJS(board->obj, ch)));
     } else {
         list_append(ch->desc, "There are %d messages on %s.\r\n\r\n"
                               " $c000W-=$c000RCurrent Discussions$c000W=-$c000w"
                               "\r\n"
                               "---------------------------------------------"
-                              "-----------------------------------\r\n",
-                    bd->num_posts, OBJS(board, ch));
-        list_board_messages(bd, ch->desc);
+                              "---------------------------------\r\n",
+                    board->messageCount, OBJS(board->obj, ch));
+        list_board_messages(board, ch->desc, -1, 0);
     }
     list_end(ch->desc);
-    return TRUE;
-}
-
-/*
- *  Free all memory allocated to a board and remove it from the
- * global list.
- */
-void free_board(int board_num)
-{
-    struct bulletin_board *bd,
-                   *tmp;
-    struct bulletin_board_message *msg,
-                   *next_msg;
-
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == board_num) {
-            break;
-        }
-    }
-
-    if (bd == NULL) {
-#if 0
-        mprintf(line_log, LOG_BEEP, SEV_ALL, "Bulletin board #%d is "
-                "non-existant according to free_board", board_num);
-#endif
-        Log("Something went wrong in free_board - bd = 0");
-        return;
-    }
-
-    /*
-     * walk through and delete all the messages and text contained
-     * within
-     */
-    for (msg = bd->messages; msg; msg = next_msg) {
-        next_msg = msg->next;
-        free(msg->author);
-        free(msg->title);
-        free(msg->text);
-        free(msg);
-    }
-
-    /*
-     * remove this board from the global list
-     */
-    if (bd == bboards) {
-        bboards = bd->next;
-    } else {
-        tmp = bboards;
-        while (tmp && (tmp->next != bd)) {
-            tmp = tmp->next;
-        }
-        if (tmp != NULL) {
-            tmp->next = bd->next;
-        }
-    }
-}
-
-/*
- *  Reads in a non-empty board from file.
- */
-struct bulletin_board *board_from_file(FILE * fl)
-{
-    struct bulletin_board *bd;
-    struct bulletin_board_message *msg,
-                   *tmp;
-    long           date;
-    int            i = 0,
-                   t[2];
-
-    CREATE(bd, struct bulletin_board, 1);
-
-    /*
-     * Find out how many posts are on the board
-     */
-    fscanf(fl, "%d\n", t);
-
-    bd->num_posts = t[0];
-    while (i < bd->num_posts) {
-        CREATE(msg, struct bulletin_board_message, 1);
-        msg->author = fread_string(fl);
-        msg->title = fread_string(fl);
-        msg->text = fread_string(fl);
-
-        /*
-         * Below I'm assuming the messages will always be written to
-         * file in order. If you change some board stuff around and
-         * they stop working correctly this might be a place to start
-         * looking for the problem.
-         */
-        msg->message_id = ++i;
-        fscanf(fl, "%ld %d %d %d\n", &date, &msg->char_id, t, t + 1);
-        msg->date = (time_t)date;
-        msg->reply_to = t[0];
-        msg->language = t[1];
-
-        /*
-         * add it to the end of the list of messages
-         */
-        if (bd->messages == NULL) {
-            bd->messages = msg;
-        } else {
-            tmp = bd->messages;
-            while (tmp->next != NULL) {
-                tmp = tmp->next;
-            }
-            tmp->next = msg;
-        }
-    }
-    return bd;
-}
-
-/*
- *  Load a board if it hasn't already been done.
- */
-void check_board(int board_num)
-{
-    FILE * fl;
-    struct bulletin_board *bd;
-    char           buf[128];
-
-    for (bd = bboards; bd; bd = bd->next) {
-        if (bd->board_num == board_num) {
-            /*
-             * Already in the list, just leave
-             */
-            return;
-        }
-    }
-
-    /*
-     * It wasn't in the list, we need to load it if it exists
-     */
-    sprintf(buf, "boards/%05d", board_num);
-
-    if ((fl = fopen(buf, "rt")) == NULL) {
-        /*
-         * the board is empty
-         */
-        CREATE(bd, struct bulletin_board, 1);
-        bd->num_posts = 0;
-        bd->messages = NULL;
-    } else {
-        bd = board_from_file(fl);
-        fclose(fl);
-    }
-    bd->board_num = board_num;
-
-    /*
-     * Board has been initialized, add it to the list
-     */
-    bd->next = bboards;
-    bboards = bd;
-}
-
-int board(struct char_data *ch, int cmd, char *arg,
-          struct obj_data *obj, int type)
-{
-    char          *a1;
-    char          *argument;
-    int            ret = FALSE;
-
-    if ((type != PULSE_COMMAND) || (ch->desc == NULL)) {
-        return FALSE;
-    }
-
-    /*
-     *  Call me paranoid but I just want to make sure the check_board
-     * procedure isn't hit all the time on a big MUD with lots of
-     * boards and busy board rooms.
-     */
-    if (cmd != CMD_LOOK && cmd != CMD_WRITE && cmd != CMD_READ &&
-        cmd != CMD_REMOVE && cmd != CMD_REPLY && cmd != CMD_RELOAD) {
-        return FALSE;
-    }
-
-
-    /* So we don't bugger it up if the proc returns FALSE */
-    if( arg ) {
-        argument = strdup(arg);
-    } else {
-        argument = NULL;
-    }
-
-    /* leave the original argument for the caller */
-    arg = argument;
-
-    check_board(obj_index[obj->item_number].virtual);
-
-    switch( cmd ) {
-    case CMD_LOOK:
-        ret = show_board(ch, arg, obj);
-        break;
-    case CMD_READ:
-        ret = display_board_message(ch, arg, obj);
-        break;
-    case CMD_REMOVE:
-        ret = remove_board_message(ch, arg, obj);
-        break;
-    case CMD_REPLY:
-        ret = reply_board_message(ch, arg, obj);
-        break;
-    case CMD_RELOAD:
-        ret = FALSE;
-        if (IS_IMMORTAL(ch)) {
-            arg = get_argument(arg, &a1);
-
-            if (a1 && !strcmp("board", a1)) {
-                free_board(obj_index[obj->item_number].virtual);
-                Log("Someone just reset a board");
-                ret = TRUE;
-            }
-        }
-        break;
-    case CMD_WRITE:
-        write_board_message(ch, arg, obj);
-        ret = TRUE;
-        break;
-    }
-
-    /* Get rid of our local argument */
-    free( argument );
-    return( ret );
+    return( TRUE );
 }
 
 

@@ -20,47 +20,12 @@
 #define QUESTLOG_FILE     "quest_log"   /* Log of quest transactions */
 
 
-int pc_class_num(int clss);
 void load_one_room(FILE * fl, struct room_data *rp);
+int pc_class_num(int clss);
 
 
-void            log_sev(char *s, int i);
-extern char    *exits[];
-extern long     SystemFlags;
-extern struct descriptor_data *descriptor_list;
-extern struct char_data *character_list;
-extern struct index_data *mob_index,
-               *obj_index;
-extern struct chr_app_type chr_apply[];
-extern struct zone_data *zone_table;
-extern const struct race_type race_list[];
-
-#ifdef HASH
-extern struct hash_header room_db;      /* In db.c */
-#else
-extern struct room_data *room_db[];     /* In db.c */
-#endif
-extern char    *dirs[];
-extern int      RacialMax[][MAX_CLASS];
-extern int      top_of_zone_table;
-extern int      top_of_world;
-extern struct descriptor_data *descriptor_list;
-
-/*
- * external functions
- */
-void            stop_fighting(struct char_data *ch);
-void            fake_setup_dir(FILE * fl, long room, int dir);
-char           *fread_string(FILE * fl);
-int             check_falling(struct char_data *ch);
-int             spy_flag;
-void            NailThisSucker(struct char_data *ch);
-
-/*
- * interal move to protos.h
- */
-int             IS_UNDERGROUND(struct char_data *ch);
 FILE           *log_f;
+int             spy_flag;
 
 void Log(char *s)
 {
@@ -785,7 +750,7 @@ void log_sev(char *str, int sev)
 {
     time_t            ct;
     char           *tmstr;
-    static char     buf[500];
+    char            buf[500];
     struct descriptor_data *i;
 
     ct = time(0);
@@ -1763,7 +1728,7 @@ void down_river(int pulse)
                         send_to_char("The waters swirl beneath your feet.\n\r",
                                      ch);
                     } else {
-                        sprintf(buf, "You drift %s...\n\r", dirs[rd]);
+                        sprintf(buf, "You drift %s...\n\r", direction[rd].dir);
                         send_to_char(buf, ch);
                         if (RIDDEN(ch)) {
                             send_to_char(buf, RIDDEN(ch));
@@ -3435,7 +3400,6 @@ void DarknessPulseStuff(int pulse)
 
 struct obj_data *find_tqp(int tqp_nr)
 {
-    extern struct obj_data *object_list;
     register struct obj_data *t;
     struct obj_data *tqp = 0;
     int             nr = 0;
@@ -3454,7 +3418,6 @@ struct obj_data *find_tqp(int tqp_nr)
 
 int count_tqp(void)
 {
-    extern struct obj_data *object_list;
     register struct obj_data *t;
     int             tqp_nr = 0;
 
@@ -3474,8 +3437,6 @@ void traveling_qp(int pulse)
     struct room_data *room;
     struct obj_data *travelqp = 0,
                    *qt;
-    extern int      qp_patience;
-    extern int      top_of_world;
     int             to_room = 0;
     int             k,
                     f;
@@ -3557,8 +3518,6 @@ void ArenaPulseStuff(int pulse)
     struct char_data *ch = NULL;
     char            buf[80];
     int             location = 0;
-    extern int      MinArenaLevel,
-                    MaxArenaLevel;
 
     if (pulse < 0)
         return;
@@ -3606,11 +3565,6 @@ void ArenaPulseStuff(int pulse)
 
 void AuctionPulseStuff(int pulse)
 {
-    extern int      auct_loop;
-    extern long     minbid;
-    extern long     intbid;
-    extern struct char_data *auctioneer;
-    extern struct char_data *bidder;
     struct obj_data *auctionobj;
     char            buf[MAX_STRING_LENGTH];
 
@@ -3794,7 +3748,7 @@ void RiverPulseStuff(int pulse)
                         if (ch->specials.fighting) {
                             stop_fighting(ch);
                         }
-                        sprintf(buf, "You drift %s...\n\r", dirs[rd]);
+                        sprintf(buf, "You drift %s...\n\r", direction[rd].dir);
                         send_to_char(buf, ch);
                         if (RIDDEN(ch)) {
                             send_to_char(buf, RIDDEN(ch));
@@ -4545,7 +4499,7 @@ int GetNewRace(struct char_file_u *s)
                     try_again;
 
     do {
-        return_race = number(1, MAX_RACE);
+        return_race = number(1, raceCount);
 
         switch (return_race) {
             /*
@@ -4933,7 +4887,6 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 void IncrementZoneNr(int nr)
 {
     struct char_data *c;
-    extern struct char_data *character_list;
 
     if (nr > top_of_zone_table) {
         return;
@@ -4955,8 +4908,6 @@ void IncrementZoneNr(int nr)
 
 int IsDarkOutside(struct room_data *rp)
 {
-    extern int      gLightLevel;
-
     if (gLightLevel >= 4) {
         return (FALSE);
     }
@@ -5470,7 +5421,6 @@ int IS_LINKDEAD(struct char_data *ch)
 int IS_UNDERGROUND(struct char_data *ch)
 {
     struct room_data *rp;
-    extern struct zone_data *zone_table;
 
     if ((rp = real_roomp(ch->in_room)) &&
         IS_SET(zone_table[rp->zone].reset_mode, ZONE_UNDER_GROUND)) {
@@ -5482,54 +5432,18 @@ int IS_UNDERGROUND(struct char_data *ch)
 
 void SetDefaultLang(struct char_data *ch)
 {
-    int             i;
+    int             skill;
+    int             race;
 
-    switch (GET_RACE(ch)) {
-    case RACE_MOON_ELF:
-    case RACE_GOLD_ELF:
-    case RACE_WILD_ELF:
-    case RACE_SEA_ELF:
-    case RACE_AVARIEL:
-    case RACE_DROW:
-        i = LANG_ELVISH;
-        ch->player.speaks = SPEAK_ELVISH;
-        break;
-    case RACE_TROLL:
-    case RACE_HALF_GIANT:
-        i = LANG_GIANTISH;
-        ch->player.speaks = SPEAK_GIANTISH;
-        break;
-    case RACE_HALF_OGRE:
-        i = LANG_OGRE;
-        ch->player.speaks = SPEAK_OGRE;
-        break;
-    case RACE_HALFLING:
-        i = LANG_HALFLING;
-        ch->player.speaks = SPEAK_HALFLING;
-        break;
-    case RACE_HALF_ORC:
-    case RACE_ORC:
-        i = LANG_ORCISH;
-        ch->player.speaks = SPEAK_ORCISH;
-        break;
-    case RACE_DWARF:
-    case RACE_DARK_DWARF:
-        i = LANG_DWARVISH;
-        ch->player.speaks = SPEAK_DWARVISH;
-        break;
-    case RACE_DEEP_GNOME:
-    case RACE_FOREST_GNOME:
-    case RACE_ROCK_GNOME:
-        i = LANG_GNOMISH;
-        ch->player.speaks = SPEAK_GNOMISH;
-        break;
-    default:
-        i = LANG_COMMON;
-        ch->player.speaks = SPEAK_COMMON;
-        break;
+    race = GET_RACE(ch);
+
+    ch->player.speaks = languages[race].langSpeaks;
+
+    skill = languages[race].langSkill;
+    if( skill ) {
+        ch->skills[skill].learned = 95;
+        SET_BIT(ch->skills[skill].flags, SKILL_KNOWN);
     }
-    ch->skills[i].learned = 95;
-    SET_BIT(ch->skills[i].flags, SKILL_KNOWN);
 }
 
 int IsMagicSpell(int spell_num)
@@ -6027,17 +5941,17 @@ int pc_num_class(int clss)
 
 char           *DescAge(int age, int race)
 {
-    if (age > race_list[race].venerable) {
+    if (age > races[race].venerable) {
         return "Venerable";
-    } else if (age > race_list[race].ancient) {
+    } else if (age > races[race].ancient) {
         return "Ancient";
-    } else if (age > race_list[race].old) {
+    } else if (age > races[race].old) {
         return "Old";
-    } else if (age > race_list[race].middle) {
+    } else if (age > races[race].middle) {
         return "Middle Aged";
-    } else if (age > race_list[race].mature) {
+    } else if (age > races[race].mature) {
         return "Mature";
-    } else if (age > race_list[race].young) {
+    } else if (age > races[race].young) {
         return "Young";
     } else {
         return "ERROR";
@@ -6078,7 +5992,6 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
                     nr;
     FILE           *mob_file;
     FILE           *vnum_f;
-    extern int      top_of_mobt;
     struct char_data *mob;
     int             count = 0;
 
@@ -6146,7 +6059,6 @@ void do_orebuild(struct char_data *ch, char *argument, int cmd)
                     rend,
                     i;
     FILE           *fp;
-    extern int      top_of_objt;
     struct obj_data *obj;
     int             count = 0;
 
@@ -6614,6 +6526,24 @@ int is_abbrev(char *arg1, char *arg2)
         return( 0 );
     }
     return (1);
+}
+
+/*
+ * ---------- Start of change_cr_to_nl) ----------
+ */
+/*
+ * change each occurence of a Carriage Return
+ * by a New Line in a buffer
+ */
+void remove_cr(char *output, char *input)
+{
+    while (*input) {
+        if( *input != '\r' ) {
+            *output++ = *input;
+        }
+        input++;
+    }
+    *output = '\0';
 }
 
 

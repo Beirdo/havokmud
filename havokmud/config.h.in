@@ -59,6 +59,9 @@
 /* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 
+/* Define to 1 if you have the `mysqlclient' library (-lmysqlclient). */
+#undef HAVE_LIBMYSQLCLIENT
+
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 

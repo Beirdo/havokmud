@@ -557,8 +557,6 @@
 
         /*
          * This one needs to be after all real damage skills, might wanna 
-         */
-        /*
          * alter messages if you move it 
          */
 #define TYPE_SUFFERING               419

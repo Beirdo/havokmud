@@ -95,7 +95,6 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
  * Add user input to the 'current' string (as defined by d->str) 
  */
 
-#if 1
 
 /*
  * This is basically the MUDs built-in editor.  I'm going to attempt to
@@ -105,7 +104,6 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
 void string_add(struct descriptor_data *d, char *str)
 {
     int             terminator = 0;
-    struct bulletin_board_message *tmp;
 
     /*
      * First of all we're concerned with finding a : at the beginning of an
@@ -197,8 +195,7 @@ void string_add(struct descriptor_data *d, char *str)
             *d->str = NULL;
         }
 
-        if (!d->connected
-            && (IS_SET(d->character->specials.act, PLR_MAILING))) {
+        if (!d->connected && IS_SET(d->character->specials.act, PLR_MAILING)) {
             if ((terminator > 0) && *d->str) {
                 store_mail(d->name, d->character->player.name, *d->str);
                 SEND_TO_Q("Message sent.\r\n", d);
@@ -220,41 +217,14 @@ void string_add(struct descriptor_data *d, char *str)
             d->name = 0;
             REMOVE_BIT(d->character->specials.act, PLR_MAILING);
         } else if (!d->connected && 
-                   IS_SET(d->character->specials.act, PLR_NODIMD)) {
-            if ((terminator > 0) && *d->str) {
-                /*
-                 * Post finished, add it to the board's list of messages 
-                 */
-                d->msg->message_id = ++d->board->num_posts;
-                d->msg->date = time(0);
-
-                /*
-                 * link it up to the end of the list so lower-numbered
-                 * messages are displayed first 
-                 */
-                if (d->board->messages == NULL) {
-                    d->board->messages = d->msg;
-                } else {
-                    tmp = d->board->messages;
-                    while (tmp->next) {
-                        tmp = tmp->next;
-                    }
-
-                    /*
-                     * tmp should be at the end of the list 
-                     */
-                    tmp->next = d->msg;
-                }
-
-                /*
-                 * Save the board and then toss the pointers 
-                 */
-                save_board(d->board, d->board->board_num);
+                   IS_SET(d->character->specials.act, PLR_POSTING)) {
+            if (terminator > 0 && *d->str) {
+                db_post_message(d->board, d->msg);
+                free(d->board);
 
                 SEND_TO_Q("Message posted.\r\n", d);
                 act("$n has finished posting $s message.", TRUE,
                     d->character, NULL, NULL, TO_ROOM);
-                REMOVE_BIT(d->character->specials.act, PLR_MAILING);
             } else {
                 /* user has aborted the post */
                 if (*d->str) {
@@ -275,7 +245,7 @@ void string_add(struct descriptor_data *d, char *str)
 
             d->board = NULL;
             d->msg = NULL;
-            REMOVE_BIT(d->character->specials.act, PLR_NODIMD);
+            REMOVE_BIT(d->character->specials.act, PLR_POSTING);
         }
         d->str = NULL;
     } else if (*str) {
@@ -283,80 +253,9 @@ void string_add(struct descriptor_data *d, char *str)
     }
 }
 
-#else
-void string_add(struct descriptor_data *d, char *str)
-{
-    char           *scan;
-    int             terminator = 0;
-
-    /*
-     * determine if this is the terminal string, and truncate if so 
-     */
-    for (scan = str; *scan; scan++) {
-        if (terminator = (*scan == '~')) {
-            *scan = '\0';
-            break;
-        }
-    }
-
-    if (!(*d->str)) {
-        if (strlen(str) > d->max_str) {
-            send_to_char("String too long - Truncated.\n\r", d->character);
-            *(str + d->max_str) = '\0';
-            terminator = 1;
-        }
-        CREATE(*d->str, char, strlen(str) + 3);
-        strcpy(*d->str, str);
-    } else {
-        if (strlen(str) + strlen(*d->str) > d->max_str) {
-            send_to_char("String too long. Last line skipped.\n\r",
-                         d->character);
-            terminator = 1;
-        } else {
-            if (!(*d->str = (char *) realloc(*d->str, strlen(*d->str) +
-                                             strlen(str) + 3))) {
-                perror("string_add");
-                assert(0);
-            }
-            strcat(*d->str, str);
-        }
-    }
-
-    if (terminator) {
-        if (!d->connected && 
-            (IS_SET(d->character->specials.act, PLR_MAILING))) {
-            store_mail(d->name, d->character->player.name, *d->str);
-            if (*d->str) {
-                free(*d->str);
-            }
-            if (d->str) {
-                free(d->str);
-            }
-            if (d->name) {
-                free(d->name);
-            }
-            d->name = 0;
-            SEND_TO_Q("Message sent!\n\r", d);
-            if (!IS_NPC(d->character)) {
-                REMOVE_BIT(d->character->specials.act, PLR_MAILING);
-            }
-        }
-        d->str = 0;
-        if (d->connected == CON_EXDSCR) {
-            send_to_char(MENU, d->character);
-            d->connected = CON_SLCT;
-        }
-    } else {
-        strcat(*d->str, "\n\r");
-    }
-}
-
-#endif
 
 /*
  * interpret an argument for do_string 
- */
-/*
  * modification of malloc'ed strings in chars/objects 
  */
 void do_string(struct char_data *ch, char *arg, int cmd)
@@ -670,7 +569,6 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     struct room_data *rp,
                    *temproom = NULL;
     long            maproom;
-    extern const char *sector_types[];
 
     rp = real_roomp(ch->in_room);
 
@@ -785,7 +683,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             if (isdigit((int)*name)) {
                 free(temproom->name);
                 sprintf(buf, "Default name: ");
-                strcat(buf, sector_types[s_type]);
+                strcat(buf, sectors[s_type].type);
                 temproom->name = buf;
             }
             send_to_char("Setting current room and sector flags.\n\r", ch);
@@ -812,7 +710,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                         if (isdigit((int)*name)) {
                             free(temproom->name);
                             sprintf(buf, "Default name: ");
-                            strcat(buf, sector_types[s_type]);
+                            strcat(buf, sectors[s_type].type);
                             temproom->name = buf;
                         }
                     }

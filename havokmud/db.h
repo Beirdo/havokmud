@@ -17,29 +17,15 @@
 #define OBJ_FILE          "tinyworld.obj"       /* object prototypes */
 #define ZONE_FILE         "tinyworld.zon"       /* zone defs & command
                                                  * tables */
-#define CREDITS_FILE      "credits"     /* for the 'credits' command */
-#define NEWS_FILE         "news"        /* for the 'news' command */
-#define MOTD_FILE         "motd"        /* messages of today */
-#define WMOTD_FILE        "wizmotd"     /* wizard's motd */
 #define PLAYER_FILE       "players"     /* the player database */
 #define TIME_FILE         "time"        /* game calendar information */
-#define IDEA_FILE         "ideas"       /* for the 'idea'-command */
-#define TYPO_FILE         "typos"       /* 'typo' */
-#define BUG_FILE          "bugs"        /* 'bug' */
-#define WIZBUG_FILE       "wizbug"      /* 'bug' for wizreport - MW */
-#define WIZIDEA_FILE      "wizidea"     /* 'idea' for wizreport - MW */
-#define WIZTYPO_FILE      "wiztypo"     /* 'typo' for wizreport - MW */
-#define MESS_FILE         "messages"    /* damage message */
-#define SOCMESS_FILE      "actions"     /* messgs for social acts */
-#define HELP_KWRD_FILE    "help_table"  /* for HELP <keywrd> */
 #define HELP_PAGE_FILE    "help"        /* for HELP <CR> */
+#define HELP_KWRD_FILE    "help_table"  /* for HELP <keywrd> */
 #define WIZ_HELP_FILE     "wizhelp_table"       /* For wizhelp <keyword> */
-#define INFO_FILE         "info"        /* for INFO */
 #define WIZLIST_FILE      "wizlist"     /* for WIZLIST */
 
 #define IWIZLIST_FILE      "iwizlist"   /* for WIZLIST */
 
-#define POSEMESS_FILE     "poses"       /* for 'pose'-command */
 #define MAIL_FILE         "mud_mail"    /* */
 
 #define REAL 0

@@ -3656,7 +3656,7 @@ void spell_identify(int level, struct char_data *ch,
 
                 case APPLY_RACE_SLAYER:
                     sprintf(buf2, "%s\n\r",
-                            RaceName[obj->affected[i].modifier]);
+                            races[obj->affected[i].modifier].racename);
                     break;
 
                 case APPLY_ALIGN_SLAYER:
@@ -4134,10 +4134,6 @@ void spell_know_monster(int level, struct char_data *ch,
                     lev,
                     hits;
 
-    extern char    *pc_class_types[];
-    extern char    *immunity_names[];
-    extern char    *RaceName[];
-    extern const char *RaceDesc[];
     int             att;
     int             no,
                     s;
@@ -4148,7 +4144,7 @@ void spell_know_monster(int level, struct char_data *ch,
 
     if (!IS_PC(victim)) {
         sprintf(buf, "$c000W$N$c000p belongs to the $c000W%s$c000p race.",
-                RaceName[GET_RACE(victim)]);
+                races[GET_RACE(victim)].racename);
         act(buf, FALSE, ch, 0, victim, TO_CHAR);
         if (level > 5) {
             exp = GetApprox(GET_EXP(victim), 40 + level);
@@ -4167,11 +4163,11 @@ void spell_know_monster(int level, struct char_data *ch,
         if (level > 15) {
             if (IS_SET(victim->hatefield, HATE_RACE)) {
                 sprintf(buf, "$c000W$N$c000p seems to hate the $c000W%s$c000p "
-                             "race", RaceName[victim->hates.race]);
+                             "race", races[victim->hates.race].racename);
                 act(buf, FALSE, ch, 0, victim, TO_CHAR);
             }
             if (IS_SET(victim->hatefield, HATE_CLASS)) {
-                sprintbit((unsigned) victim->hates.class, pc_class_types, buf2);
+                sprintclasses((unsigned) victim->hates.class, buf2);
                 sprintf(buf, "$c000W$N$c000p seems to hate the $c000W%s$c000p "
                              "class(es)", buf2);
                 act(buf, FALSE, ch, 0, victim, TO_CHAR);
@@ -4222,8 +4218,8 @@ void spell_know_monster(int level, struct char_data *ch,
             act(buf, FALSE, ch, 0, victim, TO_CHAR);
         }
 
-        ch_printf(ch, "$c000pDescription:$c000W \n\r%s",
-                  RaceDesc[victim->race]);
+        ch_printf(ch, "$c000pDescription:$c000W \n\r%s", 
+                      races[victim->race].desc);
     } else {
         send_to_char("Thats not a REAL monster\n\r", ch);
         return;

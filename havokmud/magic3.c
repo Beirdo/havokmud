@@ -13,7 +13,6 @@
  * Extern structures
  */
 
-
 #define TREE 6110
 #define GOLEM 38
 #define CREEPING_DEATH 39
@@ -1207,14 +1206,14 @@ void spell_reincarnate(int level, struct char_data *ch,
                 GET_MOVE(newch) = 1;
                 GET_POS(newch) = POSITION_SITTING;
 
-                newage = race_list[newrace].start;
+                newage = races[newrace].start;
                 newrace = GET_RACE(newch);
                 age2(newch, &my_age);
 
                 newch->player.time.birth -=
                     my_age.year * SECS_PER_MUD_YEAR * (-1);
                 newch->player.time.birth -=
-                    SECS_PER_MUD_YEAR * race_list[newrace].start;
+                    SECS_PER_MUD_YEAR * races[newrace].start;
 
                 save_char(newch, AUTO_RENT);
 

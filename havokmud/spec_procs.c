@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define INQ_SHOUT 1
 #define INQ_LOOSE 0
@@ -22,24 +23,6 @@
 /*
  * external vars
  */
-
-extern struct room_data *world;
-extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
-extern struct index_data *obj_index;
-extern struct time_info_data time_info;
-extern struct index_data *mob_index;
-extern struct weather_data weather_info;
-extern int      top_of_world;
-extern struct int_app_type int_app[26];
-extern int      RacialMax[][MAX_CLASS];
-
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
-extern char    *dirs[];
-
-extern int      drink_aff[][3];
-extern struct weather_data weather_info;
 
 
 /*
@@ -2680,7 +2663,7 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
          int type)
 {
 
-    static char     buf[256];
+    char            buf[256];
     int             money;
 
     money = advatoi(arg);
@@ -2702,8 +2685,8 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
      */
     if (cmd == 219) {
         if (HasClass(ch, CLASS_MONK) && (GetMaxLevel(ch) < 40)) {
-            send_to_char
-                ("Your vows forbid you to retain personal wealth\n\r", ch);
+            send_to_char("Your vows forbid you to retain personal wealth\n\r",
+                         ch);
             return (TRUE);
         }
 
@@ -4227,7 +4210,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
         }
 
         sprintf(buf, "%s picks you up and throws you %s\n\r",
-                ch->player.short_descr, dirs[dir]);
+                ch->player.short_descr, direction[dir].dir);
         send_to_char(buf, v);
 
         or = v->in_room;

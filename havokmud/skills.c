@@ -225,7 +225,6 @@ void do_track(struct char_data *ch, char *argument, int cmd)
                     code;
     struct hunting_data huntd;
     struct char_data *scan;
-    extern struct char_data *character_list;
 
 #ifndef USE_TRACK
     send_to_char("Sorry, tracking is disabled. Try again after reboot.\n\r",
@@ -310,7 +309,8 @@ void do_track(struct char_data *ch, char *argument, int cmd)
         send_to_char("You are unable to find traces of one.\n\r", ch);
     } else if (IS_LIGHT(ch->in_room) || IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
         SET_BIT(ch->specials.act, PLR_HUNTING);
-        sprintf(buf, "You see traces of your quarry to the %s\n\r", dirs[code]);
+        sprintf(buf, "You see traces of your quarry to the %s\n\r", 
+                direction[code].dir);
         send_to_char(buf, ch);
     } else {
         ch->specials.hunting = 0;
@@ -348,7 +348,8 @@ int track(struct char_data *ch, struct char_data *vict)
         send_to_char("##You have lost the trail.\n\r", ch);
         return (FALSE);
     } else {
-        sprintf(buf, "##You see a faint trail to the %s\n\r", dirs[code]);
+        sprintf(buf, "##You see a faint trail to the %s\n\r", 
+                direction[code].dir);
         send_to_char(buf, ch);
         return (TRUE);
     }
@@ -381,7 +382,8 @@ int dir_track(struct char_data *ch, struct char_data *vict)
         }
         return (-1);
     } else {
-        sprintf(buf, "##You see a faint trail to the %s\n\r", dirs[code]);
+        sprintf(buf, "##You see a faint trail to the %s\n\r", 
+                direction[code].dir);
         send_to_char(buf, ch);
         return (code);
     }
@@ -639,7 +641,6 @@ void slam_into_wall(struct char_data *ch,
  */
 void do_doorbash(struct char_data *ch, char *arg, int cmd)
 {
-    extern char    *dirs[];
     int             dir;
     int             ok;
     struct room_direction_data *exitp;
@@ -647,7 +648,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
                     roll;
     char            buf[256],
                    *type,
-                   *direction;
+                   *direct;
 
     if (!ch->skills) {
         return;
@@ -666,9 +667,9 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
      * make sure that the argument is a direction, or a keyword. 
      */
     arg = get_argument(arg, &type);
-    arg = get_argument(arg, &direction);
+    arg = get_argument(arg, &direct);
 
-    if ((dir = find_door(ch, type, direction)) >= 0) {
+    if ((dir = find_door(ch, type, direct)) >= 0) {
         ok = TRUE;
     } else {
         act("$n looks around, bewildered.", FALSE, ch, 0, 0, TO_ROOM);
@@ -703,9 +704,9 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
     }
 #endif
 
-    sprintf(buf, "$n charges %swards", dirs[dir]);
+    sprintf(buf, "$n charges %swards", direction[dir].dir);
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-    sprintf(buf, "You charge %swards\n\r", dirs[dir]);
+    sprintf(buf, "You charge %swards\n\r", direction[dir].dir);
     send_to_char(buf, ch);
 
     if (!IS_SET(exitp->exit_info, EX_CLOSED)) {
@@ -1111,15 +1112,13 @@ void do_disguise(struct char_data *ch, char *argument, int cmd)
  */
 void do_climb(struct char_data *ch, char *arg, int cmd)
 {
-    extern char    *dirs[];
     int             dir;
     struct room_direction_data *exitp;
     int             was_in,
                     roll;
-    extern char    *dirs[];
 
     char            buf[256],
-                   *direction;
+                   *direct;
 
     if (GET_MOVE(ch) < 10) {
         send_to_char("You're too tired to do that\n\r", ch);
@@ -1135,8 +1134,8 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
      * make sure that the argument is a direction, or a keyword. 
      */
 
-    arg = get_argument(arg, &direction);
-    if (!direction || (dir = search_block(direction, dirs, FALSE)) < 0) {
+    arg = get_argument(arg, &direct);
+    if (!direct || (dir = find_direction(direct)) < 0) {
         send_to_char("You can't climb that way.\n\r", ch);
         return;
     }
@@ -1164,9 +1163,9 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    sprintf(buf, "$n attempts to climb %swards", dirs[dir]);
+    sprintf(buf, "$n attempts to climb %swards", direction[dir].dir);
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-    sprintf(buf, "You attempt to climb %swards\n\r", dirs[dir]);
+    sprintf(buf, "You attempt to climb %swards\n\r", direction[dir].dir);
     send_to_char(buf, ch);
 
     GET_MOVE(ch) -= 10;

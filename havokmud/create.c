@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define MAIN_MENU           0
 #define CHANGE_NAME         1
@@ -36,9 +37,6 @@
 
 #define ENTER_CHECK        1
 
-extern const char *room_bits[];
-extern const char *exit_bits[];
-extern const char *sector_types[];
 
 char           *edit_menu =
     "    1) Name                       2) Description\n\r"
@@ -156,7 +154,7 @@ void UpdateRoomMenu(struct char_data *ch)
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 1, 60);
     send_to_char(buf, ch);
-    sprintf(buf, "Sector Type: %s", sector_types[rp->sector_type]);
+    sprintf(buf, "Sector Type: %s", sectors[rp->sector_type].type);
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 3, 1);
     send_to_char(buf, ch);
@@ -368,7 +366,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg,
 
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
-    sprintf(buf, "Sector Type: %s", sector_types[rp->sector_type]);
+    sprintf(buf, "Sector Type: %s", sectors[rp->sector_type].type);
     send_to_char(buf, ch);
 
     row = 0;
@@ -378,7 +376,7 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg,
             row++;
         }
         send_to_char(buf, ch);
-        sprintf(buf, "%-2d %s", i + 1, sector_types[i]);
+        sprintf(buf, "%-2d %s", i + 1, sectors[i].type);
         send_to_char(buf, ch);
     }
 

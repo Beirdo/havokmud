@@ -15,146 +15,16 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 #include "version.h"
+#include "externs.h"
+
 #define NEWHELP_FILE      "ADD_HELP"    /* New help to add (In db.h too) */
 
-/*
- * extern variables
- */
-extern struct zone_data *zone_table;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db;
-#endif
-extern struct descriptor_data *descriptor_list;
-extern struct char_data *character_list;
-extern struct obj_data *object_list;
-
-extern int      top_of_world;
-extern int      top_of_zone_table;
-extern int      top_of_mobt;
-extern int      top_of_objt;
-extern int      top_of_p_table;
-
-extern char    *exits[];
-extern char    *credits;
-extern char    *news;
-extern char    *info;
-
-extern char     wizlist[MAX_STRING_LENGTH];
-extern char     iwizlist[MAX_STRING_LENGTH];
-extern char    *dirs[];
-extern char    *where[];
-extern char    *color_liquid[];
-extern char    *fullness[];
-extern char    *RaceName[];
-extern int      RacialMax[][MAX_CLASS];
-extern char    *spell_desc[];
-extern char    *spells[];
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
-extern char    *system_flag_types[];
-extern char    *exits[];
-extern char    *listexits[];
-extern struct index_data *mob_index;
-extern char    *item_types[];
-extern char    *extra_bits[];
-extern char    *apply_types[];
-extern char    *affected_bits[];
-extern char    *affected_bits2[];
-extern char    *immunity_names[];
-extern time_t   Uptime;
-extern long     room_count;
-extern long     mob_count;
-extern long     obj_count;
-extern long     total_connections;
-extern long     total_max_players;
-extern long     SystemFlags;
-extern char    *spells[];
-extern int      spell_status[];
-extern const char *connected_types[];
-extern struct radix_list radix_head[];
-extern int      top_of_wizhelpt;
-extern struct help_index_element *wizhelp_index;
-extern FILE    *wizhelp_fl;
-extern struct radix_list radix_head[];
-extern int      top_of_helpt;
-extern struct help_index_element *help_index;
-extern FILE    *help_fl;
-extern char     help[MAX_STRING_LENGTH];
-extern struct weather_data weather_info;
-extern struct time_info_data time_info;
-extern const char *weekdays[];
-extern const char *month_name[];
-extern char    *RaceNames[];
-extern const char *fight_styles[];
-extern struct skillset warninjaskills[];
-extern struct skillset thfninjaskills[];
-extern struct skillset allninjaskills[];
-extern struct skillset loreskills[];
-extern struct skillset hunterskills[];
-extern struct skillset warmonkskills[];
-extern struct skillset archerskills[];
-extern const struct clan clan_list[MAX_CLAN];
-extern const char *languagelist[];
-extern const struct class_def classes[MAX_CLASS];
-
-/*
- * extern functions
- */
-
-void            abort(void);
-void            Log(char *s);
 int             GET_RADIUS(struct char_data *ch);
-int             IS_UNDERGROUND(struct char_data *ch);
-int             MobLevBonus(struct char_data *ch);
-int             bitvector_num(int temp);
-int             clearpath(struct char_data *ch, long room, int direc);
-int             atoi(const char *s);
-int             CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
-void            ch_printf(struct char_data *ch, char *fmt, ...);
-char           *formatNum(int foo);
-char           *DescAge(int age, int race);
-int             pc_num_class(int clss);
-int             color_strlen(struct char_data *ch, char *arg, int cmd);
-
-int             isname2(const char *str, const char *namelist);
-struct time_info_data age(struct char_data *ch);
-void            page_string(struct descriptor_data *d, char *str,
-                            int keep_internal);
-int             track(struct char_data *ch, struct char_data *vict);
-int             GetApprox(int num, int perc);
-int             SpyCheck(struct char_data *ch);
-int             remove_trap(struct char_data *ch, struct obj_data *trap);
 void            do_actual_wiz_help(struct char_data *ch, char *argument,
                                    int cmd);
-
-struct obj_data *get_obj_in_list_vis(struct char_data *ch, char *name,
-                                     struct obj_data *list);
-
-/*
- * intern functions
- */
-
-void            list_obj_to_char(struct obj_data *list,
-                                 struct char_data *ch, int mode,
-                                 bool show);
-char           *DescDamage(float dam);
-char           *DescRatio(float f);
-/*
- * theirs / yours
- */
-char           *DamRollDesc(int a);
-char           *HitRollDesc(int a);
-char           *ArmorDesc(int a);
-char           *AlignDesc(int a);
-char           *DescAttacks(float a);
-
-long            CalcPowerLevel(struct char_data *ch);
-char           *PowerLevelDesc(long a);
-
-
+int             MobLevBonus(struct char_data *ch);
 
 
 int singular(struct obj_data *o)
@@ -632,7 +502,6 @@ void list_obj_to_char(struct obj_data *list, struct char_data *ch,
 
 void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
 {
-
     char            buffer[MAX_STRING_LENGTH],
                     buf[MAX_STRING_LENGTH];
     int             j,
@@ -650,31 +519,24 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
     }
 
     if (mode == 0) {
-
         /*
          * Don't show linkdead imms to mortals, messy stuff -Lennya
          */
-        if (!IS_NPC(i) && IS_IMMORTAL(i) && IS_LINKDEAD(i)
-            && !IS_IMMORTAL(ch)) {
+        if (!IS_NPC(i) && IS_IMMORTAL(i) && IS_LINKDEAD(i) &&
+            !IS_IMMORTAL(ch)) {
             return;
 		}
 
-        if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch, i))
-            && !IS_IMMORTAL(ch)) {
-            if (IS_AFFECTED(ch, AFF_SENSE_LIFE) && !IS_IMMORTAL(i)) {
-                send_to_char
-                    ("You sense a hidden life form in the room.\n\r", ch);
-                return;
-            } else {
-                return;
-            }
+        if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch, i)) && 
+            !IS_IMMORTAL(ch) && IS_AFFECTED(ch, AFF_SENSE_LIFE) && 
+            !IS_IMMORTAL(i)) {
+
+            send_to_char("You sense a hidden life form in the room.\n\r", ch);
+            return;
         }
-        /*
-         *sprintf(buffer,""); lets see if below is more effective.
-         */
+
         *buffer = '\0';
-        if (!(i->player.long_descr)
-            || (GET_POS(i) != i->specials.default_pos)) {
+        if (!i->player.long_descr || GET_POS(i) != i->specials.default_pos) {
             /*
              * A player char or a mobile without long descr, or not in
              * default pos.
@@ -944,7 +806,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
          */
 
         if (IS_PC(i)) {
-            sprintf(buffer, "$n is %s", RaceName[GET_RACE(i)]);
+            sprintf(buffer, "$n is %s", races[GET_RACE(i)].racename);
             act(buffer, FALSE, i, 0, ch, TO_VICT);
         }
 
@@ -1004,9 +866,10 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
         for (aff = i->affected; aff; aff = aff->next) {
             if (aff->type < MAX_EXIST_SPELL) {
                 otype = -1;
-                if (spell_desc[aff->type] && *spell_desc[aff->type]) {
+                if (skills[aff->type].message[MSG_SKILL_DESCRIPTIVE]) {
                     if (aff->type != otype) {
-                        act(spell_desc[aff->type], FALSE, i, 0, ch,
+                        act(skills[aff->type].message[MSG_SKILL_DESCRIPTIVE],
+                            FALSE, i, 0, ch,
                             TO_VICT);
                         otype = aff->type;
                     }
@@ -1140,9 +1003,10 @@ void glance_at_char(struct char_data *i, struct char_data *ch)
     for (aff = i->affected; aff; aff = aff->next) {
         if (aff->type < MAX_EXIST_SPELL) {
             otype = -1;
-            if (spell_desc[aff->type] && *spell_desc[aff->type]) {
+            if (skills[aff->type].message[MSG_SKILL_DESCRIPTIVE]) {
                 if (aff->type != otype) {
-                    act(spell_desc[aff->type], FALSE, i, 0, ch, TO_VICT);
+                    act(skills[aff->type].message[MSG_SKILL_DESCRIPTIVE], 
+                        FALSE, i, 0, ch, TO_VICT);
                     otype = aff->type;
                 }
 			}
@@ -1666,7 +1530,7 @@ void list_exits_in_room(struct char_data *ch)
                     if ((!IS_SET(exitdata->exit_info, EX_SECRET) ||
                          IS_IMMORTAL(ch)) ||
                         (IS_SET(exitdata->exit_info, EX_SECRET) && seeit)) {
-                        sprintf(buf2, " %s", listexits[door]);
+                        sprintf(buf2, " %s", direction[door].listexit);
                         strcat(buf, buf2);
                         if (IS_SET(exitdata->exit_info, EX_CLOSED)) {
                             strcat(buf, "$c0015 (closed)");
@@ -1819,10 +1683,11 @@ void do_look(struct char_data *ch, char *argument, int cmd)
                  !IS_SET(exitp->exit_info, EX_CLOSED))) {
 
                 if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch)) {
-                    sprintf(buffer, "You look %swards.\n\r", dirs[keyword_no]);
+                    sprintf(buffer, "You look %swards.\n\r", 
+                            direction[keyword_no].dir);
                     send_to_char(buffer, ch);
 
-                    sprintf(buffer, "$n looks %swards.", dirs[keyword_no]);
+                    sprintf(buffer, "$n looks %swards.", direction[keyword_no].dir);
                     act(buffer, FALSE, ch, 0, 0, TO_ROOM);
 
                     rp = real_roomp(exitp->to_room);
@@ -2144,11 +2009,9 @@ int GET_RADIUS(struct char_data *ch)
 /*
  * end of look
  */
-extern int      map[7][7];
 
 void print_map(struct char_data *ch)
 {
-    extern const char *sector_char[];
     char            buf[MAX_STRING_LENGTH];
     int             x,
                     y;
@@ -2166,7 +2029,7 @@ void print_map(struct char_data *ch)
             } else {
                 sprintf(buf + strlen(buf), "%s",
                         map[x][y] - 1 <
-                        0 ? "$c000w:" : sector_char[map[x][y] - 1]);
+                        0 ? "$c000w:" : sectors[map[x][y] - 1].mapChar);
 			}
         }
         strcat(buf, "$c000w|\n\r");
@@ -2387,13 +2250,13 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
                  * don't print unless immortal
                  */
                 if (IS_IMMORTAL(ch)) {
-                    sprintf(buf + strlen(buf),
-                            "%s - swirling chaos of #%ld\n\r", exits[door],
-                            exitdata->to_room);
+                    sprintf(&buf[strlen(buf)],
+                            "%s - swirling chaos of #%ld\n\r",
+                            direction[door].exit, exitdata->to_room);
                 }
             } else if (exitdata->to_room != NOWHERE) {
                 if (IS_IMMORTAL(ch)) {
-                    sprintf(buf + strlen(buf), "%s - %s", exits[door],
+                    sprintf(&buf[strlen(buf)], "%s - %s", direction[door].exit,
                             real_roomp(exitdata->to_room)->name);
                     if (IS_SET(exitdata->exit_info, EX_SECRET)) {
                         strcat(buf, " (secret)");
@@ -2404,16 +2267,16 @@ void do_exits(struct char_data *ch, char *argument, int cmd)
                     if (IS_DARK(exitdata->to_room)) {
                         strcat(buf, " (dark)");
 					}
-                    sprintf(buf + strlen(buf), " #%ld\n\r",
+                    sprintf(&buf[strlen(buf)], " #%ld\n\r",
                             exitdata->to_room);
                 } else if (!IS_SET(exitdata->exit_info, EX_CLOSED) &&
                            !IS_SET(exitdata->exit_info, EX_SECRET)) {
                     if (IS_DARK(exitdata->to_room)) {
-                        sprintf(buf + strlen(buf),
-                                "%s - Too dark to tell\n\r", exits[door]);
+                        sprintf(&buf[strlen(buf)], "%s - Too dark to tell\n\r", 
+                                direction[door].exit);
                     } else {
-                        sprintf(buf + strlen(buf), "%s - %s\n\r",
-                                exits[door],
+                        sprintf(&buf[strlen(buf)], "%s - %s\n\r",
+                                direction[door].exit,
                                 real_roomp(exitdata->to_room)->name);
 					}
                 }
@@ -2479,8 +2342,8 @@ void do_score(struct char_data *ch, char *argument, int cmd)
 	}
     ch_printf(ch, "%sYou belong to the %s%s%s race, and speak the %s%s%s "
                   "language.\n\r",
-              color, color2, RaceName[GET_RACE(ch)], color, color2,
-              languagelist[ch->player.speaks], color);
+              color, color2, races[GET_RACE(ch)].racename, color, color2,
+              languages[ch->player.speaks-1].name, color);
 
     ch_printf(ch, "%sYou have %s%d%s($c0011%d%s) hit, %s%d%s($c0011%d%s) mana,"
                   " %s%d%s($c0011%d%s) mv points.\n\r",
@@ -2686,15 +2549,14 @@ void do_weather(struct char_data *ch, char *argument, int cmd)
         "rainy",
         "lit by flashes of lightning"
     };
-    static char     buf[1024];
 
     dlog("in do_weather");
 
     if (OUTSIDE(ch)) {
-        sprintf(buf, "The sky is %s and %s.\n\r", sky_look[weather_info.sky],
-                (weather_info.change >= 0 ? "you feel a warm wind from south" :
-                 "your foot tells you bad weather is due"));
-        send_to_char(buf, ch);
+        ch_printf(ch, "The sky is %s and %s.\n\r", sky_look[weather_info.sky],
+                  (weather_info.change >= 0 ? 
+                   "you feel a warm wind from south" :
+                   "your foot tells you bad weather is due"));
     } else {
         send_to_char("You have no feeling about the weather at all.\n\r", ch);
 	}
@@ -2709,8 +2571,6 @@ void do_list_zones(struct char_data *ch, char *argument, int cmd)
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
-
-    FILE           *fl;
 
     int             i,
                     match,
@@ -2805,13 +2665,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         /*
          * add query to ADD_HELP
          */
-        if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-            Log("Could not open the ADD_HELP-file.\n\r");
-            return;
-        }
-
-        fprintf(fl, "**%s: help %s\n", GET_NAME(ch), argument);
-        fclose(fl);
+        db_report_entry( REPORT_HELP, ch, argument );
         return;
     }
 
@@ -3008,13 +2862,14 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
 char           *GetLevelTitle(struct char_data *ch)
 {
     char            color[25];
-    int             level = GetMaxLevel(ch);
-    static char     buf[256] = "";
+    int             level;
+    static char     buf[256];
 
     int             class = 0;
-    /*
-     * int exp = 0;
-     */
+
+
+    level = GetMaxLevel(ch);
+    buf[0] = '\0';
 
     /*
      * get color of title
@@ -3110,9 +2965,9 @@ char           *GetLevelTitle(struct char_data *ch)
 char           *SPECIAL_FLAGS(struct char_data *ch,
                               struct char_data *person)
 {
-    static char     buffer[MAX_STRING_LENGTH] = "";
+    static char     buffer[MAX_STRING_LENGTH];
 
-    sprintf(buffer, "%s", "");
+    buffer[0] = '\0';
 
     if (IS_SET(person->player.user_flags, NEW_USER)) {
         sprintf(buffer, "%s$c000G[$c000WNEW$c000G]$c0007", buffer);
@@ -3137,7 +2992,6 @@ char           *SPECIAL_FLAGS(struct char_data *ch,
      */
 
     return buffer;
-
 }
 
 char           *PrintTitle(struct char_data *person, char type)
@@ -3151,7 +3005,7 @@ char           *PrintTitle(struct char_data *person, char type)
     switch (type) {
     case 'r':
         sprintf(buffer, "%s     [ $c000BRace - < $c000W%s$c000B >$c000w ]", 
-                GET_NAME(person), RaceName[GET_RACE(person)]);
+                GET_NAME(person), races[GET_RACE(person)].racename);
         break;
 
     case 'i':
@@ -3912,23 +3766,16 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
         break;
     }
 
-    RaceMax = RacialMax[GET_RACE(ch)][class];
+    RaceMax = races[GET_RACE(ch)].racialMax[class];
 
     buf[0] = 0;
 
     for (i = 1; i <= RaceMax; i++) {
-        /*
-         * crashed in sprintf here, see if you can figure out why. msw,
-         * 8/24/94
-         */
         sprintf(buf2, "[%2d] %9ld-%-9ld : %s\n\r", i,
                 classes[class].levels[i].exp, classes[class].levels[i + 1].exp,
                 (GET_SEX(ch) == SEX_FEMALE ?
                  classes[class].levels[i].title_f : 
                  classes[class].levels[i].title_m));
-        /*
-         * send_to_char(buf, ch);
-         */
         strcat(buf, buf2);
     }
     strcat(buf, "\n\r");
@@ -4184,8 +4031,6 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
     short           last_type = 0;
     char            buf2[MAX_STRING_LENGTH];
     struct obj_data *j = 0;
-    extern char    *affected_bits[];
-    extern char    *affected_bits2[];
     char            color1[10],
                     color2[10];
 
@@ -4766,21 +4611,24 @@ void show_class_skills(struct char_data *ch, char *buffer, int classnum,
     }
     strcat( buffer, buf );
 
-    show_skills( ch, buffer, classes[classnum].skills );
+    show_skills( ch, buffer, classes[classnum].skills, 
+                 classes[classnum].skillCount );
 
-    if (ch->specials.remortclass == classnum + 1) {
+    if (ch->specials.remortclass == classnum + 1 &&
+        classes[classnum].mainskillCount ) {
         if( skills ) {
             sprintf( buf, "\n\rSince you picked %s as your main class, you get"
                           " these bonus skills:\n\r", classes[classnum].name );
             strcat(buffer, buf);
         }
 
-        show_skills( ch, buffer, classes[classnum].mainskills );
+        show_skills( ch, buffer, classes[classnum].mainskills,
+                     classes[classnum].mainskillCount );
     }
 }
 
 void show_skills(struct char_data *ch, char *buffer, 
-                 const struct skillset *skills)
+                 const struct skillset *skills, int skillcount)
 {
     int             i;
     char            buf[254],
@@ -4793,7 +4641,7 @@ void show_skills(struct char_data *ch, char *buffer,
         sorc = FALSE;
     }
 
-    for( i = 0; skills[i].level != -1; i++ ) {
+    for( i = 0; i < skillcount; i++ ) {
         sprintf(buf, "[%-2d] %-30s %-15s", skills[i].level, skills[i].name,
                 how_good(ch->skills[skills[i].skillnum].learned));
 
@@ -4832,6 +4680,7 @@ char *list_knowns(struct char_data *ch, int index) {
     char *output;
     int skillflags = ch->skills[index].flags;
     int foundskills = 0;
+
     buf[0] = '\0';
 
     if(IS_SET(skillflags, SKILL_KNOWN_BARBARIAN)) {
@@ -5058,24 +4907,7 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
 
 void do_spot(struct char_data *ch, char *argument, int cmd)
 {
-    static char    *keywords[] = {
-        "north",
-        "east",
-        "south",
-        "west",
-        "up",
-        "down",
-        "\n"
-    };
-    char           *dir_desc[] = {
-        "to the north",
-        "to the east",
-        "to the south",
-        "to the west",
-        "upwards",
-        "downwards"
-    };
-    char           *rng_desc[] = {
+    static char           *rng_desc[] = {
         "right here",
         "immediately",
         "nearby",
@@ -5132,7 +4964,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
      */
     argument = get_argument(argument, &arg1);
 
-    if( !arg1 || (sd = search_block(arg1, keywords, FALSE)) == -1) {
+    if( !arg1 || (sd = find_direction(arg1)) == -1) {
         smin = 0;
         smax = 5;
         swt = 3;
@@ -5142,8 +4974,9 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
         smin = sd;
         smax = sd;
         swt = 1;
-        sprintf(buf, "$n peers intently %s.", dir_desc[sd]);
-        sprintf(buf2, "You peer intently %s, and see :\n\r", dir_desc[sd]);
+        sprintf(buf, "$n peers intently %s.", direction[sd].desc);
+        sprintf(buf2, "You peer intently %s, and see :\n\r",
+                direction[sd].desc);
     }
 
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
@@ -5178,11 +5011,11 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
                         if (IS_NPC(spud)) {
                             sprintf(buf, "%30s : %s %s\n\r",
                                     spud->player.short_descr,
-                                    rng_desc[range], dir_desc[i]);
+                                    rng_desc[range], direction[i].desc);
                         } else {
                             sprintf(buf, "%30s : %s %s\n\r",
                                     GET_NAME(spud), rng_desc[range],
-                                    dir_desc[i]);
+                                    direction[i].desc);
                         }
                         send_to_char(buf, ch);
                         nfnd++;
@@ -5203,24 +5036,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
 
 void do_scan(struct char_data *ch, char *argument, int cmd)
 {
-    static char    *keywords[] = {
-        "north",
-        "east",
-        "south",
-        "west",
-        "up",
-        "down",
-        "\n"
-    };
-    char           *dir_desc[] = {
-        "to the north",
-        "to the east",
-        "to the south",
-        "to the west",
-        "upwards",
-        "downwards"
-    };
-    char           *rng_desc[] = {
+    static char           *rng_desc[] = {
         "right here",
         "immediately",
         "nearby",
@@ -5263,22 +5079,26 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         }
 
         if (dice(1, 101) > ch->skills[SKILL_SPOT].learned) {
+            /*
+             * failed
+             */
             send_to_char("Absolutely no-one anywhere.\n\r", ch);
             WAIT_STATE(ch, 2);
             return;
         }
-        max_range = 2;
 
+        max_range = 2;
     }
 
     argument = get_argument(argument, &arg1);
 
-    if( arg1 && (sd = search_block(arg1, keywords, FALSE)) != -1 ) {
+    if( arg1 && (sd = find_direction(arg1)) != -1 ) {
         smin = sd;
         smax = sd;
         swt = 1;
-        sprintf(buf, "$n peers intently %s.", dir_desc[sd]);
-        sprintf(buf2, "You peer intently %s, and see :\n\r", dir_desc[sd]);
+        sprintf(buf, "$n peers intently %s.", direction[sd].desc);
+        sprintf(buf2, "You peer intently %s, and see :\n\r", 
+                direction[sd].desc);
     } else if (arg1 && (spud = get_char_room_vis(ch, arg1))) {
         sprintf(buf, "$n peers intently at $N.");
         sprintf(buf2, "You peer intently at $N.  You sense an aura power "
@@ -5329,25 +5149,11 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                         if (IS_NPC(spud)) {
                             sprintf(buf, "You sense a %s aura %s %s.\n\r",
                                     PowerLevelDesc(CalcPowerLevel(spud)),
-                                    rng_desc[range], dir_desc[i]);
-                            /*
-                             * spud->player.short_descr
-                             *
-                             *
-                             * if (IS_IMMORTAL(ch)) {
-                             * sprintf(buf,"[%s]->%s",buf,spud->player.short_descr);
-                             * }
-                             */
+                                    rng_desc[range], direction[i].desc);
                         } else {
                             sprintf(buf, "You sense a %s aura %s %s.\n\r",
                                     PowerLevelDesc(CalcPowerLevel(spud)),
-                                    rng_desc[range], dir_desc[i]);
-
-                            /*
-                             * if (IS_IMMORTAL(ch)) {
-                             * sprintf(buf,"[%s]->%s",buf,GET_NAME(spud));
-                             * }
-                             */
+                                    rng_desc[range], direction[i].desc);
                         }
                         send_to_char(buf, ch);
                         nfnd++;
@@ -5372,7 +5178,6 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
 long CalcPowerLevel(struct char_data *ch)
 {
     long            power;
-    extern struct str_app_type str_app[];
     int             hitroll,
                     damroll;
     if (IS_IMMORTAL(ch)) {
@@ -5522,11 +5327,11 @@ int can_see_linear(struct char_data *ch, struct char_data *targ, int *rng,
     return -1;
 }
 
-struct char_data *get_char_linear(struct char_data *ch, char *arg, int *rf,
-                                  int *df)
 /*
  * Returns direction if can see, -1 if not
  */
+struct char_data *get_char_linear(struct char_data *ch, char *arg, int *rf,
+                                  int *df)
 {
     int             i,
                     rm,
@@ -5859,9 +5664,6 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
                     clan = 0,
                     length = 35,
                     clength = 0;
-    extern int      top_of_p_table;
-    extern struct player_index_element *player_table;
-    extern const struct clan clan_list[MAX_CLAN];
 
     if (!ch) {
         return;
@@ -5874,7 +5676,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
         send_to_char("              $c000c-=* $c0008Clan List $c000c*=-\n\r",
                      ch);
         send_to_char("\n\r", ch);
-        for ( x = 1; x < MAX_CLAN; x++ ) {
+        for ( x = 1; x < clanCount; x++ ) {
             if (clan_list[x].number == -1) {
                 continue;
             }
@@ -5901,8 +5703,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
     }
     
     clan = atoi(arg);
-    /* NOTE: the clan_list[] table is indexed 0 - MAX_CLAN-1, 0 is a null */
-    if (clan < 1 || clan >= MAX_CLAN) {
+    /* NOTE: the clan_list[] table is indexed 0 - clanCount-1, 0 is a null */
+    if (clan < 1 || clan >= clanCount) {
         send_to_char("Unknown clan number.\n\r", ch);
         return;
     } 
@@ -5973,7 +5775,6 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 void do_weapons(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_STRING_LENGTH];
-    extern const struct skillset weaponskills[];
 
     if (!ch) {
         return;
@@ -6039,7 +5840,6 @@ void do_allweapons(struct char_data *ch, char *argument, int cmd)
     int             i;
     char            buf[MAX_STRING_LENGTH],
                     shbuf[500];
-    extern const struct skillset weaponskills[];
 
     dlog("in do_allweapons");
 

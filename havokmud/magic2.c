@@ -122,15 +122,8 @@ void spell_resurrection(int level, struct char_data *ch,
             rewind(fl);
             fseek(fl, obj->char_f_pos * sizeof(struct char_file_u), 0);
             fread(&st, sizeof(struct char_file_u), 1, fl);
-            /*
-             * this is a serious kludge, and must be changed before multiple
-             * languages can be implemented
-             */
-#if 0
-            if (st.talks[2] && st.abilities.con > 3) {
-#else
+
             if (!get_char(st.name) && st.abilities.con > 3) {
-#endif
                 st.points.exp *= 2;
                 st.points.leadership_exp *= 2;
                 st.m_deaths--;

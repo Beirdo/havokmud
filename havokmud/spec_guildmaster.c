@@ -5,33 +5,18 @@
 #include <ctype.h>
 
 #include "protos.h"
+#include "externs.h"
 
 /*
  * external vars
  */
 
-extern struct skillset weaponskills[];
-extern struct skillset loreskills[];
-extern struct skillset warmonkskills[];
-extern struct skillset archerskills[];
-extern struct skillset allninjaskills[];
-extern struct skillset warninjaskills[];
-extern struct skillset thfninjaskills[];
-extern struct skillset styleskillset[];
-extern char    *spells[];
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
-
-extern int      RacialMax[][MAX_CLASS];
-
-extern struct int_app_type int_app[26];
-extern const struct class_def classes[MAX_CLASS];
 
 
 void PrintSkills(struct char_data *ch, int level,
-                 const struct skillset *skills, char *buffer);
-int LearnSkill(struct char_data *ch, const struct skillset *skills, char *arg,
-               int level, char *teacher, int charge);
+                 const struct skillset *skills, int skillCount, char *buffer);
+int LearnSkill(struct char_data *ch, const struct skillset *skills, 
+               int skillCount, char *arg, int level, char *teacher, int charge);
 int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                          struct char_data *mob, int type, int class_bit, 
                          int level_ind);
@@ -150,24 +135,30 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
             strcat(buffer, buf);
             PrintSkills(ch, GET_LEVEL(ch, level_ind),
-                        classes[level_ind].skills, buffer);
-            if (ch->specials.remortclass == level_ind + 1) {
+                        classes[level_ind].skills,
+                        classes[level_ind].skillCount, buffer);
+            if (ch->specials.remortclass == level_ind + 1 &&
+                classes[level_ind].mainskillCount) {
                 sprintf(buf, "\n\rSince you picked %s as your main "
                         "class, you get these bonus skills:\n\r\n\r",
                         guildmastername);
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, level_ind),
-                            classes[level_ind].mainskills, buffer);
+                            classes[level_ind].mainskills, 
+                            classes[level_ind].mainskillCount, buffer);
             }
             page_string(ch->desc, buffer, 1);
         } else {
-            if (LearnSkill(ch, classes[level_ind].skills, arg,
+            if (LearnSkill(ch, classes[level_ind].skills, 
+                           classes[level_ind].skillCount, arg,
                            GET_LEVEL(ch, level_ind), guildmastername, 0)) {
                 return (TRUE);
             }
 
             if (ch->specials.remortclass == level_ind + 1 &&
-                LearnSkill(ch, classes[level_ind].mainskills, arg,
+                classes[level_ind].mainskillCount &&
+                LearnSkill(ch, classes[level_ind].mainskills, 
+                           classes[level_ind].mainskillCount, arg,
                            GET_LEVEL(ch, level_ind), guildmastername, 0)) {
                 return (TRUE);
             }
@@ -291,10 +282,11 @@ int loremaster(struct char_data *ch, int cmd, char *arg,
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these lores:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, -1, loreskills, buffer);
+            PrintSkills(ch, -1, loreskills, loreskillCount, buffer);
             page_string(ch->desc, buffer, 1);
-        } else if( !LearnSkill(ch, loreskills, arg, GetMaxLevel(ch),
-                               "The loremaster", GetMaxLevel(ch) * 100) ) {
+        } else if( !LearnSkill(ch, loreskills, loreskillCount, arg, 
+                               GetMaxLevel(ch), "The loremaster", 
+                               GetMaxLevel(ch) * 100) ) {
             send_to_char("$c0013[$c0015The loremaster$c0013] tells you '"
                          "I do not know of that skill!'\n\r", ch);
         }
@@ -479,11 +471,11 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice this skill:\n\r\n\r");
             strcat(buffer, buf);
 
-            PrintSkills(ch, 50, archerskills, buffer);
+            PrintSkills(ch, 50, archerskills, archerskillCount, buffer);
             page_string(ch->desc, buffer, 1);
-        } else if( !LearnSkill(ch, archerskills, arg, GetMaxLevel(ch),
-                              "The archer instructor",
-                              GetMaxLevel(ch) * 100) ) {
+        } else if( !LearnSkill(ch, archerskills, archerskillCount, arg,
+                               GetMaxLevel(ch), "The archer instructor",
+                               GetMaxLevel(ch) * 100) ) {
             send_to_char("$c0013[$c0015The archer instructor$c0013] tells you"
                          " 'I do not know of that skill!'\n\r", ch);
         }
@@ -546,25 +538,29 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
                 sprintf(buf, "You can practice any of these skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, MONK_LEVEL_IND),
-                            classes[MONK_LEVEL_IND].skills, buffer);
+                            classes[MONK_LEVEL_IND].skills,
+                            classes[MONK_LEVEL_IND].skillCount, buffer);
 
                 if (ch->specials.remortclass == MONK_LEVEL_IND + 1) {
                     sprintf(buf, "\n\rSince you picked monk as your main "
                                  "class, you get these bonus skills:\n\r\n\r");
                     strcat(buffer, buf);
                     PrintSkills(ch, GET_LEVEL(ch, MONK_LEVEL_IND),
-                                classes[MONK_LEVEL_IND].mainskills, buffer);
+                                classes[MONK_LEVEL_IND].mainskills,
+                                classes[MONK_LEVEL_IND].mainskillCount, buffer);
                 }
                 page_string(ch->desc, buffer, 1);
             } else {
-                if( LearnSkill(ch, classes[MONK_LEVEL_IND].skills, arg,
+                if( LearnSkill(ch, classes[MONK_LEVEL_IND].skills, 
+                               classes[MONK_LEVEL_IND].skillCount, arg,
                                GET_LEVEL(ch, MONK_LEVEL_IND),
                                "The Monk Guildmaster", 0) ) {
                     return( TRUE );
                 }
 
                 if (ch->specials.remortclass == MONK_LEVEL_IND + 1 &&
-                    !LearnSkill(ch, classes[MONK_LEVEL_IND].mainskills, arg,
+                    !LearnSkill(ch, classes[MONK_LEVEL_IND].mainskills,
+                                classes[MONK_LEVEL_IND].mainskillCount, arg,
                                 GET_LEVEL(ch, MONK_LEVEL_IND),
                                 "The Monk Guildmaster", 0) ) {
                     send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] "
@@ -580,10 +576,10 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
                 sprintf(buf, "You can practice these skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, WARRIOR_LEVEL_IND),
-                            warmonkskills, buffer);
+                            warmonkskills, warmonkskillCount, buffer);
                 page_string(ch->desc, buffer, 1);
             } else {
-                if( LearnSkill(ch, warmonkskills, arg,
+                if( LearnSkill(ch, warmonkskills, warmonkskillCount, arg,
                                GET_LEVEL(ch, WARRIOR_LEVEL_IND),
                                "The Monk Guildmaster", 0) ) {
                     return (TRUE);
@@ -937,30 +933,30 @@ int ninja_master(struct char_data *ch, int cmd, char *arg,
             strcat(buffer, buf);
 
             if (HasClass(ch, CLASS_WARRIOR)) {
-                PrintSkills(ch, -1, warninjaskills, buffer);
+                PrintSkills(ch, -1, warninjaskills, warninjaskillCount, buffer);
             }
 
             if (HasClass(ch, CLASS_THIEF)) {
-                PrintSkills(ch, -1, thfninjaskills, buffer);
+                PrintSkills(ch, -1, thfninjaskills, thfninjaskillCount, buffer);
             }
 
-            PrintSkills(ch, -1, allninjaskills, buffer);
+            PrintSkills(ch, -1, allninjaskills, allninjaskillCount, buffer);
             page_string(ch->desc, buffer, 1);
         } else {
             if (HasClass(ch, CLASS_WARRIOR) &&
-                LearnSkill(ch, warninjaskills, arg, GetMaxLevel(ch),
-                           "The Ninja Master", 0) ) {
+                LearnSkill(ch, warninjaskills, warninjaskillCount, arg, 
+                           GetMaxLevel(ch), "The Ninja Master", 0) ) {
                 return( TRUE );
             }
 
             if (HasClass(ch, CLASS_THIEF) &&
-                LearnSkill(ch, thfninjaskills, arg, GetMaxLevel(ch),
-                           "The Ninja Master", 0) ) {
+                LearnSkill(ch, thfninjaskills, thfninjaskillCount, arg,
+                           GetMaxLevel(ch), "The Ninja Master", 0) ) {
                 return( TRUE );
             }
 
-            if (LearnSkill(ch, allninjaskills, arg, GetMaxLevel(ch),
-                           "The Ninja Master", 0) ) {
+            if (LearnSkill(ch, allninjaskills, allninjaskillCount, arg,
+                           GetMaxLevel(ch), "The Ninja Master", 0) ) {
                 return( TRUE );
             }
 
@@ -1245,12 +1241,13 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice any of these weapon "
                          "styles:\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, 50, weaponskills, buffer);
+            PrintSkills(ch, 50, weaponskills, weaponskillCount, buffer);
             page_string(ch->desc, buffer, 1);
             return (TRUE);
         }
 
-        if( !LearnSkill(ch, weaponskills, arg, 50, "Weapon Master", 0 ) ) {
+        if( !LearnSkill(ch, weaponskills, weaponskillCount, arg, 50,
+                        "Weapon Master", 0 ) ) {
             send_to_char("$c0013[$c0015Weapon Master$c0013] tells you '"
                          "I do not know of that skill!'\n\r", ch);
         }
@@ -1488,7 +1485,7 @@ char           *how_good(int percent)
 int GainLevel(struct char_data *ch, int class)
 {
     if (GET_EXP(ch) >= classes[class].levels[GET_LEVEL(ch, class) + 1].exp) {
-        if (GET_LEVEL(ch, class) < RacialMax[GET_RACE(ch)][class]) {
+        if (GET_LEVEL(ch, class) < races[GET_RACE(ch)].racialMax[class]) {
             if (GET_LEVEL(ch, class) < 50) {
                 send_to_char("You raise a level!\n\r", ch);
                 advance_level(ch, class);
@@ -1560,27 +1557,31 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
             strcat(buffer, buf);
             PrintSkills(ch, GET_LEVEL(ch, SORCERER_LEVEL_IND),
-                        classes[SORCERER_LEVEL_IND].skills, buffer);
+                        classes[SORCERER_LEVEL_IND].skills,
+                        classes[SORCERER_LEVEL_IND].skillCount, buffer);
 
             if (ch->specials.remortclass == SORCERER_LEVEL_IND + 1) {
                 sprintf(buf, "\n\rSince you picked sorcerer as your main class,"
                              " you get these bonus skills:\n\r\n\r");
                 strcat(buffer, buf);
                 PrintSkills(ch, GET_LEVEL(ch, SORCERER_LEVEL_IND),
-                            classes[SORCERER_LEVEL_IND].mainskills, buffer);
+                            classes[SORCERER_LEVEL_IND].mainskills,
+                            classes[SORCERER_LEVEL_IND].mainskillCount, buffer);
             }
             page_string(ch->desc, buffer, 1);
             return (TRUE);
         }
 
-        if( LearnSkill(ch, classes[SORCERER_LEVEL_IND].skills, arg,
+        if( LearnSkill(ch, classes[SORCERER_LEVEL_IND].skills, 
+                       classes[SORCERER_LEVEL_IND].skillCount, arg,
                        GET_LEVEL(ch, SORCERER_LEVEL_IND),
                        "The Sorcerer Guildmaster", 0 ) ) {
             return( TRUE );
         }
 
         if (ch->specials.remortclass == SORCERER_LEVEL_IND + 1 &&
-            LearnSkill(ch, classes[SORCERER_LEVEL_IND].mainskills, arg,
+            LearnSkill(ch, classes[SORCERER_LEVEL_IND].mainskills,
+                       classes[SORCERER_LEVEL_IND].mainskillCount, arg,
                        GET_LEVEL(ch, SORCERER_LEVEL_IND),
                        "The Sorcerer Guildmaster", 0 ) ) {
             return( TRUE );
@@ -1641,7 +1642,7 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
                          "Bear in mind.. training here costs two practice "
                          "points!\n\r\n\r");
             strcat(buffer, buf);
-            PrintSkills(ch, 50, styleskillset, buffer);
+            PrintSkills(ch, 50, styleskillset, styleskillCount, buffer);
             page_string(ch->desc, buffer, 1);
             return (TRUE);
         }
@@ -1652,8 +1653,8 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        if( LearnSkill(ch, styleskillset, arg, GetMaxLevel(ch), "Darkthorn",
-                       0 ) ) {
+        if( LearnSkill(ch, styleskillset, styleskillCount,  arg, 
+                       GetMaxLevel(ch), "Darkthorn", 0 ) ) {
             /*
              * LearnSkill already reduced practises by 1, these cost 2
              */
@@ -1670,7 +1671,7 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
 
 
 void PrintSkills(struct char_data *ch, int level,
-                 const struct skillset *skills, char *buffer)
+                 const struct skillset *skills, int skillcount, char *buffer)
 {
     int             i;
     char            buf[256];
@@ -1684,8 +1685,7 @@ void PrintSkills(struct char_data *ch, int level,
      * list by level, so new skills show at top of list
      */
     while (level != 0) {
-        i = 0;
-        while (skills[i].level != -1) {
+        for( i = 0; i < skillcount; i++ ) {
             if (level == -1 || skills[i].level == level) {
                 sprintf(buf, "[%-2d] %-30s %-15s",
                         skills[i].level, skills[i].name,
@@ -1702,7 +1702,6 @@ void PrintSkills(struct char_data *ch, int level,
                 strcat(buffer, buf);
                 strcat(buffer, "\r");
             }
-            i++;
         }
 
         if( level == -1 ) {
@@ -1714,13 +1713,13 @@ void PrintSkills(struct char_data *ch, int level,
 }
 
 
-int LearnSkill(struct char_data *ch, const struct skillset *skills, char *arg,
-               int level, char *teacher, int charge)
+int LearnSkill(struct char_data *ch, const struct skillset *skills, 
+               int skillcount, char *arg, int level, char *teacher, int charge)
 {
     int             i;
     int             percent = 0;
 
-    for(i = 0; skills[i].level != -1; i++) {
+    for(i = 0; i < skillcount; i++) {
         if (is_abbrev(arg, skills[i].name)) {
             if (skills[i].level > level) {
                 ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'You're not "

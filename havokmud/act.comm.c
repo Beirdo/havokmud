@@ -10,16 +10,8 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
-/*
- * extern variables
- */
-
-extern struct room_data *world;
-extern struct descriptor_data *descriptor_list;
-extern long     SystemFlags;
-
-void do_OOCemote(struct char_data *ch, char *argument, int cmd);
 
 void do_say(struct char_data *ch, char *argument, int cmd)
 {
@@ -86,7 +78,6 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
 {
     char            buf1[MAX_INPUT_LENGTH + 80];
     struct descriptor_data *i;
-    extern int      Silence;
 
     dlog("in do_shout");
 
@@ -161,7 +152,6 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
     char            buf2[MAX_INPUT_LENGTH + 80];
     char            buf3[MAX_INPUT_LENGTH + 80];
     struct descriptor_data *i;
-    extern int      Silence;
 
     dlog("in do_yell");
 
@@ -256,7 +246,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
 
 void do_commune(struct char_data *ch, char *argument, int cmd)
 {
-    static char     buf1[MAX_INPUT_LENGTH + 80];
+    char     buf[MAX_INPUT_LENGTH + 80];
     struct descriptor_data *i;
 
     dlog("in do_commune,think");
@@ -264,42 +254,33 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
     argument = skip_spaces(argument);
     if (!argument) {
         send_to_char("Communing among the gods is fine, but WHAT?\n\r", ch);
-	} else {
-        if (argument[0] == '%') {
-            do_OOCaction(ch, ++argument, cmd);
-            return;
-        } else if (argument[0] == '#') {
-            do_OOCemote(ch, ++argument, cmd);
-            return;
-        }
+        return;
+	} 
+    
+    if (argument[0] == '%') {
+        do_OOCaction(ch, ++argument, cmd);
+        return;
+    } 
+    
+    if (argument[0] == '#') {
+        do_OOCemote(ch, ++argument, cmd);
+        return;
+    }
 
-        if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            sprintf(buf1, "$c0012You think '%s'", argument);
-            act(buf1, FALSE, ch, 0, 0, TO_CHAR);
-        }
-        sprintf(buf1, "$c0012::$c0015$n$c0012:: '%s'", argument);
+    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+        sprintf(buf, "$c0012You think '%s'", argument);
+        act(buf, FALSE, ch, 0, 0, TO_CHAR);
+    }
+    sprintf(buf, "$c0012::$c0015$n$c0012:: '%s'", argument);
 
-        for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected
-                && !IS_NPC(i->character)
-                && !IS_SET(i->character->specials.act, PLR_NOSHOUT)
-                && IS_IMMORTAL(i->character)) {
-                act(buf1, 0, ch, 0, i->character, TO_VICT);
-			}
-		}
+    for (i = descriptor_list; i; i = i->next) {
+        if (i->character != ch && !i->connected && !IS_NPC(i->character) &&
+            !IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+            IS_IMMORTAL(i->character)) {
+            act(buf, 0, ch, 0, i->character, TO_VICT);
+        }
     }
 }
-
-#if 0
-void doTell(struct char_data *ch, struct char_data *mob,
-            struct obj_data *obj, char *sentence)
-{
-    char            buf[256];
-    sprintf(buf, "$c0013[$c0015%s$c0013] tells you '%s'", mob, sentence);
-
-    act(buf, FALSE, ch, obj, mob, TO_CHAR);
-}
-#endif
 
 void do_mobTell(struct char_data *ch, char *mob, char *sentence)
 {
@@ -712,21 +693,8 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
     char            buf[255];
     char           *arg;
     int             i;
-
-#define MAX_LANGS 10
-
-    char           *lang_list[MAX_LANGS] = {
-        "common",
-        "elvish",
-        "halfling",
-        "dwarvish",
-        "orcish",
-        "giantish",
-        "ogre",
-        "gnomish",
-        "all languages",
-        "godlike"
-    };
+    int             found;
+    int             lang = -1;
 
     dlog("in do_speak");
 
@@ -736,40 +704,29 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (strstr(arg, "common")) {
-        i = SPEAK_COMMON;
-    } else if (strstr(arg, "elvish")) {
-        i = SPEAK_ELVISH;
-    } else if (strstr(arg, "halfling")) {
-        i = SPEAK_HALFLING;
-    } else if (strstr(arg, "dwarvish")) {
-        i = SPEAK_DWARVISH;
-    } else if (strstr(arg, "orcish")) {
-        i = SPEAK_ORCISH;
-    } else if (strstr(arg, "giantish")) {
-        i = SPEAK_GIANTISH;
-    } else if (strstr(arg, "ogre")) {
-        i = SPEAK_OGRE;
-    } else if (strstr(arg, "gnomish")) {
-        i = SPEAK_GNOMISH;
-    } else if (strstr(arg, "all") && IS_IMMORTAL(ch)) {
-        i = SPEAK_ALL;
-    } else if (strstr(arg, "godlike") && IS_IMMORTAL(ch)) {
-        i = SPEAK_GODLIKE;
-    } else {
-        i = -1;
-	}
+    
+    for( i = 0, found = 1; i < languageCount && !found; i++ ) {
+        if( languages[i].name && 
+            !strncasecmp( arg, languages[i].name, strlen(arg) ) ) {
 
-    if (i == -1) {
-        send_to_char("Un-recognized language!\n\r", ch);
-        return;
+            found = 1;
+
+            if( languages[i].langSkill || IS_IMMORTAL(ch) ) {
+                lang = languages[i].langSpeaks;
+            } else {
+                send_to_char("Un-recognized language!\n\r", ch);
+                return;
+            }
+        }
     }
+
 
     /*
      * set language that we're gonna speak
      */
-    ch->player.speaks = i;
-    sprintf(buf, "You concentrate on speaking %s.\n\r", lang_list[i - 1]);
+    ch->player.speaks = lang;
+    sprintf(buf, "You concentrate on speaking %s.\n\r", 
+                 languages[lang - 1].name);
     send_to_char(buf, ch);
 }
 
@@ -1252,7 +1209,6 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
 {
     char            buf1[MAX_INPUT_LENGTH + 80];
     struct descriptor_data *i;
-    extern int      Silence;
 
     dlog("in do_ooc");
 

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define DUAL_WIELD(ch) (ch->equipment[WIELD] && ch->equipment[HOLD]&&\
                         ITEM_TYPE(ch->equipment[WIELD])==ITEM_WEAPON && \
@@ -41,7 +42,6 @@
  * Structures
  */
 
-extern struct index_data *obj_index;    /* Object maxxing */
 struct char_data *combat_list = 0;      /* head of l-list of fighting
                                          * chars */
 struct char_data *missile_list = 0;     /* head of l-list of fighting
@@ -56,42 +56,9 @@ char            DestroyedItems; /* set in MakeScraps */
 /*
  * External structures
  */
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db;
-#endif
-extern struct message_list fight_messages[MAX_MESSAGES];
-extern struct obj_data *object_list;
-extern struct index_data *mob_index;
-extern struct char_data *character_list;
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
-extern char    *spells[];
-extern char    *ItemDamType[];
-extern int      ItemSaveThrows[22][5];
-extern struct dex_app_type dex_app[];
-extern struct str_app_type str_app[];
-extern struct descriptor_data *descriptor_list;
-extern struct int_app_type int_app[26];
-extern struct wis_app_type wis_app[26];
-extern const struct skillset weaponskills[];
-extern char    *room_bits[];
-extern const struct class_def classes[MAX_CLASS];
 
 int             can_see_linear(struct char_data *ch,
                                struct char_data *targ, int *rng, int *dr);
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
 int             BarbarianToHitMagicBonus(struct char_data *ch);
 int             berserkthaco(struct char_data *ch);
 int             berserkdambonus(struct char_data *ch, int dam);
@@ -103,13 +70,11 @@ long            GroupLevelRatioExp(struct char_data *ch,
 char           *replace_string(char *str, char *weapon, char *weapon_s,
                                char *location_hit, char *location_hit_s);
 void            raw_kill_arena(struct char_data *ch);
-char           *fread_string(FILE * f1);
 
 
 void            DeleteHatreds(struct char_data *ch);
 int             IsMagicSpell(int spell_num);
 void            ch_printf(struct char_data *ch, char *fmt, ...);
-int             IS_UNDERGROUND(struct char_data *ch);
 int             clearpath(struct char_data *ch, long room, int direc);
  /*
   * Weapon attack texts
@@ -221,65 +186,6 @@ int RatioExp(struct char_data *ch, struct char_data *victim, int total)
     return (total);
 }
 
-void load_messages()
-{
-    FILE           *f1;
-    int             i,
-                    type;
-    struct message_type *messages;
-    char            chk[100];
-
-    if (!(f1 = fopen(MESS_FILE, "r"))) {
-        perror("read messages");
-        assert(0);
-    }
-
-    /*
-     * find the memset way of doing this...
-     */
-
-    for (i = 0; i < MAX_MESSAGES; i++) {
-        fight_messages[i].a_type = 0;
-        fight_messages[i].number_of_attacks = 0;
-        fight_messages[i].msg = 0;
-    }
-
-    fscanf(f1, " %s \n", chk);
-
-    i = 0;
-
-    while (*chk == 'M') {
-        fscanf(f1, " %d\n", &type);
-
-        if (i >= MAX_MESSAGES) {
-            Log("Too many combat messages.");
-            exit(0);
-        }
-
-        CREATE(messages, struct message_type, 1);
-        fight_messages[i].number_of_attacks++;
-        fight_messages[i].a_type = type;
-        messages->next = fight_messages[i].msg;
-        fight_messages[i].msg = messages;
-
-        messages->die_msg.attacker_msg = fread_string(f1);
-        messages->die_msg.victim_msg = fread_string(f1);
-        messages->die_msg.room_msg = fread_string(f1);
-        messages->miss_msg.attacker_msg = fread_string(f1);
-        messages->miss_msg.victim_msg = fread_string(f1);
-        messages->miss_msg.room_msg = fread_string(f1);
-        messages->hit_msg.attacker_msg = fread_string(f1);
-        messages->hit_msg.victim_msg = fread_string(f1);
-        messages->hit_msg.room_msg = fread_string(f1);
-        messages->god_msg.attacker_msg = fread_string(f1);
-        messages->god_msg.victim_msg = fread_string(f1);
-        messages->god_msg.room_msg = fread_string(f1);
-        fscanf(f1, " %s \n", chk);
-        i++;
-    }
-
-    fclose(f1);
-}
 
 void update_pos(struct char_data *victim)
 {
@@ -1383,6 +1289,7 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
     char           *cp;
 
     cp = buf;
+    *cp = '\0';
 
     for (; *str; str++) {
         if (*str == '#') {
@@ -2208,20 +2115,19 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 void DamageMessages(struct char_data *ch, struct char_data *v, int dam,
                     int attacktype)
 {
-    int             nr,
-                    max_hit,
+    int             max_hit,
                     i,
-                    j;
-    struct message_type *messages;
-    char            buf[500],
-                    chbuf[500],
-                    victbuf[500],
-                    rmbuf[500],
-                    dambuf[100];
+                    index,
+                    found;
+    char            buf[MAX_STRING_LENGTH],
+                   *chbuf,
+                   *victbuf,
+                   *rmbuf;
 
     /* filter out kicks, hard coded in do_kick */
-    if (attacktype == SKILL_KICK)
+    if (attacktype == SKILL_KICK) {
         return;
+    }
 
     if (attacktype >= TYPE_HIT && attacktype <= TYPE_STRIKE) {
         dam_message(dam, ch, v, attacktype);
@@ -2232,53 +2138,51 @@ void DamageMessages(struct char_data *ch, struct char_data *v, int dam,
             BrittleCheck(ch, v, dam);
         }
     } else {
-        for (i = 0; i < MAX_MESSAGES; i++) {
-            if (fight_messages[i].a_type == attacktype) {
-                nr = dice(1, fight_messages[i].number_of_attacks);
-                for (j = 1, messages = fight_messages[i].msg;
-                     (j < nr) && (messages); j++) {
-                    messages = messages->next;
-                }
+        for (i = 0, found = FALSE; i < fightMessageCount && !found; i++) {
+            if (fightMessages[i].a_type == attacktype) {
+                found = TRUE;
                 /*
-                 * fixed damage displays for spells/backstab/etc, Lennya
-                 * 20030326
+                 * fixed damage displays for spells/backstab/etc,
                  */
-                if (!IS_NPC(v) && (GetMaxLevel(v) > MAX_MORT)) {
-                    sprintf(chbuf, "%s", messages->god_msg.attacker_msg);
-                    sprintf(victbuf, "%s", messages->god_msg.victim_msg);
-                    sprintf(rmbuf, "%s", messages->god_msg.room_msg);
+                if (!IS_NPC(v) && IS_IMMORTAL(v)) {
+                    index = MSG_FIGHT_GOD_ATTACKER;
                 } else if (dam > 0) {
                     if (GET_POS(v) == POSITION_DEAD) {
-                        sprintf(chbuf, "%s", messages->die_msg.attacker_msg);
-                        sprintf(victbuf, "%s", messages->die_msg.victim_msg);
-                        sprintf(rmbuf, "%s", messages->die_msg.room_msg);
+                        index = MSG_FIGHT_DIE_ATTACKER;
                     } else {
-                        sprintf(chbuf, "%s", messages->hit_msg.attacker_msg);
-                        sprintf(victbuf, "%s", messages->hit_msg.victim_msg);
-                        sprintf(rmbuf, "%s", messages->hit_msg.room_msg);
+                        index = MSG_FIGHT_HIT_ATTACKER;
                     }
-                } else if (dam <= 0) {
-                    sprintf(chbuf, "%s", messages->miss_msg.attacker_msg);
-                    sprintf(victbuf, "%s", messages->miss_msg.victim_msg);
-                    sprintf(rmbuf, "%s", messages->miss_msg.room_msg);
+                } else {
+                    index = MSG_FIGHT_MISS_ATTACKER;
                 }
 
-                /*
-                 * add the damage display for imms and legends
-                 */
-                if (GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) ||
-                    IS_SET(ch->specials.act, PLR_LEGEND)) {
-                    if (dam < 0) {
-                        dam = 0;
+                chbuf   = fightMessages[i].msg[index];
+                victbuf = fightMessages[i].msg[index+1];
+                rmbuf   = fightMessages[i].msg[index+2];
+
+                if( chbuf ) {
+                    /*
+                     * add the damage display for imms and legends
+                     */
+                    if (GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) ||
+                        IS_SET(ch->specials.act, PLR_LEGEND)) {
+                        if (dam < 0) {
+                            dam = 0;
+                        }
+                        sprintf(buf, "%s $c000Y($c000W%d$c000Y)$c0007", chbuf,
+                                dam);
+                        chbuf = buf;
                     }
-                    sprintf(dambuf, " $c000Y($c000W%d$c000Y)$c0007", dam);
-                    strcat(chbuf, dambuf);
-                    sprintf(dambuf, "%s", "");
+                    act(chbuf, FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
                 }
 
-                act(chbuf, FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-                act(victbuf, FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-                act(rmbuf, FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+                if( victbuf ) {
+                    act(victbuf, FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+                }
+
+                if( rmbuf ) {
+                    act(rmbuf, FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+                }
             }
         }
     }
@@ -2305,9 +2209,6 @@ void DamageMessages(struct char_data *ch, struct char_data *v, int dam,
     case POSITION_DEAD:
         act("$c0015$n is dead! $c0011R.I.P.", TRUE, v, 0, 0, TO_ROOM);
         act("$c0009You are dead!  Sorry...", FALSE, v, 0, 0, TO_CHAR);
-#if 0
-        send_to_char("$c0009You are dead! Sorry..",v);
-#endif
         break;
 
     default:

@@ -14,6 +14,7 @@
 #include <limits.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
@@ -63,7 +64,6 @@ struct char_data *character_list = 0;   /* global l-list of chars */
 
 struct zone_data *zone_table;   /* table of reset data */
 int             top_of_zone_table = 0;
-struct message_list fight_messages[MAX_MESSAGES];       /* fighting messages */
 struct player_index_element *player_table = 0;  /* index to player file */
 int             top_of_p_table = 0;     /* ref to top of table */
 int             top_of_p_file = 0;
@@ -124,7 +124,6 @@ struct weather_data weather_info;       /* the infomation about the
  * long saved_rooms[WORLD_SIZE];
  */
 long            number_of_saved_rooms = 0;
-extern struct descriptor_data *descriptor_list;
 struct index_data *insert_index(struct index_data *index, void *data,
                                 long vnum);
 struct index_data *insert_objindex(struct index_data *index, void *data,
@@ -135,7 +134,6 @@ int             read_mob_from_new_file(struct char_data *mob,
                                        FILE * mob_fi);
 int             GetExpFlags(struct char_data *mob, int exp);
 int             wizcenter(char *buf);
-char           *fread_string(FILE * f1);
 void            setup_dir(FILE * fl, long room, int dir);
 struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                                     int *alloc_top, char *dirname);
@@ -154,7 +152,6 @@ int             qp_patience;
 void boot_db()
 {
     int             i;
-    extern int      no_specials;
 
     char           *s;
     long            d,
@@ -167,40 +164,7 @@ void boot_db()
 
     Log("Reading newsfile, credits, help-page, info and motd.");
 
-    if( news ) {
-        free( news );
-    }
-    news = file_to_string(NEWS_FILE);
-
-    if( credits ) {
-        free( credits );
-    }
-    credits = file_to_string(CREDITS_FILE);
-
-    if( motd ) {
-        free( motd );
-    }
-    motd = file_to_string(MOTD_FILE);
-
-    if( wmotd ) {
-        free( wmotd );
-    }
-    wmotd = file_to_string("wizmotd");
-
-    if( help ) {
-        free( help );
-    }
-    help = file_to_string(HELP_PAGE_FILE);
-
-    if( info ) {
-        free( info );
-    }
-    info = file_to_string(INFO_FILE);
-
-    if( login ) {
-        free( login );
-    }
-    login = file_to_string("login");
+    db_load_textfiles();
 
     Log("Initializing Script Files.");
 
@@ -269,21 +233,16 @@ void boot_db()
     Log("Generating player index.");
     build_player_index();
 
-    Log("Loading fight messages.");
-    load_messages();
-
-    Log("Loading social messages.");
-    boot_social_messages();
-
-    Log("Loading pose messages.");
-    boot_pose_messages();
-
     Log("Assigning function pointers:");
     if (!no_specials) {
         Log("   Mobiles.");
         assign_mobiles();
+        boot_the_shops();
+        assign_the_shopkeepers();
+
         Log("   Objects.");
         assign_objects();
+
         Log("   Room.");
         assign_rooms();
     }
@@ -342,7 +301,6 @@ void boot_db()
 void reset_time()
 {
     char            buf[80];
-    extern unsigned char moontype;
     long            beginning_of_time = 650336715;
 
     struct time_info_data mud_time_passed(time_t t2, time_t t1);
@@ -1950,17 +1908,12 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
                     bc = 0;
     char            letter;
 
-    extern int      mob_tick_count;
-
     if( !mob ) {
         return( -1 );
     }
     
     memset( mob, 0, sizeof(struct char_data) );
 
-#if 0
-    HpBonus=0;
-#endif
     nr = mob->nr;
     mob->player.name = fread_string(mob_fi);
     if (*mob->player.name) {
@@ -2500,15 +2453,8 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
                     tmp2,
                     tmp3,
                     bc = 0;
-#if 0
-    int HpBonus;
-#endif
     float           att;
 
-    extern int      mob_tick_count;
-#if 0
-    HpBonus=0;
-#endif
     nr = mob->nr;
 
     mob->player.name = fread_string(mob_fi);
@@ -2959,31 +2905,6 @@ int read_obj_from_file(struct obj_data *obj, FILE * f)
 }
 
 /*
- * ---------- Start of change_cr_to_nl) ----------
- */
-/*
- * change each occurence of a Carriage Return
- * by a New Line in a buffer
- */
-void remove_cr(char *output, char *input)
-{
-    int             i,
-                    j,
-                    k;
-
-    output[0] = '\0';
-    j = strlen(input);
-    for (i = 0, k = 0; i < j; i++) {
-        if (input[i] == '\r') {
-            k++;
-        } else {
-            output[i - k] = input[i];
-        }
-    }
-    output[i - k] = '\0';
-}
-
-/*
  * ---------- Start of write_mob_to_file ----------
  */
 /*
@@ -3264,7 +3185,6 @@ void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi)
 
 int weaponconvert(struct obj_data *obj)
 {
-    extern const struct skillset weaponskills[];
     int             i = 0;
 
     return 0;
@@ -3272,11 +3192,6 @@ int weaponconvert(struct obj_data *obj)
         return WEAPON_GENERIC;
     while (weaponskills[i].level != -1) {
         if (strstr(obj->name, weaponskills[i].name)) {
-#if 0
-            sprintf(buf,"%s is a %s.\n\r",obj->name,
-            weaponskills[i].name);
-            printf(buf);
-#endif
             return 350 + i;
         }
 
@@ -3409,9 +3324,6 @@ struct obj_data *read_object(int nr, int type)
     long            bc;
     char            buf[100];
 
-    extern long     obj_count;
-    extern long     total_obc;
-
     i = nr;
     if (type == VIRTUAL) {
         nr = real_object(nr);
@@ -3507,14 +3419,12 @@ void zone_update()
     struct reset_q_element *update_u,
                    *temp,
                    *tmp2;
-    extern struct reset_q_type reset_q;
     char            buf[128];
     struct char_data *newch;
     int             to_room = 0;
     struct room_data *room;
     struct obj_data *travelqp,
                    *tmp;
-    extern long     SystemFlags;
 
     /*
      * enqueue zones
@@ -3721,7 +3631,6 @@ void reset_zone(int zone, int cmd)
     struct obj_data *obj,
                    *obj_to;
     struct room_data *rp;
-    extern long     SystemFlags;
     char           *s;
     int             d,
                     e;
@@ -5237,7 +5146,6 @@ void reset_char(struct char_data *ch)
 {
     char            buf[100];
     struct affected_type *af;
-    extern struct dex_app_type dex_app[];
 
     int             i;
 
@@ -5442,7 +5350,7 @@ void reset_char(struct char_data *ch)
     /*
      * to correct bogus races...
      */
-    if (GET_RACE(ch) > MAX_RACE || GET_RACE(ch) < 0) {
+    if (GET_RACE(ch) > raceCount || GET_RACE(ch) < 0) {
         GET_RACE(ch) = 1;
     }
     /*
@@ -5992,27 +5900,8 @@ void reboot_text(struct char_data *ch, char *arg, int cmd)
     if (IS_NPC(ch)) {
         return;
     }
-    Log("Rebooting Essential Text Files.");
 
-    if( news ) {
-        free( news );
-    }
-    news = file_to_string(NEWS_FILE);
-
-    if( credits ) {
-        free( credits );
-    }
-    credits = file_to_string(CREDITS_FILE);
-
-    if( motd ) {
-        free( motd );
-    }
-    motd = file_to_string(MOTD_FILE);
-
-    if( wmotd ) {
-        free( wmotd );
-    }
-    wmotd = file_to_string("wizmotd");
+    db_load_textfiles();
 
     Log("Initializing Scripts.");
     InitScripts();

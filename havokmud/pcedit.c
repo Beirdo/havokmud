@@ -701,19 +701,6 @@ int convert_playerfile(char *argv[])
             dummy[ammt]->grunt2.talks[tmpi] = 0;
         }
 
-        /*
-         * removed 3/7/94, msw 
-         */
-#if 0
-        for (tmpi = 0; tmpi <= MAX_NEW_LANGUAGES; tmpi++) {
-            dummy[ammt]->grunt2.new_languages[tmpi] =
-                dummy[ammt]->grunt.new_languages[tmpi];
-        }
-        for (tmpi = MAX_NEW_LANGUAGES; tmpi <= NEW_MAX_NEW_LANGUAGES;
-             tmpi++)
-            dummy[ammt]->grunt2.new_languages[tmpi] = 0;
-#endif
-
         dummy[ammt]->grunt2.extra_flags = dummy[ammt]->grunt.extra_flags;
         dummy[ammt]->grunt2.load_room = dummy[ammt]->grunt.load_room;
         dummy[ammt]->grunt2.abilities = dummy[ammt]->grunt.abilities;

@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define MOB_MAIN_MENU         0
 #define CHANGE_MOB_NAME       1
@@ -40,12 +41,6 @@
 #define MOB_HIT_RETURN       99
 
 #define ENTER_CHECK        1
-
-extern const char *action_bits[];
-extern const char *procedure_bits[];
-extern const char *affected_bits[];
-extern const char *RaceName[];
-extern const char *immunity_names[];
 
 char           *mob_edit_menu1 =
     "    1) Name                    2) Short description\n\r"
@@ -982,7 +977,7 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.medit) {
         case CHANGE_MOB_RACE:
-            if (update < 0 || update > MAX_RACE) {
+            if (update < 0 || update > raceCount) {
                 return;
             } else {
                 GET_RACE(ch->specials.mobedit) = update;
@@ -995,7 +990,8 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
 
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
-    sprintf(buf, "Mobile race: %s", RaceName[GET_RACE(ch->specials.mobedit)]);
+    sprintf(buf, "Mobile race: %s", 
+                 races[GET_RACE(ch->specials.mobedit)].racename);
     send_to_char(buf, ch);
 
     sprintf(buf, VT_CURSPOS, 21, 1);

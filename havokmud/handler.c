@@ -78,7 +78,7 @@ int isname(const char *str, const char *namelist)
                     i,
                     j,
                     exact;
-    static char     buf[MAX_INPUT_LENGTH + 40],
+    char            buf[MAX_INPUT_LENGTH + 40],
                     names[MAX_INPUT_LENGTH + 40],
                    *s;
 
@@ -130,7 +130,7 @@ int isname2(const char *str, const char *namelist)
                     i,
                     j,
                     exact;
-    static char     buf[8000],
+    char            buf[8000],
                     names[8000],
                    *s;
 

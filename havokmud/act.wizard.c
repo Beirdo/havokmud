@@ -29,6 +29,7 @@
 void            switch_light(byte why);
 void            PulseMobiles(int cmd);
 int             ZoneCleanable(int zone);
+char           *view_newhelp(void);
 
 /*
  * external vars
@@ -50,42 +51,6 @@ int             ArenaNoGroup,
                 ArenaNoTravel,
                 ArenaNoBash;
 
-extern int      top_of_helpt;
-extern struct help_index_element *help_index;
-extern char    *spells[];
-/*
- * for objects
- */
-extern char    *item_types[];
-extern char    *wear_bits[];
-extern char    *extra_bits[];
-extern char    *drinks[];
-/*
- * for rooms
- */
-extern char    *dirs[];
-extern char    *exit_bits[];
-extern char    *sector_types[];
-/*
- * for chars
- */
-extern char    *equipment_types[];
-extern char    *affected_bits[];
-extern char    *affected_bits2[];
-extern char    *immunity_names[];
-extern char    *special_user_flags[];
-extern char    *apply_types[];
-extern char    *pc_class_types[];
-extern char    *npc_class_types[];
-extern char    *action_bits[];
-extern char    *procedure_bits[];
-extern char    *player_bits[];
-extern char    *position_types[];
-extern char    *connected_types[];
-extern char    *RaceName[];
-extern struct str_app_type str_app[];
-extern const struct clan clan_list[MAX_CLAN];
-extern char    *AttackType[];
 
 void            update_pos(struct char_data *victim);
 
@@ -1445,8 +1410,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     rm->name, rm->zone, rm->number, ch->in_room, rm->special);
             send_to_char(buf, ch);
 
-            sprinttype(rm->sector_type, sector_types, buf2);
-            sprintf(buf, "Sector type : %s\n\r", buf2);
+            sprintf(buf, "Sector type : %s\n\r", sectors[rm->sector_type].type);
             send_to_char(buf, ch);
 
             strcpy(buf, "Special procedure : ");
@@ -1509,10 +1473,10 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                 if (rm->dir_option[i]) {
                     if (rm->dir_option[i]->keyword) {
                         sprintf(buf, "Direction %s . Keyword : %s\n\r",
-                                dirs[i], rm->dir_option[i]->keyword);
+                                direction[i].dir, rm->dir_option[i]->keyword);
                         send_to_char(buf, ch);
                     } else {
-                        sprintf(buf, "Direction %s \n\r", dirs[i]);
+                        sprintf(buf, "Direction %s \n\r", direction[i].dir);
                         send_to_char(buf, ch);
                     }
                     strcpy(buf, "Description:\n\r  ");
@@ -1594,7 +1558,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                 sprinttype(k->player.class, npc_class_types, buf2);
                 sprintf(buf, "%sMonster Class: %s%s", color1, color2, buf2);
             } else {
-                sprintbit((unsigned) k->player.class, pc_class_types, buf2);
+                sprintclasses((unsigned) k->player.class, buf2);
                 sprintf(buf, "%sClass: %s%s", color1, color2, buf2);
             }
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
@@ -1837,13 +1801,11 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             /*
              * race, action pointer
              */
-            sprintf(buf, "%sRace: %s", color1, color3);
-            sprinttype((k->race), RaceName, buf2);
-            strcat(buf, buf2);
-            sprintf(buf2, "%s  Generic pointer: %s%d", color1, color2,
-                    (int) k->generic);
-            strcat(buf, buf2);
+            sprintf(buf, "%sRace: %s%s%s  Generic pointer: %s%d", 
+                         color1, color3, races[k->race].racename,
+                         color1, color2, (int) k->generic);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
             /*
              * language
              */
@@ -1851,7 +1813,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                  k->player.speaks = SPEAK_COMMON;
              }
              sprintf(buf, "%sCurrently Speaking: %s%s%s", color1, color2,
-                     languagelist[k->player.speaks], color1);
+                     languages[k->player.speaks-1].name, color1);
              act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
 
@@ -2183,7 +2145,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     strcat(buf2, "\n\r");
                     break;
                 case APPLY_RACE_SLAYER:
-                    sprintf(buf2, "%s\n\r", RaceName[j->affected[i].modifier]);
+                    sprintf(buf2, "%s\n\r", 
+                                  races[j->affected[i].modifier].racename);
                     break;
                 case APPLY_ALIGN_SLAYER:
                     if (j->affected[i].modifier > 1)
@@ -2640,6 +2603,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
             send_to_char("You are now flagged as NO DELETE.\n\r", mob);
             SET_BIT(mob->player.user_flags, NO_DELETE);
         }
+#if 0
     } else if (!strcmp(field, "dimd")) {
         if (IS_SET(mob->specials.act, PLR_NODIMD)) {
             send_to_char("Setting DIMD OFF.\n\r", ch);
@@ -2650,6 +2614,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can now use DIMD.\n\r", mob);
             SET_BIT(mob->specials.act, PLR_NODIMD);
         }
+#endif
     } else if (!strcmp(field, "murder")) {
         if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
             send_to_char("I don't think so.\n\r", ch);
@@ -3887,9 +3852,8 @@ void do_start(struct char_data *ch)
 
     SetDefaultLang(ch);
 
-    /* Clear out the Posting bit that was borked for so long */
-    if( IS_SET(ch->specials.act, PLR_NODIMD) ) {
-        REMOVE_BIT(ch->specials.act, PLR_NODIMD);
+    if( IS_SET(ch->specials.act, PLR_POSTING) ) {
+        REMOVE_BIT(ch->specials.act, PLR_POSTING);
     }
 
     if (IS_SET(ch->player.user_flags, USE_ANSI)) {
@@ -4352,8 +4316,6 @@ void print_room(int rnum, struct room_data *rp, struct string_block *sb)
                     bits,
                     scan;
 
-    extern char    *sector_types[];
-
     if ((rp->sector_type < 0) || (rp->sector_type > 9)) {
         /*
          * non-optimal
@@ -4361,7 +4323,7 @@ void print_room(int rnum, struct room_data *rp, struct string_block *sb)
         rp->sector_type = 0;
     }
     sprintf(buf, "%5ld %4d %-12s %s", rp->number, rnum,
-            sector_types[rp->sector_type], (rp->name ? rp->name : "Empty"));
+            sectors[rp->sector_type].type, (rp->name ? rp->name : "Empty"));
     strcat(buf, " [");
 
     dink = 0;
@@ -4912,7 +4874,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                             break;
                         case APPLY_RACE_SLAYER:
                             sprintf(buf2, "%s",
-                                    RaceName[obj->affected[i].modifier]);
+                                    races[obj->affected[i].modifier].racename);
                             break;
                         case APPLY_ALIGN_SLAYER:
                             if (obj->affected[i].modifier > 1) {
@@ -6248,6 +6210,87 @@ void do_clone(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+char *view_newhelp(void)
+{
+    struct user_report *report;
+    char               *buf;
+    char                buf2[MAX_STRING_LENGTH];
+    int                 length;
+    int                 lengthAvail;
+    int                 done;
+
+    buf = NULL;
+    length = 0;
+    lengthAvail = 0;
+    report = NULL;
+
+    for( done = 0; !done; ) {
+        report = db_get_report( REPORT_HELP, report );
+        if( !report ) {
+            done = 1;
+            continue;
+        }
+
+        sprintf( buf2, "**%s: help %s\n\r", report->character, report->report );
+        while( length + strlen(buf2) >= lengthAvail ) {
+            /* Need to grow the buffer */
+            lengthAvail += MAX_STRING_LENGTH;
+            buf = (char *)realloc(buf, lengthAvail);
+            if( !buf ) {
+                Log("Out of memory in view_newhelp!");
+                return(NULL);
+            }
+        }
+
+        buf[length] = '\0';
+        strcat(buf, buf2);
+        length += strlen(buf2);
+    }
+
+    return( buf );
+}
+
+char *view_report(int reportId)
+{
+    struct user_report *report;
+    char               *buf;
+    char                buf2[MAX_STRING_LENGTH];
+    int                 length;
+    int                 lengthAvail;
+    int                 done;
+
+    buf = NULL;
+    length = 0;
+    lengthAvail = 0;
+    report = NULL;
+
+    for( done = 0; !done; ) {
+        report = db_get_report( reportId, report );
+        if( !report ) {
+            done = 1;
+            continue;
+        }
+
+        sprintf( buf2, "**%s[%d]: %s\n\r", report->character, report->roomNum,
+                       report->report );
+        while( length + strlen(buf2) >= lengthAvail ) {
+            /* Need to grow the buffer */
+            lengthAvail += MAX_STRING_LENGTH;
+            buf = (char *)realloc(buf, lengthAvail);
+            if( !buf ) {
+                Log("Out of memory in view_report!");
+                return(NULL);
+            }
+        }
+
+        buf[length] = '\0';
+        strcat(buf, buf2);
+        length += strlen(buf2);
+    }
+
+    return( buf );
+}
+
 void do_viewfile(struct char_data *ch, char *argument, int cmd)
 {
     char           *namefile;
@@ -6267,33 +6310,33 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!strcmp(namefile, "help")) {
-        buf = file_to_string(NEWHELP_FILE);
+        buf = view_newhelp();
     } else if (!strcmp(namefile, "quest")) {
         buf = file_to_string(QUESTLOG_FILE);
     } else if (!strcmp(namefile, "bug")) {
-        buf = file_to_string(WIZBUG_FILE);
+        buf = view_report(REPORT_WIZBUG);
     } else if (!strcmp(namefile, "idea")) {
-        buf = file_to_string(WIZIDEA_FILE);
+        buf = view_report(REPORT_WIZIDEA);
     } else if (!strcmp(namefile, "typo")) {
-        buf = file_to_string(WIZTYPO_FILE);
+        buf = view_report(REPORT_WIZTYPO);
     } else if (!strcmp(namefile, "morttypo")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        buf = file_to_string(TYPO_FILE);
+        buf = view_report(REPORT_TYPO);
     } else if (!strcmp(namefile, "mortbug")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        buf = file_to_string(BUG_FILE);
+        buf = view_report(REPORT_BUG);
     } else if (!strcmp(namefile, "mortidea")) {
         if (!IS_SET(ch->specials.act, PLR_WIZREPORT)) {
             send_to_char("You do not have the power to do this", ch);
             return;
         }
-        buf = file_to_string(IDEA_FILE);
+        buf = view_report(REPORT_IDEA);
     } else if (!strcmp(namefile, "motd")) {
         send_to_char(motd, ch);
         return;
@@ -6307,8 +6350,10 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    page_string(ch->desc, buf, 1);
-    free( buf );
+    if( buf ) {
+        page_string(ch->desc, buf, 1);
+        free( buf );
+    }
 }
 
 void do_msave(struct char_data *ch, char *argument, int cmd)
@@ -6698,15 +6743,11 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd)
 void do_wizreport(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg1,
-                   *arg2,
-                    buf[MAX_INPUT_LENGTH + 20],
-                    str[MAX_INPUT_LENGTH + 20];
-    FILE           *fl;
-
-    dlog("in do_godreport");
+                   *arg2;
+    char            buf[MAX_STRING_LENGTH];
 
     if (!IS_SET(ch->specials.act, PLR_WIZREPORT) && GetMaxLevel(ch) < 60) {
-        send_to_char("You do not have access to this command!\n", ch);
+        send_to_char("You do not have access to this command!\n\r", ch);
         return;
     }
 
@@ -6714,89 +6755,53 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
     arg2 = skip_spaces(argument);
 
     if (!arg1) {
-        send_to_char("Hrm... normally you wizreport [type] [something], no?\n",
-                     ch);
+        send_to_char("Hrm... normally you wizreport [type] [something], "
+                     "no?\n\r", ch);
         return;
     }
 
     if (!strcmp("bug", arg1)) {
         if (!arg2) {
-            send_to_char("Which bug are you talking about??\n", ch);
+            send_to_char("Which bug are you talking about??\n\r", ch);
             return;
         }
 
-        if (!(fl = fopen(WIZBUG_FILE, "at"))) {
-            perror("do_wizreport_bug");
-            send_to_char("Cannot open the Wizbug file\n", ch);
-        }
-
-        sprintf(str, "*BUG REPORT*:%s\n", arg2);
-        fputs(str, fl);
-        fclose(fl);
+        db_report_entry( REPORT_WIZBUG, ch, arg2 );
         send_to_char("Done...", ch);
     } else if (!strcmp("idea", arg1)) {
         if (!arg2) {
             send_to_char("Hrm... this does not sound like a bright idea to "
-                         "me :P\n", ch);
+                         "me :P\n\r", ch);
             return;
         }
 
-        if (!(fl = fopen(WIZIDEA_FILE, "at"))) {
-            perror("do_wizreport_idea");
-            send_to_char("Cannot open the Wizidea file\n", ch);
-        }
-
-        sprintf(str, "*IDEA REPORT*:%s\n", arg2);
-        fputs(str, fl);
-        fclose(fl);
+        db_report_entry( REPORT_WIZIDEA, ch, arg2 );
         send_to_char("Done...", ch);
     } else if (!strcmp("typo", arg1)) {
         if (!arg2) {
-            send_to_char("I do not think this is a typo...\n", ch);
+            send_to_char("I do not think this is a typo...\n\r", ch);
             return;
         }
 
-        if (!(fl = fopen(WIZTYPO_FILE, "at"))) {
-            perror("do_wizreport_typo");
-            send_to_char("Cannot open the Wiztypo file\n", ch);
-        }
-
-        sprintf(str, "*TYPO REPORT*:%s\n", arg2);
-        fputs(str, fl);
-        fclose(fl);
+        db_report_entry( REPORT_WIZTYPO, ch, arg2 );
         send_to_char("Done...", ch);
     } else if (!strcmp("cleanbug", arg1)) {
-        send_to_char("Cleaning the mortal bug file NOW!", ch);
-        if (!(fl = fopen(BUG_FILE, "wt"))) {
-            perror("do_wizreport_cleanbug");
-            send_to_char("Can't open the bug file...\n", ch);
-        }
-
-        fclose(fl);
+        send_to_char("Cleaning the mortal bug file NOW!\n\r", ch);
+        db_clean_report( REPORT_BUG );
         sprintf(buf, "%s just cleaned the bug file!", GET_NAME(ch));
         Log(buf);
     } else if (!strcmp("cleanidea", arg1)) {
-        send_to_char("Cleaning the mortal idea file NOW!\n", ch);
-        if (!(fl = fopen(IDEA_FILE, "wt"))) {
-            perror("do_wizreport_cleanidea");
-            send_to_char("Can't open the idea file...\n", ch);
-        }
-
-        fclose(fl);
+        send_to_char("Cleaning the mortal idea file NOW!\n\r", ch);
+        db_clean_report( REPORT_IDEA );
         sprintf(buf, "%s just cleaned the idea file!", GET_NAME(ch));
         Log(buf);
     } else if (!strcmp("cleantypo", arg1)) {
-        send_to_char("Cleaning the mortal typo file NOW!\n", ch);
-        if (!(fl = fopen(TYPO_FILE, "wt"))) {
-            perror("do_wizreport_cleantypo");
-            send_to_char("Can't open the typo file...\n", ch);
-        }
-
-        fclose(fl);
+        send_to_char("Cleaning the mortal typo file NOW!\n\r", ch);
+        db_clean_report( REPORT_TYPO );
         sprintf(buf, "%s just cleaned the typo file!", GET_NAME(ch));
         Log(buf);
     } else {
-        send_to_char("What do you wanna do?!?!?\n", ch);
+        send_to_char("What do you wanna do?!?!?\n\r", ch);
     }
 }
 
@@ -7331,7 +7336,6 @@ void do_setwtype(struct char_data *ch, char *argument, int cmd)
                    *num,
                     buf[100];
     long            number;
-    extern const struct skillset weaponskills[];
 
     dlog("in do_setobjspeed");
 

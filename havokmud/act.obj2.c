@@ -12,17 +12,8 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
-/*
- * extern variables 
- */
-extern struct index_data *obj_index;    /* Object maxxes */
-extern struct str_app_type str_app[];
-extern struct descriptor_data *descriptor_list;
-extern char    *drinks[];
-extern int      drink_aff[][3];
-extern struct spell_info_type spell_info[];
-extern int     spell_index[MAX_SPL_LIST];
 /*
  * Auction stuff
  * if 0, nothing up for sale 
@@ -37,21 +28,6 @@ long            intbid = 0;
 long            minbid = 0;
 struct char_data *auctioneer;   
 struct char_data *bidder;       
-/* 
- * struct obj_data *auctionobj;
- */
-extern const struct skillset weaponskills[];
-struct time_info_data age(struct char_data *ch);
-extern char    *spells[];
-extern char    *AttackType[];
-extern struct index_data *obj_index;
-extern char    *item_types[];
-extern char    *extra_bits[];
-extern char    *apply_types[];
-extern char    *affected_bits[];
-extern char    *affected_bits2[];
-extern char    *immunity_names[];
-extern char    *wear_bits[];
 
 void weight_change_object(struct obj_data *obj, int weight)
 {
@@ -106,7 +82,6 @@ void name_from_drinkcon(struct obj_data *obj)
 void name_to_drinkcon(struct obj_data *obj, int type)
 {
     char           *new_name;
-    extern char    *drinknames[];
 
     CREATE(new_name, char, strlen(obj->name) + strlen(drinknames[type]) + 2);
     sprintf(new_name, "%s %s", drinknames[type], obj->name);
@@ -673,7 +648,6 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     char            buffer[MAX_STRING_LENGTH];
     int             BitMask;
     struct room_data *rp;
-    extern const struct race_type race_list[];
 
     if (!IS_IMMORTAL(ch)) {
         BitMask = GetItemClassRestrictions(obj_object);
@@ -689,44 +663,32 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
         }
     }
 
-    if (GET_ITEM_TYPE(obj_object) == ITEM_ARMOR) {
+    /* 0 = general Size
+     * 1 = tiny
+     * 2 = small
+     * 3 = medium
+     * 4 = large
+     * 5 = huge
+     * 6 = gargantuan
+     * medium - human, elf, half-orc
+     * small  - dwarf, gnome, halfling
+     * large  - ogre, troll
+     * huge   - giants
+     */
+    if (GET_ITEM_TYPE(obj_object) == ITEM_ARMOR &&
+        obj_object->obj_flags.value[2] != 0 &&
+        obj_object->obj_flags.value[2] != races[ch->race].size &&
+        obj_object->obj_flags.value[2] != races[ch->race].size + 1 &&
+        obj_object->obj_flags.value[2] != races[ch->race].size - 1) {
 
-#if 0        
-        0=all
-        obj->obj_flags.value[2] size of armor
-        race_list[race].size
-#endif        
-        if (obj_object->obj_flags.value[2] == 0) {
-
-        } else
-            if (obj_object->obj_flags.value[2] == race_list[ch->race].size
-                || obj_object->obj_flags.value[2] ==
-                (race_list[ch->race].size + 1)
-                || obj_object->obj_flags.value[2] ==
-                (race_list[ch->race].size - 1)) {
-
-        } else {
-            send_to_char("It doesnt' seem to fit", ch);
-            return;
-        }
-/* 0 = general Size
- * 1 = tiny
- * 2 = small
- * 3 = medium
- * 4 = large
- * 5 = huge
- * 6 = gargantuan
- * medium - human, elf, half-orc
- * small  - dwarf, gnome, halfling
- * large  - ogre, troll
- * huge   - giants
- */
+        send_to_char("It doesnt' seem to fit", ch);
+        return;
     }
 
     if (anti_barbarian_stuff(obj_object) && 
         GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && !IS_IMMORTAL(ch)) {
         send_to_char("Eck! Not that! You sense magic on it!!! You quickly "
-                "drop it!\n\r", ch);
+                     "drop it!\n\r", ch);
         act("$n shivers and drops $p!", FALSE, ch, obj_object, 0, TO_ROOM);
         obj_from_char(obj_object);
         obj_to_room(obj_object, ch->in_room);

@@ -937,7 +937,7 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
 void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
                   struct char_data *ch, int delete)
 {
-    static char     buf[240];
+    char            buf[240];
     int             weight;
 
     if (!obj) {
@@ -997,7 +997,7 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
  */
 void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 {
-    static struct obj_file_u st;
+    struct obj_file_u st;
     int             i;
     char            buf[128];
 
@@ -1041,7 +1041,7 @@ void save_obj(struct char_data *ch, struct obj_cost *cost, int delete)
 
 void save_obj_reimb(struct char_data *ch)
 {
-    static struct obj_file_u st;
+    struct obj_file_u st;
     int             i;
     char            buf[128];
 

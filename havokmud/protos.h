@@ -9,7 +9,6 @@
 #include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
-#include "race.h"
 #include "script.h"
 #include "spells.h"
 #include "trap.h"
@@ -345,11 +344,9 @@ void            do_promote(struct char_data *ch, char *arg, int cmd);
  * From act.social.c 
  */
 
-void            boot_social_messages(void);
 int             find_action(int cmd);
 void            do_action(struct char_data *ch, char *argument, int cmd);
 void            do_insult(struct char_data *ch, char *argument, int cmd);
-void            boot_pose_messages(void);
 void            do_pose(struct char_data *ch, char *argument, int cmd);
 
 /*
@@ -3619,7 +3616,6 @@ void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj);
 void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj);
-void save_board(struct bulletin_board *bd, int vnum);
 void            UpdateHelpMenu(struct char_data *ch);
 int open_door(struct char_data *ch, int dir);
 int raw_open_door(struct char_data *ch, int dir);
@@ -4099,7 +4095,7 @@ char *procGetNameByFunc( int_func func, proc_type type );
 void show_class_skills(struct char_data *ch, char *buffer, int classnum,
                        int skills);
 void show_skills(struct char_data *ch, char *buffer, 
-                 const struct skillset *skills);
+                 const struct skillset *skills, int skillcount);
 
 void            do_mobTell2(struct char_data *ch,
                             struct char_data *mob, char *sentence);
@@ -4115,6 +4111,38 @@ void ShowFears(struct char_data *ch, char *buffer);
 void sprintclasses(unsigned long vektor, char *result);
 struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
                                      struct obj_data *equipment[], int *j);
+
+int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir);
+int find_direction(char *arg);
+char           *fread_string(FILE * fl);
+int             IS_UNDERGROUND(struct char_data *ch);
+int isname2(const char *str, const char *namelist);
+char           *DescAge(int age, int race);
+int bitvector_num(int temp);
+int color_strlen(struct char_data *ch, char *arg, int cmd);
+
+void db_setup(void);
+void db_initial_load(void);
+
+int procIsRegistered( int_func func, proc_type type );
+
+void do_OOCemote(struct char_data *ch, char *argument, int cmd);
+
+void db_report_entry(int reportId, struct char_data *ch, char *report);
+struct user_report *db_get_report(int reportId, struct user_report *report);
+void db_clean_report(int reportId);
+
+void db_load_textfiles(void);
+int db_save_textfile(struct char_data *ch);
+struct board_def *db_lookup_board(int vnum);
+struct bulletin_board_message *db_get_board_message(int boardId, int msgNum);
+void db_free_board_message(struct bulletin_board_message *msg);
+int db_get_board_replies(struct board_def *board, int msgId, 
+                         struct bulletin_board_message **msg);
+void db_free_board_replies(struct bulletin_board_message *msg, int count);
+void db_delete_board_message(struct board_def *board, short message_id);
+void db_post_message(struct board_def *board, 
+                     struct bulletin_board_message *msg);
 
 int dragon(struct char_data *ch, int cmd, char *arg, 
            struct char_data *mob, int type);

@@ -12,15 +12,11 @@
 #include <stdlib.h>
 
 #include "protos.h"
+#include "externs.h"
 
 /*
  * external stuff 
  */
-
-extern struct index_data *mob_index;
-extern struct room_data *world;
-extern char    *pc_class_types[];
-extern char    *RaceName[];
 
 void FreeHates(struct char_data *ch)
 {
@@ -302,8 +298,7 @@ void ShowHates(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->hatefield, HATE_RACE) && ch->hates.race != -1) {
-        sprinttype(ch->hates.race, RaceName, buf2);
-        sprintf( buf, "%sRace: %s  ", buf, buf2 );
+        sprintf( buf, "%sRace: %s  ", buf, races[ch->hates.race].racename );
     }
 
     if (IS_SET(ch->hatefield, HATE_SEX)) {
@@ -321,7 +316,7 @@ void ShowHates(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->hatefield, HATE_CLASS)) {
-        sprintbit((unsigned) ch->hates.class, pc_class_types, buf2);
+        sprintclasses((unsigned) ch->hates.class, buf2);
         sprintf( buf, "%sClass: %s  ", buf, buf2 );
     }
 
@@ -438,8 +433,7 @@ void ShowFears(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->fearfield, HATE_RACE) && ch->fears.race != -1) {
-        sprinttype(ch->fears.race, RaceName, buf2);
-        sprintf( buf, "%sRace: %s  ", buf, buf2 );
+        sprintf( buf, "%sRace: %s  ", buf, races[ch->fears.race].racename );
     }
 
     if (IS_SET(ch->fearfield, HATE_SEX)) {
@@ -457,7 +451,7 @@ void ShowFears(struct char_data *ch, char *buffer)
     }
 
     if (IS_SET(ch->fearfield, HATE_CLASS)) {
-        sprintbit((unsigned) ch->fears.class, pc_class_types, buf2);
+        sprintclasses((unsigned) ch->fears.class, buf2);
         sprintf( buf, "%sClass: %s  ", buf, buf2 );
     }
 

@@ -6,24 +6,9 @@
 #include <string.h>
 
 #include "protos.h"
-
-extern struct char_data *character_list;
-extern struct index_data *mob_index;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db;
-#endif
-extern struct str_app_type str_app[];
-extern struct index_data *mob_index;
-
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
+#include "externs.h"
 
 int             top_of_comp = 0;
-extern int      no_specials;
-
-void            do_move(struct char_data *ch, char *argument, int cmd);
 
 
 void mobile_guardian(struct char_data *ch)
@@ -69,7 +54,6 @@ void mobile_wander(struct char_data *ch)
     struct room_direction_data *exitp;
     struct room_data *rp;
     char            buf[100];
-    extern int      rev_dir[];
 
     if (GET_POS(ch) != POSITION_STANDING) {
         return;
@@ -112,14 +96,15 @@ void mobile_wander(struct char_data *ch)
 
         if ((IsHumanoid(ch) ? CAN_GO_HUMAN(ch, door) : CAN_GO(ch, door)) && 
             (!IS_SET(ch->specials.act, ACT_STAY_ZONE) || 
-             rp->zone == real_roomp(or)->zone)) {
-            ch->specials.last_direction = rev_dir[door];
+             rp->zone == real_roomp(ch->in_room)->zone)) {
+            ch->specials.last_direction = direction[door].rev;
             go_direction(ch, door);
             if (ch->in_room == 0 && or != 0) {
                 sprintf(buf, "%s just entered void from %d", GET_NAME(ch), or);
                 log_sev(buf, 5);
             }
-            if( rp->zone != real_roomp(or)->zone ) {
+            if( rp->zone != real_roomp(or)->zone && 
+                IS_SET(ch->specials.act, ACT_STAY_ZONE) ) {
                 sprintf(buf, "%s wandered from zone %ld to %ld",
                              GET_NAME(ch), real_roomp(or)->zone, rp->zone );
                 Log(buf);
@@ -293,7 +278,7 @@ void mobile_activity(struct char_data *ch)
 #ifdef HASH
     if ((ch->in_room < 0) || !hash_find(&room_db, ch->in_room)) {
 #else
-    if ((ch->in_room < 0) || !room_find(&room_db, ch->in_room)) {
+    if ((ch->in_room < 0) || !room_find(room_db, ch->in_room)) {
 #endif
 
         Log("/----- Char not in correct room.  moving to 49");

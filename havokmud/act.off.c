@@ -8,43 +8,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "protos.h"
+#include "externs.h"
 
 /*
  * extern variables
  */
-
-extern struct descriptor_data *descriptor_list;
-extern struct dex_app_type dex_app[];
-extern char    *att_kick_hit_room[];
-extern char    *att_kick_hit_victim[];
-extern char    *att_kick_hit_ch[];
-extern char    *att_kick_miss_room[];
-extern char    *att_kick_miss_victim[];
-extern char    *att_kick_miss_ch[];
-extern char    *att_kick_kill_room[];
-extern char    *att_kick_kill_victim[];
-extern char    *att_kick_kill_ch[];
-extern struct char_data *character_list;
-extern const char *fight_styles[];
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
-
-extern struct breather breath_monsters[];
-extern struct index_data *mob_index;
-extern const struct clan clan_list[MAX_CLAN];
-extern long     SystemFlags;
-
-extern const struct race_type race_list[];
-extern struct str_app_type str_app[];
 
 funcp           bweapons[] = {
     cast_geyser, cast_fire_breath, cast_gas_breath, 
@@ -298,7 +266,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         LearnFromMistake(victim, SKILL_AVOID_BACK_ATTACK, 0, 95);
     }
 
-    stabbersize = race_list[ch->race].size;
+    stabbersize = races[ch->race].size;
     if(affected_by_spell(ch, SPELL_GIANT_GROWTH)) {
         stabbersize++;
     }
@@ -309,7 +277,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
     stabbersize = MAX( MIN(stabbersize, 6), 0);
 
 
-    victimsize = race_list[victim->race].size;
+    victimsize = races[victim->race].size;
     if(affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
         victimsize++;
     }
@@ -1021,8 +989,8 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         percent -= dex_app[(int)GET_DEX(ch)].reaction *5;
 
         /* Size difference between basher and bashee */
-        chsize = race_list[ch->race].size;
-        vicsize = race_list[victim->race].size;
+        chsize  = races[ch->race].size;
+        vicsize = races[victim->race].size;
         if(affected_by_spell(ch, SPELL_GIANT_GROWTH)) {
             chsize++;
         }
@@ -2373,9 +2341,9 @@ void kick_messages(struct char_data *ch, struct char_data *victim,
                    int damage)
 {
     int             i;
-    char            buf[300];
-    char            buf2[300];
+    char            buf[MAX_STRING_LENGTH];
     char            color[] = "$c0003";
+    int             index;
 
     switch (GET_RACE(victim)) {
     case RACE_HUMAN:
@@ -2499,45 +2467,31 @@ void kick_messages(struct char_data *ch, struct char_data *victim,
     default:
         i = 18;
     };
+
     if (!damage) {
-        strcpy(buf2, att_kick_miss_ch[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_CHAR);
-        strcpy(buf2, att_kick_miss_victim[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_VICT);
-        strcpy(buf2, att_kick_miss_room[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_NOTVICT);
+        index = MSG_KICK_MISS_SELF;
     } else if (GET_HIT(victim) -
                DamageTrivia(ch, victim, damage, SKILL_KICK) < -10) {
-        strcpy(buf2, att_kick_kill_ch[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_CHAR);
-        strcpy(buf2, att_kick_kill_victim[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_VICT);
-        strcpy(buf2, att_kick_kill_room[i]);
-        strcpy(buf, color);
-        strcat(buf, buf2);
-        act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_NOTVICT);
+        index = MSG_KICK_KILL_SELF;
     } else {
-        strcpy(buf2, att_kick_hit_ch[i]);
+        index = MSG_KICK_HIT_SELF;
+    }
+
+    if( kickMessages[i].msg[index] ) {
         strcpy(buf, color);
-        strcat(buf, buf2);
+        strcat(buf, kickMessages[i].msg[index]);
         act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_CHAR);
-        strcpy(buf2, att_kick_hit_victim[i]);
+    }
+
+    if( kickMessages[i].msg[index+1] ) {
         strcpy(buf, color);
-        strcat(buf, buf2);
+        strcat(buf, kickMessages[i].msg[index+1]);
         act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_VICT);
-        strcpy(buf2, att_kick_hit_room[i]);
+    }
+
+    if( kickMessages[i].msg[index+2] ) {
         strcpy(buf, color);
-        strcat(buf, buf2);
+        strcat(buf, kickMessages[i].msg[index+2]);
         act(buf, FALSE, ch, ch->equipment[WIELD], victim, TO_NOTVICT);
     }
 }

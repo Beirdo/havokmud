@@ -34,7 +34,6 @@ char           *tfd_main_menu =
     "    9) Don't save and exit\n\r\n\r";
 
 void            UpdateTfdMenu(struct char_data *ch);
-int             write_txt_to_file(struct char_data *ch);
 void            ChangeTfdFile(struct char_data *ch, char *arg, int type);
 void            ViewOldTfd(struct char_data *ch, char *arg, int type);
 void            ChangeTfdDate(struct char_data *ch, char *arg, int type);
@@ -155,23 +154,10 @@ void TfdEdit(struct char_data *ch, char *arg)
             /*
              * write txtfile here 
              */
-            if (write_txt_to_file(ch)) {
+            if (db_save_textfile(ch)) {
                 send_to_char("File saved successfully.\n\r", ch);
                 send_to_char("Initializing new file into game...\n\r", ch);
-                if( news ) {
-                    free( news );
-                }
-                news = file_to_string(NEWS_FILE);
-
-                if( motd ) {
-                    free( motd );
-                }
-                motd = file_to_string(MOTD_FILE);
-
-                if( wmotd ) {
-                    free( wmotd );
-                }
-                wmotd = file_to_string(WMOTD_FILE);
+                db_load_textfiles();
                 send_to_char("Done.\n\r", ch);
             } else {
                 send_to_char("File save unsuccessful. Something went pear "
@@ -213,71 +199,6 @@ void TfdEdit(struct char_data *ch, char *arg)
     }
 }
 
-int write_txt_to_file(struct char_data *ch)
-{
-    char            buf[MAX_STRING_LENGTH * 2];
-    struct edit_txt_msg *tfd;
-    FILE           *fl;
-
-    if (!ch) {
-        return (FALSE);
-    }
-    tfd = ch->specials.txtedit;
-
-    if (!tfd) {
-        return (FALSE);
-    }
-    switch (tfd->file) {
-    case 1:
-        sprintf(buf, "%s", NEWS_FILE);
-        break;
-    case 2:
-        sprintf(buf, "%s", MOTD_FILE);
-        break;
-    case 3:
-        sprintf(buf, "%s", WMOTD_FILE);
-        break;
-    default:
-        send_to_char("Cannot save this file type.\n\r", ch);
-        return (FALSE);
-        break;
-    }
-
-    if ((fl = fopen(buf, "w")) == NULL) {
-        send_to_char("Cannot open file.\n\r", ch);
-        return (FALSE);
-    }
-
-    fputs("\n", fl);
-
-    if (tfd->date) {
-        sprintf(buf, "%s", tfd->date);
-        if (buf[strlen(buf) - 1] == '~') {
-            buf[strlen(buf) - 1] = '\0';
-        }
-        strcat(buf, "\n");
-        fputs(buf, fl);
-    }
-
-    if (tfd->body) {
-        fputs("\n", fl);
-        remove_cr(buf, tfd->body);
-        if (buf[strlen(buf) - 1] == '~') {
-            buf[strlen(buf) - 1] = '\0';
-        }
-        fputs(buf, fl);
-    }
-
-    if (tfd->author) {
-        sprintf(buf, "\nLast edited by %s.", tfd->author);
-        fputs(buf, fl);
-    }
-
-    fputs("\n", fl);
-
-    fclose(fl);
-    return (TRUE);
-}
 
 void ChangeTfdFile(struct char_data *ch, char *arg, int type)
 {
@@ -322,22 +243,22 @@ void ChangeTfdFile(struct char_data *ch, char *arg, int type)
 
 void ViewOldTfd(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255],
-                    buffer[254];
+    char            buf[MAX_STRING_LENGTH];
+    char            filename[20];
     char           *contents = NULL;
 
     switch (ch->specials.txtedit->file) {
     case 1:
-        contents = file_to_string(NEWS_FILE);
-        sprintf(buf, "news");
+        contents = news;
+        strcpy(filename, "news");
         break;
     case 2:
-        contents = file_to_string(MOTD_FILE);
-        sprintf(buf, "motd");
+        contents = motd;
+        strcpy(filename, "motd");
         break;
     case 3:
-        contents = file_to_string(WMOTD_FILE);
-        sprintf(buf, "wizmotd");
+        contents = wmotd;
+        strcpy(filename, "wmotd");
         break;
     default:
         send_to_char("No valid filetype selected.\n\r", ch);
@@ -345,12 +266,6 @@ void ViewOldTfd(struct char_data *ch, char *arg, int type)
         UpdateTfdMenu(ch);
         return;
         break;
-    }
-
-    if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
-        ch->specials.tfd = TFD_MAIN_MENU;
-        UpdateTfdMenu(ch);
-        return;
     }
 
     if (type != ENTER_CHECK) {
@@ -362,13 +277,12 @@ void ViewOldTfd(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    sprintf(buffer, "Current contents of %s file:\n\r\n\r", buf);
-    send_to_char(buffer, ch);
-    send_to_char(contents, ch);
-    send_to_char("\n\r\n\r(hit ENTER to return to menu)\n\r", ch);
+    sprintf(buf, "Current contents of %s file:\n\r\n\r", filename);
+    send_to_char(buf, ch);
     if( contents ) {
-        free( contents );
+        send_to_char(contents, ch);
     }
+    send_to_char("\n\r\n\r(hit ENTER to return to menu)\n\r", ch);
 }
 
 void ChangeTfdDate(struct char_data *ch, char *arg, int type)

@@ -267,11 +267,6 @@ void list_append(struct descriptor_data *d, char *fmt, ...)
                    *new_list;
 
     if (d->list_string == NULL) {
-#if 0
-        mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-         		"list_append called for %s before list_init",
-    			d->account.account_name);
-#endif
         Log("List_ijnit bedfore list_init");
     }
 
@@ -296,11 +291,6 @@ void list_append(struct descriptor_data *d, char *fmt, ...)
 void list_end(struct descriptor_data *d)
 {
     if (d->list_string == NULL) {
-#if 0
-        mprintf(line_log, ONE_LINE, LOG_BEEP | LOG_ASSERT, SEV_ALL,
-        		"list_end called for %s before list_init",
-     			d->account.account_name);
-#endif
         Log("List_ijnit called before list_init");
     }
 

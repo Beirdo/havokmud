@@ -62,7 +62,6 @@ extern struct descriptor_data *descriptor_list,
                *next_to_process;
 extern int      maxdesc,
                 avail_descs;
-extern const struct class_def classes[MAX_CLASS];
 
 /*
  * DIMD internally used VARS 
@@ -940,7 +939,7 @@ void dimd_loop(void)
     fd_set          input_set,
                     output_set,
                     exc_set;
-    static char     buf[MAX_STRING_LENGTH],
+    char            buf[MAX_STRING_LENGTH],
                     extra[MAX_STRING_LENGTH],
                     fromname[MAX_INPUT_LENGTH],
                     fromkeyname[MAX_INPUT_LENGTH],

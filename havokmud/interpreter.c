@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define STATE(d) ((d)->connected)
 
@@ -18,7 +19,6 @@
                          ((x >= 13 && x<= 15) ? "-]>>>>>>>" : \
                           ((x >= 16 && x<18) ? "-]>>>>>>>>" : ((x >= 18) ? \
                            "-]>>>>>>>>>" : "ERROR! PLS REPORT!")))))))
-#define ASSHOLE_FNAME "asshole.list"
 
 char *get_argument_common(char *line_in, char **arg_out, int do_fill,
                           char delim);
@@ -869,30 +869,6 @@ struct command_def commandList[] = {
 };
 int commandCount = NELEMS(commandList);
 
-extern long     total_connections;
-extern long     total_max_players;
-extern const char *RaceName[];
-extern const int RacialMax[MAX_RACE + 1][MAX_CLASS];
-extern char     *motd;
-extern char     *wmotd;
-extern struct char_data *character_list;
-extern struct player_index_element *player_table;
-extern int      top_of_p_table;
-extern struct index_data *mob_index;
-extern struct index_data *obj_index;
-extern char    *pc_class_types[];
-extern char    *credits;
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db;
-#endif
-extern long     SystemFlags;
-extern long     TempDis;
-extern struct descriptor_data *descriptor_list;
-extern const struct class_def classes[MAX_CLASS];
-extern const struct pc_race_choice race_choice[];
-extern int       race_choice_count;
 
 unsigned char   echo_on[] = { IAC, WONT, TELOPT_ECHO, '\r', '\n', '\0' };
 unsigned char   echo_off[] = { IAC, WILL, TELOPT_ECHO, '\0' };
@@ -970,6 +946,26 @@ int search_block(char *arg, char **list, bool exact)
 
     return( -1 );
 }
+
+int find_direction(char *arg)
+{
+    int length;
+    int i;
+
+    length = strlen( arg );
+    if( length == 0 ) {
+        return( -1 );
+    }
+
+    for( i = 0; i < directionCount; i++ ) {
+        if( !strncasecmp( arg, direction[i].dir, length ) ) {
+            return( i );
+        }
+    }
+
+    return( -1 );
+}
+
 
 int old_search_block(char *argument, int begin, int length, char **list,
                      int mode)
@@ -1484,7 +1480,6 @@ int _parse_name(char *arg, char *name)
     return (0);
 }
 
-
 int _check_ass_name(char *name)
 {
     /*
@@ -1493,110 +1488,66 @@ int _check_ass_name(char *name)
      * 2 - from end of string
      * 3 - somewhere in string
      */
-    static struct shitlist {
-        int             how;
-        char            name[80];
-    }              *shitlist = NULL;
-    FILE           *f;
-    char            buf[512];
     int             i,
-                    j,
-                    k;
+                    j;
 
     if (strlen(name) > MAX_NAME_LENGTH) {
-        return 1;
-    }
-    if (!shitlist) {
-        if ((f = fopen(ASSHOLE_FNAME, "rt")) == NULL) {
-            Log("can't open asshole names list");
-            shitlist = (struct shitlist *) calloc(1, sizeof(struct shitlist));
-            *shitlist[0].name = 0;
-            return 0;
-        }
-        for (i = 0; fgets(buf, 180, f) != NULL; i++) {
-            /*
-             * Empty loop
-             */
-        }
-        shitlist = (struct shitlist *) calloc((i + 3), sizeof(struct shitlist));
-        rewind(f);
-        for (i = 0; fgets(buf, 180, f) != NULL; i++) {
-            if (buf[strlen(buf) - 1] == '\n' || buf[strlen(buf) - 1] == '\r') {
-                buf[strlen(buf) - 1] = 0;
-            }
-            if (buf[strlen(buf) - 1] == '\n' || buf[strlen(buf) - 1] == '\r') {
-                buf[strlen(buf) - 1] = 0;
-            }
-
-            if (*buf == '*') {
-                if (buf[strlen(buf) - 1] == '*') {
-                    shitlist[i].how = 3;
-                    buf[strlen(buf) - 1] = 0;
-                    strcpy(shitlist[i].name, buf + 1);
-                } else {
-                    shitlist[i].how = 2;
-                    strcpy(shitlist[i].name, buf + 1);
-                }
-            } else {
-                if (buf[strlen(buf) - 1] == '*') {
-                    shitlist[i].how = 1;
-                    buf[strlen(buf) - 1] = 0;
-                    strcpy(shitlist[i].name, buf);
-                } else {
-                    shitlist[i].how = 0;
-                    strcpy(shitlist[i].name, buf);
-                }
-            }
-        }
-        *shitlist[i].name = 0;
-
-        for (i = 0; *shitlist[i].name; i++) {
-            sprintf(buf, "mode: %d, name: %s", shitlist[i].how,
-                    shitlist[i].name);
-#if 0
-            Log(buf);
-#endif
-        }
+        return( 1 );
     }
 
-    for (j = 0; *shitlist[j].name; j++) {
-        switch (shitlist[j].how) {
+    if (!bannedUsers) {
+        return( 0 );
+    }
+
+    for (i = 0; i < bannedUserCount; i++) {
+        switch (bannedUsers[i].how) {
         case 0:
-            if (!strcasecmp(name, shitlist[j].name)) {
-                return 1;
+            /* Exact match */
+            if (!strcasecmp(name, bannedUsers[i].name)) {
+                return( 1 );
             }
             break;
+
         case 1:
-            if (!strncasecmp(name, shitlist[j].name, strlen(shitlist[j].name))) {
-                return 1;
+            /* match to the beginning of the string */
+            if (!strncasecmp(name, bannedUsers[i].name, bannedUsers[i].len) ) {
+                return( 1 );
             }
             break;
+
         case 2:
-            if (strlen(name) < strlen(shitlist[j].name)) {
+            /* Match to the end of the string */
+            if (strlen(name) < bannedUsers[i].len) {
                 break;
             }
-            if (!strcasecmp(name + (strlen(name) - strlen(shitlist[j].name)),
-                         shitlist[j].name)) {
-                return 1;
+
+            if (!strcasecmp(&name[strlen(name) - bannedUsers[i].len],
+                            bannedUsers[i].name)) {
+                return( 1 );
             }
             break;
+
         case 3:
-            if (strlen(name) < strlen(shitlist[j].name)) {
+            /* Metch to the middle of the string */
+            if (strlen(name) < bannedUsers[i].len) {
                 break;
             }
-            for (k = 0; k <= strlen(name) - strlen(shitlist[j].name); k++) {
-                if (!strncasecmp(name + k, shitlist[j].name,
-                              strlen(shitlist[j].name))) {
-                    return 1;
+            
+            for (j = 0; j <= strlen(name) - bannedUsers[i].len; j++) {
+                if (!strncasecmp(&name[j], bannedUsers[i].name,
+                                 bannedUsers[i].len)) {
+                    return( 1 );
                 }
             }
             break;
+
         default:
-            Log("Grr! invalid value in shitlist, interpreter.c _parse_name");
-            return 1;
+            Log("Grr! invalid value in bannedUsers, interpreter.c _parse_name");
+            return( 1 );
         }
     }
-    return (0);
+
+    return( 0 );
 }
 
 
@@ -1642,7 +1593,7 @@ void show_menu(struct descriptor_data *d)
 
     if (GET_RACE(d->character) != 0) {
         sprintf(buf, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
-                RaceName[GET_RACE(d->character)]);
+                races[GET_RACE(d->character)].racename);
         strcat(bufx, buf);
     } else {
         /*
@@ -1650,7 +1601,7 @@ void show_menu(struct descriptor_data *d)
          */
         GET_RACE(d->character) = 1;
         sprintf(buf, "$c00153) $c0012Race. [$c0015%s$c0012]\n\r",
-                RaceName[GET_RACE(d->character)]);
+                races[GET_RACE(d->character)].racename);
         strcat(bufx, buf);
     }
 
@@ -3009,12 +2960,12 @@ void show_race_choice(struct descriptor_data *d)
                 (race_choice[i].raceNum == RACE_DROW ?
                  "$c000WThe Races Listed below may have some racials hatreds."
                  "  Advanced players only.\n\r" : ""),
-                i + 1, RaceName[race_choice[i].raceNum]);
+                i + 1, races[race_choice[i].raceNum].racename);
         /*
          * show level limits 
          */
         for (j = 0; j < MAX_CLASS; j++) {
-            sprintf(buf2, " %-3d", RacialMax[race_choice[i].raceNum][j]);
+            sprintf(buf2, " %-3d", races[race_choice[i].raceNum].racialMax[j]);
             strcat(buf, buf2);
         }
 

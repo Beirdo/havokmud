@@ -5,7 +5,7 @@ AC_INIT(havokmud, [1.10/1.11], [gjhurlbu@users.sourceforge.net])
 AC_CONFIG_SRCDIR([act.comm.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([scripts])
-AC_REVISION($Revision: 1.1.2.3 $)
+AC_REVISION($Revision: 1.1.2.4 $)
 
 AC_ARG_VAR(AWK, [location of the awk command])
 AC_PROG_AWK
@@ -47,6 +47,38 @@ case "${host}" in
     ;;
 esac
 
+
+AC_ARG_WITH(mysql-includes, AS_HELP_STRING([--with-mysql-includes=path], 
+    [Set the MySQL Include path [[/usr/include/mysql]] ]))
+if test "x$with_mysql_includes" = "x"; then
+	ac_cv_option_mysql_includes=/usr/include/mysql
+else
+	ac_cv_option_mysql_includes=$with_mysql_includes
+fi
+
+AC_CACHE_CHECK([the path to MySQL includes], ac_cv_option_mysql_includes)
+MYSQL_INCLUDES=-I$ac_cv_option_mysql_includes
+INCLUDES=$MYSQL_INCLUDES
+AC_SUBST(INCLUDES)
+
+CFLAGS_SAVE=$CFLAGS
+CFLAGS="$CFLAGS $MYSQL_INCLUDES"
+
+
+AC_ARG_WITH(mysql-libs, AS_HELP_STRING([--with-mysql-libs=path], 
+    [Set the MySQL Library path [[/usr/lib/mysql]] ]))
+if test "x$with_mysql_libs" = "x"; then
+	ac_cv_option_mysql_libs=/usr/lib/mysql
+else
+	ac_cv_option_mysql_libs=$with_mysql_libs
+fi
+
+AC_CACHE_CHECK([the path to MySQL libraries], ac_cv_option_mysql_libs)
+MYSQL_LIBS=-L$ac_cv_option_mysql_libs
+LDFLAGS="$LDFLAGS $MYSQL_LIBS"
+
+
+AC_CHECK_LIB([mysqlclient], [mysql_init])
 
 
 # Checks for header files.
@@ -238,6 +270,8 @@ HAVOK_SWITCH([n-save-world], [n_save_world], [N_SAVE_WORLD],
              [--enable-n-save-world], [Enable new save world (?)],
              [for new save world], [Enable new save world (?)], [no], [yes])
 
+
+CFLAGS=$CFLAGS_SAVE
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

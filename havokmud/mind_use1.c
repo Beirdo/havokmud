@@ -10,8 +10,8 @@
 #include <string.h>
 
 #include "protos.h"
+#include "externs.h"
 
-extern char    *dirs[];
 
 void mind_use_burn(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *victim, struct obj_data *tar_obj)
@@ -142,7 +142,7 @@ void mind_use_telekinesis(int level, struct char_data *ch, char *arg,
 
             p = fname(arg);
             for (i = 0; i < 6 && !found; i++) {
-                if (strncmp(p, dirs[i], strlen(p)) == 0) {
+                if (strncmp(p, direction[i].dir, strlen(p)) == 0) {
                     found = 1;
                 }
             }

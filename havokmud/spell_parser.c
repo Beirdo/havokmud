@@ -11,6 +11,7 @@
 #include <ctype.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define MANA_MU 1
 #define MANA_CL 1
@@ -27,30 +28,6 @@
  * Global data 
  */
 
-extern struct room_data *world;
-extern struct char_data *character_list;
-extern char    *spell_wear_off_msg[];
-extern char    *spell_wear_off_soon_msg[];
-extern char    *spell_wear_off_room_msg[];
-extern char    *spell_wear_off_soon_room_msg[];
-extern struct obj_data *object_list;
-extern struct index_data *obj_index;
-extern struct char_data *mem_list;
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
-extern struct time_info_data time_info;
-extern funcp    bweapons[];
-extern struct chr_app_type chr_apply[];
-extern struct int_app_type int_sf_modifier[];
 
 /*
  * internal procedures 
@@ -2457,11 +2434,10 @@ void affect_update(int pulse)
                     }
                 } else if (af->type >= FIRST_BREATH_WEAPON &&
                            af->type <= LAST_BREATH_WEAPON) {
-                    extern funcp    bweapons[];
-                    bweapons[af->type -
-                             FIRST_BREATH_WEAPON] (-af->modifier / 2, i,
-                                                   "", SPELL_TYPE_SPELL, i,
-                                                   0);
+                    bweapons[af->type - FIRST_BREATH_WEAPON](-af->modifier / 2,
+                                                             i, "",
+                                                             SPELL_TYPE_SPELL,
+                                                             i, 0);
                     if (!i->affected) {
                         /*
                          * oops, you're dead :) 
@@ -2794,11 +2770,6 @@ void add_follower(struct char_data *ch, struct char_data *leader)
     }
 }
 
-struct syllable {
-    char            org[10];
-    char            new[10];
-};
-
 struct syllable syls[] = {
     {" ", " "}, {"ar", "abra"}, {"au", "kada"}, {"bless", "fido"},
     {"blind", "nose"}, {"bur", "mosa"}, {"cu", "judi"}, {"ca", "jedi"},
@@ -2822,7 +2793,6 @@ void say_spell(struct char_data *ch, int si)
     int             j,
                     offs;
     struct char_data *temp_char;
-    extern struct syllable syls[];
 
     strcpy(buf, "");
     strcpy(splwd, spells[si - 1]);
@@ -2866,7 +2836,6 @@ void weave_song(struct char_data *ch, int si)
     int             j,
                     offs;
     struct char_data *temp_char;
-    extern struct syllable syls[];
 
     strcpy(buf, "");
     strcpy(splwd, spells[si - 1]);
@@ -3635,16 +3604,17 @@ void assign_spell_pointers(void)
 
 void SpellWearOffSoon(int s, struct char_data *ch)
 {
-    if (s > MAX_SKILLS + 10) {
+    if (s > MAX_SKILLS + 10 || s > skillCount) {
         return;
     }
-    if (spell_wear_off_soon_msg[s] && *spell_wear_off_soon_msg[s]) {
-        send_to_char(spell_wear_off_soon_msg[s], ch);
+    if (skills[s].message[MSG_SKILL_WEAR_OFF_SOON]) {
+        send_to_char(skills[s].message[MSG_SKILL_WEAR_OFF_SOON], ch);
         send_to_char("\n\r", ch);
     }
 
-    if (spell_wear_off_soon_room_msg[s] && *spell_wear_off_soon_room_msg[s]) {
-        act(spell_wear_off_soon_room_msg[s], FALSE, ch, 0, 0, TO_ROOM);
+    if (skills[s].message[MSG_SKILL_WEAR_OFF_SOON_ROOM]) {
+        act(skills[s].message[MSG_SKILL_WEAR_OFF_SOON_ROOM], FALSE, ch, 0, 0, 
+            TO_ROOM);
     }
 }
 
@@ -3652,16 +3622,17 @@ void SpellWearOff(int s, struct char_data *ch)
 {
     struct affected_type af;
 
-    if (s > MAX_SKILLS + 10) {
+    if (s > MAX_SKILLS + 10 || s > skillCount) {
         return;
     }
-    if (spell_wear_off_msg[s] && *spell_wear_off_msg[s]) {
-        send_to_char(spell_wear_off_msg[s], ch);
+    if (skills[s].message[MSG_SKILL_WEAR_OFF]) {
+        send_to_char(skills[s].message[MSG_SKILL_WEAR_OFF], ch);
         send_to_char("\n\r", ch);
     }
 
-    if (spell_wear_off_room_msg[s] && *spell_wear_off_room_msg[s]) {
-        act(spell_wear_off_room_msg[s], FALSE, ch, 0, 0, TO_ROOM);
+    if (skills[s].message[MSG_SKILL_WEAR_OFF_ROOM]) {
+        act(skills[s].message[MSG_SKILL_WEAR_OFF_ROOM], FALSE, ch, 0, 0,
+            TO_ROOM);
     }
 
     if (s == SPELL_CHARM_PERSON || s == SPELL_CHARM_MONSTER) {

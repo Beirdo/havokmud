@@ -5,39 +5,7 @@
 #include <stdlib.h>
 
 #include "protos.h"
-
-/*
- * Global data 
- */
-
-extern struct room_data *world;
-extern struct char_data *character_list;
-extern struct obj_data *object_list;
-extern int      rev_dir[];
-extern char    *dirs[];
-extern int      movement_loss[];
-extern struct weather_data weather_info;
-extern struct time_info_data time_info;
-extern struct index_data *obj_index;
-
-/*
- * Extern procedures 
- */
-
-void            update_pos(struct char_data *victim);
-void            clone_char(struct char_data *ch);
-bool            saves_spell(struct char_data *ch, sh_int spell);
-void            add_follower(struct char_data *ch,
-                             struct char_data *victim);
-#if 0
-char *strdup(char *str); 
-#endif
-
-void            ChangeWeather(int change);
-void            raw_unlock_door(struct char_data *ch,
-                                struct room_direction_data *exitp,
-                                int door);
-int             NoSummon(struct char_data *ch);
+#include "externs.h"
 
 /* 
  * I think this is the highest level you get a new poly, but I ain't sure..  
@@ -1739,7 +1707,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
         }
         p = fname(arg);
         for (i = 0; i < 6; i++) {
-            if (strncmp(p, dirs[i], strlen(p)) == 0) {
+            if (strncmp(p, direction[i].dir, strlen(p)) == 0) {
                 i++;
                 break;
             }

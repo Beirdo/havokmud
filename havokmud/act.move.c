@@ -8,35 +8,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "protos.h"
+#include "externs.h"
 
-/*
- * external vars 
- */
-#ifdef HASH
-extern struct hash_header room_db;
-#else
-extern struct room_data *room_db;
-#endif
-extern struct char_data *character_list;
-extern struct descriptor_data *descriptor_list;
-extern struct index_data *obj_index;
-extern int      rev_dir[];
-extern char    *dirs[];
-extern int      movement_loss[];
-extern char    *exits[];
 
 int             DisplayGroupMove(struct char_data *ch, int dir, int was_in,
                                  int total);
 int             DisplayOneMove(struct char_data *ch, int dir, int was_in);
 int             AddToCharHeap(struct char_data *heap[50], int *top,
                               int total[50], struct char_data *k);
+
+#if 0
 int             make_exit_ok(struct char_data *ch, struct room_data **rpp,
                              int dir);
 int             clearpath(struct char_data *ch, long room, int direc);
 
 int             toupper(int c);
+#endif
 
 void NotLegalMove(struct char_data *ch)
 {
@@ -257,8 +247,8 @@ int RawMove(struct char_data *ch, int dir)
                !IS_SET(from_here->room_flags, INDOORS)) {
         need_movement = 1;
     } else {
-        need_movement = (movement_loss[from_here->sector_type] +
-                         movement_loss[to_here->sector_type]) / 2;
+        need_movement = (sectors[from_here->sector_type].moveLoss +
+                         sectors[to_here->sector_type].moveLoss) / 2;
     }
 
     /*
@@ -571,44 +561,46 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
                 if (IS_NPC(ch)) {
                     if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies %s. [%d]\n\r",
-                                ch->player.short_descr, dirs[dir], total);
+                                ch->player.short_descr, 
+                                direction[dir].dir, total);
                     } else {
                         sprintf(tmp, "%s leaves %s. [%d]\n\r",
-                                ch->player.short_descr, dirs[dir], total);
+                                ch->player.short_descr, 
+                                direction[dir].dir, total);
                     }
                 } else {
                     if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies %s. [%d]\n\r",
-                                GET_NAME(ch), dirs[dir], total);
+                                GET_NAME(ch), direction[dir].dir, total);
                     } else {
                         sprintf(tmp, "%s leaves %s. [%d]\n\r",
-                                GET_NAME(ch), dirs[dir], total);
+                                GET_NAME(ch), direction[dir].dir, total);
                     }
                 }
             } else {
                 if (IS_NPC(ch)) {
                     if (MOUNTED(ch)) {
                         sprintf(tmp, "%s leaves %s, riding on %s\n\r",
-                                ch->player.short_descr, dirs[dir],
+                                ch->player.short_descr, direction[dir].dir,
                                 MOUNTED(ch)->player.short_descr);
                     } else if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies %s.\n\r",
-                                ch->player.short_descr, dirs[dir]);
+                                ch->player.short_descr, direction[dir].dir);
                     } else {
                         sprintf(tmp, "%s leaves %s.\n\r",
-                                ch->player.short_descr, dirs[dir]);
+                                ch->player.short_descr, direction[dir].dir);
                     }
                 } else {
                     if (MOUNTED(ch)) {
                         sprintf(tmp, "%s leaves %s, riding on %s\n\r",
-                                GET_NAME(ch), dirs[dir],
+                                GET_NAME(ch), direction[dir].dir,
                                 MOUNTED(ch)->player.short_descr);
                     } else if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies %s.\n\r",
-                                GET_NAME(ch), dirs[dir]);
+                                GET_NAME(ch), direction[dir].dir);
                     } else {
                         sprintf(tmp, "%s leaves %s\n\r",
-                                GET_NAME(ch), dirs[dir]);
+                                GET_NAME(ch), direction[dir].dir);
                     }
                 }
             }
@@ -626,22 +618,27 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
                 if (total == 1) {
                     if (MOUNTED(ch)) {
                         sprintf(tmp, "%s has arrived from the %s, riding on %s",
-                                PERS(ch, tmp_ch), dirs[rev_dir[dir]],
+                                PERS(ch, tmp_ch),
+                                direction[direction[dir].rev].dir,
                                 PERS(MOUNTED(ch), tmp_ch));
                     } else if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies in from the %s.",
-                                PERS(ch, tmp_ch), dirs[rev_dir[dir]]);
+                                PERS(ch, tmp_ch), 
+                                direction[direction[dir].rev].dir);
                     } else {
                         sprintf(tmp, "%s has arrived from the %s.",
-                                PERS(ch, tmp_ch), dirs[rev_dir[dir]]);
+                                PERS(ch, tmp_ch), 
+                                direction[direction[dir].rev].dir);
                     }
                 } else {
                     if (IS_AFFECTED(ch, AFF_FLYING)) {
                         sprintf(tmp, "%s flies in from the %s.",
-                                PERS(ch, tmp_ch), dirs[rev_dir[dir]]);
+                                PERS(ch, tmp_ch), 
+                                direction[direction[dir].rev].dir);
                     } else {
                         sprintf(tmp, "%s has arrived from the %s.",
-                                PERS(ch, tmp_ch), dirs[rev_dir[dir]]);
+                                PERS(ch, tmp_ch), 
+                                direction[direction[dir].rev].dir);
                     }
                 }
             } else if (dir == 4) {
@@ -761,57 +758,60 @@ int find_door(struct char_data *ch, char *type, char *dir)
     /* a direction was specified */
     if (dir) {
         /* Partial Match */
-        if ((door = search_block(dir, dirs, FALSE)) == -1) {    
+        if ((door = find_direction(dir)) == -1) {    
             send_to_char("That's not a direction.\n\r", ch);
             return (-1);
         }
+
         exitp = EXIT(ch, door);
         if (exitp) {
             if (!exitp->keyword) {
                 return (door);
             }
+
             if (isname(type, exitp->keyword) && strcmp(type, "secret")) {
                 return (door);
-            } else {
-                if ((door = search_block(type, dirs, FALSE)) != -1) {
-                    send_to_char("Thats a direction, not a portal.\n\r",
-                                 ch);
-                    return (-1);
-                }
-                sprintf(buf, "I see no %s there.\n\r", type);
-                send_to_char(buf, ch);
-                return (-1);
-            }
-        } else {
-            if ((door = search_block(type, dirs, FALSE)) != -1) {
-                send_to_char("Thats a direction, not a portal.\n\r", ch);
+            } 
+
+            if ((door = find_direction(type)) != -1) {
+                send_to_char("Thats a direction, not a portal.\n\r",
+                             ch);
                 return (-1);
             }
             sprintf(buf, "I see no %s there.\n\r", type);
             send_to_char(buf, ch);
             return (-1);
-        }
-    } else {                    
-        /* 
-         * try to locate the keyword 
-         */
-        if (strcmp(type, "secret")) {
-            for (door = 0; door <= 5; door++) {
-                if ((exitp = EXIT(ch, door)) &&
-                    exitp->keyword && isname(type, exitp->keyword)) {
-                    return (door);
-                }
-            }
+        } 
 
-            if ((door = search_block(type, dirs, FALSE)) != -1) {
-                send_to_char("Thats a direction, not a portal.\n\r", ch);
-                return (-1);
-            }
+        if ((door = find_direction(type)) != -1) {
+            send_to_char("Thats a direction, not a portal.\n\r", ch);
+            return (-1);
         }
-        sprintf(buf, "I see no %s here.\n\r", type);
+        sprintf(buf, "I see no %s there.\n\r", type);
         send_to_char(buf, ch);
         return (-1);
+    } 
+
+    /* 
+     * try to locate the keyword 
+     */
+    if (strcmp(type, "secret")) {
+        for (door = 0; door <= 5; door++) {
+            if ((exitp = EXIT(ch, door)) &&
+                exitp->keyword && isname(type, exitp->keyword)) {
+                return (door);
+            }
+        }
+
+        if ((door = find_direction(type)) != -1) {
+            send_to_char("Thats a direction, not a portal.\n\r", ch);
+            return (-1);
+        }
     }
+
+    sprintf(buf, "I see no %s here.\n\r", type);
+    send_to_char(buf, ch);
+    return (-1);
 }
 
 int open_door(struct char_data *ch, int dir)
@@ -846,7 +846,7 @@ int open_door(struct char_data *ch, int dir)
      * now for opening the OTHER side of the door! 
      */
     if (exit_ok(exitp, &rp) &&
-        (back = rp->dir_option[rev_dir[dir]]) &&
+        (back = rp->dir_option[direction[dir].rev]) &&
         (back->to_room == ch->in_room)) {
         REMOVE_BIT(back->exit_info, EX_CLOSED);
         if (back->keyword && (strcmp("secret", fname(back->keyword)))) {
@@ -881,7 +881,7 @@ int raw_open_door(struct char_data *ch, int dir)
      * now for opening the OTHER side of the door! 
      */
     if (exit_ok(exitp, &rp) &&
-        (back = rp->dir_option[rev_dir[dir]]) &&
+        (back = rp->dir_option[direction[dir].rev]) &&
         (back->to_room == ch->in_room)) {
         REMOVE_BIT(back->exit_info, EX_CLOSED);
         if (back->keyword && (strcmp("secret", fname(back->keyword)))) {
@@ -908,15 +908,6 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
 
     char           *cmdname = FindCommandName(cmd);
 
-    static char    *dir_desc[] = {
-        "to the north",         /* 0 */
-        "to the east",          /* 1 */
-        "to the south",         /* 2 */
-        "to the west",          /* 3 */
-        "upwards",              /* 4 */
-        "downwards"             /* 5 */
-    };
-
     dlog("in do_open_exit");
 
     if (!cmdname) {
@@ -931,7 +922,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
 
     if (!type) {
         sprintf(buf, "%s what?!\r\n", cmdname);
-        *buf = toupper(*buf);   /* ;-) */
+        *buf = toupper((int)*buf);   /* ;-) */
         send_to_char(buf, ch);
         return;
     }
@@ -950,21 +941,21 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                 SET_BIT(exitp->exit_info, EX_CLOSED);
                 if (!strcmp(fname(exitp->keyword), "secret")) {
                     sprintf(buf, "$n closed a secret passage %s",
-                            dir_desc[door]);
+                            direction[door].desc);
                     act(buf, 0, ch, 0, 0, TO_ROOM);
                 } else {
                     sprintf(buf, "$n %ss the $F and closed the passage %s",
-                            cmdname, dir_desc[door]);
+                            cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
                 sprintf(buf, "You %s the %s and close the passage %s\r\n",
-                        cmdname, fname(exitp->keyword), dir_desc[door]);
+                        cmdname, fname(exitp->keyword), direction[door].desc);
                 send_to_char(buf, ch);
                 /*
                  * handle backdoor 
                  */
                 if (exit_ok(exitp, &rp)
-                    && (back = rp->dir_option[rev_dir[door]])
+                    && (back = rp->dir_option[direction[door].rev])
                     && (back->to_room == ch->in_room)) {
                     SET_BIT(back->exit_info, EX_CLOSED);
                 }
@@ -976,15 +967,15 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                 raw_open_door(ch, door);
                 if (!strcmp(fname(exitp->keyword), "secret")) {
                     sprintf(buf, "$n opens secret passage %s",
-                            dir_desc[door]);
+                            direction[door].desc);
                     act(buf, 0, ch, 0, 0, TO_ROOM);
                 } else {
                     sprintf(buf, "$n %ss the $F and opens a passage %s",
-                            cmdname, dir_desc[door]);
+                            cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
                 sprintf(buf, "You %s the %s and open a passage %s\r\n",
-                        cmdname, fname(exitp->keyword), dir_desc[door]);
+                        cmdname, fname(exitp->keyword), direction[door].desc);
                 send_to_char(buf, ch);
             }
         } else {
@@ -1113,7 +1104,7 @@ void do_close(struct char_data *ch, char *argument, int cmd)
              * now for closing the other side, too 
              */
             if (exit_ok(exitp, &rp) && 
-                (back = rp->dir_option[rev_dir[door]]) &&
+                (back = rp->dir_option[direction[door].rev]) &&
                 back->to_room == ch->in_room) {
                 SET_BIT(back->exit_info, EX_CLOSED);
                 if (back->keyword) {
@@ -1169,7 +1160,7 @@ void raw_unlock_door(struct char_data *ch,
      * now for unlocking the other side, too 
      */
     rp = real_roomp(exitp->to_room);
-    if (rp && (back = rp->dir_option[rev_dir[door]]) &&
+    if (rp && (back = rp->dir_option[direction[door].rev]) &&
         back->to_room == ch->in_room) {
         REMOVE_BIT(back->exit_info, EX_LOCKED);
     } else {
@@ -1191,7 +1182,7 @@ void raw_lock_door(struct char_data *ch,
      * now for locking the other side, too 
      */
     rp = real_roomp(exitp->to_room);
-    if (rp && (back = rp->dir_option[rev_dir[door]]) &&
+    if (rp && (back = rp->dir_option[direction[door].rev]) &&
         back->to_room == ch->in_room) {
         SET_BIT(back->exit_info, EX_LOCKED);
     } else {
@@ -1854,7 +1845,7 @@ void do_run(struct char_data *ch, char *argument, int cmd)
 
     send_to_char("You take off, running as fast as you can!\n\r", ch);
     sprintf(buf, "%s suddenly takes off, running %s.", GET_NAME(ch),
-            dirs[keyno]);
+            direction[keyno].dir);
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
 
     was_in = ch->in_room;
