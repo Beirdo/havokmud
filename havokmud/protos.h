@@ -3290,8 +3290,10 @@ int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob);
 int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
                       struct char_data *mob);
-
-
+int level_limiter(struct char_data *ch, int cmd, char *argument,
+                  struct obj_data *obj, int type);
+int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
+                  struct obj_data *obj, int type);
 /*
  * King's Grove 
  */
@@ -4093,6 +4095,8 @@ void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 void ShowHates(struct char_data *ch, char *buffer);
 void ShowFears(struct char_data *ch, char *buffer);
 void sprintclasses(unsigned long vektor, char *result);
+struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
+                                     struct obj_data *equipment[], int *j);
 
 
 /*************************************************************************

@@ -189,6 +189,22 @@ struct obj_data *get_object_in_equip_vis(struct char_data *ch,
     return (NULL);
 }
 
+struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
+                                     struct obj_data *equipment[], int *j)
+{
+    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
+        if (equipment[(*j)] && isname(arg, equipment[(*j)]->name)) {
+            return (equipment[(*j)]);
+        }
+    }
+    for ((*j) = 0; (*j) < MAX_WEAR; (*j)++) {
+        if (equipment[(*j)] && isname2(arg, equipment[(*j)]->name)) {
+            return (equipment[(*j)]);
+        }
+    }
+    return (NULL);
+}
+
 char           *find_ex_description(char *word,
                                     struct extra_descr_data *list)
 {

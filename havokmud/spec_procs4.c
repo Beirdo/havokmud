@@ -5724,13 +5724,14 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
     char    buf[MAX_STRING_LENGTH];
     struct  obj_data *o;    
     int     objnum;
-
+    struct  char_data *i;
+    
     if (cmd != 17 || ch == mob || !arg || !ch || !mob) {
             return( FALSE );
     }
 
     objnum = real_object(6575);
-
+    
     for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
         if( o->item_number == objnum ) {
             return( FALSE );
@@ -5738,6 +5739,14 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
     }
 
     if (!strcasecmp(arg, "yes")) {
+        for (i = real_roomp(ch->in_room)->people; i;
+             i = i->next_in_room) {
+            if (IS_FOLLOWING(ch, i) && GetMaxLevel(i) >= 41) {
+                strcpy( buf, "say Your group is far too powerfull to enter!");
+                command_interpreter(mob, buf);
+                return( TRUE );
+            }
+        }
         strcpy(buf, "say Wonderful!! Let us begin!");
         command_interpreter(mob, buf);
         act("$c000WThe mazekeeper utters strange words and traces arcane"
@@ -5887,7 +5896,7 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
     } 
     
     if( !ret ) {
-        sprintf(buf, "say HAH! Wrong answer, now you will die!");
+        strcpy(buf, "say HAH! Wrong answer, now you will die!");
         command_interpreter(mob, buf);
         sprintf(buf, "kill %s", GET_NAME(ch));
         command_interpreter(mob, buf);
@@ -5911,7 +5920,7 @@ int mazekeeper_riddle_one(struct char_data *ch, int cmd, char *arg,
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
-
+    
     return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
                                      10000, 6576) );
 }
@@ -5966,8 +5975,117 @@ int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
     return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
                                      100000, 6579) );
 }
- 
 
+int level_limiter(struct char_data *ch, int cmd, char *argument,
+                  struct obj_data *obj, int type)
+{   
+    char    buf[MAX_STRING_LENGTH];
+    int     dam = 0,
+            i;
+    char    *arg, *arg1;
+    int     zapit = FALSE;
+    int     inroom = FALSE;
+    struct obj_data *tmp_obj;
+    
+    if( !ch || !obj ) {
+        return( FALSE );
+    }
+
+    if( (!obj->carried_by && !obj->equipped_by && !obj->in_obj)) {
+        /* Zap this bitch, it's in a room not on a char */
+        zapit = TRUE;
+        inroom = TRUE;
+    }
+    
+    switch( cmd ) {
+    case 72:    /* give */
+    case 304:   /* auction */
+    case 514:   /* donate */
+    case 57:    /* sell */
+    case 67:    /* put */
+        arg = strdup(argument);
+        argument = arg;
+
+        argument = get_argument(argument, &arg1);
+        if( arg1 ) {
+            tmp_obj = get_obj_in_list(arg1, ch->carrying);
+            if( obj != tmp_obj && strncasecmp(arg1, "all", 3)) {
+                free(arg);
+                return(FALSE);
+            }
+
+            zapit = TRUE;
+            inroom = TRUE;
+        }
+        free(arg);
+        break;
+    default:
+        break;
+    }
+
+    if( IS_IMMORTAL(ch) ) {
+        return( FALSE );
+    }
+
+    if (GetMaxLevel(ch) >= 41) {
+        strcpy(buf, "The $p takes an intense disliking to you and explodes, "
+                    "burning you severely!");
+        act(buf, FALSE, ch, obj, NULL, TO_CHAR);
+
+        dam = 5 * (GetMaxLevel(ch) - 41);
+        dam = MIN( dam, GET_HIT(ch) / 2 );
+        dam = MAX( dam, 0 );
+
+        DoDamage(ch, ch, dam, SPELL_FIRESHIELD);
+        
+        zapit = TRUE;
+    }
+
+    if( zapit ) {
+        strcpy(buf, "The $p explodes in a large ball of flame and a loud "
+                    "BANG!" );
+        act(buf, FALSE, ch, obj, NULL, TO_ROOM);
+        if( inroom ) {
+            act(buf, FALSE, ch, obj, NULL, TO_CHAR);
+        }
+
+        sprintf( buf, "%s exploded %s and took %d damage", GET_NAME(ch),
+                      obj->name, dam );
+        Log( buf );
+
+        if( obj->carried_by ) {
+            obj_from_char(obj);
+        } else if( obj->equipped_by ) {
+            tmp_obj = get_object_in_equip(ch, obj->name, 
+                                          obj->equipped_by->equipment, &i );
+            unequip_char(obj->equipped_by, i);
+        } else if( obj->in_obj ) {
+            obj_from_obj(obj);
+        }
+        extract_obj(obj);
+    }
+
+    return(zapit);
+}
+
+int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
+                      struct obj_data *obj, int type)
+{
+
+    if (!cmd || cmd != 7 || !ch || !argument) {
+        return( FALSE );
+    }
+    if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
+        obj_from_room(obj);
+        extract_obj(obj);
+        act("The ring of blazing white light suddenly vanishes!", 
+            FALSE, ch, obj, NULL, TO_ROOM);
+        act("The ring of blazing white light suddenly vanishes!",
+            FALSE, ch, obj, NULL, TO_CHAR);
+        return( TRUE );
+    }
+    return( FALSE );
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
