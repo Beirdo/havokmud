@@ -4202,3 +4202,4 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
   /* All commands except fill and drink */
   return(FALSE);
 }
+

@@ -1279,6 +1279,10 @@ void assign_mobiles()
 	 {40343, FireBreather},			/* White Cthol Dragon */
 /* End of Cthol (Xenon) */
   {45108, DispellerIncMob },  /* Heximals Dispeller/Incernary cloud proc */
+
+
+/*End of Thunder Mountain Keep*/
+
     { -1, NULL },
   };
 

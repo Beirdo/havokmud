@@ -2951,6 +2951,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 
   switch (type) {
   case SPELL_FIREBALL:
+  case SPELL_METEOR_SWARM:
   case SPELL_BURNING_HANDS:
   case SPELL_FLAMESTRIKE:
   case SPELL_FIRE_BREATH:
@@ -2979,7 +2980,6 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case SPELL_MAGIC_MISSILE:
   case SPELL_COLOUR_SPRAY:
   case SPELL_GAS_BREATH:
-  case SPELL_METEOR_SWARM:
   case SPELL_SUNRAY:
   case SPELL_DISINTERGRATE:
 
@@ -3370,6 +3370,7 @@ int GetItemDamageType( int type)
 
   switch(type) {
   case SPELL_FIREBALL:
+  case SPELL_METEOR_SWARM:
   case SPELL_FLAMESTRIKE:
   case SPELL_FIRE_BREATH:
   case SPELL_INCENDIARY_CLOUD:
@@ -3390,7 +3391,6 @@ int GetItemDamageType( int type)
     break;
 
   case SPELL_COLOUR_SPRAY:
-  case SPELL_METEOR_SWARM:
   case SPELL_GAS_BREATH:
   case SPELL_DISINTERGRATE:
     return(BLOW_DAMAGE);
