@@ -47,13 +47,15 @@ void spell_tree_travel(byte level, struct char_data *ch,
 }
 
 void spell_transport_via_plant(byte level, struct char_data *ch,
-		     struct char_data *victim, struct obj_data *obj)
+		     struct char_data *victim, char *arg)//struct obj_data *obj)
 {
   struct room_data *rp;
   struct obj_data *o;
+  struct obj_data *i;
+  struct obj_data *obj;
+  char name[254], buf[200];
 
   /* find the tree in the room */
-
   rp = real_roomp(ch->in_room);
   for (o = rp->contents; o; o = o->next_content) {
     if (ITEM_TYPE(o) == ITEM_TREE)
@@ -65,8 +67,24 @@ void spell_transport_via_plant(byte level, struct char_data *ch,
     return;
   }
 
+	sprintf(name,"%s",arg);
+	/* find the target tree */
+	for (i = object_list; i ; i = i->next) {
+		if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
+			/* we found a druid tree with the right name */
+			obj = i;
+			break;
+		}
+	}
+
+	if(!obj) {
+		send_to_char("That tree is nowhere to be found\n\r", ch);
+		return;
+	}
+
+
   if (ITEM_TYPE(obj) != ITEM_TREE) {
-    send_to_char("Thats not a tree!\n\r", ch);
+    send_to_char("That tree is nowhere to be found\n\r", ch);
     return;
   }
 
@@ -2039,15 +2057,17 @@ void spell_heat_stuff(byte level, struct char_data *ch,
 
     affect_to_char(ch, &af);
 
-    /* all metal flagged equips zap off! */
-    for (j = 0; j< MAX_WEAR; j++) {
-	    if (ch->equipment[j]) {
-			obj = ch->equipment[j];
-			if (IS_OBJ_STAT(obj,ITEM_METAL)) {
-    			act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, ch, obj, 0, TO_CHAR);
-  				act("$p turns so hot that $n is forced to let go of it!", FALSE, ch, obj, 0, TO_ROOM);
-  				if ((obj = unequip_char(ch,j))!=NULL) {
-					obj_to_room(obj, ch->in_room);
+	if(IS_PC(ch)) {
+		/* all metal flagged equips zap off! */
+		for (j = 0; j< MAX_WEAR; j++) {
+			if (ch->equipment[j]) {
+				obj = ch->equipment[j];
+				if (IS_OBJ_STAT(obj,ITEM_METAL)) {
+					act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, ch, obj, 0, TO_CHAR);
+					act("$p turns so hot that $n is forced to let go of it!", FALSE, ch, obj, 0, TO_ROOM);
+					if ((obj = unequip_char(ch,j))!=NULL) {
+						obj_to_room(obj, ch->in_room);
+					}
 				}
 			}
 		}
@@ -2074,24 +2094,25 @@ void spell_heat_stuff(byte level, struct char_data *ch,
     act("$N's armor starts to sizzle.", FALSE, ch, 0, victim, TO_CHAR);
     act("$N's armor starts to sizzle.", FALSE, ch, 0, victim, TO_NOTVICT);
 
-    /* all metal flagged equips zap off! */
-    for (j = 0; j< MAX_WEAR; j++) {
-	    if (victim->equipment[j]) {
-			obj = victim->equipment[j];
-			if (IS_OBJ_STAT(obj,ITEM_METAL)) {
-    			act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, victim, obj, 0, TO_CHAR);
-  				act("$p turns so hot that $n is forced to let go of it!", FALSE, victim, obj, 0, TO_ROOM);
-  				if ((obj = unequip_char(victim,j))!=NULL) {
-					obj_to_room(obj, victim->in_room);
+	if(IS_PC(victim)) {
+		/* all metal flagged equips zap off! */
+		for (j = 0; j< MAX_WEAR; j++) {
+			if (victim->equipment[j]) {
+				obj = victim->equipment[j];
+				if (IS_OBJ_STAT(obj,ITEM_METAL)) {
+					act("$p glows brightly from the heat, and you quickly let go of it!", FALSE, victim, obj, 0, TO_CHAR);
+					act("$p turns so hot that $n is forced to let go of it!", FALSE, victim, obj, 0, TO_ROOM);
+					if ((obj = unequip_char(victim,j))!=NULL) {
+						obj_to_room(obj, victim->in_room);
+					}
 				}
 			}
 		}
+	} else {
+		if (!victim->specials.fighting)
+			set_fighting(victim,ch);
+		}
 	}
-
-    if (!IS_PC(victim))
-      if (!victim->specials.fighting)
-	set_fighting(victim,ch);
-  }
 }
 
 #define DUST_DEVIL 60

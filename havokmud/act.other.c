@@ -3470,7 +3470,7 @@ dlog("in do_plr_noooc");
 
 }
 
-#define ARENA_ZONE 5//124
+#define ARENA_ZONE 124
 void do_arena(struct char_data *ch, char *argument, int cmd)
 {
 char buf[MAX_STRING_LENGTH];

@@ -451,10 +451,10 @@ void spell_true_seeing(byte level, struct char_data *ch,
   if (!IS_AFFECTED(victim, AFF_TRUE_SIGHT)) {
     if (ch != victim) {
        send_to_char("Your eyes glow silver for a moment.\n\r", victim);
-       act("$n's eyes take on a silvery hue.\n\r", FALSE, victim, 0, 0, TO_ROOM);
+       act("$n's eyes take on a silvery hue.", FALSE, victim, 0, 0, TO_ROOM);
     } else {
        send_to_char("Your eyes glow silver.\n\r", ch);
-       act("$n's eyes glow silver.\n\r", FALSE, ch, 0, 0, TO_ROOM);
+       act("$n's eyes glow silver.", FALSE, ch, 0, 0, TO_ROOM);
     }
 
     af.type      = SPELL_TRUE_SIGHT;

@@ -392,8 +392,46 @@ char *fill[]=
     "\n"
     };
 
+/* this is to determine the relative length of strings with color codes in them
+ * by determining the number of $ signs used      -Lennya
+ */
+int color_strlen(struct char_data *ch, char *arg, int cmd)
+{
+	int num = 0, abs = 0, rel = 0, i = 0;
+	char buf[254];
 
+	if(!*arg)
+		return(0);
+//	sprintf(buf,"%s",arg);
+//	log(buf);
 
+	abs = strlen(arg);
+//	sprintf(buf,"string length = %d",abs);
+//	log(buf);
+	for(i=0; i <= abs; i++) {
+//		sprintf(buf,"i = %d",i);
+//		log(buf);
+		if(arg[i]=='$') {
+//			if(arg[i+1]=='c') {
+
+				num++;
+//				sprintf(buf,"found match in arg[%d], num = %d",i,num);
+//				log(buf);
+//				i = i +6;
+//			}
+		}
+	}
+//	sprintf(buf,"end loop, num = %d",num);
+//	log(buf);
+	rel = abs - (6*num);
+	if (rel < 0) {
+		log("erps, oddness in color_strlen");
+		return(0);
+	}
+//	sprintf(buf,"color length = %d",rel);
+//	log(buf);
+	return(rel);
+}
 
 int search_block(char *arg, char **list, bool exact)
 {
@@ -1582,6 +1620,7 @@ AddCommand("chat", do_chat, 592, POSITION_RESTING, 1);
 //AddCommand("goodiebag" ,do_goodiebag,593, POSITION_STANDING,51);
 AddCommand("qchat", do_qchat, 594, POSITION_RESTING, 1);
 AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
+AddCommand("clen", color_strlen, 596, POSITION_RESTING, 1); /* lennya test */
 
 
 }

@@ -2459,8 +2459,8 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   struct descriptor_data *d;
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
-  char bufx[126];
-  int count;
+  char bufx[126], bufy[100], bufz[100];
+  int count, length=0, clength=0, j=0;
   char color_cnt=1;
   char flags[20]="";
   char name_mask[40]="";
@@ -2555,27 +2555,28 @@ dlog("in do_who");
 		sprintf(levels,"%32s","");
 		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
 
-		sprintf(tbuf, "%-32s $c0005: $c0007%s",
-				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//		sprintf(tbuf, "%-32s $c0005: $c0007%s",
+//				levels,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 /* commented this out becuz %-10s uses up its space for color codes as well,
  * thus making it necessary to use the same amount of colors for each clan, too
  * much of a bother imo.   -Lennya
  */
 
 //		strcpy(levels,tbuf);
-//		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
-//			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//		else if(GET_CLAN(person)>0)
-//			sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
-//		else
-//			sprintf(bufx, " ");
-//
-//		sprintf(tbuf, "%-32s %50s$c0005: $c0007%s",levels, bufx,
-//					person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-
-//		sprintf(levels,"%32s","");
-//		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
-
+		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else if(GET_CLAN(person)>0)
+			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else
+			sprintf(bufx, "           "); /* length 11 */
+/* fix up length, ugly stuff */
+		length = 11; /* this should be enough length for any clan abbrev */
+		clength = length - color_strlen(ch, bufx, 596);
+		for(j = 1; j <= clength; j++) {
+			strcat(bufx, " "); /* add some spaces */
+		}
+		sprintf(tbuf, "%-32s %s $c0005: $c0007%s",
+				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
 	} else {
 		switch(GetMaxLevel(person)) {
@@ -2658,8 +2659,24 @@ dlog("in do_who");
 		sprintf(levels,"%30s","");
 		if(!strcmp(GET_NAME(person), "Banon")) {
 			strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
-			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
-						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+//			sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
+//						person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else if(GET_CLAN(person)>0)
+			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else
+			sprintf(bufx, "           "); /* length 11 */
+/* fix up length, ugly stuff */
+		length = 11; /* this should be enough length for any clan abbrev */
+		clength = length - color_strlen(ch, bufx, 596);
+		for(j = 1; j <= clength; j++) {
+			strcat(bufx, " "); /* add some spaces */
+		}
+		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
+				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
 //			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
 //				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
@@ -2673,8 +2690,24 @@ dlog("in do_who");
 
 		} else {
 			strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
-							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+//			sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
+//							person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+			sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else if(GET_CLAN(person)>0)
+			sprintf(bufx, "$c000c[$c000w%s$c000c]$c000w", clan_list[GET_CLAN(person)].shortname);
+		else
+			sprintf(bufx, "           "); /* length 11 */
+/* fix up length, ugly stuff */
+		length = 11; /* this should be enough length for any clan abbrev */
+		clength = length - color_strlen(ch, bufx, 596);
+		for(j = 1; j <= clength; j++) {
+			strcat(bufx, " "); /* add some spaces */
+		}
+		sprintf(tbuf, "$c0011%-20s %s $c0005: $c0007%s",
+				levels,bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
 //			if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
 //				sprintf(bufx, "$c0008[$c000w%s$c0008]$c000w ", clan_list[GET_CLAN(person)].shortname);
 //			else if(GET_CLAN(person)>0)
@@ -2689,14 +2722,6 @@ dlog("in do_who");
 #else
 	sprintf(tbuf, "$c100%d%s", color_cnt, person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
-	}
-
-	if (IS_SET(person->specials.act, PLR_CLAN_LEADER)) {
-		sprintf(buf," $c0008[$c000w%s$c0008]$c000w", clan_list[GET_CLAN(person)].shortname);
-		sprintf(tbuf+strlen(tbuf),buf);
-	} else if(GET_CLAN(person)>0) {
-		sprintf(buf," $c000W[$c000w%s$c000W]$c000w", clan_list[GET_CLAN(person)].shortname);
-		sprintf(tbuf+strlen(tbuf),buf);
 	}
 
 	if (IS_SET(person->player.user_flags, NEW_USER))
@@ -5195,8 +5220,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 {
 	struct char_data *tmp;
 	struct char_file_u player;
-	char buf[254], name[254];
-	int x = 0, i = 0, clan = 0;
+	char buf[254], name[MAX_STRING_LENGTH], tmp_name[254], tmp_short[254];
+	int x = 0, j = 0, i = 0, clan = 0, length = 35, clength =0;
 	extern int top_of_p_table;
 	extern struct player_index_element *player_table;
 	extern const struct clan clan_list[MAX_CLAN];
@@ -5208,11 +5233,15 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 		/* list the clans */
 		send_to_char("              $c000c-=* $c0008Clan List $c000c*=-\n\r",ch);
 		send_to_char("\n\r",ch);
-		/* don't list unclanned, start at i = 1 */
 		x = 1;
 		while(clan_list[x].number != -1) {
 			sprintf(name,"%s",clan_list[x].name);
 			CAP(name);
+			length = 35; /* this should be enough length for any clan name */
+			clength = length - color_strlen(ch, name, 596);
+			for(j = 1; j <= clength; j++) {
+				strcat(name, " ");
+			}
 			sprintf(buf,"$c000c[$c000w%2d$c000c] $c000w%s   $c000c[$c000w%s$c000c]\n\r",
 				x, name, clan_list[x].shortname);
 			send_to_char(buf,ch);
@@ -5226,46 +5255,66 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 			return;
 		} else {
 			clan = atoi(arg);
-//			if((clan > 0) && (clan < (MAX_CLAN -1))) {
 			if(clan_list[clan].number < 1) {
 				send_to_char("Unknown clan number.\n\r", ch);
 				return;
 			} else {
 				/* valid clan number */
-				ch_printf(ch,"    $c000c-=* $c000w%s Clan info $c000c*=-\n\r",clan_list[clan].name);
+				ch_printf(ch,"    $c000c-=* $c000w%s %c000wClan info $c000c*=-\n\r",clan_list[clan].name);
 
-				/* loop through pfiles, check for leader[clan] */
+				/* loop through pfiles, check for saint[clan] */
+//				ch_printf(ch,"\n\r       $c000c- $c000w%s Saints $c000c-\n\r",clan_list[clan].name);
 				for(i=0;i<top_of_p_table+1;i++) {
 					if (load_char((player_table + i)->name, &player) > -1) {
 						/* store to a tmp char that we can deal with */
 						CREATE(tmp, struct char_data,1);
 						clear_char(tmp);
 						store_to_char(&player, tmp);
-						if(IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
+						if(IS_IMMORTAL(tmp) && GET_CLAN(tmp) == clan) {
+							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s\n\r",(GET_SEX(tmp)?((GET_SEX(ch) != SEX_FEMALE)?"Patron":"Matron"):"Notron"),
+								tmp->player.title?tmp->player.title:GET_NAME(tmp));
+						}
+						free(tmp);
+					} else {
+						log("screw up bigtime in load_char, saint part, in clanlist");
+						return;
+					}
+				}
+				i=0;
+				/* loop through pfiles, check for leader[clan] */
+//				ch_printf(ch,"\n\r       $c000c- $c000w%s Leaders $c000c-\n\r",clan_list[clan].name);
+				for(i=0;i<top_of_p_table+1;i++) {
+					if (load_char((player_table + i)->name, &player) > -1) {
+						/* store to a tmp char that we can deal with */
+						CREATE(tmp, struct char_data,1);
+						clear_char(tmp);
+						store_to_char(&player, tmp);
+						if(!IS_IMMORTAL(tmp) && IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
 							ch_printf(ch, "$c000c[$c0008Leader$c000c] $c000w%s\n\r",
 								tmp->player.title?tmp->player.title:GET_NAME(tmp));
 						}
 						free(tmp);
 					} else {
-						log("screw up bigtime in load_char in clanlist");
+						log("screw up bigtime in load_char, leader part, in clanlist");
 						return;
 					}
 				}
 				i=0;
 				/* now loop through pfiles, check for member[clan] */
+//				ch_printf(ch,"\n\r       $c000c- $c000w%s Members $c000c-\n\r",clan_list[clan].name);
 				for(i=0;i<top_of_p_table+1;i++) {
 					if (load_char((player_table + i)->name, &player) > -1) {
 						/* store to a tmp char that we can deal with */
 						CREATE(tmp, struct char_data,1);
 						clear_char(tmp);
 						store_to_char(&player, tmp);
-						if(!IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
+						if(!IS_IMMORTAL(tmp) && !IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
 							ch_printf(ch, "$c000c[$c0008Member$c000c] $c000w%s\n\r",
 								tmp->player.title?tmp->player.title:GET_NAME(tmp));
 						}
 						free(tmp);
 					} else {
-						log("screw up bigtime in load_char in clanlist");
+						log("screw up bigtime in load_char, member part, in clanlist");
 						return;
 					}
 				}

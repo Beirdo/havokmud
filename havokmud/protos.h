@@ -942,7 +942,7 @@ void spell_green_slime(byte level, struct char_data *ch,
 void spell_tree_travel(byte level, struct char_data *ch,
 		     struct char_data *victim, struct obj_data *obj);
 void spell_transport_via_plant(byte level, struct char_data *ch,
-		     struct char_data *victim, struct obj_data *obj);
+		     struct char_data *victim, char *arg);//struct obj_data *obj);
 void spell_speak_with_plants(byte level, struct char_data *ch,
 		     struct char_data *victim, struct obj_data *obj);
 void spell_changestaff(byte level, struct char_data *ch,
@@ -2308,3 +2308,5 @@ void do_induct(struct char_data *ch, char *argument, int cmd);
 void do_chat(struct char_data *ch, char *argument, int cmd);
 void do_qchat(struct char_data *ch, char *argument, int cmd);
 void do_clanlist(struct char_data *ch, char *arg, int cmd);
+int color_strlen(struct char_data *ch, char *arg, int cmd);
+

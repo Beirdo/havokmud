@@ -461,7 +461,7 @@ void CleanZone(int zone)
 			/* Do not clean out corpses or quest items. Bit of  kludge to avoid
 			 * deinit getting rid of quest items when a scavenge quest is going
 			 * on. Maybe make a SYS_NODEINIT? Hard to use for small imms. -Lennya */
-			if(!IS_CORPSE(obj) || !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
+			if(!IS_CORPSE(obj) && !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
 				extract_obj(obj);
 			}
 		}
@@ -3090,7 +3090,7 @@ void DarknessPulseStuff(int pulse)
 	}
 }
 
-#define ARENA_ZONE 5//124
+#define ARENA_ZONE 124
 void ArenaPulseStuff(int pulse)
 {
 	struct descriptor_data *i;

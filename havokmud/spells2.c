@@ -2953,13 +2953,13 @@ void cast_speak_with_plants( byte level, struct char_data *ch, char *arg,
 void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  if (!tar_obj)
+  if (!*arg)
     return;
 
   switch(type) {
    case SPELL_TYPE_SPELL:
    case SPELL_TYPE_SCROLL:
-    spell_transport_via_plant(level, ch, 0, tar_obj);
+    spell_transport_via_plant(level, ch, 0, arg);//tar_obj);
     break;
   default:
     log("Serious screw-up in transport_via_plant");
