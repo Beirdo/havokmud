@@ -12,6 +12,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "protos.h"
 
@@ -1552,15 +1553,21 @@ void load_char_extra(struct char_data *ch)
                     /* 
                      * hostIP 
                      */
-#if 0                    
                     for (; isspace(*s); s++) {
                         /*
                          * Empty loop
                          */
                     }
-                    ch->specials.hostip = s;
-                    strdup(s);
-#endif                
+
+                    while(strchr(s, '\n')) {
+                        *(strchr(s, '\n')) = '\0';
+                    }
+
+                    while(strchr(s, '\r')) {
+                        *(strchr(s, '\r')) = '\0';
+                    }
+
+                    ch->specials.hostip = strdup(s);
                 } else if (!strcmp(p, "rumored")) {
                     /* 
                      * Clan info 
@@ -1665,9 +1672,7 @@ void write_char_extra(struct char_data *ch)
         fprintf(fp, "clan: %s\n", ch->specials.clan);
     }
     if (ch->specials.hostip) {
-#if 0        
-        fprintf(fp, "hostip: %s\n",ch->specials.hostip);
-#endif        
+        fprintf(fp, "hostip: %s\n", ch->specials.hostip);
     }
 
     if (ch->specials.rumor) {

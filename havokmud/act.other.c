@@ -4553,11 +4553,8 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
             if (finger->specials.hostip == NULL) {
                 sprintf(buf, "$c000BHostIP                : $c0007None");
             } else {
-                sprintf(buf, "$c000BHostIP                : $c0007%s", "None");
-#if 0
-                ,finger->specials.hostip,
-                strlen(finger->specials.hostip));
-#endif
+                sprintf(buf, "$c000BHostIP                : $c0007%s",
+                        finger->specials.hostip);
             }
             strcat(buf, "\n\r");
             send_to_char(buf, ch);

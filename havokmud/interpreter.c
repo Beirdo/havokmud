@@ -2248,7 +2248,7 @@ void show_menu(struct descriptor_data *d)
 void nanny(struct descriptor_data *d, char *arg)
 {
     struct descriptor_data *desc;
-    char            buf[256];
+    char            buf[1024];
     char            bufx[1000];
 
     int             player_i,
@@ -2796,12 +2796,18 @@ void nanny(struct descriptor_data *d, char *arg)
                                 GET_NAME(d->character), d->host);
                         Log(buf);
                     }
+                    
+                    if (d->character->specials.hostip) {
+                        free(d->character->specials.hostip);
+                    }
+                    d->character->specials.hostip = strdup(d->host);
+                    write_char_extra(d->character);
                     return;
                 }
             }
 
             load_char_extra(d->character);
-            if (d->character->specials.hostip == NULL || 1) {
+            if (d->character->specials.hostip == NULL) {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
                     sprintf(buf, "%s[%s] has connected.\n\r",
@@ -2811,7 +2817,7 @@ void nanny(struct descriptor_data *d, char *arg)
             } else {
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
-                    sprintf(buf, "%s[%s] has connected.\n\r. Last connected"
+                    sprintf(buf, "%s[%s] has connected - Last connected"
                             " from[%s]",
                             GET_NAME(d->character), d->host,
                             d->character->specials.hostip);
@@ -2819,12 +2825,12 @@ void nanny(struct descriptor_data *d, char *arg)
                 }
                 SEND_TO_Q(buf, d);
             }
-#if 0
+
             if (d->character->specials.hostip) {
                 free(d->character->specials.hostip);
             }
-            d->character->specials.hostip = d->host;
-#endif
+            d->character->specials.hostip = strdup(d->host);
+            write_char_extra(d->character);
 
             send_to_char(motd, d->character);
 #if 0
