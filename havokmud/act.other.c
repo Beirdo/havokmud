@@ -2261,8 +2261,8 @@ dlog("in do_recite");
 //		} else {
 				((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
 				((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
-sprintf(buffer,"d", target);
-log(buffer);
+//sprintf(buffer,"d", target);
+//log(buffer);
 			}
 		} else {
 /* this is a learning scroll */
