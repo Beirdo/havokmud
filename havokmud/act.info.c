@@ -5124,13 +5124,13 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &arg1);
 
-    if( !arg1 || (sd = search_block(arg1, keywords, FALSE)) == -1 ) {
-        smin = 0;
-        smax = 5;
-        swt = 3;
-        sprintf(buf, "$n peers intently all around.");
-        sprintf(buf2, "You peer intently all around, and see :\n\r");
-    } else if ((spud = get_char_room_vis(ch, arg1))) {
+    if( arg1 && (sd = search_block(arg1, keywords, FALSE)) != -1 ) {
+        smin = sd;
+        smax = sd;
+        swt = 1;
+        sprintf(buf, "$n peers intently %s.", dir_desc[sd]);
+        sprintf(buf2, "You peer intently %s, and see :\n\r", dir_desc[sd]);
+    } else if (arg1 && (spud = get_char_room_vis(ch, arg1))) {
         sprintf(buf, "$n peers intently at $N.");
         sprintf(buf2, "You peer intently at $N.  You sense an aura power "
                       "of %ld", CalcPowerLevel(spud));
@@ -5138,11 +5138,11 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         act(buf2, FALSE, ch, 0, spud, TO_CHAR);
         return;
     } else {
-        smin = sd;
-        smax = sd;
-        swt = 1;
-        sprintf(buf, "$n peers intently %s.", dir_desc[sd]);
-        sprintf(buf2, "You peer intently %s, and see :\n\r", dir_desc[sd]);
+        smin = 0;
+        smax = 5;
+        swt = 3;
+        sprintf(buf, "$n peers intently all around.");
+        sprintf(buf2, "You peer intently all around, and see :\n\r");
     }
 
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
