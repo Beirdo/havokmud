@@ -90,9 +90,9 @@ int trade_with(struct obj_data *item, int shop_nr)
 {
     int             counter;
 
-    if (item->obj_flags.cost < 1)
+    if (item->obj_flags.cost < 1) {
         return (FALSE);
-
+    }
     for (counter = 0; counter < MAX_TRADE; counter++) {
         if (shop_index[shop_nr].type[counter] == item->obj_flags.type_flag) {
             return (TRUE);
@@ -106,9 +106,9 @@ int shop_producing(struct obj_data *item, int shop_nr)
 {
     int             counter;
 
-    if (item->item_number < 0)
+    if (item->item_number < 0) {
         return (FALSE);
-
+    }
     for (counter = 0; counter < MAX_PROD; counter++) {
         if (shop_index[shop_nr].producing[counter] == item->item_number) {
             return (TRUE);
@@ -130,15 +130,18 @@ void shopping_buy(char *arg, struct char_data *ch,
     float           mult = 0;
     int             cost;
 
-    if (!(is_ok(keeper, ch, shop_nr)))
+    if (!(is_ok(keeper, ch, shop_nr))) {
         return;
-
+    }
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
                 shop_index[shop_nr].type[i] == ITEM_FOOD) {
-                /* we're in a famine, we sell food, so we crank our prices 
-                 * to hell ;-) -DM */
+                /* 
+                 * we're in a famine, we sell food, 
+                 * so we crank our prices 
+                 * to hell ;-) -DM 
+                 */
                 mult = shop_multiplier;
                 break;
             }
@@ -162,9 +165,9 @@ void shopping_buy(char *arg, struct char_data *ch,
         strcpy(argm, newarg);
     }
 
-    if (num == 0)
+    if (num == 0) {
         num = 1;
-
+    }
     if (!(temp1 = get_obj_in_list_vis(ch, argm, keeper->carrying))) {
         sprintf(buf, shop_index[shop_nr].no_such_item1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
@@ -257,16 +260,19 @@ void shopping_sell(char *arg, struct char_data *ch,
     struct obj_data *temp1;
     float           mult = 0;
 
-    if (!(is_ok(keeper, ch, shop_nr)))
+    if (!(is_ok(keeper, ch, shop_nr))) {
         return;
-
+    }
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE && 
                 shop_index[shop_nr].type[i] == ITEM_FOOD) {
                 mult = shop_multiplier;
-                /* we're in a famine, we sell food, so we crank our 
-                 * prices to hell ;-) -DM */
+                /* 
+                 * we're in a famine, we sell food, 
+                 * so we crank our 
+                 * prices to hell ;-) -DM 
+                 */
                 break;
             }
 
@@ -328,9 +334,9 @@ void shopping_sell(char *arg, struct char_data *ch,
             ((chr_apply[GET_CHR(ch)].reaction * temp1->obj_flags.cost) / 100) +
             (int)(mult * temp1->obj_flags.cost);
 
-    if (cost2 < 0)
+    if (cost2 < 0) {
         cost2 = 0;
-
+    }
     if (GET_GOLD(keeper) < cost2 ) {
         sprintf(buf, shop_index[shop_nr].missing_cash1, GET_NAME(ch));
         do_tell(keeper, buf, 19);
@@ -368,15 +374,18 @@ void shopping_value(char *arg, struct char_data *ch,
     float           mult = 0;
     int             cost;
 
-    if (!(is_ok(keeper, ch, shop_nr)))
+    if (!(is_ok(keeper, ch, shop_nr))) {
         return;
-
+    }
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
                 shop_index[shop_nr].type[i] == ITEM_FOOD) {
-                /* we're in a famine, we sell food, so we crank our prices
-                 * to hell ;-) -DM */
+                /* 
+                 * we're in a famine, we sell food, 
+                 * so we crank our prices
+                 * to hell ;-) -DM 
+                 */
                 mult = shop_multiplier;
                 break;
             }
@@ -432,16 +441,19 @@ void shopping_list(char *arg, struct char_data *ch,
     float           mult = 0;
     int             cost;
 
-    if (!(is_ok(keeper, ch, shop_nr)))
+    if (!(is_ok(keeper, ch, shop_nr))) {
         return;
-
+    }
     if (keeper->generic != 0) {
         for (i = 0; i < MAX_TRADE; i++) {
             if (keeper->generic == FAMINE &&
                 shop_index[shop_nr].type[i] == ITEM_FOOD) {
                 mult = shop_multiplier;
-                /* we're in a famine, we sell food, so we crank our prices to 
-                 * hell ;-) -DM */
+                /* 
+                 * we're in a famine, we sell food, 
+                 * so we crank our prices to 
+                 * hell ;-) -DM 
+                 */
                 break;      
             }
 
@@ -482,9 +494,9 @@ void shopping_list(char *arg, struct char_data *ch,
         }
     }
 
-    if (!found_obj)
+    if (!found_obj) {
         strcat(buf, "Nothing!\n\r");
-
+    }
     send_to_char(buf, ch);
 }
 
@@ -537,7 +549,9 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
     }
 
     for (shop_nr = 0; shop_index[shop_nr].keeper != keeper->nr; shop_nr++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     if (!cmd && keeper->specials.fighting) {
@@ -577,7 +591,9 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
     }
 
     if (cmd == 25 || cmd == 70) {
-        /* Kill or Hit */
+        /* 
+         * Kill or Hit 
+         */
         only_argument(arg, argm);
 
         if (keeper == get_char_room(argm, ch->in_room)) {
@@ -586,7 +602,9 @@ int shop_keeper(struct char_data *ch, int cmd, char *arg, char *mob, int type)
         }
     } else if (cmd == 84 || cmd == 207 || cmd == 172 || cmd == 283 || 
                cmd == 370) {
-        /* Cast, recite, use */
+        /* 
+         * Cast, recite, use 
+         */
         act("$N tells you 'No magic or mystical powers here - kid!'.",
             FALSE, ch, 0, keeper, TO_CHAR);
         return (TRUE);
@@ -612,9 +630,13 @@ void boot_the_shops(void)
     for (;;) {
         buf = fread_string(shop_f);
         if (*buf == '#') {
-            /* a new shop */
+            /* 
+             * a new shop 
+             */
             if (!number_of_shops) {
-                /* first shop */
+                /* 
+                 * first shop 
+                 */
                 CREATE(shop_index, struct shop_data, 1);
             } else if (!(shop_index = (struct shop_data *)
                           realloc(shop_index, (number_of_shops + 1) * 
@@ -661,7 +683,9 @@ void boot_the_shops(void)
 
             number_of_shops++;
         } else if (*buf == '$') {
-            /* EOF */
+            /* 
+             * EOF 
+             */
             break;
         }
     }

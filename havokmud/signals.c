@@ -34,14 +34,15 @@ void signal_setup(void)
 
     /*
      * disabled for testing 
-     *
-     * interval.tv_sec = 900; 
-     * interval.tv_usec = 0; 
-     * itime.it_interval = interval; 
-     * itime.it_value = interval; 
-     * setitimer(ITIMER_VIRTUAL, &itime, 0); 
-     * signal(SIGVTALRM, checkpointing); 
      */
+#if 0
+    interval.tv_sec = 900; 
+    interval.tv_usec = 0; 
+    itime.it_interval = interval; 
+    itime.it_value = interval; 
+    setitimer(ITIMER_VIRTUAL, &itime, 0); 
+    signal(SIGVTALRM, checkpointing); 
+#endif    
 }
 
 void checkpointing(int signal)
@@ -54,14 +55,16 @@ void checkpointing(int signal)
         /*
          * abort(); temp removal for debug 
          */
-    } else
+    } else {
         tics = 0;
+    }
 #else
     if (!tics) {
         log("CHECKPOINT tics not updated, setting to 1, be very wary");
         tics = 1;
-    } else
+    } else {
         tics = 0;
+    }
 #endif
 
 }
