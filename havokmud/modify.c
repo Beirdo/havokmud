@@ -705,7 +705,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         ch_printf(ch, "I don't understand the field \"%s\"\n\r", buf);
         return;
     }
-
+    
     /*
      * string 
      */

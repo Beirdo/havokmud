@@ -3875,6 +3875,10 @@ void do_start(struct char_data *ch)
 
     SetDefaultLang(ch);
 
+    /* Clear out the Posting bit that was borked for so long */
+    if( IS_SET(ch->specials.act, PLR_NODIMD) ) {
+        REMOVE_BIT(ch->specials.act, PLR_NODIMD);
+    }
 
     if (IS_SET(ch->player.user_flags, USE_ANSI)) {
         temp = 1;

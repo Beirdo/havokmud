@@ -4585,7 +4585,7 @@ const char     *player_bits[] = {
     "Echo",
     "NoYell",
     "NoAuction",
-    "NONE",                     /* Old NODIMD flag it seems */
+    "Posting",                 /* Old NODIMD flag it seems */
     "NoOoc",
     "NoShout",
     "Freeze",
