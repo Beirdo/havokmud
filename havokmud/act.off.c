@@ -373,300 +373,309 @@ dlog("in do_order");
 
 void do_flee(struct char_data *ch, char *argument, int cmd)
 {
-  int i, attempt, loose, die, percent, charm;
-
-  void gain_exp(struct char_data *ch, int gain);
-  int special(struct char_data *ch, int cmd, char *arg);
+	int i, attempt, loose, die, percent, charm;
+	void gain_exp(struct char_data *ch, int gain);
+	int special(struct char_data *ch, int cmd, char *arg);
 
 dlog("in do_flee");
 
-  if (IS_AFFECTED(ch, AFF_PARALYSIS))
-    return;
+	if (IS_AFFECTED(ch, AFF_PARALYSIS))
+		return;
 
-if (GET_POS(ch) < POSITION_SLEEPING) {
-	 send_to_char("Not like this you can't!\n\r",ch);
-	 return;
+	if (GET_POS(ch) < POSITION_SLEEPING) {
+		send_to_char("Not like this you can't!\n\r",ch);
+		return;
 	}
 
-  if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK) || IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK) ) {
-    send_to_char("You can think of nothing but the battle!\n\r",ch);
-    return;
-  }
-
-  if (affected_by_spell(ch, SPELL_WEB)) {
-    if (!saves_spell(ch, SAVING_PARA)) {
-       WAIT_STATE(ch, PULSE_VIOLENCE);
-       send_to_char("You are ensared in webs, you cannot move!\n\r", ch);
-       act("$n struggles against the webs that hold $m", FALSE,
-	   ch, 0, 0, TO_ROOM);
-       return;
-    } else {
-      send_to_char("You pull free from the sticky webbing!\n\r", ch);
-      act("$n manages to pull free from the sticky webbing!", FALSE,
-	  ch, 0, 0, TO_ROOM);
-      GET_MOVE(ch) -= 50;
-    }
-  }
-
-  if (GET_POS(ch) <= POSITION_SITTING){
-    GET_MOVE(ch) -= 10;
-    act("$n scrambles madly to $s feet!", TRUE, ch, 0, 0, TO_ROOM);
-    act("Panic-stricken, you scramble to your feet.", TRUE, ch, 0, 0,
-	TO_CHAR);
-    GET_POS(ch) = POSITION_STANDING;
-    WAIT_STATE(ch, PULSE_VIOLENCE);
-    return;
-  }
-
-  if (!(ch->specials.fighting)) {
-    for(i=0; i<6; i++) {
-      attempt = number(0, 5);  /* Select a random direction */
-      if (CAN_GO(ch, attempt) &&
-	  !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
-		  DEATH)) {
-	act("$n panics, and attempts to flee.", TRUE, ch, 0, 0, TO_ROOM);
-
-	if (RIDDEN(ch)) {
-	  if ((die = MoveOne(RIDDEN(ch), attempt, FALSE))== 1) {
-	    /* The escape has succeeded */
-	    send_to_char("You flee head over heels.\n\r", ch);
-	    return;
-	  } else {
-	    if (!die) act("$n tries to flee, but is too exhausted!",
-			  TRUE, ch, 0, 0, TO_ROOM);
-	    return;
-	  }
-	} else {
-	  if ((die = MoveOne(ch, attempt, FALSE))== 1) {
-	    /* The escape has succeeded */
-	    send_to_char("You flee head over heels.\n\r", ch);
-	    return;
-	  } else {
-	    if (!die) act("$n tries to flee, but is too exhausted!",
-			  TRUE, ch, 0, 0, TO_ROOM);
-	    return;
-	  }
-	}
-      }
-    } /* for */
-    /* No exits was found */
-    send_to_char("PANIC! You couldn't escape!\n\r", ch);
-    return;
-  }
-
-  for(i=0; i<3; i++) {
-    attempt = number(0, 5);  /* Select a random direction */
-    if (CAN_GO(ch, attempt) &&
-	!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, DEATH)) {
-      int panic, j;
-
-      if (!ch->skills || (number(1,101) > ch->skills[SKILL_RETREAT].learned)) {
-	act("$n panics, and attempts to flee.", TRUE, ch, 0, 0, TO_ROOM);
-	panic = TRUE;
-	LearnFromMistake(ch, SKILL_RETREAT, 0, 90);
-      } else {
-	/*
-	  find a legal exit
-	  */
-	for (j =0;j<6;j++) {
-	  if (CAN_GO(ch, j) &&
-	      !IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,
-		      DEATH)) {
-	    attempt = j;
-	    j = 10;
-	  }
-	}
-	act("$n skillfully retreats from battle", TRUE, ch, 0, 0, TO_ROOM);
-	panic = FALSE;
-      }
-
-
-      if (IS_AFFECTED(ch, AFF_CHARM)) {
-	charm = TRUE;
-	REMOVE_BIT(ch->specials.affected_by, AFF_CHARM);
-      } else
-	charm = FALSE;
-
-      if (RIDDEN(ch)) {
-	die = MoveOne(RIDDEN(ch), attempt);
-      } else {
-	die = MoveOne(ch, attempt);
-      }
-
-      if (charm)
-	SET_BIT(ch->specials.affected_by, AFF_CHARM);
-
-if (die == 1) {
-	/* The escape has succeeded. We'll be nice. */
-if (GetMaxLevel(ch) > 3) {
-  if (panic || !HasClass(ch, CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_PALADIN|CLASS_RANGER)) {
-	    loose = GetMaxLevel(ch)+(GetSecMaxLev(ch)/2)+
-	      (GetThirdMaxLev(ch)/3);
-	    loose -= GetMaxLevel(ch->specials.fighting)+
-	      (GetSecMaxLev(ch->specials.fighting)/2)+
-		(GetThirdMaxLev(ch->specials.fighting)/3);
-	    loose *= GetMaxLevel(ch);
-	  }
-	} else {
-	  loose = 0;
-	}
-	if (loose < 0) loose = 1;
-	if (IS_NPC(ch) && !(IS_SET(ch->specials.act, ACT_POLYSELF) &&
-			    !(IS_SET(ch->specials.act, ACT_AGGRESSIVE)))) {
-	  AddFeared(ch, ch->specials.fighting);
-	} else {
-	  percent=(int)100 * (float) GET_HIT(ch->specials.fighting) /
-	    (float) GET_MAX_HIT(ch->specials.fighting);
-	  if (Hates(ch->specials.fighting, ch)) {
-	      SetHunting(ch->specials.fighting, ch);
-	  } else if ((IS_GOOD(ch) && (IS_EVIL(ch->specials.fighting))) ||
-		(IS_EVIL(ch) && (IS_GOOD(ch->specials.fighting)))) {
-	      AddHated(ch->specials.fighting, ch);
-	      SetHunting(ch->specials.fighting, ch);
-	  } else if (number(1,101) < percent) {
-	      AddHated(ch->specials.fighting, ch);
-	      SetHunting(ch->specials.fighting, ch);
-	  }
+	if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK) || IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK) ) {
+		send_to_char("You can think of nothing but the battle!\n\r",ch);
+		return;
 	}
 
-if (IS_PC(ch) && panic) {
-  if (HasClass(ch, CLASS_MONK) ||
-      !HasClass(ch, CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_PALADIN|CLASS_RANGER))
-	    gain_exp(ch, -loose);
+	/* NO_FLEE flag on rooms, Lennya 20030602 */
+	if (IS_SET(real_roomp(ch->in_room)->room_flags, NO_FLEE) && !IS_IMMORTAL(ch)) {
+		send_to_char("Your feet feel like lead, and refuse to move!\n\r",ch);
+		return;
 	}
 
-	if (panic) {
-	  send_to_char("You flee head over heels.\n\r", ch);
-	} else {
-	  send_to_char("You retreat skillfully\n\r", ch);
+	if (affected_by_spell(ch, SPELL_WEB)) {
+		if (!saves_spell(ch, SAVING_PARA)) {
+			WAIT_STATE(ch, PULSE_VIOLENCE);
+			send_to_char("You are ensared in webs, you cannot move!\n\r", ch);
+			act("$n struggles against the webs that hold $m", FALSE,
+			ch, 0, 0, TO_ROOM);
+			return;
+		} else {
+			send_to_char("You pull free from the sticky webbing!\n\r", ch);
+			act("$n manages to pull free from the sticky webbing!", FALSE,
+			ch, 0, 0, TO_ROOM);
+			GET_MOVE(ch) -= 50;
+		}
 	}
-	if (ch->specials.fighting->specials.fighting == ch)
-	  stop_fighting(ch->specials.fighting);
-	if (ch->specials.fighting)
-	  stop_fighting(ch);
-	return;
-      } else {
-	if (!die) act("$n tries to flee, but is too exhausted!", TRUE, ch, 0, 0, TO_ROOM);
-	return;
-      }
-    }
-  } /* for */
 
-  /* No exits were found */
-  send_to_char("PANIC! You couldn't escape!\n\r", ch);
+	if (GET_POS(ch) <= POSITION_SITTING){
+		GET_MOVE(ch) -= 10;
+		act("$n scrambles madly to $s feet!", TRUE, ch, 0, 0, TO_ROOM);
+		act("Panic-stricken, you scramble to your feet.", TRUE, ch, 0, 0,
+		TO_CHAR);
+		GET_POS(ch) = POSITION_STANDING;
+		WAIT_STATE(ch, PULSE_VIOLENCE);
+		return;
+	}
+
+	if (!(ch->specials.fighting)) {
+		for(i=0; i<6; i++) {
+			attempt = number(0, 5);  /* Select a random direction */
+			if (CAN_GO(ch, attempt)
+					&& !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,DEATH)
+					/* NO_FLEE flag on rooms, Lennya 20030602 */
+					&& !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,NO_FLEE)) {
+				act("$n panics, and attempts to flee.", TRUE, ch, 0, 0, TO_ROOM);
+				if (RIDDEN(ch)) {
+					if ((die = MoveOne(RIDDEN(ch), attempt, FALSE))== 1) {
+						/* The escape has succeeded */
+						send_to_char("You flee head over heels.\n\r", ch);
+						return;
+					} else {
+						if (!die)
+							act("$n tries to flee, but is too exhausted!",TRUE, ch, 0, 0, TO_ROOM);
+						return;
+					}
+				} else {
+					if ((die = MoveOne(ch, attempt, FALSE))== 1) {
+						/* The escape has succeeded */
+						send_to_char("You flee head over heels.\n\r", ch);
+						return;
+					} else {
+						if (!die)
+							act("$n tries to flee, but is too exhausted!",TRUE, ch, 0, 0, TO_ROOM);
+						return;
+					}
+				}
+			}
+		} /* for */
+		/* No exits was found */
+		send_to_char("PANIC! You couldn't escape!\n\r", ch);
+		return;
+	}
+
+	for(i=0; i<3; i++) {
+		attempt = number(0, 5);  /* Select a random direction */
+		if (CAN_GO(ch, attempt) &&
+					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, DEATH) &&
+					/* NO_FLEE flag on rooms, Lennya 20030602 */
+					!IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, NO_FLEE) ) {
+			int panic, j;
+
+			if (!ch->skills || (number(1,101) > ch->skills[SKILL_RETREAT].learned)) {
+				act("$n panics, and attempts to flee.", TRUE, ch, 0, 0, TO_ROOM);
+				panic = TRUE;
+				LearnFromMistake(ch, SKILL_RETREAT, 0, 90);
+			} else {
+				/*
+				 * find a legal exit
+				 */
+				for (j =0;j<6;j++) {
+					if (CAN_GO(ch, j) &&
+								!IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,DEATH) &&
+								/* NO_FLEE flag on rooms, Lennya 20030602 */
+								!IS_SET(real_roomp(EXIT(ch, j)->to_room)->room_flags,NO_FLEE)) {
+						attempt = j;
+						j = 10;
+					}
+				}
+				act("$n skillfully retreats from battle", TRUE, ch, 0, 0, TO_ROOM);
+				panic = FALSE;
+			}
+
+
+			if (IS_AFFECTED(ch, AFF_CHARM)) {
+				charm = TRUE;
+				REMOVE_BIT(ch->specials.affected_by, AFF_CHARM);
+			} else
+				charm = FALSE;
+
+			if (RIDDEN(ch)) {
+				die = MoveOne(RIDDEN(ch), attempt);
+			} else {
+				die = MoveOne(ch, attempt);
+			}
+
+			if (charm)
+				SET_BIT(ch->specials.affected_by, AFF_CHARM);
+
+			if (die == 1) {
+				/* The escape has succeeded. We'll be nice. */
+				if (GetMaxLevel(ch) > 3) {
+					if (panic || !HasClass(ch, CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_PALADIN|CLASS_RANGER)) {
+						loose = GetMaxLevel(ch)+(GetSecMaxLev(ch)/2)+(GetThirdMaxLev(ch)/3);
+						loose -= GetMaxLevel(ch->specials.fighting)+(GetSecMaxLev(ch->specials.fighting)/2)+(GetThirdMaxLev(ch->specials.fighting)/3);
+						loose *= GetMaxLevel(ch);
+					}
+				} else {
+					loose = 0;
+				}
+				if (loose < 0)
+					loose = 1;
+
+				if (IS_NPC(ch) && !(IS_SET(ch->specials.act, ACT_POLYSELF) &&
+								!(IS_SET(ch->specials.act, ACT_AGGRESSIVE)))) {
+					AddFeared(ch, ch->specials.fighting);
+				} else {
+					percent=(int)100 * (float) GET_HIT(ch->specials.fighting) /(float) GET_MAX_HIT(ch->specials.fighting);
+					if (Hates(ch->specials.fighting, ch)) {
+						SetHunting(ch->specials.fighting, ch);
+					} else if ((IS_GOOD(ch) && (IS_EVIL(ch->specials.fighting))) ||
+										(IS_EVIL(ch) && (IS_GOOD(ch->specials.fighting)))) {
+						AddHated(ch->specials.fighting, ch);
+						SetHunting(ch->specials.fighting, ch);
+					} else if (number(1,101) < percent) {
+						AddHated(ch->specials.fighting, ch);
+						SetHunting(ch->specials.fighting, ch);
+					}
+				}
+
+				if (IS_PC(ch) && panic) {
+					if (HasClass(ch, CLASS_MONK) || !HasClass(ch, CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_PALADIN|CLASS_RANGER))
+						gain_exp(ch, -loose);
+				}
+
+				if (panic) {
+					send_to_char("You flee head over heels.\n\r", ch);
+				} else {
+					send_to_char("You retreat skillfully\n\r", ch);
+				}
+
+				if (ch->specials.fighting->specials.fighting == ch)
+					stop_fighting(ch->specials.fighting);
+
+				if (ch->specials.fighting)
+					stop_fighting(ch);
+
+				return;
+			} else {
+				if (!die)
+					act("$n tries to flee, but is too exhausted!", TRUE, ch, 0, 0, TO_ROOM);
+				return;
+			}
+		}
+	} /* for */
+	/* No exits were found */
+	send_to_char("PANIC! You couldn't escape!\n\r", ch);
 }
 
 
 
 void do_bash(struct char_data *ch, char *argument, int cmd)
 {
-  struct char_data *victim;
-  char name[256];
-  byte percent;
-  char buf[100];
+	struct char_data *victim;
+	char name[256];
+	byte percent;
+	char buf[100];
 
 dlog("in do_bash");
-  if (!ch->skills)
-    return;
+
+	if (!ch->skills)
+		return;
 
 #if 0
-  if (!IS_PC(ch) && cmd && !IS_SET(ch->specials.act,ACT_POLYSELF))
-    return;
+	if (!IS_PC(ch) && cmd && !IS_SET(ch->specials.act,ACT_POLYSELF))
+		return;
 #endif
 
-   if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
-    return;
+	if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r"))
+		return;
 
-if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
- if (!HasClass(ch, CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
-     send_to_char("You're no warrior!\n\r", ch);
-     return;
-    }
+	if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+		if (!HasClass(ch, CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
+			send_to_char("You're no warrior!\n\r", ch);
+			return;
+		}
+	}
 
-  only_argument(argument, name);
+	only_argument(argument, name);
 
-  if (!(victim = get_char_room_vis(ch, name))) {
-    if (ch->specials.fighting) {
-      victim = ch->specials.fighting;
-    } else {
-      send_to_char("Bash who?\n\r", ch);
-      return;
-    }
-  }
+	if (!(victim = get_char_room_vis(ch, name))) {
+		if (ch->specials.fighting) {
+			victim = ch->specials.fighting;
+		} else {
+			send_to_char("Bash who?\n\r", ch);
+			return;
+		}
+	}
 
+	if (victim == ch) {
+		send_to_char("Aren't we funny today...\n\r", ch);
+		return;
+	}
 
-  if (victim == ch) {
-    send_to_char("Aren't we funny today...\n\r", ch);
-    return;
-  }
+	if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+		if (!IsGiant(ch)) {
+			act("$N is MUCH too large to bash!", FALSE, ch, 0, victim, TO_CHAR);
+			return;
+		}
+	}
 
-  if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
-    if (!IsGiant(ch)) {
-      act("$N is MUCH too large to bash!", FALSE, ch, 0, victim, TO_CHAR);
-      return;
-    }
-  }
+	if (MOUNTED(victim)) {
+		send_to_char("You can't bash a mounted target!\n\r", ch);
+		return;
+	}
 
-  if (MOUNTED(victim)) {
-    send_to_char("You can't bash a mounted target!\n\r", ch);
-    return;
-  }
-
-  if (MOUNTED(ch)) {
-    send_to_char("You can't bash while mounted!\n\r", ch);
-    return;
-  }
+	if (MOUNTED(ch)) {
+		send_to_char("You can't bash while mounted!\n\r", ch);
+		return;
+	}
 
 
 #if 0
-  if (!ch->skills) {
-    if (GET_POS(victim) > POSITION_DEAD) {
-      damage(ch, victim, 0, SKILL_BASH);
-      GET_POS(ch) = POSITION_SITTING;
-    }
-  }
+	if (!ch->skills) {
+		if (GET_POS(victim) > POSITION_DEAD) {
+			damage(ch, victim, 0, SKILL_BASH);
+			GET_POS(ch) = POSITION_SITTING;
+		}
+	}
 #endif
 
-  if (ch->attackers > 3) {
-    send_to_char("There's no room to bash!\n\r",ch);
-    return;
-  }
+	if (ch->attackers > 3) {
+		send_to_char("There's no room to bash!\n\r",ch);
+		return;
+	}
 
-  if (victim->attackers >= 6) {
-    send_to_char("You can't get close enough to them to bash!\n\r", ch);
-    return;
-  }
+	if (victim->attackers >= 6) {
+		send_to_char("You can't get close enough to them to bash!\n\r", ch);
+		return;
+	}
 
-  percent=number(1,101); /* 101% is a complete failure */
+	percent=number(1,101); /* 101% is a complete failure */
 
-  /* some modifications to account for dexterity, and level */
-  percent -= dex_app[GET_DEX(ch)].reaction*10;
-  percent += dex_app[GET_DEX(victim)].reaction*10;
+	/* some modifications to account for dexterity, and level */
+	percent -= dex_app[GET_DEX(ch)].reaction*10;
+	percent += dex_app[GET_DEX(victim)].reaction*10;
 
-  if (GetMaxLevel(victim) > 12) {
-    percent += ((GetMaxLevel(victim)-10) * 5);
-  }
+	if (GetMaxLevel(victim) > 12) {
+		percent += ((GetMaxLevel(victim)-10) * 5);
+	}
 
-  if (percent > ch->skills[SKILL_BASH].learned) {
-    if (GET_POS(victim) > POSITION_DEAD) {
-      damage(ch, victim, 0, SKILL_BASH);
-      GET_POS(ch) = POSITION_SITTING;
-    }
-    LearnFromMistake(ch, SKILL_BASH, 0, 90);
-    WAIT_STATE(ch, PULSE_VIOLENCE*3);
-  } else {
-    if (GET_POS(victim) > POSITION_DEAD) {
-      GET_POS(victim) = POSITION_SITTING;
-      if (!damage(ch, victim, 2, SKILL_BASH)) {
-         WAIT_STATE(victim, PULSE_VIOLENCE*2);
-         GET_POS(victim) = POSITION_SITTING;
-        sprintf(buf,"You receive 100 experience for using your bashing abilites.\n\r.",ch);
-		send_to_char(buf,ch);
-		gain_exp(ch, 100);
-      }
-    }
-  }
-  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+	if (percent > ch->skills[SKILL_BASH].learned) {
+		if (GET_POS(victim) > POSITION_DEAD) {
+			damage(ch, victim, 0, SKILL_BASH);
+			GET_POS(ch) = POSITION_SITTING;
+		}
+		LearnFromMistake(ch, SKILL_BASH, 0, 90);
+		WAIT_STATE(ch, PULSE_VIOLENCE*3);
+	} else {
+		if (GET_POS(victim) > POSITION_DEAD) {
+			GET_POS(victim) = POSITION_SITTING;
+			if (!damage(ch, victim, 2, SKILL_BASH)) {
+				WAIT_STATE(victim, PULSE_VIOLENCE*2);
+				GET_POS(victim) = POSITION_SITTING;
+				sprintf(buf,"You receive 100 experience for using your bashing abilites.\n\r.",ch);
+				send_to_char(buf,ch);
+				gain_exp(ch, 100);
+				WAIT_STATE(ch, PULSE_VIOLENCE*2);
+			}
+		}
+	}
 }
 
 

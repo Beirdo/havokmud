@@ -519,6 +519,7 @@ typedef struct {
 #define ITEM_ONLY_CLASS	    BV28//    268435456
 #define ITEM_ANTI_BARD      BV29//    536870912
 #define ITEM_RARE           BV30//
+#define ITEM_QUEST			BV31
 
 /* UNIQUE AND PC CORPSE HERE */
 
@@ -653,6 +654,8 @@ struct obj_data
 #define WATER_ROOM    BV22
 #define MOVE_ROOM     BV23
 #define MANA_ROOM     BV24
+#define NO_FLEE			BV25 /* no fleeing into this room, or out of this room, use with care! */
+#define NO_SPY			BV26 /* spying into this room not possible */
 /* For 'dir_option' */
 
 #define NORTH          0

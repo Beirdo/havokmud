@@ -2753,6 +2753,7 @@ const char *extra_bits[] = {
         "ONLY-CLASS",
 	"ANTI-BARD",
 	"RARE",
+	"QUEST",
 	"UNIQUE",
 	"\n"
 };
@@ -2783,6 +2784,8 @@ const char *room_bits[] = {
 "WATER_ROOM",
 "MOVE_ROOM",
 "MANA_ROOM",
+"NO_FLEE",
+"NO_SPY",
 	"\n"
 };
 

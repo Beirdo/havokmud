@@ -1397,31 +1397,41 @@ dlog("in do_look");
 	send_to_char("You see nothing special.\n\r", ch);
       }
 
-      if (exitp && exitp->to_room && (!IS_SET(exitp->exit_info, EX_ISDOOR) ||
-	 (!IS_SET(exitp->exit_info, EX_CLOSED)))) {
+		if (exitp && exitp->to_room && (!IS_SET(exitp->exit_info, EX_ISDOOR) ||
+					(!IS_SET(exitp->exit_info, EX_CLOSED)))) {
 
-	if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch))    {
-	  struct room_data      *rp;
-	  sprintf(buffer,"You look %swards.\n\r", dirs[keyword_no]);
-	  send_to_char(buffer, ch);
+			if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch)) {
+				struct room_data      *rp;
+				sprintf(buffer,"You look %swards.\n\r", dirs[keyword_no]);
+				send_to_char(buffer, ch);
 
-	  sprintf(buffer,"$n looks %swards.", dirs[keyword_no]);
-	  act(buffer, FALSE, ch, 0, 0, TO_ROOM);
+				sprintf(buffer,"$n looks %swards.", dirs[keyword_no]);
+				act(buffer, FALSE, ch, 0, 0, TO_ROOM);
 
-	  rp = real_roomp(exitp->to_room);
-	  if (!rp) {
-	    send_to_char("You see swirling chaos.\n\r", ch);
-	  } else
-	  if(exitp) {
-	    sprintf(buffer, "%d look", exitp->to_room);
-	    do_at(ch, buffer, 0);
-	  } else          {
-	    send_to_char("You see nothing special.\n\r", ch);
-	  }
+				rp = real_roomp(exitp->to_room);
+				if (!rp) {
+					send_to_char("You see swirling chaos.\n\r", ch);
+				} else if(exitp) {
+					/* NO_SPY flag on rooms, Lennya 20030602 */
+					if (IS_SET(real_roomp(exitp->to_room)->room_flags, NO_SPY)) {
+						int immcheck = 1;
+						sprintf(buffer, "A strange magic blurs your vision as you attempt to look into %s.\n\r", rp->name);
+						send_to_char(buffer,ch);
+						/* imms should be able to see through the blur: */
+						if (IS_IMMORTAL(ch))
+							immcheck = 0;
+						if (immcheck)
+							return;
+					}
+					sprintf(buffer, "%d look", exitp->to_room);
+					do_at(ch, buffer, 0);
+				} else {
+					send_to_char("You see nothing special.\n\r", ch);
+				}
+			}
+		}
 	}
-      }
-    }
-      break;
+	break;
 
       /* look 'in'      */
 	case 6: {
@@ -3406,94 +3416,95 @@ void do_where(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_where");
 
-  only_argument(argument, name);
+	only_argument(argument, name);
 
-  if (!*name) {
-    if (GetMaxLevel(ch) < LOW_IMMORTAL)         {
-      send_to_char("What are you looking for?\n\r", ch);
-      return;
-    } else      {
-      init_string_block(&sb);
-      append_to_string_block(&sb, "Players:\n\r--------\n\r");
+	if (!*name) {
+		if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+			send_to_char("What are you looking for?\n\r", ch);
+			return;
+		} else {
+			init_string_block(&sb);
+			append_to_string_block(&sb, "Players:\n\r--------\n\r");
 
-      for (d = descriptor_list; d; d = d->next) {
-	if (d->character && (d->connected == CON_PLYNG) && (d->character->in_room != NOWHERE)
-	    && CAN_SEE(ch, d->character)) {
-	  if (d->original)   /* If switched */
-	    sprintf(buf, "%-20s - %s [%d] In body of %s\n\r",
-		    d->original->player.name,
-		    real_roomp(d->character->in_room)->name,
-		    d->character->in_room,
-		    fname(d->character->player.name));
-	  else
-	    sprintf(buf, "%-20s - %s [%d]\n\r",
-		    d->character->player.name,
-		    real_roomp(d->character->in_room)->name,
-		    d->character->in_room);
+			for (d = descriptor_list; d; d = d->next) {
+				if (d->character && (d->connected == CON_PLYNG) && (d->character->in_room != NOWHERE)
+									&& CAN_SEE(ch, d->character)) {
+					if (d->original)   /* If switched */
+						sprintf(buf, "%-20s - %s [%d] In body of %s\n\r",
+											d->original->player.name,
+											real_roomp(d->character->in_room)->name,
+											d->character->in_room,
+											fname(d->character->player.name));
+					else
+						sprintf(buf, "%-20s - %s [%d]\n\r",
+											d->character->player.name,
+											real_roomp(d->character->in_room)->name,
+											d->character->in_room);
 
-	  append_to_string_block(&sb, buf);
+					append_to_string_block(&sb, buf);
+				}
+			}
+			page_string_block(&sb,ch);
+			destroy_string_block(&sb);
+			return;
+		}
 	}
-      }
-      page_string_block(&sb,ch);
-      destroy_string_block(&sb);
-      return;
-    }
-  }
 
-  if (isdigit(*name)) {
-    nameonly = name;
-    count = number = get_number(&nameonly);
-  } else {
-    count = number = 0;
-  }
-
-  *buf = '\0';
-
-  init_string_block(&sb);
-
-  for (i = character_list; i; i = i->next)
-    if (isname(name, i->player.name) && CAN_SEE(ch, i) )        {
-      if ((i->in_room != NOWHERE) &&
-	  ((GetMaxLevel(ch)>=LOW_IMMORTAL) || (real_roomp(i->in_room)->zone ==
-					     real_roomp(ch->in_room)->zone))) {
-	if (number==0 || (--count) == 0) {
-	  if (number==0) {
-	    sprintf(buf, "[%2d] ", ++count); /* I love short circuiting :) */
-	    append_to_string_block(&sb, buf);
-	  }
-	  do_where_person(ch, i, &sb);
-	  *buf = 1;
-	  if (number!=0)
-	    break;
+	if (isdigit(*name)) {
+		nameonly = name;
+		count = number = get_number(&nameonly);
+	} else {
+		count = number = 0;
 	}
-	if (GetMaxLevel(ch) < LOW_IMMORTAL)
-	  break;
-      }
-    }
 
-  /*  count = number;*/
+	*buf = '\0';
 
-  if (GetMaxLevel(ch) >= SAINT ) {
-    for (k = object_list; k; k = k->next)
-      if (isname(name, k->name) && CAN_SEE_OBJ(ch, k)) {
-	if (number==0 || (--count)==0) {
-	  if (number==0) {
-	    sprintf(buf, "[%2d] ", ++count);
-	    append_to_string_block(&sb, buf);
-	  }
-	  do_where_object(ch, k, number!=0, &sb);
-	  *buf = 1;
-	  if (number!=0)
-	    break;
+	init_string_block(&sb);
+
+	for (i = character_list; i; i = i->next) {
+		if (isname(name, i->player.name) && CAN_SEE(ch, i)) {
+			if ((i->in_room != NOWHERE) &&
+						((GetMaxLevel(ch)>=LOW_IMMORTAL) || (real_roomp(i->in_room)->zone ==
+						real_roomp(ch->in_room)->zone))) {
+				if (number==0 || (--count) == 0) {
+					if (number==0) {
+						sprintf(buf, "[%2d] ", ++count); /* I love short circuiting :) */
+						append_to_string_block(&sb, buf);
+					}
+					do_where_person(ch, i, &sb);
+					*buf = 1;
+					if (number!=0)
+						break;
+				}
+				if (GetMaxLevel(ch) < LOW_IMMORTAL)
+					break;
+			}
+		}
 	}
-      }
-  }
+	/*  count = number;*/
 
-  if (!*sb.data)
-    send_to_char("Couldn't find any such thing.\n\r", ch);
-  else
-    page_string_block(&sb, ch);
-  destroy_string_block(&sb);
+	if (GetMaxLevel(ch) >= SAINT ) {
+		for (k = object_list; k; k = k->next) {
+			if (isname(name, k->name) && CAN_SEE_OBJ(ch, k)) {
+				if (number==0 || (--count)==0) {
+					if (number==0) {
+						sprintf(buf, "[%2d] ", ++count);
+						append_to_string_block(&sb, buf);
+					}
+					do_where_object(ch, k, number!=0, &sb);
+					*buf = 1;
+					if (number!=0)
+						break;
+				}
+			}
+		}
+	}
+
+	if (!*sb.data)
+		send_to_char("Couldn't find any such thing.\n\r", ch);
+	else
+		page_string_block(&sb, ch);
+	destroy_string_block(&sb);
 }
 
 
