@@ -2301,7 +2301,7 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 
-
+void do_top10(struct char_data *ch, char *arg, int cmd);
 
 void do_expel(struct char_data *ch, char *argument, int cmd);
 void do_induct(struct char_data *ch, char *argument, int cmd);

@@ -841,7 +841,7 @@ if (!ch || !i) {
 	  if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[WEAR_ABOUT] &&
 	      !(j==WEAR_LIGHT || j==WEAR_HEAD || j==WEAR_HANDS ||
 		j==WEAR_SHIELD || j==WEAR_ABOUT || j==WEAR_EAR_R || j==WEAR_EAR_L ||
-		j==WEAR_EYES) && !IS_OBJ_STAT(ch->equipment[WEAR_ABOUT],ITEM_INVISIBLE) /* see through cloak  -Lennya */
+		j==WEAR_EYES) && !IS_OBJ_STAT(i->equipment[WEAR_ABOUT],ITEM_INVISIBLE) /* see through cloak  -Lennya */
 	      && !IS_IMMORTAL(ch) && (i!=ch) ) {
 	    /* Do nothing */
 	  } else
@@ -2472,12 +2472,8 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   struct descriptor_data *d;
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
-//<<<<<<< act.info.c
-//  int count;
-//=======
-  char bufx[126], bufy[100], bufz[100];
-  int count, length=0, clength=0, j=0;
-//>>>>>>> 1.64
+  int count;
+
   char color_cnt=1;
   char flags[20]="";
   char name_mask[40]="";
@@ -5288,7 +5284,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 						clear_char(tmp);
 						store_to_char(&player, tmp);
 						if(IS_IMMORTAL(tmp) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s\n\r",(GET_SEX(tmp)?((GET_SEX(tmp) != SEX_FEMALE)?"Patron":"Matron"):"Notron"),
+							ch_printf(ch, "$c000c[$c0008%s$c000c] $c000w%s %ld\n\r",(GET_SEX(tmp)?((GET_SEX(tmp) != SEX_FEMALE)?"Patron":"Matron"):"Notron",
+									CalcPowerLevel(tmp)),
 								tmp->player.title?tmp->player.title:GET_NAME(tmp));
 						}
 						free(tmp);
@@ -5307,8 +5304,8 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 						clear_char(tmp);
 						store_to_char(&player, tmp);
 						if(!IS_IMMORTAL(tmp) && IS_SET(tmp->specials.act, PLR_CLAN_LEADER) && GET_CLAN(tmp) == clan) {
-							ch_printf(ch, "$c000c[$c0008Leader$c000c] $c000w%s\n\r",
-								tmp->player.title?tmp->player.title:GET_NAME(tmp));
+							ch_printf(ch, "$c000c[$c0008Leader$c000c] $c000w%s %ld\n\r",
+								tmp->player.title?tmp->player.title:GET_NAME(tmp),CalcPowerLevel(tmp));
 						}
 						free(tmp);
 					} else {

@@ -875,6 +875,8 @@ void die(struct char_data *ch,int killedbytype)
 #else
   gain_exp(ch, -GET_EXP(ch)/2);
 #endif
+	GET_LEADERSHIP_EXP(ch) -= GET_LEADERSHIP_EXP(ch)/2;
+
 #if LEVEL_LOSS
 
   /* warn people if their next death will result in a level loss */

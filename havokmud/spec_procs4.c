@@ -78,14 +78,15 @@ int countPeople(int zonenr) {
    for(d = descriptor_list; d; d = d->next)
    {
       person=(d->original?d->original:d->character);
-
-      if(person && real_roomp(person->in_room))
-      {
-         if(real_roomp(person->in_room)->zone == zonenr)
-            count++;
-      }
-   }
-   return count;
+		if(person) {
+			if(person->in_room > 0) {
+				if(real_roomp(person->in_room)->zone == zonenr) {
+					count++;
+				}
+			}
+		}
+	}
+	return count;
 }
 /* part of royal rumble proc */
 

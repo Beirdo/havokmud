@@ -1622,6 +1622,7 @@ AddCommand("qchat", do_qchat, 594, POSITION_RESTING, 1);
 AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
 AddCommand("clen", color_strlen, 596, POSITION_RESTING, 1); /* lennya test */
 
+AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
 
 }
 

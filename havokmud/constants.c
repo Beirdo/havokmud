@@ -3194,17 +3194,17 @@ const char *player_bits[] = {
 	"MAILING",      /*Doesn't seem to work TEB*/
 	"WIZREPORT",
 	"NOBEEP",
-	"Empty1",
-	"Empty2",
-	"Empty3",
-		"Empty4",
-		"Empty5",
-	"Empty6",
-		"Empty7",
-		"Empty8",
-	"Empty9",
-		"Empty10",
-		"Empty11",
+	"HaveRoom",
+	"Mailing",
+	"ARENA",
+		"Autoassist",
+		"Autoexit",
+	"Autoloot",
+		"Autosac",
+		"Autogold",
+	"Autosplit",
+		"ClanLeader",
+		"Legend",
 	"Empty12",
 	"\n"
 };
@@ -5805,10 +5805,10 @@ const struct clan clan_list[MAX_CLAN] = {
   { 2, "the $c000BStorm$c000xCloaks","{$c000BS$c000xC$c000w}","No clan description set", 22704 },
   { 3, "the Brothers of Eternal Light","$c000WBoEL$c000w","No clan description set", 22717 },
   { 4, "the Order", "{$c000WO$c000w}", "No clan description set", 22737 },
-  { 5, "the $c0005B$c0005r$c0005o$c0005o$c0005d", "$c000xBr$c000Ro$c000ro$c000xd$c000w", "No clan description set", 3005 },
-  { 6, "the $c000GH$c000gumle $c000GR$c000gidderne", "$c000C{$c000GH$c000gR$c000C}$c000w", "No clan description set", 3005 },
-  { 7, "the Dragon's Dawn", "DD", "We are the Guardians of the Dragon's Dawn", 3005 },
-  { 8, "the Returners", "Returners", "No clan description set", 3005 },
+  { 5, "NewClan1", "N1", "No Clan description", 3005 },
+  { 6, "NewClan2", "N2", "No Clan description", 3005 },
+  { 7, "NewClan3", "N3", "No Clan description", 3005 },
+  { 8, "NewClan4", "N4", "No clan description set", 3005 },
   {-1, "Null", "Null", "Null", 3003 }
 };
 

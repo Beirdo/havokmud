@@ -2428,7 +2428,7 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 }
 
 
-extern const struct clan clan_list[10];
+extern const struct clan clan_list[MAX_CLAN];
 void do_induct(struct char_data *ch, char *argument, int cmd) {
   struct char_data *victim;
   char name[256];

@@ -1680,6 +1680,8 @@ char *Tiredness(struct char_data *ch)
   return(p);
 
 }
+
+extern const struct clan clan_list[MAX_CLAN];
 void do_group(struct char_data *ch, char *argument, int cmd)
 {
   char name[256],buf[256], tmp_buf[1000];
@@ -1813,10 +1815,16 @@ dlog("in do_group");
     if (found) {
         /* set group name if not one */
       if (!ch->master && !ch->specials.group_name && ch->followers) {
-           char gnum=number(0,MAX_GNAME);
-           ch->specials.group_name=strdup(rand_groupname[gnum]);
-           sprintf(buf,"You form <%s> adventuring group!",rand_groupname[gnum]);
-           act(buf,FALSE,ch,0,0,TO_CHAR);
+           if(GET_CLAN(ch) > 1) {
+			   ch->specials.group_name=strdup(clan_list[GET_CLAN(ch)].name);
+			              		sprintf(buf,"You form <%s> adventuring group!",clan_list[GET_CLAN(ch)].name);
+           		act(buf,FALSE,ch,0,0,TO_CHAR);
+		   } else  {
+                char gnum=number(0,MAX_GNAME);
+           		ch->specials.group_name=strdup(rand_groupname[gnum]);
+           		sprintf(buf,"You form <%s> adventuring group!",rand_groupname[gnum]);
+           		act(buf,FALSE,ch,0,0,TO_CHAR);
+           	}
           }
      }
  /* ----- End of group all functions... Manwe Windmaster & Ugha, 050797 ----- */
@@ -3724,3 +3732,48 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
 
 }//End of behead
 
+
+
+void do_top10(struct char_data *ch, char *arg, int cmd)
+{
+	struct char_data *tmp;
+	struct char_file_u player;
+	char buf[254], name[MAX_STRING_LENGTH], tmp_name[254], tmp_short[254];
+	int x = 0, j = 0, i = 0, clan = 0, length = 35, clength =0;
+	extern int top_of_p_table;
+	extern struct player_index_element *player_table;
+	extern const struct clan clan_list[MAX_CLAN];
+
+	int deadly=0, tempd=0, richest=0, tempr=0;
+	char deadlyname[16], richestname[16];
+
+	if(!ch)
+		return;
+
+
+	for(i=0;i<top_of_p_table+1;i++) {
+		if (load_char((player_table + i)->name, &player) > -1) {
+			/* store to a tmp char that we can deal with */
+			CREATE(tmp, struct char_data,1);
+			clear_char(tmp);
+			store_to_char(&player, tmp);
+			if(!IS_IMMORTAL(tmp)) {
+				if(GET_GOLD(tmp) > richest) {
+					richest=GET_GOLD(tmp);
+					sprintf(richestname,"%s",GET_NAME(tmp));
+				}
+				if(tempd=CalcPowerLevel(tmp) > deadly) {
+						deadly=tempd;
+						sprintf(deadlyname,"%s",GET_NAME(tmp));
+				}
+			}
+			free(tmp);
+		} else {
+			log("screw up bigtime in load_char, saint part, in clanlist");
+			return;
+		}
+	}
+
+
+	ch_printf(ch,"Deadly: %s   %d.\n\rRichest: %s   %d\n\r",deadlyname, deadly, richestname, richest);
+}

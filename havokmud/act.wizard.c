@@ -43,6 +43,19 @@ extern char *room_bits[];
 extern struct str_app_type str_app[];
 
 
+void *malloc (size_t size);
+void free (void *ptr);
+void *realloc (void *ptr, size_t size);
+void *calloc (size_t nelem, size_t	elsize);
+int atoi (const char *s);
+void CleanZone(int zone);
+void ch_printf(struct char_data *ch, char *fmt, ...);
+char *formatNum(int foo);
+void insert_mobile(struct char_data *obj, long vnum);
+int write_obj_to_file(struct obj_data *obj, FILE *f);
+void insert_object(struct obj_data *obj, long vnum);
+void log (char *s);
+
 
 char EasySummon = 1;
 int MinArenaLevel, MaxArenaLevel, Quadrant = 0;
@@ -389,11 +402,10 @@ if (ch->specials.poofout)
 
 void do_zsave(struct char_data *ch, char *argument, int cmdnum)
 {
-  char buf[80];
-  int i, start_room, end_room, zone;
+  int start_room, end_room, zone;
   char c;
   FILE *fp;
-  struct room_data      *rp;
+
 
 dlog("in do_zsave");
 
@@ -451,9 +463,7 @@ dlog("in do_zsave");
 #define STATUE_ZONE 4
 void do_zload(struct char_data *ch, char *argument, int cmdnum)
 {
-  char buf[80];
-  int i, start_room, end_room, zone;
-  struct room_data      *rp;
+  int zone;
   FILE *fp;
 
 dlog("in do_ zload");
@@ -504,10 +514,9 @@ dlog("in do_ zload");
 
 void do_zclean(struct char_data *ch, char *argument, int cmdnum)
 {
-  char buf[80];
-  int i, start_room, end_room, zone=-1;
+  int zone=-1;
   struct room_data      *rp;
-  FILE *fp;
+
 
 dlog("in do_zclean");
 
@@ -708,15 +717,14 @@ if (str_cmp(buf, "add")==0) {
      send_to_char("Siteban {add <host> | rem <host> | list}\n\r", ch);
      return;
    }
+	#endif
 
-#endif
   return;
 
 }
 
 void do_rload(struct char_data *ch, char *argument, int cmd)
 {
-	char buf[200];
    char i;
    int start= -1, end = -2;
 
@@ -751,7 +759,7 @@ dlog("in do_rload");
      send_to_char("Strange, start room is outside of any zone.\r\n",ch);
      return;
    }
-   if(end>zone_table[i].top) {
+   if(end > zone_table[i].top) {
      send_to_char("Forget about it, end room is outside of start room zone ;)\r\n",ch);
      return;
    }
@@ -762,7 +770,6 @@ dlog("in do_rload");
 
 void do_rsave(struct char_data *ch, char *argument, int cmd)
 {
-   char  buf[256];
    long start= -1, end = -2, i;
 
 dlog("in do_rsave");
@@ -992,9 +999,7 @@ dlog("in do_qtrans");
 
 void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd)
 {
-	char buf[254];
-
-dlog("in do_set_nooutdoor");
+	dlog("in do_set_nooutdoor");
 
 	if (!ch)
 		return;
@@ -1040,12 +1045,12 @@ dlog("in do_at");
 	return;
       }
       location = loc_nr;
-    } else if (target_mob = get_char_vis(ch, loc_str))
+    } else if ((target_mob = get_char_vis(ch, loc_str))!=NULL)
     {
       location = target_mob->in_room;
     } else
 
-    if (target_obj=get_obj_vis_world(ch, loc_str, NULL))
+    if ((target_obj=get_obj_vis_world(ch, loc_str, NULL))!=NULL)
       if (target_obj->in_room != NOWHERE)
 	location = target_obj->in_room;
       else
@@ -1082,9 +1087,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
   int loc_nr, location, i;
   struct char_data *target_mob, *pers, *v;
   struct obj_data *target_obj;
-  extern int top_of_world;
-
-  void do_look(struct char_data *ch, char *argument, int cmd);
+ void do_look(struct char_data *ch, char *argument, int cmd);
 
 dlog("in do_goto");
 
@@ -1279,7 +1282,7 @@ dlog("in do_stat");
     /* stats on room */
     if (!str_cmp("room", arg1)) {
       rm = real_roomp(ch->in_room);
-      sprintf(buf, "Room name: %s, Of zone : %d. V-Number : %d, R-number : %d (%d)\n\r",
+      sprintf(buf, "Room name: %s, Of zone : %ld. V-Number : %ld, R-number : %ld (%d)\n\r",
 	      rm->name, rm->zone, rm->number, ch->in_room, rm->special);
       send_to_char(buf, ch);
 
@@ -1361,13 +1364,13 @@ dlog("in do_stat");
 	    strcat(buf,"UNDEFINED\n\r");
 	  send_to_char(buf, ch);
 	  sprintbit((unsigned) rm->dir_option[i]->exit_info,exit_bits,buf2);
-	  sprintf(buf, "Exit flag: %s \n\rKey no: %d\n\rTo room (R-Number): %d",
+	  sprintf(buf, "Exit flag: %s \n\rKey no: %ld\n\rTo room (R-Number): %ld",
 		  buf2, rm->dir_option[i]->key,
 		  rm->dir_option[i]->to_room);
 	  send_to_char(buf, ch);
 	  sprintf(buf,"\r\n");
 	  if(rm->dir_option[i]->open_cmd!=-1)
-	    sprintf(buf," OpenCommand: %d\r\n",rm->dir_option[i]->open_cmd);
+	    sprintf(buf," OpenCommand: %ld\r\n",rm->dir_option[i]->open_cmd);
 	  send_to_char(buf, ch);
 	}
       }
@@ -1377,7 +1380,7 @@ dlog("in do_stat");
     count = 1;
 
     /* mobile in world  PERSON! */
-    if (k = get_char_vis_world(ch, arg1, &count)){
+    if ((k = get_char_vis_world(ch, arg1, &count))!=NULL){
 
       struct time_info_data ma;
 
@@ -1396,14 +1399,14 @@ dlog("in do_stat");
 	break;
       }
 
-      sprintf(buf2, " $c0014%s $c0005- Name : $c0015%s $c0005[R-Number $c0015%d$c0005], In room [$c0015%d$c0005]",
+      sprintf(buf2, " $c0014%s $c0005- Name : $c0015%s $c0005[R-Number $c0015%ld$c0005], In room [$c0015%ld$c0005]",
 	      (!IS_NPC(k) ? "PC" : (!IS_MOB(k) ? "NPC" : "MOB")),
 	      GET_NAME(k), k->nr, k->in_room);
       strcat(buf, buf2);
       act(buf,FALSE,ch,0,0,TO_CHAR);
 
       if (IS_MOB(k)) {
-	sprintf(buf, "$c0005V-Number [$c0015%d$c0005]", mob_index[k->nr].virtual);
+	sprintf(buf, "$c0005V-Number [$c0015%ld$c0005]", mob_index[k->nr].virtual);
        act(buf,FALSE,ch,0,0,TO_CHAR);
       }
 
@@ -1437,7 +1440,7 @@ sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$
 	      k->player.level[10],k->player.level[11],GET_ALIGNMENT(k));
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
-sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%ld$c0005]secs",
+sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%d$c0005]secs",
 	      k->player.time.birth,
 	      k->player.time.logon,
 	      k->player.time.played);
@@ -1614,7 +1617,7 @@ if (k->player.user_flags) {
      send_to_char(buf, ch);
 
       /* Showing the bitvector */
-      sprintf(buf,"A1:%d    A2:%d\n\r", k->specials.affected_by, k->specials.affected_by2);
+      sprintf(buf,"A1:%ld    A2:%ld\n\r", k->specials.affected_by, k->specials.affected_by2);
 		send_to_char(buf,ch);
 	if (k->specials.affected_by) {
        sprintbit((unsigned)k->specials.affected_by,affected_bits,buf);
@@ -1640,7 +1643,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		  ,spells[aff->type-1],(aff->type));
 	  act(buf,FALSE, ch,0,0,TO_CHAR);
 
-	  sprintf(buf,"     $c0005Modifies $c0014%s $c0005by $c0015%d$c0005 points",
+	  sprintf(buf,"     $c0005Modifies $c0014%s $c0005by $c0015%ld$c0005 points",
 		  apply_types[aff->location], aff->modifier);
 	  act(buf,FALSE, ch,0,0,TO_CHAR);
 
@@ -1669,7 +1672,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
     }
 
     /* stat on object */
-    if (j=(struct obj_data *)get_obj_vis_world(ch, arg1, &count)) {
+    if ((j=(struct obj_data *)get_obj_vis_world(ch, arg1, &count)) !=NULL) {
       virtual = (j->item_number >= 0) ? obj_index[j->item_number].virtual : 0;
       sprintf(buf, "Object name: [%s]\n\r R-number: [%d], V-number: [%d] Item type: ",
 	      j->name, j->item_number, virtual);
@@ -1949,18 +1952,8 @@ if (aff->type <=MAX_EXIST_SPELL) {
 void do_ooedit(struct char_data *ch, char *argument, int cmd)
 {
   char item[80], field[20],parmstr[MAX_STRING_LENGTH], parmstr2[MAX_STRING_LENGTH];
-  char buf[MAX_STRING_LENGTH], buf2[MAX_STRING_LENGTH];
-
-  struct affected_type *aff;
   struct obj_data  *j=0;
-  struct extra_descr_data *desc;
-  int i, virtual;
-
-  /* for objects */
-  extern char *item_types[];
-  extern char *wear_bits[];
-  extern char *extra_bits[];
-  extern char *drinks[];
+  int virtual;
 
 
 dlog("in do_ooedit");
@@ -2228,7 +2221,7 @@ if (!*argument)
 
 
 
-extern const struct clan clan_list[10];
+extern const struct clan clan_list[MAX_CLAN];
 void do_set(struct char_data *ch, char *argument, int cmd)
 {
     char field[20], name[20], parmstr[50];
@@ -2394,7 +2387,7 @@ Remember, be careful how you use this command!\n\r",ch);
   } else
   if (!strcmp(field, "lev"))     {
       parm2 = 0; /* mage */
-      sscanf(parmstr,"%d %d",&parm);
+      sscanf(parmstr,"%d %d",&parm, &parm2); // added parm2 here..(GH) and below
       argument=one_argument(argument, parmstr);
       sscanf(parmstr,"%d", &parm2);
       if (!IS_NPC(mob)) {
@@ -2551,7 +2544,7 @@ Remember, be careful how you use this command!\n\r",ch);
     } else if (!strcmp(field, "skills")) {
       parm = 0;
       parm2 = 0;
-      sscanf(parmstr,"%d %d",&parm);
+      sscanf(parmstr,"%d %d",&parm,&parm2);
       argument=one_argument(argument, parmstr);
       sscanf(parmstr,"%d", &parm2);
       if (mob->skills) {
@@ -2638,7 +2631,7 @@ Remember, be careful how you use this command!\n\r",ch);
 	} else if (!strcmp(field,"murder")) {
       if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
 	 send_to_char("I don't think so.\n\r",ch);
-	 sprintf(buf,"%s tried to set your murder flag!\n\r");
+	 sprintf(buf,"%s tried to set your murder flag!\n\r","Someone");
 	 send_to_char(buf,mob);
 	 return;
 	} else
@@ -2686,7 +2679,7 @@ Remember, be careful how you use this command!\n\r",ch);
 	 else  if (!strcmp(field,"stole")) {
       if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
 	 send_to_char("I don't think so.\n\r",ch);
-	 sprintf(buf,"%s tried to set your stole flag!\n\r");
+	 sprintf(buf,"%s tried to set your stole flag!\n\r","Someone");
 	 send_to_char(buf,mob);
 	 return;
 	} else
@@ -2727,7 +2720,7 @@ Remember, be careful how you use this command!\n\r",ch);
 	else  if (!strcmp(field,"wizreport")) {
       if (GetMaxLevel(ch) < GetMaxLevel(mob)) {
 	 send_to_char("I don't think so.\n\r",ch);
-	 sprintf(buf, "%s tried to set your wizreport flag!\n\r");
+	 sprintf(buf, "%s tried to set your wizreport flag!\n\r", "Someone");
 	 send_to_char(buf,mob);
 	 return;
 	} else
@@ -2964,9 +2957,7 @@ if (GET_POS(ch) == POSITION_FIGHTING && GetMaxLevel(ch) < LOW_IMMORTAL) {
 
 void do_genstatue(struct char_data *ch, char *argument, int cmd)
 {
-	struct char_data *victim;
-	struct descriptor_data *i;
-	char name[100], to_flux[100],buf[100];
+	char buf[100];
 	void update_pos( struct char_data *victim );
 
 dlog("in do_genstatue");
@@ -2991,7 +2982,7 @@ void do_flux(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
 	struct descriptor_data *i;
-	char name[100], to_flux[100],buf[100];
+	char buf[100];
 	void update_pos( struct char_data *victim );
 
 dlog("in do_flux");
@@ -3256,7 +3247,7 @@ dlog("in do_purge");
       }
       return;
     }
-    if (vict = get_char_room_vis(ch, name))     {
+    if ((vict = get_char_room_vis(ch, name)) !=NULL)     {
       if ((!IS_NPC(vict) || IS_SET(vict->specials.act, ACT_POLYSELF)) &&
 	  (GetMaxLevel(ch)<IMPLEMENTOR)) {
 	send_to_char("I'm sorry...  I can't let you do that.\n\r", ch);
@@ -3273,7 +3264,7 @@ dlog("in do_purge");
 	  extract_char(vict);
 	} else {
 	  if (vict->desc)       {
-  struct obj_cost cost;
+
 	    close_socket(vict->desc);
 	    vict->desc = 0;
 	    extract_char(vict);
@@ -3572,11 +3563,11 @@ void roll_abilities(struct char_data *ch)
 
 void do_start(struct char_data *ch)
 {
-  int r_num,i,temp = 0;
+  int r_num,temp = 0;
   struct obj_data *obj;
   char buf[80];
 
-  extern struct dex_skill_type dex_app_skill[];
+
   void advance_level(struct char_data *ch, int i);
 
 
@@ -3943,9 +3934,7 @@ dlog("in do_advance");
 
 void do_reroll(struct char_data *ch, char *argument, int cmd)
 {
-  char buf[100];
-
-dlog("in do_reroll");
+  dlog("in do_reroll");
 
   send_to_char("Use @ command instead.\n\r", ch);
 
@@ -4155,7 +4144,7 @@ void print_room(int rnum, struct room_data *rp, struct string_block *sb)
   if ((rp->sector_type < 0) || (rp->sector_type > 9)) { /* non-optimal */
     rp->sector_type = 0;
   }
-  sprintf(buf, "%5d %4d %-12s %s", rp->number, rnum,
+  sprintf(buf, "%5ld %4d %-12s %s", rp->number, rnum,
 	  sector_types[rp->sector_type], (rp->name?rp->name:"Empty"));
   strcat(buf, " [");
 
@@ -4228,7 +4217,6 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 	extern char *spells[];
 	extern char *RaceName[];
 	extern char *AttackType[];
-	extern char *item_types[];
 	extern char *extra_bits[];
 	extern char *apply_types[];
 	extern char *affected_bits[];
@@ -4288,14 +4276,12 @@ dlog("in do_show");
 					mode = "!unknown!";
 				}
 			}
-			sprintf(buf,"%4d %-40s %4dm %4dm %6d-%-6d %s\n\r", zone, zd->name,zd->lifespan, zd->age, bottom, zd->top, mode);
+			sprintf(buf,"%4d %-40s %4dm %4dm %6d-%-6ld %s\n\r", zone, zd->name,zd->lifespan, zd->age, bottom, zd->top, mode);
 			append_to_string_block(&sb, buf);
 			bottom = zd->top+1;
 		}
-	} else if (is_abbrev(buf, "objects") &&
-				(which_i=obj_index,topi=top_of_objt) ||
-				is_abbrev(buf, "mobiles") &&
-				(which_i=mob_index,topi=top_of_mobt)) {
+	} else if (is_abbrev(buf, "objects") &&	(which_i=obj_index,topi=top_of_objt) ||
+				is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
 		int objn;
 		struct index_data   *oi;
 
@@ -4520,7 +4506,7 @@ dlog("in do_show");
 				obj = read_object(oi->virtual, VIRTUAL);
 				if(obj) {
 					if(obj->max!=0) {
-						sprintf(buf,"%5d %4d %3d/%3d  %s   (%d)\n\r", oi->virtual, objn, oi->number-1, obj->max, oi->name);
+						sprintf(buf,"%5ld %4d %3d/%3d  %s \n\r", oi->virtual, objn, oi->number-1, obj->max, oi->name);
 						append_to_string_block(&sb, buf);
 					}
 				}
@@ -4658,7 +4644,7 @@ void CreateOneRoom( int loc_nr)
 	 zone++);
     if (zone > top_of_zone_table) {
       fprintf(stderr,
-	      "Room %d is outside of any zone.\n", rp->number);
+	      "Room %ld is outside of any zone.\n", rp->number);
       zone--;
     }
     rp->zone = zone;
@@ -4670,7 +4656,7 @@ void CreateOneRoom( int loc_nr)
 
 void do_set_log(struct char_data *ch, char *arg, int cmd)
 {
- char buf[255], name[255];
+ char name[255];
  struct char_data *victim;
  struct obj_data *dummy;
 
@@ -5080,7 +5066,6 @@ dlog("in do_god_interven");
 if (IS_NPC(ch))
 	  return;
  if (!*arg) {
-  char buf[255];
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
   send_to_char("interven [type]
 (Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena, deinit )\n\r\n\r",ch);
@@ -5454,7 +5439,7 @@ void do_ghost(struct char_data *ch, char *argument , int cmd)
 {
  extern int plr_tick_count;
  char find_name[80];
- int player_i,i;
+ int player_i;
  struct char_file_u tmp_store;
  struct char_data *tmp_ch,*vict;
 
@@ -5506,7 +5491,6 @@ if (IS_NPC(ch))
 
 void do_mforce(struct char_data *ch, char *argument, int cmd)
 {
-  struct descriptor_data *i;
   struct char_data *vict;
   char name[100], to_force[100],buf[100];
 
@@ -5580,9 +5564,9 @@ void clone_container_obj(struct obj_data *to, struct obj_data *obj)
 void do_clone(struct char_data *ch, char *argument, int cmd)
 {
   struct char_data *mob, *mcopy;
-  struct obj_data *obj, *next_obj, *ocopy;
+  struct obj_data *obj, *ocopy;
   char type[100], name[100],buf[100];
-  int j,i, count, number, where;
+  int j,i, count, where;
 
 dlog("in do_clone");
 
@@ -5675,10 +5659,10 @@ dlog("in do_clone");
     } /* end mob clone for */
 
   } else if(is_abbrev(type,"object")) {
-    if (obj = get_obj_in_list_vis(ch, name, ch->carrying))
+    if ((obj = get_obj_in_list_vis(ch, name, ch->carrying))!=NULL)
       where=1;
     else
-    if (obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
+    if ((obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))!=NULL)
       where=2;
     else {
       send_to_char("Can't find such object\r\n",ch);
@@ -5850,7 +5834,7 @@ dlog("in do_msave");
   }
 
 	/* check for valid VNUM period */
- if (nr=real_mobile(vnum) != -1)
+ if ((nr=real_mobile(vnum)) != -1)
    send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r",ch);
 
   sprintf(buf,"mobiles/%ld",vnum);
@@ -6096,7 +6080,7 @@ void do_wiznoooc(struct char_data *ch, char *argument, int cmd)
 {
   struct char_data *vict;
   struct obj_data *dummy;
-  char buf[MAX_INPUT_LENGTH+40], str[MAX_INPUT_LENGTH+20];
+  char buf[MAX_INPUT_LENGTH+40];
   dlog("in do_wiznoooc");
 
   if (IS_NPC(ch))
@@ -6221,7 +6205,6 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
 {
   char buf1[MAX_INPUT_LENGTH+40] ;
   char buf2[MAX_INPUT_LENGTH+40] ;
-  char buf3[MAX_INPUT_LENGTH+40] ;
   struct descriptor_data *i;
   extern int Silence;
 
@@ -6290,7 +6273,7 @@ if (strstr(argument,"lag") || strstr(argument,"LAG") || strstr(argument,"Lag") |
 		 act(buf1, 0, ch, 0, i->character, TO_VICT);
 	    } else if (GetMaxLevel(i->character) >= LOW_IMMORTAL)
 		  {
-		     sprintf(buf2, "$c0011[$c0015$n$c0011] yells from zone %d '%s'",
+		     sprintf(buf2, "$c0011[$c0015$n$c0011] yells from zone %ld '%s'",
 		     real_roomp(ch->in_room)->zone, argument);
 		     act(buf2, 0, ch, 0, i->character, TO_VICT);
 		  }
@@ -6309,7 +6292,6 @@ if (strstr(argument,"lag") || strstr(argument,"LAG") || strstr(argument,"Lag") |
 void do_set_spy(struct char_data *ch, char *argument, int cmd)
 {
   extern int spy_flag;
-  char buf[255];
 
    dlog("in do_set_spy");
 
@@ -6329,7 +6311,7 @@ void do_set_spy(struct char_data *ch, char *argument, int cmd)
 void do_reward(struct char_data *ch, char *argument, int cmd)
 {
   char name[50], word[20];
-  char buf[256],buf2[256];
+  char buf[256];
   int done=FALSE;
   unsigned short int amount = 1, temp;
   struct descriptor_data *d;
@@ -6406,7 +6388,7 @@ dlog("in do_reward");
 void do_punish(struct char_data *ch, char *argument, int cmd)
 {
   char name[50], word[20];
-  char buf[256],buf2[256];
+  char buf[256];
   int done=FALSE;
   unsigned short int amount = 1, temp;
   struct descriptor_data *d;
@@ -6480,7 +6462,7 @@ dlog("in do_punish");
 void do_spend(struct char_data *ch, char *argument, int cmd)
 {
   char name[50], word[20];
-  char buf[256],buf2[256];
+  char buf[256];
   int done=FALSE;
   unsigned short int amount = 1, temp;
   struct descriptor_data *d;
@@ -6556,10 +6538,10 @@ dlog("in do_spend");
 
 void do_see_points(struct char_data *ch, char *argument, int cmd)
 {
-  char name[50], word[20];
-  char buf[256],buf2[256];
+  char name[50];
+  char buf[256];
   int done=FALSE;
-  unsigned short int amount = 1, temp;
+
   struct descriptor_data *d;
 
 dlog("in do_see_points");
@@ -6606,7 +6588,7 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
  {
   struct obj_data *obj;
   char objec[100], num[100],buf[100];
-  int number, vnum, rnum ;
+  int number;
 
   dlog("in do_setobjmax");
 
@@ -6653,8 +6635,7 @@ void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
  {
   struct obj_data *obj;
   char objec[100], num[100],buf[100];
-  int vnum, rnum ;
-long number;
+  long number;
   dlog("in do_setobjspeed");
 
   if (IS_NPC(ch))
@@ -6694,7 +6675,6 @@ void do_setsound(struct char_data *ch, char *argument, int cmd)
 	struct obj_data *obj;
 	struct char_data *dummy;
 	char name[100], sound[100], buf[100];
-	int vnum, rnum ;
 
 dlog("in do_setsound");
 
@@ -6738,7 +6718,7 @@ void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
 	struct obj_data *bag;
-	char buf[254], tmp_shrt[254];
+	char buf[254];
 	int i = 0,j = 0;
 
 	if(!ch)
@@ -6752,7 +6732,7 @@ void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 	}
 
 	/* load the bag */
-	if(bag = read_object(GOODIE_BAG, VIRTUAL)) {
+	if((bag = read_object(GOODIE_BAG, VIRTUAL))!=NULL) {
 		obj_to_char(bag, ch);
 	} else {
 		log("Trying to load non-existent bag in do_goodiebag");
@@ -6781,7 +6761,7 @@ void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 	for (i = GOODIE_START;i <= (GOODIE_BAG-1); i++) {
 		/* if item, load & place item, 5x */
 		for(j = 0; j <= 4; j++) {
-			if(obj = read_object(i, VIRTUAL)) {
+			if((obj = read_object(i, VIRTUAL))!=NULL) {
 //				if(obj->short_description) {
 //					sprintf(tmp_shrt,"has description %s",obj->short_description);
 //					sprintf(buf,", courtesy of %s",GET_NAME(ch));
@@ -6805,10 +6785,7 @@ int ZoneCleanable (int zone);
 
 void do_wclean(struct char_data *ch, char *argument, int cmdnum)
 {
-  char buf[80];
-  int i, start_room, end_room, zone=-1;
-  struct room_data      *rp;
-  FILE *fp;
+  int zone=-1;
 
 dlog("in do_wclean");
 
@@ -6830,7 +6807,7 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 {
   char arg1[MAX_INPUT_LENGTH+30], arg2[MAX_INPUT_LENGTH+30], arg3[MAX_INPUT_LENGTH+30];
   int tmp1, tmp2, tmp3;
-  char flag[254], rest[254];
+  char flag[254];
   char buf[MAX_STRING_LENGTH];
 
   dlog("startarena");
@@ -6983,13 +6960,13 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
 
 void do_zconv(struct char_data *ch, char *argument, int cmdnum)
 {
-  char buf[80];
-  int i, start_room, end_room, zone;
+
+  int start_room, end_room, zone;
   char c;
   FILE *fp;
-  struct room_data      *rp;
 
-dlog("in do_zsave");
+
+dlog("in do_zconv");
 
   if (IS_NPC(ch))
     return;
