@@ -6,12 +6,16 @@
  *  mallocmap()         - print memory heap.
  *  malloc_debug(0)     - do not check anything
  *  malloc_debug(1)     - print error messages if something wrong
- *  malloc_debug(2)     - check heap on every free/malloc call and abort if error
+ *  malloc_debug(2)     - check heap on every free/malloc call 
+ *                        and abort if error
  *
- * $Id: sunmalloc.c,v 1.2 2004/03/10 05:37:30 gjhurlbu Exp $
- * $Revision: 1.2 $
+ * $Id: sunmalloc.c,v 1.3 2004/03/10 21:00:59 daerious Exp $
+ * $Revision: 1.3 $
  *
  * $Log: sunmalloc.c,v $
+ * Revision 1.3  2004/03/10 21:00:59  daerious
+ * formatting
+ *
  * Revision 1.2  2004/03/10 05:37:30  gjhurlbu
  * - reformatted with 'indent -orig -sob -npsl'
  *
@@ -278,10 +282,11 @@ static insert(newblk, len)
     fpp = &_root;
     x = *fpp;
     while (weight(x) >= len) {
-        if (newblk < x->block)
+        if (newblk < x->block) {
             fpp = &x->left;
-        else
+        } else {
             fpp = &x->right;
+        }
         x = *fpp;
     }
 
@@ -563,8 +568,9 @@ ptr_t malloc(nbytes)
         /*
          * the largest block is not enough. 
          */
-        if (!morecore(nbytes))
+        if (!morecore(nbytes)) {
             return 0;
+        }
     }
 
     /*
@@ -648,9 +654,9 @@ ptr_t malloc(nbytes)
      */
     __mallinfo.uordbytes += retblk->size;       /* bytes allocated */
     __mallinfo.allocated++;     /* frags allocated */
-    if (nbytes < __mallinfo.mxfast)
+    if (nbytes < __mallinfo.mxfast) {
         __mallinfo.smblks++;    /* kludge to pass the SVVS */
-
+    }
     return ((ptr_t) retblk->data);
 
 }                               /* malloc */
@@ -1237,10 +1243,12 @@ static          bool morecore(nbytes)
     }
     nbytes = roundup(nbytes, nbpg);
     p = (Dblk) sbrk((int) nbytes);
-    if (p == (Dblk) - 1)
+    if (p == (Dblk) - 1) {
         return (false);         /* errno = ENOMEM */
-    if (_lbound == NULL)        /* set _lbound the first time through */
+    }
+    if (_lbound == NULL) {        /* set _lbound the first time through */
         _lbound = (char *) p;
+    }
     _ubound = (char *) p + nbytes;
     p->size = nbytes;
 
@@ -1282,8 +1290,9 @@ static          Freehdr getfreehdr()
             error("getfreehdr: out of memory");
             return (NIL);
         }
-        if (_lbound == NULL)    /* set _lbound on first allocation */
+        if (_lbound == NULL) {    /* set _lbound on first allocation */
             _lbound = (char *) blk;
+        }
         blk->size = size;
         freehdrptr = (Freehdr) blk->data;
         nfreehdrs = NFREE_HDRS;
@@ -1369,8 +1378,9 @@ static int cartesian(p)
     register Dblk   db,
                     pdb;
 
-    if (p == NIL)               /* no tree to test */
+    if (p == NIL) {             /* no tree to test */
         return 1;
+    }
     /*
      * check that root has a data block
      */
@@ -1386,16 +1396,18 @@ static int cartesian(p)
         chkhdr(probe);
         db = probe->block;
         chkblk(db);
-        if (probe->size > p->size)      /* child larger than parent */
+        if (probe->size > p->size) {    /* child larger than parent */
             return 0;
+        }
     }
     probe = p->right;
     if (probe != NIL) {
         chkhdr(probe);
         db = probe->block;
         chkblk(db);
-        if (probe->size > p->size)      /* child larger than parent */
+        if (probe->size > p->size) {    /* child larger than parent */
             return 0;
+        }
     }
     /*
      * test data addresses in the left subtree,
@@ -1407,8 +1419,9 @@ static int cartesian(p)
         chkhdr(probe);
         db = probe->block;
         chkblk(db);
-        if (nextblk(db, probe->size) >= pdb)    /* overlap */
+        if (nextblk(db, probe->size) >= pdb) {  /* overlap */
             return 0;
+        }
         probe = probe->right;
     }
     /*
@@ -1422,8 +1435,9 @@ static int cartesian(p)
         chkhdr(probe);
         db = probe->block;
         chkblk(db);
-        if (db == NULL || db <= pdb)    /* overlap */
+        if (db == NULL || db <= pdb) {  /* overlap */
             return 0;
+        }
         probe = probe->left;
     }
     return (cartesian(p->left) && cartesian(p->right));
@@ -1449,9 +1463,9 @@ int malloc_verify()
 
     extern char     end[];
 
-    if (_lbound == NULL)        /* no allocation yet */
+    if (_lbound == NULL) {      /* no allocation yet */
         return 1;
-
+    }
     /*
      * first check heap bounds pointers
      */
@@ -1592,8 +1606,9 @@ static error(fmt, arg1, arg2, arg3)
     register int    nbytes;
 
     errno = EINVAL;
-    if (debug_level == 0)
+    if (debug_level == 0) {
         return;
+    }
     if (!n++) {
         nbytes = dummy_sprintf(dummy_stderrbuf, fmt, arg1, arg2, arg3);
         /*
@@ -1602,8 +1617,9 @@ static error(fmt, arg1, arg2, arg3)
          */
         write(fileno(stderr), dummy_stderrbuf, nbytes);
     }
-    if (debug_level >= 2)
+    if (debug_level >= 2) {
         abort();
+    }
 }
 
 /*
@@ -1664,12 +1680,13 @@ static          bool isfreeblk(blk, fp)
     }
     len = blk->size;
     while (weight(fp) >= len) {
-        if (blk == fp->block)
+        if (blk == fp->block) {
             return (true);
-        else if (blk < fp->block)
+        } else if (blk < fp->block) {
             fp = fp->left;
-        else
+        } else {
             fp = fp->right;
+        }
     }
     return (false);
 }
@@ -1691,8 +1708,9 @@ mallocmap()
     register uint   size;
     int             errstate;
 
-    if (_lbound == NULL)        /* no allocation yet */
+    if (_lbound == NULL) {      /* no allocation yet */
         return;
+    }
     p = (Dblk) _lbound;
     while (p < (Dblk) _ubound) {
         size = (int) p->size;
