@@ -223,7 +223,7 @@ dlog("in do_set_prompt");
 
 void do_title(struct char_data *ch, char *argument, int cmd)
 {
-   char buf[512];
+   char buf[512], buf2[512];
 
 
 dlog("in do_title");
@@ -242,12 +242,36 @@ dlog("in do_title");
       send_to_char("Line too long, truncated\n", ch);
       *(argument + 151) = '\0';
     }
-    sprintf(buf, "Your title has been set to : <%s>\n\r", argument);
-    send_to_char(buf, ch);
-if (ch->player.title)
-    free(ch->player.title);
-    ch->player.title = strdup(argument);
-  }
+
+    if (!strstr(argument,GET_NAME(ch))) {
+
+	  sprintf(buf,"%s %s",GET_NAME(ch),argument);
+
+		    if (strlen(buf) > 150) {
+		      send_to_char("Line too long, truncated\n", ch);
+		      *(buf + 151) = '\0';
+		    }
+
+			sprintf(buf2, "Your title has been set to : <%s>\n\r", buf);
+	      send_to_char(buf2, ch);
+
+	  	if (ch->player.title)
+	  	    free(ch->player.title);
+	  	    ch->player.title = strdup(buf);
+
+
+	}  else  {
+
+
+    sprintf(buf2, "Your title has been set to : <%s>\n\r", argument);
+    send_to_char(buf2, ch);
+
+	if (ch->player.title)
+	    free(ch->player.title);
+	    ch->player.title = strdup(argument);
+	  }
+
+	}
 
 }
 

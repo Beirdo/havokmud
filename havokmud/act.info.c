@@ -540,18 +540,20 @@ if (!ch || !i) {
        return;
       }
     }
-
+	sprintf(buffer,"");
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos.*/
       if (!IS_NPC(i)) {
-	strcpy(buffer,GET_NAME(i));
-	strcat(buffer," ");
-	if (GET_TITLE(i))
-	  strcat(buffer,GET_TITLE(i));
-      } else {
-	strcpy(buffer, i->player.short_descr);
-	CAP(buffer);
-      }
+		if (!GET_TITLE(i)) {
+		  //strcpy(buffer,GET_NAME(i));
+			//strcat(buffer," ");
+		}
+		if (GET_TITLE(i))
+		  strcat(buffer,GET_TITLE(i));
+    	  } else {
+				strcpy(buffer, i->player.short_descr);
+				CAP(buffer);
+    	    }
 
 	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
 	  strcat(buffer," (Hiding)");
@@ -914,8 +916,8 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
     if (!(i->player.long_descr)||(GET_POS(i) != i->specials.default_pos)){
       /* A player char or a mobile without long descr, or not in default pos. */
       if (!IS_NPC(i)) {
-	strcpy(buffer,GET_NAME(i));
-	strcat(buffer," ");
+	//strcpy(buffer,GET_NAME(i));
+	//strcat(buffer," ");
 	if (GET_TITLE(i))
 	  strcat(buffer,GET_TITLE(i));
       } else {
@@ -2401,7 +2403,7 @@ if (GetMaxLevel(ch)>MAX_MORT ||
   send_to_char(buf,ch);
 
   if (GET_TITLE(ch)) {
-    sprintf(buf,"$c0005This ranks you as $c0015%s $c0011%s\n\r", GET_NAME(ch), GET_TITLE(ch));
+    sprintf(buf,"$c0005This ranks you as $c0015$c0011%s\n\r", GET_TITLE(ch));
     send_to_char(buf,ch);
   }
 
@@ -2862,8 +2864,8 @@ dlog("in do_who");
               sprintf(tbuf, "%s $c0012%s",levels, classes);
               sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
-              sprintf(tbuf, "%-32s $c0005: $c0007%s %s",levels,
-                      GET_NAME(person),person->player.title?person->player.title:"(Null)");
+              sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
+                      person->player.title?person->player.title:"(Null)");
 	    }
 	      else {
 	      switch(GetMaxLevel(person)) {
@@ -2942,17 +2944,17 @@ dlog("in do_who");
               sprintf(levels,"%30s","");
               if(!strcmp(GET_NAME(person), "Banon")) {
                 strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
-              sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s %s",levels,GET_NAME(person),
+              sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
 	                      person->player.title?person->player.title:"(Null)");
 
     		} else {
                 strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-              sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s %s",levels,GET_NAME(person),
+              sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
                       person->player.title?person->player.title:"(Null)");
 			  }
 	    }
 #else
-	    sprintf(tbuf, "$c100%d%s %s", color_cnt,GET_NAME(person),
+	    sprintf(tbuf, "$c100%d%s", color_cnt,
 		      person->player.title?person->player.title:"(Null)");
 #endif
 	  }
@@ -4613,6 +4615,18 @@ dlog("in do_scan");
 
    argument_split_2(argument,arg1,arg2);
    sd = search_block(arg1, keywords, FALSE);
+
+   //only_argument(argument, name);
+   //Find char in room
+     if ((spud = get_char_room_vis(ch, arg1))) {
+
+  		sprintf(buf,"$n peers intently at $N.");
+  		sprintf(buf2,"You peer intently at $N.  You sense an aura power of %d",CalcPowerLevel(spud));
+  		act(buf, FALSE, ch,0, spud, TO_ROOM);
+  		act(buf2, FALSE, ch,0, spud, TO_CHAR);
+
+		return;
+	}
    if (sd==-1) {
       smin = 0;
       smax = 5;
@@ -4634,9 +4648,11 @@ dlog("in do_scan");
    for (spud=real_roomp(ch->in_room)->people;spud;spud=spud->next_in_room) {
       if ((CAN_SEE(ch,spud))&&(!IS_SET(spud->specials.affected_by,AFF_HIDE))&&(spud!=ch)) {
 	 if (IS_NPC(spud)) {
-	    sprintf(buf,"%30s : right here\n\r",spud->player.short_descr);
+	    sprintf(buf,"You sense a %s aura here coming from %s.\n\r"
+	    ,PowerLevelDesc(CalcPowerLevel(spud)),spud->player.short_descr);
 	 } else {
-	    sprintf(buf,"%30s : right here\n\r",GET_NAME(spud));
+	    sprintf(buf,"You sense a %s aura here coming from %s.\n\r"
+	    	,PowerLevelDesc(CalcPowerLevel(spud)),GET_NAME(spud));
 	 }
 	 send_to_char(buf,ch);
 	 nfnd++;
@@ -4652,9 +4668,18 @@ dlog("in do_scan");
 	    for (spud=real_roomp(rm)->people;spud;spud=spud->next_in_room) {
 	       if ((CAN_SEE(ch,spud))&&(!(IS_SET(spud->specials.affected_by,AFF_HIDE)))) {
 		  if (IS_NPC(spud)) {
-		     sprintf(buf,"%30s : %s %s\n\r",spud->player.short_descr,rng_desc[range],dir_desc[i]);
-		  } else {
-		     sprintf(buf,"%30s : %s %s\n\r",GET_NAME(spud),rng_desc[range],dir_desc[i]);
+		     sprintf(buf,"You sense a %s aura %s %s.\n\r"
+		     ,PowerLevelDesc(CalcPowerLevel(spud)),rng_desc[range],dir_desc[i]);
+			//spud->player.short_descr
+
+		     //if (IS_IMMORTAL(ch))
+		  	//	sprintf(buf,"[%s]->%s",buf,spud->player.short_descr);
+		   } else {
+		     sprintf(buf,"You sense a %s aura %s %s.\n\r"
+		     ,PowerLevelDesc(CalcPowerLevel(spud)),rng_desc[range],dir_desc[i]);
+
+		     //if (IS_IMMORTAL(ch))
+		  	//	sprintf(buf,"[%s]->%s",buf,GET_NAME(spud));
 		  }
 		  send_to_char(buf,ch);
 		  nfnd++;
@@ -4666,9 +4691,65 @@ dlog("in do_scan");
       }
     }
     if (nfnd==0) send_to_char("Absolutely no-one anywhere.\n\r",ch);
-    WAIT_STATE(ch,swt);
+       WAIT_STATE(ch,swt);
 }
 
+/* Calculates a char or mobs powerlevel
+ * @ returns :powerlevel
+ * @ param :Character struct
+ * @ Author :Banon (GH)
+ * @ Date :May 16, 2002
+ * maxlevel * Hitroll * damroll * Numatts + HIT*100
+ */
+long CalcPowerLevel(struct char_data *ch)  {
+	long power;
+	extern struct str_app_type str_app[];
+	int hitroll, damroll;
+		if(IS_IMMORTAL(ch))
+			power = 2000000;
+		else power = 0;
+
+ 		hitroll = ch->points.hitroll+str_app[STRENGTH_APPLY_INDEX(ch)].tohit;
+ 		damroll = ch->points.damroll+str_app[STRENGTH_APPLY_INDEX(ch)].todam;
+
+
+	power = power + GetMaxLevel(ch) * hitroll * damroll * ch->mult_att + GET_HIT(ch)*100;
+	if (IS_AFFECTED(ch,AFF_SANCTUARY))
+		power = power * 2;
+
+
+	return power;
+}
+/*
+ *
+ *
+ *
+ * You sense a <Godlike> aura nearby to the north.
+ */
+
+char *PowerLevelDesc(long a)
+{
+
+
+   if (a < 5000) {
+     return("very weak");
+   } else if (a < 25000) {
+     return("weak");
+   } else if (a <= 56000) {
+     return("small");
+   } else if (a < 130000) {
+     return("medium");
+   } else if (a < 210000) {
+ 	return ("strong");
+   } else if (a < 400000) {
+     return("very strong");
+   } else if (a < 500000) {
+     return("powerful");
+   } else if (a < 600000) {
+   	return("extremely powerful");
+   } else
+   	return("Godlike");
+}
 
 void list_groups(struct char_data *ch)
 {
@@ -4881,8 +4962,8 @@ dlog("in do_whoarena");
               sprintf(tbuf, "%s $c0012%s",levels, classes);
               sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
-              sprintf(tbuf, "%-32s $c0005: $c0007%s %s",levels,
-                      GET_NAME(person),person->player.title?person->player.title:"(Null)");
+              sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
+                      person->player.title?person->player.title:"(Null)");
 	    }
 	    else {
 	       switch(GetMaxLevel(person)) {
@@ -4952,7 +5033,7 @@ dlog("in do_whoarena");
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
               if(real_roomp(ch->in_room)->zone == 124) {
-                sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s %s",levels,GET_NAME(person),
+                sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
                       person->player.title?person->player.title:"(Null)");
 	  		  } else {
                  sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,GET_NAME(person)
@@ -5003,7 +5084,7 @@ dlog("in do_whoarena");
 
 	    }
 #else
-	    sprintf(tbuf, "$c100%d%s %s", color_cnt,GET_NAME(person),
+	    sprintf(tbuf, "$c100%d%s", color_cnt,
 		      person->player.title?person->player.title:"(Null)");
 #endif
 	  }

@@ -1,7 +1,7 @@
 /*
 	Instructions, Randomly written in hopes that others might be able to
 	add this code more easily than I did. msw
-	
+
 	Make sure the DIMD.H is included in your protos.h
 	'		#include "dimd.h"
 
@@ -25,7 +25,7 @@
 	See code for funtion descriptions, remember I am telling you this from
 	what I have gathered so it might not be totally correct. Ask the
 	MOZART guys if you need to know more.
-	
+
 */
 
 #include <sys/types.h>
@@ -37,7 +37,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <errno.h>
-  
+
 #include "protos.h"
 
 #define USE_COLOR FALSE		/* do not use DaleMUD color codes. */
@@ -60,7 +60,7 @@ extern int maxdesc, avail_descs;
 /* */
 
 
-	/* DIMD internally used VARS */  
+	/* DIMD internally used VARS */
 int	dimd_s;
 bool	dimd_on = TRUE;
 bool	dimd_gossip = TRUE;
@@ -70,11 +70,11 @@ int	dimd_state = DIMD_OPENING;
 int	dimd_port;
 int	dimd_local_mud = UNDEFINED;
 	/* */
-	
+
 /* varaibles used internally */
 static char	is_buf[MAX_STRING_LENGTH], is_names[MAX_STRING_LENGTH], *is_argv[100],
 		*is_xargv[100];
-static int	is_argc,is_xargc,is_exact;		
+static int	is_argc,is_xargc,is_exact;
 /* */
 
 /* This is where you make the list of muds that you want to 'talk'/DIMD to */
@@ -83,9 +83,9 @@ struct mud_data muds[] =		/*			   /-No Idea	*/
 /*   /- Mud Name      /-- Aliases        /-Address to site   |Port|  ?  ? ?	*/
   {"Zodiac MUD","zodiac horpo","zodiacmud",4002,2,100,1,DD_AUTOTRY},
   {"Havok Build Site","havok build code","modemcable074.230.mmtl.VIDEOTRON.net",7000,2,100,1,DD_AUTOTRY},
-  {"Havok Play Site","play main havok","modemcable074.230.mmtl.VIDEOTRON.net",6969,2,100,1,DD_AUTOTRY},  
+  {"Havok Play Site","play main havok","modemcable074.230.mmtl.VIDEOTRON.net",6969,2,100,1,DD_AUTOTRY},
   { NULL, NULL, NULL, UNDEFINED } /* this must be here */
-}; 
+};
 
 
 
@@ -101,20 +101,20 @@ bool dimd_can_see(int slev, struct char_data *o)
 {
   if (!slev && IS_AFFECTED(o, AFF_INVISIBLE))
     return FALSE;
-  
+
   if (o->invis_level && (o->invis_level - (LOW_IMMORTAL-1)) > slev)
     return FALSE;
-  
+
   return TRUE;
-  
+
 }
 
 	/* internal code sends data to a mud for various tasks */
 void dimd_broadcast(char *buf)
 {
   int i;
-  
-  
+
+
   for(i=0; muds[i].address; i++)
     if (IS_SET(muds[i].flags, DD_VERIFIED))
       write_to_descriptor(muds[i].desc, buf);
@@ -124,21 +124,21 @@ void dimd_broadcast(char *buf)
 char *one_lc_dimd_argument(char *argument, char *first_arg)
 {
   char *scan;
-  
+
   do {
     while(isspace(*argument)) argument++;
-    
+
     scan = first_arg;
     while(*argument && *argument != '^')
       *scan++ = LOWER(*argument), argument++;
-    
+
     *scan = 0;
   }
   while (fill_word(first_arg));
-  
+
   if (*argument=='^')
-    argument++; 
-  
+    argument++;
+
   return(argument);
 }
 
@@ -146,18 +146,18 @@ char *one_lc_dimd_argument(char *argument, char *first_arg)
 char *one_dimd_argument(char *argument, char *first_arg)
 {
   char *scan;
-  
+
   while(isspace(*argument)) argument++;
-  
+
   scan = first_arg;
   while(*argument && *argument != '^')
     *scan++ = *argument++;
-  
+
   *scan = 0;
-  
+
   if (*argument=='^')
-    argument++; 
-  
+    argument++;
+
   return(argument);
 }
 
@@ -165,14 +165,14 @@ char *one_dimd_argument(char *argument, char *first_arg)
 /* command. This is how MOZART limits usage of DIMD, might wanna come */
 /* up with a better plan :) */
 
-/* Shadowdale gives each user 1 credit per tick. 
+/* Shadowdale gives each user 1 credit per tick.
 	spell_parser.c, affect_update:
 '        GET_HIT(i)  = MIN(hit_gain(i) + GET_HIT(i),  hit_limit(i));
 '        GET_MANA(i) = MIN(GET_MANA(i) + mana_gain(i), mana_limit(i));
 '        GET_MOVE(i) = MIN(GET_MOVE(i) + move_gain(i), move_limit(i));
-'        
+'
 'if (!IS_LINKDEAD(i) && (i->pc))
-'        GET_DIMD(i) +=1;		
+'        GET_DIMD(i) +=1;
 '
 'etc....
 */
@@ -183,13 +183,13 @@ bool dimd_credit(struct char_data *ch, int credits)
       msg("Your DIMD privileges were taken away from you.", ch);
       return;
     };
-  
+
  /* if (credits > GET_DIMD(ch))
     {
       msg("You do not have enough dimd credits to do that.", ch);
       return(FALSE);
-    }; 
-  
+    };
+
   GET_DIMD(ch) -= credits; */
   return(TRUE);
 }
@@ -199,14 +199,14 @@ bool dimd_credit(struct char_data *ch, int credits)
 int matchmud(char *mudname)
 {
   int i;
-  
-  
+
+
   isname_init(mudname);
   for(i=0; muds[i].nicknames; i++)
     if (isname_iter(muds[i].nicknames)
 	|| isname_iter(muds[i].address))
       return i;
-  
+
   return UNDEFINED;
 }
 
@@ -215,11 +215,11 @@ int matchmud(char *mudname)
 int getlocalmud(void)
 {
   char buf[100];
-  
+
   gethostname(buf, 100);
-  
+
   DIMDLOG(buf);
-  
+
   return matchmud(buf);
 }
 
@@ -227,32 +227,32 @@ int getlocalmud(void)
 int getmud(struct char_data *ch, char *mudname, bool checkforup)
 {
   int i;
-  
-  
+
+
   if (!*mudname)
     {
       msg("You must pick a mud!", ch);
       return UNDEFINED;
     };
-  
+
   if ((i=matchmud(mudname))==UNDEFINED)
     {
       msg("I am not aware of that mud.", ch);
       return UNDEFINED;
     };
-  
+
   if (i==dimd_local_mud)
     {
       msg("You are ON that mud silly!", ch);
       return UNDEFINED;
     };
-  
+
   if (checkforup && !IS_SET(muds[i].flags, DD_VERIFIED))
     {
       msg("We are not connected to that mud at the moment.", ch);
       return UNDEFINED;
     };
-  
+
   return i;
 }
 
@@ -262,20 +262,20 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
   char buf[MAX_INPUT_LENGTH], mudname[MAX_INPUT_LENGTH];
   struct descriptor_data *d;
   int i;
-  
-  
+
+
   if (IS_SET(ch->specials.act, PLR_NOSHOUT))
     {
       msg("Ummm, no one can hear you through that gag!", ch);
       return;
     };
-  
+
   if (IS_SET(ch->specials.act, PLR_NOGOSSIP))
     {
       msg("You are not tuned into the gossip channel!", ch);
       return;
     };
-  
+
   one_argument(argument, mudname);
   if ((i=matchmud(mudname))!=UNDEFINED)
     {
@@ -283,17 +283,17 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
       if ((i=getmud(ch, mudname, TRUE))==UNDEFINED)
 	return;
     };
-  
+
   while(isspace(*argument)) argument++;
   if (!*argument)
     {
       msg("Surely you have something to gossip!", ch);
       return;
     };
-  
+
   if (!dimd_credit(ch, 2+3*(i==UNDEFINED)))
     return;
-  
+
   if (i!=UNDEFINED)
     {
       if (IS_SET(muds[i].flags, DD_NOGOSSIP))
@@ -301,7 +301,7 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
 	  msg("They are no longer listening to remote gossips.", ch);
 	  return;
 	};
-      
+
       sprintf(buf, "^%s^%s^%d^g^%s\n\r",
 	      PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
       write_to_descriptor(muds[i].desc, buf);
@@ -314,54 +314,54 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
 	if (IS_SET(muds[i].flags, DD_VERIFIED)
 	    && !IS_SET(muds[i].flags, DD_NOGOSSIP))
 	  write_to_descriptor(muds[i].desc, buf);
-#if USE_COLOR      
+#if USE_COLOR
       sprintf(buf, "$c0015$n $c0011dimension gossips, '%s'", argument);
 #else
       sprintf(buf, "$n dimension gossips, '%s'", argument);
-#endif      
+#endif
       for(d = descriptor_list; d; d = d->next)
-	if (!d->connected && d->character != ch && 
-	    !IS_SET(d->character->pc->comm, COMM_NOGOSSIP) && 
+	if (!d->connected && d->character != ch &&
+	    !IS_SET(d->character->pc->comm, COMM_NOGOSSIP) &&
 	    !check_soundproof(d->character))
 	  cact(buf, FALSE, ch, 0, d->character, TO_VICT, CLR_GOSSIP);
     };
-  
+
 }
 
 
 void do_dlink(struct char_data *ch, char *argument, int cmd)
 {
   int mud;
-  
-  
+
+
   if (!dimd_on)
     {
       msg("The DIMD server is currently down.", ch);
       return;
     };
-  
+
   if (IS_SET(ch->pc->plr, PLR_NODIMD))
     {
       msg("Your DIMD privileges were taken away!", ch);
       return;
     };
-  
+
   while(isspace(*argument)) argument++;
   if ((mud=getmud(ch, argument, FALSE))==UNDEFINED)
     return;
-  
+
   if (IS_SET(muds[mud].flags, DD_CONNECTED))
     {
       msg("We are already connected to that mud!", ch);
       return;
     };
-  
+
   if (IS_SET(muds[mud].flags, DD_REFUSE))
     {
       msg("We are refusing connections to that mud at the moment.", ch);
       return;
     };
-  
+
   msg("Attempting to connect.", ch);
   if (call_a_mud(mud))
     msg("Connection established.", ch);
@@ -374,24 +374,24 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
 {
   char buf[MAX_INPUT_LENGTH];
   int mud;
-  
-  
+
+
   if (IS_SET(ch->pc->plr, PLR_NODIMD))
     {
       msg("Your DIMD privileges were taken away!", ch);
       return;
     };
-  
+
   while(isspace(*argument)) argument++;
   if ((mud=getmud(ch, argument, FALSE))==UNDEFINED)
     return;
-  
+
   if (!IS_SET(muds[mud].flags, DD_CONNECTED))
     {
       msg("We aren't even connected to that mud!", ch);
       return;
     };
-  
+
   sprintf(buf, "Disconnecting %s[%s].",
 	  muds[mud].formalname, muds[mud].host);
   hangup_on_a_mud(mud);
@@ -402,20 +402,20 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
 {
   char buf[MAX_INPUT_LENGTH];
   int i, mud;
-  
-  
+
+
   if (IS_SET(ch->pc->plr, PLR_NODIMD))
     {
       msg("Your DIMD privileges were taken away!", ch);
       return;
     };
-  
+
   argument = one_argument(argument, buf);
   if ((mud=getmud(ch, buf, FALSE))==UNDEFINED)
     return;
-  
+
   while(isspace(*argument)) argument++;
-  
+
   if (is_abbrev(argument, "refuse"))
     {
       SET_BIT(muds[mud].flags, DD_REFUSE);
@@ -425,7 +425,7 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
       DIMDLOG(buf);
       return;
     };
-  
+
   if (is_abbrev(argument, "accept"))
     {
       REMOVE_BIT(muds[mud].flags, DD_REFUSE);
@@ -435,15 +435,15 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
       DIMDLOG(buf);
       return;
     };
-  
+
   i = atoi(argument);
   muds[mud].min_level = i;
   sprintf(buf, "Setting %s's DIMD incoming level to %d.",
 	  muds[mud].formalname, i);
-  msg(buf, ch); 
+  msg(buf, ch);
   sprintf(buf, "%s set %s's DIMD incoming level to %d.",
 	  PER(ch), muds[mud].formalname, i);
-  DIMDLOG(buf); 
+  DIMDLOG(buf);
 }
 
 
@@ -452,11 +452,11 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
   char buf[MAX_STRING_LENGTH];
   int i;
 
-#if USE_COLOR  
+#if USE_COLOR
   strcpy(buf,
 	 " $c0015Cond  $c0011Mud Name                  $c0012Nicknames              $c0013Restricted\n\r"
 	 "------ ------------------------- ---------------------- ----------\n\r");
-  
+
   for(i=0; muds[i].formalname; i++)
     sprintf(buf+strlen(buf), "$c0015%s $c0011%-25s $c0012%-22s $c0013%d\n\r",
 	    i==dimd_local_mud ? " HERE "
@@ -467,7 +467,7 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
   strcpy(buf,
 	 " Cond     Mud Name                  Nicknames              Restricted\n\r"
 	 " ------   ------------------------- ---------------------- ----------\n\r");
-  
+
   for(i=0; muds[i].formalname; i++)
     sprintf(buf+strlen(buf), "%s %-25s %-22s %d\n\r",
 	    i==dimd_local_mud ? " HERE "
@@ -475,14 +475,14 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
 	       : (IS_SET(muds[i].flags, DD_REFUSE) ? "REFUSE" : " DOWN ")),
 	    muds[i].formalname, muds[i].nicknames, muds[i].min_level);
 #endif
-  
+
   msg(buf, ch);
 }
 
 
 void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
-  
+
   while(isspace(*argument)) argument++;
   if (!str_cmp(argument, "on"))
     {
@@ -491,12 +491,12 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 	  msg("The server was already activated.", ch);
 	  return;
 	};
-      
+
       dimd_on = TRUE;
       msg("Bringing up the DIMD server.", ch);
       return;
     };
-  
+
   if (!str_cmp(argument, "off"))
     {
       if (!dimd_on)
@@ -504,12 +504,12 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 	  msg("The server was already deactivated.", ch);
 	  return;
 	};
-      
+
       dimd_on = FALSE;
       msg("Bringing down the DIMD server.", ch);
       return;
     };
-  
+
   if (!str_cmp(argument, "gossip"))
     {
       if (dimd_gossip)
@@ -522,11 +522,11 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 	  msg("Dimensional gossips will now be accepted.", ch);
 	  dimd_broadcast("^DIMD^DIMD^110^ag\n\r");
 	}
-      
+
       dimd_gossip = !dimd_gossip;
       return;
     };
-  
+
   if (!str_cmp(argument, "muse"))
     {
       if (dimd_muse)
@@ -539,11 +539,11 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 	  msg("Dimensional muses will now be accepted.", ch);
 	  dimd_broadcast("^DIMD^DIMD^110^am\n\r");
 	}
-      
+
       dimd_muse = !dimd_muse;
       return;
     };
-  
+
   if (!str_cmp(argument, "think"))
     {
       if (dimd_think)
@@ -556,11 +556,11 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 	  msg("Dimensional thinking will now be accepted.", ch);
 	  dimd_broadcast("^DIMD^DIMD^110^at\n\r");
 	}
-      
+
       dimd_think = !dimd_think;
       return;
     };
-  
+
   msg("Use either on, off, gossip, muse, or think.", ch);
 }
 
@@ -570,20 +570,20 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
   char buf[MAX_INPUT_LENGTH], mudname[MAX_INPUT_LENGTH];
   struct descriptor_data *d;
   int i;
-  
-  
+
+
   if (IS_SET(ch->specials.act, PLR_NOSHOUT))
     {
       msg("The gods are sick of listen to you!  You've been gagged!", ch);
       return;
     };
-  
+
   if (HUMAN(ch) && IS_SET(ch->pc->comm, COMM_NOMUSE))
     {
       msg("You are not tuned into the muse channel!", ch);
       return;
     };
-  
+
   one_argument(argument, mudname);
   if ((i=matchmud(mudname))!=UNDEFINED)
     {
@@ -591,17 +591,17 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
       if ((i=getmud(ch, mudname, TRUE))==UNDEFINED)
 	return;
     };
-  
+
   while(isspace(*argument)) argument++;
   if (!*argument)
     {
       msg("Sure you have something to muse!", ch);
       return;
     };
-  
+
   if (!dimd_credit(ch, 1+2*(i==UNDEFINED)))
     return;
-  
+
   if (i!=UNDEFINED)
     {
       if (IS_SET(muds[i].flags, DD_NOMUSE))
@@ -609,7 +609,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 	  msg("They are no longer listening to remote muses.", ch);
 	  return;
 	};
-      
+
       sprintf(buf, "^%s^%s^%d^mg^%s\n\r",
 	      PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
       write_to_descriptor(muds[i].desc, buf);
@@ -622,7 +622,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 	if (IS_SET(muds[i].flags, DD_VERIFIED)
 	    && !IS_SET(muds[i].flags, DD_NOMUSE))
 	  write_to_descriptor(muds[i].desc, buf);
-#if USE_COLOR      
+#if USE_COLOR
       sprintf(buf, "$kW$n $kLdimension muses, '%s'", argument);
 #else
       sprintf(buf, "$n dimension muses, '%s'", argument);
@@ -649,20 +649,20 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
     }*/
   argument = one_argument(argument, name);
   argument = one_argument(argument, mudname);
-  
+
   if ((i=getmud(ch, mudname, TRUE))==UNDEFINED)
     return;
-  
+
   while(isspace(*argument)) argument++;
   if (!*argument)
     {
       msg("Surely you have SOMETHING to say ... ?", ch);
       return;
     };
-  
+
   if (!dimd_credit(ch, 1))
     return;
-  
+
   sprintf(buf, "^%s^%s^%d^t^%s^%s\n\r",
 	  PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), name, argument);
   write_to_descriptor(muds[i].desc, buf);
@@ -674,8 +674,8 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
   char buf[MAX_INPUT_LENGTH], mudname[MAX_INPUT_LENGTH];
   struct descriptor_data *d;
   int i;
-  
-  
+
+
   one_argument(argument, mudname);
   if ((i=matchmud(mudname))!=UNDEFINED)
     {
@@ -683,17 +683,17 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
       if ((i=getmud(ch, mudname, TRUE))==UNDEFINED)
 	return;
     };
-  
+
   while(isspace(*argument)) argument++;
   if (!*argument)
     {
       msg("Sure you have something to think!", ch);
       return;
     };
-  
+
   if (!dimd_credit(ch, 1+1*(i==UNDEFINED)))
     return;
-  
+
   if (i!=UNDEFINED)
     {
       if (IS_SET(muds[i].flags, DD_NOTHINK))
@@ -701,7 +701,7 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
 	  msg("They are no longer listening to remote thinks.", ch);
 	  return;
 	};
-      
+
       sprintf(buf, "^%s^%s^%d^*^%s\n\r",
 	      PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
       write_to_descriptor(muds[i].desc, buf);
@@ -714,11 +714,11 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
 	if (IS_SET(muds[i].flags, DD_VERIFIED)
 	    && !IS_SET(muds[i].flags, DD_NOTHINK))
 	  write_to_descriptor(muds[i].desc, buf);
-#if USE_COLOR      
+#if USE_COLOR
       sprintf(buf, "$c0015$n $c0012dimension thinks, '%s'", argument);
 #else
       sprintf(buf, "$n dimension thinks, '%s'", argument);
-#endif      
+#endif
       for(d = descriptor_list; d; d = d->next)
 	if (!d->connected && d->character != ch
 	    && GetMaxLevel(d->character) >= DEMIGOD)
@@ -730,15 +730,15 @@ void do_dwho(struct char_data *ch, char *argument, int cmd)
 {
   char buf[MAX_INPUT_LENGTH];
   int i;
-  
-  
+
+
   argument = one_argument(argument, buf);
   if ((i=getmud(ch, buf, TRUE))==UNDEFINED)
     return;
-  
+
   if (!dimd_credit(ch, 2))
     return;
-  
+
   while(isspace(*argument)) argument++;
   sprintf(buf, "^%s^%s^%d^w^%s\n\r",
 	  PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
@@ -752,11 +752,11 @@ bool call_a_mud(int mud)
   struct sockaddr_in sockaddr;
   struct hostent *hp;
   char buf[200];
-  
-  
+
+
   if (mud == dimd_local_mud)
     return FALSE;
-  
+
   if (isdigit(*muds[mud].address))
     sockaddr.sin_addr.s_addr=inet_addr(muds[mud].address);
   else
@@ -768,24 +768,24 @@ bool call_a_mud(int mud)
 	  DIMDLOG(buf);
 	  return FALSE;
 	};
-      
+
       memcpy((char *) &sockaddr.sin_addr, hp->h_addr,
 	     sizeof(sockaddr.sin_addr));
     };
-  
+
   sockaddr.sin_port = htons(muds[mud].port+2);
-  
+
   if ((muds[mud].desc=socket(AF_INET, SOCK_STREAM, 0))<0)
     {
       DIMDLOG("Could not obtain a socket.");
       return FALSE;
     };
-  
+
   sockaddr.sin_family = AF_INET;
-  
+
   connectresult =
     connect(muds[mud].desc, (struct sockaddr *) &sockaddr, sizeof(sockaddr));
-  
+
   if (connectresult)
     {
       close(muds[mud].desc);
@@ -795,14 +795,14 @@ bool call_a_mud(int mud)
       case 61:
 	strcat(buf, "  Connection refused.");
 	break;
-	
+
       default:
 	sprintf(buf+strlen(buf), "  Error(%d).", errno);
       };
       DIMDLOG(buf);
       return FALSE;
     };
-  
+
   if ((maxdesc+1) >= avail_descs)
     {
       sprintf(buf, "Tried to open a connection to %s but ran out of sockets.",
@@ -814,28 +814,28 @@ bool call_a_mud(int mud)
   else
     if (muds[mud].desc > maxdesc)
       maxdesc = muds[mud].desc;
-  
-  
+
+
   size = sizeof(sockaddr);
   if (getpeername(muds[mud].desc, (struct sockaddr *) &sockaddr, &size) < 0)
     {
       perror("getpeername");
       *muds[mud].host = '\0';
     }
-  else 
+  else
     printhost(&sockaddr.sin_addr, muds[mud].host);
-  
-  
+
+
   muds[mud].output.head = NULL;
   muds[mud].input.head = NULL;
   *muds[mud].buf = 0;
   muds[mud].flags |= DD_CONNECTED|DD_VERIFIED;
   *muds[mud].pcname = 0;
-  
+
   sprintf(buf, "DIMD connection to %s[%s] established.",
 	  muds[mud].formalname, muds[mud].address);
   DIMDLOG(buf);
-  
+
   write_to_descriptor(muds[mud].desc, DIMD_PASSWORD "\n\r");
   return TRUE;
 }
@@ -846,11 +846,11 @@ bool answer_a_mud(void)
   int desc, size, mud;
   struct sockaddr_in sock;
   char buf[1024], host[100];
-  
-  
+
+
   if ((desc = new_connection(dimd_s)) < 0)
     return FALSE;
-  
+
   if ((maxdesc+1) >= avail_descs)
     {
       write_to_descriptor(desc, "Sorry, the game is full.");
@@ -860,20 +860,20 @@ bool answer_a_mud(void)
   else
     if (desc > maxdesc)
       maxdesc = desc;
-  
-  
+
+
   size = sizeof(sock);
   if (getpeername(desc, (struct sockaddr *) &sock, &size) < 0)
     {
       perror("getpeername");
       *host = '\0';
     }
-    else  printhost(&sock.sin_addr, host); 
-   
-  for(mud=0; muds[mud].address; mud++) 
+    else  printhost(&sock.sin_addr, host);
+
+  for(mud=0; muds[mud].address; mud++)
     if (!str_cmp(host, muds[mud].address) && mud != dimd_local_mud)
       break;
-  
+
   if (!muds[mud].address)
     {
       write_to_descriptor(desc, "Sorry, I don't recognize your address.");
@@ -882,7 +882,7 @@ bool answer_a_mud(void)
       DIMDLOG(buf);
       return FALSE;
     };
-  
+
   if (IS_SET(muds[mud].flags, DD_CONNECTED))
     {
       write_to_descriptor(desc, "We are already connected to your mud.");
@@ -892,7 +892,7 @@ bool answer_a_mud(void)
       DIMDLOG(buf);
       return FALSE;
     };
-  
+
   if (IS_SET(muds[mud].flags, DD_REFUSE))
     {
       write_to_descriptor(desc, "We are not accepting connections from your mud at the moment.");
@@ -902,7 +902,7 @@ bool answer_a_mud(void)
       DIMDLOG(buf);
       return FALSE;
     };
-  
+
   muds[mud].desc = desc;
   strcpy(muds[mud].host, host);
   muds[mud].output.head = NULL;
@@ -910,11 +910,11 @@ bool answer_a_mud(void)
   *muds[mud].buf = 0;
   muds[mud].flags |= DD_CONNECTED;
   *muds[mud].pcname = 0;
-  
+
   sprintf(buf, "DIMD connection established with %s[%s].",
 	  muds[mud].formalname, host);
   DIMDLOG(buf);
-  
+
   return TRUE;
 }
 
@@ -922,16 +922,16 @@ bool answer_a_mud(void)
 void hangup_on_a_mud(int mud)
 {
   char buf[MAX_INPUT_LENGTH];
-  
+
   if (!IS_SET(muds[mud].flags, DD_CONNECTED))
     return;
-  
+
   close(muds[mud].desc);
   while(get_from_q(&muds[mud].input, buf));
   while(get_from_q(&muds[mud].output, buf));
   if (muds[mud].desc == maxdesc)
     --maxdesc;
-  
+
   REMOVE_BIT(muds[mud].flags, DD_CONNECTED|DD_VERIFIED);
   sprintf(buf, "DIMD connection with %s[%s] closed.",
 	  muds[mud].formalname, muds[mud].address);
@@ -942,16 +942,16 @@ void hangup_on_a_mud(int mud)
 void close_dimd(void)
 {
   int mud;
-  
-  
+
+
   if (dimd_state != DIMD_CLOSED)
     {
       dimd_state = DIMD_CLOSED ;
       DIMDLOG("Closing all DIMD sockets and DIMD server.");
-      
+
       for(mud=0; muds[mud].address; mud++)
 	hangup_on_a_mud(mud);
-      
+
       close(dimd_s);
     };
 }
@@ -969,8 +969,8 @@ void dimd_loop(void)
   char    comm[MAX_INPUT_LENGTH];
   struct  timeval null_time;
   struct  descriptor_data *d;
-  
-  
+
+
   switch (dimd_state) {
     /****************************************************************/
   case DIMD_OPENING:
@@ -981,24 +981,24 @@ void dimd_loop(void)
 	dimd_on = FALSE;
 	return;
       };
-    
+
     dimd_port = DIMD_PORT;
     dimd_s=init_socket(dimd_port);
     DIMDLOG("DIMD port opened.");
-    
+
     for(i=0; muds[i].address; i++)
       if (IS_SET(muds[i].flags, DD_AUTOTRY))
 	call_a_mud(i);
-    
+
     dimd_state = DIMD_OPEN;
     break;
-    
+
     /****************************************************************/
   case DIMD_OPEN:
-    
+
     null_time.tv_sec = 0;
     null_time.tv_usec = 0;
-    
+
     FD_ZERO(&input_set);
     FD_ZERO(&output_set);
     FD_ZERO(&exc_set);
@@ -1010,21 +1010,21 @@ void dimd_loop(void)
 	  FD_SET(muds[i].desc, &exc_set);
 	  FD_SET(muds[i].desc, &output_set);
 	};
-    
+
     if (select(maxdesc + 1, &input_set, &output_set, &exc_set, &null_time) < 0)
       {
 	perror("Tell select poll");
 	return;
       };
-    
-    
+
+
     /* Respond to whatever might be happening */
-    
+
     /* New connection? */
     if (FD_ISSET(dimd_s, &input_set))
       if (!answer_a_mud())
 	perror("New connection");
-    
+
     for(i=0; muds[i].address; i++)
       if (IS_SET(muds[i].flags, DD_CONNECTED))
 	{
@@ -1035,15 +1035,15 @@ void dimd_loop(void)
 	      hangup_on_a_mud(i);
 	    };
 	};
-    
+
     for(i=0; muds[i].address; i++)
       if (IS_SET(muds[i].flags, DD_CONNECTED))
 	{
 	  if (FD_ISSET(muds[i].desc, &input_set))
-	    if (process_dimd_input(i) < 0) 
+	    if (process_dimd_input(i) < 0)
 	      hangup_on_a_mud(i);
 	};
-    
+
     for(i=0; muds[i].address; i++)
       if (IS_SET(muds[i].flags, DD_CONNECTED))
 	{
@@ -1062,11 +1062,11 @@ void dimd_loop(void)
 		      hangup_on_a_mud(i);
 		      break;
 		    };
-		  
+
 		  SET_BIT(muds[i].flags, DD_VERIFIED);
 		  break;
 		};
-	      
+
 	      if (*comm != '^')
 		{
 		  if (!(vict=get_char(muds[i].pcname)))
@@ -1079,10 +1079,10 @@ void dimd_loop(void)
 		    }
 		  else
 		    msg(comm, vict);
-		  
+
 		  continue;
 		};
-	      
+
 	      scan = comm+1;
 	      scan = one_dimd_argument(scan, fromname);
 	      scan = one_dimd_argument(scan, fromkeyname);
@@ -1097,7 +1097,7 @@ void dimd_loop(void)
 		  hangup_on_a_mud(i);
 		  break;
 		};
-	      
+
 	      if (fromlevel < muds[i].min_level)
 		sprintf(buf, "You must be at least %d level to use DIMD on %s.",
 			muds[i].min_level, muds[i].formalname);
@@ -1110,7 +1110,7 @@ void dimd_loop(void)
 		  case '#':
 		    strcpy(muds[i].pcname, fromkeyname);
 		    continue;
-		    
+
 		  case 'a':
 		    switch(*(dcommand+1))
 		      {
@@ -1119,26 +1119,26 @@ void dimd_loop(void)
 				muds[i].formalname);
 			REMOVE_BIT(muds[i].flags, DD_NOGOSSIP);
 			break;
-			
+
 		      case 'm':
 			sprintf(buf, "%s is now accepting remote muses.",
 				muds[i].formalname);
 			REMOVE_BIT(muds[i].flags, DD_NOMUSE);
 			break;
-			
+
 		      case 't':
 			sprintf(buf, "%s is now accepting remote thinks.",
 				muds[i].formalname);
 			REMOVE_BIT(muds[i].flags, DD_NOTHINK);
 			break;
-			
+
 		      default:
 			sprintf(buf, "Unknown accept command from %s.",
 				muds[i].formalname);
 		      };
 		    DIMDLOG(buf);
 		    continue;
-		    
+
 		  case 'r':
 		    switch(*(dcommand+1))
 		      {
@@ -1147,39 +1147,39 @@ void dimd_loop(void)
 				muds[i].formalname);
 			SET_BIT(muds[i].flags, DD_NOGOSSIP);
 			break;
-			
+
 		      case 'm':
 			sprintf(buf, "%s is now refusing remote muses.",
 				muds[i].formalname);
 			SET_BIT(muds[i].flags, DD_NOMUSE);
 			break;
-			
+
 		      case 't':
 			sprintf(buf, "%s is now refusing remote thinks.",
 				muds[i].formalname);
 			SET_BIT(muds[i].flags, DD_NOTHINK);
 			break;
-			
+
 		      default:
 			sprintf(buf, "Unknown refuse command from %s.",
 				muds[i].formalname);
 		      };
 		    DIMDLOG(buf);
 		    continue;
-		    
+
 		  case 'w':
 		    sprintf(buf, "Who request from %s at %s denied... Dwho currently disabled.",
 			    fromname, muds[i].formalname);
 		    DIMDLOG(buf);
 /*
 		    construct_who_list(buf, 39, NULL, fromgodlevel, scan);
-*/		    
+*/
 		    break;
-		    
+
 		  case 't':
 	            scan = one_lc_dimd_argument(scan, toname);
 		    while(isspace(*scan)) scan++;
-		    
+
 	            if (!(vict = get_char(toname))
 			|| !dimd_can_see(fromgodlevel, vict))
 		      strcpy(buf, "No char by that name.");
@@ -1191,7 +1191,7 @@ void dimd_loop(void)
 #else
 			sprintf(buf, "%s from %s tells you '%s'.",
 				fromname, muds[i].formalname, scan);
-#endif				
+#endif
 			cmsg(buf, vict, CLR_TELL);
 			if (IS_SET(vict->pc->comm, COMM_AFK))
 #if USE_COLOR
@@ -1201,7 +1201,7 @@ void dimd_loop(void)
 			  sprintf(buf, "You tell %s (who is AFK), '%s'",
 				  PER(vict), scan);
 
-#endif				  
+#endif
 			else
 #if USE_COLOR
 			  sprintf(buf, "$c0013You tell $c0015%s$c0013, '%s'",
@@ -1209,10 +1209,10 @@ void dimd_loop(void)
 #else
 			  sprintf(buf, "You tell %s, '%s'",
 				  PER(vict), scan);
-#endif				  
+#endif
 		      };
 		    break;
-		    
+
 		  case 'g':
 		    if (!dimd_gossip)
 		      {
@@ -1227,7 +1227,7 @@ void dimd_loop(void)
 #else
 		      sprintf(buf, "%s from %s dimension gossips, '%s'",
 			      fromname, muds[i].formalname, scan);
-#endif			      
+#endif
 		    else
 #if USE_COLOR
 		      sprintf(buf, "$c0015%s $c0011from $c0015%s $c0011gossips, '%s'",
@@ -1235,14 +1235,14 @@ void dimd_loop(void)
 #else
 		      sprintf(buf, "%s from %s gossips, '%s'",
 			      fromname, muds[i].formalname, scan);
-#endif			      
-		    
+#endif
+
 		    for(d = descriptor_list; d; d = d->next)
 		      if (!d->connected
 			  && !IS_SET(d->character->pc->comm, COMM_NOGOSSIP)
 			  && !check_soundproof(d->character))
 			cmsg(buf, d->character, CLR_GOSSIP);
-		    
+
 #if USE_COLOR
 		    sprintf(buf, "$c0011You gossip on $c0015%s$c0011, '%s'",
 			    muds[dimd_local_mud].formalname, scan);
@@ -1250,9 +1250,9 @@ void dimd_loop(void)
 		    sprintf(buf, "You gossip on %s, '%s'",
 			    muds[dimd_local_mud].formalname, scan);
 
-#endif			    
+#endif
 		    break;
-		    
+
 		  case 'm':
 		    if (!dimd_muse)
 		      {
@@ -1260,7 +1260,7 @@ void dimd_loop(void)
 			sprintf(buf, "%s is no longer accepting remote muses.", muds[dimd_local_mud].formalname);
 			break;
 		      };
-		    
+
 		    if (*(dcommand+1)=='g')
 #if USE_COLOR
 		      sprintf(buf, "$kW%s $kLfrom $kW%s $kLdimension muses, '%s'",
@@ -1268,7 +1268,7 @@ void dimd_loop(void)
 #else
 		      sprintf(buf, "%s from %s dimension muses, '%s'",
 			      fromname, muds[i].formalname, scan);
-#endif			      
+#endif
 		    else
 #if USE_COLOR
 		      sprintf(buf, "$kW%s $kLfrom $kW%s $kLmuses, '%s'",
@@ -1276,13 +1276,13 @@ void dimd_loop(void)
 #else
 		      sprintf(buf, "%s from %s muses, '%s'",
 			      fromname, muds[i].formalname, scan);
-#endif			      
+#endif
 		    for(d = descriptor_list; d; d = d->next)
 		      if (!d->connected
 			  && GetMaxLevel(d->character) >= LOW_IMMORTAL
 			  && !IS_SET(d->character->pc->comm, COMM_NOMUSE))
 			cmsg(buf, d->character, CLR_MUSE);
-		    
+
 #if USE_COLOR
 		    sprintf(buf, "$kLYou muse on $kW%s$kL, '%s'",
 			    muds[dimd_local_mud].formalname, scan);
@@ -1291,7 +1291,7 @@ void dimd_loop(void)
 			    muds[dimd_local_mud].formalname, scan);
 #endif
 		    break;
-		    
+
 		  case '*':
 		    if (!dimd_think)
 		      {
@@ -1307,7 +1307,7 @@ void dimd_loop(void)
 		      sprintf(buf, "%s from %s dimension thinks, '%s'",
 			      fromname, muds[i].formalname, scan);
 
-#endif			      
+#endif
 		    else
 #if USE_COLOR
 		      sprintf(buf, "$c0015%s $c0012from $c0015%s $c0012thinks, '%s'",
@@ -1316,13 +1316,13 @@ void dimd_loop(void)
 		      sprintf(buf, "%s from %s thinks, '%s'",
 			      fromname, muds[i].formalname, scan);
 
-#endif			      
+#endif
 		    for(d = descriptor_list; d; d = d->next)
 		      if (!d->connected
 			  && GetMaxLevel(d->character) >= DEMIGOD
 			  && !IS_SET(d->character->pc->comm, COMM_NOMUSE))
 			cmsg(buf, d->character, CLR_THINK);
-		    
+
 #if USE_COLOR
 		    sprintf(buf, "$c0012You think on $c0015%s$c0012, '%s'",
 			    muds[dimd_local_mud].formalname, scan);
@@ -1330,9 +1330,9 @@ void dimd_loop(void)
 		    sprintf(buf, "You think on %s, '%s'",
 			    muds[dimd_local_mud].formalname, scan);
 
-#endif			    
+#endif
 		    break;
-		    
+
 		  default:
 #if USE_COLOR
 		    sprintf(buf, "$c0015%s $c0009from $c0015%s $c0009issued invalid command '%s'.",
@@ -1340,23 +1340,23 @@ void dimd_loop(void)
 #else
 		    sprintf(buf, "%s from %s issued invalid command '%s'.",
 			    fromname, muds[i].formalname, dcommand);
-#endif			    
+#endif
 		    DIMDLOG(buf);
 #if USE_COLOR
 		    strcpy(buf, "Your server isn't functioning properly.");
 #else
 		    strcpy(buf, "Your server isn't functioning properly.");
-#endif		    
+#endif
 		  };
 	      };
-	      
+
 	      strcat(buf, "\n\r");
 	      sprintf(extra, "^%s^%s^%d^#\n\r%s\n\r", fromname, fromkeyname, 1000, buf);
 	      write_to_descriptor(muds[i].desc, extra);
 	    };
 	};
-    
-    /* Are they gone yet? */    
+
+    /* Are they gone yet? */
     for(i=0; muds[i].address; i++)
       if (IS_SET(muds[i].flags, DD_CONNECTED))
 	{
@@ -1364,25 +1364,25 @@ void dimd_loop(void)
 	    if (process_dimd_output(i) < 0)
 	      hangup_on_a_mud(i);
 	};
-    
-    
+
+
     if (!dimd_on)
       dimd_state = DIMD_CLOSING;
-    
+
     break;
-    
+
     /****************************************************************/
   case DIMD_CLOSING:
     close_dimd();
     dimd_state = DIMD_CLOSED ;
     break;
-    
+
     /****************************************************************/
   case DIMD_CLOSED:
     if (dimd_on)
       dimd_state = DIMD_OPENING;
     break;
-    
+
   }
   return;
 }
@@ -1399,7 +1399,7 @@ void dimd_loop(void)
 int process_dimd_output(int mud)
 {
   char i[MAX_STRING_LENGTH + 1];
-  
+
   /* Cycle thru output queue */
   while(get_from_q(&muds[mud].output, i))
     if (write_to_descriptor(muds[mud].desc, i))
@@ -1411,14 +1411,14 @@ int process_dimd_input(int mud)
 {
   int sofar, thisround, begin, squelch, i, k, flag;
   char tmp[MAX_INPUT_LENGTH+2], buffer[MAX_INPUT_LENGTH + 60];
-  
+
   sofar = 0;
   flag = 0;
   begin = strlen(muds[mud].buf);
-  
+
   /* Read in some stuff */
   do  {
-    if ((thisround = read(muds[mud].desc, muds[mud].buf + begin + sofar, 
+    if ((thisround = read(muds[mud].desc, muds[mud].buf + begin + sofar,
 			  MAX_STRING_LENGTH - (begin + sofar) - 1)) > 0) {
       sofar += thisround;
     } else {
@@ -1434,30 +1434,30 @@ int process_dimd_input(int mud)
 	return(-1);
       }
     }
-  } while (!ISNEWL(*(muds[mud].buf + begin + sofar - 1)));	
-  
+  } while (!ISNEWL(*(muds[mud].buf + begin + sofar - 1)));
+
   *(muds[mud].buf + begin + sofar) = 0;
-  
+
   /* if no newline is contained in input, return without proc'ing */
   for (i = begin; !ISNEWL(*(muds[mud].buf + i)); i++)
     if (!*(muds[mud].buf + i))
       return(0);
-  
+
   /* input contains 1 or more newlines; process the stuff */
   for (i = 0, k = 0; *(muds[mud].buf + i);)	{
     if (!ISNEWL(*(muds[mud].buf + i)) && !(flag=(k>=(MAX_INPUT_LENGTH - 2))))
       if (*(muds[mud].buf + i) == '\b') {	 /* backspace */
 	if (k) { /* more than one char ? */
 	  if (*(tmp + --k) == '$')
-	    k--;				
+	    k--;
 	  i++;
 	} else {
 	  i++;  /* no or just one char.. Skip backsp */
 	}
       } else {
 	if (isascii(*(muds[mud].buf + i)) && isprint(*(muds[mud].buf + i))) {
-	  /* 
-	    trans char, double for '$' (printf)	
+	  /*
+	    trans char, double for '$' (printf)
 	    */
 	  if ((*(tmp + k) = *(muds[mud].buf + i)) == '$')
 	    *(tmp + ++k) = '$';
@@ -1468,25 +1468,25 @@ int process_dimd_input(int mud)
 	}
       } else 	{
 	*(tmp + k) = 0;
-	
+
 	write_to_q(tmp, &muds[mud].input);
-	
+
 	if (flag) {
-	  sprintf(buffer, 
+	  sprintf(buffer,
 		  "Line too long. Truncated to:\n\r%s\n\r", tmp);
 	  if (write_to_descriptor(muds[mud].desc, buffer) < 0)
 	    return(-1);
-	  
+
 	  /* skip the rest of the line */
 	  for (; !ISNEWL(*(muds[mud].buf + i)); i++);
 	}
-	
+
 	/* find end of entry */
 	for (; ISNEWL(*(muds[mud].buf + i)); i++);
-	
+
 	/* squelch the entry from the buffer */
 	for (squelch = 0;; squelch++)
-	  if ((*(muds[mud].buf + squelch) = 
+	  if ((*(muds[mud].buf + squelch) =
 	       *(muds[mud].buf + i + squelch)) == '\0')
 	    break;
 	k = 0;
@@ -1568,11 +1568,11 @@ void printhost(struct in_addr *addr, char *buf)
 	struct hostent *from;
 
 if ((from = gethostbyaddr((char *)addr,sizeof(addr), AF_INET))) {
-    strcpy(buf,from->h_name);  
+    strcpy(buf,from->h_name);
     } else {
     log("!from!");
     i = addr->s_addr;
-    sprintf(buf, "%d.%d.%d.%d", (i&0xff), (i&0xff00)>>8, 
+    sprintf(buf, "%d.%d.%d.%d", (i&0xff), (i&0xff00)>>8,
                              (i&0xff0000)>>16, (i&0xff000000)>>24);
         }
 	log(buf);
@@ -1611,7 +1611,7 @@ void construct_who_list(char *buf, int cmd,
              if (total <=0)
                 total =1;
 	if (classn <= 0)
-		classn =1;                
+		classn =1;
               total/=classn;
                    if(total<11) strcpy(levels,"Newbie");
               else if(total<21) strcpy(levels,"Chump");
@@ -1621,8 +1621,8 @@ void construct_who_list(char *buf, int cmd,
               sprintf(tbuf, "%s %s",levels, classes);
               sprintf(levels,"%30s","");
               strcpy(levels+8-((strlen(tbuf)-12)/2),tbuf);
-              sprintf(tbuf, "%-28s : %s %s",levels,
-                      GET_NAME(person),person->player.title?person->player.title:"(Null)");
+              sprintf(tbuf, "%-28s : %s",levels,
+                      person->player.title?person->player.title:"(Null)");
             }
             else {
               switch(GetMaxLevel(person)) {

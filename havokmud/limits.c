@@ -806,7 +806,7 @@ void set_title(struct char_data *ch)
   char buf[256];
 
   sprintf(buf,
-     "the %s %s", RaceName[ch->race], ClassTitles(ch));
+     "%s the %s %s", GET_NAME(ch), RaceName[ch->race], ClassTitles(ch));
 
   if (GET_TITLE(ch)) {
     free(GET_TITLE(ch));
