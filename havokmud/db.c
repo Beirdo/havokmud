@@ -2254,12 +2254,17 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
 #if NEWSETUP
 	fscanf(f, " %d \n", &tmp);
     obj->speed = tmp;
-//	fscanf(f, " %d \n", &tmp);
-//    obj->fullness = tmp;
 
 	fscanf(f, " %d \n", &tmp);
 	obj->weapontype = tmp;
+
 #endif
+
+	/* Let's see if this works, Lennya */
+	fscanf(f, " %d \n", &tmp);
+	obj->tweak = tmp;
+
+
 /* *** extra descriptions *** */
 
     obj->ex_description = 0;
@@ -2468,9 +2473,9 @@ int write_obj_to_file(struct obj_data *obj, FILE *f)
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
 
-	fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
+	fprintf(f,"%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight, \
 		obj->obj_flags.cost, obj->obj_flags.cost_per_day,obj->level,obj->max
-		,obj->modified, obj->speed, obj->weapontype);
+		,obj->modified, obj->speed, obj->weapontype, obj->tweak);
 
 
   /* *** extra descriptions *** */
@@ -2514,11 +2519,11 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
 
  	if(IS_WEAPON(obj)) {
-		fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
-			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified, obj->speed, weaponconvert(obj));
+		fprintf(f,"%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight, \
+			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified, obj->speed, weaponconvert(obj), obj->tweak);
 	} else {
-		fprintf(f,"%d %d %d %d %d %ld 0 0\n", obj->obj_flags.weight, \
-		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified);
+		fprintf(f,"%d %d %d %d %d %ld 0 0 %d\n", obj->obj_flags.weight, \
+		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day, obj->level, obj->max, obj->modified, /* two zeros for speed and wtype*/ obj->tweak);
 	}
 
 
@@ -2725,7 +2730,7 @@ int does_Load(int num, int max ) {
     temp = 100 - ((num / (2*max)) * 100.0);
   temp2 = number(1,101);
 
-  sprintf(buff,"Chance to laod:%d    <=? Dice roll: %d",temp, temp2);
+  sprintf(buff,"Chance to load: %d    <=? Dice roll: %d",temp, temp2);
   log(buff);
   if (temp2 <= temp)
     return TRUE;
@@ -2741,7 +2746,7 @@ int does_Load(int num, int max ) {
 /* execute the reset command table of a given zone */
 void reset_zone(int zone)
 {
-  int cmd_no, last_cmd = 1, j, i;
+  int cmd_no, last_cmd = 1, j, i, tweakroll = 100, tweakmin = 3, tweakrate = 0;
   char buf[256];
   struct char_data *mob;
   struct char_data *master;
@@ -2749,7 +2754,7 @@ void reset_zone(int zone)
   struct room_data      *rp;
   FILE *fl;
   static int done = 0;
-
+  extern long SystemFlags;
   mob = 0;
 
 #if OLD_ZONE_STUFF
@@ -2873,6 +2878,17 @@ void reset_zone(int zone)
 	      if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
 		obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 		if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
 			obj_to_room(obj, ZCMD.arg3);
 		else
@@ -2901,6 +2917,18 @@ void reset_zone(int zone)
 	  obj_to = get_obj_num(ZCMD.arg3);
 	  if (obj_to && obj) {
             obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 	    if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
 			obj_to_obj(obj, obj_to);
 		else
@@ -2919,6 +2947,18 @@ void reset_zone(int zone)
 	if (TRUE  &&
 	    (obj = read_object(ZCMD.arg1, REAL)) && mob) {
 	  obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
         if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
 			obj_to_char(obj, mob);
 		else
@@ -2950,6 +2990,17 @@ void reset_zone(int zone)
 	    (obj = read_object(ZCMD.arg1, REAL))) {
 	  if (!mob->equipment[ZCMD.arg3]) {
 	     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
 
 		if(does_Load(obj_index[ZCMD.arg1].number,(int) obj->max)==TRUE)
 		   equip_char(mob, obj, ZCMD.arg3);
@@ -3125,6 +3176,18 @@ void reset_zone(int zone)
 	    if((ZCMD.if_flag>0&&ObjRoomCount(ZCMD.arg1,rp)<ZCMD.if_flag) ||
 	      (ZCMD.if_flag<=0&&ObjRoomCount(ZCMD.arg1,rp)<(-ZCMD.if_flag)+1)){
 	      if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 		obj_to_room(obj, ZCMD.arg3);
 		last_cmd = 1;
 	      } else {
@@ -3148,6 +3211,18 @@ void reset_zone(int zone)
 	  obj = read_object(ZCMD.arg1, REAL);
 	  obj_to = get_obj_num(ZCMD.arg3);
 	  if (obj_to && obj) {
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 	    obj_to_obj(obj, obj_to);
 	    last_cmd = 1;
 	  } else {
@@ -3161,6 +3236,18 @@ void reset_zone(int zone)
       case 'G': /* obj_to_char */
 	if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2 || obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 	  obj_to_char(obj, mob);
 	  last_cmd = 1;
 	} else
@@ -3186,6 +3273,18 @@ void reset_zone(int zone)
       case 'E': /* object to equipment list */
 	if ((obj_index[ZCMD.arg1].number <= ZCMD.arg2  || obj_index[ZCMD.arg1].number >= ZCMD.arg2) &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
+
+	if(!SET_BIT(SystemFlags,SYS_NO_TWEAK)) {
+	  tweakroll = number(1,100);
+	  if(obj->tweak < tweakmin) {
+		  tweakrate = tweakmin;
+	  } else {
+		  tweakrate = obj->tweak;
+	  }
+	  if(tweakroll <= tweakrate)
+		tweak(obj);
+	}
+
 	  if (!mob->equipment[ZCMD.arg3]) {
 	    equip_char(mob, obj, ZCMD.arg3);
 	  } else {

@@ -1620,7 +1620,7 @@ AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
 AddCommand("call steed",do_steed, 596, POSITION_STANDING,1);
 
 AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
-
+AddCommand("tweak", do_tweak, 598, POSITION_STANDING, 55);
 
 AddCommand("weave", do_cast, 600, POSITION_RESTING, 1);
 }

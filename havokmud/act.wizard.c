@@ -1694,6 +1694,8 @@ if (aff->type <=MAX_EXIST_SPELL) {
 
       strcat(buf,"\n\r");
       send_to_char(buf, ch);
+      sprintf(buf, "Tweak rate: %d%s\n\r", j->tweak, "%");
+      send_to_char(buf, ch);
       sprintf(buf, "Short description: %s\n\rLong description:\n\r%s\n\r",
 	      ((j->short_description) ? j->short_description : "None"),
 	      ((j->description) ? j->description : "None") );
@@ -1825,8 +1827,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		j->obj_flags.value[0],
 		j->obj_flags.value[1],
 		j->obj_flags.value[2],
-		(j->obj_flags.value[3]?"Yes":"No")/*,
-		(j->fullness ? "No" : "Yes")*/);
+		(j->obj_flags.value[3]?"Yes":"No"));
 	break;
       case ITEM_DRINKCON :
 	sprinttype(j->obj_flags.value[2],drinks,buf2);
@@ -1996,7 +1997,7 @@ send_to_char("Help for Oedit. Command line Parameters OEDIT <NAME> <FIELD> <VALU
 "aff2   = special affect 2      | aff3   = special affect 3\n\r"
 "aff4   = special affect 4      | aff5   = special affect 5\n\r"
 "speed  = speed of weapon       | ego    = level of item \n\r"
-"max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\n\r"
+"max    = max of item           | tweak  = tweak rate\n\r"
 "\n\rNote: NI = Not implemented.\n\r",ch);
   return;
  } /* End Help! */
@@ -2122,12 +2123,12 @@ if (!*argument)
 		 j->max=atol(parmstr);
 		 return;
 	}
-//	if (!strcmp(field,"fullness"))
-//		{
-//		 argument = one_argument(argument,parmstr);
-//		 j->fullness=atol(parmstr);
-//		 return;
-//	}
+	if (!strcmp(field,"tweak"))
+		{
+		 argument = one_argument(argument,parmstr);
+		 j->tweak=atol(parmstr);
+		 return;
+	}
 	if (!strcmp(field,"rent"))
 		{
 		 argument = one_argument(argument,parmstr);
@@ -5079,7 +5080,7 @@ if (IS_NPC(ch))
 	  return;
  if (!*arg) {
   send_to_char("Eh? What do you wanna intervene upon?\n\r",ch);
-  send_to_char("interven [type] (Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena, deinit )\n\r\n\r",ch);
+  send_to_char("interven [type] (Type=portal,summon,astral,kill,logall,eclipse,dns,color,wizlock,nopoly,req,rp,worldarena,deinit,tweak)\n\r",ch);
   return;
  }
 
@@ -5206,7 +5207,7 @@ if (IS_NPC(ch))
 	   }
     } else
 
- if (!strcmp("nopoly",arg)) {                   /* Provides people from Polymorphing -Manwe Windmaster 970307 */
+ if (!strcmp("nopoly",arg)) {                   /* Prevents people from Polymorphing -Manwe Windmaster 970307 */
 	 if (IS_SET(SystemFlags,SYS_NO_POLY)) {
 	    REMOVE_BIT(SystemFlags,SYS_NO_POLY);
 	    send_to_char("All people may now polymorph\n\r",ch);
@@ -5239,7 +5240,7 @@ if (IS_NPC(ch))
 	    			 send_to_char("Locate Object disabled\n\r",ch);
 	    			 log("Locate Object disabled");
 	   			}
-	   		}else if (!strcmp("worldarena",arg)) {                   /* world arena */
+	 } else if (!strcmp("worldarena",arg)) {                   /* world arena */
 	 			if (IS_SET(SystemFlags,SYS_WLD_ARENA)) {
 	 			   	REMOVE_BIT(SystemFlags,SYS_WLD_ARENA);
 	 			   	send_to_char("World arena disable\n\r",ch);
@@ -5251,15 +5252,25 @@ if (IS_NPC(ch))
 	 		    }
 
 
-    } else if (!strcmp("deinit",arg)) {                   /* world arena */
+    } else if (!strcmp("deinit",arg)) {                   /* deinit */
 	 			if (IS_SET(SystemFlags,SYS_NO_DEINIT)) {
 	 			   	REMOVE_BIT(SystemFlags,SYS_NO_DEINIT);
-	 			   	send_to_char("Deinit zones disable\n\r",ch);
-	 			   	log("Deinit Zones has been disable");
+	 			   	send_to_char("Deinit zones disabled\n\r",ch);
+	 			   	log("Deinit Zones has been disabled");
 	 			} else {
 	 			   	SET_BIT(SystemFlags,SYS_NO_DEINIT);
 	 		    	send_to_char("Deinit zones enabled\n\r",ch);
 	 		    	log("Deinit zones enabled");
+	 		    }
+    } else if (!strcmp("tweak",arg)) {                   /* obj tweaking */
+	 			if (IS_SET(SystemFlags,SYS_NO_TWEAK)) {
+	 			   	REMOVE_BIT(SystemFlags,SYS_NO_TWEAK);
+	 			   	send_to_char("Tweaking items enabled\n\r",ch);
+	 			   	log("Tweaking items have been enabled");
+	 			} else {
+	 			   	SET_BIT(SystemFlags,SYS_NO_TWEAK);
+	 		    	send_to_char("Tweaking items disabled\n\r",ch);
+	 		    	log("Tweaking items disabled");
 	 		    }
 
 
@@ -6977,11 +6988,41 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
        return;
     }
     return;
- }
+}
 
+void do_tweak(struct char_data *ch, char *arg, int cmd)
+{
+	struct obj_data *obj;
+	struct char_data *dummy;
+	char name[100], sound[100], buf[100];
 
+dlog("in do_tweak");
 
+	if(!ch)
+		return;
+	if(cmd != 598) /* tweak */
+		return;
 
+	only_argument(arg,name);
+	if(!arg) {
+		send_to_char("Tweak what?\n\r",ch);
+		return;
+	} else {
+		if(generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
+			if(obj) {
+				if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) {
+					send_to_char("You cannot tweak artifacts.\n\r",ch);
+					return;
+				}
+				ch_printf(ch,"You tweak %s.\n\r",obj->short_description);
+				act("$n tweaks $p!",FALSE, ch, obj, 0, TO_ROOM);
+				tweak(obj);
+			}
+		} else {
+			send_to_char("Hmm, can't find it.\n\r",ch);
+		}
+	}
+}
 
 void do_zconv(struct char_data *ch, char *argument, int cmdnum)
 {

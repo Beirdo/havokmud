@@ -2518,7 +2518,7 @@ strcat(buf,"\n\r");
         sprintf(buf2,"$c0014%s","unlimited");
       else
         sprintf(buf2,"$c0014%d$c0005", obj->max,obj->level);//obj_index[obj->item_number].MaxObjCount);
-      sprintf(buf,"%s $c0005ObjMax: [$c0014%s$c0005].\n\r", buf, buf2);
+      sprintf(buf,"%s $c0005ObjMax: [$c0014%s$c0005], Tweak Rate: [$c0014%d$c0005]\n\r", buf, buf2, obj->tweak);
       send_to_char(buf, ch);
     	if(obj->level==0)
     		sprintf(buf2,"$c0005Ego: $c0014None$c0005, ");

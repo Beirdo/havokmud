@@ -5469,3 +5469,109 @@ char *formatNum(int foo)
 	return buf_new;
 }
 
+/*
+TWEAKING OBJECTS		- Lennya 20030730
+
+The idea is to make items that are loaded at a zone reset, will not always be 100% identical.
+The object structure needs a new element, the tweak rate (%). This is the chance of the item
+stats not being regular but tweaked.
+Tweaking is subject to some regulations. For instance, a +2dam ring will never tweak better
+than +3dam, or worse than 0dam. To keep things simple, only the special affects can tweak, not
+Armor Class of armor or damdice/damage type of a weapon.
+*/
+
+void tweak(struct obj_data *obj)
+{
+	int i = 0, roll = 0, mod = 0;
+
+dlog("in tweak");
+
+	if (!obj) {
+		log("No object found in tweak func?!");
+		return;
+	}
+
+	if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) /* don't tweak artifacts */
+		return;
+
+	/* here goes */
+	for(i = 0 ; i <= 4; i++) {
+		if(obj->affected[i].location != APPLY_NONE) {
+			switch(obj->affected[i].location) {
+				case APPLY_STR:
+				case APPLY_DEX:
+				case APPLY_INT:
+				case APPLY_WIS:
+				case APPLY_CON:
+				case APPLY_CHR:
+				case APPLY_HITROLL:
+				case APPLY_DAMROLL:
+				case APPLY_HITNDAM:
+					{
+						if(number(0,4)) {
+							if (number(0,1)) { /* good tweak */
+								roll = -1;
+							} else { /* bad tweak */
+								roll = number(1,2);
+							}
+							obj->affected[i].modifier = obj->affected[i].modifier - roll;
+						}
+					}
+					break;
+				case APPLY_SAVING_PARA:
+				case APPLY_SAVING_ROD:
+				case APPLY_SAVING_PETRI:
+				case APPLY_SAVING_BREATH:
+				case APPLY_SAVING_SPELL:
+				case APPLY_SAVE_ALL:
+					{
+						if(number(0,4)) {
+							if (number(0,1)) { /* good tweak */
+								roll = -1;
+							} else { /* bad tweak */
+								roll = number(1,2);
+							}
+							obj->affected[i].modifier = obj->affected[i].modifier + roll;
+						}
+					}
+					break;
+				case APPLY_AGE:
+				case APPLY_MANA:
+				case APPLY_HIT:
+				case APPLY_MOVE:
+				case APPLY_ARMOR:
+				case APPLY_BACKSTAB:
+				case APPLY_KICK:
+				case APPLY_SNEAK:
+				case APPLY_HIDE:
+				case APPLY_BASH:
+				case APPLY_PICK:
+				case APPLY_STEAL:
+				case APPLY_TRACK:
+				case APPLY_FIND_TRAPS:
+				case APPLY_RIDE:
+				case APPLY_MANA_REGEN:
+				case APPLY_HIT_REGEN:
+				case APPLY_MOVE_REGEN:
+				case APPLY_SPELLFAIL:
+					{ /* +/- 1..75% */
+						if(number(0,4)) {
+							roll = 100 + (number(1,75));
+							mod = (int)obj->affected[i].modifier*roll/100;
+							if (number(0,1)) {
+								obj->affected[i].modifier = mod;
+							} else if(number(0,1)) {
+								obj->affected[i].modifier = mod;
+							}
+						} /* no tweak */
+					}
+					break;
+				default:
+					{
+						/* don't change the others */
+					}
+					break;
+			}
+		}
+	}
+}

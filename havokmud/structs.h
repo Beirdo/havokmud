@@ -255,8 +255,9 @@ struct QuestItem {
 #define SYS_NO_POLY     BV10//1024    /* Spell Polymorph Self is disabled -Manwe Windmaster 030797 */
 #define SYS_NOOOC       BV11//2048    /* Provide from OOCing worldwird - Manwe */
 #define SYS_LOCOBJ      BV12//4096    /* Disbale Locate Object - Manwe Windmaster 1311197 */
-#define SYS_WLD_ARENA   BV13    /* Makes the entire world flagged arena*/
-#define SYS_NO_DEINIT   BV14   /*makes zone not deinit*/
+#define SYS_WLD_ARENA   BV13   /* Makes the entire world flagged arena */
+#define SYS_NO_DEINIT   BV14   /* makes zone not deinit */
+#define SYS_NO_TWEAK    BV15   /* makes items not tweak  -Lennya 20030730 */
 
 /* end sys flags */
 
@@ -636,6 +637,7 @@ struct obj_data
 	int speed;  /* Speed of the weapon*/
 //	int fullness; hrmm, can't quite get this to work smoothly here, mebbe somewhere else  -Lennya
 	int weapontype;
+	int tweak;
 
 	char *modBy;
 	long modified;

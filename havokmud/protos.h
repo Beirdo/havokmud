@@ -371,6 +371,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd);
 void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd);
 void do_setsound(struct char_data *ch, char *argument, int cmd);
 void do_goodiebag(struct char_data *ch, char *argument, int cmd);
+void do_tweak(struct char_data *ch, char *argument, int cmd);
 /* From board.c */
 
 void board_write_msg(struct char_data *ch, char *arg, int bnum);
@@ -2136,6 +2137,7 @@ int CheckGetEgo(struct char_data *ch, struct obj_data *obj);
 int CheckEgoGive(struct char_data *ch,struct char_data *vict,
 					 struct obj_data *obj);
 int HowManySpecials(struct char_data *ch) ;
+void tweak(struct obj_data *obj);
 
 /* From weather.c */
 
