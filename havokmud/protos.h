@@ -210,7 +210,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd);
 void do_pour(struct char_data *ch, char *argument, int cmd);
 void do_sip(struct char_data *ch, char *argument, int cmd);
 void do_taste(struct char_data *ch, char *argument, int cmd);
-int perform_wear(struct char_data *ch, struct obj_data *obj_object, long keyword);
+void  perform_wear(struct char_data *ch, struct obj_data *obj_object, long keyword);
 int IsRestricted(int Mask, int Class);
 void wear(struct char_data *ch, struct obj_data *obj_object, long keyword);
 void do_wear(struct char_data *ch, char *argument, int cmd);
