@@ -595,7 +595,7 @@ perform_wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     act("$n wears $p on $s back.", TRUE, ch, obj_object,0,TO_ROOM);
     break;
   case 16:
-    act("$n insert $p on $s ear.", TRUE, ch, obj_object,0,TO_ROOM);
+    act("$n inserts $p in $s ear.", TRUE, ch, obj_object,0,TO_ROOM);
     break;
   case 17:
     act("$n wears $p on $s eye.", TRUE, ch, obj_object,0,TO_ROOM);
@@ -631,21 +631,10 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 	if (!IS_IMMORTAL(ch)) {
 		BitMask = GetItemClassRestrictions(obj_object);
 		if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
-log("onlyclass item");
 			if(!OnlyClassItemValid(ch, obj_object)) {
 				send_to_char("You are not the proper person for this.\n\r",ch);
 				return;
 			}
-
-//			if(   (OnlyClass(ch,CLASS_MAGIC_USER) || OnlyClass(ch,CLASS_SORCERER))
-//					&& (CLASS_MAGIC_USER + CLASS_SORCERER ==
-//          			GetItemClassRestrictions(obj_object)));
-//			else {
-//				if (!OnlyClass(ch,BitMask)) { /* check here only for class restricts */
-//					send_to_char("You are not the proper person for this.\n\r",ch);
-//					return;
-//				}
-//			}
 		} else	/* not only-class, okay to check normal anti-settings */
 			if (IsRestricted(BitMask, ch->player.class) && IS_PC(ch)) {
 				send_to_char("You are forbidden to do that.\n\r", ch);

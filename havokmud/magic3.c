@@ -1317,7 +1317,7 @@ void spell_reincarnate(byte level, struct char_data *ch,
   if (st.talks[2] && st.abilities.con > 3)
   {
 	st.points.exp *= 2;
-	st.points.leadership_exp *= 2; /* test */
+	st.points.leadership_exp *= 2;
 	st.talks[2] = TRUE;
 	st.m_deaths--;
 	st.abilities.con -= 1;
@@ -3136,30 +3136,11 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	      send_to_char("Sorry, following in circles can not be allowed.\n\r", ch);
 	      return;
 	    }
-/*
-	      if (IsImmune(victim, IMM_CHARM) || (WeaponImmune(victim))) {
-	          FailCharm(victim,ch);
-	       	  return;
-	      }
-*/
-	      if (IsResist(victim, IMM_CHARM)) {
-	         if (saves_spell(victim, SAVING_PARA)) {
-	          FailCharm(victim,ch);
-	       	  return;
-		 }
 
 	         if (saves_spell(victim, SAVING_PARA)) {
 	          FailCharm(victim,ch);
 	       	  return;
 		 }
-	       } else {
-	          if (!IsSusc(victim, IMM_CHARM)) {
-		     if (saves_spell(victim, SAVING_PARA)) {
-		        FailCharm(victim,ch);
-			return;
-		     }
-		  }
-	       }
 
 	    if (victim->master)
 	      stop_follower(victim);

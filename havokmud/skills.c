@@ -3198,10 +3198,16 @@ if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
    affect_to_char (target,&af);
 
    GET_MANA(ch) -= 15;
-   act ("You excite the chemicals in $N's body!",TRUE,ch,0,target,TO_CHAR);
-   act ("$n touches $N lightly on the forehead.",TRUE,ch,0,target,TO_NOTVICT);
-   act ("$N suddenly gets a wild look in $m eyes!",TRUE,ch,0,target,TO_NOTVICT);
-   act ("$n touches you on the forehead lightly, you feel energy ulimited!",TRUE,ch,0,target,TO_VICT);
+	if(ch == target) {
+		act ("You excite the chemicals in your body!",FALSE,ch,0,0,TO_CHAR);
+		act ("$n touches $mself lightly on the forehead.",FALSE,ch,0,0,TO_ROOM);
+		act ("$n suddenly gets a wild look in $s eyes!",FALSE,ch,0,0,TO_ROOM);
+	} else {
+		act ("You excite the chemicals in $N's body!",TRUE,ch,0,target,TO_CHAR);
+		act ("$n touches $N lightly on the forehead.",TRUE,ch,0,target,TO_NOTVICT);
+		act ("$N suddenly gets a wild look in $S eyes!",TRUE,ch,0,target,TO_NOTVICT);
+		act ("$n touches you on the forehead lightly, you feel energy ulimited!",TRUE,ch,0,target,TO_VICT);
+	}
 	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 	gain_exp(ch, 100);
 }

@@ -928,8 +928,8 @@ void assign_mobiles()
     {6207, fighter},
     {6208, fighter},
 /*
-** Dwarf Village
-*/
+** Dwarf Village, commented out after revamp
+
     {6500, fighter},
     {6501, fighter},
     {6502, wraith},
@@ -940,7 +940,7 @@ void assign_mobiles()
     {6516, fighter},
     {6516, snake},
     {6517, snake},
-
+*/
 /*
 **  Lycanthropia
 */

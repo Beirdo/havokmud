@@ -1474,7 +1474,7 @@ dlog("in do_sit");
     GET_POS(ch) = POSITION_SITTING;
   } break;
   case POSITION_SITTING	: {
-    send_to_char("You'r sitting already.\n\r", ch);
+    send_to_char("You're sitting already.\n\r", ch);
   } break;
   case POSITION_RESTING	: {
     act("You stop resting, and sit up.", FALSE, ch,0,0,TO_CHAR);

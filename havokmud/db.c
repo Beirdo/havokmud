@@ -3198,6 +3198,7 @@ void zone_update()
   int i;
   struct reset_q_element *update_u, *temp, *tmp2;
   extern struct reset_q_type reset_q;
+  char buf[128];
 
 
   /* enqueue zones */
@@ -3254,6 +3255,8 @@ void zone_update()
 			} else {
 				CleanZone(update_u->zone_to_reset);
 				zone_table[update_u->zone_to_reset].start=0;
+				sprintf(buf, "zone %d just deinited",update_u->zone_to_reset);
+				log(buf);
 			}
 
 			/* dequeue */

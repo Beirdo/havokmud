@@ -1190,7 +1190,7 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
    return;
  }*/
 if (mob->player.distant_snds!=0){
-   sprintf(buf, "Current Mobile Distant Sound:('= talk)\n\r");
+   sprintf(buf, "Current Mobile Distant Sound:\n\r");
    send_to_char(buf, ch);
    send_to_char(mob->player.distant_snds, ch);
  }

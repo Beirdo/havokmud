@@ -3665,6 +3665,30 @@ int CountLims(struct obj_data *obj)
   return(total);
 }
 
+struct obj_data *find_a_rare(struct obj_data *obj)
+{
+	struct obj_data *rare;
+
+	if(!obj)
+		return(0);
+
+	if (obj->contains) { /* check contents */
+		rare = find_a_rare(obj->contains);
+		if(rare)
+			return(rare);
+	}
+
+	if(IS_RARE(obj)) /* check self */
+		return(obj);
+
+	if (obj->next_content) { /* move to next item in list */
+		rare = find_a_rare(obj->next_content);
+		if(rare)
+			return(rare);
+	}
+
+	return(0); /* no rares found */
+}
 
 char *lower(char *s)
 {

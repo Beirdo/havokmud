@@ -1073,53 +1073,46 @@ void gain_condition(struct char_data *ch,int condition,int value)
 #define FORCE_RENT_TIME  40
 void check_idling(struct char_data *ch)
 {
-char buf[255];
+	char buf[255];
+	void do_save(struct char_data *ch, char *argument, int cmd);
 
-  void do_save(struct char_data *ch, char *argument, int cmd);
+	if (++(ch->specials.timer) == 8) {
+		do_save(ch, "", 0);
 
+	} else if (ch->specials.timer == VOID_PULL_TIME) {
+		if (ch->in_room != NOWHERE && ch->in_room != 0) {
+			ch->specials.was_in_room = ch->in_room;
+			if (ch->specials.fighting)     	{
+				stop_fighting(ch->specials.fighting);
+				stop_fighting(ch);
+			}
+			act("$n disappears into the void.", TRUE, ch, 0, 0, TO_ROOM);
+			send_to_char("You have been idle, and are pulled into a void.\n\r", ch);
+			char_from_room(ch);
+			char_to_room(ch, 0);  /* Into room number 0 */
+		}
+	} else if (ch->specials.timer == FORCE_RENT_TIME)  {
+		struct obj_cost cost;
+		do_save(ch,"",0);
+		if (ch->in_room != NOWHERE)
+			char_from_room(ch);
+		char_to_room(ch, 4);
+		if (ch->desc)
+			close_socket(ch->desc);
+		ch->desc = 0;
 
-  if (++(ch->specials.timer) == 8) {
-       do_save(ch, "", 0);
+		if (recep_offer(ch, NULL, &cost,TRUE)) {
+			/* if above fails we lose their EQ! */
+			cost.total_cost = 100;
+			save_obj(ch, &cost, 1);
+		} else {
+			sprintf(buf,"%s had a failed recp_offer, they are losing EQ!",GET_NAME(ch));
+			log(buf);
+			slog(buf);
+		}
 
-  } else if (ch->specials.timer == VOID_PULL_TIME) {
-
-    if (ch->in_room != NOWHERE && ch->in_room != 0) {
-      ch->specials.was_in_room = ch->in_room;
-      if (ch->specials.fighting)     	{
-	stop_fighting(ch->specials.fighting);
-	stop_fighting(ch);
-      }
-      act("$n disappears into the void.", TRUE, ch, 0, 0, TO_ROOM);
-      send_to_char("You have been idle, and are pulled into a void.\n\r", ch);
-      char_from_room(ch);
-      char_to_room(ch, 0);  /* Into room number 0 */
-    }
-
-  } else if (ch->specials.timer == FORCE_RENT_TIME)  {
-      struct obj_cost cost;
-	do_save(ch,"",0);
-      if (ch->in_room != NOWHERE)
-	char_from_room(ch);
-
-      char_to_room(ch, 4);
-
-      if (ch->desc)
-	close_socket(ch->desc);
-
-      ch->desc = 0;
-
-      if (recep_offer(ch, NULL, &cost,TRUE)) {
-   /* if above fails we lose their EQ! */
-	cost.total_cost = 100;
-	save_obj(ch, &cost, 1);
-       } else {
-         sprintf(buf,"%s had a failed recp_offer, they are losing EQ!",GET_NAME(ch));
-         log(buf);
-         slog(buf);
-        }
-
-      extract_char(ch);
-    }
+		extract_char(ch);
+	}
 }
 
 

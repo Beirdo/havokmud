@@ -2127,6 +2127,7 @@ int MobCountInRoom( struct char_data *list);
 void *Mymalloc( long size);
 int SpaceForSkills(struct char_data *ch);
 int CountLims(struct obj_data *obj);
+struct obj_data *find_a_rare(struct obj_data *obj);
 char *lower(char *s);
 int getFreeAffSlot( struct obj_data *obj);
 void SetRacialStuff( struct char_data *mob);
