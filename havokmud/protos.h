@@ -525,7 +525,7 @@ void WeaponSkillCheck(struct char_data *ch);
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam);
 int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type);
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type);
-int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
+void DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 		    int attacktype);
 void specdamage (struct char_data *ch, struct char_data*victim);
 
@@ -549,12 +549,12 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
 			int DistanceWeapon);
 int CalcThaco(struct char_data *ch);
 int HitOrMiss(struct char_data *ch, struct char_data *victim, int calc_thaco);
-int MissVictim(struct char_data *ch, struct char_data *v, int type, int w_type,
+void MissVictim(struct char_data *ch, struct char_data *v, int type, int w_type,
 	       int (*dam_func)());
 int GetWeaponDam(struct char_data *ch, struct char_data *v,
 		 struct obj_data *wielded);
 int LoreBackstabBonus(struct char_data *ch, struct char_data *v);
-int HitVictim(struct char_data *ch, struct char_data *v, int dam,
+void HitVictim(struct char_data *ch, struct char_data *v, int dam,
 		   int type, int w_type, int (*dam_func)());
 
 void root_hit(struct char_data *ch, struct char_data *victim, int type,
@@ -564,8 +564,8 @@ void hit(struct char_data *ch, struct char_data *victim, int type);
 void perform_violence(int pulse);
 struct char_data *FindVictim( struct char_data *ch);
 struct char_data *FindAnyVictim( struct char_data *ch);
-int BreakLifeSaverObj( struct char_data *ch);
-int BrittleCheck(struct char_data *ch, struct char_data *v, int dam);
+void BreakLifeSaverObj( struct char_data *ch);
+void BrittleCheck(struct char_data *ch, struct char_data *v, int dam);
 int PreProcDam(struct char_data *ch, int type, int dam);
 int DamageOneItem( struct char_data *ch, int dam_type, struct obj_data *obj);
 void MakeScrap( struct char_data *ch,struct char_data *v, struct obj_data *obj);
@@ -574,10 +574,10 @@ int DamageItem(struct char_data *ch, struct obj_data *o, int num);
 int ItemSave( struct obj_data *i, int dam_type);
 int DamagedByAttack( struct obj_data *i, int dam_type);
 int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam);
-int DamageStuff(struct char_data *v, int type, int dam);
+void DamageStuff(struct char_data *v, int type, int dam);
 int GetItemDamageType( int type);
 int SkipImmortals(struct char_data *v, int amnt, int attacktype);
-int WeaponSpell( struct char_data *c, struct char_data *v,
+void WeaponSpell( struct char_data *c, struct char_data *v,
 				struct obj_data *obj, int type);
 
 struct char_data *FindAnAttacker(struct char_data *ch);
@@ -2443,3 +2443,4 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 
 void do_OOCaction(struct char_data *ch, char *argument, int cmd);
+void ch_printf(struct char_data *ch, char *fmt, ...);

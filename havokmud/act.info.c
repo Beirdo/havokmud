@@ -114,6 +114,7 @@ extern long SystemFlags;
 
 /* extern functions */
 
+void abort ( void );
 void log (char *s);
 int GET_RADIUS(struct char_data *ch);
 int IS_UNDERGROUND(struct char_data *ch);
@@ -141,7 +142,7 @@ int color_strlen(struct char_data *ch, char *arg, int cmd);
 //     void *valloc (size_t size);
 
 
-
+int isname2(const char *str, const char *namelist);
 struct time_info_data age(struct char_data *ch);
 void page_string(struct descriptor_data *d, char *str, int keep_internal);
 int track( struct char_data *ch, struct char_data *vict);
@@ -794,7 +795,7 @@ if (!ch || !i) {
 		send_to_char(buffer,ch);
 	}
 	for(k = 1; k <= TQP_AMOUNT; k++) {
-		if(tqp = find_tqp(k)) {
+		if((tqp = find_tqp(k))) {
 			if(i == tqp->carried_by) {
 				sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
 				sprintf(buf,"%s", CAP(buffer));
@@ -1214,7 +1215,7 @@ if (IS_LINKDEAD(i))
 	}
 
 	for(k = 1; k <= TQP_AMOUNT; k++) {
-		if(tqp = find_tqp(k)) {
+		if((tqp = find_tqp(k))) {
 			if(i == tqp->carried_by) {
 				sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
 				sprintf(buf,"%s", CAP(buffer));
@@ -2707,9 +2708,8 @@ char *GetLevelTitle(struct char_data *ch) {
 	char color[25];
 	int level = GetMaxLevel(ch);
 	static char buf[256]="";
-	char buf2[256];
-	int i, h;
-	int high=0;
+
+
 	int class=0;
 //	int exp = 0;
 
@@ -2780,8 +2780,8 @@ char *GetLevelTitle(struct char_data *ch) {
 
 		for (i=0;i < MAX_CLASS;i++) {
 			if(GET_LEVEL(ch, i)) {
-				if(titles[i][GET_LEVEL(ch, i)].exp > high) {
-					high = titles[i][GET_LEVEL(ch, i)].exp;
+				if(titles[i][(int)GET_LEVEL(ch, i)].exp > high) {
+					high = titles[i][(int)GET_LEVEL(ch, i)].exp;
 					class = i;
 				}
 			}
@@ -2792,19 +2792,19 @@ char *GetLevelTitle(struct char_data *ch) {
 			class = 0;
 #endif
 		if(GET_SEX(ch)==SEX_FEMALE) {
-			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_f);
+			sprintf(buf,"%s%s", color, titles[class][(int)GET_LEVEL(ch, class)].title_f);
 			return buf;
 		} else {
-			sprintf(buf,"%s%s", color, titles[class][GET_LEVEL(ch, class)].title_m);
+			sprintf(buf,"%s%s", color, titles[class][(int)GET_LEVEL(ch, class)].title_m);
 			return buf;
 		}
 	}
 }
 
 char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
-	static char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
+	static char buffer[MAX_STRING_LENGTH]="";
 
-	sprintf(buffer,"");
+	sprintf(buffer,"%s","");
 
 				    if (IS_SET(person->player.user_flags, NEW_USER))
 					   sprintf(buffer,"%s$c000G[$c000WNEW$c000G]$c0007", buffer);
@@ -2827,7 +2827,7 @@ char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
 
 
 char *PrintTitle(struct char_data *person,char type) {
-	static char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
+	static char buffer[MAX_STRING_LENGTH]="";
  	extern char *RaceName[];
 		switch(type) {
 		case 'r': {
@@ -2882,7 +2882,7 @@ char *PrintTitle(struct char_data *person,char type) {
 
 		default:
 			sprintf(buffer,"%s ", (person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
-
+			return buffer;
 	}
 }
 
@@ -2896,24 +2896,16 @@ char *PrintTitle(struct char_data *person,char type) {
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
   int count=0, temp=0;
-
-	char title[512];
-	int display=0;
 	char type;
-
   char color[10];
-  char color_cnt=1;
-  char flags[20]="";
-  char name_mask[40]="";
-  char tmpname1[80],tmpname2[80];
   char buf[256];
   char levelimm[127], immbuf[127];
 
-	char levels[40]="", classes[20]="";
+	char classes[20]="";
 					extern char *classname[];
 					int i,total,classn; long bit;
 	char immortals[MAX_STRING_LENGTH]="", mortals[MAX_STRING_LENGTH]=""
-		 , quest[MAX_STRING_LENGTH]="", clan[MAX_STRING_LENGTH]="";
+		 , quest[MAX_STRING_LENGTH]="";
 
 	if(IS_SET(ch->player.user_flags,OLD_COLORS))
 		sprintf(color,"$c000p");
@@ -2946,7 +2938,7 @@ char *PrintTitle(struct char_data *person,char type) {
 			}
 		strcat(buffer,"\n\r\n\r");
 		send_to_char(buffer,ch);
-		sprintf(buffer,"");
+		sprintf(buffer,"%s","");
 	}
 
 
@@ -3007,7 +2999,7 @@ argument = one_argument(argument,tbuf);
 							}else {
 								/*Get mortal class titles */
 								if(!IS_IMMORTAL(person)) {
-										sprintf(classes,"");
+										sprintf(classes,"%s","");
 										for(bit=1,i=total=classn=0;i<=CLASS_COUNT;i++, bit<<=1) {
 											if(HasClass(person,bit)) {
 												classn++;
@@ -5767,7 +5759,7 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
   int count;
-  char color_cnt=1;
+  int color_cnt=1; /*Why was this a char?? (GH'04)*/
 
   char name_mask[40]="";
   char tmpname1[80],tmpname2[80];
@@ -5787,7 +5779,7 @@ dlog("in do_whoarena");
 	  (real_roomp(person->in_room)->zone == 124)) {
 	if (OK_NAME(person,name_mask)) {
 	  count++;
-    	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
+    	  color_cnt = ((color_cnt+1) % 9);  /* range 1 to 9 */
 #if 1
 	   if(!IS_IMMORTAL(person)) {
          char classes[20]="";
@@ -6019,9 +6011,9 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 			} else {
 				/* valid clan number */
 				ch_printf(ch,"    $c000c-=* $c000w%s $c000wClan info $c000c*=-\n\r",clan_list[clan].name);
-				sprintf(saints,"");
-				sprintf(leaders,"");
-				sprintf(members,"");
+				sprintf(saints,"%s","");
+				sprintf(leaders,"%s","");
+				sprintf(members,"%s","");
 				/* loop through pfiles, check for [clan] */
 				for(i=0;i<top_of_p_table+1;i++) {
 					if (load_char((player_table + i)->name, &player) > -1) {

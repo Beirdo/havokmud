@@ -59,6 +59,27 @@ long GroupLevelRatioExp(struct char_data *ch,int group_max_level,long experincep
 char *replace_string(char *str, char *weapon, char *weapon_s,
 			        char *location_hit, char *location_hit_s);
 void raw_kill_arena(struct char_data *ch);
+char *fread_string(FILE *f1);
+
+void free(void *ptr);
+
+void abort ( void );
+void *calloc(size_t num_of_objs, size_t size_of_objs);
+//void free(void *pointer_to_obj);
+//void *malloc(size_t size_of_object);
+//void *realloc(void *pointer_to_obj, size_t size_of_obj);
+void exit(int status);
+int abs(int i);
+
+//char *crypt(const char *key, const char *salt);
+//ssize_t write(int fildes, const void *buf, size_t nbyte);
+//int atoi(const char *str);
+
+void DeleteHatreds(struct char_data *ch);
+int IsMagicSpell(int spell_num);
+void ch_printf(struct char_data *ch, char *fmt, ...);
+int IS_UNDERGROUND(struct char_data *ch);
+int clearpath(struct char_data *ch, long room, int direc);
  /* Weapon attack texts */
 struct attack_hit_type attack_hit_text[] =
 {
@@ -240,9 +261,9 @@ void update_pos( struct char_data *victim )
   } else if (GET_HIT(victim) > 0 ) {
     if (!IS_AFFECTED(victim, AFF_PARALYSIS)) {
       if (!MOUNTED(victim))
-	GET_POS(victim) = POSITION_STANDING;
-      else
-	GET_POS(victim) == POSITION_MOUNTED;
+		GET_POS(victim) = POSITION_STANDING;
+    /*  else
+	GET_POS(victim) == POSITION_MOUNTED;  wasn't really doing anything.. (GH'04) perhaps look into it later*/
     } else {
       GET_POS(victim) = POSITION_STUNNED;
     }
@@ -280,7 +301,7 @@ if (!ch)
 /* start one char fighting another */
 void set_fighting(struct char_data *ch, struct char_data *vict)
 {
-char buf[128];
+
 
   if (ch->specials.fighting) {
     log("Fighting character set to fighting another.");
@@ -336,7 +357,7 @@ if (IS_LINKDEAD(vict)) {
 /* remove a char from the list of fighting chars */
 void stop_fighting(struct char_data *ch)
 {
-struct char_data *tmp,tch;
+struct char_data *tmp;
 
   if (!ch->specials.fighting) {
     char buf[300];
@@ -875,11 +896,11 @@ void die(struct char_data *ch,int killedbytype)
   for(i=0;i<MAX_CLASS;i++) {
     if (GET_LEVEL(ch,i) > 1) {
       if (GET_LEVEL(ch,i) >= LOW_IMMORTAL) break;
-      if (GET_EXP(ch) < (titles[i][GET_LEVEL(ch, i)].exp/fraction)) {
+      if (GET_EXP(ch) < (titles[i][(int)GET_LEVEL(ch, i)].exp/fraction)) {
         tmp = (ch->points.max_hit)/GetMaxLevel(ch);
         ch->points.max_hit -= tmp;
         GET_LEVEL(ch, i) -= 1;
-        ch->specials.spells_to_learn -= MAX(1, MAX(2, wis_app[GET_RWIS(ch)].bonus)/HowManyClasses(ch));
+        ch->specials.spells_to_learn -= MAX(1, MAX(2, wis_app[(int)GET_RWIS(ch)].bonus)/HowManyClasses(ch));
        send_to_char("\n\rInsufficient experience has cost you a level.\n\r", ch);
       }
     }
@@ -907,13 +928,13 @@ void die(struct char_data *ch,int killedbytype)
   /* warn people if their next death will result in a level loss */
   for(i=0;i<MAX_CLASS;i++) {
     if (GET_LEVEL(ch,i) > 1) {
-      if (GET_EXP(ch) < (titles[i][GET_LEVEL(ch, i)].exp/fraction)) {
+      if (GET_EXP(ch) < (titles[i][(int)GET_LEVEL(ch, i)].exp/fraction)) {
         send_to_char("\n\r\n\rWARNING WARNING WARNING WARNING WARNING WARNING\n\r",
                      ch);
         send_to_char("Your next death will result in the loss of a level,\n\r",
                      ch);
-        sprintf(buf,"unless you get at least %d more exp points.\n\r",
-                (titles[i][GET_LEVEL(ch, i)].exp/fraction) - GET_EXP(ch));
+        sprintf(buf,"unless you get at least %ld more exp points.\n\r",
+                (titles[i][(int)GET_LEVEL(ch, i)].exp/fraction) - GET_EXP(ch));
         send_to_char(buf,ch);
       }
     }
@@ -1014,7 +1035,7 @@ long NewExpCap(struct char_data *ch, long total)  {
 	long temp = 0,temp2=0;
 	int x;
 
-	char buf[40];
+
 	for(x = 0;x < MAX_CLASS;x++) {
 
 		if(GET_LEVEL(ch, x)) {
@@ -1069,7 +1090,7 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 			no_members+=GET_AVE_LEVEL(f->follower);
 			if (IS_PC(f->follower))
 				pc++;
-			if (IS_PC(f->follower) || IS_SET(f->follower->specials.act,ACT_POLYSELF) && f->follower->in_room==k->in_room) {
+			if (IS_PC(f->follower) || (IS_SET(f->follower->specials.act,ACT_POLYSELF) && f->follower->in_room==k->in_room)) {
 				if (group_max_level < GetMaxLevel(f->follower))
 					group_max_level=GetMaxLevel(f->follower);
 				group_count++;
@@ -1481,7 +1502,7 @@ void WeaponSkillCheck(struct char_data *ch)
 	int found = 0;
 	int maxpoints = 0;
 	int totpoints = 0;
-	int valid = 0;
+
 	int fighter = 0;
 	int specialist = 0;
 	int lowest = 100;
@@ -1937,7 +1958,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 }
 
 
-int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
+void DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 		    int attacktype)
 {
   int nr, max_hit, i, j;
@@ -1988,7 +2009,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 							dam = 0;
 						sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
 						strcat(chbuf,dambuf);
-						sprintf(dambuf,"");
+						sprintf(dambuf,"%s","");
 					}
 					act(chbuf,FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
 					act(victbuf,FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
@@ -2281,7 +2302,7 @@ if (attacktype != TYPE_RANGE_WEAPON) { /*this ain't smart, pc's wielding bows? *
 
 int GetWeaponType(struct char_data *ch, struct obj_data **wielded)
 {
-	char buf[255];
+
 	  int w_type;
 
   if (ch->equipment[WIELD] &&
@@ -2464,7 +2485,7 @@ int CalcThaco(struct char_data *ch)
   /* The lower AC, the better                      */
 
   if (!IS_NPC(ch))
-    calc_thaco = thaco[BestFightingClass(ch)][GET_LEVEL(ch, BestFightingClass(ch))];
+    calc_thaco = thaco[(int)BestFightingClass(ch)][(int)GET_LEVEL(ch, BestFightingClass(ch))];
   else
     /* THAC0 for monsters is set in the HitRoll */
     calc_thaco = 20;
@@ -2519,8 +2540,8 @@ if(HasClass(ch, CLASS_MONK))
 
 int HitOrMiss(struct char_data *ch, struct char_data *victim, int calc_thaco)
 {
-  int diceroll, victim_ac,scheck = 0;
-	int temp=0;
+  int diceroll, victim_ac;
+
   extern struct dex_app_type dex_app[];
 
   diceroll = number(1,20);
@@ -2534,7 +2555,7 @@ if(victim->style==FIGHTING_STYLE_BERSERKED || victim->style==FIGHTING_STYLE_AGGR
 }
 
   if (!AWAKE(victim))
-    victim_ac -= dex_app[GET_DEX(victim)].defensive;
+    victim_ac -= dex_app[(int)GET_DEX(victim)].defensive;
 
   victim_ac = MAX(-10, victim_ac);  /* -10 is lowest */
 
@@ -2546,7 +2567,7 @@ if(victim->style==FIGHTING_STYLE_BERSERKED || victim->style==FIGHTING_STYLE_AGGR
   }
 }
 
-int MissVictim(struct char_data *ch, struct char_data *v, int type, int w_type,
+void MissVictim(struct char_data *ch, struct char_data *v, int type, int w_type,
 	       int (*dam_func)())
 {
   struct obj_data *o;
@@ -2689,23 +2710,23 @@ int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
 }
 
 #define SMITH_SHIELD 52877
-int HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int w_type, int (*dam_func)())
+void HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int w_type, int (*dam_func)())
 {
 	extern byte lesser_backstab_mult[];
 	extern byte backstab_mult[];
-	int dead, scheck = 0;
+	int dead;
 
 	if (type == SKILL_BACKSTAB) {
 	    int tmp;
 		if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
 			if(!(ch->specials.remortclass == THIEF_LEVEL_IND + 1)) {
-				tmp = lesser_backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+				tmp = lesser_backstab_mult[(int)GET_LEVEL(ch, THIEF_LEVEL_IND)];
 			} else {
-				tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+				tmp = backstab_mult[(int)GET_LEVEL(ch, THIEF_LEVEL_IND)];
 			}
 			tmp += LoreBackstabBonus(ch, v);
 		} else {
-	       tmp = backstab_mult[GetMaxLevel(ch)];
+	       tmp = backstab_mult[(int)GetMaxLevel(ch)];
 	    }
 		dam *= tmp;
 		dead = (*dam_func)(ch, v, dam, type);
@@ -2820,12 +2841,12 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
 /* control the fights going on */
 void perform_violence(int pulse)
 {
- 	char temp[30];
+
 
  	struct follow_type *f;
  struct char_data *ch, *vict;
    struct obj_data *tmp,*tmp2,*obj;
-   int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
+   int i,tdir,cmv,max_cmv,caught,rng,tdr;
    float x;
    int perc;
    int weapontype;
@@ -2924,7 +2945,7 @@ void perform_violence(int pulse)
                   x /= 2.0;
                }
 *//*  Modifier for weaponskills -Gordon 1-18-04 */
-			if(obj = ch->equipment[WIELD]){
+			if((obj = ch->equipment[WIELD])){
 				if(IS_WEAPON(obj)){
 					weapontype = obj->weapontype + WEAPON_FIRST; //350 - 409
 
@@ -3348,7 +3369,7 @@ void perform_violence(int pulse)
 /*This crashes the mud too */
 struct char_data *FindVictim( struct char_data *ch)
 {
-	char buf[24];
+
   struct char_data *tmp_ch;
   struct room_data *rp;
   unsigned char found=FALSE;
@@ -3730,7 +3751,7 @@ struct char_data *FindAnyVictim( struct char_data *ch)
 }
 
 
-int BreakLifeSaverObj( struct char_data *ch)
+void BreakLifeSaverObj( struct char_data *ch)
 {
 
       int found=FALSE, i, j;
@@ -3767,14 +3788,14 @@ int BreakLifeSaverObj( struct char_data *ch)
       }
 
 }
-
-int BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
+/* Its void.. why does it return FALSE or TRUE??? */
+void BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
 {
   char buf[200];
   struct obj_data *obj;
 
   if (dam <= 0)
-    return(FALSE);
+    return;//(FALSE);
 
   if (ch->equipment[WIELD]) {
     if (IS_OBJ_STAT(ch->equipment[WIELD], ITEM_BRITTLE) && !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
@@ -3782,7 +3803,7 @@ int BrittleCheck(struct char_data *ch, struct char_data *v, int dam)
 	 sprintf(buf, "%s shatters.\n\r", obj->short_description);
 	 send_to_char(buf, ch);
 	 MakeScrap(ch,v, obj);
-         return(TRUE);
+         return;//(TRUE);
        }
     }
   }
@@ -3792,7 +3813,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 {
 
   unsigned Our_Bit;
-  char sus_buf[120], res_buf[120];
+
 
   /*
     long, intricate list, with the various bits and the various spells and
@@ -4218,7 +4239,7 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 }
 
 
-int DamageStuff(struct char_data *v, int type, int dam)
+void DamageStuff(struct char_data *v, int type, int dam)
 {
   int num, dam_type;
   struct obj_data *obj;
@@ -4340,7 +4361,7 @@ int SkipImmortals(struct char_data *v, int amnt,int attacktype)
 }
 
 #if 0
-int WeaponSpell( struct char_data *c, struct char_data *v, int type)
+void WeaponSpell( struct char_data *c, struct char_data *v, int type)
 {
   int j, num;
 
@@ -4359,16 +4380,15 @@ int WeaponSpell( struct char_data *c, struct char_data *v, int type)
   }
 }
 #else
-int WeaponSpell( struct char_data *c, struct char_data *v,
+void WeaponSpell( struct char_data *c, struct char_data *v,
 				struct obj_data *obj, int type)
 {
   int j, num;
 
-  if ( (c->in_room == v->in_room) && (GET_POS(v) != POSITION_DEAD) ||
+  if ( ((c->in_room == v->in_room) && (GET_POS(v) != POSITION_DEAD)) ||
        (GET_POS(v) !=POSITION_DEAD && type == TYPE_RANGE_WEAPON) )
   {
-    if ((c->equipment[WIELD]) &&
-    (((type >= TYPE_BLUDGEON) && (type <= TYPE_SMITE))) ||
+    if (((c->equipment[WIELD]) && (((type >= TYPE_BLUDGEON) && (type <= TYPE_SMITE)))) ||
       (type == TYPE_RANGE_WEAPON && obj))
       {
        struct obj_data *weapon;
@@ -4834,7 +4854,7 @@ int GetFormType(struct char_data *ch)
 
 int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 {
-	int x=0, scheck = 0;
+	int x=0;
   if(v->style==FIGHTING_STYLE_DEFENSIVE && (v->specials.remortclass == MONK_LEVEL_IND+1)) {
 	  if (FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE))
 	  	x = v->skills[SKILL_DODGE].learned*2.5;
@@ -4858,7 +4878,7 @@ int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 
 int SmithShield(struct char_data *ch, struct char_data *v, struct obj_data *obj, int *dam)
 {
-	int x=0, scheck = 0;
+
 
 	if(number(1,180) <= GET_DEX(v)) {
 		*dam = -2;
@@ -4969,7 +4989,7 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
    victim_ac  = GET_AC(targ)/10;
 
    if (AWAKE(targ))
-      victim_ac += dex_app[GET_DEX(targ)].defensive;
+      victim_ac += dex_app[(int)GET_DEX(targ)].defensive;
 
    victim_ac = MAX(-10, victim_ac);  /* -10 is lowest */
 
@@ -5155,7 +5175,6 @@ void specdamage(struct char_data *ch, struct char_data *v)
 int FSkillCheck(struct char_data *ch, int fskill)
 {
 	int perc=0, tmp = 0, max = 95;
-	char fname[254], buf[254];
 
 	if (!ch)
 		return(FALSE);

@@ -42,7 +42,20 @@ int plr_tick_count=0;
 int MAX_NAME_LENGTH = 11;/*Max length of a characters name*/
 
 
+/* C Functions */
+void abort ( void );
+void *calloc(size_t num_of_objs, size_t size_of_objs);
+void free(void *pointer_to_obj);
+void *malloc(size_t size_of_object);
+void *realloc(void *pointer_to_obj, size_t size_of_obj);
+
+char *crypt(const char *key, const char *salt);
+ssize_t write(int fildes, const void *buf, size_t nbyte);
+int atoi(const char *str);
+
 /* should be moved to protos.h at in a future release... */
+
+void AddCommand(char *name, void (*func), int number, int min_pos, int min_lev);
 void do_wclean(struct char_data *ch, char *argument, int cmd);
 void do_setobjmax(struct char_data *ch, char *argument, int cmd);
 void do_setobjspeed(struct char_data *ch, char *argument, int cmd);
@@ -56,7 +69,7 @@ void do_set_spy(struct char_data *ch, char *argument, int cmd);
 void do_wizset(struct char_data *ch, char *argument, int cmd);
 void do_home(struct char_data *ch, char *argument, int cmd);
 void do_lgos(struct char_data *ch, char *argument, int cmd);
-int show_race_choice(struct descriptor_data *d);
+void show_race_choice(struct descriptor_data *d);
 void do_glance(struct char_data *ch, char *argument, int cmd);
 void do_startarena(struct char_data *ch, char *argument, int cmd);
 void do_arena(struct char_data *ch, char *argument, int cmd);
@@ -396,7 +409,7 @@ char *fill[]=
 int color_strlen(struct char_data *ch, char *arg, int cmd)
 {
 	int num = 0, abs = 0, rel = 0, i = 0;
-	char buf[254];
+
 
 	if(!*arg)
 		return(0);
@@ -638,16 +651,16 @@ if (IS_SET(ch->specials.act, PLR_FREEZE) ) {
 		/* to log all pc's */
 	if (IS_SET(SystemFlags,SYS_LOGALL)) {
 	   if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
-	      sprintf(buf,"[%d] %s:%s", ch->in_room,ch->player.name, argument);
+	      sprintf(buf,"[%ld] %s:%s", ch->in_room,ch->player.name, argument);
 	      slog(buf);
 	    }
 	  } else        /* user flagged as log person */
 	   if(IS_AFFECTED2(ch, AFF2_LOG_ME)) {
-	      sprintf(buf,"[%d] %s:%s", ch->in_room,ch->player.name, argument);
+	      sprintf(buf,"[%ld] %s:%s", ch->in_room,ch->player.name, argument);
 	     slog(buf);
 	   } else               /* we log ALL immortals */
 	  if ((GetMaxLevel(ch)>=LOW_IMMORTAL)&&(GetMaxLevel(ch)<60)) {
-	      sprintf(buf,"[%d] %s:%s", ch->in_room,ch->player.name, argument);
+	      sprintf(buf,"[%ld] %s:%s", ch->in_room,ch->player.name, argument);
 	    slog(buf);
 	  }
 
@@ -894,7 +907,7 @@ void half_chop(char *string, char *arg1, char *arg2)
 
   for (; isspace(*string); string++);
 
-  for (; *arg2 = *string; string++, arg2++);
+  for (; (*arg2 = *string); string++, arg2++);
 }
 
 
@@ -908,7 +921,7 @@ int special(struct char_data *ch, int cmd, char *arg)
 
   if (ch->in_room == NOWHERE) {
     char_to_room(ch, 3001);
-    return;
+    return(0); //added 0 here.. had no returning value in Int function (GH'04)
   }
 
   /* special in room? */
@@ -1649,7 +1662,7 @@ int _parse_name(char *arg, char *name)
 
   /* skip whitespaces */
   for (; isspace(*arg); arg++);
-  for (i = 0; *name = *arg; arg++, i++, name++) {
+  for (i = 0; (*name = *arg); arg++, i++, name++) {
     if ((*arg <0) || !isalpha(*arg) || i > MAX_NAME_LENGTH)
       return(1);
 
@@ -1759,13 +1772,14 @@ int pc_num_class(int clss);
 
 void show_menu(struct descriptor_data *d) {
 
-	int bit,ii,total,classn;
+	int bit;
 	char buf[100];
 	  char bufx[1000];
 	  char classes[50];
 	  char mainclass[50];
 
-	sprintf(classes,"");
+	sprintf(classes,"%s","");
+
 	for(bit = 0; bit <= NECROMANCER_LEVEL_IND;bit++) {
 		if(HasClass(d->character, pc_num_class(bit))) {
 		  strcat(classes,classname[bit]);
@@ -1774,7 +1788,7 @@ void show_menu(struct descriptor_data *d) {
 	if(!(strcmp(classes,"")))
 	  sprintf(classes,"None Selected");
 
-	sprintf(mainclass,"");
+	sprintf(mainclass,"%s","");
 	if(d->character->specials.remortclass) { // remort == 0 means none picked
 		strcat(mainclass,classname[(d->character->specials.remortclass - 1)]);
 	}
@@ -1783,7 +1797,7 @@ void show_menu(struct descriptor_data *d) {
 
 sprintf(bufx,"$c0009-=$c0015Havok Character Creation Menu [%s]$c0009=-\n\r\n\r",GET_NAME(d->character));
 
-sprintf(buf,"$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",Sex[GET_SEX(d->character)]);
+sprintf(buf,"$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",Sex[((int)GET_SEX(d->character))]);
 strcat(bufx, buf);
 
 sprintf(buf,"$c00152) $c0012Ansi Colors.\n\r");
@@ -1828,8 +1842,8 @@ void nanny(struct descriptor_data *d, char *arg)
   struct descriptor_data *i;
   char buf[100];
   char bufx[1000];
-  char temp[256];
-  char *s;
+
+
   int player_i, count=0, oops=FALSE, index=0, chosen=0;
   char tmp_name[20];
   struct char_file_u tmp_store;
@@ -1847,7 +1861,7 @@ void nanny(struct descriptor_data *d, char *arg)
   void show_class_selection(struct descriptor_data *d, int r);
   int count_players=0, bit=0;
 
-	char classes[50];
+
   write(d->descriptor, echo_on, 6);
 
   switch (STATE(d))     {
@@ -2706,7 +2720,7 @@ case CON_PRESS_ENTER:
 
   case CON_QCLASS :
 {
-  int total_class=0;
+
   int ii=0;
     /* skip whitespaces */
 
@@ -3448,7 +3462,7 @@ auto-saved\n\r",d);
        sprintf(buf,"%s just killed theirself!",GET_NAME(d->character));
        log(buf);
       for (i = 0; i <= top_of_p_table; i++)     {
-	if (!str_cmp((player_table + i)->name, GET_NAME(d->character))) {
+ 	if (!str_cmp((player_table + i)->name, GET_NAME(d->character))) {
 if ((player_table+i)->name)
 	  free((player_table +i)->name);
 	  (player_table +i)->name = (char *)malloc(strlen("111111"));
@@ -3937,7 +3951,7 @@ buf2);
 		 } /* end switch */
 }
 
-int show_race_choice(struct descriptor_data *d)
+void show_race_choice(struct descriptor_data *d)
 {
 	int ii,i=0;
 	char buf[255],buf2[254];
