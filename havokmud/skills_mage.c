@@ -1533,7 +1533,7 @@ void spell_disintegrate(int level, struct char_data *ch,
         i = 0;
         if (!(IS_PC(ch) && IS_PC(victim))) {
             /*
-             * get rid of player-player scrappage, Lennya20030320
+             * get rid of player-player scrappage
              */
             if (!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
                 /*
@@ -3300,15 +3300,6 @@ void spell_haste(int level, struct char_data *ch,
         affect_from_char(victim, SPELL_SLOW);
         return;
     }
-#if 0
-    /*
-     * Why can't mobs haste anyway? commented out by Lennya
-     */
-    if (IS_NPC(victim)) {
-        send_to_char("It doesn't seem to work\n", ch);
-        return;
-    }
-#endif
 
     if (IS_IMMUNE(victim, IMM_HOLD)) {
         act("$N seems to ignore your spell", FALSE, ch, 0, victim, TO_CHAR);
@@ -5109,7 +5100,6 @@ void spell_poly_self(int level, struct char_data *ch,
     REMOVE_BIT(mob->specials.act, ACT_SCAVENGER);
     /*
      * Why set current mana at max 85?
-     * Look in to this. -Lennya
      */
     GET_MANA(mob) = MIN((GET_MANA(mob) - 15), 85);
     WAIT_STATE(mob, PULSE_VIOLENCE * 2);
@@ -5119,40 +5109,35 @@ void spell_poly_self(int level, struct char_data *ch,
     buf = (char *) malloc(strlen(GET_NAME(mob)) + strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), GET_NAME(mob));
 
-#ifndef TITAN
-    /*
-     * this code crashes ardent titans
-     */
     if (GET_NAME(mob)) {
         free(GET_NAME(mob));
     }
-#endif
 
     GET_NAME(mob) = buf;
     buf = (char *) malloc(strlen(mob->player.short_descr) +
                           strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), mob->player.short_descr);
 
-#ifdef TITAN
     if (mob->player.short_descr) {
         free(mob->player.short_descr);
     }
-#endif
     mob->player.short_descr = buf;
+
 #if 0
     buf = (char *)malloc(strlen(mob->player.short_descr)+12);
     sprintf(buf, "%s is here\n\r", mob->player.short_descr);
 #endif
-#ifndef TITAN
+
     if (mob->player.long_descr) {
         free(mob->player.long_descr);
     }
-#endif
+
 #if 0
     mob->player.long_descr = buf;
 #endif
+
     /*
-     * prettied up the way polies look in the room -Lennya
+     * prettied up the way polies look in the room
      */
     mob->player.long_descr = NULL;
 }

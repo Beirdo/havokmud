@@ -129,7 +129,6 @@
 #undef BYTE_COUNT
 #define OLD_ZONE_STUFF          /* for temp testing of reset_zon */
 #undef N_SAVE_WORLD
-#undef TITAN
 
 #else
 

@@ -150,7 +150,7 @@ int main(int argc, char **argv)
     int             a;
 #endif
     spy_flag = TRUE;
-#if defined(sun) || defined(NETBSD)
+#if defined(__sun__) || defined(__NetBSD__)
     struct rlimit   rl;
     int             res;
 #endif
@@ -168,17 +168,17 @@ int main(int argc, char **argv)
     SET_BIT(SystemFlags, SYS_LOGALL);
 #endif
 
-#if defined(sun) || defined(NETBSD)
+#if defined(__sun__) || defined(__NetBSD__)
     /*
      **  this block sets the max # of connections.
      */
-#if defined(sun)
+#if defined(__sun__)
     res = getrlimit(RLIMIT_NOFILE, &rl);
     rl.rlim_cur = MAX_CONNECTS;
     res = setrlimit(RLIMIT_NOFILE, &rl);
 #endif
 
-#if defined(NETBSD)
+#if defined(__NetBSD__)
     res = getrlimit(RLIMIT_OFILE, &rl);
     rl.rlim_cur = MAX_CONNECTS;
     res = setrlimit(RLIMIT_OFILE, &rl);
@@ -424,29 +424,6 @@ void game_loop(int s)
 
         FD_SET(s, &input_set);
 
-#ifdef TITAN
-        maxdesc = 0;
-        if (cap < 20) {
-            cap = 20;
-        }
-        for (point = descriptor_list; point; point = point->next) {
-            if (point->descriptor <= cap && point->descriptor >= cap - 20) {
-                FD_SET(point->descriptor, &input_set);
-                FD_SET(point->descriptor, &exc_set);
-                FD_SET(point->descriptor, &output_set);
-            }
-
-            if (maxdesc < point->descriptor) {
-                maxdesc = point->descriptor;
-            }
-        }
-
-        if (cap > maxdesc) {
-            cap = 0;
-        } else {
-            cap += 20;
-        }
-#else
 #if 0
         dimd_loop();
 #endif
@@ -459,16 +436,11 @@ void game_loop(int s)
                 maxdesc = point->descriptor;
             }
         }
-#endif
 
         /*
          * check out the time 
          */
-#ifdef NETBSD
         gettimeofday(&now, NULL);
-#else
-        gettimeofday(&now, (struct timezone *) 0);
-#endif
 
         timespent = timediff(&now, &last_time);
         timeout = timediff(&opt_time, &timespent);
@@ -1152,7 +1124,7 @@ int init_socket(int port)
 int new_connection(int s)
 {
     struct sockaddr_in isa;
-#ifdef sun
+#ifdef __sun__
     struct sockaddr peer;
 #endif
     int             i;
@@ -1169,7 +1141,7 @@ int new_connection(int s)
     }
     nonblock(t);
 
-#ifdef sun
+#ifdef __sun__
 
     i = sizeof(peer);
     if (!getpeername(t, &peer, &i)) {
@@ -1233,7 +1205,7 @@ int new_descriptor(int s)
     }
 
     if (*newd->host == '\0') {
-#ifndef sun
+#ifndef __sun__
         if ((long) strncpy(newd->host, inet_ntoa(sock.sin_addr), 49) > 0) {
             *(newd->host + 49) = '\0';
             sprintf(buf, "New connection from addr %s: %d: %d", newd->host,
