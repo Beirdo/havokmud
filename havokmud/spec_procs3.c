@@ -4142,6 +4142,29 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
   }
 }
 
+/*Thunder Mountain Keep*/
+
+#define NADIA_PILL 45431
+#define PEN_MIGHT 45445
+#define DRAGON_SCEPTRE_ONE 45470
+#define DRAGON_SCEPTRE_TWO 45481
+#define MARBLES 45475
+#define JESTER_KEY 45480
+#define NADIA_KEY 45489
+#define EYE_DRAGON 45488
+#define GATEKEEPER_KEY 45491
+#define BLACK_PILL 45492
+#define BLUE_PILL 45493
+
+#define BRAXIS 45406
+#define NADIA 45409
+#define MIME_JERRY 45410
+#define ZORK 45413
+#define ELAMIN 45417
+#define GOBLIN_CHUIRGEON 45443
+
+#define ZORK_ROOM 45496
+#define CALM_BEFORE_STORM 45517
 
 int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
@@ -4202,10 +4225,6 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
   return(FALSE);
 }
 
-#define MARBLES 45475
-#define BRAXIS 45406
-#define EYE_DRAGON_I 45490
-#define GATEKEEPER_KEY 45491
 /* Braxis the Swamp Dragon */
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -4317,7 +4336,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 		act("$n says, 'world of monsters and danger.  You must be brave as well as'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'strong to survive, but if you do, the rewards will be great.'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n hands over a couple of items.", FALSE, vict, 0, 0, TO_ROOM);
-		if ((r_num = real_object(EYE_DRAGON_I)) >= 0) {
+		if ((r_num = real_object(EYE_DRAGON)) >= 0) {
 			obj = read_object(r_num, REAL);
 			obj_to_char(obj, ch);
 		}
@@ -4332,9 +4351,6 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 
 }
 
-#define MIME_JERRY 45410
-#define NADIA_KEY 45489
-#define NADIA_PILL 45431
 int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
   struct char_data *i, *tmp_ch;
@@ -4498,7 +4514,6 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	}
 }
 
-#define NADIA 45409
 /* Nadia */
 int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -4575,13 +4590,6 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	return(FALSE);
 }
 
-
-
-
-#define PEN_MIGHT 45445
-#define ELAMIN 45417
-#define JESTER_KEY 45480
-#define EYE_DRAGON_SCEPTRE 45470
 /* Elamin */
 int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -4703,7 +4711,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 		act("$n says, 'careful.  I wouldn't want anything bad to happen to'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'you in your journeys.'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n hands over the dragon sceptre.", FALSE, vict, 0, 0, TO_ROOM);
-                if ((r_num = real_object(EYE_DRAGON_SCEPTRE)) >= 0) {
+                if ((r_num = real_object(DRAGON_SCEPTRE_ONE)) >= 0) {
                         obj = read_object(r_num, REAL);
                         obj_to_char(obj, ch);
                 }
@@ -4714,7 +4722,6 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 
 }
 
-#define GOBLIN_CHUIRGEON 45443
 int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
@@ -4798,10 +4805,6 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 	return (FALSE);
 }
 
-#define BLACK_PILL 45492
-#define BLUE_PILL 45493
-#define ZORK 45413
-#define ZORK_ROOM 45496
 int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
   struct char_data *temp_ch;
@@ -5136,4 +5139,96 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_dat
 	}
 
 	return(FALSE);
-}				
+}
+				
+int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+  char buf[256], obj_name1[180], obj_name2[180];
+  char arg1[128];
+  char arg2[128];
+  struct obj_data *obj;
+  struct obj_data *obj1;
+  struct obj_data *obj2;
+  struct char_data *tmp_char;
+  int r_num = 0;
+
+	if (cmd == 67) /*put*/
+	{
+	      	argument_interpreter(arg, arg1, arg2);
+
+		if ((!*obj_name1) || (!(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying)))) return(FALSE);
+		if ((!*obj_name2) || (!(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying)))) return(FALSE);
+
+      		if ((obj_index[obj1->item_number].virtual != EYE_DRAGON)) return(FALSE);
+		if ((obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_ONE)) return(FALSE);
+
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_ROOM);
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);	
+		extract_obj(obj1);
+		extract_obj(obj2);
+		if ((r_num = real_object(DRAGON_SCEPTRE_TWO)) >= 0) {
+			obj = read_object(r_num, REAL);
+			obj_to_char(obj, ch);
+		}
+
+		return(TRUE);
+
+
+	}
+
+	return(FALSE);
+}
+
+int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct
+room_data *rp, int type)
+{
+  char buf[256], obj_name1[180], obj_name2[180];
+  char arg1[128];
+  char arg2[128];
+  struct obj_data *obj;
+  struct obj_data *obj1;
+  struct obj_data *obj2;
+  struct char_data *tmp_char;
+  int r_num = 0;
+  struct char_data *tmp, *tmp2;
+  struct room_data *room;
+
+	if (cmd == 67) /*put*/
+	{
+	      	argument_interpreter(arg, arg1, arg2);
+
+		if ((!*obj_name1) || (!(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying)))) return(FALSE);
+		if ((!*obj_name2) || (!(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying)))) return(FALSE);
+
+      		if ((obj_index[obj1->item_number].virtual != EYE_DRAGON)) return(FALSE);
+		if ((obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_TWO)) return(FALSE);
+
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_ROOM);
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);	
+		act("The sceptre flies out of $n's grasp and spins rapidly in the air.", FALSE, ch, 0, 0, TO_ROOM);
+		act("The sceptre flies out of your grasp and spins rapidly in the air.", FALSE, ch, 0, 0, TO_CHAR);
+		act("A blinding white light fills the room.  You blink and find yourself in a new room.", FALSE, ch, 0, 0, TO_ROOM);
+		act("A blinding white light fills the room.  You blink and find yourself in a new room.", FALSE, ch, 0, 0, TO_CHAR);
+		extract_obj(obj1);
+		extract_obj(obj2);
+  		
+		room = real_roomp(ch->in_room);
+
+  		for (tmp = room->people;tmp;tmp=tmp2) {
+    			tmp2 = tmp->next_in_room;
+			if ( in_group(ch, tmp) && (!tmp->specials.fighting) &&
+			(IS_PC(tmp) || IS_SET(tmp->specials.act,ACT_POLYSELF))
+			&& IS_AFFECTED(tmp,AFF_GROUP)) {
+      				char_from_room(tmp);
+      				char_to_room(tmp, CALM_BEFORE_STORM);
+      				do_look(tmp, "\0", 0);
+    			}
+  		}
+
+		return(TRUE);
+
+
+	}
+
+	return(FALSE);
+}

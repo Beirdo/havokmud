@@ -1474,6 +1474,8 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,

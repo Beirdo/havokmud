@@ -1370,6 +1370,8 @@ void assign_objects()
 #endif
 
 /*Thunder Mountain Keep Objects*/
+   {45470, thunder_sceptre_one},
+   {45481, thunder_sceptre_two},
    {45492, thunder_black_pill},
    {45493, thunder_blue_pill},
 /*End Thunder Mountain Keep Objects*/
