@@ -3094,7 +3094,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
     if ((cmd == 84 || cmd == 370) && HasClass(ch, CLASS_SORCERER) &&
         !IS_IMMORTAL(ch) && 
-        IS_SET(ch->skills[spl].flags, SKILL_KNOWN_SORCERER)) {
+        IS_SET(ch->skills[spl].flags, SKILL_KNOWN_SORCERER) &&
+        !(IS_SET(ch->skills[spl].flags, SKILL_KNOWN_CLERIC) ||
+          IS_SET(ch->skills[spl].flags, SKILL_KNOWN_MAGE) ||
+          IS_SET(ch->skills[spl].flags, SKILL_KNOWN_DRUID))) {
         send_to_char("You must use recall for this spell.\n\r", ch);
         return;
     }
