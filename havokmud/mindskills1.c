@@ -736,6 +736,7 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 	int room = 0;
 	int old_location;
 	struct obj_data *i;
+    struct char_data *target;
 
 	assert(ch);
 	sprintf(name,"%s",arg);
@@ -765,12 +766,25 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 				if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
 					found = 1; /* we found at least one item */
 					if (i->carried_by) {
-						if (strlen(PERS_LOC(i->carried_by, ch))>0) {
-							room = (i->carried_by->in_room);
-						}
+					  target = i->carried_by;
+					  log("item is carried");
+					  if(!IS_IMMORTAL(target)) {
+							 log("this target was not immortal");
+							 if (!(IS_SET(target->specials.act,ACT_PSI)) && (GetMaxLevel(target) > GetMaxLevel(ch))){
+						       log("target is not psi/59");
+						       room = target->in_room;
+											    }
+				      }
+
+
 					} else if (i->equipped_by) {
-						if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
-							room = (i->equipped_by->in_room);
+						target = i->equipped_by;
+						log("item is equipped");
+						if(!IS_IMMORTAL(target)){
+							log("target is not immortal (equipped)");
+							if (!(IS_SET(target->specials.act,ACT_PSI)) && (GetMaxLevel(target) > GetMaxLevel(ch))){
+						       log("target is not psi/59");
+						       room = target->in_room;
 						}
 					} else if (i->in_obj) {
 						room = (i->in_obj->in_room);
@@ -799,5 +813,6 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 	       char_to_room(ch, old_location);
 		}
 	}
+}
 }
 
