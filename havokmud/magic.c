@@ -8,7 +8,7 @@
 #include "protos.h"
 
 /*
- * Extern structures 
+ * Extern structures
  */
 #if HASH
 extern struct hash_header room_db;
@@ -52,8 +52,8 @@ void            stop_follower(struct char_data *ch);
 void            sprintbit(unsigned long, char *[], char *);
 
 /*
- * For future use in blinding those with infravision who are fireballed or 
- * otherwise subjected to lotsa heat quickly in dark rooms. 
+ * For future use in blinding those with infravision who are fireballed or
+ * otherwise subjected to lotsa heat quickly in dark rooms.
  */
 
 void heat_blind(struct char_data *ch)
@@ -82,7 +82,7 @@ void heat_blind(struct char_data *ch)
 }
 
 /*
- * Offensive Spells 
+ * Offensive Spells
  */
 
 void spell_magic_missile(int level, struct char_data *ch,
@@ -131,7 +131,8 @@ void spell_chill_touch(int level, struct char_data *ch,
 void spell_burning_hands(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -147,9 +148,10 @@ void spell_burning_hands(int level, struct char_data *ch,
 
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
+		rdam = dam;
         temp = tmp_victim->next_in_room;
         if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && 
+            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL &&
                 !IS_NPC(tmp_victim)) {
                 return;
             }
@@ -158,11 +160,11 @@ void spell_burning_hands(int level, struct char_data *ch,
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 heat_blind(tmp_victim);
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam = 0;
+                    rdam = 0;
                 } else if (!saves_spell(tmp_victim, SAVING_SPELL - 4)) {
                     BurnWings(tmp_victim);
                 }
-                MissileDamage(ch, tmp_victim, dam, SPELL_BURNING_HANDS);
+                MissileDamage(ch, tmp_victim, rdam, SPELL_BURNING_HANDS);
             } else {
                 act("You are able to avoid the flames!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -271,7 +273,7 @@ void spell_energy_restore(int level, struct char_data *ch,
 }
 
 /*
- * Drain XP, MANA, HP - caster gains HP and MANA 
+ * Drain XP, MANA, HP - caster gains HP and MANA
  */
 void spell_energy_drain(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
@@ -290,15 +292,15 @@ void spell_energy_drain(int level, struct char_data *ch,
         GET_ALIGNMENT(ch) = MAX(-1000, GET_ALIGNMENT(ch) - 200);
 
         if (GetMaxLevel(victim) <= 1) {
-            /* 
-             * Kill the sucker 
+            /*
+             * Kill the sucker
              */
             damage(ch, victim, 100, SPELL_ENERGY_DRAIN);
         } else if (!IS_NPC(victim) && GetMaxLevel(victim) >= LOW_IMMORTAL) {
             send_to_char("Some puny mortal just tried to drain you...\n\r",
                          victim);
-        } else if (!IS_SET(victim->M_immune, IMM_DRAIN) && 
-                 !IS_SET(victim->immune, IMM_DRAIN) && 
+        } else if (!IS_SET(victim->M_immune, IMM_DRAIN) &&
+                 !IS_SET(victim->immune, IMM_DRAIN) &&
                  !saves_spell(victim, SAVING_SPELL)) {
             send_to_char("Your life energy is drained!\n\r", victim);
             dam = 1;
@@ -316,8 +318,8 @@ void spell_energy_drain(int level, struct char_data *ch,
                 GET_EXP(victim) -= tmp;
                 victim->points.hitroll += 1;
             }
-        } else if (!IS_SET(ch->M_immune, IMM_DRAIN) && 
-                   !IS_SET(ch->immune, IMM_DRAIN) && 
+        } else if (!IS_SET(ch->M_immune, IMM_DRAIN) &&
+                   !IS_SET(ch->immune, IMM_DRAIN) &&
                    !saves_spell(ch, SAVING_SPELL)) {
             send_to_char("Your spell backfires!\n\r", ch);
             dam = 1;
@@ -339,8 +341,8 @@ void spell_energy_drain(int level, struct char_data *ch,
             send_to_char("Your spell fails utterly.\n\r", ch);
         }
     } else {
-        /* 
-         * Miss 
+        /*
+         * Miss
          */
         damage(ch, victim, 0, SPELL_ENERGY_DRAIN);
     }
@@ -349,7 +351,8 @@ void spell_energy_drain(int level, struct char_data *ch,
 void spell_fireball(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -359,26 +362,27 @@ void spell_fireball(int level, struct char_data *ch,
     }
     dam = dice(level, 8);
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
+        rdam = dam;
         temp = tmp_victim->next;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam >>= 1;
+                    rdam >>= 1;
                 } else if (!saves_spell(tmp_victim, SAVING_SPELL - 4)) {
                     /*
-                     * Fail the second save, then their wings are toast 
-                     * for two weeks 
+                     * Fail the second save, then their wings are toast
+                     * for two weeks
                      */
                     BurnWings(tmp_victim);
                 }
                 heat_blind(tmp_victim);
-                MissileDamage(ch, tmp_victim, dam, SPELL_FIREBALL);
+                MissileDamage(ch, tmp_victim, rdam, SPELL_FIREBALL);
             } else {
                 act("You dodge the mass of flame!!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 heat_blind(tmp_victim);
             }
-        } else if (tmp_victim->in_room != NOWHERE && 
+        } else if (tmp_victim->in_room != NOWHERE &&
                    real_roomp(ch->in_room)->zone ==
                    real_roomp(tmp_victim->in_room)->zone) {
             send_to_char("You feel a blast of hot air.\n\r", tmp_victim);
@@ -406,7 +410,7 @@ void spell_earthquake(int level, struct char_data *ch,
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
         temp = tmp_victim->next;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim) && 
+            if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim) &&
                 !IS_AFFECTED(tmp_victim, AFF_FLYING)) {
 
                 if (GetMaxLevel(tmp_victim) > 4) {
@@ -508,8 +512,8 @@ void spell_harm(int level, struct char_data *ch,
     dam = GET_HIT(victim) - dice(1, 4);
 
     if (dam < 0) {
-        /* 
-         * Kill the suffering bastard 
+        /*
+         * Kill the suffering bastard
          */
         dam = 100;
     } else {
@@ -604,8 +608,8 @@ void spell_teleport(int level, struct char_data *ch,
             }
             return;
         } else {
-            /* 
-             * the character (target) is now the victim 
+            /*
+             * the character (target) is now the victim
              */
             ch = victim;
         }
@@ -659,7 +663,7 @@ void spell_bless(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    if (GET_POS(victim) != POSITION_FIGHTING && 
+    if (GET_POS(victim) != POSITION_FIGHTING &&
         !affected_by_spell(victim, SPELL_BLESS)) {
 
         send_to_char("You feel righteous.\n\r", victim);
@@ -721,9 +725,9 @@ void spell_clone(int level, struct char_data *ch,
     if (obj) {
 
     } else {
-#if 0        
-        clone_char(victim); 
-#endif        
+#if 0
+        clone_char(victim);
+#endif
     }
 }
 
@@ -731,8 +735,8 @@ void spell_control_weather(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj)
 {
     /*
-     * Control Weather is not possible here!!! 
-     * Better/Worse can not be transferred 
+     * Control Weather is not possible here!!!
+     * Better/Worse can not be transferred
      */
 }
 
@@ -783,7 +787,7 @@ void spell_create_water(int level, struct char_data *ch,
     assert(ch && obj);
 
     if (GET_ITEM_TYPE(obj) == ITEM_DRINKCON) {
-        if (obj->obj_flags.value[2] != LIQ_WATER && 
+        if (obj->obj_flags.value[2] != LIQ_WATER &&
             obj->obj_flags.value[1] != 0) {
 
             name_from_drinkcon(obj);
@@ -793,7 +797,7 @@ void spell_create_water(int level, struct char_data *ch,
             water = 2 * level * ((weather_info.sky >= SKY_RAINING) ? 2 : 1);
 
             /*
-             * Calculate water it can contain, or water created 
+             * Calculate water it can contain, or water created
              */
             water = MIN(obj->obj_flags.value[0] - obj->obj_flags.value[1],
                         water);
@@ -831,7 +835,7 @@ void spell_cure_blind(int level, struct char_data *ch,
     if (IS_PC(ch) && IS_PC(victim)) {
         GET_ALIGNMENT(ch) += 1;
     }
-}   
+}
 
 void spell_cure_critic(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
@@ -852,11 +856,11 @@ void spell_cure_critic(int level, struct char_data *ch,
     send_to_char("You feel better!\n\r", victim);
 
     update_pos(victim);
-#if 0    
+#if 0
     if (IS_PC(ch) && IS_PC(victim)) {
         GET_ALIGNMENT(ch)+=3;
     }
-#endif    
+#endif
 }
 
 void spell_cure_light(int level, struct char_data *ch,
@@ -878,11 +882,11 @@ void spell_cure_light(int level, struct char_data *ch,
     send_to_char("You feel better!\n\r", victim);
 
     update_pos(victim);
-#if 0    
+#if 0
     if (IS_PC(ch) && IS_PC(victim)) {
-        GET_ALIGNMENT(ch)+=1; 
+        GET_ALIGNMENT(ch)+=1;
     }
-#endif    
+#endif
 }
 
 void spell_curse(int level, struct char_data *ch,
@@ -899,7 +903,7 @@ void spell_curse(int level, struct char_data *ch,
         SET_BIT(obj->obj_flags.extra_flags, ITEM_NODROP);
 
         /*
-         * LOWER ATTACK DICE BY -1 
+         * LOWER ATTACK DICE BY -1
          */
         if (obj->obj_flags.type_flag == ITEM_WEAPON) {
             obj->obj_flags.value[2]--;
@@ -1047,8 +1051,8 @@ void spell_detect_poison(int level, struct char_data *ch,
                 victim, TO_CHAR);
         }
     } else {
-        /* 
-         * It's an object 
+        /*
+         * It's an object
          */
         if (obj->obj_flags.type_flag == ITEM_DRINKCON ||
             obj->obj_flags.type_flag == ITEM_FOOD) {
@@ -1123,7 +1127,7 @@ void spell_enchant_weapon(int level, struct char_data *ch,
             return;
         }
         /*
-         * find the slots 
+         * find the slots
          */
         i = getFreeAffSlot(obj);
 
@@ -1216,8 +1220,8 @@ void spell_invisibility(int level, struct char_data *ch,
             SET_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
         }
     } else {
-        /* 
-         * Then it is a PC | NPC 
+        /*
+         * Then it is a PC | NPC
          */
         if (!affected_by_spell(victim, SPELL_INVISIBLE)) {
             act("$n slowly fades out of existence.", TRUE, victim, 0, 0,
@@ -1344,7 +1348,7 @@ void spell_locate_object(int level, struct char_data *ch,
     sprintf(name, "%s", arg);
 
     /*
-     * when starting out, no object has been found yet 
+     * when starting out, no object has been found yet
      */
     found = 0;
 
@@ -1364,15 +1368,15 @@ void spell_locate_object(int level, struct char_data *ch,
         if (isname(name, i->name) &&
             !IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
             /*
-             * we found at least one item 
+             * we found at least one item
              */
             if (i->carried_by) {
                 target = i->carried_by;
-                if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                if (((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
                       real_roomp(ch->in_room)->zone ==
-                       real_roomp(target->in_room)->zone) || 
-                      (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
-                    !IS_IMMORTAL(target) && 
+                       real_roomp(target->in_room)->zone) ||
+                      (!IS_SET(SystemFlags, SYS_ZONELOCATE))) &&
+                    !IS_IMMORTAL(target) &&
                     strlen(PERS_LOC(i->carried_by, ch)) > 0) {
 
                     found = 1;
@@ -1383,12 +1387,12 @@ void spell_locate_object(int level, struct char_data *ch,
                 }
             } else if (i->equipped_by) {
                 target = i->equipped_by;
-                if (((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                if (((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
                       real_roomp(ch->in_room)->zone ==
-                      real_roomp(target->in_room)->zone) || 
-                     (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
-                    !IS_IMMORTAL(target) && 
-                    strlen(PERS_LOC(i->equipped_by, ch)) > 0) { 
+                      real_roomp(target->in_room)->zone) ||
+                     (!IS_SET(SystemFlags, SYS_ZONELOCATE))) &&
+                    !IS_IMMORTAL(target) &&
+                    strlen(PERS_LOC(i->equipped_by, ch)) > 0) {
 
                     found = 1;
                     sprintf(buf2, "%s equipped by %s.\n\r",
@@ -1397,9 +1401,9 @@ void spell_locate_object(int level, struct char_data *ch,
                     j--;
                 }
             } else if (i->in_obj) {
-                if ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+                if ((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
                      real_roomp(ch->in_room)->zone ==
-                     real_roomp(i->in_obj->in_room)->zone) || 
+                     real_roomp(i->in_obj->in_room)->zone) ||
                     (!IS_SET(SystemFlags, SYS_ZONELOCATE))) {
 
                     found = 1;
@@ -1408,9 +1412,9 @@ void spell_locate_object(int level, struct char_data *ch,
                     strcat(buf, buf2);
                     j--;
                 }
-            } else if ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
+            } else if ((IS_SET(SystemFlags, SYS_ZONELOCATE) &&
                         real_roomp(ch->in_room)->zone ==
-                        real_roomp(i->in_room)->zone) || 
+                        real_roomp(i->in_room)->zone) ||
                        (!IS_SET(SystemFlags, SYS_ZONELOCATE))) {
                 found = 1;
                 sprintf(buf2, "%s in %s.\n\r",
@@ -1501,8 +1505,8 @@ void spell_poison(int level, struct char_data *ch,
         }
     } else if (obj->obj_flags.type_flag == ITEM_DRINKCON ||
                obj->obj_flags.type_flag == ITEM_FOOD) {
-        /* 
-         * Object poison 
+        /*
+         * Object poison
          */
         obj->obj_flags.value[3] = 1;
     }
@@ -1608,8 +1612,8 @@ void spell_remove_curse(int level, struct char_data *ch,
             REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_NODROP);
         }
     } else {
-        /* 
-         * Then it is a PC | NPC 
+        /*
+         * Then it is a PC | NPC
          */
         if (affected_by_spell(victim, SPELL_CURSE)) {
             act("$n briefly glows red, then blue.", FALSE, victim, 0, 0,
@@ -1618,14 +1622,14 @@ void spell_remove_curse(int level, struct char_data *ch,
             affect_from_char(victim, SPELL_CURSE);
         } else {
             /*
-             * uncurse items equiped by a person 
+             * uncurse items equiped by a person
              */
             i = 0;
             do {
                 if (victim->equipment[i] &&
                     IS_SET(victim->equipment[i]->obj_flags.extra_flags,
                            ITEM_NODROP)) {
-                    spell_remove_curse(level, victim, NULL, 
+                    spell_remove_curse(level, victim, NULL,
                                        victim->equipment[i]);
                     found = TRUE;
                 }
@@ -1801,7 +1805,7 @@ void spell_strength(int level, struct char_data *ch,
             } else {
                 af.modifier = number(1, 6);
             }
-        } else if (HasClass(ch, CLASS_WARRIOR) || 
+        } else if (HasClass(ch, CLASS_WARRIOR) ||
                    HasClass(ch, CLASS_BARBARIAN)) {
             af.modifier = number(1, 8);
         } else if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_THIEF)) {
@@ -1821,7 +1825,7 @@ void spell_ventriloquate(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     /*
-     * Not possible!! No argument! 
+     * Not possible!! No argument!
      */
 }
 
@@ -1837,8 +1841,8 @@ void spell_word_of_recall(int level, struct char_data *ch,
     if (IS_NPC(victim)) {
         return;
     }
-#if 0    
-    loc_nr = GET_HOME(ch); 
+#if 0
+    loc_nr = GET_HOME(ch);
 #endif
 
     if (victim->player.hometown) {
@@ -1865,7 +1869,7 @@ void spell_word_of_recall(int level, struct char_data *ch,
     }
 
     /*
-     * a location has been found. 
+     * a location has been found.
      */
     send_to_char("You think of better times and close your eyes.\n\r", victim);
 
@@ -2003,8 +2007,8 @@ void RawSummon(struct char_data *v, struct char_data *c)
     char            buf[400];
 
     /*
-     * this section run if the mob is above 3 levels above the caster 
-     * destroys the mobs EQ 
+     * this section run if the mob is above 3 levels above the caster
+     * destroys the mobs EQ
      */
 
     if (IS_NPC(v) && !IS_SET(v->specials.act, ACT_POLYSELF) &&
@@ -2012,7 +2016,7 @@ void RawSummon(struct char_data *v, struct char_data *c)
         act("$N struggles, and all of $S items are destroyed!", TRUE, c, 0,
             v, TO_CHAR);
         /*
-         * remove objects from victim 
+         * remove objects from victim
          */
         for (j = 0; j < MAX_WEAR; j++) {
             if (v->equipment[j]) {
@@ -2247,7 +2251,7 @@ void spell_sense_life(int level, struct char_data *ch,
 
     assert(victim);
 
-    if (!affected_by_spell(victim, SPELL_SENSE_LIFE) && 
+    if (!affected_by_spell(victim, SPELL_SENSE_LIFE) &&
         !IS_AFFECTED(victim, AFF_SENSE_LIFE)) {
         if (ch != victim) {
             act("$n waves $s hands around $N's eyes.", FALSE, ch, 0,
@@ -2360,8 +2364,8 @@ void spell_anti_magic_shell(int level, struct char_data *ch,
         spell_dispel_magic(IMPLEMENTOR, ch, ch, 0);
 
         af.type = SPELL_ANTI_MAGIC_SHELL;
-        /* 
-         * one tic only! 
+        /*
+         * one tic only!
          */
         af.duration = (level < LOW_IMMORTAL) ? 1 : level;
         af.modifier = 0;
@@ -2385,14 +2389,14 @@ void spell_prismatic_spray(int level, struct char_data *ch,
         return;
     }
     /*
-     * spell effects: 
-     * red 1 40 dam 
-     * orange 2 80 
-     * yellow 3 100 
+     * spell effects:
+     * red 1 40 dam
+     * orange 2 80
+     * yellow 3 100
      * green 4 poison
-     * blue 5 petrify 
-     * indigo 6 feeble 
-     * violet 7 teleport 
+     * blue 5 petrify
+     * indigo 6 feeble
+     * violet 7 teleport
      */
 
     send_to_char
@@ -2445,7 +2449,7 @@ void spell_prismatic_spray(int level, struct char_data *ch,
                     }
                     break;
                     /*
-                     * these have internal saves already 
+                     * these have internal saves already
                      */
                 case 4:
                     act("$N is hit by a green shaft of light!", FALSE, ch,
@@ -2488,8 +2492,8 @@ void spell_prismatic_spray(int level, struct char_data *ch,
                                   tmp_victim, NULL);
                     break;
                 default:
-                    /* 
-                     * should never get here 
+                    /*
+                     * should never get here
                      */
                     dam = 100;
                     MissileDamage(ch, tmp_victim, dam, SPELL_PRISMATIC_SPRAY);
@@ -2514,7 +2518,8 @@ void spell_prismatic_spray(int level, struct char_data *ch,
 void spell_incendiary_cloud(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -2530,25 +2535,26 @@ void spell_incendiary_cloud(int level, struct char_data *ch,
         FALSE, ch, 0, 0, TO_ROOM);
 
     for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
+        rdam = dam;
         temp = tmp_victim->next;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
                 if (!saves_spell(tmp_victim, SAVING_SPELL)) {
                     if (!saves_spell(tmp_victim, SAVING_SPELL - 4)) {
-                        /* 
-                         * Fail two saves, wings burn 
+                        /*
+                         * Fail two saves, wings burn
                          */
                         BurnWings(tmp_victim);
                     }
                     heat_blind(tmp_victim);
-                    MissileDamage(ch, tmp_victim, dam, SPELL_INCENDIARY_CLOUD);
+                    MissileDamage(ch, tmp_victim, rdam, SPELL_INCENDIARY_CLOUD);
                 } else {
-                    dam >>= 1;  
-                    /* 
-                     * half dam 
+                    rdam >>= 1;
+                    /*
+                     * half dam
                      */
                     heat_blind(tmp_victim);
-                    MissileDamage(ch, tmp_victim, dam, SPELL_INCENDIARY_CLOUD);
+                    MissileDamage(ch, tmp_victim, rdam, SPELL_INCENDIARY_CLOUD);
                 }
             } else {
                 act("You avoid the smouldering gases!\n\r", FALSE, ch, 0,
@@ -2572,7 +2578,7 @@ void spell_comp_languages(int level, struct char_data *ch,
             act("$n gently touches $N's ears.", FALSE, ch, 0, victim,
                 TO_NOTVICT);
             act("You touch $N's ears gently.", FALSE, ch, 0, victim, TO_CHAR);
-            act("$n gently touches your ears, wow you have missed so much!", 
+            act("$n gently touches your ears, wow you have missed so much!",
                 FALSE, ch, 0, victim, TO_VICT);
         } else {
             act("$n touches $s own ears.", FALSE, ch, 0, victim, TO_NOTVICT);
@@ -2580,8 +2586,8 @@ void spell_comp_languages(int level, struct char_data *ch,
                 0, victim, TO_CHAR);
         }
         af.type = SPELL_COMP_LANGUAGES;
-        /* 
-         * one tic only! 
+        /*
+         * one tic only!
          */
         af.duration = (level < LOW_IMMORTAL) ? (int) level / 2 : level;
         af.modifier = 0;
@@ -2661,12 +2667,12 @@ void spell_identify(int level, struct char_data *ch,
         send_to_char(buf, ch);
 
         /*
-         * alittle more info for immortals -bcw 
+         * alittle more info for immortals -bcw
          */
         if (GetMaxLevel(ch) > LOW_IMMORTAL) {
             sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%ld%s]",
                     color1, color2, obj->item_number, color1, color2,
-                    (obj->item_number >= 0) ? 
+                    (obj->item_number >= 0) ?
                      obj_index[obj->item_number].virtual : 0, color1);
 
             if (obj->max == 0) {
@@ -2781,8 +2787,8 @@ void spell_identify(int level, struct char_data *ch,
         case ITEM_WEAPON:
             sprintf(buf, "%sDamage Dice is '%s%dD%d%s' [%s%s%s] [%s%s%s]\n\r",
                     color1, color2, obj->obj_flags.value[1],
-                    obj->obj_flags.value[2], color1, color2, 
-                    AttackType[obj->obj_flags.value[3]], color1, color2, 
+                    obj->obj_flags.value[2], color1, color2,
+                    AttackType[obj->obj_flags.value[3]], color1, color2,
                     weaponskills[obj->weapontype].name, color1);
             send_to_char(buf, ch);
             break;
@@ -2798,7 +2804,7 @@ void spell_identify(int level, struct char_data *ch,
         found = FALSE;
 
         for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-            if (obj->affected[i].location != APPLY_NONE && 
+            if (obj->affected[i].location != APPLY_NONE &&
                 obj->affected[i].modifier != 0) {
                 if (!found) {
                     sprintf(buf, "%sCan affect you as:\n\r", color1);
@@ -2825,7 +2831,7 @@ void spell_identify(int level, struct char_data *ch,
 
                 case APPLY_WEAPON_SPELL:
                 case APPLY_EAT_SPELL:
-                    sprintf(buf2, "%s\n\r", 
+                    sprintf(buf2, "%s\n\r",
                             spells[obj->affected[i].modifier - 1]);
                     break;
 
@@ -2840,7 +2846,7 @@ void spell_identify(int level, struct char_data *ch,
                     break;
 
                 case APPLY_RACE_SLAYER:
-                    sprintf(buf2, "%s\n\r", 
+                    sprintf(buf2, "%s\n\r",
                             RaceName[obj->affected[i].modifier]);
                     break;
 
@@ -2893,8 +2899,8 @@ void spell_identify(int level, struct char_data *ch,
         if (GET_LEVEL(ch, BestMagicClass(ch)) > 30) {
             sprintf(buf, "%sStr %s%d%s/%s%d%s, Int %s%d%s, Wis %s%d%s, Dex "
                          "%s%d%s, Con %s%d$%s, Ch %s%d\n\r",
-                    color1, color2, GET_STR(victim), color1, color2, 
-                    GET_ADD(victim), color1, color2, GET_INT(victim), 
+                    color1, color2, GET_STR(victim), color1, color2,
+                    GET_ADD(victim), color1, color2, GET_INT(victim),
                     color1, color2, GET_WIS(victim), color1, color2,
                     GET_DEX(victim), color1, color2, GET_CON(victim), color1,
                     color2, GET_CHR(victim));
@@ -2904,13 +2910,13 @@ void spell_identify(int level, struct char_data *ch,
         send_to_char("You learn nothing new.\n\r", ch);
     }
     if (GetMaxLevel(ch) < LOW_IMMORTAL) {
-#if 0        
+#if 0
         act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
         act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
         GET_POS(ch) = POSITION_STUNNED;
 #endif
         WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-    
+
     }
 }
 
@@ -2951,7 +2957,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
         }
 
         /*
-         * find the slots 
+         * find the slots
          */
         i = getFreeAffSlot(obj);
 
@@ -2985,7 +2991,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
             obj->affected[i].modifier -= 1;
         }
         if (IS_GOOD(ch)) {
-            SET_BIT(obj->obj_flags.extra_flags, 
+            SET_BIT(obj->obj_flags.extra_flags,
                     ITEM_ANTI_EVIL | ITEM_ANTI_NEUTRAL);
             act("$p glows blue.", FALSE, ch, obj, 0, TO_CHAR);
         } else if (IS_EVIL(ch)) {
@@ -3027,19 +3033,19 @@ void spell_fire_breath(int level, struct char_data *ch,
     if (saves_spell(victim, SAVING_BREATH)) {
         dam >>= 1;
     } else if (!saves_spell(victim, SAVING_SPELL - 4)) {
-        /* 
-         * Fail two saves, burn the wings 
+        /*
+         * Fail two saves, burn the wings
          */
         BurnWings(victim);
     }
     MissileDamage(ch, victim, dam, SPELL_FIRE_BREATH);
 
     /*
-     * And now for the damage on inventory 
+     * And now for the damage on inventory
      */
 
     /*
-     * DamageStuff(victim, FIRE_DAMAGE); 
+     * DamageStuff(victim, FIRE_DAMAGE);
      */
 
     for (burn = victim->carrying;
@@ -3080,11 +3086,11 @@ void spell_frost_breath(int level, struct char_data *ch,
     MissileDamage(ch, victim, dam, SPELL_FROST_BREATH);
 
     /*
-     * And now for the damage on inventory 
+     * And now for the damage on inventory
      */
 
     for (frozen = victim->carrying;
-         frozen && ITEM_TYPE(frozen) != ITEM_DRINKCON && 
+         frozen && ITEM_TYPE(frozen) != ITEM_DRINKCON &&
          ITEM_TYPE(frozen) != ITEM_POTION;
          frozen = frozen->next_content) {
         if (!saves_spell(victim, SAVING_BREATH) && frozen) {
@@ -3218,19 +3224,19 @@ void spell_disintegrate(int level, struct char_data *ch,
     if (!saves_spell(victim, SAVING_SPELL)) {
         i = 0;
         if (!(IS_PC(ch) && IS_PC(victim))) {
-            /* 
-             * get rid of player-player scrappage, Lennya20030320 
+            /*
+             * get rid of player-player scrappage, Lennya20030320
              */
             if (!IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
                 /*
-                 * frag their EQ 
+                 * frag their EQ
                  */
                 while (i < MAX_WEAR) {
                     if (victim->equipment[i]) {
                         obj = victim->equipment[i];
                         if (!ItemSave(obj, SPELL_DISINTEGRATE)) {
                             act("$p turns red hot, $N screams, then it "
-                                "disappears in a puff of smoke!", TRUE, ch, 
+                                "disappears in a puff of smoke!", TRUE, ch,
                                 obj, victim, TO_CHAR);
                             if (obj->equipped_by || obj->carried_by) {
                                 act("$p, held by $N, disappears in a puff of "
@@ -3267,16 +3273,16 @@ void spell_disintegrate(int level, struct char_data *ch,
                 }
             }
         } else {
-            /* 
-             * player hitting player with disint outside arena 
+            /*
+             * player hitting player with disint outside arena
              */
             sprintf(buf, "%s just hit %s with a disintegrate outside the "
                          "arena!", GET_NAME(ch), GET_NAME(victim));
             Log(buf);
         }
     } else {
-        /* 
-         * we saved ! 1/2 dam and no EQ frag 
+        /*
+         * we saved ! 1/2 dam and no EQ frag
          */
         damage >>= 1;
     }
@@ -3407,11 +3413,11 @@ void spell_shard_breath(int level, struct char_data *ch,
     MissileDamage(ch, victim, dam, SPELL_LIGHTNING_BREATH);
 
     /*
-     * And now for the damage on inventory 
+     * And now for the damage on inventory
      */
 
     /*
-     * DamageStuff(victim, FIRE_DAMAGE); 
+     * DamageStuff(victim, FIRE_DAMAGE);
      */
 
     for (burn = victim->carrying;
@@ -3491,11 +3497,11 @@ void spell_light_breath(int level, struct char_data *ch,
     spell_blindness(level, ch, victim, 0);
 
     /*
-     * And now for the damage on inventory 
+     * And now for the damage on inventory
      */
 
     /*
-     * DamageStuff(victim, FIRE_DAMAGE); 
+     * DamageStuff(victim, FIRE_DAMAGE);
      */
 
     for (burn = victim->carrying;

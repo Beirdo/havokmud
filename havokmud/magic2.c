@@ -7,7 +7,7 @@
 #include "protos.h"
 
 /*
- * Extern structures 
+ * Extern structures
  */
 extern struct room_data *world;
 extern struct obj_data *object_list;
@@ -28,7 +28,7 @@ extern int      ArenaNoGroup,
 void            do_snoop(struct char_data *ch, char *argument, int cmd);
 
 /*
- * cleric spells 
+ * cleric spells
  */
 
 /*
@@ -50,8 +50,8 @@ void spell_resurrection(int level, struct char_data *ch,
     }
     if (IS_CORPSE(obj)) {
         if (obj->char_vnum) {
-            /* 
-             * corpse is a npc 
+            /*
+             * corpse is a npc
              */
 
             if (GET_GOLD(ch) < 25000) {
@@ -75,10 +75,10 @@ void spell_resurrection(int level, struct char_data *ch,
                 TO_ROOM);
 
             /*
-             * should be charmed and follower ch 
+             * should be charmed and follower ch
              */
 
-            if (IsImmune(victim, IMM_CHARM) || IsResist(victim, IMM_CHARM) || 
+            if (IsImmune(victim, IMM_CHARM) || IsResist(victim, IMM_CHARM) ||
                 (GetMaxLevel(victim) > 50)) {
                 act("$n says 'Thank you'", FALSE, ch, 0, victim, TO_ROOM);
             } else if (too_many_followers(ch)) {
@@ -101,7 +101,7 @@ void spell_resurrection(int level, struct char_data *ch,
             IS_CARRYING_N(victim) = 0;
 
             /*
-             * take all from corpse, and give to person 
+             * take all from corpse, and give to person
              */
 
             for (obj_object = obj->contains; obj_object;
@@ -112,12 +112,12 @@ void spell_resurrection(int level, struct char_data *ch,
             }
 
             /*
-             * get rid of corpse 
+             * get rid of corpse
              */
             extract_obj(obj);
         } else {
-            /* 
-             * corpse is a pc 
+            /*
+             * corpse is a pc
              */
             if (GET_GOLD(ch) < 75000) {
                 send_to_char("The gods are not happy with your sacrifice.\n\r",
@@ -313,9 +313,9 @@ void spell_flamestrike(int level, struct char_data *ch,
     if (saves_spell(victim, SAVING_SPELL)) {
         dam >>= 1;
     } else if (!saves_spell(victim, SAVING_SPELL - 4)) {
-        BurnWings(victim);  
-        /* 
-         * Fail two saves, burn the wings 
+        BurnWings(victim);
+        /*
+         * Fail two saves, burn the wings
          */
     }
     heat_blind(victim);
@@ -489,7 +489,7 @@ void spell_true_seeing(int level, struct char_data *ch,
 }
 
 /*
- * magic user spells 
+ * magic user spells
  */
 void spell_major_track(int level, struct char_data *ch,
                        struct char_data *targ, struct obj_data *obj)
@@ -542,7 +542,7 @@ void spell_poly_self(int level, struct char_data *ch,
     char           *buf;
 
     /*
-     * Checking for No_Poly system flag) - Manwe Windmaster 97/03/07 
+     * Checking for No_Poly system flag) - Manwe Windmaster 97/03/07
      */
 
     if (IS_SET(SystemFlags, SYS_NO_POLY)) {
@@ -559,8 +559,8 @@ void spell_poly_self(int level, struct char_data *ch,
         return;
     }
     if (ch->desc->snoop.snoop_by) {
-        /* 
-         * force the snooper to stop 
+        /*
+         * force the snooper to stop
          */
         do_snoop(ch->desc->snoop.snoop_by, GET_NAME(ch->desc->snoop.snoop_by),
                  0);
@@ -580,7 +580,7 @@ void spell_poly_self(int level, struct char_data *ch,
     char_from_room(ch);
     char_to_room(ch, 3);
     /*
-     * stop following whoever you are following.. 
+     * stop following whoever you are following..
      */
     if (ch->master) {
         stop_follower(ch);
@@ -598,14 +598,14 @@ void spell_poly_self(int level, struct char_data *ch,
     REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
     REMOVE_BIT(mob->specials.act, ACT_META_AGG);
     REMOVE_BIT(mob->specials.act, ACT_SCAVENGER);
-    /* 
-     * Why set current mana at max 85?  
-     * Look in to this. -Lennya 
+    /*
+     * Why set current mana at max 85?
+     * Look in to this. -Lennya
      */
     GET_MANA(mob) = MIN((GET_MANA(mob) - 15), 85);
     WAIT_STATE(mob, PULSE_VIOLENCE * 2);
     /*
-     * do some fiddling with the strings 
+     * do some fiddling with the strings
      */
     buf = (char *) malloc(strlen(GET_NAME(mob)) + strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), GET_NAME(mob));
@@ -613,7 +613,7 @@ void spell_poly_self(int level, struct char_data *ch,
 #if TITAN
 #else
     /*
-     * this code crashes ardent titans 
+     * this code crashes ardent titans
      */
     if (GET_NAME(mob)) {
         free(GET_NAME(mob));
@@ -621,7 +621,7 @@ void spell_poly_self(int level, struct char_data *ch,
 #endif
 
     GET_NAME(mob) = buf;
-    buf = (char *) malloc(strlen(mob->player.short_descr) + 
+    buf = (char *) malloc(strlen(mob->player.short_descr) +
                           strlen(GET_NAME(ch)) + 2);
     sprintf(buf, "%s %s", GET_NAME(ch), mob->player.short_descr);
 
@@ -643,9 +643,9 @@ void spell_poly_self(int level, struct char_data *ch,
 #endif
 #if 0
     mob->player.long_descr = buf;
-#endif    
+#endif
     /*
-     * prettied up the way polies look in the room -Lennya 
+     * prettied up the way polies look in the room -Lennya
      */
     mob->player.long_descr = NULL;
 }
@@ -682,7 +682,7 @@ void spell_stone_skin(int level, struct char_data *ch,
         affect_to_char(ch, &af);
 
         /*
-         * resistance to piercing weapons 
+         * resistance to piercing weapons
          */
 
         af.type = SPELL_STONE_SKIN;
@@ -786,8 +786,8 @@ void spell_invis_group(int level, struct char_data *ch,
 
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = tmp_victim->next_in_room) {
-        if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim) && 
-            in_group(ch, tmp_victim) && 
+        if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim) &&
+            in_group(ch, tmp_victim) &&
             !affected_by_spell(tmp_victim, SPELL_INVISIBLE)) {
             act("$n slowly fades out of existence.", TRUE,
                 tmp_victim, 0, 0, TO_ROOM);
@@ -822,7 +822,8 @@ void spell_acid_blast(int level, struct char_data *ch,
 void spell_cone_of_cold(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -837,6 +838,7 @@ void spell_cone_of_cold(int level, struct char_data *ch,
 
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
+        rdam = dam;
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
@@ -846,9 +848,9 @@ void spell_cone_of_cold(int level, struct char_data *ch,
                 act("You are chilled to the bone!",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam >>= 1;
+                    rdam >>= 1;
                 }
-                MissileDamage(ch, tmp_victim, dam, SPELL_CONE_OF_COLD);
+                MissileDamage(ch, tmp_victim, rdam, SPELL_CONE_OF_COLD);
             } else {
                 act("You are able to avoid the cone!",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -860,7 +862,8 @@ void spell_cone_of_cold(int level, struct char_data *ch,
 void spell_ice_storm(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -874,6 +877,7 @@ void spell_ice_storm(int level, struct char_data *ch,
 
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
+        rdam = dam;
         temp = tmp_victim->next_in_room;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
@@ -883,9 +887,9 @@ void spell_ice_storm(int level, struct char_data *ch,
                 act("You are blasted by the storm",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam >>= 1;
+                    rdam >>= 1;
                 }
-                MissileDamage(ch, tmp_victim, dam, SPELL_ICE_STORM);
+                MissileDamage(ch, tmp_victim, rdam, SPELL_ICE_STORM);
             } else {
                 act("You are able to dodge the storm!",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -935,8 +939,8 @@ void spell_Create_Monster(int level, struct char_data *ch,
     struct room_data *rp;
 
     /*
-     * load in a monster of the correct type, determined by level of the spell 
-     * really simple to start out with 
+     * load in a monster of the correct type, determined by level of the spell
+     * really simple to start out with
      */
 
     if ((rp = real_roomp(ch->in_room)) == NULL) {
@@ -954,18 +958,18 @@ void spell_Create_Monster(int level, struct char_data *ch,
     if (level <= 5) {
         mob = read_mobile(16034, VIRTUAL);
 #if 0
-        rnum = number(1, 10) + 200;     
-        /* 
-         * removed this plot of mobs 
+        rnum = number(1, 10) + 200;
+        /*
+         * removed this plot of mobs
          */
         mob = read_mobile(rnum, VIRTUAL);
 #endif
     } else if (level <= 7) {
         mob = read_mobile(9191, VIRTUAL);
 #if 0
-        rnum = number(1, 10) + 210;     
-        /* 
-         * removed this plot of mobs 
+        rnum = number(1, 10) + 210;
+        /*
+         * removed this plot of mobs
          */
         mob = read_mobile(rnum, VIRTUAL);
 #endif
@@ -992,12 +996,12 @@ void spell_Create_Monster(int level, struct char_data *ch,
     }
 
     /*
-     * lets make monsum stronger.. they are pussies... (GH) 
+     * lets make monsum stronger.. they are pussies... (GH)
      */
     GET_DAMROLL(mob) += (int) level / 2;
     GET_HITROLL(mob) += (int) level / 2;
     mob->points.max_hit += level * 5;
-#if 0    
+#if 0
     GET_MAX_HIT(mob) += level*2;
 #endif
     char_to_room(mob, ch->in_room);
@@ -1011,7 +1015,7 @@ void spell_Create_Monster(int level, struct char_data *ch,
             0, mob, TO_CHAR);
     } else {
         /*
-         * charm them for a while 
+         * charm them for a while
          */
         if (mob->master) {
             stop_follower(mob);
@@ -1040,8 +1044,8 @@ void spell_Create_Monster(int level, struct char_data *ch,
     }
 
     /*
-     * adjust the bits... 
-     * get rid of aggressive, add sentinel 
+     * adjust the bits...
+     * get rid of aggressive, add sentinel
      */
 
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
@@ -1053,7 +1057,7 @@ void spell_Create_Monster(int level, struct char_data *ch,
 }
 
 /*
- * either 
+ * either
  */
 
 void spell_light(int level, struct char_data *ch,
@@ -1061,7 +1065,7 @@ void spell_light(int level, struct char_data *ch,
 {
 
     /*
-     * creates a ball of light in the hands. 
+     * creates a ball of light in the hands.
      */
     struct obj_data *tmp_obj;
 
@@ -1236,15 +1240,15 @@ void spell_animate_dead(int level, struct char_data *ch,
     struct obj_data *obj_object,
                    *next_obj;
     char            buf[MAX_STRING_LENGTH];
-    /* 
-     * virtual # for zombie 
+    /*
+     * virtual # for zombie
      */
     int             r_num = 100;
 
     /*
-     * some sort of check for corpse hood 
+     * some sort of check for corpse hood
      */
-    if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER || 
+    if (GET_ITEM_TYPE(corpse) != ITEM_CONTAINER ||
         !corpse->obj_flags.value[3]) {
         send_to_char("The magic fails abruptly!\n\r", ch);
         return;
@@ -1257,11 +1261,11 @@ void spell_animate_dead(int level, struct char_data *ch,
     act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_ROOM);
     act("$N slowly rises from the ground.", FALSE, ch, 0, mob, TO_CHAR);
     /*
-     * zombie should be charmed and follower ch 
+     * zombie should be charmed and follower ch
      */
 
     if (too_many_followers(ch)) {
-        act("$N takes one look at the size of your posse and just says no!", 
+        act("$N takes one look at the size of your posse and just says no!",
             TRUE, ch, 0, mob, TO_CHAR);
         act("You take one look at the size of $n's posse and just say no!",
             TRUE, ch, 0, mob, TO_ROOM);
@@ -1275,7 +1279,7 @@ void spell_animate_dead(int level, struct char_data *ch,
     IS_CARRYING_N(mob) = 0;
 
     /*
-     * take all from corpse, and give to zombie 
+     * take all from corpse, and give to zombie
      */
 
     for (obj_object = corpse->contains; obj_object; obj_object = next_obj) {
@@ -1284,12 +1288,12 @@ void spell_animate_dead(int level, struct char_data *ch,
         obj_to_char(obj_object, mob);
     }
     /*
-     * set up descriptions and such 
+     * set up descriptions and such
      */
     sprintf(buf, "%s is here, slowly animating\n\r", corpse->short_description);
     mob->player.long_descr = (char *) strdup(buf);
     /*
-     * set up hitpoints 
+     * set up hitpoints
      */
     mob->points.max_hit = dice(MAX(level / 2, 5), 8);
     mob->points.hit = mob->points.max_hit / 2;
@@ -1297,7 +1301,7 @@ void spell_animate_dead(int level, struct char_data *ch,
     GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
     mob->player.class = ch->player.class;
     /*
-     * get rid of corpse 
+     * get rid of corpse
      */
     extract_obj(corpse);
 }
@@ -1361,14 +1365,14 @@ void spell_dispel_magic(int level, struct char_data *ch,
             REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_INVISIBLE);
 
         if (level >= 45) {
-            /* 
-             * if level 45> then they can do this 
+            /*
+             * if level 45> then they can do this
              */
             if (IS_SET(obj->obj_flags.extra_flags, ITEM_MAGIC)) {
                 REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
             }
             /*
-             * strip off everything 
+             * strip off everything
              */
             for (i = 0; i < MAX_OBJ_AFFECT; i++) {
                 obj->affected[i].location = 0;
@@ -1386,7 +1390,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     /*
-     * gets rid of infravision, invisibility, detect, etc 
+     * gets rid of infravision, invisibility, detect, etc
      */
     if (GetMaxLevel(victim) <= level) {
         /* Changed so it's actually using scroll level (GH) */
@@ -1395,38 +1399,38 @@ void spell_dispel_magic(int level, struct char_data *ch,
         yes = FALSE;
     }
 
-    if (affected_by_spell(victim, SPELL_INVISIBLE) && 
+    if (affected_by_spell(victim, SPELL_INVISIBLE) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_INVISIBLE);
         send_to_char("You feel exposed.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_DETECT_INVISIBLE) && 
+    if (affected_by_spell(victim, SPELL_DETECT_INVISIBLE) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_DETECT_INVISIBLE);
         send_to_char("You feel less perceptive.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_DETECT_EVIL) && 
+    if (affected_by_spell(victim, SPELL_DETECT_EVIL) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_DETECT_EVIL);
         send_to_char("You feel less morally alert.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_DETECT_GOOD) && 
+    if (affected_by_spell(victim, SPELL_DETECT_GOOD) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_DETECT_GOOD);
         send_to_char("You can't sense the goodness around you anymore.\n\r",
                      victim);
     }
 
-    if (affected_by_spell(victim, SPELL_DETECT_MAGIC) && 
+    if (affected_by_spell(victim, SPELL_DETECT_MAGIC) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_DETECT_MAGIC);
         send_to_char("You stop noticing the magic in your life.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_SENSE_LIFE) && 
+    if (affected_by_spell(victim, SPELL_SENSE_LIFE) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_SENSE_LIFE);
         send_to_char("You feel less in touch with living things.\n\r", victim);
@@ -1445,7 +1449,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
             }
         }
 
-        if (victim->attackers < 6 && !victim->specials.fighting && 
+        if (victim->attackers < 6 && !victim->specials.fighting &&
             IS_NPC(victim)) {
             set_fighting(victim, ch);
         }
@@ -1457,7 +1461,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
         send_to_char("You feel less morally protected.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_PROTECT_FROM_GOOD) && 
+    if (affected_by_spell(victim, SPELL_PROTECT_FROM_GOOD) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_PROTECT_FROM_GOOD);
         send_to_char("Some of your evilness dissipates into the ether.\n\r",
@@ -1470,74 +1474,74 @@ void spell_dispel_magic(int level, struct char_data *ch,
         send_to_char("Your sight grows dimmer.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_SLEEP) && 
+    if (affected_by_spell(victim, SPELL_SLEEP) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_SLEEP);
         send_to_char("You don't feel so tired.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_CHARM_PERSON) && 
+    if (affected_by_spell(victim, SPELL_CHARM_PERSON) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_CHARM_PERSON);
         send_to_char("You feel less enthused about your master.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_WEAKNESS) && 
+    if (affected_by_spell(victim, SPELL_WEAKNESS) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_WEAKNESS);
         send_to_char("You don't feel so weak.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_STRENGTH) && 
+    if (affected_by_spell(victim, SPELL_STRENGTH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_STRENGTH);
         send_to_char("You don't feel so strong.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_ARMOR) && 
+    if (affected_by_spell(victim, SPELL_ARMOR) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_ARMOR);
         send_to_char("You don't feel so well protected.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_DETECT_POISON) && 
+    if (affected_by_spell(victim, SPELL_DETECT_POISON) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_DETECT_POISON);
         send_to_char("You don't feel so sensitive to fumes.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_BLESS) && 
+    if (affected_by_spell(victim, SPELL_BLESS) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_BLESS);
         send_to_char("You don't feel so blessed.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_FLY) && 
+    if (affected_by_spell(victim, SPELL_FLY) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_FLY);
         send_to_char("You don't feel lighter than air anymore.\n\r", victim);
         check_falling(victim);
     }
 
-    if (affected_by_spell(victim, SPELL_WATER_BREATH) && 
+    if (affected_by_spell(victim, SPELL_WATER_BREATH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_WATER_BREATH);
         send_to_char("You don't feel so fishy anymore.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_FIRE_BREATH) && 
+    if (affected_by_spell(victim, SPELL_FIRE_BREATH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_FIRE_BREATH);
         send_to_char("You don't feel so fiery anymore.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_LIGHTNING_BREATH) && 
+    if (affected_by_spell(victim, SPELL_LIGHTNING_BREATH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_LIGHTNING_BREATH);
         send_to_char("You don't feel so electric anymore.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_GAS_BREATH) && 
+    if (affected_by_spell(victim, SPELL_GAS_BREATH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_GAS_BREATH);
         send_to_char("You don't have gas anymore.\n\r", victim);
@@ -1563,7 +1567,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
             }
         }
 
-        if (victim->attackers < 6 && !victim->specials.fighting && 
+        if (victim->attackers < 6 && !victim->specials.fighting &&
             IS_NPC(victim)) {
             set_fighting(victim, ch);
         }
@@ -1583,7 +1587,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
             }
         }
 
-        if (victim->attackers < 6 && !victim->specials.fighting && 
+        if (victim->attackers < 6 && !victim->specials.fighting &&
             IS_NPC(victim)) {
             set_fighting(victim, ch);
         }
@@ -1599,7 +1603,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
                          "existence.\n\r", victim);
             act("$n's blade barrier disappears.", FALSE, victim, 0, 0, TO_ROOM);
         }
-        if (victim->attackers < 6 && !victim->specials.fighting && 
+        if (victim->attackers < 6 && !victim->specials.fighting &&
             IS_NPC(victim)) {
             set_fighting(victim, ch);
         }
@@ -1644,9 +1648,9 @@ void spell_dispel_magic(int level, struct char_data *ch,
     }
 
     if (IS_SET(victim->specials.affected_by2, AFF2_HEAT_STUFF)) {
-#if 0        
+#if 0
         if (affected_by_spell(victim, SPELL_HEAT_STUFF)) {
-#endif        
+#endif
         affect_from_char(victim, SPELL_HEAT_STUFF);
         send_to_char("You don't feel so hot anymore\n\r", victim);
     }
@@ -1708,7 +1712,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
             act("The globe of darkness surrounding $n vanishes.", FALSE,
                 victim, 0, 0, TO_ROOM);
         }
-        if (victim->attackers < 6 && !victim->specials.fighting && 
+        if (victim->attackers < 6 && !victim->specials.fighting &&
             IS_NPC(victim)) {
             set_fighting(victim, ch);
         }
@@ -1785,7 +1789,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
         send_to_char("You feel less powerful.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_FIND_TRAPS) && 
+    if (affected_by_spell(victim, SPELL_FIND_TRAPS) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_FIND_TRAPS);
         send_to_char("Your sense of traps just left you.\n\r", victim);
@@ -1802,7 +1806,7 @@ void spell_dispel_magic(int level, struct char_data *ch,
         affect_from_char(victim, SPELL_HOLY_ARMOR);
         send_to_char("Your Deity's protection has left you.\n\r", victim);
     }
-    
+
     if (affected_by_spell(victim, SPELL_HOLY_STRENGTH) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_HOLY_STRENGTH);
@@ -1868,13 +1872,13 @@ void spell_dispel_magic(int level, struct char_data *ch,
                      victim);
     }
 
-    if (affected_by_spell(victim, SPELL_ENDURE_COLD) && 
+    if (affected_by_spell(victim, SPELL_ENDURE_COLD) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_ENDURE_COLD);
         send_to_char("Your skin loses it's white hue.\n\r", victim);
     }
 
-    if (affected_by_spell(victim, SPELL_EYE_OF_THE_DEAD) && 
+    if (affected_by_spell(victim, SPELL_EYE_OF_THE_DEAD) &&
         (yes || !saves_spell(victim, SAVING_SPELL))) {
         affect_from_char(victim, SPELL_EYE_OF_THE_DEAD);
         send_to_char("Your eye of the dead goes blind and strays beyond your"
@@ -1984,8 +1988,8 @@ void spell_paralyze(int level, struct char_data *ch,
         if (!IsSusc(victim, IMM_HOLD) && saves_spell(victim, SAVING_PARA)) {
             FailPara(victim, ch);
             return;
-        } else if (IsSusc(victim, IMM_HOLD) && 
-                   saves_spell(victim, SAVING_PARA) && 
+        } else if (IsSusc(victim, IMM_HOLD) &&
+                   saves_spell(victim, SAVING_PARA) &&
                    saves_spell(victim, SAVING_PARA)) {
             FailPara(victim, ch);
             return;
@@ -2026,7 +2030,7 @@ void spell_calm(int level, struct char_data *ch,
     assert(ch && victim);
 
     /*
-     * removes aggressive bit from monsters 
+     * removes aggressive bit from monsters
      */
     if (IS_NPC(victim)) {
         if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
@@ -2075,80 +2079,80 @@ void spell_web(int level, struct char_data *ch,
     }
     if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
         if (IsSmall(victim) && !fail && !number(0, 3)) {
-            pissed = TRUE;      
-            /* 
-             * 25% 
+            pissed = TRUE;
+            /*
+             * 25%
              */
         } else if (big) {
             if (fail) {
                 if (number(0, 4) < 2) {
-                    pissed = TRUE;      
-                    /* 
-                     * 40% 
+                    pissed = TRUE;
+                    /*
+                     * 40%
                      */
                 }
             } else {
                 if (number(0, 4) < 3) {
-                    pissed = TRUE;      
-                    /* 
-                     * 60% 
+                    pissed = TRUE;
+                    /*
+                     * 60%
                      */
                 }
             }
         } else {
             if (fail) {
                 if (!number(0, 4)) {
-                    pissed = TRUE;      
-                    /* 
-                     * 20% 
+                    pissed = TRUE;
+                    /*
+                     * 20%
                      */
                 }
             } else {
                 if (!number(0, 2)) {
-                    pissed = TRUE;      
-                    /* 
-                     * 33% 
+                    pissed = TRUE;
+                    /*
+                     * 33%
                      */
                 }
             }
         }
     } else {
-        /* 
-         * assume if not indoors, outdoors and web is less affective at 
-         * blocking the victim from the caster. 
+        /*
+         * assume if not indoors, outdoors and web is less affective at
+         * blocking the victim from the caster.
          */
         if (IsSmall(victim) && !fail && !number(0, 2)) {
-            pissed = TRUE;      
-            /* 
-             * 33% 
+            pissed = TRUE;
+            /*
+             * 33%
              */
         } else if (big) {
             if (fail) {
                 if (number(0, 4) < 3) {
-                    pissed = TRUE;      
-                    /* 
-                     * 60% 
+                    pissed = TRUE;
+                    /*
+                     * 60%
                      */
                 }
             } else {
-                pissed = TRUE;  
-                /* 
-                 * 100% 
+                pissed = TRUE;
+                /*
+                 * 100%
                  */
             }
         } else {
             if (fail) {
                 if (number(0, 4) < 2) {
-                    pissed = TRUE;      
-                    /* 
-                     * 40% 
+                    pissed = TRUE;
+                    /*
+                     * 40%
                      */
                 }
             } else {
                 if (number(0, 4) < 3) {
-                    pissed = TRUE;      
-                    /* 
-                     * 60% 
+                    pissed = TRUE;
+                    /*
+                     * 60%
                      */
                 }
             }
@@ -2253,7 +2257,7 @@ void spell_conjure_elemental(int level, struct char_data *ch,
     act("Out of the smoke, $N emerges", TRUE, ch, 0, victim, TO_NOTVICT);
 
     /*
-     * charm them for a while 
+     * charm them for a while
      */
 
     if (too_many_followers(ch)) {
@@ -2404,7 +2408,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
             0, victim, TO_CHAR);
     } else {
         /*
-         * charm them for a while 
+         * charm them for a while
          */
         if (victim->master) {
             stop_follower(victim);
@@ -2420,7 +2424,7 @@ void spell_cacaodemon(int level, struct char_data *ch,
 
         affect_to_char(victim, &af);
     }
-    
+
     if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
         REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
     }
@@ -2563,7 +2567,7 @@ void spell_globe_darkness(int level, struct char_data *ch,
 
     assert(victim);
 
-    if (!affected_by_spell(victim, SPELL_GLOBE_DARKNESS) && 
+    if (!affected_by_spell(victim, SPELL_GLOBE_DARKNESS) &&
         !IS_AFFECTED(victim, AFF_DARKNESS)) {
         if (ch != victim) {
             act("$n summons a black globe around $N.", FALSE, ch, 0,
@@ -2978,7 +2982,7 @@ void spell_wall_of_thought(int level, struct char_data *ch,
         affect_to_char(ch, &af);
 
         /*
-         * resistance to piercing weapons 
+         * resistance to piercing weapons
          */
 
         af.type = SPELL_WALL_OF_THOUGHT;

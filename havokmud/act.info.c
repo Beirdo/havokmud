@@ -3465,6 +3465,7 @@ char           *PrintTitle(struct char_data *person, char type)
 {
     static char     buffer[MAX_STRING_LENGTH] = "";
     extern char    *RaceName[];
+
     switch (type) {
     case 'r':{
             sprintf(buffer, "%s %s", GET_NAME(person),
@@ -3526,6 +3527,10 @@ char           *PrintTitle(struct char_data *person, char type)
     case 'p':
         sprintf(buffer, "%s ->PowerLevel:[%ld]", GET_NAME(person),
                 CalcPowerLevel(person));
+        return buffer;
+    case 'a':
+        sprintf(buffer, "%s ->Alignment:[%d]", GET_NAME(person),
+                GET_ALIGNMENT(person));
         return buffer;
 
     default:
@@ -3613,7 +3618,8 @@ void do_who(struct char_data *ch, char *argument, int cmd)
             send_to_char("            -t    for title\n\r", ch);
             send_to_char("            -q    for questpoints\n\r", ch);
             send_to_char("            -p    for powerlevel\n\r", ch);
-            send_to_char("            -v    for visibility level\n\r\n\r", ch);
+            send_to_char("            -v    for visibility level\n\r", ch);
+            send_to_char("            -a    for alignment\n\r\n\r", ch);
             ch_printf(ch, "%sConnects since last reboot: $c0015%ld\n\r",
                       color, total_connections);
             ch_printf(ch,
@@ -3742,7 +3748,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
             }
         }
     }
-    
+
     if (count == 0)
         ch_printf(ch, "\n\r $c000W No visible characters found!!\n\r");
 
@@ -7369,11 +7375,11 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
             }
 #ifdef FUCKING_DUMB_COMPILER
             sprintf(buf, "$c000c[$c000w%2d$c000c] $c000w%s   $c000c"
-                         "[$c000w%s$c000c]\n\r", 
+                         "[$c000w%s$c000c]\n\r",
                     x, name, clan_list[x].shortname);
 #endif
             sprintf(buf, "$c000c[$c000w%2d%s] $c000w%s   $c000c"
-                         "[$c000w%s%s]\n\r", 
+                         "[$c000w%s%s]\n\r",
                     x, "$c000c", name, clan_list[x].shortname, "$c000c");
             send_to_char(buf, ch);
             x++;

@@ -4066,7 +4066,7 @@ void do_start(struct char_data *ch)
     int             r_num,
                     temp = 0;
     struct obj_data *obj;
-    char            buf[80];
+    char            buf[256];
 
     void            advance_level(struct char_data *ch, int i);
 
@@ -4082,7 +4082,7 @@ void do_start(struct char_data *ch)
     StartLevels(ch);
     GET_EXP(ch) = 1;
     set_title(ch);
-    
+
     /*
      *  This is the old style of determining hit points.  I modified it so that
      *  characters get the standard AD&D + 10 hp to start.
@@ -4140,6 +4140,7 @@ void do_start(struct char_data *ch)
         ch->player.speaks = SPEAK_ELVISH;
         break;
     case RACE_DWARF:
+    case RACE_DARK_DWARF:
         ch->player.speaks = SPEAK_DWARVISH;
         break;
     case RACE_DEEP_GNOME:
