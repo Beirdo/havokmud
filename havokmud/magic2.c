@@ -1491,35 +1491,24 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	affect_from_char(victim,SPELL_SENSE_LIFE);
 	send_to_char("You feel less in touch with living things.\n\r",victim);
     }
-    if (affected_by_spell(victim,SPELL_SANCTUARY)) {
-		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-			affect_from_char(victim,SPELL_SANCTUARY);
+    /*start FEB 19,2004 -gordon*/
+    if (IS_AFFECTED(victim, AFF_SANCTUARY)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL)){
+			REMOVE_BIT(victim->specials.affected_by,AFF_SANCTUARY);
+			if (affected_by_spell(victim,SPELL_SANCTUARY)){
+				affect_from_char(victim,SPELL_SANCTUARY);
+			}
 			send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-			if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+			if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)){
 				act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
 			}
 		}
-      	/* aggressive Act. */
 		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
 			set_fighting(victim, ch);
-		}
-    }
-    if (IS_AFFECTED(victim, AFF_SANCTUARY)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by, AFF_SANCTUARY);
-	send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
-		}
+      	}
 	}
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	  (IS_NPC(victim))) {
-	set_fighting(victim, ch);
-      }
-    }
+	/*end feb 19,2004 -gordon*/
+
     if (affected_by_spell(victim,SPELL_PROTECT_FROM_EVIL))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	affect_from_char(victim,SPELL_PROTECT_FROM_EVIL);
@@ -1606,102 +1595,59 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	affect_from_char(victim,SPELL_FROST_BREATH);
 	send_to_char("You don't feel so frosty anymore.\n\r",victim);
     }
-    if (affected_by_spell(victim,SPELL_FIRESHIELD)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-		affect_from_char(victim,SPELL_FIRESHIELD);
-		send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
-		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
-		}
-      }
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	    (IS_NPC(victim))) {
-	  set_fighting(victim, ch);
-	}
-    }
-    if (IS_AFFECTED(victim, AFF_FIRESHIELD)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by, AFF_FIRESHIELD);
-	send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
-		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
-		}
-	}
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	  (IS_NPC(victim))) {
-	set_fighting(victim, ch);
-      }
-    }
 
-    if (affected_by_spell(victim,SPELL_CHILLSHIELD)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-		affect_from_char(victim,SPELL_CHILLSHIELD);
-		send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
-		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+/*start FEB 19,2004 -gordon*/
+	    if (IS_AFFECTED(victim, AFF_FIRESHIELD)) {
+			if (yes || !saves_spell(victim, SAVING_SPELL)){
+				REMOVE_BIT(victim->specials.affected_by,AFF_FIRESHIELD);
+				if (affected_by_spell(victim,SPELL_FIRESHIELD)){
+					affect_from_char(victim,SPELL_FIRESHIELD);
+				}
+				send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
+				if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+					act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+				}
+			}
+			if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+				set_fighting(victim, ch);
+	      	}
 		}
-      }
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	    (IS_NPC(victim))) {
-	  set_fighting(victim, ch);
-	}
-    }
-    if (IS_AFFECTED(victim, AFF_CHILLSHIELD)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by, AFF_CHILLSHIELD);
-	send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
-		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-			act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
-		}
-	}
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	  (IS_NPC(victim))) {
-	set_fighting(victim, ch);
-      }
-    }
 
 
-    if (affected_by_spell(victim,SPELL_BLADE_BARRIER)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-		affect_from_char(victim,SPELL_BLADE_BARRIER);
-		send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
+
+
+    if (IS_AFFECTED(victim, AFF_CHILLSHIELD)){
+		if (yes || !saves_spell(victim, SAVING_SPELL)) {
+			REMOVE_BIT(victim->specials.affected_by, AFF_CHILLSHIELD);
+			if (affected_by_spell(victim, SPELL_CHILLSHIELD)){
+				affect_from_char(victim,SPELL_CHILLSHIELD);
+			}
+			send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
+			if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+				act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+			}
+    	}
+		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+			set_fighting(victim, ch);
+		}
+	}
+
+
+
+	if (IS_AFFECTED(victim, AFF_BLADE_BARRIER)){
+		if (yes || !saves_spell(victim, SAVING_SPELL)){
+			REMOVE_BIT(victim->specials.affected_by, AFF_BLADE_BARRIER);
+			if (affected_by_spell(victim,SPELL_BLADE_BARRIER)){
+				affect_from_char(victim,SPELL_BLADE_BARRIER);
+			}
+			send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
 			act("$n's blade barrier disappears.",FALSE,victim,0,0,TO_ROOM);
-      }
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	    (IS_NPC(victim))) {
-	  set_fighting(victim, ch);
+		}
+		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+			set_fighting(victim, ch);
+		}
 	}
-    }
-    if (IS_AFFECTED(victim, AFF_BLADE_BARRIER)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by, AFF_BLADE_BARRIER);
-	send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
-			act("$n's blade barrier disappears.",FALSE,victim,0,0,TO_ROOM);
-	}
-      /*
-       *  aggressive Act.
-       */
-      if ((victim->attackers < 6) && (!victim->specials.fighting) &&
-	  (IS_NPC(victim))) {
-	set_fighting(victim, ch);
-      }
-    }
-
+/*end feb 19, 2004 -gordon*/
 
 
     if (affected_by_spell(victim,SPELL_FAERIE_FIRE))
@@ -1791,28 +1737,22 @@ if (IS_SET(victim->specials.affected_by2,AFF2_HEAT_STUFF)) {
 	affect_from_char(victim,SPELL_DRAGON_RIDE);
    }
 
-	if (affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-			affect_from_char(victim,SPELL_GLOBE_DARKNESS);
+/*start feb 19, 2004 -gordon*/
+	if (IS_AFFECTED(victim, AFF_DARKNESS)){
+
+		if (yes || !saves_spell (victim, SAVING_SPELL)){
+			REMOVE_BIT(victim->specials.affected_by, AFF_DARKNESS);
+			if (affected_by_spell(victim,SPELL_GLOBE_DARKNESS)){
+				affect_from_char(victim,SPELL_GLOBE_DARKNESS);
+			}
 			send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
 			act("The globe of darkness surrounding $n vanishes.", FALSE, victim, 0, 0, TO_ROOM);
 		}
-    } else {
-		if (IS_AFFECTED(victim, AFF_DARKNESS)) {
-			if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-				REMOVE_BIT(victim->specials.affected_by, AFF_DARKNESS);
-				send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
-				act("The globe of darkness surrounding $n vanishes.",FALSE,victim,0,0,TO_ROOM);
-			}
-		  /*
-		   *  aggressive Act.
-		   */
-			if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
-				set_fighting(victim, ch);
-			}
+		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+			set_fighting(victim, ch);
 		}
 	}
-
+/*end feb 19, 2004 -gordon*/
     if (affected_by_spell(victim,SPELL_GLOBE_MINOR_INV)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	 affect_from_char(victim,SPELL_GLOBE_MINOR_INV);
