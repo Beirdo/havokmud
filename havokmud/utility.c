@@ -3312,10 +3312,11 @@ char           *advicelist[] = {
     "Use $c0015GET ALL.<ITEMNAME>$c0007 to pick up all of a specific item in "
         "a room, such as all.coins"
 };
+int advicecount = NELEMS(advicelist);
 
 void AdvicePulseStuff(int pulse)
 {
-    int             numberadvice = 37;
+    int             numberadvice;
     struct descriptor_data *i;
     register struct char_data *ch;
     char            buffer[150];
@@ -3329,8 +3330,11 @@ void AdvicePulseStuff(int pulse)
 
             if (IS_PC(ch) && ch->in_room != NOWHERE &&
                 IS_SET(ch->player.user_flags, NEW_USER)) {
-                sprintf(buffer, "$c000GAdvice: '$c000w%s$c000G'\n\r",
-                        advicelist[number(0, numberadvice)]);
+                numberadvice = number(0, advicecount - 1);
+                snprintf(buffer, 150, "$c000GAdvice: '$c000w%s$c000G'\n\r",
+                        advicelist[numberadvice]);
+                buffer[149] = '\0';
+
                 if (AWAKE(ch)) {
                     send_to_char(buffer, ch);
                 }
