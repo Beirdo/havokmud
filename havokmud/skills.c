@@ -3891,7 +3891,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if(!ch->skills[sn].learned) {  //do you know that spell?
+	if(!ch->skills[sn+1].learned) {  //do you know that spell?
 		send_to_char("You don't know of this spell.\n\r",ch);
 		return;
 	}
