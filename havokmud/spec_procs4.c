@@ -1309,6 +1309,7 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 			}
 		}
 	}
+	return(FALSE);
 }
 #if 0
 /* Proc that makes a door open at nighttime 8pm, and close at dawn 5pm. */
