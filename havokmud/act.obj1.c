@@ -474,6 +474,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &arg);
     if( !arg ) {
         send_to_char("Drop what?\n\r", ch);
+        return;
     }
 
     if (isdigit((int)*arg) && !index(arg, '.')) {
