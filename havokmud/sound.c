@@ -104,17 +104,23 @@ void MakeSound(int pulse)
     for (ch = character_list; ch; ch = ch->next) {
         if (IS_NPC(ch) && (ch->player.sounds) && !number(0, 5) && 
             strcmp(ch->player.sounds, "")) {
-            /* don't make sound if empty sound string */
+            /* 
+             * don't make sound if empty sound string 
+             */
             if (ch->specials.default_pos > POSITION_SLEEPING) {
                 if (GET_POS(ch) > POSITION_SLEEPING) {
                     /*
                      * Make the sound 
                      */
-                    // if(*ch->player.distant_snds != '\'')
+#if 0                    
+                    if(*ch->player.distant_snds != '\'')
+#endif                    
                     MakeNoise(ch->in_room, ch->player.sounds,
                               ch->player.distant_snds);
-                    // else
-                    // MakeNoise(ch->in_room, ch->player.sounds,"");
+#if 0                    
+                    else
+                    MakeNoise(ch->in_room, ch->player.sounds,"");
+#endif                
                 } else if (GET_POS(ch) == POSITION_SLEEPING) {
                     /*
                      * snore 
@@ -128,11 +134,15 @@ void MakeSound(int pulse)
                 /*
                  * Make the sound 
                  */
-                // if(*ch->player.distant_snds != '\'')
+#if 0                
+                if(*ch->player.distant_snds != '\'')
+#endif                
                 MakeNoise(ch->in_room, ch->player.sounds,
                           ch->player.distant_snds);
-                // else
-                // MakeNoise(ch->in_room,ch->player.sounds,"");
+#if 0                
+                else
+                    MakeNoise(ch->in_room,ch->player.sounds,"");
+#endif            
             }
         }
     }
