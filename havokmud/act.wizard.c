@@ -7387,7 +7387,6 @@ int eval(struct obj_data *object) {
 					break;
 
 				case APPLY_M_IMMUNE:
-					log("true immunity");
 					if (IS_SET(object->affected[i].modifier, IMM_POISON))
 						total += 6;
 					if (IS_SET(object->affected[i].modifier, IMM_CHARM))
