@@ -4331,6 +4331,37 @@ dlog("in do_show");
 				extract_obj(obj);
 			}
 		}
+	} else if (is_abbrev(buf, "wearslot") && (which_i=obj_index,topi=top_of_objt)) {
+		int objn, wearslot = 0;
+		struct index_data   *oi;
+
+		only_argument(argument, zonenum);
+
+		if(!(isdigit(zonenum))) {
+			append_to_string_block(&sb,"Usage:\n\r"
+				 "  show wearslot #\n\r"
+				 "  Number ranging from 0 (lightsource) to 22 (loaded weapon)\n\r");
+		} else {
+			wearslot = atoi(zonenum);
+			append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
+			for (objn=0; objn < topi; objn++) {
+				oi = which_i + objn;
+				obj = read_object(oi->virtual, VIRTUAL);
+				if(obj) {
+					if(ITEM_TYPE(obj) == wearslot) {
+						if(eval(obj) < -5)
+							sprintf(color,"%s","$c0008");
+						else if(eval(obj) < 20)
+							sprintf(color,"%s","");
+						else
+							sprintf(color,"%s","$c000W");
+						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+						append_to_string_block(&sb, buf);
+					}
+				}
+				extract_obj(obj);
+			}
+		}
 	} else if (is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
 		int objn;
 		struct index_data   *oi;
