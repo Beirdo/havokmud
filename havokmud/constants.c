@@ -1466,7 +1466,7 @@ const char     *spell_wear_off_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "The shock of the backstab you suffered has worn off.",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -1820,7 +1820,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -2172,7 +2172,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "The pain from the backstab is getting better, slowly.",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -2531,7 +2531,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",
@@ -5081,7 +5081,7 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel */
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",
-    "!Backstab!",
+    "",
     "!Pick Lock!",
     "!Kick!",
     "!Bash!",

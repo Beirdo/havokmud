@@ -166,9 +166,40 @@ void do_kill(struct char_data *ch, char *argument, int cmd)
 void do_backstab(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
+    struct affected_type af;
     char           *name;
-    byte            percent,
-                    base = 0;
+    int            percent;
+    int            base = 0;
+    double         lagmod = 1.0;
+    int            damagemod = 0;
+    int            stabbersize;
+    int            victimsize;
+    int            sizediff;
+    int            howgood;
+    int            stunned = 0;
+    int            hitrollpenalty = 0;
+    int            damrollpenalty = 0;
+    char           buf[MAX_STRING_LENGTH];
+    int            temp;
+
+
+    int BSSizeDifferential [7][7] = {
+    /* Stabber is vertical, victim is horizontal */
+    /* Gen is for a general size mob, which is treated as tiny */
+    /* Negative numbers are bad, positive numbers are good, because it is */
+    /* subtracted from the backstab roll */
+    /*        Gen    T     S    M    L    H    G  */
+    /* Gen*/ {  0,   0,   10,  -5, -10, -15, -20},
+    /* T */  {  0,   0,   10,  -5, -10, -15, -20},
+    /* S */  {-10, -10,    0,  10,  -5, -10, -15},
+    /* M */  {-15, -15,  -10,   0,  10,  -5, -10},
+    /* L */  {-25, -25,  -15, -10,   0,  10,  -5},
+    /* H */  {-40, -40,  -25, -15, -10,   0,  10},
+    /* G */  {-60, -60,  -40, -25, -15, -10,   0}
+    };
+
+    buf[0] = '\0';
+
 
     dlog("in do_backstab");
 
@@ -182,7 +213,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 
     argument = get_argument(argument, &name);
     if (!name || !(victim = get_char_room_vis(ch, name))) {
-        send_to_char("Backstab who?\n\r", ch);
+        send_to_char("Backstab whom?\n\r", ch);
         return;
     }
 
@@ -202,11 +233,6 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (MOUNTED(ch)) {
-        send_to_char("Your mount would give you away.\n", ch);
-        return;
-    }
-
     if (ch->attackers) {
         send_to_char("There's no way to reach that back while you're "
                      "fighting!\n\r", ch);
@@ -222,14 +248,6 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
     if (victim->attackers >= 3) {
         send_to_char("You can't get close enough to them to backstab!\n\r", ch);
         return;
-    }
-
-    if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
-        if (!IsGiant(ch)) {
-            act("$N is MUCH too large to backstab", FALSE, ch, 0, victim,
-                TO_CHAR);
-            return;
-        }
     }
 
     if (ch->equipment[WIELD]->obj_flags.value[3] != 11 &&
@@ -257,10 +275,10 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
         base = 4;
     }
 
-    if (victim->skills && victim->skills[SKILL_AVOID_BACK_ATTACK].learned
-        && GET_POS(victim) > POSITION_SITTING
-        && !IS_AFFECTED(victim, AFF_PARALYSIS)) {
-        percent = number(1, 101);       /* 101% is a complete failure */
+    if (victim->skills && victim->skills[SKILL_AVOID_BACK_ATTACK].learned &&
+        GET_POS(victim) > POSITION_SITTING && 
+        !IS_AFFECTED(victim, AFF_PARALYSIS)) {
+        percent = number(1, 100);       /* 101% is a complete failure */
         if (percent < victim->skills[SKILL_AVOID_BACK_ATTACK].learned) {
             act("You sense a back attack from $N and avoid it skillfully!",
                 FALSE, victim, 0, ch, TO_CHAR);
@@ -271,60 +289,187 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
             SetCharFighting(ch, victim);
             AddHated(victim, ch);
             return;
-        } else {
-            act("You failed to sense a back attack from $N!", FALSE, victim,
-                0, ch, TO_CHAR);
-            act("$n fails to avoid a back attack from $N!", FALSE, victim,
-                0, ch, TO_ROOM);
-            LearnFromMistake(victim, SKILL_AVOID_BACK_ATTACK, 0, 95);
         }
+
+        act("You failed to sense a back attack from $N!", FALSE, victim,
+            0, ch, TO_CHAR);
+        act("$n fails to avoid a back attack from $N!", FALSE, victim,
+            0, ch, TO_ROOM);
+        LearnFromMistake(victim, SKILL_AVOID_BACK_ATTACK, 0, 95);
     }
 
-    /*
-     * ^ they had skill avoid ba and where awake! ^
-     */
-    percent = number(1, 101);   /* 101% is a complete failure */
+    stabbersize = race_list[ch->race].size;
+    if(affected_by_spell(ch, SPELL_GIANT_GROWTH)) {
+        stabbersize++;
+    }
+
+    if(IS_NPC(ch) && IS_SET(ch->specials.act, ACT_HUGE)) {
+        stabbersize += 2;
+    }
+    stabbersize = MAX( MIN(stabbersize, 6), 0);
+
+
+    victimsize = race_list[victim->race].size;
+    if(affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
+        victimsize++;
+    }
+
+    if(IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+        victimsize += 2;
+    }
+    victimsize  = MAX( MIN(victimsize,  6), 0);
+
+
+    if(victimsize - stabbersize >= 4 && !IS_AFFECTED(ch, AFF_FLYING)) {
+    /* There are 4 sizes difference, a small trying to backstab a gigantic */
+        send_to_char("$c000WYou would have to be flying to reach a "
+                     "back that much out of reach.\n\r", ch);
+        return;
+    }
+
+    percent = number(1, 100);
 
     if (ch->skills[SKILL_BACKSTAB].learned) {
-        if (percent > ch->skills[SKILL_BACKSTAB].learned) {
-            /* failure */
-            if (AWAKE(victim)) {
-                AddHated(victim, ch);
-                /* damage (third arg) = 0 */
-                damage(ch, victim, 0, SKILL_BACKSTAB);
-            } else {
-                /* failed but vic is asleep */
-                base += 2;
-                GET_HITROLL(ch) += base;
-                AddHated(victim, ch);
-                hit(ch, victim, SKILL_BACKSTAB);
-                GET_HITROLL(ch) -= base;
-            }
-            LearnFromMistake(ch, SKILL_BACKSTAB, 0, 95);
+        if(percent < 6) {
+            /* auto success */
+            percent = -1;
+        } else if(percent > 95) {
+            /* auto failure */
+            percent = 101;
         } else {
-            /* success */
-            GET_HITROLL(ch) += base;
-            AddHated(victim, ch);
-            if (IS_PC(ch) && IS_PC(victim)) {
-                GET_ALIGNMENT(ch) -= 50;
+            /* size, dexterity, level */
+            sizediff = BSSizeDifferential[stabbersize][victimsize];
+            percent -= sizediff;
+            percent += (dex_app[(int) GET_DEX(ch)].defensive / 2);
+
+            if(IS_NPC(ch)) {
+                percent -= (GetMaxLevel(ch) - GetMaxLevel(victim));
+            } else {
+                percent -= (GET_LEVEL(ch, THIEF_LEVEL_IND) - 
+                            GetMaxLevel(victim));
             }
-            hit(ch, victim, SKILL_BACKSTAB);
-            GET_HITROLL(ch) -= base;
-            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
-                         "using your combat abilities.$c0007\n\r", ch);
-            gain_exp(ch, 100);
         }
-    } else {
-        AddHated(victim, ch);
-        damage(ch, victim, 0, SKILL_BACKSTAB);
+
+        howgood = ch->skills[SKILL_BACKSTAB].learned - percent;
+        if(howgood > 0) {
+            if(howgood > 50) {
+                base += 4;
+                strcat(buf, "$c000GYour stab is aimed in precisely "
+                            "the right location, the victim will be "
+                            "$c000Wstunned "
+                            "$c000Gby the impact.");
+                stunned = 1;
+                hitrollpenalty = ((int) howgood / 10) + 5;
+                damrollpenalty = ((int) howgood / 10) + 5;
+            } else if(howgood > 20) {
+                base += 2;
+                strcat(buf,"$c000GYour stab lands in a vital spot on the "
+                           "the victim, they will almost certainly be "
+                           "$c000Wblinded "
+                           "$c000Gby the pain.");
+                hitrollpenalty = 5;
+                damrollpenalty = 5;
+            } else if(howgood > 10) {
+                strcat(buf,"$c000gYour stab lands in the "
+                           "$c000Wcenter "
+                           "$c000gof the victim's back.");
+            } else {
+                base -= 2;
+                strcat(buf,"$c000gYour stab is slightly "
+                           "$c000Woff target, "
+                           "$c000gbut still fairly potent.");
+                temp = (int) GET_DAMROLL(ch) * .10;
+                damagemod -= temp;
+            }
+            
+            strcat(buf, "\n\r");
+            if(victimsize - stabbersize >= 4) {
+                /* if you have to fly to backstab, you only get 80% damroll */
+                temp = (int) GET_DAMROLL(ch) * .20;
+                damagemod -= temp;
+            }
+
+            /* Temporarily boost the hit & damage rolls */
+            GET_HITROLL(ch) += base;
+            GET_DAMROLL(ch) += damagemod;
+
+            AddHated(victim, ch);
+            temp = GET_HIT(victim);
+            hit(ch, victim, SKILL_BACKSTAB);
+
+            /* Now set it back to the original */
+            GET_DAMROLL(ch) -= damagemod;
+            GET_HITROLL(ch) -= base;
+
+            if(victim && temp > GET_HIT(victim) && 
+               GET_POS(victim) != POSITION_DEAD) {
+                send_to_char(buf,ch);
+
+                if(stunned && GET_POS(victim) > POSITION_STUNNED) {
+                    GET_POS(victim) = POSITION_STUNNED;
+                    WAIT_STATE(victim, PULSE_VIOLENCE * 2);
+                }
+
+                if(hitrollpenalty != 0) {
+                    af.type = SKILL_BACKSTAB;
+                    af.duration = 1;
+                    af.modifier = -hitrollpenalty;
+                    af.location = APPLY_HITROLL;
+                    af.bitvector = 0;
+                    affect_to_char(victim, &af);
+                }
+
+                if(damrollpenalty != 0) {
+                    af.type = SKILL_BACKSTAB;
+                    af.duration = 1;
+                    af.modifier = -damrollpenalty;
+                    af.location = APPLY_DAMROLL;
+                    af.bitvector = 0;
+                    affect_to_char(victim, &af);
+                }
+            }
+            gain_exp(ch, 100);
+        } else {
+            damage(ch, victim, 0, SKILL_BACKSTAB);
+            AddHated(victim, ch);
+
+            if(howgood < -50) {
+                GET_POS(ch) = POSITION_SITTING;
+                lagmod = 1.5;
+                strcat(buf,"$c000RYour stab misses horribly, so badly that "
+                           "$c000Wyou fall to the ground.  "
+                           "$c000RIt will take you some time to recover so "
+                           "that you can stand up again.");
+            } else if(howgood < -20) {
+                lagmod = 1.5;
+                strcat(buf,"$c000rYour stab misses badly, it will take you a "
+                           "$c000Wlong time "
+                           "$c000rto recover your balance.");
+            } else if(howgood < -10) {
+                lagmod = 1.0;
+                strcat(buf,"$c000YYour stab misses, you might need a "
+                           "$c000Wfew seconds "
+                           "$c000Yto recover your poise.");
+            } else {
+                lagmod = 0.5;
+                strcat(buf,"$c000yYou realize even as you start "
+                           "your stroke that you will miss.  You "
+                           "$c000Wdraw back, "
+                           "$c000yjust in time, and recover quickly.");
+            }
+
+            strcat(buf, "\n\r");
+            send_to_char(buf,ch);
+            LearnFromMistake(ch, SKILL_BACKSTAB, 0, 90);
+        }
     }
 
     if (OnlyClass(ch, CLASS_THIEF)) {
         /* one round lag for sc thieves */
-        WAIT_STATE(ch, PULSE_VIOLENCE);
+        WAIT_STATE(ch, PULSE_VIOLENCE * lagmod);
     } else {
         /* two rounds lag for multi thieves */
-        WAIT_STATE(ch, PULSE_VIOLENCE * 2);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 2 * lagmod);
     }
 }
 
@@ -827,11 +972,11 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if(!ch->specials.fighting) {
-        set_fighting(ch,victim);
-    }
     if(!victim->specials.fighting) {
         set_fighting(victim,ch);
+    }
+    if(!ch->specials.fighting) {
+        set_fighting(ch,victim);
     }
 
     if (A_NOASSIST(ch, victim)) {
@@ -865,7 +1010,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
     percent = number(1, 100);   /* 100 is a complete failure, 1 is success */
 
     if(percent < 6) {
-        goodbash = 10;  /* Middle of the road a 2 round lag for both */
+        goodbash = 8;  /* Middle of the road a 2 round lag for both */
     }
     else if(percent > 95) {
         goodbash = -4; /* Middle of the road a 2 round lag miss */
@@ -903,7 +1048,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             vicsize = 0;
         }
         /* 062104 - Changed to half differential by request of Gordon */
-        percent -= BashSizeDifferential[chsize][vicsize] * .5;
+        percent -= BashSizeDifferential[chsize][vicsize] >> 1;
 
         /* Level difference between basher and bashee */
         /* 062104 - Changed to only 1% penalty/bonus from 2% per
@@ -913,9 +1058,18 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             percent -= (GET_LEVEL(ch,BestFightingClass(ch)) -
                         GetMaxLevel(victim)) * 1;
         }
+        /* 071204 - Added in check for main class, worse than s/c,
+           better than m/c */
+        else if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1 ||
+                ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1 ||
+                ch->specials.remortclass == PALADIN_LEVEL_IND + 1 ||
+                ch->specials.remortclass == RANGER_LEVEL_IND + 1){
+            percent -= (((int) (GET_LEVEL(ch,BestFightingClass(ch)) * 0.95)) -
+                         GetMaxLevel(victim)) * 1;
+        }
         /* 062104 - Changed to only 10% penalty from 20% for multi-class */
         else {
-            percent -= ((GET_LEVEL(ch,BestFightingClass(ch)) * 0.9) -
+            percent -= (((int) (GET_LEVEL(ch,BestFightingClass(ch)) * 0.9)) -
                          GetMaxLevel(victim)) * 1;
     }
 
@@ -976,7 +1130,9 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
     }
 
     if(goodbash > 0) {
+        if(GET_POS(victim) > POSITION_SITTING) {
         GET_POS(victim) = POSITION_SITTING;
+        }
         strbonus = str_app[STRENGTH_APPLY_INDEX(ch)].todam;
         if(strbonus > 0) {
             goodbash += (strbonus >> 1) + (strbonus & 1);
@@ -989,26 +1145,27 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
         }
 
         /* 
-         * min is original 1 with a -4 for a -3
-         * max is original 6 with a +7 for a 13
-         * I'm going to make an assumption that most bashers
-         * will be around an 18/80 strength
-         * which means that the average basher will end up
-         * with a goodbash number between a minimum of 5 and a
-         * maximum of 10, an 18/100 strength pushes the minimum up to
-         * 7 and the maximum at 12
-         * a 19 strength (half-giant, troll) will put their
-         * minimum at 8 range, which makes them a
-         * very good, almost always 2 round basher
-         * -3 through 3 == 1 round bashee, 2 round basher
-         * 4 through 8 == 1 round bashee, 1.5 round basher
-         * 9 through 11 == 2 round bashee, 2 round basher
-         * 12 through 13 == 3 round bashee, 2 round basher
+         *  if your strength damage bonus is 0, then your range for
+         *  successful bashes is: 1 through 6, which means you will
+         *  never have a chance at a really good bash.
+         *  the minimum is calculated using this formula:
+         *  x = 1/2 damage bonus rounded up (+1 = 1, +2 = 1, +3 = 2)
+         *  minimum = 2 + x
+         *  so for a 16 strength, with a +1 damage bonus your minimum is:
+         *  2 + 1 = 3
+         *  an 18/80 strength is: 2 + 2 = 4
+         *  a 19 strength is 2 + 4 = 6
+         *  for maximums you use this formula:
+         *  maximum = 6 + 2x
+         *  so for a 16 strength, with a +1 damage bonus your maximum is:
+         *  6 + 2 = 8
+         *  an 18/80 strength is: 6 + 4 = 10
+         *  a 19 strength is: 6 + 8 = 14
          */
-        if(goodbash < 4) {
+        if(goodbash < 3) {
             /* Dark Green */
             vicwait = 1;
-            chwait = 2;
+            chwait = 1.5;
             act("$c000gYou push $N, sending $M to the ground but you "
                 "lose your balance and $c000Walmost hit the ground "
                 "$c000gvery hard yourself!",
@@ -1020,10 +1177,10 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 "balance and $c000Walmost hits the ground $c000g$mself.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         }
-        else if(goodbash < 9) {
+        else if(goodbash < 6) {
             /* Dark Green */
             vicwait = 1;
-            chwait = 1.5;
+            chwait = 1;
             act("$c000gYou barely manage to slam into $N, sending $M "
                 "to the ground, but $E $c000Wrecovers quickly.",
                 FALSE, ch, 0, victim, TO_CHAR);
@@ -1034,7 +1191,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             act("$c000g$n slams $N to the ground, but stumbles and "
                 "$N $c000Wrecovers quickly.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        } else if(goodbash < 12) {
+        } else if(goodbash < 9) {
             /* Bright Green */
             vicwait = 2;
             chwait = 2;
@@ -1065,7 +1222,9 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 FALSE, ch, 0, victim, TO_NOTVICT);
         }
     } else {
+        if(GET_POS(ch) > POSITION_SITTING) {
         GET_POS(ch) = POSITION_SITTING;
+        }
         if(goodbash <= -6) {
             /* Red */
             vicwait = 0;
