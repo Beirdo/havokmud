@@ -2943,7 +2943,7 @@ dlog("in do_who");
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
-      		sprintf(levels, "Lord of Quests");
+      		sprintf(levels, "Lord of the Flies");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               if(!strcmp(GET_NAME(person), "Banon")) {

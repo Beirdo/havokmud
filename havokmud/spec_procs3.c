@@ -4289,6 +4289,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 	char tbuf[80];
 	struct char_data *vict;
 	struct obj_data *obj;
+	struct char_data *tmp_ch;
 	int test=0, r_num=0;
 	int has_marbles = 0;
         int marblesrnum = 0;
@@ -4401,6 +4402,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 			obj = read_object(r_num, REAL);
 			obj_to_char(obj, ch);
 		}
+
 		return(TRUE);
 	}
 
@@ -5275,8 +5277,18 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_da
 		extract_obj(obj1);
 		extract_obj(obj2);
 
-		room = real_roomp(ch->in_room);
+          	if ((r_num = real_object(DRAGON_SCEPTRE_ONE)) >= 0) {
+            		obj = read_object(r_num, REAL);
+            		obj_to_room(obj,ch->in_room);
+          	}
+          	if ((r_num = real_object(EYE_DRAGON)) >= 0) {
+            		obj = read_object(r_num, REAL);
+            		obj_to_room(obj,ch->in_room);
+			obj = read_object(r_num, REAL);
+            		obj_to_room(obj,ch->in_room);
+          	}
 
+		room = real_roomp(ch->in_room);
   		for (tmp = room->people;tmp;tmp=tmp2) {
     			tmp2 = tmp->next_in_room;
 			if ( in_group(ch, tmp) && (!tmp->specials.fighting) &&
