@@ -5862,6 +5862,13 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
             o = read_object(rid[i].reward, VIRTUAL);
             obj_to_char(o, ch);
             gain_exp(ch, exp);
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience!$c000w", 
+                    exp);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
+            GET_GOLD(ch) = (GET_GOLD(ch) + exp);
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bgold coins!$c000w", 
+                    exp);
+            act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
             act("The riddler speaks in a strange language and traces an "
                 "arcane symbol in the air.", FALSE, mob, 0, 0, TO_ROOM);
