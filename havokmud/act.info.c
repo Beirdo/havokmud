@@ -2548,8 +2548,47 @@ char *GetLevelTitle(struct char_data *ch) {
 						sprintf(color,"$c000W");
 					else if (level < 51)
 						sprintf(color,"$c000B");
-						else
+						else {
 							sprintf(color,"$c000Y");
+							if(level<52)
+								sprintf(buf,"%s%s", color, "Lesser Deity");
+							else if (level<53)
+								sprintf(buf,"%s%s", color, "Deity");
+							else if (level<54)
+								sprintf(buf,"%s%s", color, "Greater Deity");
+							else if (level<55)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Lesser Goddess");
+								else
+									sprintf(buf,"%s%s", color, "Lesser God");
+							else if (level<56)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Goddess");
+								else
+									sprintf(buf,"%s%s", color, "God");
+							else if (level<57)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Greater Goddess");
+								else
+									sprintf(buf,"%s%s", color, "Greater God");
+							else if (level<58)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Goddess of Judgement");
+								else
+									sprintf(buf,"%s%s", color, "God of Judgement");
+							else if (level<59)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Lady");
+								else
+									sprintf(buf,"%s%s", color, "Lord");
+							else if (level<60)
+								if(GET_SEX(ch)==SEX_FEMALE)
+									sprintf(buf,"%s%s", color, "Implementrix");
+								else
+									sprintf(buf,"%s%s", color, "Implementor");
+							else
+								sprintf(buf,"%s%s", color, "Creator");
+							return buf;
 
 	if(!IS_IMMORTAL(ch) && (GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND))) {
 		sprintf(buf,"%s","$c0008L$c000we$c000Wge$c000wn$c0008d");
