@@ -1983,7 +1983,7 @@ Warrior
 	mend, skill to repair damage armor/weaponry
 
 Thief
-	plain backstab bonus (lower bonusses other thief types)
+	plain backstab bonus (lower bonusses other thief types)       //done by gordon
 	successful retreat/flee does a (two?) hide skillcheck, for being hidden right after.
 
 Druid

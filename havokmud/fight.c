@@ -2433,20 +2433,26 @@ int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
 #define SMITH_SHIELD 727
 int HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int w_type, int (*dam_func)())
 {
+	extern byte lesser_backstab_mult[];
 	extern byte backstab_mult[];
 	int dead, scheck = 0;
 
-	if (type == SKILL_BACKSTAB) {
-		int tmp;
-		if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
-			tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
-			tmp += LoreBackstabBonus(ch, v);
-		} else {
-			tmp = backstab_mult[GetMaxLevel(ch)];
-		}
-		dam *= tmp;
-		dead = (*dam_func)(ch, v, dam, type);
-	} else { /* not a backstab hit */
+	 if (type == SKILL_BACKSTAB) {
+	    int tmp;
+	 if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
+	    if(!(ch->specials.remortclass == THIEF_LEVEL_IND + 1)) {
+	       tmp = lesser_backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+	    } else {
+	       tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+	    }
+	       tmp += LoreBackstabBonus(ch, v);
+	    } else {
+	       tmp = backstab_mult[GetMaxLevel(ch)];
+	    }
+	          dam *= tmp;
+	          dead = (*dam_func)(ch, v, dam, type);
+	     } else { /* not a backstab hit */
+
 		/* reduce damage for dodge skill:*/
 		if (v->skills && v->skills[SKILL_DODGE].learned) {
 			if (v->style==FIGHTING_STYLE_DEFENSIVE) {
@@ -2466,7 +2472,7 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int 
 			}
 		}
 		dead = (*dam_func)(ch, v, dam, w_type);
-	}
+    }
 	/* if the victim survives, lets hit him with a weapon spell */
 	if (!dead) {
 		if(!A_NOWSPELLS(ch)) {
