@@ -692,6 +692,11 @@ memory_check("end 5, begin 6");
 		memory_check("arena pulse");
 	      ArenaPulseStuff(pulse);
     }
+	if (!(pulse % PULSE_TARANTIS)) {
+		dlog("Before tarantis pulse");
+		memory_check("tarantis pulse");
+	      TarantisPulseStuff(pulse);
+    }
 
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");

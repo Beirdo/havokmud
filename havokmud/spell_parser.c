@@ -2188,9 +2188,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
 					send_to_char("You are afraid that it could harm your master.\n\r", ch);
 					return;
-				} else if (A_NOASSIST(ch,tar_char)) {
-					act("$N is engaged with someone else, no can do.",FALSE,ch,0,tar_char,TO_CHAR);
-					return;
+				} else if(!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
+					if (A_NOASSIST(ch,tar_char)) {
+						act("$N is engaged with someone else, no can do.",FALSE,ch,0,tar_char,TO_CHAR);
+						return;
+					}
 				}
 
 			}

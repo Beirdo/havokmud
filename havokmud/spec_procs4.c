@@ -1167,6 +1167,41 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 	}
 }
 
+/* Ashamael's Citystate of Tarantis */
+#define NIGHTWALKER 740
+#define SPAWNROOM 740
+#define WAITROOM 737
+int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char buf[254];
+	struct char_data *freshmob;
+
+	if (!IS_NPC(ch))
+		return(FALSE);
+
+	/* if event death, do the die thing and load up a new mob at a spawn_room */
+	if (type == EVENT_DEATH) {
+		freshmob = read_mobile(real_mobile(NIGHTWALKER),REAL);
+    	char_to_room(freshmob, SPAWNROOM);
+    	act("$n crumbles to a pile of dust, but a tiny cloud seems to escape.", FALSE, ch, 0, 0, TO_ROOM);
+		return(TRUE);
+	}
+	/* else if light && not in spawn_room && not in a DARK room then
+	 * burn to a cinder, and load up a new one in the spawn room */
+	if(ch->in_room != SPAWNROOM && ch->in_room != WAITROOM && (!IS_SET(real_roomp(ch->in_room)->room_flags, DARK))) {
+		if (time_info.hours > 6 && time_info.hours < 19) {
+	    	act("A young ray of sunlight peeps over the horizon and strikes $n.", FALSE, ch, 0, 0, TO_ROOM);
+	    	act("The power of the beam instantly reduces $n to a pile of dust!", FALSE, ch, 0, 0, TO_ROOM);
+			GET_HIT(ch) = -1;
+			die(ch, '\0');
+			return(TRUE);
+		}
+	}
+	return(FALSE);
+}
+
+/* End Tarantis */
+
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	extern const struct skillset weaponskills[];

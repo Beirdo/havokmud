@@ -1396,6 +1396,11 @@ void assign_mobiles()
  {3907, mermaid }, /* Melodia Merqueen */
  {3953, mermaid }, /* Sirens */
  {3959, mermaid }, /* roaming mermaids */
+
+/* Tarantis */
+	{740, nightwalker},
+
+
 /* Heximal's new zone */
 	{50998, Deshima },
 	{23201    , TrainingGuild },
@@ -1605,9 +1610,12 @@ void assign_rooms()
 	{50964, riddle_exit },
 
 /* The King's Grove */
-   { 706, climb_room },
-   { 717, legendfountain },
-   { 721, pick_berries },
+	{ 706, climb_room },
+	{ 717, legendfountain },
+	{ 721, pick_berries },
+
+/* Citystate of Tarantis */
+//	{736, timed_door },
 
 /* Rocky's Zone */
 	{17429, close_doors},

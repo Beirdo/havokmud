@@ -2095,6 +2095,7 @@ void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
 void DarknessPulseStuff(int pulse);
 void ArenaPulseStuff(int pulse);
+void TarantisPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);
@@ -2293,7 +2294,11 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 int generate_legend_statue();
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-				/* Heximal's zone */
+
+/* Citystate of Tarantis */
+int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+/* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
