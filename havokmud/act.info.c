@@ -2559,7 +2559,7 @@ char *GetLevelTitle(struct char_data *ch) {
 		exp = GET_EXP(ch);
 		for (i=0;i<=CLASS_COUNT;i++) {
 			if (HasClass(ch, i)) {
-				if (titles[i][GET_LEVEL(ch, i)].exp >= high) {
+				if ((titles[i][GET_LEVEL(ch, i)].exp > high) && (GET_LEVEL(ch, i) != 0)) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
 					class = i;
 				}
