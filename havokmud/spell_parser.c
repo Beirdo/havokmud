@@ -3892,7 +3892,7 @@ void assign_spell_pointers()
 
 	spello(350,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 40,
 	LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL,
-	75, TAR_OBJ_WORLD, cast_plant_gate, 0,0, LOW_IMMORTAL, LOW_IMMORTAL); // plant gate
+	60, TAR_OBJ_WORLD, cast_plant_gate, 0,0, LOW_IMMORTAL, LOW_IMMORTAL); // plant gate
 
 }
 
