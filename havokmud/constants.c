@@ -2888,7 +2888,9 @@ const char *affected_bits2[] =
 	"Protection from Good",
 	"Darkness",
 	"Haste",
+	"Slow",
 	"Blade-Barrier",
+	"style-berserked",
 	"\n"
 };
 

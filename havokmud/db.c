@@ -396,10 +396,11 @@ void build_player_index()
   struct char_file_u dummy;
   FILE *fl;
   int active = 0;
+  int temp= 0;
   char tempbuf[MAX_STRING_LENGTH];
   char title[MAX_STRING_LENGTH], tmp2[MAX_STRING_LENGTH], blank[MAX_STRING_LENGTH];
   char buf[MAX_STRING_LENGTH*2];
-  char buf2[MAX_STRING_LENGTH*2];
+
   register int max=0, j;
   int center;
 
@@ -511,11 +512,11 @@ void build_player_index()
         strcat(wizlist, buf);
         active++;
       } else {
-        sprintf(buf2, "$$c0007%s\n\r", list_wiz.lookup[9].stuff[i].title);
+        sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[9].stuff[i].title);
         center = wizcenter(buf);
  	     for(j = 0; j <= center; j++)
-			strcat(wizlist, " ");
- 	     strcat(wizlist, buf);
+			strcat(iwizlist, " ");
+ 	     strcat(iwizlist, buf);
  	}
   }
 
@@ -649,7 +650,8 @@ void build_player_index()
   strcat(iwizlist,"\n\r\n\r");
 
 
-  sprintf(buf, "$$c0012-*$$c0009 Lesser Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[3]);
+
+  sprintf(buf, "$$c0012-*$$c0009 Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[4]);
   center = wizcenter(buf);
   for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
@@ -684,7 +686,9 @@ void build_player_index()
 
 
 
-  sprintf(buf, "$$c0012-*$$c0009 Greater Deities [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[2]);
+
+
+  sprintf(buf, "$$c0012-*$$c0009 Lesser Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[3]);
   center = wizcenter(buf);
   for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
@@ -700,9 +704,44 @@ void build_player_index()
         for(j = 0; j <= center; j++)
 	      strcat(wizlist, " ");
         strcat(wizlist, buf);
-		active++;
+        active++;
  	} else {
   		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[3].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
+  }
+
+  strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist,"\n\r\n\r");
+
+
+
+
+  sprintf(buf, "$$c0012-*$$c0009 Greater Deities [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[2]);
+  center = wizcenter(buf);
+  for(i = 0; i <= center; i++) {
+     strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
+  strcat(wizlist, buf);
+  strcat(iwizlist,buf);
+
+  for(i = 0; i < list_wiz.number[2]; i++) {
+	if(list_wiz.lookup[2].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+		active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
         center = wizcenter(buf);
         for(j = 0; j <= center; j++)
 	      strcat(iwizlist, " ");
@@ -727,16 +766,16 @@ void build_player_index()
     strcat(wizlist, buf);
     strcat(iwizlist,buf);
 
-    for(i = 0; i < list_wiz.number[2]; i++) {
-  	if(list_wiz.lookup[2].stuff[i].active == 1) {
-    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
+    for(i = 0; i < list_wiz.number[1]; i++) {
+  	if(list_wiz.lookup[1].stuff[i].active == 1) {
+    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
           center = wizcenter(buf);
           for(j = 0; j <= center; j++)
   	      strcat(wizlist, " ");
           strcat(wizlist, buf);
           active++;
    	} else {
-    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
+    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
           center = wizcenter(buf);
           for(j = 0; j <= center; j++)
   	      strcat(iwizlist, " ");
@@ -760,9 +799,9 @@ void build_player_index()
   strcat(wizlist, buf);
   strcat(iwizlist,buf);
 
-  for(i = 0; i < list_wiz.number[1]; i++) {
-	if(list_wiz.lookup[1].stuff[i].active == 1) {
-  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
+  for(i = 0; i < list_wiz.number[0]; i++) {
+	if(list_wiz.lookup[1].stuff[0].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[0].stuff[i].title);
         center = wizcenter(buf);
         for(j = 0; j <= center; j++)
 
@@ -770,7 +809,7 @@ void build_player_index()
         strcat(wizlist, buf);
         active++;
  	} else {
-  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[0].stuff[i].title);
         center = wizcenter(buf);
         for(j = 0; j <= center; j++)
 	      strcat(iwizlist, " ");
@@ -793,11 +832,11 @@ void build_player_index()
 
 
 
-  sprintf(buf, "Total Gods: $c000W%d$c000w\n\r\n\r", active);
+  sprintf(buf, "$c000BTotal Gods: $c000W%d$c000w\n\r$c000BType '$c000Wiwizlist$c000B' to see inactive gods.\n\r\n\r", active);
   strcat(wizlist, buf);
 
 
-  sprintf(buf, "Total Gods: $c000W%d$c000w\n\r\n\r", max - active);
+  sprintf(buf, "$c000BTotal Gods: $c000W%d$c000w\n\r$c000BType '$c000Wwizlist$c000B' to see active gods.\n\r\n\r", max - active);
   strcat(iwizlist, buf);
 
   return;

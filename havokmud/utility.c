@@ -3270,7 +3270,7 @@ int CountLims(struct obj_data *obj)
     total += CountLims(obj->contains);
   if (obj->next_content)
     total += CountLims(obj->next_content);
-  if (IS_RARE(obj)==TRUE)// LIM_ITEM_COST_MIN)
+  if (IS_RARE(obj))// LIM_ITEM_COST_MIN)
     total+=1;
   return(total);
 }

@@ -806,7 +806,11 @@ void die(struct char_data *ch,int killedbytype)
   char buf[80];
   int fraction;
 
-  if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){
+  if(ValidRoom(ch)==FALSE) {
+	return;
+
+	}
+  if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)){  /*This crash??*/
   /* need at least 1/fraction worth of exp for the minimum needed for */
   /* the pc's current level, or else you lose a level.  If all three  */
   /* classes are lacking in exp, you lose one level in each class. */
@@ -3424,6 +3428,10 @@ void MakeScrap( struct char_data *ch,struct char_data *v, struct obj_data *obj)
   char buf[200];
   struct obj_data *t, *x;
   extern char DestroyedItems;
+
+
+  if(ValidRoom(ch)==FALSE)
+    return;
 
   if(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) return;
 

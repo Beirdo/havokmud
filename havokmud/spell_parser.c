@@ -1040,9 +1040,11 @@ int GetMoveRegen(struct char_data *i) {
 	int damagex=0;
 
       /*Movement*/
-     if(IS_SET(real_roomp(i->in_room)->room_flags, MOVE_ROOM)) {
-		send_to_char("You suddently feel a wave of tiredness overcome you.\n\r",i);
-		damagex = number(15,30);
+	if(ValidRoom(i)==TRUE) {
+	    if(IS_SET(real_roomp(i->in_room)->room_flags, MOVE_ROOM)) {
+			send_to_char("You suddently feel a wave of tiredness overcome you.\n\r",i);
+			damagex = number(15,30);
+		}
 	}
 	return GET_MOVE(i) + move_gain(i) - damagex;
 
@@ -1071,14 +1073,29 @@ int GetHitRegen(struct char_data *i) {
 	return hit_gain(i) + GET_HIT(i) - damagex +trollregen;
 
 }
+int ValidRoom(struct char_data *ch ){
+	struct room_data *rp;
 
+	rp = real_roomp(ch->in_room);
+	if(!rp) {
+		log("/* no room? BLAH!!! least it never crashed */");
+		return(FALSE);
+	}
+	return (TRUE);
+}
 int GetManaRegen(struct char_data *i) {
 	int damagex=0;
-	if(IS_SET(real_roomp(i->in_room)->room_flags, MANA_ROOM)) {
-	  send_to_char("You feel your aura being drained by some unknown force!\n\r",i);
-	  damagex = number(15,30);
+
+	if (ValidRoom(i) == TRUE) {
+		if(IS_SET(real_roomp(i->in_room)->room_flags, MANA_ROOM)) {
+		  send_to_char("You feel your aura being drained by some unknown force!\n\r",i);
+		  damagex = number(15,30);
+		}
 	}
-			/*Mana*/
+
+		/*Mana*/
+
+
     return GET_MANA(i) + mana_gain(i) - damagex;
 
 
@@ -1170,22 +1187,24 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 
 		/* Regen mana/hitpoint/move*/
 		regenroom=0;
-		if(IS_SET(real_roomp(i->in_room)->room_flags, REGEN_ROOM)) {
-			regenroom=10;
-			if(GET_POS(i) > POSITION_SITTING) /*Standing, fighting etc*/
-				regenroom=15;
-			else if (GET_POS(i) > POSITION_SLEEPING) /*Resting and sitting*/
-				regenroom=20;
-			else if (GET_POS(i) > POSITION_STUNNED) /*sleeping*/
-				regenroom=25;
-			else
-				regenroom=20;
+
+		if(ValidRoom(i)==TRUE) {
+			if(IS_SET(real_roomp(i->in_room)->room_flags, REGEN_ROOM)) {
+				regenroom=10;
+				if(GET_POS(i) > POSITION_SITTING) /*Standing, fighting etc*/
+					regenroom=15;
+				else if (GET_POS(i) > POSITION_SLEEPING) /*Resting and sitting*/
+					regenroom=20;
+				else if (GET_POS(i) > POSITION_STUNNED) /*sleeping*/
+					regenroom=25;
+				else
+					regenroom=20;
 
 
-			if(GET_HIT(i)!=hit_limit(i) || GET_MANA(i)!=mana_limit(i) || GET_MOVE(i)!=move_limit(i))
-				send_to_char("Your wounds seem to heal over.",i);
-		 }
-
+				if(GET_HIT(i)!=hit_limit(i) || GET_MANA(i)!=mana_limit(i) || GET_MOVE(i)!=move_limit(i))
+					send_to_char("Your wounds seem to heal over.",i);
+				 }
+		}
 
 
 		/*Lets regen the characters*/

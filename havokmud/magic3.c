@@ -269,8 +269,10 @@ void spell_haste(byte level, struct char_data *ch,
   af.type      = SPELL_HASTE;
   af.duration  = level;
   af.modifier  = 1;
-  af.location  = APPLY_HASTE;
-  af.bitvector = 0;
+  //af.location  = APPLY_HASTE;
+  //af.bitvector = 0;
+  af.location  = APPLY_BV2;
+  af.bitvector = AFF2_HASTE;
   affect_to_char(victim, &af);
 
   send_to_char("You feel fast!\n\r", victim);
@@ -312,9 +314,12 @@ void spell_slow(byte level, struct char_data *ch,
 
   af.type      = SPELL_SLOW;
   af.duration  = level;
-  af.modifier  = -1;
-  af.location  = APPLY_HASTE;
-  af.bitvector = 0;
+  af.modifier  = 1;//-1;
+
+  af.location  = APPLY_BV2;
+  af.bitvector = AFF2_SLOW;
+  //af.location  = APPLY_SLOW;
+  //af.bitvector = 0;
   affect_to_char(victim, &af);
 
   send_to_char("You feel very slow!\n\r", victim);

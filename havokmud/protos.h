@@ -2235,3 +2235,5 @@ int process_dimd_input(int mud);
 void do_zconv(struct char_data *ch, char *argument, int cmdnum);
 
 long NewExpCap(struct char_data *ch, long total);
+
+int ValidRoom(struct char_data *ch );

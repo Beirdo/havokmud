@@ -479,16 +479,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 
     case APPLY_HASTE:
       if (mod > 0) {
-		if (IS_SET(SystemFlags, SYS_WIZLOCKED))
-		  fprintf(stderr, "current mult = %f\n", ch->mult_att);
-		    //if (affected_by_spell(ch, SPELL_HASTE))
-		       //ch->mult_att*=2;
-			SET_BIT(ch->specials.affected_by2, AFF2_HASTE);
-		if (IS_SET(SystemFlags, SYS_WIZLOCKED))
-			fprintf(stderr, "new mult = %f\n", ch->mult_att);
-      } else if (mod < 0) {
+		    SET_BIT(ch->specials.affected_by2, AFF2_HASTE);
+	  } else if (mod < 0) {
 			REMOVE_BIT(ch->specials.affected_by2, AFF2_HASTE);
-			//ch->mult_att = ch->mult_att / 2.0;
 	  }
 	 break;
 
