@@ -119,6 +119,7 @@ extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 #endif
 extern struct index_data *obj_index;
+extern int top_of_alloc_objt;
 #if 0
 extern struct time_info_data time_info;
 extern struct index_data *mob_index;

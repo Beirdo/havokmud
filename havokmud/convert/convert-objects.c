@@ -94,6 +94,7 @@ int main(int argc, char **argv)
     free( dir );
 
     db_setup();
+    boot_db();
     do_orebuild(NULL, NULL, 0);
 
     return (0);

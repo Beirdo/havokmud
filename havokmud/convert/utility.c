@@ -6041,13 +6041,16 @@ void do_orebuild(struct char_data *ch, char *argument, int cmd)
     long            i;
     struct obj_data *obj;
     int             count = 0;
+    long            top;
 
-    for (i = 0; i <= 50000; i++) {
+    top = 99999;
+
+    for (i = 0; i < top; i++) {
         obj = read_object(i, VIRTUAL);
         if (obj) {
             db_save_object(obj, -1, -1);
             count++;
-            free(obj);
+            free_obj(obj);
         }
     }
     printf("\n\rDone\n\r");

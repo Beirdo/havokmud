@@ -119,7 +119,9 @@ int             top_of_sort_objt = 0;
 #if 0
 
 int             top_of_alloc_mobt = 99999;
+#endif
 int             top_of_alloc_objt = 99999;
+#if 0
 
 struct time_info_data time_info;        /* the infomation about the time */
 struct weather_data weather_info;       /* the infomation about the
@@ -141,8 +143,10 @@ int             read_mob_from_new_file(struct char_data *mob,
 int             GetExpFlags(struct char_data *mob, int exp);
 int             wizcenter(char *buf);
 void            setup_dir(FILE * fl, long room, int dir);
+#endif
 struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                                     int *alloc_top, char *dirname);
+#if 0
 
 
 int             qp_patience;
@@ -150,20 +154,24 @@ int             qp_patience;
 /************************************************************************
 *  routines for booting the system                                       *
 *********************************************************************** */
+#endif
 
 /*
  * body of the booting system
  */
 void boot_db(void)
 {
+#if 0
     int             i;
 
     char           *s;
     long            d,
                     e;
+#endif
 
-    Log("Boot db -- BEGIN.");
+    Log("Boot db -- BEGIN.\n\r");
 
+#if 0
     Log("Resetting the game time:");
     reset_time();
 
@@ -187,12 +195,14 @@ void boot_db(void)
         perror("boot");
         assert(0);
     }
+#endif
 
     if (!(obj_f = fopen(OBJ_FILE, "r"))) {
         perror("boot");
         assert(0);
     }
 
+#if 0
 #ifdef CLEAN_AT_BOOT
     Log("Clearing inactive players");
     clean_playerfile();
@@ -213,9 +223,11 @@ void boot_db(void)
     Log("Generating index tables for mobile and object files.");
     mob_index = generate_indices(mob_f, &top_of_mobt, &top_of_sort_mobt,
                                  &top_of_alloc_mobt, MOB_DIR);
+#endif
     obj_index = generate_indices(obj_f, &top_of_objt, &top_of_sort_objt,
                                  &top_of_alloc_objt, OBJ_DIR);
 
+#if 0
     Log("Renumbering zone table.");
     renum_zone_table(0);
 
@@ -281,8 +293,10 @@ void boot_db(void)
 #if 0
     generate_legend_statue();
 #endif
-    Log("Boot db -- DONE.");
+#endif
+    Log("Boot db -- DONE.\n\r");
 }
+#if 0
 
 /*
  * reset the time in the game from file
@@ -950,6 +964,7 @@ void read_object_to_memory(long vnum)
         obj_index[i].data = (void *) read_object(i, REAL);
     }
 }
+#endif
 
 /*
  * generate index table for object or monster file
@@ -1087,6 +1102,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
 
     return (index);
 }
+#if 0
 
 void cleanout_room(struct room_data *rp)
 {
@@ -3326,7 +3342,7 @@ struct obj_data *read_object(int nr, int type)
 
     if (!obj) {
         Log("Cannot create obj?! db.c read_obj");
-        return (FALSE);
+        return (0);
     }
 
     bc = sizeof(struct obj_data);
@@ -3372,9 +3388,7 @@ struct obj_data *read_object(int nr, int type)
     obj->level = 0;
 #endif
     obj_count++;
-#ifdef BYTE_COUNT
-    fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);
-#endif
+    printf("Object [%ld/%d] uses %ld bytes\n", obj_index[nr].virtual, nr, bc);
     total_obc += bc;
     return (obj);
 }

@@ -529,7 +529,9 @@ void             raw_force_all(char *to_force);
  * From db.c 
  */
 void            SaveTheWorld(void);
+#endif
 void            boot_db(void);
+#if 0
 void            reset_time(void);
 void            update_time(void);
 void            build_player_index(void);
