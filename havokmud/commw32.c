@@ -2274,6 +2274,148 @@ with remaining color codes -Manwe  */
       }
   }
 }
+void act2(char *str, int hide_invisible, struct char_data *ch,
+	 struct obj_data *obj, void *vict_obj,struct char_data *vict, int type)
+{
+  register char *strp, *point, *i;
+  int KLUDGE = TRUE;
+  struct char_data *to;
+  char buf[MAX_STRING_LENGTH], tmp[MAX_INPUT_LENGTH];
+
+  extern long SystemFlags;
+
+  if (!str)
+    return;
+  if (!*str)
+    return;
+
+
+  if (ch->in_room <= -1)
+    return;  /* can't do it. in room -1 */
+
+
+
+  if (type == TO_VICT)
+    {to = (struct char_data *) vict_obj;
+     }
+  else if (type == TO_CHAR)
+    {to = ch;
+    }
+  else {
+	 if(real_roomp(ch->in_room))
+       to = real_roomp(ch->in_room)->people;
+     else
+       log("Crash in ACT");
+  }
+
+
+
+
+  for (; to; to = to->next_in_room)     {
+    if (to->desc &&
+    ((to != ch) || (type == TO_CHAR)) && (CAN_SEE(to, ch)
+    || !hide_invisible) && AWAKE(to) &&
+    !((type == TO_NOTVICT) &&
+      (to==(struct char_data *) vict_obj))){ /*End of monster IF statement*/
+      for (strp = str, point = buf;;)
+	if (*strp == '$') {
+	  switch (*(++strp)) {
+
+      // Let's forget about direct color parsing for now... we a proc to
+      // do that after all...  - Manwe
+
+/*        parse ansi colors here
+    $CMBFG, where M is modier, B is back ground color and FG is fore
+    $C0001 would be normal, black back, red fore.
+    $C1411 would be bold, blue back, light yellow fore
+*/
+act_switch_c:
+	  case 'C':
+	  case 'c': if (IS_SET(to->player.user_flags, USE_ANSI)) {
+			KLUDGE=TRUE;
+		       str2ansi(tmp,strp,1,4);
+		       i = ansi_parse(tmp);
+		     } else
+			i = "";
+		       ++strp;++strp;++strp;++strp; /* delete nums */
+		     break;
+	/*  case 'C':
+	  case 'c':
+	    break; */ //Let's just forget about the $c for now... - Manwe
+	  case 'n': i = PERS(ch, to);
+	    break;
+	  case 'N': i = PERS((struct char_data *) vict_obj, to);
+	    break;
+	  case 'm': i = HMHR(ch);
+	    break;
+	  case 'M': i = HMHR((struct char_data *) vict_obj);
+	    break;
+	  case 's': i = HSHR(ch);
+	    break;
+	  case 'S': i = HSHR((struct char_data *) vict_obj);
+	    break;
+	  case 'e': i = HSSH(ch);
+	    break;
+	  case 'E': i = HSSH((struct char_data *) vict_obj);
+	    break;
+	  case 'o': i = OBJN(obj, to);
+	    break;
+	  case 'O': i = OBJN((struct obj_data *) vict_obj, to);
+	    break;
+	  case 'p': i = OBJS(obj, to);
+	    break;
+	  case 'P': i = OBJS((struct obj_data *) vict_obj, to);
+	    break;
+	  case 'a': i = SANA(obj);
+	    break;
+	  case 'A': i = SANA((struct obj_data *) vict_obj);
+	    break;
+	  case 'T': i = (char *) vict_obj;
+	    break;
+	  case 'F': i = fname((char *) vict_obj);
+	    break;
+	  case '$':
+	     if(*strp=='$' && toupper(*(strp+1))=='C' &&
+		 isdigit(*(strp+2)) && isdigit(*(strp+3)) ) {
+	       strp++;
+	       goto act_switch_c;
+	    } //we don't want to parse ANS that way... -Manwe
+	    i = "$";
+	    break;
+	  default:
+	    log("Illegal $-code to act():");
+	    log(str);
+	    break;
+	  }
+
+	  while (*point = *(i++))
+	    ++point;
+
+	  ++strp;
+
+	}       else if (!(*(point++) = *(strp++)))
+	  break;
+
+      *(--point) = '\n';
+      *(++point) = '\r';
+      *(++point) = '\0';
+
+
+if(vict) {
+
+	SEND_TO_Q(ParseAnsiColors(IS_SET(to->player.user_flags,USE_ANSI),CAP(buf)),vict->desc);
+
+/* kludge to turn the color back grey, try to move to prompt */
+  if (KLUDGE && IS_SET(to->player.user_flags,USE_ANSI))
+       SEND_TO_Q(ansi_parse("0007"),vict->desc);
+    }
+
+}
+    if ((type == TO_VICT) || (type == TO_CHAR)) {
+      return;
+      }
+  }
+}
 
 int raw_force_all( char *to_force)
 {

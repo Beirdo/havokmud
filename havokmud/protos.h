@@ -436,6 +436,9 @@ void send_to_room_except_two
   (char *messg, int room, struct char_data *ch1, struct char_data *ch2);
 void act(char *str, int hide_invisible, struct char_data *ch,
 	 struct obj_data *obj, void *vict_obj, int type);
+void act2(char *str, int hide_invisible, struct char_data *ch,
+	 struct obj_data *obj, void *vict_obj,struct char_data *vict, int type);
+
 int raw_force_all( char *to_force);
 
 
@@ -2436,3 +2439,7 @@ void do_chtextfile(struct char_data *ch, char *argument, int cmd);
 void TfdEdit(struct char_data *ch, char *arg);
 
 int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+
+
+void do_OOCaction(struct char_data *ch, char *argument, int cmd);

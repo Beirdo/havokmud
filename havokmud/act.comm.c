@@ -121,6 +121,15 @@ if (GET_MOVE(ch)<5 || GET_MANA(ch)<5 && GetMaxLevel(ch) < LOW_IMMORTAL) {
   if (!(*argument))
     send_to_char("Shout? Yes! Fine! Shout we must, but WHAT??\n\r", ch);
   else	{
+
+	    if(argument[0]=='%') {
+	       do_OOCaction(ch, argument, cmd);
+	       return;
+	    } else if (argument[0]=='#') {
+	       do_OOCemote(ch,argument, cmd);
+	       return;
+		}
+
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
       sprintf(buf1,"$c0009You shout '%s'", argument);
       act(buf1,FALSE, ch,0,0,TO_CHAR);
@@ -258,7 +267,16 @@ dlog("in do_commune,think");
   if (!(*argument))
     send_to_char("Communing among the gods is fine, but WHAT?\n\r",ch);
   else {
-    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+       if(argument[0]=='%') {
+          do_OOCaction(ch, argument, cmd);
+          return;
+       } else if (argument[0]=='#') {
+          do_OOCemote(ch,argument, cmd);
+          return;
+		}
+
+
+   if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
       sprintf(buf1,"$c0012You think '%s'", argument);
       act(buf1,FALSE, ch,0,0,TO_CHAR);
     }
@@ -1182,6 +1200,17 @@ IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
   if (!(*argument))
     send_to_char("Hrm... normally, you should OOC something...\n\r", ch);
   else	{
+
+    if(argument[0]=='%') {
+       do_OOCaction(ch, argument, cmd);
+       return;
+    } else if (argument[0]=='#') {
+       do_OOCemote(ch,argument, cmd);
+       return;
+	}
+
+
+
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
       sprintf(buf1,"$c0012You $c0015OOC$c0012 '$c0015%s$c0012'", argument);
       act(buf1,FALSE, ch,0,0,TO_CHAR);
@@ -1190,19 +1219,59 @@ IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
 	    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
 	        GET_MOVE(ch) -= 5;
 	        GET_MANA(ch) -= 5;
-	        }
+	    }
 
 
     for (i = descriptor_list; i; i = i->next)
-      if (i->character != ch && !i->connected &&
-	  (IS_NPC(i->character) ||
-	   (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
-	    !IS_SET(i->character->specials.act, PLR_NOOOC) &&
-            !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
-	  !check_soundproof(i->character)) {
-	  act(buf1, 0, ch, 0, i->character, TO_VICT);
+      if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
+	   		(!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+	    	!IS_SET(i->character->specials.act, PLR_NOOOC) &&
+            !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && !check_soundproof(i->character)) {
+	  	 act(buf1, 0, ch, 0, i->character, TO_VICT);
       }
   }
+}
+
+void do_OOCemote(struct char_data *ch, char *argument, int cmd) {
+	char buf1[MAX_INPUT_LENGTH+80], command[100];
+	int CMD_OOC=497, CMD_GOSSIP=302, CMD_SHOUT=18;
+	  struct descriptor_data *i;
+	  extern int Silence;
+
+
+	/* OOC and shout so far.. Gossip?? due time */
+	if(cmd==CMD_OOC)  /* OOC Social.. why stop there.. */
+		sprintf(command, "$c000B[$c000WOOC$c000B]$c000w");
+	else if (cmd==CMD_SHOUT)
+			sprintf(command, "$c000R[$c000WSHOUT$c000R]$c000w");
+	else if (cmd==CMD_GOSSIP)
+		sprintf(command, "$c000Y[$c000WGOSSIP$c000Y]$c000w");
+		else
+			sprintf(command, "$c000p[$c000WWORLD$c000p]$c000w");
+
+
+	argument[0]=' ';
+
+	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+	      sprintf(buf1,"%s $n%s.",command,argument);
+	      act(buf1,FALSE, ch,0,0,TO_CHAR);
+	    }
+	    sprintf(buf1, "%s $n%s$c0012.", command, argument);
+		    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+		        GET_MOVE(ch) -= 5;
+		        GET_MANA(ch) -= 5;
+		    }
+
+
+	    for (i = descriptor_list; i; i = i->next)
+	      if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
+		   		(!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+		    	!IS_SET(i->character->specials.act, PLR_NOOOC) &&
+	            !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && !check_soundproof(i->character)) {
+		  	 act(buf1, 0, ch, 0, i->character, TO_VICT);
+	      }
+
+
 }
 
 void do_reply(struct char_data *ch, char *argument, int cmd)
