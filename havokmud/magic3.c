@@ -2534,6 +2534,23 @@ void spell_wrath_god(byte level, struct char_data *ch,
 void spell_pacifism(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
 
+	assert(ch && victim);
+			 /*
+			    removes aggressive bit from monsters
+			 */
+   if (IS_NPC(victim)) {
+     if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
+       if (HitOrMiss(ch, victim, CalcThaco(ch))) {
+		 REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+		 send_to_char("You feel peace and harmony surrounding you.\n\r", ch);
+       }
+     } else {
+         send_to_char("You feel at peace with the universe.\n\r", victim);
+       }
+   } else {
+      send_to_char("You feel at peace with the universe.\n\r", victim);
+     }
+
 }
 
 void spell_aura_power(byte level, struct char_data *ch,
@@ -2551,7 +2568,7 @@ void spell_holy_strength(byte level, struct char_data *ch,
 
 
     if (!affected_by_spell(victim,SPELL_HOLY_STRENGTH)) {
-       act("You spirits of god make you stronger.", FALSE, victim,0,0,TO_CHAR);
+       act("The spirits of gods make you stronger.", FALSE, victim,0,0,TO_CHAR);
        act("$n muscles seem to expand!\n\r", FALSE, victim, 0, 0, TO_ROOM);
 
        af.type      = SPELL_HOLY_STRENGTH;
@@ -2599,7 +2616,7 @@ if (level <0 || level >ABS_MAX_LVL)
     af.bitvector = 0;
 
     affect_to_char(victim, &af);
-    send_to_char("You feel the spirits of god protecting you.\n\r", victim);
+    send_to_char("You feel the spirits of gods protecting you.\n\r", victim);
   } else {
     send_to_char("Nothing New seems to happen\n\r", ch);
   }

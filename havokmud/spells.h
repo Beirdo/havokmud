@@ -350,7 +350,9 @@
 #define SPELL_PACIFISM           294
 #define SPELL_AURA_POWER         295
 #define SKILL_LEG_SWEEP          296
-#define MAX_EXIST_SPELL         296   /* max number of skills/spells */
+#define SKILL_CHARGE             297
+#define MAX_EXIST_SPELL         297   /* max number of skills/spells */
+
 
 #define FIRST_BREATH_WEAPON	     306 /*	201 */
 #define SPELL_FIRE_BREATH            306 /*	201 */

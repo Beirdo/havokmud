@@ -3872,3 +3872,113 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
     return;
 } /*End Brew*/
 #endif
+
+/* New paladin charge skill.  Must be mounted.. Basically backstab code
+ * @usage : charge <target>
+ * @date : May 14, 2002
+ * @author: Greg Hovey (Banon)
+**/
+
+ void do_charge(struct char_data *ch, char *argument, int cmd)
+{
+  struct char_data *victim;
+  char name[256];
+  byte percent, base=0;
+
+dlog("in do_charge");
+
+if (!ch->skills)
+	return;
+
+  if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r"))
+    return;
+
+  only_argument(argument, name);
+
+  if (!(victim = get_char_room_vis(ch, name))) {
+    send_to_char("charge who?\n\r", ch);
+    return;
+  }
+
+  if (victim == ch) {
+    send_to_char("How can you charge yourself?\n\r", ch);
+    return;
+  }
+
+  if (!HasClass(ch, CLASS_PALADIN)) {
+    send_to_char("You're no paladin!\n\r", ch);
+    return;
+  }
+
+  if (!ch->equipment[WIELD]) {
+    send_to_char("You need to wield a weapon, to make it a success.\n\r",ch);
+    return;
+  }
+
+  if (!MOUNTED(ch)) {
+    send_to_char("You need a mount to that.\n", ch);
+    return;
+  }
+
+  if (ch->attackers) {
+    send_to_char("There's no way to reach that charge while you're fighting!\n\r", ch);
+    return;
+  }
+
+  if (victim->attackers >= 3) {
+    send_to_char("There is to many people in the way to do that!\n\r", ch);
+    return;
+  }
+
+  if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE))   {
+    if (!IsGiant(ch))     {
+      act("$N is too big to charge at", FALSE, ch, 0, victim, TO_CHAR);
+      return;
+    }
+  }
+
+  if (ch->equipment[WIELD]->obj_flags.value[3] != 4) {
+    send_to_char("Only smashing weapons can be used for charging.\n\r",ch);
+    return;
+  }
+
+  if (ch->specials.fighting) {
+    send_to_char("You're too busy to charge on them\n\r", ch);
+    return;
+  }
+
+
+  if (victim->specials.fighting) {
+    base = 0;
+  } else {
+    base = 4;
+  }
+
+
+  percent=number(1,101); /* 101% is a complete failure */
+
+  if (ch->skills[SKILL_CHARGE].learned) {
+    if (percent > ch->skills[SKILL_CHARGE].learned) {
+	char buff[255];
+   	  send_to_char("You totally miss your target!\n\r",ch);
+      LearnFromMistake(ch, SKILL_CHARGE, 0, 95);
+    }
+
+    else {
+	   char buff[256];
+
+        GET_HITROLL(ch) += 100;
+		sprintf(buff, "You charge agressively at %s on your sturdy stead.\n\r",
+			GET_NAME(victim));
+		send_to_char(buff,ch);
+        //AddHated(victim, ch);
+		damage(ch,victim,GET_DAMROLL(ch)*100, SKILL_CHARGE);
+        //hit(ch,victim,SKILL_CHARGE);
+
+        GET_HITROLL(ch) -= 100;
+
+    }
+  }
+  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}
+

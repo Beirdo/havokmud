@@ -767,6 +767,8 @@ char *spells[]=
    "wrath of god",
    "pacifism",
    "aura of power",     /*295 */
+   "brew",
+   "charge",
    "\n"
 };
 
@@ -3286,14 +3288,16 @@ spello(291,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
     LOW_IMMORTAL,  1,  LOW_IMMORTAL,  LOW_IMMORTAL,
   200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_circle_protection, 0,0); /* paladin*/
 
+
+
   spello(293,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
     LOW_IMMORTAL,  30,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_wrath_god, 0,0); /* paladin*/
+  200,  TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_wrath_god, 0,0); /* paladin*/
 
 
 spello(294,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
   LOW_IMMORTAL,  7,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_pacifism, 0,0); /* paladin*/
+  200, TAR_CHAR_ROOM, cast_pacifism, 0,0); /* paladin*/
 
 
   spello(295,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
@@ -3304,9 +3308,13 @@ spello(296,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  10,
   200, 0, 0, 0,0); /* brew potion */
 
+
+
+  spello(297,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+  LOW_IMMORTAL,  4,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, 0, 0, 0,0); /* paladin charge */
+
 }
-
-
 void SpellWearOffSoon(int s, struct char_data *ch)
 {
 

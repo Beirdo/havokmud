@@ -1889,7 +1889,7 @@ void cast_pacifism( byte level, struct char_data *ch, char *arg, int type,
 void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
 		struct char_data *tar_ch, struct obj_data *tar_obj );
 
-
+void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
 
 
 /* From utility.c */

@@ -4513,34 +4513,56 @@ void cast_aura_power( byte level, struct char_data *ch, char *arg,
 void cast_pacifism( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  switch(type) {
-  case SPELL_TYPE_SPELL:
-  case SPELL_TYPE_SCROLL:
-  case SPELL_TYPE_WAND:
-  case SPELL_TYPE_STAFF:
-    spell_pacifism(level, ch, tar_ch, 0);
-    break;
-  default:
-      log("serious screw-up in pacifism.");
-      break;
-  }
+  switch (type) {
+    case SPELL_TYPE_SPELL:
+			act("$n calls upons the gods to calm down $N.", FALSE, ch, 0, tar_ch, TO_NOTVICT);
+			act("You call upon the gods to calm down $N.", FALSE, ch, 0, tar_ch, TO_CHAR);
+			spell_pacifism(level, ch, tar_ch, 0);
+			break;
+    case SPELL_TYPE_POTION:
+         spell_pacifism(level, ch, ch, 0);
+         break;
+    case SPELL_TYPE_SCROLL:
+	 spell_pacifism(level, ch, tar_ch, 0);
+	 break;
+    case SPELL_TYPE_STAFF:
+         for (tar_ch = real_roomp(ch->in_room)->people ;
+              tar_ch ; tar_ch = tar_ch->next_in_room)
+            if (in_group(ch, tar_ch))
+              spell_pacifism(level,ch,tar_ch,0);
+         break;
+    default :
+         log("Serious screw-up in pacifism!");
+         break;
+	}
 }
 
 void cast_wrath_god( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  switch(type) {
-  case SPELL_TYPE_SPELL:
-  case SPELL_TYPE_SCROLL:
-  case SPELL_TYPE_WAND:
-  case SPELL_TYPE_STAFF:
-    spell_wrath_god(level, ch, tar_ch, 0);
-    break;
-  default:
-      log("serious screw-up in wrath of god.");
-      break;
+  switch (type) {
+    case SPELL_TYPE_SPELL:
+    	 		act("$n calls upons the wrath of gods to destroy $N.", FALSE, ch, 0, tar_ch, TO_NOTVICT);
+			act("You call upon the wrath of gods to destroy $N.", FALSE, ch, 0, tar_ch, TO_CHAR);
+         spell_wrath_god(level, ch, tar_ch, 0);
+         break;
+    case SPELL_TYPE_SCROLL:
+         if(tar_ch)
+       		spell_wrath_god(level, ch, tar_ch, 0);
+         else
+            spell_wrath_god(level, ch, ch, 0);
+         break;
+    case SPELL_TYPE_WAND:
+         if(tar_ch)
+       		spell_wrath_god(level, ch, tar_ch, 0);
+         break;
+    default :
+         log("Serious screw-up in wrath of god!");
+         break;
+
   }
 }
+
 
 void cast_circle_protection( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )

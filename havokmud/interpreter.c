@@ -1530,6 +1530,8 @@ AddCommand("beat",do_action,555,POSITION_RESTING,0);
 
 /* Changing gossip to yell  (GH) */
 AddCommand("yell",do_yell,563,POSITION_RESTING,0);
+AddCommand("legsweep",do_leg_sweep, 564, POSITION_STANDING,0);
+AddCommand("charge",do_charge, 565, POSITION_STANDING,0);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince
   tag trip grunt imitate hickey torture addict adjust anti  bbl beam

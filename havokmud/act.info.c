@@ -2921,7 +2921,7 @@ dlog("in do_who");
 		break;
 	      } else if (GET_SEX(person) == SEX_MALE) {
 		sprintf(levels,"Supreme Lord");
-		break;
+		//break;
 	      } else {
 		sprintf(levels,"Supreme Thing");
 		break;
@@ -2932,17 +2932,24 @@ dlog("in do_who");
 
 	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
 		sprintf(levels, "Supreme Dictator");      // High council members, this should be
-	      else if(!strcmp(GET_NAME(person), "Alora"))    // fixxed with new immortal system code
-		sprintf(levels, "Lady of Communication");// -MW 02/20/2001
+	      else if(!strcmp(GET_NAME(person), "Banon"))    // fixxed with new immortal system code
+		sprintf(levels, "$c0011C$c0003r$c0011e$c0003a$c0011t$c0003o$c0011r");// -MW 02/20/2001
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
       		sprintf(levels, "Lord of Quests");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
-              strcpy(levels+10-(strlen(tbuf)/2),tbuf);
+              if(!strcmp(GET_NAME(person), "Banon")) {
+                strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
+              sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s %s",levels,GET_NAME(person),
+	                      person->player.title?person->player.title:"(Null)");
+
+    		} else {
+                strcpy(levels+10-(strlen(tbuf)/2),tbuf);
               sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s %s",levels,GET_NAME(person),
                       person->player.title?person->player.title:"(Null)");
+			  }
 	    }
 #else
 	    sprintf(tbuf, "$c100%d%s %s", color_cnt,GET_NAME(person),

@@ -86,7 +86,7 @@ struct QuestItem {
   char *where;
 };
 
-#define VERSION "1.8"
+#define VERSION "1.9.0 by Greg Hovey"
 /*
   tailoring stuff
 */
