@@ -7,6 +7,7 @@
 /*   external vars  */
 
   extern struct skillset warriorskills[];
+  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];

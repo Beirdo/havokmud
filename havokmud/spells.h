@@ -359,7 +359,10 @@
 #define STYLE_DEFENSIVE  301
 #define STYLE_EVASIVE    302
 
-#define MAX_EXIST_SPELL         302   /* max number of skills/spells */
+/* Repair skill for sc warriors */
+#define SKILL_MEND		 303
+
+#define MAX_EXIST_SPELL         303   /* max number of skills/spells */
 
 #define FIRST_BREATH_WEAPON	     306 /*	201 */
 #define SPELL_FIRE_BREATH            306 /*	201 */

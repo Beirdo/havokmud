@@ -19,6 +19,7 @@
 
 /*   external vars  */
   extern struct skillset warriorskills[];
+  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
@@ -681,6 +682,27 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 				i=0;
 				x--;
 			}
+			if(OnlyClass(ch,CLASS_WARRIOR)) {
+				x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
+				while (x != 0) {
+					while(scwarskills[i].level != -1) {
+						if (scwarskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
+									scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -722,6 +744,47 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 					return(TRUE);
 				}
 				x++;
+			}
+			if(OnlyClass(ch,CLASS_WARRIOR)) {
+				x=0;
+				while (scwarskills[x].level != -1) {
+					if(is_abbrev(arg,scwarskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(scwarskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+
+						if(ch->skills[scwarskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+
+						sprintf(buf,"You practice %s for a while.\n\r",scwarskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+
+						if(!IS_SET(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN_WARRIOR);
+						}
+						percent=ch->skills[scwarskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[scwarskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[scwarskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
@@ -800,6 +863,27 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 				i=0;
 				x--;
 			}
+			if(OnlyClass(ch,CLASS_WARRIOR)) {
+				x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
+				while (x != 0) {
+					while(scwarskills[i].level != -1) {
+						if (scwarskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
+									scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+			}
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
@@ -841,6 +925,47 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 					return(TRUE);
 				}
 				x++;
+			}
+			if(OnlyClass(ch,CLASS_WARRIOR)) {
+				x=0;
+				while (scwarskills[x].level != -1) {
+					if(is_abbrev(arg,scwarskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(scwarskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+
+						if(ch->skills[scwarskills[x].skillnum].learned > 45) {
+							//check if skill already practiced
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+										 " 'You must learn from experience and practice to get"
+										 " any better at that skill.'\n\r",ch);
+							return(TRUE);
+						}
+
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+
+						sprintf(buf,"You practice %s for a while.\n\r",scwarskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+
+						if(!IS_SET(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN_WARRIOR);
+						}
+						percent=ch->skills[scwarskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[scwarskills[x].skillnum].learned = MIN(95,percent);
+						if(ch->skills[scwarskills[x].skillnum].learned >= 95)
+							send_to_char("'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
 			}
 			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);

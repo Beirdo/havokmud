@@ -2797,41 +2797,40 @@ if (GET_POS(ch) == POSITION_FIGHTING && GetMaxLevel(ch) < LOW_IMMORTAL) {
   }
 }
 
+/* Flux, restores hps/mana/mv for all mortals
+ * Lennya
+ * 20030408
+ */
 void do_flux(struct char_data *ch, char *argument, int cmd)
 {
-  struct char_data *victim;
-  struct descriptor_data *i;
-  char name[100], to_flux[100],buf[100];
-  void update_pos( struct char_data *victim );
+	struct char_data *victim;
+	struct descriptor_data *i;
+	char name[100], to_flux[100],buf[100];
+	void update_pos( struct char_data *victim );
 
 dlog("in do_flux");
 
-  if (IS_NPC(ch))
-    return;
+	if (IS_NPC(ch))
+		return;
 
-  only_argument(argument, buf);
+	only_argument(argument, buf);
 
-  if (!*buf) {
-
-	sprintf(buf,"%s just did a flux.",GET_NAME(ch)); /* want to keep an eye on how often it's used */
-    log_sev(buf,0);
-    send_to_char("You send a warm aura resonating throughout the lands.\n\r", ch);
-    act("A warm aura emanates from $n.", TRUE, ch, 0, 0, TO_ROOM);
-
-    for (i = descriptor_list; i; i = i->next)
-          if (!i->connected && !IS_IMMORTAL(i->character)) {  /* only connected mortals will be fluxxed */
-    	  victim = i->character;
-    	  GET_MANA(victim) = GET_MAX_MANA(victim); /* flux restores hp, ma, mv */
-	      GET_HIT(victim) = GET_MAX_HIT(victim);
-	      GET_MOVE(victim) = GET_MAX_MOVE(victim);
-	      update_pos( victim );
-	      act("The resonance of a higher being surges through your soul, leaving you $c0006r$c0002ef$c0010res$c0002he$c0006d$c0007.",
-	      FALSE, victim, 0, ch, TO_CHAR);
-    	}
-
-  } else
-    send_to_char("No need to add an argument, Usage: 'flux'.\n\r",ch);
-
+	if (!*buf) {
+		sprintf(buf,"%s just did a flux.",GET_NAME(ch)); /* want to keep an eye on how often it's used */
+		log_sev(buf,0);
+		send_to_char("You send a warm aura resonating throughout the lands.\n\r", ch);
+		act("A warm aura emanates from $n.", TRUE, ch, 0, 0, TO_ROOM);
+		for (i = descriptor_list; i; i = i->next)
+			if (!i->connected && !IS_IMMORTAL(i->character)) {  /* only connected mortals will be fluxxed */
+				victim = i->character;
+				GET_MANA(victim) = GET_MAX_MANA(victim); /* flux restores hp, ma, mv */
+				GET_HIT(victim) = GET_MAX_HIT(victim);
+				GET_MOVE(victim) = GET_MAX_MOVE(victim);
+				update_pos( victim );
+				act("The resonance of a higher being surges through your soul, leaving you $c0006r$c0002ef$c0010res$c0002he$c0006d$c0007.",FALSE,victim,0,ch,TO_CHAR);
+			}
+	} else
+		send_to_char("No need to add an argument, Usage: 'flux'.\n\r",ch);
 }
 
 void do_force(struct char_data *ch, char *argument, int cmd)

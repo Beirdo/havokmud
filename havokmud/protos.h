@@ -334,6 +334,7 @@ void do_switch(struct char_data *ch, char *argument, int cmd);
 void do_return(struct char_data *ch, char *argument, int cmd);
 void do_force(struct char_data *ch, char *argument, int cmd);
 void do_flux(struct char_data *ch, char *argument, int cmd);
+void do_mend(struct char_data *ch, char *argument, int cmd);
 void do_load(struct char_data *ch, char *argument, int cmd);
 void purge_one_room(int rnum, struct room_data *rp, int *range);
 void do_purge(struct char_data *ch, char *argument, int cmd);

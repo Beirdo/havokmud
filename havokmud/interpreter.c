@@ -1566,6 +1566,7 @@ AddCommand("autosplit",do_auto, 579, POSITION_RESTING,1);
 AddCommand("autoexits",do_auto, 581, POSITION_RESTING,1);
 
 AddCommand("train", do_not_here, 582, POSITION_STANDING, 1);
+AddCommand("mend",do_mend,583,POSITION_STANDING,51);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

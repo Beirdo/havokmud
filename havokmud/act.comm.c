@@ -51,12 +51,13 @@ if (apply_soundproof(ch))
 if (IS_NPC(ch))
    return;
 
-if (GET_HIT(ch) > GET_MAX_HIT(ch) ||		/* bug fix */
-    GET_MANA(ch) > GET_MAX_MANA(ch) ||
-    GET_MOVE(ch) > GET_MAX_MOVE(ch)) {
-	send_to_char("Sorry, cannot do that right now.\n\r",ch);
-        return;
-}
+/* Commented out this check, don't see why one shouldn't be able to report in this case -Lennya 20030407*/
+//if (GET_HIT(ch) > GET_MAX_HIT(ch) ||		/* bug fix */
+//    GET_MANA(ch) > GET_MAX_MANA(ch) ||
+//    GET_MOVE(ch) > GET_MAX_MOVE(ch)) {
+//	send_to_char("Sorry, cannot do that right now.\n\r",ch);
+//        return;
+//}
 
   sprintf(buf,"$c0014[$c0015$n$c0014] reports 'HP:%2.0f%% MANA:%2.0f%% MV:%2.0f%%'",
   ((float)GET_HIT(ch)  / (int)GET_MAX_HIT(ch))  * 100.0 + 0.5,

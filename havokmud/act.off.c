@@ -750,9 +750,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       damage(ch, victim, 0, SKILL_LEG_SWEEP);
       GET_POS(ch) = POSITION_SITTING;
     }
-    act("You try to do quick spin and knock $N legs out, but miss."
+    act("You try to do quick spin and knock $N's legs out, but miss."
 	        	,FALSE, ch, 0, victim,TO_CHAR);
-	act("$n tries to do a quick spin and knocks $N legs out, but misses $M."
+	act("$n tries to do a quick spin and knock $N's legs out, but misses $M."
          	,FALSE, ch,0,victim,TO_ROOM);
     LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
     WAIT_STATE(ch, PULSE_VIOLENCE*3);
@@ -762,9 +762,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
          WAIT_STATE(victim, PULSE_VIOLENCE*2);
          GET_POS(victim) = POSITION_SITTING;
-        act("$c000CYou do a quick spin and knock $N legs out from underneath $M."
+        act("$c000CYou do a quick spin and knock $N's legs out from underneath $M."
         	,FALSE, ch, 0, victim,TO_CHAR);
-        act("$c000C$n does a quick spin and knocks $N legs out from underneath $M."
+        act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M."
          	,FALSE, ch,0,victim,TO_ROOM);
         sprintf(buf,"You receive 100 experience for using your leg sweep abilites.\n\r.",ch);
 		send_to_char(buf,ch);
@@ -775,8 +775,137 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
   WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }
 
+/* Mend skill for imms and sc warriors, repairs armor and weapons
+ * Lennya
+ * 20030408
+ */
+void do_mend(struct char_data *ch, char *argument, int cmd)
+{
+	struct obj_data *obj;
+	struct obj_data *cmp;
+	char buf[254], arg[254];
+	int perc = 0;
+
+dlog("in do_mend");
+
+	if(!ch)
+		return;
+
+	if(!IS_IMMORTAL(ch) && !OnlyClass(ch, CLASS_WARRIOR)) {
+		send_to_char("Pardon?\n\r",ch);
+		return;
+	}
+
+	if(!IS_SET(ch->skills[SKILL_MEND].flags,SKILL_KNOWN)) {
+		send_to_char("You don't know this skill.\n\r",ch);
+		return;
+	}
 
 
+	if(ch->specials.fighting) {
+		send_to_char("Heh, not when yer fighting, silly!\n\r",ch);
+		return;
+	}
+
+	argument = one_argument(argument, arg);
+
+	if(!arg) {
+		send_to_char("Mend what?\n\r",ch);
+		return;
+	}
+
+	obj = get_obj_in_list_vis(ch, arg, ch->carrying);
+	perc = number(1,101);
+
+	if(obj) {
+		if(ITEM_TYPE(obj) == ITEM_ARMOR) {
+			if(obj->obj_flags.value[0] == 0 || obj->obj_flags.value[1] == 0) {
+				sprintf(buf,"%s tried to mend an invalid armor value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+				log(buf);
+				return;
+			}
+			if(obj->obj_flags.value[0] >= obj->obj_flags.value[1]) {
+				send_to_char("That item has no need of your attention.\n\r",ch);
+				return;
+			} else {
+				if(ch->skills[SKILL_MEND].learned < perc) {
+					/* failure permanently lowers full strength by one point */
+					obj->obj_flags.value[1] -= 1;
+					sprintf(buf,"%s tries to mend %s, but only makes things worse.",GET_NAME(ch),obj->short_description);
+					act(buf,FALSE,ch,0,0,TO_ROOM);
+					sprintf(buf,"You try to mend %s, but make matters worse.\n\r",obj->short_description);
+					send_to_char(buf,ch);
+					LearnFromMistake(ch, SKILL_MEND, 0, 95);
+					WAIT_STATE(ch, PULSE_VIOLENCE*2);
+					return;
+				} else {
+					obj->obj_flags.value[0] = obj->obj_flags.value[1];
+					sprintf(buf,"%s expertly mends %s.",GET_NAME(ch),obj->short_description);
+					act(buf,FALSE,ch,0,0,TO_ROOM);
+					sprintf(buf,"You expertly mend %s.\n\r",obj->short_description);
+					send_to_char(buf,ch);
+					WAIT_STATE(ch, PULSE_VIOLENCE*1);
+					return;
+				}
+			}
+		} else if (ITEM_TYPE(obj) == ITEM_WEAPON) {
+			if(obj->obj_flags.value[2] == 0) {
+				sprintf(buf,"%s tried to mend an weapon with invalid value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+				log(buf);
+				return;
+			}
+			cmp = read_object(obj->item_number, REAL);
+			if(cmp->obj_flags.value[2] == 0) {
+				sprintf(buf,"%s tried to mend an weapon with invalid value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+				log(buf);
+				extract_obj(cmp);
+				return;
+			}
+			if(cmp->obj_flags.value[2] == obj->obj_flags.value[2]) {
+				send_to_char("That item has no need of your attention.\n\r",ch);
+				extract_obj(cmp);
+				return;
+			} else {
+				if(ch->skills[SKILL_MEND].learned < perc) {
+					/* failure lowers damage die by one point */
+					obj->obj_flags.value[2] -= 1;
+					sprintf(buf,"%s tries to mend %s, but only makes matters worse.",GET_NAME(ch),obj->short_description);
+					act(buf,FALSE,ch,0,0,TO_ROOM);
+					sprintf(buf,"You try to mend %s, but only make things worse.\n\r",obj->short_description);
+					send_to_char(buf,ch);
+					/* did this scrap the weapon? */
+					if(obj->obj_flags.value[2] < 1) {
+						sprintf(buf,"%s screwed up so bad that %s is reduced to junk!",GET_NAME(ch),obj->short_description);
+						act(buf,FALSE,ch,0,0,TO_ROOM);
+						sprintf(buf,"You screwed up so bad that %s is reduced to junk!\n\r",obj->short_description);
+						send_to_char(buf,ch);
+						MakeScrap(ch,NULL, obj);
+					}
+					extract_obj(cmp);
+					LearnFromMistake(ch, SKILL_MEND, 0, 95);
+					WAIT_STATE(ch, PULSE_VIOLENCE*2);
+					return;
+				} else {
+					obj->obj_flags.value[2] = cmp->obj_flags.value[2];
+					sprintf(buf,"%s expertly mends %s.",GET_NAME(ch),obj->short_description);
+					act(buf,FALSE,ch,0,0,TO_ROOM);
+					sprintf(buf,"You expertly mend %s.\n\r",obj->short_description);
+					send_to_char(buf,ch);
+					extract_obj(cmp);
+					WAIT_STATE(ch, PULSE_VIOLENCE*1);
+					return;
+				}
+			}
+		} else {
+			send_to_char("You can't mend that!",ch);
+			return;
+		}
+	} else {
+		sprintf(buf,"Mend what?\n\r",arg);
+		send_to_char(buf, ch);
+		return;
+	}
+}
 
 void do_rescue(struct char_data *ch, char *argument, int cmd)
 {

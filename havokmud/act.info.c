@@ -84,6 +84,7 @@ extern long SystemFlags;
   extern char *RaceNames[];
   extern const char *fight_styles[];
   extern struct skillset warriorskills[];
+  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
@@ -4492,6 +4493,21 @@ dlog("in do_show_skill");
 			strcat(buffer, buf);
 			strcat(buffer, "\r");
 			i++;
+		}
+		i = 0;
+		if(OnlyClass(ch,CLASS_WARRIOR)) {
+			while(scwarskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
+							scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
 		}
 		page_string(ch->desc, buffer, 1);
 		return;

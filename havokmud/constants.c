@@ -4767,6 +4767,10 @@ const struct skillset warriorskills[] = {
   {"skin",      SKILL_TAN,           1},
   {"None",		-1,					-1}
 };
+const struct skillset scwarskills[] = {
+	{"mend",		SKILL_MEND,			51},
+    {"None",		-1,					-1}
+};
 const struct skillset thiefskills[] = {
   {"backstab",  SKILL_BACKSTAB,      1},
   {"remove trap", SKILL_REMOVE_TRAP, 1},

@@ -786,6 +786,7 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
   char buf[254], buffer[MAX_STRING_LENGTH], temp[20];
   int i = 0;
   extern struct skillset warriorskills[];
+  extern struct skillset scwarskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
@@ -845,6 +846,23 @@ dlog("in do_practice");
 				strcat(buffer, "\r");
 			}
 			i++;
+		}
+		i=0;
+		if(OnlyClass(ch,CLASS_WARRIOR)) {
+	  		while(scwarskills[i].level != -1) {
+				if (IS_SET(ch->skills[scwarskills[i].skillnum].flags,SKILL_KNOWN)) {
+					sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
+							scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				i++;
+			}
 		}
 		i=0;
 		while(warninjaskills[i].level != -1) {

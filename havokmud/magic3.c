@@ -1892,35 +1892,37 @@ void spell_barkskin(byte level, struct char_data *ch,
   }
 }
 
-void spell_gust_of_wind(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_gust_of_wind(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  struct char_data *tmp_victim, *temp;
+	struct char_data *tmp_victim, *temp;
 
-  assert(ch);
-  assert((level >= 1) && (level <= ABS_MAX_LVL));
+	assert(ch);
+	assert((level >= 1) && (level <= ABS_MAX_LVL));
 
-  send_to_char("You wave your hands, and a gust of wind boils forth!\n\r",
-	       ch);
-  act("$n sends a gust of wind towards you!\n\r",
-	  FALSE, ch, 0, 0, TO_ROOM);
+	send_to_char("You wave your hands, and a gust of wind boils forth!\n\r",ch);
+	act("$n sends a gust of wind towards you!",FALSE, ch, 0, 0, TO_ROOM);
 
-  for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
-       tmp_victim = temp ) {
-    temp = tmp_victim->next_in_room;
-    if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-      if ((GetMaxLevel(tmp_victim)>LOW_IMMORTAL) &&(!IS_NPC(tmp_victim)))
-	return;
-      if (!in_group(ch, tmp_victim)) {
-	if ( saves_spell(tmp_victim, SAVING_SPELL) )
-	  continue;
-	GET_POS(tmp_victim) = POSITION_SITTING;
-      } else {
-	act("You are able to avoid the swirling gust\n\r",
-	    FALSE, ch, 0, tmp_victim, TO_VICT);
-      }
-    }
-  }
+	for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;tmp_victim = temp ) {
+		temp = tmp_victim->next_in_room;
+		if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
+			if ((GetMaxLevel(tmp_victim)>LOW_IMMORTAL) &&(!IS_NPC(tmp_victim)))
+				return;
+			if (!in_group(ch, tmp_victim)) {
+				if (!saves_spell(tmp_victim, SAVING_SPELL)) {
+					act("Despite your sudden gusts, $N manages to keep his footing.",FALSE,ch,0,tmp_victim,TO_CHAR);
+					act("Despite $n's sudden gusts, you manage to keep your footing.",FALSE, ch, 0, tmp_victim, TO_VICT);
+					act("Despite $n's sudden gusts, $N manages to keep his footing.",FALSE, ch, 0, tmp_victim, TO_NOTVICT);
+					return;
+				}
+				act("Your gust of wind makes $N stumble and $E falls on $S bum.",FALSE,ch,0,tmp_victim,TO_CHAR);
+				act("$n's gust of wind makes you stumble and you lose your footing.",FALSE, ch, 0, tmp_victim, TO_VICT);
+				act("$n's gust of wind makes $N stumble and $E falls on $S bum.",FALSE, ch, 0, tmp_victim, TO_NOTVICT);
+				GET_POS(tmp_victim) = POSITION_SITTING;
+			} else {
+				act("You are able to avoid the swirling gust.",FALSE, ch, 0, tmp_victim, TO_VICT);
+			}
+		}
+	}
 }
 
 
