@@ -5705,7 +5705,7 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
 
     sprintf(buf, "tell %s Your skills have been patched up.", GET_NAME(ch));
     command_interpreter(mob, buf);
-    return( FALSE );
+    return( TRUE );
 }
 
 /*
