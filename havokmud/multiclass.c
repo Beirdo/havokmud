@@ -248,7 +248,7 @@ int BestThiefClass(struct char_data *ch)
  if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
    return(CLERIC_LEVEL_IND);
  if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
-   return(TRUE);
+   return(NECROMANCER_LEVEL_IND);
 
 
   log("Massive error.. character has no recognized class.");

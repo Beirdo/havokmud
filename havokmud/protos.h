@@ -2341,4 +2341,23 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_numb_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_binding(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_decay(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_shadow_step(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_cavorting_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_nullify(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_dark_empathy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_eye_of_the_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_soul_steal(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_dark_pact(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_darktravel(byte level, struct char_data *ch, struct char_data *tmp_ch, struct obj_data *obj);
+void spell_vampiric_embrace(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_bind_affinity(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_scourge_warlock(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_finger_of_death(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
