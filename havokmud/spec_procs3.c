@@ -3924,7 +3924,8 @@ int archer_sub(struct char_data *ch)
 
         if (bow) {
             if (ch->equipment[WIELD]) {
-                do_remove(ch, ch->equipment[WIELD]->name, 0);
+                sprintf(buf, "remove %s", ch->equipment[WIELD]->name);
+                command_interpreter(ch, buf);
                 return TRUE;
             } else {
                 do_wield(ch, bow->name, 0);
@@ -3964,16 +3965,17 @@ int archer_sub(struct char_data *ch)
 
 int archer_hth(struct char_data *ch)
 {
-    struct obj_data *spid,
-                   *hth = NULL;
-
+    struct  obj_data    *spid,
+                        *hth = NULL;
+    char    buf[MAX_STRING_LENGTH];
     /*
      * What to do if you are an archer and find yourself in HTH combat 
      * I. If you are wielding a bow ditch it 
      */
     if (ch->equipment[WIELD] && 
         ch->equipment[WIELD]->obj_flags.type_flag == ITEM_FIREWEAPON) {
-        do_remove(ch, ch->equipment[WIELD]->name, 66);
+        sprintf(buf, "remove %s", ch->equipment[WIELD]->name);
+        command_interpreter(ch, buf);
         return TRUE;
     } else {
         if (ch->equipment[WIELD]) {
@@ -5390,7 +5392,8 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     " see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
 
                 if (vict->equipment[HOLD]) {
-                    do_remove(vict, vict->equipment[HOLD]->name, 0);
+                    sprintf(buf, "remove %s", vict->equipment[HOLD]->name);
+                    command_interpreter(vict, buf);
                     sprintf(buf, "give green-key %s", GET_NAME(ch));
                     command_interpreter(vict, buf);
                     act("$n says, 'Here is the key to the west wing.  You'll "
@@ -6474,7 +6477,8 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
                          "token of my appreciation.", GET_NAME(ch));
             command_interpreter(vict, buf);
-            do_remove(vict, vict->equipment[WIELD]->name, 0);
+            sprintf(buf, "remove %s", vict->equipment[WIELD]->name);
+            command_interpreter(vict, buf);
             sprintf(buf, "give Staff %s", GET_NAME(ch));
             command_interpreter(vict, buf);
         } else {
@@ -7682,7 +7686,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
                              "my people. Perhaps you would be a better "
                              "choice.");
                 do_say(tgt, buf, 19);
-                do_remove(tgt, tgt->equipment[WEAR_HEAD]->name, 0);
+                sprintf(buf, "remove %s", tgt->equipment[WEAR_HEAD]->name);
+                command_interpreter(tgt, buf);
 
                 sprintf(buf, "give laurel-leaves-myrrhal %s", GET_NAME(ch));
                 command_interpreter(tgt, buf);

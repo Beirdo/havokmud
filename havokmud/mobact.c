@@ -798,7 +798,8 @@ int FindABetterWeapon(struct char_data * mob)
          */
         if (best->carried_by == mob) {
             if (mob->equipment[WIELD]) {
-                do_remove(mob, mob->equipment[WIELD]->name, 0);
+                sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+                command_interpreter(mob, buf);
             }
             do_wield(mob, best->name, 0);
         } else if (best->equipped_by == mob) {
@@ -811,7 +812,8 @@ int FindABetterWeapon(struct char_data * mob)
             command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
-        do_remove(mob, mob->equipment[WIELD]->name, 0);
+        sprintf(buf, "remove %s", mob->equipment[WIELD]->name);
+        command_interpreter(mob, buf);
     }
     return (FALSE);
 }
