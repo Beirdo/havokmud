@@ -4155,6 +4155,7 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
 #define GATEKEEPER_KEY 45491
 #define BLACK_PILL 45492
 #define BLUE_PILL 45493
+#define GRAYSWANDIR 45494
 
 #define BAHAMUT 45400
 #define TMK_GUARD_ONE 45401
@@ -5382,14 +5383,14 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
    if(!AWAKE(ch)) return(FALSE);
 
-   if(!cmd) 
-   {
+   	if(!cmd) 
+   	{
    		if(number(0,10) == 0) 
 		{
    			act("$n says, 'Pardon me sire, might you spare a poor man some food?'",FALSE, mob, 0, 0, TO_ROOM);
 	      		return(TRUE);
    		}
-   }
+   	}
 
 	/*TALK TO ME!!!*/
 
@@ -5490,5 +5491,127 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			return(TRUE);
    		}
 	}
+
 return(TRUE);	
+
+}
+
+int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+    char buf[256], name[256];
+    struct char_data *victim;
+    struct obj_data *object;
+    int percent = 0; 
+    int r_num = 0;
+    int v_num1 = 0;
+    int v_num2 = 0;
+    extern struct dex_app_type dex_app[];
+    
+
+	if (cmd == 157) /* Bash */
+	{
+		if ((r_num = real_object(GRAYSWANDIR)) >= 0) {
+			object = read_object(r_num, REAL);
+			v_num1 = obj_index[object->item_number].virtual;
+		}
+		
+		object =  ch->equipment[HOLD];
+		
+		v_num2 = obj_index[object->item_number].virtual;
+
+		if (v_num1 != v_num2) return(FALSE);
+		
+/*		if (ch->equipment[HOLD] != object) return (FALSE);*/
+
+  		if (!ch->skills) return(TRUE);		
+
+   		if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r")) return(TRUE);
+
+		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+ 			if (!HasClass(ch, CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
+     				send_to_char("You're no warrior!\n\r", ch);
+     				return(TRUE);
+    			}
+		}
+
+  		only_argument(arg, name);
+
+  		if (!(victim = get_char_room_vis(ch, name))) {
+    			if (ch->specials.fighting) {
+      				victim = ch->specials.fighting;
+    			} 
+			else {
+     		 		send_to_char("Bash who?\n\r", ch);
+      				return(TRUE);
+    			}
+		}
+
+  		if (!(victim = get_char_room_vis(ch, name))) {
+    			if (ch->specials.fighting) {
+      				victim = ch->specials.fighting;
+    			} 
+			else {
+      				send_to_char("Bash who?\n\r", ch);
+      				return(TRUE);
+    			}
+  		}
+
+		if (victim == ch) {
+    			send_to_char("Aren't we funny today...\n\r", ch);
+    			return(TRUE);
+  		}
+
+		if (MOUNTED(victim)) {
+    			send_to_char("You can't bash a mounted target!\n\r", ch);
+    			return(TRUE);
+  		}
+
+		if (MOUNTED(ch)) {
+    			send_to_char("You can't bash while mounted!\n\r", ch);
+    			return(TRUE);
+  		}
+
+		if (ch->attackers > 3) {
+    			send_to_char("There's no room to bash!\n\r",ch);
+    			return(TRUE);
+  		}
+
+  		if (victim->attackers >= 6) {
+    			send_to_char("You can't get close enough to them to bash!\n\r", ch);
+    			return(TRUE);
+  		}
+
+     		SetVictFighting(ch, victim);
+     		SetCharFighting(ch, victim);
+
+		percent = number(1,101); /* 101% is a complete failure */
+  		percent -= dex_app[GET_DEX(ch)].reaction*10;
+  		percent += dex_app[GET_DEX(victim)].reaction*10;
+
+  		if (percent > ch->skills[SKILL_BASH].learned) {
+    			if (GET_POS(victim) > POSITION_DEAD) {
+		            	act("$c0009You wildly swings $p at $N and fall over.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
+        			act("$c0009$n wildly swings $p at you and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_VICT);
+	            		act("$c0009$n wildly swings $p at $N and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
+      				GET_POS(ch) = POSITION_SITTING;
+    			}
+    			LearnFromMistake(ch, SKILL_BASH, 0, 90);
+    			WAIT_STATE(ch, PULSE_VIOLENCE*3);
+  		}
+
+		else {
+    			if (GET_POS(victim) > POSITION_DEAD) {
+				act("$c0009You give $N a solid hit with $p that knocks them to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
+				act("$c0009$n gives you a solid hit with $p that knocks you to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_VICT);
+				act("$c0009$n gives $N a solid hit with $p that knocks them to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
+      				GET_POS(victim) = POSITION_SITTING;
+				WAIT_STATE(victim, PULSE_VIOLENCE*2);
+         			GET_POS(victim) = POSITION_SITTING;
+    			}
+  		}
+	  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+	} 
+	else return(FALSE);
+
+	return(TRUE);
 }

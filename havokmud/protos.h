@@ -1479,6 +1479,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_dat
 int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 
 /* From spell_parser.c */

@@ -1377,6 +1377,7 @@ void assign_objects()
    {45481, thunder_sceptre_two},
    {45492, thunder_black_pill},
    {45493, thunder_blue_pill},
+   {45494, grayswandir},
 /*End Thunder Mountain Keep Objects*/
 
     { -1, NULL },
