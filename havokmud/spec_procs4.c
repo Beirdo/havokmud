@@ -1472,7 +1472,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
 	if(!ch || !cmd)
 		return;
 
-	if(cmd != 601) /* sharpen */
+	if(cmd != 602) /* sharpen */
 		return;
 
 	if(ch->specials.fighting) {
