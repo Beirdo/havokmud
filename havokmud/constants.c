@@ -3331,11 +3331,13 @@ const char *affected_bits2[] =
 	"Haste",
 	"Slow",
 	"Wings burned",
-	"style-berserked",
+	"Style Berserked",
 	"Quest",
-	"NoOutdoorLogs",
+	"No Outdoor Logs",
 	"Wings tired",
-	"invis to undead",
+	"Invis to Undead",
+	"Guardian Angel",
+	"Song of the Wanderer",
 	"\n"
 };
 

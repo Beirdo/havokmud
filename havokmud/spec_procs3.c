@@ -7310,8 +7310,8 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
 		}
  		break;
  	case 2:
- 		if (IS_NPC(ch)) /* since slow doesn't really affect mobs, check here if wielder is PC */
- 			return(FALSE);
+// 		if (IS_NPC(ch)) /* since slow doesn't really affect mobs, check here if wielder is PC */
+// 			return(FALSE);
  		if (IsImmune(ch, IMM_HOLD)) /* immune PCs shouldn't be affected. */
  			return(FALSE);
 		if (!affected_by_spell(ch, SPELL_SLOW)) {

@@ -439,114 +439,100 @@ int Summoner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, in
 #endif
 int Summoner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-/*   extern struct descriptor_data *descriptor_list; */
-  struct descriptor_data *d;
-  struct char_data *targ=0;
-  struct char_list *i;
-  char buf[255];
+	struct descriptor_data *d;
+	struct char_data *targ=0;
+	struct char_list *i;
+	char buf[255];
+	extern char EasySummon;
 
-  extern char EasySummon;
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
 
-  if (cmd || !AWAKE(ch))
-    return(FALSE);
+	if (check_soundproof(ch)) return(FALSE);
 
-  if (check_soundproof(ch)) return(FALSE);
+	if (ch->specials.fighting)  return(FALSE);
 
-  if (ch->specials.fighting)  return(FALSE);
+	if (check_nomagic(ch, 0, 0))
+		return(TRUE);
 
-  if (check_nomagic(ch, 0, 0))
-    return(TRUE);
-
-  /*
-  **  wait till at 75% of hitpoints.
-  */
-
-  if (GET_HIT(ch) > ((GET_MAX_HIT(ch)*3)/4)) {
-    /*
-    **  check for hatreds
-    */
-    if (IS_SET(ch->hatefield, HATE_CHAR)) {
-      if (ch->hates.clist) {
-        for (i = ch->hates.clist; i; i = i->next) {
-          if (i->op_ch) {  /* if there is a char_ptr */
-	    targ = i->op_ch;
-	    if (IS_PC(targ)) {
-	      sprintf(buf, "You hate %s\n\r", targ);
-	      send_to_char(buf, ch);
-	      break;
-	    }
-	  } else {  /* look up the char_ptr */
-	    for (d=descriptor_list; d; d = d->next) {
+	/* wait till at 75% of hitpoints. */
+	if (GET_HIT(ch) > ((GET_MAX_HIT(ch)*3)/4)) {
+		/* check for hatreds */
+		if (IS_SET(ch->hatefield, HATE_CHAR)) {
+			if (ch->hates.clist) {
+				for (i = ch->hates.clist; i; i = i->next) {
+					if (i->op_ch) {  /* if there is a char_ptr */
+						targ = i->op_ch;
+						if (IS_PC(targ)) {
+							sprintf(buf, "You hate %s\n\r", targ->player.name);
+							send_to_char(buf, ch);
+							break;
+						}
+					} else {  /* look up the char_ptr */
+						for (d=descriptor_list; d; d = d->next) {
 #if 0
-	/* disabled case of crashes, FIX IT msw */
-	if (GET_NAME(d->character) && i->name)
-	      if (d->character && i->name && (strcmp(GET_NAME(d->character), i->name)==0)) {
-		targ = d->character;
-		break;
-	      }
+						/* disabled case of crashes, FIX IT msw */
+							if (GET_NAME(d->character) && i->name)
+								if (d->character && i->name && (strcmp(GET_NAME(d->character), i->name)==0)) {
+									targ = d->character;
+									break;
+								}
 #endif
-
-	    }
-	  }
-        }
-      }
-    }
-    if (targ)
-    {
-      act("$n utters the words 'Your ass is mine!'.",
-	   1, ch, 0, 0, TO_ROOM);
-      if (EasySummon == 1)
-         {
-	  if (!IS_SET(ch->player.class, CLASS_PSI))
-	     spell_summon(GetMaxLevel(ch), ch, targ, 0);
-       else if (ch->skills[SKILL_SUMMON].learned &&
-                (GET_MAX_HIT(targ) <= GET_HIT(ch)))
-                   do_mindsummon(ch,targ->player.name,0);
-                  else do_psi_portal(ch,targ->player.name,0);
-         }
-      else
-      {
-	if (GetMaxLevel(ch) < 32)
- 	   if (number(0,10))
-               {
-	        do_say(ch, "Curses!  Foiled again!\n\r", 0);
-	        return(0);
-	       }
-    	/* Easy Summon was turned off and they were < 32nd level */
-	/* so we portal to them! */
-        if (!IS_SET(ch->player.class,CLASS_PSI))
-           {
-	    spell_portal(GetMaxLevel(ch), ch, targ, 0);
-	    command_interpreter(ch,"enter portal");
-           }
-         else  /*its a psi summoner, do his stuff*/
-          {
-           /*with easy_summon turned off must portal, so ..*/
-           if (!ch->skills[SKILL_PORTAL].learned)
-            ch->skills[SKILL_PORTAL].learned = ch->skills[SKILL_SUMMON].learned;
-           do_psi_portal(ch,targ->player.name,0);
-          }
-      }
-      if (targ->in_room == ch->in_room)
-         {
-	  if (NumCharmedFollowersInRoom(ch) > 0)
-            {
-	     sprintf(buf, "followers kill %s", GET_NAME(targ));
-	     do_order(ch, buf, 0);
-	    }
-      act("$n says, 'And now my young $N... You will DIE!",0,ch,0,targ,TO_ROOM);
-          if (!IS_SET(ch->player.class,CLASS_PSI))
-             spell_dispel_magic(GetMaxLevel(ch),ch, targ, 0);
-           else do_blast(ch,targ->player.name,1);
-         }
-      return(FALSE);
-    } else {
-      return(FALSE);
-    }
-
-  } else {
-    return(FALSE);
-  }
+						}
+					}
+				}
+			}
+		}
+		if (targ) {
+			act("$n utters the words 'Your ass is mine!'",1, ch, 0, 0, TO_ROOM);
+			if (EasySummon == 1) {
+				if (!IS_SET(ch->player.class, CLASS_PSI))
+					spell_summon(GetMaxLevel(ch), ch, targ, 0);
+				else if (GET_MAX_HIT(targ) <= GET_HIT(ch)) {
+					ch->skills[SKILL_SUMMON].learned = 100;
+					do_mindsummon(ch,targ->player.name,0);
+					ch->points.mana = 100;
+				} else {
+					ch->skills[SKILL_PORTAL].learned = 100;
+					do_psi_portal(ch,targ->player.name,0);
+					ch->points.mana = 100;
+				}
+			} else {
+				if (GetMaxLevel(ch) > 32)
+					if (number(0,3)) {
+						do_say(ch, "Curses!  Foiled again!\n\r", 0);
+						return(0);
+					} /* Easy Summon was turned off and they were > 32nd level */
+					/* so we portal to them! */
+					if (!IS_SET(ch->player.class,CLASS_PSI)) {
+						spell_portal(GetMaxLevel(ch), ch, targ, 0);
+						command_interpreter(ch,"enter portal");
+					} else { /*its a psi summoner, do his stuff*/
+						/* with easy_summon turned off must portal, so.. */
+						if (!ch->skills[SKILL_PORTAL].learned)
+							ch->skills[SKILL_PORTAL].learned = 100;
+						do_psi_portal(ch,targ->player.name,0);
+						ch->points.mana = 100;
+					}
+			}
+			if (targ->in_room == ch->in_room) {
+				if (NumCharmedFollowersInRoom(ch) > 0) {
+					sprintf(buf, "followers kill %s", GET_NAME(targ));
+					do_order(ch, buf, 0);
+				}
+				act("$n says, 'And now my young $N... You will DIE!",0,ch,0,targ,TO_ROOM);
+				if (!IS_SET(ch->player.class,CLASS_PSI))
+					spell_dispel_magic(GetMaxLevel(ch),ch, targ, 0);
+				else
+					do_blast(ch,targ->player.name,1);
+			}
+			return(FALSE);
+		} else {
+			return(FALSE);
+		}
+	} else {
+		return(FALSE);
+	}
 }
 /*---------------end of summoner---------------*/
 
@@ -626,7 +612,7 @@ int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int
  if (type != PULSE_COMMAND)
     return(FALSE);
 
- switch(cmd) {
+	switch(cmd) {
        case 17:
        case 169: invert(arg, buf);
                  do_say(ch, buf, cmd);
@@ -643,505 +629,360 @@ int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int
                  return(TRUE);
                  break;
        default:  return(FALSE);
- }
-}
-
-/*
-int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
-{
- 	char buf[255];
-
- 	if (type != PULSE_COMMAND)
-    	return(FALSE);
-
-	if(cmd==17 || cmd==169) {
-		sprintf(buf,"$c0012$s speaks '$c0015$s$c0012'",GET_NAME(ch), arg);
-		act(buf,1,ch,0,0,TO_ROOM);
-		sprintf(buf,"$c0012You speak '$c0015$s$c0012'", arg);
-		send_to_char(buf,ch);
-		return(TRUE);
-
 	}
-
- return(FALSE);
 }
-*/
+
 int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  struct char_data *vict;
+	struct char_data *vict;
 
-  byte lspell;
-  char buf[200];
+	byte lspell;
+	char buf[200];
 
+	if (cmd || !AWAKE(ch) || IS_AFFECTED(ch, AFF_PARALYSIS))
+		return(FALSE);
 
-  if (cmd || !AWAKE(ch) || IS_AFFECTED(ch, AFF_PARALYSIS))
-    return(FALSE);
+	if (!ch->specials.fighting && !IS_PC(ch)) {
+		if ((GET_POS(ch) > POSITION_STUNNED) && (GET_POS(ch) < POSITION_FIGHTING)) {
+			StandUp(ch);
+			return(TRUE);
+		}
+		SET_BIT(ch->player.class, CLASS_MAGIC_USER);
 
-  if (!ch->specials.fighting && !IS_PC(ch)) {
-
-  if ((GET_POS(ch) > POSITION_STUNNED) &&
-      (GET_POS(ch) < POSITION_FIGHTING)) {
-    StandUp(ch);
-    return(TRUE);
-  }
-     SET_BIT(ch->player.class, CLASS_MAGIC_USER);
-
-     if (GetMaxLevel(ch) >= 25)     {
-       if (!ch->desc)        {
-          if (Summoner(ch, cmd, arg, mob, type))
-	    return(TRUE);
-	  else 	  {
-	    if (NumCharmedFollowersInRoom(ch) < 5 && IS_SET(ch->hatefield, HATE_CHAR)) {
-	      act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	      cast_mon_sum7(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-	      do_order(ch, "followers guard on", 0);
-	      return(TRUE);
-	     }
-         }
-    } else
-      {  /* level < 25  Do nothing for summons */
-      } /* end level < 25 */
+		if (GetMaxLevel(ch) >= 25) {
+			if (!ch->desc) {
+				if (Summoner(ch, cmd, arg, mob, type))
+					return(TRUE);
+				else {
+					if (!IS_SET(real_roomp(ch->in_room)->room_flags, NO_SUM)) {
+						if (NumCharmedFollowersInRoom(ch) < 4 && IS_SET(ch->hatefield, HATE_CHAR)) {
+							act("$n utters the words 'Here boy!'", 1, ch, 0, 0, TO_ROOM);
+							cast_mon_sum7(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+							do_order(ch, "followers guard on", 0);
+							return(TRUE);
+						}
+					}
+				}
+			}
+		} /* level < 25  Do nothing for summons */
 
 #ifdef PREP_SPELLS
 
-if (!ch->desc) 	{		/* make sure it is a mob not a pc */
-/* Now, lets cast a few spells on ourself */
+		if (!ch->desc) { /* make sure it is a mob not a pc */
+		/* low level prep spells here */
+			if (!affected_by_spell(ch,SPELL_SHIELD)) {
+				act("$n utters the words 'dragon'", 1, ch, 0, 0, TO_ROOM);
+				cast_shield(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_STRENGTH)) {
+				act("$n utters the words 'giant'", 1, ch, 0, 0, TO_ROOM);
+				cast_strength(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!IS_EVIL(ch) && !affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL)) {
+				act("$n utters the words 'anti-evil'", 1, ch, 0, 0, TO_ROOM);
+				cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if ((IS_AFFECTED(ch,AFF_FIRESHIELD) || IS_AFFECTED(ch,AFF_SANCTUARY)) &&
+					(!affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)) ) {
+				act("$n utters the words 'darkness'", 1, ch, 0, 0, TO_ROOM);
+				cast_globe_darkness(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (!affected_by_spell(ch,SPELL_ARMOR)) {
+				act("$n utters the words 'dragon'", 1, ch, 0, 0, TO_ROOM);
+				cast_armor(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
-/* low level prep spells here */
-
-	if (!affected_by_spell(ch,SPELL_SHIELD)) {
-	      act("$n utters the words 'dragon'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_shield(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
+			/* high level prep spells here */
+			if (GetMaxLevel(ch) >= 25) {
+				if (!affected_by_spell(ch,SPELL_STONE_SKIN)) {
+					act("$n utters the words 'stone'", 1, ch, 0, 0, TO_ROOM);
+					cast_stone_skin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_GLOBE_MINOR_INV)) {
+					act("$n utters the words 'haven'", 1, ch, 0, 0, TO_ROOM);
+					cast_globe_minor_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_GLOBE_MAJOR_INV)) {
+					act("$n utters the words 'super haven'", 1, ch, 0, 0, TO_ROOM);
+					cast_globe_major_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (GetMaxLevel(ch) >= 40) {
+					if (!affected_by_spell(ch,SPELL_FIRESHIELD) && !IS_AFFECTED(ch,AFF_FIRESHIELD)) {
+						act("$n utters the words 'crackle'", 1, ch, 0, 0, TO_ROOM);
+						cast_fireshield(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+						return(TRUE);
+					}
+				}
+			}
+			/* end prep spells */
+			return(FALSE);
 		}
-
-	if (!affected_by_spell(ch,SPELL_STRENGTH)) {
-	      act("$n utters the words 'giant'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_strength(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
-		}
-
-	if (!IS_EVIL(ch) && !affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL)) {
-	         act("$n utters the words 'anti-evil'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
-		}
-
-if ((IS_AFFECTED(ch,AFF_FIRESHIELD) || IS_AFFECTED(ch,AFF_SANCTUARY)) &&
-		(!affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)) ) {
-	      act("$n utters the words 'darkness'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_globe_darkness(GetMaxLevel(ch),ch,GET_NAME(ch),SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
-		}
-
-
-/* high level prep spells here */
-	if (GetMaxLevel(ch) >= 25) {
-
-	if (!affected_by_spell(ch,SPELL_ARMOR)) {
-	      act("$n utters the words 'dragon'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_armor(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
-		}
-
-
-	if (!affected_by_spell(ch,SPELL_STONE_SKIN)) {
-	      act("$n utters the words 'stone'.", 1, ch, 0, 0, TO_ROOM);
-		 cast_stone_skin(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		 return(TRUE);
-		}
-
-
-	if (!affected_by_spell(ch,SPELL_GLOBE_MINOR_INV)) {
-	        act("$n utters the words 'haven'.", 1, ch, 0, 0, TO_ROOM);
-		cast_globe_minor_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-
-	if (!affected_by_spell(ch,SPELL_GLOBE_MAJOR_INV)) {
-	        act("$n utters the words 'super haven'.", 1, ch, 0, 0, TO_ROOM);
-		cast_globe_major_inv(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-
-	 } /* end high level prep spells */
-
-
-/* end prep spells */
-
-       return(FALSE);
-      }
 #endif
-    }
-  }
+	} /* end not fighting */
 
-  if (!ch->specials.fighting)
-    return(FALSE);
+	if (!ch->specials.fighting)
+		return(FALSE);
 
-  if (!IS_PC(ch))
-{
-    if ((GET_POS(ch) > POSITION_STUNNED) &&
-	(GET_POS(ch) < POSITION_FIGHTING))
-{
-
-      if (GET_HIT(ch) > GET_HIT(ch->specials.fighting)/2)
-	StandUp(ch);
-      else
-{
-        StandUp(ch);
-	do_flee(ch, "\0", 0);
-      }
-
-      return(TRUE);
-    }
-  }
-
-
-  if (check_soundproof(ch)) return(FALSE);
-
-  if (check_nomagic(ch, 0, 0))
-    return(FALSE);
-
-  /* Find a dude to to evil things upon ! */
-
-  vict = FindVictim(ch);
-
-  if (!vict)
-    vict = ch->specials.fighting;
-
-  if (!vict) return(FALSE);
-
-  lspell = number(0,GetMaxLevel(ch)); /* gen number from 0 to level */
-  if (!IS_PC(ch)) {
-    lspell+= GetMaxLevel(ch)/5;   /* weight it towards the upper levels of
-				     the mage's range */
-  }
-  lspell = MIN(GetMaxLevel(ch), lspell);
-
-  /*
-  **  check your own problems:
-  */
-
-  if (lspell < 1)
-    lspell = 1;
-
-  if (IS_AFFECTED(ch, AFF_BLIND) && (lspell > 15)) {
-    act("$n utters the words 'Let me see the light!'.",
-	TRUE, ch, 0, 0, TO_ROOM);
-    cast_cure_blind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-    return TRUE;
-  }
-
-  if (IS_AFFECTED(ch, AFF_BLIND))
-    return(FALSE);
-
-  if ((IS_AFFECTED(vict, AFF_SANCTUARY)) && (lspell > 10) &&
-      (GetMaxLevel(ch) > (GetMaxLevel(vict)))) {
-    act("$n utters the words 'Use MagicAway Instant Magic Remover'.",
-	1, ch, 0, 0, TO_ROOM);
-    cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    return(FALSE);
-
-  }
-
-  if ((IS_AFFECTED(vict, AFF_FIRESHIELD)) && (lspell > 10) &&
-      (GetMaxLevel(ch) > (GetMaxLevel(vict)))) {
-    act("$n utters the words 'Use MagicAway Instant Magic Remover'.",
-	1, ch, 0, 0, TO_ROOM);
-    cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    return(FALSE);
-
-  }
-
-  if (!IS_PC(ch)) {
-    if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 28) &&
-	!IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
-      act("$n checks $s watch.", TRUE, ch, 0, 0, TO_ROOM);
-      act("$n utters the words 'Oh my, would you just LOOK at the time!'",
-	  1, ch, 0, 0, TO_ROOM);
-
-      vict = FindMobDiffZoneSameRace(ch);
-      if (vict) {
-	spell_teleport_wo_error(GetMaxLevel(ch), ch, vict, 0);
-	return(TRUE);
-      }
-      cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      return(FALSE);
-    }
-  }
-
-  if (!IS_PC(ch)) {
-    if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 15) &&
-	(!IS_SET(ch->specials.act, ACT_AGGRESSIVE))) {
-      act("$n utters the words 'Woah! I'm outta here!'",
-	  1, ch, 0, 0, TO_ROOM);
-      cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      return(FALSE);
-    }
-  }
-
-
-  if  (GET_HIT(ch) > (GET_MAX_HIT(ch) / 2) &&
-       !IS_SET(ch->specials.act, ACT_AGGRESSIVE) &&
-       GetMaxLevel(vict) < GetMaxLevel(ch) && (number(0,1))) {
-
-    /*
-     **  Non-damaging case:
-     */
-
-    if (((lspell>8) && (lspell<50)) && (number(0,6)==0)) {
-      act("$n utters the words 'Icky Sticky!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return TRUE;
-    }
-
-    if (((lspell>5) && (lspell<10)) && (number(0,6)==0)) {
-      act("$n utters the words 'You wimp'.", 1, ch, 0, 0, TO_ROOM);
-      cast_weakness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return TRUE;
-    }
-
-    if (((lspell>5) && (lspell<10)) && (number(0,7)==0)) {
-      act("$n utters the words 'Bippety boppity Boom'.",1,ch,0,0,TO_ROOM);
-      cast_armor(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      return TRUE;
-    }
-
-    if (((lspell>12) && (lspell<20)) && (number(0,7)==0))	{
-      act("$n utters the words '&#%^^@%*#'.", 1, ch, 0, 0, TO_ROOM);
-      cast_curse(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return TRUE;
-    }
-
-    if (((lspell>10) && (lspell < 20)) && (number(0,5)==0)) {
-      act("$n utters the words 'yabba dabba do'.", 1, ch, 0, 0, TO_ROOM);
-      cast_blindness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return TRUE;
-    }
-
-    if (((lspell>8) && (lspell < 40)) && (number(0,5)==0) &&
-	(vict->specials.fighting != ch)) {
-      act("$n utters the words 'You are getting sleepy'.",
-	  1, ch, 0, 0, TO_ROOM);
-      cast_charm_monster(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      if (IS_AFFECTED(vict, AFF_CHARM)) {
-	char buf[200];
-
-	if (!vict->specials.fighting) {
-	  sprintf(buf, "%s kill %s",
-		  GET_NAME(vict), GET_NAME(ch->specials.fighting));
-	  do_order(ch, buf, 0);
-	} else {
-	  sprintf(buf, "%s remove all", GET_NAME(vict));
-	  do_order(ch, buf, 0);
+	if (!IS_PC(ch)) {
+		if ((GET_POS(ch) > POSITION_STUNNED) && (GET_POS(ch) < POSITION_FIGHTING)) {
+			if (GET_HIT(ch) > GET_HIT(ch->specials.fighting)/2)
+				StandUp(ch);
+			else {
+				StandUp(ch);
+				do_flee(ch, "\0", 0);
+			}
+			return(TRUE);
+		}
 	}
-      }
-    }
 
-    /*
-    **  The really nifty case:
-    */
-      switch(lspell) {
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-      case 9:
-      case 10:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum1(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 11:
-      case 12:
-      case 13:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum2(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 14:
-      case 15:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum3(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 16:
-      case 17:
-      case 18:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum4(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 19:
-      case 20:
-      case 21:
-      case 22:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum5(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 23:
-      case 24:
-      case 25:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum6(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      case 26:
-      default:
-	act("$n utters the words 'Here boy!'.", 1, ch, 0, 0, TO_ROOM);
-	cast_mon_sum7(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        do_order(ch, "followers guard on", 0);
-        return(TRUE);
-	break;
-      }
+	if (check_soundproof(ch)) return(FALSE);
 
-  } else {
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
 
-/*
-*/
+	/* Find a dude to to evil things upon ! */
+	vict = FindVictim(ch);
 
-  switch (lspell) {
-  case 1:
-  case 2:
-    act("$n utters the words 'bang! bang! pow!'.", 1, ch, 0, 0, TO_ROOM);
-    cast_magic_missile(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    break;
-  case 3:
-  case 4:
-  case 5:
-    act("$n utters the words 'ZZZZzzzzzzTTTT'.", 1, ch, 0, 0, TO_ROOM);
-    cast_shocking_grasp(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    break;
-  case 6:
-  case 7:
-  case 8:
-      if (ch->attackers <= 2) {
-        act("$n utters the words 'Icky Sticky!'.", 1, ch, 0, 0, TO_ROOM);
-        cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-        break;
-      } else {
-        act("$n utters the words 'Fwoosh!'.", 1, ch, 0, 0, TO_ROOM);
-        cast_burning_hands(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-	break;
-      }
-  case 9:
-  case 10:
-      act("$n utters the words 'SPOOGE!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_acid_blast(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-  case 11:
-  case 12:
-  case 13:
-    if (ch->attackers <= 2) {
-      act("$n utters the words 'KAZAP!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_lightning_bolt(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    } else {
-      act("$n utters the words 'Ice Ice Baby!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_ice_storm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    }
-  case 14:
-  case 15:
-    act("$n utters the words 'Ciao!'.", 1, ch, 0, 0, TO_ROOM);
-    cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    break;
-  case 16:
-  case 17:
-  case 18:
-  case 19:
-      act("$n utters the words 'maple syrup'.", 1, ch, 0, 0, TO_ROOM);
-      cast_slow(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-  case 20:
-  case 21:
-  case 22:
-    if (IS_EVIL(ch))	{
-      act("$n utters the words 'slllrrrrrrpppp'.", 1, ch, 0, 0, TO_ROOM);
-      cast_energy_drain(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    }
-  case 23:
-  case 24:
-  case 25:
-  case 26:
-  case 27:
-  case 28:
-  case 29:
-    if (ch->attackers <= 2) {
-      act("$n utters the words 'Look! A rainbow!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_colour_spray(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    } else {
-      act("$n utters the words 'Get the sensation!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_cone_of_cold(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    }
-  case 30:
-  case 31:
-  case 32:
-  case 33:
-  case 34:
-  case 35:
-    act("$n utters the words 'Hasta la vista, Baby'.", 1, ch,0,0,TO_ROOM);
-    cast_fireball(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-    break;
-  case 36:
-  case 37:
-      act("$n utters the words 'KAZAP KAZAP KAZAP!'.", 1, ch, 0, 0, TO_ROOM);
-      cast_chain_lightn(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-  case 38:
-      act("$n utters the words 'duhhh'.", 1, ch, 0, 0, TO_ROOM);
-      cast_feeblemind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-  case 39:
-      act("$n utters the words 'STOP'.", 1, ch, 0, 0, TO_ROOM);
-      cast_paralyze(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      break;
-    case 40:
-    case 41:
-    if (ch->attackers <= 2) {
-       act("$n utters the words 'frag'.", 1, ch,0,0,TO_ROOM);
-       cast_meteor_swarm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-       break;
-     } else {
-       act("$n utters the words 'Whew, whata smell!'.", 1, ch,0,0,TO_ROOM);
-       cast_incendiary_cloud(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-       break;
-     }
+	if (!vict)
+		vict = ch->specials.fighting;
 
-/*
-    ...
-    case 50:
-*/
-  default:
-    if (ch->attackers <= 2) {
-       act("$n utters the words 'ZZAAPP!'.", 1, ch,0,0,TO_ROOM);
-       cast_disintegrate(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-       break;
-     } else {
-       act("$n utters the words 'Whew, whata smell!'.", 1, ch,0,0,TO_ROOM);
-       cast_incendiary_cloud(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-       break;
-     }
-  }
+	if (!vict) return(FALSE);
+
+	lspell = number(0,GetMaxLevel(ch)); /* gen number from 0 to level */
+	if (!IS_PC(ch)) {
+		lspell+= GetMaxLevel(ch)/5;
+	}
+
+	lspell = MIN(GetMaxLevel(ch), lspell);
+
+	if (lspell < 1)
+		lspell = 1;
+
+	if (IS_AFFECTED(ch, AFF_BLIND) && (lspell > 15)) {
+		act("$n utters the words 'Let me see the light!'",	TRUE, ch, 0, 0, TO_ROOM);
+		cast_cure_blind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+		return TRUE;
+	}
+
+	if (IS_AFFECTED(ch, AFF_BLIND))
+		return(FALSE);
+
+	if ((IS_AFFECTED(vict, AFF_SANCTUARY)) && (lspell > 10) && (GetMaxLevel(ch) > (GetMaxLevel(vict)))) {
+		act("$n utters the words 'Use MagicAway Instant Magic Remover'",1, ch, 0, 0, TO_ROOM);
+		cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+		return(FALSE);
+	}
+
+	if ((IS_AFFECTED(vict, AFF_FIRESHIELD)) && (lspell > 10) && (GetMaxLevel(ch) > (GetMaxLevel(vict)))) {
+		act("$n utters the words 'Use MagicAway Instant Magic Remover'", 1, ch, 0, 0, TO_ROOM);
+		cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+		return(FALSE);
+	}
+
+	if (!IS_PC(ch)) {
+		if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 28) && !IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
+			act("$n checks $s watch.", TRUE, ch, 0, 0, TO_ROOM);
+			act("$n utters the words 'Oh my, would you just LOOK at the time!'", 1, ch, 0, 0, TO_ROOM);
+			vict = FindMobDiffZoneSameRace(ch);
+			if (vict) {
+				spell_teleport_wo_error(GetMaxLevel(ch), ch, vict, 0);
+				return(TRUE);
+			}
+			cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(FALSE);
+		}
+	}
+
+	if (!IS_PC(ch)) {
+		if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 15) && (!IS_SET(ch->specials.act, ACT_AGGRESSIVE))) {
+			act("$n utters the words 'Woah! I'm outta here!'", 1, ch, 0, 0, TO_ROOM);
+			cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return(FALSE);
+		}
+	}
+
+	if  (GET_HIT(ch) > (GET_MAX_HIT(ch) / 2) && !IS_SET(ch->specials.act, ACT_AGGRESSIVE) &&
+					GetMaxLevel(vict) < GetMaxLevel(ch) && (number(0,1))) {
+		if (((lspell>8) && (lspell<50)) && (number(0,6)==0)) {
+			act("$n utters the words 'Icky Sticky!'", 1, ch, 0, 0, TO_ROOM);
+			cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return TRUE;
+		}
+
+		if (((lspell>5) && (lspell<10)) && (number(0,6)==0)) {
+			act("$n utters the words 'You wimp'", 1, ch, 0, 0, TO_ROOM);
+			cast_weakness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return TRUE;
+		}
+
+		if (((lspell>5) && (lspell<10)) && (number(0,7)==0)) {
+			act("$n utters the words 'Bippety boppity Boom'",1,ch,0,0,TO_ROOM);
+			cast_armor(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			return TRUE;
+		}
+
+		if (((lspell>12) && (lspell<20)) && (number(0,7)==0)) {
+			act("$n utters the words '&#%^^@%*#'", 1, ch, 0, 0, TO_ROOM);
+			cast_curse(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return TRUE;
+		}
+
+		if (((lspell>10) && (lspell < 20)) && (number(0,5)==0)) {
+			act("$n utters the words 'yabba dabba do'", 1, ch, 0, 0, TO_ROOM);
+			cast_blindness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return TRUE;
+		}
+
+		if (((lspell>8) && (lspell < 40)) && (number(0,5)==0) && (vict->specials.fighting != ch)) {
+			act("$n utters the words 'You are getting sleepy'", 1, ch, 0, 0, TO_ROOM);
+			cast_charm_monster(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			if (IS_AFFECTED(vict, AFF_CHARM)) {
+				char buf[200];
+				if (!vict->specials.fighting) {
+					sprintf(buf, "%s kill %s",
+					GET_NAME(vict), GET_NAME(ch->specials.fighting));
+					do_order(ch, buf, 0);
+				} else {
+					sprintf(buf, "%s remove all", GET_NAME(vict));
+					do_order(ch, buf, 0);
+				}
+			}
+		}
+	} else { /* The really nifty case: */
+		switch (lspell) {
+			case 1:
+			case 2:
+				act("$n utters the words 'bang! bang! pow!'", 1, ch, 0, 0, TO_ROOM);
+				cast_magic_missile(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 3:
+			case 4:
+			case 5:
+				act("$n utters the words 'ZZZZzzzzzzTTTT'", 1, ch, 0, 0, TO_ROOM);
+				cast_shocking_grasp(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 6:
+			case 7:
+			case 8:
+				if (ch->attackers <= 2) {
+					act("$n utters the words 'Icky Sticky!'", 1, ch, 0, 0, TO_ROOM);
+					cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				} else {
+					act("$n utters the words 'Fwoosh!'", 1, ch, 0, 0, TO_ROOM);
+					cast_burning_hands(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+			case 9:
+			case 10:
+				act("$n utters the words 'SPOOGE!'", 1, ch, 0, 0, TO_ROOM);
+				cast_acid_blast(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 11:
+			case 12:
+			case 13:
+				if (ch->attackers <= 2) {
+					act("$n utters the words 'KAZAP!'", 1, ch, 0, 0, TO_ROOM);
+					cast_lightning_bolt(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				} else {
+					act("$n utters the words 'Ice Ice Baby!'", 1, ch, 0, 0, TO_ROOM);
+					cast_ice_storm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+			case 14:
+			case 15:
+				act("$n utters the words 'Ciao!'", 1, ch, 0, 0, TO_ROOM);
+				cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 16:
+			case 17:
+			case 18:
+			case 19:
+				act("$n utters the words 'maple syrup'", 1, ch, 0, 0, TO_ROOM);
+				cast_slow(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 20:
+			case 21:
+			case 22:
+				if (IS_EVIL(ch))	{
+					act("$n utters the words 'slllrrrrrrpppp'", 1, ch, 0, 0, TO_ROOM);
+					cast_energy_drain(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+			case 23:
+			case 24:
+			case 25:
+			case 26:
+			case 27:
+			case 28:
+			case 29:
+				if (ch->attackers <= 2) {
+					act("$n utters the words 'Look! A rainbow!'", 1, ch, 0, 0, TO_ROOM);
+					cast_colour_spray(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				} else {
+					act("$n utters the words 'Get the sensation!'", 1, ch, 0, 0, TO_ROOM);
+					cast_cone_of_cold(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+			case 30:
+			case 31:
+			case 32:
+			case 33:
+			case 34:
+			case 35:
+				act("$n utters the words 'Hasta la vista, Baby'", 1, ch,0,0,TO_ROOM);
+				cast_fireball(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 36:
+			case 37:
+				act("$n utters the words 'KAZAP KAZAP KAZAP!'", 1, ch, 0, 0, TO_ROOM);
+				cast_chain_lightn(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 38:
+				act("$n utters the words 'duhhh'", 1, ch, 0, 0, TO_ROOM);
+				cast_feeblemind(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 39:
+				act("$n utters the words 'STOP'", 1, ch, 0, 0, TO_ROOM);
+				cast_paralyze(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+				break;
+			case 40:
+			case 41:
+				if (ch->attackers <= 2) {
+					act("$n utters the words 'frag'", 1, ch,0,0,TO_ROOM);
+					cast_meteor_swarm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				} else {
+					act("$n utters the words 'Whew, whata smell!'", 1, ch,0,0,TO_ROOM);
+					cast_incendiary_cloud(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+			default:
+				if (ch->attackers <= 2) {
+					act("$n utters the words 'ZZAAPP!'", 1, ch,0,0,TO_ROOM);
+					cast_disintegrate(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				} else {
+					act("$n utters the words 'Whew, whata smell!'", 1, ch,0,0,TO_ROOM);
+					cast_incendiary_cloud(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+					break;
+				}
+		}
+	}
+	return TRUE;
 }
-  return TRUE;
-}
 
-/* for NECROMANCER flagged mobs, -Lennya 20030808 */
+/* for ACT_NECROMANCER flagged mobs, -Lennya 20030808 */
 #define TONGUE_ITEM 22
 int necromancer(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -1853,231 +1694,220 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  struct char_data *vict;
-  byte lspell, healperc=0;
+	struct char_data *vict;
+	byte lspell, healperc=0;
+
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
+
+	if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
+		StandUp(ch);
+		return(TRUE);
+	}
+
+	if (check_soundproof(ch)) return(FALSE);
+
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
 
 
-  if (cmd || !AWAKE(ch))
-    return(FALSE);
-
-    if ((GET_POS(ch)<POSITION_STANDING) && (GET_POS(ch)>POSITION_STUNNED)) {
-      StandUp(ch);
-      return(TRUE);
-    }
-
-  if (check_soundproof(ch)) return(FALSE);
-
-  if (check_nomagic(ch, 0, 0))
-    return(FALSE);
-
-
-  if (!ch->specials.fighting) {
-    if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
-      if ((lspell = GetMaxLevel(ch)) >= 20) {
-	act("$n utters the words 'What a Rush!'.", 1, ch,0,0,TO_ROOM);
-	cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      } else if (lspell > 12) {
-      act("$n utters the words 'Woah! I feel GOOD! Heh.'.", 1, ch,0,0,TO_ROOM);
-	cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      } else if (lspell > 8) {
-      act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
-        cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      } else {
-	act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
-	cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-      }
-    }
+	if (!ch->specials.fighting) {
+		if (GET_HIT(ch) < GET_MAX_HIT(ch)-10) {
+			if ((lspell = GetMaxLevel(ch)) >= 20) {
+				act("$n utters the words 'What a Rush!'", 1, ch,0,0,TO_ROOM);
+				cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else if (lspell > 12) {
+				act("$n utters the words 'Woah! I feel GOOD! Heh.'", 1, ch,0,0,TO_ROOM);
+				cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else if (lspell > 8) {
+				act("$n utters the words 'I feel much better now!'", 1, ch,0,0,TO_ROOM);
+				cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			} else {
+				act("$n utters the words 'I feel good!'", 1, ch,0,0,TO_ROOM);
+				cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+			}
+		}
 
 #ifdef PREP_SPELLS
 
-if (!ch->desc) {		/* make sure it is a mob */
-	/* low level prep */
-	if (!affected_by_spell(ch,SPELL_ARMOR)) {
-		act("$n utters the words 'protect'.",FALSE,ch,0,0,TO_ROOM);
-		cast_armor(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
+		if (!ch->desc) { /* make sure it is a mob */
+			/* low level prep */
+			if (!affected_by_spell(ch,SPELL_ARMOR)) {
+				act("$n utters the words 'protect'",FALSE,ch,0,0,TO_ROOM);
+				cast_armor(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
-	if (!affected_by_spell(ch,SPELL_BLESS)) {
-		act("$n utters the words 'bless'.",FALSE,ch,0,0,TO_ROOM);
-		cast_bless(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
+			if (!affected_by_spell(ch,SPELL_BLESS)) {
+				act("$n utters the words 'bless'",FALSE,ch,0,0,TO_ROOM);
+				cast_bless(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
-	if (!affected_by_spell(ch,SPELL_AID)) {
-		act("$n utters the words 'aid'.",FALSE,ch,0,0,TO_ROOM);
-		cast_aid(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
+			if (!affected_by_spell(ch,SPELL_AID)) {
+				act("$n utters the words 'aid'",FALSE,ch,0,0,TO_ROOM);
+				cast_aid(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
-	if (!affected_by_spell(ch,SPELL_DETECT_MAGIC)) {
-		act("$n utters the words 'detect magic'.",FALSE,ch,0,0,TO_ROOM);
-		cast_detect_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
+			if (!affected_by_spell(ch,SPELL_DETECT_MAGIC)) {
+				act("$n utters the words 'detect magic'",FALSE,ch,0,0,TO_ROOM);
+				cast_detect_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
-	if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
-		act("$n utters the words 'anti evil'.",FALSE,ch,0,0,TO_ROOM);
-		cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	/* end low level prep */
+			if (!affected_by_spell(ch,SPELL_PROTECT_FROM_EVIL) && !IS_EVIL(ch)) {
+				act("$n utters the words 'anti evil'",FALSE,ch,0,0,TO_ROOM);
+				cast_protection_from_evil(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
+			if (GetMaxLevel(ch)>24) {	/* high level prep */
+				if (!affected_by_spell(ch,SPELL_PROT_FIRE)) {
+					act("$n utters the words 'resist fire'",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_fire(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_COLD)) {
+					act("$n utters the words 'resist cold'",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_cold(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_ENERGY)) {
+					act("$n utters the words 'resist energy'",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_energy(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (!affected_by_spell(ch,SPELL_PROT_ELEC)) {
+					act("$n utters the words 'resist electricity'",FALSE,ch,0,0,TO_ROOM);
+					cast_prot_elec(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+				if (GetMaxLevel(ch) > 44) {
+					if (!affected_by_spell(ch,SPELL_BLADE_BARRIER)) {
+						act("$n utters the words 'butcher's blade'",FALSE,ch,0,0,TO_ROOM);
+						cast_blade_barrier(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+						return(TRUE);
+					}
+				}
+			}
 
-if (GetMaxLevel(ch)>24) {	/* high level prep */
-	if (!affected_by_spell(ch,SPELL_PROT_FIRE)) {
-		act("$n utters the words 'resist fire'.",FALSE,ch,0,0,TO_ROOM);
-		cast_prot_fire(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	if (!affected_by_spell(ch,SPELL_PROT_COLD)) {
-		act("$n utters the words 'resist cold'.",FALSE,ch,0,0,TO_ROOM);
-		cast_prot_cold(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	if (!affected_by_spell(ch,SPELL_PROT_ENERGY)) {
-		act("$n utters the words 'resist energy'.",FALSE,ch,0,0,TO_ROOM);
-		cast_prot_energy(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	if (!affected_by_spell(ch,SPELL_PROT_ELEC)) {
-		act("$n utters the words 'resist electricity'.",FALSE,ch,0,0,TO_ROOM);
-		cast_prot_elec(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	}	/* end high level prep */
+			/* low level removes */
+			if (affected_by_spell(ch,SPELL_POISON)) {
+				act("$n utters the words 'remove poison'",FALSE,ch,0,0,TO_ROOM);
+				cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+			if (affected_by_spell(ch,SPELL_BLINDNESS)) {
+				act("$n utters the words 'cure blind'",FALSE,ch,0,0,TO_ROOM);
+				cast_cure_blind(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
 
+			/* hi level removes */
+			if (GetMaxLevel(ch) >24)	{
+				if (affected_by_spell(ch,SPELL_CURSE)) {
+					act("$n utters the words 'remove curse'",FALSE,ch,0,0,TO_ROOM);
+					cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
 
-	/* low level removes */
-	if (affected_by_spell(ch,SPELL_POISON)) {
-		act("$n utters the words 'remove poison'.",FALSE,ch,0,0,TO_ROOM);
-		cast_remove_poison(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	if (affected_by_spell(ch,SPELL_BLINDNESS)) {
-		act("$n utters the words 'cure blind'.",FALSE,ch,0,0,TO_ROOM);
-		cast_cure_blind(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
+				if (affected_by_spell(ch,SPELL_PARALYSIS)) {
+					act("$n utters the words 'remove paralysis'",FALSE,ch,0,0,TO_ROOM);
+					cast_remove_paralysis(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+					return(TRUE);
+				}
+			}
 
-	/* end low level removes */
-
-	/* hi level removes */
-if (GetMaxLevel(ch) >24)	{
-	if (affected_by_spell(ch,SPELL_CURSE)) {
-		act("$n utters the words 'remove curse'.",FALSE,ch,0,0,TO_ROOM);
-		cast_remove_curse(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-
-	if (affected_by_spell(ch,SPELL_PARALYSIS)) {
-		act("$n utters the words 'remove paralysis'.",FALSE,ch,0,0,TO_ROOM);
-		cast_remove_paralysis(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-
-	}	/* end hi level removes */
-
-
-	if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
-		act("$n utters the words 'lemon aid'.",FALSE,ch,0,0,TO_ROOM);
-		cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
-		return(TRUE);
-		}
-	} /* ^ was a npc/not a pc! */
+			if (GET_MOVE(ch) < GET_MAX_MOVE(ch)/2) {
+				act("$n utters the words 'lemon aid'",FALSE,ch,0,0,TO_ROOM);
+				cast_refresh(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				return(TRUE);
+			}
+		} /* ^ was a npc/not a pc! */
 #endif
+	}
 
-  }
+	/* Find a dude to to evil things upon ! */
+	if ((vict = FindAHatee(ch))==NULL)
+		vict = FindVictim(ch);
 
+	if (!vict)
+		vict = ch->specials.fighting;
 
+	if (!vict) return(FALSE);
 
-  /* Find a dude to to evil things upon ! */
+	/*
+		gen number from 0 to level
+	*/
 
-  if ((vict = FindAHatee(ch))==NULL)
-     vict = FindVictim(ch);
+	lspell = number(0,GetMaxLevel(ch));
+	lspell+= GetMaxLevel(ch)/5;
+	lspell = MIN(GetMaxLevel(ch), lspell);
 
-  if (!vict)
-    vict = ch->specials.fighting;
-
-  if (!vict) return(FALSE);
-
-  /*
-    gen number from 0 to level
-    */
-
-  lspell = number(0,GetMaxLevel(ch));
-  lspell+= GetMaxLevel(ch)/5;
-  lspell = MIN(GetMaxLevel(ch), lspell);
-
-  if (lspell < 1)
-    lspell = 1;
+	if (lspell < 1)
+		lspell = 1;
 
 
-  if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 31) &&
-      (!IS_SET(ch->specials.act, ACT_AGGRESSIVE))) {
-    act("$n utters the words 'Woah! I'm outta here!'",
-	1, ch, 0, 0, TO_ROOM);
-    vict = FindMobDiffZoneSameRace(ch);
-    if (vict) {
-      cast_astral_walk(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return(TRUE);
-    }
-    cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-    return(FALSE);
-  }
+	if ((GET_HIT(ch) < (GET_MAX_HIT(ch) / 4)) && (lspell > 31) && (!IS_SET(ch->specials.act, ACT_AGGRESSIVE))) {
+		act("$n utters the words 'Woah! I'm outta here!'",1, ch, 0, 0, TO_ROOM);
+		vict = FindMobDiffZoneSameRace(ch);
+		if (vict) {
+			cast_astral_walk(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return(TRUE);
+		}
+		cast_teleport(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
+		return(FALSE);
+	}
 
+	/*
+		first -- hit a foe, or help yourself?
+	*/
 
-  /*
-    first -- hit a foe, or help yourself?
-    */
+	if (ch->points.hit < (ch->points.max_hit / 2))
+		healperc = 7;
+	else if (ch->points.hit < (ch->points.max_hit / 4))
+		healperc = 5;
+	else if (ch->points.hit < (ch->points.max_hit / 8))
+		healperc=3;
 
-  if (ch->points.hit < (ch->points.max_hit / 2))
-    healperc = 7;
-  else if (ch->points.hit < (ch->points.max_hit / 4))
-    healperc = 5;
-  else if (ch->points.hit < (ch->points.max_hit / 8))
-    healperc=3;
-
-  if (number(1,healperc+2)>3) {
-    /* do harm */
-
-    /* call lightning */
-    if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) &&
-	(number(0,5)==0)) {
-      act("$n whistles.",1,ch,0,0,TO_ROOM);
-      act("$n utters the words 'Here Lightning!'.",1,ch,0,0,TO_ROOM);
-      cast_call_lightning(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
-      return(TRUE);
-    }
+	if (number(1,healperc+2)>3) { /* do harm */
+		/* call lightning */
+		if (OUTSIDE(ch) && (weather_info.sky>=SKY_RAINING) && (lspell >= 15) && (number(0,5)==0)) {
+			act("$n whistles.",1,ch,0,0,TO_ROOM);
+			act("$n utters the words 'Here Lightning!'",1,ch,0,0,TO_ROOM);
+			cast_call_lightning(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+			return(TRUE);
+		}
 
     switch(lspell) {
     case 1:
     case 2:
     case 3:
-      act("$n utters the words 'Moo ha ha!'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'muhahaha!'",1,ch,0,0,TO_ROOM);
       cast_cause_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 4:
     case 5:
     case 6:
-      act("$n utters the words 'Hocus Pocus!'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'hocus pocus'",1,ch,0,0,TO_ROOM);
       cast_blindness(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 7:
-      act("$n utters the words 'Va-Voom!'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'Va-Voom!'",1,ch,0,0,TO_ROOM);
       cast_dispel_magic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 8:
-      act("$n utters the words 'Urgle Blurg'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'urgle blurg'",1,ch,0,0,TO_ROOM);
       cast_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 9:
     case 10:
-      act("$n utters the words 'Take That!'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'take that!'",1,ch,0,0,TO_ROOM);
       cast_cause_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 11:
-      act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'burn baby burn'",1,ch,0,0,TO_ROOM);
       cast_flamestrike(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     case 13:
@@ -2086,14 +1916,14 @@ if (GetMaxLevel(ch) >24)	{
     case 16:
       {
 	  if (!IS_SET(vict->M_immune, IMM_FIRE)) {
-	    act("$n utters the words 'Burn Baby Burn'.",1,ch,0,0,TO_ROOM);
+	    act("$n utters the words 'burn baby burn'",1,ch,0,0,TO_ROOM);
 	    cast_flamestrike(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
 	  } else if (IS_AFFECTED(vict, AFF_SANCTUARY) &&
 		     ( GetMaxLevel(ch) > GetMaxLevel(vict))) {
-	    act("$n utters the words 'Va-Voom!'.",1,ch,0,0,TO_ROOM);
+	    act("$n utters the words 'Va-Voom!'",1,ch,0,0,TO_ROOM);
 	    cast_dispel_magic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,vict,0);
 	  } else {
-	    act("$n utters the words 'Take That!'.",1,ch,0,0,TO_ROOM);
+	    act("$n utters the words 'take that!'",1,ch,0,0,TO_ROOM);
 	    cast_cause_critic(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL, vict, 0);
 	  }
        	break;
@@ -2102,7 +1932,7 @@ if (GetMaxLevel(ch) >24)	{
     case 18:
     case 19:
     default:
-      act("$n utters the words 'Hurts, doesn't it??'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'Hurts, doesn't it??'",1,ch,0,0,TO_ROOM);
       cast_harm(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
       break;
     }
@@ -2113,19 +1943,19 @@ if (GetMaxLevel(ch) >24)	{
     /* do heal */
 
     if (IS_AFFECTED(ch, AFF_BLIND) && (lspell >= 4) & (number(0,3)==0)) {
-      act("$n utters the words 'Praise Celestian, I can SEE!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'Praise Celestian, I can SEE!'", 1, ch,0,0,TO_ROOM);
       cast_cure_blind( GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       return(TRUE);
     }
 
     if (IS_AFFECTED(ch, AFF_CURSE) && (lspell >= 6) && (number(0,6)==0)) {
-      act("$n utters the words 'I'm rubber, you're glue.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'I'm rubber, you're glue'", 1, ch,0,0,TO_ROOM);
       cast_remove_curse(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       return(TRUE);
     }
 
     if (IS_AFFECTED(ch, AFF_POISON) && (lspell >= 5) && (number(0,6)==0)) {
-      act("$n utters the words 'Praise <Deity Name> I don't feel sick no more!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'Praise Pentak, I don't feel sick no more!'", 1, ch,0,0,TO_ROOM);
       cast_remove_poison(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       return(TRUE);
     }
@@ -2134,13 +1964,13 @@ if (GetMaxLevel(ch) >24)	{
     switch(lspell) {
     case 1:
     case 2:
-      act("$n utters the words 'Abrazak'.",1,ch,0,0,TO_ROOM);
+      act("$n utters the words 'abrazak'",1,ch,0,0,TO_ROOM);
       cast_armor(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
     case 3:
     case 4:
     case 5:
-      act("$n utters the words 'I feel good!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'I feel good!'", 1, ch,0,0,TO_ROOM);
       cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
     case 6:
@@ -2148,7 +1978,7 @@ if (GetMaxLevel(ch) >24)	{
     case 8:
     case 9:
     case 10:
-      act("$n utters the words 'I feel much better now!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'I feel much better now!'", 1, ch,0,0,TO_ROOM);
       cast_cure_serious(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
     case 11:
@@ -2157,16 +1987,16 @@ if (GetMaxLevel(ch) >24)	{
     case 14:
     case 15:
     case 16:
-      act("$n utters the words 'Woah! I feel GOOD! Heh.'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'Woah! I feel GOOD! Heh.'", 1, ch,0,0,TO_ROOM);
       cast_cure_critic(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
     case 17:
     case 18: /* heal */
-      act("$n utters the words 'What a Rush!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'What a Rush!'", 1, ch,0,0,TO_ROOM);
       cast_heal(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
     default:
-      act("$n utters the words 'Oooh, pretty!'.", 1, ch,0,0,TO_ROOM);
+      act("$n utters the words 'Oooh, pretty!'", 1, ch,0,0,TO_ROOM);
       cast_sanctuary(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
       break;
 

@@ -1692,7 +1692,7 @@ void auction_id(byte level, struct char_data *ch, struct char_data *victim, stru
 			sprintf(buf2,"$c000w%s","unlimited");
 		else
 			sprintf(buf2,"$c000w%d$c000c", obj->max,obj->level);
-		sprintf(buf,"%s $c000cObjMax: [$c000w%s$c000c], Tweak Rate: [$c000w%d$c000c]\n\r", buf, buf2, obj->tweak);
+		sprintf(buf,"%s $c000cObjMax: [$c000w%s$c000c], Tweak Rate: [$c000w%d$c000c], ObjValue[$c000w%d$c000c]\n\r", buf, buf2, obj->tweak, eval(obj));
 		send_to_char(buf, ch);
 
 		if(obj->level==0)
@@ -1722,7 +1722,7 @@ void auction_id(byte level, struct char_data *ch, struct char_data *victim, stru
 	sprintf(buf,"$c000cWeight:$c000w %d$c000c, Value: $c000w%d,$c000c Rent cost: $c000w %d  %s\n\r",
 			obj->obj_flags.weight, obj->obj_flags.cost,
 			obj->obj_flags.cost_per_day
-			, IS_RARE(obj)? "$c000c[$c00wRARE$c000c]":" ");
+			, IS_RARE(obj)? "$c000c[$c000wRARE$c000c]":" ");
 
 	send_to_char(buf, ch);
 

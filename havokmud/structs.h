@@ -938,7 +938,6 @@ struct room_data
 /* bard stuff */
 #define AFF2_GUARDIAN_ANGEL	   BV17 /* bard mad sneak spell. blame xenon, not me */
 #define AFF2_SONG_OF_WANDERER  BV18 /* no move use */
-#define AFF2_SONG_OF_ETERNAL_LIGHT  BV19 /* set real_roomp(ch->in_room)->light+++++ */
 
 /* Flag spells as brewable or single class */
 #define BREWABLE_SPELL         BV00

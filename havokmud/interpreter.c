@@ -1629,7 +1629,12 @@ AddCommand("sharpen",do_sharpen,602,POSITION_RESTING,1);
 AddCommand("eval", do_eval, 603, POSITION_STANDING, 53);
 AddCommand("reimburse", do_reimb, 604, POSITION_STANDING, 53);
 
-AddCommand("remort", do_not_here, 605, POSITION_STANDING, 1);
+AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
+AddCommand("voice", do_throw_voice, 606, POSITION_SITTING, 1);
+AddCommand("detect sound", do_detect_sound, 607, POSITION_STANDING, 1);
+AddCommand("know", do_know, 608, POSITION_RESTING, 1);
+AddCommand("lore", do_legend_lore, 609, POSITION_RESTING, 1);
+AddCommand("ventriloquate", do_ventriloquate, 610, POSITION_SITTING, 1);
 }
 
 

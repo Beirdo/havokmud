@@ -2867,6 +2867,14 @@ void perform_violence(int pulse)
                /* We are a NPC */
                x = ch->mult_att;
 
+			if(!A_NOHASTE(ch)) {
+				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
+					x = x * 2;
+
+				if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
+					x = x / 2;
+			}
+
                while(x > 0.999)
                {
                   if(ch->specials.fighting)
@@ -3472,6 +3480,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case SPELL_GAS_BREATH:
   case SPELL_SUNRAY:
   case SPELL_DISINTEGRATE:
+  case SONG_OF_BITING_WORDS:
     Our_Bit = IMM_ENERGY;
     break;
 

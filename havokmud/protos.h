@@ -1992,6 +1992,11 @@ void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
 void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
 void do_steed(struct char_data *ch, char *argument, int cmd);
 void do_stop(struct char_data *ch, char *argument, int cmd);
+void do_throw_voice(struct char_data *ch, char *argument, int cmd);
+void do_detect_sound(struct char_data *ch, char *argument, int cmd);
+void do_know(struct char_data *ch, char *argument, int cmd);
+void do_legend_lore(struct char_data *ch, char *argument, int cmd);
+void do_ventriloquate(struct char_data *ch, char *argument, int cmd);
 
 /* From utility.c */
 int advatoi (const char *s);

@@ -4203,3 +4203,420 @@ dlog("in do_stop");
 		send_to_char("But you're not playing a song in the first place?!\n\r",ch);
 	}
 }
+
+void do_throw_voice(struct char_data *ch, char *argument, int cmd)
+{
+	int percent = 0;
+	int dam = 0;
+	struct char_data *vict;
+	char name[120];
+
+dlog("in do_throw_voice");
+
+	if(!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Your voice just isn't up to a challenge like that.\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills) {
+		log("Char without skills trying to throw voice");
+		return;
+	}
+
+	if(!ch->skills[SKILL_THROW_VOICE].learned) {
+		send_to_char("You do not know how to that.\n\r",ch);
+		return;
+	}
+
+	if (ch->specials.fighting) {
+		vict = ch->specials.fighting;
+	}
+
+	if(!vict) {
+		only_argument(argument, name);
+
+		if (!(vict = get_char_room_vis(ch, name))) {
+			send_to_char("Throw your voice at whom?\n\r", ch);
+			return;
+		}
+	}
+
+	if(GET_MOVE(ch) < 10) {
+		send_to_char("Your voice isn't up to the challenge right now.\n\r",ch);
+		return;
+	}
+
+	percent=number(1,101);
+
+	if (ch->skills[SKILL_THROW_VOICE].learned) {
+		if (percent > ch->skills[SKILL_THROW_VOICE].learned) {
+			send_to_char("You try to throw your voice, but fail miserably.\n\r",ch);
+			act("$n croaks at $N.",FALSE, ch, 0,vict,TO_NOTVICT);
+			act("$n croaks at you.",FALSE, ch, 0,vict,TO_VICT);
+			LearnFromMistake(ch, SKILL_THROW_VOICE, 0, 95);
+			GET_MOVE(ch) -= 5;
+		} else {
+			dam = dice(1,4) + (int)GetMaxLevel(ch)/2;
+			damage(ch, vict, dam, SKILL_THROW_VOICE);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+			GET_MOVE(ch) -= 10;
+		}
+	}
+	WAIT_STATE(ch, PULSE_VIOLENCE);
+}
+
+void do_detect_sound(struct char_data *ch, char *argument, int cmd)
+{
+	static char *keywords[]= {
+		"north",
+		"east",
+		"south",
+		"west",
+		"up",
+		"down",
+		"\n"
+	};
+	char *dir_desc[] = {
+		"to the north",
+		"to the east",
+		"to the south",
+		"to the west",
+		"upwards",
+		"downwards"
+	};
+	char *mob_desc[] = {
+		"A being",
+		"A tiny being",
+		"A small being",
+		"A normal sized being",
+		"A large being",
+		"A huge being",
+		"A gargantuan being"
+	};
+	char *rng_desc[] = {
+		"right here",
+		"immediately",
+		"nearby",
+		"a ways",
+		"a ways",
+		"far",
+		"far",
+		"very far",
+		"very far"
+	};
+	char buf[MAX_STRING_LENGTH], buf2[MAX_STRING_LENGTH];
+	char arg1[MAX_STRING_LENGTH], arg2[MAX_STRING_LENGTH];
+	int sd, smin, smax, swt, i, max_range = 6, range, rm, nfnd, percent = 0;
+	struct char_data *spud;
+	long CalcPowerLevel(struct char_data *ch);
+	char *PowerLevelDesc(long a);
+	extern const struct race_type race_list[];
+
+dlog("in do_detect sound");
+
+	if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+		if(!HasClass(ch, CLASS_BARD)) {
+			send_to_char("Your voice just isn't up to a challenge like that.\n\r",ch);
+			return;
+		}
+		if(!ch->skills) {
+			log("Char without skills trying to detect sound");
+			return;
+		}
+		if(!ch->skills[SKILL_DETECT_SOUND].learned) {
+			send_to_char("You do not know how to that.\n\r",ch);
+			return;
+		}
+		if(ch->specials.fighting) {
+			send_to_char("Not while yer fighting, too much noise.\n\r",ch);
+			return;
+		}
+		max_range = 2;
+	}
+
+	percent=number(1,101);
+
+	if (percent > ch->skills[SKILL_DETECT_SOUND].learned) {
+		send_to_char("You strain your ear trying to detect sound nearby, but cannot distinguish anything.\n\r",ch);
+		act("$n cups his ear and listens but grimaces and tries to clean it out.",FALSE, ch, 0,0,TO_ROOM);
+		LearnFromMistake(ch, SKILL_DETECT_SOUND, 0, 95);
+		return;
+	}
+
+	argument_split_2(argument,arg1,arg2);
+	sd = search_block(arg1, keywords, FALSE);
+	if (sd==-1) {
+		smin = 0;
+		smax = 5;
+		swt = 3;
+		sprintf(buf,"$n cups his ear and listens for a moment.");
+		sprintf(buf2,"You listen carefully for a moment and hear:\n\r");
+	} else {
+		smin = sd;
+		smax = sd;
+		swt = 1;
+		sprintf(buf,"$n peers intently %s.",dir_desc[sd]);
+		sprintf(buf2,"You listen carefully for a sound from %s and hear:\n\r",dir_desc[sd]);
+	}
+	act(buf, FALSE, ch, 0, 0, TO_ROOM);
+	send_to_char(buf2,ch);
+	nfnd = 0;
+
+	/* Check in room first */
+	for (spud=real_roomp(ch->in_room)->people;spud;spud=spud->next_in_room) {
+		if (!IS_SET(spud->specials.affected_by,AFF_SNEAK) && spud != ch) {
+			sprintf(buf,"%30s : right here\n\r",mob_desc[race_list[GET_RACE(spud)].size]);
+			send_to_char(buf,ch);
+	 		nfnd++;
+		}
+	}
+
+	for (i = smin; i <= smax; i++) {
+		rm = ch->in_room;
+		range = 0;
+		while (range < max_range) {
+			range++;
+			if (clearpath(ch, rm,i)) {
+				rm = real_roomp(rm)->dir_option[i]->to_room;
+				for (spud=real_roomp(rm)->people;spud;spud=spud->next_in_room) {
+					if (!IS_SET(spud->specials.affected_by,AFF_SNEAK)) {
+						sprintf(buf,"%30s : %s %s\n\r",mob_desc[race_list[GET_RACE(spud)].size],rng_desc[range],dir_desc[i]);
+						send_to_char(buf,ch);
+						nfnd++;
+					}
+				}
+			} else {
+				range = max_range + 1;
+			}
+		}
+	}
+	if (nfnd==0)
+		send_to_char("You hear no sounds but for your own breath.\n\r",ch);
+	WAIT_STATE(ch, PULSE_VIOLENCE);
+}
+
+void do_know(struct char_data *ch, char *argument, int cmd)
+{
+	char buf[MAX_STRING_LENGTH], buf2[MAX_STRING_LENGTH];
+	char arg1[100], arg2[MAX_STRING_LENGTH];
+	struct char_data *vict;
+	int percent = 0, level = 0;
+
+dlog("in do_know");
+
+	if(!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Your voice just isn't up to a challenge like that.\n\r",ch);
+		return;
+	}
+	if(!ch->skills) {
+		log("Char without skills trying to know something");
+		return;
+	}
+
+	if(!*argument) {
+		send_to_char("Did you want to know monster or alignment?\n\r",ch);
+		return;
+	}
+
+	percent=number(1,101);
+	argument_split_2(argument,arg1,arg2);
+
+	if(!*arg1) {
+		send_to_char("Did you want to know monster or alignment?\n\r",ch);
+		return;
+	}
+
+	level = GetMaxLevel(ch);
+
+	if(is_abbrev(arg1,"monster")) {
+		if(!ch->skills[SKILL_KNOW_MONSTER].learned) {
+			send_to_char("You do not know how to that.\n\r",ch);
+			return;
+		}
+		if(!*arg2) {
+			send_to_char("Who did you want to know monster?\n\r",ch);
+			return;
+		}
+		if(!(vict = get_char_room_vis(ch, arg2))) {
+			send_to_char("Noone here by that name.\n\r",ch);
+			return;
+		}
+		if (percent > ch->skills[SKILL_KNOW_MONSTER].learned) {
+			send_to_char("Alas, you don't seem to have enough experience with this type of monster.\n\r",ch);
+			LearnFromMistake(ch, SKILL_KNOW_MONSTER, 0, 95);
+			WAIT_STATE(ch, PULSE_VIOLENCE);
+			return;
+		}
+		spell_know_monster(level, ch, vict, 0);
+	} else if(is_abbrev(arg1,"alignment")) {
+		if(!ch->skills[SKILL_KNOW_ALIGNMENT].learned) {
+			send_to_char("You do not know how to that.\n\r",ch);
+			return;
+		}
+		if(!*arg2) {
+			vict = ch;
+		} else if(!(vict = get_char_room_vis(ch, arg2))) {
+			send_to_char("Noone here by that name.\n\r",ch);
+			return;
+		}
+		if (percent > ch->skills[SKILL_KNOW_ALIGNMENT].learned) {
+			send_to_char("You cannot seem to determine the alignment.\n\r",ch);
+			LearnFromMistake(ch, SKILL_KNOW_ALIGNMENT, 0, 95);
+			WAIT_STATE(ch, PULSE_VIOLENCE);
+			return;
+		}
+		spell_know_alignment(level, ch, vict, 0);
+	} else {
+		send_to_char("Did you want to know monster or alignment?\n\r",ch);
+		return;
+	}
+	WAIT_STATE(ch, PULSE_VIOLENCE);
+}
+
+void do_legend_lore(struct char_data *ch, char *argument, int cmd)
+{
+	char arg[128];
+	struct char_data *dummy;
+	struct obj_data *obj;
+	int percent = 0, level = 0;
+
+dlog("in do_legend_lore");
+
+	if(!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Your voice just isn't up to a challenge like that.\n\r",ch);
+		return;
+	}
+	if(!ch->skills) {
+		log("Char without skills trying to legend lore");
+		return;
+	}
+	if(!ch->skills[SKILL_LEGEND_LORE].learned) {
+		send_to_char("You do not know how to that.\n\r",ch);
+		return;
+	}
+
+	only_argument(argument, arg);
+
+	if(!*arg) {
+		send_to_char("Upon what would you like to try your lore skills?\n\r",ch);
+		return;
+	}
+
+	level = GetMaxLevel(ch);
+	percent=number(1,101);
+
+	if(generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
+		if (percent > ch->skills[SKILL_LEGEND_LORE].learned) {
+			send_to_char("You cannot seem to determine the values of the item.\n\r",ch);
+			LearnFromMistake(ch, SKILL_LEGEND_LORE, 0, 95);
+		} else
+			spell_identify(level, ch, 0, obj);
+	} else {
+		send_to_char("Nothing here by that name.\n\r",ch);
+		return;
+	}
+	WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}
+
+void do_ventriloquate(struct char_data *ch, char *argument, int cmd)
+{
+
+/*
+		Usage: Venttriloquate (target) (what the target should appear to say)
+		Cost: 5 Vitality
+		Display to char if successful:
+			‘You make it seem as if TARGETNAME said ‘TEXT’.’
+		Display to char if unsuccessful:
+‘You tried to make TARGETNAME seem to say ‘TEXT’, but everyone knows they didn’t.’
+		Display to room if successful:
+			‘$c0015TARGETNAME says, ‘TEXT’.’
+		Display to room if unsuccessful:
+‘Someone tried to make it seem like TARGETNAME said ‘TEXT’.’
+		Display to target if successful:
+			‘$c0015Out of absolutely nowhere, you seem to say, ‘TEXT’.’
+		Display to target if unsuccessful:
+			‘Someone tried to make it seem like you said ‘TEXT’.
+*/
+	int percent = 0;
+	int dam = 0;
+	struct char_data *vict;
+	char name[120], string[MAX_STRING_LENGTH], buf[255];
+
+dlog("in do_ventriloquate");
+
+	if(!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Your voice just isn't up to a challenge like that.\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills) {
+		log("Char without skills trying to ventriloquate");
+		return;
+	}
+
+	if(!ch->skills[SKILL_VENTRILOQUATE].learned) {
+		send_to_char("You do not know how to that.\n\r",ch);
+		return;
+	}
+
+	if (ch->specials.fighting) {
+		send_to_char("Hah, not in a fight.\n\r",ch);
+		return;
+	}
+
+	argument_split_2(argument,name,string);
+
+	if(!*name) {
+		send_to_char("Impersonate who?.\n\r",ch);
+		return;
+	}
+
+	if(!*string) {
+		send_to_char("What's it you want them to say?\n\r",ch);
+		return;
+	}
+
+	if (!(vict = get_char_room_vis(ch, name))) {
+		send_to_char("Noone here by that name.\n\r", ch);
+		return;
+	}
+
+	if(ch == vict) {
+		send_to_char("Impersonate yourself? Get real.\n\r",ch);
+		return;
+	}
+
+	if(GET_MOVE(ch) < 5) {
+		send_to_char("Your voice isn't up to the challenge right now.\n\r",ch);
+		return;
+	}
+
+	percent=number(1,101);
+
+	if (ch->skills[SKILL_VENTRILOQUATE].learned) {
+		if (percent > ch->skills[SKILL_VENTRILOQUATE].learned) {
+
+			sprintf("You tried to make $N seem to say ‘%s’, but everyone knows $E didn’t.",string);
+			act(buf,FALSE, ch, 0,vict,TO_CHAR);
+			sprintf("Someone tried to make it seem like $N said ‘%s’",string);
+			act(buf,FALSE, ch, 0,vict,TO_NOTVICT);
+			sprintf("Someone tried to make it seem like you said ‘%s’",string);
+			act(buf,FALSE, ch, 0,vict,TO_VICT);
+
+			LearnFromMistake(ch, SKILL_THROW_VOICE, 0, 95);
+			GET_MOVE(ch) -= 5;
+		} else {
+			sprintf("You make it seem as if $N says ‘%s’",string);
+			act(buf,FALSE, ch, 0,vict,TO_CHAR);
+			sprintf("$c000W[$c000p$N$c000W] says ‘%s’",string);
+			act(buf,FALSE, ch, 0,vict,TO_NOTVICT);
+			sprintf("$c000WYou say ‘%s’",string);
+			act(buf,FALSE, ch, 0,vict,TO_VICT);
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+		}
+	}
+	GET_MOVE(ch) -= 5;
+	WAIT_STATE(ch, PULSE_VIOLENCE);
+}
