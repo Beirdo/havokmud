@@ -2968,39 +2968,45 @@ void TeleportPulseStuff(int pulse)
 
 
 char *advicelist[] = {
-	"Havok's webpage is located at $c000Whttp:\\havok.haaksman.org",
-	"Remember, when you want to leave, find an innkeeper to rent.(Frm Temple. $c000Ws2e4neu)",
-	"After gaining enough exp to level, remember to see your guildmaster to gain and learn new skills.",
+	"Havok's webpage is located at $c000Whttp://havok.haaksman.org/",
+	"Remember, when you want to leave, find an innkeeper to $c0015RENT$c0007 or ask her for an $c0015OFFER$c0007.(From Temple. $c000Ws2e4neu$c0007)",
+	"After earning enough exp to level, remember to see your guildmaster to gain and learn new skills.",
 	"To disable this advice channel, type $c000WSET ADVICE DISABLE",
 	"Use the $c000WOOC $c000wcommand to talk out of character.",
 	"Remember, the $c000WYELL$c000w command is used for zone communication and $c000WSHOUT$c000w is a world wide channel.",
 	"If you have any ideas for the mud, please use the $c000WIDEA$c000w command to inform the gods of it.",
-	"To see a list of all the socials in the game, type $c000WHELP SOCIAL.",
+	"To see a list of all the socials in the game, type $c000WHELP SOCIAL$c0007.",
 	"West of the Temple is a good place to get experience and some good starting gear.",
-	"East of the Temple is donations.  There is also another donations in New Thalos",
+	"East of the Temple is donations. Feel free to grub around there. There is also another donations in New Thalos",
 	"North of the Temple is the hall of rules.  Ignorance of these rules is unacceptable.",
 	"Don't forget to eat and drink or you may die of hunger and thirst.",
-	"To see who is grouped, type $c000WGWHO.",
+	"To see who is grouped, type $c000WGWHO$c0007.",
 	"To turn off any certain channel, type $c000WNOOOC, NOSHOUT, NOYELL$c000w, etc.",
 	"If you have any problems, ask for a god and they may assist you at any time.",
 	"Remember, no foul language over public channels please.",
 	"To see if anyone is in the arena battling, type$c000W WHOARENA",
 	"Karysinya Coach is a quick and easy way to travel the lands. (From Meeting Square go $c000Wsesu$c000w)",
 	"Type $c000WWORLD $c000wto see some interesting facts about Havok.",
-	"$c000WATTRIBUTES $c000wcommand is used to see what spell affects and stats your character has.",
-	"Did you know that you could immort to after you gain 200mil xp?",
-	"Type $c000WWIZLIST $c000wto see a list of all the immortals that trek the lands of Havok.",
+	"$c000WATTRIBUTES $c000wcommand is used to see what spell affects and stats your character has. It can be accessed from lvl 5 upwards.",
+	"Did you know that you can request immortality if your character gains 200mil xp or more?",
+	"Immortals/Gods are the people that rule the mud. Type $c000WWIZLIST $c000wto see a list of all of them.",
 	"Before attacking someone, use the $c000WCONSIDER$c000w command to determine how strong they are.",
 	"To see a list of people in the same zone as you, type $c000WWHOZONE$c000w.",
 	"Some items have ego which means you have to be a certain level to use the item.",
 	"See our discussion board, go 2 east & 1 north of meeting square. ($c000WLook board, read<Message#>",
 	"At times, you may see our resident bot Seth on, whom will spell you up and summon you when needed.",
-	"Typing $c000WQUIT$c000W will not save your character's equipment, visit an innkeeper to keep your gear safe.",//27
+	"Typing $c000WQUIT$c000w will not save your character's equipment. Try $c0015HELP RENT$c0007.",//27
 	"Bug the immortals to add more help and advice to this list.",
-	"Type $c000WNEWS$c000w to see a list of the last news and events thats occured on Havok",
+	"Type $c000WNEWS$c000w to see the last news and events that occurred on Havok",
 	"Use $c000WBPROMPT$c000w to set your battle prompt the same was as the regular $c000WPROMPT$c000w command.",
 	"Type $c000WHELP COLOR$c000w to get a list of the color code characters.",
 	"You cannot $c000WSHOUT$c000w or use $c000WOOC$c000w until level 2." //32
+	"If you're curious about the function of a spell, type $c0015HELP SPELL <spellname>$c0007.",
+	"If you're curious about the function of a skill, type $c0015HELP SKILL <skillname>$c0007.",
+	"You may want to read $c0015HELP NEWBIE$c0007 for some useful information to get you started.",
+	"When confused, try $c0015HELP <feature>$c0007, there may be a helpfile about it!",
+	"Some of Havok's monsters are smart. They may attack you, talk to you, cast spells on you, or help each other out.",
+	"In the $c0015ARENA$c0007, players can battle each other. Dont worry, there are no penalties for dying in the Arena."//38
 
 };
 

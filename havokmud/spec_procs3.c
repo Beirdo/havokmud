@@ -6684,8 +6684,8 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
            char_to_room(ch,51823);
            act("$n madly rages about, then calms down when there's no more quarries about.", FALSE, ch, 0, 0, TO_ROOM);
            do_look(ch, "", 0);
-           return(TRUE);
            send_to_char("You rage about, then realize there's noone to fight and calm down.\n\r",ch);
+           return(TRUE);
 
 	}
 	else
@@ -6722,8 +6722,8 @@ int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 	            char_to_room(ch,51828);
 	            act("$n climbs out of the barrel, swaying slightly.", FALSE, ch, 0, 0, TO_ROOM);
 	            do_look(ch, "", 0);
-	            send_to_char("You feel a bit dizzy from so much mead.",ch);
-
+	            send_to_char("You feel a bit dizzy from so much mead.\n\r",ch);
+                send_to_char("\n\r",ch);
 	return(TRUE);
     } /* end strcmpi() */
    return(FALSE);
