@@ -3159,7 +3159,7 @@ void do_flux(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *victim;
     struct descriptor_data *i;
-    char           *buf;
+    char            buf[MAX_STRING_LENGTH];
 
     dlog("in do_flux");
 
@@ -3167,8 +3167,7 @@ void do_flux(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = get_argument(argument, &buf);
-    if (!buf) {
+    if (!argument) {
         sprintf(buf, "%s just did a flux.", GET_NAME(ch));
         /*
          * want to keep an eye on how often it's used
