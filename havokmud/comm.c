@@ -353,6 +353,7 @@ int run_the_game(int port)
     }
 
     Log("Normal termination of game.");
+    return( 0 );
 }
 
 /*
