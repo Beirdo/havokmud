@@ -359,6 +359,46 @@ int remove_trap(struct char_data *ch, struct obj_data *trap)
     return (TRUE);
 }
 
+void do_disguise(struct char_data *ch, char *argument, int cmd)
+{
+    struct affected_type af;
+    struct char_data *k;
+
+    if (!ch->skills) {
+        return;
+    }
+    send_to_char("You attempt to disguise yourself\n\r", ch);
+
+    if (affected_by_spell(ch, SKILL_DISGUISE)) {
+        send_to_char("You can only do this once per day\n\r", ch);
+        return;
+    }
+
+    if (number(1, 101) < ch->skills[SKILL_DISGUISE].learned) {
+        for (k = character_list; k; k = k->next) {
+            if (k->specials.hunting == ch) {
+                k->specials.hunting = 0;
+            }
+            if (number(1, 101) < ch->skills[SKILL_DISGUISE].learned) {
+                if (Hates(k, ch)) {
+                    ZeroHatred(k, ch);
+                }
+                if (Fears(k, ch)) {
+                    ZeroFeared(k, ch);
+                }
+            }
+        }
+    } else {
+        LearnFromMistake(ch, SKILL_DISGUISE, 0, 95);
+    }
+    af.type = SKILL_DISGUISE;
+    af.duration = 24;
+    af.modifier = 0;
+    af.location = APPLY_NONE;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
+}
+
 void do_find_traps(struct char_data *ch, char *arg, int cmd)
 {
     if (!ch->skills) {
@@ -532,9 +572,6 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
     dlog("in do_sneak");
 
     if (IS_AFFECTED2(ch, AFF2_SKILL_SNEAK)) {
-#if 0
-        affect_from_char(ch, SKILL_SNEAK);
-#endif
         if (IS_AFFECTED(ch, AFF_HIDE)) {
             REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
         }
@@ -557,15 +594,6 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (!IS_AFFECTED(ch, AFF_SILENCE)) {
-        /*
-         * removed this to balance with to many sneak items.. (GH)
-         */
-#if 0
-        if (EqWBits(ch, ITEM_ANTI_THIEF)) {
-            send_to_char("Gonna be hard to "
-                    "sneak around in that!\n\r", ch); return;
-        }
-#endif
         if (HasWBits(ch, ITEM_HUM)) {
             send_to_char("Gonna be hard to sneak around with that thing "
                          "humming\n\r", ch);
@@ -580,34 +608,25 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills) {
         return;
     }
-#if 0
-    if (percent > ch->skills[SKILL_SNEAK].learned +
-            dex_app_skill[GET_DEX(ch)].sneak) {
-        LearnFromMistake(ch, SKILL_SNEAK, 1, 90);
-        WAIT_STATE(ch, PULSE_VIOLENCE); return;
-    }
-#endif
     if (IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
         send_to_char("You stop being sneaky!", ch);
-#if 0
-        affect_from_char(ch, SKILL_SNEAK);
-#endif
         REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
     } else {
         send_to_char("You start jumping from shadow to shadow.", ch);
         SET_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
         WAIT_STATE(ch, PULSE_VIOLENCE * 1);
     }
+}
 
-#if 0
-    af.type = SKILL_SNEAK;
-    af.duration = GET_LEVEL(ch, BestThiefClass(ch));
-    af.modifier = 0;
-    af.location = APPLY_NONE;
-    af.bitvector = AFF_SNEAK;
-    affect_to_char(ch, &af);
-    WAIT_STATE(ch, PULSE_VIOLENCE);
-#endif
+int SpyCheck(struct char_data *ch)
+{
+    if (!ch->skills) {
+        return (FALSE);
+    }
+    if (number(1, 101) > ch->skills[SKILL_SPY].learned) {
+        return (FALSE);
+    }
+    return (TRUE);
 }
 
 void do_spy(struct char_data *ch, char *arg, int cmd)

@@ -75,6 +75,120 @@ void do_feign_death(struct char_data *ch, char *arg, int cmd)
         LearnFromMistake(ch, SKILL_FEIGN_DEATH, 0, 95);
     }
 }
+
+void do_flurry(struct char_data *ch, char *argument, int cmd)
+{
+    int             percent = 0;
+    struct affected_type af;
+
+    dlog("in do_flurry");
+
+    if (ch->specials.remortclass != MONK_LEVEL_IND + 1) {
+        send_to_char("Err, you're likely to trip.\n\r", ch);
+        return;
+    }
+    if (!ch->skills) {
+        Log("Char without skills trying to flurry");
+        return;
+    }
+    if (!ch->skills[SKILL_FLURRY].learned) {
+        send_to_char("You need some guidance before attempting this.\n\r", ch);
+        return;
+    }
+    if (!ch->specials.fighting) {
+        send_to_char("You can only do this when engaged in battle.\n\r", ch);
+        return;
+    }
+    if (affected_by_spell(ch, SKILL_FLURRY)) {
+        send_to_char("You're doing the best you can!\n\r", ch);
+        return;
+    }
+    percent = number(1, 101);
+
+    if (ch->skills[SKILL_FLURRY].learned) {
+        if (percent > ch->skills[SKILL_FLURRY].learned) {
+            send_to_char("You try a daunting combat move, but trip and "
+                         "stumble.\n\r", ch);
+            act("$n tries a daunting combat move, but trips and stumbles.",
+                FALSE, ch, 0, 0, TO_ROOM);
+            LearnFromMistake(ch, SKILL_FLURRY, 0, 90);
+        } else {
+            act("$n starts delivering precision strikes at lightning speed!",
+                TRUE, ch, 0, 0, TO_ROOM);
+            act("You start delivering precision strikes at lightning speed!",
+                TRUE, ch, 0, 0, TO_CHAR);
+            af.type = SKILL_FLURRY;
+            af.duration = 0;
+            af.modifier = 5;
+            af.location = APPLY_HITROLL;
+            af.bitvector = 0;
+            affect_to_char(ch, &af);
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
+                         "using your abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
+        }
+    }
+
+    WAIT_STATE(ch, PULSE_VIOLENCE * 3);
+}
+
+void do_flowerfist(struct char_data *ch, char *argument, int cmd)
+{
+    int             percent = 0,
+                    dam = 0;
+    struct char_data *tch;
+    struct char_data *tempchar;
+    
+    dlog("in do_flowerfist");
+
+    if (ch->specials.remortclass != MONK_LEVEL_IND + 1) {
+        send_to_char("Err, are you sure you want to pick flowers at this "
+                     "moment?\n\r", ch);
+        return;
+    }
+
+    if (!ch->skills) {
+        Log("Char without skills trying to flowerfist");
+        return;
+    }
+
+    if (!ch->skills[SKILL_FLOWERFIST].learned) {
+        send_to_char("You need some guidance before attempting this.\n\r", ch);
+        return;
+    }
+
+    percent = number(1, 120);
+
+    if (ch->skills[SKILL_FLOWERFIST].learned) {
+        if (percent > ch->skills[SKILL_FLOWERFIST].learned + GET_DEX(ch)) {
+            send_to_char("You can't seem to get it right.\n\r", ch);
+            act("$n seems to want to pick some flowers.", FALSE, ch, 0, 0,
+                TO_ROOM);
+            LearnFromMistake(ch, SKILL_FLOWERFIST, 0, 90);
+        } else {
+            act("$n chants loudly, while $s fists seem to be all over the "
+                "place!", TRUE, ch, 0, 0, TO_ROOM);
+            act("You chant loudly, while sending hits throughout the area.",
+                TRUE, ch, 0, 0, TO_CHAR);
+
+            for (tch = real_roomp(ch->in_room)->people; tch;
+                 tch = tempchar) {
+                tempchar = tch->next_in_room;
+                if (!in_group(tch, ch) && !IS_IMMORTAL(tch)) {
+                    dam = dice(6, 6);
+                    damage(ch, tch, dam, TYPE_HIT);
+                }
+            }
+
+            send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
+                         "using your abilities.$c0007\n\r", ch);
+            gain_exp(ch, 100);
+        }
+    }
+
+    WAIT_STATE(ch, PULSE_VIOLENCE * 2);
+}
+
 /* hide */
 /* kick */
 

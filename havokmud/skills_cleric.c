@@ -5749,6 +5749,202 @@ void cast_sanctuary(int level, struct char_data *ch, char *arg, int type,
         break;
     }
 }
+
+void do_scribe(struct char_data *ch, char *argument, int cmd)
+{
+    char            buf[MAX_INPUT_LENGTH];
+    char            arg[MAX_INPUT_LENGTH],
+                   *spellnm;
+    struct obj_data *obj;
+    int             sn = -1,
+                    x,
+                    index,
+                    formula = 0;
+
+    if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
+        send_to_char("Der, what is that?\n\r", ch);
+        return;
+    }
+
+    if (!MainClass(ch, CLERIC_LEVEL_IND) && !IS_IMMORTAL(ch)) {
+        send_to_char("Alas, you can only dream of scribing scrolls.\n\r", ch);
+        return;
+    }
+
+    if (!ch->skills) {
+        send_to_char("You don't seem to have any skills.\n\r", ch);
+        return;
+    }
+
+    if (!(ch->skills[SKILL_SCRIBE].learned)) {
+        send_to_char("You cannot seem to comprehend the intricacies of "
+                     "scribing.\n\r", ch);
+        return;
+    }
+
+    if (!argument) {
+        send_to_char("Which spell would you like to scribe?\n\r", ch);
+        return;
+    }
+
+    if (GET_MANA(ch) < 50 && !IS_IMMORTAL(ch)) {
+        send_to_char("You don't have enough mana to scribe that spell.\n\r",
+                     ch);
+        return;
+    }
+
+    if (!(obj = read_object(EMPTY_SCROLL, VIRTUAL))) {
+        Log("no default scroll could be found for scribe");
+        send_to_char("woops, something's wrong.\n\r", ch);
+        return;
+    }
+
+    argument = get_argument_delim(argument, &spellnm, '\'');
+    /*
+     * Check for beginning quote 
+     */
+    if (!spellnm || spellnm[-1] != '\'') {
+        send_to_char("Magic must always be enclosed by the holy magic symbols :"
+                     " '\n\r", ch);
+        return;
+    }
+
+    sn = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
+    sn = sn - 1;
+
+    /* 
+     * find spell number..
+     */
+    for (x = 0; x < 250; x++) {
+        if (is_abbrev(arg, spells[x])) {
+            sn = x;
+            break;
+        }
+    }
+
+    if (sn == -1) {
+        /* 
+         * no spell found?
+         */
+        send_to_char("Scribe what??.\n\r", ch);
+        return;
+    }
+
+    index = spell_index[sn + 1];
+    if (!ch->skills[sn + 1].learned || index == -1) {
+        /* 
+         * do you know that spell?
+         */
+        send_to_char("You don't know of this spell.\n\r", ch);
+        return;
+    }
+
+    if (!(spell_info[index].min_level_cleric)) {
+        /*
+         * is it a mage spell?
+         */
+        send_to_char("Alas, you cannot scribe that spell, it's not in your "
+                     "sphere.\n\r", ch);
+        return;
+    }
+
+    if (spell_info[index].brewable == 0 && !IS_IMMORTAL(ch)) {
+        send_to_char("You can't scribe this spell.\n\r", ch);
+        return;
+    }
+
+    if (GET_MANA(ch) < spell_info[index].min_usesmana * 2 && 
+        !IS_IMMORTAL(ch)) {
+        send_to_char("You don't have enough mana to scribe that spell.\n\r",
+                     ch);
+        return;
+    }
+
+    act("$n holds up a scroll and binds it with enchantments.", TRUE, ch,
+        obj, NULL, TO_ROOM);
+    act("You bind an empty scroll with enchantments.", TRUE, ch, obj, NULL,
+        TO_CHAR);
+
+    formula = ((ch->skills[SKILL_SCRIBE].learned) + GET_INT(ch) / 3) + 
+              (GET_WIS(ch) / 3);
+
+    if (formula > 98) {
+        formula = 98;
+    }
+    if ((number(1, 101) >= formula || ch->skills[SKILL_SCRIBE].learned < 10) &&
+        !IS_IMMORTAL(ch)) {
+
+        WAIT_STATE(ch, PULSE_VIOLENCE * 5);
+        act("$p goes up in flames!", TRUE, ch, obj, NULL, TO_CHAR);
+        act("$p goes up in flames!", TRUE, ch, obj, NULL, TO_ROOM);
+        GET_HIT(ch) -= 10;
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
+        act("$n yelps in pain.", TRUE, ch, 0, NULL, TO_ROOM);
+        act("Ouch!", TRUE, ch, 0, NULL, TO_CHAR);
+        LearnFromMistake(ch, SKILL_SCRIBE, 0, 90);
+
+        extract_obj(obj);
+    } else {
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
+        sprintf(buf, "You have imbued a spell to %s.\n\r",
+                obj->short_description);
+        send_to_char(buf, ch);
+        send_to_char("The scribing process was a success!\n\r", ch);
+
+        if (obj->short_description) {
+            free(obj->short_description);
+        }
+        sprintf(buf, "a scroll of %s", spells[sn]);
+        obj->short_description = (char *) strdup(buf);
+
+        if (obj->name) {
+            free(obj->name);
+        }
+        sprintf(buf, "scroll %s", spells[sn]);
+        obj->name = (char *) strdup(buf);
+
+        if (obj->description) {
+            free(obj->description);
+        }
+        obj->description = strdup("A scroll, bound with enchantments, lies on "
+                                  "the ground.");
+
+        if (IS_IMMORTAL(ch)) {
+            /* 
+             * set spell level.
+             */
+            obj->obj_flags.value[0] = MAX_MORT;
+            
+            /* 
+             * set ego to level.
+             */
+            obj->level = MAX_MORT;
+        } else {
+            /* 
+             * set spell level.
+             */
+            obj->obj_flags.value[0] = GetMaxLevel(ch);
+
+            /*
+             * set ego to level.
+             */
+            obj->level = GetMaxLevel(ch);
+        }
+        
+        /* 
+         * set spell in slot.
+         */
+        obj->obj_flags.value[1] = sn + 1;
+        obj->obj_flags.timer = 42;
+
+        send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
+                     "your abilities.$c0007\n\r", ch);
+        gain_exp(ch, 100);
+        obj_to_char(obj, ch);
+        WAIT_STATE(ch, PULSE_VIOLENCE * 3);
+    }
+}
+
 #if 0
 void spell_second_wind(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)

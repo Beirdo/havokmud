@@ -6616,6 +6616,17 @@ int is_abbrev(char *arg1, char *arg2)
     return (1);
 }
 
+int IS_FOLLOWING(struct char_data *tch, struct char_data *person)
+{
+    if (person->master) {
+        person = person->master;
+    }
+    if (tch->master) {
+        tch = tch->master;
+    }
+    return (person == tch && IS_AFFECTED(person, AFF_GROUP) && 
+            IS_AFFECTED(tch, AFF_GROUP));
+}
 
 /*************************************************************************
  * Support for different platforms
