@@ -757,27 +757,6 @@ if((IS_MOB(ch)) && (!IS_SET(ch->specials.act,ACT_POLYSELF))&&(mob_index[ch->nr].
 
 /* tell mob to hate killer next load here, or near here */
 
-#if 0
-/* this seems to cause a infinate loop, figure out why */
-
-tmp = ch->specials.fighting;
-if (is_murdervict(ch) &&
-   (IS_PC(tmp) || IS_SET(tmp->specials.act,ACT_POLYSELF)) && ch != tmp) {
-for (tch=real_roomp(ch->in_room)->people;tch;tch = tch->next_in_room) {
- if (ch != tch && GET_POS(tch) > POSITION_SLEEPING &&
-     IS_NPC(tch) && CAN_SEE(tmp, tch))     {
-      if (IS_GOOD(tch) || IS_NEUTRAL(tch))     {
-          sprintf(buf, "Setting MURDER bit on %s for killing %s.",
-                  GET_NAME(tmp),GET_NAME(ch));
-          log(buf);
-        //  SET_BIT(tmp->player.user_flags,MURDER_1);
-	  act("$n points at $N and screams 'MURDERER!",TRUE,tch,0,tmp,TO_ROOM);
-         } /* good/neut */
-        } /* npc */
-       } /* for */
-    } /* start murder stuff */
-
-#endif
 
 
   if (ch->specials.fighting)
@@ -1869,6 +1848,12 @@ if (!IS_PC(victim) && !IS_SET(victim->specials.act,ACT_POLYSELF))
     /*
      *  if the victim is dead, return TRUE.
      */
+     if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
+		do_get(ch, "coins corpse", -1);
+	 }
+	   if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
+		 do_get(ch, "all corpse", -1);
+	   }
     victim = 0;
     return(TRUE);
   } else {

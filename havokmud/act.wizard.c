@@ -3956,6 +3956,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 {
   int   zone;
   char buf[MAX_STRING_LENGTH], zonenum[MAX_INPUT_LENGTH];
+  struct obj_data *obj;
   struct index_data     *which_i;
   int   bottom, top, topi;
   struct string_block   sb;
@@ -4036,6 +4037,42 @@ dlog("in do_show");
 	      oi->number, oi->name);
       append_to_string_block(&sb, buf);
     }
+}
+else if (is_abbrev(buf, "maxxes") && (which_i=obj_index,topi=top_of_objt)) {
+    int         objn;
+    struct index_data   *oi;
+
+    only_argument(argument, zonenum);
+    zone = -1;
+    if (1==sscanf(zonenum,"%i", &zone) &&
+	( zone<0 || zone>top_of_zone_table )) {
+      append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+      return;
+    }
+    if (zone>=0) {
+      bottom = zone ? (zone_table[zone-1].top+1) : 0;
+      top = zone_table[zone].top;
+    }
+
+    append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
+    for (objn=0; objn<topi; objn++) {
+      oi = which_i + objn;
+
+      if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
+	  zone<0 && !isname(zonenum, oi->name))
+	continue; /* optimize later*/
+		  obj = read_object(oi->virtual, VIRTUAL);
+		  if(obj) {
+
+      		if(obj->max!=0) {
+    			  sprintf(buf,"%5d %4d %3d/%3d  %s   (%d)\n\r", oi->virtual, objn,
+	  		    oi->number-1, obj->max, oi->name);
+    			  append_to_string_block(&sb, buf);
+
+  	  		}
+  		  }
+		extract_obj(obj);
+    }
 
 
   } else if (is_abbrev(buf, "rooms")) {
@@ -4086,7 +4123,7 @@ dlog("in do_show");
   } else {
     append_to_string_block(&sb,"Usage:\n\r"
 		 "  show zones\n\r"
-		 "  show (objects|mobiles) (zone#|name)\n\r"
+		 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
 		 "  show rooms (zone#|death|private)\n\r");
   }
   page_string_block(&sb,ch);

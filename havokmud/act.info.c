@@ -3878,10 +3878,31 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 
 }
 
+void do_resistances(struct char_data *ch, char *argument, int cmd) {
+   int x;
+#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
+
+	send_to_char("\n\r$c0005Current resistances:\n\r--------------\n\r",ch);
+	for(x=1;x<=BV17;x=x*2) {
+
+	  if(IS_IMMUNE(ch,x))
+	    	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
+	  	else
+	  	if(IsResist(ch, x))
+	  	 	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
+	  	else
+	   	  if(IsSusc(ch, x))
+	  	  	ch_printf(ch,"$c000pYou are $c000CSusceptible$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
+	  	  else
+	  	  	ch_printf(ch,"$c000pYou are $c000CDefenseless$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
+	}
+
+}
+
 
 void do_attribute(struct char_data *ch, char *argument, int cmd)
 {
-	#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
+#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
    char buf[MAX_STRING_LENGTH];
    struct affected_type *aff;
    struct time_info_data my_age;
@@ -3927,20 +3948,9 @@ $c0014%s$c0005 respectively.\n\r",
 
 /* letrs say the resistances*/
 
-   send_to_char("\n\r$c0005Current Resistances:\n\r--------------\n\r",ch);
+send_to_char("\n\r$c0005Type 'Resist' to see a list of your resistances:\n\r",ch);
 
-for(x=16;x<=64;x=x*2) {
-  if(IsResist(ch, x))
-   	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
-  else
-    if(IS_IMMUNE(ch,x))
-  	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
-  	else
-  	  if(IsSusc(ch, x))
-  	  	ch_printf(ch,"$c000pYou are $c000Csusceptible$c000p to $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
-  	  else
-  	  	ch_printf(ch,"$c000pYou are $c000CDefenseless$c000p to $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
-}
+
    /*
    **   by popular demand -- affected stuff
    */

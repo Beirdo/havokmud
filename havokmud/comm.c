@@ -1819,7 +1819,7 @@ return buf;
 }
 
 /* source: EOD, by John Booth <???> */
-void ch_printf(CHAR_DATA *ch, char *fmt, ...)
+void ch_printf(struct char_data *ch, char *fmt, ...)
 {
     char buf[MAX_STRING_LENGTH];	/* better safe than sorry */
     va_list args;
@@ -2417,9 +2417,9 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     ((time_info.hours >= 12) ? "pm" : "am") );
                     break;
 		case 'T':   /* System Time*/
-                    curr_time = time(NULL);
-             sprintf(tbuf,"%02d:%02d",
-             localtime(&curr_time)->tm_hour,localtime(&curr_time)->tm_min);
+              //      curr_time = time(NULL);
+             //sprintf(tbuf,"%02d:%02d",
+             //localtime(&curr_time)->tm_hour,localtime(&curr_time)->tm_min);
 		    break;
 		case 'R': /* room number for immortals */
 		    if(IS_IMMORTAL(ch)) {

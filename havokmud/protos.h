@@ -168,6 +168,7 @@ void do_consider(struct char_data *ch, char *argument, int cmd);
 void do_spells(struct char_data *ch, char *argument, int cmd);
 void do_world(struct char_data *ch, char *argument, int cmd);
 void do_attribute(struct char_data *ch, char *argument, int cmd);
+void do_resistances(struct char_data *ch, char *argument, int cmd);
 void do_value(struct char_data *ch, char *argument, int cmd);
 char *AlignDesc(int a);
 char *ArmorDesc(int a);

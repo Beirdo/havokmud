@@ -4933,6 +4933,9 @@ void dlog(char *s)
 }
 
 /*added 2001 (GH) */
+int bitvector_num(int temp) {
+	return pc_class_num(temp);
+}
 int pc_class_num(int clss) {
 
   switch(clss) {
@@ -4957,27 +4960,62 @@ int pc_class_num(int clss) {
     case BV18: return 18;
     case BV19: return 19;
     case BV20: return 20;
+    case BV21: return 21;
+	case BV22: return 22;
+	case BV23: return 23;
+	case BV24: return 24;
+	case BV25: return 25;
+	case BV26: return 26;
+	case BV27: return 27;
+	case BV28: return 28;
+	case BV29: return 29;
+	case BV30: return 30;
+	case BV31: return 31;
+
     default: return 0;
   }
+}
+int num_bitvector(int temp) {
+	return pc_num_class(temp);
+
 }
 int pc_num_class(int clss) {
 
   switch(clss) {
-    case 0: return 1;
-    case 1: return 2;
-    case 2: return 4;
-    case 3: return 8;
-    case 4: return 16;
-    case 5: return 32;
-    case 6: return 64;
-    case 7: return 128;
-    case 8: return 256;
-    case 9: return 512;
-    case 10: return 1024;
-	case 11: return 2048;
-	case 12: return 4096;
-	case 13: return 8192;
-	default: return 1;
+    case 0: return BV00;
+    case 1: return BV01;
+    case 2: return BV02;
+    case 3: return BV03;
+    case 4: return BV04;
+    case 5: return BV05;
+    case 6: return BV06;
+    case 7: return BV07;
+    case 8: return BV08;
+    case 9: return BV09;
+    case 10: return BV10;
+    case 11: return BV11;
+    case 12: return BV12;
+    case 13: return BV13;
+    case 14: return BV14;
+    case 15: return BV15;
+    case 16: return BV16;
+    case 17: return BV17;
+    case 18: return BV18;
+    case 19: return BV19;
+    case 20: return BV20;
+    case 21: return BV21;
+    case 22: return BV22;
+    case 23: return BV23;
+    case 24: return BV24;
+    case 25: return BV25;
+    case 26: return BV26;
+    case 27: return BV27;
+    case 28: return BV28;
+    case 29: return BV29;
+    case 30: return BV30;
+	case 31: return BV31;
+
+	default: return BV00;
   }
 }
 

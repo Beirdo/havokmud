@@ -2577,7 +2577,8 @@ dlog("in do_set_flags");
  argument = one_argument(argument,type);
 
  if (!*type) {
- 	send_to_char("Set, but set what?!?!?\n\r",ch);
+ 	send_to_char("Set, but set what?!?!? type help set for further details on\n\r",ch);
+ 	send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak\n\r",ch);
  	return;
   }
 
@@ -2703,7 +2704,45 @@ dlog("in do_set_flags");
 	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOSPLIT);
 	 	   }
 	 	 }
+
+ 	else
+	 if (!strcmp(type,"autogold")) {
+	 	   if (strstr(field,"enable")) {
+	 	     act("Setting autogold on.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->specials.act, PLR_AUTOGOLD))
+	 	       SET_BIT(ch->specials.act, PLR_AUTOGOLD);
+	 	   } else {
+	 	     act("Setting autogold off.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (IS_SET(ch->specials.act, PLR_AUTOGOLD))
+	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOGOLD);
+	 	   }
+	 	 }
 	 else
+	 if (!strcmp(type,"autoloot")) {
+	 	   if (strstr(field,"enable")) {
+	 	     act("Setting autoloot on.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->specials.act, PLR_AUTOLOOT))
+	 	       SET_BIT(ch->specials.act, PLR_AUTOLOOT);
+	 	   } else {
+	 	     act("Setting autoloot off.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (IS_SET(ch->specials.act, PLR_AUTOLOOT))
+	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOLOOT);
+	 	   }
+	 	 }
+	 else
+		if (!strcmp(type,"autoassist")) {
+	 	   if (strstr(field,"enable")) {
+	 	     act("Setting autoloot on.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->specials.act, PLR_AUTOLOOT))
+	 	       SET_BIT(ch->specials.act, PLR_AUTOLOOT);
+	 	   } else {
+	 	     act("Setting autoassist off.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (IS_SET(ch->specials.act, PLR_AUTOLOOT))
+	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOLOOT);
+	 	   }
+	 	 }
+	 else
+
 	 if (!strcmp(type,"advice")) {
 	 	   if (strstr(field,"enable")) {
 	 	     act("Turning on Newbie Help.",FALSE,ch,0,0,TO_CHAR);

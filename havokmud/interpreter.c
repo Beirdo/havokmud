@@ -1550,7 +1550,7 @@ AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
 AddCommand("bid",do_bid,570,POSITION_STANDING,0);
-
+AddCommand("resist",do_resistances,571,POSITION_RESTING,0);
 
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
