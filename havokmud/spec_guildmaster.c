@@ -1735,8 +1735,10 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
                 }
 
                 if (ch->skills[weaponskills[x].skillnum].learned > 0) {
-                    // check if skill already practiced
-                    send_to_char
+                    /* 
+		     * check if skill already practice
+                     */     
+		send_to_char
                         ("$c0013[$c0015Weapon Master$c0013] tells you"
                          " 'You already look quite knowledgeable of that "
                          "weapon.'\n\r", ch);
