@@ -82,7 +82,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
 bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
 		 struct obj_cost *cost, int forcerent)
 {
-  int nbdays,i,ii,limited_items=0;
+  int discount,nbdays,i,ii,limited_items=0;
   char buf[MAX_INPUT_LENGTH];
   struct obj_data *tmp, *tmp_next_obj;
 
@@ -207,6 +207,35 @@ if (!receptionist && forcerent) {
 #endif
 
   if (receptionist) {
+#if 1
+    //(GH)  discounts for same race and same alignment. and charisma..
+
+    if(GET_RACE(ch) == GET_RACE(receptionist))
+      discount = discount + 5;
+
+    if (IS_GOOD(receptionist) && IS_GOOD(ch))
+      discount = discount + 5;
+    else
+      if (IS_EVIL(receptionist) && IS_EVIL(ch))
+	discount = discount + 5;
+      else
+	if(IS_NEUTRAL(receptionist) && IS_NEUTRAL(ch))
+	  discount = discount + 5;
+
+    if (GET_CHR(ch) > GET_CHR(receptionist))
+      discount = discount + (1 + GET_CHR(ch) - GET_CHR(receptionist));
+
+    if(discount > 0) {
+      sprintf(buf,"$n winks at you and offers you a %d%% discount. (%d coins)"
+	      , discount, ((cost->total_cost*discount/100)));
+      cost->total_cost = cost->total_cost - (cost->total_cost*discount/100);
+      act(buf,FALSE,receptionist,0,ch,TO_VICT);
+    }
+#endif
+
+
+
+
     sprintf(buf, "$n tells you 'It will cost you %d coins per day.'",
 	    cost->total_cost);
     act(buf,FALSE,receptionist,0,ch,TO_VICT);
@@ -873,17 +902,7 @@ void CountLimitedItems(struct obj_file_u *st)
 	    */
 	    if (cost_per_day > LIM_ITEM_COST_MIN) {
 	      if(obj->item_number<0) abort();
-	      //obj_index[obj->item_number].number++;
-	    } else {
-#if 0    /* NEW_RENT, he used this to make almost all items rare */
-	      if (IS_OBJ_STAT(obj, ITEM_MAGIC) ||
-		  IS_OBJ_STAT(obj, ITEM_GLOW) ||
-		  IS_OBJ_STAT(obj, ITEM_HUM) ||
-		  IS_OBJ_STAT(obj, ITEM_INVISIBLE) ||
-		  IS_OBJ_STAT(obj, ITEM_BLESS)) {
-		obj_index[obj->item_number].number++;
-	      }
-#endif
+	      obj_index[obj->item_number].number++;
 	    }
 	    obj_index[obj->item_number].number++;
 	    extract_obj(obj);
