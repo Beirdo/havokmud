@@ -59,18 +59,26 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
     if (!ch->skills) {
         return;
     }
+
     if (check_peaceful(ch, "You feel too peaceful to contemplate "
                            "violence.\n\r")) {
         return;
     }
+
     if (!IS_PC(ch) && cmd) {
         return;
     }
+
     /*
      *   get victim
      */
     argument = get_argument(argument, &name);
-    if (!name || !(victim = get_char_room_vis(ch, name))) {
+    if (!name) {
+        send_to_char("Disarm who/what?\n\r", ch);
+        return;
+    }
+
+    if(!(victim = get_char_room_vis(ch, name))) {
         if (ch->specials.fighting) {
             victim = ch->specials.fighting;
         } else {
