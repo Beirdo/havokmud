@@ -554,42 +554,8 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 	char name[32];
 
-	int *concost;
 
-	int *strcost;
-	int *dexcost;
-	int *chrcost;
-	int *intcost;
-	int *wiscost;
-
-	if((GET_RCON(ch) -3) < 3){concost = 3;}
-	else{concost = (GET_RCON(ch) -3);}
-	if((GET_RSTR(ch) -3) < 3){strcost = 3;}
-	else{strcost = (GET_RSTR(ch) -3);}
-	if((GET_RDEX(ch) -3) < 3){dexcost = 3;}
-	else{dexcost = (GET_RDEX(ch) -3);}
-	if((GET_RCHR(ch) -3) < 3){chrcost = 3;}
-	else{chrcost = (GET_RCHR(ch) -3);}
-	if((GET_RINT(ch) -3) < 3){intcost = 3;}
-	else{intcost = (GET_RINT(ch) -3);}
-	if((GET_RWIS(ch) -3) < 3){wiscost = 3;}
-	else{wiscost = (GET_RWIS(ch) -3);}
-
-
-	const struct skillset traininglist[] = {
-//	  { "hitpoints",    1,      2},
-//	  { "movement",  	2,      1},
-//	  { "mana",         3,      2},
-	  { "constitution",	4,		concost},  /*cost is current real stat -3 -Gordon Jan202004- */
-	  { "strength",     5,      strcost},
-	  { "dexterity",    6,      dexcost},
-	  { "charisma",     7,      chrcost},
-	  { "intelligence", 8,      intcost},
-	  { "wisdom",       9,      wiscost},
-	  { "None",		    -1,	    -1}
-
-	};
-	int x=0, stat=0;
+    int x=0, stat=0, cost=3;
 
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
@@ -597,33 +563,46 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	if(cmd!=582 && cmd!=59)
 		return(FALSE);
 
+	const struct skillset traininglist[] = {
+//	  { "hitpoints",    1,      0},
+//	  { "movement",  	2,      0},
+//	  { "mana",         3,      0},
+	  { "constitution",	4,		(GET_RCON(ch) -3)},  /*cost is current real stat -3 -Gordon Jan202004- */
+	  { "strength",     5,      (GET_RSTR(ch) -3)},
+	  { "dexterity",    6,      (GET_RDEX(ch) -3)},
+	  { "charisma",     7,      (GET_RCHR(ch) -3)},
+	  { "intelligence", 8,      (GET_RINT(ch) -3)},
+	  { "wisdom",       9,      (GET_RWIS(ch) -3)},
+	  { "None",		    -1,	    -1}
 
+	};
 
 	if(cmd==582 && !*arg) { //list if no argument
 		ch_printf(ch,"$c000B%-15s     %-3s\n\r------------------------\n\r","Stat","Cost");
-		while(traininglist[x].level!=-1) {
-		   ch_printf(ch,"$c000W %-15s     %-3d\n\r",traininglist[x].name, traininglist[x].level);
-			x++;
-		}
-		return;
+			while(traininglist[x].level!=-1) {
+		    	ch_printf(ch,"$c000W %-15s     %-3d\n\r",traininglist[x].name, traininglist[x].level < 3 ? 3 : traininglist[x].level);
+		 		x++;
+		    }
+		ch_printf(ch,"$c000B------------------------\n\r");
+	    return;
 	} else
 		sprintf(name,"%s",GET_NAME(mob));
-		if(cmd==582) { //train
+	    	if(cmd==582) { //train
+				while(traininglist[x].level!=-1) {
+					if(is_abbrev(arg,traininglist[x].name)) {
+						cost = traininglist[x].level;
+						if(cost < 3)
+							cost = 3;
+							stat= x+1;
+							if(GET_PRAC(ch) - cost < 0) {
+								ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
+								return (TRUE);
+							}
 
-			//ch_printf(ch," Lets train your stats\n\r");
+						break;
+					}
 
-			while(traininglist[x].level!=-1) {
-				if(is_abbrev(arg,traininglist[x].name)) {
-					stat= x+1;
-						if(GET_PRAC(ch) - traininglist[x].level < 0) {
-							ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
-							return (TRUE);
-						}
-
-					break;
-				}
-
-				x++;
+					x++;
 
 			}
 
