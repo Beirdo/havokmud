@@ -611,31 +611,31 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
             return;
         }
         if (GetMaxLevel(ch) < MIN_MAIL_LEVEL) {
-            sprintf(buf, "$n tells you, 'Sorry, you have to be level %d to "
+            sprintf(buf, "$N tells you, 'Sorry, you have to be level %d to "
                          "send mail!'", MIN_MAIL_LEVEL);
-            act(buf, FALSE, mailman, 0, ch, TO_VICT);
+            act(buf, FALSE, ch, 0, mailman, TO_CHAR);
             return;
         }
     }
     if (!*arg) {
-        act("$n tells you, 'Who did you want me to send this to?'",
-            FALSE, mailman, 0, ch, TO_VICT);
+        act("$N tells you, 'Who did you want me to send this to?'",
+            FALSE, ch, 0, mailman, TO_CHAR);
         return;
     }
     if (cmd != BUGMAIL && GET_GOLD(ch) < STAMP_PRICE) {
-        sprintf(buf, "$n tells you, 'It will costs %d coins to deliever "
+        sprintf(buf, "$N tells you, 'It will costs %d coins to deliever "
                      "this.'\n\r"
-                    "$n tells you, '...which I see you can't afford.'",
-                    STAMP_PRICE);
-        act(buf, FALSE, mailman, 0, ch, TO_VICT);
+                     "$N tells you, '...which I see you can't afford.'",
+                     STAMP_PRICE);
+        act(buf, FALSE, ch, 0, mailman, TO_CHAR);
         return;
     }
 
     _parse_name(arg, recipient);
 
     if (find_name(recipient) < 0) {
-        act("$n tells you, 'Never heard of that person!'",
-            FALSE, mailman, 0, ch, TO_VICT);
+        act("$N tells you, 'Never heard of that person!'",
+            FALSE, ch, 0, mailman, TO_CHAR);
         return;
     }
 
@@ -645,16 +645,16 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
 
     act("$n starts to write a note.", TRUE, ch, 0, 0, TO_ROOM);
     if (cmd != BUGMAIL) {
-        sprintf(buf, "$n tells you, 'I'll take %d coins for the delivery.'\n\r"
-                     "$n tells you, 'Write your message, use /w when done. "
+        sprintf(buf, "$N tells you, 'I'll take %d coins for the delivery.'\n\r"
+                     "$N tells you, 'Write your message, use /w when done. "
                      "Use /? for more info on editing strings.'", STAMP_PRICE);
-        act(buf, FALSE, mailman, 0, ch, TO_VICT);
+        act(buf, FALSE, ch, 0, mailman, TO_CHAR);
         GET_GOLD(ch) -= STAMP_PRICE;
     } else {
-        act(" 'Havok MUD thanks you for reporting your bugs.'", FALSE,
-            mailman, 0, ch, TO_VICT);
-        act(" 'Write your message, use /w when done. Use /? for more info on "
-            "editing strings.'", FALSE, mailman, 0, ch, TO_VICT);
+        act("Havok MUD thanks you for reporting your bugs.\n\r"
+            "Write your message, use /w when done.\n\r"
+            "Use /? for more info on editing strings.", FALSE, ch, 0, mailman,
+            TO_CHAR);
     }
     SET_BIT(ch->specials.act, PLR_MAILING);
 
