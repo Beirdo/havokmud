@@ -1528,6 +1528,9 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_da
 int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
+/* Assigns for Leaves of Silver */
+int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
+int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,
@@ -2162,6 +2165,7 @@ int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
 /*Spec_procs2*/
 
 int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2174,3 +2178,7 @@ void do_mobTell(struct char_data *ch,char *mob, char *sentence);
 /*Utilities */
 void qlog(char *desc);
 void do_orebuild(struct char_data *ch, char *argument, char cmd);
+
+/* Leaves of Silver */
+int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
+int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);

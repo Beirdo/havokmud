@@ -1321,6 +1321,14 @@ void assign_mobiles()
   {45564, cleric_specialist_guildmaster },
 
 /*End of Thunder Mountain Keep*/
+
+#if 1
+/* Start Leaves of Silver */
+	{47951, Jessep}, /* Jessep */
+	{47975, Tysha}, /* Tysha */
+/* End Leaves of Silver */
+#endif
+
     /* Ash's New Zones */
 #if 1
 
