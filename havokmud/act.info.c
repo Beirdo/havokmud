@@ -3817,6 +3817,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
   struct time_info_data my_age;
   int i = 0, j2 = 0, Worn_Index = 0;
   char buf2[MAX_STRING_LENGTH];  
+  char buf3[MAX_STRING_LENGTH];
   struct obj_data *j=0, *p=0;
   extern char *apply_types[];
   extern char *affected_bits[];
@@ -3863,6 +3864,7 @@ dlog("in do_attrib");
         			switch(j->affected[i].location) {
 					case APPLY_SPELL:
 						sprintbit(j->affected[i].modifier,affected_bits,buf2);
+						if (strcmp(buf2, "NOBITS")==0) break;
         					sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
         					send_to_char(buf, ch);
            					break;

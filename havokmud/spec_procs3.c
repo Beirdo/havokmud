@@ -4582,11 +4582,12 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				act("$n says, 'If you do me a favor and kill that dastardly Mime Jerry, I will'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM); 
 				act("$n says, 'to pay the consequences when he doesn't come to see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
-				return(TRUE);
-				if (get_obj_in_list_vis(vict, "green key", vict->carrying)) {
+				if (vict->equipment[HOLD]) {
+					do_remove(vict,vict->equipment[HOLD]->name,0);
 	      				sprintf(buf,"green-key %s",GET_NAME(ch));
       					do_give(vict,buf,0);
 					act("$n says, 'Here is the key to the west wing.  You'll need it.'", FALSE, vict, 0, 0, TO_ROOM);
+					return(TRUE);
 				}
 
 			}
@@ -4765,8 +4766,8 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 		}
 		
 		act("$n says, 'Lo.  Yoo be lookin for abit o doctrin?  I offa my'", FALSE, vict, 0, 0, TO_ROOM);
-		act("$n says, 'ade fo a wee tiny 150 grand.  Yoo be stronga, I'", FALSE, vict, 0, 0, TO_ROOM);
-		act("$n says, 'swayr.  Jus gimme da money and I get right ta work.'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'ade fo a wee tiny gold pyle.  Yoo be stronga, I'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'swayr.  Jus type 'buy' and I get right ta work.'", FALSE, vict, 0, 0, TO_ROOM);
 
 	return(TRUE);
 	}
@@ -5368,6 +5369,13 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, i
 				act("$n says, 'Supposedly, there is a spring hidden somewhere in the realm who's waters'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'can restore a person's age if they give some ancient staff to a nymph'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'that guards the it.  Probably rediculous fancy.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 9:
+				act("$n says, 'Ever hear the legend of the Staff of the Ages?'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'Some say that it's mysteries contain the'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'only possibility for the defeat of Bahamut.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'Though, I bet thats crazy.  There's *nothing*'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'that can take out Bahamut, The Ancient Platinum.'", FALSE, vict, 0, 0, TO_ROOM);
 			break;
 			default:
 				act("$n says, 'Leave me alone.  I've got work to do!'", FALSE, vict, 0, 0, TO_ROOM);
