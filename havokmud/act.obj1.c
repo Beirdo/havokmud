@@ -930,11 +930,11 @@ dlog("in do_donate");
 	tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
 	if (tmp_object) {
 	  if (! IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
-	    sprintf(buffer, "%s dissapears from your hands! A small voice says: 'Thank you'.\n\r", tmp_object->short_description);
+	    sprintf(buffer, "%s disappears from your hands! A small voice says: 'Thank you'.\n\r", tmp_object->short_description);
 	    send_to_char(buffer, ch);
        sprintf(buffer,"$c0004The gods thank you for your donation!\n\r");
      	 send_to_char(buffer,ch);
-	    act("$p dissapears from $n's hands!.", 1, ch, tmp_object, 0, TO_ROOM);
+	    act("$p disappears from $n's hands!.", 1, ch, tmp_object, 0, TO_ROOM);
 	    obj_from_char(tmp_object);
 	    obj_to_room(tmp_object,((number(0,1)==1)) ? donations1 : donations2);//);
 	    value +=((tmp_object->obj_flags.cost)*10/100);
@@ -947,7 +947,7 @@ dlog("in do_donate");
 	  }
 	} else {
 	  if (num > 0)
-	    send_to_char("Try donating something you have, silly!.\n\r", ch);
+	    send_to_char("Try donating something you have, silly!\n\r", ch);
 
 	  num = 0;
 	}

@@ -1379,6 +1379,7 @@ void assign_mobiles()
 {33188, Tyrannosaurus_swallower },
  {23200, FightingGuildMaster },
  {51826, sinpool } , /* Lennyas pool proc*/
+ {51843, pridemirror } , /* Lennyas mirror proc*/
  {51803, sin_spawner },
  {51821, trinketlooter },
  {51822, trinketlooter },

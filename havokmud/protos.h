@@ -1513,6 +1513,7 @@ int NeutralBlade(struct char_data *ch, int cmd, char *arg,struct obj_data *tobj,
 
 /* Procs for lennyas sin zone */
 int sinpool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int pridemirror(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int sin_spawner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int altarofsin(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);

@@ -6596,26 +6596,54 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
 
 
  /*Lennyas proc to portal somewhere */
-
  int sinpool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+  {
+    char buf[50];
+    struct char_data *portal;
+
+    if(cmd!=7) return(FALSE);     /* enter */
+    one_argument(arg,buf);
+
+   if(*buf) {
+      if(!(str_cmp("portal",buf)) || !(str_cmp("gate",buf)) ||
+        !(str_cmp("gate portal",buf))) {
+        if(portal=get_char_room("portal",ch->in_room)) {
+            send_to_char("\n\r",ch);
+            send_to_char("Having seen enough of this path, you enter the Gate of Sin.\n\r",ch);
+            send_to_char("\n\r",ch);
+            act("$n enters the Gate of Sin and disappears from your vicinity.", FALSE , ch, 0, 0, TO_ROOM);
+            char_from_room(ch);
+            char_to_room(ch,51804);
+            act("Proven a true sinner, $n materializes from one of the altar's seven sides.", FALSE, ch, 0, 0, TO_ROOM);
+            do_look(ch, "", 0);
+            return(TRUE);
+        }
+      } else return(FALSE);
+    }
+  return(FALSE);
+ }
+
+
+ int pridemirror(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
  {
    char buf[50];
    struct char_data *portal;
 
-   if(cmd!=7) return(FALSE);     /* enter */
+   if(cmd!=15) return(FALSE);     /* look */
    one_argument(arg,buf);
 
   if(*buf) {
-     if(!(str_cmp("portal",buf)) || !(str_cmp("gate",buf)) ||
-        !(str_cmp("gate portal",buf))) {
-       if(portal=get_char_room("pool",ch->in_room)) {
+     if(!(str_cmp("mirror",buf))) {
+       if(portal=get_char_room("mirror",ch->in_room)) {
            send_to_char("\n\r",ch);
-           send_to_char("Having seen enough of this path, you enter the Gate of Sin.\n\r",ch);
+           send_to_char("Ah yes, this is how you look best, after all. Who needs clothes\n\r",ch);
+           send_to_char("with a divine body like yours, anyway? It is time to show that\n\r",ch);
+           send_to_char("Guardian of Pride who looks best around here.\n\r",ch);
            send_to_char("\n\r",ch);
-           act("$n enters the Gate of Sin and disappears from your vicinity.", FALSE , ch, 0, 0, TO_ROOM);
+           act("$n looks into the Mirror of Pride, smiles, and steps inside it.", FALSE , ch, 0, 0, TO_ROOM);
            char_from_room(ch);
-           char_to_room(ch,51804);
-           act("Proven a true sinner, $n materializes from one of the altar's seven sides.", FALSE, ch, 0, 0, TO_ROOM);
+           char_to_room(ch,51835);
+           act("$n steps out of one of the mirroring surfaces in the room, smiling.", FALSE, ch, 0, 0, TO_ROOM);
            do_look(ch, "", 0);
            return(TRUE);
        }
