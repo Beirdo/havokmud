@@ -507,7 +507,9 @@ void load_char_objs(struct char_data *ch)
 	  if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		log("Char has no equipment");
 		return;
-      }
+      }else{
+		  return;
+	  }
 	}
 
 	rewind(fl);
@@ -515,7 +517,9 @@ void load_char_objs(struct char_data *ch)
 	  if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		log("No objects found");
 		return;
-      }
+      }else{
+		  return;
+	  }
 	}
 
 	if (str_cmp(st.owner, GET_NAME(ch)) != 0) {
