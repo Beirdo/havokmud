@@ -4580,6 +4580,7 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 #define PEN_MIGHT 45445
 #define ELAMIN 45417
+#define JESTER_KEY 45480
 #define EYE_DRAGON_SCEPTRE 45470
 /* Elamin */
 int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
@@ -4589,8 +4590,8 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 	struct char_data *vict;
 	struct obj_data *obj;
 	int test=0, r_num=0;
-	int has_pen = 0;
-        int penrnum = 0;
+	int has_pen = 0, has_key = 0;
+        int penrnum = 0, keyrnum = 0;
 	struct obj_data *i;
 
 	if(!AWAKE(ch)) return(FALSE);
@@ -4630,6 +4631,21 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 			act("$n says, 'took a very powerful magical item from me a short time'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'back.  If you will go to the Jester and obtain my pen'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'and bring it back to me, the sceptre will be yours.'", FALSE, vict, 0, 0, TO_ROOM);
+
+			keyrnum = real_object(JESTER_KEY);
+			for (i = vict->carrying; i; i = i->next_content) {
+				if (has_key != 1) {
+				if (i->item_number == keyrnum) has_key = 1;
+				else has_key = 0;
+	                }
+			if (has_key == 1) {
+  	    			sprintf(buf,"skeleton-key %s",GET_NAME(ch));
+      				do_give(vict,buf,0);
+			}
+
+		}
+
+
 			return(TRUE);
 		}
 
@@ -4696,4 +4712,88 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 	
 	return(FALSE);
 
+}
+
+#define GOBLIN_CHUIRGEON 45443
+int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
+	struct char_data *vict;
+	struct obj_data *obj;
+	int test=0, r_num=0;
+	struct obj_data *i;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	if (cmd == 531)	/*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+		
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+		if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+		if (mob_index[vict->nr].virtual != GOBLIN_CHUIRGEON) return(FALSE);
+
+		if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+			send_to_char("Get real.  You shouldn't be playing around with him.\n\r", ch);
+			return (TRUE);
+		}
+		
+		act("$n says, 'Lo.  Yoo be lookin for abit o doctrin?  I offa my'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'ade fo a wee tiny 150 grand.  Yoo be stronga, I'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'swayr.  Jus gimme da money and I get right ta work.'", FALSE, vict, 0, 0, TO_ROOM);
+
+	return(TRUE);
+	}
+
+	else if (cmd == 56) /*Buy*/
+	{
+		if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+			send_to_char("Get real.  You shouldn't be playing around with him.\n\r", ch);
+			return (TRUE);
+		}
+
+
+		test = GET_CON(ch)+1;
+		test = test*100000;
+
+		if (GET_GOLD(ch) < test) {
+			act("$n says, 'Wat I look lyk?  Freebee?  Yoo need mo money.'", FALSE, mob, 0, 0, TO_ROOM);
+			return (TRUE);
+		}
+		else if (GET_EXP(ch) < 100000000) {
+			act("$n says, 'Yoo need mo expuriense befo I can help yoo.'", FALSE, mob, 0, 0, TO_ROOM);
+			return (TRUE);
+		}
+		else if (GET_CON(ch) > 17) {
+			act("$n says, 'Yoo too strong fo mee to help.'", FALSE, mob, 0, 0, TO_ROOM);
+			return (TRUE);
+		}
+		else {
+
+		act("$n says, 'Vewy good.  I begin now.'", FALSE, mob, 0, 0, TO_ROOM);
+		act("$n pushes you to the floor.", FALSE, mob, 0, 0, TO_ROOM);
+		act("$n walks over to one of the cages and pulls a small bunny out.", FALSE, mob, 0, 0, TO_ROOM);
+		act("$n slowly returns, gutting the bunny then quickly slicing your stomach open.", FALSE, mob, 0, 0, TO_ROOM);
+		WAIT_STATE(ch,PULSE_VIOLENCE*12);
+		GET_POS(ch) = POSITION_STUNNED;		
+       		GET_MANA(ch) = 1;
+		GET_MOVE(ch) = 1;
+		GET_HIT(ch) = 1;
+		GET_CON(ch) += 1;
+		GET_GOLD(ch) -= test;
+		GET_EXP(ch) -= GET_CON(ch)*5000000;
+		return (TRUE);	
+		}	
+	}
+	else {
+		return (FALSE);
+	}
+
+	return (FALSE);
 }

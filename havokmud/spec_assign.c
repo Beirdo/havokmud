@@ -1286,6 +1286,7 @@ void assign_mobiles()
   {45409, nadia},
   {45410, mime_jerry},
   {45417, elamin},
+  {45443, goblin_chuirgeon},
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */
