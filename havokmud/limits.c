@@ -531,31 +531,27 @@ if (!HasClass(ch,CLASS_THIEF|CLASS_MONK))
 /* Gain maximum in various points */
 void advance_level(struct char_data *ch, int class)
 {
-  int add_hp, i;
-  char bufx[50];
-  int add_mana = 0, add_move=0;
+ 	int 	add_hp, i, add_mana = 0, add_move=0;
+  	char	bufx[50];
+
+
   if (class > MAX_CLASS) {
     log("Bad advance class.. no such class");
     return;
   }
   	add_move=GET_MAX_MOVE(ch);
 	add_mana=GET_MAX_MANA(ch);
-  if (GET_LEVEL(ch, class) > 0 &&
-      GET_EXP(ch) < titles[class][GET_LEVEL(ch, class)+1].exp) {
+  if (GET_LEVEL(ch, class) > 0 && GET_EXP(ch) < titles[class][GET_LEVEL(ch, class)+1].exp) {
     /*  they can't advance here */
     log("Bad advance_level, can't advance in this class.");
     return;
   }
 
   GET_LEVEL(ch, class) += 1;
-
-
-
-  if (class == WARRIOR_LEVEL_IND || class == BARBARIAN_LEVEL_IND ||
-      class == PALADIN_LEVEL_IND || class == RANGER_LEVEL_IND)
-     add_hp = con_app[GET_RCON(ch)].hitp;
+  if (class == WARRIOR_LEVEL_IND || class == BARBARIAN_LEVEL_IND || class == PALADIN_LEVEL_IND || class == RANGER_LEVEL_IND)
+      add_hp = con_app[GET_RCON(ch)].hitp;
   else
-     add_hp = MIN(con_app[GET_RCON(ch)].hitp,2);
+      add_hp = MIN(con_app[GET_RCON(ch)].hitp,2);
 
 
   switch(class) {
@@ -655,10 +651,8 @@ void advance_level(struct char_data *ch, int class)
 
 
   add_hp = MAX(1, add_hp);
-	if(add_hp > 0) {
-		sprintf(bufx,"You feel healthier. +%d Health\n\r",add_hp);
-		send_to_char(bufx,ch);
-	}
+  sprintf(bufx,"You feel healthier. +%d Health\n\r",add_hp);
+  send_to_char(bufx,ch);
   ch->points.max_hit += add_hp;
 
   if (ch->specials.spells_to_learn < 70)
