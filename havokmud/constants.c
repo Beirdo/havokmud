@@ -1512,7 +1512,7 @@ const char     *spell_wear_off_msg[] = {
     "spell91, please report.",
     "Your skin returns to normal.",
     "spell93, please report.",
-    "Your clarity of vision dissapears",
+    "Your clarity of vision disappears",
     "spell95, please report",
     "The pink glow around your body fades.",    /* 96 */
     "spell 97, please report.",

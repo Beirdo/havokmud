@@ -7200,7 +7200,7 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
                 send_to_char("There is a slight wrenching sensation, and then "
                              "the color disappears.\n\r", ch);
                 send_to_char("\n\r", ch);
-                act("$n enters the pool and dissapears!", FALSE, ch, 0, 0,
+                act("$n enters the pool and disappears!", FALSE, ch, 0, 0,
                     TO_ROOM);
                 char_from_room(ch);
                 char_to_room(ch, BAHAMUT_HOME);

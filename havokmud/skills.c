@@ -2227,7 +2227,7 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
                      "through.\n\r", ch);
         act("$n closes $s eyes and a shimmering portal appears!", FALSE,
             ch, 0, 0, TO_ROOM);
-        act("$n steps through the portal and the portal dissapears!",
+        act("$n steps through the portal and the portal disappears!",
             FALSE, ch, 0, 0, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, location);
