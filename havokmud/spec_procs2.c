@@ -3521,7 +3521,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 					GET_GOLD(ch) -= charge;
 					sprintf(buf,"You practice %s for a while.\n\r",loreskills[x].name);
 					send_to_char(buf,ch);
-					ch->specials.spells_to_learn = ch->specials.spells_to_learn-2;
+					ch->specials.spells_to_learn = ch->specials.spells_to_learn-1;
 
 					if(!IS_SET(ch->skills[loreskills[x].skillnum].flags,SKILL_KNOWN)) {
 						SET_BIT(ch->skills[loreskills[x].skillnum].flags,SKILL_KNOWN);

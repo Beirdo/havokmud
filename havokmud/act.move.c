@@ -1272,6 +1272,7 @@ dlog("in do_pick");
 
   if (percent > (ch->skills[SKILL_PICK_LOCK].learned)) {
     send_to_char("You failed to pick the lock.\n\r", ch);
+    act("$n mutters as $s lockpicks jam in the lock.",TRUE,ch,0,0,TO_ROOM);
     LearnFromMistake(ch, SKILL_PICK_LOCK, 0, 90);
     WAIT_STATE(ch, PULSE_VIOLENCE*4);
     return;
