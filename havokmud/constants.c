@@ -817,7 +817,6 @@ const struct class_def classes[MAX_CLASS] = {
     { "So", "Sorcerer",
       /* Skills */
       { {"acid blast", SPELL_ACID_BLAST, 6, 45},
-        {"animate dead", SPELL_ANIMATE_DEAD, 16, 45},
         {"armor", SPELL_ARMOR, 5, 45},
         {"blindness", SPELL_BLINDNESS, 12, 45},
         {"burning hands", SPELL_BURNING_HANDS, 6, 45},
