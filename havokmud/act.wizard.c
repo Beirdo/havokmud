@@ -4192,9 +4192,6 @@ void do_start(struct char_data *ch)
     send_to_char("Autoexits activated\n\r", ch);
 
     if (IS_SET(ch->player.class, CLASS_THIEF)) {
-
-#if 1
-/* converting to switch */
         switch (GET_RACE(ch)) {
             case RACE_HUMAN:
             case RACE_MOON_ELF:
@@ -4228,61 +4225,6 @@ void do_start(struct char_data *ch)
                 break;
         }
     }
-#else        
-        if (GET_RACE(ch) == RACE_HUMAN) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_MOON_ELF ||
-                   GET_RACE(ch) == RACE_GOLD_ELF ||
-                   GET_RACE(ch) == RACE_WILD_ELF ||
-                   GET_RACE(ch) == RACE_SEA_ELF ||
-                   GET_RACE(ch) == RACE_AVARIEL) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_DROW) {
-            ch->skills[SKILL_SNEAK].learned = 20;
-            ch->skills[SKILL_HIDE].learned = 15;
-            ch->skills[SKILL_STEAL].learned = 25;
-            ch->skills[SKILL_BACKSTAB].learned = 20;
-            ch->skills[SKILL_PICK_LOCK].learned = 5;
-        } else if (GET_RACE(ch) == RACE_DWARF) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_HALFLING) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_ROCK_GNOME ||
-                   GET_RACE(ch) == RACE_DEEP_GNOME ||
-                   GET_RACE(ch) == RACE_FOREST_GNOME) {
-            ch->skills[SKILL_SNEAK].learned = 10;
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 15;
-            ch->skills[SKILL_BACKSTAB].learned = 10;
-            ch->skills[SKILL_PICK_LOCK].learned = 10;
-        } else if (GET_RACE(ch) == RACE_HALF_ELF) {
-            ch->skills[SKILL_HIDE].learned = 5;
-            ch->skills[SKILL_STEAL].learned = 10;
-        }
-
-        else if (GET_RACE(ch) == RACE_HALF_OGRE) {
-        } else if (GET_RACE(ch) == RACE_HALF_ORC) {
-        } else if (GET_RACE(ch) == RACE_HALF_GIANT) {
-        }
-    }
-#endif
-    
 
     ch->skills[SKILL_BASH].learned = 0;
     ch->skills[SKILL_KICK].learned = 0;
