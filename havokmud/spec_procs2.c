@@ -4364,7 +4364,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 							return(TRUE);
 						}
 
-						sprintf(buf,"You practice %s for a while.\n\r",monkskills[x].name);
+						sprintf(buf,"You practice %s for a while.\n\r",warmonkskills[x].name);
 						send_to_char(buf,ch);
 						ch->specials.spells_to_learn--;
 
