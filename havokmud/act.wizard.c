@@ -1266,7 +1266,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
         send_to_char("You must supply a room number or a name.\n\r", ch);
         return;
     }
-    if (isdigit((int)*buf) && NULL == index(buf, '.')) {
+    if (isdigit((int)*buf) && !index(buf, '.')) {
         loc_nr = atoi(buf);
         if (!real_roomp(loc_nr)) {
             if (GetMaxLevel(ch) < CREATOR || loc_nr < 0) {

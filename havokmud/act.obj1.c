@@ -1,6 +1,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "protos.h"
 
@@ -10,14 +11,6 @@
 
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
-
-/*
- * extern functions
- */
-
-struct obj_data *create_money(int amount);
-char            getall(char *name, char *newname);
-int             getabunch(char *name, char *newname);
 
 /*
  * protos.h?
@@ -479,16 +472,20 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     dlog("in do_drop");
 
     argument = get_argument(argument, &arg);
-    if (arg && is_number(arg)) {
+    if( !arg ) {
+        send_to_char("Drop what?\n\r", ch);
+    }
+
+    if (isdigit((int)*arg) && !index(arg, '.')) {
         amount = advatoi(arg);
         argument = get_argument(argument, &arg);
 
-        if (arg && strcasecmp("coins", arg) != 0 && strcasecmp("coin", arg) != 0) {
+        if (!arg || (strcasecmp("coins", arg) && strcasecmp("coin", arg))) {
             send_to_char("Do you mean 'drop <number> coins' ?\n\r", ch);
             return;
         }
 
-        if (amount < 0) {
+        if (amount <= 0) {
             send_to_char("Sorry, you can't do that!\n\r", ch);
             return;
         }
@@ -500,9 +497,6 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
         sprintf(buffer, "You drop %s coins.\n\r", formatNum(amount));
         send_to_char(buffer, ch);
-        if (amount == 0) {
-            return;
-        }
 
         act("$n drops some gold.", FALSE, ch, 0, 0, TO_ROOM);
         tmp_object = create_money(amount);
@@ -511,92 +505,88 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (arg) {
-        if (!strcmp(arg, "all")) {
-            for (tmp_object = ch->carrying;
-                 tmp_object; tmp_object = next_obj) {
-                next_obj = tmp_object->next_content;
-                if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
-                    obj_from_char(tmp_object);
-                    obj_to_room(tmp_object, ch->in_room);
-                    check_falling_obj(tmp_object, ch->in_room);
-                    test = TRUE;
-                } else if (CAN_SEE_OBJ(ch, tmp_object)) {
-                    if (singular(tmp_object)) {
-                        sprintf(buffer,
-                                "You can't drop %s, it must be CURSED!\n\r",
-                                tmp_object->short_description);
-                    } else {
-                        sprintf(buffer,
-                                "You can't drop %s, they must be CURSED!\n\r",
-                                tmp_object->short_description);
-                    }
-                    send_to_char(buffer, ch);
-                    test = TRUE;
-                }
-            }
-            if (!test) {
-                send_to_char("You do not seem to have anything.\n\r", ch);
-            } else {
-                act("You drop everything you own.", 1, ch, 0, 0, TO_CHAR);
-                act("$n drops everything $e owns.", 1, ch, 0, 0, TO_ROOM);
-            }
-#ifdef NODUPLICATES
-            do_save(ch, "", 0);
-#endif
-        } else {
-            if (getall(arg, newarg) == TRUE) {
-                num = -1;
-                strcpy(arg, newarg);
-            } else if ((p = getabunch(arg, newarg)) != '\0') {
-                num = p;
-                strcpy(arg, newarg);
-            } else {
-                num = 1;
-            }
-
-            while (num != 0) {
-                tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
-                if (tmp_object) {
-                    if (!IS_SET(tmp_object->obj_flags.extra_flags,
-                                ITEM_NODROP)) {
-                        sprintf(buffer, "You drop %s.\n\r",
-                                tmp_object->short_description);
-                        send_to_char(buffer, ch);
-                        act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
-                        obj_from_char(tmp_object);
-                        obj_to_room(tmp_object, ch->in_room);
-
-                        check_falling_obj(tmp_object, ch->in_room);
-                    } else {
-                        if (singular(tmp_object)) {
-                            send_to_char("You can't drop it, it must be "
-                                         "CURSED!\n\r", ch);
-                        } else {
-                            send_to_char("You can't drop them, they must be "
-                                         "CURSED!\n\r", ch);
-                        }
-
-                        num = 0;
-                    }
+    if (!strcmp(arg, "all")) {
+        for (tmp_object = ch->carrying;
+             tmp_object; tmp_object = next_obj) {
+            next_obj = tmp_object->next_content;
+            if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
+                obj_from_char(tmp_object);
+                obj_to_room(tmp_object, ch->in_room);
+                check_falling_obj(tmp_object, ch->in_room);
+                test = TRUE;
+            } else if (CAN_SEE_OBJ(ch, tmp_object)) {
+                if (singular(tmp_object)) {
+                    sprintf(buffer,
+                            "You can't drop %s, it must be CURSED!\n\r",
+                            tmp_object->short_description);
                 } else {
-                    if (num > 0) {
-                        send_to_char("You do not have that item.\n\r", ch);
-                    }
-
-                    num = 0;
+                    sprintf(buffer,
+                            "You can't drop %s, they must be CURSED!\n\r",
+                            tmp_object->short_description);
                 }
-                if (num > 0) {
-                    num--;
-                }
+                send_to_char(buffer, ch);
+                test = TRUE;
             }
-#ifdef NODUPLICATES
-            do_save(ch, "", 0);
-#endif
         }
+        if (!test) {
+            send_to_char("You do not seem to have anything.\n\r", ch);
+        } else {
+            act("You drop everything you own.", 1, ch, 0, 0, TO_CHAR);
+            act("$n drops everything $e owns.", 1, ch, 0, 0, TO_ROOM);
+        }
+#ifdef NODUPLICATES
+        do_save(ch, "", 0);
+#endif
+        return;
+    } 
+
+    if (getall(arg, newarg) == TRUE) {
+        num = -1;
+        strcpy(arg, newarg);
+    } else if ((p = getabunch(arg, newarg)) != '\0') {
+        num = p;
+        strcpy(arg, newarg);
     } else {
-        send_to_char("Drop what?\n\r", ch);
+        num = 1;
     }
+
+    while (num != 0) {
+        tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
+        if (tmp_object) {
+            if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
+                sprintf(buffer, "You drop %s.\n\r",
+                        tmp_object->short_description);
+                send_to_char(buffer, ch);
+                act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
+                obj_from_char(tmp_object);
+                obj_to_room(tmp_object, ch->in_room);
+
+                check_falling_obj(tmp_object, ch->in_room);
+            } else {
+                if (singular(tmp_object)) {
+                    send_to_char("You can't drop it, it must be CURSED!\n\r",
+                                 ch);
+                } else {
+                    send_to_char("You can't drop them, they must be "
+                                 "CURSED!\n\r", ch);
+                }
+
+                num = 0;
+            }
+        } else {
+            if (num > 0) {
+                send_to_char("You do not have that item.\n\r", ch);
+            }
+
+            num = 0;
+        }
+        if (num > 0) {
+            num--;
+        }
+    }
+#ifdef NODUPLICATES
+    do_save(ch, "", 0);
+#endif
 }
 
 void do_put(struct char_data *ch, char *argument, int cmd)
