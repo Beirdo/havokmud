@@ -618,6 +618,14 @@ dlog("in do_flee");
 				if (ch->specials.fighting)
 					stop_fighting(ch);
 
+				if (ch->specials.remortclass == (THIEF_LEVEL_IND + 1) && !IS_AFFECTED(ch, AFF_HIDE)) {
+					 do_hide(ch, 0, 0);
+					 if (!IS_AFFECTED(ch, AFF_HIDE)){
+						 do_hide(ch, 0, 0);
+					 }
+
+
+				}
 				return;
 			} else {
 				if (!die)

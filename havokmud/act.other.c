@@ -620,6 +620,16 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_hide");
 
+  if(cmd == 334 && !HasClass(ch, CLASS_BARBARIAN)){
+   send_to_char("Hey, you can't do that!\n\r", ch);
+   return;
+}
+
+  if (cmd == 153 && !HasClass(ch, CLASS_THIEF|CLASS_MONK|CLASS_RANGER)){
+	  send_to_char("Hey, you can't do that!\n\r", ch);
+	  return;
+}
+
   if (IS_AFFECTED(ch, AFF_HIDE))
     REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
 
@@ -651,12 +661,13 @@ dlog("in do_hide");
   if (percent > ch->skills[SKILL_HIDE].learned +
       dex_app_skill[GET_DEX(ch)].hide) {
     LearnFromMistake(ch, SKILL_HIDE, 1, 90);
-    WAIT_STATE(ch, PULSE_VIOLENCE*1);
+    if (cmd) WAIT_STATE(ch, PULSE_VIOLENCE*1);
     return;
+
   }
 
   SET_BIT(ch->specials.affected_by, AFF_HIDE);
-  WAIT_STATE(ch, PULSE_VIOLENCE*1);
+  if (cmd) WAIT_STATE(ch, PULSE_VIOLENCE*1);
 
 }
 
