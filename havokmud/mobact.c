@@ -303,7 +303,7 @@ void mobile_activity(struct char_data *ch)
   }
 
 	/* darkraces have autodarkness   -Lennya 20030604 */
-	if (IsDarkrace(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+	if (IsDarkrace(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)) {
 		act("$n uses $s innate powers of darkness.",FALSE,ch,0,0,TO_ROOM);
 		cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 	}
@@ -536,8 +536,8 @@ if (!IS_PC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF) && ch->specials.fightin
 
   if (!IS_PC(ch) && ch->specials.fighting)
   {
-    if (IS_AFFECTED(ch->specials.fighting, AFF_FIRESHIELD) || IS_AFFECTED2(ch->specials.fighting, AFF2_CHILLSHIELD)
-    		|| IS_AFFECTED2(ch->specials.fighting, AFF2_BLADE_BARRIER))
+    if (IS_AFFECTED(ch->specials.fighting, AFF_FIRESHIELD) || IS_AFFECTED(ch->specials.fighting, AFF_CHILLSHIELD)
+    		|| IS_AFFECTED(ch->specials.fighting, AFF_BLADE_BARRIER))
     {
       struct char_data *vict;
       vict = FindVictim(ch);

@@ -137,24 +137,24 @@ void cast_major_track( byte level, struct char_data *ch, char *arg, int type,
   switch(type){
   case SPELL_TYPE_SPELL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 1);
+    spell_track(level, ch, tar_ch, tar_obj);
     break;
   case SPELL_TYPE_POTION:
-    spell_track(level, ch, ch, 1);
+    spell_track(level, ch, ch, tar_obj);
     break;
   case SPELL_TYPE_WAND:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 1);
+    spell_track(level, ch, tar_ch, tar_obj);
     break;
   case SPELL_TYPE_SCROLL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 1);
+    spell_track(level, ch, tar_ch, tar_obj);
     break;
   case SPELL_TYPE_STAFF:
     for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
         if (tar_ch != ch)
-           spell_track(level, ch, tar_ch, 1);
+           spell_track(level, ch, tar_ch, tar_obj);
     }
     break;
   default:

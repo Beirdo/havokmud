@@ -361,7 +361,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 			act("You are engulfed by $n, and are quickly disassembled.",FALSE,ch,0,t,TO_VICT);
 			act("$N is quickly reduced to a bloody pile of bones by $n.",FALSE,ch,0,t,TO_NOTVICT);
 			GET_HIT(ch) -= GET_HIT(t);
-			die(t,NULL);
+			die(t,'\0');
 			/* find the corpse and destroy it */
 			rp = real_roomp(ch->in_room);
 			if (!rp) {
@@ -424,7 +424,7 @@ int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *
 				act("You are engulfed by $n, and are quickly disassembled.",FALSE,ch,0,t,TO_VICT);
 				act("$N is quickly reduced to a bloody pile of bones by $n.",FALSE,ch,0,t,TO_NOTVICT);
 				GET_HIT(ch) -= GET_HIT(t);
-				die(t,NULL);
+				die(t,'\0');
 				/* find the corpse and destroy it */
 				rp = real_roomp(ch->in_room);
 				if (!rp) {

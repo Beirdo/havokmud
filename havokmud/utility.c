@@ -3076,6 +3076,7 @@ void DarknessPulseStuff(int pulse)
 	struct descriptor_data *i;
 	register struct char_data *ch;
 	char buf[80], buffer[150];
+	int j = 0;
 
 	if (pulse < 0)
 		return;
@@ -3086,8 +3087,16 @@ void DarknessPulseStuff(int pulse)
 	for (i = descriptor_list; i; i=i->next) {
 		if (!i->connected) {
 			ch = i->character;
+log("running darknesspulsestuff");
+			for (j = 0; j <= (MAX_WEAR - 1); j++) { /* scrap antisun before doing the darkness check */
+				if (ch->equipment[j] && ch->equipment[j]->item_number>=0)  {
+					if (IS_SET(ch->equipment[j]->obj_flags.extra_flags,ITEM_ANTI_SUN)) {
+						AntiSunItem(ch, 0, 0, ch->equipment[j], PULSE_COMMAND);
+					}
+				}
+			}
 			if (IS_PC(ch) && IsDarkrace(ch)) {
-				if(AWAKE(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)
+				if(AWAKE(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(ch,AFF_DARKNESS)
 							&& !IS_UNDERGROUND(ch) && !IS_DARK(ch->in_room)) {
 					act("$n uses $s innate powers of darkness.",FALSE,ch,0,0,TO_ROOM);
 					act("You use your innate powers of darkness.",FALSE,ch,0,0,TO_CHAR);

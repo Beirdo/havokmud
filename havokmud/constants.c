@@ -351,35 +351,8 @@ const char *spell_wear_off_msg[] = {
  	"The aura of freezing flames that surrounds you melts.", //338
     "wall of thought",
     "mind tap",
- "Your blade barrier winks out of existence.",
-  "",
-  "",
-  "",
-  "", /**/
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "", /*360*/
-
-
-
-  "\n"
+	"Your blade barrier winks out of existence.",
+	"\n"
 };
 
 const char *spell_wear_off_room_msg[] = {
@@ -725,8 +698,7 @@ const char *spell_wear_off_room_msg[] = {
     "wall of thought",
     "mind tap",
     "$n's blade barrier winks out of existence.",
-
-"\n"
+	"\n"
 };
 
 const char *spell_wear_off_soon_msg[] = {
@@ -1071,7 +1043,7 @@ const char *spell_wear_off_soon_msg[] = {
  	"Your aura of freezing flames hisses softly.", //338
     "wall of thought",
     "mind tap",
-	"Your blade barrier wavers a moment",
+	"Your blade barrier wavers a moment.",
 "\n"
 };
 
@@ -3178,15 +3150,15 @@ const char *affected_bits[] =
 	"Hide",
 	"Silence",
 	"Charm",
-	"Follow",
+	"Darkness",
 	"Protect from Evil",
 	"True Sight",
 	"Scrying",
 	"Fireshield",
 	"Group",
 	"Telepathy",
-	"Wings Tired",
-	"Wings Burned",
+	"Chillshield",
+	"Blade barrier",
    "\n"
 };
 
@@ -3200,14 +3172,14 @@ const char *affected_bits2[] =
 	"AWAY-FROM-KEYBOARD",
     "Detect Good",
 	"Protection from Good",
-	"Darkness",
+	"Follow",
 	"Haste",
 	"Slow",
-	"Blade-Barrier",
+	"Wings burned",
 	"style-berserked",
 	"Quest",
 	"NoOutdoorLogs",
-	"chillshield",
+	"Wings tired",
 	"invis to undead",
 	"\n"
 };

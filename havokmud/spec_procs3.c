@@ -3200,12 +3200,13 @@ log("trying to berserk because of item ");
 
 int AntiSunItem(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
+
 	if (type != PULSE_COMMAND)
   		return(FALSE);
 
 	if (OUTSIDE(ch) && weather_info.sunlight == SUN_LIGHT
 		&& weather_info.sky<= SKY_CLOUDY &&
-		!IS_AFFECTED2(ch,AFF2_DARKNESS)) {
+		!IS_AFFECTED(ch,AFF_DARKNESS)) {
   			/* frag the item! */
 		act("The sun strikes $p, causing it to fall apart!",FALSE,ch,obj,0,TO_CHAR);
 		act("The sun strikes $p worn by $n, causing it to fall apart!",FALSE,ch,obj,0,TO_ROOM);
@@ -6678,7 +6679,8 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
 				do_say(i,"Grandpa! Oh grandpa, I'm home!",0);
 				/* make tysha follow Vaelhar */
 				if (i->master) {
-					hero = get_char_room(i->master, ch->in_room);
+//					hero = get_char_room(i->master, ch->in_room);
+					hero = i->master;
  					stop_follower(i);
 				}
 				add_follower(i, ch);
@@ -6694,11 +6696,15 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
  				do_say(ch,"the spirit to make use of it. I wish you well.",0);
  				act("Vaelhar hands over Brynn'Ath, Bane of the Blighted.", FALSE, ch, 0, 0, TO_ROOM);
  				/* give tysha's former master brynn'ath */
- 				obj = read_object(47914, REAL);
- 				if (!obj)
+ 				obj = read_object(47914, VIRTUAL);
+ 				if (!obj) {
+					log("No obj found in Vaelhar's proc");
  					return(FALSE);
- 				if (!hero)
+				}
+ 				if (!hero) {
+					log("No hero found in Vaelhar's proc");
  					return(FALSE);
+				}
 				obj_to_char(obj, hero);
 			}
 		}
@@ -7466,7 +7472,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 								}
 								/* and replace it by something more comfy */
 								sprintf(buf, "comfortable-robe");
-								do_wear(i, buf, "body");
+								do_wear(i, buf, WEAR_BODY);
 								return(TRUE);
 							} else {
 								/* made his save, give him some notice */
@@ -7505,7 +7511,7 @@ int lust_sinner(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 							}
 							/* and replace it by something more comfy */
 							sprintf(buf, "comfortable-robe");
-							do_wear(i, buf, "body");
+							do_wear(i, buf, WEAR_BODY);
 							return(TRUE);
 						}
 					} /* victim already charmed, boo, someone was quicker than I was */

@@ -58,6 +58,7 @@ int ValidMove( struct char_data *ch, int cmd)
 {
 	char tmp[256];
 	struct room_direction_data	*exitp;
+	struct room_data *rp;
 
 	exitp = EXIT(ch, cmd);
 
@@ -94,11 +95,16 @@ int ValidMove( struct char_data *ch, int cmd)
 */
 	/*Wizset fast.. (GH)*/
 	if (!exit_ok(exitp,NULL))  {
-		if (!make_exit_ok(ch,real_roomp(ch->in_room),cmd)) {
-			NotLegalMove(ch);
+		if(rp = real_roomp(ch->in_room)) {
+
+			if (!make_exit_ok(ch,&rp,cmd)) {
+				NotLegalMove(ch);
+				return(FALSE);
+			} else
+				return(FALSE);
+		} else {
 			return(FALSE);
-		} else
-			return(FALSE);
+		}
 	} else if (IS_SET(exitp->exit_info, EX_CLOSED)) {
 		if (exitp->keyword) {
 			if (!IS_SET(exitp->exit_info, EX_SECRET) && (strcmp(fname(exitp->keyword), "secret"))) {
@@ -1790,10 +1796,10 @@ if(IS_AFFECTED(ch,AFF_FLYING))
        affect_from_char(ch,COND_WINGS_FLY);
 
        af2.type     = COND_WINGS_TIRED;
-       af2.location = APPLY_NONE;
+       af2.location = APPLY_BV2;
        af2.modifier = 0;
        af2.duration = GET_CON(ch) - dur_remaining;
-       af2.bitvector= AFF_WINGSTIRED;
+       af2.bitvector= AFF2_WINGSTIRED;
        affect_to_char(ch, &af2);
 
        }
@@ -1843,11 +1849,11 @@ if(IS_SET(ch->specials.act, PLR_NOFLY))
 if(IS_AFFECTED(ch,AFF_FLYING))
   {send_to_char("But you are already flying.\n\r",ch);
    return;
-  }else if(IS_AFFECTED(ch,AFF_WINGSBURNED)) {
+  }else if(IS_AFFECTED2(ch,AFF2_WINGSBURNED)) {
     send_to_char("Your wings have sustained too much damage to lift you.\n\r",ch);
     act("$n stretches his wings experimentally and winces in pain.",TRUE,ch,0,0,TO_ROOM);
     return;
-  } else if(IS_AFFECTED(ch, AFF_WINGSTIRED)) {
+  } else if(IS_AFFECTED2(ch, AFF2_WINGSTIRED)) {
   for(af = ch->affected;af;af = af->next)
    if(af->type == COND_WINGS_TIRED)
      tired_remaining = af->duration;

@@ -2747,6 +2747,7 @@ int does_Load(int num, int max ) {
 void reset_zone(int zone)
 {
   int cmd_no, last_cmd = 1, j, i, tweakroll = 100,tweakrate = 0;
+  int tweakmin = 0; /* this is the minimum tweak rate on ALL items, currently 0 */
   char buf[256];
   struct char_data *mob;
   struct char_data *master;
@@ -2757,7 +2758,6 @@ void reset_zone(int zone)
   extern long SystemFlags;
   mob = 0;
 
-  int tweakmin = 0; /* this is the minimum tweak rate on ALL items, currently 0 */
 
 #if OLD_ZONE_STUFF
 #if 0

@@ -733,7 +733,7 @@ if (!ch || !i) {
     }
 
  if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
    }
 
@@ -742,18 +742,18 @@ if (!ch || !i) {
       act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
 
     if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
    }
-    if (IS_AFFECTED2(i, AFF2_CHILLSHIELD)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+    if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
-   if  (IS_AFFECTED2(i,AFF2_DARKNESS))
+   if  (IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0008$n is surrounded by darkness!", FALSE, i, 0, ch, TO_VICT);
 
-   if  (IS_AFFECTED2(i,AFF2_BLADE_BARRIER))
+   if  (IS_AFFECTED(i,AFF_BLADE_BARRIER))
       act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
 
   } else if (mode == 1) {
@@ -1122,7 +1122,7 @@ if (IS_LINKDEAD(i))
     }
 
  if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
    }
 
@@ -1130,19 +1130,19 @@ if (IS_LINKDEAD(i))
       act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
 
     if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
-    if (IS_AFFECTED2(i, AFF2_CHILLSHIELD)) {
-   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+    if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
+   if (!IS_AFFECTED(i,AFF_DARKNESS))
       act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
-    if (IS_AFFECTED2(i,AFF2_DARKNESS))
+    if (IS_AFFECTED(i,AFF_DARKNESS))
       act("$c0008$n is surround by darkness!", FALSE, i, 0, ch, TO_VICT);
 
-   if  (IS_AFFECTED2(i,AFF2_BLADE_BARRIER))
+   if  (IS_AFFECTED(i,AFF_BLADE_BARRIER))
       act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
 
   } else if (mode == 1) {
@@ -2108,10 +2108,10 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 
 
     /* Drow fight -4 in lighted rooms! */
-	if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && !IS_AFFECTED2(ch,AFF2_DARKNESS) && !IS_UNDERGROUND(ch))   {
+	if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && !IS_AFFECTED(ch,AFF_DARKNESS) && !IS_UNDERGROUND(ch))   {
        ch_printf(ch,"$c0011The light is the area causes you great pain$c0009!\n\r");
 	}
-	if (IS_SET(ch->specials.affected_by,AFF_WINGSBURNED)) {
+	if (IS_SET(ch->specials.affected_by2,AFF2_WINGSBURNED)) {
 	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.$c000B\n\r",ch);
 	}
 	if (IS_SET(ch->specials.act,PLR_NOFLY))   {

@@ -2014,6 +2014,8 @@ int MaxConForRace(struct char_data *ch);
 int MaxChrForRace(struct char_data *ch);
 int MaxStrForRace(struct char_data *ch);
 
+/* test*/
+
 int MaxLimited(int lev);
 int SiteLock (char *site);
 int IsSpecialized(int sk_num);

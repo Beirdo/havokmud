@@ -1667,7 +1667,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 						return(TRUE);
 				}
 			}
-			if (IS_AFFECTED2(v, AFF2_CHILLSHIELD) && !IS_AFFECTED2(ch, AFF2_CHILLSHIELD)) {
+			if (IS_AFFECTED(v, AFF_CHILLSHIELD) && !IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
 				lev = GetMaxLevel(v);
 				dam = dice(1,6)+(lev/2);
 				if (damage(v, ch, dam, SPELL_CHILLSHIELD)) {
@@ -1729,6 +1729,8 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 					}
 					/* add the damage display for imms and legends */
 					if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)  || IS_SET(ch->specials.act, PLR_LEGEND)) {
+						if(dam < 0)
+							dam = 0;
 						sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
 						strcat(chbuf,dambuf);
 						sprintf(dambuf,"");
@@ -2210,7 +2212,7 @@ int CalcThaco(struct char_data *ch)
 
     /*  Drow are -4 to hit during daylight or lighted rooms. */
   if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW && IS_PC(ch)
-      && !IS_AFFECTED2(ch,AFF2_DARKNESS) && !IS_UNDERGROUND(ch)) {
+      && !IS_AFFECTED(ch,AFF_DARKNESS) && !IS_UNDERGROUND(ch)) {
        calc_thaco +=4;
       }
 
@@ -2514,7 +2516,7 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
   }
 
   /* let's see if this works */
-			if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER) && !IS_AFFECTED2(ch, AFF2_BLADE_BARRIER)) {
+			if (IS_AFFECTED(victim, AFF_BLADE_BARRIER) && !IS_AFFECTED(ch, AFF_BLADE_BARRIER)) {
 				/* 8d8, half for save, on a successful hit */
 				if (HitOrMiss(victim, ch, CalcThaco(victim))) {
 					dam = dice(8,8);
@@ -4653,16 +4655,16 @@ if(IS_SET(ch->M_immune, IMM_FIRE))
 
 if(GET_RACE(ch) == RACE_AVARIEL)   /*Races with fire prone wings*/
    {
-    if(IS_AFFECTED(ch, AFF_WINGSBURNED))
+    if(IS_AFFECTED2(ch, AFF2_WINGSBURNED))
       affect_from_char(ch, COND_WINGS_BURNED);
 
     send_to_char("The flames burn a swath of feathers from your wings!\n\r",ch);
-    act("$n has the feathers seared from his wings!\n\r",FALSE,ch,0,0,TO_ROOM);
+    act("$n has the feathers seared from $ss wings!\n\r",FALSE,ch,0,0,TO_ROOM);
     af.type      = COND_WINGS_BURNED;
-    af.location  = APPLY_NONE;
+    af.location  = APPLY_BV2;
     af.modifier  = 0;
     af.duration  = 536;
-    af.bitvector = AFF_WINGSBURNED;
+    af.bitvector = AFF2_WINGSBURNED;
     affect_to_char(ch, &af);
     if(affected_by_spell(ch,COND_WINGS_FLY))
        {
@@ -4690,8 +4692,15 @@ void specdamage(struct char_data *ch, struct char_data *v)
 {
   struct obj_data *object;
 
-	if (affected_by_spell(ch, SPELL_VAMPIRIC_EMBRACE) && ch != v && !IsUndead(v) && number(1,25) == 25)
-		vampiric_embrace(ch,v);
+	if (affected_by_spell(ch, SPELL_VAMPIRIC_EMBRACE) && ch != v && !IsUndead(v)) {
+		if(HasClass(ch, CLASS_WARRIOR)) {
+			if(number(1,100) < 5)
+				vampiric_embrace(ch,v);
+		} else {
+			if(number(1,100) < 9)
+				vampiric_embrace(ch,v);
+		}
+	}
 	if (mob_index[ch->nr].virtual == BAHAMUT)
 		bahamut_prayer(ch, v);
 	if (ch->equipment[WEAR_BODY]) {

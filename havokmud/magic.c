@@ -1178,7 +1178,7 @@ void spell_heal(byte level, struct char_data *ch,
 
   send_to_char("A warm feeling fills your body.\n\r", victim);
 
-  if (IS_AFFECTED(victim, AFF_WINGSBURNED))
+  if (IS_AFFECTED2(victim, AFF2_WINGSBURNED))
      {affect_from_char(victim,COND_WINGS_BURNED);
       send_to_char("Your wings knit together and begin to sprout new feathers!\n\r", victim);
      }
@@ -1618,20 +1618,20 @@ void spell_fireshield(byte level, struct char_data *ch, struct char_data *victim
 			act("The heat of your spell melts the icey aura surrounding you.",TRUE,victim,0,0,TO_CHAR);
 			affect_from_char(victim,SPELL_CHILLSHIELD);
 		}
-		if (IS_AFFECTED2(victim, AFF2_CHILLSHIELD)) {
+		if (IS_AFFECTED(victim, AFF_CHILLSHIELD)) {
 			act("The cold aura around $n is extinguished.",TRUE,victim,0,0,TO_ROOM);
 			act("The heat of your spell melts the icey aura surrounding you.",TRUE,victim,0,0,TO_CHAR);
-			REMOVE_BIT(victim->specials.affected_by2, AFF2_CHILLSHIELD);
+			REMOVE_BIT(victim->specials.affected_by, AFF_CHILLSHIELD);
 		}
 		if (affected_by_spell(victim, SPELL_BLADE_BARRIER)) {
 			act("The whirling blades around $n burn to cinders.",TRUE,victim,0,0,TO_ROOM);
 			act("The heat of your spell burns your blade barrier to cinders.",TRUE,victim,0,0,TO_CHAR);
 			affect_from_char(victim,SPELL_BLADE_BARRIER);
 		}
-		if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER)) {
+		if (IS_AFFECTED(victim, AFF_BLADE_BARRIER)) {
 			act("The whirling blades around $n burn to cinders.",TRUE,victim,0,0,TO_ROOM);
 			act("The heat of your spell burns your blade barrier to cinders.",TRUE,victim,0,0,TO_CHAR);
-			REMOVE_BIT(victim->specials.affected_by2, AFF2_BLADE_BARRIER);
+			REMOVE_BIT(victim->specials.affected_by, AFF_BLADE_BARRIER);
 		}
 
 		act("$c000R$n is surrounded by a glowing red aura.",TRUE,victim,0,0,TO_ROOM);

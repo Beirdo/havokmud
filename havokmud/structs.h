@@ -345,9 +345,8 @@ struct QuestItem {
 #define PULSE_TELEPORT      10
 #define PULSE_MAILCHECK 	240
 #define PULSE_ADVICE       200
-#define PULSE_DARKNESS	200
+#define PULSE_DARKNESS	250
 #define PULSE_ARENA	100 /* see if there's a winner in arena */
-//#define PULSE_TARANTIS 20 /* check time, close/open door accordingly */
 #define MAX_ROOMS   5000
 
 
@@ -902,15 +901,18 @@ struct room_data
 #define AFF_HIDE              BV20//0x00100000
 #define AFF_SILENCE           BV21//0x00200000
 #define AFF_CHARM             BV22//0x00400000
-#define AFF_FOLLOW            BV23//0x00800000
+
+//#define AFF_FOLLOW            BV23//0x00800000 /* this doesn't seem to do anything, placed darkness here -Lennya */
+#define AFF_DARKNESS	       BV23
+
 #define AFF_PROTECT_FROM_EVIL BV24//0x01000000  /*  */
 #define AFF_TRUE_SIGHT        BV25//0x02000000
-#define AFF_SCRYING           BV26//0x04000000   /* seeing other rooms */
+#define AFF_SCRYING           BV26//0x04000000   /* looking in adjacent rooms */
 #define AFF_FIRESHIELD        BV27//0x08000000
 #define AFF_GROUP             BV28//0x10000000
 #define AFF_TELEPATHY         BV29//0x20000000
-#define AFF_WINGSTIRED        BV30// 0x40000000
-#define AFF_WINGSBURNED       BV31// 0x80000000
+#define AFF_CHILLSHIELD        BV30// 0x40000000
+#define AFF_BLADE_BARRIER       BV31// 0x80000000
 
 /* affects 2 */
 #define AFF2_ANIMAL_INVIS      BV00//0x00000001
@@ -921,15 +923,18 @@ struct room_data
 #define AFF2_AFK               BV05//0x00000020
 #define AFF2_DETECT_GOOD       BV06//0x00000040
 #define AFF2_PROTECT_FROM_GOOD BV07//0x00000080
-#define AFF2_DARKNESS	       BV08//0x00000100
+
+#define AFF2_FOLLOW			   BV08
+//#define AFF2_DARKNESS	       BV08//0x00000100
+
 #define AFF2_HASTE             BV09//0x00000200
 #define AFF2_SLOW			   BV10//0x00000400
-#define AFF2_BLADE_BARRIER     BV11//0x00000800
+#define AFF2_WINGSBURNED	   BV11
 #define AFF2_STYLE_BERSERK     BV12//0x00001000
 #define AFF2_QUEST			   BV13
 #define AFF2_NO_OUTDOOR		   BV14
 /* necro stuff */
-#define AFF2_CHILLSHIELD	   BV15
+#define AFF2_WINGSTIRED        BV15// 0x40000000
 #define AFF2_INVIS_TO_UNDEAD   BV16
 
 /* Flag spells as brewable or single class */

@@ -1636,9 +1636,9 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	  set_fighting(victim, ch);
 	}
     }
-    if (IS_AFFECTED2(victim, AFF2_CHILLSHIELD)) {
+    if (IS_AFFECTED(victim, AFF_CHILLSHIELD)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by2, AFF2_CHILLSHIELD);
+	REMOVE_BIT(victim->specials.affected_by, AFF_CHILLSHIELD);
 	send_to_char("Your aura of chill flames suddenly winks out of existence.\n\r",victim);
 		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
 			act("The cold aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
@@ -1668,9 +1668,9 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	  set_fighting(victim, ch);
 	}
     }
-    if (IS_AFFECTED2(victim, AFF2_BLADE_BARRIER)) {
+    if (IS_AFFECTED(victim, AFF_BLADE_BARRIER)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	REMOVE_BIT(victim->specials.affected_by2, AFF2_BLADE_BARRIER);
+	REMOVE_BIT(victim->specials.affected_by, AFF_BLADE_BARRIER);
 	send_to_char("Your blade barrier suddenly winks out of existence.\n\r",victim);
 			act("$n's blade barrier disappears.",FALSE,victim,0,0,TO_ROOM);
 	}
@@ -1771,13 +1771,28 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	affect_from_char(victim,SPELL_DRAGON_RIDE);
    }
 
-    if (affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
-      if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	 affect_from_char(victim,SPELL_GLOBE_DARKNESS);
-	 send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
-	 act("The globe of darkness surrounding $N vanishes.", FALSE, ch, 0, victim, TO_NOTVICT);
-      }
-    }
+	if (affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_GLOBE_DARKNESS);
+			send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
+			act("The globe of darkness surrounding $N vanishes.", FALSE, ch, 0, victim, TO_NOTVICT);
+		}
+    } else {
+		if (IS_AFFECTED(victim, AFF_DARKNESS)) {
+			if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+				REMOVE_BIT(victim->specials.affected_by, AFF_DARKNESS);
+				send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
+				act("The globe of darkness surrounding $n vanishes.",FALSE,victim,0,0,TO_ROOM);
+			}
+		  /*
+		   *  aggressive Act.
+		   */
+			if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
+				set_fighting(victim, ch);
+			}
+		}
+	}
+
     if (affected_by_spell(victim,SPELL_GLOBE_MINOR_INV)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	 affect_from_char(victim,SPELL_GLOBE_MINOR_INV);
@@ -2005,11 +2020,11 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		if(affected_by_spell(victim,COND_WINGS_FLY))
 			affect_from_char(victim,COND_WINGS_FLY);
 
-		if(IS_AFFECTED(victim,AFF_WINGSBURNED))
-			affect_from_char(victim,AFF_WINGSBURNED);
+		if(IS_AFFECTED2(victim,AFF2_WINGSBURNED))
+			REMOVE_BIT(victim->specials.affected_by2, AFF2_WINGSBURNED);
 
-		if(IS_AFFECTED(victim,AFF_WINGSTIRED))
-			affect_from_char(victim,AFF_WINGSTIRED);
+		if(IS_AFFECTED2(victim,AFF2_WINGSTIRED))
+			REMOVE_BIT(victim->specials.affected_by2, AFF2_WINGSTIRED);
 
 		if(IS_AFFECTED(victim,COND_WINGS_BURNED))
 			affect_from_char(victim,COND_WINGS_BURNED);
@@ -2566,27 +2581,27 @@ void spell_globe_darkness(byte level, struct char_data *ch,
 
   assert(victim);
 
-  if (!affected_by_spell(victim, SPELL_GLOBE_DARKNESS)) {
+  if (!affected_by_spell(victim, SPELL_GLOBE_DARKNESS) && !IS_AFFECTED(victim,AFF_DARKNESS)) {
  if (ch != victim) {
-    act("$n summons a black globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a black globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a black globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a black globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a black globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a black globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a black globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a black globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a black globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a black globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_GLOBE_DARKNESS;
     af.duration  = level;
     af.modifier  = 5;
-    af.location  = APPLY_BV2;
-    af.bitvector = AFF2_DARKNESS;
+    af.location  = APPLY_NONE;
+    af.bitvector = AFF_DARKNESS;
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"%s is already surrounded by a globe of darkness\n\r",GET_NAME(victim));
+   sprintf(buf,"%s is already surrounded by a globe of darkness.\n\r",GET_NAME(victim));
    else
-   sprintf(buf,"You are already surrounded by a globe of darkness\n\r");
+   sprintf(buf,"You are already surrounded by a globe of darkness.\n\r");
    send_to_char(buf,ch);
   }
 }
@@ -2604,12 +2619,12 @@ void spell_prot_fire(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_FIRE)) {
  if (ch != victim) {
-    act("$n summons a fire protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a fire protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a fire protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a fire protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a fire protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a fire protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a fire protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a fire protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a fire protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a fire protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_FIRE;
@@ -2620,9 +2635,9 @@ void spell_prot_fire(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a fire protective globe");
+   sprintf(buf,"$N is already surrounded by a fire protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a fire protective globe");
+   sprintf(buf,"You are already surrounded by a fire protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2638,12 +2653,12 @@ void spell_prot_cold(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_COLD)) {
  if (ch != victim) {
-    act("$n summons a cold protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a cold protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a cold protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a cold protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a cold protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a cold protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a cold protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a cold protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a cold protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a cold protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_COLD;
@@ -2654,9 +2669,9 @@ void spell_prot_cold(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a cold protective globe");
+   sprintf(buf,"$N is already surrounded by a cold protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a cold protective globe");
+   sprintf(buf,"You are already surrounded by a cold protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2672,12 +2687,12 @@ void spell_prot_energy(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_ENERGY)) {
  if (ch != victim) {
-    act("$n summons a energy protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a energy protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a energy protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a energy protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a energy protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a energy protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a energy protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a energy protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a energy protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a energy protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_ENERGY;
@@ -2688,9 +2703,9 @@ void spell_prot_energy(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a energy protective globe");
+   sprintf(buf,"$N is already surrounded by a energy protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a energy protective globe");
+   sprintf(buf,"You are already surrounded by a energy protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2706,12 +2721,12 @@ void spell_prot_elec(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_ELEC)) {
  if (ch != victim) {
-    act("$n summons a electric protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a electric protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a electric protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a electric protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a electric protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a electric protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a electric protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a electric protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a electric protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a electric protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_ELEC;
@@ -2722,9 +2737,9 @@ void spell_prot_elec(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a electric protective globe");
+   sprintf(buf,"$N is already surrounded by a electric protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a electric protective globe");
+   sprintf(buf,"You are already surrounded by a electric protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2740,12 +2755,12 @@ void spell_prot_dragon_breath_fire(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_BREATH_FIRE)) {
  if (ch != victim) {
-    act("$n summons a fire breath protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a fire breath protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a fire breath protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a fire breath protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a fire breath protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a fire breath protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a fire breath protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a fire breath protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a fire breath protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a fire breath protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_BREATH_FIRE;
@@ -2756,9 +2771,9 @@ void spell_prot_dragon_breath_fire(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a fire protective globe");
+   sprintf(buf,"$N is already surrounded by a fire protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a fire protective globe");
+   sprintf(buf,"You are already surrounded by a fire protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2774,12 +2789,12 @@ void spell_prot_dragon_breath_frost(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_BREATH_FROST)) {
  if (ch != victim) {
-    act("$n summons a frost breath protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a frost breath protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a frost breath protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a frost breath protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a frost breath protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a frost breath protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a frost breath protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a frost breath protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a frost breath protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a frost breath protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_BREATH_FROST;
@@ -2790,9 +2805,9 @@ void spell_prot_dragon_breath_frost(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a frost protective globe");
+   sprintf(buf,"$N is already surrounded by a frost protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a frost protective globe");
+   sprintf(buf,"You are already surrounded by a frost protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2809,12 +2824,12 @@ void spell_prot_dragon_breath_elec(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_BREATH_ELEC)) {
  if (ch != victim) {
-    act("$n summons a electric breath protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a electric breath protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a electric breath protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a electric breath protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a electric breath protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a electric breath protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a electric breath protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a electric breath protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a electric breath protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a electric breath protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_BREATH_ELEC;
@@ -2825,9 +2840,9 @@ void spell_prot_dragon_breath_elec(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a electric protective globe");
+   sprintf(buf,"$N is already surrounded by a electric protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a electric protective globe");
+   sprintf(buf,"You are already surrounded by a electric protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2844,12 +2859,12 @@ void spell_prot_dragon_breath_acid(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_BREATH_ELEC)) {
  if (ch != victim) {
-    act("$n summons a acid breath protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a acid breath protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a acid breath protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a acid breath protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a acid breath protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a acid breath protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a acid breath protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a acid breath protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a acid breath protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a acid breath protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_BREATH_ACID;
@@ -2860,9 +2875,9 @@ void spell_prot_dragon_breath_acid(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a acid protective globe");
+   sprintf(buf,"$N is already surrounded by a acid protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a acid protective globe");
+   sprintf(buf,"You are already surrounded by a acid protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }
@@ -2879,12 +2894,12 @@ void spell_prot_dragon_breath_gas(byte level, struct char_data *ch,
 
   if (!affected_by_spell(victim, SPELL_PROT_BREATH_ELEC)) {
  if (ch != victim) {
-    act("$n summons a gas breath protective globe around $N", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a gas breath protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
-    act("$n summons a gas breath protective globe around you", FALSE, ch, 0, victim, TO_VICT);
+    act("$n summons a gas breath protective globe around $N.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a gas breath protective globe about $N.", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a gas breath protective globe around you.", FALSE, ch, 0, victim, TO_VICT);
   } else {
-    act("$n summons a gas breath protective globe about $mself", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You summon a gas breath protective globe about yourself", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n summons a gas breath protective globe about $mself.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You summon a gas breath protective globe about yourself.", FALSE, ch, 0, victim, TO_CHAR);
   }
 
     af.type      = SPELL_PROT_BREATH_GAS;
@@ -2895,9 +2910,9 @@ void spell_prot_dragon_breath_gas(byte level, struct char_data *ch,
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)
-   sprintf(buf,"$N is already surrounded by a gas protective globe");
+   sprintf(buf,"$N is already surrounded by a gas protective globe.");
    else
-   sprintf(buf,"You are already surrounded by a gas protective globe");
+   sprintf(buf,"You are already surrounded by a gas protective globe.");
    act(buf,FALSE,ch,0,victim,TO_CHAR);
   }
 }

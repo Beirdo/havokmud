@@ -3133,10 +3133,12 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	      send_to_char("Sorry, following in circles can not be allowed.\n\r", ch);
 	      return;
 	    }
+/*
 	      if (IsImmune(victim, IMM_CHARM) || (WeaponImmune(victim))) {
 	          FailCharm(victim,ch);
 	       	  return;
 	      }
+*/
 	      if (IsResist(victim, IMM_CHARM)) {
 	         if (saves_spell(victim, SAVING_PARA)) {
 	          FailCharm(victim,ch);
@@ -3180,6 +3182,8 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	    affect_to_char(victim, &af);
 
 	    act("$n's glare draws you towards $m.",FALSE,ch,0,victim,TO_VICT);
+	    act("$N seems attracted by $n's aura and starts to follow $m.",FALSE,ch,0,victim,TO_ROOM);
+	    act("$N seems attracted by your aura and starts to follow you.",FALSE,ch,0,victim,TO_CHAR);
 
 	    if (!IS_PC(ch)) {
 	      REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
@@ -4353,10 +4357,10 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_BLADE_BARRIER);
 		}
-		if (IS_AFFECTED2(ch, AFF2_BLADE_BARRIER)) {
+		if (IS_AFFECTED2(ch, AFF_BLADE_BARRIER)) {
 			act("The whirling blades around $n freeze up and shatter.",TRUE,ch,0,0,TO_ROOM);
 			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
-			REMOVE_BIT(ch->specials.affected_by2, AFF2_BLADE_BARRIER);
+			REMOVE_BIT(ch->specials.affected_by, AFF_BLADE_BARRIER);
 		}
 
 		act("$c000C$n is surrounded by a cold blue aura.",TRUE,ch,0,0,TO_ROOM);
@@ -4365,8 +4369,8 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 		af.type      = SPELL_CHILLSHIELD;
 		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
 		af.modifier  = 0;
-		af.location  = APPLY_BV2;
-		af.bitvector = AFF2_CHILLSHIELD;
+		af.location  = APPLY_NONE;
+		af.bitvector = AFF_CHILLSHIELD;
 		affect_to_char(ch, &af);
 	} else {
 		send_to_char("Nothing new seems to happen.\n\r",ch);
@@ -4393,10 +4397,10 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_CHILLSHIELD);
 		}
-		if (IS_AFFECTED2(ch, AFF2_CHILLSHIELD)) {
+		if (IS_AFFECTED2(ch, AFF_CHILLSHIELD)) {
 			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
 			act("The heat of your spell melts the icey aura surrounding you.",TRUE,ch,0,0,TO_CHAR);
-			REMOVE_BIT(ch->specials.affected_by2, AFF2_CHILLSHIELD);
+			REMOVE_BIT(ch->specials.affected_by, AFF_CHILLSHIELD);
 		}
 
 		act("$c000B$n is surrounded by a barrier of whirling blades.",TRUE,ch,0,0,TO_ROOM);
@@ -4405,8 +4409,8 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 		af.type      = SPELL_BLADE_BARRIER;
 		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
 		af.modifier  = 0;
-		af.location  = APPLY_BV2;
-		af.bitvector = AFF2_BLADE_BARRIER;
+		af.location  = APPLY_NONE;
+		af.bitvector = AFF_BLADE_BARRIER;
 		affect_to_char(ch, &af);
 	} else {
 		send_to_char("Nothing new seems to happen.\n\r",ch);

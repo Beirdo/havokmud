@@ -2256,9 +2256,9 @@ int _affected_by_s(struct char_data *ch, int skill)
 
     switch(skill) {
 	case SPELL_BLADE_BARRIER:
-	    if(IS_AFFECTED2(ch,AFF2_BLADE_BARRIER)) fa=1; break;
+	    if(IS_AFFECTED(ch,AFF_BLADE_BARRIER)) fa=1; break;
 	case SPELL_CHILLSHIELD:
-	    if(IS_AFFECTED2(ch,AFF2_CHILLSHIELD)) fa=1; break;
+	    if(IS_AFFECTED(ch,AFF_CHILLSHIELD)) fa=1; break;
 	case SPELL_FIRESHIELD:
 	    if(IS_AFFECTED(ch,AFF_FIRESHIELD)) fa=1; break;
 	case SPELL_SANCTUARY:

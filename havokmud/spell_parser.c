@@ -3937,10 +3937,10 @@ struct affected_type af;
 
   if (s == COND_WINGS_FLY) {
     af.type     = COND_WINGS_TIRED;
-    af.location = APPLY_NONE;
+    af.location = APPLY_BV2;
     af.duration = 25 - GET_CON(ch);
     af.modifier = 0;
-    af.bitvector= AFF_WINGSTIRED;
+    af.bitvector= AFF2_WINGSTIRED;
     affect_to_char(ch, &af);
     check_falling(ch);
   }
