@@ -1,0 +1,111 @@
+<HTML><HEAD><TITLE>Havok</TITLE>
+
+
+<
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="Microsoft FrontPage 5.0" name=GENERATOR></HEAD>
+<BODY text=#cccccc vLink=#999999 aLink=#ffff00 link=#0033ff bgColor=#000000
+leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<TABLE cellSpacing=0 cellPadding=0 width=729 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=left width=212>
+    <img rectangle=" (0,274) (131,295) gettingstarted.html" rectangle=" (1,298) (100,319) telnet://havok.haaksman.org:6969/" rectangle=" (0,327) (60,351) zones.html" rectangle=" (2,355) (60,376) races.html" rectangle=" (2,381) (66,403) classes.html" rectangle=" (0,409) (90,429) immortals.html" rectangle=" (0,463) (75,486) history.html" rectangle=" (0,490) (71,510) credits.html" rectangle=" (3,512) (129,534) coderscorner.html" rectangle=" (2,542) (130,000) buildingguide.html" src="../sidemenu.gif" border="0" width="214" height="595" usemap="#Map"><BR></TD>
+    <TD width=38>&nbsp;</TD>
+    <TD vAlign=top align=left width=371>
+      <TABLE cellSpacing=0 cellPadding=0 width=500 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width=500>
+            <P align=center><BR><FONT face="Arial, Helvetica, sans-serif"
+            size=2>
+            <IMG height=17 src="../seperator.gif"
+            width=500></FONT></P>
+            <P align=center><b>
+            <font face="Arial, Helvetica, sans-serif" color="#33CC99">Mob and
+            Object Placement</font></b></P>
+            <P><font face="Arial, Helvetica, sans-serif" size="2">&nbsp;
+            <font color="#FF0000">For a complete walk-through, check out the
+            <a href="http://havok.haaksman.org/~banon/build.doc">Guide to
+            Building on Havok:</a> these pages are intended as quick-references.</font></font></P>
+            <p class="MsoNormal"><b>&nbsp;</b></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This subject doesn’t really need
+            its own chapter, because it’s one of the simplest parts of
+            building.&nbsp; Basically, when you’ve got your mobs and objects done and
+            ready to put in the zone, just go around and put them where you want
+            them.&nbsp; Use <b><font color="#FFFF00">load m</font> </b>and
+            <font color="#FFFF00"><b>load o</b></font> to load up your mobs and
+            objects.&nbsp; If you have any mobs are are not flagged
+            <font color="#FFFF00"><b>sentinel</b></font>, keep in mind that they
+            will be wandering around between when you load them and when you
+            save.&nbsp; To save mob and object locations in a zone, use
+            <font color="#FFFF00"><b>zsave (zone #)</b></font>.&nbsp; This will save
+            the location of every mob and object currently in your zone.&nbsp; </p>
+            <p class="MsoNormal" style="text-indent: .25in">Keep in mind that
+            <font color="#FFFF00"><b>zsave</b></font> does not discriminate
+            between mobs and objects that you <i>want</i> in the zone, and mobs
+            and objects that somehow magically appeared there.&nbsp; Trust me, it
+            happens.&nbsp; Especially on your first zone or two.&nbsp; As I said in the
+            chapters on item and mob creation, <font color="#FF0000">ALWAYS
+            DESTROY THE FIRST COPY OF ANY NEW MOB OR OBJECT</font>.&nbsp; If you
+            <font color="#FFFF00">zsave</font> an item or a mob into your zone,
+            and the one you use is the first one that you made, the mud will
+            remember what that item or mob used to be, and that old item/mob
+            will load there instead of the new one.&nbsp; </p>
+            <p class="MsoNormal" style="text-indent: .5in">If you want a mob to
+            have an item in his inventory, give it to him.&nbsp; If you want him to
+            be wearing it, <font color="#FFFF00"><b>mforce</b></font> him to
+            wear it, although sometimes, especially with weapons, the mob’s
+            natural stats are better than what he gets with the item equipped,
+            and he’ll automatically take it off.&nbsp; If you really want him to be
+            wearing it, tinker with his stats a bit.</p>
+            <p class="MsoNormal" style="text-indent: .5in">If you’ve got items
+            in containers, like a treasure chest, put the items in the chest,
+            lock it (if necessary), and put the chest on the ground, then
+            <font color="#FFFF00"><b>zsave</b></font>.</p>
+            <p class="MsoNormal" style="text-indent: .5in">Keep in mind that if
+            you ‘<font color="#FFFF00">quit now</font>’ to get out of the game,
+            any items you have in your inventory will fall onto the ground, and
+            they can be <font color="#FFFF00">zsaved</font> if you don’t notice
+            them later.</p>
+            <p class="MsoNormal" style="text-indent: .25in">Also keep in mind
+            that <b><font color="#FFFF00">zsave</font> </b>is used to save
+            certain conditions of doors: namely, whether or not the door is
+            closed, and whether or not it is locked.</p>
+            <p class="MsoNormal" align="center"><font color="#33CC99">
+            <span style="font-size: 12.0pt; font-family: Times New Roman">Page ©
+            2004 Nathan Walker for HavokMUD</span></font></p>
+            <p class="MsoNormal"><IMG height=17 src="../seperator.gif" width=500> </TD></TR>
+        <TR>
+          <TD vAlign=top align=left
+  width=500>&nbsp;</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><MAP name=Map>
+
+  <AREA shape=RECT coords='0, 435, 133, 458'
+      href="http://www.cgispy.com/boards/board.cgi?user=gnomist">
+      <AREA shape=RECT coords='1, 250, 60, 268'
+      href="../index.html">
+      <AREA shape=RECT coords='0, 274, 131, 295'
+      href="../gettingstarted.html">
+      <AREA shape=RECT coords='1, 298, 100, 319'
+      href="telnet://havok.haaksman.org:6969/">
+      <AREA shape=RECT coords='0, 327, 60, 351'
+      href="../zones.html">
+      <AREA shape=RECT coords='2, 355, 60, 376'
+      href="../races.html">
+      <AREA shape=RECT coords='2, 381, 66, 403'
+      href="../classes.html">
+      <AREA shape=RECT coords='0, 409, 90, 429'
+      href="../immortals.html">
+      <AREA shape=RECT coords='0, 463, 75, 486'
+      href="../history.html">
+      <AREA shape=RECT coords='0, 490, 71, 510'
+      href="../credits.html">
+      <area shape=RECT coords='3, 512, 129, 534'
+      href="../coderscorner.html">
+      <area shape=RECT coords='2, 542, 129, 566'
+      href="buildingguide.html">
+      <area shape=RECT coords='2, 570, 66, 595'
+    href="../clans/clans.html">
+
+</MAP><NOSCRIPT><IMG height=1 src=""
+width=1 border=0></NOSCRIPT> <IMG height=1 alt=1 src="" width=1> </BODY></HTML>

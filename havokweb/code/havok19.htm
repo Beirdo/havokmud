@@ -1,0 +1,198 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<title>HAVOK18</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font size="4" face="Lucida Sans">One of our big ports of 2002.&nbsp; Was a
+good day on Havok and a hard few months for me.</font></p>
+
+<p><font size="4" face="Lucida Sans"><u>HAVOKMUD 1.9 News File</u></font></p>
+
+<p><font face="Lucida Sans">.
+</font></p>
+
+<p><font face="Lucida Sans">-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-June 6th, 2002-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-<br>
+<br>
+Welcome everyone!!  I know its been a while since our last port but the time<br>
+has come and here it is.  I hope the wait has been worth it because we got<br>
+tons of new zones for you guys to explore and lots of new code stuff for you<br>
+guys to play and toy with.  Keep your eyes out to for more code and new&nbsp;<br>
+zones<br>
+in the future to come because we've got lots of hard working Immorts working<br>
+on all kinds of projects for you guys.<br>
+<br>
+<br>
+Coding News:<br>
+------------<br>
+<br>
+-New Aura scan for PSI<br>
+	- Can detect peoples aura<br>
+	- scan &lt;direction> or scan &lt;target><br>
+-New title system<br>
+	- Can set a pre-name<br>
+	- title (prename) (Yourname) (title)<br>
+-New damage descriptions to accomodate for increased damage of chars.<br>
+	- Annilihate and Decimate messages when attacking<br>
+	-New damage and hitroll ratios on att<br>
+-Hero Advantages<br>
+	- After 100mil &amp; 200mil experience, gain new title.<br>
+	- After 200mil experience, will tell how hard you hit when attacking<br>
+-Age fixxed<br>
+	-You can now die of old ages.. Beware<br>
+-Att is now level 1<br>
+-whoarena code<br>
+	- whoarena will say the condition of the people in the arena<br>
+	- Please don't inform your buddies of there oponents condition.<br>
+-New additions to 'Who'<br>
+	-Says max number of people connected since last reboot<br>
+	-Says connects to the mud since last reboot.<br>
+-New character creation menu.<br>
+	-Can have unlimited rolls<br>
+	-Can go back and make changes<br>
+-On creation<br>
+	-Wimpy now activated on character creation.<br>
+	-autoexits enabled on start.<br>
+-Practice sessions displayed on ‘score’<br>
+-New Quest Avatar.<br>
+	- Will give out random for mortals<br>
+	- Quest will be hard.. but remember, items will only be from old stock&nbsp;<br>
+zones.<br>
+	- ask elminster What is the quest?<br>
+	- Random prizes also.<br>
+-New Quest shop<br>
+	-Find the shop in Winterfell somewhere.<br>
+-Invalid direction message is random now instead of the same old thing.<br>
+<br>
+<br>
+-rangers stuff<br>
+	- get rescue at level 3<br>
+        -Fixed dual wield where you would lose your main weapon<br>
+	     -WIll also learn from your mistakes when fumbling.<br>
+	- protection from good at level 15 and 30<br>
+	- giant growth for rangers<br>
+-New Paladin spells and skills.<br>
+	-Holy Word<br>
+	-Holy Armor<br>
+	-Holy Strength<br>
+	-enlightenment<br>
+	-Circle of Protection (disabled)<br>
+	-Wrath of god (disabled)<br>
+	-Pacifism<br>
+	-Aura of Power<br>
+	-Mounted Charge<br>
+		-ride mount, charge (target) 3*damage<br>
+-Legsweep skill for monks<br>
+	-Simular to bash but be careful when there is too many people attacking.<br>
+-Bug fixxes<br>
+	-haste and gain bug fixxed<br>
+	-Monsum Bug fixxed<br>
+-Bards are almost here.  you may notice them on the creation menu but they<br>
+		are not chooseable yet..<br>
+-Brew Skill almost finished.  Should be ported soon.<br>
+-Talk command<br>
+	-Mortals can now strike up conversations with mobiles<br>
+	-Be essential for new zones to come<br>
+	-Most will not have much to say.<br>
+-Be on the look out for new item quest mobs.<br>
+-Lots of new zone procs also.<br>
+	-Few tips.<br>
+		- Board, Talk, and touch command is essential to some zones.<br>
+<br>
+Immortal Code Stuff<br>
+-------------------<br>
+-Changes to Who<br>
+	- now says the gods invis level. (invis 60)<br>
+-Host IP on whois.<br>
+	- Tells what IP char last connected from.(disabled atm)<br>
+-Rsave<br>
+	-Will default and rsave the room your currently in.<br>
+	-will also say a numerical value to how many rooms were saved.<br>
+-Talk<br>
+	-Can set what mobs will say with medit<br>
+	-medit mob, goto distant sounts and put '(text to say)<br>
+-New automated quest on mobs<br>
+	-builders can now set automated quest in there zones.<br>
+	-set the quest flag in the actiosn menu and the mob will<br>
+		be looking for the item saved as the same number<br>
+		as the mob.  Mob will return that item #+1.<br>
+<br>
+<br>
+Misc. Stuff<br>
+-----------<br>
+-Haste bug officially fixed<br>
+-Protection from good fixed<br>
+-Paladin mana problem fixed<br>
+-wizlist is fixxed and colorized<br>
+-draw weapon implemented<br>
+-Major crash bug (FindVictim and findaHatee)<br>
+-Lennys leaves of silver procs ported and working i hope<br>
+-TMK Mobs hopefully doefsnt' crash us<br>
+-added Ego/%Load fields to objects.. (Not used yet)<br>
+-Also added to objects, the last person to modify an object<br>
+-More work on quest Avatar(Mayor)<br>
+-Added quest count to score.. (Just a little (3))<br>
+<br>
+Ok, there is probably more but i can't remember, anyway<br>
+you guys know the drill.  Have fun and report any problems to me.<br>
+Thanks,<br>
+Banon<br>
+<br>
+<br>
+                                March 22, 2001 News<br>
+Well everyone, we've done another code port to follow up from the last one.<br>
+Its basically a lot of little things.. Some may be noticeable.. some not.  Anyway<br>
+i hope you enjoy and keep the ideas and bug reports coming!!<br>
+<br>
+-New help and wizhelp files added.. (Side note: Use help skill &lt;skill> for some)<br>
+-Change ID and Whois colors.. Much prettier.<br>
+-ID now states what type of weapon your ID'ing... [Slash][Blast].. etc..<br>
+-Locate object doesn't overflows its output anymore.<br>
+-Disengage can now be learnt in the warrior guild master.<br>
+-Guildmasters practice output is now more aligned and prettier.<br>
+-Guildmasters now probably display some of those hidden spells and skills.<br>
+-Flying things are now immune to the earthquake spell.<br>
+-Socials should be fixed now.. (We hope)<br>
+-Fixed meteor swarm so now it does fire damage rather than energy&nbsp;<br>
+-Give coins display name given to correctly now and keyword gold also works now.<br>
+-Haste/Gain bug is fixed.<br>
+-You shouldn't worry about your heads decaying anymore.. :P<br>
+-Also you can no longer behead a ghost or a pile of dust and bones.<br>
+-Now ask if you'd like Ansi color on character creation.<br>
+-Wear doesn't give you the messed up 2 name wear message.   dagger:dagger: ok<br>
+-put all bag now displays a message to everyone else.<br>
+-Susc hold doesn't automatically paralyze you now.<br>
+-Few typos in the code fixed.<br>
+-Jag fountain no has water.. :P&nbsp;<br>
+-Bellow lag has been decreased.<br>
+-Reincarnation now defaults your age to your new races starting age.<br>
+-Rumor has it that Strahd has a few new things up his sleeves.. Or on them.<br>
+-Now keeps a log of invalid help calls so they can be reviews later.<br>
+       (if help spell &lt;New spell> wasn't in the help files.. records it)<br>
+<br>
+Few immortal things.<br>
+-The immortal wizset fast command now works.&nbsp;<br>
+     (Hopefully this means more zones for you guys)<br>
+-Also immortals can now see the spell/skill number when stating stuff.<br>
+-Immortals can now see you hiding people....<br>
+<br>
+<br>
+<br>
+</font></p>
+
+<p><font face="Lucida Sans"><br>
+</font></p>
+
+<p><a href="HavokWeb/index.htm"><font color="#0000FF" size="4"
+face="Matisse ITC"><strong>&lt;-Main Page</strong></font></a></p>
+
+<p>Last Updated March 9, 2003, by Greg Hovey</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

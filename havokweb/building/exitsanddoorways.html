@@ -1,0 +1,231 @@
+<HTML><HEAD><TITLE>Havok</TITLE>
+
+
+<
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="Microsoft FrontPage 5.0" name=GENERATOR></HEAD>
+<BODY text=#cccccc vLink=#999999 aLink=#ffff00 link=#0033ff bgColor=#000000
+leftMargin=0 topMargin=0 marginheight="0" marginwidth="0">
+<TABLE cellSpacing=0 cellPadding=0 width=729 border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=left width=212>
+    <img rectangle=" (0,274) (131,295) gettingstarted.html" rectangle=" (1,298) (100,319) telnet://havok.haaksman.org:6969/" rectangle=" (0,327) (60,351) zones.html" rectangle=" (2,355) (60,376) races.html" rectangle=" (2,381) (66,403) classes.html" rectangle=" (0,409) (90,429) immortals.html" rectangle=" (0,463) (75,486) history.html" rectangle=" (0,490) (71,510) credits.html" rectangle=" (3,512) (129,534) coderscorner.html" rectangle=" (2,542) (130,000) buildingguide.html" src="../sidemenu.gif" border="0" width="214" height="595" usemap="#Map"><BR></TD>
+    <TD width=38>&nbsp;</TD>
+    <TD vAlign=top align=left width=371>
+      <TABLE cellSpacing=0 cellPadding=0 width=500 border=0>
+        <TBODY>
+        <TR>
+          <TD vAlign=top align=left width=500>
+            <P align=center><BR><FONT face="Arial, Helvetica, sans-serif"
+            size=2>
+            <IMG height=17 src="../seperator.gif"
+            width=500></FONT></P>
+            <P align=center><b>
+            <font face="Arial, Helvetica, sans-serif" color="#33CC99">Exits and
+            Doorways</font></b></P>
+            <P><font face="Arial, Helvetica, sans-serif" size="2">&nbsp;
+            <font color="#FF0000">For a complete walk-through, check out the
+            <a href="http://havok.haaksman.org/~banon/build.doc">Guide to
+            Building on Havok:</a> these pages are intended as quick-references.</font></font></P>
+            <p class="MsoNormal"><b>&nbsp;</b></p>
+            <p class="MsoNormal">Exits allow players to move between one room
+            and another.&nbsp; There are many different types of exits, so you can
+            set up each one exactly as you like it.&nbsp; There are three ways to
+            create an exit.&nbsp; The first is with <font color="#FFFF00"><b>redit</b></font>,
+            using option <font color="#FFFF00"><b>5</b></font>.&nbsp; This method is
+            simple and straightforward, however it limits what you can do.&nbsp; The
+            best is with the <b><font color="#FFFF00">edit</font> </b>command.&nbsp;
+            The third is the <font color="#FFFF00"><b>fast exits</b></font>
+            feature which, while fast and <i>very </i>handy, is very limited in
+            what it can do.&nbsp; We’ll go through all three.</p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.1: Making Exits
+            With Redit</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To make an exit with
+            <font color="#FFFF00">redit</font>, type <font color="#FFFF00"><b>
+            redit</b></font> while standing in the room as you did in
+            <font color="#33CC99">Chapter III</font>.&nbsp; Enter
+            <font color="#FFFF00"><b>5</b></font> to open the exits menu.&nbsp; There
+            are three important pieces of information you need to know:</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>Direction</b></font>&nbsp;is
+            the direction that the exit leaves the room from.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>To_Room</b></font>&nbsp;
+            is the vnum of the room that the exit will lead to.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>Key#</b></font>&nbsp;
+            is the vnum of the object that unlocks and locks the door, if&nbsp;
+            it has one.</p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.2: Making Exits
+            With Edit</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The <font color="#FFFF00">edit</font>
+            command is driven in a command-line manner.&nbsp; You can type
+            <font color="#FFFF00"><b>wizhelp edit</b></font> for complete info,
+            but I’ll reprint the important parts here.&nbsp; <font color="#FFFF00">
+            <b>Edit</b></font> is a powerful command that can be used to edit
+            pretty much anything in a room that you could want to.&nbsp; We’ll go
+            over the rest in <font color="#33CC99">Chapter V</font>.&nbsp; Here is
+            how you make exits with it:</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+            <p class="MsoNormal" align="center" style="text-align: center">
+            <font color="#FFFF00"><b>edit exit (dir) (door_flags) (key_number)
+            [(open_command)]</b></font></p>
+            <p class="MsoNormal" align="center" style="text-align: center"><b>&nbsp;</b></p>
+            <p class="MsoNormal"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>Now that probably doesn’t
+            make a lot of sense immediately, so let’s go through it.&nbsp; There are
+            four different variables:</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>Dir</b></font>
+            is the direction that the exit leaves the room from.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>0</b></font> is north.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>1</b></font> is east.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>2</b></font> is south.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>
+            <font color="#FFFF00">3</font> </b>is west.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>
+            <font color="#FFFF00">4</font> </b>is up.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>
+            <font color="#FFFF00">5</font> </b>is down.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To choose
+            the direction, simply swap (<font color="#FFFF00">dir</font>) for
+            <font color="#FFFF00">0-5</font> in the command above.</p>
+            <p class="MsoNormal">&nbsp;</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>Door_flags</b></font>&nbsp;define
+            what the exit IS, exactly.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>S</b></font> is secret.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>C</b></font> is climb (or fly).</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>P</b> </font>is pickproof (and bashproof,
+            knockproof).</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>D</b></font> is is_door, which means the
+            exit has a physical door.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>X</b></font> is null, meaning you don’t
+            want any flags.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FF0000"><b>Additional Notes:</b></font> not every
+            option is available here.&nbsp; Some of them are available in
+            <font color="#FFFF00">redit</font>.&nbsp; To make a door closed, simply
+            close it by hand.&nbsp; To make a door locked, lock it by hand.&nbsp; </p>
+            <p class="MsoNormal">&nbsp;You have tohave a flag of some sort; use
+            <font color="#FFFF00"><b>X</b></font> if you want nothing.&nbsp; The
+            flags are cumulative; if you want more than one, stack them
+            together, such as <font color="#FF0000"><b>edit exit (dir) scp ….</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>Key_number</b></font>&nbsp;is
+            the vnum of the object you want to be the key.&nbsp; If you have no key,
+            use <b>0</b>.</p>
+            <p class="MsoNormal">&nbsp;</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FFFF00"><b>
+            Open_commands</b></font>&nbsp;are optional.&nbsp; This is for if you want the
+            door to be opened with a command other than <b>open</b>.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>Pull</b></font> is 224.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>Twist</b></font> is 371.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>Turn</b></font> is 372.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>Lift</b></font> is 373.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#FFFF00"><b>Push</b></font> is 374.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To define a
+            special open command, simply type in the appropriate number at the
+            end of the <font color="#FFFF00"><b>edit exit</b> </font>string. </p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.3: Deleting Exits</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To delete an exit, use
+            <font color="#FFFF00"><b>edit exit (dir)</b></font> with no other
+            modifiers.&nbsp; It will delete the exit in that direction, and probably
+            give you a screenfull of spam.&nbsp; Don’t worry about it, <i>the spam
+            means it’s working!</i>&nbsp; ;^)</p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.4: Fast Exits</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To enable fast exits, type
+            <font color="#FFFF00"><b>wizset fast</b></font>.&nbsp; This is a nice
+            little feature that Banon has coded in for all of us.&nbsp; While you
+            have fast exits enabled, if you walk in a direction that has no
+            exit, it will create an exit to the next available room that <i>has
+            not been <b>create</b>d yet</i>, and it will create an exit back.&nbsp;
+            It’s all very fast and automatic, but if you want anything other
+            than a basic two-way exit, you’ll need to go back and modify them.</p>
+            <p class="MsoNormal">&nbsp;</p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.5: Exit
+            Descriptions</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Exit descs are special descriptions
+            that are shown when a player attempts to look through an exit.&nbsp;
+            These are a very good way to add a bit of flavor to your zone, or to
+            hide keywords to secrets, etc etc.&nbsp; To make them, type
+            <font color="#FFFF00"><b>edit exdsc (direction)</b></font>, where (<font color="#FFFF00">direction</font>)
+            is <font color="#FFFF00">0-5</font> as listed in
+            <font color="#33CC99">IV.2</font>.</p>
+            <p class="MsoNormal">&nbsp;</p>
+            <p class="MsoNormal"><font color="#33CC99"><b>IV.6: Saving Exits</b></font></p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are two different things you
+            have to do to save your exits, depending on how complex your exit
+            is.&nbsp; The first is <font color="#FFFF00"><b>rsave</b></font>.&nbsp; When
+            you <font color="#FFFF00"><b>rsave</b></font>, Havok will save all
+            of the basic data that defines the exit.&nbsp; However, if your door is
+            <b><font color="#FFFF00">closed</font> </b>or <font color="#FFFF00">
+            <b>locked</b></font>, then rsave will not remember this.&nbsp; To save
+            doors like this, you must <b><font color="#FFFF00">zsave</font>
+            <font color="#FFFF00">(zone#)</font></b>.&nbsp; The basic reason for this
+            is that Havok only loads room data once – when the game boots.&nbsp; But
+            things like whether or not a door is closed or locked are things
+            that must be reset every time the zone resets – and when the zone
+            resets, it reloads the <i>zone</i> data.&nbsp; Therefore,
+            <font color="#FFFF00"><b>zsave</b></font> to save your exits being
+            closed/locked.</p>
+            <p class="MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#FF0000"> <b>Note:</b></font>
+            Object and mob locations in your zone are also saved with <b>zsave</b>,
+            so you should be careful when using it.&nbsp; I personally recommend not
+            having any mobs or items in your zone until the rooms are all built
+            and set.&nbsp; But many people prefer not to build this way.&nbsp; If you have
+            mobs and objects that are currently loading in your zone, type
+            <font color="#FFFF00"><b>zclean (zone#)</b></font> first – this will
+            destroy all mobs and items in the zone, thus saving you from having
+            all sorts of random things laying around (and trust me, THEY DO!).&nbsp;
+            Once the zone is clean, set all your doors and locks how you want
+            them, then type <font color="#FFFF00"><b>zload (zone#)</b></font>
+            (which will load all your mobs and objects back), and
+            <font color="#FFFF00"><b>zsave (zone#)</b></font>, which will resave
+            everything, including your door info.</p>
+            <p class="MsoNormal">&nbsp;</p>
+            <p class="MsoNormal" align="center"><font color="#33CC99">
+            <span style="font-size: 12.0pt; font-family: Times New Roman">Page ©
+            2004 Nathan Walker for HavokMUD</span></font></p>
+            <p class="MsoNormal"><IMG height=17 src="../seperator.gif" width=500> </TD></TR>
+        <TR>
+          <TD vAlign=top align=left
+  width=500>&nbsp;</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><MAP name=Map>
+
+  <AREA shape=RECT coords='0, 435, 133, 458'
+      href="http://www.cgispy.com/boards/board.cgi?user=gnomist">
+      <AREA shape=RECT coords='1, 250, 60, 268'
+      href="../index.html">
+      <AREA shape=RECT coords='0, 274, 131, 295'
+      href="../gettingstarted.html">
+      <AREA shape=RECT coords='1, 298, 100, 319'
+      href="telnet://havok.haaksman.org:6969/">
+      <AREA shape=RECT coords='0, 327, 60, 351'
+      href="../zones.html">
+      <AREA shape=RECT coords='2, 355, 60, 376'
+      href="../races.html">
+      <AREA shape=RECT coords='2, 381, 66, 403'
+      href="../classes.html">
+      <AREA shape=RECT coords='0, 409, 90, 429'
+      href="../immortals.html">
+      <AREA shape=RECT coords='0, 463, 75, 486'
+      href="../history.html">
+      <AREA shape=RECT coords='0, 490, 71, 510'
+      href="../credits.html">
+      <area shape=RECT coords='3, 512, 129, 534'
+      href="../coderscorner.html">
+      <area shape=RECT coords='2, 542, 129, 566'
+      href="buildingguide.html">
+      <area shape=RECT coords='2, 570, 66, 595'
+    href="../clans/clans.html">
+
+</MAP><NOSCRIPT><IMG height=1 src=""
+width=1 border=0></NOSCRIPT> <IMG height=1 alt=1 src="" width=1> </BODY></HTML>

@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<title>The Havok Coder Setup Guide</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="5"><strong>The Havok Coder Setup
+Guide</strong></font></p>
+
+<p align="center"><font size="5"><strong>By Greg Hovey</strong></font></p>
+
+<p align="left">Here are all the necessary steps to get anyone
+set up and ready to code for Havok. If you have any questions or
+comments, feel free to email me at <a
+href="mailto:hoveyg@hotmail.com">hoveyg@hotmail.com</a> or find
+me on ICQ.</p>
+
+<p><strong><u>Step One:</u></strong> Goto <a
+href="http://www.cygwin.com">www.cygwin.com</a> and download and
+installs its latest version of cygwin. Special note: Make sure
+you have the GCC, CRYPT, MAKE, CVS, OpenSSH packages along with
+its regular base system.</p>
+
+<p><strong><u>Step Two:</u></strong> Go to <a
+href="http://www.sourceforge.com">www.sourceforge.com</a> and
+create an account there and get myself to add you to our project.
+If your waiting for me to add you to our project developer list,
+skip the next few steps for now and follow step #5 and #6. If
+your doing this for your own personal use and don't plan on
+contributing to Havok or plan on making your own mud, then you
+can skip a few of these steps and checkout the mud as an anonymous user but you'll have to read up on the
+source forge web page to
+figure that out.</p>
+
+<p><strong><u>Step Three:</u></strong> In Cygwin, type '<strong>export
+CVS_RSH=ssh</strong>' and '<strong>export
+CVSROOT=(YourSourceforgeUserName)@cvs.havok.sourceforge.net:/cvsroot/havok</strong>'.
+After this is completed, you should be able to obtain the latest
+version of Havok by typing '<strong>cvs checkout havokmud</strong>'
+in a Cygwin Shell and then it will prompt you for your source forge password. </p>
+
+<p><strong><u>Step Four:</u></strong> After all the Havok files
+have been downloaded to your computer, you should now be able to
+change the directory to <strong>havokmud</strong> and type '<strong>make
+-f makefile.w32</strong>' to compile the mud.</p>
+
+<p><strong><u>Step Five:</u></strong><strong> </strong>The mud
+may be compiled though but at the minute you have no library files
+to accompany the mud. So the best method to obtain these is to
+download the latest tar ball on Source Forge or click <a href="http://havok.haaksman.org/~banon/lib.tar.gz">here</a>
+to download an old lib that I was testing stuff on.</p>
+
+<p><strong><u>Step Six:</u></strong> Now you should have
+everything you need to run the mud. You can run the mud by typing
+'<strong>./dmserver -d (/LibDirectoryLocation/) (port#)</strong>'.
+I normally just type<strong> './dmserver -d ./lib/</strong>'
+which will default to port 4000.</p>
+
+<p><strong><u>Step Seven:</u></strong> Now that its running, you
+can now connect to the mud by telnet/connecting to the address
+'localhost' on what ever port you opened up on.</p>
+
+<p>&nbsp;</p>
+
+<p><font size="5"><u>Steps to Editing and Committing your changes</u></font></p>
+
+<p><strong><u>Step One:</u></strong> The first step is to
+download a good editor to alter and change your code. I
+personally use Text Pad v4.5 because of its easy to use find
+utility which will find any string in all your source code and
+because of its language color parsing abilities which makes it
+easier to find mistakes and analyze your code. (Download <a
+href="http://download.textpad.com/download/files/txpeng450.exe">TextPad</a>)</p>
+
+<p><strong><u>Step Two:</u></strong> Ok.. this is the tricky
+part..... Code something... </p>
+
+<p><strong><u>Step Three:</u></strong> After altering your code.
+You should always compile the code and make sure that it works
+and that there is no bugs or problems with it because you should
+never commit changes that are messed up because then when the
+other coders for the mud update there new release, they will have
+your messed up code and wont' have a clue what's going on.</p>
+
+<p><strong><u>Step Four:</u></strong> After all is perfect, its
+usually a good idea to update your code to the latest version of
+the source just to sync your code with the other coders new code
+that they committed since you last updated or committed yourself.
+This can be done in the cygwin shell by typing '<strong>cvs
+update</strong>' in the havokmud directory. This will merge your
+changes with the master copy of Havok in the sourceforge
+database.</p>
+
+<p><strong><u>Step Five:</u></strong> Type 'cvs commit' to commit
+all your changes. After comparing the source forge version and
+your version, it'll then ask you to type in comments to describe
+your additions to the mud. If it says there is no editor
+pressent, type '<strong>export EDITOR=vi</strong>' or whatever
+editor your use too. Few notes about VI, to start editing, type<strong>
+i </strong>to insert and type in your description. After your
+done, press <strong>&lt;ESCAPE&gt;</strong> and they type '<strong>!wq</strong>'
+to quit and save your changes to the log. <i>New: a short cut of doing this is
+to just type 'cvs commit -m 'describe your changes'</i></p>
+
+<p><strong><u>Step Six:</u></strong> There really is no step six
+so that's basically it. You have just successfully committed and
+contributed your own additions to Havok. If you have any
+questions or comments or if something doesn't' work. Feel free to
+email me at <a href="mailto:hoveyg@hotmail.com">hoveyg@hotmail.com</a>
+or find me on Havok or ICQ.</p>
+
+<p align="right">Last Revised on March 9th, 2003 by Greg Hovey</p>
+</body>
+</html>
