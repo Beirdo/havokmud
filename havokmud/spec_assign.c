@@ -1283,6 +1283,8 @@ void assign_mobiles()
 /*Beginning of Thunder Mountain Keep*/
 
   {45406, braxis_swamp_dragon},
+  {45409, nadia},
+  {45410, mime_jerry},
 
 /*End of Thunder Mountain Keep*/
 

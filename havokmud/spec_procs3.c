@@ -787,8 +787,7 @@ if (type == EVENT_DEATH)    {
   	  } break;
 
 	  default:{
-   act("$n falls to the ground and crumbles into dust, a faint sigh of relief seems to fill the castle.",
-        FALSE, ch, 0, 0, TO_ROOM);
+   act("$n falls to the ground and crumbles into dust, a faint sigh of relief seems to fill the castle.",FALSE, ch, 0, 0, TO_ROOM);
         vampnum=-1;
     return(TRUE);
 	          } break;
@@ -4321,3 +4320,251 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 	return(FALSE);
 
 }
+
+#define MIME_JERRY 45410
+#define NADIA_KEY 45489
+#define NADIA_PILL 45431
+
+int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  struct char_data *i, *tmp_ch;
+  struct obj_data *target_obj;
+  char buf[80];
+  int inroom,r_num=FALSE;
+  static int mimenum=0;
+
+  void do_emote(struct char_data *ch, char *argument, int cmd);
+  
+  if(IS_PC(ch))
+    return(0);
+
+  inroom = ch->in_room;
+   
+	if(type == EVENT_DEATH) {
+			sprintf(buf,"nadia_thunder_mountain", 0);
+			if (tmp_ch = get_char_vis_world(ch, buf, 0)) {
+			if ((r_num = real_object(NADIA_KEY)) >= 0) {
+				target_obj = read_object(r_num, REAL);
+				obj_to_char(target_obj, tmp_ch);
+			}
+			if ((r_num = real_object(NADIA_PILL)) >= 0) {
+				target_obj = read_object(r_num, REAL);
+				obj_to_char(target_obj, tmp_ch);
+			}
+			}
+	}
+
+
+
+
+  switch (number(0, 60))
+    {
+    case 0:
+		do_emote(ch, "turns himself into a box.", 0);
+		return(1);
+	break;
+	case 1:
+		do_emote(ch, "starts to climb an invisible rope.", 0);
+		return(1);
+	break;
+	case 2:
+		do_emote(ch, "is stuck inside a box that you can't see. Wierd!", 0);
+		return(1);
+	break;
+	case 3:
+		do_emote(ch, "is crawling around on the floor like a dog.", 0);
+		return(1);
+	break;
+	case 4:
+		do_emote(ch, "is lying on the floor playing dead.", 0);
+		return(1);
+	break;
+	case 5:
+		do_emote(ch, "pretends like he's riding a big stallion.", 0);
+		return(1);
+	break;
+	case 6:
+		do_emote(ch, "is stuck under an enormous rock....or so he thinks.", 0);
+		return(1);
+	break;
+	case 7:
+		do_emote(ch, "mimics your every move.", 0);
+		return(1);
+	break;
+	case 8:
+		do_emote(ch, "begins to eat some imaginary cheese.", 0);
+		return(1);
+	break;
+	case 9:
+		do_emote(ch, "sniffs your behind.", 0);
+		return(1);
+	break;
+	case 10:
+		do_emote(ch, "would like a kiss from you.", 0);
+		return(1);
+	break;
+	case 11:
+		do_emote(ch, "flexes his muscles and pretends like he's the great Lord Ignatius.", 0);
+		return(1);
+	break;
+	case 12:
+		do_emote(ch, "sticks his nose in your crotch and won't go away.", 0);
+		return(1);
+	break;
+	case 13:
+		do_emote(ch, "rolls up in a tiny ball for you to kick him.", 0);
+		return(1);
+	break;
+	case 14:
+		do_emote(ch, "takes a black magic marker and begins to give you a cute mustache.", 0);
+		return(1);
+	break;
+	case 15:
+		do_emote(ch, "worships Abagor as his patron saint of stupidity.", 0);
+		return(1);
+	break;
+	case 16:
+		do_emote(ch, "wishes he could be just like you.", 0);
+		return(1);
+	break;
+	case 17:
+		do_emote(ch, "pees his pants every time that meanie Tsaron shows up.", 0);
+		return(1);
+	break;
+	case 18:
+		do_emote(ch, "begins falling and falling and falling and falling and....", 0);
+		return(1);
+	break;
+	case 19:
+		do_emote(ch, "is head over heels in love....no, he's just head over heels.", 0);
+		return(1);
+	break;
+	case 20:
+		do_emote(ch, "moshes wildly with you and tries to steal your wallet.", 0);
+		return(1);
+	break;
+	case 21:
+		do_emote(ch, "begs for a couple of cents with those poor puppy dog eyes.", 0);
+		return(1);
+	break;
+	case 22:
+		do_emote(ch, "is sitting with no chair...Amazing!", 0);
+		return(1);
+	break;
+	case 23:
+		do_emote(ch, "shows you his wallet and the pictures of all his kids.", 0);
+		return(1);
+	break;
+	case 24:
+		do_emote(ch, "would like it if you would give him a massage.", 0);
+		return(1);
+	break;
+	case 25:
+		do_emote(ch, "would shave his butt and learn to walk backwards if he looked like you!", 0);
+		return(1);
+	break;
+	case 26:
+		do_emote(ch, "is gradually getting squished tighter and tighter into a magical force field!", 0);
+		return(1);
+	break;
+	case 27:
+		do_emote(ch, "is climbing a ladder, but going nowhere.", 0);
+		return(1);
+	break;
+	case 28:
+		do_emote(ch, "writhes on the floor doing strange undulating motions.", 0);
+		return(1);
+	break;
+	case 29:
+		do_emote(ch, "begins to do laps around the room on his hands.", 0);
+		return(1);
+	break;
+	case 30:
+		do_emote(ch, "sits down at his computer and starts to MUD.", 0);
+		return(1);
+	break;
+	default:
+    return(0);
+	}
+}
+
+#define NADIA 45409
+/* Nadia */
+int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
+	struct char_data *vict;
+	struct obj_data *obj;
+	int test=0;
+	int has_key = 0;
+	int has_pill = 0;
+        int keyrnum = 0;
+	int pillrnum = 0;
+	struct obj_data *i;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	/*TALK TO ME!!!*/
+
+	if (cmd == 531)	/*Talk*/
+	{
+
+		arg=one_argument(arg, vict_name);
+		
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+		
+		if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+	      	
+		if (mob_index[vict->nr].virtual != NADIA) return(FALSE);
+
+		keyrnum = real_object(NADIA_KEY);
+		for (i = vict->carrying; i; i = i->next_content) {
+			if (has_key != 1) {
+				if (i->item_number == keyrnum) has_key = 1;
+				else has_key = 0;
+			}
+		}
+	                   
+		/*Quest Text*/
+		if (has_key == 0)
+		{	
+			pillrnum = real_object(NADIA_PILL);
+			for (i = vict->carrying; i; i = i->next_content) {
+				if (has_pill != 1) {
+					if (i->item_number == pillrnum) has_pill = 1;
+					else has_pill = 0;
+				}
+			}
+
+			if (has_pill == 0) 
+			{
+			act("$n says, 'I don't know anything about a sceptre or any dragons, but I'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'do know who might be able to help you.  Elamin, a great magician'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'used to work for the king is imprisoned in the keep tower.'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'If you do me a favor and kill that dastardly Mime Jerry, I will'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'to pay the consequences when he doesn't come to see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+			}
+		}
+		
+		else if (has_key == 1)
+		{
+			act("$n says, 'Here is the key.  I will tell you no more.  Go, before I change my mind.'", FALSE, vict, 0, 0, TO_ROOM);
+      			sprintf(buf,"key-elamin %s",GET_NAME(ch));
+      			do_give(vict,buf,0);
+			return(TRUE);
+		}
+	}
+	return(FALSE);
+}
+
+
+
+
