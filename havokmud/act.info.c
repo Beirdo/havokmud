@@ -63,7 +63,7 @@ extern char    *apply_types[];
 extern char    *affected_bits[];
 extern char    *affected_bits2[];
 extern char    *immunity_names[];
-extern long     Uptime;
+extern time_t   Uptime;
 extern long     room_count;
 extern long     mob_count;
 extern long     obj_count;
@@ -4059,7 +4059,7 @@ void do_world(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[1000];
     char            tbuf[256];
-    long            ct,
+    time_t          ct,
                     ot;
     char           *tmstr,
                    *otmstr;
@@ -4070,13 +4070,13 @@ void do_world(struct char_data *ch, char *argument, int cmd)
                  "$c000w", VERSION);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
     ot = Uptime;
-    otmstr = asctime(localtime((const time_t *)&ot));
+    otmstr = asctime(localtime(&ot));
     *(otmstr + strlen(otmstr) - 1) = '\0';
     sprintf(buf, "$c000BStart time was: $c000W%s $c000B(PST)$c000w", otmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
     ct = time(0);
-    tmstr = asctime(localtime((const time_t *)&ct));
+    tmstr = asctime(localtime(&ct));
     *(tmstr + strlen(tmstr) - 1) = '\0';
     sprintf(buf, "$c000BCurrent time is: $c000W%s $c000B(PST)$c000w", tmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
