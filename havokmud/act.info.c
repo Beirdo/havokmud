@@ -3815,6 +3815,11 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
   char buf[MAX_STRING_LENGTH];
   struct affected_type *aff;
   struct time_info_data my_age;
+  int i = 0, j2 = 0, Worn_Index = 0;
+  char buf2[MAX_STRING_LENGTH];  
+  struct obj_data *j=0, *p=0;
+  extern char *apply_types[];
+  extern char *affected_bits[];
   
 dlog("in do_attrib");
  
@@ -3851,6 +3856,25 @@ dlog("in do_attrib");
   **   by popular demand -- affected stuff
   */
   send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
+  	for (Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++) {
+    		if (ch->equipment[j2]){
+			j = ch->equipment[j2];
+      			for (i=0;i<MAX_OBJ_AFFECT;i++) {
+        			switch(j->affected[i].location) {
+					case APPLY_SPELL:
+						sprintbit(j->affected[i].modifier,affected_bits,buf2);
+        					sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
+        					send_to_char(buf, ch);
+           					break;
+					default:
+					break;
+				}
+			}
+    		}
+	    
+  	}
+
+
   if (ch->affected) {
     for(aff = ch->affected; aff; aff = aff->next) {
       if (aff->type <= MAX_EXIST_SPELL) {
@@ -3864,6 +3888,8 @@ dlog("in do_attrib");
 	case SKILL_FIRST_AID:   
 	case SKILL_LAY_ON_HANDS:
 	case SKILL_MEDITATE:
+	  sprintf(buf, "$c0005Skill : '$c0014%s$c0005' will expire in $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
+	  send_to_char(buf,ch);
 	  break;
 	case SKILL_MEMORIZE:
 	  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete in $c0014%d $c0005minutes.\n\r",spells[aff->modifier-1], (aff->duration*4));
