@@ -118,6 +118,10 @@ void appear(struct char_data *ch)
   if (affected_by_spell(ch, SPELL_INVIS_TO_ANIMALS))
     affect_from_char(ch, SPELL_INVIS_TO_ANIMALS);
 
+  if (affected_by_spell(ch, SPELL_INVIS_TO_UNDEAD))
+    affect_from_char(ch, SPELL_INVIS_TO_UNDEAD);
+
+
   REMOVE_BIT(ch->specials.affected_by, AFF_INVISIBLE);
 }
 
@@ -1460,7 +1464,7 @@ char buf[255];
   if (v->master == ch)
     stop_follower(v);
 
-  if (IS_AFFECTED(ch, AFF_INVISIBLE) || IS_AFFECTED2(ch, AFF2_ANIMAL_INVIS))
+  if (IS_AFFECTED(ch, AFF_INVISIBLE) || IS_AFFECTED2(ch, AFF2_ANIMAL_INVIS) || IS_AFFECTED2(ch, AFF2_ANIMAL_INVIS))
     appear(ch);
 
   if (IS_AFFECTED(ch, AFF_SNEAK)) {

@@ -1697,6 +1697,10 @@ void spell_dispel_magic(byte level, struct char_data *ch,
    if (affected_by_spell(victim, SPELL_INVIS_TO_ANIMALS)) {
 	affect_from_char(victim,SPELL_INVIS_TO_ANIMALS);
    }
+   if (affected_by_spell(victim, SPELL_INVIS_TO_UNDEAD)) {
+	affect_from_char(victim,SPELL_INVIS_TO_UNDEAD);
+   }
+
 
    if (affected_by_spell(victim, SPELL_DRAGON_RIDE)) {
 	affect_from_char(victim,SPELL_DRAGON_RIDE);

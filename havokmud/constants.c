@@ -1382,10 +1382,43 @@ const char *spell_wear_off_soon_room_msg[] = {
 "",
 "",
 "",
-"",
-"",
-"",
-"",
+	"cold light",
+	"disease",
+	"invis to undead",
+	"life tap",
+	"suit of bone",
+	"spectral shield",//310
+	"clinging darkness",
+	"dominate undead",
+	"unsummon",
+	"siphon strength",
+	"gather shadows",
+	"mend bones",
+	"trace corpse",
+	"endure cold",
+	"life draw",
+	"numb the dead",//320
+	"binding",
+	"decay",
+	"shadow step",
+	"cavorting bones",
+	"mist of death",
+	"nullify",
+	"dark empathy",
+	"eye of the dead",
+	"soul steal",
+	"life leech",//330
+	"dark pact",
+	"darktravel",
+	"vampiric embrace",
+	"bind affinity",
+	"scourge of the warlock",
+	"finger of death",
+	"flesh golem",
+	"dominate undead", //338
+   "wall of thought",
+   "mind tap",
+
 "\n"
 
 };

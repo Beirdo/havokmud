@@ -2500,7 +2500,7 @@ char *GetLevelTitle(struct char_data *ch) {
 
 
 
-#if 0
+#if 1
  void do_who(struct char_data *ch, char *argument, int cmd) {
 
   struct zone_data    *zd;
@@ -2583,11 +2583,11 @@ char *GetLevelTitle(struct char_data *ch) {
    }
 //ch_printf(ch," Immortals: %d   Quest: %d   Mortals: %d\n\r", strlen(immortals), strlen(quest), strlen(mortals));
 	if(strlen(immortals) != 0)
-	   ch_printf(ch,"\n\r%-20s$c000pImmortals\n\r$c000w%s ","", immortals);
+	   ch_printf(ch,"%-2s$c000pImmortals\n\r$c000w%s","", immortals);
 	if(strlen(quest)  != 0)
-	   ch_printf(ch,"\n\r\n\r%-20s$c000pQuest\n\r$c000w%s  ","", quest);
+	   ch_printf(ch,"\n\r%-2s$c000pQuest\n\r$c000w%s","", quest);
 	if(strlen(mortals)  != 0)
-	   ch_printf(ch,"\n\r\n\r%-20s$c000pMortals\n\r$c000w%s ", "", mortals);
+	   ch_printf(ch,"\n\r%-2s$c000pMortals\n\r$c000w%s", "", mortals);
 
 
 

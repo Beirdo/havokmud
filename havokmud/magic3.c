@@ -2866,7 +2866,26 @@ void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim
 }
 
 void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
-void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  struct affected_type af;
+
+	  assert(ch && victim);
+
+	  if (!affected_by_spell(victim, SPELL_INVIS_TO_UNDEAD)) {
+
+	    act("The undead no longer see $n.", TRUE, victim,0,0,TO_ROOM);
+	    send_to_char("The undead no longer see you.\n\r", victim);
+
+	    af.type      = SPELL_INVIS_TO_UNDEAD;
+	    af.duration  = 24;
+	    af.modifier  = 0;
+	    af.location  = APPLY_BV2;
+	    af.bitvector = AFF2_ANIMAL_INVIS;
+	    affect_to_char(victim, &af);
+	  }
+}
+
+
 void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
 void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	  struct affected_type af;
@@ -2915,13 +2934,189 @@ void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *v
 
 
 void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
-void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  char buf[MAX_INPUT_LENGTH];
+	  struct affected_type af;
+
+	  void add_follower(struct char_data *ch, struct char_data *leader);
+	  bool circle_follow(struct char_data *ch, struct char_data *victim);
+	  void stop_follower(struct char_data *ch);
+
+	  assert(ch && victim);
+
+	  if (victim == ch) {
+	    send_to_char("You like yourself even better!\n\r", ch);
+	    return;
+	  }
+
+	  if (IsUndead(victim)) {
+	    send_to_char("You can't charm a plant-creature!\n\r", ch);
+	    return;
+	  }
+
+	  if (IsPerson(victim)) {
+	    send_to_char("You can't charm people! Try charm person for that!\n\r", ch);
+	    return;
+	  }
+
+
+	  if (GetMaxLevel(victim) > GetMaxLevel(ch)+3) {
+	    FailCharm(victim, ch);
+	    return;
+	  }
+
+	  if (too_many_followers(ch)) {
+	    act("$N takes one look at the size of your posse and justs says no!",
+		TRUE, ch, 0, victim, TO_CHAR);
+	    act("$N takes one look at the size of $n's posse and just says no!",
+		TRUE, ch, 0, victim, TO_ROOM);
+	    return;
+	  }
+
+	  if (!IS_AFFECTED(victim, AFF_CHARM) && !IS_AFFECTED(ch, AFF_CHARM)) {
+	    if (circle_follow(victim, ch)) {
+	      send_to_char("Sorry, following in circles can not be allowed.\n\r", ch);
+	      return;
+	    }
+	      if (IsImmune(victim, IMM_CHARM) || (WeaponImmune(victim))) {
+	          FailCharm(victim,ch);
+	       	  return;
+	      }
+	      if (IsResist(victim, IMM_CHARM)) {
+	         if (saves_spell(victim, SAVING_PARA)) {
+	          FailCharm(victim,ch);
+	       	  return;
+		 }
+
+	         if (saves_spell(victim, SAVING_PARA)) {
+	          FailCharm(victim,ch);
+	       	  return;
+		 }
+	       } else {
+	          if (!IsSusc(victim, IMM_CHARM)) {
+		     if (saves_spell(victim, SAVING_PARA)) {
+		        FailCharm(victim,ch);
+			return;
+		     }
+		  }
+	       }
+
+	    if (victim->master)
+	      stop_follower(victim);
+
+	    add_follower(victim, ch);
+
+	    af.type      = SPELL_DOMINATE_UNDEAD;
+
+	    if (GET_CHR(ch))
+	      af.duration  = follow_time(ch);
+	    else
+	      af.duration  = 24*18;
+
+	    if (IS_GOOD(victim) && IS_GOOD(ch))
+	      af.duration *= 2;
+	    if (IS_EVIL(victim) && IS_EVIL(ch))
+	      af.duration  += af.duration >> 1;
+
+
+	    af.modifier  = 0;
+	    af.location  = 0;
+	    af.bitvector = AFF_CHARM;
+	    affect_to_char(victim, &af);
+
+	    act("$n's glare, draws you towards $m.",FALSE,ch,0,victim,TO_VICT);
+
+	    if (!IS_PC(ch)) {
+	      REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+	      SET_BIT(victim->specials.act, ACT_SENTINEL);
+	    }
+
+  }
+}
 void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
 void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
-void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
-void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+	  struct affected_type af;
+
+		assert((ch && obj) || victim);
+
+	  if (obj) {
+	     send_to_char("The shadows start to encase it, but nothing happens.",ch);
+	  } else {
+			if (!affected_by_spell(victim, SPELL_INVISIBLE)) {
+
+			  act("$n slowly fades out of existence.", TRUE, victim,0,0,TO_ROOM);
+	  	  send_to_char("The shadows slowly start enveloping your entire body, then suddently you start to blend with them.\n\r", victim);
+
+		    af.type      = SPELL_INVISIBLE;
+	    	af.duration  = 24;
+	    	af.modifier  = -40;
+	  	  af.location  = APPLY_AC;
+		    af.bitvector = AFF_INVISIBLE;
+	  	  affect_to_char(victim, &af);
+	  	}
+	 }
+}
+void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+
+	  int healpoints;
+
+	  assert(victim);
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(!IsUndead(victim)) {
+		send_to_char("They seem alive and well.. Why would you??",ch);
+
+	}
+
+	  healpoints = dice(3,8)+3;
+
+	  if ( (healpoints + GET_HIT(victim)) > hit_limit(victim) )
+	    GET_HIT(victim) = hit_limit(victim);
+	  else
+	    GET_HIT(victim) += healpoints;
+
+	  send_to_char("Your bandages seem to tighten up!\n\r", victim);
+
+	  update_pos(victim);
+
+
+}
 void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
-void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
+  struct affected_type af;
+  char buf[254];
+
+ if (!victim)
+    return;
+
+  if (!affected_by_spell(victim, SPELL_ENDURE_COLD)) {
+ if (ch != victim) {
+    act("$n points at $N, and then $N's hands turn a pale blue color.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You point at $N, and make his skin a pale blue color.summon a electric protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
+    act("$n points at you.  Suddently, you feel a cold chill throughout your entire body.", FALSE, ch, 0, victim, TO_VICT);
+  } else {
+    act("$n concentrates for a second, then $s skin turns a weird pale blue.", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("You concentrate for a second, then all of a suddent, you feel a cold chill overtake your body.", FALSE, ch, 0, victim, TO_CHAR);
+  }
+
+    af.type      = SPELL_ENDURE_COLD;
+    af.modifier  = IMM_COLD;
+    af.location  = APPLY_IMMUNE; /* res */
+    af.bitvector = 0;
+    af.duration  = (int)level/10;
+    affect_to_char(victim, &af);
+  } else {
+  if (ch != victim)
+   sprintf(buf,"$N already seems to be able to endure the cold.");
+   else
+   sprintf(buf,"You already have the ability to endure the cold.");
+   act(buf,FALSE,ch,0,victim,TO_CHAR);
+  }
+
+
+}
 void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
 
 
