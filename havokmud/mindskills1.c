@@ -730,87 +730,65 @@ void mind_kinolock( byte level, struct char_data *ch, char *arg, int type,
 
 void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim, struct char_data arg)
 {
+	char name[256];
+	char buf[MAX_STRING_LENGTH],buf2[256];
+	int j, found = 0;
+	int room = 0;
+	int old_location;
+	assert(ch);
+	sprintf(name,"%s",arg);
+	sprintf(buf,"");
+	struct obj_data *i;
 
+	if (!ch->skills)
+		return;
 
-  char name[256];
-  char buf[MAX_STRING_LENGTH],buf2[256];
-  int j, found = 0;
-  int room = 0;
-  int old_location;
-  assert(ch);
-  sprintf(name,"%s",arg);
-  sprintf(buf,"");
-  struct obj_data *i;
-
-
-
-  if (!ch->skills)
-  	return;
-
-  if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)){
-    if (!HasClass(ch,CLASS_PSI)) {
-      send_to_char ("Your mind is not developed enough to do this\n\r",ch);
-      return;
-    }
-  }
-
-  if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
-  	send_to_char("Der, what is that ?\n\r",ch);
-    return;
-  }
-
-  if (!ch->skills[SKILL_SENSE_OBJECT].learned)   {
-    send_to_char ("You have not trained your mind to do this\n\r",ch);
-    return;
-  } else{
-
-	  for (i = object_list; i; i = i->next) {
-        if (isname(name, i->name)){
-          if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
-	        found = 1; /* we found at least one item */
-
-	        if (i->carried_by) {
-              if (strlen(PERS_LOC(i->carried_by, ch))>0) {
-		        room = (i->carried_by->in_room);
-              }
-
-	         }else if (i->equipped_by) {
-		        if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
-                  room = (i->equipped_by->in_room);
-		        }
-
-             }else if (i->in_obj) {
-	           room = (i->in_obj->in_room);
-
-	         }else {
-				if(i->in_room){
-	              room = (i->in_room);
-                }
-			  }
-			}
-		   }
-	  }
+	if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+		if (!HasClass(ch,CLASS_PSI)) {
+			send_to_char ("Your mind is not developed enough to do this\n\r",ch);
+			return;
+		}
 	}
 
-      if(room==0 || room== NOWHERE ) {
-	    send_to_char("You cannot sense that item.\n\r",ch);
-        return;
+	if (affected_by_spell(ch,SPELL_FEEBLEMIND)) {
+		send_to_char("Der, what is that ?\n\r",ch);
+		return;
+	}
 
-   }else {
+	if (!ch->skills[SKILL_SENSE_OBJECT].learned)   {
+		send_to_char ("You have not trained your mind to do this\n\r",ch);
+		return;
+	} else {
+		for (i = object_list; i; i = i->next) {
+			if (isname(name, i->name)) {
+				if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
+					found = 1; /* we found at least one item */
+					if (i->carried_by) {
+						if (strlen(PERS_LOC(i->carried_by, ch))>0) {
+							room = (i->carried_by->in_room);
+						}
+					} else if (i->equipped_by) {
+						if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
+							room = (i->equipped_by->in_room);
+						}
+					} else if (i->in_obj) {
+						room = (i->in_obj->in_room);
+					} else {
+						if(i->in_room) {
+							room = (i->in_room);
+						}
+					}
+				}
+			}
+		}
+	}
 
-      if ((GET_MANA(ch) < 20) && GetMaxLevel(ch) < LOW_IMMORTAL)    {
-	    send_to_char ("You have a headache. Better rest before you try this again.\n\r",ch);
-	    return;
-	  }else{
-	     if (dice(1,101) > ch->skills[SKILL_SCRY].learned)      {
-	       send_to_char("You cannot open a window at this time.\n\r", ch);
-	       GET_MANA(ch)-=10;
-	       LearnFromMistake(ch, SKILL_SCRY, 0, 95);
-	       WAIT_STATE(ch, PULSE_VIOLENCE*2);
-	       return;
-	     }
-	     else {
-	       GET_MANA(ch)-=20;
+	if(room==0 || room== NOWHERE ) {
+		send_to_char("You cannot sense that item.\n\r",ch);
+		return;
+	} else {
+// a valid room check
+		if(real_roomp(room)) {
 	       send_to_char("You close your eyes and envision your target.\n\r",ch);
 	       old_location = ch->in_room;
 	       char_from_room(ch);
@@ -818,8 +796,7 @@ void mind_sense_object(byte level, struct char_data *ch,struct char_data *victim
 	       do_look(ch, "",15);
 	       char_from_room(ch);
 	       char_to_room(ch, old_location);
-	 	   WAIT_STATE(ch, PULSE_VIOLENCE);
-	     }
-	   }
+		}
 	}
-  }
+}
+
