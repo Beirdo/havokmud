@@ -2330,7 +2330,7 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
         if ((GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) ||
             (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER)) {
             send_to_char("When you look inside, you see:\n\r", ch);
-            sprintf(buf, "look in %s", argument);
+            sprintf(buf, "look in %s", name);
             command_interpreter(ch, buf);
         }
     }
