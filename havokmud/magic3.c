@@ -169,8 +169,8 @@ void spell_plant_gate(int level, struct char_data *ch,
         }
     }
 
-    if (ITEM_TYPE(obj) != ITEM_TREE) {
-        send_to_char("Thats not a tree!\n\r", ch);
+    if (!obj) {
+        send_to_char("You can not sense a tree by that name.\n\r", ch);
         return;
     }
 
