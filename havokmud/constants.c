@@ -3324,6 +3324,7 @@ const char *system_flag_types [] = {
 	"WLD-ARENA",
 	"NO-DEINIT",
 	"NO-TWEAK",
+	"ZONE-LOCATE",
 	"\n"
 	};
 

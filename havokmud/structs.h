@@ -274,7 +274,7 @@ struct QuestItem {
 #define SYS_WLD_ARENA   BV13   /* Makes the entire world flagged arena */
 #define SYS_NO_DEINIT   BV14   /* makes zone not deinit */
 #define SYS_NO_TWEAK    BV15   /* makes items not tweak  -Lennya 20030730 */
-
+#define SYS_ZONELOCATE  BV16   /* makes locate in zone only -Gordon 20040201 */
 /* end sys flags */
 
 #define SPEAK_COMMON		1

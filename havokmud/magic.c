@@ -1336,33 +1336,58 @@ void spell_locate_object(byte level, struct char_data *ch,struct char_data *vict
 		if (isname(name, i->name)) {
 			/* ITEM_QUEST flag makes item !locate  -Lennya 20030602 */
 			if(!IS_SET(i->obj_flags.extra_flags, ITEM_QUEST)) {
-				found = 1; /* we found at least one item */
+				 /* we found at least one item */
 				if(i->carried_by) {
 					target = i->carried_by;
+					if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+					&& (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					|| (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+
 	            	if(!IS_IMMORTAL(target)) {
 					  if (strlen(PERS_LOC(i->carried_by, ch))>0) {
+						found = 1;
 						sprintf(buf2,"%s carried by %s.\n\r",i->short_description,PERS(i->carried_by,ch));
 						strcat(buf,buf2);
 						j--;
 				      }
 					}
+				  }
 				} else if(i->equipped_by) {
 					target = i->equipped_by;
+					if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+					 && (real_roomp(ch->in_room)->zone == real_roomp(target->in_room)->zone))
+					 || (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+
+
 					if(!IS_IMMORTAL(target)){
 					  if (strlen(PERS_LOC(i->equipped_by, ch))>0) {
+						found = 1;
 						sprintf(buf2,"%s equipped by %s.\n\r",i->short_description,PERS(i->equipped_by,ch));
 						strcat(buf,buf2);
 						j--;
 					  }
 				    }
+				  }
+
 				} else if (i->in_obj) {
+					if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+					&& (real_roomp(ch->in_room)->zone == real_roomp(i->in_obj->in_room)->zone))
+					|| (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
+
+					found = 1;
 					sprintf(buf2,"%s in %s.\n\r",i->short_description,i->in_obj->short_description);
 					strcat(buf,buf2);
 					j--;
+				  }
 				} else {
+
+					if(((IS_SET (SystemFlags, SYS_ZONELOCATE))
+					&& (real_roomp(ch->in_room)->zone == real_roomp(i->in_room)->zone))
+					|| (!IS_SET(SystemFlags, SYS_ZONELOCATE))){
 					sprintf(buf2,"%s in %s.\n\r",i->short_description,(i->in_room == NOWHERE ? "use but uncertain." :real_roomp(i->in_room)->name));
 					strcat(buf,buf2);
 					j--;
+			      }
 				}
 			}
 		}

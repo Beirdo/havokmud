@@ -5412,6 +5412,16 @@ if (IS_NPC(ch))
 	 		    	send_to_char("Tweaking items disabled\n\r",ch);
 	 		    	log("Tweaking items disabled");
 	 		    }
+   } else if (!strcmp("zonelocate", arg)) {
+	   			if (IS_SET(SystemFlags,SYS_ZONELOCATE)) {
+					REMOVE_BIT(SystemFlags,SYS_ZONELOCATE);
+					send_to_char("Zone only locating has been disabled\n\r",ch);
+					log("Zone only locating has been disabled");
+				} else {
+					SET_BIT(SystemFlags,SYS_ZONELOCATE);
+					send_to_char("Zone only locating has been enabled\n\r",ch);
+					log("Zone only locating has been enabled");
+				}
 
 
     } else
