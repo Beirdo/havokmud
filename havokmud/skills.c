@@ -3888,17 +3888,17 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	}
 
-	if (!(spell_info[sn].min_level_cleric)) {  //is it a mage spell?
+	if (!(spell_info[sn+1].min_level_cleric)) {  //is it a mage spell?
 		send_to_char("Alas, you cannot scribe that spell, it's not in your sphere.\n\r",ch);
 		return;
 	}
 
-	if (spell_info[sn].brewable == 0){
+	if (spell_info[sn+1].brewable == 0){
 		send_to_char("You can't scribe this spell.\n\r",ch);
 		return;
 	}
 
-	if((GET_MANA(ch) < spell_info[sn].min_usesmana*2) && !IS_IMMORTAL(ch)) {
+	if((GET_MANA(ch) < spell_info[sn+1].min_usesmana*2) && !IS_IMMORTAL(ch)) {
 		send_to_char("You don't have enough mana to scribe that spell.\n\r",ch);
 		return;
 	}
@@ -3916,7 +3916,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_CHAR );
 		act( "$p goes up in flames!",TRUE, ch, obj, NULL, TO_ROOM );
 		GET_HIT(ch) -= 10;
-		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		act("$n yelps in pain.",TRUE,ch,0,NULL,TO_ROOM);
 		act("Ouch!",TRUE,ch,0,NULL,TO_CHAR);
 
@@ -3925,7 +3925,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		return;
 	} else {
 
-		GET_MANA(ch)-= spell_info[sn].min_usesmana*2;
+		GET_MANA(ch)-= spell_info[sn+1].min_usesmana*2;
 		sprintf(buf, "You have imbued a spell to %s.\n\r", obj->short_description);
 		send_to_char( buf, ch );
 		send_to_char("The scribing process was a success!\n\r", ch);
