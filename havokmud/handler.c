@@ -878,7 +878,7 @@ void char_to_room(struct char_data *ch, long room)
       /*
 	start up the zone.
 	*/
-      reset_zone(rp->zone);
+      reset_zone(rp->zone,0);
       if(rp->zone == STATUE_ZONE)
       	generate_legend_statue();
 

@@ -3101,7 +3101,7 @@ void assign_spell_pointers()
 
   spello(69,12,POSITION_STANDING, 11, 22, 14,
   11,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  15,	 TAR_CHAR_ROOM, cast_flying, 0,1, LOW_IMMORTAL, LOW_IMMORTAL);
+  15,	 TAR_CHAR_ROOM, cast_flying, 0,1, LOW_IMMORTAL, 20);
 
   spello(70,24,POSITION_FIGHTING, 17, LOW_IMMORTAL, LOW_IMMORTAL,
   17,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3165,7 +3165,7 @@ void assign_spell_pointers()
 
   spello(85,12,POSITION_STANDING, 6, 3, 4,
   6,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  5,	 TAR_CHAR_ROOM, cast_refresh,0,1, LOW_IMMORTAL, LOW_IMMORTAL);
+  5,	 TAR_CHAR_ROOM, cast_refresh,0,1, LOW_IMMORTAL, 5);
 
   spello(86,12,POSITION_FIGHTING, 20, 9, 14,
   20,  35,  30,  LOW_IMMORTAL,
@@ -3483,7 +3483,7 @@ void assign_spell_pointers()
 
   spello( 163, 12, POSITION_STANDING, 30, BIG_GUY, BIG_GUY,
   30,  BIG_GUY,  BIG_GUY,  BIG_GUY,
-  20,	 TAR_CHAR_WORLD, cast_teleport_wo_error, 0,1, LOW_IMMORTAL, LOW_IMMORTAL);
+  20,	 TAR_CHAR_WORLD, cast_teleport_wo_error, 0,1, LOW_IMMORTAL, 35);
 
   spello( 164, 12, POSITION_STANDING, 43, BIG_GUY, BIG_GUY,
   43,  BIG_GUY,  BIG_GUY,  BIG_GUY,

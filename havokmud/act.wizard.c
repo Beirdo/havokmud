@@ -466,7 +466,7 @@ void do_zload(struct char_data *ch, char *argument, int cmdnum)
   int zone;
   FILE *fp;
 
-dlog("in do_ zload");
+dlog("in do_zload");
   if (IS_NPC(ch))
     return;
 
@@ -506,7 +506,7 @@ dlog("in do_ zload");
   fclose(fp);
   renum_zone_table(zone);
   zone_table[zone].start=0;
-  reset_zone(zone);
+  reset_zone(zone, cmdnum);
   if(zone == STATUE_ZONE) /* if statue zone, make sure the statues are rebuilt too! */
   	generate_legend_statue();
   send_to_char("Ok\r\n",ch);

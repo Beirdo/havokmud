@@ -2586,13 +2586,13 @@ void spell_identify(byte level, struct char_data *ch, struct char_data *victim, 
 					send_to_char(buf2, ch);
 				}
 				if (obj->obj_flags.value[2] >= 1) {
-					sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+					sprinttype(obj->obj_flags.value[2]-1,spells,buf);
 					sprintf(buf2,"%s%s",color2, buf);
 					strcat(buf2,"\n\r");
 					send_to_char(buf2, ch);
 				}
 				if (obj->obj_flags.value[3] >= 1) {
-					sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+					sprinttype(obj->obj_flags.value[3]-1,spells,buf);
 					sprintf(buf2,"%s%s",color2, buf);
 					strcat(buf2,"\n\r");
 					send_to_char(buf2, ch);

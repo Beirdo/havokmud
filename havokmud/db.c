@@ -242,13 +242,13 @@ void boot_db()
 	  if (i == 0) {
 	    fprintf(stderr, "Performing boot-time reload of static mobs\n",
 		    s);
-	    reset_zone(0);
+	    reset_zone(0,0);
 
 	  }
 
 	  if (i == 1) {
 	    fprintf(stderr, "Automatic initialization of  %s\n", s);
-	    reset_zone(1);
+	    reset_zone(1,0);
 	  }
 	}
 
@@ -3247,10 +3247,10 @@ void zone_update()
 			//IS_SET(SystemFlags,SYS_NO_DEINIT)
 			if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT)) {
 				/* this should never deinit, or set back to 0 */
-				reset_zone(update_u->zone_to_reset);
+				reset_zone(update_u->zone_to_reset,0);
 			} else if (!is_empty(update_u->zone_to_reset)) {
 				/* ALWAYS should just reset, not cleaned when there's people in it */
-				reset_zone(update_u->zone_to_reset);
+				reset_zone(update_u->zone_to_reset,0);
 			} else {
 				CleanZone(update_u->zone_to_reset);
 				zone_table[update_u->zone_to_reset].start=0;
@@ -3313,7 +3313,7 @@ int does_Load(int num, int max ) {
 #define ZCMD zone_table[zone].cmd[cmd_no]
 
 /* execute the reset command table of a given zone */
-void reset_zone(int zone)
+void reset_zone(int zone, int cmd)
 {
   int cmd_no, last_cmd = 1, j, i, tweakroll = 100,tweakrate = 0;
   int tweakmin = 0; /* this is the minimum tweak rate on ALL items, currently 0 */
@@ -3328,7 +3328,6 @@ void reset_zone(int zone)
   mob = 0;
 
 	if(zone == 189) {
-//		log("resetting cog sequence to 0 for Sentinel's Zone (189)");
 		cog_sequence = 0;
 	}
 
@@ -3464,10 +3463,14 @@ void reset_zone(int zone)
 		tweak(obj);
 	}
 
-		if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
-			obj_to_room(obj, ZCMD.arg3);
-		else
-		   extract_obj(obj);
+		if(cmd != 375) {
+			if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+				obj_to_room(obj, ZCMD.arg3);
+			else
+				extract_obj(obj);
+		} else {
+			extract_obj(obj);
+		}
 
 		last_cmd = 1;
 	      } else {
@@ -3504,10 +3507,14 @@ void reset_zone(int zone)
 		tweak(obj);
 	}
 
-	    if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
-			obj_to_obj(obj, obj_to);
-		else
-		   extract_obj(obj);
+		if(cmd != 375) {
+			if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+				obj_to_obj(obj, obj_to);
+			else
+				extract_obj(obj);
+		} else {
+			extract_obj(obj);
+		}
 
 	    last_cmd = 1;
 	  } else {
@@ -3533,11 +3540,14 @@ void reset_zone(int zone)
 	  if(tweakroll <= tweakrate)
 		tweak(obj);
 	}
-
-        if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
-			obj_to_char(obj, mob);
-		else
-		   extract_obj(obj);
+		if(cmd != 375) {
+			if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+				obj_to_char(obj, mob);
+			else
+				extract_obj(obj);
+		} else {
+			extract_obj(obj);
+		}
 
 	  last_cmd = 1;
 	} else
@@ -3576,11 +3586,14 @@ void reset_zone(int zone)
 	  if(tweakroll <= tweakrate)
 		tweak(obj);
 	}
-
-		if(does_Load(obj_index[ZCMD.arg1].number,(int) obj->max)==TRUE)
-		   equip_char(mob, obj, ZCMD.arg3);
-		else
-		   extract_obj(obj);
+		if(cmd != 375) {
+			if(does_Load((int)obj_index[ZCMD.arg1].number, (int)obj->max)==TRUE)
+				equip_char(mob, obj, ZCMD.arg3);
+			else
+				extract_obj(obj);
+		} else {
+			extract_obj(obj);
+		}
 
 	  } else {
 	    sprintf(buf, "eq error - zone %d, cmd %d, item %d, mob %d, loc %d\n", zone, cmd_no,

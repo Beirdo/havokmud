@@ -262,7 +262,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
 	send_to_char("Monsters have no titles.\n\r",ch);
 	return;
       }
-      if ((GetMaxLevel(ch) >= GetMaxLevel(mob)) && (ch != mob))
+      if (GetMaxLevel(ch) >= GetMaxLevel(mob))
 	ch->desc->str = &mob->player.title;
       else {
 	send_to_char("Sorry, can't set the title of someone of higher level.\n\r", ch);

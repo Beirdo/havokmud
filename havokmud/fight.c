@@ -2268,6 +2268,9 @@ if (ch->specials.fighting) {
   }
 } /* end OTHER end prot good check */
 
+if(HasClass(ch, CLASS_MONK))
+	calc_thaco -= (int) GetMaxLevel(ch)/7; /* monks get a bit of a bonus to hit  -Lennya 20030901*/
+
   calc_thaco -= str_app[STRENGTH_APPLY_INDEX(ch)].tohit;
   calc_thaco -= GET_HITROLL(ch);
   calc_thaco += GET_COND(ch, DRUNK)/5;

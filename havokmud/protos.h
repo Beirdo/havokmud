@@ -458,7 +458,7 @@ void boot_zones();
 struct char_data *read_mobile(int nr, int type);
 struct obj_data *read_object(int nr, int type);
 void zone_update();
-void reset_zone(int zone);
+void reset_zone(int zone, int cmd);
 int is_empty(int zone_nr);
 int load_char(char *name, struct char_file_u *char_element);
 void store_to_char(struct char_file_u *st, struct char_data *ch);
