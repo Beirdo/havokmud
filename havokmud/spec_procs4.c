@@ -557,12 +557,12 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 //	  { "hitpoints",    1,      2},
 //	  { "movement",  	2,      1},
 //	  { "mana",         3,      2},
-	  { "constitution",	4,		 10},
-	  { "strength",     5,      10},
-	  { "dexterity",    6,      10},
-	  { "charisma",     7,      5},
-	  { "intelligence", 8,      12},
-	  { "wisdom",       9,      12},
+	  { "constitution",	4,		(GET_RCON(ch) - 3)},  /*cost is current real stat -3 -Gordon Jan202004- */
+	  { "strength",     5,      (GET_RSTR(ch) - 3)},
+	  { "dexterity",    6,      (GET_RDEX(ch) - 3)},
+	  { "charisma",     7,      (GET_RCHR(ch) - 3)},
+	  { "intelligence", 8,      (GET_RINT(ch) - 3)},
+	  { "wisdom",       9,      (GET_RWIS(ch) - 3)},
 	  { "None",		    -1,	    -1}
 
 	};
@@ -628,7 +628,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
 						break;
 					}
-					if(GET_RCON(ch) >=  MaxConForRace(ch)){
+					if(GET_RCON(ch) >=  MaxConForRace(ch)){ //check for racial maxes -Gordon Jan202004-
 						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum con for your race.'\n\r", name, traininglist [stat-1].name,name);
 						break;
 
