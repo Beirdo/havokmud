@@ -1482,12 +1482,13 @@ dlog("in do_auction");
 		return;
 	}
 
+/*
 	if(GET_GOLD(ch) < 2000) {
 		send_to_char("Sorry, you don't have the enough to pay the auctioneer's fee.\n\r",ch);
 		minbid = 0;
 		return;
 	}
-
+*/
 
 	if(!(minbid=atoi(bid)))
 		minbid=1; /* min bid is 1 coin, and we got an auction runnin. */
@@ -1503,9 +1504,10 @@ dlog("in do_auction");
 	send_to_all(buf);
 
 	send_to_char("Your item is taken away from you.\n\r",ch);
+/*
 	send_to_char("You are charged 2000 coins for this auction.\n\r",ch);
 	GET_GOLD(ch)-=2000;
-
+*/
 	auct_loop = 1;
 
 	auctioneer = ch;
@@ -1546,6 +1548,12 @@ dlog("in do_bid");
 
 	if(!(auctionobj = auctioneer->specials.auction)) {
 		log("auctionobj not found in do_bid");
+		return;
+	}
+
+	/* can't bid on your own auctions */
+	if(auctioneer == ch && !IS_IMMORTAL(ch)) {
+		send_to_char("Meh, stop bidding on your own stuff, punk!\n\r",ch);
 		return;
 	}
 
