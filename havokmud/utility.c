@@ -3873,59 +3873,70 @@ int GetApprox(int num, int perc)
   return(num);
 }
 
+#define STEED_TEMPLATE 44
 int MountEgoCheck(struct char_data *ch, struct char_data *horse)
 {
-  int ride_ego, drag_ego, align, check;
+	int ride_ego, drag_ego, align, check;
 
-  if (IsDragon(horse)) {
-    if (ch->skills) {
-      drag_ego = GetMaxLevel(horse)*2;
-      if (IS_SET(horse->specials.act, ACT_AGGRESSIVE) ||
-	  IS_SET(horse->specials.act, ACT_META_AGG)) {
-	drag_ego += GetMaxLevel(horse);
-      }
-      ride_ego = ch->skills[SKILL_RIDE].learned/10 +
-	GetMaxLevel(ch)/2;
-      if (IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
-	ride_ego += ((GET_INT(ch) + GET_WIS(ch))/2);
-      }
-      align = GET_ALIGNMENT(ch) - GET_ALIGNMENT(horse);
-      if (align < 0) align = -align;
-      align/=100;
-      align -= 5;
-      drag_ego += align;
-      if (GET_HIT(horse) > 0)
-	drag_ego -= GET_MAX_HIT(horse)/GET_HIT(horse);
-      else
-	    drag_ego = 0;
-      if (GET_HIT(ch) > 0)
-	ride_ego -= GET_MAX_HIT(ch)/GET_HIT(ch);
-      else
-	ride_ego = 0;
+	/* called steed check */
+	if (mob_index[horse->nr].virtual == STEED_TEMPLATE) {
+//	if (!strcmp(horse->player.name,"charge horse") {
+		if(HasClass(ch, CLASS_PALADIN)) {
+			if(GET_LEVEL(ch) >= GET_LEVEL(horse)+10) {
+				/* ok, this horse likes you */
+				return(-1);
+			}
+		}
+	}
 
-      check = drag_ego+number(1,10)-(ride_ego+number(1,10));
-      return(check);
+	if (IsDragon(horse)) {
+		if (ch->skills) {
+			drag_ego = GetMaxLevel(horse)*2;
+			if (IS_SET(horse->specials.act, ACT_AGGRESSIVE) || IS_SET(horse->specials.act, ACT_META_AGG)) {
+				drag_ego += GetMaxLevel(horse);
+			}
+			ride_ego = ch->skills[SKILL_RIDE].learned/10 + GetMaxLevel(ch)/2;
+			if (IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
+				ride_ego += ((GET_INT(ch) + GET_WIS(ch))/2);
+			}
+			align = GET_ALIGNMENT(ch) - GET_ALIGNMENT(horse);
+			if (align < 0)
+				align = -align;
+			align/=100;
+			align -= 5;
+			drag_ego += align;
+			if (GET_HIT(horse) > 0)
+				drag_ego -= GET_MAX_HIT(horse)/GET_HIT(horse);
+			else
+				drag_ego = 0;
+			if (GET_HIT(ch) > 0)
+				ride_ego -= GET_MAX_HIT(ch)/GET_HIT(ch);
+			else
+				ride_ego = 0;
 
-    } else {
-      return(-GetMaxLevel(horse));
-    }
-  } else {
-    if (!ch->skills) return(-GetMaxLevel(horse));
+			check = drag_ego+number(1,10)-(ride_ego+number(1,10));
+			return(check);
 
-    drag_ego = GetMaxLevel(horse);
+		} else {
+			return(-GetMaxLevel(horse));
+		}
+	} else {
+		if (!ch->skills)
+			return(-GetMaxLevel(horse));
 
-    if (drag_ego > 15)
-      drag_ego *= 2;
+		drag_ego = GetMaxLevel(horse);
 
-    ride_ego = ch->skills[SKILL_RIDE].learned/10 +
-      GetMaxLevel(ch);
+		if (drag_ego > 15)
+			drag_ego *= 2;
 
-    if (IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
-      ride_ego += (GET_INT(ch) + GET_WIS(ch));
-    }
-    check = drag_ego+number(1,5)-(ride_ego+number(1,10));
-    return(check);
-  }
+		ride_ego = ch->skills[SKILL_RIDE].learned/10 + GetMaxLevel(ch);
+
+		if (IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
+			ride_ego += (GET_INT(ch) + GET_WIS(ch));
+		}
+		check = drag_ego+number(1,5)-(ride_ego+number(1,10));
+		return(check);
+	}
 }
 
 int RideCheck( struct char_data *ch, int mod)

@@ -1651,7 +1651,7 @@ struct char_data *read_mobile(int nr, int type)
 //		log("Has the proc");
 		    if(mob_index[mob->nr].func != QuestMobProc){
 		       mob_index[mob->nr].func = *QuestMobProc;//(*QuestMobProc)();
-				log("assigning proc");
+//				log("assigning proc");
 			} else {
 //				log("Already has proc");
 			}
@@ -1751,7 +1751,11 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
     fscanf(mob_fi, " %d ", &tmp);
     if (tmp == -1) {
       fscanf(mob_fi, " %d ", &tmp);
-      mob->points.gold = tmp;
+ sprintf(buf,"money = %d",tmp);
+ log(buf);
+      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);
+ sprintf(buf,"money = %d",mob->points.gold);
+ log(buf);
       fscanf(mob_fi, " %d ", &tmp);
       GET_EXP(mob) = tmp;
       fscanf(mob_fi, " %d \n", &tmp);
@@ -1761,7 +1765,9 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
       if(IsSmall(mob))
 	mob->abilities.str -= 1;
     } else {
-      mob->points.gold = tmp;
+ sprintf(buf,"beepmoney = %d",tmp);
+ log(buf);
+      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
       fscanf(mob_fi, " %d \n", &tmp);
       GET_EXP(mob) = tmp;
     }
@@ -1866,7 +1872,7 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 
     if (tmp == -1) {
       fscanf(mob_fi, " %d ", &tmp);
-      mob->points.gold = tmp;
+      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
       fscanf(mob_fi, " %d ", &tmp);
       if (tmp >= 0)
 	GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
@@ -1879,7 +1885,8 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
       if(IsSmall(mob))
 	mob->abilities.str -= 1;
     } else {
-      mob->points.gold = tmp;
+
+      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
 
       /*
 	this is where the new exp will come into play
@@ -1990,7 +1997,7 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
     mob->points.max_move = tmp;
 
     fscanf(mob_fi, " %d ", &tmp);
-    mob->points.gold = tmp;
+    mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
 
     fscanf(mob_fi, " %d \n", &tmp);
     GET_EXP(mob) = tmp;
@@ -2088,10 +2095,16 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 #endif
 
   if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
-    char buf[200];
-    sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr,
-	    mob->points.gold);
-    log(buf);
+sprintf(buf,"number = %d",nr);
+log(buf);
+//	  if(mob->nr != 51817) { /* ginayro can carry more, him being greedy and unkillable and all */
+	if (mob_index[mob->nr].virtual != 51817) {
+//	if(strcmp(mob->player.name,"guardian greed Ginayro 14000")) {
+	    char buf[200];
+	    sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr,
+			    mob->points.gold);
+	    log(buf);
+	}
   }
 
   /* set up things that all members of the race have */
@@ -2378,7 +2391,7 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
 
     if GET_RACE(mob) {
       fprintf(mob_fi, " %d ", -1);
-      fprintf(mob_fi, " %d ", 5* mob->points.gold); /* will this keep money from saving to 1/5th? */
+      fprintf(mob_fi, " %d ", 5 * mob->points.gold); /* fix that odd money thing */
       fprintf(mob_fi, " %d ",GetExpFlags(mob, i) );
       fprintf(mob_fi, " %d \n", GET_RACE(mob));
     } else {

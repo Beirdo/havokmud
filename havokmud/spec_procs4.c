@@ -1190,11 +1190,6 @@ int timed_door(struct char_data *ch, struct room_data *rp, int cmd)
        "above",
        "below"};
 
-log("trying proc");
-
-	if(cmd)
-		return(FALSE);
-log("seems to be working");
 	/* initialize exit info */
 	sprintf(doorname,"door");
 	doordir = 2;
@@ -1235,6 +1230,18 @@ log("seems to be working");
 					send_to_room(buf, exitp->to_room);
 				}
 			}
+		} else if (time_info.hours == 9) { /* they should all be fried by now */
+			spawnroom = real_roomp(SPAWNROOM);
+			if (!spawnroom) {
+				log("No nightwalker spawnroom found, blame Ash.");
+				return(FALSE);
+			}
+//			log("transferring nightwalkers");
+			while (spawnroom->people) {
+				nightwalker = spawnroom->people;
+				char_from_room(nightwalker);
+				char_to_room(nightwalker, WAITROOM);
+			}
 		}
 	} else { /* it's open. should it be closed? */
 		if(4 < time_info.hours && time_info.hours < 20) { /* yah man, let's close that bugger */
@@ -1252,14 +1259,6 @@ log("seems to be working");
 				}
 				sprintf(buf,"The %s %s slams shut.\n\r",doorname, dir_name[rev_dir[doordir]]);
 				send_to_room(buf, exitp->to_room);
-			}
-			/* now that it's firmly closed, we can transfer any nightwalkers from the spawnroom to waitroom */
-//			log("transferring nightwalkers");
-			spawnroom = real_roomp(SPAWNROOM);
-			while (spawnroom->people) {
-				nightwalker = spawnroom->people;
-				char_from_room(nightwalker);
-				char_to_room(nightwalker, WAITROOM);
 			}
 		}
 	}

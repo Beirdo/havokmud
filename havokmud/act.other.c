@@ -2517,85 +2517,77 @@ void do_mount(struct char_data *ch, char *arg, int cmd)
 
 dlog("in do_mount");
 
-  if (cmd == 276 || cmd == 278) {
-    only_argument(arg, name);
+	if (cmd == 276 || cmd == 278) {
+		only_argument(arg, name);
 
-    if (!(horse = get_char_room_vis(ch, name))) {
-      send_to_char("Mount what?\n\r", ch);
-      return;
-    }
+		if (!(horse = get_char_room_vis(ch, name))) {
+			send_to_char("Mount what?\n\r", ch);
+			return;
+		}
 
-    if (!IsHumanoid(ch)) {
-      send_to_char("You can't ride things!\n\r", ch);
-      return;
-    }
+		if (!IsHumanoid(ch)) {
+			send_to_char("You can't ride things!\n\r", ch);
+			return;
+		}
 
-    if (IsRideable(horse)) {
+		if (IsRideable(horse)) {
 
-      if (GET_POS(horse) < POSITION_STANDING) {
-	send_to_char("Your mount must be standing\n\r", ch);
-	return;
-      }
+			if (GET_POS(horse) < POSITION_STANDING) {
+				send_to_char("Your mount must be standing\n\r", ch);
+				return;
+			}
 
-      if (RIDDEN(horse)) {
-	send_to_char("Already ridden\n\r", ch);
-	return;
-      } else if (MOUNTED(ch)) {
-	send_to_char("Already riding\n\r", ch);
-	return;
-      }
+			if (RIDDEN(horse)) {
+				send_to_char("Already ridden\n\r", ch);
+				return;
+			} else if (MOUNTED(ch)) {
+				send_to_char("Already riding\n\r", ch);
+				return;
+			}
 
-      check = MountEgoCheck(ch, horse);
-      if (check > 5) {
-	act("$N snarls and attacks!",
-	    FALSE, ch, 0, horse, TO_CHAR);
-	act("as $n tries to mount $N, $N attacks $n!",
-	    FALSE, ch, 0, horse, TO_NOTVICT);
-	WAIT_STATE(ch, PULSE_VIOLENCE);
-	hit(horse, ch, TYPE_UNDEFINED);
-	return;
-      } else if (check > -1) {
-	act("$N moves out of the way, you fall on your butt",
-	    FALSE, ch, 0, horse, TO_CHAR);
-	act("as $n tries to mount $N, $N moves out of the way",
-	    FALSE, ch, 0, horse, TO_NOTVICT);
-	WAIT_STATE(ch, PULSE_VIOLENCE);
-	GET_POS(ch) = POSITION_SITTING;
-	return;
-      }
+			check = MountEgoCheck(ch, horse);
+			if (check > 5) {
+				act("$N snarls and attacks!", FALSE, ch, 0, horse, TO_CHAR);
+				act("as $n tries to mount $N, $N attacks $n!", FALSE, ch, 0, horse, TO_NOTVICT);
+				WAIT_STATE(ch, PULSE_VIOLENCE);
+				hit(horse, ch, TYPE_UNDEFINED);
+				return;
+			} else if (check > -1) {
+				act("$N moves out of the way, you fall on your butt", FALSE, ch, 0, horse, TO_CHAR);
+				act("as $n tries to mount $N, $N moves out of the way", FALSE, ch, 0, horse, TO_NOTVICT);
+				WAIT_STATE(ch, PULSE_VIOLENCE);
+				GET_POS(ch) = POSITION_SITTING;
+				return;
+			}
 
+			if (RideCheck(ch, 50)) {
+				act("You hop on $N's back", FALSE, ch, 0, horse, TO_CHAR);
+				act("$n hops on $N's back", FALSE, ch, 0, horse, TO_NOTVICT);
+				act("$n hops on your back!", FALSE, ch, 0, horse, TO_VICT);
+				MOUNTED(ch) = horse;
+				RIDDEN(horse) = ch;
+				GET_POS(ch) = POSITION_MOUNTED;
+				REMOVE_BIT(ch->specials.affected_by, AFF_SNEAK);
+			} else {
+				act("You try to ride $N, but falls on $s butt", FALSE, ch, 0, horse, TO_CHAR);
+				act("$n tries to ride $N, but falls on $s butt", FALSE, ch, 0, horse, TO_NOTVICT);
+				act("$n tries to ride you, but falls on $s butt", FALSE, ch, 0, horse, TO_VICT);
+				GET_POS(ch) = POSITION_SITTING;
+				WAIT_STATE(ch, PULSE_VIOLENCE*2);
+			}
+		} else {
+			send_to_char("You can't ride that!\n\r", ch);
+			return;
+		}
+	} else if (cmd == 277) {
+		horse = MOUNTED(ch);
 
-      if (RideCheck(ch, 50)) {
-	act("You hop on $N's back", FALSE, ch, 0, horse, TO_CHAR);
-	act("$n hops on $N's back", FALSE, ch, 0, horse, TO_NOTVICT);
-	act("$n hops on your back!", FALSE, ch, 0, horse, TO_VICT);
-	MOUNTED(ch) = horse;
-	RIDDEN(horse) = ch;
-	GET_POS(ch) = POSITION_MOUNTED;
-	REMOVE_BIT(ch->specials.affected_by, AFF_SNEAK);
-      } else {
-	act("You try to ride $N, but falls on $s butt",
-	    FALSE, ch, 0, horse, TO_CHAR);
-	act("$n tries to ride $N, but falls on $s butt",
-	    FALSE, ch, 0, horse, TO_NOTVICT);
-	act("$n tries to ride you, but falls on $s butt",
-	    FALSE, ch, 0, horse, TO_VICT);
-	GET_POS(ch) = POSITION_SITTING;
-	WAIT_STATE(ch, PULSE_VIOLENCE*2);
-      }
-    } else {
-      send_to_char("You can't ride that!\n\r", ch);
-      return;
-    }
-  } else if (cmd == 277) {
-    horse = MOUNTED(ch);
-
-    act("You dismount from $N", FALSE, ch, 0, horse, TO_CHAR);
-    act("$n dismounts from $N", FALSE, ch, 0, horse, TO_NOTVICT);
-    act("$n dismounts from you", FALSE, ch, 0, horse, TO_VICT);
-    Dismount(ch, MOUNTED(ch), POSITION_STANDING);
-    return;
-  }
+		act("You dismount from $N", FALSE, ch, 0, horse, TO_CHAR);
+		act("$n dismounts from $N", FALSE, ch, 0, horse, TO_NOTVICT);
+		act("$n dismounts from you", FALSE, ch, 0, horse, TO_VICT);
+		Dismount(ch, MOUNTED(ch), POSITION_STANDING);
+		return;
+	}
 
 }
 
@@ -3439,7 +3431,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     akills = finger->specials.a_kills;
     adeaths = finger->specials.a_deaths;
     ch_printf(ch, "$c000BArena ratio           : $c0007%3.0f%s\n\r",
-    ((akills+adeaths) == 0) ? 0 : ( ((float)akills  / ((int) (akills+adeaths)))  * 100.0 + 0.5),"%");
+    ((akills+adeaths) == 0) ? 0 : ( (  (float) akills /((int)(akills+adeaths))   )  * 100.0 + 0.5),"%");
 
   } /* end found finger'e*/
   else  /*Else there is no character in char DB*/

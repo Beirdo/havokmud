@@ -1381,32 +1381,38 @@ void assign_mobiles()
 {32034, CorsairPush },
 {33188, Tyrannosaurus_swallower },
  {23200, FightingGuildMaster },
- /* Tmeple of Sin */
- {51826, sinpool } , /* Lennyas pool proc*/
- {51843, pridemirror } , /* Lennyas mirror proc*/
- {51803, sin_spawner },
- {51821, trinketlooter },
- {51822, trinketlooter },
- {51823, trinketlooter },
- {51824, trinketlooter },
- {51805, lust_sinner },
- {51806, lust_sinner },
- {51812, Tyrannosaurus_swallower}, /* Hambre, Guardian of Gluttony */
- /* mermaid lagoon */
- {3907, mermaid }, /* Melodia Merqueen */
- {3953, mermaid }, /* Sirens */
- {3959, mermaid }, /* roaming mermaids */
 
-/* Tarantis */
-	{740, nightwalker},
+/* Tmeple of Sin */
+	{51826, sinpool } , /* Lennyas pool proc*/
+	{51843, pridemirror } , /* Lennyas mirror proc*/
+	{51803, sin_spawner },
+	{51821, trinketlooter },
+	{51822, trinketlooter },
+	{51823, trinketlooter },
+	{51824, trinketlooter },
+	{51805, lust_sinner },
+	{51806, lust_sinner },
+	{51812, Tyrannosaurus_swallower}, /* Hambre, Guardian of Gluttony */
+
+/* mermaid lagoon */
+	{3907, mermaid }, /* Melodia Merqueen */
+	{3953, mermaid }, /* Sirens */
+	{3959, mermaid }, /* roaming mermaids */
+
+/* City State of Tarantis */
+	{740, nightwalker },
+	{1000, timed_door }, /* mob to stick the door proc on */
 
 
 /* Heximal's new zone */
 	{50998, Deshima },
 	{23201    , TrainingGuild },
 	{ 23202 , WeaponsMaster },
+
 /* King's Grove */
 	{702, DruidGuildMaster },
+
+
 #endif
 
     { -1, NULL },
@@ -1615,7 +1621,7 @@ void assign_rooms()
 	{ 721, pick_berries },
 
 /* Citystate of Tarantis */
-	{737, timed_door },
+//	{737, timed_door },
 
 /* Rocky's Zone */
 	{17429, close_doors},
