@@ -2144,6 +2144,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	int qend, spl, i,exp;
 	bool target_ok;
 	extern struct chr_app_type chr_apply[];
+	extern struct int_app_type int_sf_modifier[];
+
 
 	if (!IsHumanoid(ch)) {
 		send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
@@ -2530,8 +2532,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 				}
 				/* end EQ check	*/
 
-//				if(max<101)
-//					max=101; // still some chance of failure
+				max += int_sf_modifier[GET_INT(ch)].learn;
 
 				if (ch->attackers > 0)
 					max += spell_info[spl].spellfail;
