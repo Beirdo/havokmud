@@ -2518,6 +2518,35 @@ New Spells:
 void spell_enlightenment(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
 
+
+  struct affected_type af;
+  int t,i;
+
+  if (!affected_by_spell(victim,SPELL_ENLIGHTENMENT) ||
+      !saves_spell(victim, SAVING_SPELL)) {
+
+
+    if(affected_by_spell(victim, SPELL_FEEBLEMIND)) {
+       send_to_char("They have already been enlightened!\n\r", ch);
+       return;
+    }
+
+    send_to_char("You feel enlightened by the gods\n\r", victim);
+
+    af.type      = SPELL_ENLIGHTENMENT;
+    af.duration  = 24;
+    af.modifier  = 2;
+    af.location  = APPLY_INT;
+    af.bitvector = 0;
+    affect_to_char(victim, &af);
+
+    af.type      = SPELL_ENLIGHTENMENT;
+    af.duration  = 24;
+    af.modifier  = 2;
+    af.location  = APPLY_WIS;
+    af.bitvector = 0;
+    affect_to_char(victim, &af);
+  }
 }
 void spell_circle_protection(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
@@ -2529,7 +2558,26 @@ void spell_circle_protection(byte level, struct char_data *ch,
 void spell_wrath_god(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
 
+  int dam;
+
+  assert(victim && ch);
+  assert((level >= 1) && (level <= ABS_MAX_LVL));
+
+  dam = dice(level,4);
+
+  if ( saves_spell(victim, SAVING_SPELL) )
+    dam >>= 1;
+
+    if (GET_RACE(ch) == RACE_GOD)
+      dam = 0;
+    if (!HitOrMiss(ch, victim, CalcThaco(ch)))
+      dam = 0;
+
+  damage(ch, victim, dam, SPELL_WRATH_GOD);
+
 }
+
+
 
 void spell_pacifism(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
@@ -2555,6 +2603,29 @@ void spell_pacifism(byte level, struct char_data *ch,
 
 void spell_aura_power(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj){
+  /* +2 to hit +2 dam */
+  struct affected_type af;
+
+  if (affected_by_spell(victim, SPELL_AURA_POWER)) {
+    send_to_char("You already feel an aura of power surrounding you.\n\r", ch);
+    return;
+  }
+
+  act("$n suddently has a godly aura surrounding $m.", FALSE, victim, 0, 0, TO_ROOM);
+  send_to_char("You suddently feel a godly aura surrounding you.\n\r", victim);
+
+  af.type      = SPELL_AURA_POWER;
+  af.duration  = 10;
+  af.modifier  = 2;
+  af.location  = APPLY_HITROLL;
+   af.bitvector = 0;
+  affect_to_char(victim, &af);
+
+  af.location = APPLY_DAMROLL;
+  af.modifier = 2;                 /* Make better */
+  affect_to_char(victim, &af);
+
+
 
 }
 

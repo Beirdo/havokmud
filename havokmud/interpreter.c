@@ -2116,7 +2116,7 @@ if (GET_NAME(d->character))
       sprintf(buf, "%s[%s] has connected."
       	, GET_NAME(d->character), d->host);
 	else
-	  sprintf(buf, "%s[%s] has connected./n/rLast connected from[%s]"
+	  sprintf(buf, "%s[%s] has connected.\n\rLast connected from[%s]"
       	, GET_NAME(d->character), d->host, d->character->specials.hostip);
 
 

@@ -761,6 +761,10 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       damage(ch, victim, 0, SKILL_LEG_SWEEP);
       GET_POS(ch) = POSITION_SITTING;
     }
+    act("You try to do quick spin and knock $N legs out, but miss."
+	        	,FALSE, ch, 0, victim,TO_CHAR);
+	act("$n tries to do a quick spin and knocks $N legs out, but misses $M."
+         	,FALSE, ch,0,victim,TO_ROOM);
     LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
     WAIT_STATE(ch, PULSE_VIOLENCE*3);
   } else {
@@ -769,6 +773,10 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       if (!damage(ch, victim, 2, SKILL_LEG_SWEEP)) {
          WAIT_STATE(victim, PULSE_VIOLENCE*2);
          GET_POS(victim) = POSITION_SITTING;
+        act("You do a quick spin and knock $N legs out from underneath $M."
+        	,FALSE, ch, 0, victim,TO_CHAR);
+        act("$n does a quick spin and knocks $N legs out from underneath $M."
+         	,FALSE, ch,0,victim,TO_ROOM);
         sprintf(buf,"You receive 100 experience for using your leg sweep abilites.\n\r.",ch);
 		send_to_char(buf,ch);
 		gain_exp(ch, 100);

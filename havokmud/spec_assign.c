@@ -1401,6 +1401,8 @@ void assign_objects()
     {3099, board},
     {40100, board},
     {25015, BerserkerItem},
+    {22730, board },
+
     {21122, nodrop},
     {21130, soap},
     {27038, BerserkerItem},
@@ -1420,8 +1422,6 @@ void assign_objects()
    {45493, thunder_blue_pill},
    {45494, grayswandir},
 /*End Thunder Mountain Keep Objects*/
-{ 44129,  Magic_Pool},//  in proc_assign and add to protos
-{ 44115,  Read_Room},// in proc_assign and add to protos..
 
     { -1, NULL },
   };
@@ -1470,10 +1470,13 @@ void assign_rooms()
     { 22648,  Fountain},
     { 26010,	Fountain},
     { 26109,   Fountain},  /* Stormcloak fountain*/
-
+    { 22739,   Fountain}, /* {O}rder fountain */
+    { 22732,  PostMaster },/* Order */
+    { 22731, receptionist },/* Order */
     { 2000,  bank },
     { 13521, bank },
     { 18224, bank},
+	{ 22733, bank }, /* Order Bank */
 /* sundhaven bank */
     {11558, bank},
 	{3422,ChurchBell},
@@ -1501,6 +1504,9 @@ void assign_rooms()
        { 550,   monk_challenge_prep_room},
        { 551,   monk_challenge_room},
     */
+{ 44129,  Magic_Pool},//  in proc_assign and add to protos
+{ 44115,  Read_Room},// in proc_assign and add to protos..
+
     { -1, NULL},
   };
   int i;

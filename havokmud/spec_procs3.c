@@ -4170,11 +4170,10 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
   if (cmd && cmd != 156) return(FALSE);
 
-
   if (AWAKE(ch)) {
     if ((targ = FindAnAttacker(ch))!='\0') {
-      act("$n pushes you off the ship.", TRUE, ch, 0, 0, TO_ROOM);
-
+      act("$N pushes you off the ship.", TRUE, targ, 0, ch, TO_CHAR);
+	  act("$N gives $n a good push off the ship.",TRUE, targ, 0 , ch, TO_ROOM);
 		//char_from_room(mob);
 		if ( !(target=get_char_vis_world(ch,"ship",NULL)) )   {
 		  send_to_char ("Where did that darn ship go??.\n\r",ch);
@@ -4183,13 +4182,8 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 	    location = target->in_room;
 
-		//char_from_room(mob);
-	//	char_to_room(mob,location);  /*Find the room that the corsair ship is in*/
-
-	//	char_from_room(ch);
-		//char_to_room(ch,location);  /*Find the room that the corsair ship is in*/
 		char_from_room(targ);
-		char_to_room(targ,location);  /*Find the room that the corsair ship is in*/
+		char_to_room(targ,location);  /*Find the room that 	the corsair ship is in*/
 		act("$n suddently falls from above.", TRUE, targ, 0, 0, TO_ROOM);
     	act("You fall helplessly downward off the ship.", FALSE, ch, 0, 0, TO_CHAR);
     }
@@ -5362,7 +5356,7 @@ int bahamut_armor(struct char_data *ch, struct char_data *vict)
 		act("$c0011A blinding beam of light bursts from $n.",FALSE, ch, 0, 0, TO_ROOM);
 		GET_HIT(ch) += 15;
 		GET_HIT(vict) -= 15;
-		break;	
+		break;
 	case 3:
 		act("$c0011A bright light flickers around you briefly.", FALSE, ch, 0, 0, TO_CHAR);
 		act("$c0011A bright light flickers around $n briefly.", FALSE, ch, 0, 0, TO_ROOM);
@@ -5816,9 +5810,9 @@ int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
   //send_to_char("Start proc",ch);
   if (cmd==11) { /*11 = drink */
     only_argument(arg,buf);
-	 send_to_char("pool?",ch);
-    if (!str_cmp(buf, "pool")) {
-       send_to_char("not pool",ch);
+
+    if (str_cmp(buf, "pool")) {
+
       return(FALSE);
     }
 
@@ -5833,41 +5827,49 @@ int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
     GET_COND(ch,FULL)+=1;
 
     act("You suddently feel much better.",FALSE,ch,0,0,TO_CHAR);
-    cast_heal(50, ch, "", SPELL_TYPE_SPELL, ch, 0);
+    cast_heal(50, ch, "", SPELL_TYPE_SCROLL, ch, 0);
     return(TRUE);
   }
   return(FALSE);
 }
 
 
-//{ 44115,  Read_Room} in proc_assign and add to protos..
 
+//{ 44115,  Read_Room} in proc_assign and add to protos..
+/* Morrigans proc.. read book.. transfers to room+1   kind of cludgy and ugly.. i'm lazy
+ * @author : Banon
+ * @date : May 17, 2002
+ */
 int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
   int key_room;
   char buf[MAX_INPUT_LENGTH];
   struct obj_data *obj;
-	//send_to_char("entering proc",ch);
+
   if (cmd!=63)  /*63 = read */
     return FALSE;
+
   if (!HasClass(ch, CLASS_PSI))
 	return FALSE;
 
   only_argument(arg,buf);
   if (str_cmp(buf, "book")) {
-   	 send_to_char("cmp book and buf .. not same",ch);
-     return(FALSE);
+   	     return(FALSE);
   }
+	/* get obj in list vis */
 
-  obj = get_obj_in_list_vis(ch,buf,ch->carrying);
-	if (!obj)
-		return(FALSE);
-  if(obj_index[obj->item_number].virtual == real_roomp(ch->in_room))  {
+  obj = get_obj_in_list_vis(ch,"book",ch->carrying);
+  if (!obj)
+ 	return(FALSE);
+
+  if(obj_index[obj->item_number].virtual == ch->in_room)  {
   	key_room = 1+ch->in_room;
   	act("$n reads the book then disappears.", FALSE, ch, 0, 0, TO_ROOM);
+  	act("You read the book and feel your body being torn to another location",FALSE,ch,0,0,TO_CHAR);
   	char_from_room(ch);
   	char_to_room(ch, key_room);
   	act("$n suddently appears.", FALSE, ch, 0, 0, TO_ROOM);
+  	do_look(ch, "", 0);
   	return TRUE;
   }
 

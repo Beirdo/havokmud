@@ -5446,13 +5446,13 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	if(check==-1)
 	  return (FALSE);
 
-	sprintf(buf2,"Check=%d",check);
-	send_to_char(buf2,ch);
+	//sprintf(buf2,"Check=%d",check);
+	//send_to_char(buf2,ch);
 
 	j=destination[check];
 
 	//sprintf(buf2,"Going to Room# %d\n\r",j);
-	send_to_char(buf2,ch);
+	//send_to_char(buf2,ch);
 	send_to_char("You touch the strange post and suddently feel your mind",ch);
     send_to_char(" and body being torn appart.\n\r",ch);
 

@@ -5240,7 +5240,7 @@ int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 		act(buf,FALSE,ch,0,mob,TO_CHAR);
   		act("$n gives some gold to $N",FALSE,ch,0,mob,TO_ROOM);
-  		act("You give $N some gold.",FALSE,ch,0,mob,TO_ROOM);
+  		act("You give $N some gold.",FALSE,ch,0,mob,TO_CHAR);
   		return(TRUE);
 
 	}

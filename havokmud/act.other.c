@@ -242,8 +242,8 @@ dlog("in do_title");
       send_to_char("Line too long, truncated\n", ch);
       *(argument + 151) = '\0';
     }
-
-    if (!strstr(argument,GET_NAME(ch))) {
+	sprintf(buf,"$c0007%s",GET_NAME(ch));
+    if (!strstr(argument,buf)) {
 
 	  sprintf(buf,"%s %s",GET_NAME(ch),argument);
 

@@ -3852,17 +3852,17 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 	free(obj->short_description);
       sprintf(buf,"%s","weird potion");
 
-      obj->short_description = strdup(buf);
+      obj->short_description = buf;
       if(obj->name)
 	free(obj->name);
 
       sprintf(buf,"%s","weird potion");
-      obj->name = strdup(buf);
+      obj->name = buf;
       if(obj->description)
 	free(obj->description);
       sprintf(buf,"%s","A wierd coloured potion is on the ground.");
 
-      obj->description = strdup(buf);
+      obj->description = buf;
       obj->obj_flags.value[slot] = sn+1;  //set spell in slot..
       WAIT_STATE(ch,PULSE_VIOLENCE*12);
 
@@ -3947,20 +3947,13 @@ if (!ch->skills)
     return;
   }
 
-
-  if (victim->specials.fighting) {
-    base = 0;
-  } else {
-    base = 4;
-  }
-
-
   percent=number(1,101); /* 101% is a complete failure */
 
   if (ch->skills[SKILL_CHARGE].learned) {
     if (percent > ch->skills[SKILL_CHARGE].learned) {
 	char buff[255];
    	  send_to_char("You totally miss your target!\n\r",ch);
+	  act("$n charges at $N on his stead and totally misses $M.",FALSE, ch, 0,victim,TO_ROOM);
       LearnFromMistake(ch, SKILL_CHARGE, 0, 95);
     }
 
@@ -3968,11 +3961,10 @@ if (!ch->skills)
 	   char buff[256];
 
         GET_HITROLL(ch) += 100;
-		sprintf(buff, "You charge agressively at %s on your sturdy stead.\n\r",
-			GET_NAME(victim));
-		send_to_char(buff,ch);
+		act("You charge agressively at $N on your sturdy stead.\n\r",FALSE,ch,0,victim,TO_CHAR);
+		act("$n charges agressively forward on his stead at $N", FALSE,ch,0,victim,TO_ROOM);
         //AddHated(victim, ch);
-		damage(ch,victim,GET_DAMROLL(ch)*100, SKILL_CHARGE);
+		damage(ch,victim,GET_DAMROLL(ch)*3, SKILL_CHARGE);
         //hit(ch,victim,SKILL_CHARGE);
 
         GET_HITROLL(ch) -= 100;
