@@ -772,14 +772,23 @@ if (IS_LINKDEAD(i))
 	}
       }
     }
-    if (found) {
+    if (found) { 
+      if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[12]) {
+	act("$p covers much of $n's body.",FALSE,i,i->equipment[12],ch,TO_VICT);
+      }
       act("\n\r$n is using:", FALSE, i, 0, ch, TO_VICT);
+      
       for (j=0; j< MAX_WEAR; j++) {
 	if (i->equipment[j]) {
-	  if (CAN_SEE_OBJ(ch,i->equipment[j])) {
-	    send_to_char(where[j],ch);
-	    show_obj_to_char(i->equipment[j],ch,1);
-	  }
+	  if (IS_SET(i->player.user_flags, CLOAKED) && i->equipment[12] &&
+	      !(j==0 || j==5 || j==6 || j==8 || j==9 || j==11 || j==12 || j==21)
+	      && !IS_IMMORTAL(ch) && (i!=ch) ) {
+	    /* Do nothing */
+	  } else
+	    if (CAN_SEE_OBJ(ch,i->equipment[j])) {
+	      send_to_char(where[j],ch);
+	      show_obj_to_char(i->equipment[j],ch,1);
+	    }
 	}
       }
     }
@@ -1094,6 +1103,7 @@ if (IS_LINKDEAD(i))
     }
     if (found) {
       act("\n\r$n is using:", FALSE, i, 0, ch, TO_VICT);
+     
       for (j=0; j< MAX_WEAR; j++) {
 	if (i->equipment[j]) {
 	  if (CAN_SEE_OBJ(ch,i->equipment[j])) {
@@ -1476,7 +1486,8 @@ dlog("in do_look");
 	  for (j = 0; j< MAX_WEAR && !found; j++) {
 	    if (ch->equipment[j]) {
 	      if (CAN_SEE_OBJ(ch,ch->equipment[j])) {
-		tmp_desc = find_ex_description(arg2, ch->equipment[j]->ex_description);
+		tmp_desc = find_ex_description(arg2, ch->equipment[j]->ex_description); 
+	    
 		if (tmp_desc) {
 		  page_string(ch->desc, tmp_desc, 1);
 		  found = TRUE;
@@ -1632,7 +1643,7 @@ dlog("in do_look");
 /* end of look */
 #else
 /* base do look */
-void do_look(struct char_data *ch, char *argument, int cmd)
+  void do_look(struct char_data *ch, char *argument, int cmd)
 {
   char buffer[MAX_STRING_LENGTH];
   char arg1[MAX_INPUT_LENGTH+80];
@@ -1763,7 +1774,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	/* Item carried */
 	bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
 			    FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
-
+	
 	if (bits) { /* Found something */
 	  if (GET_ITEM_TYPE(tmp_object)== ITEM_DRINKCON)        {
 	    if (tmp_object->obj_flags.value[1] <= 0) {
@@ -1801,9 +1812,9 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 	send_to_char("Look in what?!\n\r", ch);
       }
     }
-      break;
-
-      /* look 'at'      */
+    break;
+    
+    /* look 'at'      */
     case 7 : {
       if (*arg2) {
 	bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM |
@@ -1991,17 +2002,17 @@ void do_look(struct char_data *ch, char *argument, int cmd)
 }
 
 /* end of look */
-
+ 
 #endif
 
 
 
-
-void do_read(struct char_data *ch, char *argument, int cmd)
-{
-  char buf[100];
-dlog("in do_read");
-
+ 
+ void do_read(struct char_data *ch, char *argument, int cmd)
+   {
+     char buf[100];
+     dlog("in do_read");
+     
   /* This is just for now - To be changed later.! */
   sprintf(buf,"at %s",argument);
   do_look(ch,buf,15);
@@ -2009,7 +2020,7 @@ dlog("in do_read");
 
 
 
-void do_examine(struct char_data *ch, char *argument, int cmd)
+ void do_examine(struct char_data *ch, char *argument, int cmd)
 {
   char name[1000], buf[1000];
   struct char_data *tmp_char;
@@ -2633,13 +2644,13 @@ dlog("in do_wizhelp");
 
 void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
 {
-
+  
 
   int chk, bot, top, mid, minlen;
   char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
-
-
-dlog("in do_actual_wiz");
+  
+  
+  dlog("in do_actual_wiz");
 
   if (!ch->desc)
     return;
@@ -2688,27 +2699,27 @@ dlog("in do_actual_wiz");
 	}
       return;
     }
-
-
-/* send a generic wizhelp menu like help I guess send_to_char(help, ch); */
-
+  
+  
+  /* send a generic wizhelp menu like help I guess send_to_char(help, ch); */
+  
 }
 
 
 void do_command_list(struct char_data *ch, char *arg, int cmd)
 {
- char buf[MAX_STRING_LENGTH];
- int i, j = 1;
- NODE *n;
-
-dlog("in do_command_list");
-
- if(IS_NPC(ch))
+  char buf[MAX_STRING_LENGTH];
+  int i, j = 1;
+  NODE *n;
+  
+  dlog("in do_command_list");
+  
+  if(IS_NPC(ch))
     return;
-
- sprintf(buf, "Commands Available To You:\n\r\n\r");
-
- for(i = 0; i < 27; i++) {
+  
+  sprintf(buf, "Commands Available To You:\n\r\n\r");
+  
+  for(i = 0; i < 27; i++) {
     n = radix_head[i].next;
     while(n) {
 	if(n->min_level <= GetMaxLevel(ch)) {
@@ -2733,8 +2744,8 @@ dlog("in do_command_list");
 					strcpy(tmpname2,lower(mask)),\
 					strlen(mask))==0)
 /*
-int OK_NAME(struct char_data *name, char *mask)
-{
+  int OK_NAME(struct char_data *name, char *mask)
+  {
   char n1[80],n2[80];
   if(!*mask) return 1;
   strcpy(n1,lower(GET_NAME(name)));
@@ -2813,14 +2824,14 @@ dlog("in do_who");
 		sprintf(tbuf+strlen(tbuf)," [%d]", person->in_room);
 	    }
 	  } else {
-	       char levels[40]="", classes[20]="";
-	       char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
-	       int i,total,classn; long bit;
+	    char levels[40]="", classes[20]="";
+	    char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
+	    int i,total,classn; long bit;
 #if 1
 	    if(!IS_IMMORTAL(person)) {
 	      for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
 		if(HasClass(person,bit)) {
-/*                  if(strlen(levels)!=0) strcat(levels,"/");
+		  /*                  if(strlen(levels)!=0) strcat(levels,"/");
 		  sprintf(levels+strlen(levels),"%d",person->player.level[i]);*/
 		  classn++; total+=person->player.level[i];
 		  if(strlen(classes)!=0) strcat(classes,"/");
@@ -2894,26 +2905,29 @@ dlog("in do_who");
 				sprintf(levels, "Lady");
 				break;
 				}
-
-	      case 59:    if(!strcmp(GET_NAME(person), "Salsilian"))     //Hardcoded the names of the current
-	    	                sprintf(levels, "Lord of Justice");      // High council members, this should be
-	                  else if(!strcmp(GET_NAME(person), "Alora"))    // fixxed with new immortal system code
-			                sprintf(levels, "Lady of Communication");// -MW 02/20/2001
-	                  else if(!strcmp(GET_NAME(person), "Keirstad"))
-			                sprintf(levels, "Lord of Building");
-		              else if (GET_SEX(person) == SEX_MALE){
-            				sprintf(levels, "Supreme Lord");
-			        	break;
-					}
-					  else if (GET_SEX(person) == SEX_FEMALE){
-					        sprintf(levels, "Supreme Lady");
-					   break;
-            		}
-
-		case 60: sprintf(levels, "Supreme Being");
+		
+	      case 59:   if (GET_SEX(person) == SEX_FEMALE){
+		sprintf(levels, "Supreme Lady");
+		break;
+	      } else if (GET_SEX(person) == SEX_MALE) {
+		sprintf(levels,"Supreme Lord");
+		break;
+	      } else {
+		sprintf(levels,"Supreme Thing");
+		break;
 	      }
-      	if(!str_cmp(GET_NAME(person), "Meckyl"))
-      		sprintf(levels, "");
+	      
+	      case 60: sprintf(levels, "Supreme Being");
+	      }
+
+	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
+		sprintf(levels, "Questor God");      // High council members, this should be
+	      else if(!strcmp(GET_NAME(person), "Alora"))    // fixxed with new immortal system code
+		sprintf(levels, "Lady of Communication");// -MW 02/20/2001
+	      else if(!strcmp(GET_NAME(person), "Keirstad"))
+		sprintf(levels, "Lord of Building");
+	       else if(!str_cmp(GET_NAME(person), "Banon"))
+      		sprintf(levels, "Realm Creator");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
@@ -2947,7 +2961,7 @@ dlog("in do_who");
 
     int listed = 0, count, lcount, l, skip = FALSE;
     char ttbuf[256];
-
+    
     sprintf(buffer,"$c0005Players [God Version -? for Help]\n\r--------\n\r");
 
     count=0;
@@ -2959,7 +2973,7 @@ dlog("in do_who");
 	send_to_char("[-][6]Monk[7]Barb[8]Sorc[9]Paladin[!]Ranger[@]Psi\n\r", ch);
 	return;
     }
-
+    
     for (person = character_list; person; person = person->next) {
       if (!IS_NPC(person) && CAN_SEE(ch, person) && OK_NAME(person,name_mask)) {
 	count++;
@@ -3089,37 +3103,37 @@ void do_users(struct char_data *ch, char *argument, int cmd)
 
   struct descriptor_data *d;
 
-dlog("in do_users");
-
+  dlog("in do_users");
+  
   strcpy(buf, "Connections:\n\r------------\n\r");
-
+  
   for (d = descriptor_list; d; d = d->next){
-  if (d->character) {
-    if ( CAN_SEE(ch, d->character) || GetMaxLevel(ch) >= 51 && ((d->character)->invis_level <= GetMaxLevel(ch)))
-     {
-      if (d && d->character && d->character->player.name)
+    if (d->character) {
+      if ( CAN_SEE(ch, d->character) || GetMaxLevel(ch) >= 51 && ((d->character)->invis_level <= GetMaxLevel(ch)))
 	{
-	  if(d->original)
-	    sprintf(line, "%-16s: ", d->original->player.name);
+	  if (d && d->character && d->character->player.name)
+	    {
+	      if(d->original)
+		sprintf(line, "%-16s: ", d->original->player.name);
+	      else
+		sprintf(line, "%-16s: ", d->character->player.name);
+	    }
 	  else
-	    sprintf(line, "%-16s: ", d->character->player.name);
-	}
-      else
-        sprintf(line, "UNDEFINED       : ");
-
-      if (d->host && *d->host)
+	    sprintf(line, "UNDEFINED       : ");
+	  
+	  if (d->host && *d->host)
         {
          sprintf(buf2, "%-22s [%s]\n\r", connected_types[d->connected],d->host);
-         } else
+	} else
           {
-           sprintf(buf2, "%-22s [%s]\n\r", connected_types[d->connected],"????");
-           }
-      strcat(line, buf2);
-      strcat(buf, line);
-    } /* could not see the person */
-  } /* no  character */
- } /* end for */
-
+	    sprintf(buf2, "%-22s [%s]\n\r", connected_types[d->connected],"????");
+	  }
+	  strcat(line, buf2);
+	  strcat(buf, line);
+	} /* could not see the person */
+    } /* no  character */
+  } /* end for */
+  
 /*  send_to_char(buf, ch); */
   page_string(ch->desc,buf,TRUE);
 }
@@ -3128,8 +3142,8 @@ dlog("in do_users");
 
 void do_inventory(struct char_data *ch, char *argument, int cmd) {
 
-dlog("in do_inventory");
-
+  dlog("in do_inventory");
+  
   send_to_char("You are carrying:\n\r", ch);
   list_obj_in_heap(ch->carrying, ch);
 }
@@ -3139,15 +3153,15 @@ void do_equipment(struct char_data *ch, char *argument, int cmd) {
   int j,Worn_Index;
   bool found;
   char String[256];
-
-dlog("in do_equip");
+  
+  dlog("in do_equip");
 
   send_to_char("You are using:\n\r", ch);
   found = FALSE;
   for (Worn_Index = j=0; j< (MAX_WEAR - 1); j++) {
-   sprintf(String,"%s",where[j]);
-   send_to_char(String,ch);
-    if (ch->equipment[j]){
+    sprintf(String,"%s",where[j]);
+    send_to_char(String,ch);
+    if (ch->equipment[j]){ 
       if (CAN_SEE_OBJ(ch,ch->equipment[j])) {
 	show_obj_to_char(ch->equipment[j],ch,1);
 	found = TRUE;

@@ -2385,16 +2385,26 @@ dlog("in do_set_flags");
   * Usage: set cloak  (Will toggle on and off like a light switch)
   * Currently disabled until further coding has been done.. (FALSE)
   */
- if (!strcmp(type,"cloak")&& FALSE) {
+ if (!strcmp(type,"cloak")) {
    if (!IS_SET(ch->player.user_flags, CLOAKED)) {
+     if(!ch->equipment[12]){
+       send_to_char("You don't have a cloak to do that with.",ch);
+       return;
+     }
      SET_BIT(ch->player.user_flags,CLOAKED);
-     act("You pull your cloak down over your body.", TRUE, ch, 0, 0, TO_VICT);
-     act("$n pulls down $s cloak down ever $s body.", TRUE, ch, 0, 0, TO_NOTVICT);
+     act("You pull $p down over your body.", FALSE,ch,ch->equipment[12],0,TO_CHAR);
+     act("$n pulls $p down over $s body.",FALSE,ch, ch->equipment[12],0,TO_NOTVICT);
      //send_to_char("You pull your cloak over your body!\n\r",ch);
      return;
    } else {
      REMOVE_BIT(ch->player.user_flags, CLOAKED);
-     send_to_char("You pull back your cloak.\n\r",ch);
+     if(!ch->equipment[12]) {
+       send_to_char("You don't even have a cloak on.",ch);
+       return;
+     }
+     //send_to_char("You pull back your cloak.\n\r",ch);
+     act("You pull $p back away from your body.", FALSE, ch, ch->equipment[12],0,TO_CHAR);
+     act("$n pulls back $p away from $s body.", FALSE, ch, ch->equipment[12], 0, TO_NOTVICT);
    }
    return;
  }
