@@ -4894,6 +4894,7 @@ const int preproomexitsquad4[] = {
  */
 const struct skillset mainmageskills[] = {
  {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
+ {"brew",				SKILL_BREW					,1},
  {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
  {"mana shield", 		SPELL_MANA_SHIELD			,14},
  {"None", 				-1							,-1}
@@ -4991,6 +4992,7 @@ const struct skillset mageskills[] = {
 
 const struct skillset mainsorcskills[] = {
  {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
+ {"brew",				SKILL_BREW					,1},
  {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
  {"mana shield", 		SPELL_MANA_SHIELD			,14},
  {"None", 				-1							,-1}
@@ -5291,8 +5293,10 @@ const struct skillset druidskills[] = {
 };
 const struct skillset mainclericskills[] = {
 	{"energy restore",			SPELL_ENERGY_RESTORE		,48},
+	{"group heal",				SPELL_GROUP_HEAL			,29},
 	{"resurrection",			SPELL_RESURRECTION			,36},
- {"None", 				-1							,-1}
+	{"scribe",					SKILL_SCRIBE				,1},
+	{"None", 					-1							,-1}
 };
 const struct skillset clericskills[] = {
 	{"aid",						SPELL_AID					,4},
@@ -6351,7 +6355,7 @@ const char *languagelist[] = {
 };
 
 
-char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd","Ne"};
+char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Ne"};
 //None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Returners
 /*
 const char *MortalLevel[7][3] = {

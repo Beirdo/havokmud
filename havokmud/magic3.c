@@ -4487,3 +4487,22 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 		send_to_char("Nothing new seems to happen.\n\r",ch);
 	}
 }
+
+void spell_mana_shield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	if (!affected_by_spell(ch, SPELL_MANA_SHIELD)) {
+		act("$c000y$n summons forth a $c000Ygolden $c000yglobe to float next to $s head.",TRUE,ch,0,0,TO_ROOM);
+		act("$c000yYou summon forth a $c000Ygolden $c000yglobe to float next to your head.",TRUE,ch,0,0,TO_CHAR);
+
+		af.type      = SPELL_MANA_SHIELD;
+		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = 0;
+		affect_to_char(ch, &af);
+	} else {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+	}
+}

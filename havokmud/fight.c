@@ -1491,6 +1491,23 @@ char buf[255];
     REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
   }
 
+if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
+	while(GET_MANA(v) && dam) {
+		GET_MANA(v) -= 1;
+		dam -= 1;
+	}
+	if(dam && !GET_MANA(v)) {
+		act("Your mana shield absorbs part of the blow, and is fully drained.",FALSE, ch, 0, v, TO_VICT);
+		act("$N's mana shield absorbs part of your blow, and is fully drained.",FALSE, ch, 0, v, TO_CHAR);
+		act("$N's mana shield absorbs part of the blow, and is fully drained.",FALSE, ch, 0, v, TO_NOTVICT);
+		affect_from_char(victim,SPELL_MANA_SHIELD);
+	} else {
+		act("Your mana shield absorbs the blow!",FALSE, ch, 0, v, TO_VICT);
+		act("$N's mana shield absorbs your blow!",FALSE, ch, 0, v, TO_CHAR);
+		act("$N's mana shield absorbs $n's blow!",FALSE, ch, 0, v, TO_NOTVICT);
+	}
+}
+
   if (IS_AFFECTED(v, AFF_SANCTUARY)) {
       dam = MAX((int)(dam/2), 0);  /* Max 1/2 damage when sanct'd */
   }

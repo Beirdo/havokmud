@@ -3928,7 +3928,7 @@ dlog("in do_spells");
 	*buf=0;
 
 	sprintf(buf + strlen(buf),
-	"[  #] %-30s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, Bd, Ne\n\r",
+	"[  #] %-30s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, xx, Ne\n\r",
 	"SPELL/SKILL\0");
 
 	for (i = 1, spl = 0; i <= MAX_EXIST_SPELL; i++, spl++) {

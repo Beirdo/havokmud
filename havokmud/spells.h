@@ -413,12 +413,11 @@
 #define SKILL_KINOLOCK			345
 #define SKILL_FLOWER_FIST		346
 #define SKILL_FLURRY			347
-
 #define SKILL_SCRIBE			348
+#define SPELL_GROUP_HEAL		349
 
 
-
-#define MAX_EXIST_SPELL         348   /* max number of skills/spells */
+#define MAX_EXIST_SPELL         349   /* max number of skills/spells */
 
 
 
