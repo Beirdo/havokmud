@@ -208,33 +208,33 @@ const char *spell_wear_off_msg[] = {
   "",
   "",
   "",     /* 197 */
- "",   
- "",   
+ "",
+ "",
  "",   /* 200 geyser*/
- "Your wings finally cramp and give out.",  /*201 Wings Fly*/   
- "Your wings stop feeling sore and tired.", /*202 Wings Tired*/   
- "At long last your wings have healed enough to allow flight.",/*203 Wings Burned*/  
- "You feel less protected from good beings.",   
- "",   
- "",   
- "!berserk!", /*207*/   
- "!tan!",   
- "!avoid backattack!",   
- "!find food!",   
- "!Find Water!",   
+ "Your wings finally cramp and give out.",  /*201 Wings Fly*/
+ "Your wings stop feeling sore and tired.", /*202 Wings Tired*/
+ "At long last your wings have healed enough to allow flight.",/*203 Wings Burned*/
+ "You feel less protected from good beings.",
+ "",
+ "",
+ "!berserk!", /*207*/
+ "!tan!",
+ "!avoid backattack!",
+ "!find food!",
+ "!Find Water!",
  "You feel guilty knowing you have not prayed in a day",   /* 212  */
- "You stop memorizing and meditating.",   
- "!bellow!",   
- "The dark globe about your fades away",   
- "The protective globe about your body fizzles out",   
- "The protective globe about your body flares and is suddenly gone",   
- "You feel less protected from draining",   
- "You feel less protected from dragons",   
- "The antimagic shell about you flickers and is gone",   
- "",   
- "",   
- "",   
- "",   
+ "You stop memorizing and meditating.",
+ "!bellow!",
+ "The dark globe about your fades away",
+ "The protective globe about your body fizzles out",
+ "The protective globe about your body flares and is suddenly gone",
+ "You feel less protected from draining",
+ "You feel less protected from dragons",
+ "The antimagic shell about you flickers and is gone",
+ "",
+ "",
+ "",
+ "",
  "spell 225 please report.",   /* 225 */
  "",
  "",
@@ -514,30 +514,30 @@ const char *spell_wear_off_room_msg[] = {
   "",
   "",
  "",   /* 200 */
- "$n's wings falter and give out from exhaustion.", /*201 Wings Fly*/   
- "",   
- "", 
+ "$n's wings falter and give out from exhaustion.", /*201 Wings Fly*/
+ "",
+ "",
  "$n looks a bit less unholy.",
- "",   
- "",   
- "",   
- "",   
- "",   
- "",   
- "",   
+ "",
+ "",
+ "",
+ "",
+ "",
+ "",
+ "",
  "",   /* 212 */
- "$n stops meditating and closes $s spell book.",   
- "",   
+ "$n stops meditating and closes $s spell book.",
+ "",
  "The dark globe around $n fades away",   /* 215 */
- "The protective globe about $n fizzles out",   
+ "The protective globe about $n fizzles out",
  "The protective globe about $n flares and is gone",
- "$n looks more fearful of vampires",   
- "$n looks more fearful of dragons",   
- "The shimmering shield around $n sparks brightly and fades away",   
- "",   
- "",   
- "",   
- "",   
+ "$n looks more fearful of vampires",
+ "$n looks more fearful of dragons",
+ "The shimmering shield around $n sparks brightly and fades away",
+ "",
+ "",
+ "",
+ "",
  "spell 225 please report.",   /* 225 */
  "",
  "",
@@ -1923,7 +1923,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
     {"Demi God","Demi Goddess",                    241000000},
     {"God","Goddess",                              242000000},
     {"Implementor","Implementrix",                 243000000},
-    {"Implementor","Implementrix",                 244000000} 
+    {"Implementor","Implementrix",                 244000000}
 },
 
 {   {"Man"," Woman",                                       0},
@@ -1989,7 +1989,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
     {"Implementor","Implementrix",                       239000000}
   },
 
- { 
+ {
  {"Man",                "Woman",     0},
  {"Grunt",   		"Grunt", 1},
  {"Brawler",   		"Brawler", 6000},
@@ -2050,8 +2050,8 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
  {"Extirpator",   "Queen",    237500000},
  {"God",          "Goddess",  238500000},
  {"Implementor",  "Implementrix",  239500000},
- {"Implementor",  "Implementrix",  241000000} 
- }, 
+ {"Implementor",  "Implementrix",  241000000}
+ },
   	/* sorcerer */
  {
     {"Man",         "Woman",                 0},
@@ -2182,7 +2182,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
       {"Immortal Paladin","Immortal Paladin",238000000},
       {"Immortal Paladin","Immortal Paladin",239000000} /* 60 */
  },
- 
+
 
 
 	/* ranger */
@@ -2549,7 +2549,7 @@ const char *extra_bits[] = {
 	"ARTIFACT",
         "ANTI-MEN",
         "ANTI-WOMEN",
-        "ANTI-SUN", 
+        "ANTI-SUN",
         "ANTI-BARBARIAN",
         "ANTI-RANGER",
         "ANTI-PALADIN",
@@ -2880,7 +2880,7 @@ const char *player_bits[] = {
 	"NO-OOC",
 	"NOSHOUT",
 	"FREEZE",
-	"NOTELL", 
+	"NOTELL",
 	"NOFLY",
 	"MAILING",      /*Doesn't seem to work TEB*/
 	"WIZREPORT",
@@ -3155,7 +3155,7 @@ struct dex_app_type dex_app[41] = {
 	{ 4, 4,-50},
 	{ 5, 5,-60},
 	{ 5, 5,-60}    /* 25 */
- 
+
 };
 
 /* [con] apply (all) */
@@ -3257,16 +3257,16 @@ struct chr_app_type chr_apply[26] = {
         { 2, -30},
         { 2, -20},
         { 3, -10},
-        { 4,  0},	
+        { 4,  0},
         { 5,  0},		/* 9 */
-        { 6,  0},	
-        { 7,  0},	
-        { 8,  0},	
+        { 6,  0},
+        { 7,  0},
+        { 8,  0},
         { 9, +5},		/* 13 */
-        { 10, +10},	
-        { 12, +15},	
-        { 14, +20},	
-        { 17, +25},	
+        { 10, +10},
+        { 12, +15},
+        { 14, +20},
+        { 17, +25},
         { 20, +30}, /* 18 */
         {20, +40},
         {25, +50},
@@ -3918,7 +3918,7 @@ const char *att_kick_miss_victim[] = {
   "You laugh as $n dents $s foot on your bark.",
   "You easily avoid a sloppy kick from $n.",
   "$n's kick parts your hair but does little else.",
-  "$n's light kick to your shin bearly gets your attention.",
+  "$n's light kick to your shin barely gets your attention.",
   "$n passes through you with $s puny kick.",
   "You nimbly flitter away from $n's kick.",
   "You sneer as you sidestep $n's kick.",

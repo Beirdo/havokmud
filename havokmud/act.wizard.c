@@ -5841,7 +5841,7 @@ dlog("in do_see_points");
   }
 
 
-  sprintf(buf,"%s have %u Quest points\n\r",GET_NAME(d->character),d->character->player.q_points);
+  sprintf(buf,"%s has %u Quest points\n\r",GET_NAME(d->character),d->character->player.q_points);
   send_to_char(buf,ch);
 
   return;

@@ -1370,6 +1370,7 @@ void assign_rooms()
     { 22646,  Fountain},
     { 22648,  Fountain},
     { 26010,	Fountain},
+    { 26109,   Fountain},  /* Stormcloak fountain*/
     { 13530, pet_shops },
 
     { 2000,  bank },

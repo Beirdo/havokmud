@@ -8,7 +8,7 @@
 
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
-		 
+
 /* extern functions */
 
 struct obj_data *create_money( int amount );
@@ -20,13 +20,13 @@ int getabunch(char *name, char  *newname);
 
 
 /* procedures related to get */
-void get(struct char_data *ch, struct obj_data *obj_object, 
-	struct obj_data *sub_object) 
+void get(struct char_data *ch, struct obj_data *obj_object,
+	struct obj_data *sub_object)
 {
    char buffer[256];
 
 				/* check person to item ego */
-  if (CheckEgo(ch,obj_object) && 
+  if (CheckEgo(ch,obj_object) &&
       CheckGetBarbarianOK(ch,obj_object))  {
 
    if (sub_object) {
@@ -49,7 +49,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
        	obj_from_room(obj_object);
        	obj_to_char(obj_object, ch);
    }
-	if((obj_object->obj_flags.type_flag == ITEM_MONEY) && 
+	if((obj_object->obj_flags.type_flag == ITEM_MONEY) &&
 		(obj_object->obj_flags.value[0]>=1))
 	{
 		obj_from_char(obj_object);
@@ -67,7 +67,7 @@ void get(struct char_data *ch, struct obj_data *obj_object,
   } else {
 	   /* failed barb or ego item check */
   }
-  
+
 }
 
 void do_get(struct char_data *ch, char *argument, int cmd)
@@ -86,7 +86,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 dlog("in do_get");
 
   argument_interpreter(argument, arg1, arg2);
-  
+
   /* get type */
   if (!*arg1) {
     type = 0;
@@ -98,9 +98,9 @@ dlog("in do_get");
       type = 2; /* "get all.item" */
     }
   }
-  if (*arg1 && *arg2) { 
+  if (*arg1 && *arg2) {
     if (!str_cmp(arg1,"all")) {   /* "get all all" */
-      if (!str_cmp(arg2,"all")) { 
+      if (!str_cmp(arg2,"all")) {
 	type = 3;
       } else {
 	type = 4; /* get all object */
@@ -113,14 +113,14 @@ dlog("in do_get");
       }
     }
   }
-  
+
   switch (type) {
     					/* get */
-  case 0:{ 
-    send_to_char("Get what?\n\r", ch); 
+  case 0:{
+    send_to_char("Get what?\n\r", ch);
   } break;
     					/* get all */
-  case 1:{ 
+  case 1:{
     sub_object = 0;
     found = FALSE;
     fail	= FALSE;
@@ -136,7 +136,7 @@ dlog("in do_get");
 	}
       if (CAN_SEE_OBJ(ch,obj_object)) {
 	if ((IS_CARRYING_N(ch) + 1) <= CAN_CARRY_N(ch)) {
-	  if ((IS_CARRYING_W(ch) + obj_object->obj_flags.weight) <= 
+	  if ((IS_CARRYING_W(ch) + obj_object->obj_flags.weight) <=
 	      CAN_CARRY_W(ch)) {
 	    if (CAN_WEAR(obj_object,ITEM_TAKE)) {
 	      get(ch,obj_object,sub_object);
@@ -146,7 +146,7 @@ dlog("in do_get");
 	      fail = TRUE;
 	    }
 	  } else {
-	    sprintf(buffer,"%s : You can't carry that much weight.\n\r", 
+	    sprintf(buffer,"%s : You can't carry that much weight.\n\r",
 		    obj_object->short_description);
 	    send_to_char(buffer, ch);
 	    fail = TRUE;
@@ -169,27 +169,27 @@ dlog("in do_get");
     sub_object = 0;
     found = FALSE;
     fail	= FALSE;
-    if (getall(arg1,newarg)==TRUE) 
+    if (getall(arg1,newarg)==TRUE)
     {
       strcpy(arg1,newarg);
       num = -1;
-    } else 
-    if ((p = getabunch(arg1,newarg))!='\0') 
+    } else
+    if ((p = getabunch(arg1,newarg))!='\0')
     {
       strcpy(arg1,newarg);
       num = p;
-    } else 
+    } else
     {
       num = 1;
     }
 
     while (num != 0) {
-      obj_object = get_obj_in_list_vis(ch, arg1, 
+      obj_object = get_obj_in_list_vis(ch, arg1,
 				       real_roomp(ch->in_room)->contents);
-      if (obj_object) 
+      if (obj_object)
       {
 	if (IS_CORPSE(obj_object) && num != 1) {
-	   send_to_char("You can only get one corpse at a time.\n\r",ch); 
+	   send_to_char("You can only get one corpse at a time.\n\r",ch);
 	   fail = TRUE;
 	   num= 0;
 	   return; /* no need for num and fail above I guess */
@@ -199,37 +199,37 @@ dlog("in do_get");
 		return;
 	    }
 
-	if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) 
+	if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch)))
 	{
-  if ((IS_CARRYING_W(ch) + obj_object->obj_flags.weight) < CAN_CARRY_W(ch)) 
+  if ((IS_CARRYING_W(ch) + obj_object->obj_flags.weight) < CAN_CARRY_W(ch))
 	      {
-	    if (CAN_WEAR(obj_object,ITEM_TAKE)) 
+	    if (CAN_WEAR(obj_object,ITEM_TAKE))
 	    {
 	      get(ch,obj_object,sub_object);
 	      found = TRUE;
-	    } else 
+	    } else
 	    {
 	      send_to_char("You can't take that.\n\r", ch);
 	      fail = TRUE;
 	      num = 0;
 	    }
 	  } else {
-	    sprintf(buffer,"%s : You can't carry that much weight.\n\r", 
+	    sprintf(buffer,"%s : You can't carry that much weight.\n\r",
 		    obj_object->short_description);
 	    send_to_char(buffer, ch);
 	    fail = TRUE;
 	    num = 0;
 	  }
 	} else {
-	  sprintf(buffer,"%s : You can't carry that many items.\n\r", 
+	  sprintf(buffer,"%s : You can't carry that many items.\n\r",
 		  obj_object->short_description);
 	  send_to_char(buffer, ch);
 	  fail = TRUE;
 	  num = 0;
 	}
-      } else 
+      } else
       {
-	if (num > 0) 
+	if (num > 0)
 	{
 	  sprintf(buffer,"You do not see a %s here.\n\r", arg1);
 	  send_to_char(buffer, ch);
@@ -242,15 +242,15 @@ dlog("in do_get");
   } break;
     /* get all all */
 
-  case  3:{ 
+  case  3:{
     send_to_char("You must be joking?!\n\r", ch);
   } break;
     /* get all ??? */
   case 4:{
     found = FALSE;
-    fail  = FALSE; 
+    fail  = FALSE;
     has   = FALSE;
-    sub_object = (struct obj_data *) 
+    sub_object = (struct obj_data *)
       get_obj_vis_accessible(ch, arg2);
     if (sub_object) {
       if (GET_ITEM_TYPE(sub_object)==ITEM_CONTAINER){
@@ -266,9 +266,9 @@ dlog("in do_get");
 	    }
 	  next_obj = obj_object->next_content;
 	  if (CAN_SEE_OBJ(ch,obj_object)) {
-	    if ((IS_CARRYING_N(ch) + 1 < 
+	    if ((IS_CARRYING_N(ch) + 1 <
 		 CAN_CARRY_N(ch))) {
-	      if (has || (IS_CARRYING_W(ch) + obj_object->obj_flags.weight) < 
+	      if (has || (IS_CARRYING_W(ch) + obj_object->obj_flags.weight) <
 		  CAN_CARRY_W(ch)) {
 		if (CAN_WEAR(obj_object,ITEM_TAKE)) {
 		  get(ch,obj_object,sub_object);
@@ -278,13 +278,13 @@ dlog("in do_get");
 		  fail = TRUE;
 		}
 	      } else {
-		sprintf(buffer,"%s : You can't carry that much weight.\n\r", 
+		sprintf(buffer,"%s : You can't carry that much weight.\n\r",
 			obj_object->short_description);
 		send_to_char(buffer, ch);
 		fail = TRUE;
 	      }
 	    } else {
-	      sprintf(buffer,"%s : You can't carry that many items.\n\r", 
+	      sprintf(buffer,"%s : You can't carry that many items.\n\r",
 		      obj_object->short_description);
 	      send_to_char(buffer, ch);
 	      fail = TRUE;
@@ -292,7 +292,7 @@ dlog("in do_get");
 	  }
 	}
 	if (!found && !fail) {
-	  sprintf(buffer,"You do not see anything in %s.\n\r", 
+	  sprintf(buffer,"You do not see anything in %s.\n\r",
 		  sub_object->short_description);
 	  send_to_char(buffer, ch);
 	  fail = TRUE;
@@ -303,20 +303,20 @@ dlog("in do_get");
 	send_to_char(buffer, ch);
 	fail = TRUE;
       }
-    } else { 
+    } else {
       sprintf(buffer,"You do not see or have the %s.\n\r", arg2);
       send_to_char(buffer, ch);
       fail = TRUE;
     }
   } break;
-  case 5:{ 
-    send_to_char("You can't take a thing from more than one container.\n\r", 
+  case 5:{
+    send_to_char("You can't take a thing from more than one container.\n\r",
 		 ch);
   } break;
-    /*  
-      take ??? from ???   (is it??) 
+    /*
+      take ??? from ???   (is it??)
       */
-    
+
   case 6:{
     found = FALSE;
     fail  = FALSE;
@@ -330,23 +330,23 @@ dlog("in do_get");
 	  num = -1;
 	  strcpy(arg1,newarg);
 	} else if ((p = getabunch(arg1,newarg))!='\0') {
-	  num = p;                     
+	  num = p;
 	  strcpy(arg1,newarg);
 	} else {
 	  num = 1;
 	}
-	
+
 	while (num != 0) {
-	  
-	  obj_object = get_obj_in_list_vis(ch, arg1, 
+
+	  obj_object = get_obj_in_list_vis(ch, arg1,
 					   sub_object->contains);
 	  if (obj_object) {
-	    /* check for trap (jdb - 11/9) */					
+	    /* check for trap (jdb - 11/9) */
 	    if (CheckForInsideTrap(ch, sub_object)) {
 	      return;
 	      }
 	    if ((IS_CARRYING_N(ch) + 1 < CAN_CARRY_N(ch))) {
-	      if (has || (IS_CARRYING_W(ch) + obj_object->obj_flags.weight) < 
+	      if (has || (IS_CARRYING_W(ch) + obj_object->obj_flags.weight) <
 		  CAN_CARRY_W(ch)) {
 		if (CAN_WEAR(obj_object,ITEM_TAKE)) {
 		  get(ch,obj_object,sub_object);
@@ -357,14 +357,14 @@ dlog("in do_get");
 		  num = 0;
 		}
 	      } else {
-		sprintf(buffer,"%s : You can't carry that much weight.\n\r", 
+		sprintf(buffer,"%s : You can't carry that much weight.\n\r",
 			obj_object->short_description);
 		send_to_char(buffer, ch);
 		fail = TRUE;
 		num = 0;
 	      }
 	    } else {
-	      sprintf(buffer,"%s : You can't carry that many items.\n\r", 
+	      sprintf(buffer,"%s : You can't carry that many items.\n\r",
 		      obj_object->short_description);
 	      send_to_char(buffer, ch);
 	      fail = TRUE;
@@ -378,9 +378,9 @@ dlog("in do_get");
 	    num = 0;
 	    fail = TRUE;
 	  }
-	  
+
 	  if (num > 0) num--;
-	  
+
 	}
       } else {
 	sprintf(buffer,"%s is not a container.\n\r", sub_object->short_description);
@@ -543,26 +543,26 @@ void do_put(struct char_data *ch, char *argument, int cmd)
 dlog("in do_put");
 
   argument_interpreter(argument, arg1, arg2);
-  
+
   if (*arg1) {
     if (*arg2) {
-      
+
       if (getall(arg1,newarg)==TRUE) {
 	num = -1;
 	strcpy(arg1,newarg);
       } else if ((p = getabunch(arg1,newarg))!='\0') {
-	num = p;                     
+	num = p;
 	strcpy(arg1,newarg);
       } else {
-	num = 1;  
+	num = 1;
       }
-      
+
       if (!strcmp(arg1,"all")) {
       bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,
              ch, &tmp_char, &sub_object);
 
        if(sub_object){
-         if(IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED))       
+         if(IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED))
            {send_to_char("But its closed.\n\r",ch);
             return;
            }
@@ -577,7 +577,7 @@ dlog("in do_put");
             send_to_char(buffer,ch);
             }else{
         if(tmp_object == sub_object);
-            else{ 
+            else{
               if((tmp_object->obj_flags.weight +
                  sub_object->obj_flags.weight)
                    > sub_object->obj_flags.value[0] - 1)
@@ -589,10 +589,10 @@ dlog("in do_put");
            sprintf(buffer,"%s : OK\n\r",tmp_object->short_description);
            send_to_char(buffer,ch);
            obj_from_char(tmp_object);
-           obj_to_obj(tmp_object,sub_object);           
+           obj_to_obj(tmp_object,sub_object);
             }/*end else*/
-           } /*end if bag = tmp_obj if */  
-          }/*end Cursed else*/ 
+           } /*end if bag = tmp_obj if */
+          }/*end Cursed else*/
         }/*end for*/
        return;
        }
@@ -605,7 +605,7 @@ dlog("in do_put");
 #else
 	  obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
 #endif
-	  
+
 	  if (obj_object) {
 	    if (IS_OBJ_STAT(obj_object,ITEM_NODROP)) {
 	      if (singular(obj_object))
@@ -626,10 +626,10 @@ dlog("in do_put");
 		      send_to_char("You attempt to fold it into itself, but fail.\n\r", ch);
 		    else
 		      send_to_char("You attempt to fold them inside out, but fail.\n\r", ch);
-		      
+
 		    return;
 		  }
-		  if (((sub_object->obj_flags.weight) + 
+		  if (((sub_object->obj_flags.weight) +
 		       (obj_object->obj_flags.weight)) <
 		      (sub_object->obj_flags.value[0])) {
 		    act("You put $p in $P",TRUE, ch, obj_object, sub_object, TO_CHAR);
@@ -639,26 +639,26 @@ dlog("in do_put");
 		      /* make up for above line */
 		      if (sub_object->carried_by)
 			IS_CARRYING_W(ch) += GET_OBJ_WEIGHT(obj_object);
-		      
+
 		      obj_to_obj(obj_object, sub_object);
 		    } else {
 	/*This isn't  obj_from_room(obj_object);
 	  used.	      obj_to_obj(obj_object, sub_object);  */
 		    }
-		    
+
 		    act("$n puts $p in $P",TRUE, ch, obj_object, sub_object, TO_ROOM);
 		    num--;
 		  } else {
 		    if (singular(sub_object))
 		      send_to_char("It won't fit.\n\r", ch);
-		    else 
+		    else
 		      send_to_char("They won't fit.\n\r", ch);
 		    num = 0;
 		  }
 		} else {
 		  if (singular(obj_object))
 		    send_to_char("It seems to be closed.\n\r", ch);
-		  else 
+		  else
 		    send_to_char("They seem to be closed.\n\r", ch);
 		  num = 0;
 		}
@@ -673,7 +673,7 @@ dlog("in do_put");
 	      num = 0;
 	    }
 	  } else {
-	    if ((num > 0) || (num == -1)) { 
+	    if ((num > 0) || (num == -1)) {
 	      sprintf(buffer, "You don't have the %s.\n\r", arg1);
 	      send_to_char(buffer, ch);
 	    }
@@ -700,8 +700,6 @@ int newstrlen(char *p) {
   return(i);
 }
 
-
-
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
   char obj_name[200], vict_name[80], buf[132];
@@ -709,23 +707,28 @@ void do_give(struct char_data *ch, char *argument, int cmd)
   int amount, num, p, count;
   struct char_data *vict;
   struct obj_data *obj;
-  
 
-dlog("in do_give");
+
+  dlog("in do_give");
 
   argument=one_argument(argument,obj_name);
-  sprintf(buf,"obj_name: %s",obj_name);
-  if(is_number(obj_name))	{
+  obj = get_obj_in_list_vis(ch,obj_name,ch->carrying);
+  /*  sprintf(buf,"obj_name: %s",obj_name); */
+  if(!obj && is_number(obj_name))	{
     if(newstrlen(obj_name) >= 10)
       obj_name[10] = '\0';
     amount = atoi(obj_name);
     argument=one_argument(argument, arg);
-    if (str_cmp("coins",arg) && str_cmp("coin",arg))      	{
+
+    if (str_cmp("coins",arg)!=0 && str_cmp("coin",arg)!=0
+	&& str_cmp("gold",arg)!=0) //(GH) fixxed...
+    {
       send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r",ch);
       return;
     }
-    if(amount<0)	{
-      send_to_char("Sorry, you can't do that!\n\r",ch);
+
+  if(amount<0)	{
+    send_to_char("Sorry, you can't do that!\n\r",ch);
       return;
     }
     if((GET_GOLD(ch)<amount) && (IS_NPC(ch) || (GetMaxLevel(ch) < DEMIGOD))) {
@@ -744,11 +747,11 @@ dlog("in do_give");
       send_to_char("To who?\n\r",ch);
       return;
     }
-    sprintf(buf,"You give %d coins to %s.\n\r",amount,PERS(ch,vict));
+    sprintf(buf,"You give %d gold coins to %s.\n\r",amount,PERS(vict,ch));
     send_to_char(buf,ch);
     sprintf(buf,"%s gives you %d gold coins.\n\r",PERS(ch,vict),amount);
     send_to_char(buf,vict);
-    act("$n gives some gold to $N.", 1, ch, 0, vict, TO_NOTVICT);
+    act("$n gives some gold coins to $N.", 1, ch, 0, vict, TO_NOTVICT);
     if (IS_NPC(ch) || (GetMaxLevel(ch) < DEMIGOD))
       GET_GOLD(ch)-=amount;
     GET_GOLD(vict)+=amount;
@@ -757,12 +760,13 @@ dlog("in do_give");
       sprintf(buf, "%s gave %d coins to %s", GET_NAME(ch), amount, GET_NAME(vict));
       log(buf);
     }
-      
+
     return;
   } else {
     argument=one_argument(argument, vict_name);
-    
-    
+
+
+
     if (!*obj_name || !*vict_name)	{
       send_to_char("Give what to who?\n\r", ch);
       return;
@@ -772,10 +776,10 @@ dlog("in do_give");
       num = -1;
       strcpy(obj_name,newarg);
     } else if ((p = getabunch(obj_name,newarg))!='\0') {
-      num = p;                     
+      num = p;
       strcpy(obj_name,newarg);
     } else {
-      num = 1;  
+      num = 1;
     }
 
     count = 0;
@@ -787,25 +791,25 @@ dlog("in do_give");
 	return;
       }
 
-      if (!(vict = get_char_room_vis(ch, vict_name)))	
+      if (!(vict = get_char_room_vis(ch, vict_name)))
       {
 	send_to_char("No one by that name around here.\n\r", ch);
 	return;
       }
 
 if (!CheckGiveBarbarianOK(ch,vict,obj)) {
-      return; 
+      return;
      }
 
 if (!CheckEgoGive(ch,vict,obj)) {
 	return;
-   }	       
-      if (vict == ch) 
+   }
+      if (vict == ch)
       {
 	send_to_char("Why are you trying to give something to yourself?\n\r", ch);
 	return;
       }
-      
+
       if ((1+IS_CARRYING_N(vict)) > CAN_CARRY_N(vict))	{
 	act("$N seems to have $S hands full.", 0, ch, 0, vict, TO_CHAR);
 	return;
@@ -817,10 +821,10 @@ if (!CheckEgoGive(ch,vict,obj)) {
 
       if ( (IS_OBJ_STAT(obj, ITEM_NODROP) ) && ( !IS_IMMORTAL(ch) ) ) {
    	if (singular(obj)){
-           sprintf(buf,"You can't let go of %s, it must be CURSED!\r",obj->short_description);      
+           sprintf(buf,"You can't let go of %s, it must be CURSED!\r",obj->short_description);
 	  send_to_char(buf, ch);}
 	else{
-          sprintf(buf,"You can't let go of %s, they must be CURSED!\r",obj->short_description);      
+          sprintf(buf,"You can't let go of %s, they must be CURSED!\r",obj->short_description);
 	  send_to_char(buf, ch);}
         return;
 
@@ -834,18 +838,19 @@ if (!CheckEgoGive(ch,vict,obj)) {
       if (num > 0) num--;
       count++;
       }
-      
+
     }
 #if   NODUPLICATES
     do_save(ch, "", 0);
     do_save(vict, "", 0);
-#endif    
+#endif
   }
 }
 
 
 
-void do_donate(struct char_data *ch, char *argument, int cmd) 
+
+void do_donate(struct char_data *ch, char *argument, int cmd)
 {
   char arg[MAX_INPUT_LENGTH+80];
   int amount, value;
@@ -860,7 +865,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
 dlog("in do_donate");
 
   s=one_argument(argument, arg);
-      
+
   if (*arg) {
     if (!str_cmp(arg,"all")) {
       value = 0;
@@ -875,9 +880,9 @@ dlog("in do_donate");
 	  test = TRUE;
 	} else {
 	  if (CAN_SEE_OBJ(ch, tmp_object)) {
-	    if (singular(tmp_object)) 
+	    if (singular(tmp_object))
 	      sprintf(buffer, "You can't donate %s, it must be CURSED!\n\r", tmp_object->short_description);
-	    else 
+	    else
 	      sprintf(buffer, "You can't donate %s, they must be CURSED!\n\r", tmp_object->short_description);
 	    send_to_char(buffer, ch);
 	    test = TRUE;
@@ -899,10 +904,10 @@ dlog("in do_donate");
 	num = -1;
 	strcpy(arg,newarg);
       } else if ((p = getabunch(arg,newarg))!='\0') {
-	num = p;                     
+	num = p;
 	strcpy(arg,newarg);
       } else {
-	num = 1;  
+	num = 1;
       }
       value = 0;
       while (num != 0) {
@@ -918,16 +923,16 @@ dlog("in do_donate");
 	    obj_to_room(tmp_object,99);
 	    value +=((tmp_object->obj_flags.cost)*10/100);
 	  } else {
-	    if (singular(tmp_object)) 
+	    if (singular(tmp_object))
 	      send_to_char("You can't donate it, it must be CURSED!\n\r", ch);
-	    else 
+	    else
 	      send_to_char("You can't donate them, they must be CURSED!\n\r", ch);
 	    num = 0;
 	  }
 	} else {
 	  if (num > 0)
 	    send_to_char("Try donating something you have, silly!.\n\r", ch);
-	  
+
 	  num = 0;
 	}
 	if (num > 0) num--;
@@ -936,7 +941,7 @@ dlog("in do_donate");
       do_save(ch, "", 0);
 #endif
  	//   	GET_GOLD(ch) += value;
-   } 
+   }
    } else {
     send_to_char("Normally, you gotta donate something!?\n\r", ch);
   }

@@ -2755,7 +2755,7 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 }
 
 
-#define SEVERED_HEAD    30
+#define SEVERED_HEAD    29
 /* Behead corpse code
    By: Greg Hovey Feb. 2001 (GH)
    This method will allow you to behead a corpse with a slash or cleave weapon.
@@ -2792,7 +2792,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd) {
     /* affect[0] == race of corpse, affect[1] == level of corpse */
     if (j->affected[0].modifier !=0 && j->affected[1].modifier !=0) {
       /* item not a corpse if v3 = 0 */
-      if (!j->obj_flags.value[3])     {
+      if (!IS_CORPSE(j))     {
 	send_to_char("Sorry, this is not a carcass.\n\r",ch);
 	return;
       }

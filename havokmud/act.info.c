@@ -528,9 +528,9 @@ if (!ch || !i) {
 
   if (mode == 0) {
 
-    if (IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) {
+    if ((IS_AFFECTED(i, AFF_HIDE) || !CAN_SEE(ch,i)) && !IS_IMMORTAL(ch)) {
       if (IS_AFFECTED(ch, AFF_SENSE_LIFE) && !IS_IMMORTAL(i)) {
-	send_to_char("You sense a hidden life form in the room.\n\r", ch);
+		send_to_char("You sense a hidden life form in the room.\n\r", ch);
        return;
       } else {
       /* no see nothing */
@@ -550,10 +550,12 @@ if (!ch || !i) {
 	CAP(buffer);
       }
 
-      if ( IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
-	strcat(buffer," (invisible)");
-      if ( IS_AFFECTED(i,AFF_CHARM))
-	strcat(buffer," (pet)");
+	if(IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
+	  strcat(buffer," (Hiding)");
+	if ( IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
+	  strcat(buffer," (invisible)");
+    if ( IS_AFFECTED(i,AFF_CHARM))
+	  strcat(buffer," (pet)$c0007");
 
       switch(GET_POS(i)) {
       case POSITION_STUNNED  :
@@ -910,7 +912,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
       if ( IS_AFFECTED(i,AFF_INVISIBLE))
 	strcat(buffer,"$c0011 (invisible)");
       if ( IS_AFFECTED(i,AFF_CHARM))
-	strcat(buffer,"$c0010 (pet)");
+	strcat(buffer,"$c0010 (pet)$c0007");
 
       switch(GET_POS(i)) {
       case POSITION_STUNNED  :

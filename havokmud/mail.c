@@ -145,8 +145,8 @@ mail_index_type *find_char_in_index(char *searchee)
       return 0;
    }
 
-   for (temp_rec = mail_index; 
-       (temp_rec && str_cmp(temp_rec->recipient, searchee)); 
+   for (temp_rec = mail_index;
+       (temp_rec && str_cmp(temp_rec->recipient, searchee));
        temp_rec = temp_rec->next)
       ;
 
@@ -355,7 +355,7 @@ void	store_mail(char *to, char *from, char *message_pointer)
 	   the block size is big enough it won't matter anyway.  Hopefully,
 	   MUD players won't pour their life stories out into the Mud Mail
 	   System anyway.
- 
+
 	   Note that the block_type data field in data blocks is either
 	   a number >=0, meaning a link to the next block, or LAST_BLOCK
 	   flag (-2) meaning the last block in the current message.  This
@@ -427,8 +427,8 @@ if (mail_pointer)
 	 free(mail_pointer);
       } else {
 	 /* find entry before the one we're going to del */
-	 for (prev_mail = mail_index; 
-	     prev_mail->next != mail_pointer; 
+	 for (prev_mail = mail_index;
+	     prev_mail->next != mail_pointer;
 	     prev_mail = prev_mail->next)
 	    ;
 	 prev_mail->next = mail_pointer->next;
@@ -521,7 +521,7 @@ struct char_data *find_mailman(struct char_data *ch)
    if (!mail_ok(ch))
       return 0;
 #if 0
-   for (temp = world[ch->in_room].people, mailman = 0; 
+   for (temp = world[ch->in_room].people, mailman = 0;
        (temp) && (!mailman); temp = temp->next_in_room)
       if (IS_NPC(temp))
 	 if (mob_index[temp->nr].func == PostMaster)
@@ -529,7 +529,7 @@ struct char_data *find_mailman(struct char_data *ch)
 #else
    mailman = FindMobInRoomWithFunction(ch->in_room, PostMaster);
 #endif
-   
+
    if (!mailman)
       send_to_char("Whoa!  Buggy post office.  Please report this.  Error #10.\n\r", ch);
 
@@ -545,8 +545,8 @@ void	postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
    if (cmd != BUGMAIL) {
       if (!(mailman = find_mailman(ch)))
         return;
-      
-      
+
+
       if (GetMaxLevel(ch) < MIN_MAIL_LEVEL) {
          sprintf(buf, "$n tells you, 'Sorry, you have to be level %d to send mail!'",
              MIN_MAIL_LEVEL);
@@ -568,7 +568,7 @@ void	postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
          return;
       }
     }
-   
+
     _parse_name(arg, recipient);
 
    if (find_name(recipient) < 0) {
@@ -588,10 +588,10 @@ void	postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
       act(buf, FALSE, mailman, 0, ch, TO_VICT);
       GET_GOLD(ch) -= STAMP_PRICE;
    }
-   else { 
+   else {
       act(" 'Havok MUD thanks you for reporting your bugs.'", FALSE, mailman, 0, ch, TO_VICT);
       act(" 'Write your message, use ~ when done.'", FALSE, mailman, 0, ch, TO_VICT);
-   }   
+   }
    SET_BIT(ch->specials.act, PLR_MAILING);
 
    ch->desc->name = (char *)strdup(recipient);
@@ -605,9 +605,10 @@ void bugmail(struct char_data *ch,  char *arg, int cmd)
 /* i will make it go to both of us later -bcw*/
   char temp_arg[] = " Pentak";
   int tmp_cmd = 0;
-  
-  postmaster_send_mail(ch, cmd,"Forbathian") ;
- 
+
+  postmaster_send_mail(ch, cmd,"Manwe") ;
+  postmaster_send_mail(ch, cmd,"Banon") ;
+
  }
 
 
@@ -656,7 +657,7 @@ void	postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
         {
         for(i = 0;ch->specials.prompt[19+i] != '\0';i++)
           buf2[i] = ch->specials.prompt[19 + i];
-        ch->specials.prompt = buf2; 
+        ch->specials.prompt = buf2;
         }*/
       return;
    }

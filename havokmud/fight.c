@@ -1184,7 +1184,7 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
     {
       "$n #W $N very hard #l.",                                /* 11..14  */
       "You #w $N very hard #l.",
-      "$n #W you very hard on you #L."
+      "$n #W you very hard on your #L."
     },
 
     {
