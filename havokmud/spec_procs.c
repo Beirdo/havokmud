@@ -18,7 +18,7 @@
 #define Ivory_Gate    1499
 
 /*   external vars  */
-
+extern struct skillset bardskills[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
@@ -6910,5 +6910,110 @@ int web_slinger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     act("$n casts sticky webs upon you!", TRUE, ch, 0, 0, TO_ROOM);
     cast_web(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
   }
+}
+
+
+
+int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+  int count = 0;
+  char buf[256];
+  static int percent = 0;
+  static int x; //for loop..
+  struct char_data *guildmaster;
+  static int MAXBSKILLS = 78;
+  struct string_block sb;
+  //skill             level..
+
+#if 0
+  if(!AWAKE(ch) || IS_NPC(ch))
+    return(FALSE);
+  //170->Practice,164->Practise, 243->gain
+  if (cmd==164 || cmd == 170 || cmd == 243) {
+    
+    if(!HasClass(ch, CLASS_BARD)){
+      send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+		   " 'Your not a bard'\n\r",ch);
+      return(TRUE);
+    }
+    //gain
+    if(cmd == 243 && 
+       GET_EXP(ch)<titles[BARD_LEVEL_IND][GET_LEVEL(ch,BARD_LEVEL_IND)+1].exp){
+      send_to_char("Your not ready to gain yet!!",ch);
+      return (FALSE);
+    } else {
+      if(cmd == 243) {  //gain
+	GainLevel(ch,BARD_LEVEL_IND);
+	return (TRUE);
+      }
+    } 
+    
+    if(!*arg && (cmd == 170 || cmd == 164)) {
+      init_string_block(&sb);
+      sprintf(buf,"You have got %d practice sessions left.\n\r",
+	      ch->specials.spells_to_learn);
+      send_to_char(buf,ch);
+      append_to_string_block(&sb,buf);
+      //practice,Practise
+      append_to_string_block(&sb,"You can practice any of these spells.\n\r");
+	for(x = 0; x < MAXBSKILLS;x++) {  //practice
+	  if(bardskills[x].level <= GET_LEVEL(ch,BARD_LEVEL_IND)) {
+	    
+	    count++;
+	    //if(count%25 == 0)
+	      
+	    sprintf(buf,"%-20s:%-15s   Level: %-15d\n\r"
+		    ,bardskills[x].name,
+		    how_good(ch->skills[bardskills[x].skillnum].learned),
+		    bardskills[x].level); 
+	    append_to_string_block(&sb,buf);
+	  }
+	}
+	page_string_block(&sb,ch);
+	destroy_string_block(&sb);
+	return(TRUE);
+	
+    } else {
+      for (x = 0;x < MAXBSKILLS;x++) {
+	if(is_abbrev(arg,bardskills[x].name)){  //!str_cmp(arg,n_skills[x])){
+	  if(bardskills[x].level > GET_LEVEL(ch,BARD_LEVEL_IND)){
+	    send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+			 " 'I don't know if i know that skill.'",ch);
+	    return(TRUE);
+	  }
+	  if(ch->skills[bardskills[x].skillnum].learned > 45) { 
+	    //check if skill already practised
+	    send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+			 " 'You must learn from experience and practice to get"
+			 " any better at that skill.\n\r",ch);
+	    return(TRUE);
+	  }
+	  if(ch->specials.spells_to_learn <=0){
+	    send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+			 " 'You don't have enough practice points.'\n\r",ch);
+	    return(TRUE);
+	  }
+	  
+	  sprintf(buf,"You practice %s %s for a while.\n\r",arg,bardskills[x].name);
+	  send_to_char(buf,ch);
+	  ch->specials.spells_to_learn--;
+	  
+	  if(!IS_SET(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN)) {
+	    SET_BIT(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN);
+	    SET_BIT(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN_BARD);
+	  }
+	 percent=ch->skills[bardskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+	  ch->skills[bardskills[x].skillnum].learned = MIN(95,percent);
+	  if(ch->skills[bardskills[x].skillnum].learned >= 95)
+	    send_to_char("'You are now a master of this art.'\n\r",ch);
+	  return(TRUE);
+	}
+      }
+      send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you '"
+		   "I do not know of that skill!'",ch);
+      return(TRUE);
+    }
+  }
+#endif
+  return (FALSE);
 }
 

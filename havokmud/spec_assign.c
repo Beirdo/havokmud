@@ -1287,6 +1287,32 @@ void assign_mobiles()
   {45410, mime_jerry},
 
 /*End of Thunder Mountain Keep*/
+    /* Ash's New Zones */
+#if 0 
+    
+    {31811,  MageGuildMaster },       /* Maeister gm guildmaster mage */
+    {31825,  PsiGuildmaster },       /* Psikill psionist gm guildmaster */
+      // {31816,  BardGuildMaster },       /* Alvantil bard gm guildmaster*/
+    {31827,  ThiefGuildMaster },      /* Littlefinger thief gm guildmaster*/
+    {31814,  ClericGuildMaster },     /* Cirelic cleric gm guildmaster*/
+    {31815,  PaladinGuildmaster },    /* Justiciar paladin gm guildmaster*/
+    {31806,  barbarian_guildmaster }, /* Cabal guildmaster gm barbarian*/
+    {31807,  RangerGuildmaster },     /* Raegar gm guildmaster warrior*/
+    {31900,  DruidGuildMaster },      /* Winter druid guildmaster*/
+    {31940,  monk_master },           /* Hands monk guildmaster*/
+    {31801, receptionist },           /* winterfell receptionist */
+    {31803, PostMaster },             /* winterfell scribe mage  */
+
+
+
+      /*{31856,}, */    /* Spendthrift (purchase items from characters)*/
+      /*{31874,}, */    /* Sargon caravan master (purchase items from characters)*/
+{31877,  QPSalesman },  /* Questor Demigod (Quest Point Shop...)*/
+  /*{31880,    }, */    /* Ziik grocer (sell bread and barrels of water) */
+  /*{31889,    }, */    /* Magelius (sell neutral potions for brew) */
+{31886,  RepairGuy },   /* Ned armorer (repair like super repair) */
+
+#endif
 
     { -1, NULL },
   };
@@ -1398,9 +1424,10 @@ void assign_rooms()
    //{40285, fiery_alley},
    //{40287, fiery_alley},
 
-/*Thunder Mountain Keep */
-{45450, Thunder_Fountain},
-
+    /*Thunder Mountain Keep */
+    {45450, Thunder_Fountain},
+    {31860, pet_shops },
+    {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
     { -1, NULL},
   };
   int i;

@@ -1598,3 +1598,9 @@ struct breather {
   int	cost;
   funcp	*breaths;
 };
+
+struct skillset {
+  char *name;
+  int skillnum;
+  int level;
+};

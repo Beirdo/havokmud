@@ -7,7 +7,7 @@
 #include "limits.h"
 #include "trap.h"
 #include "race.h"
-
+#include "spells.h"
 
 const char *spell_wear_off_msg[] = {
   "RESERVED DB.C",
@@ -2315,68 +2315,69 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
  }
 
 #if 0
-{ 	{"Man",		"Woman",	0}/*Bard*/
-	{"Singer",	"Singer",	1}/*1*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}/*10*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}/*20*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-   	{"Singer",	"Singer",	1}/*30*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}/*40*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}/*50*/
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}
-	{"Singer",	"Singer",	1}/*60*/
-
+{
+        {"Man",		"Woman",	0},/*Bard*/
+	{"Singer",	"Singer",	1},/*1*/
+        {"Singer",	"Singer",	1500},
+        {"Master Singer", "Master Singer", 3000},
+        {"Rhymer",	"Rhymer",	6000},
+        {"Rhymer",	"Rhymer",	12000},
+        {"Master Rhymer", "Master Rhymer", 24000},
+        {"Lyrist",	"Lyrist",	50000},
+        {"Lyrist",	"Lyrist",	100000},
+        {"Master Lyrist", "Master Lyrist", 200000},
+	{"Sonnateer",	"Sonnateer",	400000},/*10*/
+        {"Sonnateer",	"Sonnateer",	600000},
+        {"Master Sonnateer", "Master Sonnateer", 800000},
+        {"Skald",	"Skald", 1000000},
+	{"Skald",	"Skald",	1200000},
+	  {"Master Skald",	"Master Skald",	1400000},
+        {"Racaraide",	"Racaraide",       1600000},
+        {"Racaraide",	"Racaraide",	1800000},
+        {"Master Racaraide","Master Racaraide",	2100000},
+        {"Joungleur",	"Joungleur",	2400000},
+	{"Joungleur",	"Joungleur",	2700000},/*20*/
+        {"Master Joungleur", "Master Joungleur", 3000000},
+        {"Troubadour",	"Troubadour",	3300000},
+        {"Troubadour",	"Troubadour",	3502000},
+      	{"Master Troubadour", "Master Troubadour", 3703000},
+        {"Minstrel",	"Minstrel",	3904000},
+	  {"Minstrel",	"Minstrel",	4105000},
+        {"Master Minstrel",	"Master Minstrel",	5006000},
+        {"Muse",	"Muse",	6070000},
+        {"Muse",	"Muse",	8080000},
+   	{"Master Muse",	"Master Muse",	9000000},/*30*/
+	{"Lorist",	"Lorist",	11000000},
+	  {"Lorist",	"Lorist",	12000000},
+        {"Master Lorist","Master Lorist",13000000},
+      	{"Bard",	"Bard",	14000000},
+        {"Bard",	"Bard",	15000000},
+        {"Bard",	"Bard",	16000000},
+	{"Bard",	"Bard",	17000000},
+        {"Bard",	"Bard",	18000000},
+        {"Bard",	"Bard",	19000000},
+	{"Bard",	"Bard",	20000000},/*40*/
+        {"Master Bard",	"Master Bard",	21010000},
+        {"Master Bard",	"Master Bard",	25030000},
+        {"Master Bard",	"Master Bard",	30040000},
+	{"Master Bard",	"Master Bard",	35500000},
+        {"Master Bard",	"Master Bard",	40600000},
+        {"Master Bard",	"Master Bard",	45700000},
+	{"Master Bard",	"Master Bard",	50080000},
+        {"Master Bard",	"Master Bard",	55900000},
+        {"Master Bard",	"Master Bard",	60000000},
+	{"Master Bard",	"Master Bard",	65000000},/*50*/
+        {"Immortal Bard", "Immortal Bard",	200000000},
+        {"Immortal Bard",	"Immortal Bard",	211000000},
+        {"Immortal Bard",	"Immortal Bard",	220000000},
+	{"Immortal Bard",	"Immortal Bard",	230000000},
+        {"Immortal Bard",	"Immortal Bard",	245000000},
+        {"Immortal Bard",	"Immortal Bard",	250000000},
+        {"Immortal Bard",	"Immortal Bard",	269000000},
+      	{"Immortal Bard",	"Immortal Bard",	270000000},
+        {"Immortal",	"Immortal",	280000000},
+        {"Immortal",	"Immortal",	299000000}
+  }
 #endif
 };
 
@@ -2602,6 +2603,9 @@ const char *extra_bits[] = {
         "ANTI-MONK",
         "ANTI-DRUID",
         "ONLY-CLASS",
+	"ANTI-BARD",
+	"UNIQUE",
+	"PC-CORPSE",
 	"\n"
 };
 
@@ -4095,6 +4099,140 @@ const int preproomexitsquad4[] = {
 
 
 
+const struct skillset warriorskills[] = {
+
+  {"bash",      SKILL_BASH,          1},
+  {"kick",      SKILL_KICK,          1},
+  {"rescue",    SKILL_RESCUE,        1},
+  {"skin",      SKILL_TAN,           1},
+  {"bellow",    SKILL_BELLOW,        1}
+};
+
+const struct skillset thiefskills[] = {
+  {"steal",     SKILL_STEAL,         1},
+  {"sneak",     SKILL_SNEAK,         1},
+  {"hide",      SKILL_HIDE,          1},
+  {"backstab",  SKILL_BACKSTAB,      1},
+  {"pick",      SKILL_PICK_LOCK,     1},
+  {"spy",       SKILL_SPY,           1},
+  {"retreat",   SKILL_RETREAT,       1},
+  {"find trap", SKILL_FIND_TRAP,     1},
+  {"disarm trap", SKILL_DISARM,      1}
+};
+const struct skillset ninjaskills[] = {
+  { "disarm",            SKILL_DISARM,          1},
+  { "doorbash",          SKILL_DOORBASH,        1},
+  { "spy",               SKILL_SPY,             1},
+  { "retreat",           SKILL_RETREAT,         1},
+  { "switch opponents",  SKILL_SWITCH_OPP,          1},
+  { "riding",            SKILL_RIDE,            1},
+  { "disguise",          SKILL_HIDE,        1},
+  { "climb",             SKILL_CLIMB,           1}
+};
+const struct skillset barbskills[] = {
+   {"disarm",          SKILL_DISARM,          1},   /* No. 1 */
+   {"doorbash",        SKILL_DOORBASH,        1}, /* No. 2 */
+   {"spy",             SKILL_SPY,             1},      /* 3 */
+   {"retreat",         SKILL_RETREAT,         1},  /* 4 */
+   {"switch opponents",SKILL_SWITCH_OPP,          1}, /* 5 */
+   {"disguise",        SKILL_DISGUISE,        1},	 	/* 6 */
+   {"climb",           SKILL_CLIMB,           1}, 		/* 7 */
+   {"hunt",            SKILL_HUNT,            1}, 		/* 8 */
+   {"dodge",           SKILL_DODGE,           1},		/* 9 */
+   {"bash",            SKILL_BASH,            1},		/* 10 */
+   {"first aid",       SKILL_FIRST_AID,       1},	/* 11 */
+   {"berserk",         SKILL_BERSERK,         1},          /* 12 */
+   {"avoid backattack",SKILL_AVOID_BACK_ATTACK, 1}, /* 13 */
+   {"find food",       SKILL_FIND_FOOD,       1},
+   {"find water",      SKILL_FIND_WATER,      1},
+   {"skin",            SKILL_TAN,             1},
+   {"camouflage",      SKILL_HIDE,      1},
+   {"bellow",          SKILL_BELLOW,          1},
+   {"bash",            SKILL_BASH,            1}
+};
+const struct skillset bardskills[] = {
+  {"steal",     SKILL_STEAL,         1},
+  {"doorbash",  SKILL_DOORBASH,      1},
+  {"dodge",     SKILL_DODGE,         1},
+  {"retreat",   SKILL_RETREAT,       1},
+  {"sending",   SPELL_SENDING,       1},
+  {"bash",      SKILL_BASH,          2},
+  {"rescue",    SKILL_RESCUE,        3},
+  {"kick",      SKILL_KICK,          3},
+  {"spy",       SKILL_SPY,           4},
+  {"shield",    SPELL_SHIELD,        5},
+  {"magic missile",   SPELL_MAGIC_MISSILE, 5},
+  {"ventriloquate",   SPELL_VENTRILOQUATE, 5},
+  {"create light",    SPELL_LIGHT,         5},
+  {"comprehend language",SPELL_COMP_LANGUAGES,5},
+  {"detect magic",    SPELL_DETECT_MAGIC,    5},
+  {"detect invisible",SPELL_DETECT_INVISIBLE,6},
+  {"shocking grasp",  SPELL_SHOCKING_GRASP,  6},
+  {"find familiar",   SPELL_FAMILIAR,        6},
+  {"knock",      SPELL_KNOCK,          7},
+  {"sleep",      SPELL_SLEEP,          7},
+  {"scare",      SPELL_SCARE,          8},
+  {"inivisibility",SPELL_INVISIBLE,    8},
+  {"chill touch",SPELL_CHILL_TOUCH,    8},
+  {"calm",       SPELL_CALM,           8},
+  {"charm person",SPELL_CHARM_PERSON,  8},
+  {"monsum one", SPELL_MON_SUM_1,      8},
+  {"armor",      SPELL_ARMOR,          9},
+  {"faerie fire",SPELL_FAERIE_FIRE,    9},
+  {"darkness",   SPELL_GLOBE_DARKNESS,       9},
+  {"weakness",   SPELL_WEAKNESS,       10},
+  {"acid blast", SPELL_ACID_BLAST,     10},
+  {"burning hands", SPELL_BURNING_HANDS,10},
+  {"refresh",    SPELL_REFRESH,       10},
+  {"strength",   SPELL_STRENGTH,      10},  //34 spells..
+  {"know alignment",SPELL_KNOW_ALIGNMENT,11},
+  {"monsum two", SPELL_MON_SUM_2,       11},
+  {"infravision",SPELL_INFRAVISION,     12},
+  {"minor creation",SPELL_MINOR_CREATE, 12},
+  {"fear",          SPELL_FEAR,           12},
+  {"dispel magic",  SPELL_DISPEL_MAGIC,   13},  //40X
+  
+  {"water breath",  SPELL_WATER_BREATH,   13},
+  {"monsum three",  SPELL_MON_SUM_3,      13},
+  {"know monster",  SPELL_KNOW_MONSTER,   13},
+  {"polymorph self", SPELL_POLY_SELF,     13},
+  {"lightning bolt",SPELL_LIGHTNING_BOLT, 14},
+  {"continual light", SPELL_CONT_LIGHT,   14},
+  {"gust of wind",   SPELL_GUST_OF_WIND,    14},
+  {"charm monster",  SPELL_CHARM_MONSTER, 14},
+  {"fly",            SPELL_FLY,             15},
+  {"ice storm",      SPELL_ICE_STORM,       15},
+  {"web",            SPELL_WEB,             15},
+  {"blindness",      SPELL_BLINDNESS,       16},
+  {"minor track",    SPELL_MINOR_TRACK,     16},
+  {"monsum 4",       SPELL_MON_SUM_4,       16},
+  {"curse",          SPELL_CURSE,           17},
+  {"enchant weapon", SPELL_ENCHANT_WEAPON,  18},
+  {"colour spray",   SPELL_COLOUR_SPRAY,     18},
+  {"monsum 5",       SPELL_MON_SUM_5,       19},
+  {"enchant armor",  SPELL_ENCHANT_ARMOR,   20},
+  {"faerie fog",     SPELL_FAERIE_FOG,      20},
+  {"power word blind",SPELL_PWORD_BLIND, 20},
+  {"conjure elemental", SPELL_CONJURE_ELEMENTAL, 20},
+  {"teleport",       SPELL_TELEPORT,      21},
+  {"cone of cold",   SPELL_CONE_OF_COLD,  21},
+  {"monsum 6",       SPELL_MON_SUM_6,     22},
+  {"slowness",       SPELL_SLOW,      23},
+  {"paralyze",       SPELL_PARALYSIS,      24},
+  {"second wind",    SPELL_SECOND_WIND,   24},
+  {"minor invulnerbility", SPELL_GLOBE_MINOR_INV,24},
+  {"major track",   SPELL_MAJOR_TRACK,    24},
+  {"silence",        SPELL_SILENCE,       25},
+  {"monsum 7",       SPELL_MON_SUM_7,     26},
+  {"haste",          SPELL_HASTE,         27},
+  {"group fly",      SPELL_FLY_GROUP,     28},
+  {"fireball",       SPELL_FIREBALL,      29},
+  {"summon",         SPELL_SUMMON,        31},
+  {"teleport without error", SPELL_TELEPORT_WO_ERROR, 34},
+  {"chain lightning", SPELL_CHAIN_LIGHTNING, 40},
+ 
+  {"none",            -1,             -1}
+};
 
 const struct race_type race_list[] = {
   {RACE_HALFBREED,"Half-Breed", 17,0,21,41,61,91,121},
@@ -4231,6 +4369,444 @@ const struct race_type race_list[] = {
   {RACE_WIGHTS       ,"Wights",17,0,21,41,61,91,121},
   {RACE_YETI         ,"Yeti",17,0,21,41,61,91,121}
 };
+
+const char *RaceDesc[131] =
+{
+"Half-breeds are a mix of 2 different races. **\n",
+"Humans are really the most average of all the races.. They can advance\n"
+"in just about every class and have average stats.\n",
+
+"   Sharp features such as pointed ears set this race apart from most.\n"
+"They are known to be flightly and not dependable. Elves are also known to be\n"
+"some of the best magicians around, as well as being on of the most\n"
+"dexterous races.\n",
+
+"   Wide as a barrel and about as tall. This short stalky race builds\n"
+"the best stone houses/tunnels or anything made of stone around. Dwarves are\n"
+"known to have very good constitution, but as also known to be very hard to\n"
+"get along with. If a dwarf does not have a beard a foot long he must be a\n"
+"baby.\n",
+
+"  Mini-humans is what they look like, but nothing like humans are\n"
+"they. Halflings like to enjoy good food and lay about. They are good at most\n"
+"thief skills when born, although they are generally not a evil race.\n",
+
+"   Some would say that these guys look like a dwarf with a very large\n"
+"nose, I would not say that to a dwarf though. Gnomes are known to be very\n"
+"intelligent, but are not wise at all.\n",
+
+"Reptiles are cold blooded and have scales.\n",
+
+"Unknown\n",
+
+"Lycanthropes are humans who can transform themselves to resemble normal\n"
+"animals or monsters.\n",
+
+"Dragons arn't meant to be toyed with.  Dragons are huge scaled reptile like\n"
+"creatures with various affects and types.\n",
+
+"Undead creatures are generally monsters brought back from the dead by an evil\n"
+"mage of some sort.\n",
+
+"Orcs are one of the most common, and disliked, of the demihuman races.\n"
+"They are agressive and warlike.\n",
+
+"Insects are the heartiest and the most numerous of creatures. Normal insects \n"
+"are found almost everywhere. The giant variety, with added brawn and power, \n"
+"make tough opponents.\n",
+
+"Spiders and Arachnids are aggressive predators, dwelling both above and below \n"
+"ground. Most listed here are poisonous and bite prey first, because unconscious\n"
+"victims are easier to carry to a lair.\n",
+
+"Dinosaurs are found on alternate planes of existence, or even on lost continents.\n"
+"They are very rare.\n",
+
+"Any of numerous cold-blooded aquatic vertebrates, characteristically having fins,\n"
+"gills, and a streamlined body. \n",
+
+"Avians, whether magical or mundane in nature, are among the most interesting creatures\n"
+"ever to evolve. Their unique physiology sets them apart from all other life, and their\n"
+"grace and beauty have earned them a place of respect and adoration in the tales of\n"
+"many races.\n",
+
+"These species vary greatly n power and intelligences.There are different \n"
+"types of giants out there.\n",
+
+"Not much are know about these Predator creatures except for there desire to\n"
+"hunt out and feeding on the living.\n",
+
+"An organism that grows, feeds, and is sheltered on or in a different organism \n"
+"while contributing nothing to the survival of its host.\n",
+
+"Slime is a strain of monstrous plant life, that grows while clinging to \n"
+"ceilings. Slime favors moist, subterranean regions. It feeds on whatever \n"
+"animal, vegetable, or metallic substances happen to cross its path. \n",
+
+"Demons are evil vial creatures that are pretty dangerous to play with.\n",
+
+"Snakes vary in size and slay their prey with deadly venom.  Neutralize poison\n"
+"counters snake bites\n",
+
+"They like to eat grass and plants.\n",
+
+"A perennial woody plant having a main trunk and usually a distinct crown.\n",
+
+"A perennial plant gone bad.\n",
+
+"Elementals are strong, but relatively stupid being conjured up from their \n"
+"normal habitat on the elemental planes.\n",
+
+"Planar species are normally found inhabiting on the elemental planes.\n",
+
+"Devils are extremely evil creatures and shouldn't be taken lightly. Goes by a\n"
+"varity of names.\n",
+
+"Ghosts are the spirits of humans who were either so greatly evil in life \n"
+"or whose deaths were so unusually emotional they have been cursed with the \n"
+"gift of undead status. Thus, they roam about at night or in places of darkness.\n"
+"These spirits hate goodness and life, hungering to draw the living essences from\n"
+"the living.\n",
+
+"Goblins are small, nasty humanoids... They would be no concern except for\n"
+"there great numbers.\n",
+
+"Trolls are ravenous horrors found in almost all climates and locales.  They \n"
+"attack with their diry, clawed hands and must be killed quickly because they \n"
+"regenerate hit points.\n",
+
+"Not much is know about the Vegman race.\n",
+
+"Not much is know about the MindFlayr race.**\n",
+
+"Primates that are characterized by long arms and legs, large dog-like muzzles, \n"
+"and sharp canine teeth.\n",
+
+"Not much is know about the Enfan race.\n",
+
+"   The most evil race of elves, these live under the ground and rarely\n"
+"tunnel out to the surface. The sun and any light hurts their eyes extremely\n"
+"so. Generally drow have black colored skin and white hair.\n",
+
+"Golems are magically created automatons of great power.  Golems can be \n"
+"construced of flesh, clay, stone ,or iron - all are dangerous.\n",
+
+"Skexies are weird birdlike creatures.\n",
+
+"Troglodytes are a warlike race of carnivorous reptilian humanoids that dwell\n"
+"in natural subterranean caverns and in the cracks and crevices of mountains.\n"
+"They hate man above all other creatures and often launch bloody raids on human \n"
+"communities in search of food and steel. \n",
+
+"Not much is know about the Patryn race.\n",
+
+"Giant rats are ferocious rodents the size of large dogs.\n",
+
+"Not much is know about the Sartan race.\n",
+
+"Not much is know about the Tytan race.\n",
+
+"Are small little blue creatures that like to sing and dance.. (Don't ask)\n",
+
+"Not much is know about the Roo race.\n",
+
+"A large hoofed mammal having a short-haired coat, a long mane, and a long tail,\n"
+"domesticated since ancient times and used for riding.\n" ,
+
+"Not much is known about this race.\n",
+
+"Not much is know about these astral creatures. **\n",
+
+"An immortal creature of the realm, generally unkillable and human like in appearance.\n",
+
+"Hill giants are one of the smaller of the giant races, they are brutish hulk\n"
+"possessing low intelliences and tremendous strength.\n",
+
+"These giants have a reputation for rudeness and stupididtiy.  While the reputation\n"
+"may be deserved, frost giants are crafty skilled fighters.\n",
+
+"Fire giants are brutal and ruthless warriors who resemble huge dwarves and \n"
+"have flaming red or orange hair and coal black skin.\n",
+
+"These members of the giant races consider themselves to be above all others of \n"
+"the species, except storm giants, whom they view as equals.\n",
+
+"The most noble and intelligent of the giant races.  These giants are dangerous \n"
+"fighters when angry, and can often use magic.\n",
+
+"Stone giants are lean, but muscular. Their hard, hairless flesh is smooth and gray,\n"
+"making it easy for them to blend in with their mountainous surroundings. Their gaunt\n"
+"facial features and deep, sunken black eyes make them seem perpetually grim.\n",
+
+"Red dragons can exhale great spouts of flame or attack with their claws and fangs.\n",
+
+"Black dragons are abusive, quick to anger, and resent intrusions of any kind. They \n"
+"like dismal surroundings, heavy vegetation, and prefer darkness to daylight. Although\n"
+"not as intelligent as other dragons, black dragons are instinctively cunning \n"
+"and malevolent.\n",
+
+"Green dragons are bad tempered, mean, cruel, and rude. They hate goodness and \n"
+"good-aligned creatures. They love intrigue and seek to enslave other woodland \n"
+"creatures, killing those who cannot be controlled or intimidated.\n",
+
+"Unique among dragons in their preferences for cold climates, these evil beast \n"
+"can attack with their freezing cold breath in addition to razor sharp claws and \n"
+"fangs.  Small in size and not as intelligent as their cousins,  these dragons are \n"
+"still quite dangerous.\n",
+
+"Blue dragons are extremely territorial and voracious. They love to spend long hours \n"
+"preparing ambushes for herd animals and unwary travelers, and they spend equally long \n"
+"hours dwelling on their success and admiring their trophies. \n",
+
+"Silver dragons are kind and helpful. They will cheerfully assist good creatures if \n"
+"their need is genuine. They often take the forms of kindly old men or fair damsels \n"
+"when associating with people. \n",
+
+"Gold dragons are wise, judicious, and benevolent. They often embark on self-appointed\n"
+"quests to promote goodness, and are not easily distracted from them. They hate \n"
+"injustice and foul play. A gold dragon frequently assumes human or animal guise and \n"
+"usually will be encountered disguised.\n",
+
+"Bronze dragons are inquisitive and fond of humans and demi-humans. They enjoy \n"
+"polymorphing into small, friendly animals so they can unobtrusively observe humans and \n"
+"demi-humans, especially adventurers. Bronze dragons thrive on simple challenges such \n"
+"as riddles and harmless contests. They are fascinated by warfare and will eagerly join \n"
+"an army if the cause is just and the pay is good.\n",
+
+"Copper dragons are incorrigible pranksters, joke tellers, and riddlers. They are prideful\n"
+"and are not good losers, although they are reasonably good winners. They are particularly\n"
+"selfish, and greedy for their alignment, and have an almost neutral outlook where wealth \n"
+"is concerned.\n",
+
+"Brass dragons are great talkers, but not particularly good conversationalists. They are \n"
+"egotistical and often boorish. They oftern have useful information, but will divulge it\n"
+"only after drifting off the subject many times and after hints that a gift would be\n"
+"appreciated.\n",
+
+"Theses undead feed on the blood of the living.  Often they are indistinguishable\n"
+"from humans, and they maintain abilies they possessed in life (Inlucding sometimes\n"
+"spellcasting).  Vampires can only be hit by magical weapons.\n",
+
+"This is perhaps the single most powerful type of undead creature.  A lich is the\n"
+"remains of a powerful magic user who has kept his body animated after death \n"
+"through the use of foul magics.  Liches can use magic as they did while still \n"
+"living, and have other powers similar to greater undead creatures.\n",
+
+"These undead creatues have burning eyes set in mummified features.  They feed\n"
+"on adventures' life essences and can only be hit by silver or magical weapons.\n",
+
+"These creatures are so like ghouls as to be completely indistinguishable from them,\n"
+"and they are usually found only with a pack of ghouls. When a pack of ghouls and \n"
+"ghasts attacks it will quickly become evident that ghasts are present, for they\n"
+"exude a carrion stench in a 10' radius which causes retching and nausea.\n",
+
+"These undead spirits haunt the most desolate and deserted places.  They\n"
+"attack all living creatues with mindless rage, drain life levels, and can \n"
+"only be hit by magical weapons.\n",
+
+"Zombies are mindless, animated undead controlled by evil wizards or clerics.\n"
+"While more dangerous than skeletons, they move very slowly and can be damaged\n"
+"by holy water.\n",
+
+"These undead are one of the weaker types.  Skeletons are animated by evil wizards\n"
+"or clerics and are often used as guardains or warriors.\n",
+
+"Ghouls are undead creatues who feed on the flesh of those who are still living.\n"
+"Their attacks can paralyze all races of characetsrs except elves.\n",
+
+"   A Half breed of human and elf, this race calls no place home and\n"
+"tries to make anywhere s/he stays their home. A Half elf can take on the\n"
+"qualities of either of it human or elvish parents.\n",
+
+"   Half Ogres are huge harry human looking race. They are not very\n"
+"smart nor very quick moving about, however they are strong and healthy.\n",
+
+"   Half human and half orc, this guy looks like a very very ugly human.\n"
+"Not very sure where to live these guys can be very dangerous or very\n"
+"helpful.\n",
+
+"Race of half giant and half human, they look more human than anything\n"
+"and can often be confused as a large human. Half-Giants are known for their\n"
+"high strength and constitution.\n",
+
+"Lizard men are savage reptilian humanoids.  They generally attack in groups.\n",
+
+"   Wide as a barrel and about as tall. This short stalky race builds\n"
+"the best stone houses/tunnels or anything made of stone around. Dwarves are\n"
+"known to have very good constitution, but as also known to be very hard to\n"
+"get along with. If a dwarf does not have a beard a foot long he must be a\n"
+"baby.\n",
+
+"Small cousins of the dwarves, gnomes are friendly but reticent, quick to help\n"
+"their friends but rarely seen by other races unless they want to be. They tend\n"
+"to dwell underground in hilly, wooded regions where they can pursue their \n"
+"interests in peace.\n",
+
+"Gnolls are large, evil, hyena-like humanoids that roam in loosely organized \n"
+"packs.  They attack by overwhelming unwary victims with their numbers.\n",
+
+"   Sharp features such as pointed ears set this race apart from most.\n"
+"They are known to be flightly and not dependable. Elves are also known to be\n"
+"some of the best magicians around, as well as being on of the most\n"
+"dexterous races.\n",
+
+"   Sharp features such as pointed ears set this race apart from most.\n"
+"They are known to be flightly and not dependable. Elves are also known to be\n"
+"some of the best magicians around, as well as being on of the most\n"
+"dexterous races.\n",
+
+"   Sharp features such as pointed ears set this race apart from most.\n"
+"They are known to be flightly and not dependable. Elves are also known to be\n"
+"some of the best magicians around, as well as being on of the most\n"
+"dexterous races.\n",
+
+"   Some would say that these guys look like a dwarf with a very large\n"
+"nose, I would not say that to a dwarf though. Gnomes are known to be very\n"
+"intelligent, but are not wise at all.\n",
+
+"  Avariel are a sub-species of elf, blessed with a pair of feathered\n"
+"wings. These wings are attached between their shoulder blades and range in\n"
+"color from white to black, with most being some shade of tufted grey.\n"
+"These wings are somewhat vulnerable to fire, and as a result Avariel tend\n"
+"to be somewhat paranoid about fire wielding mages and other natural\n"
+"sources of flame.\n",
+
+"These foes look like giant two headed orcs.  They have great strength and \n"
+"can wield two spiked clubs that inflict terrible damage in combat.\n",
+
+"A repulsive creature that appears as part cock, part lizard.  They have the\n"
+"power to turn flesh to stone. \n",
+
+"Large reptilian carnivores with big Teeth!!\n",
+
+"Reptilian monsters whose very gaze can turn to stone any fleshy creature.\n",
+
+"Ferocious predators of a magical nature.  Gargoyles are typically found \n"
+"amid ruins or dwellins in underground caverns.\n",
+
+"Part dark-efl, part spider monster.  This horror is the subterranean \n"
+"counterpart of the centaur.\n",
+
+"Displacer beasts resemble a sixlegged puma with two ebony tentacles growing \n"
+"from behind its shoulders.  These beasts have the magical ability to displace\n"
+"their image about three feet from their actual body, making them especially \n"
+"tricky opponents.\n",
+
+"Half-lion, half-eagle avian carnivores.  Their favorite prey is horses and \n"
+"their distant kin.\n",
+
+"Theses other-planar creatures resemble wolves, but they can breathe fire and \n"
+"detect invisible enemies.\n",
+
+"Immense reptillian monsters with multiple heads.  All of its heads must be \n"
+"severed before a hydra can be slain.  Hydras come in many sizes, with an \n"
+"increasing number of heads as they grow stronger.\n",
+
+"Stony monsters which immune to normal weapons and can attack many times with \n"
+"their sharp claws and spikes.\n",
+
+"Large cold climate relatives of the elephants found in warmer regions.\n",
+
+"These are hideous womencreatures with coilng masses of snakes for hair. \n"
+"They can turn a person to stone with thir gaze.\n",
+
+"These creature are part-man and part-bull warriors.  They are highly intelligent\n"
+"and dangerous opponents.\n",
+
+"Theses are huge omnivorous bats who like nothing better than warm blooded \n"
+"humanoids for dinner.\n",
+
+"These scavengers have long tentacles that they use to scoop trash into their\n"
+"cavernous mouths.\n",
+
+"This is a more powerful form of Otyugh.  These disgusting scavengers have several\n"
+"vicious attacks and a heavily armored body.\n",
+
+"thses are sometimes referred to as polar woarms. They inhabit cold regions and are \n"
+"aggressive predators who have been known to attack even frost giants.\n",
+
+"These enormous carnivores burrow through solid ground in search of small(Man-sized)\n"
+"morsels.\n",
+
+"These are giant, poisonous spiders with the ability to phase in and out of this\n"
+"dimension.  They are 'phased in' until they attack and are 'phased out' afterward.\n",
+
+"An extremely rare creature that is part-lion, and has the upper torso of a woman. \n"
+"Rather than fight, sphinxes will often converse with the adventurers.\n",
+
+"Large, vicous wolves.\n",
+
+"These creatures are distant relativies of dragons.  They attack by biting and using\n"
+"the poisonous sting in their tail.\n",
+
+"These powerful subterranean creatures can use their claws to burrow through solid \n"
+"stone in search of prey.\n",
+
+"These omnivorous garden pest are kind of slimy and attack by biting and can spit a \n"
+"higly corrosive acid.\n",
+
+"Also called landsharks, these are the results of a mad mage's experiment.  They are\n"
+"supid, irascible and always hungry.\n",
+
+"These are giant, segmented creatures whose eight tentacles can attack once apiece \n"
+"each around.  Carrion crawlers paralyze their victims and devour them.\n",
+
+"These creatures are the hybrid offspring of rogue black dragons and basilisk.  \n"
+"Dracolisk combine a dragon's breath attack with the petrifying gaze of a basilisk.\n",
+
+"These evil spirits' keening wail strikes fear into the hearts of men.  They attack \n"
+"with a chilling touch.\n",
+
+"Also called eye tyrants or Spheres of Many Eyes, they are solitary horrors of great\n"
+"power.  Each of the creatures' eyes has a unique magical pwer, and they are armored \n"
+"with tough chitinous skin.\n",
+
+"These are a rare and dangerous form of undead beholder.  They appear as sluggish, \n"
+"wounded beholders, but still possess some of their orignal magical pwoers.\n",
+
+"These are powerful undead dragons whose attacks include a breath weapon and a \n"
+"paralyzing touch.\n",
+
+"These evils spirits ply victims with illusion and false civility, but in reality are\n"
+"cunning fighter/magic-users.\n",
+
+"A creation of Bane.\n",
+
+"Ankhegs are burrowing monsters usually found in forests and farming areas.  They resemble\n"
+"legged worms armed with wicked mandibles and sharply hooked limbs.\n",
+
+"Bugbears are giant, hairy cousins of goblins.  They stand about 7' tall and are powerful\n"
+"warriors.\n",
+
+"Efreet are genies from the elemental plane of fire.  These creatures are immune to all \n"
+"forms of fire but can hit by other magical attacks.\n",
+
+"Harpies are wicked avian humanoids thay prey upon nearly all creatures resembling wolves,\n"
+"but they can breathe fire and can detect invisible enemies.\n",
+
+"Manticores are a strage mix: They have a lions torso and legs, bats wings, a spiked tipped\n"
+"tail and a human head.  They fire voileys of spikes from their tails and have a great \n"
+"appetite for human flesh.\n",
+
+"Scrags, also called river trolls, live in waterways and are related to trolls.They\n"
+"perhaps the most feared of all troll-kind.\n",
+
+"Owlbears are thought to be a hybrid created by some long-forgotten wizard.  They have \n"
+"the body of a large bear, and the head and slashing beak of a giant owl.   Owlbears \n"
+"are vicious, evil tempered, and ravenous.\n",
+
+"Squids are dangerous varieties of the smaller sea creatures.  They are known to attack \n"
+"travelers on the Trackless Sea.\n",
+
+"Tigers are carnivourous predators that are sometimes trained for combat.\n",
+
+"Theses evil undead spirits feed on adventures life essences and, like wights, can\n"
+"only be hit by silver or magical weapons.\n",
+
+"Yetis are large creatures that inhabit ice regions.  Their white fur makes them nearly \n"
+"invisible.  Oftentimes, you cannont spot them until they are within 10 to 30 feet of you.\n"
+};
+
 
 const char *AttackType[]= {
     "Stab",
