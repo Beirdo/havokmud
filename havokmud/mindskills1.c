@@ -697,29 +697,34 @@ void mind_kinolock( byte level, struct char_data *ch, char *arg, int type,
 		send_to_char("Sorry.. this skill can only be used on doors\n", ch);
 		return;
 	} else if ((door = find_door(ch, otype, dir)) >= 0) {
-		if (!IS_SET(EXIT(ch, door)->exit_info, EX_ISDOOR))
+		if (!IS_SET(EXIT(ch, door)->exit_info, EX_ISDOOR)) {
 			send_to_char("That's absurd.\n\r", ch);
-		else if (!IS_SET(EXIT(ch, door)->exit_info, EX_CLOSED))
+		} else if (!IS_SET(EXIT(ch, door)->exit_info, EX_CLOSED)) {
 			send_to_char("You realize that the door is already open.\n\r", ch);
-		else if (EXIT(ch, door)->key < 0)
+		} else if (EXIT(ch, door)->key < 0) {
 			send_to_char("You can't seem to spot any lock to unlock.\n\r", ch);
-		else if (!IS_SET(EXIT(ch, door)->exit_info, EX_LOCKED))
-			if (IS_SET(EXIT(ch, door)->exit_info, EX_PICKPROOF)){
-				send_to_char("You seem to be unable to lock this...\n\r", ch);}
-			else {
-				send_to_char("You engage the lock with your mind.\n\r", ch);
-				act ("You here a click as $n engages the lock with $s mind.",TRUE, ch, 0, 0, TO_ROOM);
-				raw_lock_door(ch, EXIT(ch,door), door);
-			} else if (IS_SET(EXIT(ch, door)->exit_info, EX_PICKPROOF))
-				send_to_char("You seem to be unable to knock this...\n\r", ch);
-			else {
-				if ((EXIT(ch, door)->keyword) && strcmp("secret", fname(EXIT(ch, door)->keyword)))
-					act("$n uses $s mind to open the lock of the $F.", 0, ch, 0, EXIT(ch, door)->keyword, TO_ROOM);
-				else
-					act("$n uses $s mind to open the lock.", TRUE, ch, 0, 0, TO_ROOM);
-				send_to_char("The lock quickly yields to your skills.\n\r", ch);
-				raw_unlock_door(ch, EXIT(ch, door), door);
+		} else if (!IS_SET(EXIT(ch, door)->exit_info, EX_LOCKED)) {
+			if (IS_SET(EXIT(ch, door)->exit_info, EX_PICKPROOF)) {
+				if (!IS_SET(EXIT(ch, door)->exit_info, EX_LOCKED)) {
+					send_to_char("You seem to be unable to lock this...\n\r", ch);
+				} else {
+					send_to_char("You seem to be unable to unlock this...\n\r", ch);
+				}
+			} else {
+				if (!IS_SET(EXIT(ch, door)->exit_info, EX_LOCKED)) {
+					send_to_char("You engage the lock with your mind.\n\r", ch);
+					act ("You here a click as $n engages the lock with $s mind.",TRUE, ch, 0, 0, TO_ROOM);
+					raw_lock_door(ch, EXIT(ch,door), door);
+				} else {
+					if ((EXIT(ch, door)->keyword) && strcmp("secret", fname(EXIT(ch, door)->keyword))) {
+						act("$n uses $s mind to open the lock of the $F.", 0, ch, 0, EXIT(ch, door)->keyword, TO_ROOM);
+					} else {
+						act("$n uses $s mind to open the lock.", TRUE, ch, 0, 0, TO_ROOM);
+					}
+					send_to_char("The lock quickly yields to your skills.\n\r", ch);
+					raw_unlock_door(ch, EXIT(ch, door), door);
+				}
 			}
 		}
 	}
-
+}
