@@ -2811,7 +2811,8 @@ case CON_CHECK_MAGE_TYPE:{
 	}
     if(d->character->term != 0)
        ScreenOff(d->character);
-    SEND_TO_Q(MENU, d);
+    send_to_char(MENU,d->character);
+    
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host))  {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
@@ -2824,8 +2825,8 @@ case CON_CHECK_MAGE_TYPE:{
 
 
   case CON_WMOTD:               /* read CR after printing motd  */
-
-    SEND_TO_Q(MENU, d);
+    send_to_char(MENU,d->character);
+    
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
@@ -3057,9 +3058,10 @@ if ((player_table+i)->name)
       sprintf(buf,"rent/%s.aux",GET_NAME(d->character));
       remove(buf);    //remove rent AUX file
       close_socket(d);
-     }
-      SEND_TO_Q(MENU,d);
-      SEND_TO_Q("Enter:",d);
+   }
+   send_to_char(MENU,d->character);
+   //SEND_TO_Q(MENU,d);
+   
       STATE(d)= CON_SLCT;
      }
     break;
@@ -3211,7 +3213,8 @@ if (d->character->player.description)
 
     default:
       SEND_TO_Q("Wrong option.\n\r", d);
-      SEND_TO_Q(MENU, d);
+      send_to_char(MENU,d->character);
+      
       break;
     }
     break;
@@ -3261,7 +3264,8 @@ if (d->character->player.description)
     SEND_TO_Q(
 	      "\n\rDone. You must enter the game to make the change final\n\r",
 	      d);
-    SEND_TO_Q(MENU, d);
+    send_to_char(MENU,d->character);
+    
     STATE(d) = CON_SLCT;
     break;
 

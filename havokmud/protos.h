@@ -2083,3 +2083,5 @@ int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data 
 
 int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
+/* act.comm.c - used for mobs to tell people stuff */
+void do_mobTell(struct char_data *ch,char *mob, char *sentence);

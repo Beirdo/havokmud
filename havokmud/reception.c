@@ -34,9 +34,9 @@ int     cur_depth=0;
 void add_obj_cost(struct char_data *ch, struct char_data *re,
 		  struct obj_data *obj, struct obj_cost *cost)
 {
-  char buf[MAX_INPUT_LENGTH];
+  char buf[MAX_INPUT_LENGTH], buf2[MAX_INPUT_LENGTH];
   int  temp;
-
+  
   /* Add cost for an item and it's contents, and next->contents */
 
   if (obj) {
@@ -63,7 +63,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
     } else
       if (cost->ok) {
 	if (re) {
-	  act("$n tells you 'I refuse storing $p'",FALSE,re,obj,ch,TO_VICT);
+	  act("$c0013[$c0015$n$c0013] tells you 'I refuse storing $p'",FALSE,re,obj,ch,TO_VICT);
 	  cost->ok = FALSE;
 	} else {
 #if NODUPLICATES
@@ -110,7 +110,8 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
 
   if (cost->no_carried == 0) {
     if (receptionist)
-      act("$n tells you 'But you are not carrying anything?'",FALSE,receptionist,0,ch,TO_VICT);
+      act("$c0013[$c0015$n$c0013] tells you 'But you are not carrying anything?'",FALSE,receptionist,0,ch,TO_VICT);
+    //do_mobTell(ch,receptionist,"What the hell do you want!!");
     return(FALSE);
   }
 
@@ -120,7 +121,7 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist,
   {
     if (receptionist)
     {
-      sprintf(buf,"$n tells you 'Sorry, but I can't store more than %d limited items.",
+      sprintf(buf,"$c0013[$c0015$n$c0013] tells you 'Sorry, but I can't store more than %d limited items.",
 	      MaxLimited(GetMaxLevel(ch)));
       act(buf,FALSE,receptionist,0,ch,TO_VICT);
       return(FALSE);
@@ -186,7 +187,7 @@ if (!receptionist && forcerent) {
 
   if (cost->no_carried > MAX_OBJ_SAVE) {
     if (receptionist) {
-      sprintf(buf,"$n tells you 'Sorry, but I can't store more than %d items.",
+      sprintf(buf,"$c0013[$c0015$n$c0013] tells you 'Sorry, but I can't store more than %d items.",
 	      MAX_OBJ_SAVE);
       act(buf,FALSE,receptionist,0,ch,TO_VICT);
     }
@@ -237,7 +238,7 @@ if (!receptionist && forcerent) {
 
 
 
-    sprintf(buf, "$n tells you 'It will cost you %d coins per day.'",
+    sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'It will cost you %d coins per day.'",
 	    cost->total_cost);
     act(buf,FALSE,receptionist,0,ch,TO_VICT);
 
@@ -245,31 +246,31 @@ if (!receptionist && forcerent) {
 
     if (cost->total_cost <= GET_GOLD(ch))
      {  nbdays=(GET_GOLD(ch)/cost->total_cost)-1;
-        sprintf(buf, "$n tells you 'You have enough money to stay for %d days", nbdays);
+        sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'You can stay for %d days'", nbdays);
         act(buf, FALSE,receptionist, 0, ch,TO_VICT);
      }
 
 if (limited_items <= 5)
-   sprintf(buf, "$n tells you 'You carry %d rare items.'",
+   sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'You carry %d rare items.'",
 	    limited_items); else
 if (limited_items <= 12)
-   sprintf(buf, "$n tells you 'Hum, You carry %d rare items, nice.'",
+   sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'Hum, You carry %d rare items, nice.'",
 	    limited_items); else
 if (limited_items < 18)
-   sprintf(buf, "$n tells you 'You've got %d rare items, great job.'",
+   sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'You've got %d rare items, great job.'",
 	    limited_items);    else
 if (limited_items >= 18)
-   sprintf(buf, "$n tells you 'WOW! You carry %d rare items, super job!'",
+   sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'WOW! You carry %d rare items, super job!'",
 	    limited_items);
 
     act(buf,FALSE,receptionist,0,ch,TO_VICT);
 
     if (cost->total_cost > GET_GOLD(ch)) {
       if (GetMaxLevel(ch) < LOW_IMMORTAL)
-	act("$n tells you 'Which I can see you can't afford'",
+	act("$c0013[$c0015$n$c0013] tells you 'Which I can see you can't afford'",
 	    FALSE,receptionist,0,ch,TO_VICT);
       else if (GetMaxLevel(ch) > LOW_IMMORTAL) {
-	act("$n tells you 'Well, since you're a God, I guess it's okay'",
+	act("$c0013[$c0015$n$c0013] tells you 'Well, since you're a God, I guess it's okay'",
 	    FALSE,receptionist,0,ch,TO_VICT);
 	cost->total_cost = 0;
       }

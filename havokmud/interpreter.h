@@ -1,13 +1,14 @@
 
 #define MENU         \
-"\n\rWelcome to Havok MUD\n\r\n\
-0) Exit from Havok Mud.\n\r\
-1) Enter the game at Karsynia\n\r\
-2) Enter description.\n\r\
-3) Read the background story\n\r\
-4) Change password.\n\r\
-K) Kill this character!\n\r\n\r\
-   Make your choice: "
+"\n\r$c0009Welcome $c0009to '$c0015Havok $c0015MUD$c0009'\n\r\n\
+$c00150) $c0012Exit from Havok Mud.\n\r\
+$c00151) $c0012Enter the game at Karsynia\n\r\
+$c00152) $c0012Enter description.\n\r\
+$c00153) $c0012Read the background story\n\r\
+$c00154) $c0012Change password.\n\r\
+
+$c0015K) $c0012Kill this character!\n\r\n\r\
+   $c0011Make your choice: "
 
 
 #define RACEHELP          \

@@ -24,6 +24,7 @@ extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern int MaxArenaLevel, MinArenaLevel;
 struct char_data *mem_list = 0; /* head for the list of memorizers */
 void stop_follower(struct char_data *ch);
+void do_mobTell(struct char_data *ch,char *mob, char *sentence);
 void do_gain(struct char_data *ch, char *argument, int cmd)
 {
 dlog("in do_gain");
@@ -257,7 +258,12 @@ void do_quit(struct char_data *ch, char *argument, int cmd)
 dlog("in do_quit");
   if (IS_NPC(ch) || !ch->desc || IS_AFFECTED(ch, AFF_CHARM))
     return;
-
+  if (!*argument || strcmp(argument,"now")) {
+    do_mobTell(ch,"A tiny Voice","Psst. You should really rent at an Inn Keeper.");
+    do_mobTell(ch,"A tiny Voice","But if you wanna loose your stuff.. Type 'quit now'");
+   
+    return;
+  }
   if (GET_POS(ch) == POSITION_FIGHTING) {
     send_to_char("No way! You are fighting.\n\r", ch);
     return;
@@ -271,7 +277,8 @@ dlog("in do_quit");
     return;
   }
 
-  act("Goodbye, friend.. Come back soon!", FALSE, ch, 0, 0, TO_CHAR);
+  //act("Goodbye, friend.. Come back soon!", FALSE, ch, 0, 0, TO_CHAR);
+  do_mobTell(ch,"A tiny Voice","Goodbye Friend.. Come Back Soon!");
   act("$n has left the game.", TRUE, ch,0,0,TO_ROOM);
   zero_rent(ch);
   extract_char(ch); /* Char is saved in extract char */

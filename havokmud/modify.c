@@ -144,7 +144,7 @@ void string_add(struct descriptor_data *d, char *str)
 	   }
 	   d->str = 0;
     if (d->connected == CON_EXDSCR)	{
-      SEND_TO_Q(MENU, d);
+      send_to_char(MENU,d->character);
       d->connected = CON_SLCT;
     }
   } else

@@ -1861,7 +1861,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
 
   if (t_desc) {
     t_desc->connected = CON_SLCT;
-    SEND_TO_Q(MENU, t_desc);
+    send_to_char(MENU,t_desc->character);
   }
 }
 

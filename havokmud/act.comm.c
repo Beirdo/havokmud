@@ -338,7 +338,12 @@ dlog("in do_commune,think");
 	act(buf1, 0, ch, 0, i->character, TO_VICT);
   }
 }
-
+void do_mobTell(struct char_data *ch,char *mob, char *sentence) {
+  char buf[256];
+  sprintf(buf,"$c0013[$c0015%s$c0013] tells you '%s'",mob, sentence);
+  
+  act(buf,FALSE, ch,0,0,TO_CHAR);
+}
 
 void do_tell(struct char_data *ch, char *argument, int cmd)
 {
