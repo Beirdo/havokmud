@@ -6586,6 +6586,10 @@ char           *skip_spaces(char *string)
          */
     }
 
+    if( !*string ) {
+        return( NULL );
+    }
+
     return (string);
 }
 

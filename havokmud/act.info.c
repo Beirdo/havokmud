@@ -2765,7 +2765,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
     argument = skip_spaces(argument);
 
-    if (*argument) {
+    if (argument && *argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);
             return;

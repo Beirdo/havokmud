@@ -2529,10 +2529,10 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
          */
         if (!IS_PC(victim)) {
             if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
-                do_get(ch, "all.coin corpse", -1);
+                command_interpreter(ch, "get all.coin corpse");
             }
             if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
-                do_get(ch, "all corpse", -1);
+                command_interpreter(ch, "get all corpse");
             }
         }
         victim = 0;

@@ -1630,7 +1630,12 @@ char *get_argument_common(char *line_in, char **arg_out, int do_fill,
             *arg_out = NULL;
             return( NULL );
         }
+
         line = skip_spaces( line );
+        if( !line ) {
+            *arg_out = NULL;
+            return( NULL );
+        }
         
         if( delim && *line == delim ) {
             /* Found a delimiter, skip past it, then match the other one rather
