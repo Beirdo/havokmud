@@ -2562,23 +2562,23 @@ void do_group(struct char_data *ch, char *argument, int cmd)
             /*
              * victim stronger??
              */
-#if 0
+
             if ((GetMaxLevel(victim) - GetMaxLevel(ch)) > 8) {
                 act("$N looks to be too strong to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
                 return;
             }
-#endif
+
             /*
              * your stronger??
              */
-#if 0
+
             if ((GetMaxLevel(ch) - GetMaxLevel(victim)) > 8) {
                 act("$N looks to be too puny and week to join you.",
                         FALSE, ch, 0, victim, TO_CHAR);
                 return;
             }
-#endif
+
             if (IS_IMMORTAL(ch) && !IS_IMMORTAL(victim)) {
                 /*
                  * Do not let imms group mortals
