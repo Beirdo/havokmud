@@ -4563,9 +4563,9 @@ int IsDarkOutside(struct room_data *rp)
 
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
-if ((IS_OBJ_STAT(obj_object,ITEM_GLOW))  || (IS_OBJ_STAT(obj_object,ITEM_HUM)) ||
+if ((ITEM_TYPE(obj_object) != ITEM_KEY) && ((IS_OBJ_STAT(obj_object,ITEM_GLOW))  || (IS_OBJ_STAT(obj_object,ITEM_HUM)) ||
    (IS_OBJ_STAT(obj_object,ITEM_MAGIC)) ||
-   (IS_OBJ_STAT(obj_object,ITEM_NODROP)) )
+   (IS_OBJ_STAT(obj_object,ITEM_NODROP))))
     return(TRUE); else
     return(FALSE);
 }
@@ -4576,7 +4576,7 @@ int CheckGetBarbarianOK(struct char_data *ch,struct obj_data *obj_object)
  if (GET_LEVEL(ch,BARBARIAN_LEVEL_IND) !=0 &&
        (anti_barbarian_stuff(obj_object)) && (GetMaxLevel(ch)<LOW_IMMORTAL)  )
        {
-	act("$n you sense magic on $p and drop it.",FALSE,ch,obj_object,0,TO_CHAR);
+	act("You sense magic on $p and drop it.",FALSE,ch,obj_object,0,TO_CHAR);
         act("$n shakes $s head and refuses to take $p.", FALSE, ch, obj_object, 0, TO_ROOM);
         return(FALSE);
        }
