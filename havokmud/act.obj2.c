@@ -1331,15 +1331,18 @@ dlog("in do_remove");
       for (j=0;j<MAX_WEAR;j++) {
         if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
           if (ch->equipment[j]) {
-            if ((obj_object = unequip_char(ch,j))!=NULL) {
-              obj_to_char(obj_object, ch);
+            if (!IS_OBJ_STAT(ch->equipment[j],ITEM_NODROP)){
+              if ((obj_object = unequip_char(ch,j))!=NULL) {
+                obj_to_char(obj_object, ch);
+					act("You stop using $p.",FALSE,ch,obj_object,0,TO_CHAR);
+					if (obj_object->obj_flags.type_flag == ITEM_LIGHT)
+						if (obj_object->obj_flags.value[2])
+							real_roomp(ch->in_room)->light--;
 
-              act("You stop using $p.",FALSE,ch,obj_object,0,TO_CHAR);
-              if (obj_object->obj_flags.type_flag == ITEM_LIGHT)
-                if (obj_object->obj_flags.value[2])
-                  real_roomp(ch->in_room)->light--;
-
-            }
+			   }
+			}else{
+				act("You can't let go of $p, it must be CURSED!", FALSE, ch, ch->equipment[j], 0, TO_CHAR);
+			}
           }
         } else {
           send_to_char("You can't carry any more stuff.\n\r",ch);
