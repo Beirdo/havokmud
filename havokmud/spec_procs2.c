@@ -3575,17 +3575,20 @@ struct breath_victim *choose_victims(struct char_data *ch,
       temp->yesno = 1;
     } else if (ch == cons) {
       temp->yesno = 0;
+      /* Start Change Jan 22, 2004 Odin
+	 Changed percentages of dragon breath damage to parties involved */
     } else if ((in_group(first_victim, cons) ||
 		cons == first_victim->master ||
 		cons->master == first_victim) &&
-	       (temp->yesno = (3 != dice(1,5))) ) {
-      /* group members will get hit 4/5 times */
+	       (temp->yesno = (dice(1,5)<3)) ) {
+      /* group members will get hit 2/5 times */
     } else if (cons->specials.fighting == ch) {
       /* people fighting the dragon get hit 4/5 times */
       temp->yesno = (3 != dice(1,5));
-    } else /* bystanders get his 2/5 times */
-      temp->yesno = (dice(1,5)<3);
+    } else /* bystanders get his 3/5 times */
+      temp->yesno = (dice(1,5)<4);
   }
+  /* End Change Jan 22, 2004 Odin */
   return head;
 }
 
