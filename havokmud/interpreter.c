@@ -1706,7 +1706,7 @@ void show_menu(struct descriptor_data *d) {
 			,RaceName[GET_RACE(d->character)],"]", classes);
 	strcat(bufx, buf);
 	strcat(bufx, "-=|                                        |==>0////O\n\r");
-	if(!GET_CON(d->character))
+	if(!GET_CON(d->character) || GET_CON(d->character)==0)
 		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]                         |   *\n\r");
 	 else
 		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]                         |   *\n\r");
@@ -1771,6 +1771,7 @@ void nanny(struct descriptor_data *d, char *arg)
  			return;
       	    break;
  		 case '4':
+ 		 	GET_CON(d->character)=0;
       	    send_to_char("class",d->character);
  			SEND_TO_Q("\n\rSelect your class now.\n\r",d);
 			show_class_selection(d,GET_RACE(d->character));
@@ -1780,12 +1781,14 @@ void nanny(struct descriptor_data *d, char *arg)
  			return;
       	    break;
       	  case '5':
+ 			if (d->character->player.class !=0) {
 			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
 	     	SEND_TO_Q("Seperated y spaces.. don't duplicate\n\r", d);
             SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
             SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
             SEND_TO_Q("Your choices? ",d);
       	    STATE(d) = CON_STAT_LIST;
+			} else SEND_TO_Q("\nPlease select a class first.\n\r",d);
       	    return;
       	    break;
       	  case 'd':
@@ -1806,7 +1809,7 @@ void nanny(struct descriptor_data *d, char *arg)
 				return;
 				break;
 			}
-			if(!GET_CON(d->character)) {
+			if(!GET_CON(d->character) || GET_CON(d->character)==0) {
 				SEND_TO_Q("Please pick your stats.",d);
 				return;
 				break;
@@ -2341,7 +2344,7 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
   d->character->reroll--;
 
  if (*arg!='r' &&  *arg!='R'){
-    SEND_TO_Q("Stats chosen!", d);
+    SEND_TO_Q("Stats chosen!\n\r", d);
 
     STATE(d)= CON_RMOTD;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
