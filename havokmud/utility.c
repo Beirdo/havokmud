@@ -3255,7 +3255,7 @@ void traveling_qp(int pulse)
 					if(!IS_NPC(ch)) {
 				//		ch->player.q_points++;
 						send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
-						if(qt = read_object(27, VIRTUAL)) {
+						if(qt = read_object(QUEST_POTION, VIRTUAL)) {
 							obj_to_char(qt, ch);
 						}
 						log("carried by player, gained a QT");

@@ -1346,7 +1346,6 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *
 	return(FALSE);
 }
 
-#define QUEST_POTION 52868
 int qp_potion(struct char_data *ch, int cmd, char *arg)
 {
 	char buf[254], buffer[254];

@@ -385,6 +385,7 @@ struct QuestItem {
 #define TRAVELQP     26 // vnum
 #define EMPTY_POTION 29
 #define EMPTY_SCROLL 32
+#define QUEST_POTION 27
 
 struct nodes
 {
