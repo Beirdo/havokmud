@@ -38,6 +38,10 @@
 #define CHANGE_SAFFECT5_MOD 31 
 
 #define CHANGE_S2AFFECT1_MOD 32
+#define CHANGE_S2AFFECT2_MOD 33
+#define CHANGE_S2AFFECT3_MOD 34
+#define CHANGE_S2AFFECT4_MOD 35
+#define CHANGE_S2AFFECT5_MOD 36
 
 #define ENTER_CHECK        1
 
@@ -372,6 +376,10 @@ case CHANGE_SAFFECT5_MOD:
 	 ChangeObjSAffect(ch, arg, 0);
 	 return;
 case CHANGE_S2AFFECT1_MOD:
+case CHANGE_S2AFFECT2_MOD:
+case CHANGE_S2AFFECT3_MOD:
+case CHANGE_S2AFFECT4_MOD:
+case CHANGE_S2AFFECT5_MOD:
 	ChangeObjS2Affect(ch, arg, 0);
 	return; 
  default: log("Got to bad spot in ObjEdit");
@@ -1322,6 +1330,14 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
    switch(ch->specials.oedit) {
         case CHANGE_S2AFFECT1_MOD: affect = 1;
                                   break;
+	case CHANGE_S2AFFECT2_MOD: affect = 2;
+				  break;
+	case CHANGE_S2AFFECT3_MOD: affect = 3;
+				  break;
+	case CHANGE_S2AFFECT4_MOD: affect = 4;
+				  break;
+	case CHANGE_S2AFFECT5_MOD: affect = 5;
+				  break;
         default: break;
   }
    
@@ -1337,6 +1353,18 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
         case CHANGE_AFFECT1_MOD: ch->specials.oedit=CHANGE_S2AFFECT1_MOD;
         			affect=1;
                                 break;
+	case CHANGE_AFFECT2_MOD: ch->specials.oedit=CHANGE_S2AFFECT2_MOD;
+				affect=2;
+				break;
+	case CHANGE_AFFECT3_MOD: ch->specials.oedit=CHANGE_S2AFFECT3_MOD;
+				affect=3;
+				break;
+	case CHANGE_AFFECT4_MOD: ch->specials.oedit=CHANGE_S2AFFECT4_MOD;
+				affect=4;
+				break;
+	case CHANGE_AFFECT5_MOD: ch->specials.oedit=CHANGE_S2AFFECT5_MOD;
+				affect=5;
+				break;
   } }
     
  
