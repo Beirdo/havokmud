@@ -2567,38 +2567,34 @@ char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
 }
 
 
-char *PrintTitle(struct char_data *person,int type) {
-	char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
-
+char *PrintTitle(struct char_data *person,char type) {
+	static char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
+ 	extern char *RaceName[];
 		switch(type) {
-			case 0:
-				return GET_TITLE(person);
-
-
-		case 1: {
-		    sprinttype((person->race),RaceName, buffer);
+		case 'r': {
+		    sprintf(buffer,"%s %s", GET_NAME(person), RaceName[GET_RACE(person)] );
 		 	return buffer;
 		}
-		case 2:
+		case 'i':
 		  sprintf(buffer,"%s Idle:[%-3d] ",GET_NAME(person),person->specials.timer);
 		  return buffer;
 
-		case 3:
+		case 'l':
 		  sprintf(buffer,"%s Level:[%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d] ", GET_NAME(person),
 			person->player.level[0],person->player.level[1],
 			person->player.level[2],person->player.level[3],
 			person->player.level[4],person->player.level[5],
 			person->player.level[6],person->player.level[7],
 			person->player.level[8],person->player.level[9],
-			person->player.level[10]);
+			person->player.level[10],person->player.level[11]);
 		  	return buffer;
 
-		case 4:
+		case 'h':
 		  sprintf(buffer,"%s Hit:[%d/%-3d] Mana:[%d/%-3d] Move:[%d/%-3d]", GET_NAME(person)
 		  	,GET_HIT(person),GET_MAX_HIT(person),GET_MANA(person),GET_MAX_MANA(person),GET_MOVE(person),GET_MAX_MOVE(person));
 		  return buffer;
 
-		case 5:
+		case 's':
 		  if (GET_STR(person) != 18)
 		    sprintf(buffer,"%s [S:%-2d I:%-2d W:%-2d C:%-2d D:%-2d CH:%-2d] ", GET_NAME(person),
 		       GET_STR(person),GET_INT(person),GET_WIS(person),
@@ -2610,10 +2606,10 @@ char *PrintTitle(struct char_data *person,int type) {
 		       GET_CHR(person));
 		  return buffer;
 
-		case 6:
-		  sprintf(buffer," %s %-16s ", GET_NAME(person),(person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
+		case 't':
+		  sprintf(buffer,"%s ", (person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
 		  return buffer;
-		case 7:
+		case 'v':
 		   sprintf (buffer, "%s [I:%d]", GET_NAME(person),person->invis_level);
 		   return buffer;
 
@@ -2621,85 +2617,6 @@ char *PrintTitle(struct char_data *person,int type) {
 			return GET_TITLE(person);
 
 	}
-
-
-/*
-
-case 'r': {
-		    char bbuf[256];
-		  sprinttype((person->race),RaceName,ttbuf);
-		  sprintf(bbuf," [%s] ",ttbuf);
-		  strcat(tbuf,bbuf);
-		  break;
-		}
-		case 'i':
-		  sprintf(ttbuf,"Idle:[%-3d] ",person->specials.timer);
-		  strcat(tbuf,ttbuf);
-		  break;
-		case 'l':
-		  sprintf(ttbuf,"Level:[%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d/%-2d] ",
-			person->player.level[0],person->player.level[1],
-			person->player.level[2],person->player.level[3],
-			person->player.level[4],person->player.level[5],
-			person->player.level[6],person->player.level[7],
-			person->player.level[8],person->player.level[9],
-			person->player.level[10]);
-		  strcat(tbuf,ttbuf);
-		  break;
-		case 'h':
-		  sprintf(ttbuf,"Hit:[%d/%-3d] Mana:[%d/%-3d] Move:[%d/%-3d]",GET_HIT(person),GET_MAX_HIT(person),GET_MANA(person),GET_MAX_MANA(person),GET_MOVE(person),GET_MAX_MOVE(person));
-		  strcat(tbuf,ttbuf);
-		  break;
-		case 's':
-		  if (GET_STR(person) != 18)
-		    sprintf(ttbuf,"[S:%-2d I:%-2d W:%-2d C:%-2d D:%-2d CH:%-2d] ",
-		       GET_STR(person),GET_INT(person),GET_WIS(person),
-		       GET_CON(person),GET_DEX(person),GET_CHR(person));
-		  else
-		    sprintf(ttbuf,"[S:%-2d(%1d) I:%-2d W:%-2d C:%-2d D:%-2d CH:%-2d] ",
-		       GET_STR(person),GET_ADD(person),GET_INT(person),
-		       GET_WIS(person),GET_CON(person),GET_DEX(person),
-		       GET_CHR(person));
-		  strcat(tbuf,ttbuf);
-		  break;
-		case 't':
-		  sprintf(ttbuf," %-16s ",(person->player.title?person->player.title:GET_NAME(person)));//"(null)"));
-		  strcat(tbuf,ttbuf);
-		  break;
-		case 'v':
-		   sprintf (ttbuf, "[I:%d]", person->invis_level);
-		   strcat(tbuf,ttbuf);
-		   break;
-
-if (index(flags,'g') != NULL)
-	  if (!IS_IMMORTAL(person)) skip = TRUE;
-	if (index(flags,'o') != NULL)
-	  if (IS_IMMORTAL(person)) skip = TRUE;
-	if (index(flags,'1') != NULL)
-	  if (!HasClass(person,CLASS_MAGIC_USER)) skip = TRUE;
-	if (index(flags,'2') != NULL)
-	  if (!HasClass(person,CLASS_CLERIC)) skip = TRUE;
-	if (index(flags,'3') != NULL)
-	  if (!HasClass(person,CLASS_WARRIOR)) skip = TRUE;
-	if (index(flags,'4') != NULL)
-	  if (!HasClass(person,CLASS_THIEF)) skip = TRUE;
-	if (index(flags,'5') != NULL)
-	  if (!HasClass(person,CLASS_DRUID)) skip = TRUE;
-	if (index(flags,'6') != NULL)
-	  if (!HasClass(person,CLASS_MONK)) skip = TRUE;
-	if (index(flags,'7') != NULL)
-	  if (!HasClass(person,CLASS_BARBARIAN)) skip = TRUE;
-	if (index(flags,'8') != NULL)
-	  if (!HasClass(person,CLASS_SORCERER)) skip = TRUE;
-	if (index(flags,'9') != NULL)
-	  if (!HasClass(person,CLASS_PALADIN)) skip = TRUE;
-	if (index(flags,'!') != NULL)
-	  if (!HasClass(person,CLASS_RANGER)) skip = TRUE;
-	if (index(flags,'@') != NULL)
-	  if (!HasClass(person,CLASS_PSI)) skip = TRUE;
-*/
-
-
 }
 
 
@@ -2715,7 +2632,7 @@ if (index(flags,'g') != NULL)
 
 	char title[512];
 	int display=0;
-	int type;
+	char type;
 
   char color[10];
   char color_cnt=1;
@@ -2766,12 +2683,12 @@ if (index(flags,'g') != NULL)
 
 argument = one_argument(argument,tbuf);
 	if(tbuf[0]=='-' && tbuf[1]!='\0')
-		type=checkflags(tbuf);
+		type=tbuf[1];
 	else
-		type=0;
+		type='t';
 
 
-	ch_printf(ch," ARGUMENTS: %d",type);
+	//ch_printf(ch," ARGUMENTS: %c",type);
 
 	//Loops through all players in descriptor
 	for (d = descriptor_list; d; d = d->next) {
@@ -2812,10 +2729,16 @@ argument = one_argument(argument,tbuf);
 					}
 
 		  		}
+
+		  	/* Split off into the different groups */
 			if(IS_IMMORTAL(person)) {
 				sprintf(buf,"%15s $c000Y%-8s $c000p:$c000w %s %s\n\r",""
 					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
-				strcat(immortals, buf);
+
+				if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals*/
+					strcat(quest, buf);
+				else
+					strcat(immortals, buf);
 			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
 
 				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s %s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
@@ -2848,9 +2771,6 @@ argument = one_argument(argument,tbuf);
     ch_printf(ch, "%sPlayers online since last reboot: $c0015%ld\n\r",color, total_max_players);
 }
 #else
-
-
-
 void do_who(struct char_data *ch, char *argument, int cmd)
 {
   struct zone_data    *zd;
