@@ -1545,6 +1545,8 @@ struct txt_q
 #define CON_ALREADY_PLAYING 31
 #define CON_ANSI            32
 #define CON_CREATION_MENU   33
+#define CON_ALIGNMENT       34
+
 struct snoop_data
 {
 	struct char_data *snooping;

@@ -1730,8 +1730,7 @@ void show_menu(struct descriptor_data *d) {
 	strcat(bufx, buf);
 	strcat(bufx, "-=|                                        |==>0////O\n\r");
 	if(!GET_CON(d->character) || GET_CON(d->character)==0)
-		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]
-       |   *\n\r");
+		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]       |   *\n\r");
 	 else
 		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]
        |   *\n\r");
@@ -1742,7 +1741,8 @@ O\n\r");
 	strcat(bufx, "   \\_/____________________________________/\n\r");
 	strcat(bufx, "Please pick the number you'd like to change:\n\r");
 #else
-sprintf(bufx,"$c0009-=$c0015Havok Character Creaton Menu %s$c0009=-\n\r\n\r",GET_NAME(d->character));
+
+sprintf(bufx,"$c0009-=$c0015Havok Character Creation Menu [%s]$c0009=-\n\r\n\r",GET_NAME(d->character));
 
 sprintf(buf,"$c00151) $c0012Gender.[$c0015%s$c0012]\n\r",Sex[GET_SEX(d->character)]);
 strcat(bufx, buf);
@@ -1757,9 +1757,12 @@ sprintf(buf,"$c00154) $c0012Class.[$c0015%s$c0012]\n\r",classes);
 strcat(bufx, buf);
 
 if(!GET_CON(d->character) || GET_CON(d->character)==0)
-	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015None Picked$c0012]\n\r\n\r");
+	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015None Picked$c0012]\n\r");
  else
-	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015Done$c0012]\n\r\n\r");
+	strcat(bufx,"$c00155) $c0012Character Stats.[$c0015Done$c0012]\n\r");
+
+sprintf(buf,"$c00156) $c0012Alignment.[$c000W%s$c000B]\n\r\n\r", (GET_ALIGNMENT(d->character)?AlignDesc(GET_ALIGNMENT(d->character)):"None"));
+strcat(bufx, buf);
 
 
 strcat(bufx,"$c0015D) $c0012Done!\n\r\n\r");
@@ -1826,6 +1829,7 @@ void nanny(struct descriptor_data *d, char *arg)
 			return;
       	    break;
 		 case '4':
+		 	GET_ALIGNMENT(d->character)=0;
 		 	GET_CON(d->character)=0;
       	    send_to_char("class",d->character);
 			SEND_TO_Q("\n\rSelect your class now.\n\r",d);
@@ -1847,6 +1851,35 @@ void nanny(struct descriptor_data *d, char *arg)
 			} else SEND_TO_Q("\nPlease select a class first.\n\r",d);
       	    return;
       	    break;
+		case '6':
+
+			sprintf(bufx,"Your alignment is an indication of how well or badly you have morally\n\r"
+					"conducted yourself in the game. It ranges numerically, from -1000\n\r"
+					"(Chaotic Evil) to 1000 (Lawful Good), 0 being neutral. Generally, if you kill\n\r"
+					"'Good' mobs, you will gravitate towards Evil, and vice-versa. Some spells\n\r"
+					"and skills also affect your alignment. ie Backstab makes you evil, and\n\r"
+					"the spell heal makes you good\n\r");
+			send_to_char(bufx,d->character);
+
+
+
+			if(HasClass(d->character,CLASS_PALADIN))
+				sprintf(bufx,"Please select your alignment (Good)");
+			else
+				if (HasClass(d->character, CLASS_DRUID))
+					sprintf(bufx,"Please select your alignment (Neutral)");
+				else
+					if (HasClass(d->character, CLASS_RANGER))
+						sprintf(bufx,"Please select your alignment (Good/Neutral)");
+					else
+						sprintf(bufx,"Please select your alignment (Good/Neutral/Evil)");
+
+			send_to_char(bufx,d->character);
+       	    STATE(d) = CON_ALIGNMENT;
+
+      	    return;
+      	    break;
+
       	  case 'd':
       	  case 'D':
 			count_players=0;
@@ -1862,6 +1895,11 @@ void nanny(struct descriptor_data *d, char *arg)
 			}
 			if(GET_SEX(d->character)==0){
 				SEND_TO_Q("Please enter a proper sex.",d);
+				return;
+				break;
+			}
+			if(!GET_ALIGNMENT(d->character)){
+				SEND_TO_Q("Please choose an alignment.",d);
 				return;
 				break;
 			}
@@ -1899,6 +1937,52 @@ d->host);
 	 // 	return;
 
 	//break;
+	case CON_ALIGNMENT:
+	for (; isspace(*arg); arg++);
+	    switch (*arg)
+	      {
+			case 'n':
+		    case 'N':
+		    	if(!HasClass(d->character, CLASS_PALADIN)) {
+			  	GET_ALIGNMENT(d->character)=1;
+			  	send_to_char("You have choosen to be Neutral in alignment.\n\r\n\r",d->character);
+			  	STATE(d) = CON_CREATION_MENU;
+			  	show_menu(d);
+			  	return;
+				break;
+			}
+	      case 'g':
+	      case 'G':
+		/* Set ansi */
+
+		   if(!HasClass(d->character,CLASS_DRUID)) {
+			GET_ALIGNMENT(d->character)=1000;
+			send_to_char("You have choosen to be a follower of light.\n\r\n\r",d->character);
+			show_menu(d);
+			STATE(d) = CON_CREATION_MENU;
+			return;
+			break;
+			}
+	      case 'e':
+	      case 'E':
+
+			if(!HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
+				GET_ALIGNMENT(d->character)=-1000;
+				send_to_char("You have choosen the dark side.\n\r\n\r",d->character);
+				STATE(d) = CON_CREATION_MENU;
+				show_menu(d);
+				return;
+				break;
+			}
+
+
+	      default:
+		SEND_TO_Q("Please select a alignment.\n\r", d);
+
+		return;
+		break;
+	  }
+
     case CON_ANSI:
 
 		//temp
@@ -2290,9 +2374,9 @@ the\n\r",d);
       } else {
         write(d->descriptor, echo_on, 6);
 
-        //SEND_TO_Q("Would you like to have ansi colors? ",d);
-        show_menu(d);
-        STATE(d) = CON_CREATION_MENU;
+        SEND_TO_Q("Would you like to have ansi colors? ",d);
+        //show_menu(d);
+        STATE(d) = CON_ANSI;//CON_CREATION_MENU;
 
         }
       break;
