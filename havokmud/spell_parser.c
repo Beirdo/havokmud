@@ -768,6 +768,11 @@ char *spells[]=
    "aura of power",     /*295 */
    "brew",
    "charge",
+   "standard",
+   "berserked",
+   "aggressive",
+   "defensive",
+   "evasive",
    "\n"
 };
 

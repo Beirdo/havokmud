@@ -337,7 +337,11 @@ struct char_data *tmp,tch;
       act("$n seems calm down!", FALSE, ch,0,0,TO_ROOM);
       act("You calm down.", FALSE,ch, 0, 0, TO_CHAR);
      }
-
+	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK))    {
+      REMOVE_BIT(ch->specials.affected_by2,AFF2_STYLE_BERSERK);
+      act("$n seems calm down!", FALSE, ch,0,0,TO_ROOM);
+      act("You calm down.", FALSE,ch, 0, 0, TO_CHAR);
+     }
 
   if (ch == combat_next_dude)
     combat_next_dude = ch->next_fighting;
@@ -778,6 +782,11 @@ if((IS_MOB(ch)) && (!IS_SET(ch->specials.act,ACT_POLYSELF))&&(mob_index[ch->nr].
   if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK))  {
     REMOVE_BIT(ch->specials.affected_by2,AFF2_BERSERK);
     }
+
+  if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK))  {
+	REMOVE_BIT(ch->specials.affected_by2,AFF2_STYLE_BERSERK);
+  }
+
 
   /*
    *   return them from polymorph
@@ -1694,7 +1703,9 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
     if (dam > (max_hit/5)) {
       act("That Really $c0010HURT!$c0007",FALSE, v, 0, 0, TO_CHAR);
     }
-    if (GET_HIT(v) < (max_hit/5) && GET_HIT(v) > 0) {
+    if (GET_HIT(v) < (max_hit/(v->style==FIGHTING_STYLE_EVASIVE ? 3:5)) && GET_HIT(v) > 0) {
+
+      if(GET_HIT(v) < (max_hit/5))
       act("You wish that your wounds would stop $c0010BLEEDING$c0007 so much!",
 	  FALSE,v,0,0,TO_CHAR);
 
@@ -2170,12 +2181,18 @@ if (ch->specials.fighting) {
 int HitOrMiss(struct char_data *ch, struct char_data *victim, int calc_thaco)
 {
   int diceroll, victim_ac;
-
+	int temp=0;
   extern struct dex_app_type dex_app[];
 
   diceroll = number(1,20);
 
-  victim_ac  = GET_AC(victim)/10;
+if(victim->style==FIGHTING_STYLE_BERSERKED || victim->style==FIGHTING_STYLE_AGGRESSIVE) {
+	victim_ac=(GET_AC(victim) + 20)/10;
+} else if(victim->style==FIGHTING_STYLE_EVASIVE || victim->style==FIGHTING_STYLE_DEFENSIVE) {
+	victim_ac=(GET_AC(victim) - 20)/10;
+} else {
+	victim_ac=(GET_AC(victim))/10;
+}
 
   if (!AWAKE(victim))
     victim_ac -= dex_app[GET_DEX(victim)].defensive;
@@ -2229,31 +2246,8 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
     } else {
       if (wielded->obj_flags.value[2] > 0)
       {
-#if 0
-	if (wielded->obj_flags.value[0] == 2)
-	{
 
- /* I do not know why they wanted to do this...  */
- /* halves the dam dice on a value[0] ==2, which */
- /* should be blank by what the docs say...	 */
- /* I disabled it msw 				 */
-
-	  if (GET_HEIGHT(v) < 250)
-	  {
-	    dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]/2);
-	    send_to_char("Your weapon seems to be less effective against non-giant-sized opponents\n\r", ch);
-	  }/* height */ else
-	  {
-	    dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
-	  } /* ! height */
-	} /* not v[0] = 2 */
-	else
-	{
-	  dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
-	}
-#else
         dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
-#endif
 
       }  /* !v[2]>0 */ else
       {
@@ -2307,6 +2301,13 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
     /* Position  stunned  x 2.33 */
     /* Position  incap    x 2.66 */
     /* Position  mortally x 3.00 */
+
+
+	if(ch->style==FIGHTING_STYLE_AGGRESSIVE)
+		dam = dam*1.20;
+
+	if(ch->style==FIGHTING_STYLE_DEFENSIVE)
+		dam = dam - dam*0.20;
 
     if (GET_POS(v) <= POSITION_DEAD)
       return(0);
@@ -2382,8 +2383,8 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 */
 
       if (v->skills && v->skills[SKILL_DODGE].learned) {
-	if (number(1,101) <= v->skills[SKILL_DODGE].learned) {
-	  dam -= number(1,3);
+	if (number(1,101) <= (v->style==FIGHTING_STYLE_DEFENSIVE ? v->skills[SKILL_DODGE].learned * 1.25 : v->skills[SKILL_DODGE].learned)) {
+	  dam -= number(1,(v->style==FIGHTING_STYLE_DEFENSIVE ? 5:3));
 	  if (HasClass(v, CLASS_MONK)) {
 	    MonkDodge(ch, v, &dam);
 	  }
@@ -2519,6 +2520,19 @@ void perform_violence(int pulse)
 
                x = ch->mult_att;
 
+
+
+
+
+
+
+               if(ch->style==FIGHTING_STYLE_BERSERKED && !IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
+				   	act("$n turns red and suddently becomes raged with anger!",TRUE,ch,0,0,TO_ROOM);
+			   		send_to_char("You feel your rage overcome you!!\n\r",ch);
+			   		SET_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
+			   }
+
+
                /* if dude is a monk, and is wielding something */
 
                if (HasClass(ch, CLASS_MONK) && !IS_IMMORTAL(ch))
@@ -2568,9 +2582,12 @@ void perform_violence(int pulse)
                }
 
 				if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK)) {
-					x += 0.50;
+					x += 0.75;
 				}
 
+				if (IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
+					x += 0.50;
+				}
 				/*autoassist?*/
 					if(ch) {
 				    	if(IS_AFFECTED(ch, AFF_GROUP)&&IS_PC(ch)) {
@@ -2590,6 +2607,16 @@ void perform_violence(int pulse)
 						}
 					}
 
+
+
+
+				if(ch->style==FIGHTING_STYLE_EVASIVE) {
+
+					//ch_printf(ch,"Number attacks before=%d\n\r",x);
+					x=x-x*0.30;
+					//ch_printf(ch,"Number of attacks after=%d\n\r",x);
+
+				}
 				//sprintf(temp,"\n\rNumatks:%.2f\n\r",x);
 				//send_to_char(temp,ch);
                while(x > 0.999)
@@ -4219,7 +4246,14 @@ int GetFormType(struct char_data *ch)
 
 int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 {
-  if (number(1, 20000) < v->skills[SKILL_DODGE].learned*
+	int x=0;
+  if(v->style==FIGHTING_STYLE_DEFENSIVE){
+
+	  x = v->skills[SKILL_DODGE].learned*1.5;
+
+   }
+
+  if (number(1, 20000) < (x==0 ? v->skills[SKILL_DODGE].learned : x)*
                          GET_LEVEL(v , MONK_LEVEL_IND)) {
     *dam = 0;
     act("You dodge the attack", FALSE, ch, 0, v, TO_VICT);

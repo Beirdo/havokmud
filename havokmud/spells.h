@@ -351,8 +351,15 @@
 #define SPELL_AURA_POWER         295
 #define SKILL_LEG_SWEEP          296
 #define SKILL_CHARGE             297
-#define MAX_EXIST_SPELL         297   /* max number of skills/spells */
 
+/* Fighting styles */
+#define STYLE_STANDARD   298
+#define STYLE_BERSERKED  299
+#define STYLE_AGGRESSIVE 300
+#define STYLE_DEFENSIVE  301
+#define STYLE_EVASIVE    302
+
+#define MAX_EXIST_SPELL         302   /* max number of skills/spells */
 
 #define FIRST_BREATH_WEAPON	     306 /*	201 */
 #define SPELL_FIRE_BREATH            306 /*	201 */
@@ -391,9 +398,11 @@
 #define TYPE_BLAST                   324
 #define TYPE_RANGE_WEAPON	     325
 
+
+
 	/* This one needs to be after all real damage skills, might wanna */
 	/* alter messages if you move it */
-#define TYPE_SUFFERING               326
+#define TYPE_SUFFERING               330
                                    /* MAX is MAX_SKILLS = 350 */
 
 /* More anything but spells and weapontypes can be insterted here! */

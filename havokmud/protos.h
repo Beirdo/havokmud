@@ -498,6 +498,10 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 		    int attacktype);
 void specdamage (struct char_data *ch, struct char_data*victim);
 
+
+
+void do_style(struct char_data *ch, char *argument, int cmd);
+
 /* msw changed */
 void make_corpse(struct char_data *ch, int killedbytype);
 void raw_kill(struct char_data *ch,int killedbytype);
@@ -2171,7 +2175,7 @@ void do_flag_status(struct char_data *ch,char *argument,int cmd);
 /*Spec_procs.c*/
 int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
+int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 /*Spec_procs3*/
 int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

@@ -80,7 +80,7 @@ extern long SystemFlags;
   extern const char *month_name[];
   extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
   extern char *RaceNames[];
-
+  extern const char *fight_styles[];
 
 
 /* extern functions */
@@ -2189,6 +2189,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
 	char buff[50];
   struct time_info_data real_time_passed(time_t t2, time_t t1);
 
+
 dlog("in do_score");
 
   age2(ch, &my_age);
@@ -2435,6 +2436,8 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
    sprintf(buf, "$c0015You are on the ground in spite of your fly item.$c0005\n\r");
 	send_to_char(buf,ch);
    }
+	ch->skills[STYLE_STANDARD].learned = 95;
+	ch_printf(ch,"$c000pYou are currently fighting $c000W%s$c000p.\n\r", fight_styles[ch->style]);
 
   sprintf(buf,"$c0005You have $c0015%d $c0005practice sessions remaining.\n\r",
 	      ch->specials.spells_to_learn);
@@ -2450,32 +2453,31 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
   case POSITION_STUNNED :
     send_to_char("$c0011You are stunned! You can't move", ch); break;
   case POSITION_SLEEPING :
-    send_to_char("$c0010You are sleeping.",ch); break;
+    send_to_char("$c0010You are $c000Wsleeping.",ch); break;
   case POSITION_RESTING  :
-    send_to_char("$c0012You are resting.",ch); break;
+    send_to_char("$c0012You are $c000Wresting.",ch); break;
   case POSITION_SITTING  :
-    send_to_char("$c0013You are sitting.",ch); break;
+    send_to_char("$c0013You are $c000Wsitting.",ch); break;
   case POSITION_FIGHTING :
     if (ch->specials.fighting)
-      act("$c1009You are fighting $N.", FALSE, ch, 0,
-	  ch->specials.fighting, TO_CHAR);//<---------------ACT
+      act("$c1009You are fighting $N.", FALSE, ch, 0, ch->specials.fighting, TO_CHAR);//<---------------ACT
     else
       send_to_char("$c1009You are fighting thin air.\n\r",ch);
     break;
   case POSITION_STANDING :
-    send_to_char("$c0005You are standing.",ch); break;
+    send_to_char("$c0005You are $c000Wstanding.",ch); break;
   case POSITION_MOUNTED:
     if (MOUNTED(ch)) {
 	sprintf(buf,"$c0005You are riding on $c0015%s\n\r",MOUNTED(ch)->player.short_descr);
 	send_to_char(buf,ch);
     } else {
-      send_to_char("$c0005You are standing.\n\r",ch);break;
+      send_to_char("$c0005You are $c000Wstanding.\n\r",ch);break;
     }
     break;
     default :
-      send_to_char("$c0005You are floating.\n\r",ch); break;
+      send_to_char("$c0005You are $c000Wfloating.\n\r",ch); break;
   }
-
+	//send_to_char("\n\r\n\r$c000pType '$c000Wpinfo$c000p' to see list of current character flags.",ch);
 }
 
 
@@ -3883,7 +3885,7 @@ void do_resistances(struct char_data *ch, char *argument, int cmd) {
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
 
 	send_to_char("\n\r$c0005Current resistances:\n\r--------------\n\r",ch);
-	for(x=1;x<=BV17;x=x*2) {
+	for(x=1;x<=BV13;x=x*2) {
 
 	  if(IS_IMMUNE(ch,x))
 	    	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);

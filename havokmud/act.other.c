@@ -2530,34 +2530,37 @@ dlog("in do_set_afk");
 }
 void do_flag_status(struct char_data *ch,char *argument,int cmd) {
   send_to_char("Flag Status: \n\r",ch);
+/*
+	ch_printf("AFK [%s]     ANSI [%s]\n\r"
+		,(IS_AFFECTED2(ch,AFF2_AFK) ? "X" : " "),(IS_SET(ch->player.user_flags, USE_ANSI) ? "X":" ") );
 
-  if(IS_AFFECTED2(ch,AFF2_AFK))
-    send_to_char("AFK [X]         ",ch);
-  else
-    send_to_char("AFK [ ]         ",ch);
+	ch_printf("%15s [%s]     %15s [%s]\n\r"
+		,"Wimpy",(IS_SET(ch->specials.act, PLR_WIMPY) ? "X" : " "),
+		 "Zone Sounds",(IS_SET(ch->specials.act, ZONE_SOUNDS) ? "X":" ") );
 
-  if(IS_SET(ch->player.user_flags, USE_ANSI))
-    send_to_char("ANSI [x] \n\r",ch);
-  else
-    send_to_char("ANSI [ ] \n\r",ch);
 
-  if (IS_SET(ch->specials.act, PLR_WIMPY))
-    send_to_char("Wimpy [x]       ",ch);
-  else
-    send_to_char("Wimpy [ ]       ",ch);
-  if (IS_SET(ch->specials.act, ZONE_SOUNDS))
-    send_to_char("Zone Sounds [x]\n\r",ch);
-  else
-    send_to_char("Zone Sounds [ ]\n\r",ch);
+	ch_printf("%15s [%s]     %15s [%s]\n\r"
+		,"Cloaked",(IS_SET(ch->specials.act, CLOAKED) ? "X" : " "),
+		 "Private",(IS_SET(ch->specials.act, CHAR_PRIVATE) ? "X":" ") );
 
- if (IS_SET(ch->specials.act, CLOAKED))
-    send_to_char("Cloaked [x]       ",ch);
-  else
-    send_to_char("Cloaked [ ]       ",ch);
-  if (IS_SET(ch->specials.act, CHAR_PRIVATE))
-    send_to_char("Private [x]\n\r",ch);
-  else
-    send_to_char("Private [ ]\n\r",ch);
+
+	send_to_char("Auto settings.",ch);
+
+	ch_printf("%15s [%s]     %15s [%s]\n\r"
+		,"Auto Assist",(IS_SET(ch->specials.act, PLR_AUTOASSIST) ? "X" : " "),
+		 "Auto Split",(IS_SET(ch->specials.act, PLR_AUTOSPLIT) ? "X":" ") );
+
+	ch_printf("%15s [%s]     %15s [%s]\n\r"
+		,"Auto Exit",(IS_SET(ch->specials.act, PLR_AUTOEXIT) ? "X" : " "),
+		 "Auto Loot",(IS_SET(ch->specials.act, PLR_AUTOLOOT) ? "X":" ") );
+
+
+	ch_printf("%15s [%s]     %15s [%s]\n\r"
+		,"Auto Gold",(IS_SET(ch->specials.act, PLR_AUTOGOLD) ? "X" : " "),
+		 "Auto Sac",(IS_SET(ch->specials.act, PLR_AUTOSAC) ? "X":" ") );
+
+*/
+
 }
 
 

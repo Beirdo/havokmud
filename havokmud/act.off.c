@@ -22,7 +22,7 @@ extern char *att_kick_kill_room[];
 extern char *att_kick_kill_victim[];
 extern  char *att_kick_kill_ch[];
 extern struct char_data *character_list;
-
+extern const char *fight_styles[];
 
 void do_hit(struct char_data *ch, char *argument, int cmd)
 
@@ -399,7 +399,7 @@ if (GET_POS(ch) < POSITION_SLEEPING) {
 	 return;
 	}
 
-  if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK)) {
+  if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK) || IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK) ) {
     send_to_char("You can think of nothing but the battle!\n\r",ch);
     return;
   }
@@ -2155,3 +2155,46 @@ dlog("in do_throw");
         }
 }
 
+/**
+  * @description - Function for the 'style' command.  Lets users pick there fighting style.
+  * @date - December 18,2002
+  * @author - Greg Hovey (Banon)
+  */
+
+void do_style(struct char_data *ch, char *argument, int cmd) {
+	char style[128], temp[128];
+	int x;
+	int found=0;
+  	only_argument(argument, style);
+
+	if(!*style) { /* If no style, list all styles and how good*/
+		send_to_char("$c000pYou currently know the following fighting styles.\n\r",ch);
+		for(x=0;x<5;x++) {
+			if(ch->skills[x+298].learned!=0) {
+				ch_printf(ch,"$c000W%s $c000C%10s : $c000W%s.\n\r",ch->style==x ? "->": "  ", fight_styles[x], how_good(ch->skills[x+298].learned));
+				found=1;
+			}
+		}
+		if(found==0)
+			send_to_char("  $c000CNone.\n\r",ch);
+
+		send_to_char("$c000pTo choose a fighting style, type '$c000Wstyle <style name>$c000w'\n\r\n\r",ch);
+		//ch_printf(ch,"$c000BYou are currently fighting $c000W%s.",fight_styles[ch->style]);
+		return;
+	}
+
+	for(x=0;x<5;x++) {
+		if((isname(style,fight_styles[x])) && ch->skills[x+298].learned > 0) {
+			ch_printf(ch,"You change your stance and adopt %s %s style of fighting.\n\r", style[0]=='A'|| style[0]=='E' ? "an": "a", fight_styles[x]);
+			sprintf(temp,"$n changes $s stance and adopts %s %s style of fighting.",style[0]=='A' || style[0]=='E' ? "an": "a", fight_styles[x]);
+			act(temp,TRUE,ch,0,0,TO_ROOM);
+			ch->style = x;
+			found=1;
+		}
+
+	}
+
+	if(found==0) {
+		send_to_char("You don't seem to know that fighting style. \n\r",ch);
+	}
+}

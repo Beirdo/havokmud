@@ -226,6 +226,10 @@ struct QuestItem {
 #define CHAR_PRIVATE   BV18//262144
 #define CLAN_LEADER    BV19
 #define NEW_USER       BV20
+
+
+
+
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */
@@ -327,6 +331,19 @@ struct QuestItem {
 #define PULSE_MAILCHECK 	240
 #define PULSE_ADVICE       200
 #define MAX_ROOMS   5000
+
+
+
+
+
+/* FIghting styles!!! */
+#define FIGHTING_STYLE_STANDARD   0
+#define FIGHTING_STYLE_BERSERKED  1
+#define FIGHTING_STYLE_AGGRESSIVE 2
+#define FIGHTING_STYLE_DEFENSIVE  3
+#define FIGHTING_STYLE_EVASIVE    4
+
+
 
 struct nodes
 {
@@ -858,7 +875,7 @@ struct room_data
 #define AFF2_HASTE             BV09//0x00000200
 #define AFF2_SLOW			   BV10//0x00000400
 #define AFF2_BLADE_BARRIER     BV11//0x00000800
-
+#define AFF2_STYLE_BERSERK     BV12
 
 
 /* Flag spells as brewable or single class */
@@ -1359,7 +1376,7 @@ struct char_data
 	char last_tell[80];          /* Who last telled something to
 	                                         the char */
         int old_exp;                  /* For energe restore -MW */
-
+	int style;  					/* Fighting Style!!!*/
 
 };
 

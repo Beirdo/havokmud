@@ -95,6 +95,8 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #define SANA(obj) (index("aeiouyAEIOUY", *(obj)->name) ? "an" : "a")
 
+
+
 #define IS_NPC(ch)  (IS_SET((ch)->specials.act, ACT_ISNPC))
 
 #define IS_MOB(ch)  (IS_SET((ch)->specials.act, ACT_ISNPC) && ((ch)->nr >-1))

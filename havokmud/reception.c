@@ -51,7 +51,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
 		 else
 		 	temp=0;
 
-         if(!IS_RARE(obj))      /* Let's not charge for normal items */
+         if(!IS_RARE(obj) || obj->obj_flags.cost_per_day < 10000)      /* Let's not charge for normal items */
             temp=0;
 
          cost->total_cost += temp;

@@ -1377,7 +1377,7 @@ void assign_mobiles()
 {33185, board_ship },   /* note.. Not sure which corsair does waht */
 {32034, CorsairPush },
 {33188, Tyrannosaurus_swallower },
-
+ {23200, FightingGuildMaster },
 
 #endif
 

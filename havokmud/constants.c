@@ -3122,6 +3122,17 @@ const char *position_types[] = {
 	"\n"
 };
 
+const char *fight_styles[] = {
+	"Standard",
+	"Berserked",
+	"Aggressive",
+	"Defensive",
+	"Evasive",
+	"\n"
+
+};
+
+
 const char *connected_types[]	=	{
 	"Playing",
 	"Get name",
@@ -5034,3 +5045,12 @@ const struct affect_list oedit_list[] = {
   {"Invis to Animals", AFF2_ANIMAL_INVIS, 2}
 };
 
+
+
+const struct skillset styleskillset[] = {
+  { "standard",          STYLE_STANDARD,          1},
+  { "berserked",         STYLE_BERSERKED,        1},
+  { "aggressive",        STYLE_AGGRESSIVE,             1},
+  { "defensive",         STYLE_DEFENSIVE,         1},
+  { "evasive",           STYLE_EVASIVE,      1}
+};

@@ -2034,7 +2034,6 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
       bc += strlen(obj->modBy);
     }
 
-
     /* *** numeric data *** */
 
     fscanf(f, " %d ", &tmp);
@@ -2058,6 +2057,8 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
     fscanf(f, " %d \n", &tmp);
     obj->obj_flags.cost_per_day = tmp;
 	/*New fields (GH)*/
+
+
     fscanf(f, " %d \n", &tmp);
     obj->level = tmp;
     fscanf(f, " %d \n", &tmp);
@@ -2304,10 +2305,10 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
 
  	if(IS_WEAPON(obj)) {
 		fprintf(f,"%d %d %d %d %d %ld 25 0\n", obj->obj_flags.weight, \
-			obj->obj_flags.cost, obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+			obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
 	} else {
 		fprintf(f,"%d %d %d %d %d %ld 0 0\n", obj->obj_flags.weight, \
-		obj->obj_flags.cost, obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+		obj->obj_flags.cost, obj->obj_flags.cost_per_day==-1?-1:obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
 	}
 
 
@@ -3226,6 +3227,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.charging=0;
 	ch->specials.auction=0;
 	ch->specials.minbid=0;
+	ch->style=0;
 	       /* new stuff added 1-26-95 msw */
 	       /* need to malloc the space for the pc struct */
     ch->pc = (void*)malloc(sizeof(struct pc_data));
@@ -3834,6 +3836,11 @@ void reset_char(struct char_data *ch)
   if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK)){
       REMOVE_BIT(ch->specials.affected_by2,AFF2_BERSERK);
       }
+
+	if (IS_SET(ch->specials.affected_by2,AFF2_STYLE_BERSERK)){
+	      REMOVE_BIT(ch->specials.affected_by2,AFF2_STYLE_BERSERK);
+	}
+
 /*
    Clear out MAILING flags case there was a crash
 */

@@ -19,6 +19,7 @@
 
 /*   external vars  */
 extern struct skillset bardskills[];
+extern struct skillset styleskillset[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
@@ -7083,6 +7084,98 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 
 
 
+
+
+
+int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+  int count = 0;
+  char buf[256];
+  static int percent = 0;
+  static int x; //for loop..
+  struct char_data *guildmaster;
+  static int MAXSSKILLS = 5;
+  struct string_block sb;
+  //skill             level..
+
+#if 1
+  if(!AWAKE(ch) || IS_NPC(ch))
+    return(FALSE);
+  //170->Practice,164->Practise, 243->gain
+  if (cmd==164 || cmd == 170 ) {
+
+
+    if(!*arg && (cmd == 170 || cmd == 164)) {
+      init_string_block(&sb);
+      sprintf(buf,"You have got %d practice sessions left.\n\r",
+	      ch->specials.spells_to_learn);
+      //send_to_char(buf,ch);
+      append_to_string_block(&sb,buf);
+      //practice,Practise
+      append_to_string_block(&sb,"You can practice any of these spells.\n\r");
+	for(x = 0; x < MAXSSKILLS;x++) {  //practice
+	  if(1) {
+
+	    count++;
+	    //if(count%25 == 0)
+
+	    sprintf(buf,"%-20s:%-15s   Level: %-15d\n\r"
+		    ,styleskillset[x].name,
+		    how_good(ch->skills[styleskillset[x].skillnum].learned),
+		    styleskillset[x].level);
+	    /* Display New Spell.. not done..
+	      if(spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
+	      sprintf(buf,"%s [New Spell] \n\r",buf);
+	      else
+	      sprintf(buf,"%s \n\r",buf);
+	    */
+
+	    append_to_string_block(&sb,buf);
+	  }
+	}
+	page_string_block(&sb,ch);
+	destroy_string_block(&sb);
+	return(TRUE);
+
+    } else {
+      for (x = 0;x < MAXSSKILLS;x++) {
+	if(is_abbrev(arg,styleskillset[x].name)){  //!str_cmp(arg,n_skills[x])){
+
+	  if(ch->skills[styleskillset[x].skillnum].learned > 45) {
+	    //check if skill already practised
+	    send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+			 " 'You must learn from experience and practice to get"
+			 " any better at that skill.\n\r",ch);
+	    return(TRUE);
+	  }
+	  if(ch->specials.spells_to_learn <2){
+	    send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+			 " 'You don't have enough practice points.'\n\r",ch);
+	    return(TRUE);
+	  }
+
+	  sprintf(buf,"You practice %s for a while.\n\r",styleskillset[x].name);
+	  send_to_char(buf,ch);
+	  ch->specials.spells_to_learn = ch->specials.spells_to_learn-2;
+
+	  if(!IS_SET(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN)) {
+	    SET_BIT(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN);
+	    SET_BIT(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN_BARD);
+	  }
+	 percent=ch->skills[styleskillset[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+	  ch->skills[styleskillset[x].skillnum].learned = MIN(95,percent);
+	  if(ch->skills[styleskillset[x].skillnum].learned >= 95)
+	    send_to_char("'You are now a master of this art.'\n\r",ch);
+	  return(TRUE);
+	}
+      }
+      send_to_char("$c0013[$c0015Darkthorn$c0013] tells you '"
+		   "I do not know of that skill!'",ch);
+      return(TRUE);
+    }
+  }
+#endif
+  return (FALSE);
+}
 
 
 

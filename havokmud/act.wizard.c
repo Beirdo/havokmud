@@ -3353,7 +3353,7 @@ dlog("in do_start");
     obj_to_char(obj,ch);                        /* water   */
   }
 
-
+ch->skills[STYLE_STANDARD].learned = 95;
 if (HasClass(ch,
  CLASS_CLERIC|CLASS_MAGIC_USER|CLASS_SORCERER|CLASS_PSI|
  CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID))
