@@ -5581,6 +5581,164 @@ void init_char(struct char_data *ch)
     /*
      * make favors for sex
      */
+#if 1    
+    if (GET_RACE(ch) == RACE_HUMAN) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 140 + dice(6,10);
+            ch->player.height = 152 + dice(5,10);
+            /* Between 5.2 and 6.6 feet tall (5.9 avg) */
+        } else {
+            ch->player.weight = 100 + dice(6,10);
+            ch->player.height = 150 + dice(5,10);
+            /* Between 5.1 and 6.5 feet tall (5.8 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_AVARIEL) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 70 + dice(3,10);
+            ch->player.height = 130 + dice(1,25);
+            /* Between 4.3 and 5 feet tall (4.7 avg) */
+        } else {
+            ch->player.weight = 60 + dice(3,10);
+            ch->player.height = 120 + dice(1,25);
+            /* Between 4 and 4.8 feet tall (4.4 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_DWARF ||
+               GET_RACE(ch) == RACE_DARK_DWARF) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 130 + dice(4,10);
+            ch->player.height = 110 + dice(1,25);
+            /* Between 3.6 and 4.4 feet tall (4 avg) */
+        } else {
+            ch->player.weight = 105 + dice(4,10);
+            ch->player.height = 104 + dice(1,25);
+            /* Between 3.4 and 4.2 feet tall (3.8 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_FOREST_GNOME ||
+               GET_RACE(ch) == RACE_ROCK_GNOME) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 72 + dice(5,4);
+            ch->player.height = 96 + dice(1,13);
+            /* Between 3.2 and 3.6 feet tall (3.4 avg) */
+        } else {
+            ch->player.weight = 68 + dice(5,4);
+            ch->player.height = 91 + dice(1,13);
+            /* Between 3 and 3.4 feet tall (3.2 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_GOBLIN) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 48 + dice(2,4);
+            ch->player.height = 81 + dice(2,20);
+            /* Between 2.7 and 4 feet tall (3.3 avg) */
+        } else {
+            ch->player.weight = 43 + dice(2,4);
+            ch->player.height = 76 + dice(2,20);
+            /* Between 2.5 and 3.8 feet tall (3.2 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_HALFLING) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 52 + dice(5,4);
+            ch->player.height = 81 + dice(2,20);
+            /* Between 2.7 and 4 feet tall (3.3 avg) */
+        } else {
+            ch->player.weight = 48 + dice(5,4);
+            ch->player.height = 76 + dice(2,20);
+            /* Between 2.5 and 3.8 feet tall (3.2 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_MOON_ELF ||
+               GET_RACE(ch) == RACE_DROW ||
+               GET_RACE(ch) == RACE_GOLD_ELF ||
+               GET_RACE(ch) == RACE_SEA_ELF) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 90 + dice(3,10);
+            ch->player.height = 140 + dice(1,25);
+            /* Between 4.6 and  5.4 feet tall (5.0 avg) */
+        } else {
+            ch->player.weight = 70 + dice(3,10);
+            ch->player.height = 120 + dice(1,25);
+            /* Between 4 and  4.8 feet tall (4.4 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_WILD_ELF) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 95 + dice(3,10);
+            ch->player.height = 145 + dice(1,25);
+            /* Between 4.8 and  5.6 feet tall (5.2 avg) */
+        } else {
+            ch->player.weight = 75 + dice(3,10);
+            ch->player.height = 120 + dice(1,25);
+            /* Between 4 and  4.8 feet tall (4.4 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_HALF_ELF) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 110 + dice(3,10);
+            ch->player.height = 152 + dice(2,20);
+            /* Between 5 and 6.3 feet tall (5.7 avg) */
+        } else {
+            ch->player.weight = 90 + dice(3,10);
+            ch->player.height = 147 + dice(2,20);
+            /* Between 4.9 and 6.1 feet tall (5.5 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_HALF_OGRE) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 300 + dice(5,20);
+            ch->player.height = 213 + dice(2,30);
+            /* Between 7 and 9 feet tall (8 avg) */
+        } else {
+            ch->player.weight = 250 + dice(5,20);
+            ch->player.height = 200 + dice(2,30);
+            /* Between 6.5 and 8.5 feet tall (7.6 avg */
+        }
+    } else if (GET_RACE(ch) == RACE_HALF_ORC) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 260 + dice(2,20);
+            ch->player.height = 211 + dice(2,16);
+            /* Between 7 and 8 feet tall (7.5 avg) */
+        } else {
+            ch->player.weight = 240 + dice(2,20);
+            ch->player.height = 207 + dice(2,16);
+            /* Between 6.9 and 7.8 feet tall (7.3 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_HALF_GIANT) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 800 + dice(4,100);
+            ch->player.height = 304 + dice(1,100);
+            /* Between 10 and 13 feet tall (11.6 avg) */
+        } else {
+            ch->player.weight = 800 + dice(3,100);
+            ch->player.height = 304 + dice(1,66);
+            /* Between 10 and 12 feet tall (11.1 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_ORC) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 220 + dice(3,10);
+            ch->player.height = 213 + dice(1,30);
+            /* Between 7 and 8 feet tall (7.5 avg) */
+        } else {
+            ch->player.weight = 200 + dice(3,10);
+            ch->player.height = 198 + dice(1,30);
+            /* Between 6.5 and 7.5 feet tall (7 avg) */
+        }
+    } else if (GET_RACE(ch) == RACE_TROLL) {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 220 + dice(6,10);
+            ch->player.height = 213 + dice(2,26);
+            /* Between 7 and 8.7 feet tall (7.9 avg) */
+        } else {
+            ch->player.weight = 200 + dice(6,10);
+            ch->player.height = 200 + dice(2,26);
+            /* Between 6.5 and 8.25 feet tall (7.4 avg) */
+        }
+    } else {
+        if (ch->player.sex == SEX_MALE) {
+            ch->player.weight = 120 + dice(1,60);
+            ch->player.height = 152 + dice(1,30);
+            /* Between 5 and 6 feet tall (5.5 avg) */
+        } else {
+            ch->player.weight = 120 + dice(1,60);
+            ch->player.height = 152 + dice(1,30);
+            /* Between 5 and 6 feet tall (5.5 avg) */
+        }
+    }
+#else    
     if (GET_RACE(ch) == RACE_HUMAN) {
         if (ch->player.sex == SEX_MALE) {
             ch->player.weight = number(120, 180);
@@ -5661,7 +5819,7 @@ void init_char(struct char_data *ch)
             ch->player.height = number(150, 180);
         }
     }
-
+#endif
     ch->points.mana = GET_MAX_MANA(ch);
     ch->points.hit = GET_MAX_HIT(ch);
     ch->points.move = GET_MAX_MOVE(ch);

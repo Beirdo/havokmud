@@ -2198,7 +2198,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
                     BurnWings(ch);
                 }
                 lev = GetMaxLevel(v);
-                dam = dice(1, 6) + (lev / 2);
+                dam = dice(3, 8);
                 if (damage(v, ch, dam, SPELL_FIRESHIELD) &&
                     GET_POS(ch) == POSITION_DEAD) {
                     return (TRUE);
@@ -2207,7 +2207,7 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
             if (IS_AFFECTED(v, AFF_CHILLSHIELD) &&
                 !IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
                 lev = GetMaxLevel(v);
-                dam = dice(1, 6) + (lev / 2);
+                dam = dice(3, 8);
                 if (damage(v, ch, dam, SPELL_CHILLSHIELD) &&
                     GET_POS(ch) == POSITION_DEAD) {
                     return (TRUE);
@@ -3240,19 +3240,10 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
         return;
     }
 
-    /*
-     * let's see if this works
-     */
     if (IS_AFFECTED(victim, AFF_BLADE_BARRIER) &&
         !IS_AFFECTED(ch, AFF_BLADE_BARRIER)) {
-        /*
-         * 8d8, half for save, on a successful hit
-         */
         if (HitOrMiss(victim, ch, CalcThaco(victim))) {
-            dam = dice(8, 8);
-            if (saves_spell(ch, SAVING_SPELL)) {
-                dam >>= 1;
-            }
+            dam = dice(3, 8);
             if (damage(victim, ch, dam, SPELL_BLADE_BARRIER) &&
                 GET_POS(ch) == POSITION_DEAD) {
                 return;
@@ -4933,10 +4924,12 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
 {
     int             num = 0;
 
-    if (dam_type == FIRESHIELD) {
+    if (dam_type == FIRESHIELD || dam_type == CHILLSHIELD ||
+        dam_type == BLADE_BARRIER) {
         /*
-         * fireshield should scrap less -Lennya 20030322
+         * shields should scrap less -Lennya
          */
+        Log("In fs, cs, bb, item saves");
         if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
             while (!ItemSave(i, dam_type)) {
                 /*
@@ -4951,22 +4944,23 @@ int DamagedByAttack(struct obj_data *i, int dam_type)
                 }
             }
             return (num);
-        } else if (ItemSave(i, dam_type)) {
-            return (0);
-        } else if (ItemSave(i, dam_type)) {
-            /*
-             * let's give it another chance to save
-             */
-            return (0);
-        } else if (ItemSave(i, dam_type)) {
         /*
-         * last chance to save
+         * fireshield gets multiple chances to save
+         * then scraps (-1) if fails them all
          */
+        } else if (ItemSave(i, dam_type)) {
+            Log("save 1");
+            return (0);
+        } else if (ItemSave(i, dam_type)) {
+            Log("save 2");
+            return (0);
+        } else if (ItemSave(i, dam_type)) {
+            Log("save 3");
+            return (0);
+        } else if (ItemSave(i, dam_type)) {
+            Log("save 4");
             return (0);
         } else {
-            /*
-             * failed three saves, scrap it
-             */
             return (-1);
         }
     } else if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {

@@ -398,6 +398,39 @@ void mind_use_sense_object(int level, struct char_data *ch, char *arg,
     }
 }
 
+void mind_use_wall_of_thought(int level, struct char_data *ch, char *arg,
+                              int type, struct char_data *tar_ch,
+                              struct obj_data *tar_obj)
+{
+    switch(type) {
+    case SPELL_TYPE_SPELL:
+        if (affected_by_spell(ch, SKILL_WALL_OF_THOUGHT)) {
+            send_to_char("Nothing seems to happen.\n\r", ch);
+            return;
+        } else {
+            mind_wall_of_thought(level, ch, ch, 0);
+            break;
+        }
+    case SPELL_TYPE_POTION:
+        if (affected_by_spell(ch, SKILL_WALL_OF_THOUGHT)) {
+            return;
+        } else {
+            mind_wall_of_thought(level, ch, ch, 0);
+            break;
+        }
+    case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:    
+        if (tar_obj || affected_by_spell(ch, SKILL_WALL_OF_THOUGHT)) {
+            return;
+        } else {
+            mind_wall_of_thought(level, ch, ch, 0);
+            break;
+        }
+    default:
+        Log("Serious screwup in wall_of_thought!");
+        break;
+    }
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

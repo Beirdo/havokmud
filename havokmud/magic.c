@@ -439,9 +439,11 @@ void spell_earthquake(int level, struct char_data *ch,
 void spell_dispel_evil(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    int             dam = 1;
-
+    int             dam;
+    
     assert(ch && victim);
+    dam = dice(5,10);
+    
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
@@ -2361,9 +2363,9 @@ void spell_prismatic_spray(int level, struct char_data *ch,
      * orange 2 80
      * yellow 3 100
      * green 4 poison
-     * blue 5 petrify
+     * blue 5 lightning
      * indigo 6 feeble
-     * violet 7 teleport
+     * violet 7 petrify
      */
 
     send_to_char
@@ -2435,7 +2437,7 @@ void spell_prismatic_spray(int level, struct char_data *ch,
                         ch, 0, tmp_victim, TO_CHAR);
                     act("$n hits you with a blue shaft of light!", FALSE,
                         ch, 0, tmp_victim, TO_VICT);
-                    cast_paralyze(level, ch, "", SPELL_TYPE_SPELL,
+                    cast_lightning_bolt(level, ch, "", SPELL_TYPE_SPELL,
                                   tmp_victim, NULL);
                     break;
                 case 6:
@@ -2455,7 +2457,7 @@ void spell_prismatic_spray(int level, struct char_data *ch,
                         ch, 0, tmp_victim, TO_CHAR);
                     act("$n hits you with a violet shaft of light!", FALSE,
                         ch, 0, tmp_victim, TO_VICT);
-                    cast_teleport(level, ch, "", SPELL_TYPE_SPELL,
+                    cast_paralyze(level, ch, "", SPELL_TYPE_SPELL,
                                   tmp_victim, NULL);
                     break;
                 default:

@@ -430,7 +430,7 @@
 /*
  * PSI Spells 
  */
-#define SPELL_WALL_OF_THOUGHT        339
+#define SKILL_WALL_OF_THOUGHT        339
 #define SKILL_MIND_TAP               340
 
 #define SPELL_BLADE_BARRIER          341

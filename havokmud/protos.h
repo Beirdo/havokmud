@@ -3370,10 +3370,10 @@ void            do_chat(struct char_data *ch, char *argument, int cmd);
 void            do_qchat(struct char_data *ch, char *argument, int cmd);
 void            do_clanlist(struct char_data *ch, char *arg, int cmd);
 
-void            spell_wall_of_thought(int level, struct char_data *ch,
+void            mind_wall_of_thought(int level, struct char_data *ch,
                                       struct char_data *victim,
                                       struct obj_data *obj);
-void            cast_wall_of_thought(int level, struct char_data *ch,
+void            mind_use_wall_of_thought(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);
