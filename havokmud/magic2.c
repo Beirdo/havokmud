@@ -1740,7 +1740,7 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	send_to_char("You don't feel so in touch with trees anymore.\n\r",
 		     victim);
    }
-   if (affected_by_spell(victim, SPELL_HEAT_STUFF)) {
+   if (affected_by2(victim, SPELL_HEAT_STUFF)) {
 	affect_from_char(victim,SPELL_HEAT_STUFF);
 	send_to_char("You don't feel so hot anymore\n\r",
 		     victim);

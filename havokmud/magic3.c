@@ -2039,7 +2039,8 @@ void spell_heat_stuff(byte level, struct char_data *ch,
 
   assert(victim);
 
-  if (affected_by_spell(victim, SPELL_HEAT_STUFF)) {
+if (IS_SET(victim->specials.affected_by2,AFF2_HEAT_STUFF)) { // let's see if this helps.. Lennya Jan04
+//  if (affected_by2(victim, SPELL_HEAT_STUFF)) {
     send_to_char("Already affected\n\r", ch);
     return;
   }
