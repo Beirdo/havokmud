@@ -131,7 +131,7 @@ int mana_limit(struct char_data *ch)
   }
   if (HasClass(ch, CLASS_NECROMANCER)) {
     max += 100;
-    max += (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)/3) * 5;
+    max += (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)/2) * 5;
   }
 
 
@@ -632,7 +632,7 @@ void advance_level(struct char_data *ch, int class)
 
   case NECROMANCER_LEVEL_IND:
   	if (GET_LEVEL(ch,  NECROMANCER_LEVEL_IND) < 15)
-		add_hp += number(2,13);
+		add_hp += number(2,12);
 	else
 	    add_hp += 3;
 	break;
@@ -791,6 +791,22 @@ void drop_level(struct char_data *ch, int class, int goddrain)
       add_hp += 8;
 }   break;
 
+ case CLASS_BARD : {
+    lin_class = BARD_LEVEL_IND;
+    if (GET_LEVEL(ch, BARD_LEVEL_IND) < 15)
+      add_hp += number(2,14);
+    else
+      add_hp += 8;
+}   break;
+
+  case CLASS_NECROMANCER : {
+    lin_class = NECROMANCER_LEVEL_IND;
+    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) < 15)
+      add_hp += number(2,14);
+    else
+      add_hp += 8;
+}   break;
+
   } /*end switch */
 
 
@@ -826,6 +842,10 @@ void drop_level(struct char_data *ch, int class, int goddrain)
     add_hp = MAX(add_hp, 4);
   if (class = CLASS_DRUID)
     add_hp = MAX(add_hp, 5);
+  if (class = CLASS_BARD)
+    add_hp = MAX(add_hp, 4);
+  if (class = CLASS_NECROMANCER)
+    add_hp = MAX(add_hp, 4);
 
 
   add_hp /= HowManyClasses(ch);
@@ -1294,9 +1314,25 @@ int i;
       if (GET_LEVEL(ch, DRUID_LEVEL_IND) >= 32) {
 	SET_BIT(ch->M_immune, IMM_POISON);
       }
-    }
-
   }
+		if (HasClass(ch, CLASS_NECROMANCER)) {
+			if (GET_ALIGNMENT(ch) < 350) {
+      			SET_BIT(ch->specials.affected_by2,AFF2_DETECT_GOOD);
+			}
+			if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) >= 15) {
+				SET_BIT(ch->immune, IMM_DRAIN);
+			}
+			if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) >= 23) {
+				SET_BIT(ch->immune, IMM_POISON);
+			}
+			if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) >= 35) {
+				SET_BIT(ch->M_immune, IMM_POISON);
+			}
+			if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) >= 41) {
+				SET_BIT(ch->M_immune, IMM_DRAIN);
+			}
+		}
+	}
 }
 
 

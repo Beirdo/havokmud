@@ -115,22 +115,23 @@ char *how_good(int percent)
 
 int GainLevel(struct char_data *ch, int class)
 {
-
-  if (GET_EXP(ch)>=
-     titles[class][GET_LEVEL(ch, class)+1].exp) {
-     if (GET_LEVEL(ch, class) < RacialMax[GET_RACE(ch)][class]) {
-
-       send_to_char("You raise a level!\n\r", ch);
-       advance_level(ch, class);
-       set_title(ch);
-       return(TRUE);
-     }  else {
-       send_to_char("You are unable to advance further in this class\n\r", ch);
-     }
-  } else {
-     send_to_char("You haven't got enough experience!\n\r",ch);
-  }
-  return(FALSE);
+	if (GET_EXP(ch)>= titles[class][GET_LEVEL(ch, class)+1].exp) {
+		if (GET_LEVEL(ch, class) < RacialMax[GET_RACE(ch)][class]) {
+			if (GET_LEVEL(ch, class) < 50) {
+				send_to_char("You raise a level!\n\r", ch);
+				advance_level(ch, class);
+				set_title(ch);
+				return(TRUE);
+			} else {
+				send_to_char("You cannot join the ranks of the immortals without the help of a Creator!\n\r", ch);
+			}
+		} else {
+			send_to_char("You are unable to advance further in this class\n\r", ch);
+		}
+	} else {
+		send_to_char("You haven't got enough experience!\n\r",ch);
+	}
+	return(FALSE);
 }
 
 struct char_data *FindMobInRoomWithFunction(int room, int (*func)())

@@ -270,7 +270,7 @@ int BestMagicClass(struct char_data *ch)
  if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
    return(CLERIC_LEVEL_IND);
  if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
-   return(CLERIC_LEVEL_IND);
+   return(NECROMANCER_LEVEL_IND);
 
  if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
    return(PALADIN_LEVEL_IND);
@@ -449,8 +449,8 @@ int BestClassBIT(struct char_data *ch)
    case    PALADIN_LEVEL_IND :return(256);break;
    case    RANGER_LEVEL_IND :return(512);break;
    case    PSI_LEVEL_IND: return(1024); break;
- case    BARD_LEVEL_IND:  return(2048); break;
-  case    NECROMANCER_LEVEL_IND:  return(4096); break;
+   case    BARD_LEVEL_IND:  return(2048); break;
+   case    NECROMANCER_LEVEL_IND:  return(4096); break;
    default : {
               log("Error in BestClassBIT");
               break; }

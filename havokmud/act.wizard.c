@@ -1436,13 +1436,14 @@ dlog("in do_stat");
       strcat(buf, buf2);
       act(buf,FALSE,ch,0,0,TO_CHAR);
 
-sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0014%d$c0005] Alignment[$c0014%d$c0005]",
+sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0014%d$c0005/$c0014%d$c0005] Alignment[$c0014%d$c0005]",
 	      k->player.level[0], k->player.level[1],
 	      k->player.level[2], k->player.level[3],
 	      k->player.level[4], k->player.level[5],
 	      k->player.level[6], k->player.level[7],
 	      k->player.level[8], k->player.level[9],
-	      k->player.level[10],k->player.level[11],GET_ALIGNMENT(k));
+	      k->player.level[10],k->player.level[11],
+	      k->player.level[12],GET_ALIGNMENT(k));
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
 sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%d$c0005]secs",
@@ -4022,7 +4023,7 @@ if (victim->player.time.logon + victim->player.time.played<0) {
 	  if (GET_LEVEL(victim,i) < GetMaxLevel(victim))
 	      GET_LEVEL(victim,i) = GetMaxLevel(victim);
 	  }/* for */
-	  for (i=1;i<=CLASS_BARD;i*=2) {
+	  for (i=1;i<=CLASS_NECROMANCER;i*=2) {
 	    if (!HasClass(victim,i))
 	       victim->player.class +=i;
 	  } /* for */
@@ -5040,12 +5041,12 @@ if (IS_NPC(ch))
 
      /* do it here! */
 
-send_to_char("You are struck by a black beam from above, it hurts!\r"
-	"The life force from your body fades and you feel yourself lose\r"
-	"memories of old times and battles.\r"
+send_to_char("You are struck by a black beam from above, it hurts!\n\r"
+	"The life force from your body fades and you feel yourself lose\n\r"
+	"memories of old times and battles.\n\r"
 	"The feeling fades and you shiver at a cold gust of wind.\n\r",victim);
 
-   sprintf(buf,"You drain %d level(s) How Evil!\n\r",numtolose);
+   sprintf(buf,"You drained %d level(s). How evil!\n\r",numtolose);
    send_to_char(buf,ch);
 
       for (i=0; i<=numtolose-1; i++)

@@ -538,7 +538,7 @@ if (level <0 || level >ABS_MAX_LVL)
     affect_to_char(victim, &af);
     send_to_char("You feel someone protecting you.\n\r", victim);
   } else {
-    send_to_char("Nothing New seems to happen\n\r", ch);
+    send_to_char("Nothing new seems to happen\n\r", ch);
   }
 }
 
@@ -1606,23 +1606,34 @@ void spell_remove_poison(byte level, struct char_data *ch,
 
 
 
-void spell_fireshield(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_fireshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  struct affected_type af;
+	struct affected_type af;
 
-  if (!affected_by_spell(victim, SPELL_FIRESHIELD) ) {
+	if (!affected_by_spell(victim, SPELL_FIRESHIELD)) {
+		if (affected_by_spell(victim, SPELL_CHILLSHIELD)) {
+			act("The cold aura around $n is extinguished.",TRUE,victim,0,0,TO_ROOM);
+			act("The heat of your spell melts the icey aura surrounding you.",TRUE,victim,0,0,TO_CHAR);
+			affect_from_char(victim,SPELL_CHILLSHIELD);
+		}
+		if (IS_AFFECTED2(victim, AFF2_CHILLSHIELD)) {
+			act("The cold aura around $n is extinguished.",TRUE,victim,0,0,TO_ROOM);
+			act("The heat of your spell melts the icey aura surrounding you.",TRUE,victim,0,0,TO_CHAR);
+			REMOVE_BIT(victim->specials.affected_by2, AFF2_CHILLSHIELD);
+		}
 
-    act("$n is surrounded by a glowing red aura.",TRUE,victim,0,0,TO_ROOM);
-		act("You start glowing red.",TRUE,victim,0,0,TO_CHAR);
+		act("$c000R$n is surrounded by a glowing red aura.",TRUE,victim,0,0,TO_ROOM);
+		act("$c000RYou start glowing red.",TRUE,victim,0,0,TO_CHAR);
 
-    af.type      = SPELL_FIRESHIELD;
-    af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
-    af.modifier  = 0;
-    af.location  = APPLY_NONE;
-    af.bitvector = AFF_FIRESHIELD;
-    affect_to_char(victim, &af);
-  }
+		af.type      = SPELL_FIRESHIELD;
+		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = AFF_FIRESHIELD;
+		affect_to_char(victim, &af);
+	} else {
+		send_to_char("Nothing new seems to happen.\n\r",victim);
+	}
 }
 
 void spell_sanctuary(byte level, struct char_data *ch,

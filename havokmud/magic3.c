@@ -2806,7 +2806,7 @@ if (level <0 || level >ABS_MAX_LVL)
     affect_to_char(victim, &af);
     send_to_char("You feel the spirits of gods protecting you.\n\r", victim);
   } else {
-    send_to_char("Nothing New seems to happen\n\r", ch);
+    send_to_char("Nothing new seems to happen\n\r", ch);
   }
 }
 
@@ -2925,9 +2925,18 @@ void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, 
 	}
 
 	dam = dice(3,6) + 2; /* avg 12.5 | max 20 | min 5 */
+	damage(ch, victim, dam, SPELL_LIFE_TAP);
+
+	if(IsResist(victim, IMM_DRAIN))
+		dam >>= 1;
+
+	if(IS_AFFECTED(victim, AFF_SANCTUARY))
+		dam >>= 1;
+
+	if(IsImmune(victim, IMM_DRAIN))
+		dam = 0;
 
 	GET_HIT(ch) += dam;
-	damage(ch, victim, dam, SPELL_LIFE_TAP);
 
 }
 
@@ -2967,7 +2976,7 @@ void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *vict
 	    affect_to_char(victim, &af);
 	    send_to_char("Bones start forming around your armor, making it stronger than ever.\n\r", victim);
 	  } else {
-	    send_to_char("Nothing New seems to happen\n\r", ch);
+	    send_to_char("Nothing new seems to happen\n\r", ch);
 	  }
 }
 
@@ -2978,12 +2987,12 @@ void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *v
 	  assert(victim && ch);
 
 	  if (!affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
-	    act("A spectral shield forms around $N.",TRUE, ch, 0, victim, TO_NOTVICT);
+	    act("A suit of battlescarred armor surrounds $N.",TRUE, ch, 0, victim, TO_NOTVICT);
 	    if (ch != victim) {
-	       act("A spectral shield forms around $N.", TRUE, ch, 0, victim, TO_CHAR);
-	       act("A spectral shield forms around you.", TRUE, ch, 0, victim, TO_VICT);
+	       act("A suit of battlescarred armor surrounds $N.", TRUE, ch, 0, victim, TO_CHAR);
+	       act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, victim, TO_VICT);
 	    } else {
-	       act("A spectral shield forms around you.", TRUE, ch, 0, 0, TO_CHAR);
+	       act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, 0, TO_CHAR);
 	     }
 
 	    af.type      = SPELL_SPECTRAL_SHIELD;
@@ -2992,6 +3001,8 @@ void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *v
 	    af.location  = APPLY_AC;
 	    af.bitvector = 0;
 	    affect_to_char(victim, &af);
+	  } else {
+		  send_to_char("Nothing new seems to happen\n\r", ch);
 	  }
 }
 
@@ -3132,8 +3143,8 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 
 	if ( (victim->master==ch) && IsUndead(victim) ) {
 
-		act("$N corpse crumbles to the ground.", FALSE, ch, 0,victim, TO_ROOM);
-		send_to_char("You point at the undead creature, and then it suddenly crumbles to the ground.\n\r\n\r", ch);
+		act("$n points at $N who then crumbles to the ground.", FALSE, ch, 0,victim, TO_ROOM);
+		send_to_char("You point at the undead creature, and then it suddenly crumbles to the ground.\n\r", ch);
 
 
 		  healpoints = dice(3,8)+3;
@@ -3144,7 +3155,7 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 		  else
 		    GET_HIT(ch) += healpoints;
 
-		  healpoints = dice(3,8)+3;
+		  healpoints = dice(3,8)+3+5; /* added +5 to make up for cast cost  -Lennya */
 
 		  if ( (healpoints + GET_MANA(ch)) > mana_limit(ch) )
 		    GET_MANA(ch) = mana_limit(ch);
@@ -3157,28 +3168,34 @@ void spell_unsummon(byte level, struct char_data *ch, struct char_data *victim, 
 
 
 	} else {
-		send_to_char("You can't unsummon other people's dead or people that are still alive.",ch);
+		send_to_char("You can't unsummon other people's dead or people that are still alive.\n\r",ch);
 	}
-
 }
 
-void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
-	  struct affected_type af;
-	  float modifier;
-		int mod=0;
-	  assert(ch && victim);
+void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+	float modifier;
+	int mod=0;
+
+	assert(ch && victim);
+
+	if(victim == ch) {
+		send_to_char("Siphon your own strength? What a waste of mana.\n\r",ch);
+		return;
+	}
 
 	if (!affected_by_spell(ch,SPELL_SIPHON_STRENGTH)) {
-				/* Weaken victim */
-	     if (!saves_spell(victim, SAVING_SPELL)) {
-			modifier = level/200.0;
+		if (!saves_spell(victim, SAVING_SPELL)) {
+//			modifier = level/200.0;
+			mod = dice(1,5);
 			act("You feel your strength being siphoned from your body.", FALSE, victim,0,0,TO_VICT);
-			act("$n almost colapses.", FALSE, victim, 0, 0, TO_ROOM);
+			act("$n staggers as some of his strength is siphoned away.", FALSE, victim, 0, 0, TO_ROOM);
 
 			af.type      = SPELL_SIPHON_STRENGTH;
-			af.duration  = (int) level/2;
-			mod= victim->abilities.str * modifier;
-			af.modifier  = (int)0 - mod;
+			af.duration  = 3;
+//			mod= victim->abilities.str * modifier;
+			af.modifier  = 0 - mod;
 			if (victim->abilities.str_add) {
 			   af.modifier -= 2;
 				mod+=2;
@@ -3188,19 +3205,26 @@ void spell_siphon_strength(byte level, struct char_data *ch, struct char_data *v
 
 			affect_to_char(victim, &af);
 
-					/*strengthen ch*/
 		  	act("You feel your muscles becoming engorged.", FALSE, ch,0,0,TO_CHAR);
-	     	act("$n muscles suddently become engorged!", FALSE, ch, 0, 0, TO_ROOM);
+	     	act("$n's muscles suddenly become engorged!", FALSE, ch, 0, 0, TO_ROOM);
 
 	     	af.type      = SPELL_SIPHON_STRENGTH;
-	     	af.duration  = 2*level;
-			af.modifier = mod;/* number of strength added*/
+	     	af.duration  = 8;
+			af.modifier = mod; /* number of strength added*/
 	     	af.location  = APPLY_STR;
 	     	af.bitvector = 0;
 	     	affect_to_char(ch, &af);
+
+	     	/* aggressive act */
+			if (!victim->specials.fighting && (victim!=ch)) {
+				set_fighting(victim, ch);
+			}
+		} else { /* made save */
+			send_to_char("Your quarry withstands your spell.\n\r",ch);
 		}
-	}	else
-		send_to_char("I'm not sure if your muscles can stand such power.",ch);
+	} else {
+		send_to_char("I'm not sure if your muscles can stand such power.\n\r",ch);
+	}
 }
 
 
@@ -3236,7 +3260,7 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 		return;
 
 	if(!IsUndead(victim)) {
-		send_to_char("They seem alive and well.. Why would you??",ch);
+		send_to_char("They seem alive and well.. Why would you??\n\r",ch);
 
 	}
 
@@ -3255,7 +3279,7 @@ void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim
 }
 void spell_trace_corpse(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 
-	send_to_char("You start thinking of death and decay.",ch);
+	send_to_char("You start thinking of death and decay.\n\r",ch);
 	spell_locate_object(level, ch, NULL, "corpse");
 }
 
@@ -3313,9 +3337,19 @@ void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim,
 	}
 
 	dam = dice(5,6) + 5; /* avg 22.5 | max 35 | min 10 */
+	damage(ch, victim, dam, SPELL_LIFE_DRAW);
+
+	if(IsResist(victim, IMM_DRAIN))
+		dam >>= 1;
+
+	if(IS_AFFECTED(victim, AFF_SANCTUARY))
+		dam >>= 1;
+
+	if(IsImmune(victim, IMM_DRAIN))
+		dam = 0;
 
 	GET_HIT(ch) += dam;
-	damage(ch, victim, dam, SPELL_LIFE_DRAW);
+
 }
 
 void spell_numb_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
@@ -3549,7 +3583,7 @@ void spell_cavorting_bones(byte level, struct char_data *ch, struct char_data *v
 	mob->points.hitroll = mob->points.hitroll + mtohit;
 	char_to_room(mob, ch->in_room);
 	extract_obj(obj);
-	act("$p starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
+	act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
 
 	if(too_many_followers(ch)) {
 		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
@@ -3696,7 +3730,7 @@ void spell_eye_of_the_dead(byte level, struct char_data *ch, struct char_data *v
 	    af.duration  = 20;
 	    af.modifier  = 0;
 	    af.location  = APPLY_NONE;
-	    af.bitvector = 0;
+	    af.bitvector = AFF_TRUE_SIGHT;
 	    affect_to_char(ch, &af);
 
 	} else {
@@ -3754,9 +3788,19 @@ void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim
 	}
 
 	dam = dice(8,6) + 7; /* avg 35 | max 55 | min 15 */
+	damage(ch, victim, dam, SPELL_LIFE_LEECH);
+
+	if(IsResist(victim, IMM_DRAIN))
+		dam >>= 1;
+
+	if(IS_AFFECTED(victim, AFF_SANCTUARY))
+		dam >>= 1;
+
+	if(IsImmune(victim, IMM_DRAIN))
+		dam = 0;
 
 	GET_HIT(ch) += dam;
-	damage(ch, victim, dam, SPELL_LIFE_LEECH);
+
 }
 
 void spell_dark_pact(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
@@ -4076,7 +4120,7 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 	mob->points.hitroll = mob->points.hitroll + mtohit;
 	char_to_room(mob, ch->in_room);
 	extract_obj(obj);
-	act("$p starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
+	act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
 
 	if(too_many_followers(ch)) {
 		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
@@ -4116,8 +4160,32 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 
 void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	if (!affected_by_spell(ch, SPELL_CHILLSHIELD)) {
+		if (affected_by_spell(ch, SPELL_FIRESHIELD)) {
+			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			affect_from_char(ch,SPELL_FIRESHIELD);
+		}
+		if (IS_AFFECTED(ch, AFF_FIRESHIELD)) {
+			act("The fiery aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
+			act("The cold of your spell extinguishes the fire surrounding you.",TRUE,ch,0,0,TO_CHAR);
+			REMOVE_BIT(ch->specials.affected_by, AFF_FIRESHIELD);
+		}
 
+		act("$c000C$n is surrounded by a cold blue aura.",TRUE,ch,0,0,TO_ROOM);
+		act("$c000CYou summon an aura of chilly blue flames around you.",TRUE,ch,0,0,TO_CHAR);
+
+		af.type      = SPELL_CHILLSHIELD;
+		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+		af.modifier  = 0;
+		af.location  = APPLY_BV2;
+		af.bitvector = AFF2_CHILLSHIELD;
+		affect_to_char(ch, &af);
+	} else {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+	}
 }
 
 

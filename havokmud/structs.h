@@ -277,6 +277,7 @@ struct QuestItem {
 #define BLOW_DAMAGE 4
 #define ACID_DAMAGE 5
 #define FIRESHIELD  6
+#define CHILLSHIELD 7
 
 #define HATE_SEX   1
 #define HATE_RACE  2
@@ -1034,8 +1035,6 @@ struct room_data
 #define CLASS_PSI	     BV10//1024
 #define CLASS_BARD       BV11//    2048
 #define CLASS_NECROMANCER BV12
-
-//#define CLASS_NECRO		4096
 
 /* sex */
 #define SEX_NEUTRAL   0

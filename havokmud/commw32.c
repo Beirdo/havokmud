@@ -2258,6 +2258,8 @@ int _affected_by_s(struct char_data *ch, int skill)
     int  fs=0,fa=0;
 
     switch(skill) {
+	case SPELL_CHILLSHIELD:
+	    if(IS_AFFECTED2(ch,AFF2_CHILLSHIELD)) fa=1; break;
 	case SPELL_FIRESHIELD:
 	    if(IS_AFFECTED(ch,AFF_FIRESHIELD)) fa=1; break;
 	case SPELL_SANCTUARY:
@@ -2393,6 +2395,10 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 		    *tbuf=0;
 		    if((i=_affected_by_s(ch,SPELL_FIRESHIELD))!=-1)
 			strcat(tbuf,(i>1)?"F":"f");
+		    else if(s_flag)
+			strcat(tbuf,"-");
+		    if((i=_affected_by_s(ch,SPELL_CHILLSHIELD))!=-1)
+			strcat(tbuf,(i>1)?"C":"c");
 		    else if(s_flag)
 			strcat(tbuf,"-");
 		    if((i=_affected_by_s(ch,SPELL_SANCTUARY))!=-1)

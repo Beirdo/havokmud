@@ -2095,14 +2095,13 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 #endif
 
   if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
-sprintf(buf,"number = %d",nr);
-log(buf);
+//sprintf(buf,"number = %d",nr);
+//log(buf);
 //	  if(mob->nr != 51817) { /* ginayro can carry more, him being greedy and unkillable and all */
 	if (mob_index[mob->nr].virtual != 51817) {
 //	if(strcmp(mob->player.name,"guardian greed Ginayro 14000")) {
 	    char buf[200];
-	    sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr,
-			    mob->points.gold);
+	    sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr, mob->points.gold);
 	    log(buf);
 	}
   }

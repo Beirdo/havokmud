@@ -552,10 +552,10 @@ void cast_scourge_warlock( byte level, struct char_data *ch, char *arg,
 void cast_finger_of_death( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_flesh_golem( byte level, struct char_data *ch, char *arg,
-     int type, struct char_data *tar_ch, struct obj_data *tar_obj );/*
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_chillshield( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-*/
+
 struct spell_info_type spell_info[MAX_SPL_LIST];
 
 char *spells[]=
@@ -902,7 +902,7 @@ char *spells[]=
 	"scourge of the warlock",
 	"finger of death",
 	"flesh golem",
-	"dominate undead", //338
+	"chillshield", //338
    "wall of thought",
    "mind tap",
    "\n"
@@ -1050,6 +1050,8 @@ int SPELL_LEVEL(struct char_data *ch, int sn)
   if (HasClass(ch, CLASS_SORCERER  ))
     min = MIN(min, spell_info[sn].min_level_sorcerer);
 
+  if (HasClass(ch, CLASS_NECROMANCER))
+    min = MIN(min, spell_info[sn].min_level_necromancer);
 
   if (HasClass(ch, CLASS_CLERIC))
     min = MIN(min, spell_info[sn].min_level_cleric);
@@ -1065,6 +1067,9 @@ int SPELL_LEVEL(struct char_data *ch, int sn)
 
   if (HasClass(ch, CLASS_DRUID))
     min = MIN(min, spell_info[sn].min_level_druid);
+
+  if (HasClass(ch, CLASS_BARD))
+    min = MIN(min, spell_info[sn].min_level_bard);
 
   return(min);
 
@@ -2139,8 +2144,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
 		return;
 	}
-	if (cmd == 600 && !HasClass(ch,CLASS_BARD)) { /* take away mind spells for non psi */
+	if (cmd == 600 && !HasClass(ch,CLASS_BARD)) { /* take away sing spells for non-bards */
 		send_to_char("You try to sing a pretty song, but it sounds awful.\n\r", ch);
+		return;
+	}
+	if (cmd == 84 && !IS_IMMORTAL(ch) && HasClass(ch,CLASS_NECROMANCER) && (GET_ALIGNMENT(ch) >= -350)) {
+		/* necro too GOOD to cast */
+		send_to_char("Alas, you have strayed too far from the Dark Lord's guidance.\n\r", ch);
 		return;
 	}
 
@@ -3858,11 +3868,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(337,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   33,	 TAR_OBJ_ROOM , cast_flesh_golem, 0,0, 37);
-/*
+
   spello(338,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_IGNORE , cast_chillshield, 0,0, 45);
-*/
+
 
 
 }

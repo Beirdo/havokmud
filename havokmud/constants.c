@@ -1518,6 +1518,7 @@ const char *ItemDamType[] =
 	"crushed",
 	"corroded",
 	"burned",
+	"frozen",
 	"\n"
 };
 
@@ -3195,7 +3196,7 @@ const char *affected_bits2[] =
 	"Berserk",
 	"Group-Order",
 	"AWAY-FROM-KEYBOARD",
-        "Detect Good",
+    "Detect Good",
 	"Protection from Good",
 	"Darkness",
 	"Haste",
@@ -3204,6 +3205,8 @@ const char *affected_bits2[] =
 	"style-berserked",
 	"Quest",
 	"NoOutdoorLogs",
+	"chillshield",
+	"invis to undead",
 	"\n"
 };
 

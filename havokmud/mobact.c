@@ -536,7 +536,7 @@ if (!IS_PC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF) && ch->specials.fightin
 
   if (!IS_PC(ch) && ch->specials.fighting)
   {
-    if (IS_AFFECTED(ch->specials.fighting, AFF_FIRESHIELD))
+    if (IS_AFFECTED(ch->specials.fighting, AFF_FIRESHIELD) || IS_AFFECTED2(ch->specials.fighting, AFF2_CHILLSHIELD))
     {
       struct char_data *vict;
       vict = FindVictim(ch);

@@ -745,6 +745,10 @@ if (!ch || !i) {
    if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
    }
+    if (IS_AFFECTED2(i, AFF2_CHILLSHIELD)) {
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+      act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
+   }
 
    if  (IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0008$n is surrounded by darkness!", FALSE, i, 0, ch, TO_VICT);
@@ -1125,6 +1129,11 @@ if (IS_LINKDEAD(i))
     if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
    if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
+   }
+
+    if (IS_AFFECTED2(i, AFF2_CHILLSHIELD)) {
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
+      act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
     if (IS_AFFECTED2(i,AFF2_DARKNESS))

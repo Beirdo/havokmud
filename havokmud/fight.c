@@ -463,6 +463,10 @@ case    SPELL_FIREBALL:sprintf(spec_desc,"smoldering remains of %s are",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
                          corpse->beheaded_corpse = TRUE;
                         break;
+case    SPELL_CHILLSHIELD:sprintf(spec_desc,"frozen remains of %s are",
+                         (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+                         corpse->beheaded_corpse = TRUE;
+                        break;
 case	SPELL_FINGER_OF_DEATH:
 case	SPELL_LIFE_TAP:
 case	SPELL_LIFE_DRAW:
@@ -1661,6 +1665,16 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 						return(TRUE);
 				}
 			}
+			if (IS_AFFECTED2(v, AFF2_CHILLSHIELD) && !IS_AFFECTED2(ch, AFF2_CHILLSHIELD)) {
+				lev = GetMaxLevel(v);
+				dam = dice(1,6)+(lev/2);
+				//blip
+				if (damage(v, ch, dam, SPELL_CHILLSHIELD)) {
+					if (GET_POS(ch) == POSITION_DEAD)
+						return(TRUE);
+				}
+			}
+
 		}
 		update_pos(v);
 //	} else {
@@ -3376,6 +3390,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
     Our_Bit = IMM_ELEC;
     break;
 
+  case SPELL_CHILLSHIELD:
   case SPELL_CHILL_TOUCH:
   case SPELL_CONE_OF_COLD:
   case SPELL_ICE_STORM:
@@ -3819,6 +3834,9 @@ int GetItemDamageType( int type)
   switch(type) {
   case SPELL_FIRESHIELD:
     return(FIRESHIELD);
+    break;
+  case SPELL_CHILLSHIELD:
+    return(CHILLSHIELD);
     break;
 
   case SPELL_FIREBALL:

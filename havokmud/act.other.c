@@ -123,14 +123,14 @@ dlog("in do_junk");
     }
   }
   if (count > 1) {
-    sprintf(buf, "You junk %s (%d).\n\r", arg, count);
+    sprintf(buf, "You junk %s (%d).", arg, count);
     act(buf, 1, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$n junks %s.\n\r", arg);
+    sprintf(buf, "$n junks %s.", arg);
     act(buf, 1, ch, 0, 0, TO_ROOM);
   } else if (count == 1) {
-    sprintf(buf, "You junk %s \n\r", arg);
+    sprintf(buf, "You junk %s ", arg);
     act(buf, 1, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$n junks %s.\n\r", arg);
+    sprintf(buf, "$n junks %s.", arg);
     act(buf, 1, ch, 0, 0, TO_ROOM);
   } else {
     send_to_char("You don't have anything like that\n\r", ch);

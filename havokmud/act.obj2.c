@@ -679,7 +679,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
   }
  //14 is for shields..   (Bards can't wear shields);  (GH)
   if (keyword == 14 && !IS_IMMORTAL(ch) &&
-      HasClass(ch,CLASS_BARD)){
+    OnlyClass(ch,CLASS_BARD)) { /* Lennya, fix to make mobs able to still wear shields */
+//	 HasClass(ch,CLASS_BARD)) {
     send_to_char("Bards can't wear shields!!\n\r",ch);
     return;
   }
