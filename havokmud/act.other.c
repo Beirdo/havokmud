@@ -3321,13 +3321,13 @@ char           *trim(char *str)
 
     if (str) {
         for (ibuf = obuf = str; *ibuf;) {
-            while (*ibuf && (isspace(*ibuf))) {
+            while (*ibuf && (isspace((int)*ibuf))) {
                 ibuf++;
             }
             if (*ibuf && (obuf != str)) {
                 *(obuf++) = ' ';
             }
-            while (*ibuf && (!isspace(*ibuf))) {
+            while (*ibuf && (!isspace((int)*ibuf))) {
                 *(obuf++) = *(ibuf++);
             }
         }

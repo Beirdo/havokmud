@@ -775,7 +775,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             rp->room_flags = r_flags;
             rp->sector_type = s_type;
             sprintf(name, "%s", temproom->name);
-            if (isdigit(*name)) {
+            if (isdigit((int)*name)) {
                 free(temproom->name);
                 sprintf(buf, "Default name: ");
                 strcat(buf, sector_types[s_type]);
@@ -802,7 +802,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                               i);
                     if (temproom->name) {
                         sprintf(name, "%s", temproom->name);
-                        if (isdigit(*name)) {
+                        if (isdigit((int)*name)) {
                             free(temproom->name);
                             sprintf(buf, "Default name: ");
                             strcat(buf, sector_types[s_type]);

@@ -1,6 +1,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <time.h>
 #include <sys/types.h>
@@ -466,7 +467,7 @@ int wizcenter(char *buf)
         if (buf[i] == '$' && buf[i + 1] == '$'
             && toupper(buf[i + 2]) == 'C') {
             codes += 3;
-            for (j = 3; isdigit(buf[i + j]) && j < 8; j++, codes++) {
+            for (j = 3; isdigit((int)buf[i + j]) && j < 8; j++, codes++) {
                 /*
                  * Empty loop
                  */

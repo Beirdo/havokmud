@@ -28,7 +28,7 @@ DEPS = ${SRCS:.c=.d}
 all : dmserver
 
 dmserver : ${OBJS}
-	$(LD) -g -o $@ $+ -lcrypt
+	$(LD) -g -o $@ $+ -lcrypt -lsocket -lnsl
 
 depend : ${DEPS}
 

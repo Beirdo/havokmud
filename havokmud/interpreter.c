@@ -1444,7 +1444,7 @@ void command_interpreter(struct char_data *ch, char *argument)
         return;
     } 
     
-    if (!isalpha(*argument)) {
+    if (!isalpha((int)*argument)) {
         arg = (char *)malloc(strlen(argument) + 2);
         if( !arg ) {
             Log( "Nasty error in command_interpreter!!!" );
@@ -1847,7 +1847,7 @@ int _parse_name(char *arg, char *name)
     }
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
-        if ((*arg < 0) || !isalpha(*arg) || i > MAX_NAME_LENGTH) {
+        if ((*arg < 0) || !isalpha((int)*arg) || i > MAX_NAME_LENGTH) {
             return (1);
         }
 

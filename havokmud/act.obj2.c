@@ -1511,7 +1511,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        if (isdigit(arg1[0])) {
+        if (isdigit((int)arg1[0])) {
             /*
              * PAT-PAT-PAT 
              * Make a list of item numbers for stuff to remove 
@@ -1525,7 +1525,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
             T = arg1;
 
-            while (isdigit(*T) && (*T != '\0')) {
+            while (isdigit((int)*T) && (*T != '\0')) {
                 P = T;
 
                 if (strchr(T, ',')) {
@@ -1759,7 +1759,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (isdigit(*arg)) {
+    if (isdigit((int)*arg)) {
         /*
          * check for ego 
          */

@@ -1,11 +1,16 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <time.h>
 #include <sys/file.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 #include "protos.h"
 #include "externs.h"
@@ -731,10 +736,10 @@ char           *strip_ansi(char *newbuf, const char *orig, size_t maxlen)
     while (orig[i] && (k < (maxlen - 1))) {
         while (orig[i] && orig[i] == '$' && 
                orig[i + 1] && LOWER(orig[i + 1]) == 'c' && 
-               orig[i + 2] && isdigit(orig[i + 2]) && 
-               orig[i + 3] && isdigit(orig[i + 3]) && 
-               orig[i + 4] && isdigit(orig[i + 4]) && 
-               orig[i + 5] && isdigit(orig[i + 5])) {
+               orig[i + 2] && isdigit((int)orig[i + 2]) && 
+               orig[i + 3] && isdigit((int)orig[i + 3]) && 
+               orig[i + 4] && isdigit((int)orig[i + 4]) && 
+               orig[i + 5] && isdigit((int)orig[i + 5])) {
             i += 6;
         }
         newbuf[k++] = orig[i];
@@ -6073,7 +6078,7 @@ int advatoi(const char *s)
     }
     stringptr = string;
 
-    while (isdigit(*stringptr)) {
+    while (isdigit((int)*stringptr)) {
         /*
          * as long as the current character is a digit
          */
@@ -6106,7 +6111,7 @@ int advatoi(const char *s)
          */
     }
 
-    while (isdigit(*stringptr) && (multiplier > 1)) {
+    while (isdigit((int)*stringptr) && (multiplier > 1)) {
         /*
          * if any digits follow k/m, add those too
          * the further we get to right, the less are the digit 'worth'
@@ -6116,7 +6121,7 @@ int advatoi(const char *s)
         stringptr++;
     }
 
-    if (*stringptr != '\0' && !isdigit(*stringptr)) {
+    if (*stringptr != '\0' && !isdigit((int)*stringptr)) {
         /*
          * a non-digit character was found, other than NUL
          * If a digit is found, it means the multiplier is 1 - i.e. extra
@@ -6397,7 +6402,7 @@ char           *skip_spaces(char *string)
         return( NULL );
     }
 
-    for (; *string && isspace(*string); string++) {
+    for (; *string && isspace((int)*string); string++) {
         /* 
          * Empty loop 
          */
@@ -6412,7 +6417,7 @@ char           *skip_spaces(char *string)
 
 char           *skip_word(char *string)
 {
-    for (; *string && !isspace(*string); string++) {
+    for (; *string && !isspace((int)*string); string++) {
         /* 
          * Empty loop 
          */
@@ -6421,13 +6426,12 @@ char           *skip_word(char *string)
     return (string);
 }
 
-
 /*************************************************************************
  * Support for different platforms
  *************************************************************************/
 
-#if defined( __FreeBSD__ )
-/* FreeBSD seems to be missing strnlen */
+#if defined( __FreeBSD__ ) || defined( __sun__ )
+/* FreeBSD and Solaris seem to be missing strnlen */
 
 size_t strnlen(const char *s, size_t maxlen) 
 {
@@ -6440,6 +6444,42 @@ size_t strnlen(const char *s, size_t maxlen)
     return( len );
 }
 
+#endif
+
+#if defined( __sun__ )
+/* Solaris seems to be missing strsep */
+char *strsep(char **stringp, const char *delim)
+{
+    char *start, *end, *delimstart = NULL, *del;
+
+    if( !stringp || !delim || !*stringp ) {
+        return( NULL );
+    }
+
+    start = *stringp;
+
+    for( end = start, del = (char *)delim; *end && *del; end++ ) {
+        if( *end == *del ) {
+            if( del == delim ) {
+                delimstart = end;
+            }
+            del++;
+        } else {
+            del = (char *)delim;
+        }
+    }
+
+    if( !*end ) {
+        /* It's the whole string */
+        *stringp = NULL;
+    } else {
+        /* Found a token */
+        *delimstart = '\0';
+        *stringp = end;
+    }
+
+    return( start );
+}
 #endif
 
 
