@@ -52,10 +52,11 @@ void cast_call_lightning(byte level, struct char_data *ch, char *arg,
         break;
     case SPELL_TYPE_SCROLL:
         if (OUTSIDE(ch) && weather_info.sky >= SKY_RAINING) {
-            if (victim)
+            if (victim) {
                 spell_call_lightning(level, ch, victim, 0);
-            else if (!tar_obj)
+            } else if (!tar_obj) {
                 spell_call_lightning(level, ch, ch, 0);
+            }
         }
         break;
     case SPELL_TYPE_STAFF:
@@ -114,14 +115,16 @@ void cast_colour_spray(byte level, struct char_data *ch, char *arg,
         spell_colour_spray(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_colour_spray(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_colour_spray(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_colour_spray(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in colour spray!");
@@ -156,14 +159,16 @@ void cast_energy_drain(byte level, struct char_data *ch, char *arg,
         spell_energy_drain(level, ch, ch, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_energy_drain(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_energy_drain(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_energy_drain(level, ch, victim, 0);
+        }
         break;
     case SPELL_TYPE_STAFF:
         for (victim = real_roomp(ch->in_room)->people;
@@ -188,10 +193,11 @@ void cast_energy_restore(byte level, struct char_data *ch, char *arg,
         spell_energy_restore(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_energy_drain(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_energy_drain(level, ch, ch, 0);
+        }
         break;
     default:
         log("Serious screw-up in energy restore!");
@@ -248,14 +254,16 @@ void cast_lightning_bolt(byte level, struct char_data *ch, char *arg,
         spell_lightning_bolt(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_lightning_bolt(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_lightning_bolt(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_lightning_bolt(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in lightning bolt!");
@@ -272,14 +280,16 @@ void cast_acid_blast(byte level, struct char_data *ch, char *arg, int type,
         spell_acid_blast(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_acid_blast(level, ch, victim, 0);
-        else
+        } else {
             spell_acid_blast(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_acid_blast(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in acid blast!");
@@ -327,14 +337,16 @@ void cast_meteor_swarm(byte level, struct char_data *ch, char *arg,
         spell_meteor_swarm(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_meteor_swarm(level, ch, victim, 0);
-        else
+        } else {
             spell_meteor_swarm(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_meteor_swarm(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in meteor swarm!");
@@ -351,14 +363,16 @@ void cast_flamestrike(byte level, struct char_data *ch, char *arg,
         spell_flamestrike(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_flamestrike(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_flamestrike(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_flamestrike(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in flamestrike!");
@@ -375,14 +389,16 @@ void cast_magic_missile(byte level, struct char_data *ch, char *arg,
         spell_magic_missile(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_magic_missile(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_magic_missile(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_magic_missile(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in magic missile!");
@@ -428,10 +444,12 @@ void cast_cause_serious(byte level, struct char_data *ch, char *arg,
         spell_cause_serious(level, ch, ch, 0);
         break;
     case SPELL_TYPE_WAND:
-        if (tar_obj)
+        if (tar_obj) {
             return;
-        if (!victim)
+        }
+        if (!victim) {
             victim = ch;
+        }
         spell_cause_serious(level, ch, victim, 0);
         break;
     case SPELL_TYPE_STAFF:
@@ -457,18 +475,21 @@ void cast_cause_critic(byte level, struct char_data *ch, char *arg,
         spell_cause_critical(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (!victim)
+        if (!victim) {
             victim = ch;
+        }
         spell_cause_critical(level, ch, victim, 0);
         break;
     case SPELL_TYPE_WAND:
-        if (!victim)
+        if (!victim) {
             victim = ch;
+        }
         spell_cause_critical(level, ch, victim, 0);
         break;
     case SPELL_TYPE_POTION:
-        if (!victim)
+        if (!victim) {
             victim = ch;
+        }
         spell_cause_critical(level, ch, victim, 0);
         break;
     case SPELL_TYPE_STAFF:
@@ -510,14 +531,16 @@ void cast_green_slime(byte level, struct char_data *ch, char *arg,
         spell_green_slime(level, ch, victim, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (victim)
+        if (victim) {
             spell_green_slime(level, ch, victim, 0);
-        else if (!tar_obj)
+        } else if (!tar_obj) {
             spell_green_slime(level, ch, ch, 0);
+        }
         break;
     case SPELL_TYPE_WAND:
-        if (victim)
+        if (victim) {
             spell_green_slime(level, ch, victim, 0);
+        }
         break;
     default:
         log("Serious screw-up in green Slime!");
