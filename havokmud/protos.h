@@ -4167,6 +4167,9 @@ void mind_use_sense_object(int level, struct char_data *ch, char *arg,
 
 char *file_to_string(char *name);
 
+int_func procGetFuncByName( char *name, proc_type type );
+char *procGetNameByFunc( int_func func, proc_type type );
+
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()
  */

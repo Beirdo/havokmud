@@ -2226,6 +2226,21 @@ struct command_def {
     int             min_lev;
 };
 
+typedef enum {
+    PROC_UNDEF = -1,
+    PROC_MOBILE,
+    PROC_OBJECT,
+    PROC_ROOM
+} proc_type;
+
+typedef int (*int_func)();
+
+struct spec_proc {
+    char           *name;
+    int_func        func;
+    proc_type       type;
+};
+
 #endif
 
 /*
