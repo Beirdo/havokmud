@@ -150,11 +150,12 @@ int main(int argc, char **argv)
 #ifdef SITELOCK
     int             a;
 #endif
-    spy_flag = TRUE;
 #if defined(__sun__) || defined(__NetBSD__)
     struct rlimit   rl;
     int             res;
 #endif
+
+    spy_flag = TRUE;
 
 #ifdef MALLOC_DEBUG
     malloc_debug(1);            /* some systems might not have this lib */
@@ -1113,6 +1114,7 @@ int new_connection(int s)
     struct sockaddr_in isa;
 #ifdef __sun__
     struct sockaddr peer;
+    char            buf[MAX_STRING_LENGTH];
 #endif
     int             i;
     int             t;
