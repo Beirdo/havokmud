@@ -1,4 +1,9 @@
-/* Race -- Npc, otherwise */
+#ifndef _race_h
+#define _race_h
+
+/*
+ * Race -- Npc, otherwise 
+ */
 #define RACE_HALFBREED 0
 #define RACE_HUMAN     1
 #define RACE_MOON_ELF  2
@@ -16,7 +21,7 @@
 #define RACE_DINOSAUR 14
 #define RACE_FISH     15
 #define RACE_BIRD     16
-#define RACE_GIANT    17	/* generic giant more specials down ---V */
+#define RACE_GIANT    17        /* generic giant more specials down ---V */
 #define RACE_PREDATOR 18
 #define RACE_PARASITE 19
 #define RACE_SLIME    20
@@ -77,27 +82,33 @@
 #define RACE_UNDEAD_SKELETON 72
 #define RACE_UNDEAD_GHOUL    73
 
-/* a few pc races */
+/*
+ * a few pc races 
+ */
 #define RACE_HALF_ELF   74
 #define RACE_HALF_OGRE    75
 #define RACE_HALF_ORC     76
 #define RACE_HALF_GIANT   77
-/* end pc */
+/*
+ * end pc 
+ */
 
 #define RACE_LIZARDMAN 78
 
 #define RACE_DARK_DWARF 79
 #define RACE_DEEP_GNOME 80
 
-#define RACE_GNOLL	81
+#define RACE_GNOLL      81
 
-#define RACE_GOLD_ELF	82
-#define RACE_WILD_ELF	83
-#define RACE_SEA_ELF	84
+#define RACE_GOLD_ELF   82
+#define RACE_WILD_ELF   83
+#define RACE_SEA_ELF    84
 #define RACE_FOREST_GNOME 85
 #define RACE_AVARIEL      86
 
-/* New Races by Greg Hovey */
+/*
+ * New Races by Greg Hovey 
+ */
 #define RACE_ETTIN        87
 #define RACE_COCKATRICE   88
 #define RACE_COCODILE     89
@@ -146,20 +157,23 @@
 
 #define MAX_RACE      131
 
+struct race_type {
+    int             race;
+    char           *racename;
 
-
-struct race_type
-{
-  int race;
-  char *racename;
-
-  int start;
-  int young;
-  int mature;
-  int middle;
-  int old;
-  int ancient;
-  int venerable;
-  int size;
+    int             start;
+    int             young;
+    int             mature;
+    int             middle;
+    int             old;
+    int             ancient;
+    int             venerable;
+    int             size;
 
 };
+
+#endif
+
+/*
+ * vim:ts=4:sw=4:ai:et:si:sts=4
+ */
