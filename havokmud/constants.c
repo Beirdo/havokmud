@@ -4186,3 +4186,22 @@ const struct race_type race_list[] = {
   {RACE_WIGHTS       ,"Wights",17,0,21,41,61,91,121},
   {RACE_YETI         ,"Yeti",17,0,21,41,61,91,121}
 };
+
+const char *AttackType[]= {
+    "Stab", 
+    "Whip",
+    "Slash", 
+    "Smash",
+    "Cleave",
+    "Crush",
+    "Pound",
+    "Claw",
+    "Bite", 
+    "Sting",
+    "Pierce", 
+    "Impale",
+    "\n"
+};
+
+
+

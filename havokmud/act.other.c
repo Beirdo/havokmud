@@ -2545,39 +2545,39 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
       return;
     }
     /*Display Character information*/
-    sprintf(buf,"\n\r$c0015%s$c0012's adventurer information:\n\r",
+    sprintf(buf,"\n\r$c0015%s's$c0005 adventurer information:\n\r",
 	    GET_NAME(finger));
     send_to_char(buf,ch);
     /*Last time sited??*/
     if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
-      sprintf(buf,"$c0012Last time sited    : $c0015Unknown\n\r");
+      sprintf(buf,"$c0005Last time sited    : $c0014Unknown\n\r");
     else if(get_char(name))
-      sprintf(buf,"$c0012Last time sited    : $c0015Currently Playing\n\r");
+      sprintf(buf,"$c0005Last time sited    : $c0014Currently Playing\n\r");
     else
-      sprintf(buf,"$c0012Last time sited    : $c0015%s"
+      sprintf(buf,"$c0005Last time sited    : $c0014%s"
 	      ,asctime(localtime(&tmp_store.last_logon)));
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
     /*Display char Email addy*/
     if(finger->specials.email==NULL)
-      sprintf(buf, "$c0012Known message drop : $c0015None\n\r");
+      sprintf(buf, "$c0005Known message drop : $c0014None\n\r");
     else
-      sprintf(buf, "$c0012Known message drop : $c0015%-60s\n\r"
+      sprintf(buf, "$c0005Known message drop : $c0014%-60s\n\r"
 	      , finger->specials.email);//GET_EMAIL(finger));
     //strcat(buf,GET_EMAIL(ch));
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
     /*Display clan info*/
     if(finger->specials.clan==NULL)
-      sprintf(buf,"$c0012Clan info          : $c0015None");
+      sprintf(buf,"$c0005Clan info          : $c0014None");
     else
-      sprintf(buf,"$c0012Clan info          : $c0015%-50s",finger->specials.clan);
+      sprintf(buf,"$c0005Clan info          : $c0014%-50s",finger->specials.clan);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
     if(finger->specials.rumor == NULL)
-      sprintf(buf, "$c0012Rumored Info       : $c0015None");
+      sprintf(buf, "$c0005Rumored Info       : $c0014None");
     else
-      sprintf(buf,"$c0012Rumored Info        : $c0015 %-50s",
+      sprintf(buf,"$c0005Rumored Info        : $c0014%-50s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
