@@ -3263,7 +3263,7 @@ void traveling_qp(int pulse)
 		return;
 	}
 
-	if(qp_patience < 10) { // hasn't been in inventory for 100 secs yet
+	if(qp_patience < 8) { // hasn't been in inventory for 100 secs yet
 		return;
 	}
 
