@@ -1873,7 +1873,7 @@ void close_socket(struct descriptor_data *d)
             act("$n has lost $s touch with reality.", TRUE, d->character,
                 0, 0, TO_ROOM);
 
-            if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+            if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
                 sprintf(buf, "Closing link to: %s.", GET_NAME(d->character));
                 log(buf);
             }
@@ -1896,7 +1896,7 @@ void close_socket(struct descriptor_data *d)
         } else {
             if (GET_NAME(d->character) && 
                 (!IS_IMMORTAL(d->character) || 
-                 d->character->invis_level == 0)) {
+                 d->character->invis_level <= 58)) {
                 sprintf(buf, "Losing player: %s.", GET_NAME(d->character));
                 log(buf);
             }
