@@ -1151,7 +1151,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
   int i, virtual;
   int i2, count;
   bool found;
-
+  char buff[50];
   /* for objects */
   extern char *item_types[];
   extern char *wear_bits[];
@@ -1381,11 +1381,11 @@ act(buf,FALSE,ch,0,0,TO_CHAR);
 	      GET_MOVE(k),move_limit(k),move_gain(k) );
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
-
-sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%d$c0005], Exp: [$c0014%d$c0005], Hitroll: [$c0014%d$c0005+($c0015%d$c0005)], Damroll: [$c0014%d$c0005+($c0015%d$c0005)] sf[$c0014%d$c0005]",
+sprintf(buff,"%s",formatNum(GET_EXP(k)));
+sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%s$c0005], Exp: [$c0014%s$c0005], Hitroll: [$c0014%d$c0005+($c0015%d$c0005)], Damroll: [$c0014%d$c0005+($c0015%d$c0005)] sf[$c0014%d$c0005]",
 	      GET_AC(k),
-	      GET_GOLD(k),
-	      GET_EXP(k),
+	      formatNum(GET_GOLD(k)),
+	      buff,
 	      k->points.hitroll,str_app[STRENGTH_APPLY_INDEX(k)].tohit,
 	      k->points.damroll,str_app[STRENGTH_APPLY_INDEX(k)].todam,
 	      k->specials.spellfail);

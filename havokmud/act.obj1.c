@@ -53,18 +53,19 @@ void get(struct char_data *ch, struct obj_data *obj_object,
 		(obj_object->obj_flags.value[0]>=1))
 	{
 		obj_from_char(obj_object);
-		sprintf(buffer,"There was %d coins.\n\r", obj_object->obj_flags.value[0]);
+		sprintf(buffer,"There was %s coins.\n\r", formatNum(obj_object->obj_flags.value[0]));
 		send_to_char(buffer,ch);
 
 		if (IS_SET(ch->specials.act, PLR_AUTOSPLIT)) {
 		   sprintf(buffer,"%d",obj_object->obj_flags.value[0]);
+		   GET_GOLD(ch) += obj_object->obj_flags.value[0];
 		   do_split(ch, buffer, 0);
 		} else {
 			GET_GOLD(ch) += obj_object->obj_flags.value[0];
 		}
         	if (GET_GOLD(ch) > 500000 && obj_object->obj_flags.value[0] > 100000) {
                    char buf[MAX_INPUT_LENGTH+80];
-                   sprintf(buf,"%s just got %d coins", GET_NAME(ch),obj_object->obj_flags.value[0]);
+                   sprintf(buf,"%s just got %s coins", GET_NAME(ch),formatNum(obj_object->obj_flags.value[0]));
 		   		   log(buf);
 				}
 		extract_obj(obj_object);
@@ -434,7 +435,7 @@ dlog("in do_drop");
       send_to_char("You haven't got that many coins!\n\r",ch);
       return;
     }
-    sprintf(buffer,"You drop %i coins.\n\r", amount);
+    sprintf(buffer,"You drop %s coins.\n\r", formatNum(amount));
     send_to_char(buffer,ch);
     if(amount==0)
       return;
@@ -754,9 +755,9 @@ void do_give(struct char_data *ch, char *argument, int cmd)
       send_to_char("To who?\n\r",ch);
       return;
     }
-    sprintf(buf,"You give %d gold coins to %s.\n\r",amount,PERS(vict,ch));
+    sprintf(buf,"You give %s gold coins to %s.\n\r",formatNum(amount),PERS(vict,ch));
     send_to_char(buf,ch);
-    sprintf(buf,"%s gives you %d gold coins.\n\r",PERS(ch,vict),amount);
+    sprintf(buf,"%s gives you %s gold coins.\n\r",PERS(ch,vict),formatNum(amount));
     send_to_char(buf,vict);
     act("$n gives some gold coins to $N.", 1, ch, 0, vict, TO_NOTVICT);
     if (IS_NPC(ch) || (GetMaxLevel(ch) < DEMIGOD))

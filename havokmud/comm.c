@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/resource.h>
-
+#include <stdarg.h>
 #include "protos.h"
 
 
@@ -1818,7 +1818,18 @@ char *ParseAnsiColors(int UsingAnsi, char *txt)
 return buf;
 }
 
+/* source: EOD, by John Booth <???> */
+void ch_printf(CHAR_DATA *ch, char *fmt, ...)
+{
+    char buf[MAX_STRING_LENGTH];	/* better safe than sorry */
+    va_list args;
 
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
+
+    send_to_char(buf, ch);
+}
 void send_to_char(char *messg, struct char_data *ch)
 {
   if (ch)

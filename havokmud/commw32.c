@@ -18,6 +18,10 @@
 #include <signal.h>
 #include <sys/resource.h>
 
+
+#include <stdarg.h>
+
+
 #include "protos.h"
 
 void dimd_loop(void);
@@ -1817,6 +1821,18 @@ return buf;
 }
 
 
+/* source: EOD, by John Booth <???> */
+void ch_printf(struct char_data *ch, char *fmt, ...)
+{
+    char buf[MAX_STRING_LENGTH];	/* better safe than sorry */
+    va_list args;
+
+    va_start(args, fmt);
+    vsprintf(buf, fmt, args);
+    va_end(args);
+
+    send_to_char(buf, ch);
+}
 void send_to_char(char *messg, struct char_data *ch)
 {
   if (ch)
@@ -2262,6 +2278,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
     char tbuf[255],*pr_scan,*mask;
     long l,exp,texp;
+        long curr_time=0;
     int i,s_flag=0;
 
     *outbuf=0;
@@ -2395,6 +2412,10 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 			strcat(tbuf,"-");
 		    break;
 		case 'T':   /* did't implemented.. yet */
+
+		           curr_time = time(NULL);
+             sprintf(tbuf,"%02d:%02d",
+             localtime(&curr_time)->tm_hour,localtime(&curr_time)->tm_min);
 		    break;
 		case 'R': /* room number for immortals */
 		    if(IS_IMMORTAL(ch)) {

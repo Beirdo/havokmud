@@ -2186,7 +2186,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
   struct time_info_data playing_time;
   static char buf[1000], buf2[1000];
   struct time_info_data my_age;
-
+	char buff[50];
   struct time_info_data real_time_passed(time_t t2, time_t t1);
 
 dlog("in do_score");
@@ -2225,8 +2225,9 @@ dlog("in do_score");
   sprintf(buf, "$c0005Your alignment is: $c0015%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
   send_to_char(buf,ch);
 
-  sprintf(buf,"$c0005You have scored $c0015%d$c0005 exp and you have $c0015%d$c0005 gold coins, and $c0015%d$c0005 Quest points ($c0015%d$c0005).\n\r",
-	  GET_EXP(ch),GET_GOLD(ch),ch->player.q_points, ch->specials.questwon);
+  sprintf(buff,"%s",formatNum(GET_GOLD(ch)));
+  sprintf(buf,"$c0005You have scored $c0015%s$c0005 exp and you have $c0015%s$c0005 gold coins, and $c0015%d$c0005 Quest points ($c0015%d$c0005).\n\r",
+	  formatNum(GET_EXP(ch)),buff,ch->player.q_points, ch->specials.questwon);
   send_to_char(buf,ch);
 
 	/* the mud will crash without this check! */
@@ -3880,17 +3881,17 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 
 void do_attribute(struct char_data *ch, char *argument, int cmd)
 {
+	#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
    char buf[MAX_STRING_LENGTH];
    struct affected_type *aff;
    struct time_info_data my_age;
-   int i = 0, j2 = 0, Worn_Index = 0;
+   int i = 0, j2 = 0, Worn_Index = 0, x;
    short last_type;
    char buf2[MAX_STRING_LENGTH];
    char buf3[MAX_STRING_LENGTH];
    struct obj_data *j=0, *p=0;
    extern char *apply_types[];
    extern char *affected_bits[];
-
    dlog("in do_attrib");
 
    age2(ch, &my_age);
@@ -3922,6 +3923,24 @@ $c0014%s$c0005 respectively.\n\r",
            HitRollDesc(GET_HITROLL(ch)), DamRollDesc(GET_DAMROLL(ch)));
    send_to_char(buf,ch);
 
+
+
+/* letrs say the resistances*/
+
+   send_to_char("\n\r$c0005Current Resistances:\n\r--------------\n\r",ch);
+
+for(x=16;x<=64;x=x*2) {
+  if(IsResist(ch, x))
+   	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
+  else
+    if(IS_IMMUNE(ch,x))
+  	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
+  	else
+  	  if(IsSusc(ch, x))
+  	  	ch_printf(ch,"$c000pYou are $c000Csusceptible$c000p to $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
+  	  else
+  	  	ch_printf(ch,"$c000pYou are $c000CDefenseless$c000p to $c000C%sing.\n\r",immunity_names[pc_class_num(x)]);
+}
    /*
    **   by popular demand -- affected stuff
    */
@@ -3988,6 +4007,7 @@ $c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
          }
       }
    }
+
 }
 
 void do_value(struct char_data *ch, char *argument, int cmd)

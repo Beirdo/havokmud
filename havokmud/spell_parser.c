@@ -927,8 +927,159 @@ int SPELL_LEVEL(struct char_data *ch, int sn)
 #endif
 
 }
+/* This function returns the damage that a player will get when in a certain sector type */
+int RoomElementalDamage(int flags,struct char_data *ch) {
+#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
+	int damage = number(25,50);
+	int type=0;
+	int x;
+
+if(IS_IMMORTAL(ch)) {
+	return 0;
+
+}
+
+if(IS_SET(flags,FIRE_ROOM)) {
+   if(IS_IMMUNE(ch,IMM_FIRE))
+   	return 0;
+
+
+   if(IsResist(ch, IMM_FIRE)) {
+	  send_to_char("$c000RYou feel the heat from the area start to burn your skin.\n\r",ch);
+	  return damage/2;
+   }  else if(IsSusc(ch, IMM_FIRE)) {
+		send_to_char("$c000RYou feel the heat from the area start to burn your skin.. OUCH\n\r",ch);
+		return damage*2;
+	} else {
+		send_to_char("$c000RYou feel the heat from the area start to burn your skin... OUCH!!\n\r",ch);
+		return damage;
+	}
+
+}
+
+
+
+if(IS_SET(flags,ICE_ROOM)) {
+	 if(IS_IMMUNE(ch,IMM_COLD))
+   	return 0;
+   if(IsResist(ch, IMM_COLD)) {
+	  send_to_char("$c000CThe cold and frost seem to be taking toll...\n\r",ch);
+	  return damage/2;
+   }  else if(IsSusc(ch, IMM_COLD)) {
+		send_to_char("$c000CThe cold and frost seem to be taking toll... OUCH\n\r",ch);
+		return damage*2;
+	} else {
+		send_to_char("$c000CThe cold and frost seem to be taking toll... OUCH!!\n\r",ch);
+		return damage;
+	}
+
+}
+
+
+if(IS_SET(flags,EARTH_ROOM)) {
+	 if(IS_IMMUNE(ch,IMM_BLUNT))
+   		return 0;
+   if(IsResist(ch, IMM_BLUNT)) {
+	  send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+	  return damage/2;
+   }  else if(IsSusc(ch, IMM_BLUNT)) {
+		send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+		return damage*2;
+	} else {
+		send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+		return damage;
+	}
+
+}
+
+
+if(IS_SET(flags,ELECTRIC_ROOM)) {
+    if(IS_IMMUNE(ch,IMM_ELEC))
+   	return 0;
+
+   if(IsResist(ch, IMM_ELEC)) {
+	  send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+	  return damage/2;
+   }  else if(IsSusc(ch, IMM_ELEC)) {
+		send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+		return damage*2;
+	} else {
+		send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+		return damage;
+	}
+
+}
+if(IS_SET(flags,WIND_ROOM)) {
+   if(IS_IMMUNE(ch,IMM_PIERCE))
+   	return 0;
+
+  if(IsResist(ch, IMM_PIERCE)) {
+	  send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+	  return damage/2;
+   }  else if(IsSusc(ch, IMM_PIERCE)) {
+		send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		return damage*2;
+	} else {
+		send_to_char("$c000bThe whirl wind picks up and starts tossing debre throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		return damage;
+	}
+
+}
+
+	return 0;
+}
 
 #if 1
+
+int GetMoveRegen(struct char_data *i) {
+	int damagex=0;
+
+      /*Movement*/
+     if(IS_SET(real_roomp(i->in_room)->room_flags, MOVE_ROOM)) {
+		send_to_char("You suddently feel a wave of tiredness overcome you.\n\r",i);
+		damagex = number(15,30);
+	}
+	return GET_MOVE(i) + move_gain(i) - damagex;
+
+
+}
+int GetHitRegen(struct char_data *i) {
+	char buf[256];
+	int damagex=0, trollregen=0;
+
+	if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
+		trollregen=hit_gain(i)*0.5;
+		send_to_char("Your wounds seem to close up and heal over some.",i);
+		sprintf(buf,"%s's wounds seem to close up.",GET_NAME(i));
+		send_to_room_except(buf,i->in_room,i);
+	}
+
+
+			/*Damage sector regen!!!!*/
+	damagex = RoomElementalDamage(real_roomp(i->in_room)->room_flags,i);
+	if(damagex!=0) {
+		sprintf(buf,"%s screams in pain!\n\r",GET_NAME(i));
+		send_to_room_except(buf, i->in_room, i);
+	}
+	/*Lets regen the characters*/
+	/*Hitpoints*/
+	return hit_gain(i) + GET_HIT(i) - damagex +trollregen;
+
+}
+
+int GetManaRegen(struct char_data *i) {
+	int damagex=0;
+	if(IS_SET(real_roomp(i->in_room)->room_flags, MANA_ROOM)) {
+	  send_to_char("You feel your aura being drained by some unknown force!\n\r",i);
+	  damagex = number(15,30);
+	}
+			/*Mana*/
+    return GET_MANA(i) + mana_gain(i) - damagex;
+
+
+}
+
+
 void affect_update( int pulse )
 {
   register struct affected_type *af, *next_af_dude;
@@ -938,9 +1089,9 @@ void affect_update( int pulse )
   struct char_data  *next_char;
   struct room_data *rp;
   int dead=FALSE, room, k;
-  int regenroom=0;
+  int regenroom=0, damagex;
+  char buf[256];
   extern struct time_info_data time_info;
-
 
   void update_char_objects( struct char_data *ch ); /* handler.c */
   void do_save(struct char_data *ch, char *arg, int cmd); /* act.other.c */
@@ -1012,6 +1163,8 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 	   and that is why the gain is added to the hits, not vice versa
 	   */
 
+		/* Regen mana/hitpoint/move*/
+		regenroom=0;
 		if(IS_SET(real_roomp(i->in_room)->room_flags, REGEN_ROOM)) {
 			regenroom=10;
 			if(GET_POS(i) > POSITION_SITTING) /*Standing, fighting etc*/
@@ -1022,17 +1175,30 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 				regenroom=25;
 			else
 				regenroom=20;
-			send_to_char("Your wounds seem to heal over.",i);
-		}
 
 
-        GET_HIT(i)  = MIN((hit_gain(i) + GET_HIT(i)) + regenroom,  hit_limit(i));
-        GET_MANA(i) = MIN((GET_MANA(i) + mana_gain(i)) + regenroom, mana_limit(i));
-        GET_MOVE(i) = MIN((GET_MOVE(i) + move_gain(i)) + regenroom, move_limit(i));
+			if(GET_HIT(i)!=hit_limit(i) || GET_MANA(i)!=mana_limit(i) || GET_MOVE(i)!=move_limit(i))
+				send_to_char("Your wounds seem to heal over.",i);
+		 }
+
+
+
+		/*Lets regen the characters*/
+        /*Hitpoints*/
+        GET_HIT(i)  = MIN(GetHitRegen(i)+regenroom,  hit_limit(i));
+
+        GET_MANA(i) = MIN(GetManaRegen(i) + regenroom, mana_limit(i));
+
+        GET_MOVE(i) = MIN(GetMoveRegen(i) + regenroom, move_limit(i));
 #if 0
 if (i->pc)
    GET_DIMD(i) +=2;
 #endif
+
+		update_pos(i);
+		if(GET_POS(i) == POSITION_DEAD)
+			die(i,'\0');
+		else
         if (GET_POS(i) == POSITION_STUNNED)
 	  update_pos( i );
       } else if (GET_POS(i) == POSITION_INCAP) {

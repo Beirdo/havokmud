@@ -3777,11 +3777,11 @@ void reset_char(struct char_data *ch)
   }
 
   if (GET_BANK(ch) > GetMaxLevel(ch)*100000) {
-    sprintf(buf, "%s has %d coins in bank.", GET_NAME(ch), GET_BANK(ch));
+    sprintf(buf, "%s has %s coins in bank.", GET_NAME(ch), formatNum(GET_BANK(ch)));
     log(buf);
   }
   if (GET_GOLD(ch) > GetMaxLevel(ch)*100000) {
-    sprintf(buf, "%s has %d coins.", GET_NAME(ch), GET_GOLD(ch));
+    sprintf(buf, "%s has %s coins.", GET_NAME(ch), formatNum(GET_GOLD(ch)));
     log(buf);
   }
 

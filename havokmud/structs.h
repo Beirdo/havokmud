@@ -628,7 +628,14 @@ struct obj_data
 #define ARENA_ROOM   BV14//16384 /* For Arena */
 #define NO_FLY       BV15//32768 /* no flying here -bcw */
 #define REGEN_ROOM   BV16
-
+#define FIRE_ROOM    BV17
+#define ICE_ROOM     BV18
+#define WIND_ROOM    BV19
+#define EARTH_ROOM   BV20
+#define ELECTRIC_ROOM BV21
+#define WATER_ROOM    BV22
+#define MOVE_ROOM     BV23
+#define MANA_ROOM     BV24
 /* For 'dir_option' */
 
 #define NORTH          0

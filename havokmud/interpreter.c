@@ -933,7 +933,7 @@ if (ch->equipment[j] && ch->equipment[j]->item_number>=0)  {
 
   /* special in object present? */
   for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content)
-    if (i->item_number>=0)  /* Crash here maybe?? */
+    if (i->item_number>=0)  /* Crash here maybe?? FROZE HERE!! loop? */
       if (obj_index[i->item_number].func)
 	if ((*obj_index[i->item_number].func)(ch, cmd, arg, i, PULSE_COMMAND))
 	  return(1);
@@ -1113,6 +1113,8 @@ void assign_command_pointers ()
   AddCommand("massage",do_action,162,POSITION_RESTING,0);
   AddCommand("tickle",do_action,163,POSITION_RESTING,0);
   AddCommand("practice",do_practice,164,POSITION_RESTING,1);
+  AddCommand("study",do_practice,164,POSITION_RESTING,1);
+
   AddCommand("pat",do_action,165,POSITION_RESTING,0);
   AddCommand("examine",do_examine,166,POSITION_SITTING,0);
   AddCommand("take",do_get,167,POSITION_RESTING,1); /* TAKE */
@@ -1548,7 +1550,7 @@ AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
 AddCommand("bid",do_bid,570,POSITION_STANDING,0);
-AddCommand("study",do_practice,571,POSITION_RESTING,1);
+
 
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses

@@ -4936,19 +4936,28 @@ void dlog(char *s)
 int pc_class_num(int clss) {
 
   switch(clss) {
-    case 1: return 0;
-    case 2: return 1;
-    case 4: return 2;
-    case 8: return 3;
-    case 16: return 4;
-    case 32: return 5;
-    case 64: return 6;
-    case 128: return 7;
-    case 256: return 8;
-    case 512: return 9;
-    case 1024: return 10;
-    case 2048: return 11;
-
+    case BV00: return 0;
+    case BV01: return 1;
+    case BV02: return 2;
+    case BV03: return 3;
+    case BV04: return 4;
+    case BV05: return 5;
+    case BV06: return 6;
+    case BV07: return 7;
+    case BV08: return 8;
+    case BV09: return 9;
+    case BV10: return 10;
+    case BV11: return 11;
+    case BV12: return 12;
+    case BV13: return 13;
+    case BV14: return 14;
+    case BV15: return 15;
+    case BV16: return 16;
+    case BV17: return 17;
+    case BV18: return 18;
+    case BV19: return 19;
+    case BV20: return 20;
+    default: return 0;
   }
 }
 int pc_num_class(int clss) {
@@ -5151,5 +5160,37 @@ int advatoi (const char *s)
 
 
   return (number);
+}
+
+
+/**********************************************************************
+*   Function to format big numbers, so you can easy understand it.    *
+*    Added by Desden, el Chaman Tibetano (J.L.Sogorb) in Oct-1998     *
+*                Email: jlalbatros@mx2.redestb.es                     *
+*								                      *
+**********************************************************************/
+
+char *formatNum(int foo)
+{
+	int index,index_new,rest;
+	char buf[16];
+	static char buf_new[16];
+
+	sprintf(buf,"%d",foo);
+	rest = strlen(buf)%3;
+
+	for (index=index_new=0;index<strlen(buf);index++,index_new++)
+	  {
+	   if (index!=0 && (index-rest)%3==0 )
+	    {
+	     buf_new[index_new]=',';
+	     index_new++;
+	     buf_new[index_new]=buf[index];
+	    }
+	  else
+	  buf_new[index_new] = buf[index];
+	  }
+	buf_new[index_new]='\0';
+	return buf_new;
 }
 
