@@ -4496,7 +4496,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf + strlen(buf),
                         "[%3d] %-30s  <%3d> %2d %3d %3d %3d %3d %3d %3d "
                         "%3d\n\r",
-                        index, spells[spl],
+                        i, spells[spl],
                         spell_info[index].min_usesmana,
                         spell_info[index].min_level_cleric,
                         spell_info[index].min_level_magic,
