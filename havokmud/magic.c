@@ -579,7 +579,7 @@ void spell_astral_walk(int level, struct char_data *ch,
             act("$n wavers, fades and dissappears", FALSE, tmp, 0, 0, TO_ROOM);
             char_from_room(tmp);
             char_to_room(tmp, ASTRAL_ENTRANCE);
-            do_look(tmp, "\0", 0);
+            do_look(tmp, NULL, 0);
         }
     }
 }
@@ -642,7 +642,7 @@ void spell_teleport(int level, struct char_data *ch,
     char_to_room(ch, to_room);
     act("$n slowly fades in to existence.", FALSE, ch, 0, 0, TO_ROOM);
 
-    do_look(ch, "", 0);
+    do_look(ch, NULL, 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
         !IS_IMMORTAL(ch)) {
@@ -1844,7 +1844,7 @@ void spell_word_of_recall(int level, struct char_data *ch,
     char_from_room(victim);
     char_to_room(victim, location);
     act("$n appears in the middle of the room.", TRUE, victim, 0, 0, TO_ROOM);
-    do_look(victim, "", 15);
+    do_look(victim, NULL, 15);
 
 }
 
@@ -2014,7 +2014,7 @@ void RawSummon(struct char_data *v, struct char_data *c)
     sprintf(buf, "%s has summoned you!\n\r",
             (IS_NPC(c) ? c->player.short_descr : GET_NAME(c)));
     send_to_char(buf, v);
-    do_look(v, "", 15);
+    do_look(v, NULL, 15);
 
     if (IS_NPC(v) && !IS_SET(v->specials.act, ACT_POLYSELF) &&
         (IS_SET(v->specials.act, ACT_AGGRESSIVE) ||

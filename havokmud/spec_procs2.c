@@ -3113,7 +3113,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                     Log(buf);
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
-                    do_look(t, "", 0);
+                    do_look(t, NULL, 0);
                     sprintf(buf, "The prisoner convicted of murder, %s, is now"
                                  " free!", GET_NAME(t));
                     do_shout(PGuard, buf, 0);
@@ -3139,7 +3139,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
 
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
-                    do_look(t, "", 0);
+                    do_look(t, NULL, 0);
 
                     sprintf(buf, "The prisoner convicted of robbery, %s, is "
                                  "now free!", GET_NAME(t));
@@ -3370,7 +3370,7 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
                     "off to prison!", TRUE, ch, 0, tch, TO_VICT);
                 char_from_room(tch);
                 char_to_room(tch, PRISON_ROOM);
-                do_look(tch, "", 0);
+                do_look(tch, NULL, 0);
                 act("The prison door slams shut behind you!",
                     TRUE, ch, 0, tch, TO_VICT);
                 return (TRUE);
@@ -3389,7 +3389,7 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
                     "to prison!", TRUE, ch, 0, tch, TO_VICT);
                 char_from_room(tch);
                 char_to_room(tch, PRISON_ROOM);
-                do_look(tch, "", 0);
+                do_look(tch, NULL, 0);
                 act("The prison door slams shut behind you!",
                     TRUE, ch, 0, tch, TO_VICT);
                 return (TRUE);
@@ -4484,7 +4484,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         }
         char_to_room(mob, ch->in_room);
         chal->river_speed = 1;
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         REMOVE_BIT(ch->specials.act, PLR_WIMPY);
         return (TRUE);
     }
@@ -4735,7 +4735,7 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg,
         }
         char_to_room(mob, ch->in_room);
         chal->river_speed = 1;
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         REMOVE_BIT(ch->specials.act, PLR_WIMPY);
         return (TRUE);
     }
@@ -4791,7 +4791,7 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
             port, 0, TO_CHAR);
         char_from_room(ch);
         char_to_room(ch, port->obj_flags.value[1]);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         act("$n appears from thin air!", FALSE, ch, 0, 0, TO_ROOM);
     } else {
         obj->obj_flags.value[0]--;
@@ -5442,7 +5442,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
 
                 act("A strange rift like portal appears and $n steps out!",
                     FALSE, ch, 0, 0, TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return (TRUE);
             }
         }
@@ -5475,7 +5475,7 @@ int board_ship(struct char_data *ch, int cmd, char *arg,
             char_to_room(ch, j);
 
             act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         }
     }
@@ -5743,19 +5743,19 @@ int arena_prep_room(struct char_data *ch, int cmd, char *arg,
         switch (Quadrant) {
         case 1:
             char_to_room(ch, preproomexitsquad1[(dice(1, 4) - 1)]);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         case 2:
             char_to_room(ch, preproomexitsquad2[(dice(1, 4) - 1)]);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         case 3:
             char_to_room(ch, preproomexitsquad3[(dice(1, 4) - 1)]);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         case 4:
             char_to_room(ch, preproomexitsquad4[(dice(1, 4) - 1)]);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         default:
             Log("Major Screw Up In Arena Prep. Room!!");

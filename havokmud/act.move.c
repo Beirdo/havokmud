@@ -211,7 +211,7 @@ int RawMove(struct char_data *ch, int dir)
         char_to_room(ch, 0);
         send_to_char("Uh-oh.  The ground melts beneath you as you fall into "
                      "the swirling chaos.\n\r", ch);
-        do_look(ch, "\0", 15);
+        do_look(ch, NULL, 15);
         if (IS_SET(ch->player.user_flags, SHOW_EXITS)) {
             act("$c0015-----------------", FALSE, ch, 0, 0, TO_CHAR);
             do_exits(ch, "", 8);
@@ -224,7 +224,7 @@ int RawMove(struct char_data *ch, int dir)
         (!MOUNTED(ch))) {
         char_from_room(ch);
         char_to_room(ch, new_r);
-        do_look(ch, "\0", 15);
+        do_look(ch, NULL, 15);
         if (IS_SET(ch->player.user_flags, SHOW_EXITS)) {
             act("$c0015-----------------", FALSE, ch, 0, 0, TO_CHAR);
             do_exits(ch, "", 8);
@@ -385,7 +385,7 @@ int RawMove(struct char_data *ch, int dir)
         char_from_room(ch);
         char_to_room(ch, new_r);
     }
-    do_look(ch, "\0", 15);
+    do_look(ch, NULL, 15);
     if (IS_SET(to_here->room_flags, DEATH) && !IS_IMMORTAL(ch)) {
         if (MOUNTED(ch)) {
             NailThisSucker(MOUNTED(ch));
@@ -1479,7 +1479,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                 char_to_room(ch, to_room);
                 act("$n materializes out of thin air!", FALSE, ch, 0, 0,
                     TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return;
             }
         } else {

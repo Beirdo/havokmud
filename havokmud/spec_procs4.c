@@ -540,7 +540,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
                              "elsewhere.\n\r", i);
 
                 char_to_room(i, number(51153, 51158));
-                do_look(i, "", 0);
+                do_look(i, NULL, 0);
                 return (TRUE);
             }
             x++;
@@ -1915,7 +1915,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 char_from_room(ch);
                 char_to_room(ch, CLIMB_ROOM);
                 act("$n climbs up from below.", FALSE, ch, 0, 0, TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return (TRUE);
             }
             sprintf(buffer, "You don't see any %s to climb around here.\n\r",
@@ -4619,7 +4619,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
                 " else!", TRUE, tempchar, 0, 0, TO_CHAR);
             act("Suddenly, $n appears, looking bewildered.", TRUE,
                 tempchar, 0, 0, TO_ROOM);
-            do_look(tempchar, "", 15);
+            do_look(tempchar, NULL, 15);
         }
     }
 
@@ -4635,7 +4635,7 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
         stop_fighting(mob);
         char_from_room(opponent);
         char_to_room(opponent, MISTROOMVNUM);
-        do_look(opponent, "", 15);
+        do_look(opponent, NULL, 15);
         AttackRandomChar(mob);
     }
     return (FALSE);
@@ -5359,7 +5359,7 @@ int disembark_ship(struct char_data *ch, int cmd, char *argument,
                     map_coords[x].x == GET_YCOORD(obj)) {
                     char_from_room(ch);
                     char_to_room(ch, map_coords[x].room);
-                    do_look(ch, "", 0);
+                    do_look(ch, NULL, 0);
                     return (TRUE);
                 }
 
@@ -5732,7 +5732,7 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, j);
 
         act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
 

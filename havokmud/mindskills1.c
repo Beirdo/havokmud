@@ -131,7 +131,7 @@ void mind_teleport(int level, struct char_data *ch,
     char_to_room(ch, to_room);
     act("A mass of flying particles form into $n!", FALSE, ch, 0, 0, TO_ROOM);
 
-    do_look(ch, "", 0);
+    do_look(ch, NULL, 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
         !IS_IMMORTAL(ch)) {
@@ -168,7 +168,7 @@ void mind_probability_travel(int level, struct char_data *ch,
                 0, ch, TO_ROOM);
             char_from_room(tmp);
             char_to_room(tmp, PROBABILITY_TRAVEL_ENTRANCE);
-            do_look(tmp, "\0", 0);
+            do_look(tmp, NULL, 0);
             act("$n wavers into existance", FALSE, tmp, 0, 0, TO_ROOM);
         }
     }
@@ -894,7 +894,7 @@ void mind_sense_object(int level, struct char_data *ch,
             old_location = ch->in_room;
             char_from_room(ch);
             char_to_room(ch, room);
-            do_look(ch, "", 15);
+            do_look(ch, NULL, 15);
             char_from_room(ch);
             char_to_room(ch, old_location);
         }

@@ -2868,7 +2868,7 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         /*
          * before the fiery gates
          */
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         return (TRUE);
         break;
     default:
@@ -2894,7 +2894,7 @@ int kings_hall(struct char_data *ch, int cmd, char *arg)
     /*
      * behind the altar
      */
-    do_look(ch, "", 15);
+    do_look(ch, NULL, 15);
     return (TRUE);
 }
 
@@ -3031,12 +3031,17 @@ int sisyphus(struct char_data *ch, int cmd, char *arg,
      * use this as a switch, to avoid double challenges
      */
     static int      b = 1;
+    char           *name;
 
     if (cmd) {
         if (cmd <= 6 && cmd >= 1 && IS_PC(ch)) {
             if (b) {
                 b = 0;
-                do_look(mob, GET_NAME(ch), 0);
+                name = strdup(GET_NAME(ch));
+                do_look(mob, name, 0);
+                if( name ) {
+                    free(name);
+                }
             } else {
                 b = 1;
             }
@@ -4161,7 +4166,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
         or = v->in_room;
         char_from_room(v);
         char_to_room(v, (real_roomp(or))->dir_option[dir]->to_room);
-        do_look(v, "\0", 15);
+        do_look(v, NULL, 15);
 
         if (IS_SET(RM_FLAGS(v->in_room), DEATH) && !IS_IMMORTAL(v)) {
             NailThisSucker(v);
@@ -5961,7 +5966,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
 
                 char_from_room(ch);
                 char_to_room(ch, rp->dir_option[2]->to_room);
-                do_look(ch, "\0", 0);
+                do_look(ch, NULL, 0);
 
                 /*
                  * First level followers can tag along
@@ -5980,7 +5985,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                             char_from_room(fol->follower);
                             char_to_room(fol->follower,
                                          rp->dir_option[2]->to_room);
-                            do_look(fol->follower, "\0", 0);
+                            do_look(fol->follower, NULL, 0);
                         }
                     }
                 }
@@ -6013,7 +6018,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                     rp = real_roomp(ch->in_room);
                     char_from_room(ch);
                     char_to_room(ch, rp->dir_option[2]->to_room);
-                    do_look(ch, "\0", 0);
+                    do_look(ch, NULL, 0);
 
                     /*
                      * Follower stuff again
@@ -6033,7 +6038,7 @@ int guardian(struct char_data *ch, int cmd, char *arg,
                                 char_from_room(fol->follower);
                                 char_to_room(fol->follower,
                                              rp->dir_option[2]->to_room);
-                                do_look(fol->follower, "\0", 0);
+                                do_look(fol->follower, NULL, 0);
                             }
                         }
                     }

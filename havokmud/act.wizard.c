@@ -1080,7 +1080,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
             act("$n arrives from a puff of smoke.", FALSE, victim, 0, 0,
                 TO_ROOM);
             act("$n has transferred you!", FALSE, ch, 0, victim, TO_VICT);
-            do_look(victim, "", 15);
+            do_look(victim, NULL, 15);
             send_to_char("Ok.\n\r", ch);
         }
     } else {
@@ -1098,7 +1098,7 @@ void do_trans(struct char_data *ch, char *argument, int cmd)
                 act("$n arrives from a puff of smoke.", FALSE, victim, 0,
                     0, TO_ROOM);
                 act("$n has transferred you!", FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
             }
         }
         send_to_char("Ok.\n\r", ch);
@@ -1140,7 +1140,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
                     FALSE, victim, 0, 0, TO_ROOM);
                 act("$n has called upon your help, you're unable to resist!",
                     FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
                 send_to_char("Ok.\n\r", ch);
             } else {
                 send_to_char("Alas, this person does not wish to aid you in "
@@ -1164,7 +1164,7 @@ void do_qtrans(struct char_data *ch, char *argument, int cmd)
                     FALSE, victim, 0, 0, TO_ROOM);
                 act("$n has called upon your help, you're unable to resist!",
                     FALSE, ch, 0, victim, TO_VICT);
-                do_look(victim, "", 15);
+                do_look(victim, NULL, 15);
             }
         }
         send_to_char("Ok.\n\r", ch);
@@ -1413,7 +1413,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
             command_interpreter(ch, (ch->specials.poofin + 1));
         }
     }
-    do_look(ch, "", 15);
+    do_look(ch, NULL, 15);
 }
 
 void do_stat(struct char_data *ch, char *argument, int cmd)
@@ -3429,7 +3429,7 @@ void purge_one_room(int rnum, struct room_data *rp, int *range)
          * send character to the void
          */
         char_to_room(ch, 0);
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
         act("$n tumbles into the Void.", TRUE, ch, 0, 0, TO_ROOM);
     }
 
@@ -6620,7 +6620,7 @@ void do_home(struct char_data *ch, char *argument, int cmd)
         char_to_room(ch,ch->specials.start_room);
         act("A whirling vortex appears and $n arrives.",FALSE,ch,0,0,TO_ROOM);
 #endif
-        do_look(ch, "", 15);
+        do_look(ch, NULL, 15);
     } else {
         send_to_char("You ain't got a home buddy!\n\r", ch);
     }

@@ -3635,7 +3635,7 @@ void nanny(struct descriptor_data *d, char *arg)
             if (!GetMaxLevel(d->character)) {
                 do_start(d->character);
             }
-            do_look(d->character, "", 15);
+            do_look(d->character, NULL, 15);
             /*
              * do an auction check, grant reimbs as needed
              */

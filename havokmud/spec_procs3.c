@@ -922,7 +922,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                 SET_BIT(mobtmp->specials.affected_by, AFF_CHARM);
                 AddHated(mobtmp, tmp);
             }
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "order followers guard on");
             return (TRUE);
             break;
 
@@ -1015,9 +1015,9 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
 
             act("$n summons one of his faithful followers, $N!", FALSE,
                 ch, 0, mobtmp, TO_ROOM);
-            do_order(ch, "followers guard on", 0);
-            sprintf(buf, "followers kill %s", GET_NAME(tmp));
-            do_order(ch, buf, 0);
+            command_interpreter(ch, "order followers guard on");
+            sprintf(buf, "order followers kill %s", GET_NAME(tmp));
+            command_interpreter(ch, buf);
             return (TRUE);
             break;
         }
@@ -2212,7 +2212,7 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
                         0, TO_ROOM);
                     cast_mon_sum7(GetMaxLevel(ch), ch, "",
                                   SPELL_TYPE_SPELL, ch, 0);
-                    do_order(ch, "followers guard on", 0);
+                    command_interpreter(ch, "order followers guard on");
                     return (TRUE);
                 }
             }
@@ -2274,8 +2274,8 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
      */
 
     if (IS_AFFECTED(ch, AFF_BLIND) && lspell > 15) {
-        sprintf(buf, " 'remove blind' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'remove blind' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return TRUE;
     }
 
@@ -2284,15 +2284,15 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
     }
     if (IS_AFFECTED(vict, AFF_SANCTUARY) && lspell > 10 &&
         GetMaxLevel(ch) > GetMaxLevel(vict)) {
-        sprintf(buf, " 'dispel magic' %s", GET_NAME(vict));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'dispel magic' %s", GET_NAME(vict));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
     if (IS_AFFECTED(vict, AFF_FIRESHIELD) && lspell > 10 &&
         GetMaxLevel(ch) > GetMaxLevel(vict)) {
-        sprintf(buf, " 'dispel magic' %s", GET_NAME(vict));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'dispel magic' %s", GET_NAME(vict));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
@@ -2306,15 +2306,15 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 #endif
-        sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
     if (!IS_PC(ch) && GET_HIT(ch) < GET_MAX_HIT(ch) / 4 && lspell > 15 &&
         !IS_SET(ch->specials.act, ACT_AGGRESSIVE)) {
-        sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-        do_cast(ch, buf, 0);
+        sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
+        command_interpreter(ch, buf);
         return (FALSE);
     }
 
@@ -2327,48 +2327,47 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
          */
 
         if (lspell > 8 && lspell < 50 && !number(0, 6)) {
-            sprintf(buf, " 'web' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'web' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 5 && lspell < 10 && !number(0, 6)) {
-            sprintf(buf, " 'weakness' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'weakness' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 5 && lspell < 10 && !number(0, 7)) {
-            sprintf(buf, " 'armor' %s", GET_NAME(ch));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'armor' %s", GET_NAME(ch));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 12 && lspell < 20 && !number(0, 7)) {
-            sprintf(buf, " 'curse' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'curse' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 10 && lspell < 20 && !number(0, 5)) {
-            sprintf(buf, " 'blind' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'blind' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             return TRUE;
         }
 
         if (lspell > 8 && lspell < 40 && !number(0, 5) &&
             vict->specials.fighting != ch) {
-            sprintf(buf, " 'charm monster' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'charm monster' %s", GET_NAME(vict));
+            command_interpreter(ch, buf);
             if (IS_AFFECTED(vict, AFF_CHARM)) {
                 if (!vict->specials.fighting) {
-                    sprintf(buf, "%s kill %s",
+                    sprintf(buf, "order %s kill %s",
                             GET_NAME(vict), GET_NAME(ch->specials.fighting));
-                    do_order(ch, buf, 0);
                 } else {
-                    sprintf(buf, "%s remove all", GET_NAME(vict));
-                    do_order(ch, buf, 0);
+                    sprintf(buf, "order %s remove all", GET_NAME(vict));
                 }
+                command_interpreter(ch, buf);
             }
         }
 
@@ -2386,97 +2385,83 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 8:
         case 9:
         case 10:
-            sprintf(buf, " 'monsum one'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum one'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 11:
         case 12:
         case 13:
-            sprintf(buf, " 'monsum two'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum two'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 14:
         case 15:
-            sprintf(buf, " 'monsum three'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum three'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 16:
         case 17:
         case 18:
-            sprintf(buf, " 'monsum four'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum four'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 19:
         case 20:
         case 21:
         case 22:
-            sprintf(buf, " 'monsum five'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum five'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 23:
         case 24:
         case 25:
-            sprintf(buf, " 'monsum six'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum six'");
+            command_interpreter(ch, "order followers guard on");
             break;
         case 26:
         default:
-            sprintf(buf, " 'monsum seven'");
-            do_cast(ch, buf, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "cast 'monsum seven'");
+            command_interpreter(ch, "order followers guard on");
             break;
         }
         return (TRUE);
     } else {
+        buf[0] = '\0';
         switch (lspell) {
         case 1:
         case 2:
-            sprintf(buf, " 'magic missle' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'magic missle' %s", GET_NAME(vict));
             break;
         case 3:
         case 4:
         case 5:
-            sprintf(buf, " 'shocking grasp' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'shocking grasp' %s", GET_NAME(vict));
             break;
         case 6:
         case 7:
         case 8:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'web' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'web' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'burning hands' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'burning hands' %s", GET_NAME(vict));
             }
             break;
         case 9:
         case 10:
-            sprintf(buf, " 'acid blast' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'acid blast' %s", GET_NAME(vict));
             break;
         case 11:
         case 12:
         case 13:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'lightning bolt' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'lightning bolt' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'ice storm' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'ice storm' %s", GET_NAME(vict));
             }
             break;
         case 14:
         case 15:
-            sprintf(buf, " 'teleport' %s", GET_NAME(ch));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'teleport' %s", GET_NAME(ch));
             break;
         case 16:
         case 17:
@@ -2493,11 +2478,9 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 28:
         case 29:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'colour spray' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'colour spray' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'cone of cold' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'cone of cold' %s", GET_NAME(vict));
             }
             break;
         case 30:
@@ -2508,27 +2491,26 @@ int magic_user_imp(struct char_data *ch, int cmd, char *arg,
         case 35:
         case 36:
         case 37:
-            sprintf(buf, " 'fireball' %s", GET_NAME(vict));
-            do_cast(ch, buf, 0);
+            sprintf(buf, "cast 'fireball' %s", GET_NAME(vict));
             break;
         case 38:
         case 39:
         case 40:
         case 41:
             if (IS_EVIL(ch)) {
-                sprintf(buf, " 'energy drain' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'energy drain' %s", GET_NAME(vict));
             }
             break;
         default:
             if (ch->attackers <= 2) {
-                sprintf(buf, " 'meteor swarm' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'meteor swarm' %s", GET_NAME(vict));
             } else {
-                sprintf(buf, " 'fireball' %s", GET_NAME(vict));
-                do_cast(ch, buf, 0);
+                sprintf(buf, "cast 'fireball' %s", GET_NAME(vict));
             }
             break;
+        }
+        if( *buf ) {
+            command_interpreter(ch, buf);
         }
     }
     return TRUE;
@@ -3560,7 +3542,7 @@ int Slavalis(struct char_data *ch, int cmd, char *arg,
                     ch, TO_ROOM);
                 char_from_room(v);
                 char_to_room(v, SLAV_DEAD_DONE_ROOM);
-                do_look(v, "\0", 0);
+                do_look(v, NULL, 0);
             }
         }
 
@@ -4112,8 +4094,8 @@ int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
                     if (affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                         ch->followers) {
-                        do_order(ch, "followers guard on", 0);
-                        do_group(ch, "all", 0);
+                        command_interpreter(ch, "order followers guard on");
+                        command_interpreter(ch, "group all");
                         act("$n utters the words 'instant growth'.",
                             FALSE, ch, 0, 0, TO_ROOM);
 
@@ -4967,7 +4949,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
                 0, TO_ROOM);
             char_from_room(ch);
             char_to_room(ch, 46201);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             break;
         default:
             send_to_char("The water tastes so good, you are tempted to try "
@@ -6112,7 +6094,7 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
 
                 char_from_room(tmp);
                 char_to_room(tmp, CALM_BEFORE_STORM);
-                do_look(tmp, "\0", 0);
+                do_look(tmp, NULL, 0);
             }
         }
         return (TRUE);
@@ -6761,7 +6743,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, key_room);
 
         act("$n suddenly appears.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return TRUE;
     }
 
@@ -7164,7 +7146,7 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
                 char_to_room(ch, BAHAMUT_HOME);
                 act("$n appears in a dazzling explosion of light!", FALSE,
                     ch, 0, 0, TO_ROOM);
-                do_look(ch, "", 0);
+                do_look(ch, NULL, 0);
                 return (TRUE);
             }
         }
@@ -7391,7 +7373,7 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
 
             act("$n suddenly appears from below.", FALSE, ch, 0, 0,
                 TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
             return (TRUE);
         }
     }
@@ -7853,7 +7835,7 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
 
         act("Proven a true sinner, $n materializes from one of the "
             "altar's seven sides.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -7889,7 +7871,7 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, 51835);
         act("$n steps out of one of the mirroring surfaces in the room, "
             "smiling.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -7923,7 +7905,7 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg,
 
             act("$n madly rages about, then calms down when there's no more "
                 "quarries about.", FALSE, ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
 
             send_to_char("You rage about, then realize there's noone to fight "
                          "and calm down.\n\r", ch);
@@ -7967,7 +7949,7 @@ int sinbarrel(struct char_data *ch, int cmd, char *arg,
 
             act("$n climbs out of the barrel, swaying slightly.", FALSE,
                 ch, 0, 0, TO_ROOM);
-            do_look(ch, "", 0);
+            do_look(ch, NULL, 0);
 
             send_to_char("\n\r", ch);
             send_to_char("You feel a bit dizzy from so much mead.\n\r", ch);
@@ -8290,7 +8272,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         char_from_room(ch);
         char_to_room(ch, 51878);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     } else {
         if (ch->master) {
@@ -8306,7 +8288,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
                  */
                 char_from_room(f->follower);
                 char_to_room(f->follower, 51878);
-                do_look(f->follower, "", 0);
+                do_look(f->follower, NULL, 0);
             }
         }
 
@@ -8320,7 +8302,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
              */
             char_from_room(ch->master);
             char_to_room(ch->master, 51878);
-            do_look(ch->master, "", 0);
+            do_look(ch->master, NULL, 0);
         }
 
         /*
@@ -8328,7 +8310,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument,
          */
         char_from_room(ch);
         char_to_room(ch, 51878);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
     }
     return (TRUE);
 }
@@ -8899,7 +8881,7 @@ int pride_remover_one(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the north.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -8958,7 +8940,7 @@ int pride_remover_two(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the east.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9017,7 +8999,7 @@ int pride_remover_three(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the north.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9076,7 +9058,7 @@ int pride_remover_four(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from above.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9183,7 +9165,7 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the south.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9242,7 +9224,7 @@ int pride_remover_six(struct char_data *ch, int cmd, char *arg,
          */
 
         act("$n strides in from the west.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);
@@ -9298,7 +9280,7 @@ int pride_remover_seven(struct char_data *ch, int cmd, char *arg,
         char_to_room(ch, 51836);        /* move char to The Naked Truth */
 
         act("$n strides in from the south.", FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
         return (TRUE);
     }
     return (FALSE);

@@ -3184,7 +3184,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
                 if (name) {
                     if (!strcmp(name, "self")) {
-                        name = GET_NAME(ch);
+                        ori_argument = strdup(GET_NAME(ch));
+                        name = ori_argument;
+                    } else {
+                        ori_argument = NULL;
                     }
 
                     /*
@@ -3301,6 +3304,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                         IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
                         send_to_char("You can't cast magic on that!", ch);
                         return;
+                    }
+
+                    if( ori_argument ) {
+                        free( ori_argument );
                     }
                 } else {
                     /* 
@@ -3841,7 +3848,7 @@ int check_falling(struct char_data *ch)
         act("$n falls from the sky", FALSE, ch, 0, 0, TO_ROOM);
         count++;
 
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
 
         if (IS_SET(targ->room_flags, DEATH) && !IS_IMMORTAL(ch)) {
             NailThisSucker(ch);
@@ -3919,7 +3926,7 @@ int check_falling(struct char_data *ch)
         Log("Someone messed up an air room.");
         char_from_room(ch);
         char_to_room(ch, 2);
-        do_look(ch, "", 0);
+        do_look(ch, NULL, 0);
     }
     return (FALSE);
 }

@@ -1753,9 +1753,9 @@ void down_river(int pulse)
                         char_to_room(ch,
                                      real_roomp(or)->dir_option[rd]->to_room);
 
-                        do_look(ch, "\0", 15);
+                        do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
-                            do_look(RIDDEN(ch), "\0", 15);
+                            do_look(RIDDEN(ch), NULL, 15);
                         }
                     }
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
@@ -3146,7 +3146,7 @@ void TeleportPulseStuff(int pulse)
                     char_to_room(tmp, rp->tele_targ);
 
                     if (IS_SET(TELE_LOOK, rp->tele_mask) && IS_PC(tmp)) {
-                        do_look(tmp, "\0", 15);
+                        do_look(tmp, NULL, 15);
                     }
 
                     if (IS_SET(dest->room_flags, DEATH) && !IS_IMMORTAL(tmp)) {
@@ -3477,7 +3477,7 @@ void ArenaPulseStuff(int pulse)
                                      "back home.\n\r\n\r", ch);
                         act("$n appears in the middle of the room.",
                             TRUE, ch, 0, 0, TO_ROOM);
-                        do_look(ch, "", 15);
+                        do_look(ch, NULL, 15);
                         send_to_char("\n\r", ch);
                     }
                     sprintf(buf, "%s has been declared winner of this "
@@ -3697,9 +3697,9 @@ void RiverPulseStuff(int pulse)
                         }
                         char_to_room(ch,
                                      real_roomp(or)->dir_option[rd]->to_room);
-                        do_look(ch, "\0", 15);
+                        do_look(ch, NULL, 15);
                         if (RIDDEN(ch)) {
-                            do_look(RIDDEN(ch), "\0", 15);
+                            do_look(RIDDEN(ch), NULL, 15);
                         }
 
                         if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
@@ -5686,7 +5686,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
             new_rm = real_roomp(ch->in_room);
             new_rm->room_flags = ROOM_WILDERNESS;
 
-            do_look(ch, "", 15);
+            do_look(ch, NULL, 15);
 
             return (TRUE);
         }
@@ -5736,7 +5736,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
                 new_rm = real_roomp(ch->in_room);
                 new_rm->room_flags = ROOM_WILDERNESS;
             }
-            do_look(ch, "", 15);
+            do_look(ch, NULL, 15);
             return (TRUE);
         }
     }

@@ -2300,8 +2300,8 @@ void do_read(struct char_data *ch, char *argument, int cmd)
     /*
      * This is just for now - To be changed later.!
      */
-    sprintf(buf, "at %s", argument);
-    do_look(ch, buf, 15);
+    sprintf(buf, "look at %s", argument);
+    command_interpreter(ch, buf);
 }
 
 void do_examine(struct char_data *ch, char *argument, int cmd)
@@ -2313,8 +2313,8 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_examine");
 
-    sprintf(buf, "at %s", argument);
-    do_look(ch, buf, 15);
+    sprintf(buf, "look at %s", argument);
+    command_interpreter(ch, buf);
 
     argument = get_argument(argument, &name);
 
@@ -2330,8 +2330,8 @@ void do_examine(struct char_data *ch, char *argument, int cmd)
         if ((GET_ITEM_TYPE(tmp_object) == ITEM_DRINKCON) ||
             (GET_ITEM_TYPE(tmp_object) == ITEM_CONTAINER)) {
             send_to_char("When you look inside, you see:\n\r", ch);
-            sprintf(buf, "in %s", argument);
-            do_look(ch, buf, 15);
+            sprintf(buf, "look in %s", argument);
+            command_interpreter(ch, buf);
         }
     }
 }

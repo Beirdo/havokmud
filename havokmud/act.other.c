@@ -589,7 +589,7 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
     act("$n appears in the middle of the room.", TRUE, victim, 0, 0, TO_ROOM);
     send_to_char("You close your eyes and think of home!  Suddenly, you find "
                  "yourself in a familiar location.\n\r", victim);
-    do_look(victim, "", 15);
+    do_look(victim, NULL, 15);
     GET_MOVE(victim) = 0;
     send_to_char("\n\rYou feel rather tired now!\n\r", victim);
 }
@@ -1539,7 +1539,8 @@ void do_quaff(struct char_data *ch, char *argument, int cmd)
 void do_recite(struct char_data *ch, char *argument, int cmd)
 {
     char           *buf,
-                   *buf2;
+                   *buf2,
+                   *tempname;
     struct obj_data *scroll,
                    *obj;
     struct char_data *victim;
@@ -1599,7 +1600,10 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
 
     if (buf2) {
         if (strcasecmp(buf2, "self") == 0) {
-            buf2 = GET_NAME(ch);
+            tempname = strdup(GET_NAME(ch));
+            buf2 = tempname;
+        } else {
+            tempname = NULL;
         }
 
         /*
@@ -1677,6 +1681,10 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             obj = (void *) buf2;
             target_ok = TRUE;
             target = TAR_NAME;
+        }
+
+        if( tempname ) {
+            free( tempname );
         }
 
         if (victim && IS_NPC(victim) &&
@@ -1805,7 +1813,8 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 {
     char           *buf,
                    *buf2,
-                   *buf3;
+                   *buf3,
+                   *tempname;
     struct char_data *tmp_char;
     struct obj_data *tmp_object,
                    *stick;
@@ -1866,7 +1875,10 @@ void do_use(struct char_data *ch, char *argument, int cmd)
         }
     } else if (buf2 && stick->obj_flags.type_flag == ITEM_WAND) {
         if (!strcmp(buf2, "self")) {
-            buf2 = GET_NAME(ch);
+            tempname = strdup(GET_NAME(ch));
+            buf2 = tempname;
+        } else {
+            tempname = NULL;
         }
 
         bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
@@ -1965,6 +1977,10 @@ void do_use(struct char_data *ch, char *argument, int cmd)
             } else {
                 send_to_char("What should the wand be pointed at?\n\r", ch);
             }
+        }
+
+        if( tempname ) {
+            free( tempname );
         }
     } else {
         send_to_char("Use is normally only for wands and staves.\n\r", ch);
@@ -3383,7 +3399,7 @@ void do_arena(struct char_data *ch, char *argument, int cmd)
     char_to_room(ch, ARENA_ENTRANCE);
     sprintf(buf, "%s appears in the room!\n\r", GET_NAME(ch));
     send_to_room_except(buf, ch->in_room, ch);
-    do_look(ch, "", 0);
+    do_look(ch, NULL, 0);
     return;
 }
 
