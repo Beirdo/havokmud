@@ -1403,6 +1403,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 					cast_cure_light(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
 					break;
 			}
+			return(TRUE);
 		}
 
 #ifdef PREP_SPELLS
@@ -1543,10 +1544,10 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	} /* end spellup */
 
 	/* Find a dude to to evil things upon ! */
-	if ((vict = FindAHatee(ch))==NULL) {
+//	if ((vict = FindAHatee(ch))==NULL) {
 		if (IS_SET(ch->specials.act, ACT_AGGRESSIVE))
 			vict = FindVictim(ch);
-	}
+//	}
 	if (!vict)
 		vict = ch->specials.fighting;
 	if (!vict)

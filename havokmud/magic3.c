@@ -4547,7 +4547,7 @@ void spell_iron_skins(byte level, struct char_data *ch, struct char_data *victim
 		act("You invoke the earthen forces, and surround yourself with iron skins.",TRUE,ch,0,0,TO_CHAR);
 
 		af.type      = SPELL_IRON_SKINS;
-		af.duration  = level;
+		af.duration  = (int)level*1.5;
 		af.modifier  = 0;
 		af.location  = APPLY_NONE;
 		af.bitvector = 0;

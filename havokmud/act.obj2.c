@@ -1540,6 +1540,11 @@ dlog("in do_bid");
 		return;
 	}
 
+	if (IS_SET(auctionobj->obj_flags.extra_flags, ITEM_MAGIC) && HasClass(ch, CLASS_BARBARIAN) && !IS_IMMORTAL(ch)) {
+		send_to_char("You sense magic on the item, and refrain from placing a bid.\n\r",ch);
+		return;
+	}
+
 	only_argument(argument,arg);
 
 	if(isdigit(*arg)) {
