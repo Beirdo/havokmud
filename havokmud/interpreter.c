@@ -592,7 +592,7 @@ struct command_def commandList[] = {
     { "gwho", list_groups, 379, POSITION_DEAD, 0 },
     { "mforce", do_mforce, 380, POSITION_DEAD, 53 },
     { "clone", do_clone, 381, POSITION_DEAD, 53 },
-    { "fire", do_fire, 382, POSITION_DEAD, 0 },
+    { "fire", do_fire, 382, POSITION_STANDING, 0 },
     { "throw", do_throw, 383, POSITION_SITTING, 0 },
     { "run", do_run, 384, POSITION_STANDING, 0 },
     { "notch", do_weapon_load, 385, POSITION_RESTING, 0 },
