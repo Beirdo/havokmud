@@ -2003,12 +2003,12 @@ Monk
 
 Barbarian
 	immunity to poison from level 20
-	1% harder skin per level. at level 50, barbs get a pierce damage reduction of 75% added to any damage modifiers
+//	1% harder skin per level. at level 50, barbs get a pierce damage reduction of 75% added to any damage modifiers
 //	+8 move regen
 //	+5 hitpoint regen
 
 Ranger
-	when hasted, offhand does an extra attack
+//	when hasted, offhand does an extra attack
 	+10% damage vs. undead
 	+5%  damage vs. evil
 
