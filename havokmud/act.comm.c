@@ -1222,6 +1222,11 @@ dlog("in do_reply");
     return;
     }
 
+  if (!(vict = get_char_vis(ch, name))) {
+	  send_to_char("They seem to have left...", ch);
+	  return;
+  }
+
   if(!*argument) {
     send_to_char("Did they leave you speechless?\n\r", ch);
     return;
