@@ -2,6 +2,7 @@
 #define _config_h
 
 #define _GNU_SOURCE
+#define __EXTENSIONS__
 
 #ifdef __CYGWIN__
 #define __SAVE_ANSI__ __STRICT_ANSI__

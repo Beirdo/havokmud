@@ -27,7 +27,7 @@ void            do_move(struct char_data *ch, char *argument, int cmd);
 
 void mobile_guardian(struct char_data *ch)
 {
-    struct char_data *targ;
+    struct char_data *targ = NULL;
     int             i,
                     found = FALSE;
 

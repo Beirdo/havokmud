@@ -6,6 +6,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
@@ -1203,7 +1204,7 @@ void do_at(struct char_data *ch, char *argument, int cmd)
         return;
     }
     
-    if (isdigit(*loc_str)) {
+    if (isdigit((int)*loc_str)) {
         loc_nr = atoi(loc_str);
         if (NULL == real_roomp(loc_nr)) {
             send_to_char("No room exists with that number.\n\r", ch);
@@ -1266,7 +1267,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
         send_to_char("You must supply a room number or a name.\n\r", ch);
         return;
     }
-    if (isdigit(*buf) && NULL == index(buf, '.')) {
+    if (isdigit((int)*buf) && NULL == index(buf, '.')) {
         loc_nr = atoi(buf);
         if (!real_roomp(loc_nr)) {
             if (GetMaxLevel(ch) < CREATOR || loc_nr < 0) {
@@ -2907,8 +2908,6 @@ void do_shutdow(struct char_data *ch, char *argument, int cmd)
 
 void do_shutdown(struct char_data *ch, char *argument, int cmd)
 {
-    extern int      mudshutdown,
-                    reboot;
     char            buf[100],
                    *arg;
 
@@ -2928,7 +2927,7 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "Reboot by %s.", GET_NAME(ch));
         send_to_all(buf);
         Log(buf);
-        mudshutdown = reboot = 1;
+        mudshutdown = reboot_now = 1;
     } else {
         send_to_char("Go shut down someone your own size.\n\r", ch);
     }
@@ -3267,7 +3266,7 @@ void do_load(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (isdigit(*num)) {
+    if (isdigit((int)*num)) {
         number = atoi(num);
     } else {
         number = -1;
@@ -3510,7 +3509,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             }
 
             argument = get_argument(argument, &name);
-            if (!name || !isdigit(*name)) {
+            if (!name || !isdigit((int)*name)) {
                 send_to_char("purge room start [end]", ch);
                 return;
             }
@@ -3518,7 +3517,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
             range[0] = atoi(name);
 
             argument = get_argument(argument, &name);
-            if (name && isdigit(*name)) {
+            if (name && isdigit((int)*name)) {
                 range[1] = atoi(name);
             } else {
                 range[1] = range[0];
@@ -4113,7 +4112,7 @@ void do_advance(struct char_data *ch, char *argument, int cmd)
         send_to_char("You must supply a level number.\n\r", ch);
         return;
     } else {
-        if (!isdigit(*level)) {
+        if (!isdigit((int)*level)) {
             send_to_char("Third argument must be a positive integer.\n\r", ch);
             return;
         }
@@ -4565,7 +4564,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        if( isdigit(*zonenum) ) {
+        if( isdigit((int)*zonenum) ) {
             zone = atoi( zonenum );
             if (zone <= 0 || zone > top_of_zone_table) {
                 send_to_char("That is not a valid zone_number\n\r", ch);
@@ -4608,7 +4607,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                (which_i = obj_index, topi = top_of_objt)) {
 
         zonenum = skip_spaces(argument);
-        if (!zonenum || !(isdigit(*zonenum))) {
+        if (!zonenum || !(isdigit((int)*zonenum))) {
             append_to_string_block(&sb, "Usage:\n\r"
                                    "  show wearslot #\n\r"
                                    "  Number ranging from  0   TAKE\n\r"
@@ -4659,7 +4658,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
     } else if (is_abbrev(arg1, "itemtype") &&
                (which_i = obj_index, topi = top_of_objt)) {
         zonenum = skip_spaces(argument);
-        if (!zonenum || !(isdigit(*zonenum))) {
+        if (!zonenum || !(isdigit((int)*zonenum))) {
             append_to_string_block(&sb, "Usage:\n\r"
                                    "  show itemtype #\n\r"
                                    "  Number ranging from  0   UNDEFINED\n\r"
@@ -4723,7 +4722,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
         zonenum = skip_spaces(argument);
         zone = -1;
 
-        if( zonenum && isdigit(*zonenum) ) {
+        if( zonenum && isdigit((int)*zonenum) ) {
             zone = atoi(zonenum);
         }
 
@@ -4760,7 +4759,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        if( isdigit(*zonenum) ) {
+        if( isdigit((int)*zonenum) ) {
             zone = atoi(zonenum);
         }
 
@@ -4811,7 +4810,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
 
         zonenum = skip_spaces(argument);
         zone = -1;
-        if( zonenum && isdigit(*zonenum) ) {
+        if( zonenum && isdigit((int)*zonenum) ) {
             zone = atoi(zonenum);
         }
 
@@ -4974,7 +4973,7 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                (which_i = obj_index, topi = top_of_objt)) {
         zonenum = skip_spaces(argument);
         zone = -1;
-        if( zonenum && isdigit(*zonenum) ) {
+        if( zonenum && isdigit((int)*zonenum) ) {
             zone = atoi(zonenum);
         }
 
@@ -7278,7 +7277,7 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &objec);
     num = skip_spaces(argument);
 
-    if (num && isdigit(*num)) {
+    if (num && isdigit((int)*num)) {
         number = atoi(num);
     } else {
         send_to_char("usage is: setobjmax itemname loadrate.\n\r", ch);
@@ -7331,7 +7330,7 @@ void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &objec);
     num = skip_spaces(argument);
 
-    if (num && isdigit(*num)) {
+    if (num && isdigit((int)*num)) {
         number = atoi(num);
     } else {
         send_to_char("usage is: setobjspeed item speed.\n\r", ch);
@@ -7373,7 +7372,7 @@ void do_setwtype(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &objec);
     num = skip_spaces(argument);
 
-    if (num && isdigit(*num)) {
+    if (num && isdigit((int)*num)) {
         number = atoi(num);
     } else {
         send_to_char("Usage: setwtype item wtype.  Get wtype from allweapons "

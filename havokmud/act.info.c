@@ -8,6 +8,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
@@ -3766,7 +3767,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (isdigit(*name)) {
+    if (isdigit((int)*name)) {
         nameonly = name;
         count = number = get_number(&nameonly);
     } else {
@@ -5784,7 +5785,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
         return;
     }
     
-    if (!isdigit(*arg)) {
+    if (!isdigit((int)*arg)) {
         send_to_char("Usage:  clanlist\n\r", ch);
         send_to_char("        clanlist <clan number>\n\r", ch);
         return;

@@ -5,6 +5,7 @@
 #include <sys/time.h>
 
 #include "protos.h"
+#include "externs.h"
 
 void            checkpointing(int signal);
 void            shutdown_request(int signal);
@@ -83,8 +84,6 @@ void shutdown_request(int signal)
 void hupsig(int signal)
 {
     int             i;
-    extern int      mudshutdown,
-                    reboot;
 
     Log("Received SIGHUP, SIGINT, or SIGTERM. Shutting down");
 
@@ -95,7 +94,7 @@ void hupsig(int signal)
         SaveTheWorld();
     }
 
-    mudshutdown = reboot = 1;
+    mudshutdown = reboot_now = 1;
 }
 
 void logsig(int signal)

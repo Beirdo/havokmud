@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -45,17 +46,6 @@ void            identd_test(struct sockaddr_in in_addr);
  */
 
 #define STATE(d) ((d)->connected)
-
-#if defined(__CYGWIN__)
-  static int _Sigprocmask( int how, int mask ) {
-    sigset_t newset=mask, oldset;
-    int ccode = sigprocmask( how, &newset, &oldset );
-    return ( ccode < 0 )? ccode : oldset;
-  }
-  #define sigmask(sig)   ( 1UL << ( (sig) % ( 8*sizeof(sigset_t) )))
-  #define sigblock(mask)    _Sigprocmask( SIG_BLOCK,   (mask) )
-  #define sigsetmask(mask)  _Sigprocmask( SIG_SETMASK, (mask) )
-#endif
 
 int             mud_port;
 
@@ -93,7 +83,7 @@ int             lawful = 0;     /* work like the game regulator */
 int             slow_death = 0; /* Shut her down, Martha, she's sucking
                                  * mud */
 int             mudshutdown = 0;        /* clean shutdown */
-int             reboot = 0;     /* reboot the game after a shutdown */
+int             reboot_now = 0;     /* reboot the game after a shutdown */
 int             no_specials = 0;        /* Suppress ass. of special
                                          * routines */
 long            Uptime;         /* time that the game has been up */
@@ -111,6 +101,7 @@ int             maxdesc,
                 avail_descs;
 int             tics = 0;       /* for extern checkpointing */
 
+void sigsetmaskset( int *set, int count );
 
 /*
  *********************************************************************
@@ -253,7 +244,7 @@ int main(int argc, char **argv)
     }
 
     if (pos < argc) {
-        if (!isdigit(*argv[pos])) {
+        if (!isdigit((int)*argv[pos])) {
             fprintf(stderr, "Usage: %s [-l] [-s] [-d pathname] [ port # ]\n",
                     argv[0]);
             assert(0);
@@ -353,7 +344,7 @@ int run_the_game(int port)
 
     PROFILE(monitor(0);)
 
-    if (reboot) {
+    if (reboot_now) {
         Log("Rebooting.");
     }
 
@@ -387,9 +378,12 @@ void game_loop(int s)
     char            promptbuf[180];
     struct descriptor_data *point,
                    *next_point;
-    int             mask;
     struct char_data *ch;
     int             update = 0;
+
+    static int      sigs[] = { SIGUSR1, SIGUSR2, SIGINT, SIGPIPE, SIGALRM, 
+                               SIGTERM, SIGHUP };
+    static int      sigcount = NELEMS(sigs);
 
     /*
      * extern struct descriptor_data *descriptor_list; 
@@ -415,10 +409,6 @@ void game_loop(int s)
      * !! Change if more needed !! 
      */
     avail_descs = getdtablesize() - 2;  /* never used, pointless? */
-
-    mask = sigmask(SIGUSR1) | sigmask(SIGUSR2) | sigmask(SIGINT) |
-           sigmask(SIGPIPE) | sigmask(SIGALRM) | sigmask(SIGTERM) |
-           sigmask(SIGHUP);
 
     /*
      * Main loop 
@@ -489,7 +479,7 @@ void game_loop(int s)
             last_time.tv_sec++;
         }
 
-        sigsetmask(mask);
+        sigsetmaskset(sigs, sigcount);
 
         if (select(maxdesc + 1, &input_set, &output_set, &exc_set, 
                    &null_time) < 0) {
@@ -513,7 +503,7 @@ void game_loop(int s)
              */
         }
 
-        sigsetmask(0);
+        sigsetmaskset(NULL, 0);
 
         /*
          * Respond to whatever might be happening 
@@ -1600,7 +1590,8 @@ int process_input(struct descriptor_data *t)
                     i++;
                 }
             } else {
-                if (isascii(*(t->buf + i)) && isprint(*(t->buf + i))) {
+                if (isascii((int)*(t->buf + i)) && 
+                    isprint((int)*(t->buf + i))) {
                     /*
                      * trans char, double for '$' (printf) 
                      */
@@ -1948,9 +1939,10 @@ void close_socket(struct descriptor_data *d)
 #endif
 }
 
+
 void nonblock(int s)
 {
-    if (fcntl(s, F_SETFL, FNDELAY) == -1) {
+    if (fcntl(s, F_SETFL, O_NDELAY) == -1) {
         perror("Noblock");
         assert(0);
     }
@@ -1982,11 +1974,14 @@ void coma(int s)
     int             workhours(void);
     int             load(void);
 
+    static int      sigs[] = { SIGUSR1, SIGUSR2, SIGINT, SIGPIPE, SIGALRM,
+                               SIGTERM, SIGURG, SIGXCPU, SIGHUP };
+    static int      sigcount = NELEMS(sigs);
+
+
     Log("Entering comatose state.");
 
-    sigsetmask(sigmask(SIGUSR1) | sigmask(SIGUSR2) | sigmask(SIGINT) |
-               sigmask(SIGPIPE) | sigmask(SIGALRM) | sigmask(SIGTERM) |
-               sigmask(SIGURG) | sigmask(SIGXCPU) | sigmask(SIGHUP));
+    sigsetmaskset(sigs, sigcount);
 
     while (descriptor_list) {
         close_socket(descriptor_list);
@@ -2002,7 +1997,7 @@ void coma(int s)
         if (FD_ISSET(s, &input_set)) {
             if (load() < 6) {
                 Log("Leaving coma with visitor.");
-                sigsetmask(0);
+                sigsetmask(NULL, 0);
                 return;
             }
             if ((conn = new_connection(s)) >= 0) {
@@ -2020,7 +2015,7 @@ void coma(int s)
     } while (load() >= 6);
 
     Log("Leaving coma.");
-    sigsetmask(0);
+    sigsetmask(NULL, 0);
 #endif
 }
 
@@ -2406,7 +2401,8 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                          */
                     case '$':
                         if (*strp != '$' || toupper(*(strp + 1)) != 'C' ||
-                            !isdigit(*(strp + 2)) || !isdigit(*(strp + 3))) {
+                            !isdigit((int)*(strp + 2)) || 
+                            !isdigit((int)*(strp + 3))) {
                             i = "$";
                             break;
                         }
@@ -2571,7 +2567,8 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                          */
                     case '$':
                         if (*strp != '$' || toupper(*(strp + 1)) != 'C' ||
-                            !isdigit(*(strp + 2)) || !isdigit(*(strp + 3))) {
+                            !isdigit((int)*(strp + 2)) || 
+                            !isdigit((int)*(strp + 3))) {
                             i = "$";
                             break;
                         }
@@ -3351,6 +3348,21 @@ void identd_test(struct sockaddr_in in_addr)
     fclose(fp_in);
 
     return;
+}
+
+void sigsetmaskset( int *set, int count )
+{
+    static sigset_t sigset;
+    int i;
+
+    sigemptyset(&sigset);
+    if( set ) {
+        for( i = 0; i < count; i++ ) {
+            sigaddset(&sigset, set[i]);
+        }
+    }
+
+    sigprocmask( SIG_SETMASK, &sigset, NULL );
 }
 
 /*

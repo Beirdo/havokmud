@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "protos.h"
+#include "externs.h"
 
 #define REBOOT_AT    3          /* 0-23, time of optional reboot if -e
                                  * lib/reboot */
@@ -774,7 +775,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
             rp->room_flags = r_flags;
             rp->sector_type = s_type;
             sprintf(name, "%s", temproom->name);
-            if (isdigit(*name)) {
+            if (isdigit((int)*name)) {
                 free(temproom->name);
                 sprintf(buf, "Default name: ");
                 strcat(buf, sector_types[s_type]);
@@ -801,7 +802,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                               i);
                     if (temproom->name) {
                         sprintf(name, "%s", temproom->name);
-                        if (isdigit(*name)) {
+                        if (isdigit((int)*name)) {
                             free(temproom->name);
                             sprintf(buf, "Default name: ");
                             strcat(buf, sector_types[s_type]);
@@ -1257,9 +1258,6 @@ void check_reboot()
     char            dummy;
     FILE           *boot;
 
-    extern int      mudshutdown,
-                    reboot;
-
     tc = time(0);
     t_info = localtime(&tc);
 
@@ -1285,7 +1283,7 @@ void check_reboot()
                             "while.\n\r");
                 raw_force_all("return");
                 raw_force_all("save");
-                mudshutdown = reboot = 1;
+                mudshutdown = reboot_now = 1;
             } else if (t_info->tm_min > 49) {
                 send_to_all("MUD WILL REBOOT IN 1 MINUTE!\n\r");
             } else if (t_info->tm_min > 45) {
