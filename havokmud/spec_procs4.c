@@ -1019,6 +1019,8 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 		act("$n quaffs $p.",TRUE,ch,obj,0,TO_ROOM);
 		act("You quaff $o which dissolves.",FALSE,ch,obj,0,TO_CHAR);
 		act("You have claimed your quest point!",FALSE,ch,obj,0,TO_CHAR);
+		sprintf(buf,"%s just quaffed a quest potion.\n\r",GET_NAME(ch));
+		qlog(buf);
 		ch->player.q_points++;
 		do_save(ch, "", 0);
 		extract_obj(obj);

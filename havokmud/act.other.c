@@ -2924,7 +2924,6 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
 	struct descriptor_data *i;
 	char buf[254];
 
-
 dlog("in do_set_quest");
 
   if (!ch)
@@ -2933,14 +2932,16 @@ dlog("in do_set_quest");
     return;
 
   if(IS_AFFECTED2(ch,AFF2_QUEST)) {
-    act("$c0008$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
-    act("$c0008You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
+    act("$n has stopped questing.", TRUE, ch, 0, 0, TO_ROOM);
+    act("You stop questing.", TRUE, ch, 0, 0, TO_CHAR);
     REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST);
 	} else {
 		/*imms can always go into questy mode */
 		if (IS_IMMORTAL(ch)) {
-			act("$c0007$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
-			act("$c0007The need to run a quest courses through your veins!", TRUE, ch, 0, 0, TO_CHAR);
+			act("$n starts a quest!", TRUE, ch, 0, 0, TO_ROOM);
+			sprintf(buf,"%s started a quest.\n\r",GET_NAME(ch));
+			qlog(buf);	/* quest log this */
+			act("The need to run a quest courses through your veins!", TRUE, ch, 0, 0, TO_CHAR);
 			SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
 		} else {
 			/* see if there's a connected, questy imm */
@@ -2955,12 +2956,14 @@ dlog("in do_set_quest");
 					}
 				}
 			}
-			if (qcheck == 1) { /* there is */
-				act("$c0007$n joins the quest!", TRUE, ch, 0, 0, TO_ROOM);
-				act("$c0007Okay, you're now part of the quest!", TRUE, ch, 0, 0, TO_CHAR);
+			if (qcheck) { /* there is */
+				act("$n joins the quest!", TRUE, ch, 0, 0, TO_ROOM);
+				sprintf(buf,"%s just joined the quest.\n\r",GET_NAME(ch));
+				qlog(buf);
+				act("Okay, you're now part of the quest!", TRUE, ch, 0, 0, TO_CHAR);
 				SET_BIT(ch->specials.affected_by2, AFF2_QUEST);
 			} else { /* there isn't */
-				act("$c0007You cannot embark on a quest without Divine Guidance.", TRUE, ch, 0, 0, TO_CHAR);
+				act("You cannot embark on a quest without Divine Guidance.", TRUE, ch, 0, 0, TO_CHAR);
 			}
 		}
 	}
