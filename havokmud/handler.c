@@ -1708,16 +1708,20 @@ void extract_char_smarter(struct char_data *ch, long save_room)
     ch->desc->snoop.snooping = ch->desc->snoop.snoop_by = 0;
   }
 
+  /*Start Change Jan 22, 2004 Odin
+    Altered to drop gold from pets, if any, as well as equipment */
   if (ch->carrying || ch->points.gold>0)	{
     /* transfer ch's objects to room */
 
-    if (!IS_IMMORTAL(ch)) {
-      amount = ch->points.gold;
-      if(amount > 0){
-	tmp_object = create_money(amount);
-	obj_to_room(tmp_object,ch->in_room);
-	GET_GOLD(ch)-=amount;
-      }
+    if (!IS_IMMORTAL(ch)) 
+      {
+	amount = ch->points.gold;
+	if(amount > 0){
+	  tmp_object = create_money(amount);
+	  obj_to_room(tmp_object,ch->in_room);
+	  GET_GOLD(ch)-=amount;
+	}
+	/*End Change Jan 22, 2004 Odin */
       
       while(ch->carrying) {
 	i=ch->carrying;
