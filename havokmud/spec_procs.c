@@ -485,7 +485,7 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
     "spy",
     "retreat",
     "find trap",
-    "disarm trap",
+    "remove trap",
     "\n",
   };
   int percent=0, number=0;
