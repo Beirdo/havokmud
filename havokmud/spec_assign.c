@@ -53,8 +53,9 @@ int is_murdervict(struct char_data *ch)
     };
 
     for (i = 0; i < MAX_MUTYPE; i++) {
-        if (mob_index[ch->nr].virtual == mutype[i])
+        if (mob_index[ch->nr].virtual == mutype[i]) {
             return (TRUE);
+        }
     }
 #endif
     return (FALSE);
@@ -67,11 +68,13 @@ void assign_mobiles()
 {
     static struct special_proc_entry specials[] = {
 
-        {1, remort_guild},      // puff },
+        {1, remort_guild},
         {2, Ringwraith},
         {3, tormentor},
-        // { 4, Inquisitor},
-        // { 6, AcidBlob },
+#if 0
+        {4, Inquisitor},
+        {6, AcidBlob },
+#endif        
         {25, magic_user},
 
         {30, MageGuildMaster},
@@ -90,7 +93,7 @@ void assign_mobiles()
         {199, AGGRESSIVE},
         {200, AGGRESSIVE},
         /*
-         **  Doom Island
+         * Doom Island
          */
 
         {205, fighter},
@@ -924,9 +927,10 @@ void assign_mobiles()
         {6206, fighter},
         {6207, fighter},
         {6208, fighter},
+#if 0
         /*
-         ** Dwarf Village, commented out after revamp
-         
+         * Dwarf Village, commented out after revamp
+         */
          {6500, fighter},
          {6501, fighter},
          {6502, wraith},
@@ -937,7 +941,7 @@ void assign_mobiles()
          {6516, fighter},
          {6516, snake},
          {6517, snake},
-         */
+#endif         
         /*
          **  Lycanthropia
          */
@@ -988,7 +992,9 @@ void assign_mobiles()
          **  Lower city
          */
         {99, QuestorGOD},
-        // { 3047, DogCatcher },
+#if 0        
+        { 3047, DogCatcher },
+#endif        
         {3143, mayor},
         {7009, MidgaardCityguard},
 
@@ -1227,14 +1233,14 @@ void assign_mobiles()
         /*
          * Thikahnus's zone 
          */
-        {37203, FrostBreather}, // Iceberg
-        {37208, shadow},        // Ministraal
-        {37209, vampire},       // Joshua von Richten
-        {37210, ghost},         // spectre guard
-        {37227, shadow},        // spirit priest
-        {37228, ghoul},         // Spirit high priest
-        {37229, fido},          // Stray dog
-        {37230, ghost},         // Spectre roaming
+        {37203, FrostBreather}, /* Iceberg */
+        {37208, shadow},        /* Ministraal */
+        {37209, vampire},       /* Joshua von Richten */
+        {37210, ghost},         /* spectre guard */
+        {37227, shadow},        /* spirit priest */
+        {37228, ghoul},         /* Spirit high priest */
+        {37229, fido},          /* Stray dog */
+        {37230, ghost},         /* Spectre roaming */
         /*
          * The Realms of Delbrandor 
          */
@@ -1369,7 +1375,9 @@ void assign_mobiles()
                                  * help */
         {31913, citizen},       /* for guards and clerics shouting for
                                  * help */
-        // {31886, RepairGuy },
+#if 0        
+        {31886, RepairGuy },
+#endif        
         {33185, board_ship},    /* note.. Not sure which corsair does waht 
                                  */
         {32034, CorsairPush},
@@ -1423,7 +1431,7 @@ void assign_mobiles()
         {52850, DruidGuildMaster},
         {52853, gnome_collector},
 
-        // Talesian mob procedures
+        /* Talesian mob procedures */
         {37802, sageactions},
         {37803, guardianextraction},
         {37804, ghastsmell},
@@ -1481,7 +1489,7 @@ void assign_objects()
     static struct special_proc_entry specials[] = {
         {15, SlotMachine},
         {30, scraps},
-        {23, ships_helm},       // godsay},
+        {23, ships_helm},   
         {31, portal},
         {3097, board},
         {3098, board},
@@ -1521,11 +1529,11 @@ void assign_objects()
          * King's Grove 
          */
         {27, qp_potion},
-        //
-        // Talesian object procedures
+        
+        /* Talesian object procedures */
         {37821, mirrorofopposition},
 
-        {51152, chestproc},     // royal rumble proc
+        {51152, chestproc},     /* royal rumble proc */
 
         {-1, NULL},
     };
@@ -1707,9 +1715,10 @@ void assign_rooms()
          * Cthol (Xenon) 
          */
         {40233, dispel_room},
-        // {40285, fiery_alley},
-        // {40287, fiery_alley},
-
+#if 0        
+        {40285, fiery_alley},
+        {40287, fiery_alley},
+#endif
         /*
          * Thunder Mountain Keep 
          */
@@ -1723,18 +1732,20 @@ void assign_rooms()
         {31943, pet_shops},
         {31858, bank},          /* Giamina bank teller (room# 31858 -
                                  * bank) */
-        /*
-         * Ash's Monk and Druid challenge rooms { 500,
-         * druid_challenge_prep_room}, { 501, druid_challenge_room}, {
-         * 550, monk_challenge_prep_room}, { 551, monk_challenge_room}, 
-         */
-        {44129, Magic_Pool},    // in proc_assign and add to protos
-        {44114, Read_Room},     // in proc_assign and add to protos..
-        {51151, preperationproc},       // Royal rumble proc.
+#if 0        
+        /* Ash's Monk and Druid challenge rooms  */
+         { 500,druid_challenge_prep_room}, 
+         { 501, druid_challenge_room}, 
+         { 550, monk_challenge_prep_room}, 
+         { 551, monk_challenge_room}, 
+#endif
+        {44129, Magic_Pool},    /* in proc_assign and add to protos */
+        {44114, Read_Room},     /* in proc_assign and add to protos.. */
+        {51151, preperationproc},       /* Royal rumble proc. */
 
         {53025, Fountain},      /* Luna's fountain */
 
-        // Talesian room procedures
+        /* Talesian room procedures */
         {37840, traproom},
         {37823, guardianroom},
         {37857, trapjawsroom},
