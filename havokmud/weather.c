@@ -90,7 +90,9 @@ void another_hour(int mode)
                          "horizon.\n\r", moon);
             send_to_outdoor(buf);
             if (moontype > 16 && moontype < 22) {
-                /* brighter during these moons */
+                /* 
+                 * brighter during these moons 
+                 */
                 gLightLevel++;
             }
         }
@@ -136,7 +138,9 @@ void another_hour(int mode)
         }
 
         if (time_info.hours > 23) {
-            /* Changed by HHS due to bug ??? */
+            /* 
+             * Changed by HHS due to bug ??? 
+             */
             time_info.hours -= 24;
             time_info.day++;
             switch (time_info.day) {
@@ -226,11 +230,11 @@ void weather_change()
     int             diff,
                     change;
 
-    if ((time_info.month >= 9) && (time_info.month <= 16))
+    if ((time_info.month >= 9) && (time_info.month <= 16)) {
         diff = (weather_info.pressure > 985 ? -2 : 2);
-    else
+    } else {
         diff = (weather_info.pressure > 1015 ? -2 : 2);
-
+    }
     weather_info.change += (dice(1, 4) * diff + dice(2, 6) - dice(2, 6));
 
     weather_info.change = MIN(weather_info.change, 12);
@@ -245,40 +249,44 @@ void weather_change()
 
     switch (weather_info.sky) {
     case SKY_CLOUDLESS:
-        if (weather_info.pressure < 990)
+        if (weather_info.pressure < 990) {
             change = 1;
-        else if (weather_info.pressure < 1010 && dice(1, 4) == 1)
+        } else if (weather_info.pressure < 1010 && dice(1, 4) == 1) {
             change = 1;
+        }
         break;
     case SKY_CLOUDY:
-        if (weather_info.pressure < 970)
+        if (weather_info.pressure < 970) {
             change = 2;
-        else if (weather_info.pressure < 990)
-            if (dice(1, 4) == 1)
+        } else if (weather_info.pressure < 990) {
+            if (dice(1, 4) == 1) {
                 change = 2;
-            else
+            } else {
                 change = 0;
-        else if (weather_info.pressure > 1030 && dice(1, 4) == 1)
+            }
+        } else if (weather_info.pressure > 1030 && dice(1, 4) == 1) {
                 change = 3;
-
+        }
         break;
     case SKY_RAINING:
-        if (weather_info.pressure < 970)
-            if (dice(1, 4) == 1)
+        if (weather_info.pressure < 970) {
+            if (dice(1, 4) == 1) {
                 change = 4;
-            else
+            } else {
                 change = 0;
-        else if (weather_info.pressure > 1030)
+            }
+        } else if (weather_info.pressure > 1030) {
             change = 5;
-        else if (weather_info.pressure > 1010 && dice(1, 4) == 1)
+        } else if (weather_info.pressure > 1010 && dice(1, 4) == 1) {
             change = 5;
+        }
         break;
     case SKY_LIGHTNING:
-        if (weather_info.pressure > 1010)
+        if (weather_info.pressure > 1010) {
             change = 6;
-        else if (weather_info.pressure > 990 && dice(1, 4) == 1)
+        } else if (weather_info.pressure > 990 && dice(1, 4) == 1) {
             change = 6;
-
+        }
         break;
     default:
         change = 0;
@@ -291,11 +299,12 @@ void weather_change()
 
 void ChangeWeather(int change)
 {
-    if (change < 0)
+    if (change < 0) {
         change = 0;
-    if (change > 7)
+    }
+    if (change > 7) {
         change = 6;
-
+    }
     switch (change) {
     case 0:
         break;
@@ -369,9 +378,9 @@ void ChangeWeather(int change)
 
 void GetMonth(int month)
 {
-    if (month < 0)
+    if (month < 0) {
         return;
-
+    }
     if (month <= 1) {
         send_to_outdoor(" It is bitterly cold outside\n\r");
     } else if (month <= 2) {
