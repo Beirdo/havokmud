@@ -61,7 +61,9 @@ void get(struct char_data *ch, struct obj_data *obj_object,
         if ((obj_object->obj_flags.type_flag == ITEM_MONEY) &&
             (obj_object->obj_flags.value[0] >= 1)) {
             obj_from_char(obj_object);
-            /* don't notify if it's 1 coin or less */
+            /* 
+             * don't notify if it's 1 coin or less 
+             */
             if (obj_object->obj_flags.value[0] > 1) {   
                 sprintf(buffer, "There was %s coins.\n\r",
                         formatNum(obj_object->obj_flags.value[0]));
@@ -122,10 +124,14 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 
     if (*arg1 && !*arg2) {      
         if (!str_cmp(arg1, "all")) {
-            /* plain "get all" */
+            /* 
+             * plain "get all" 
+             */
             type = 1;
         } else {
-            /* "get all.item" */
+            /* 
+             * "get all.item" 
+             */
             type = 2;           
         }
     }
@@ -133,15 +139,21 @@ void do_get(struct char_data *ch, char *argument, int cmd)
     if (*arg1 && *arg2) {
         if (!str_cmp(arg1, "all")) {
             if (!str_cmp(arg2, "all")) {
-                /* "get all all" */
+                /* 
+                 * "get all all" 
+                 */
                 type = 3;
             } else {
-                /* get all object */
+                /* 
+                 * get all object 
+                 */
                 type = 4;
             }
         } else {
             if (!str_cmp(arg2, "all")) {
-                /* "get object all" */
+                /* 
+                 * "get object all" 
+                 */
                 type = 5;
             } else {
                 type = 6;
@@ -203,7 +215,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
             if (found) {
                 send_to_char("OK.\n\r", ch);
             } else if (!fail) {
-                    send_to_char("You see nothing here.\n\r", ch);
+                send_to_char("You see nothing here.\n\r", ch);
             }
         }
         break;
@@ -442,9 +454,9 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                             fail = TRUE;
                         }
 
-                        if (num > 0)
+                        if (num > 0) {
                             num--;
-
+                        }
                     }
                 } else {
                     sprintf(buffer, "%s is not a container.\n\r",
@@ -737,10 +749,11 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                         else {
                                             /*
                                              * This isn't used
-                                             * obj_from_room(obj_object);
-                                             * obj_to_obj(obj_object,
-                                             * sub_object); 
-                                             */
+                                             */ 
+                                             obj_from_room(obj_object);
+                                             obj_to_obj(obj_object,
+                                             sub_object); 
+                                             
                                         }
 #endif
                                         act("$n puts $p in $P", TRUE, ch,
@@ -828,9 +841,13 @@ void do_give(struct char_data *ch, char *argument, int cmd)
      * sprintf(buf,"obj_name: %s",obj_name); 
      */
     if (!obj && is_number(obj_name)) {
-        if (newstrlen(obj_name) >= 10)
+        if (newstrlen(obj_name) >= 10) {
             obj_name[10] = '\0';
-        amount = advatoi(obj_name);     // atoi(obj_name);
+        }
+        amount = advatoi(obj_name);     
+        /* 
+         * atoi(obj_name);
+         */
         argument = one_argument(argument, arg);
 
         if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 && 
@@ -1082,13 +1099,16 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
 
                     num = 0;
                 }
-                if (num > 0)
+                if (num > 0) {
                     num--;
+                }
             }
 #if   NODUPLICATES
             do_save(ch, "", 0);
 #endif
-            // GET_GOLD(ch) += value;
+            /* 
+             * GET_GOLD(ch) += value;
+             */
         }
     } else {
         send_to_char("Normally, you gotta donate something!?\n\r", ch);
