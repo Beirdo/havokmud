@@ -5979,6 +5979,17 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
         }
         return 0;
     } else {
+
+        if (affected_by_spell(targ, SKILL_WALL_OF_THOUGHT)) {
+            act("$p released by $n is deflected by some barrier "
+                "surrounding $N.", FALSE, ch, missile, targ, TO_NOTVICT);
+            act("Something prevents your missile from hitting $N.", FALSE,
+                ch, 0, targ, TO_CHAR);
+            act("Your wall of thought protects you from $p, released by $n.",
+                FALSE, ch, missile, targ, TO_VICT);
+            return 0;
+        }
+
         dam += dice(missile->obj_flags.value[1], missile->obj_flags.value[2]);
         dam = MAX(1, dam);
         AddHated(targ, ch);
