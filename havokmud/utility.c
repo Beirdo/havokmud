@@ -6430,7 +6430,7 @@ char           *skip_word(char *string)
  * Support for different platforms
  *************************************************************************/
 
-#if defined( __FreeBSD__ ) || defined( __sun__ )
+#if defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __sun__ )
 /* FreeBSD and Solaris seem to be missing strnlen */
 
 size_t strnlen(const char *s, size_t maxlen) 

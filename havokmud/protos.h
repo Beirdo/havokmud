@@ -4079,7 +4079,7 @@ void ShowFears(struct char_data *ch, char *buffer);
 char *crypt(const char *key, const char *salt);
 #endif
 
-#if defined( __FreeBSD__ ) || defined( __sun__ )
+#if defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __sun__ )
 /* FreeBSD and Solaris seem to be missing strnlen */
 size_t strnlen(const char *s, size_t maxlen);
 #endif
