@@ -43,7 +43,7 @@ extern int      top_of_world;
 extern struct descriptor_data *descriptor_list;
 
 /*
- * external functions 
+ * external functions
  */
 void            stop_fighting(struct char_data *ch);
 void            fake_setup_dir(FILE * fl, long room, int dir);
@@ -53,7 +53,7 @@ int             spy_flag;
 void            NailThisSucker(struct char_data *ch);
 
 /*
- * interal move to protos.h 
+ * interal move to protos.h
  */
 int             IS_UNDERGROUND(struct char_data *ch);
 FILE           *log_f;
@@ -97,11 +97,11 @@ int MAX(int a, int b)
 
 int OnlyClassItemValid(struct char_data *ch, struct obj_data *obj)
 {
-    if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER)) && 
+    if ((HasClass(ch, CLASS_MAGIC_USER) || HasClass(ch, CLASS_SORCERER)) &&
         !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_MAGE)) {
         return (FALSE);
     }
-    if (HasClass(ch, CLASS_THIEF) && 
+    if (HasClass(ch, CLASS_THIEF) &&
         !IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_THIEF)) {
         return (FALSE);
     }
@@ -262,7 +262,7 @@ int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj)
     }
     /*
      * changed the act.info.c, hope this works on traps INSIDE chests
-     * etc.. 
+     * etc..
      */
 
     if (ITEM_TYPE(obj) == ITEM_TRAP && GET_TRAP_CHARGES(obj) > 0) {
@@ -479,7 +479,7 @@ int LoadZoneFile(FILE * fl, int zon)
     }
 
     /*
-     * read the command table 
+     * read the command table
      */
     cmd_no = 0;
     for (expand = 1; !feof(fl);) {
@@ -562,18 +562,18 @@ void CleanZone(int zone)
 
         for (obj = rp->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-            obj_index[obj->item_number].number--; 
-            /* 
+            obj_index[obj->item_number].number--;
+            /*
              * object
-             * maxxing.(GH) 
+             * maxxing.(GH)
              *
              *
              * Do not clean out corpses, druid trees or quest items. Bit
-             * of kludge to avoid deinit getting rid of quest items when a 
-             * scavenge quest is going on. Maybe make a SYS_NODEINIT? Hard 
-             * to use for small imms. -Lennya 
+             * of kludge to avoid deinit getting rid of quest items when a
+             * scavenge quest is going on. Maybe make a SYS_NODEINIT? Hard
+             * to use for small imms. -Lennya
              */
-            if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TREE && 
+            if (!IS_CORPSE(obj) && ITEM_TYPE(obj) != ITEM_TREE &&
                 !IS_SET(obj->obj_flags.extra_flags, ITEM_QUEST)) {
                 extract_obj(obj);
             }
@@ -679,7 +679,7 @@ unsigned IsSusc(struct char_data *ch, int bit)
 }
 
 /*
- * creates a random number in interval [from;to] 
+ * creates a random number in interval [from;to]
  */
 int number(int from, int to)
 {
@@ -691,7 +691,7 @@ int number(int from, int to)
 }
 
 /*
- * simulates dice roll 
+ * simulates dice roll
  */
 int dice(int number, int size)
 {
@@ -699,7 +699,7 @@ int dice(int number, int size)
     int             sum = 0;
 
     /*
-     * instead of crashing the mud we set it to 1 
+     * instead of crashing the mud we set it to 1
      */
     if (size <= 0) {
         size = 1;
@@ -771,10 +771,10 @@ char           *strip_cr(char *newbuf, const char *orig, size_t maxlen)
 }
 
 /*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2 
+ * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
  */
 /*
- * scan 'till found different or end of both 
+ * scan 'till found different or end of both
  */
 int str_cmp(char *arg1, char *arg2)
 {
@@ -801,8 +801,8 @@ int str_cmp(char *arg1, char *arg2)
 }
 
 /*
- * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2 
- * scan 'till found different, end of both, or n reached 
+ * returns: 0 if equal, 1 if arg1 > arg2, -1 if arg1 < arg2
+ * scan 'till found different, end of both, or n reached
  */
 int strn_cmp(char *arg1, char *arg2, int n)
 {
@@ -827,7 +827,7 @@ int strn_cmp(char *arg1, char *arg2, int n)
 }
 
 /*
- * writes a string to the log 
+ * writes a string to the log
  */
 void log_sev(char *str, int sev)
 {
@@ -845,7 +845,7 @@ void log_sev(char *str, int sev)
         fprintf(stderr, "%s", buf);
     }
     /*
-     * My Addon to log into file... useful, he? 
+     * My Addon to log into file... useful, he?
      */
     if (!log_f) {
         if (!(log_f = fopen("output.log", "w"))) {
@@ -864,7 +864,7 @@ void log_sev(char *str, int sev)
     }
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected && GetMaxLevel(i->character) >= LOW_IMMORTAL &&
-            i->character->specials.sev <= sev && 
+            i->character->specials.sev <= sev &&
             !IS_SET(i->character->specials.act, PLR_NOSHOUT)) {
             SEND_TO_Q(buf, i);
         }
@@ -921,7 +921,7 @@ void sprinttype(int type, char *names[], char *result)
 }
 
 /*
- * Calculate the REAL time passed over the last t2-t1 centuries (secs) 
+ * Calculate the REAL time passed over the last t2-t1 centuries (secs)
  */
 struct time_info_data real_time_passed(time_t t2, time_t t1)
 {
@@ -944,7 +944,7 @@ struct time_info_data real_time_passed(time_t t2, time_t t1)
 }
 
 /*
- * Calculate the MUD time passed over the last t2-t1 centuries (secs) 
+ * Calculate the MUD time passed over the last t2-t1 centuries (secs)
  */
 struct time_info_data mud_time_passed(time_t t2, time_t t1)
 {
@@ -996,7 +996,7 @@ struct time_info_data mud_time_passed(time_t t2, time_t t1)
         if (now.year) {
             now.year = -now.year;
         }
-    }   
+    }
     return (now);
 }
 
@@ -1058,8 +1058,8 @@ void age2(struct char_data *ch, struct time_info_data *g)
 
     mud_time_passed2(time(0), ch->player.time.birth, g);
 
-    /* 
-     * All players start at 17 
+    /*
+     * All players start at 17
      */
     g->year += 17;
 
@@ -1071,8 +1071,8 @@ struct time_info_data age(struct char_data *ch)
 
     player_age = mud_time_passed(time(0), ch->player.time.birth);
 
-    /* 
-     * All players start at 17 
+    /*
+     * All players start at 17
      */
     player_age.year += 17;
 
@@ -1085,9 +1085,9 @@ int in_group(struct char_data *ch1, struct char_data *ch2)
      * possibilities -> 1.  char is char2's master 2.  char2 is char's
      * master 3.  char and char2 follow same. 4.  char rides char2 5..
      * char2 rides char
-     * 
+     *
      * otherwise not true.
-     * 
+     *
      */
     if (ch1 == ch2) {
         return (TRUE);
@@ -1115,12 +1115,12 @@ int in_group(struct char_data *ch1, struct char_data *ch2)
 }
 
 /*
- * more new procedures 
+ * more new procedures
  */
 
 /*
  * these two procedures give the player the ability to buy 2*bread or put
- * all.bread in bag, or put 2*bread in bag... 
+ * all.bread in bag, or put 2*bread in bag...
  */
 
 char getall(char *name, char *newname)
@@ -1134,8 +1134,8 @@ char getall(char *name, char *newname)
     tmpname[0] = '\0';
     otname[0] = '\0';
 
-    /* 
-     * reads up to first space 
+    /*
+     * reads up to first space
      */
     sscanf(name, "%s ", otname);
 
@@ -1202,8 +1202,8 @@ int DetermineExp(struct char_data *mob, int exp_flags)
         exp_flags = 1;
     }
     /*
-     * reads in the monster, and adds the flags together for simplicity, 1 
-     * exceptional ability is 2 special abilities 
+     * reads in the monster, and adds the flags together for simplicity, 1
+     * exceptional ability is 2 special abilities
      */
 
     if (GetMaxLevel(mob) < 0) {
@@ -1476,8 +1476,8 @@ int GetExpFlags(struct char_data *mob, int exp)
     int             sab;
 
     /*
-     * reads in the monster, and adds the flags together for simplicity, 1 
-     * exceptional ability is 2 special abilities 
+     * reads in the monster, and adds the flags together for simplicity, 1
+     * exceptional ability is 2 special abilities
      */
 
     if (GetMaxLevel(mob) < 0)
@@ -1759,10 +1759,10 @@ void down_river(int pulse)
     }
     for (ch = character_list; ch; ch = tmp) {
         tmp = ch->next;
-        if (!IS_NPC(ch) && ch->in_room != NOWHERE && 
-            real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM && 
+        if (!IS_NPC(ch) && ch->in_room != NOWHERE &&
+            real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM &&
             !(pulse % (real_roomp(ch->in_room))->river_speed) &&
-            real_roomp(ch->in_room)->river_dir <= 5 && 
+            real_roomp(ch->in_room)->river_dir <= 5 &&
             real_roomp(ch->in_room)->river_dir >= 0) {
 
             rd = (real_roomp(ch->in_room))->river_dir;
@@ -1778,7 +1778,7 @@ void down_river(int pulse)
             }
 
             /*
-             * flyers don't get moved 
+             * flyers don't get moved
              */
             if (!IS_AFFECTED(ch, AFF_FLYING) && !MOUNTED(ch)) {
                 rp = real_roomp(ch->in_room);
@@ -1804,7 +1804,7 @@ void down_river(int pulse)
                         char_from_room(ch);
                         if (RIDDEN(ch)) {
                             char_from_room(RIDDEN(ch));
-                            char_to_room(RIDDEN(ch), 
+                            char_to_room(RIDDEN(ch),
                                     real_roomp(or)->dir_option[rd]->to_room);
                         }
 
@@ -1816,7 +1816,7 @@ void down_river(int pulse)
                             do_look(RIDDEN(ch), "\0", 15);
                         }
                     }
-                    if (IS_SET(RM_FLAGS(ch->in_room), DEATH) && 
+                    if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
                         GetMaxLevel(ch) < LOW_IMMORTAL) {
                         if (RIDDEN(ch)) {
                             NailThisSucker(RIDDEN(ch));
@@ -1868,7 +1868,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
             continue;
         }
         /*
-         * strip ^Ms from description 
+         * strip ^Ms from description
          */
         x = 0;
 
@@ -1890,7 +1890,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
 
         fprintf(fp, "#%ld\n%s~\n%s~\n", rp->number, rp->name, temp);
         if (!rp->tele_targ) {
-            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags, 
+            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags,
                     rp->sector_type);
         } else if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
             fprintf(fp, "%ld %ld -1 %d %d %d %ld", rp->zone,
@@ -1956,7 +1956,7 @@ void do_WorldSave(struct char_data *ch, char *argument, char cmd)
         }
 
         /*
-         * extra descriptions.. 
+         * extra descriptions..
          */
 
         for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
@@ -2007,7 +2007,7 @@ void RoomSave(struct char_data *ch, long start, long end)
     rstart = start;
     rend = end;
 
-    if (rstart <= -1 || rend <= -1 || rstart > WORLD_SIZE || 
+    if (rstart <= -1 || rend <= -1 || rstart > WORLD_SIZE ||
         rend > WORLD_SIZE) {
         send_to_char("I don't know those room #s.  make sure they are all\n\r",
                      ch);
@@ -2033,7 +2033,7 @@ void RoomSave(struct char_data *ch, long start, long end)
         strcat(dots, ".");
 
         /*
-         * strip ^Ms from description 
+         * strip ^Ms from description
          */
         x = 0;
 
@@ -2055,7 +2055,7 @@ void RoomSave(struct char_data *ch, long start, long end)
 
         fprintf(fp, "#%ld\n%s~\n%s~\n", rp->number, rp->name, temp);
         if (!rp->tele_targ) {
-            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags, 
+            fprintf(fp, "%ld %ld %ld", rp->zone, rp->room_flags,
                     rp->sector_type);
         } else {
             if (!IS_SET(TELE_COUNT, rp->tele_mask)) {
@@ -2123,7 +2123,7 @@ void RoomSave(struct char_data *ch, long start, long end)
         }
 
         /*
-         * extra descriptions.. 
+         * extra descriptions..
          */
 
         for (exptr = rp->ex_description; exptr; exptr = exptr->next) {
@@ -2169,8 +2169,8 @@ void RoomLoad(struct char_data *ch, int start, int end)
 
         fscanf(fp, "#%*d\n");
         if (!(rp = real_roomp(vnum))) {
-            /* 
-             * empty room 
+            /*
+             * empty room
              */
             rp = (void *) malloc(sizeof(struct room_data));
             if (rp) {
@@ -2178,7 +2178,7 @@ void RoomLoad(struct char_data *ch, int start, int end)
             }
 #if HASH
             /*
-             * this still does not work and needs work by someone 
+             * this still does not work and needs work by someone
              */
             room_enter(&room_db, vnum, rp);
 #else
@@ -2230,7 +2230,7 @@ void fake_setup_dir(FILE * fl, long room, int dir)
 int IsHumanoid(struct char_data *ch)
 {
     /*
-     * these are all very arbitrary 
+     * these are all very arbitrary
      */
     if (!ch) {
         return (FALSE);
@@ -2734,7 +2734,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     dist = GET_ALIGNMENT(tch) - GET_ALIGNMENT(ch);
     dist = (dist > 0) ? dist : -dist;
     if (Hates(ch, tch)) {
-        dist *= 2;  
+        dist *= 2;
     }
     SET_BIT(ch->specials.act, ACT_HUNTING);
     ch->specials.hunting = tch;
@@ -2881,19 +2881,19 @@ void FighterMove(struct char_data *ch)
         SpaceForSkills(ch);
     }
 
-    if (ch->specials.fighting && 
+    if (ch->specials.fighting &&
         ch->specials.fighting->specials.fighting != 0) {
         friend = ch->specials.fighting->specials.fighting;
         if (friend == ch) {
             MakeNiftyAttack(ch);
         } else {
             /*
-             * rescue on a 1 or 2, other on a 3 or 4 
+             * rescue on a 1 or 2, other on a 3 or 4
              */
             if (GET_RACE(friend) == (GET_RACE(ch))) {
                 if (GET_HIT(friend) < GET_HIT(ch)) {
                     if (!ch->skills[SKILL_RESCUE].learned) {
-                        ch->skills[SKILL_RESCUE].learned = 
+                        ch->skills[SKILL_RESCUE].learned =
                             GetMaxLevel(ch) * 3 + 30;
                     }
                     do_rescue(ch, GET_NAME(friend), 0);
@@ -2929,9 +2929,9 @@ void MonkMove(struct char_data *ch)
         return;
     } else {
         /*
-         * Commented out as a temporary fix to monks fleeing challenges. 
-         * Was easier than rooting around in the spec_proc for the monk 
-         * challenge for it, which is proobably what should be done. 
+         * Commented out as a temporary fix to monks fleeing challenges.
+         * Was easier than rooting around in the spec_proc for the monk
+         * challenge for it, which is proobably what should be done.
          */
         if (GET_HIT(ch) < GET_MAX_HIT(ch) / 20) {
             if (!ch->skills[SKILL_RETREAT].learned) {
@@ -2942,7 +2942,7 @@ void MonkMove(struct char_data *ch)
             return;
         } else {
             if (GetMaxLevel(ch) > 30 && !number(0, 4) &&
-                GetMaxLevel(ch->specials.fighting) <= GetMaxLevel(ch) && 
+                GetMaxLevel(ch->specials.fighting) <= GetMaxLevel(ch) &&
                 GET_MAX_HIT(ch->specials.fighting) < 2 * GET_MAX_HIT(ch) &&
                 !affected_by_spell(ch->specials.fighting, SKILL_QUIV_PALM) &&
                 !affected_by_spell(ch, SKILL_QUIV_PALM) && ch->in_room == 551 &&
@@ -3008,7 +3008,7 @@ int HasObject(struct char_data *ch, int ob_num)
     struct obj_data *i;
 
     /*
-     * equipment too 
+     * equipment too
      */
 
     found = 0;
@@ -3023,7 +3023,7 @@ int HasObject(struct char_data *ch, int ob_num)
         return (TRUE);
     }
     /*
-     * carrying 
+     * carrying
      */
     for (i = ch->carrying; i; i = i->next_content) {
         found += RecCompObjNum(i, ob_num);
@@ -3142,7 +3142,7 @@ void TeleportPulseStuff(int pulse)
                    *temp_obj;
 
     /*
-     * check_mobile_activity(pulse); Teleport(pulse); 
+     * check_mobile_activity(pulse); Teleport(pulse);
      */
 
 
@@ -3197,8 +3197,8 @@ void TeleportPulseStuff(int pulse)
                     }
                     bk = tmp;
 
-                    /* 
-                     * the list of people in the room has changed 
+                    /*
+                     * the list of people in the room has changed
                      */
                     char_from_room(tmp);
                     char_to_room(tmp, rp->tele_targ);
@@ -3226,8 +3226,8 @@ void TeleportPulseStuff(int pulse)
                 }
 
                 if (IS_SET(TELE_COUNT, rp->tele_mask)) {
-                    /* 
-                     * reset it for next count 
+                    /*
+                     * reset it for next count
                      */
                     rp->tele_time = 0;
                 }
@@ -3351,19 +3351,19 @@ void DarknessPulseStuff(int pulse)
         if (!i->connected) {
             ch = i->character;
             for (j = 0; j <= (MAX_WEAR - 1); j++) {
-                /* 
-                 * scrap antisun before doing the darkness check 
+                /*
+                 * scrap antisun before doing the darkness check
                  */
-                if (ch->equipment[j] && ch->equipment[j]->item_number >= 0 && 
+                if (ch->equipment[j] && ch->equipment[j]->item_number >= 0 &&
                     IS_SET(ch->equipment[j]->obj_flags.extra_flags,
                            ITEM_ANTI_SUN)) {
                     AntiSunItem(ch, 0, 0, ch->equipment[j], PULSE_COMMAND);
                 }
             }
 
-            if (IS_PC(ch) && IsDarkrace(ch) && AWAKE(ch) && 
-                !affected_by_spell(ch, SPELL_GLOBE_DARKNESS) && 
-                !IS_AFFECTED(ch, AFF_DARKNESS) && !IS_UNDERGROUND(ch) && 
+            if (IS_PC(ch) && IsDarkrace(ch) && AWAKE(ch) &&
+                !affected_by_spell(ch, SPELL_GLOBE_DARKNESS) &&
+                !IS_AFFECTED(ch, AFF_DARKNESS) && !IS_UNDERGROUND(ch) &&
                 !IS_DARK(ch->in_room)) {
                 act("$n uses $s innate powers of darkness.", FALSE, ch,
                     0, 0, TO_ROOM);
@@ -3452,30 +3452,30 @@ void traveling_qp(int pulse)
             extract_obj(travelqp);
             f = 0;
         } else if (qp_patience < 8) {
-            /* 
+            /*
              * hasn't been in inventory long enough yet
              */
             f = 0;
         } else if (qp_patience <= 60 && number(k, 3) == 3) {
-            /* 
+            /*
              * hasn't been sitting here too long yet
              * 67, 50, 0% chance of not moving
              */
             f = 0;
         }
 
-        /* 
+        /*
          * find a new mob
          */
         if (f) {
             newch = NULL;
             while (!newch) {
-                /* 
+                /*
                  * this may cause endless loop, maybe use for(1..100)
                  */
                 to_room = number(0, top_of_world);
                 room = real_roomp(to_room);
-                if (room && (newch = room->people) && 
+                if (room && (newch = room->people) &&
                     (IS_PC(newch) || newch == ch || newch->specials.fighting ||
                      IS_SET(newch->specials.act, ACT_POLYSELF))) {
                     newch = NULL;
@@ -3506,12 +3506,12 @@ void ArenaPulseStuff(int pulse)
     if (pulse < 0)
         return;
 
-    if (MinArenaLevel == 0 && MaxArenaLevel == 0 && 
+    if (MinArenaLevel == 0 && MaxArenaLevel == 0 &&
         countPeople(ARENA_ZONE) == 1) {
-        /* 
+        /*
          * arena must be closed
          * last one standing in arena!
-         * let's see who this is 
+         * let's see who this is
          */
         for (i = descriptor_list; i; i = i->next) {
             if (!i->connected) {
@@ -3522,7 +3522,7 @@ void ArenaPulseStuff(int pulse)
 
                 if (IS_PC(ch) && real_roomp(ch->in_room)->zone == ARENA_ZONE) {
                     /*
-                     * we have a winner - move and declare 
+                     * we have a winner - move and declare
                      */
                     if ((location = ch->player.hometown)) {
                         char_from_room(ch);
@@ -3557,7 +3557,7 @@ void AuctionPulseStuff(int pulse)
     struct obj_data *auctionobj;
     char            buf[MAX_STRING_LENGTH];
 
-    if (pulse < 0 || !auctioneer || 
+    if (pulse < 0 || !auctioneer ||
         !(auctionobj = auctioneer->specials.auction)) {
         return;
     }
@@ -3580,7 +3580,7 @@ void AuctionPulseStuff(int pulse)
         minbid = 0;
 
         /*
-         * return item to auctioneer 
+         * return item to auctioneer
          */
         auctioneer->specials.auction = 0;
 
@@ -3627,13 +3627,13 @@ void AuctionPulseStuff(int pulse)
         send_to_all(buf);
 
         /*
-         * return money to auctioneer 
+         * return money to auctioneer
          */
         GET_GOLD(auctioneer) += intbid;
         ch_printf(auctioneer, "You receive %ld coins for the item you "
                               "auctioned.\n\r", intbid);
         /*
-         * return item to bidder 
+         * return item to bidder
          */
         ch_printf(bidder, "You receive %s.\n\r", auctionobj->short_description);
         auctioneer->specials.auction = 0;
@@ -3671,7 +3671,7 @@ void TrollRegenPulseStuff(int pulse)
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected) {
             ch = i->character;
-            if (IS_PC(ch) && GET_RACE(ch) == RACE_TROLL && 
+            if (IS_PC(ch) && GET_RACE(ch) == RACE_TROLL &&
                 GET_HIT(ch) < GET_MAX_HIT(ch)) {
                 troll_regen(ch);
             }
@@ -3693,7 +3693,7 @@ void RiverPulseStuff(int pulse)
     struct room_data *rp;
 
     /*
-     * down_river(pulse); MakeSound(); 
+     * down_river(pulse); MakeSound();
      */
 
     if (pulse < 0) {
@@ -3704,35 +3704,35 @@ void RiverPulseStuff(int pulse)
             ch = i->character;
             if ((IS_PC(ch) || RIDDEN(ch)) && ch->in_room != NOWHERE &&
                 (real_roomp(ch->in_room)->sector_type == SECT_WATER_NOSWIM ||
-                 real_roomp(ch->in_room)->sector_type == SECT_UNDERWATER) && 
-                real_roomp(ch->in_room)->river_speed > 0 && 
+                 real_roomp(ch->in_room)->sector_type == SECT_UNDERWATER) &&
+                real_roomp(ch->in_room)->river_speed > 0 &&
                 !(pulse % real_roomp(ch->in_room)->river_speed) &&
-                real_roomp(ch->in_room)->river_dir <= 5 && 
+                real_roomp(ch->in_room)->river_dir <= 5 &&
                 real_roomp(ch->in_room)->river_dir >= 0) {
 
                 rd = real_roomp(ch->in_room)->river_dir;
-                for (obj_object = real_roomp(ch->in_room)->contents; 
+                for (obj_object = real_roomp(ch->in_room)->contents;
                      obj_object; obj_object = next_obj) {
                     next_obj = obj_object->next_content;
                     if (real_roomp(ch->in_room)->dir_option[rd]) {
                         obj_from_room(obj_object);
-                        obj_to_room(obj_object, 
+                        obj_to_room(obj_object,
                             real_roomp(ch->in_room)->dir_option[rd]->to_room);
                     }
                 }
 
                 /*
-                 * flyers don't get moved 
+                 * flyers don't get moved
                  */
                 if (IS_IMMORTAL(ch) && IS_SET(ch->specials.act, PLR_NOHASSLE)) {
                     send_to_char("The waters swirl and eddy about you.\n\r",
                                  ch);
-                } else if ((!IS_AFFECTED(ch, AFF_FLYING) || 
-                            real_roomp(ch->in_room)->sector_type == 
+                } else if ((!IS_AFFECTED(ch, AFF_FLYING) ||
+                            real_roomp(ch->in_room)->sector_type ==
                                SECT_UNDERWATER) && !MOUNTED(ch)) {
                     rp = real_roomp(ch->in_room);
                     if (rp && rp->dir_option[rd] &&
-                        rp->dir_option[rd]->to_room && 
+                        rp->dir_option[rd]->to_room &&
                         EXIT(ch, rd)->to_room != NOWHERE) {
                         if (ch->specials.fighting) {
                             stop_fighting(ch);
@@ -3773,7 +3773,7 @@ void RiverPulseStuff(int pulse)
         for (ch = character_list; ch; ch = tmp) {
             tmp = ch->next;
             /*
-             * mobiles 
+             * mobiles
              */
             if (!IS_PC(ch) && ch->player.sounds && !number(0, 5) &&
                 strcmp(ch->player.sounds, "")) {
@@ -3781,13 +3781,13 @@ void RiverPulseStuff(int pulse)
                 if (ch->specials.default_pos > POSITION_SLEEPING) {
                     if (GET_POS(ch) > POSITION_SLEEPING) {
                         /*
-                         * Make the sound 
+                         * Make the sound
                          */
                         MakeNoise(ch->in_room, ch->player.sounds,
                                   ch->player.distant_snds);
                     } else if (GET_POS(ch) == POSITION_SLEEPING) {
                         /*
-                         * snore 
+                         * snore
                          */
                         sprintf(buffer, "%s snores loudly.\n\r",
                                 ch->player.short_descr);
@@ -3796,7 +3796,7 @@ void RiverPulseStuff(int pulse)
                     }
                 } else if (GET_POS(ch) == ch->specials.default_pos) {
                     /*
-                     * Make the sound 
+                     * Make the sound
                      */
                     MakeNoise(ch->in_room, ch->player.sounds,
                               ch->player.distant_snds);
@@ -3814,7 +3814,7 @@ int apply_soundproof(struct char_data *ch)
     struct room_data *rp;
 
     if (IS_IMMORTAL(ch)) {
-        return (FALSE); 
+        return (FALSE);
     }
     if (IS_AFFECTED(ch, AFF_SILENCE)) {
         send_to_char("You are silenced, you can't make a sound!\n\r", ch);
@@ -3827,8 +3827,8 @@ int apply_soundproof(struct char_data *ch)
         return (FALSE);
     }
     if (IS_SET(rp->room_flags, SILENCE)) {
-        /* 
-         * for shouts, emotes, etc 
+        /*
+         * for shouts, emotes, etc
          */
         send_to_char("You are in a silence zone, you can't make a sound!\n\r",
                      ch);
@@ -3859,8 +3859,8 @@ int check_soundproof(struct char_data *ch)
         return (FALSE);
     }
     if (IS_SET(rp->room_flags, SILENCE)) {
-        /* 
-         * for shouts, emotes, etc 
+        /*
+         * for shouts, emotes, etc
          */
         return (TRUE);
     }
@@ -3877,8 +3877,8 @@ int MobCountInRoom(struct char_data *list)
     struct char_data *tmp;
 
     for (i = 0, tmp = list; tmp; tmp = tmp->next_in_room, i++) {
-        /* 
-         * Empty loop 
+        /*
+         * Empty loop
          */
     }
 
@@ -3897,7 +3897,7 @@ void           *Mymalloc(long size)
 void SpaceForSkills(struct char_data *ch)
 {
     /*
-     * create space for the skills for some mobile or character. 
+     * create space for the skills for some mobile or character.
      */
 
     ch->skills = (struct char_skill_data *)
@@ -3936,25 +3936,25 @@ struct obj_data *find_a_rare(struct obj_data *obj)
         return (NULL);
     }
     if (obj->contains) {
-        /* 
-         * check contents 
+        /*
+         * check contents
          */
         rare = find_a_rare(obj->contains);
         if (rare) {
             return (rare);
         }
-    }   
+    }
 
     if (IS_RARE(obj)) {
-        /* 
-         * check self 
+        /*
+         * check self
          */
         return (obj);
     }
 
     if (obj->next_content) {
-        /* 
-         * move to next item in list 
+        /*
+         * move to next item in list
          */
         rare = find_a_rare(obj->next_content);
         if (rare) {
@@ -3962,9 +3962,9 @@ struct obj_data *find_a_rare(struct obj_data *obj)
         }
     }
 
-    return (0);                 
-    /* 
-     * no rares found 
+    return (0);
+    /*
+     * no rares found
      */
 }
 
@@ -3978,7 +3978,7 @@ void CheckLegendStatus(struct char_data *ch)
     if (IS_SET(ch->specials.act, PLR_LEGEND) || IS_IMMORTAL(ch)) {
         return;
     }
-    if (GET_EXP(ch) > 200000000 && ch->specials.m_kills >= 5000 && 
+    if (GET_EXP(ch) > 200000000 && ch->specials.m_kills >= 5000 &&
         GET_LEADERSHIP_EXP(ch) > 200000000) {
         /*
          * set legend status
@@ -4078,8 +4078,8 @@ void SetRacialStuff(struct char_data *mob)
         SET_BIT(mob->susc, IMM_COLD);
         break;
     case RACE_GIANT_CLOUD:
-        /* 
-         * should be gas... but no IMM_GAS 
+        /*
+         * should be gas... but no IMM_GAS
          */
         SET_BIT(mob->M_immune, IMM_SLEEP);
         SET_BIT(mob->susc, IMM_ACID);
@@ -4146,7 +4146,7 @@ void SetRacialStuff(struct char_data *mob)
     }
 
     /*
-     * height and weight / Hatred Foes! / 
+     * height and weight / Hatred Foes! /
      */
     if (IS_NPC(mob)) {
         switch (GET_RACE(mob)) {
@@ -4190,10 +4190,10 @@ void SetRacialStuff(struct char_data *mob)
         case RACE_MFLAYER:
             break;
         case RACE_DROW:
-            /* 
-             * I think this doesn't work!!! - Beirdo 
+            /*
+             * I think this doesn't work!!! - Beirdo
              */
-            AddHatred(mob, OP_RACE, RACE_MOON_ELF | RACE_WILD_ELF | 
+            AddHatred(mob, OP_RACE, RACE_MOON_ELF | RACE_WILD_ELF |
                                     RACE_GOLD_ELF);
             break;
         case RACE_SKEXIE:
@@ -4212,8 +4212,8 @@ void SetRacialStuff(struct char_data *mob)
 
         case RACE_ORC:
             AddHatred(mob, OP_GOOD, 1000);
-            /* 
-             * I think this doesn't work!!! - Beirdo 
+            /*
+             * I think this doesn't work!!! - Beirdo
              */
             AddHatred(mob, OP_RACE, RACE_MOON_ELF | RACE_GOLD_ELF |
                                     RACE_WILD_ELF);
@@ -4267,7 +4267,7 @@ void SetRacialStuff(struct char_data *mob)
         case RACE_DRAGON_BRONZE:
         case RACE_DRAGON_COPPER:
         case RACE_DRAGON_BRASS:
-            mob->player.weight = MAX(60, 
+            mob->player.weight = MAX(60,
                                      GetMaxLevel(mob) * GetMaxLevel(mob) * 2);
             mob->player.height = 100 + MIN(mob->player.weight, 500);
             break;
@@ -4318,7 +4318,7 @@ void SetRacialStuff(struct char_data *mob)
             break;
 
         case RACE_TYTAN:
-            mob->player.weight = MAX(500, 
+            mob->player.weight = MAX(500,
                                      GetMaxLevel(mob) * GetMaxLevel(mob) * 10);
             mob->player.height = GetMaxLevel(mob) / 2 * 100;
             break;
@@ -4427,7 +4427,7 @@ int GetNewRace(struct char_file_u *s)
 
         switch (return_race) {
             /*
-             * we allow these races to be used in reincarnations 
+             * we allow these races to be used in reincarnations
              */
         case RACE_HUMAN:
         case RACE_MOON_ELF:
@@ -4462,7 +4462,7 @@ int GetNewRace(struct char_file_u *s)
             try_again = FALSE;
             break;
             /*
-             * not a valid race, try again 
+             * not a valid race, try again
              */
         default:
             try_again = TRUE;
@@ -4476,7 +4476,7 @@ int GetNewRace(struct char_file_u *s)
 int GetApprox(int num, int perc)
 {
     /*
-     * perc = 0 - 100 
+     * perc = 0 - 100
      */
     int             adj,
                     r;
@@ -4512,13 +4512,13 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
                     check;
 
     /*
-     * called steed check 
+     * called steed check
      */
     if (mob_index[horse->nr].virtual == STEED_TEMPLATE &&
-        HasClass(ch, CLASS_PALADIN) && 
+        HasClass(ch, CLASS_PALADIN) &&
         GetMaxLevel(ch) >= GetMaxLevel(horse) + 10) {
         /*
-         * ok, this horse likes you 
+         * ok, this horse likes you
          */
         return (-1);
     }
@@ -4526,12 +4526,12 @@ int MountEgoCheck(struct char_data *ch, struct char_data *horse)
     if (IsDragon(horse)) {
         if (ch->skills) {
             drag_ego = GetMaxLevel(horse) * 2;
-            if (IS_SET(horse->specials.act, ACT_AGGRESSIVE) || 
+            if (IS_SET(horse->specials.act, ACT_AGGRESSIVE) ||
                 IS_SET(horse->specials.act, ACT_META_AGG)) {
                 drag_ego += GetMaxLevel(horse);
             }
 
-            ride_ego = ch->skills[SKILL_RIDE].learned / 10 + 
+            ride_ego = ch->skills[SKILL_RIDE].learned / 10 +
                        GetMaxLevel(ch) / 2;
 
             if (IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
@@ -4585,7 +4585,7 @@ int RideCheck(struct char_data *ch, int mod)
 {
     if (ch->skills) {
         if (!IS_AFFECTED(ch, AFF_DRAGON_RIDE)) {
-            if (number(1, 90) > ch->skills[SKILL_RIDE].learned + mod && 
+            if (number(1, 90) > ch->skills[SKILL_RIDE].learned + mod &&
                 number(1, 91 - mod) > ch->skills[SKILL_RIDE].learned / 2 &&
                 ch->skills[SKILL_RIDE].learned < 90) {
                 send_to_char("You learn from your mistake\n\r", ch);
@@ -4614,7 +4614,7 @@ int EqWBits(struct char_data *ch, int bits)
     int             i;
 
     for (i = 0; i < MAX_WEAR; i++) {
-        if (ch->equipment[i] && 
+        if (ch->equipment[i] &&
             IS_SET(ch->equipment[i]->obj_flags.extra_flags, bits)) {
             return (TRUE);
         }
@@ -4671,16 +4671,16 @@ int LearnFromMistake(struct char_data *ch, int sknum, int silent, int max)
 }
 
 /*
- * if (!IsOnPmp(roomnumber)) then they are on another plane! 
+ * if (!IsOnPmp(roomnumber)) then they are on another plane!
  */
 int IsOnPmp(int room_nr)
 {
     if (real_roomp(room_nr) &&
-        !IS_SET(zone_table[real_roomp(room_nr)->zone].reset_mode, 
+        !IS_SET(zone_table[real_roomp(room_nr)->zone].reset_mode,
                 ZONE_ASTRAL)) {
         return (TRUE);
     }
-    
+
     return (FALSE);
 }
 
@@ -4748,7 +4748,7 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 
     obj_ego = obj->obj_flags.cost_per_day;
 
-    if (strstr(obj->name, "scroll") || strstr(obj->name, "potion") || 
+    if (strstr(obj->name, "scroll") || strstr(obj->name, "potion") ||
         strstr(obj->name, "bag") || strstr(obj->name, "tongue") ||
         strstr(obj->name, "key")) {
         /*
@@ -4764,10 +4764,10 @@ int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
         obj_ego /= 666;
 
         /*
-         * alignment stuff 
+         * alignment stuff
          */
 
-        if (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) || 
+        if (IS_OBJ_STAT(obj, ITEM_ANTI_GOOD) ||
             IS_OBJ_STAT(obj, ITEM_ANTI_EVIL)) {
             if (IS_NEUTRAL(ch)) {
                 obj_ego += obj_ego / 4;
@@ -4842,10 +4842,10 @@ int IsDarkOutside(struct room_data *rp)
 
 int anti_barbarian_stuff(struct obj_data *obj_object)
 {
-    if (ITEM_TYPE(obj_object) != ITEM_KEY && 
-        (IS_OBJ_STAT(obj_object, ITEM_GLOW) || 
+    if (ITEM_TYPE(obj_object) != ITEM_KEY &&
+        (IS_OBJ_STAT(obj_object, ITEM_GLOW) ||
          IS_OBJ_STAT(obj_object, ITEM_HUM) ||
-         IS_OBJ_STAT(obj_object, ITEM_MAGIC) || 
+         IS_OBJ_STAT(obj_object, ITEM_MAGIC) ||
          IS_OBJ_STAT(obj_object, ITEM_NODROP))) {
         return (TRUE);
     } else {
@@ -4856,7 +4856,7 @@ int anti_barbarian_stuff(struct obj_data *obj_object)
 int CheckGetBarbarianOK(struct char_data *ch, struct obj_data *obj_object)
 {
 #ifndef BARB_GET_DISABLE
-    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && 
+    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
         anti_barbarian_stuff(obj_object) && GetMaxLevel(ch) < LOW_IMMORTAL) {
         act("You sense magic on $p and drop it.", FALSE, ch, obj_object, 0,
             TO_CHAR);
@@ -4906,7 +4906,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
     /*
      * if the item is limited, check its ego. use some funky function to
      * determine if pc's ego is higher than objs' ego.. if it is,
-     * proceed.. otherwise, deny. 
+     * proceed.. otherwise, deny.
      */
     if (obj->level != 0) {
         if (obj->level <= GetMaxLevel(ch) || IS_IMMORTAL(ch)) {
@@ -4929,8 +4929,8 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
                 obj, 0, TO_ROOM);
         }
         return (FALSE);
-    } 
-    
+    }
+
     if (j < 0 && GetMaxLevel(ch) < IMPLEMENTOR) {
         act("$p almost seems to say 'You're pretty puny.  I don't want to be "
             "seen with you!\n", 0, ch, obj, 0, TO_CHAR);
@@ -4962,7 +4962,7 @@ int CheckEgoGive(struct char_data *ch, struct char_data *vict,
     /*
      * if the item is limited, check its ego. use some funky function to
      * determine if pc's ego is higher than objs' ego.. if it is,
-     * proceed.. otherwise, deny. 
+     * proceed.. otherwise, deny.
      */
     j = ItemEgoClash(vict, obj, 0);
     if (j < -5 && GetMaxLevel(vict) < IMPLEMENTOR) {
@@ -4973,8 +4973,8 @@ int CheckEgoGive(struct char_data *ch, struct char_data *vict,
         }
         act("$p refuses to be given to $n by $N ", 0, vict, obj, ch, TO_ROOM);
         return (FALSE);
-    } 
-    
+    }
+
     if (j < 0 && GetMaxLevel(vict) < IMPLEMENTOR) {
         if (AWAKE(vict)) {
             act("$p almost seems to say 'You're pretty puny.  I don't want to "
@@ -4996,16 +4996,16 @@ int IsSpecialized(int sk_num)
     return (IS_SET(sk_num, SKILL_SPECIALIZED));
 }
 
-                                 
+
 /*
- * this persons max specialized skills 
+ * this persons max specialized skills
  */
 int HowManySpecials(struct char_data *ch)
 {
     int             i,
                     ii = 0;
 
-    for (i = 0; i < MAX_SPL_LIST; i++) { 
+    for (i = 0; i < MAX_SPL_LIST; i++) {
         if (IsSpecialized(ch->skills[i].special)) {
             ii++;
         }
@@ -5022,7 +5022,7 @@ int CanSeeTrap(int num, struct char_data *ch)
 {
     if (HasClass(ch, CLASS_THIEF)) {
         return (affected_by_spell(ch, SPELL_FIND_TRAPS) ||
-                (ch->skills && num < (ch->skills[SKILL_FIND_TRAP].learned) && 
+                (ch->skills && num < (ch->skills[SKILL_FIND_TRAP].learned) &&
                  !MOUNTED(ch)));
     }
     if (HasClass(ch, CLASS_RANGER) && OUTSIDE(ch)) {
@@ -5038,9 +5038,9 @@ int CanSeeTrap(int num, struct char_data *ch)
 }
 
 /*
- * this is where we figure the max limited items the char may rent with 
- * for his/her current level, pc's wanted it this way. MAX_LIM_ITEMS is in 
- * structs.h 
+ * this is where we figure the max limited items the char may rent with
+ * for his/her current level, pc's wanted it this way. MAX_LIM_ITEMS is in
+ * structs.h
  */
 int MaxLimited(int lev)
 {
@@ -5238,7 +5238,7 @@ int IS_STEALER(struct char_data *ch)
 #if 0
     char            buf[256];
 
-    if (IS_PC(ch) && IS_SET(ch->player.user_flags, STOLE_1) && 
+    if (IS_PC(ch) && IS_SET(ch->player.user_flags, STOLE_1) &&
         !IS_IMMORTAL(ch)) {
         sprintf(buf, "%s has STOLE set.", GET_NAME(ch));
         Log(buf);
@@ -5266,7 +5266,7 @@ void FORGET(struct char_data *ch, int spl)
 }
 
 /*
- * return the amount max a person can memorize a single spell 
+ * return the amount max a person can memorize a single spell
  */
 int MaxCanMemorize(struct char_data *ch, int spell)
 {
@@ -5278,13 +5278,13 @@ int MaxCanMemorize(struct char_data *ch, int spell)
     } else {
         BONUS = 0;
     }
-    /* 
-     * multies get less... 
+    /*
+     * multies get less...
      */
 
     if (GET_INT(ch) > 18) {
-        /* 
-         * +1 spell per intel over 18 
+        /*
+         * +1 spell per intel over 18
          */
         BONUS += (GET_INT(ch) - 18);
     }
@@ -5321,7 +5321,7 @@ int MaxCanMemorize(struct char_data *ch, int spell)
         return (10 + BONUS);
     } else {
         /*
-         * should never get here, cept for immos 
+         * should never get here, cept for immos
          */
         return ((int) GetMaxLevel(ch) / 10);
     }
@@ -5343,7 +5343,7 @@ int IS_UNDERGROUND(struct char_data *ch)
     struct room_data *rp;
     extern struct zone_data *zone_table;
 
-    if ((rp = real_roomp(ch->in_room)) && 
+    if ((rp = real_roomp(ch->in_room)) &&
         IS_SET(zone_table[rp->zone].reset_mode, ZONE_UNDER_GROUND)) {
         return (TRUE);
     }
@@ -5395,10 +5395,10 @@ int IsMagicSpell(int spell_num)
     int             tmp = FALSE;
 
     /*
-     * using non magic items, since everything else is almost magic 
+     * using non magic items, since everything else is almost magic
      */
     /*
-     * lot smaller switch this way 
+     * lot smaller switch this way
      */
     switch (spell_num) {
     case SKILL_BACKSTAB:
@@ -5516,11 +5516,11 @@ int exist(char *s)
     }
 }
 
-        
+
 /*
- * Good side just means they are of the first races and on the 
- * general good side of life, it does NOT refer to alignment 
- * only good side people can kill bad side people PC's 
+ * Good side just means they are of the first races and on the
+ * general good side of life, it does NOT refer to alignment
+ * only good side people can kill bad side people PC's
  */
 int IsGoodSide(struct char_data *ch)
 {
@@ -5546,9 +5546,9 @@ int IsGoodSide(struct char_data *ch)
 }
 
 /*
- * this just means the PC is a troll/orc or the like not related to 
- * to alignment what-so-ever 
- * only bad side people can hit and kill good side people PC's 
+ * this just means the PC is a troll/orc or the like not related to
+ * to alignment what-so-ever
+ * only bad side people can hit and kill good side people PC's
  */
 int IsBadSide(struct char_data *ch)
 {
@@ -5566,8 +5566,8 @@ int IsBadSide(struct char_data *ch)
 }
 
 /*
- * good side can fight bad side people pc to pc fighting only, not used 
- * for NPC fighting to pc fighting 
+ * good side can fight bad side people pc to pc fighting only, not used
+ * for NPC fighting to pc fighting
  */
 int CanFightEachOther(struct char_data *ch, struct char_data *ch2)
 {
@@ -5646,8 +5646,8 @@ int CheckSquare(struct char_data *ch, int dir)
 {
     int             room = 0;
 
-    if (dir == 0 || dir == 2) { 
-        /* 
+    if (dir == 0 || dir == 2) {
+        /*
          * go east and check
          */
         if ((real_roomp(ch->in_room)->dir_option[1])) {
@@ -5673,8 +5673,8 @@ int CheckSquare(struct char_data *ch, int dir)
         }
     }
 
-    if (dir == 1 || dir == 3) { 
-        /* 
+    if (dir == 1 || dir == 3) {
+        /*
          * go north and check
          */
         if ((real_roomp(ch->in_room)->dir_option[0])) {
@@ -5705,7 +5705,7 @@ int CheckSquare(struct char_data *ch, int dir)
 
 /*
  * Edit Fast rewriten by Greg Hovey(GH) makes an exit to a new room and
- * back 
+ * back
  */
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 {
@@ -5740,7 +5740,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
 
         if (square != NOWHERE) {
             sprintf(buf, "exit %d 0 0 %d", dir, square);
-            /* 
+            /*
              * make exit in desired direction..
              */
             do_edit(ch, buf, 0);
@@ -5781,7 +5781,7 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
              */
             do_edit(ch, buf, 0);
 
-            /* 
+            /*
              * move char to that room..
              */
             char_from_room(ch);
@@ -5796,14 +5796,14 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir)
             }
             new_rm = real_roomp(ch->in_room);
             /*
-             * let's set the sector to match the room we came from 
+             * let's set the sector to match the room we came from
              */
             new_rm->sector_type = sector;
 
             sprintf(buf, "exit %d 0 0 %d", dir, current);
             do_edit(ch, buf, 0);
             /*
-             * If wizset map is enabled, set the roomflag MAP_ROOM -Lennya 
+             * If wizset map is enabled, set the roomflag MAP_ROOM -Lennya
              */
             if (IS_SET(ch->player.user_flags, FAST_MAP_EDIT)) {
                 new_rm = real_roomp(ch->in_room);
@@ -5847,14 +5847,14 @@ int opdir(int dir)
 
 /*
  * Used to search for corrupted memory, call before and after suspect
- * functions 
+ * functions
  */
 void memory_check(char *p)
 {
 #if DEBUG
-    if (!malloc_verify()) {     
-        /* 
-         * some systems might not have this lib 
+    if (!malloc_verify()) {
+        /*
+         * some systems might not have this lib
          */
         fprintf(stderr, "memory_check failed: %s!\r\n", p);
         fflush(stderr);
@@ -5871,7 +5871,7 @@ void dlog(char *s)
 }
 
 /*
- * added 2001 (GH) 
+ * added 2001 (GH)
  */
 int bitvector_num(int temp)
 {
@@ -5924,7 +5924,7 @@ char           *DescAge(int age, int race)
 /*
  * Quest Log - Basically responsible for keeping a log of all quest
  * transactions. param desc - This is the data to be entered into the log.
- * By: Greg Hovey. 
+ * By: Greg Hovey.
  */
 void qlog(char *desc)
 {
@@ -6075,38 +6075,38 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
  * util function, converts an 'advanced' ASCII-number-string into a
  * number. Used by parsebet() but could also be used by do_give or
  * do_wimpy.
- * 
+ *
  * Advanced strings can contain 'k' (or 'K') and 'm' ('M') in them, not
  * just numbers. The letters multiply whatever is left of them by 1,000
  * and 1,000,000 respectively. Example:
- * 
- * 14k = 14 * 1,000 = 14,000 
+ *
+ * 14k = 14 * 1,000 = 14,000
  * 23m = 23 * 1,000,0000 = 23,000,000
- * 
+ *
  * If any digits follow the 'k' or 'm', the are also added, but the number
  * which they are multiplied is divided by ten, each time we get one left.
  * This is best illustrated in an example :)
- * 
+ *
  * 14k42 = 14 * 1000 + 4 * 100 + 2 * 10 = 14420
- * 
+ *
  * Of course, it only pays off to use that notation when you can skip many
  * 0's. There is not much point in writing 66k666 instead of 66666, except
  * maybe when you want to make sure that you get 66,666.
- * 
+ *
  * More than 3 (in case of 'k') or 6 ('m') digits after 'k'/'m' are
  * automatically disregarded. Example:
- * 
+ *
  * 14k1234 = 14,123
- * 
+ *
  * If the number contains any other characters than digits, 'k' or 'm', the
  * function returns 0. It also returns 0 if 'k' or 'm' appear more than
  * once.
- * 
+ *
  */
 
 int advatoi(const char *s)
 {
-    char            string[MAX_INPUT_LENGTH];   /* a buffer to hold a copy 
+    char            string[MAX_INPUT_LENGTH];   /* a buffer to hold a copy
                                                  * of the argument */
     char           *stringptr = string; /* a pointer to the buffer so we
                                          * can move around */
@@ -6117,28 +6117,28 @@ int advatoi(const char *s)
                                          * extra digits right */
 
     /*
-     * the pointer to buffer stuff is not really necessary, but originally 
+     * the pointer to buffer stuff is not really necessary, but originally
      * I modified the buffer, so I had to make a copy of it. What the
-     * hell, it works:) (read: it seems to work:) 
+     * hell, it works:) (read: it seems to work:)
      */
 
     strcpy(string, s);          /* working copy */
 
     while (isdigit(*stringptr)) {
-        /* 
-         * as long as the current character is a digit 
+        /*
+         * as long as the current character is a digit
          */
 
-        /* 
-         * copy first digit 
+        /*
+         * copy first digit
          */
         strncpy(tempstring, stringptr, 1);
-        /* 
-         * add to current * number 
+        /*
+         * add to current * number
          */
         number = (number * 10) + atoi(tempstring);
-        /* 
-         * advance 
+        /*
+         * advance
          */
         stringptr++;
     }
@@ -6157,22 +6157,22 @@ int advatoi(const char *s)
     case '\0':
         break;
     default:
-        return 0;               
-        /* 
-         * not k nor m nor NUL - return 0! 
+        return 0;
+        /*
+         * not k nor m nor NUL - return 0!
          */
     }
 
     while (isdigit(*stringptr) && (multiplier > 1)) {
-        /* 
-         * if any digits follow k/m, add those too 
+        /*
+         * if any digits follow k/m, add those too
          */
-        /* 
-         * copy first digit 
+        /*
+         * copy first digit
          */
         strncpy(tempstring, stringptr, 1);
-        /* 
-         * the further we get to right, the less are the digit 'worth' 
+        /*
+         * the further we get to right, the less are the digit 'worth'
          */
         multiplier = multiplier / 10;
         number = number + (atoi(tempstring) * multiplier);
@@ -6180,10 +6180,10 @@ int advatoi(const char *s)
     }
 
     if (*stringptr != '\0' && !isdigit(*stringptr)) {
-        /* 
+        /*
          * a non-digit character was found, other than NUL
-         * If a digit is found, it means the multiplier is 1 - i.e. extra 
-         * digits that just have to be ignore, liked 14k4443 -> 3 is ignored 
+         * If a digit is found, it means the multiplier is 1 - i.e. extra
+         * digits that just have to be ignore, liked 14k4443 -> 3 is ignored
          */
         return 0;
     }
@@ -6194,7 +6194,7 @@ int advatoi(const char *s)
 /*
  * Lennya 20030730 A little gadget to convert a string to a floating
  * number. Maybe it already exists, but I couldn't find it. It works,
- * anyway. 
+ * anyway.
  */
 float arg_to_float(char *arg)
 {
@@ -6346,14 +6346,14 @@ char           *formatNum(int foo)
 
 /*
  * TWEAKING OBJECTS - Lennya 20030730
- * 
+ *
  * The idea is to make items that are loaded at a zone reset, will not
- * always be 100% identical. The object structure needs a new element, the 
+ * always be 100% identical. The object structure needs a new element, the
  * tweak rate (%). This is the chance of the item stats not being regular
  * but tweaked. Tweaking is subject to some regulations. For instance, a
  * +2dam ring will never tweak better than +3dam, or worse than 0dam. To
- * keep things simple, only the special affects can tweak, not Armor Class 
- * of armor or damdice/damage type of a weapon. 
+ * keep things simple, only the special affects can tweak, not Armor Class
+ * of armor or damdice/damage type of a weapon.
  */
 
 void tweak(struct obj_data *obj)
@@ -6370,14 +6370,14 @@ void tweak(struct obj_data *obj)
     }
 
     if (IS_OBJ_STAT(obj, ITEM_IMMUNE)) {
-        /* 
-         * don't tweak artifacts 
+        /*
+         * don't tweak artifacts
          */
         return;
     }
 
     /*
-     * here goes 
+     * here goes
      */
     for (i = 0; i <= 4; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
@@ -6393,20 +6393,20 @@ void tweak(struct obj_data *obj)
             case APPLY_HITNDAM:
                 if (number(0, 4)) {
                     if (number(0, 1)) {
-                        /* 
-                         * good tweak 
+                        /*
+                         * good tweak
                          */
                         roll = -1;
                     } else {
-                        /* 
-                         * bad tweak 
+                        /*
+                         * bad tweak
                          */
                         roll = number(1, 2);
                     }
                     mod = obj->affected[i].modifier - roll;
 
                     /*
-                     * stick to certain limits 
+                     * stick to certain limits
                      */
                     if (mod > 3 && ITEM_TYPE(obj) != ITEM_WEAPON) {
                         mod = 3;
@@ -6424,13 +6424,13 @@ void tweak(struct obj_data *obj)
             case APPLY_SAVE_ALL:
                 if (number(0, 4)) {
                     if (number(0, 1)) {
-                        /* 
-                         * good tweak 
+                        /*
+                         * good tweak
                          */
                         roll = -1;
                     } else {
-                        /* 
-                         * bad tweak 
+                        /*
+                         * bad tweak
                          */
                         roll = number(1, 2);
                     }
@@ -6456,8 +6456,8 @@ void tweak(struct obj_data *obj)
             case APPLY_HIT_REGEN:
             case APPLY_MOVE_REGEN:
             case APPLY_SPELLFAIL:
-                /* 
-                 * +/- 1..40% 
+                /*
+                 * +/- 1..40%
                  */
                 if (number(0, 4)) {
                     roll = (number(1, 40));
@@ -6471,7 +6471,7 @@ void tweak(struct obj_data *obj)
                 break;
             default:
                 /*
-                 * don't change the others 
+                 * don't change the others
                  */
                 break;
             }
@@ -6535,8 +6535,8 @@ int MobCastCheck(struct char_data *ch, int psi)
 
 /*
  * @Name: CountPeople in zone Function @description: This function counts
- * the number of people in a zone. @Author: Greg Hovey (Banon) @Used: used 
- * in chestproc and preparationproc 
+ * the number of people in a zone. @Author: Greg Hovey (Banon) @Used: used
+ * in chestproc and preparationproc
  */
 int countPeople(int zonenr)
 {
@@ -6564,7 +6564,9 @@ int count_People_in_room(int room)
     if (real_roomp(room)) {
         for (i = real_roomp(room)->people; i; i = i->next_in_room) {
             if (i) {
-                // this counts the number of people in just this room.
+                /*
+                 * this counts the number of people in just this room.
+                 */
                 count++;
             }
         }
