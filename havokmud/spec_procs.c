@@ -3473,8 +3473,9 @@ int Keftab(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                 found = FALSE;
         }
         ch->specials.hunting = 0;
-        return (FALSE);
+        found = TRUE;
     }
+    return (FALSE);
 }
 
 int StormGiant(struct char_data *ch, int cmd, char *arg,

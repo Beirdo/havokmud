@@ -1991,8 +1991,8 @@ int HasFlyItem(struct char_data *ch)
                 }
             }
         }
-    return (FALSE);
     }
+    return (FALSE);
 }
 
 void do_launch(struct char_data *ch)
