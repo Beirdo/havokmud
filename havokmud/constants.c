@@ -1246,6 +1246,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"cell adjustment", SKILL_CELL_ADJUSTMENT, 14, 45},
         {"chameleon", SKILL_CHAMELEON, 8, 45},
         {"doorway", SKILL_DOORWAY, 3, 45},
+        {"esp", SKILL_ESP, 1, 45},
         {"flame shroud", SKILL_FLAME_SHROUD, 15, 45},
         {"great sight", SKILL_GREAT_SIGHT, 11, 45},
         {"hypnosis", SKILL_HYPNOSIS, 2, 45},
