@@ -3958,7 +3958,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 
 		if(GetMaxLevel(ch)>50) {
 			obj->obj_flags.value[0] = 50;  //set spell level.
-			obj->level = GetMaxLevel(50);  //set ego to level.
+			obj->level = 50;  //set ego to level.
 
 		} else {
 			obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
