@@ -8,6 +8,11 @@ LD=$(CC)
 ##  these are architecture dependent flags
 CFLAGS = -g -O6 -Wall -Werror -Wno-trigraphs -ansi -pedantic
 
+##  Libraries
+LIBS = -lcrypt
+# Solaris needs the following
+#LIBS = -lcrypt -lsocket -lnsl
+
 
 SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	act.other.c act.social.c act.wizard.c ansi_parser.c board.c bsd.c \
@@ -28,7 +33,7 @@ DEPS = ${SRCS:.c=.d}
 all : dmserver
 
 dmserver : ${OBJS}
-	$(LD) -g -o $@ $+ -lcrypt -lsocket -lnsl
+	$(LD) -g -o $@ $+ ${LIBS}
 
 depend : ${DEPS}
 
