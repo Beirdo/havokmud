@@ -2168,7 +2168,7 @@ void tweak(struct obj_data *obj);
 int HasInstrument(struct char_data *ch);
 
 struct obj_data *find_tqp();
-
+int count_tqp();
 /* From weather.c */
 
 void weather_and_time(int mode);

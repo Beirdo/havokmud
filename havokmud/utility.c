@@ -3211,19 +3211,37 @@ void DarknessPulseStuff(int pulse)
 	}
 }
 
-struct obj_data *find_tqp()
+struct obj_data *find_tqp(int tqp_nr)
 {
 	extern struct obj_data *object_list;
 	register struct obj_data *t;
 	struct obj_data *tqp = 0;
+	int nr = 0;
 
 	for (t = object_list; t; t = t->next) {
 		if(obj_index[t->item_number].virtual == TRAVELQP) {
-			tqp = t;
-			return(tqp);
+			nr++;
+			if(nr == tqp_nr) {
+				tqp = t;
+				return(tqp);
+			}
 		}
 	}
 	return(0);
+}
+
+int count_tqp()
+{
+	extern struct obj_data *object_list;
+	register struct obj_data *t;
+	int tqp_nr = 0;
+
+	for (t = object_list; t; t = t->next) {
+		if(obj_index[t->item_number].virtual == TRAVELQP) {
+			tqp_nr++;
+		}
+	}
+	return(tqp_nr);
 }
 
 void traveling_qp(int pulse)
@@ -3236,66 +3254,67 @@ void traveling_qp(int pulse)
     extern struct index_data *mob_index;
     extern int top_of_world;
     int to_room = 0;
+    int k;
 
-	if(!(travelqp = find_tqp())) {
-		return;
-	}
+	qp_patience++; /* some secs have passed */
 
-	qp_patience++; /* 20 secs have passed */
-
-	if(init_counter()<MIN_INIT_TQP) {
-		extract_obj(travelqp);
-		return;
-	}
-
-	if(!(ch = travelqp->carried_by)) {
-		log("not carried, extracting");
-		extract_obj(travelqp);
-		return;
-	}
-
-	if(!IS_NPC(ch)) {
-//		ch->player.q_points++;
-		send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
-		if(qt = read_object(27, VIRTUAL)) {
-			obj_to_char(qt, ch);
-		}
-		log("carried by player, gained a QT");
-		sprintf(buf,"%s just found a quest token.\n\r", GET_NAME(ch));
-		qlog(buf);
-		extract_obj(travelqp);
-		return;
-	}
-
-
-	if(qp_patience < 8) { // hasn't been in inventory for 100 secs yet
-		return;
-	}
-
-	if(!(qp_patience > 60)) // hasn't been sitting here for 10 mins yet
-		if(number(0,3)) { // 75% of not moving
+	for(k = 1; k <= TQP_AMOUNT; k++) {
+		if(!(travelqp = find_tqp(k))) {
 			return;
 		}
 
-	// find a new mob
-	newch = 0;
-	while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
-		to_room = number(0, top_of_world);
-		room = real_roomp(to_room);
-		if (room) {
-			if(newch = room->people) {
-				if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF) || newch == ch) {
-					newch = 0;
+		if(init_counter()<MIN_INIT_TQP) {
+			extract_obj(travelqp);
+			return;
+		}
+
+		if(!(ch = travelqp->carried_by)) {
+			log("not carried, extracting");
+			extract_obj(travelqp);
+			return;
+		}
+
+		if(!IS_NPC(ch)) {
+	//		ch->player.q_points++;
+			send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
+			if(qt = read_object(27, VIRTUAL)) {
+				obj_to_char(qt, ch);
+			}
+			log("carried by player, gained a QT");
+			sprintf(buf,"%s just found a quest token.\n\r", GET_NAME(ch));
+			qlog(buf);
+			extract_obj(travelqp);
+			return;
+		}
+
+		if(qp_patience < 8) { // hasn't been in inventory long enough yet
+			return;
+		}
+
+		if(!(qp_patience > 60)) // hasn't been sitting here too long yet
+			if(number(0,3)) { // 75% of not moving
+				return;
+			}
+
+		// find a new mob
+		newch = 0;
+		while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
+			to_room = number(0, top_of_world);
+			room = real_roomp(to_room);
+			if (room) {
+				if(newch = room->people) {
+					if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF) || newch == ch) {
+						newch = 0;
+					}
 				}
 			}
 		}
+		obj_from_char(travelqp);
+		act("$n ceases to be outlined by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue.",FALSE,ch,0,0,TO_ROOM);
+		obj_to_char(travelqp, newch);
+		act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!",FALSE,newch,0,0,TO_ROOM);
+		qp_patience=0;
 	}
-	obj_from_char(travelqp);
-	act("$n ceases to be outlined by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue.",FALSE,ch,0,0,TO_ROOM);
-	obj_to_char(travelqp, newch);
-	act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!",FALSE,newch,0,0,TO_ROOM);
-	qp_patience=0;
-
 }
 
 #define ARENA_ZONE 124

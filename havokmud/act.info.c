@@ -572,6 +572,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
   int j, found, percent, otype;
   struct obj_data *tmp_obj, *tqp;
   struct affected_type *aff;
+  int k = 0;
 
 if (!ch || !i) {
    log("!ch || !i in act.info.c show_char_to_char");
@@ -774,16 +775,15 @@ if (!ch || !i) {
 		sprintf(buffer,"$c000B%s",buf);
 		send_to_char(buffer,ch);
 	}
-
-	if(tqp = find_tqp()) {
-		if(i == tqp->carried_by) {
-			sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
-			sprintf(buf,"%s", CAP(buffer));
-			send_to_char(buffer,ch);
+	for(k = 1; k <= TQP_AMOUNT; k++) {
+		if(tqp = find_tqp(k)) {
+			if(i == tqp->carried_by) {
+				sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+				sprintf(buf,"%s", CAP(buffer));
+				send_to_char(buffer,ch);
+			}
 		}
 	}
-
-
 
   } else if (mode == 1) {
 
@@ -987,6 +987,7 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
   char buffer[MAX_STRING_LENGTH],buf[MAX_STRING_LENGTH];
   char tmp[10];
   int j, found, percent;
+  int k = 0;
   struct obj_data *tmp_obj, *tqp;
 
 	/* Don't show linkdead imms to mortals. Should never be multiple, but hey..   -Lennya */
@@ -1186,11 +1187,13 @@ if (IS_LINKDEAD(i))
 		send_to_char(buffer,ch);
 	}
 
-	if(tqp = find_tqp()) {
-		if(i == tqp->carried_by) {
-			sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
-			sprintf(buf,"%s", CAP(buffer));
-			send_to_char(buffer,ch);
+	for(k = 1; k <= TQP_AMOUNT; k++) {
+		if(tqp = find_tqp(k)) {
+			if(i == tqp->carried_by) {
+				sprintf(buffer,"%s is surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+				sprintf(buf,"%s", CAP(buffer));
+				send_to_char(buffer,ch);
+			}
 		}
 	}
 

@@ -3211,14 +3211,14 @@ int init_counter()
 /* update zone ages, queue for reset if necessary, and dequeue when possible */
 void zone_update()
 {
-  int i;
+  int i,j;
   struct reset_q_element *update_u, *temp, *tmp2;
   extern struct reset_q_type reset_q;
   char buf[128];
   struct char_data *newch;
   int to_room = 0;
   struct room_data *room;
-  struct obj_data *travelqp;
+  struct obj_data *travelqp, *tmp;
 
   /* enqueue zones */
 
@@ -3292,28 +3292,40 @@ void zone_update()
 	}
 
 	i = init_counter();
-	if((i > (MIN_INIT_TQP-1)) && !(travelqp = find_tqp())) {
-		// init the travelqp thing
-		newch = 0;
-		qp_patience = 0;
-		while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
-			to_room = number(0, top_of_world);
-			room = real_roomp(to_room);
-			if (room) {
-				if(newch = room->people) {
-					if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF)) {
-						newch = 0;
+	if(i > (MIN_INIT_TQP-1)) {
+		for(i = 1; i <= TQP_AMOUNT; i++) {
+			if(!(travelqp = find_tqp(i))) {
+				// init the travelqp thing
+				newch = 0;
+				qp_patience = 0;
+				while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
+					to_room = number(0, top_of_world);
+					room = real_roomp(to_room);
+					if (room) {
+						if(newch = room->people) {
+							if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF)) {
+								newch = 0;
+							} else {
+								// does he already have one? (is this really needed? more calcs)
+								for(j = 1; j <= TQP_AMOUNT; j++) {
+									if(tmp = find_tqp(j)) {
+										if(newch == tmp->carried_by) {
+											newch = 0;
+										}
+									}
+								}
+							}
+						}
 					}
 				}
+				if(!(travelqp = read_object(TRAVELQP, VIRTUAL))) {
+					log("no tqp item could be loaded");
+					return;
+				}
+				obj_to_char(travelqp, newch);
 			}
 		}
-		if(!(travelqp = read_object(TRAVELQP, VIRTUAL))) {
-			log("no tqp item could be loaded");
-			return;
-		}
-		obj_to_char(travelqp, newch);
 		log("travelqp inited");
-
 	}
 }
 

@@ -2725,8 +2725,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						act("$n tries to cast a spell within a anti-magic shell, muhahaha!",FALSE,ch,0,0,TO_ROOM);
 						return;
 					}
-					if (cmd != 600 && check_nomagic(ch,"Your skill appears useless in this magic dead zone.",
-											"$n's spell dissolves like so much wet toilet paper."))
+					if (cmd != 600 && check_nomagic(ch,"Your skill appears useless in this magic dead zone.\n\r",
+											"$n's spell dissolves like so much wet toilet paper.\n\r"))
 							return;
 				}
 				if(cmd != 600)

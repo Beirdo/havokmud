@@ -5991,7 +5991,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		questNumber2 = number(0,3);
 	}
 
-	if(cmd == 15) { //look
+/*	if(cmd == 15) { //look
 		if(!(strcmp(lower(arg),"ball"))) {
 			send_to_char("You look deep into the crystal ball..\n\r\n\r",ch);
 			if(obj = find_tqp()) {
@@ -6014,7 +6014,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		}
 		return(FALSE);
 	}
-
+*/
 	//Ask what the quest is?
 	if (cmd == 86)
 	{ /* ask */
