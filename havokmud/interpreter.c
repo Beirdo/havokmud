@@ -115,7 +115,7 @@ const int moon_elf_class_choice[]= {
 	CLASS_PALADIN,
 	CLASS_RANGER,
 	CLASS_PSI,
-	//CLASS_BARD,
+	CLASS_BARD,
 	CLASS_WARRIOR+CLASS_MAGIC_USER,
 	CLASS_WARRIOR+CLASS_THIEF,
 	CLASS_MAGIC_USER+CLASS_THIEF,
@@ -186,6 +186,7 @@ CLASS_WARRIOR,
 CLASS_THIEF,
 CLASS_PALADIN,
 CLASS_RANGER,
+CLASS_BARD,
 CLASS_WARRIOR+CLASS_THIEF,
 CLASS_WARRIOR+CLASS_CLERIC,
 	/* NEW CLASS SELECTIONS HERE */
@@ -197,6 +198,7 @@ CLASS_MAGIC_USER,
 CLASS_CLERIC,
 CLASS_WARRIOR,
 CLASS_THIEF,
+CLASS_BARD,
 CLASS_THIEF+CLASS_WARRIOR,
 	/* NEW CLASS SELECTIONS HERE */
 0
@@ -240,6 +242,7 @@ CLASS_BARBARIAN,
 CLASS_PALADIN,
 CLASS_RANGER,
 CLASS_PSI,
+CLASS_BARD,
 CLASS_WARRIOR+CLASS_DRUID,
 CLASS_WARRIOR+CLASS_THIEF,
 CLASS_WARRIOR+CLASS_MAGIC_USER,
@@ -3613,15 +3616,15 @@ int show_race_choice(struct descriptor_data *d)
 	char buf[255],buf2[254];
 
 SEND_TO_Q(  "                                  Level Limits\n\r",d);
-sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
-	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps");//,"bd");
+sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n\r",
+	"#","Race","ma","cl","wa","th","dr","mk","ba","so","pa","ra","ps","bd");
 	SEND_TO_Q(buf,d);
 
 	while (race_choice[i]!=-1) {
 	  sprintf(buf,"%-3d) %-15s",i,RaceName[race_choice[i]]);
 
 	  /* show level limits */
-	   for (ii=0;ii<MAX_CLASS-1;ii++) {
+	   for (ii=0;ii<MAX_CLASS;ii++) {
 	      sprintf(buf2," %-3d",RacialMax[race_choice[i]][ii]);
 	      strcat(buf,buf2);
 	     } /* end for */
@@ -3632,7 +3635,7 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s\n
 	 }
 
 SEND_TO_Q("ma=magic user, cl=cleric, wa=warrior, th=thief,dr=druid,mk=monk\n\r",d);
-SEND_TO_Q("ba=barbarian,  so=sorcerer,pa=paladin,ra=ranger,ps=psionist,\n\r\n\r",d);
+SEND_TO_Q("ba=barbarian,  so=sorcerer,pa=paladin,ra=ranger,ps=psi,bd=bard\n\r\n\r",d);
 }
 
 

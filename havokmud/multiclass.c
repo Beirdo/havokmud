@@ -5,7 +5,7 @@
 */
 
 /*
-**  
+**
 */
 
 #include <stdio.h>
@@ -69,10 +69,10 @@ int HasClass(struct char_data *ch, int class)
 
  if (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))   {
 	/* I have yet to figure out why we do this */
- if (!IS_SET(class, CLASS_MONK) || !IS_SET(class, CLASS_DRUID) || 
+ if (!IS_SET(class, CLASS_MONK) || !IS_SET(class, CLASS_DRUID) ||
      !IS_SET(class,CLASS_BARBARIAN) || !IS_SET(class, CLASS_SORCERER) ||
      !IS_SET(class,CLASS_PALADIN) || !IS_SET(class,CLASS_RANGER) ||
-     !IS_SET(class,CLASS_PSI) || !IS_SET(class,CLASS_BARD)) 
+     !IS_SET(class,CLASS_PSI) || !IS_SET(class,CLASS_BARD))
       return(TRUE);
       /* but is seems to be needed  */
   } /* was NPC */
@@ -87,27 +87,27 @@ int HowManyClasses(struct char_data *ch)
 {
   short i, tot=0;
 
-  for (i=0;i<MAX_CLASS;i++) 
+  for (i=0;i<MAX_CLASS;i++)
   {
-    if (GET_LEVEL(ch, i)) 
+    if (GET_LEVEL(ch, i))
     {
       tot++;
     }
   } /* end for */
-  
-  if (tot) 
+
+  if (tot)
     return(tot);
-    
-  else 
+
+  else
   {
 
-  
-    if (IS_SET(ch->player.class, CLASS_MAGIC_USER)) 
+
+    if (IS_SET(ch->player.class, CLASS_MAGIC_USER))
       tot++;
 
-    if (IS_SET(ch->player.class, CLASS_WARRIOR)) 
+    if (IS_SET(ch->player.class, CLASS_WARRIOR))
       tot++;
-      
+
     if (IS_SET(ch->player.class, CLASS_THIEF))
       tot++;
 
@@ -134,12 +134,12 @@ int HowManyClasses(struct char_data *ch)
 
     if (IS_SET(ch->player.class, CLASS_PSI))
       tot++;
-    
+
     if(IS_SET(ch->player.class, CLASS_BARD))
       tot++;
 
    }
-  
+
   return(tot);
 }
 
@@ -148,30 +148,30 @@ int BestFightingClass(struct char_data *ch)
 {
 
 
- if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) 
+ if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
    return(WARRIOR_LEVEL_IND);
- if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) 
-   return(PALADIN_LEVEL_IND);   
+ if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+   return(PALADIN_LEVEL_IND);
 
- if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) 
-   return(BARBARIAN_LEVEL_IND);   
- if (GET_LEVEL(ch, RANGER_LEVEL_IND)) 
-   return(RANGER_LEVEL_IND);   
+ if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+   return(BARBARIAN_LEVEL_IND);
+ if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+   return(RANGER_LEVEL_IND);
 
  if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
    return(CLERIC_LEVEL_IND);
  if (GET_LEVEL(ch, DRUID_LEVEL_IND))
    return(DRUID_LEVEL_IND);
- if (GET_LEVEL(ch, MONK_LEVEL_IND)) 
+ if (GET_LEVEL(ch, MONK_LEVEL_IND))
    return(MONK_LEVEL_IND);
- if (GET_LEVEL(ch, THIEF_LEVEL_IND)) 
+ if (GET_LEVEL(ch, THIEF_LEVEL_IND))
    return(THIEF_LEVEL_IND);
 
- if (GET_LEVEL(ch, PSI_LEVEL_IND)) 
+ if (GET_LEVEL(ch, PSI_LEVEL_IND))
    return(PSI_LEVEL_IND);
- if (GET_LEVEL(ch, MAGE_LEVEL_IND)) 
+ if (GET_LEVEL(ch, MAGE_LEVEL_IND))
    return(MAGE_LEVEL_IND);
- if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) 
+ if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
    return(SORCERER_LEVEL_IND);
  if (GET_LEVEL(ch, BARD_LEVEL_IND))
    return (BARD_LEVEL_IND);
@@ -185,34 +185,34 @@ int BestFightingClass(struct char_data *ch)
 int BestThiefClass(struct char_data *ch)
 {
 
- if (GET_LEVEL(ch, THIEF_LEVEL_IND)) 
+ if (GET_LEVEL(ch, THIEF_LEVEL_IND))
    return(THIEF_LEVEL_IND);
  if (GET_LEVEL(ch,BARD_LEVEL_IND))
      return(BARD_LEVEL_IND);
- if (GET_LEVEL(ch, MONK_LEVEL_IND)) 
+ if (GET_LEVEL(ch, MONK_LEVEL_IND))
    return(MONK_LEVEL_IND);
- if (GET_LEVEL(ch, PSI_LEVEL_IND)) 
+ if (GET_LEVEL(ch, PSI_LEVEL_IND))
    return(PSI_LEVEL_IND);
 
- if (GET_LEVEL(ch, MAGE_LEVEL_IND)) 
+ if (GET_LEVEL(ch, MAGE_LEVEL_IND))
    return(MAGE_LEVEL_IND);
- if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) 
+ if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
    return(SORCERER_LEVEL_IND);
 
- if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) 
+ if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
    return(WARRIOR_LEVEL_IND);
- if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) 
+ if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
    return(BARBARIAN_LEVEL_IND);
- if (GET_LEVEL(ch, RANGER_LEVEL_IND)) 
-   return(RANGER_LEVEL_IND);   
- if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) 
-   return(PALADIN_LEVEL_IND);   
-   
- if (GET_LEVEL(ch, DRUID_LEVEL_IND)) 
+ if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+   return(RANGER_LEVEL_IND);
+ if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+   return(PALADIN_LEVEL_IND);
+
+ if (GET_LEVEL(ch, DRUID_LEVEL_IND))
    return(DRUID_LEVEL_IND);
- if (GET_LEVEL(ch, CLERIC_LEVEL_IND)) 
+ if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
    return(CLERIC_LEVEL_IND);
- 
+
   log("Massive error.. character has no recognized class.");
   log(GET_NAME(ch));
   assert(0);
@@ -223,34 +223,34 @@ int BestThiefClass(struct char_data *ch)
 int BestMagicClass(struct char_data *ch)
 {
 
- if (GET_LEVEL(ch, MAGE_LEVEL_IND)) 
+ if (GET_LEVEL(ch, MAGE_LEVEL_IND))
    return(MAGE_LEVEL_IND);
- if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) 
+ if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
    return(SORCERER_LEVEL_IND);
- if (GET_LEVEL(ch, DRUID_LEVEL_IND)) 
+ if (GET_LEVEL(ch, DRUID_LEVEL_IND))
    return(DRUID_LEVEL_IND);
- if (GET_LEVEL(ch, CLERIC_LEVEL_IND)) 
+ if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
    return(CLERIC_LEVEL_IND);
 
- if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) 
-   return(PALADIN_LEVEL_IND);   
- if (GET_LEVEL(ch, PSI_LEVEL_IND)) 
-   return(PSI_LEVEL_IND);   
+ if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+   return(PALADIN_LEVEL_IND);
+ if (GET_LEVEL(ch, PSI_LEVEL_IND))
+   return(PSI_LEVEL_IND);
  if (GET_LEVEL(ch, BARD_LEVEL_IND))
    return(BARD_LEVEL_IND);
- if (GET_LEVEL(ch, RANGER_LEVEL_IND)) 
-   return(RANGER_LEVEL_IND);   
-  
- if (GET_LEVEL(ch, THIEF_LEVEL_IND)) 
+ if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+   return(RANGER_LEVEL_IND);
+
+ if (GET_LEVEL(ch, THIEF_LEVEL_IND))
    return(THIEF_LEVEL_IND);
- if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) 
+ if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
    return(WARRIOR_LEVEL_IND);
- if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) 
+ if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
    return(BARBARIAN_LEVEL_IND);
-   
- if (GET_LEVEL(ch, MONK_LEVEL_IND)) 
+
+ if (GET_LEVEL(ch, MONK_LEVEL_IND))
    return(MONK_LEVEL_IND);
- 
+
   log("Massive error.. character has no recognized class.");
   log(GET_NAME(ch));
   ch->player.class = 4;
@@ -345,17 +345,17 @@ void StartLevels(struct char_data *ch)
   }
   if (IS_SET(ch->player.class, CLASS_BARBARIAN)) {
     advance_level(ch, BARBARIAN_LEVEL_IND);
-  }  
+  }
   if (IS_SET(ch->player.class, CLASS_PALADIN)) {
     advance_level(ch, PALADIN_LEVEL_IND);
-  }    
+  }
   if (IS_SET(ch->player.class, CLASS_RANGER)) {
     advance_level(ch, RANGER_LEVEL_IND);
-  }  
+  }
   if (IS_SET(ch->player.class, CLASS_PSI)) {
     advance_level(ch, PSI_LEVEL_IND);
-  }  
-  if (IS_SET(ch->player.class, CLASS_PSI)) {
+  }
+  if (IS_SET(ch->player.class, CLASS_BARD)) {
     advance_level(ch, BARD_LEVEL_IND);
   }
 }
@@ -391,25 +391,25 @@ int BestClassBIT(struct char_data *ch)
 
   assert(max > 0);
 
- switch(class) 
- 
+ switch(class)
+
  {
    case    MAGE_LEVEL_IND   :return(1);break;
    case    CLERIC_LEVEL_IND :return(2);break;
    case    WARRIOR_LEVEL_IND:return(4);break;
-   case    THIEF_LEVEL_IND  :return(8);break; 
+   case    THIEF_LEVEL_IND  :return(8);break;
    case    DRUID_LEVEL_IND  :return(16);break;
    case    MONK_LEVEL_IND   :return(32);break;
    case    BARBARIAN_LEVEL_IND :return(64);break;
-   case    SORCERER_LEVEL_IND :return(128);break;   
-   case    PALADIN_LEVEL_IND :return(256);break;      
-   case    RANGER_LEVEL_IND :return(512);break;   
+   case    SORCERER_LEVEL_IND :return(128);break;
+   case    PALADIN_LEVEL_IND :return(256);break;
+   case    RANGER_LEVEL_IND :return(512);break;
    case    PSI_LEVEL_IND: return(1024); break;
  case    BARD_LEVEL_IND:  return(2048); break;
-   default : { 
-              log("Error in BestClassBIT"); 
+   default : {
+              log("Error in BestClassBIT");
               break; }
  } /* switch */
- 
+
   return(class);
 }

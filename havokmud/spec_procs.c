@@ -7003,7 +7003,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
       init_string_block(&sb);
       sprintf(buf,"You have got %d practice sessions left.\n\r",
 	      ch->specials.spells_to_learn);
-      send_to_char(buf,ch);
+      //send_to_char(buf,ch);
       append_to_string_block(&sb,buf);
       //practice,Practise
       append_to_string_block(&sb,"You can practice any of these spells.\n\r");
@@ -7051,7 +7051,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	    return(TRUE);
 	  }
 
-	  sprintf(buf,"You practice %s %s for a while.\n\r",arg,bardskills[x].name);
+	  sprintf(buf,"You practice %s for a while.\n\r",bardskills[x].name);
 	  send_to_char(buf,ch);
 	  ch->specials.spells_to_learn--;
 

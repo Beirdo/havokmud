@@ -3508,7 +3508,7 @@ dlog("in do_advance");
 	  break;
 
 	default:
-	  send_to_char("Must supply a class (M C W T D K B P R I S)\n\r", ch);
+	  send_to_char("Must supply a class (M C W T D K B P R I S A)\n\r", ch);
 	  return;
 	  break;
 
