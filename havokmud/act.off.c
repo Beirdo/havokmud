@@ -815,7 +815,7 @@ dlog("in do_leg_sweep");
 		return;
 	}
 
-	if (victim->attackers >= 3) {
+	if (victim->attackers >= 4) {
 		send_to_char("You'll end up giving your buddies a good boot if you do that!\n\r", ch);
 		return;
 	}
