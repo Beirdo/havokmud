@@ -1037,7 +1037,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
 void do_bug(struct char_data *ch, char *argument, int cmd)
 {
     FILE           *fl;
-    char            str[MAX_INPUT_LENGTH + 20];
+    char            str[MAX_STRING_LENGTH];
 
     dlog("in do_bug");
 
