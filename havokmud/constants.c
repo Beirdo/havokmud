@@ -3557,17 +3557,17 @@ const char *spell_desc[] = {
   "!acid blast!",
   "$n looks rather fishy",
   "$n is flying",
-  "spell1, please report.",   /* 70 */
-  "spell2, please report.",
-  "spell72, please report",
+  "spell 70, please report.",   /* 70 */
+  "spell 712, please report.",
+  "spell 72, please report",
   "$n is surrounded by a weak shield of magic.",
-  "spell74, please report",
-  "spell6, please report.",
-  "spell7, please report.",
-  "spell8, please report.",
-  "spell9, please report.",
-  "spell10, please report.",
-  "spell11, please report.",  /* 80  */
+  "spell 74, please report",
+  "spell 75, please report.",
+  "spell 76, please report.",
+  "spell 77, please report.",
+  "spell 78, please report.",
+  "spell 79, please report.",
+  "spell 80, please report.",  /* 80  */
   "$n is surrounded by glowing red flames!",
   "",
   "spell83, please report.",
@@ -3616,25 +3616,25 @@ const char *spell_desc[] = {
   "spell 126 please report.",
   "spell 127 please report.",
   "spell 128 please report.",
-  "spell 129 please report.",
-  "spell 130 please report.",
-  "spell 131 please report.",
-  "spell 132 please report.",
-  "spell 133 please report.",
-  "spell 134 please report.",
-  "spell 135 please report.",
-  "spell 136 please report.",
+  "", /*animal summon one*/
+  "spell 130 please report.", /*animal summon two*/
+  "spell 131 please report.", /*animal summon three*/
+  "", /*fire servant*/
+  "", /*earth servant*/
+  "", /*water servant*/
+  "", /*wind servant*/
+  "spell 136 please report.", /*reincarnate*/
   "spell 137 please report.",
-  "spell 138 please report.",
+  "$n has been magically enlarged!",
   "spell 139 please report.",
-  "spell 140 please report.",
+  "",
   "$n seems a bit shadowy",
   "",
   "",
   "",
-  "spell 145 please report.",
-  "spell 146 please report.",
-  "spell 147 please report.",
+  "", /*slow poison*/
+  "$n is firmly entangled in vines.",
+  "spell 147 please report.", /*Snare*/
   "spell 148 please report.",
   "$n's skin seems rough, and brown, like bark!",
   "spell 150 please report.",
@@ -4276,16 +4276,16 @@ const struct skillset thiefskills[] = {
   {"spy",       SKILL_SPY,           1},
   {"retreat",   SKILL_RETREAT,       1},
   {"find trap", SKILL_FIND_TRAP,     1},
-  {"disarm trap", SKILL_DISARM,      1}
+  {"disarm trap", SKILL_REMOVE_TRAP, 1}
 };
 const struct skillset ninjaskills[] = {
   { "disarm",            SKILL_DISARM,          1},
   { "doorbash",          SKILL_DOORBASH,        1},
   { "spy",               SKILL_SPY,             1},
   { "retreat",           SKILL_RETREAT,         1},
-  { "switch opponents",  SKILL_SWITCH_OPP,          1},
+  { "switch opponents",  SKILL_SWITCH_OPP,      1},
   { "riding",            SKILL_RIDE,            1},
-  { "disguise",          SKILL_HIDE,        1},
+  { "disguise",          SKILL_HIDE,            1},
   { "climb",             SKILL_CLIMB,           1}
 };
 const struct skillset barbskills[] = {
