@@ -10,7 +10,6 @@ void            shutdown_request(int signal);
 void            logsig(int signal);
 void            hupsig(int signal);
 
-int             raw_force_all(char *to_force);
 
 void signal_setup(void)
 {
