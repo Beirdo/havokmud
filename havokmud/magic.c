@@ -392,7 +392,8 @@ if (level <0 || level >ABS_MAX_LVL)
   for(tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
     temp = tmp_victim->next;
     if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-      if (!in_group(ch,tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
+      if (!in_group(ch,tmp_victim) && !IS_IMMORTAL(tmp_victim)
+      	 && (!IS_AFFECTED(tmp_victim, AFF_FLYING)) ) {
 
 	 if (GetMaxLevel(tmp_victim) > 4) {
 	   act("You fall and hurt yourself!!\n\r",

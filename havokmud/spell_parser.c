@@ -1,7 +1,7 @@
 
 
 /*
-*** DaleMUD, 
+*** DaleMUD,
 */
 
 
@@ -770,7 +770,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {15,13,13,13,13,13,11,11,11,11,11, 9, 9, 9, 9, 9, 7, 7, 7, 7, 7, 5, 4, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
   {17,15,15,15,15,15,13,13,13,13,13,11,11,11,11,11, 9, 9, 9, 9, 9, 7, 5, 3, 3,3,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
   {14,12,12,12,12,12,10,10,10,10,10, 8, 8, 8, 8, 8, 6, 6, 6, 6, 6, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0}
-}, 
+},
 /* cleric */
 {
   {11,10,10,10, 9, 9, 9, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 4, 2, 2, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
@@ -778,7 +778,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {15,13,13,13,12,12,12,10,10,10, 9, 9, 9, 8, 8, 8, 7, 7, 7, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {18,16,16,16,15,15,15,13,13,13,12,12,12,11,11,11,10,10,10, 8, 8, 7, 6, 5, 4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {17,15,15,15,14,14,14,12,12,12,11,11,11,10,10,10, 9, 9, 9, 7, 7, 6, 5, 4, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}, 
+},
 /* warrior */
 {
   {15,13,13,13,13,12,12,12,12,11,11,11,11,10,10,10,10, 9, 9, 9, 9, 8, 7, 6, 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -786,7 +786,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {14,12,12,12,12,11,11,11,11,10,10,10,10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 5, 3, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {18,16,16,16,16,15,15,15,15,14,14,14,14,13,13,13,13,12,12,12,12,11, 9, 5, 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {17,15,15,15,15,13,13,13,13,11,11,11,11, 9, 9, 9, 9, 7, 7, 7, 7, 5, 3, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}, 
+},
 /* thief */
 {
   {16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 5, 5, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -801,7 +801,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {15,13,13,13,12,12,12,10,10,10, 9, 9, 9, 8, 8, 8, 7, 7, 7, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {18,16,16,16,15,15,15,13,13,13,12,12,12,11,11,11,10,10,10, 8, 8, 7, 6, 5, 4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {17,15,15,15,14,14,14,12,12,12,11,11,11,10,10,10, 9, 9, 9, 7, 7, 6, 5, 4, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}, 
+},
 { /* monk */
   {16,14,14,13,13,11,11,10,10, 8, 8, 7, 7, 5, 5, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {18,16,16,15,15,13,13,12,12,10,10, 9, 9, 7, 7, 6, 6, 5, 5, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -832,7 +832,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
   {15,13,13,13,12,12,12,10,10,10, 9, 9, 9, 8, 8, 8, 7, 7, 7, 5, 5, 4, 3, 2, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {18,16,16,16,15,15,15,13,13,13,12,12,12,11,11,11,10,10,10, 8, 8, 7, 6, 5, 4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {17,15,15,15,14,14,14,12,12,12,11,11,11,10,10,10, 9, 9, 9, 7, 7, 6, 5, 4, 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-}, 
+},
  /* ranger (same as druid) */
 {
   {11,10,10,10, 9, 9, 9, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 4, 2, 2, 2, 2, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0},
@@ -853,7 +853,7 @@ const byte saving_throws[MAX_CLASS][5][ABS_MAX_LVL] = {
 
 
 void spello(int nr, byte beat, byte pos,
-	    byte mlev, byte clev, byte dlev, 
+	    byte mlev, byte clev, byte dlev,
 	    byte slev, byte plev, byte rlev, byte ilev,
 	    ubyte mana, sh_int tar, void *func, sh_int sf)
 {
@@ -863,11 +863,11 @@ void spello(int nr, byte beat, byte pos,
   spell_info[nr].min_level_cleric   = clev;
   spell_info[nr].min_level_magic    = mlev;
   spell_info[nr].min_level_druid    = dlev;
-  spell_info[nr].min_level_sorcerer = slev;  
-  spell_info[nr].min_level_paladin  = plev;  
-  spell_info[nr].min_level_ranger   = rlev;  
-  spell_info[nr].min_level_psi      = ilev;  
-  spell_info[nr].min_usesmana 	    = mana;  
+  spell_info[nr].min_level_sorcerer = slev;
+  spell_info[nr].min_level_paladin  = plev;
+  spell_info[nr].min_level_ranger   = rlev;
+  spell_info[nr].min_level_psi      = ilev;
+  spell_info[nr].min_usesmana 	    = mana;
   spell_info[nr].targets            = tar;
   spell_info[nr].spellfail 	    = sf;
 }
@@ -926,10 +926,10 @@ void affect_update( int pulse )
   struct char_data  *next_char;
   struct room_data *rp;
   int dead=FALSE, room, k;
-  
+
   extern struct time_info_data time_info;
-  
-  
+
+
   void update_char_objects( struct char_data *ch ); /* handler.c */
   void do_save(struct char_data *ch, char *arg, int cmd); /* act.other.c */
 
@@ -939,13 +939,13 @@ void affect_update( int pulse )
      *  check the effects on the char
      */
     dead=FALSE;
-    for (af = i->affected; af&&!dead; af = next_af_dude) 
+    for (af = i->affected; af&&!dead; af = next_af_dude)
 {
       next_af_dude = af->next;
-	if (af->duration >= 1 && af->type != SKILL_MEMORIZE ) 
+	if (af->duration >= 1 && af->type != SKILL_MEMORIZE )
 	{
 		af->duration--;
-	if (af->duration == 1) 
+	if (af->duration == 1)
 		SpellWearOffSoon(af->type, i);
        }/* >=1 end */
         else if ( af->type != SKILL_MEMORIZE ) /* dur < 1 */
@@ -953,27 +953,27 @@ void affect_update( int pulse )
 	/* It must be a spell */	/* /----- was FIRST_BREATH_WEAPON */
 	if ((af->type > 0)
            && (af->type < MAX_EXIST_SPELL)
-           && af->type != SKILL_MEMORIZE ) 
-     { 
+           && af->type != SKILL_MEMORIZE )
+     {
 	  if (!af->next || (af->next->type != af->type) ||
-	      (af->next->duration > 0)) 
+	      (af->next->duration > 0))
       {
             SpellWearOff(af->type, i);
 /* moved to it's own pulse update bcw
-	    check_memorize(i,af); */ 
+	    check_memorize(i,af); */
 #if 0
 	if (!affected_by_spell(i,SPELL_CHARM_PERSON)) /* added to fix bug */
-	/* ro does not remove it here! */	
+	/* ro does not remove it here! */
 	    affect_remove(i, af);			/* msw 12/16/94 */
-#endif							/* check_check_decharm */	    
+#endif							/* check_check_decharm */
       }/* end duration > 0 || */
-    } /* was not a spell */ 
-  else 
-if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON ) 
+    } /* was not a spell */
+  else
+if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 {
 	 extern funcp bweapons[];
  bweapons[af->type-FIRST_BREATH_WEAPON](-af->modifier/2, i, "",SPELL_TYPE_SPELL, i, 0);
-	  if (!i->affected) 
+	  if (!i->affected)
 	  {
 	    /* oops, you're dead :) */
 	    dead = TRUE;
@@ -990,7 +990,7 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
     if (!dead) {
 
       if (GET_POS(i) >= POSITION_STUNNED && (i->desc || !IS_PC(i))) {
-	/* note - because of poison, this one has to be in the 
+	/* note - because of poison, this one has to be in the
 	   opposite order of the others.  The logic:
 
 	   hit_gain() modifies the characters hps if they are poisoned.
@@ -1005,8 +1005,8 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 #if 0
 if (i->pc)
    GET_DIMD(i) +=2;
-#endif   
-        if (GET_POS(i) == POSITION_STUNNED) 
+#endif
+        if (GET_POS(i) == POSITION_STUNNED)
 	  update_pos( i );
       } else if (GET_POS(i) == POSITION_INCAP) {
         /* do nothing */  damage(i, i, 0, TYPE_SUFFERING);
@@ -1088,39 +1088,39 @@ if (i->pc)
       check_nature(i);  /* check falling, check drowning, etc */
     }
   }
-  
+
   /*
    *  update the objects
    */
   for(j = object_list; j ; j = next_thing){
     next_thing = j->next; /* Next in object list */
-    
+
     /* If this is a corpse */
-    if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) && 
+    if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) &&
 	(j->obj_flags.value[3]) ) {
       /* timer count down */
       if (j->obj_flags.timer > 0) j->obj_flags.timer--;
-      
+
       if (!j->obj_flags.timer) {
 	if (j->carried_by)
-      act("$p biodegrades in your hands. Everything in it falls to the floor", 
+      act("$p biodegrades in your hands. Everything in it falls to the floor",
 	      FALSE, j->carried_by, j, 0, TO_CHAR);
-	else if ((j->in_room != NOWHERE) && 
+	else if ((j->in_room != NOWHERE) &&
 		 (real_roomp(j->in_room)->people)){
 	  act("$p dissolves into a fertile soil.",
 	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
 	  act("$p dissolves into a fertile soil.",
 	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
-	}	
+	}
 	ObjFromCorpse(j);
       }
     } else {
-      
+
       /*
        *  Sound objects
        */
       if (ITEM_TYPE(j) == ITEM_AUDIO) {
-	if (((j->obj_flags.value[0]) && 
+	if (((j->obj_flags.value[0]) &&
 	     (pulse % j->obj_flags.value[0])==0) ||
 	    (!number(0,5))) {
 	  if (j->carried_by) {
@@ -1135,8 +1135,8 @@ if (i->pc)
 	  /*
 	   *  broadcast to room
 	   */
-	  
-	  if (j->action_description) {	  
+
+	  if (j->action_description) {
 	    MakeNoise(room, j->action_description, j->action_description);
 	  }
 	}
@@ -1147,7 +1147,7 @@ if (i->pc)
       }
     }
   }
-}  
+}
 
 void update_mem( int pulse )
 {
@@ -1163,15 +1163,15 @@ void update_mem( int pulse )
       if (af->duration >= 1 && af->type == SKILL_MEMORIZE ) {
         af->duration--;
       }/* >=1 end */
-      else if (  af->type == SKILL_MEMORIZE ) { 
+      else if (  af->type == SKILL_MEMORIZE ) {
         SpellWearOff(af->type, i);
         check_memorize(i,af);
         stop_memorizing(i);
 	affect_remove(i, af);
-      }  
-    }  
-  }  
-}  
+      }
+    }
+  }
+}
 
 void stop_memorizing(struct char_data *ch)
 {
@@ -1234,7 +1234,7 @@ void affect_update( int pulse )
 	      send_to_char(spell_wear_off_msg[af->type], i);
 	      send_to_char("\n\r", i);
 	    }
-	    
+
 	  }
 	} else if (af->type>=FIRST_BREATH_WEAPON &&
 		   af->type <=LAST_BREATH_WEAPON ) {
@@ -1247,17 +1247,17 @@ void affect_update( int pulse )
 	    break;
 	  }
 	}
-	
+
 	affect_remove(i, af);
       }
     }
     if (!dead) {
-      
+
       if (GET_POS(i) >= POSITION_STUNNED) {
         GET_HIT(i)  = MIN(GET_HIT(i)  + hit_gain(i),  hit_limit(i));
         GET_MANA(i) = MIN(GET_MANA(i) + mana_gain(i), mana_limit(i));
         GET_MOVE(i) = MIN(GET_MOVE(i) + move_gain(i), move_limit(i));
-        if (GET_POS(i) == POSITION_STUNNED) 
+        if (GET_POS(i) == POSITION_STUNNED)
 	  update_pos( i );
       } else if (GET_POS(i) == POSITION_INCAP) {
         /* do nothing */  damage(i, i, 0, TYPE_SUFFERING);
@@ -1289,44 +1289,44 @@ void affect_update( int pulse )
 	   }
 	}
 
-	        
+
       }
     }
   }
-  
+
   /*
    *  update the objects
    */
-  
+
   for(j = object_list; j ; j = next_thing){
     next_thing = j->next; /* Next in object list */
-    
+
     /* If this is a corpse */
-    if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) && 
+    if ( (GET_ITEM_TYPE(j) == ITEM_CONTAINER) &&
 	(j->obj_flags.value[3]) ) {
       /* timer count down */
       if (j->obj_flags.timer > 0) j->obj_flags.timer--;
-      
+
       if (!j->obj_flags.timer) {
 	if (j->carried_by)
 	  act("$p biodegrades in your hands.",
 	      FALSE, j->carried_by, j, 0, TO_CHAR);
-	else if ((j->in_room != NOWHERE) && 
+	else if ((j->in_room != NOWHERE) &&
 		 (real_roomp(j->in_room)->people)){
 	  act("$p dissolves into a fertile soil.",
 	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_ROOM);
 	  act("$p dissolves into a fertile soil.",
 	      TRUE, real_roomp(j->in_room)->people, j, 0, TO_CHAR);
-	}	
+	}
 	ObjFromCorpse(j);
       }
     } else {
-      
+
       /*
        *  Sound objects
        */
       if (ITEM_TYPE(j) == ITEM_AUDIO) {
-	if (((j->obj_flags.value[0]) && 
+	if (((j->obj_flags.value[0]) &&
 	     (pulse % j->obj_flags.value[0])==0) ||
 	    (!number(0,5))) {
 	  if (j->carried_by) {
@@ -1341,16 +1341,16 @@ void affect_update( int pulse )
 	  /*
 	   *  broadcast to room
 	   */
-	  
-	  if (j->action_description) {	  
+
+	  if (j->action_description) {
 	    MakeNoise(room, j->action_description, j->action_description);
 	  }
 	}
       }
-    }    
+    }
   }
-}  
-	
+}
+
 #endif
 
 
@@ -1365,7 +1365,7 @@ bool circle_follow(struct char_data *ch, struct char_data *victim)
     if (k == ch)
       return(TRUE);
   }
-  
+
   return(FALSE);
 }
 
@@ -1381,7 +1381,7 @@ void stop_follower(struct char_data *ch)
 
   if (IS_AFFECTED(ch, AFF_CHARM)) {
     act("You realize that $N is a jerk!", FALSE, ch, 0, ch->master, TO_CHAR);
-    act("$n realizes that $N is a jerk!", FALSE, ch, 0, ch->master, 
+    act("$n realizes that $N is a jerk!", FALSE, ch, 0, ch->master,
 	TO_NOTVICT);
     act("$n hates your guts!", FALSE, ch, 0, ch->master, TO_VICT);
 
@@ -1395,18 +1395,18 @@ void stop_follower(struct char_data *ch)
       act("$n stops following you.", FALSE, ch, 0, ch->master, TO_VICT);
     }
   }
-  
+
   if (ch->master->followers->follower == ch) { /* Head of follower-list? */
     k = ch->master->followers;
     ch->master->followers = k->next;
 if (k)
     free(k);
   } else { /* locate follower who is not head of list */
-    
-    for(k = ch->master->followers; k->next && k->next->follower!=ch; 
-	k=k->next)  
+
+    for(k = ch->master->followers; k->next && k->next->follower!=ch;
+	k=k->next)
       ;
-    
+
     if (k->next) {
       j = k->next;
       k->next = j->next;
@@ -1416,7 +1416,7 @@ if (j)
       assert(FALSE);
     }
   }
-  
+
   ch->master = 0;
   REMOVE_BIT(ch->specials.affected_by, AFF_CHARM | AFF_GROUP);
 }
@@ -1429,7 +1429,7 @@ void stop_follower_quiet(struct char_data *ch)
 
   if (IS_AFFECTED(ch, AFF_CHARM)) {
     act("You realize that $N is a jerk!", FALSE, ch, 0, ch->master, TO_CHAR);
-    act("$n realizes that $N is a jerk!", FALSE, ch, 0, ch->master, 
+    act("$n realizes that $N is a jerk!", FALSE, ch, 0, ch->master,
 	TO_NOTVICT);
       act("$n hates your guts!", FALSE, ch, 0, ch->master, TO_VICT);
 
@@ -1443,18 +1443,18 @@ void stop_follower_quiet(struct char_data *ch)
       // act("$n stops following you.", FALSE, ch, 0, ch->master, TO_VICT);
     }
   }
-  
+
   if (ch->master->followers->follower == ch) { /* Head of follower-list? */
     k = ch->master->followers;
     ch->master->followers = k->next;
 if (k)
     free(k);
   } else { /* locate follower who is not head of list */
-    
-    for(k = ch->master->followers; k->next && k->next->follower!=ch; 
-	k=k->next)  
+
+    for(k = ch->master->followers; k->next && k->next->follower!=ch;
+	k=k->next)
       ;
-    
+
     if (k->next) {
       j = k->next;
       k->next = j->next;
@@ -1464,7 +1464,7 @@ if (j)
       assert(FALSE);
     }
   }
-  
+
   ch->master = 0;
   REMOVE_BIT(ch->specials.affected_by, AFF_CHARM | AFF_GROUP);
 }
@@ -1475,10 +1475,10 @@ if (j)
 void die_follower(struct char_data *ch)
 {
   struct follow_type *j, *k;
-  
+
   if (ch->master)
     stop_follower(ch);
-  
+
   for (k=ch->followers; k; k=j) {
     j = k->next;
     stop_follower(k->follower);
@@ -1493,7 +1493,7 @@ void add_follower(struct char_data *ch, struct char_data *leader)
 {
   struct follow_type *k;
  char buf[200];
- 
+
 
 #if 0
   assert(!ch->master);
@@ -1507,16 +1507,16 @@ if (ch->master) {
  return;
 }
 #endif
-  
+
   ch->master = leader;
-  
+
   CREATE(k, struct follow_type, 1);
-  
+
   k->follower = ch;
   k->next = leader->followers;
   leader->followers = k;
-  
-  
+
+
   act("You now follow $N.", FALSE, ch, 0, leader, TO_CHAR);
   if (!IS_SET(ch->specials.act, PLR_STEALTH)) {
     act("$n starts following you.", TRUE, ch, 0, leader, TO_VICT);
@@ -1565,18 +1565,18 @@ say_spell( struct char_data *ch, int si )
 {
   char buf[MAX_STRING_LENGTH], splwd[MAX_BUF_LENGTH];
   char buf2[MAX_STRING_LENGTH];
-  
+
   int j, offs;
   struct char_data *temp_char;
   extern struct syllable syls[];
-  
-  
-  
+
+
+
   strcpy(buf, "");
   strcpy(splwd, spells[si-1]);
 
   offs = 0;
-  
+
   while(*(splwd+offs)) {
     for(j=0; *(syls[j].org); j++)
       if (strncmp(syls[j].org, splwd+offs, strlen(syls[j].org))==0) {
@@ -1587,13 +1587,13 @@ say_spell( struct char_data *ch, int si )
 	  ++offs;
       }
   }
-  
-  
-  
+
+
+
 
 sprintf(buf2,"$n utters the words, '%s'", buf);
 sprintf(buf, "$n utters the words, '%s'", spells[si-1]);
-  
+
   for(temp_char = real_roomp(ch->in_room)->people;
       temp_char;
       temp_char = temp_char->next_in_room)
@@ -1602,7 +1602,7 @@ sprintf(buf, "$n utters the words, '%s'", spells[si-1]);
 	act(buf, FALSE, ch, 0, temp_char, TO_VICT);
       else
 	act(buf2, FALSE, ch, 0, temp_char, TO_VICT);
-      
+
     }
 }
 
@@ -1611,13 +1611,13 @@ sprintf(buf, "$n utters the words, '%s'", spells[si-1]);
 bool saves_spell(struct char_data *ch, sh_int save_type)
 {
   int save;
-  
+
   /* Negative apply_saving_throw makes saving throw better! */
-  
+
   save = ch->specials.apply_saving_throw[save_type];
-  
+
   if (!IS_NPC(ch)) {
-    
+
     save += saving_throws[BestMagicClass(ch)][save_type][GET_LEVEL(ch,BestMagicClass(ch))];
     if (GetMaxLevel(ch) > MAX_MORT)
       return(TRUE);
@@ -1625,28 +1625,28 @@ bool saves_spell(struct char_data *ch, sh_int save_type)
 
   if (GET_RACE(ch) == RACE_GOD)   /* gods always save */
     return(1);
-  
+
   return(MAX(1,save) < number(1,20));
 }
 
 bool ImpSaveSpell(struct char_data *ch, sh_int save_type, int mod)
 {
   int save;
-  
+
   /* Positive mod is better for save */
-  
+
   /* Negative apply_saving_throw makes saving throw better! */
-  
+
   save = ch->specials.apply_saving_throw[save_type] - mod;
-  
+
   if (!IS_NPC(ch)) {
-    
+
     save += saving_throws[BestMagicClass(ch)][save_type]
       [GET_LEVEL(ch,BestMagicClass(ch))];
     if (GetMaxLevel(ch) >= LOW_IMMORTAL)
       return(TRUE);
   }
-  
+
   return(MAX(1,save) < number(1,20));
 }
 
@@ -1668,13 +1668,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
   struct obj_data *tar_obj;
   struct char_data *tar_char;
   char name[MAX_INPUT_LENGTH];
-  char ori_argument[256];     /* make a copy of argument for log */ 
+  char ori_argument[256];     /* make a copy of argument for log */
   int qend, spl, i;
 #if 0
   int  mlev, clev, dlev, minl;
 #endif
   bool target_ok;
-  
+
 #if 0
 
 /* disabled, trying out new style of casting by npc's. Use the same */
@@ -1683,7 +1683,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
   if (IS_NPC(ch) && (!IS_SET(ch->specials.act, ACT_POLYSELF)))
     return;
 
-#endif    
+#endif
 
 
 
@@ -1691,7 +1691,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
     return;
   }
-  
+
   if (!IS_IMMORTAL(ch)) {
     if (BestMagicClass(ch) == WARRIOR_LEVEL_IND) {
       send_to_char("Think you had better stick to fighting...\n\r", ch);
@@ -1705,7 +1705,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
   }
 
- 
+
   if (cmd!=370 && apply_soundproof(ch))
      return;
 
@@ -1716,24 +1716,24 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
      ori_argument[i] = argument[i];
   ori_argument[i] = '\0';  /* ensure proper null termination */
 /* modification end */
-  
+
   /* If there is no chars in argument */
   if (!(*argument)) {
     send_to_char("Cast which what where?\n\r", ch);
     return;
   }
-  
+
   if (*argument != '\'') {
 
 /*    sprintf(buf,argument);
     log(buf); */
-    
+
     send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
     return;
   }
-  
+
   /* Locate the last quote && lowercase the magic words (if any) */
-  
+
   for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
     *(argument+qend) = LOWER(*(argument+qend));
 
@@ -1741,9 +1741,9 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     send_to_char("Magic must always be enclosed by the holy magic symbols : '\n\r",ch);
     return;
   }
-  
+
   spl = old_search_block(argument, 1, qend-1,spells, 0);
-  
+
   if (!spl) {
     send_to_char("Nothing seems to happen ! WOW! \n\r",ch);
     return;
@@ -1751,7 +1751,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 
 
 	/* mobs do not get  skills so we just check it for PC's */
-	
+
   if (!ch->skills)
    if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
      send_to_char("You do not have skills!\n\r",ch);
@@ -1771,9 +1771,9 @@ if ((cmd == 84 || cmd == 370) && OnlyClass(ch,CLASS_SORCERER)) {
 
 #if 1
 /* this should make sorcerer learned spells be forced to be recalled */
-if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) && 
+if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
     !IS_IMMORTAL(ch) && IS_SET(ch->skills[spl].flags,SKILL_KNOWN_SORCERER) ) {
-   send_to_char("You must use recall for this spell.\n\r",ch); 
+   send_to_char("You must use recall for this spell.\n\r",ch);
    return;
   }
 #endif
@@ -1798,23 +1798,23 @@ if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
 	break;
       } /* Switch */
     }	else {
-      
+
       if (!IS_IMMORTAL(ch)) {
 
-	if ((spell_info[spl].min_level_magic > 
+	if ((spell_info[spl].min_level_magic >
 	     GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
-	     
-           (spell_info[spl].min_level_sorcerer > 
-	     GET_LEVEL(ch,SORCERER_LEVEL_IND)) &&	     
-	     
+
+           (spell_info[spl].min_level_sorcerer >
+	     GET_LEVEL(ch,SORCERER_LEVEL_IND)) &&
+
 	    (spell_info[spl].min_level_cleric >
 	     GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
-	     
+
 	    (spell_info[spl].min_level_paladin >
 	     GET_LEVEL(ch,PALADIN_LEVEL_IND)) &&
-	     
+
 	    (spell_info[spl].min_level_ranger >
-	     GET_LEVEL(ch,RANGER_LEVEL_IND)) &&	     
+	     GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
 
 	    (spell_info[spl].min_level_psi >
 	     GET_LEVEL(ch,PSI_LEVEL_IND)) &&
@@ -1827,34 +1827,34 @@ if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
       }
       argument+=qend+1;	/* Point to the last ' */
       for(;*argument == ' '; argument++);
-      
+
       /* **************** Locate targets **************** */
-      
+
       target_ok = FALSE;
       tar_char = 0;
       tar_obj = 0;
-      
+
       if (IS_SET(spell_info[spl].targets, TAR_VIOLENT) &&
-	  check_peaceful(ch, 
+	  check_peaceful(ch,
 	  "This seems to be an dead magic zone!\n\r"))
 	return;
 
    /* for seeing what the other guys are doing test */
-   
+
 if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
      sprintf(buf,"%s cast %s",GET_NAME(ch),ori_argument);  /* changed argument */
      log(buf);
   }
 
       if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
-	
+
 	argument = one_argument(argument, name);
-	
+
 	if (*name) {
 	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
 	    if (tar_char = get_char_room_vis(ch, name)) {
 	      if (tar_char == ch || tar_char == ch->specials.fighting ||
-		  tar_char->attackers < 6 || 
+		  tar_char->attackers < 6 ||
 		  tar_char->specials.fighting == ch)
 		target_ok = TRUE;
 	      else {
@@ -1868,19 +1868,19 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
 	    if (tar_char = get_char_vis(ch, name))
 	      target_ok = TRUE;
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
 	    if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
 	      target_ok = TRUE;
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
 	    if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
 	      target_ok = TRUE;
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 	    if (tar_obj = get_obj_vis(ch, name))
 	      target_ok = TRUE;
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
 	    for(i=0; i<MAX_WEAR && !target_ok; i++)
 	      if (ch->equipment[i] && str_cmp(name, ch->equipment[i]->name) == 0) {
@@ -1888,53 +1888,53 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 		target_ok = TRUE;
 	      }
 	  }
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY))
 	    if (str_cmp(GET_NAME(ch), name) == 0) {
 	      tar_char = ch;
 	      target_ok = TRUE;
 	    }
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
 	    tar_obj = (void*)name;
 	    target_ok = TRUE;
 	  }
-	  
+
 	  if (tar_char) {
-	    if (IS_NPC(tar_char)) 
+	    if (IS_NPC(tar_char))
 	      if (IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
 		send_to_char("You can't cast magic on that!",ch);
 		return;
 	      }
 	  }
-	  
-	  
+
+
 	} else { /* No argument was typed */
-	  
+
 	  if (IS_SET(spell_info[spl].targets, TAR_FIGHT_SELF))
 	    if (ch->specials.fighting) {
 	      tar_char = ch;
 	      target_ok = TRUE;
 	    }
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_FIGHT_VICT))
 	    if (ch->specials.fighting) {
 	      /* WARNING, MAKE INTO POINTER */
 	      tar_char = ch->specials.fighting;
 	      target_ok = TRUE;
 	    }
-	  
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
 	    tar_char = ch;
 	    target_ok = TRUE;
 	  }
-	  
+
 	}
-	
+
       } else {
 	target_ok = TRUE; /* No target, is a good target */
       }
-      
+
       if (!target_ok) {
 	if (*name) {
 	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
@@ -1951,7 +1951,7 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	    send_to_char("You are not wearing anything like that.\n\r", ch);
 	  else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 	    send_to_char("Nothing at all by that name.\n\r", ch);
-	  
+
 	} else { /* Nothing was given as argument */
 	  if (spell_info[spl].targets < TAR_OBJ_INV)
 	    send_to_char("Who should the spell be cast upon?\n\r", ch);
@@ -1974,18 +1974,18 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
       }
 
 
-	
 
-      if (cmd == 283) 
+
+      if (cmd == 283)
       { /* recall */
-	if (!MEMORIZED(ch, spl)) 
+	if (!MEMORIZED(ch, spl))
 	{
 	  send_to_char("You don't have that spell memorized!\n\r", ch);
 	  return;
 	}
-      } else {      
+      } else {
 	if (GetMaxLevel(ch) < LOW_IMMORTAL) {
-	  if (GET_MANA(ch) < (unsigned int)USE_MANA(ch, (int)spl) || 
+	  if (GET_MANA(ch) < (unsigned int)USE_MANA(ch, (int)spl) ||
 	      GET_MANA(ch) <=0) {
 	    send_to_char("You can't summon enough energy!\n\r", ch);
 	    return;
@@ -1995,11 +1995,11 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 
       if (spl != SPELL_VENTRILOQUATE && cmd != 370)  /* :-) */
 	say_spell(ch, spl);		/* psi's do not utter! */
-      
+
       WAIT_STATE(ch, spell_info[spl].beats);
-      
+
       if ((spell_info[spl].spell_pointer == 0) && spl>0)
-	send_to_char("Sorry, this magic has not yet been implemented :(\n\r", 
+	send_to_char("Sorry, this magic has not yet been implemented :(\n\r",
 		     ch);
       else {
 	int max, cost;
@@ -2011,31 +2011,31 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	switch(BestMagicClass(ch)) {
 		case	MAGE_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_MAGE))
 					max+=10; /* 20% harder to cast spells */
-					break;		
+					break;
 		case	SORCERER_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_MAGE))
 					max+=10; /* 20% harder to cast spells */
-					break;		
+					break;
 		case	CLERIC_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_CLERIC))
 					max+=10; /* 20% harder to cast spells */
-					break;		
+					break;
 		case	DRUID_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_DRUID))
 					max+=10; /* 20% harder to cast spells */
-					break;		
+					break;
 		case	PALADIN_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_PALADIN))
 					max+=10; /* 20% harder to cast spells */
-					break; 
+					break;
 		case 	PSI_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_PSI))
 					max+=10; /* 20% harder to cast spells */
 					break;
 		case 	RANGER_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_RANGER))
 					max+=10; /* 20% harder to cast spells */
-					break;		
+					break;
 		default:if (EqWBits(ch,ITEM_ANTI_MAGE))
 			max+=10; /* 20% harder to cast spells */
 			break;
 		} /* end switch */
 
-  
+
 /* end EQ check				    */
 	if (ch->attackers > 0)
 	  max += spell_info[spl].spellfail;
@@ -2046,16 +2046,16 @@ if (cmd == 283)  /* recall:  less chance of spell fail ... */
   max = max/2;
 
 /* memorized spells don't fail ... bcw */
-if (number(1,max) > ch->skills[spl].learned && 
+if (number(1,max) > ch->skills[spl].learned &&
      !IsSpecialized(ch->skills[spl].special) &&
      cmd != 283 )      {
-	  send_to_char("You lost your concentration!\n\r", ch); 
+	  send_to_char("You lost your concentration!\n\r", ch);
 	  cost = (int)USE_MANA(ch, (int)spl);
-	  GET_MANA(ch) -= (cost>>1); 
+	  GET_MANA(ch) -= (cost>>1);
 	  LearnFromMistake(ch, spl, 0, 95);
 	  return;
      }
-     
+
         if (tar_char) {
 
 	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL) &&
@@ -2081,7 +2081,7 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 	return;
 	}
 
-	if (check_nomagic(ch, 
+	if (check_nomagic(ch,
 	     "Your skill appears useless in this magic dead zone.",
 	    "$n's spell dissolves like so much wet toilet paper"))
 	  return;
@@ -2094,7 +2094,7 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 	minl = 0;
 	if (HasClass(ch, CLASS_MAGIC_USER)) {
 	  if (!EqWBits(ch, ITEM_ANTI_MAGE))
-	    minl = 
+	    minl =
 	}
 #endif
 	send_to_char("Ok.\n\r",ch);
@@ -2106,12 +2106,12 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 	  GET_MANA(ch) -= cost;
 	}
       }
-      
+
     }	/* if GET_POS < min_pos */
-    
+
     return;
   }
-  
+
   switch (number(1,5)){
   case 1: send_to_char("Bylle Grylle Grop Gryf???\n\r", ch); break;
   case 2: send_to_char("Olle Bolle Snop Snyf?\n\r",ch); break;
@@ -2125,7 +2125,7 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 void assign_spell_pointers()
 {
   int i;
-  
+
 					/* make sure defaults are 0! msw */
   for(i=0; i<MAX_SPL_LIST; i++) {
      spell_info[i].spell_pointer = 0;
@@ -2137,34 +2137,34 @@ void assign_spell_pointers()
      spell_info[i].min_level_ranger   = 0;
      spell_info[i].min_level_psi      = 0;
     }
-  
-  
+
+
   /* From spells1.c */
 
-  /* mage only 	    */   
-  
-spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  15,TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_magic_missile,10);  
+  /* mage only 	    */
 
-  spello( 8,12,POSITION_FIGHTING, 4, LOW_IMMORTAL,  LOW_IMMORTAL, 
-  4,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 
+spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  15,TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_magic_missile,10);
+
+  spello( 8,12,POSITION_FIGHTING, 4, LOW_IMMORTAL,  LOW_IMMORTAL,
+  4,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_chill_touch,10);
-  
+
   spello( 5,24,POSITION_FIGHTING, 6, LOW_IMMORTAL,  LOW_IMMORTAL, 6,
   LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL, 15, TAR_IGNORE | TAR_VIOLENT,
   cast_burning_hands,5);
-  
-  spello(37,12,POSITION_FIGHTING, 2, LOW_IMMORTAL,  LOW_IMMORTAL, 
-  2,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 
+
+  spello(37,12,POSITION_FIGHTING, 2, LOW_IMMORTAL,  LOW_IMMORTAL,
+  2,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM|TAR_FIGHT_VICT|TAR_VIOLENT, cast_shocking_grasp,0);
 
-  
-  spello( 30, 24, POSITION_FIGHTING, 
-  10,  LOW_IMMORTAL,  LOW_IMMORTAL, 
-  10,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 
+
+  spello( 30, 24, POSITION_FIGHTING,
+  10,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  10,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT,cast_lightning_bolt,20);
 
-  spello(10,24,POSITION_FIGHTING, 14,LOW_IMMORTAL, LOW_IMMORTAL, 
-  14,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 
+  spello(10,24,POSITION_FIGHTING, 14,LOW_IMMORTAL, LOW_IMMORTAL,
+  14,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20, 	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_colour_spray,40);
 
   spello(26,36,POSITION_FIGHTING, 25, LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -2289,307 +2289,307 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   spello(33,24,POSITION_FIGHTING,LOW_IMMORTAL,  13, 8,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_SELF_NONO | TAR_OBJ_INV | TAR_OBJ_EQUIP | TAR_FIGHT_VICT | TAR_VIOLENT, cast_poison, 60);
-  
-  spello(34,12,POSITION_STANDING,LOW_IMMORTAL,  7, LOW_IMMORTAL, 
+
+  spello(34,12,POSITION_STANDING,LOW_IMMORTAL,  7, LOW_IMMORTAL,
   LOW_IMMORTAL,  20,  25,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_protection_from_evil, 0);
-  
-  spello(35,12,POSITION_STANDING,LOW_IMMORTAL, 8, LOW_IMMORTAL, 
+
+  spello(35,12,POSITION_STANDING,LOW_IMMORTAL, 8, LOW_IMMORTAL,
    LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_OBJ_INV | TAR_OBJ_EQUIP | TAR_OBJ_ROOM, cast_remove_curse, 0);
-  
-  spello(36,36,POSITION_STANDING, LOW_IMMORTAL, 26, LOW_IMMORTAL, 
+
+  spello(36,36,POSITION_STANDING, LOW_IMMORTAL, 26, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   50,	 TAR_CHAR_ROOM, cast_sanctuary, 0);
-  
+
   spello(38,24,POSITION_STANDING, 3, LOW_IMMORTAL, LOW_IMMORTAL,
   3,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_VIOLENT |TAR_FIGHT_VICT, cast_sleep, 0);
-  
-  spello(39,12,POSITION_STANDING, 6, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(39,12,POSITION_STANDING, 6, LOW_IMMORTAL, LOW_IMMORTAL,
   6,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM, cast_strength, 0);
-  
-  spello(40,36,POSITION_STANDING, 27,  19, LOW_IMMORTAL, 
+
+  spello(40,36,POSITION_STANDING, 27,  19, LOW_IMMORTAL,
   27,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_WORLD | TAR_VIOLENT, cast_summon, 0);
-  
-  /* */	
-  spello(41,12,POSITION_STANDING, 1, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  /* */
+  spello(41,12,POSITION_STANDING, 1, LOW_IMMORTAL, LOW_IMMORTAL,
   1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_OBJ_ROOM | TAR_SELF_NONO, cast_ventriloquate, 0);
-  
-  spello(42,12,POSITION_STANDING,LOW_IMMORTAL, 15, LOW_IMMORTAL, 
+
+  spello(42,12,POSITION_STANDING,LOW_IMMORTAL, 15, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_SELF_ONLY, cast_word_of_recall, 0);
-  
+
   spello(43,12,POSITION_STANDING,LOW_IMMORTAL,  17, 8,
   LOW_IMMORTAL,  40,  20,  LOW_IMMORTAL,
    5,	 TAR_CHAR_ROOM | TAR_OBJ_INV | TAR_OBJ_ROOM, cast_remove_poison,0);
-  
+
   spello(44,12,POSITION_STANDING,LOW_IMMORTAL,  4, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
    5,	 TAR_CHAR_ROOM, cast_sense_life,0);
-  
+
   spello(47,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+ BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
-  
+
   spello(48,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+ BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
-  
+
   spello(49,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+ BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
-  
+
   spello(50,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+ BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
-  
-  
-  spello(52,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1, 
- BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+
+
+  spello(52,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
+ BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0);
-  
-  spello(53,1,POSITION_STANDING,45,IMMORTAL, IMMORTAL, 
+
+  spello(53,1,POSITION_STANDING,45,IMMORTAL, IMMORTAL,
   45,  IMMORTAL,  IMMORTAL,  IMMORTAL,
   100, 	 TAR_OBJ_ROOM | TAR_OBJ_INV, cast_identify, 0);
-  
+
   spello(54,12,POSITION_STANDING, 8, LOW_IMMORTAL, 5,
   8,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  7,	 TAR_CHAR_ROOM, cast_infravision, 0); 
-  
-  spello(55,12,POSITION_FIGHTING, LOW_IMMORTAL,  1, 2,  
+  7,	 TAR_CHAR_ROOM, cast_infravision, 0);
+
+  spello(55,12,POSITION_FIGHTING, LOW_IMMORTAL,  1, 2,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   8,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT, cast_cause_light, 10);
-  
-  spello(56,24,POSITION_FIGHTING, LOW_IMMORTAL,  10,  13, 
+
+  spello(56,24,POSITION_FIGHTING, LOW_IMMORTAL,  10,  13,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   11,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_cause_critic, 20);
-  
-  spello(57,36,POSITION_FIGHTING, LOW_IMMORTAL , 15, LOW_IMMORTAL, 
+
+  spello(57,36,POSITION_FIGHTING, LOW_IMMORTAL , 15, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_flamestrike, 50);
-  
-  spello(58,36,POSITION_FIGHTING, LOW_IMMORTAL, 20, LOW_IMMORTAL, 
+
+  spello(58,36,POSITION_FIGHTING, LOW_IMMORTAL, 20, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT, cast_dispel_good, 50);
-  
-  spello(59,12,POSITION_FIGHTING, 6, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(59,12,POSITION_FIGHTING, 6, LOW_IMMORTAL, LOW_IMMORTAL,
   6,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_weakness, 30);
-  
-  spello(60,12,POSITION_FIGHTING, 9, 10, 9, 
+
+  spello(60,12,POSITION_FIGHTING, 9, 10, 9,
   9,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_OBJ_ROOM | TAR_OBJ_INV |
 	 TAR_VIOLENT , cast_dispel_magic, 50);
-  
-  spello(61,12,POSITION_STANDING, 3, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(61,12,POSITION_STANDING, 3, LOW_IMMORTAL, LOW_IMMORTAL,
   3,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE, cast_knock, 0);
-  
-  spello(62,12,POSITION_STANDING, 7, 4, 2, 
+
+  spello(62,12,POSITION_STANDING, 7, 4, 2,
   7,  5,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT, cast_know_alignment, 0);
-  
+
   spello(63,12,POSITION_STANDING, 16, 8, LOW_IMMORTAL,
    16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
    5,	 TAR_OBJ_ROOM, cast_animate_dead, 0);
-  
-  spello(64,36,POSITION_FIGHTING, 20, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(64,36,POSITION_FIGHTING, 20, LOW_IMMORTAL, LOW_IMMORTAL,
   20,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_paralyze, 90);
-  
-  spello(65,12,POSITION_FIGHTING, LOW_IMMORTAL, 6, 9 , 
+
+  spello(65,12,POSITION_FIGHTING, LOW_IMMORTAL, 6, 9 ,
   LOW_IMMORTAL,  15,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT, cast_remove_paralysis, 30);
 
-  spello( 66, 12, POSITION_FIGHTING, 8, LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello( 66, 12, POSITION_FIGHTING, 8, LOW_IMMORTAL, LOW_IMMORTAL,
   8,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_fear, 40);
-  
-  spello(67,24,POSITION_FIGHTING, 6, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(67,24,POSITION_FIGHTING, 6, LOW_IMMORTAL, LOW_IMMORTAL,
   6,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_acid_blast, 20);
-  
-  spello(68,12,POSITION_STANDING, 9, LOW_IMMORTAL, 6, 
+
+  spello(68,12,POSITION_STANDING, 9, LOW_IMMORTAL, 6,
   9,  LOW_IMMORTAL,  17,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM, cast_water_breath, 0);
-  
-  spello(69,12,POSITION_STANDING, 11, 22, 14, 
+
+  spello(69,12,POSITION_STANDING, 11, 22, 14,
   11,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM, cast_flying, 0);
-  
-  spello(70,24,POSITION_FIGHTING, 17, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(70,24,POSITION_FIGHTING, 17, LOW_IMMORTAL, LOW_IMMORTAL,
   17,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_IGNORE | TAR_VIOLENT,  cast_cone_of_cold, 40);
-  
-  spello(71,24,POSITION_FIGHTING, 36, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(71,24,POSITION_FIGHTING, 36, LOW_IMMORTAL, LOW_IMMORTAL,
   36,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   35,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_meteor_swarm, 80);
-  
-  spello(72,12,POSITION_FIGHTING, 11, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(72,12,POSITION_FIGHTING, 11, LOW_IMMORTAL, LOW_IMMORTAL,
   11,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_IGNORE | TAR_VIOLENT,  cast_ice_storm, 20);
-  
-  spello(73,24,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(73,24,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,
   1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   1,	 TAR_CHAR_ROOM, cast_shield, 15);
-  
+
   spello(74,24,POSITION_STANDING, 4, LOW_IMMORTAL, LOW_IMMORTAL,
   4,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE, cast_mon_sum1,0);
-  
-  spello(75,24,POSITION_STANDING, 7, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(75,24,POSITION_STANDING, 7, LOW_IMMORTAL, LOW_IMMORTAL,
   7,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   12,	 TAR_IGNORE, cast_mon_sum2,0);
-  
-  spello(76,24,POSITION_STANDING, 9, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(76,24,POSITION_STANDING, 9, LOW_IMMORTAL, LOW_IMMORTAL,
   9,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_IGNORE, cast_mon_sum3,0);
-  
-  spello(77,24,POSITION_STANDING, 12, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(77,24,POSITION_STANDING, 12, LOW_IMMORTAL, LOW_IMMORTAL,
   12,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   17,	 TAR_IGNORE, cast_mon_sum4,0);
-  
-  spello(78,24,POSITION_STANDING, 15, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(78,24,POSITION_STANDING, 15, LOW_IMMORTAL, LOW_IMMORTAL,
   15,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE, cast_mon_sum5,0);
-  
-  spello(79,24,POSITION_STANDING, 18, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(79,24,POSITION_STANDING, 18, LOW_IMMORTAL, LOW_IMMORTAL,
   18,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   22,	 TAR_IGNORE, cast_mon_sum6,0);
-  
-  spello(80,24,POSITION_STANDING, 22, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(80,24,POSITION_STANDING, 22, LOW_IMMORTAL, LOW_IMMORTAL,
   22,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   25,	 TAR_IGNORE, cast_mon_sum7,0);
 
-  spello(81,24,POSITION_STANDING, 40, 45, 48, 
+  spello(81,24,POSITION_STANDING, 40, 45, 48,
   40,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_SELF_ONLY | TAR_CHAR_ROOM, cast_fireshield,0);
-  
-  spello(82,12,POSITION_STANDING, 10, LOW_IMMORTAL, 12, 
+
+  spello(82,12,POSITION_STANDING, 10, LOW_IMMORTAL, 12,
   10,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_VIOLENT, cast_charm_monster,0);
-  
-  spello(83,12,POSITION_FIGHTING, LOW_IMMORTAL, 7, 8, 
+
+  spello(83,12,POSITION_FIGHTING, LOW_IMMORTAL, 7, 8,
   45, 50,  LOW_IMMORTAL,  LOW_IMMORTAL,
   9,	 TAR_CHAR_ROOM, cast_cure_serious, 14);
-  
+
   spello(84,12,POSITION_FIGHTING, LOW_IMMORTAL, 7, 8,
   45,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   9,	 TAR_CHAR_ROOM | TAR_VIOLENT, cast_cause_serious, 14);
-  
-  spello(85,12,POSITION_STANDING, 6, 3, 4, 
+
+  spello(85,12,POSITION_STANDING, 6, 3, 4,
   6,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_refresh,0);
-  
+
   spello(86,12,POSITION_FIGHTING, 20, 9, 14,
   20,  35,  30,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_second_wind,25);
-  
-  spello(87,12,POSITION_STANDING, LOW_IMMORTAL, 1, 12, 
+
+  spello(87,12,POSITION_STANDING, LOW_IMMORTAL, 1, 12,
   LOW_IMMORTAL,  10,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_turn,0);
-  
-  spello(88,24,POSITION_STANDING, 24, 23, LOW_IMMORTAL, 
+
+  spello(88,24,POSITION_STANDING, 24, 23, LOW_IMMORTAL,
   24,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_IGNORE, cast_succor,0);
-  
-  spello(89,12,POSITION_STANDING, 1, 2, 3,  
+
+  spello(89,12,POSITION_STANDING, 1, 2, 3,
   1,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_IGNORE, cast_light,0);
-  
-  spello(90,24,POSITION_STANDING, 10, 26, 16, 
+
+  spello(90,24,POSITION_STANDING, 10, 26, 16,
   10,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE, cast_cont_light,0);
-  
-  spello(91,24,POSITION_STANDING, 4, 2, LOW_IMMORTAL, 
+
+  spello(91,24,POSITION_STANDING, 4, 2, LOW_IMMORTAL,
   4,  18,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM, cast_calm,0);
-  
-  spello(92,24,POSITION_STANDING, 26, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(92,24,POSITION_STANDING, 26, LOW_IMMORTAL, LOW_IMMORTAL,
   26,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_SELF_ONLY, cast_stone_skin,0);
 
-  spello(93,24,POSITION_STANDING, 16, 13, 11, 
+  spello(93,24,POSITION_STANDING, 16, 13, 11,
   16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_conjure_elemental,0);
-  
-  spello(94,24,POSITION_STANDING, LOW_IMMORTAL, 19, 24, 
+
+  spello(94,24,POSITION_STANDING, LOW_IMMORTAL, 19, 24,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM, cast_true_seeing,0);
-  
-  spello(95,24,POSITION_STANDING, 8, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(95,24,POSITION_STANDING, 8, LOW_IMMORTAL, LOW_IMMORTAL,
   8,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_minor_creation,0);
-  
-  spello(96,12,POSITION_STANDING, 5, 4, 1, 
+
+  spello(96,12,POSITION_STANDING, 5, 4, 1,
   5,  LOW_IMMORTAL, 7,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_SELF_NONO | TAR_VIOLENT, cast_faerie_fire,0);
-  
-  spello(97,24,POSITION_STANDING, 16, 11, 10, 
+
+  spello(97,24,POSITION_STANDING, 16, 11, 10,
   16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE, cast_faerie_fog,0);
-  
-  spello(98,24,POSITION_STANDING, 30, 29, LOW_IMMORTAL, 
+
+  spello(98,24,POSITION_STANDING, 30, 29, LOW_IMMORTAL,
   30,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   50,	 TAR_IGNORE, cast_cacaodemon,0);
-  
 
-  spello(99,12,POSITION_STANDING, 9, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello(99,12,POSITION_STANDING, 9, LOW_IMMORTAL, LOW_IMMORTAL,
   9,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE, cast_poly_self,0);
-    
+
   spello(100,12,POSITION_FIGHTING, BIG_GUY+1, BIG_GUY+1, BIG_GUY+1,
-   BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+   BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200, TAR_IGNORE, cast_mana,0);
 
-  spello( 101,12,POSITION_STANDING, LOW_IMMORTAL, 30, LOW_IMMORTAL, 
+  spello( 101,12,POSITION_STANDING, LOW_IMMORTAL, 30, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_WORLD, cast_astral_walk,0);
-  
-  spello( 102,36,POSITION_STANDING, LOW_IMMORTAL, 36, LOW_IMMORTAL, 
+
+  spello( 102,36,POSITION_STANDING, LOW_IMMORTAL, 36, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
  33,	 TAR_OBJ_ROOM, cast_resurrection,0);
 
-  spello( 103,12,POSITION_STANDING, LOW_IMMORTAL, 24, LOW_IMMORTAL, 
+  spello( 103,12,POSITION_STANDING, LOW_IMMORTAL, 24, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,	 TAR_IGNORE, cast_heroes_feast,0);
 
-  spello( 104,12,POSITION_STANDING, 24, LOW_IMMORTAL, 22, 
+  spello( 104,12,POSITION_STANDING, 24, LOW_IMMORTAL, 22,
   24,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_fly_group,0);
 
   spello(105, 250, POSITION_STANDING, BIG_GUY+1, BIG_GUY+1,BIG_GUY+1,
-  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1, 
+  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   200, TAR_IGNORE | TAR_VIOLENT, cast_dragon_breath,0);
- 
 
-  spello( 106,12,POSITION_FIGHTING, 11, LOW_IMMORTAL, LOW_IMMORTAL, 
+
+  spello( 106,12,POSITION_FIGHTING, 11, LOW_IMMORTAL, LOW_IMMORTAL,
   11,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   3,	 TAR_CHAR_ROOM, cast_web,60);
 
-  spello( 107,12,POSITION_STANDING, 12, LOW_IMMORTAL, 7, 
+  spello( 107,12,POSITION_STANDING, 12, LOW_IMMORTAL, 7,
   12,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM, cast_minor_track,0);
 
-  spello( 108,12,POSITION_STANDING, 20, LOW_IMMORTAL, 17, 
+  spello( 108,12,POSITION_STANDING, 20, LOW_IMMORTAL, 17,
   20,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM, cast_major_track,0);
 
 /* new stuff */
 
-  spello(109,24,POSITION_STANDING, IMMORTAL, 15, IMMORTAL, 
+  spello(109,24,POSITION_STANDING, IMMORTAL, 15, IMMORTAL,
   IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_golem,0);
 
-  spello(110,24,POSITION_STANDING, 2, IMMORTAL, IMMORTAL, 
+  spello(110,24,POSITION_STANDING, 2, IMMORTAL, IMMORTAL,
   2,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_familiar,0);
 
-  spello(111,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 30, 
+  spello(111,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 30,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_changestaff,0);
 
@@ -2597,23 +2597,23 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE | TAR_VIOLENT,  cast_holyword,80);
 
-  spello(113,24,POSITION_FIGHTING, IMMORTAL, IMMORTAL, IMMORTAL, 
+  spello(113,24,POSITION_FIGHTING, IMMORTAL, IMMORTAL, IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE | TAR_VIOLENT, cast_unholyword,80);
 
-  spello(114,24,POSITION_FIGHTING, 23, IMMORTAL, IMMORTAL, 
+  spello(114,24,POSITION_FIGHTING, 23, IMMORTAL, IMMORTAL,
   23,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_pword_kill,40);
 
-  spello(115,24,POSITION_FIGHTING, 16, IMMORTAL, IMMORTAL, 
+  spello(115,24,POSITION_FIGHTING, 16, IMMORTAL, IMMORTAL,
   16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_pword_blind,20);
 
-  spello(116,24,POSITION_FIGHTING, 25, IMMORTAL, 25, 
+  spello(116,24,POSITION_FIGHTING, 25, IMMORTAL, 25,
   25,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_chain_lightn,80);
 
-  spello(117,24,POSITION_FIGHTING, 4, IMMORTAL, IMMORTAL, 
+  spello(117,24,POSITION_FIGHTING, 4, IMMORTAL, IMMORTAL,
   4,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   3,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_scare,10);
 
@@ -2621,35 +2621,35 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
    5,	 TAR_CHAR_ROOM, cast_aid,10);
 
-  spello(119,24,POSITION_FIGHTING, LOW_IMMORTAL, 1, IMMORTAL, 
+  spello(119,24,POSITION_FIGHTING, LOW_IMMORTAL, 1, IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   3,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_command,30);
 
-  spello(120, 12, POSITION_STANDING, IMMORTAL, IMMORTAL, 12, 
+  spello(120, 12, POSITION_STANDING, IMMORTAL, IMMORTAL, 12,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE, cast_change_form, 0);
 
-  spello(121,24,POSITION_FIGHTING, 34, IMMORTAL, IMMORTAL, 
+  spello(121,24,POSITION_FIGHTING, 34, IMMORTAL, IMMORTAL,
   34,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT |TAR_VIOLENT,cast_feeblemind,70);
 
-  spello(122,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 3, 
+  spello(122,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 3,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_OBJ_INV, cast_shillelagh, 0);
 
-  spello(123,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 4, 
+  spello(123,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 4,
   LOW_IMMORTAL,  LOW_IMMORTAL,  10,  LOW_IMMORTAL,
   10,	 TAR_IGNORE ,cast_goodberry,0);
 
-  spello(124,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 7, 
+  spello(124,12,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 7,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE,cast_flame_blade,0);
 
-  spello(125,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 35, 
+  spello(125,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 35,
   LOW_IMMORTAL,  LOW_IMMORTAL,  35,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_SELF_NONO,cast_animal_growth,40);
 
-  spello(126,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 33, 
+  spello(126,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 33,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_SELF_NONO,cast_insect_growth,40);
 
@@ -2658,187 +2658,192 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   50,	 TAR_IGNORE,cast_creeping_death,0);
 
 
-  spello(128,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 20, 
+  spello(128,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 20,
   LOW_IMMORTAL,  LOW_IMMORTAL,  20,  LOW_IMMORTAL,
   10,	 TAR_IGNORE,cast_commune,0);
 
-  spello(129,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 15, 
+  spello(129,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 15,
   LOW_IMMORTAL,  LOW_IMMORTAL,  20,  LOW_IMMORTAL,
   15,	 TAR_IGNORE, cast_animal_summon_1,0);
-  spello(130,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 20, 
+  spello(130,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 20,
   LOW_IMMORTAL,  LOW_IMMORTAL,  25,  LOW_IMMORTAL,
   20,	 TAR_IGNORE, cast_animal_summon_2,0);
-  spello(131,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 25, 
+  spello(131,24,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 25,
   LOW_IMMORTAL,  LOW_IMMORTAL,  30,  LOW_IMMORTAL,
   25,	 TAR_IGNORE, cast_animal_summon_3,0);
 
 
-  spello(132,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 35, 
+  spello(132,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 35,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_fire_servant,0);
-  spello(133,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 36, 
+  spello(133,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 36,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_earth_servant,0);
-  spello(134,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 37, 
+  spello(134,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 37,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_water_servant,0);
-  spello(135,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 38, 
+  spello(135,24,POSITION_STANDING, IMMORTAL, IMMORTAL, 38,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_IGNORE, cast_wind_servant,0);
 
-  spello(136,36,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 39, 
+  spello(136,36,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 39,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   50,	 TAR_OBJ_ROOM, cast_reincarnate,0);
 
 
-  spello(137,12,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 17, 
+  spello(137,12,POSITION_STANDING, IMMORTAL, LOW_IMMORTAL, 17,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_VIOLENT, cast_charm_veggie,0);
 
-  spello(138,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 20, 
+  spello(138,24,POSITION_FIGHTING, LOW_IMMORTAL, IMMORTAL, 20,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_SELF_NONO,cast_veggie_growth,40);
 
-  spello(139,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 15, 
+  spello(139,24,POSITION_STANDING, LOW_IMMORTAL, IMMORTAL, 15,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_SELF_ONLY, cast_tree,0);
 
 
-  spello(140,24,POSITION_STANDING, 
-  LOW_IMMORTAL, IMMORTAL, 31, 
+  spello(140,24,POSITION_STANDING,
+  LOW_IMMORTAL, IMMORTAL, 31,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_OBJ_INV | TAR_OBJ_ROOM, cast_animate_rock,0);
 
-  spello( 141, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 8, 
+  spello( 141, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 8,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   2,	 TAR_SELF_ONLY, cast_tree_travel, 0);
 
-  spello( 142, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 10, 
+  spello( 142, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  15,  LOW_IMMORTAL,
   2,	 TAR_SELF_ONLY, cast_travelling, 0);
 
-  spello( 143, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 5, 
+  spello( 143, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 5,
     LOW_IMMORTAL,  LOW_IMMORTAL,  3,  LOW_IMMORTAL,
   2,	 TAR_CHAR_ROOM | TAR_SELF_NONO, cast_animal_friendship, 0);
 
-  spello( 144, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 11, 
+  spello( 144, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 11,
   LOW_IMMORTAL,  LOW_IMMORTAL,  8,  LOW_IMMORTAL,
   10,	 TAR_SELF_ONLY, cast_invis_to_animals, 0);
 
-  spello( 145, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 6, 
+  spello( 145, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 6,
   LOW_IMMORTAL,  10,  10,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM, cast_slow_poison, 0);
 
-  spello( 146, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 16, 
+  spello( 146, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 16,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_entangle, 0);
 
-  spello( 147, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 8, 
+  spello( 147, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 8,
   LOW_IMMORTAL,  LOW_IMMORTAL,  5,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_snare, 0);
 
-  spello( 148, 12, POSITION_SITTING, 10, LOW_IMMORTAL, IMMORTAL, 
+  spello( 148, 12, POSITION_SITTING, 10, LOW_IMMORTAL, IMMORTAL,
   10,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   2,	 TAR_IGNORE, cast_gust_of_wind, 30);
 
-  spello( 149, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 3, 
+  spello( 149, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 3,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_barkskin, 0);
 
-  spello( 150, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 27, 
+  spello( 150, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 27,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_sunray, 30);
 
-  spello( 151, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 19, 
+  spello( 151, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 19,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT | 
+  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT |
 	 TAR_OBJ_ROOM | TAR_OBJ_INV, cast_warp_weapon, 60);
 
-  spello( 152, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 23, 
+  spello( 152, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 23,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_heat_stuff, 30);
 
-  spello( 153, 12, POSITION_STANDING, LOW_IMMORTAL, 16, 15, 
+  spello( 153, 12, POSITION_STANDING, LOW_IMMORTAL, 16, 15,
   LOW_IMMORTAL,  LOW_IMMORTAL,  13,  LOW_IMMORTAL,
   10,	 TAR_SELF_ONLY, cast_find_traps, 0);
 
-  spello( 154, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 22, 
+  spello( 154, 12, POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL, 22,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,	 TAR_IGNORE, cast_firestorm, 30);
 
-  spello( 155, 12, POSITION_STANDING, 23, IMMORTAL, IMMORTAL, 
+  spello( 155, 12, POSITION_STANDING, 23, IMMORTAL, IMMORTAL,
   23,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20, 	 TAR_CHAR_ROOM | TAR_VIOLENT, cast_haste, 0);
 
-  spello( 156, 12, POSITION_STANDING, 19, IMMORTAL, IMMORTAL, 
+  spello( 156, 12, POSITION_STANDING, 19, IMMORTAL, IMMORTAL,
   19,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20, 	 TAR_CHAR_ROOM | TAR_VIOLENT, cast_slow, 0);
 
-  spello(157,24,POSITION_STANDING, LOW_IMMORTAL, 3, 1, 
+  spello(157,24,POSITION_STANDING, LOW_IMMORTAL, 3, 1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_IGNORE, cast_dust_devil,0);
 
-  spello(158, 12, POSITION_FIGHTING, 9, IMMORTAL, IMMORTAL, 
+  spello(158, 12, POSITION_FIGHTING, 9, IMMORTAL, IMMORTAL,
   9,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_SELF_NONO| TAR_CHAR_ROOM | TAR_FIGHT_VICT, 
+  20,	 TAR_SELF_NONO| TAR_CHAR_ROOM | TAR_FIGHT_VICT,
 	 cast_know_monster, 50);
 
-  spello( 159, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 10, 
+  spello( 159, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_OBJ_WORLD, cast_transport_via_plant, 0);
 
-  spello( 160, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 7, 
+  spello( 160, 12, POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL, 7,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_OBJ_ROOM, cast_speak_with_plants, 0);
 
-  spello( 161, 12, POSITION_FIGHTING, 21, 23, 25, 
+  spello( 161, 12, POSITION_FIGHTING, 21, 23, 25,
   21,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT, cast_silence, 100);
 
-  spello( 162, 12, POSITION_STANDING, 1, LOW_IMMORTAL, LOW_IMMORTAL, 
-  1,  LOW_IMMORTAL,1,LOW_IMMORTAL, 
+  spello( 162, 12, POSITION_STANDING, 1, LOW_IMMORTAL,1,
+  1,  LOW_IMMORTAL,1,LOW_IMMORTAL,
   5,	 0, 0, 0);
-  
-  spello( 163, 12, POSITION_STANDING, 30, BIG_GUY, BIG_GUY, 
-  30,  BIG_GUY,  BIG_GUY,  BIG_GUY,   
+
+  spello( 163, 12, POSITION_STANDING, 30, BIG_GUY, BIG_GUY,
+  30,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   20,	 TAR_CHAR_WORLD, cast_teleport_wo_error, 0);
-  
-  spello( 164, 12, POSITION_STANDING, 43, BIG_GUY, BIG_GUY, 
-  43,  BIG_GUY,  BIG_GUY,  BIG_GUY, 
+
+  spello( 164, 12, POSITION_STANDING, 43, BIG_GUY, BIG_GUY,
+  43,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   50,	 TAR_CHAR_WORLD, cast_portal, 0);
-  
-  spello( 165, 12, POSITION_STANDING, BIG_GUY, BIG_GUY, BIG_GUY, 
-  BIG_GUY,  BIG_GUY,  BIG_GUY,  BIG_GUY, 
+
+  spello( 165, 12, POSITION_STANDING, BIG_GUY, BIG_GUY, BIG_GUY,
+  BIG_GUY,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   20,	 TAR_IGNORE, cast_dragon_ride, 0);
-  
-  spello( 166, 12, POSITION_STANDING, 47, BIG_GUY, 15, 
-  47,  BIG_GUY,  BIG_GUY,  BIG_GUY, 
+
+  spello( 166, 12, POSITION_STANDING, 47, BIG_GUY, 15,
+  47,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   20,	 TAR_IGNORE, cast_mount, 0);
-  
-  spello(169,12,POSITION_STANDING,LOW_IMMORTAL,  7, LOW_IMMORTAL, 
+
+  spello(169,12,POSITION_STANDING,LOW_IMMORTAL,  7, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM, cast_protection_from_good, 0);
 
-  spello(204,12,POSITION_STANDING,LOW_IMMORTAL,  20, LOW_IMMORTAL, 
+
+  spello(187,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
+  BIG_GUY+1,  BIG_GUY+1,1,  BIG_GUY+1,
+  200,	 TAR_IGNORE, 0, 0);
+
+  spello(204,12,POSITION_STANDING,LOW_IMMORTAL,  20, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   45,	 TAR_IGNORE, cast_protection_from_good_group, 0);
-  
-  spello(203,12, POSITION_STANDING,BIG_GUY+1,  BIG_GUY+1, BIG_GUY+1, 
+
+  spello(203,12, POSITION_STANDING,BIG_GUY+1,  BIG_GUY+1, BIG_GUY+1,
   BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,  BIG_GUY+1,
   BIG_GUY+1,	 TAR_IGNORE, 0, 0);
 
 /* few skills */
-  
+
   spello(45,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1, BIG_GUY+1,
-  BIG_GUY+1,  BIG_GUY+1,  4,  BIG_GUY+1, 
+  BIG_GUY+1,  BIG_GUY+1,  4,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0); /* sneak */
 
   spello(46,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
-   BIG_GUY+1,  BIG_GUY+1,  2,  BIG_GUY+1, 
+   BIG_GUY+1,  BIG_GUY+1,  2,  BIG_GUY+1,
    200,	 TAR_IGNORE, 0, 0); /* hide */
 
   spello(51,0,POSITION_STANDING,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
-  BIG_GUY+1,  1,  1,  BIG_GUY+1, 
+  BIG_GUY+1,  1,  1,  BIG_GUY+1,
   200,	 TAR_IGNORE, 0, 0); /* bash */
 
   spello(183,0, POSITION_STANDING,
@@ -2884,29 +2889,29 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   200, 0, 0, 0); /* berserk */
-  
+
   spello(208,0, POSITION_STANDING,
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  1,  LOW_IMMORTAL,
   200, 0, 0, 0); /* tan */
-  
+
   spello(209,0, POSITION_STANDING,
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   200, 0, 0, 0); /* avoid ba */
-  
+
   spello(210,0, POSITION_STANDING,
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  1,  LOW_IMMORTAL,
   200, 0, 0, 0); /* find food */
-  
+
   spello(211,0, POSITION_STANDING,
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   LOW_IMMORTAL,  LOW_IMMORTAL,  1,  LOW_IMMORTAL,
   200, 0, 0, 0); /* find water */
 
   spello(214,0, POSITION_STANDING,
-  BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,  
+  BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,BIG_GUY+1,
   200, 0, 0, 0); /* bellow */
 
@@ -2919,23 +2924,23 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   spello(215,12, POSITION_STANDING,5 ,3 ,3 ,
   5,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   15,         TAR_CHAR_ROOM, cast_globe_darkness, 0);
-  
+
   spello(216,12, POSITION_STANDING,20,IMMORTAL,IMMORTAL,
   20,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   25,         TAR_CHAR_ROOM| TAR_SELF_ONLY, cast_globe_minor_inv, 0);
-         
+
   spello(217,24, POSITION_STANDING,27,IMMORTAL,IMMORTAL,
   27,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   50,         TAR_CHAR_ROOM | TAR_SELF_ONLY, cast_globe_major_inv, 0);
-         
+
   spello(218,12, POSITION_STANDING,IMMORTAL,48 ,IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   40,         TAR_CHAR_ROOM| TAR_SELF_ONLY, cast_prot_energy_drain, 0);
-         
+
   spello(219,12, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   200,         TAR_CHAR_ROOM, cast_prot_dragon_breath, 0);
-         
+
   spello(220,24, POSITION_STANDING,48,BIG_GUY,BIG_GUY,
   48,  BIG_GUY,  BIG_GUY,  BIG_GUY,
   100, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_anti_magic_shell, 0);
@@ -2977,11 +2982,11 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   spello(228,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  11,
   20, 0, 0, 0); /* great site */
-  
+
   spello(229,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  1,
   20, 0, 0, 0); /* blast */
-  
+
   spello(230,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  2,
   20, 0, 0, 0); /* hypnosis */
@@ -3007,11 +3012,11 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  1,
   10, TAR_SELF_ONLY|TAR_CHAR_ROOM, 0, 0);/* psi esp */
 
-  spello(268,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(268,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  5,
   15,	 TAR_IGNORE| TAR_VIOLENT, mind_use_burn, 5);
 
-  spello(269,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(269,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  8,
   45,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_clairvoyance, 0);
 
@@ -3020,19 +3025,19 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   50,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_danger_sense, 0);
 
 
-  spello(271,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(271,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  38,
   50,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_disintegrate, 10);
 
-  spello(272,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(272,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL, 35,
   35,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_telekinesis,20);
 
-  spello(273,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(273,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  10,
   20,	 TAR_CHAR_ROOM, mind_use_levitation, 0);
 
-  spello(274,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(274,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  14,
   100,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_cell_adjustment, 0);
 
@@ -3041,51 +3046,51 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   40,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_chameleon, 0);
 
 
-  spello(276,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(276,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  6,
   15,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_psi_strength, 0);
 
-  spello(277,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(277,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  14,
   60,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_mind_over_body, 0);
 
 
-  spello(278,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(278,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  21,
   40,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_probability_travel, 0);
 
-  spello(279,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(279,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  12,
   15,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_teleport, 0);
 
-  spello(280,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(280,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  51,
   30,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_domination, 0);
 
-  spello(281,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(281,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  21,
   20,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_mind_wipe, 0);
 
-  spello(282,34,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(282,34,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  37,
   45,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT, mind_use_psychic_crush, 0);
 
 
-  spello(283,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(283,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  34,
   50,	TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_tower_iron_will, 0);
 
 
-  spello(284,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(284,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  17,
   50,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_mindblank, 0);
 
 
-  spello(285,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(285,24,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  3,
   50,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_psychic_impersonation, 0);
 
-  spello(286,35,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL, 
+  spello(286,35,POSITION_FIGHTING,LOW_IMMORTAL,  LOW_IMMORTAL, LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  20,
   60,	 TAR_CHAR_ROOM|TAR_VIOLENT|TAR_FIGHT_VICT|TAR_IGNORE, mind_use_ultra_blast, 0);
 
@@ -3094,7 +3099,7 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   100,	 TAR_SELF_ONLY|TAR_CHAR_ROOM, mind_use_intensify, 0);
 
-  
+
 /* end psionist stuff */
 
 /* ranger skills */
@@ -3133,7 +3138,7 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
 
 /* new spells here */
 
-  spello(242,12,POSITION_STANDING,LOW_IMMORTAL,  20, LOW_IMMORTAL, 
+  spello(242,12,POSITION_STANDING,LOW_IMMORTAL,  20, LOW_IMMORTAL,
   LOW_IMMORTAL,  35,  45,  LOW_IMMORTAL,
   45,	 TAR_IGNORE, cast_protection_from_evil_group, 0);
 
@@ -3175,8 +3180,8 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   16,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   100,	 TAR_OBJ_INV | TAR_OBJ_EQUIP, cast_enchant_armor,0);
 
-  spello( 261, 12, POSITION_STANDING, LOW_IMMORTAL,1 ,1,
-  LOW_IMMORTAL,  1,LOW_IMMORTAL,LOW_IMMORTAL,
+  spello( 261, 12, POSITION_STANDING, 1,1,LOW_IMMORTAL,
+  1,  LOW_IMMORTAL,LOW_IMMORTAL,LOW_IMMORTAL,
   5,	 0, 0, 0);
 
   spello(262,24, POSITION_STANDING,IMMORTAL,40,41,
@@ -3449,7 +3454,7 @@ if (GET_POS(ch) <= POSITION_DEAD)
 	DamageAllStuff(ch, BLOW_DAMAGE);
 
 	return(TRUE);
-	
+
       }
     } else {
 /*
@@ -3458,7 +3463,7 @@ if (GET_POS(ch) <= POSITION_DEAD)
       rp = targ;
       targ = 0;
     }
-  }  
+  }
 
   if (count >= 100) {
     log("Someone messed up an air room.");
@@ -3510,7 +3515,7 @@ void check_falling_obj( struct obj_data *obj, int room)
   rp = real_roomp(room);
   if (!rp) return;
 
-  if (rp->sector_type != SECT_AIR) 
+  if (rp->sector_type != SECT_AIR)
     return;
 
   done = FALSE;
@@ -3527,9 +3532,9 @@ void check_falling_obj( struct obj_data *obj, int room)
       if (count > 1) {
 
 	if (rp->people) {
-	  act("$p smashes against the ground at high speed", 
+	  act("$p smashes against the ground at high speed",
 	      FALSE, rp->people, obj, 0, TO_ROOM);
-	  act("$p smashes against the ground at high speed", 
+	  act("$p smashes against the ground at high speed",
 	      FALSE, rp->people, obj, 0, TO_CHAR);
 	}
 	return;
@@ -3537,9 +3542,9 @@ void check_falling_obj( struct obj_data *obj, int room)
       } else {
 
 	if (rp->people) {
-	  act("$p lands with a loud THUMP!", 
+	  act("$p lands with a loud THUMP!",
 	      FALSE, rp->people, obj, 0, TO_ROOM);
-	  act("$p lands with a loud THUMP!", 
+	  act("$p lands with a loud THUMP!",
 	      FALSE, rp->people, obj, 0, TO_CHAR);
 	}
 	return;
@@ -3568,15 +3573,15 @@ void check_falling_obj( struct obj_data *obj, int room)
 	return;
       } else {
 	if (targ->people) {
-	  if (targ->sector_type >= SECT_WATER_SWIM){	  
-	    act("$p smashes against the water at high speed", 
+	  if (targ->sector_type >= SECT_WATER_SWIM){
+	    act("$p smashes against the water at high speed",
 		FALSE, targ->people, obj, 0, TO_ROOM);
-	    act("$p smashes against the water at high speed", 
+	    act("$p smashes against the water at high speed",
 		FALSE, targ->people, obj, 0, TO_CHAR);
 	  } else {
-	    act("$p smashes against the ground at high speed", 
+	    act("$p smashes against the ground at high speed",
 		FALSE, targ->people, obj, 0, TO_ROOM);
-	    act("$p smashes against the ground at high speed", 
+	    act("$p smashes against the ground at high speed",
 		FALSE, targ->people, obj, 0, TO_CHAR);
 	  }
 	}
@@ -3590,7 +3595,7 @@ void check_falling_obj( struct obj_data *obj, int room)
       rp = targ;
       targ = 0;
     }
-  }  
+  }
 
   if (count >= 100) {
     log("Someone screwed up an air room.");

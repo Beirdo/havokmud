@@ -4175,7 +4175,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 	    (spell_info[i+1].min_level_druid <=
 	     GetMaxLevel(guildmaster)-10)) {
 
-	    sprintf(buf,"[%d] %s %s \n\r",
+	    sprintf(buf,"[%d] %-25s %s \n\r",
 		    spell_info[i+1].min_level_druid,
 		    spells[i],how_good(ch->skills[i+1].learned));
 	  send_to_char(buf, ch);
@@ -5832,7 +5832,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	    GET_LEVEL(ch,RANGER_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_ranger <=
 	     GetMaxLevel(guildmaster)-10)) {
-	  sprintf(buf,"[%d] %s %s \n\r",
+	  sprintf(buf,"[%d] %-25s %s \n\r",
 		  spell_info[i+1].min_level_ranger,spells[i],
 		  how_good(ch->skills[i+1].learned));
 	  send_to_char(buf, ch);
@@ -5963,7 +5963,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 	    GET_LEVEL(ch,PSI_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_psi <=
 	     GetMaxLevel(guildmaster)-10)) {
-	  sprintf(buf,"[%d] %s %s \n\r",
+	  sprintf(buf,"[%d] %-25s %s \n\r",
 		  spell_info[i+1].min_level_psi,spells[i],
 		  how_good(ch->skills[i+1].learned));
 	  send_to_char(buf, ch);
@@ -6082,7 +6082,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	    GET_LEVEL(ch,PALADIN_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_paladin <=
 	     GetMaxLevel(guildmaster)-10)) {
-	  sprintf(buf,"[%d] %s %s \n\r",
+	  sprintf(buf,"[%d] %-25s %s \n\r",
 		  spell_info[i+1].min_level_paladin,spells[i],
 		  how_good(ch->skills[i+1].learned));
 	  send_to_char(buf, ch);
@@ -6190,7 +6190,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg, struct
 	    (spell_info[i+1].min_level_magic <=
 	     GetMaxLevel(guildmaster)-10)) {
 
-	    sprintf(buf,"[%d] %s %s \n\r",
+	    sprintf(buf,"[%d] %-15s %s \n\r",
 		    spell_info[i+1].min_level_magic,
 		    spells[i],how_good(ch->skills[i+1].learned));
 	  send_to_char(buf, ch);
