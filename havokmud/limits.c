@@ -1011,9 +1011,10 @@ void gain_exp(struct char_data *ch, int gain)
         } else {
             chrace = GET_RACE(ch);
         }
+
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i] &&
-                (GET_LEVEL(ch, i) < 50)) {
+                (GET_LEVEL(ch, i) < MAX_MORT)) {
                 if (GET_EXP(ch) >= classes[i].titles[GET_LEVEL(ch, i) + 2].exp -
                                    1) {
                     /* 
@@ -1040,7 +1041,9 @@ void gain_exp(struct char_data *ch, int gain)
                     send_to_char("You must gain at your guild before you "
                                  "can acquire more experience.\n\r", ch);
                     return;
-                } else if (GET_EXP(ch) + gain >= 
+                } else if (GET_EXP(ch) <
+                               classes[i].titles[GET_LEVEL(ch, i) + 1].exp &&
+                           GET_EXP(ch) + gain >= 
                                classes[i].titles[GET_LEVEL(ch, i) + 1].exp) {
                     /* 
                      * this is the levelling stroke 
@@ -1074,10 +1077,14 @@ void gain_exp(struct char_data *ch, int gain)
         if (!IS_SET(ch->specials.act, PLR_LEGEND)) {
             CheckLegendStatus(ch);
         }
+        
         for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) && GET_LEVEL(ch, i) < RacialMax[chrace][i] && 
+                GET_LEVEL(ch, i) < MAX_MORT &&
                 GET_EXP(ch) > classes[i].titles[GET_LEVEL(ch, i) + 2].exp) {
-
+                /* Max the XP to one less than 2 levels above current, unless
+                 * the level is MAX_MORT
+                 */
                 GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
             }
         }

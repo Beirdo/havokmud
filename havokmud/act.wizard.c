@@ -2594,7 +2594,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
             send_to_char("Setting legend flag.\n\r", ch);
         } else {
             REMOVE_BIT(mob->specials.act, PLR_LEGEND);
-            send_to_char("Removing legend leader flag.\n\r", ch);
+            send_to_char("Removing legend flag.\n\r", ch);
         }
     } else if (!strcmp(field, "nodelete")) {
         if (IS_SET(mob->player.user_flags, NO_DELETE)) {

@@ -3158,9 +3158,8 @@ char           *GetLevelTitle(struct char_data *ch)
         return buf;
     }
 
-    if (!IS_IMMORTAL(ch)
-        && (GET_EXP(ch) > 200000000
-            || IS_SET(ch->specials.act, PLR_LEGEND))) {
+    if (!IS_IMMORTAL(ch) && (GET_EXP(ch) > 200000000 || 
+                             IS_SET(ch->specials.act, PLR_LEGEND))) {
         sprintf(buf, "%s", "$c0008L$c000we$c000Wge$c000wn$c0008d");
         return buf;
     } else {
