@@ -2223,7 +2223,11 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd);
 /* Leaves of Silver */
 int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
+int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 
+/* Heximal's zone */
+int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 
 bool dimd_can_see(int slev, struct char_data *o);

@@ -24,6 +24,7 @@ extern int gSeason;  /* what season is it ? */
 
 extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern char *spells[];
+extern int rev_dir[];
 
 /* extern procedures */
 void do_group(struct char_data *ch, char *arg, int cmd);
@@ -6581,19 +6582,57 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob) {
  		return (FALSE);
  }
 
- /* int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob) { */
+int Vaelhar(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
+{
 
- 	/* scan room for people every tick */
- 		/* if tysha (vnum 47975) is in the room AND vaelhar is carrying brynn'ath (vnum 47914) */
- 			/* give tysha's master brynn'ath */
- 			/* make tysha stop following her master */
- 		/* else if tysha is not in the room */
- 			/* make Vaelhar say something like "please bring my grand-daughter back!" */
+	struct char_data *hero, *i, *next;
+	struct obj_data *obj;
 
- /*}*/
+	if (ch->followers)
+		return(FALSE);
 
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
 
-
+ 	/* scan room for people */
+ 	if (ch->in_room > -1) {
+		for (i = real_roomp(ch->in_room)->people; i; i = next) {
+			next = i->next_in_room;
+			if (mob_index[i->nr].virtual == 47975) { /* if tysha is in the room  */
+				do_say(i,"Grandpa! Oh grandpa, I'm home!",0);
+				/* make tysha follow Vaelhar */
+				if (i->master) {
+					hero = get_char_room(i->master, ch->in_room);
+ 					stop_follower(i);
+				}
+				add_follower(i, ch);
+ 				act("Tysha runs up to Vaelhar and jumps into his arms, tears of joy running down her face.", FALSE, ch, 0, 0, TO_ROOM);
+ 				act("The old man can't hold back his own tears, as he twirls the little girl around and around.", FALSE, ch, 0, 0, TO_ROOM);
+ 				act("After some time, they quiet down and Tysha tells the old man all about her ordeals.", FALSE, ch, 0, 0, TO_ROOM);
+ 				act("She doesn't fail to mention how bravely you rescued her.", FALSE, ch, 0, 0, TO_ROOM);
+ 				act("When she's done talking, the old man stands up and walks over to a cabinet,", FALSE, ch, 0, 0, TO_ROOM);
+ 				act("He takes out a softly glowing mace.", FALSE, ch, 0, 0, TO_ROOM);
+ 				do_say(ch,"Thank you, brave hero, for returning my granddaughter to me.",0);
+				do_say(ch,"She is all I have left. I'm old and feeble nowadays, so perhaps",0);
+ 				do_say(ch,"this mace will have more use in your hands. You certainly have",0);
+ 				do_say(ch,"the spirit to make use of it. I wish you well.",0);
+ 				act("Vaelhar hands over Brynn'Ath, Bane of the Blighted.", FALSE, ch, 0, 0, TO_ROOM);
+ 				/* give tysha's former master brynn'ath */
+ 				obj = read_object(47914, REAL);
+ 				if (!obj)
+ 					return(FALSE);
+ 				if (!hero)
+ 					return(FALSE);
+				obj_to_char(obj, hero);
+			}
+		}
+		/* else if tysha is not in the room */
+		if (!ch->followers) {
+			do_say(ch,"Please, please bring my granddaughter back to me.",0);
+			act("Vaelhar looks up at you imploringly.", FALSE, ch, 0, 0, TO_ROOM);
+		}
+	}
+}
 
  /*Lennyas proc to portal somewhere */
  int sinpool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
@@ -6720,9 +6759,9 @@ int sinbarrel(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 	            char_to_room(ch,51828);
 	            act("$n climbs out of the barrel, swaying slightly.", FALSE, ch, 0, 0, TO_ROOM);
 	            do_look(ch, "", 0);
+	            send_to_char("\n\r",ch);
 	            send_to_char("You feel a bit dizzy from so much mead.\n\r",ch);
-                send_to_char("\n\r",ch);
-	return(TRUE);
+                return(TRUE);
     } /* end strcmpi() */
    return(FALSE);
  } /* end pull */

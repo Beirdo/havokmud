@@ -1326,6 +1326,7 @@ void assign_mobiles()
 /* Start Leaves of Silver */
 	{47951, Jessep}, /* Jessep */
 	{47975, Tysha}, /* Tysha */
+	{47905, Vaelhar}, /* Vaelhar */
 /* End Leaves of Silver */
 #endif
 
@@ -1388,6 +1389,10 @@ void assign_mobiles()
  {51805, lust_sinner },
  {51806, lust_sinner },
  {51812, Tyrannosaurus_swallower}, /* Hambre, Guardian of Gluttony */
+
+/* Heximal's new zone */
+	{50998, Deshima },
+
 
 #endif
 
@@ -1525,6 +1530,11 @@ void assign_rooms()
 	{51930, pride_remover_seven},
 	{51836, pride_disabler},
 	{51835, pride_disabler},
+
+/* Heximal's riddles */
+ {50962, riddle_exit },
+ {50963, riddle_exit },
+ {50964, riddle_exit },
 
    /* Cthol (Xenon) */
    {40233, dispel_room},
