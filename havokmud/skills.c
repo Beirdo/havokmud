@@ -975,45 +975,38 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 
 void do_first_aid( struct char_data *ch, char *arg, int cmd)
 {
-  struct affected_type af;
-  int exp_level=0;
+  struct 	affected_type af;
+  int    	exp_level=0;
 
   if (!ch->skills) return;
 
-  send_to_char("You attempt to render first aid unto yourself\n\r", ch);
-
   if (affected_by_spell(ch, SKILL_FIRST_AID)) {
-    send_to_char("You can only do this once per day\n\r", ch);
+    send_to_char("You can only do this once per day.\n\r", ch);
     return;
   }
+  if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+    exp_level = GetMaxLevel(ch);
 
-if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
- if (HasClass(ch,CLASS_BARBARIAN))
-    exp_level=  GET_LEVEL(ch,BARBARIAN_LEVEL_IND);
-      else
-    exp_level = GET_LEVEL(ch,MONK_LEVEL_IND);
-
-  if (number(1,101) < ch->skills[SKILL_FIRST_AID].learned)
-  {
-		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
-		gain_exp(ch, 100);
-    GET_HIT(ch)+= number(1,4)+exp_level;
+  if (number(1,101) < ch->skills[SKILL_FIRST_AID].learned){
+	send_to_char("You render first aid unto yourself.\n\r", ch);
+	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+	gain_exp(ch, 100);
+    GET_HIT(ch) += ((number(3,15)) + exp_level);
     if(GET_HIT(ch) > GET_MAX_HIT(ch))
        GET_HIT(ch) = GET_MAX_HIT(ch);
 
     af.duration = 24;
-  } else
-  {
-    af.duration = 6;
-    if (ch->skills[SKILL_FIRST_AID].learned < 95 &&
-	ch->skills[SKILL_FIRST_AID].learned > 0)
-	{
-      if (number(1,101) > ch->skills[SKILL_FIRST_AID].learned)
-      {
-	ch->skills[SKILL_FIRST_AID].learned++;
+  } else {
+      af.duration = 6;   /* changed a few messages here so people know they are learning -gordon jan232004- */
+      send_to_char("You attempt to render first aid unto yourself, but fail.\n\r", ch);
+      if (ch->skills[SKILL_FIRST_AID].learned < 95 &&
+	  ch->skills[SKILL_FIRST_AID].learned > 0){
+        if (number(1,101) > ch->skills[SKILL_FIRST_AID].learned){
+		  ch->skills[SKILL_FIRST_AID].learned++;
+          send_to_char("You learn from your mistake.\n\r", ch);
+        }
       }
     }
-  }
 
   af.type = SKILL_FIRST_AID;
   af.modifier = 0;

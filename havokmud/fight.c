@@ -1620,7 +1620,6 @@ void WeaponSkillCheck(struct char_data *ch)
 						ch->weaponskills.grade7 + ch->weaponskills.grade8;
 
 			if(totpoints > maxpoints) { // let's lower all the others a point
-			log("lowering others");
 				if(found != 1 && ch->weaponskills.grade1 > 0)
 					ch->weaponskills.grade1--;
 				if(found != 2 && ch->weaponskills.grade2 > 0)
@@ -2193,12 +2192,15 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim, int killedbytyp
     /*
      *  if the victim is dead, return TRUE.
      */
-     if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
-		do_get(ch, "all.coin corpse", -1);
-	 }
+/* added the pc check to fix crashes when a pc starves, posion, etc -gordon jan232004- */
+     if (!IS_PC(victim)){
+       if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
+		 do_get(ch, "all.coin corpse", -1);
+	   }
 	   if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
 		 do_get(ch, "all corpse", -1);
 	   }
+   }
     victim = 0;
     return(TRUE);
   } else {
