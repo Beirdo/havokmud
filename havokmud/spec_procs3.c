@@ -3223,10 +3223,10 @@ int AntiSunItem(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, 
 
   if (OUTSIDE(ch) && weather_info.sunlight == SUN_LIGHT
      && weather_info.sky<= SKY_CLOUDY &&
-     !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+     !IS_AFFECTED2(ch,AFF2_DARKNESS)) {
   			/* frag the item! */
-	act("The sun strikes $p, causing it to fall appart!",FALSE,ch,obj,0,TO_CHAR);
-	act("The sun strikes $p worn by $n, causing it to fall appart!",FALSE,ch,obj,0,TO_ROOM);
+	act("The sun strikes $p, causing it to fall apart!",FALSE,ch,obj,0,TO_CHAR);
+	act("The sun strikes $p worn by $n, causing it to fall apart!",FALSE,ch,obj,0,TO_ROOM);
 	    MakeScrap(ch,0,obj);
 	    return(TRUE); /* if not TRUE mud will CRASH! */
 	  }

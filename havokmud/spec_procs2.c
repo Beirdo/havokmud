@@ -5377,7 +5377,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	sprintf(buf2,"Going to Room# %d\n\r",j);
 	send_to_char(buf2,ch);
 	send_to_char("You touch the strange post and suddently feel your mind"
-		     " and body being torn appart.\n\r",ch);
+		     " and body being torn apart.\n\r",ch);
 	
 	act("$n touches the strange post and suddently dissapears!"
 	    , FALSE , ch, 0, 0, TO_ROOM);

@@ -2867,13 +2867,16 @@ const char *affected_bits[] =
 };
 
 const char *affected_bits2[] =
-{	"Invisible to animals",
+{	
+	"Invisible to animals",
 	"Heat Stuff",
 	"Logging",
 	"Berserk",
 	"Group-Order",
 	"AWAY-FROM-KEYBOARD",
         "Detect Good",
+	"Protection from Good",
+	"Darkness",
 	"\n"
 };
 
@@ -4978,5 +4981,35 @@ const char *AttackType[]= {
     "\n"
 };
 
-
+const struct affect_list oedit_list[] = {
+  {"Blindness", AFF_BLIND, 1},
+  {"Curse", AFF_CURSE, 1},
+  {"Detect Invisible", AFF_DETECT_INVISIBLE, 1},
+  {"Detect Magic", AFF_DETECT_MAGIC, 1},
+  {"Detect Evil", AFF_DETECT_EVIL, 1},
+  {"Detect Good", AFF2_DETECT_GOOD, 2},
+  {"Sense Life", AFF_SENSE_LIFE, 1},
+  {"Infravision", AFF_INFRAVISION, 1},
+  {"True Sight", AFF_TRUE_SIGHT, 1},
+  {"Invisibility", AFF_INVISIBLE, 1},
+  {"Sneak", AFF_SNEAK, 1},
+  {"Hide", AFF_HIDE, 1},
+  {"Prot. from Evil", AFF_PROTECT_FROM_EVIL, 1},
+  {"Prot. from Good", AFF2_PROTECT_FROM_GOOD, 2},
+  {"Growth", AFF_GROWTH, 1},
+  {"Sanctuary", AFF_SANCTUARY, 1},
+  {"Fireshield", AFF_FIRESHIELD, 1},
+  {"Flying", AFF_FLYING, 1},
+  {"Travelling", AFF_TRAVELLING, 1},
+  {"Tree Travel", AFF_TREE_TRAVEL, 1},
+  {"Water Breath", AFF_WATERBREATH, 1},
+  {"Poison", AFF_POISON, 1},
+  {"Sleep", AFF_SLEEP, 1},
+  {"Silence", AFF_SILENCE, 1},
+  {"Paralysis", AFF_PARALYSIS, 1},
+  {"Scrying", AFF_SCRYING, 1},
+  {"Telepathy", AFF_TELEPATHY, 1},
+  {"Berserk", AFF2_BERSERK, 2},
+  {"Invis to Animals", AFF2_ANIMAL_INVIS, 2}
+};
 

@@ -751,7 +751,6 @@ struct room_data
 #define AFF_SANCTUARY         0x00000080
 #define AFF_DRAGON_RIDE       0x00000100
 #define AFF_GROWTH            0x00000200 /* this was the one that was missing*/
-
 #define AFF_CURSE             0x00000400
 #define AFF_FLYING            0x00000800
 #define AFF_POISON            0x00001000
@@ -785,6 +784,7 @@ struct room_data
 #define AFF2_AFK               0x00000020
 #define AFF2_DETECT_GOOD       0x00000040
 #define AFF2_PROTECT_FROM_GOOD 0x00000080
+#define AFF2_DARKNESS	       0x00000100
 
 /* modifiers to char's abilities */
 
@@ -804,7 +804,7 @@ struct room_data
 #define APPLY_HIT              13
 #define APPLY_MOVE             14
 #define APPLY_GOLD             15
-#define APPLY_EXP              16
+#define APPLY_SPELL2           16
 #define APPLY_AC               17
 #define APPLY_ARMOR            17
 #define APPLY_HITROLL          18
@@ -1609,4 +1609,10 @@ struct skillset {
   char *name;
   int skillnum;
   int level;
+};
+
+struct affect_list {
+  char *affectname;
+  int affectnumber;
+  int affecttype;
 };

@@ -2539,7 +2539,8 @@ void spell_identify(byte level, struct char_data *ch,
 
     case ITEM_WAND :
     case ITEM_STAFF :
-      sprintf(buf, "$c0005Has $c0014%d $c0005chages, with$c0014 %d$c0005 charges left.\n\r",
+      sprintf(buf, "$c0005Has $c0014%d $c0005charges, with$c0014 %d$c0005
+charges left.\n\r",
 	      obj->obj_flags.value[1],
 	      obj->obj_flags.value[2]);
       send_to_char(buf, ch);
@@ -2610,6 +2611,14 @@ void spell_identify(byte level, struct char_data *ch,
 	   strcat(buf,"\n\r");
 	   sprintf(buf2,buf);
 	   break;
+	case APPLY_SPELL2:
+	   sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
+	   sprintf(buf,"$c0015");
+	   strcat(buf,buf2);
+	   strcat(buf,"\n\r");
+	   sprintf(buf2,buf);
+	   break;
+
         case APPLY_RACE_SLAYER:
            sprintf(buf2,"$c0015%s\n\r", RaceName[obj->affected[i].modifier]);
            break;

@@ -2303,8 +2303,8 @@ void spell_globe_darkness(byte level, struct char_data *ch,
     af.type      = SPELL_GLOBE_DARKNESS;
     af.duration  = level;
     af.modifier  = 5;
-    af.location  = APPLY_HIDE;
-    af.bitvector = 0;
+    af.location  = APPLY_BV2;
+    af.bitvector = AFF2_DARKNESS;
     affect_to_char(victim, &af);
   } else {
   if (ch != victim)

@@ -705,7 +705,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if ((ch->equipment[WEAR_NECK_1]) && (ch->equipment[WEAR_NECK_2])) {
         send_to_char("You can't wear any more around your neck.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s around your neck.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         if (ch->equipment[WEAR_NECK_1]) {
           obj_from_char(obj_object);
@@ -724,7 +725,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_BODY]) {
         send_to_char("You already wear something on your body.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your body.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch,  obj_object, WEAR_BODY);
@@ -738,7 +740,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_HEAD]) {
         send_to_char("You already wear something on your head.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your head.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_HEAD);
@@ -752,7 +755,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_LEGS]) {
         send_to_char("You already wear something on your legs.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your legs.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_LEGS);
@@ -766,7 +770,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_FEET]) {
         send_to_char("You already wear something on your feet.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your feet.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_FEET);
@@ -780,7 +785,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_HANDS]) {
         send_to_char("You already wear something on your hands.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your hands.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_HANDS);
@@ -794,7 +800,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_ARMS]) {
         send_to_char("You already wear something on your arms.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your arms.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_ARMS);
@@ -808,7 +815,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_ABOUT]) {
         send_to_char("You already wear something about your body.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s about your body.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, WEAR_ABOUT);
@@ -820,10 +828,11 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
   case 10: {
     if (CAN_WEAR(obj_object,ITEM_WEAR_WAISTE)) {
       if (ch->equipment[WEAR_WAISTE]) {
-        send_to_char("You already wear something about your waiste.\n\r",
+        send_to_char("You already wear something about your waist.\n\r",
                      ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s around your waist.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch,  obj_object, WEAR_WAISTE);
@@ -939,8 +948,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
             return;
           }
         }
-        sprintf(buffer," Ok.\n\r");//,obj_object->short_description);
-        send_to_char(buffer, ch);
+      sprintf(buffer,"You grab %s and hold it.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch, obj_object, HOLD);
@@ -983,7 +992,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_BACK]) {
         send_to_char("You already wear something on your back.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your back.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch,  obj_object, WEAR_BACK);
@@ -1017,7 +1027,8 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       if (ch->equipment[WEAR_EYES]) {
         send_to_char("You already have something on your eyes.\n\r", ch);
       } else {
-        send_to_char("OK.\n\r", ch);
+      sprintf(buffer,"You wear %s on your eyes.\n\r",obj_object->short_description);
+      send_to_char(buffer, ch);
         perform_wear(ch,obj_object,keyword);
         obj_from_char(obj_object);
         equip_char(ch,  obj_object, WEAR_EYES);

@@ -653,7 +653,7 @@ if (!ch || !i) {
 
       if (IS_AFFECTED2(ch, AFF2_DETECT_GOOD)) {
       	if (IS_GOOD(i))
-         	strcat(buffer, "$c0015 (White Aura)$c0011");
+         	strcat(buffer, "$c0015 (White Aura) $c0011");
       }
 
 if (IS_AFFECTED2(i,AFF2_AFK))
@@ -675,7 +675,7 @@ if (IS_LINKDEAD(i))
     }
 
  if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!affected_by_spell(i,SPELL_GLOBE_DARKNESS))
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
    }
 
@@ -684,12 +684,12 @@ if (IS_LINKDEAD(i))
       act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
 
     if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!affected_by_spell(i,SPELL_GLOBE_DARKNESS))
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
-   if  (affected_by_spell(i,SPELL_GLOBE_DARKNESS))
-      act("$c0008$n is surround by darkness!", FALSE, i, 0, ch, TO_VICT);
+   if  (IS_AFFECTED2(i,AFF2_DARKNESS))
+      act("$c0008$n is surrounded by darkness!", FALSE, i, 0, ch, TO_VICT);
 
   } else if (mode == 1) {
 
@@ -1042,7 +1042,7 @@ if (IS_LINKDEAD(i))
     }
 
  if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!affected_by_spell(i,SPELL_GLOBE_DARKNESS))
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
    }
 
@@ -1050,11 +1050,11 @@ if (IS_LINKDEAD(i))
       act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
 
     if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!affected_by_spell(i,SPELL_GLOBE_DARKNESS))
+   if (!IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
    }
 
-    if (affected_by_spell(i,SPELL_GLOBE_DARKNESS))
+    if (IS_AFFECTED2(i,AFF2_DARKNESS))
       act("$c0008$n is surround by darkness!", FALSE, i, 0, ch, TO_VICT);
 
   } else if (mode == 1) {
@@ -2412,7 +2412,7 @@ if (GetMaxLevel(ch)>MAX_MORT ||
 
     /* Drow fight -4 in lighted rooms! */
 if (!IS_DARK(ch->in_room) && GET_RACE(ch) == RACE_DROW &&
-     !affected_by_spell(ch,SPELL_GLOBE_DARKNESS) && !IS_UNDERGROUND(ch))   {
+     !IS_AFFECTED2(ch,AFF2_DARKNESS) && !IS_UNDERGROUND(ch))   {
        sprintf(buf,"$c0011The light is the area causes you great pain$c0009!\n\r");
 	send_to_char(buf,ch);
    }
@@ -2924,13 +2924,13 @@ dlog("in do_who");
 	      }
 
 	      if(!strcmp(GET_NAME(person), "Tsaron"))     //Hardcoded the names of the current
-		sprintf(levels, "Questor God");      // High council members, this should be
+		sprintf(levels, "Supreme Dictator");      // High council members, this should be
 	      else if(!strcmp(GET_NAME(person), "Alora"))    // fixxed with new immortal system code
 		sprintf(levels, "Lady of Communication");// -MW 02/20/2001
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
-      		sprintf(levels, "Lord of Dragons");
+      		sprintf(levels, "Lord of Quests");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);

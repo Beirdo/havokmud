@@ -208,11 +208,11 @@ if (!ch)
     }
   } else if (loc == APPLY_WEAPON_SPELL) {
     return;
-  } else if (loc == APPLY_BV2) {
+  } else if (loc == APPLY_SPELL2) {
     if (add) {
-      SET_BIT(ch->specials.affected_by2, bitv);
+      SET_BIT(ch->specials.affected_by2, mod);
     } else {
-      REMOVE_BIT(ch->specials.affected_by2, bitv);
+      REMOVE_BIT(ch->specials.affected_by2, mod);
     }
     return;
   } else {
@@ -368,10 +368,6 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       break;
 
     case APPLY_GOLD:
-      break;
-
-
-    case APPLY_EXP:
       break;
 
     case APPLY_AC:

@@ -37,6 +37,8 @@
 #define CHANGE_SAFFECT4_MOD 30 
 #define CHANGE_SAFFECT5_MOD 31 
 
+#define CHANGE_S2AFFECT1_MOD 32
+
 #define ENTER_CHECK        1
 
 extern struct index_data *obj_index;         /* index table for object file     */ 
@@ -46,6 +48,7 @@ extern const char *wear_bits[];
 extern const char *apply_types[];
 extern const char *immunity_names[];
 extern const char *affected_bits[];
+extern const char *affected_bits2[];
 int functionflag;
  
 char *obj_edit_menu = "    1) Name                    2) Short description\n\r"
@@ -72,7 +75,7 @@ void ChangeObjValues(struct char_data *ch, char *arg, int type);
 void ChangeObjValue(struct char_data *ch, char *arg, int type);
 void ObjHitReturn(struct char_data *ch, char *arg, int type);
 void ChangeObjSAffect(struct char_data *ch, char *arg, int type);
-
+void ChangeObjS2Affect(struct char_data *ch, char *arg, int type);
  
 void ChangeObjFlags(struct char_data *ch, char *arg, int type)
 {
@@ -367,7 +370,10 @@ case CHANGE_SAFFECT3_MOD:
 case CHANGE_SAFFECT4_MOD:
 case CHANGE_SAFFECT5_MOD:
 	 ChangeObjSAffect(ch, arg, 0);
-	 return; 
+	 return;
+case CHANGE_S2AFFECT1_MOD:
+	ChangeObjS2Affect(ch, arg, 0);
+	return; 
  default: log("Got to bad spot in ObjEdit");
           return;
  }
@@ -739,22 +745,12 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
       functionflag=FALSE;
       switch(update) {
         case 0:
-        case 41:
-	case 42:
 	case 43:
 	case 44:
 	case 45:
-	case 46:
-	case 48:
-	case 49:
-	case 50:
-	case 51:
-	case 52:
-	case 53:
-	case 54:
-	case 55:
+	case 48: /*check*/
+	case 49: /*check*/
 	case 56:
-	case 7:
           send_to_char("\n\rNote: Modifier does not affect anything in this case.\n\r",ch);
           break;
         case 1:
@@ -762,6 +758,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 	case 3:
 	case 4:
 	case 5:
+        case 6:
 	case 8:
 	case 9:
 	case 10:
@@ -770,7 +767,6 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 	case 13:
 	case 14:
 	case 15:
-	case 16:
 	case 17:
 	case 18:
 	case 19:
@@ -781,12 +777,24 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 	case 24:
 	case 25:
         case 40:
+        case 41:
+	case 42:
+	case 50:
+	case 51:
+	case 52:
+	case 53:
+	case 54:
+	case 55:
           send_to_char("\n\rNote: Modifier will make field go up modifier number of points.\n\r",ch);
           send_to_char("      Positive modifier will make field go up, negative modifier will make\n\r      field go down.\n\r",ch);
           break;
-        case 6:
+	case 7:
           send_to_char("\n\rNote: Modifier will change characters sex by adding.\n\r      0=neutral, 1=male, 2=female\n\r",ch);
           break;
+	case 16: /*check*/
+          ChangeObjS2Affect(ch, "", ENTER_CHECK);
+          functionflag=TRUE;
+          break;          
 	case 26:
 	case 27:
 	case 28:
@@ -823,6 +831,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 	case 37:
 	case 38:
 	case 39:
+	case 46:
 	case 47:
 	  send_to_char("\n\rNote: Modifier will affect % learned of skill.\n\r",ch);
 	  send_to_char("      Positive values will increase the % learned making the char less likely\n\r      to fail while negative numbers will do the opposite.\n\r",ch);
@@ -998,20 +1007,23 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    if((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL) ||
+    if ((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL && 
+	(value != 0)) ||
        ((ch->specials.objedit->obj_flags.type_flag==ITEM_WAND) &&
-        (value==0)) ||
+        (value == 3)) ||
        ((ch->specials.objedit->obj_flags.type_flag==ITEM_STAFF) &&
-        (value==0)) ||
+        (value == 3)) ||
        (ch->specials.objedit->obj_flags.type_flag==ITEM_POTION && value != 0)) {
        if(update>=45 && update<=52)
          skill=TRUE;
-       if(update>=120 && update<=127) 
+       if(update>=171 && update<=214) 
          skill=TRUE;
-       if(update>=129 && update<=163)
+       if(update>=221 && update<=241)
          skill=TRUE;
-       if(update>=180 && update<=187) 
+       if(update>=246 && update<=254) 
          skill=TRUE;
+       if(update==288)
+	 skill=TRUE;
        if(skill==TRUE) {
          send_to_char("You must use a spell number, not a skill!\n\rSetting modifier to 1 (armor spell).\n\r",ch);
          update=1;
@@ -1036,7 +1048,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
  switch(ch->specials.objedit->obj_flags.type_flag) {
    case ITEM_LIGHT:
      if(value==0)
-       send_to_char("\n\rValue1 is the colour.",ch);
+       send_to_char("\n\rValue1 is the color (Because we all know its spelled without a 'u').",ch);
      else if(value==1)
        send_to_char("\n\rValue2 is the type.",ch);
      else if(value==2)
@@ -1048,11 +1060,11 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      if(value==0)
        send_to_char("\n\rValue1 is the level of casting this scroll casts.",ch);
      else if(value==1)
-       send_to_char("\n\rValue2 is the second spell this scroll casts.",ch);
+       send_to_char("\n\rValue2 is the first spell this scroll casts.",ch);
      else if(value==2)
-       send_to_char("\n\rValue3 is the third spell this scroll casts.",ch); 
+       send_to_char("\n\rValue3 is the second spell this scroll casts.",ch); 
      else
-       send_to_char("\n\rValue4 is the fourth spell this scroll casts.",ch);
+       send_to_char("\n\rValue4 is the third spell this scroll casts.",ch);
      break;
    case ITEM_WAND:
      if(value==0)
@@ -1062,7 +1074,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else if(value==2)
        send_to_char("\n\rValue3 is the number of charges the wand has.",ch);
      else
-       send_to_char("\n\rValue is not used for this item type.",ch);
+       send_to_char("\n\rValue4 is the spell the wand casts.",ch);
      break;
    case ITEM_STAFF:
      if(value==0)
@@ -1072,7 +1084,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else if(value==2)
        send_to_char("\n\rValue3 is the number of charges the staff has.",ch);
      else
-       send_to_char("\n\rValue is not used for this item type.",ch);
+       send_to_char("\n\rValue4 is the spell the staff casts.",ch);
      break;
    case ITEM_WEAPON:
      if(value==0)
@@ -1139,11 +1151,11 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      if(value==0)
        send_to_char("\n\rValue1 is the level of the spells this potion casts.",ch);
      else if(value==1)
-       send_to_char("\n\rValue2 is the second spell this potion casts.",ch);
+       send_to_char("\n\rValue2 is the first spell this potion casts.",ch);
      else if(value==2)
-       send_to_char("\n\rValue3 is the third spell this potion casts.",ch); 
+       send_to_char("\n\rValue3 is the second spell this potion casts.",ch); 
      else
-       send_to_char("\n\rValue4 is the fourth spell this potion casts.",ch);
+       send_to_char("\n\rValue4 is the third spell this potion casts.",ch);
      break;
    case ITEM_TRAP:
      if(value==0)
@@ -1294,6 +1306,72 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
       for(a=1;a<=i;a++)
         check*=2;
     sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->affected[affect-1].modifier & (check)) ? "X" : " "), affected_bits[i]);
+    send_to_char(buf, ch);
+  }
+ 
+ sprintf(buf, VT_CURSPOS, 20, 1);
+ send_to_char(buf, ch);
+ send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);
+}
+
+void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
+{
+ int i, a, check=0, row, update, affect;
+ char buf[255];
+ 
+   switch(ch->specials.oedit) {
+        case CHANGE_S2AFFECT1_MOD: affect = 1;
+                                  break;
+        default: break;
+  }
+   
+ if(type != ENTER_CHECK)
+    if(!*arg || (*arg == '\n')) {
+        ch->specials.oedit = CHANGE_OBJ_AFFECTS;
+        UpdateObjMenu(ch);
+        return;
+    } 
+    
+ if(type == ENTER_CHECK) {
+   switch(ch->specials.oedit) {
+        case CHANGE_AFFECT1_MOD: ch->specials.oedit=CHANGE_S2AFFECT1_MOD;
+        			affect=1;
+                                break;
+  } }
+    
+ 
+ update = atoi(arg);
+ update--;
+ if(type != ENTER_CHECK) {
+    if(update < 0 || update > 29)
+       return;
+    i=1;
+    if(update>0)
+      for(a=1;a<=update;a++)
+        i*=2;
+
+    if(IS_SET(ch->specials.objedit->affected[affect-1].modifier, i))
+       REMOVE_BIT(ch->specials.objedit->affected[affect-1].modifier, i);
+    else
+       SET_BIT(ch->specials.objedit->affected[affect-1].modifier, i);
+  }
+
+ sprintf(buf, VT_HOMECLR);
+ send_to_char(buf, ch);
+ sprintf(buf, "Object Spell Affects:");
+ send_to_char(buf, ch);
+ 
+ row = 0;
+ for(i = 0; i < 9; i++) {
+    sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
+    if(i & 1)
+       row++;
+    send_to_char(buf, ch);
+    check=1;
+    if(i>0)
+      for(a=1;a<=i;a++)
+        check*=2;
+    sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->affected[affect-1].modifier & (check)) ? "X" : " "), affected_bits2[i]);
     send_to_char(buf, ch);
   }
  
