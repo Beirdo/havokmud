@@ -1484,22 +1484,15 @@ void WeaponSkillCheck(struct char_data *ch)
 	int fighter = 0;
 	int specialist = 0;
 	int lowest = 100;
-
-	log("entering");
+	char buf[256];
 
 	if(!(obj = ch->equipment[WIELD]))
 		return;
 
-log("wielded");
-
 	if(!IS_WEAPON(obj))
 		return;
-log("weapon");
 
 	weapontype = obj->weapontype + WEAPON_FIRST; //350 - 409
-log("type");
-
-log("survived main checks");
 
 	if(ch->weaponskills.slot1 == weapontype)
 		found = 1;
@@ -1518,72 +1511,70 @@ log("survived main checks");
 	else if(ch->weaponskills.slot8 == weapontype)
 		found = 8;
 
-			if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
-				specialist = 1;
-				fighter = 1;
-				maxpoints = 400;
-			} else if ( HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) ||
-						HasClass(ch, CLASS_PALADIN) || HasClass(ch,CLASS_RANGER))   {
-				fighter = 1;
-				maxpoints = 200;
-			} else {
-				maxpoints = 100;
-			}
-
+	if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
+		specialist = 1;
+		fighter = 1;
+		maxpoints = 400;
+	} else if ( HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) ||
+				HasClass(ch, CLASS_PALADIN) || HasClass(ch,CLASS_RANGER))   {
+		fighter = 1;
+		maxpoints = 200;
+	} else {
+		maxpoints = 100;
+	}
 
 	if(!found) {
-		log("not found");
 		// assign the lowest available slot to this type
-				if(lowest > ch->weaponskills.grade1)
-					lowest = ch->weaponskills.grade1;
-				if(lowest > ch->weaponskills.grade2)
-					lowest = ch->weaponskills.grade2;
-				if(lowest > ch->weaponskills.grade3)
-					lowest = ch->weaponskills.grade3;
-				if(lowest > ch->weaponskills.grade4 && fighter)
-					lowest = ch->weaponskills.grade4;
-				if(lowest > ch->weaponskills.grade5 && fighter)
-					lowest = ch->weaponskills.grade5;
-				if(lowest > ch->weaponskills.grade6 && specialist)
-					lowest = ch->weaponskills.grade6;
-				if(lowest > ch->weaponskills.grade7 && specialist)
-					lowest = ch->weaponskills.grade7;
-				if(lowest > ch->weaponskills.grade8 && specialist)
-					lowest = ch->weaponskills.grade8;
+		if(lowest > ch->weaponskills.grade1)
+			lowest = ch->weaponskills.grade1;
+		if(lowest > ch->weaponskills.grade2)
+			lowest = ch->weaponskills.grade2;
+		if(lowest > ch->weaponskills.grade3)
+			lowest = ch->weaponskills.grade3;
+		if(lowest > ch->weaponskills.grade4 && fighter)
+			lowest = ch->weaponskills.grade4;
+		if(lowest > ch->weaponskills.grade5 && fighter)
+			lowest = ch->weaponskills.grade5;
+		if(lowest > ch->weaponskills.grade6 && specialist)
+			lowest = ch->weaponskills.grade6;
+		if(lowest > ch->weaponskills.grade7 && specialist)
+			lowest = ch->weaponskills.grade7;
+		if(lowest > ch->weaponskills.grade8 && specialist)
+			lowest = ch->weaponskills.grade8;
 
-				if(lowest == ch->weaponskills.grade1) {
-					ch->weaponskills.grade1 = 0;
-					ch->weaponskills.slot1 = weapontype;
-				} else if(lowest == ch->weaponskills.grade2) {
-					ch->weaponskills.grade2 = 0;
-					ch->weaponskills.slot2 = weapontype;
-				} else if(lowest == ch->weaponskills.grade3) {
-					ch->weaponskills.grade3 = 0;
-					ch->weaponskills.slot3 = weapontype;
-				} else if(lowest == ch->weaponskills.grade4) {
-					ch->weaponskills.grade4 = 0;
-					ch->weaponskills.slot4 = weapontype;
-				} else if(lowest == ch->weaponskills.grade5) {
-					ch->weaponskills.grade5 = 0;
-					ch->weaponskills.slot5 = weapontype;
-				} else if(lowest == ch->weaponskills.grade6) {
-					ch->weaponskills.grade6 = 0;
-					ch->weaponskills.slot6 = weapontype;
-				} else if(lowest == ch->weaponskills.grade7) {
-					ch->weaponskills.grade7 = 0;
-					ch->weaponskills.slot7 = weapontype;
-				} else if(lowest == ch->weaponskills.grade8) {
-					ch->weaponskills.grade8 = 0;
-					ch->weaponskills.slot8 = weapontype;
-				} else {
-					log("got to bad spot in WeaponSkillCheck");
-				}
-
+		if(lowest == ch->weaponskills.grade1) {
+			ch->weaponskills.grade1 = 0;
+			ch->weaponskills.slot1 = weapontype;
+		} else if(lowest == ch->weaponskills.grade2) {
+			ch->weaponskills.grade2 = 0;
+			ch->weaponskills.slot2 = weapontype;
+		} else if(lowest == ch->weaponskills.grade3) {
+			ch->weaponskills.grade3 = 0;
+			ch->weaponskills.slot3 = weapontype;
+		} else if(lowest == ch->weaponskills.grade4) {
+			ch->weaponskills.grade4 = 0;
+			ch->weaponskills.slot4 = weapontype;
+		} else if(lowest == ch->weaponskills.grade5) {
+			ch->weaponskills.grade5 = 0;
+			ch->weaponskills.slot5 = weapontype;
+		} else if(lowest == ch->weaponskills.grade6) {
+			ch->weaponskills.grade6 = 0;
+			ch->weaponskills.slot6 = weapontype;
+		} else if(lowest == ch->weaponskills.grade7) {
+			ch->weaponskills.grade7 = 0;
+			ch->weaponskills.slot7 = weapontype;
+		} else if(lowest == ch->weaponskills.grade8) {
+			ch->weaponskills.grade8 = 0;
+			ch->weaponskills.slot8 = weapontype;
+		} else {
+			log("got to bad spot in WeaponSkillCheck");
+			return;
+		}
+		sprintf(buf,"You've decided to get in some practice with the %s.\n\r",weaponskills[weapontype-350].name);
+		send_to_char(buf,ch);
 	} else {
-		log("found");
 		// 3% chance of skill increase
-		if(number(1,100)<40) { // should be 4
-		log("gain percent");
+		if(number(1,100)<4) { // should be 4
 			switch(found)
 			{
 				case 1: ch->weaponskills.grade1++; break;

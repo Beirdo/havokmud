@@ -172,6 +172,7 @@ void do_where(struct char_data *ch, char *argument, int cmd);
 void do_levels(struct char_data *ch, char *argument, int cmd);
 void do_consider(struct char_data *ch, char *argument, int cmd);
 void do_spells(struct char_data *ch, char *argument, int cmd);
+void do_weapons(struct char_data *ch, char *argument, int cmd);
 void do_allweapons(struct char_data *ch, char *argument, int cmd);
 void do_world(struct char_data *ch, char *argument, int cmd);
 void do_attribute(struct char_data *ch, char *argument, int cmd);

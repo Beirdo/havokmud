@@ -1614,6 +1614,7 @@ AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
 
 // room here
 
+AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
 AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
