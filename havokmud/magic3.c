@@ -5327,7 +5327,7 @@ void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, 
 				GET_HIT(victim)+=number(1,8);
 				update_pos(victim);
 				af.type      = SPELL_AID;
-				af.duration  = 1;
+				af.duration  = 2;
 				af.modifier  = 1;
 				af.location  = APPLY_HITROLL;
 				af.bitvector = 0;
@@ -5335,7 +5335,7 @@ void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, 
 			}
 			if (!affected_by_spell(victim, SPELL_PROTECT_FROM_EVIL) ) {
 				af.type      = SPELL_PROTECT_FROM_EVIL;
-				af.duration  = 1;
+				af.duration  = 2;
 				af.modifier  = 0;
 				af.location  = APPLY_NONE;
 				af.bitvector = AFF_PROTECT_FROM_EVIL;

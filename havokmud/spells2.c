@@ -5349,7 +5349,7 @@ void play_song_of_biting_words( byte level, struct char_data *ch, char *arg, int
 {
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_battle(level, ch, tar_ch, 0);
+			song_of_biting_words(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_biting_words");
@@ -5462,7 +5462,7 @@ void play_song_of_mint_and_lemon( byte level, struct char_data *ch, char *arg,
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_mint_and_lemon(level, ch, 0, 0);
+			song_of_mint_and_lemon(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_mint_and_lemon");
@@ -5476,7 +5476,7 @@ void play_song_of_seeing( byte level, struct char_data *ch, char *arg, int type,
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_seeing(level, ch, 0, 0);
+			song_of_seeing(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_seeing");
@@ -5546,7 +5546,7 @@ void play_song_of_dazzling( byte level, struct char_data *ch, char *arg, int typ
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_dazzling(level, ch, 0, 0);
+			song_of_dazzling(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_dazzling");

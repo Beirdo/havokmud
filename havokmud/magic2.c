@@ -835,7 +835,7 @@ void spell_cone_of_cold(byte level, struct char_data *ch,
   dam = dice(level,5);
 
   send_to_char("A cone of freezing air fans out before you\n\r", ch);
-  act("$n sends a cone of ice shooting from the fingertips!\n\r",
+  act("$n sends a cone of ice shooting from the fingertips!",
 	  FALSE, ch, 0, 0, TO_ROOM);
 
    for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
@@ -845,13 +845,13 @@ void spell_cone_of_cold(byte level, struct char_data *ch,
 	 if ((GetMaxLevel(tmp_victim)>LOW_IMMORTAL) && (!IS_NPC(tmp_victim)))
 	    return;
 	 if (!in_group(ch, tmp_victim)) {
-	    act("You are chilled to the bone!\n\r",
+	    act("You are chilled to the bone!",
 		 FALSE, ch, 0, tmp_victim, TO_VICT);
 	    if ( saves_spell(tmp_victim, SAVING_SPELL) )
 		dam >>= 1;
 	    MissileDamage(ch, tmp_victim, dam, SPELL_CONE_OF_COLD);
 	 } else {
-	    act("You are able to avoid the cone!\n\r",
+	    act("You are able to avoid the cone!",
 		 FALSE, ch, 0, tmp_victim, TO_VICT);
 	  }
        }
@@ -870,7 +870,7 @@ void spell_ice_storm(byte level, struct char_data *ch,
   dam = dice(level,4);
 
   send_to_char("You conjure a storm of ice\n\r", ch);
-  act("$n conjures an ice storm!\n\r",
+  act("$n conjures an ice storm!",
 	  FALSE, ch, 0, 0, TO_ROOM);
 
    for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
@@ -880,13 +880,13 @@ void spell_ice_storm(byte level, struct char_data *ch,
 	 if ((GetMaxLevel(tmp_victim)>LOW_IMMORTAL) && (!IS_NPC(tmp_victim)))
 	    return;
 	 if (!in_group(ch, tmp_victim)) {
-	    act("You are blasted by the storm\n\r",
+	    act("You are blasted by the storm",
 		 FALSE, ch, 0, tmp_victim, TO_VICT);
 	    if ( saves_spell(tmp_victim, SAVING_SPELL) )
 		dam >>= 1;
 	    MissileDamage(ch, tmp_victim, dam, SPELL_ICE_STORM);
 	 } else {
-	    act("You are able to dodge the storm!\n\r",
+	    act("You are able to dodge the storm!",
 		 FALSE, ch, 0, tmp_victim, TO_VICT);
 	  }
        }
