@@ -6038,6 +6038,17 @@ const struct skillset warmonkskills[] = {
     {"None", -1, -1, -1}
 };
 
+const struct skillset hunterskills[] = {
+    {"hunt", SKILL_HUNT, 1, 94},
+    {"find traps", SKILL_FIND_TRAP, 1, 94},
+    {"remove traps", SKILL_REMOVE_TRAP, 1, 94},
+    {"value item", SKILL_EVALUATE, 1, 94},
+    {"find food", SKILL_FIND_FOOD, 1, 94},
+    {"find water", SKILL_FIND_WATER, 1, 94},
+    {"None", -1, -1, -1}
+};
+
+
 /*
  * '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge,
  * 6=gargantuan '
