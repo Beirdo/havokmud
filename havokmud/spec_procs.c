@@ -2941,11 +2941,17 @@ int Donation(struct char_data *ch, int cmd, char *arg,
     }
     if (*arg2) { 
         sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
-        if ((sub_object) && (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER)) {
-            if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
-                return (FALSE);
+        if (sub_object) {
+            if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
+                if ((sub_object = get_obj_in_list_vis(ch, arg2, 
+                                                      ch->carrying))) {
+                    return (FALSE);
+                } else {
+                    send_to_char("Now now, that would be greedy!\n\r", ch);
+                    return (TRUE);
+                }
             } else {
-                send_to_char("Now now, that would be greedy!\n\r", ch);
+                send_to_char("That isnt a container.\n\r", ch);
                 return (TRUE);
             }
         }
