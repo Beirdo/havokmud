@@ -1980,7 +1980,7 @@ Cleric
 
 Warrior
 	more weapon proficiencies
-	bellow becomes an area affect bash
+//	bellow becomes an area affect bash
 //	+8 hitpoint regen
 //	+5 move regen
 //	mend, skill to repair damage armor/weaponry
@@ -2002,35 +2002,35 @@ Monk
 //	flowerfist, area attack
 
 Barbarian
-	immunity to poison from level 20
+//	immunity to poison from level 20
 //	1% harder skin per level. at level 50, barbs get a pierce damage reduction of 75% added to any damage modifiers
 //	+8 move regen
 //	+5 hitpoint regen
 
 Ranger
 //	when hasted, offhand does an extra attack
-	+10% damage vs. undead
-	+5%  damage vs. evil
+//	+10% damage vs. undead
+//	+5%  damage vs. evil
 
 Paladin
-	+10% damage vs. undead
-	+20% damage vs. evil
-	-20% damage vs. good
-	15% discount on rent
+//	+10% damage vs. undead
+//	+20% damage vs. evil
+//	-20% damage vs. good
+//	15% discount on rent
 
 Psi
-	immune sleep
-	immune charm
+//	immune sleep
+//	immune charm
 //	+5 hitpoint regen
 //	+5 mana regen
 	object scry
 	telekinetic knock spell
 
 Necromancer
-	-10% damage vs. undead
-	+15% damage vs. good
-	+ 5% damage vs. neutral
-	-20% damage vs. evil
+//	-10% damage vs. undead
+//	+15% damage vs. good
+//	+ 5% damage vs. neutral
+//	-20% damage vs. evil
 
 //	(lower hp gain for necros in general)
 

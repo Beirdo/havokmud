@@ -1473,6 +1473,34 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
   return(TRUE);
 }
 
+int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam)
+{
+	if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
+		if(IsUndead(v))
+			dam *= 1.1;
+		if(IS_EVIL(v))
+			dam *= 1.05;
+	} else if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1) {
+		if(IsUndead(v))
+			dam *= 1.1;
+		if(IS_EVIL(v))
+			dam *= 1.2;
+		else if(IS_GOOD(v))
+			dam *= 0.8;
+	} else if(ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+		if(IsUndead(v))
+			dam *= 0.9;
+		if(IS_NEUTRAL(v))
+			dam *= 1.05;
+		else if(IS_GOOD(v))
+			dam *= 1.15;
+		else if(IS_EVIL(v))
+			dam *= 0.8;
+	}
+
+	return(dam);
+}
+
 int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
 {
 
@@ -1491,6 +1519,17 @@ char buf[255];
     REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
   }
 
+#if PREVENT_PKILL
+ if ( (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) &&
+      (IS_PC(v) || IS_SET(v->specials.act,ACT_POLYSELF)) &&
+      (ch != v) &&
+       !CanFightEachOther(ch,v)       ) {
+	act("Your attack seems usless against $N!",FALSE,ch,0,v,TO_CHAR);
+	act("The attack from $n is futile!",FALSE,ch,0,v,TO_VICT);
+	dam=-1;
+    }
+#endif
+
 if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
 	while(GET_MANA(v) && dam) {
 		GET_MANA(v) -= 1;
@@ -1506,10 +1545,12 @@ if (affected_by_spell(v,SPELL_MANA_SHIELD)) {
 		act("$N's mana shield absorbs the blow, but is fully drained.",FALSE, ch, 0, v, TO_CHAR);
 		act("$N's mana shield absorbs the blow, but is fully drained.",FALSE, ch, 0, v, TO_NOTVICT);
 		affect_from_char(v,SPELL_MANA_SHIELD);
+		return(dam);
 	} else {
 		act("Your mana shield absorbs the blow!",FALSE, ch, 0, v, TO_VICT);
 		act("$N's mana shield absorbs your blow!",FALSE, ch, 0, v, TO_CHAR);
 		act("$N's mana shield absorbs $n's blow!",FALSE, ch, 0, v, TO_NOTVICT);
+		return(dam);
 	}
 }
 
@@ -1532,18 +1573,22 @@ if (affected_by_spell(v,SPELL_IRON_SKINS)) {
 			act("$N's last iron skin is flayed, and you manage to hit $M.",FALSE, ch, 0, v, TO_CHAR);
 			act("$N's last iron skin is flayed, and $n manages to get a hit in.",FALSE, ch, 0, v, TO_NOTVICT);
 			affect_from_char(v,SPELL_IRON_SKINS);
-		} else if(dam && !aff->duration) {
+		} else if(!dam && !aff->duration) {
 			act("Your last iron skin is flayed, keeping you from harm one last time.",FALSE, ch, 0, v, TO_VICT);
 			act("$N's last iron skin is flayed, keeping $M from harm one more time.",FALSE, ch, 0, v, TO_CHAR);
 			act("$N's last iron skin is flayed, keeping $M from harm one more time.",FALSE, ch, 0, v, TO_NOTVICT);
 			affect_from_char(v,SPELL_IRON_SKINS);
+			return(dam);
 		} else {
 			act("Some of your iron skins crumble to dust, leaving you unharmed!",FALSE, ch, 0, v, TO_VICT);
 			act("Some of $N's iron skins crumble to dust, leaving $M unharmed!",FALSE, ch, 0, v, TO_CHAR);
 			act("Some of $N's iron skins crumble to dust, leaving $M unharmed!",FALSE, ch, 0, v, TO_NOTVICT);
+			return(dam);
 		}
 	}
 }
+
+	dam = ClassDamBonus(ch,v,dam);
 
   if (IS_AFFECTED(v, AFF_SANCTUARY)) {
       dam = MAX((int)(dam/2), 0);  /* Max 1/2 damage when sanct'd */
@@ -1560,17 +1605,6 @@ if (affected_by_spell(v,SPELL_IRON_SKINS)) {
   dam = PreProcDam(v,type,dam);
 
 
-#if PREVENT_PKILL
-
- if ( (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) &&
-      (IS_PC(v) || IS_SET(v->specials.act,ACT_POLYSELF)) &&
-      (ch != v) &&
-       !CanFightEachOther(ch,v)       ) {
-	act("Your attack seems usless against $N!",FALSE,ch,0,v,TO_CHAR);
-	act("The attack from $n is futile!",FALSE,ch,0,v,TO_VICT);
-	dam=-1;
-    }
-#endif
 	/* shield makes you immune to magic missle! */
 
 if (affected_by_spell(v,SPELL_SHIELD) && type == SPELL_MAGIC_MISSILE) {

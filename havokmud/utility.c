@@ -615,26 +615,6 @@ int number(int from, int to)
        return(from);
 }
 
-int HasInstrument(struct char_data *ch)
-{
-
-	if (ch->equipment[WIELD])
-		if(ITEM_TYPE(ch->equipment[WIELD]) == ITEM_INSTRUMENT)
-			return(TRUE);
-	if (ch->equipment[HOLD])
-		if(ITEM_TYPE(ch->equipment[HOLD]) == ITEM_INSTRUMENT)
-			return(TRUE);
-	if (ch->equipment[WEAR_LIGHT])
-		if(ITEM_TYPE(ch->equipment[WEAR_LIGHT]) == ITEM_INSTRUMENT)
-			return(TRUE);
-
-	send_to_char("Ah, you need an instrument to play this song.\n\r", ch);
-	return(FALSE);
-}
-
-
-
-
 /* simulates dice roll */
 int dice(int number, int size)
 {

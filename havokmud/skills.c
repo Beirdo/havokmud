@@ -4335,7 +4335,7 @@ dlog("in do_flurry");
 		}
 	}
 
-//	WAIT_STATE(ch, PULSE_VIOLENCE*3); commented out for testing purposes
+	WAIT_STATE(ch, PULSE_VIOLENCE*3);
 }
 
 void do_flowerfist(struct char_data *ch, char *argument, int cmd)
@@ -4371,14 +4371,9 @@ dlog("in do_flowerfist");
 			act("$n chants loudly, while $s fists seem to be all over the place!",TRUE,ch,0,0,TO_ROOM);
 			act("You chant loudly, while sending hits throughout the area.",TRUE,ch,0,0,TO_CHAR);
 			for (tch=real_roomp(ch->in_room)->people; tch; tch=tch->next_in_room) {
-				if (!in_group(tch, ch)) {
+				if (!in_group(tch, ch) && !IS_IMMORTAL(tch)) {
 					dam = dice(6,6);
 					damage(ch, tch, dam, TYPE_HIT);
-
-					//some message while the messages file isn't updated yet
-					act("$n hits $N.",TRUE,ch,0,tch,TO_NOTVICT);
-					act("$n hits you.",TRUE,ch,0,tch,TO_VICT);
-					act("You hit $N.",TRUE,ch,0,tch,TO_CHAR);
 				}
 			}
 			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
@@ -4386,5 +4381,5 @@ dlog("in do_flowerfist");
 		}
 	}
 
-//	WAIT_STATE(ch, PULSE_VIOLENCE*2); commented out for testing purposes
+	WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }

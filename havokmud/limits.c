@@ -1293,6 +1293,16 @@ int i;
 
 
       /* other stuff.. immunities, etc, are set here */
+	if(ch->specials.remortclass == BARBARIAN_LEVEL_IND + 1 && GET_LEVEL(ch, BARBARIAN_LEVEL_IND) > 19) {
+		SET_BIT(ch->M_immune, IMM_POISON);
+	} else if(ch->specials.remortclass == PSI_LEVEL_IND + 1) {
+		if(GET_LEVEL(ch, PSI_LEVEL_IND) > 16)
+			SET_BIT(ch->M_immune, IMM_CHARM);
+		if(GET_LEVEL(ch, PSI_LEVEL_IND) > 27)
+			SET_BIT(ch->M_immune, IMM_SLEEP);
+	}
+
+
 
   if (HasClass(ch, CLASS_MONK)) {
 /*

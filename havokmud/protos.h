@@ -513,6 +513,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type);
 int DamDetailsOk( struct char_data *ch, struct char_data *v, int dam, int type);
 int SetCharFighting(struct char_data *ch, struct char_data *v);
 int SetVictFighting(struct char_data *ch, struct char_data *v);
+int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam);
 int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type);
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type);
 int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
@@ -2170,7 +2171,6 @@ int CheckEgoGive(struct char_data *ch,struct char_data *vict,
 					 struct obj_data *obj);
 int HowManySpecials(struct char_data *ch) ;
 void tweak(struct obj_data *obj);
-int HasInstrument(struct char_data *ch);
 
 struct obj_data *find_tqp();
 int count_tqp();

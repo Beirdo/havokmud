@@ -264,6 +264,9 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 	else if(IS_NEUTRAL(receptionist) && IS_NEUTRAL(ch))
 		discount = discount + 5;
 
+	if(ch->specials.remortclass == PALADIN_LEVEL_IND + 1)
+		discount += 15;  // 15% discount for paladins
+
 	if(GET_CLAN(ch) > 1)
 		discount = discount + 5;
 
@@ -271,7 +274,7 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 		discount = discount + (1 + GET_CHR(ch) - GET_CHR(receptionist));
 
 	if (IS_SET(ch->specials.act, PLR_CLAN_LEADER))
-		discount+=10;  //100% discount for clan leaders..
+		discount+=10;  //10% discount for clan leaders..
 
     if(discount > 0 && discount !=100) {
 		sprintf(buf,"$n winks at you and offers you a %d%% discount. (%d coins)", discount, ((cost->total_cost*discount/100)));
