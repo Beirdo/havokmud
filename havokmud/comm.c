@@ -2361,7 +2361,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 		    sprintf(tbuf,"%ld",GET_EXP(ch));
 		    break;
 		case 'x': /* xp left to level (any level, btw..) */
-		    for(l=1,i=0,exp=999999999;i<=PSI_LEVEL_IND;i++,l<<=1) {
+		    for(l=1,i=0,exp=999999999;i<=NECROMANCER_LEVEL_IND;i++,l<<=1) {
 			if(HasClass(ch,l)) {
 			    texp=(titles[i][GET_LEVEL(ch,i)+1].exp)-GET_EXP(ch);
 			    if(texp<exp)

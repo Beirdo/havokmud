@@ -55,6 +55,7 @@ void spell_transport_via_plant(byte level, struct char_data *ch,
   struct obj_data *i;
   struct obj_data *obj;
   char name[254], buf[200];
+  int found = 0;
 
   /* find the tree in the room */
   rp = real_roomp(ch->in_room);
@@ -74,28 +75,29 @@ void spell_transport_via_plant(byte level, struct char_data *ch,
 		if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
 			/* we found a druid tree with the right name */
 			obj = i;
+			found = 1;
 			break;
 		}
 	}
 
-	if(!obj) {
-		send_to_char("That tree is nowhere to be found\n\r", ch);
+	if(!found) {
+		send_to_char("That tree is nowhere to be found.\n\r", ch);
 		return;
 	}
 
-
+/*
   if (ITEM_TYPE(obj) != ITEM_TREE) {
-    send_to_char("That tree is nowhere to be found\n\r", ch);
+    send_to_char("That tree is nowhere to be found.\n\r", ch);
     return;
   }
-
+*/
   if (obj->in_room < 0) {
-    send_to_char("That tree is nowhere to be found\n\r", ch);
+    send_to_char("That tree is nowhere to be found.\n\r", ch);
     return;
   }
 
   if (!real_roomp(obj->in_room)) {
-    send_to_char("That tree is nowhere to be found\n\r", ch);
+    send_to_char("That tree is nowhere to be found.\n\r", ch);
     return;
   }
 

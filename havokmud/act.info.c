@@ -2154,8 +2154,8 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	}
 
 
-	ch_printf(ch,"%sYour main character class is a %s%s%s.\n\r", color, color2, class_names[ch->specials.remortclass], color);
-
+/*	ch_printf(ch,"%sYour main character class is a %s%s%s.\n\r", color, color2, class_names[ch->specials.remortclass], color);
+commented out to avoid confusing noobs */
 
    ch_printf(ch,"%sYou have killed %s%d%s monsters, and have died %s%d%s times. Arena: %s%d%s/%s%d%s\n\r",
     	color, color2, ch->specials.m_kills,color, color2, ch->specials.m_deaths,color, color2, ch->specials.a_kills,color, color2, ch->specials.a_deaths,color);

@@ -344,7 +344,7 @@ dlog("in do_tell");
      if (real_roomp(ch->in_room)->zone !=
 	 real_roomp(vict->in_room)->zone
 	  && GetMaxLevel(ch) < LOW_IMMORTAL
-	/*  && GetMaxLevel(vict) <LOW_IMMORTAL */) 	{ //Added this line... useful ;) - MW // deleted it again -Lennya
+	&& GetMaxLevel(vict) <LOW_IMMORTAL) 	{ //Added this line... useful ;) - MW
 	 send_to_char("That person is not near enough for you to tell.\n\r",ch);
  	 return;
 	}
