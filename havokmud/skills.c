@@ -3953,6 +3953,7 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
+		obj_to_char(obj, ch);
 		WAIT_STATE(ch,PULSE_VIOLENCE*4);
 		return;
 	}
@@ -4083,6 +4084,7 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 		gain_exp(ch, 100);
+		obj_to_char(obj, ch);
 		WAIT_STATE(ch,PULSE_VIOLENCE*6);
 		return;
 	}
