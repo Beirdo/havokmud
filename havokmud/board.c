@@ -365,8 +365,8 @@ char a1[MAX_INPUT_LENGTH];
   }
 
   /* We've got the message, simply print it out to the character now */
-  sprintf(buffer, " [%3d] : %s\r\n"
-           " %s %s\r\n"
+  sprintf(buffer, " Author [%3d] : %s\r\n"
+           " Date: %s Topic: %s\r\n"
            "--------------------------\r\n\r\n%s",
            tmessage, msg->author, asctime(localtime(&msg->date)), msg->title,
            msg->text ? msg->text : "N/M\r\n");
