@@ -116,6 +116,8 @@ void do_talk(struct char_data *ch, char *argument, int cmd);
 
 
 /* From act.info.c */
+void do_sea_commands(struct char_data *ch, char *argument, int cmd);
+
 void do_map(struct char_data *ch, char *argument, int cmd);
 void list_groups(struct char_data *ch);
 void do_command_list(struct char_data *ch, char *arg, int cmd);
@@ -2444,3 +2446,6 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 void do_OOCaction(struct char_data *ch, char *argument, int cmd);
 void ch_printf(struct char_data *ch, char *fmt, ...);
+
+
+int ships_helm(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);

@@ -213,6 +213,11 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #define GET_ITEM_TYPE(obj) ((obj)->obj_flags.type_flag)
 
+#define GET_XCOORD(obj)  ((obj)->obj_flags.value[0])
+#define GET_YCOORD(obj)  ((obj)->obj_flags.value[1])
+
+
+
 #define CAN_WEAR(obj, part) (IS_SET((obj)->obj_flags.wear_flags,part))
 
 #define GET_OBJ_WEIGHT(obj) ((obj)->obj_flags.weight)

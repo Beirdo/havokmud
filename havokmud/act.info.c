@@ -6124,3 +6124,12 @@ dlog("in do_allweapons");
 	}
 	page_string(ch->desc, buf, 1);
 }
+
+
+void do_sea_commands(struct char_data *ch, char *argument, int cmd) {
+
+
+	send_to_char("Sorry, you need to be in your ship and on the open sea to partake in those actions.\n\r",ch);
+	send_to_char("(Possible commands-] Plank, Disembark, Embark, Sail/Steer)\n\r",ch);
+
+}

@@ -1562,9 +1562,8 @@ AddCommand("moon",do_action,556,POSITION_RESTING,0);
 AddCommand("dream",do_action,557,POSITION_RESTING,0);
 AddCommand("shove",do_action, 558, POSITION_RESTING,0);
 AddCommand("behead",do_behead,559,POSITION_STANDING,0);
-AddCommand("pinfo",do_flag_status, 560, POSITION_RESTING,59); /* being
-worked on*/
-AddCommand("board",do_not_here,561,POSITION_STANDING,0);
+AddCommand("pinfo",do_flag_status, 560, POSITION_RESTING,59); /* being worked on*/
+//Moved down below.AddCommand("board",do_not_here,561,POSITION_STANDING,0);
 
 /* New command for editing gossiping scribe's messages -bwise */
 AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
@@ -1615,13 +1614,6 @@ AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
 AddCommand("affects", do_attribute,606, POSITION_DEAD,1);
 
 // room here
-//BOARD DISEMBARK EMBARK PLANK
-/* New command for sailing/ships */
-AddCommand("board", do_not_here, 607, POSITION_RESTING, 1);
-AddCommand("disembark", do_not_here, 608, POSITION_SITTING, 1);
-AddCommand("embark", do_not_here, 609, POSITION_STANDING, 1);
-AddCommand("plank", do_not_here, 610, POSITION_STANDING, 1);
-
 
 
 AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
@@ -1636,7 +1628,14 @@ AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
 AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
 
-
+//BOARD DISEMBARK EMBARK PLANK
+/* New command for sailing/ships */
+AddCommand("board", do_sea_commands, 620, POSITION_RESTING, 1);
+AddCommand("disembark", do_sea_commands, 621, POSITION_SITTING, 1);
+AddCommand("embark", do_sea_commands, 622, POSITION_STANDING, 1);
+AddCommand("plank", do_sea_commands, 623, POSITION_STANDING, 1);
+AddCommand("sail", do_sea_commands, 624, POSITION_STANDING, 1);
+AddCommand("steer", do_sea_commands, 625, POSITION_STANDING, 1);
 
 
 }

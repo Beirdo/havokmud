@@ -2896,6 +2896,7 @@ const char *item_types[] = {
 "ROCK",
 "PORTAL",//27
 "INSTRUMENT",
+"SHIPS HELM",
 	"\n"
 };
 

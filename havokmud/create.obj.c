@@ -523,7 +523,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
 
  if(type != ENTER_CHECK) {
     switch(ch->specials.oedit) {
-    case CHANGE_OBJ_TYPE: if(update < 0 || update > 28)
+    case CHANGE_OBJ_TYPE: if(update < 0 || update > 29)
                             return;
                           else {
                             ch->specials.objedit->obj_flags.type_flag = update;
@@ -540,7 +540,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
 
  row = 0;
- for(i = 0; i < 29; i++) {
+ for(i = 0; i < 30; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -1466,6 +1466,18 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        send_to_char("\n\rThis value determines the mana reduction of song weaving (1-50%).",ch);
      else
        send_to_char("\n\rValue not used for this item type.\n\r",ch);
+     break;
+     case ITEM_SHIPS_HELM:
+	    if(value==0)
+	      send_to_char("\n\rX coordinate of ship.",ch);
+	     else if(value==1)
+	     	send_to_char("\n\rY coordinate of ship.",ch);
+	     else if(value==2)
+	     	send_to_char("\n\rSpeed of ship.",ch);
+	     else if(value==3)
+	        send_to_char("\n\rSize of ship.",ch);
+	     else
+	        send_to_char("\n\rValue not used for this item type.\n\r",ch);
      break;
    default:
      send_to_char("Value not used for this item type.\n\r",ch);

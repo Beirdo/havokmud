@@ -5949,7 +5949,7 @@ int board_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   int j;
   char buf[256];
   struct char_data *ship;
-  if(cmd!=561) return(FALSE);	/* board ship */
+  if(cmd!=620) return(FALSE);	/* board ship */
 
   one_argument(arg,buf);
   if(*buf) {

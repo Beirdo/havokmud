@@ -27,13 +27,13 @@ typedef char byte;
 #define FOREST_DARK     2
 #define NO_DARK         3
 
-#define ,CMD_look       15
-#define ,CMD_write      149
-#define ,CMD_read       63
-#define ,CMD_remove     66
-#define ,CMD_reply      515
-#define ,CMD_reload     284
-#define ,CMD_first_move 1
+#define cmd_look       15
+#define cmd_write      149
+#define cmd_read       63
+#define cmd_remove     66
+#define cmd_reply      515
+#define cmd_reload     284
+#define cmd_first_move 1
 
 #define ONE_WORD                  24
 #define ONE_LINE                  96
@@ -501,6 +501,8 @@ typedef struct {
 #define ITEM_ROCK      26
 #define ITEM_PORTAL		27
 #define ITEM_INSTRUMENT 28
+#define ITEM_SHIPS_HELM  29
+
 /* Bitvector For 'wear_flags' */
 
 #define ITEM_TAKE              1
@@ -2000,7 +2002,11 @@ struct class_titles {
 };
 
 /*  Ok.. this list probaby isn't finished.. They have to match up for # for #..
-    So when someone has time.. Just make sure that its numbered right */
+    So when someone has time.. Just make sure that its numbered right
+    NOTE: I had to take a few out.. (which screws up the numbering.. b/c they were already
+    defined.. Once this is finished.. This should make the code a prettier place
+
+    Instead of every proc going  if(cmd==322)  It can now be if(cmd==CMD_blah)   */
 enum
 {
   CMD_north=1
@@ -2017,7 +2023,7 @@ enum
   ,CMD_eat
   ,CMD_wear
   ,CMD_wield
-  ,CMD_look
+  //,CMD_look
   ,CMD_score
   ,CMD_say
   ,CMD_shout
@@ -2065,10 +2071,10 @@ enum
   ,CMD_drop
   ,CMD_goto
   ,CMD_weather
-  ,CMD_read
+  //,CMD_read
   ,CMD_pour
   ,CMD_grab
-  ,CMD_remove
+  //,CMD_remove
   ,CMD_put
   ,CMD_shutdow  //68
   ,CMD_save
@@ -2079,7 +2085,7 @@ enum
   ,CMD_stat
   ,CMD_guard
   ,CMD_time
-  ,CMD_load
+  //,CMD_load
   ,CMD_purge
   ,CMD_shutdown
   ,CMD_idea
@@ -2122,12 +2128,12 @@ enum
   ,CMD_groan
   ,CMD_grope
   ,CMD_hiccup
-  ,CMD_lick,
-  ,CMD_love,
-  ,CMD_moan,
-  ,CMD_nibble,
-  ,CMD_pout,
-  ,CMD_purr,
+  ,CMD_lick
+  ,CMD_love
+  ,CMD_moan
+  ,CMD_nibble
+  ,CMD_pout
+  ,CMD_purr
   ,CMD_ruffle
   ,CMD_shiver
   ,CMD_shrug
@@ -2151,7 +2157,7 @@ enum
   ,CMD_wink
   ,CMD_yawn
   ,CMD_snowball
-  ,CMD_write
+  //,CMD_write
   ,CMD_hold
   ,CMD_flee
   ,CMD_sneak
@@ -2182,7 +2188,7 @@ enum
   ,CMD_pray
   ,CMD_TEMP2
   ,CMD_beg
-  ,CMD_bleed
+  //,CMD_bleed
   ,CMD_cringe
   ,CMD_cackle
   ,CMD_fume
@@ -2278,7 +2284,7 @@ enum
   ,CMD_swim
   ,CMD_spy
   ,CMD_springleap
-  ,CMD_quivering palm
+  ,CMD_quiveringpalm
   ,CMD_feigndeath
   ,CMD_mount
   ,CMD_dismount
@@ -2288,7 +2294,7 @@ enum
   ,CMD_firstaid
   ,CMD_log
   ,CMD_recall
-  ,CMD_reload
+  //,CMD_reload
   ,CMD_event
   ,CMD_disguise
   ,CMD_climb
@@ -2326,7 +2332,7 @@ enum
   ,CMD_caress
   ,CMD_cheer
   ,CMD_jump
-  ,CMD_roll
+  //,CMD_roll
   ,CMD_split
   ,CMD_berserk
   ,CMD_tan
@@ -2344,7 +2350,7 @@ enum
   ,CMD_flame
   ,CMD_aura
   ,CMD_great
-  ,CMD_psionic invisibility
+  ,CMD_psionicinvisibility
   ,CMD_blast
   ,CMD_psionicblast
 ,CMD_medit
@@ -2433,8 +2439,8 @@ enum
 ,CMD_recoil
 ,CMD_roar
 ,CMD_relax
-,CMD_snap
-,CMD_strut
+//,CMD_snap
+//,CMD_strut
 ,CMD_stroke
 ,CMD_stretch
 ,CMD_swave
@@ -2476,7 +2482,7 @@ enum
 ,CMD_whois
 ,CMD_osave
 ,CMD_msave
-,CMD_?
+//,CMD_?
 ,CMD_home
 ,CMD_wizset
 ,CMD_ooc
@@ -2497,7 +2503,7 @@ enum
 ,CMD_wdisplay
 ,CMD_jam
 ,CMD_donate
-,CMD_reply
+//,CMD_reply
 ,CMD_set_spy
 ,CMD_reward
 ,CMD_punish
@@ -2546,7 +2552,7 @@ enum
 ,CMD_shove
 ,CMD_behead
 ,CMD_pinfo
-,CMD_board
+//,CMD_board
 ,CMD_gosmsg
 ,CMD_yell
 ,CMD_legsweep
@@ -2607,3 +2613,15 @@ enum
 ,CMD_recallhome
 ,CMD_scribe
 } CommandList;
+
+
+
+
+
+struct map_coord
+{
+  int x;
+  int y;
+  int room;
+
+};
