@@ -6418,7 +6418,11 @@ void tweak(struct obj_data *obj)
                     } else if (mod > 5) {
                         mod = 5;
                     }
-                    obj->affected[i].modifier = mod;
+                    if( mod ) {
+                        obj->affected[i].modifier = mod;
+                    } else {
+                        obj->affected[i].location = APPLY_NONE;
+                    }
                 }
                 break;
             case APPLY_SAVING_PARA:
@@ -6440,6 +6444,9 @@ void tweak(struct obj_data *obj)
                         roll = number(1, 2);
                     }
                     obj->affected[i].modifier += roll;
+                    if( obj->affected[i].modifier == 0 ) {
+                        obj->affected[i].location = APPLY_NONE;
+                    }
                 }
                 break;
             case APPLY_AGE:
@@ -6471,6 +6478,9 @@ void tweak(struct obj_data *obj)
                         obj->affected[i].modifier += mod;
                     } else if (number(0, 1)) {
                         obj->affected[i].modifier -= mod;
+                    }
+                    if( obj->affected[i].modifier == 0 ) {
+                        obj->affected[i].location = APPLY_NONE;
                     }
                 }
                 break;
