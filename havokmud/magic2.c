@@ -2395,7 +2395,7 @@ void spell_faerie_fog (byte level, struct char_data *ch, struct char_data *victi
 						act("$n is briefly revealed, but disappears again.", TRUE, tmp_victim, 0, 0, TO_ROOM);
 						act("You are briefly revealed, but disappear again.", TRUE, tmp_victim, 0, 0, TO_CHAR);
 						SET_BIT(tmp_victim->specials.affected_by, AFF_HIDE);
-						revelead = 1;
+						revealed = 1;
 					} else {
 						REMOVE_BIT(tmp_victim->specials.affected_by, AFF_HIDE);
 						act("$n is revealed!",TRUE, tmp_victim, 0, 0, TO_ROOM);
