@@ -4592,11 +4592,11 @@ dlog("in do_ventriloquate");
 			LearnFromMistake(ch, SKILL_THROW_VOICE, 0, 95);
 			GET_MOVE(ch) -= 5;
 		} else {
-			sprintf("You make it seem as if $N says ‘%s’",string);
+			sprintf(buf,"You make it seem as if $N says ‘%s’",string);
 			act(buf,FALSE, ch, 0,vict,TO_CHAR);
-			sprintf("$c000W[$c000p$N$c000W] says ‘%s’",string);
+			sprintf(buf,"$c000W[$c000p$N$c000W] says ‘%s’",string);
 			act(buf,FALSE, ch, 0,vict,TO_NOTVICT);
-			sprintf("$c000WYou say ‘%s’",string);
+			sprintf(buf,"$c000WYou say ‘%s’",string);
 			act(buf,FALSE, ch, 0,vict,TO_VICT);
 			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
 			gain_exp(ch, 100);
