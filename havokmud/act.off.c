@@ -2261,6 +2261,20 @@ void kick_messages(struct char_data *ch, struct char_data *victim,
     case RACE_DRAGON_BRONZE:
     case RACE_DRAGON_COPPER:
     case RACE_DRAGON_BRASS:
+    case RACE_DRAGON_AMETHYST:
+    case RACE_DRAGON_CRYSTAL:
+    case RACE_DRAGON_EMERALD:
+    case RACE_DRAGON_SAPPHIRE:
+    case RACE_DRAGON_TOPAZ:
+    case RACE_DRAGON_BROWN:
+    case RACE_DRAGON_CLOUD:
+    case RACE_DRAGON_DEEP:
+    case RACE_DRAGON_MERCURY:
+    case RACE_DRAGON_MIST:
+    case RACE_DRAGON_SHADOW:
+    case RACE_DRAGON_STEEL:
+    case RACE_DRAGON_YELLOW:
+    case RACE_DRAGON_TURTLE:
         i = number(4, 7);
         break;
     case RACE_TREE:

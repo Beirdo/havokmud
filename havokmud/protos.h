@@ -1028,7 +1028,9 @@ void            spell_light_breath(int level, struct char_data *ch,
 void            spell_dark_breath(int level, struct char_data *ch,
                                   struct char_data *victim,
                                   struct obj_data *obj);
-
+void            spell_lozenge_breath(int level, struct char_data *ch,
+                                    struct char_data *victim,
+                                    struct obj_data *obj);
 /*
  * Fom magic2.c 
  */

@@ -1539,6 +1539,76 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             acapply++;
             acbonus += 2;
             break;
+    case RACE_DRAGON_AMETHYST:
+            sprintf(hidetype, "amethyst dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_CRYSTAL:
+            sprintf(hidetype, "crystal dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_EMERALD:
+            sprintf(hidetype, "emerald dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_SAPPHIRE:
+            sprintf(hidetype, "sapphire dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_TOPAZ:
+            sprintf(hidetype, "topaz dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_BROWN:
+            sprintf(hidetype, "brown dragon hide");
+            acapply ++;
+            acbonus ++;
+            break;
+    case RACE_DRAGON_CLOUD:
+            sprintf(hidetype, "cloud dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_DEEP:
+            sprintf(hidetype, "deep dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_MERCURY:
+            sprintf(hidetype, "mercury dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_MIST:
+            sprintf(hidetype, "mist dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_SHADOW:
+            sprintf(hidetype, "shadow dragon hide");
+            acapply += 7;
+            acbonus += 7;
+            break;
+    case RACE_DRAGON_STEEL:
+            sprintf(hidetype, "steel dragon hide");
+            acapply += 6;
+            acbonus += 6;
+            break;
+    case RACE_DRAGON_YELLOW:
+            sprintf(hidetype, "yellow dragon hide");
+            acapply += 4;
+            acbonus += 4;
+            break;
+    case RACE_DRAGON_TURTLE:
+            sprintf(hidetype, "turtle dragon hide");
+            acapply += 8;
+            acbonus += 8;
+            break;
         case RACE_GOLEM:
         case RACE_SKEXIE:
         case RACE_TROGMAN:

@@ -6111,8 +6111,37 @@ struct dragon_def dragonTable[] = {
       { { "$c000PA sticky cloud", spell_slow_breath }, 
         { "$c000GA cone of acid", spell_acid_breath } }, 2 },
     { RACE_DRAGON_BRASS,
-      { { "$c000bA gloomy cloud", spell_sleep_breath }, 
-        { "$c000yA cloud of blistering sand", spell_desertheat_breath } }, 2 }
+      { { "$c0008A gloomy cloud", spell_sleep_breath }, 
+        { "$c000yA cloud of blistering sand", spell_desertheat_breath } }, 2 },
+    { RACE_DRAGON_AMETHYST,
+      { { "$c000pA faceted violet lozenge", spell_lozenge_breath } }, 1 },
+    { RACE_DRAGON_CRYSTAL,
+      { { "$c000YA cone of glowing shards", spell_shard_breath } }, 1 },
+    { RACE_DRAGON_EMERALD,
+      { { "$c000cA loud keening wail", spell_sound_breath } }, 1 },
+    { RACE_DRAGON_SAPPHIRE,
+      { { "$c000cA cone of high-pitched, almost inaudible sound", 
+         spell_sound_breath } }, 1 },
+    { RACE_DRAGON_TOPAZ,
+      { { "$c000yA cone of dehydration", spell_dehydration_breath } }, 1 },
+    { RACE_DRAGON_BROWN,
+      { { "$c000yA cloud of blistering sand", spell_desertheat_breath } }, 1 },
+    { RACE_DRAGON_CLOUD,
+      { { "$c000CAn icy blast of air", spell_frost_breath } }, 1 },
+    { RACE_DRAGON_DEEP,
+      { { "$c000gA cone of flesh-corrosive gas", spell_gas_breath } }, 1 },
+    { RACE_DRAGON_MERCURY,
+      { { "$c000YA beam of bright, yellow light", spell_light_breath } }, 1 },
+    { RACE_DRAGON_MIST,
+      { { "$c000CA cloud of scalding vapor", spell_vapor_breath } }, 1 },
+    { RACE_DRAGON_SHADOW,
+      { { "$c0008A cloud of blackness", spell_dark_breath } }, 1 },
+    { RACE_DRAGON_STEEL,
+      { { "$c000gA cube of toxic gas", spell_gas_breath } }, 1 },
+    { RACE_DRAGON_YELLOW,
+      { { "$c000YA cloud of blistering sand", spell_desertheat_breath } }, 1 },
+    { RACE_DRAGON_TURTLE,
+      { { "$c000CA cloud of scalding steam", spell_vapor_breath } }, 1 }
 };
 int dragonTableCount = NELEMS(dragonTable);
 
@@ -6153,7 +6182,7 @@ int dragon(struct char_data *ch, int cmd, char *arg,
 
     act("$c000W$n rears back and inhales!$c000w", FALSE, ch, 0, 0, TO_ROOM);
 
-    sprintf(buf, "%s shoots forth from $n's mouth!$c000w",
+    sprintf(buf, "%s spews forth from $n's mouth!$c000w",
             dragonTable[i].breath[j].spews );
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
 

@@ -2296,6 +2296,19 @@ int HasWings(struct char_data *ch)
     case RACE_DRAGON_BRONZE:
     case RACE_DRAGON_COPPER:
     case RACE_DRAGON_BRASS:
+    case RACE_DRAGON_AMETHYST:
+    case RACE_DRAGON_CRYSTAL:
+    case RACE_DRAGON_EMERALD:
+    case RACE_DRAGON_SAPPHIRE:
+    case RACE_DRAGON_TOPAZ:
+    case RACE_DRAGON_BROWN:
+    case RACE_DRAGON_CLOUD:
+    case RACE_DRAGON_DEEP:
+    case RACE_DRAGON_MERCURY:
+    case RACE_DRAGON_MIST:
+    case RACE_DRAGON_SHADOW:
+    case RACE_DRAGON_STEEL:
+    case RACE_DRAGON_YELLOW:
         return (TRUE);
         break;
     default:
@@ -2322,6 +2335,20 @@ int IsRideable(struct char_data *ch)
         case RACE_DRAGON_BRONZE:
         case RACE_DRAGON_COPPER:
         case RACE_DRAGON_BRASS:
+        case RACE_DRAGON_AMETHYST:
+        case RACE_DRAGON_CRYSTAL:
+        case RACE_DRAGON_EMERALD:
+        case RACE_DRAGON_SAPPHIRE:
+        case RACE_DRAGON_TOPAZ:
+        case RACE_DRAGON_BROWN:
+        case RACE_DRAGON_CLOUD:
+        case RACE_DRAGON_DEEP:
+        case RACE_DRAGON_MERCURY:
+        case RACE_DRAGON_MIST:
+        case RACE_DRAGON_SHADOW:
+        case RACE_DRAGON_STEEL:
+        case RACE_DRAGON_YELLOW:
+        case RACE_DRAGON_TURTLE:
             return (TRUE);
             break;
         default:
@@ -2448,6 +2475,20 @@ int IsReptile(struct char_data *ch)
     case RACE_DRAGON_BRONZE:
     case RACE_DRAGON_COPPER:
     case RACE_DRAGON_BRASS:
+    case RACE_DRAGON_AMETHYST:
+    case RACE_DRAGON_CRYSTAL:
+    case RACE_DRAGON_EMERALD:
+    case RACE_DRAGON_SAPPHIRE:
+    case RACE_DRAGON_TOPAZ:
+    case RACE_DRAGON_BROWN:
+    case RACE_DRAGON_CLOUD:
+    case RACE_DRAGON_DEEP:
+    case RACE_DRAGON_MERCURY:
+    case RACE_DRAGON_MIST:
+    case RACE_DRAGON_SHADOW:
+    case RACE_DRAGON_STEEL:
+    case RACE_DRAGON_YELLOW:
+    case RACE_DRAGON_TURTLE:
     case RACE_DINOSAUR:
     case RACE_SNAKE:
     case RACE_TROGMAN:
@@ -2681,6 +2722,20 @@ int IsDragon(struct char_data *ch)
     case RACE_DRAGON_BRONZE:
     case RACE_DRAGON_COPPER:
     case RACE_DRAGON_BRASS:
+    case RACE_DRAGON_AMETHYST:
+    case RACE_DRAGON_CRYSTAL:
+    case RACE_DRAGON_EMERALD:
+    case RACE_DRAGON_SAPPHIRE:
+    case RACE_DRAGON_TOPAZ:
+    case RACE_DRAGON_BROWN:
+    case RACE_DRAGON_CLOUD:
+    case RACE_DRAGON_DEEP:
+    case RACE_DRAGON_MERCURY:
+    case RACE_DRAGON_MIST:
+    case RACE_DRAGON_SHADOW:
+    case RACE_DRAGON_STEEL:
+    case RACE_DRAGON_YELLOW:
+    case RACE_DRAGON_TURTLE:
         return (TRUE);
         break;
     default:
@@ -4125,16 +4180,67 @@ void SetRacialStuff(struct char_data *mob)
         SET_BIT(mob->M_immune, IMM_ENERGY);
         break;
     case RACE_DRAGON_GOLD:
+        SET_BIT(mob->specials.affected_by, AFF_WATERBREATH); 
         SET_BIT(mob->M_immune, IMM_SLEEP + IMM_ENERGY);
         break;
     case RACE_DRAGON_BRONZE:
         SET_BIT(mob->M_immune, IMM_COLD + IMM_ACID);
+        SET_BIT(mob->specials.affected_by, AFF_WATERBREATH);  
         break;
     case RACE_DRAGON_COPPER:
         SET_BIT(mob->M_immune, IMM_FIRE);
         break;
     case RACE_DRAGON_BRASS:
         SET_BIT(mob->M_immune, IMM_ELEC);
+        break;
+    case RACE_DRAGON_AMETHYST:
+        SET_BIT(mob->specials.affected_by, AFF_WATERBREATH); 
+        break;
+    case RACE_DRAGON_CRYSTAL:
+        SET_BIT(mob->M_immune, IMM_COLD);
+        break;
+    case RACE_DRAGON_EMERALD:
+        break;
+    case RACE_DRAGON_SAPPHIRE:
+        SET_BIT(mob->M_immune, IMM_HOLD);
+        break;
+    case RACE_DRAGON_TOPAZ:
+        SET_BIT(mob->M_immune, IMM_COLD);
+        SET_BIT(mob->specials.affected_by, AFF_WATERBREATH); 
+        break;
+    case RACE_DRAGON_BROWN:
+        SET_BIT(mob->M_immune, IMM_ACID);
+        break;
+    case RACE_DRAGON_CLOUD:
+        SET_BIT(mob->M_immune, IMM_COLD);
+        break;
+    case RACE_DRAGON_DEEP:
+        SET_BIT(mob->M_immune, IMM_CHARM);
+        SET_BIT(mob->M_immune, IMM_SLEEP);
+        SET_BIT(mob->M_immune, IMM_HOLD);
+        SET_BIT(mob->M_immune, IMM_COLD);
+        SET_BIT(mob->M_immune, IMM_FIRE);
+        SET_BIT(mob->specials.affected_by, AFF_TRUE_SIGHT);
+        SET_BIT(mob->specials.affected_by, AFF_DETECT_MAGIC);
+        SET_BIT(mob->specials.affected_by, AFF_INFRAVISION);
+        break;
+    case RACE_DRAGON_MERCURY:
+        SET_BIT(mob->M_immune, IMM_FIRE);
+        break;
+    case RACE_DRAGON_MIST:
+        SET_BIT(mob->M_immune, IMM_FIRE);
+        break;
+    case RACE_DRAGON_SHADOW:
+        SET_BIT(mob->M_immune, IMM_DRAIN);
+        break;
+    case RACE_DRAGON_STEEL:
+        SET_BIT(mob->M_immune, IMM_POISON);
+        break;
+    case RACE_DRAGON_YELLOW:
+        SET_BIT(mob->M_immune, IMM_FIRE);
+        break;
+    case RACE_DRAGON_TURTLE:
+        SET_BIT(mob->specials.affected_by, AFF_WATERBREATH); 
         break;
     case RACE_HALF_ELF:
     case RACE_HALF_OGRE:
@@ -4268,6 +4374,20 @@ void SetRacialStuff(struct char_data *mob)
         case RACE_DRAGON_BRONZE:
         case RACE_DRAGON_COPPER:
         case RACE_DRAGON_BRASS:
+        case RACE_DRAGON_AMETHYST:
+        case RACE_DRAGON_CRYSTAL:
+        case RACE_DRAGON_EMERALD:
+        case RACE_DRAGON_SAPPHIRE:
+        case RACE_DRAGON_TOPAZ:
+        case RACE_DRAGON_BROWN:
+        case RACE_DRAGON_CLOUD:
+        case RACE_DRAGON_DEEP:
+        case RACE_DRAGON_MERCURY:
+        case RACE_DRAGON_MIST:
+        case RACE_DRAGON_SHADOW:
+        case RACE_DRAGON_STEEL:
+        case RACE_DRAGON_YELLOW:
+        case RACE_DRAGON_TURTLE:
             mob->player.weight = MAX(60,
                                      GetMaxLevel(mob) * GetMaxLevel(mob) * 2);
             mob->player.height = 100 + MIN(mob->player.weight, 500);

@@ -154,8 +154,21 @@
 #define RACE_TIGER        129
 #define RACE_WIGHTS       130
 #define RACE_YETI         131
-
-#define MAX_RACE      131
+#define RACE_DRAGON_AMETHYST    132
+#define RACE_DRAGON_CRYSTAL     133
+#define RACE_DRAGON_EMERALD     134
+#define RACE_DRAGON_SAPPHIRE    135
+#define RACE_DRAGON_TOPAZ       136
+#define RACE_DRAGON_BROWN       137
+#define RACE_DRAGON_CLOUD       138
+#define RACE_DRAGON_DEEP        139
+#define RACE_DRAGON_MERCURY     140
+#define RACE_DRAGON_MIST        141
+#define RACE_DRAGON_SHADOW      142
+#define RACE_DRAGON_STEEL       143
+#define RACE_DRAGON_YELLOW      144
+#define RACE_DRAGON_TURTLE      145
+#define MAX_RACE      145
 
 struct race_type {
     int             race;
