@@ -3956,8 +3956,14 @@ void do_scribe( struct char_data *ch, char *argument, int cmd)
 		sprintf(buf,"%s","A scroll, bound with enchantments, lies on the ground.");
 		obj->description = (char *)strdup( buf );
 
-		obj->level = GetMaxLevel(ch);  //set ego to level.
-		obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
+		if(GetMaxLevel(ch)>50) {
+			obj->obj_flags.value[0] = 50;  //set spell level.
+			obj->level = GetMaxLevel(50);  //set ego to level.
+
+		} else {
+			obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
+			obj->level = GetMaxLevel(ch);  //set ego to level.
+		}
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
@@ -4088,7 +4094,10 @@ void do_brew( struct char_data *ch, char *argument, int cmd)
 		sprintf(buf,"%s","A weird coloured potion is on the ground.");
 		obj->description = (char *)strdup( buf );
 
-		obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
+		if(GetMaxLevel(ch)>50)
+			obj->obj_flags.value[0] = 50;  //set spell level.
+		else
+			obj->obj_flags.value[0] = GetMaxLevel(ch);  //set spell level.
 		obj->obj_flags.value[1] = sn+1;  //set spell in slot.
 
 		send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
