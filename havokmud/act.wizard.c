@@ -55,7 +55,25 @@ void insert_mobile(struct char_data *obj, long vnum);
 int write_obj_to_file(struct obj_data *obj, FILE *f);
 void insert_object(struct obj_data *obj, long vnum);
 void log (char *s);
+void abort ( void );
+time_t time(time_t *tloc);
 
+char *crypt(const char *key, const char *salt);
+
+FILE *MakeZoneFile( struct char_data *c, int zone);
+int SaveZoneFile(FILE *fp, int start_room, int end_room);
+FILE *OpenZoneFile(struct char_data *c, int zone);
+int LoadZoneFile(FILE *fl, int zon);
+
+//char *asctime(const struct tm *timeptr);
+//struct tm *localtime(const time_t *timer);
+
+
+long atol(const char *str);
+
+int pc_num_class(int clss);
+int eval(struct obj_data *object);
+void write_mob_to_file(struct char_data *mob, FILE *mob_fi);//,int hpB)
 
 char EasySummon = 1;
 int MinArenaLevel, MaxArenaLevel, Quadrant = 0;
@@ -734,7 +752,7 @@ if (str_cmp(buf, "add")==0) {
 
 void do_rload(struct char_data *ch, char *argument, int cmd)
 {
-   char i;
+   int i; //Why is i a char?? perhaps it should be of type int?
    int start= -1, end = -2;
 
 dlog("in do_rload");
@@ -829,10 +847,10 @@ dlog("in do_rsave");
 
 void do_emote(struct char_data *ch, char *arg, int cmd)
 {
-	int i, j, k, found, extra;
-	char buf[MAX_INPUT_LENGTH+40], name[255], oriarg[MAX_STRING_LENGTH], *copy;
-	char part1[MAX_STRING_LENGTH],part2[MAX_STRING_LENGTH], sign[10];
-	struct char_data *vict;
+	int i;//, j, k, found, extra;
+	char buf[MAX_INPUT_LENGTH+40];//, name[255], oriarg[MAX_STRING_LENGTH], *copy;
+	//char part1[MAX_STRING_LENGTH],part2[MAX_STRING_LENGTH], sign[10];
+	//struct char_data *vict;
 
 dlog("in do_emote");
 
@@ -1325,9 +1343,9 @@ dlog("in do_goto");
     }
     location = loc_nr;
   }
-  else if (target_mob = get_char_vis_world(ch, buf, NULL))
+  else if ((target_mob = get_char_vis_world(ch, buf, NULL)))
     location = target_mob->in_room;
-  else if (target_obj=get_obj_vis_world(ch, buf, NULL))
+  else if ((target_obj=get_obj_vis_world(ch, buf, NULL)))
     if (target_obj->in_room != NOWHERE)
       location = target_obj->in_room;
     else        {
@@ -1917,7 +1935,9 @@ dlog("in do_stat");
 
 		send_to_char(buf,ch);
 
-    	sprintf(buf,"Last modified by %s on %s", j->modBy, asctime(localtime(&j->modified)));
+    	sprintf(buf,"Last modified by %s on %s",
+    		j->modBy,
+    		asctime(localtime(&j->modified)));
     	send_to_char(buf,ch);
 
 
@@ -2025,7 +2045,7 @@ dlog("in do_stat");
 		j->obj_flags.value[0]);
 	break;
 	  case ITEM_AUDIO :
-	sprintf(buf, "Sound : %s\0\0",(j->action_description ? j->action_description:"None"));
+	sprintf(buf, "Sound : %s\n\r",(j->action_description ? j->action_description:"None"));
 	break;
 	  case ITEM_INSTRUMENT :
 	sprintf(buf, "Mana reduction : %d\n\r",(j->obj_flags.value[0]));
@@ -2069,7 +2089,7 @@ dlog("in do_stat");
       for(j2=j->contains;j2;j2 = j2->next_content) {
 	strcat(buf,fname(j2->name));
 	strcat(buf,"\n\r");
-	found == TRUE;
+	//found == TRUE;  The point of this??(GH'04)
       }
       if (!found)
 	strcpy(buf,"Contains : Nothing\n\r");
@@ -2089,7 +2109,7 @@ dlog("in do_stat");
            strcat(buf2,"\n\r");
            break;
         case APPLY_ATTACKS:
-           sprintf(buf2,"%f\n\r", j->affected[i].modifier/10);
+           sprintf(buf2,"%f\n\r", (float)j->affected[i].modifier/10);
            break;
         case APPLY_WEAPON_SPELL:
         case APPLY_EAT_SPELL:
@@ -2117,7 +2137,7 @@ dlog("in do_stat");
            break;
 
          default:
-           sprintf(buf2,"%d\n\r", j->affected[i].modifier);
+           sprintf(buf2,"%ld\n\r", j->affected[i].modifier);
            break;
         }
         send_to_char(buf2,ch);
@@ -2190,7 +2210,7 @@ if (!*argument)
 
     /* object */
 
-    if (j=(struct obj_data *)get_obj_in_list_vis(ch, item,ch->carrying))
+    if ((j=(struct obj_data *)get_obj_in_list_vis(ch, item,ch->carrying)))
     {
       virtual = (j->item_number >= 0) ? obj_index[j->item_number].virtual : 0;
 
@@ -3466,8 +3486,7 @@ dlog("in do_purge");
 	    extract_char(vict);
 	  }
 	}
-      } else if (obj = get_obj_in_list_vis
-			 (ch, name, real_roomp(ch->in_room)->contents)) {
+      } else if ((obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))) {
 	act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
 	//obj_index[obj->item_number].number--;
 	extract_obj(obj);
@@ -4486,8 +4505,8 @@ dlog("in do_show");
 		append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
 		for (objn=0; objn<topi; objn++) {
 			oi = which_i + objn;
-			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
-								zone<0 && !isname(zonenum, oi->name))
+			if ((zone>=0 && (oi->virtual<bottom || oi->virtual>top))
+			   || (zone<0 && !isname(zonenum, oi->name)))
 				continue; /* optimize later*/
 			obj = read_object(oi->virtual, VIRTUAL);
 			if(obj) {
@@ -4497,7 +4516,7 @@ dlog("in do_show");
 					sprintf(color,"%s","");
 				else
 					sprintf(color,"%s","$c000W");
-				sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+				sprintf(buf,"%5ld %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 				append_to_string_block(&sb, buf);
 				extract_obj(obj);
 			}
@@ -4545,7 +4564,7 @@ dlog("in do_show");
 							sprintf(color,"%s","");
 						else
 							sprintf(color,"%s","$c000W");
-						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+						sprintf(buf,"%5ld %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 						append_to_string_block(&sb, buf);
 					}
 					extract_obj(obj);
@@ -4604,7 +4623,7 @@ dlog("in do_show");
 							sprintf(color,"%s","");
 						else
 							sprintf(color,"%s","$c000W");
-						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
+						sprintf(buf,"%5ld %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 						append_to_string_block(&sb, buf);
 					}
 					extract_obj(obj);
@@ -4628,10 +4647,10 @@ dlog("in do_show");
 		append_to_string_block(&sb, "VNUM  rnum count names\n\r");
 		for (objn=0; objn<topi; objn++) {
 			oi = which_i + objn;
-			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
-								zone<0 && !isname(zonenum, oi->name))
+			if ((zone>=0 && (oi->virtual<bottom || oi->virtual>top)) ||
+								(zone<0 && !isname(zonenum, oi->name)))
 				continue; /* optimize later*/
-			sprintf(buf,"%5d %4d %3d  %s\n\r", oi->virtual, objn, oi->number, oi->name);
+			sprintf(buf,"%5ld %4d %3d  %s\n\r", oi->virtual, objn, oi->number, oi->name);
 			append_to_string_block(&sb, buf);
 		}
 	} else if (is_abbrev(buf, "rooms")) {
@@ -4663,14 +4682,13 @@ dlog("in do_show");
 			room_iterate(room_db, show_room_zone, &srzs);
 #endif
 			if (srzs.blank){
-				sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank,
-				srzs.lastblank);
+				sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank, srzs.lastblank);
 				append_to_string_block(&sb, buf);
 				srzs.blank = 0;
 			}
 		}
-	} else  if (is_abbrev(buf, "report") && (which_i=obj_index,topi=top_of_objt) ||
-				is_abbrev(buf, "stats") && (which_i=mob_index,topi=top_of_mobt) ) {
+	} else  if ((is_abbrev(buf, "report") && (which_i=obj_index,topi=top_of_objt)) ||
+				(is_abbrev(buf, "stats") && (which_i=mob_index,topi=top_of_mobt)) ) {
 
 		if(GetMaxLevel(ch) < 56) {
 			send_to_char("Alas, the report option is only viewable for level 56 and higher.\n\r",ch);
@@ -4691,7 +4709,7 @@ dlog("in do_show");
 		append_to_string_block(&sb, "VNUM  rnum count names\n\r");
 		for (objn=0; objn<topi; objn++) {
 			oi = which_i + objn;
-			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) || zone<0 && !isname(zonenum, oi->name))
+			if ((zone>=0 && (oi->virtual<bottom || oi->virtual>top)) || (zone<0 && !isname(zonenum, oi->name)))
 				continue; /* optimize later*/
 			obj = read_object(oi->virtual, VIRTUAL);
 			if(obj) {
@@ -4699,7 +4717,7 @@ dlog("in do_show");
 			    sprintbit( (unsigned)obj->obj_flags.extra_flags,extra_bits,temp2);
 				if(oi->number-1!=0) {
 				//VNUM; NAME; TYPE; FLAGS; Affect1; Affect2; Affect3; Affect4
-    				sprintf(buf,"%d;%d;%d;%d;%s;%s;%s;",
+    				sprintf(buf,"%d;%ld;%d;%d;%s;%s;%s;",
     			    zone,
     			  	oi->virtual,
     			  	((oi->number-1==0)?0:1),
@@ -4771,7 +4789,7 @@ dlog("in do_show");
 								strcat(buf2,"");
 								break;
 							case APPLY_ATTACKS:
-								sprintf(buf2,"%f", obj->affected[i].modifier/10);
+								sprintf(buf2,"%f", (float)(obj->affected[i].modifier/10));
 								break;
 							case APPLY_WEAPON_SPELL:
 							case APPLY_EAT_SPELL:
@@ -4779,7 +4797,7 @@ dlog("in do_show");
 							   break;
 							case APPLY_SPELL:
 								sprintbit(obj->affected[i].modifier,affected_bits, buf2);
-								sprintf(buf,"");
+								sprintf(buf,"%s","");
 								strcat(buf,buf2);
 								sprintf(buf2,buf);
 								break;
@@ -4787,7 +4805,7 @@ dlog("in do_show");
 							case APPLY_BV2:
 							case APPLY_SPELL2:
 								sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
-								sprintf(buf,"");
+								sprintf(buf,"%s","");
 								strcat(buf,buf2);
 								sprintf(buf2,buf);
 								break;
@@ -4803,7 +4821,7 @@ dlog("in do_show");
 									sprintf(buf2,"SLAY EVIL");
 								break;
 							default:
-								sprintf(buf2,"%d", obj->affected[i].modifier);
+								sprintf(buf2,"%ld", obj->affected[i].modifier);
 								break;
 						}
 						append_to_string_block(&sb, buf2);
@@ -4830,7 +4848,7 @@ dlog("in do_show");
 		append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
 			for (objn=0; objn<topi; objn++) {
 				oi = which_i + objn;
-				if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) || zone<0 && !isname(zonenum, oi->name))
+				if ((zone>=0 && (oi->virtual<bottom || oi->virtual>top)) || (zone<0 && !isname(zonenum, oi->name)))
 					continue; /* optimize later*/
 				obj = read_object(oi->virtual, VIRTUAL);
 				if(obj) {
@@ -5124,7 +5142,7 @@ dlog("in do_cset");
  i = atoi(buf4);
 
  if(!strcmp(buf1, "show")) {
-    radix = HashTable[*buf2];
+    radix = HashTable[(int)*buf2];
     if(!radix_head[radix].next) {
        send_to_char("Sorry, command not found.\n\r", ch);
        return;
@@ -5142,7 +5160,7 @@ dlog("in do_cset");
   }
 
  else if(!strcmp(buf1, "set")) {
-    radix = HashTable[*buf2];
+    radix = HashTable[(int)*buf2];
     if(!radix_head[radix].next) {
        send_to_char("Sorry, command not found.\n\r", ch);
        return;
@@ -5180,7 +5198,7 @@ dlog("in do_cset");
 
 
  else if(!strcmp(buf1, "log")) {
-    radix = HashTable[*buf2];
+    radix = HashTable[(int)*buf2];
     if(!radix_head[radix].next) {
        send_to_char("Sorry, command not found.\n\r", ch);
        return;
@@ -7305,7 +7323,7 @@ void do_tweak(struct char_data *ch, char *arg, int cmd)
 {
 	struct obj_data *obj;
 	struct char_data *dummy;
-	char name[100], sound[100], buf[100];
+	char name[100];
 
 dlog("in do_tweak");
 
@@ -7406,7 +7424,7 @@ void do_eval(struct char_data *ch, char *arg, int cmd)
 {
 	struct obj_data *obj;
 	struct char_data *dummy;
-	char name[100], sound[100], buf[100];
+	char name[100];
 
 
 	int total =0;
@@ -7437,24 +7455,22 @@ dlog("in do_eval");
 }
 int eval(struct obj_data *object) {
 	int total=0;
-	char buf[256], buf2[256];
 	int i;
-	bool found;
-	extern const struct skillset weaponskills[];
+	//extern const struct skillset weaponskills[];
 	struct time_info_data age(struct char_data *ch);
 
-	extern char *spells[];
-	extern char *RaceName[];
+	//extern char *spells[];
+	//extern char *RaceName[];
 
-	extern char *AttackType[];
-	extern struct index_data *obj_index;
-	extern char *item_types[];
-	extern char *extra_bits[];
-	extern char *apply_types[];
-	extern char *affected_bits[];
-	extern char *affected_bits2[];
-	extern char *immunity_names[];
-	extern char *wear_bits[];
+	//extern char *AttackType[];
+	//extern struct index_data *obj_index;
+	//extern char *item_types[];
+	//extern char *extra_bits[];
+	//extern char *apply_types[];
+	//extern char *affected_bits[];
+	//extern char *affected_bits2[];
+	//extern char *immunity_names[];
+	//extern char *wear_bits[];
 
 
 					/* anti stuff */
@@ -7905,10 +7921,8 @@ int eval(struct obj_data *object) {
 
 void do_reimb(struct char_data *ch, char *argument, int cmd)
 {
-	char name[50];
 	char buf[256];
 	struct char_data *victim;
-	struct descriptor_data *d;
 
 dlog("in do_reimb");
 

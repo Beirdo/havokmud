@@ -22,7 +22,16 @@ extern char *dirs[];
 extern int movement_loss[];
 extern char *exits[];
 
+int DisplayMove( struct char_data *ch, int dir, int was_in, int total);
+int DisplayGroupMove(struct char_data *ch, int dir, int was_in, int total);
+int DisplayOneMove(struct char_data *ch, int dir, int was_in);
+int AddToCharHeap( struct char_data *heap[50], int *top, int total[50], struct char_data *k);
 int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir);
+int clearpath(struct char_data *ch, long room, int direc);
+
+int toupper(int c);
+
+
 
 void NotLegalMove(struct char_data *ch)
 {
@@ -94,8 +103,8 @@ int ValidMove( struct char_data *ch, int cmd)
 	}
 */
 	/*Wizset fast.. (GH)*/
-	if (!exit_ok(exitp,NULL))  {
-		if(rp = real_roomp(ch->in_room)) {
+	if ((!exit_ok(exitp,NULL)))  {
+		if((rp = real_roomp(ch->in_room))) {
 
 			if (!make_exit_ok(ch,&rp,cmd)) {
 				NotLegalMove(ch);
@@ -374,8 +383,9 @@ if (!IS_AFFECTED(ch,AFF_FLYING))
 
   if (IS_NPC(ch)) {
     if (ch->specials.hunting) {
-      if (IS_SET(ch->specials.act, ACT_HUNTING) && ch->desc)
-	WAIT_STATE(ch, PULSE_VIOLENCE);
+      if (IS_SET(ch->specials.act, ACT_HUNTING) && ch->desc) {
+		WAIT_STATE(ch, PULSE_VIOLENCE);
+	  }
     }
   } else {
     if (ch->specials.hunting) {
@@ -1092,8 +1102,7 @@ void raw_unlock_door( struct char_data *ch,
       back->to_room == ch->in_room) {
     REMOVE_BIT(back->exit_info, EX_LOCKED);
   } else {
-    sprintf(buf, "Inconsistent door locks in rooms %d->%d",
-	    ch->in_room, exitp->to_room);
+    sprintf(buf, "Inconsistent door locks in rooms %ld->%ld", ch->in_room, exitp->to_room);
     log(buf);
   }
 }
@@ -1113,8 +1122,7 @@ void raw_lock_door( struct char_data *ch,
       back->to_room == ch->in_room) {
     SET_BIT(back->exit_info, EX_LOCKED);
   } else {
-    sprintf(buf, "Inconsistent door locks in rooms %d->%d",
-	    ch->in_room, exitp->to_room);
+    sprintf(buf, "Inconsistent door locks in rooms %ld->%ld", ch->in_room, exitp->to_room);
     log(buf);
   }
 }
@@ -1348,7 +1356,7 @@ dlog("in do_enter");
 				to_room = portal->obj_flags.value[0];
 				if(rp<0) {
 					rp=0;
-					sprintf(tmp,"Bad ObjValue1 for portal object, vnum %d",obj_index[portal->item_number].virtual);
+					sprintf(tmp,"Bad ObjValue1 for portal object, vnum %ld",obj_index[portal->item_number].virtual);
 					log(tmp);
 					log("char sent to void (room 0)");
 				}
@@ -1774,7 +1782,7 @@ dlog("in do_run");
 void do_land(struct char_data *ch)
 {
 int dur_remaining;
-struct affected_type *af,*old_af;
+struct affected_type *af;
 struct affected_type af2;
 struct room_data *rp;
 
