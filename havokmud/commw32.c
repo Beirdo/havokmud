@@ -1669,7 +1669,7 @@ slog("begin close_socket");
         d->character->old_exp = 0; //Disallow energy restore after link close - MW
        do_save(d->character, "", 0);
       act("$n has lost $s touch with reality.", TRUE, d->character, 0, 0, TO_ROOM);
-      if(!IS_IMMORTAL(d->character) || d->character->invis_level == 0){
+      if(!IS_IMMORTAL(d->character) || d->character->invis_level <= 58){
         sprintf(buf, "Closing link to: %s.", GET_NAME(d->character));
         log(buf);
 	  }
@@ -1689,7 +1689,7 @@ slog("begin close_socket");
 
     } else {
       if (GET_NAME(d->character)) {
-		if(!IS_IMMORTAL(d->character) || d->character->invis_level == 0){
+		if(!IS_IMMORTAL(d->character) || d->character->invis_level <= 58){
 	      sprintf(buf, "Losing player: %s.", GET_NAME(d->character));
 	      log(buf);
 		}

@@ -154,7 +154,7 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 			/* check carrying items first, least important */
 			if (CountLims(ch->carrying)) {
 				if (i > 0) {
-				  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+				  if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 					sprintf(buf,"Removing carried items from %s in force rent.", GET_NAME(ch));
 					log(buf);
 			      }
@@ -221,7 +221,7 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 			}
 
 			if (i > 0) {
-				if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+				if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 				  sprintf(buf, "%s force rented and still had more limited items than suppose to.", GET_NAME(ch));
 				  log(buf);
 				}
@@ -504,7 +504,7 @@ void load_char_objs(struct char_data *ch)
 	sprintf(tbuf, "rent/%s", lower(ch->player.name));
 	/* r+b is for Binary Reading/Writing */
 	if (!(fl = fopen(tbuf, "r+b")))  {
-	  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+	  if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		log("Char has no equipment");
 		return;
       }
@@ -512,7 +512,7 @@ void load_char_objs(struct char_data *ch)
 
 	rewind(fl);
 	if (!ReadObjs(fl, &st)) {
-	  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+	  if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		log("No objects found");
 		return;
       }
@@ -537,7 +537,7 @@ void load_char_objs(struct char_data *ch)
 
 	if (ch->in_room == NOWHERE && st.last_update + 1*SECS_PER_REAL_HOUR > time(0)) {
 /* you made it back from the crash in time, 1 hour grace period. */
-		if (!IS_IMMORTAL(ch) || ch->invis_level == 0){
+		if (!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		  log("Character reconnecting.");
 	    }
 		found = TRUE;
@@ -545,7 +545,7 @@ void load_char_objs(struct char_data *ch)
 		char buf[MAX_STRING_LENGTH];
 
 		if (ch->in_room == NOWHERE)
-			if (!IS_IMMORTAL(ch) || ch->invis_level == 0){
+			if (!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 			  log("Char reconnecting after autorent");
 	 		}
 #if NEW_RENT
@@ -554,7 +554,7 @@ void load_char_objs(struct char_data *ch)
 		timegold = (int) (	(st.total_cost*((float)time(0) - st.last_update))/(SECS_PER_REAL_DAY)	);
 #endif
 		//timegold=timegold+100000;
-		if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+		if(!IS_IMMORTAL(ch) || ch->invis_level <= 58){
 		  sprintf(buf, "Char ran up charges of %g gold in rent", timegold);
 		  log(buf);
 		}

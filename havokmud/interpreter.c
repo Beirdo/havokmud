@@ -2330,7 +2330,7 @@ if (GET_NAME(d->character))
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
 
-          if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level == 0) {
+          if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
             act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
             sprintf(buf, "%s[%s] has reconnected.",GET_NAME(d->character), d->host);
             log(buf);
@@ -2341,12 +2341,12 @@ if (GET_NAME(d->character))
 
 	load_char_extra(d->character); /*Load extra fromfile*/
       if(d->character->specials.hostip==NULL || 1){
-        if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+        if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
           sprintf(buf, "%s[%s] has connected.\n\r", GET_NAME(d->character), d->host);
 	      log(buf);
 	    }
 	  }else{
-		if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+		if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
 		  sprintf(buf, "%s[%s] has connected.\n\r. Last connected from[%s]"
       	, GET_NAME(d->character), d->host, d->character->specials.hostip);
 	    log(buf);
@@ -2403,7 +2403,7 @@ if (GET_NAME(d->character))
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
 
-          if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+          if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
             act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
             sprintf(buf, "%s[%s] has reconnected.", GET_NAME(d->character), d->host);
             log(buf);
@@ -3519,7 +3519,7 @@ if ((player_table+i)->name)
     case '1':
       reset_char(d->character);
       total_connections++;
-      if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+      if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
         sprintf(buf, "Loading %s's equipment", d->character->player.name);
   	    log(buf);
   	  }
