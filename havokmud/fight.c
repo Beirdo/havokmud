@@ -2348,16 +2348,16 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 			for(j=0; j<MAX_OBJ_AFFECT; j++) {
 				if (wielded->affected[j].location == APPLY_RACE_SLAYER) {
 					if (wielded->affected[j].modifier == GET_RACE(v)) {
-						dam *= 2;
+						dam *= 1.5;
 					}
 				}
 				if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
 					if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
-						dam *= 2;
+						dam *= 1.5;
 					else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
-						dam *=2;
+						dam *=1.5;
 					else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
-						dam *= 2;
+						dam *= 1.5;
 				}
 			}
 		}
