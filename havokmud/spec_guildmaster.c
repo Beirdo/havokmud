@@ -8,23 +8,25 @@
  * external vars 
  */
 
+extern struct skillset weaponskills[];
+extern struct skillset loreskills[];
+extern struct skillset warmonkskills[];
+extern struct skillset archerskills[];
+extern struct skillset allninjaskills[];
+extern struct skillset warninjaskills[];
+extern struct skillset thfninjaskills[];
 extern struct skillset warriorskills[];
 extern struct skillset thiefskills[];
 extern struct skillset barbskills[];
 extern struct skillset monkskills[];
 extern struct skillset mageskills[];
-extern struct skillset sorcskills[];
 extern struct skillset clericskills[];
 extern struct skillset druidskills[];
 extern struct skillset paladinskills[];
 extern struct skillset rangerskills[];
 extern struct skillset psiskills[];
-extern struct skillset warninjaskills[];
-extern struct skillset thfninjaskills[];
-extern struct skillset allninjaskills[];
-extern struct skillset warmonkskills[];
-extern struct skillset archerskills[];
-extern struct skillset loreskills[];
+extern struct skillset styleskillset[];
+extern struct skillset necroskills[];
 extern struct skillset mainwarriorskills[];
 extern struct skillset mainthiefskills[];
 extern struct skillset mainbarbskills[];
@@ -37,11 +39,16 @@ extern struct skillset maindruidskills[];
 extern struct skillset mainpaladinskills[];
 extern struct skillset mainrangerskills[];
 extern struct skillset mainpsiskills[];
+
+extern char *class_names[];
+
 extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct int_app_type int_app[26];
 
 void            page_string(struct descriptor_data *d, char *str,
                             int keep_internal);
+void            do_mobTell2(struct char_data *ch,
+                            struct char_data *mob, char *sentence);
 
 void PrintSkills(struct char_data *ch, int level, struct skillset *skills,
                  char *buffer);
@@ -1405,6 +1412,644 @@ int LearnSkill(struct char_data *ch, struct skillset *skills, char *arg,
     }
     return(FALSE);
 }
+
+int TrainingGuild(struct char_data *ch, int cmd, char *arg,
+                  struct char_data *mob, int type)
+{
+    char            name[32];
+
+    int             x = 0,
+                    stat = 0,
+                    cost = 3;
+
+    const struct skillset traininglist[] = {
+        {"constitution", 4, (GET_RCON(ch) - 3)},
+        {"strength", 5, (GET_RSTR(ch) - 3)},
+        {"dexterity", 6, (GET_RDEX(ch) - 3)},
+        {"charisma", 7, (GET_RCHR(ch) - 3)},
+        {"intelligence", 8, (GET_RINT(ch) - 3)},
+        {"wisdom", 9, (GET_RWIS(ch) - 3)},
+        {"None", -1, -1}
+    };
+
+    if (!AWAKE(ch) || IS_NPC(ch))
+        return (FALSE);
+
+    if (cmd != 582 && cmd != 59)
+        return (FALSE);
+
+    if (cmd == 582 && !*arg) {
+        // list if no argument
+        ch_printf(ch, "$c000B%-15s     %-3s\n\r------------------------\n\r",
+                  "Stat", "Cost");
+        while (traininglist[x].level != -1) {
+            ch_printf(ch, "$c000W %-15s     %-3d\n\r",
+                      traininglist[x].name,
+                      traininglist[x].level < 3 ? 3 : traininglist[x].level);
+            x++;
+        }
+        ch_printf(ch, "$c000B------------------------\n\r");
+        return (TRUE);
+    }
+    
+    if (cmd == 582) {
+        // train
+        while (traininglist[x].level != -1) {
+            if (is_abbrev(arg, traininglist[x].name)) {
+                cost = traininglist[x].level;
+                if (cost < 3)
+                    cost = 3;
+                stat = x + 1;
+                if (GET_PRAC(ch) - cost < 0) {
+                    ch_printf(ch, "$c000P%s tells you 'You don't have enough "
+                                  "practice sessions to learn %s.'\n\r",
+                              mob->player.short_descr, traininglist[x].name);
+                    return (TRUE);
+                }
+                break;
+            }
+            x++;
+        }
+
+        switch (stat) {
+            /*
+             * case 1: GET_PRAC(ch) -= cost; ch->points.max_hit ++;
+             * //GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
+             * ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of
+             * this! Its good for ya!!'\n\r$c000w%s hands you a foul
+             * looking health drink and you swig it down. (+1
+             * HP)\n\r",name,name); break; case 2: GET_PRAC(ch)-= cost;
+             * ch->points.max_move++;//GET_MAX_MOVE(ch) = GET_MAX_MOVE(ch) 
+             * + 1;
+             * 
+             * ch_printf(ch,"$c000P%s tells you 'Hey, take a swig of
+             * this!!!'\n\r$c000w%s hands you a high protein energy drink
+             * and you drink it down.(+1 Move)\n\r",name,name); break;
+             * case 3: GET_PRAC(ch)-= cost; ch->points.max_mana
+             * ++;//GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
+             * 
+             * ch_printf(ch,"$c000P%s tells you 'This mystical drink
+             * should do it!!!'\n\r$c000wHe hands you a mystical potion
+             * and you chug it down.(+1 Mana)\n\r",name); break; 
+             */
+        case 1:         // 4:
+            if (GET_RCON(ch) >= 17) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              " further.'\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RCON(ch) >= MaxConForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                              "maximum con for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_RCON(ch) = GET_RCON(ch) + 1;
+                GET_CON(ch) = GET_CON(ch) + 1;
+
+                GET_PRAC(ch) -= cost;
+                ch_printf(ch, "$c000P%s tells you 'Lets train your "
+                              "constitution!!!'\n\r$c000wYou heed his advice "
+                              "and go for a jog around the room.(+1 Con)\n\r",
+                          mob->player.short_descr);
+            }
+            break;
+        case 2:
+            if (affected_by_spell(ch, SPELL_STRENGTH)) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s "
+                              "while it is magically enhanced.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (affected_by_spell(ch, SPELL_HOLY_STRENGTH)) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s "
+                              "while it is magically enhanced.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RSTR(ch) >= 18) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              "further.'\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RSTR(ch) >= MaxStrForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                              "maximum %s for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_PRAC(ch) -= cost;
+                GET_RSTR(ch) = GET_RSTR(ch) + 1;
+                GET_STR(ch) = GET_STR(ch) + 1;
+
+                ch_printf(ch, "$c000P%s tells you 'Lets train your "
+                              "strength!!!'\n\r$c000wYou start lifting some "
+                              "weights.  You feel stronger!!!(+1 Str)'\n\r",
+                          mob->player.short_descr);
+            }
+            break;
+        case 3:
+            if (GET_RDEX(ch) >= 17) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              "further.'\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RDEX(ch) >= MaxDexForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You already have the "
+                              "maximum %s for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_PRAC(ch) -= cost;
+                GET_RDEX(ch) = GET_RDEX(ch) + 1;;
+                GET_DEX(ch) = GET_DEX(ch) + 1;
+                ch_printf(ch, "$c000P%s tells you 'Lets train your dex!!!\n\r"
+                              "$c000w%s shows you some stretches.  You mimic "
+                              "them!!! (+1 Dex)\n\r",
+                          mob->player.short_descr, mob->player.short_descr);
+            }
+            break;
+        case 4:
+            if (GET_RCHR(ch) >= 17) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              "further.'\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RCHR(ch) >= MaxChrForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                              "maximum %s for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_PRAC(ch) -= cost;
+                GET_RCHR(ch) = GET_RCHR(ch) + 1;
+                GET_CHR(ch) = GET_CHR(ch) + 1;
+                ch_printf(ch, "$c000P%s tells you 'Lets train your charisma!!!'"
+                              "\n\r$c000w%s gives you some lessons in "
+                              "manners!!(+1 Chr)\n\r",
+                          mob->player.short_descr, mob->player.short_descr);
+            }
+            break;
+        case 5:
+            if (GET_RINT(ch) >= 17) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              "further.\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RINT(ch) >= MaxIntForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                              "maximum %s for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_PRAC(ch) -= cost;
+                GET_RINT(ch) = GET_RINT(ch) + 1;
+                GET_INT(ch) = GET_INT(ch) + 1;
+                ch_printf(ch, "$c000P%s tells you 'Lets train your "
+                              "intelligence!!!\n\r$c000w%s gives you a strange"
+                              " old book to read. You read it!!(+1 Int)\n\r",
+                          mob->player.short_descr, mob->player.short_descr);
+            }
+            break;
+        case 6:
+            if (GET_RWIS(ch) >= 17) {
+                ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
+                              "further.'\n\r", mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            }
+
+            if (GET_RWIS(ch) >= MaxWisForRace(ch)) {
+                ch_printf(ch, "$c000P%s tells you 'You allready have the "
+                              "maximum %s for your race.'\n\r",
+                          mob->player.short_descr,
+                          traininglist[stat - 1].name, name);
+                break;
+            } else {
+                GET_PRAC(ch) -= cost;
+                GET_RWIS(ch) = GET_RWIS(ch) + 1;
+                GET_WIS(ch) = GET_WIS(ch) + 1;
+                ch_printf(ch, "$c000P%s tells you 'Lets train your "
+                              "wisdom!!!\n\r$c000w%s sits down and brings out "
+                              "the old chess board!!\n\rYou and him have a "
+                              "chat and play a few games.(+1 Wis)'\n\r",
+                          mob->player.short_descr, mob->player.short_descr);
+            }
+            break;
+        default:
+            ch_printf(ch, "$c000P%s tells you 'I'm not quite sure how to train"
+                          " that.'\n\r", mob->player.short_descr);
+            break;
+        }
+    }
+}
+
+int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
+                  struct char_data *mob, int type)
+{
+    int             count = 0;
+    char            buf[256],
+                    buffer[MAX_STRING_LENGTH];
+    static int      percent = 0;
+    static int      x = 0;
+    int             i = 0;
+
+    if (!AWAKE(ch) || IS_NPC(ch))
+        return (FALSE);
+
+    // 170->Practice,164->Practise, 243->gain
+    if (cmd == 164 || cmd == 170) {
+
+        if (!OnlyClass(ch, CLASS_WARRIOR)) {
+            send_to_char("Only single class warriors can learn weapon styles "
+                         "proficiently.", ch);
+            return (FALSE);
+        }
+
+        if (!*arg) {
+            /* practice||practise, without argument */
+            sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
+                    ch->specials.spells_to_learn);
+            sprintf(buf, "You can practice any of these weapon "
+                         "styles:\n\r\n\r");
+            strcat(buffer, buf);
+            PrintSkills(ch, 50, weaponskills, buf);
+            page_string(ch->desc, buffer, 1);
+            return (TRUE);
+        } 
+        
+#if 0
+        x = 0;
+        while (weaponskills[x].level != -1) {
+            if (is_abbrev(arg, weaponskills[x].name)) {
+                if (weaponskills[x].level > 51) {
+                    send_to_char
+                        ("$c0013[$c0015Weapon Master$c0013] tells you"
+                         " 'You're not experienced enough to learn this weapon.'",
+                         ch);
+                    return (TRUE);
+                }
+
+                if (ch->skills[weaponskills[x].skillnum].learned > 0) {
+                    // check if skill already practiced
+                    send_to_char
+                        ("$c0013[$c0015Weapon Master$c0013] tells you"
+                         " 'You already look quite knowledgeable of that weapon.'\n\r",
+                         ch);
+                    return (TRUE);
+                }
+
+                if (ch->specials.spells_to_learn <= 0) {
+                    send_to_char
+                        ("$c0013[$c0015Weapon Master$c0013] tells you"
+                         " 'You don't have enough practice points.'\n\r",
+                         ch);
+                    return (TRUE);
+                }
+
+                sprintf(buf,
+                        "%s shows you how to use the %s correctly.\n\r",
+                        GET_NAME(mob), weaponskills[x].name);
+                send_to_char(buf, ch);
+                ch->specials.spells_to_learn--;
+
+                if (!IS_SET
+                    (ch->skills[weaponskills[x].skillnum].flags,
+                     SKILL_KNOWN)) {
+                    SET_BIT(ch->skills[weaponskills[x].skillnum].flags,
+                            SKILL_KNOWN);
+                    SET_BIT(ch->skills[weaponskills[x].skillnum].flags,
+                            SKILL_KNOWN);
+                }
+                percent =
+                    ch->skills[weaponskills[x].skillnum].learned +
+                    int_app[GET_INT(ch)].learn;
+                ch->skills[weaponskills[x].skillnum].learned =
+                    MIN(95, percent);
+                if (ch->skills[weaponskills[x].skillnum].learned > 0)
+                    send_to_char
+                        ("'You are now a master of this art.'\n\r",
+                         ch);
+                return (TRUE);
+            }
+            x++;
+        }
+#endif
+        if( !LearnSkill(ch, weaponskills, arg, 50, "Weapon Master", 0 ) ) {
+            send_to_char("$c0013[$c0015Weapon Master$c0013] tells you '"
+                         "I do not know of that skill!'\n\r", ch);
+        }
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
+int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
+                           struct char_data *mob, int type)
+{
+    int             count = 0;
+    char            buf[256],
+                    buffer[MAX_STRING_LENGTH];
+    static int      percent = 0;
+    static int      x = 0;
+    int             i = 0;
+    struct char_data *guildmaster;
+
+    if (!AWAKE(ch) || IS_NPC(ch))
+        return (FALSE);
+
+    // 170->Practice,164->Practise, 243->gain
+    if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
+
+        if (!HasClass(ch, CLASS_NECROMANCER)) {
+            send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] "
+                         "tells you 'You're not a necromancer.'\n\r", ch);
+            return (TRUE);
+        }
+
+        if (!mob) {
+            guildmaster = FindMobInRoomWithFunction(ch->in_room,
+                                                    NecromancerGuildMaster);
+        } else {
+            guildmaster = mob;
+        }
+
+        if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+            send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] "
+                         "tells you 'You must learn from another, I can no "
+                         "longer train you.'\n\r", ch);
+            return (TRUE);
+        }
+
+        if (cmd == 243) {
+            // gain
+            if (GET_EXP(ch) < titles[NECROMANCER_LEVEL_IND]
+                            [GET_LEVEL(ch, NECROMANCER_LEVEL_IND) + 1].exp) {
+                send_to_char("You're not ready to gain yet!", ch);
+                return (FALSE);
+            } else {
+                GainLevel(ch, NECROMANCER_LEVEL_IND);
+                return (TRUE);
+            }
+        }
+
+        if (!*arg) {
+            /* practice||practise, without argument */
+            sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
+                    ch->specials.spells_to_learn);
+            sprintf(buf, "You can practice any of these spells and "
+                         "skills:\n\r\n\r");
+            strcat(buffer, buf);
+            PrintSkills(ch, GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
+                        necroskills, buf);
+
+            if (ch->specials.remortclass == NECROMANCER_LEVEL_IND + 1) {
+                sprintf(buf, "\n\rSince you picked necromancer as your main "
+                             "class, you get these bonus skills:\n\r\n\r");
+                strcat(buffer, buf);
+                PrintSkills(ch, GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
+                            mainnecroskills, buf);
+            }
+            page_string(ch->desc, buffer, 1);
+            return (TRUE);
+        } 
+        
+        if( LearnSkill(ch, necroskills, arg, 
+                       GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
+                       "The Necromancer Guildmaster", 0 ) ) {
+            return( TRUE );
+        }
+
+        if( LearnSkill(ch, necroskills, arg, 
+                       GET_LEVEL(ch, NECROMANCER_LEVEL_IND), 
+                       "The Necromancer Guildmaster", 0 ) ) {
+            return( TRUE );
+        }
+
+        send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells"
+                     " you 'I do not know of that skill!'\n\r", ch);
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
+int generic_guildmaster(struct char_data *ch, int cmd, char *arg,
+                        struct char_data *mob, int type)
+{
+    int             count = 0;
+    char            buf[256],
+                    buffer[MAX_STRING_LENGTH],
+                    classname[120];
+    static int      percent = 0;
+    static int      x = 0;
+    int             i = 0,
+                    class = 0,
+                    level_ind = 0,
+                    level = 0;
+    struct char_data *guildmaster,
+                   *j,
+                   *next;
+    struct room_data *rp;
+    struct skillset skillz[] = { };
+    long            s_known;
+    int             end = 0;
+
+    if (!AWAKE(ch) || IS_NPC(ch) || !ch->in_room ||
+        !(rp = real_roomp(ch->in_room))) {
+        return (FALSE);
+    }
+
+    for (j = rp->people; j; next) {
+        next = j->next_in_room;
+        if (j->specials.proc == PROC_GUILDMASTER) {
+            guildmaster = j;
+            break;
+        }
+    }
+
+    if (!guildmaster) {
+        log("weirdness in generic_guildmaster, assigned but not found");
+        return (FALSE);
+    }
+
+    if (!IS_NPC(guildmaster)) {
+        log("weirdness in guildmaster, is not a mob");
+        return (FALSE);
+    }
+
+    if (cmd != 164 && cmd != 170 && cmd != 243)
+        return (FALSE);
+
+    /*
+     * let's see which GM we got here 
+     */
+    if (IS_SET(guildmaster->specials.act, ACT_MAGIC_USER)) {
+        MageGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_CLERIC)) {
+        ClericGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_WARRIOR)) {
+        WarriorGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_THIEF)) {
+        ThiefGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_DRUID)) {
+        DruidGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_MONK)) {
+        monk_master(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_BARBARIAN)) {
+        barbarian_guildmaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_PALADIN)) {
+        PaladinGuildmaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_RANGER)) {
+        RangerGuildmaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_PSI)) {
+        PsiGuildmaster(ch, cmd, 0, guildmaster, 0);
+    } else if (IS_SET(guildmaster->specials.act, ACT_NECROMANCER)) {
+        NecromancerGuildMaster(ch, cmd, 0, guildmaster, 0);
+    } else {
+        log("guildmaster proc attached to mobile without a class, autoset to"
+            " warrior");
+        SET_BIT(guildmaster->specials.act, ACT_WARRIOR);
+    }
+    return (TRUE);
+}
+
+
+int remort_guild(struct char_data *ch, int cmd, char *arg,
+                 struct char_data *mob, int type)
+{
+    int             classcombos[] = {
+        CLASS_MAGIC_USER + CLASS_CLERIC + CLASS_WARRIOR + CLASS_THIEF,
+        CLASS_DRUID + CLASS_RANGER + CLASS_WARRIOR,
+        CLASS_SORCERER + CLASS_CLERIC + CLASS_WARRIOR + CLASS_THIEF,
+        CLASS_RANGER + CLASS_DRUID,
+        CLASS_PSI + CLASS_WARRIOR + CLASS_THIEF,
+        CLASS_NECROMANCER + CLASS_WARRIOR + CLASS_THIEF,
+        -1
+    };
+    int             x,
+                    hasclass = 0,
+                    num = 0,
+                    choose = -1,
+                    avg = 0;
+
+    char            classname[128];
+
+    if (cmd != 605)
+        return (FALSE);
+
+    only_argument(arg, classname);
+
+    if (!*classname) {
+        do_mobTell2(ch, mob, "A class you must choose!");
+        return (TRUE);
+    }
+
+    /*
+     * lets count what classes ch has now 
+     */
+
+    for (x = 0; x < MAX_CLASS; x++) {
+        if (HasClass(ch, pc_num_class(x))) {
+            hasclass += pc_num_class(x);
+            num += 1;
+            avg += ch->player.level[x];
+        }
+        if (is_abbrev(classname, class_names[x])) {
+            choose = x;
+            // ch_printf(ch,"You choose class# x%d as a new
+            // class.pc%d.\n\r",x,pc_num_class(x));
+        }
+    }
+
+    if (avg / num < 50 || GET_LEADERSHIP_EXP(ch) < 50000000) {
+        /* Average level is 50?? they maxxed out?? */
+        do_mobTell2(ch, mob, "You don't look strong enough or worthy enough "
+                             "to be in my presences.");
+        return (TRUE);
+    }
+
+    /*
+     * didn't find a class argument 
+     */
+    if (choose == -1) {
+        do_mobTell2(ch, mob, "That profession is unknown to me!");
+        return (TRUE);
+    }
+
+    /*
+     * Check to see if they have that class 
+     */
+    if (HasClass(ch, pc_num_class(choose))) {
+        do_mobTell2(ch, mob, "You already know enough about that class!");
+        return (TRUE);
+    }
+
+    /*
+     * See if they have too many classes
+     */
+    if (num > 2) {
+        do_mobTell2(ch, mob, "I'm afraid you already have too many "
+                             "professions!");
+        return (TRUE);
+    }
+
+    hasclass += pc_num_class(choose);
+
+    x = 0;
+    while (classcombos[x] != -1) {
+        if (IS_SET(classcombos[x], hasclass)) {
+            do_mobTell2(ch, mob, "You may now know the art of this class!");
+            ch_printf(ch, "You just obtained a new class!!! %d",
+                      pc_num_class(choose));
+            ch->player.class = hasclass;
+            do_restore(ch, GET_NAME(ch), 0);
+            ch->specials.remortclass = choose;
+
+            ch->points.max_hit = ch->points.max_hit / GET_CON(ch);
+
+            /*
+             * reset the char 
+             */
+            for (x = 0; x < MAX_CLASS; x++) {
+                if (HasClass(ch, pc_num_class(x))) {
+                    // set all classes to level 1
+                    ch->player.level[x] = 1;
+                } else
+                    ch->player.level[x] = 0;
+            }
+            GET_EXP(ch) = 1;
+            GET_LEADERSHIP_EXP(ch) = 1;
+            return (TRUE);
+        }
+        x++;
+    }
+
+    /*
+     * No class combos found 
+     */
+    do_mobTell2(ch, mob, "You can't multi-class with that class!");
+    return (TRUE);
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
