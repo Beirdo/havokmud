@@ -4557,39 +4557,36 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
             char_to_room(ch, rm - 1);
             me->river_speed = 0;
             return (TRUE);
-        } else {
-            if (mob_index[ch->nr].virtual >= MONK_MOB &&
-                mob_index[ch->nr].virtual <= MONK_MOB + 40) {
-                extract_char(ch);
-                /*
-                 * find pc in room; 
-                 */
-                for (i = me->people; i; i = i->next_in_room)
-                    if (IS_PC(i)) {
-                        if (IS_NPC(i)) {
-                            command_interpreter(i, "return");
-                        }
-                        GET_EXP(i) = 
-                            MAX(classes[MONK_LEVEL_IND].
-                                   levels[GET_LEVEL(i, MONK_LEVEL_IND) + 
-                                          1].exp + 1, GET_EXP(i));
-                        GainLevel(i, MONK_LEVEL_IND);
-                        char_from_room(i);
-                        char_to_room(i, monkpreproom);
-
-                        while (me->people) {
-                            extract_char(me->people);
-                        }
-                        while (me->contents) {
-                            extract_obj(me->contents);
-                        }
-                        me->river_speed = 0;
-                        return (TRUE);
+        } else if (mob_index[ch->nr].virtual >= MONK_MOB &&
+                   mob_index[ch->nr].virtual <= MONK_MOB + 40) {
+            extract_char(ch);
+            /*
+             * find pc in room; 
+             */
+            for (i = me->people; i; i = i->next_in_room) {
+                if (IS_PC(i)) {
+                    if (IS_NPC(i)) {
+                        command_interpreter(i, "return");
                     }
-                return (TRUE);
-            } else {
-                return (FALSE);
+                    GET_EXP(i) = 
+                        MAX(classes[MONK_LEVEL_IND].
+                               levels[GET_LEVEL(i, MONK_LEVEL_IND) + 
+                                      1].exp + 1, GET_EXP(i));
+                    GainLevel(i, MONK_LEVEL_IND);
+                    char_from_room(i);
+                    char_to_room(i, monkpreproom);
+
+                    while (me->people) {
+                        extract_char(me->people);
+                    }
+                    while (me->contents) {
+                        extract_obj(me->contents);
+                    }
+                    me->river_speed = 0;
+                    return (TRUE);
+                }
             }
+            return (TRUE);
         }
     }
     return (FALSE);

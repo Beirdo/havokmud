@@ -282,20 +282,15 @@ void load_messages()
 
 void update_pos(struct char_data *victim)
 {
-    if ((GET_HIT(victim) > 0) && (GET_POS(victim) > POSITION_STUNNED)) {
-        return;
-    } else if (GET_HIT(victim) > 0) {
+    if (GET_HIT(victim) > 0) {
+        if(GET_POS(victim) > POSITION_STUNNED) {
+            return;
+        }
+
         if (!IS_AFFECTED(victim, AFF_PARALYSIS)) {
             if (!MOUNTED(victim)) {
                 GET_POS(victim) = POSITION_STANDING;
             }
-#if 0
-            else GET_POS(victim) == POSITION_MOUNTED;
-            /*
-             * wasn't really doing anything.. (GH'04)
-             * perhaps look into it later
-             */
-#endif
         } else {
             GET_POS(victim) = POSITION_STUNNED;
         }
@@ -2492,6 +2487,7 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
             }
             log_sev(buf, 6);
         }
+
         if (IS_SET(real_roomp(victim->in_room)->room_flags, ARENA_ROOM)) {
             if (IS_PC(ch)) {
                 ch->specials.a_kills = ch->specials.a_kills + 1;
@@ -2527,18 +2523,18 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim,
         }
         victim = 0;
         return (TRUE);
-    } else {
-        if (DestroyedItems) {
-            if (check_falling(victim)) {
-                /*
-                 * 0 = ok, 1 = dead
-                 */
-                return (TRUE);
-            }
-            DestroyedItems = 0;
-        }
-        return (FALSE);
     }
+    
+    if (DestroyedItems) {
+        if (check_falling(victim)) {
+            /*
+             * 0 = ok, 1 = dead
+             */
+            return (TRUE);
+        }
+        DestroyedItems = 0;
+    }
+    return (FALSE);
 }
 
 int MissileDamage(struct char_data *ch, struct char_data *victim,

@@ -6,6 +6,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "protos.h"
 
 /*
@@ -1175,7 +1176,9 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
     struct char_data *victim;
     char           *name;
     byte            percent;
-    char            buf[100];
+    char            buf[MAX_STRING_LENGTH];
+    char           *mobname;
+    int             level;
 
     dlog("in do_leg_sweep");
 
@@ -1183,8 +1186,8 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (check_peaceful
-        (ch, "You feel too peaceful to contemplate violence.\n\r")) {
+    if (check_peaceful(ch,
+                       "You feel too peaceful to contemplate violence.\n\r")) {
         return;
     }
 
@@ -1251,6 +1254,8 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
         percent += ((GetMaxLevel(victim) - 10) * 5);
     }
 
+    mobname = strdup(GET_NAME(victim));
+
     if (percent > ch->skills[SKILL_LEG_SWEEP].learned) {
         if (GET_POS(victim) > POSITION_DEAD) {
             damage(ch, victim, 0, SKILL_LEG_SWEEP);
@@ -1262,40 +1267,39 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
             "but misses $M.", FALSE, ch, 0, victim, TO_ROOM);
         LearnFromMistake(ch, SKILL_LEG_SWEEP, 0, 90);
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
-    } else {
-        if (GET_POS(victim) > POSITION_DEAD) {
+    } else if (GET_POS(victim) > POSITION_DEAD) {
+        GET_POS(victim) = POSITION_SITTING;
+        level = GET_LEVEL(ch, MONK_LEVEL_IND);
+        if (!damage(ch, victim, 9, SKILL_LEG_SWEEP) && 
+            level == GET_LEVEL(ch, MONK_LEVEL_IND)) {
+            WAIT_STATE(victim, PULSE_VIOLENCE * 2);
             GET_POS(victim) = POSITION_SITTING;
-            if (!damage(ch, victim, 9, SKILL_LEG_SWEEP)) {
-                WAIT_STATE(victim, PULSE_VIOLENCE * 2);
-                GET_POS(victim) = POSITION_SITTING;
-                act("$c000CYou do a quick spin and knock $N's legs out from "
-                    "underneath $M.", FALSE, ch, 0, victim, TO_CHAR);
-                act("$c000C$n does a quick spin and knocks $N's legs out from "
-                    "underneath $M.", FALSE, ch, 0, victim, TO_NOTVICT);
-                act("$c000C$n does a quick spin and knocks your legs out from "
-                    "underneath you.", FALSE, ch, 0, victim, TO_VICT);
-                sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r");
-                send_to_char(buf, ch);
-                gain_exp(ch, 100);
-                WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-            } else {
-                act("$c000CYour legsweep lands a killing blow to $M.",
-                    FALSE, ch, 0, victim, TO_CHAR);
-                act("$c000C$n's legsweep lands a killing blow to $M.",
-                    FALSE, ch, 0, victim, TO_ROOM);
-#if 0
-                   act("$c000C$n's legsweep lands a killing blow to your "
-                   "head.",FALSE, ch,0,victim,TO_VICT);
-#endif
-                sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r");
-                send_to_char(buf, ch);
-                gain_exp(ch, 100);
-                WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-            }
+            act("$c000CYou do a quick spin and knock $N's legs out from "
+                "underneath $M.", FALSE, ch, 0, victim, TO_CHAR);
+            act("$c000C$n does a quick spin and knocks $N's legs out from "
+                "underneath $M.", FALSE, ch, 0, victim, TO_NOTVICT);
+            act("$c000C$n does a quick spin and knocks your legs out from "
+                "underneath you.", FALSE, ch, 0, victim, TO_VICT);
+            sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
+                         "for using your combat abilities.$c0007\n\r");
+            send_to_char(buf, ch);
+            gain_exp(ch, 100);
+            WAIT_STATE(ch, PULSE_VIOLENCE * 2);
+        } else {
+            sprintf(buf, "$c0000CYour legsweep lands a killing blow to %s.",
+                    mobname);
+            act(buf, FALSE, ch, 0, victim, TO_CHAR);
+            sprintf(buf, "$c0000C$n's legsweep lands a killing blow to %s.",
+                    mobname);
+            act(buf, FALSE, ch, 0, victim, TO_ROOM);
+            sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
+                         "for using your combat abilities.$c0007\n\r");
+            send_to_char(buf, ch);
+            gain_exp(ch, 100);
+            WAIT_STATE(ch, PULSE_VIOLENCE * 2);
         }
     }
+    free(mobname);
 }
 
 void do_mend(struct char_data *ch, char *argument, int cmd)
