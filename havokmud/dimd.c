@@ -120,7 +120,7 @@ bool dimd_can_see(int slev, struct char_data *o)
     if (!slev && IS_AFFECTED(o, AFF_INVISIBLE)) {
         return FALSE;
     }
-    if (o->invis_level && (o->invis_level - (LOW_IMMORTAL - 1)) > slev) {
+    if (o->invis_level && (o->invis_level - (IMMORTAL - 1)) > slev) {
         return FALSE;
     }
     return TRUE;
@@ -148,9 +148,7 @@ char           *one_lc_dimd_argument(char *argument, char *first_arg)
     char           *scan;
 
     do {
-        while (isspace(*argument)) {
-            argument++;
-        }
+        argument = skip_spaces(argument);
         scan = first_arg;
         while (*argument && *argument != '^') {
             *scan++ = LOWER(*argument), argument++;
@@ -172,9 +170,7 @@ char           *one_dimd_argument(char *argument, char *first_arg)
 {
     char           *scan;
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     scan = first_arg;
     while (*argument && *argument != '^') {
         *scan++ = *argument++;
@@ -278,7 +274,7 @@ int getmud(struct char_data *ch, char *mudname, bool checkforup)
 void do_dgossip(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                    *mudname;
     struct descriptor_data *d;
     int             i;
 
@@ -292,18 +288,15 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED &&
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
-    if (!*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         msg("Surely you have something to gossip!", ch);
         return;
     }
@@ -311,6 +304,7 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
     if (!dimd_credit(ch, 2 + 3 * (i == UNDEFINED))) {
         return;
     }
+
     if (i != UNDEFINED) {
         if (IS_SET(muds[i].flags, DD_NOGOSSIP)) {
             msg("They are no longer listening to remote gossips.", ch);
@@ -324,8 +318,8 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
         sprintf(buf, "^%s^%s^%d^gg^%s\n\r",
                 PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
         for (i = 0; muds[i].address; i++) {
-            if (IS_SET(muds[i].flags, DD_VERIFIED) 
-                && !IS_SET(muds[i].flags, DD_NOGOSSIP)) {
+            if (IS_SET(muds[i].flags, DD_VERIFIED) && 
+                !IS_SET(muds[i].flags, DD_NOGOSSIP)) {
                 write_to_descriptor(muds[i].desc, buf);
             }
         }
@@ -358,9 +352,7 @@ void do_dlink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
@@ -392,9 +384,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
@@ -411,6 +401,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
 void do_drestrict(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
+    char           *arg;
     int             i,
                     mud;
 
@@ -419,13 +410,17 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    argument = one_argument(argument, buf);
-    if ((mud = getmud(ch, buf, FALSE)) == UNDEFINED) {
+    argument = get_argument(argument, &arg);
+    if (!arg || (mud = getmud(ch, arg, FALSE)) == UNDEFINED) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
+
+    argument = skip_spaces(argument);
+    if( !argument ) {
+        send_to_char( "You need to specify refuse, accept or a level\n\r", ch );
+        return;
     }
+
     if (is_abbrev(argument, "refuse")) {
         SET_BIT(muds[mud].flags, DD_REFUSE);
         sprintf(buf, "Now refusing new connections with %s.",
@@ -434,6 +429,7 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
         DIMDLOG(buf);
         return;
     }
+
     if (is_abbrev(argument, "accept")) {
         REMOVE_BIT(muds[mud].flags, DD_REFUSE);
         sprintf(buf, "Now accepting new connections with %s.",
@@ -492,9 +488,8 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
 
 void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
+
     if (!str_cmp(argument, "on")) {
         if (dimd_on) {
             msg("The server was already activated.", ch);
@@ -562,7 +557,7 @@ void do_dmanage(struct char_data *ch, char *argument, int cmd)
 void do_dmuse(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                   *mudname;
     struct descriptor_data *d;
     int             i;
 
@@ -576,18 +571,15 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED && 
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
-    if (!*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         msg("Sure you have something to muse!", ch);
         return;
     }
@@ -621,7 +613,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 
         for (d = descriptor_list; d; d = d->next) {
             if (!d->connected && d->character != ch && 
-                GetMaxLevel(d->character) >= LOW_IMMORTAL && 
+                IS_IMMORTAL(d->character) && 
                 !IS_SET(d->character->pc->comm, COMM_NOMUSE)) {
                 cact(buf, FALSE, ch, 0, d->character, TO_VICT, CLR_MUSE);
             }
@@ -631,8 +623,8 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
 
 void do_dtell(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH],
+    char           *name,
+                   *mudname,
                     buf[MAX_STRING_LENGTH];
     int             i;
 
@@ -640,16 +632,15 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
      * for (i=0;i<MAX_MOBOBJ;i++) { sprintf(buf,"%s has pos
      * %d",mob_index[i].name, mob_index[i].pos); slog(buf); }
      */
-    argument = one_argument(argument, name);
-    argument = one_argument(argument, mudname);
+    argument = get_argument(argument, &name);
+    argument = get_argument(argument, &mudname);
 
-    if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
+    if ( !name || ! mudname || (i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
-    }
-    if (!*argument) {
+
+    argument = skip_spaces(argument);
+    if (!argument) {
         msg("Surely you have SOMETHING to say ... ?", ch);
         return;
     }
@@ -657,6 +648,7 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
     if (!dimd_credit(ch, 1)) {
         return;
     }
+
     sprintf(buf, "^%s^%s^%d^t^%s^%s\n\r",
             PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), name, argument);
     write_to_descriptor(muds[i].desc, buf);
@@ -665,22 +657,19 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
 void do_dthink(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    mudname[MAX_INPUT_LENGTH];
+                   *mudname;
     struct descriptor_data *d;
     int             i;
 
-    one_argument(argument, mudname);
-    if ((i = matchmud(mudname)) != UNDEFINED) {
-        argument = one_argument(argument, mudname);
-        if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
-            return;
-        }
+    argument = get_argument(argument, &mudname);
+    if (!mudname || 
+        ((i = matchmud(mudname)) != UNDEFINED && 
+         (i = getmud(ch, mudname, TRUE)) == UNDEFINED)) {
+        return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
-    if (!*argument) {
+    argument = skip_spaces(argument);
+    if (!argument) {
         msg("Sure you have something to think!", ch);
         return;
     }
@@ -724,17 +713,23 @@ void do_dwho(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH];
     int             i;
+    char           *arg;
 
-    argument = one_argument(argument, buf);
-    if ((i = getmud(ch, buf, TRUE)) == UNDEFINED) {
+    argument = get_argument(argument, &arg);
+    if (!arg || (i = getmud(ch, arg, TRUE)) == UNDEFINED) {
         return;
     }
+
     if (!dimd_credit(ch, 2)) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
+
+    argument = skip_spaces(argument);
+    if( !argument ) {
+        send_to_char( "DWHO who?\n\r", ch );
+        return;
     }
+
     sprintf(buf, "^%s^%s^%d^w^%s\n\r",
             PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
     write_to_descriptor(muds[i].desc, buf);
@@ -1155,8 +1150,7 @@ void dimd_loop(void)
 
                         case 't':
                             scan = one_lc_dimd_argument(scan, toname);
-                            while (isspace(*scan))
-                                scan++;
+                            scan = skip_spaces(scan);
 
                             if (!(vict = get_char(toname)) || 
                                 !dimd_can_see(fromgodlevel, vict)) {
@@ -1278,7 +1272,7 @@ void dimd_loop(void)
 
                             for (d = descriptor_list; d; d = d->next) {
                                 if (!d->connected && 
-                                    GetMaxLevel(d->character) >= LOW_IMMORTAL &&
+                                    IS_IMMORTAL(d->character) &&
                                     !IS_SET(d->character->pc->comm,
                                             COMM_NOMUSE)) {
                                     cmsg(buf, d->character, CLR_MUSE);
@@ -1517,20 +1511,16 @@ int process_dimd_input(int mud)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(muds[mud].buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(muds[mud].buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(muds[mud].buf + i)); i++) {
-                /*
-                 * Empty loop
-                 */
+            while (ISNEWL(muds[mud].buf[i])) {
+                i++;
             }
 
             /*

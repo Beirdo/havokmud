@@ -65,7 +65,7 @@ extern struct time_info_data time_info;
 /*
  * extern struct char_data *character_list; 
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;      /* In db.c */
 #else
 extern struct room_data *room_db;       /* In db.c */
@@ -102,7 +102,7 @@ long            TempDis = 0;
 
 int             pulse;
 
-#if SITELOCK
+#ifdef SITELOCK
 char            hostlist[MAX_BAN_HOSTS][30];    /* list of sites to ban */
 int             numberhosts;
 #endif
@@ -132,7 +132,7 @@ void close_socket_fd(int desc)
 {
     struct descriptor_data *d;
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
     slog("begin close_socket_fd");
 #endif
 
@@ -142,7 +142,7 @@ void close_socket_fd(int desc)
         }
     }
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
     slog("end close_socket_fd");
 #endif
 }
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 
     SystemFlags = 0;
 
-#if LOG_ALL
+#ifdef LOG_ALL
     SET_BIT(SystemFlags, SYS_LOGALL);
 #endif
 
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 
 #endif
 
-#if DEBUG
+#ifdef DEBUG
     /*
      * never seen this function, must be something john was working on,
      * disabled 
@@ -279,14 +279,14 @@ int main(int argc, char **argv)
     srandom(time(0));
     REMOVE_BIT(SystemFlags, SYS_WIZLOCKED);
 
-#if SITELOCK
+#ifdef SITELOCK
     Log("Blanking denied hosts.");
     for (a = 0; a < MAX_BAN_HOSTS; a++) {
         strcpy(hostlist[a], " \0\0\0\0");
     }
     numberhosts = 0;
 
-#if LOCKGROVE
+#ifdef LOCKGROVE
     Log("Locking out Host: oak.grove.iup.edu.");
     strcpy(hostlist[0], "oak.grove.iup.edu");
     numberhosts = 1;
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
     numberhosts = 2;
 #endif                          /* LOCKGROVE */
 
-#if PERSONAL_PERM_LOCKOUTS
+#ifdef PERSONAL_PERM_LOCKOUTS
     numberhosts += 0;
 #endif
 
@@ -434,7 +434,7 @@ void game_loop(int s)
 
         FD_SET(s, &input_set);
 
-#if TITAN
+#ifdef TITAN
         maxdesc = 0;
         if (cap < 20) {
             cap = 20;
@@ -949,7 +949,7 @@ void write_to_q(char *txt, struct txt_q *queue)
 }
 #endif
 
-#if BLOCK_WRITE
+#ifdef BLOCK_WRITE
 void write_to_output(char *txt, struct descriptor_data *t)
 {
     int             size;
@@ -1644,20 +1644,16 @@ int process_input(struct descriptor_data *t)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(t->buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(t->buf + i)); i++) {
-                /* 
-                 * Empty loop 
-                 */
+            while (ISNEWL(t->buf[i])) {
+                i++;
             }
 
             /*
@@ -1789,20 +1785,16 @@ int process_input(struct descriptor_data *t)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(t->buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(t->buf + i)); i++) {
-                /* 
-                 * Empty loop 
-                 */
+            while (ISNEWL(t->buf[i])) {
+                i++;
             }
 
             /*
@@ -1841,7 +1833,7 @@ void close_socket(struct descriptor_data *d)
         Log("!d in close_socket");
         return;
     }
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
     slog("begin close_socket");
 #endif
 
@@ -1888,7 +1880,7 @@ void close_socket(struct descriptor_data *d)
             d->character->desc = 0;
 
             /*
-             * d->character->invis_level = LOW_IMMORTAL; msw 8/9/94 
+             * d->character->invis_level = IMMORTAL; msw 8/9/94 
              */
 
             if (!IS_AFFECTED(d->character, AFF_CHARM) && d->character->master) {
@@ -1956,7 +1948,7 @@ void close_socket(struct descriptor_data *d)
         free(d);
     }
 
-#if LOG_DEBUG
+#ifdef LOG_DEBUG
     slog("end close_socket");
 #endif
 }

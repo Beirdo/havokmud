@@ -102,40 +102,56 @@ int count_pages(char *str)
 void show_string(struct descriptor_data *d, char *input)
 {
     char            bigbuf[MAX_STRING_LENGTH],
-                    tmpbuf[64];
+                   *tmpbuf;
     int             diff;
 
-    one_argument(input, tmpbuf);
-
+    input = get_argument(input, &tmpbuf);
+    if( tmpbuf ) {
     /*
      * Q is for quit. :)
      */
-    if (LOWER(*tmpbuf) == 'q') {
-        free(d->showstr_vector);
-        d->showstr_count = 0;
-        if (d->showstr_head) {
-            free(d->showstr_head);
-            d->showstr_head = NULL;
+        switch( tolower(*tmpbuf) ) {
+        case 'q':
+            free(d->showstr_vector);
+            d->showstr_count = 0;
+            if (d->showstr_head) {
+                free(d->showstr_head);
+                d->showstr_head = NULL;
+            }
+            return;
+            break;
+        case 'r':
+            /*
+             *  R is for refresh, so back up one page internally so we
+             * can display it again.
+             */
+            d->showstr_page = MAX(0, d->showstr_page - 1);
+            break;
+        case 'b':
+            /*
+             *  B is for back, so back up two pages internally so we can
+             * display the correct page here.
+             */
+            d->showstr_page = MAX(0, d->showstr_page - 2);
+            break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            /*
+             *  Feature to 'goto' a page.  Just type the number of the
+             * page and you are there!
+             */
+            d->showstr_page = MAX(0, MIN(atoi(tmpbuf) - 1, 
+                                         d->showstr_count - 1));
+            break;
         }
-        return;
-    } else if (LOWER(*tmpbuf) == 'r') {
-        /*
-         *  R is for refresh, so back up one page internally so we
-         * can display it again.
-         */
-        d->showstr_page = MAX(0, d->showstr_page - 1);
-    } else if (LOWER(*tmpbuf) == 'b') {
-        /*
-         *  B is for back, so back up two pages internally so we can
-         * display the correct page here.
-         */
-        d->showstr_page = MAX(0, d->showstr_page - 2);
-    } else if (isdigit(*tmpbuf)) {
-        /*
-         *  Feature to 'goto' a page.  Just type the number of the
-         * page and you are there!
-         */
-        d->showstr_page = MAX(0, MIN(atoi(tmpbuf) - 1, d->showstr_count - 1));
     }
 
     /*

@@ -639,8 +639,7 @@ int timnus(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (cmd) {
         if (cmd == 1 && ch->in_room == TimnusRoom &&
-            TIMNUSNORTHLIMIT < GetMaxLevel(ch) &&
-            GetMaxLevel(ch) < LOW_IMMORTAL) {
+            GetMaxLevel(ch) > TIMNUSNORTHLIMIT && !IS_IMMORTAL(ch)) {
             if (!check_soundproof(ch)) {
                 act("$n tells you 'Thou art not pure enough of heart.'",
                     TRUE, mob, 0, ch, TO_VICT);
@@ -648,8 +647,7 @@ int timnus(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             act("$n grins evilly.", TRUE, mob, 0, ch, TO_VICT);
             return (TRUE);
         } else if (cmd == 4 && ch->in_room == TimnusRoom && 
-                   TIMNUSWESTLIMIT < GetMaxLevel(ch) &&
-                   GetMaxLevel(ch) < LOW_IMMORTAL) {
+                   GetMaxLevel(ch) > TIMNUSWESTLIMIT && !IS_IMMORTAL(ch)) {
             if (!check_soundproof(ch)) {
                 act("$n tells you 'Thou art not pure enough of heart.'",
                     TRUE, mob, 0, ch, TO_VICT);
@@ -1390,14 +1388,14 @@ int snake_guardians(struct char_data *ch, int cmd, char *arg,
 int EvilBlade(struct char_data *ch, int cmd, char *arg,
               struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     extern struct str_app_type str_app[];
     struct obj_data *obj,
                    *blade;
     struct char_data *joe,
                    *holder;
     struct char_data *lowjoe = 0;
-    char            arg1[128],
+    char           *arg1,
                     buf[250];
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
@@ -1561,7 +1559,12 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
             }
             
             if (cmd == 66 && holder == ch) {
-                one_argument(arg, arg1);
+                arg = get_argument(arg, &arg1);
+                if( !arg1 ) {
+                    send_to_char( "Remove what?\n\r", ch );
+                    return( FALSE );
+                }
+
                 if (strcmp(arg1, "all") == 0) {
                     if (!EgoBladeSave(ch)) {
                         sprintf(buf, "%s laughs at your attempt remove it!\n\r",
@@ -1682,14 +1685,14 @@ int EvilBlade(struct char_data *ch, int cmd, char *arg,
 int GoodBlade(struct char_data *ch, int cmd, char *arg,
               struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     extern struct str_app_type str_app[];
     struct obj_data *obj,
                    *blade;
     struct char_data *joe,
                    *holder;
     struct char_data *lowjoe = 0;
-    char            arg1[128],
+    char           *arg1,
                     buf[250];
 
     if ((type != PULSE_COMMAND) || (IS_IMMORTAL(ch)) || 
@@ -1919,7 +1922,12 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
                 }
 
                 if (cmd == 66 && holder == ch) {
-                    one_argument(arg, arg1);
+                    arg = get_argument(arg, &arg1);
+                    if( !arg1 ) {
+                        send_to_char("Remove what?\n\r", ch);
+                        return( FALSE );
+                    }
+
                     if (strcmp(arg1, "all") == 0) {
                         if (!EgoBladeSave(ch)) {
                             sprintf(buf, "%s laughs at your attempt remove "
@@ -2045,7 +2053,7 @@ int GoodBlade(struct char_data *ch, int cmd, char *arg,
 int NeutralBlade(struct char_data *ch, int cmd, char *arg,
                  struct obj_data *tobj, int type)
 {
-#if EGO
+#ifdef USE_EGOS
     return (FALSE);
 #endif
 }
@@ -3511,12 +3519,12 @@ int Psionist(struct char_data *ch, int cmd, char *arg,
 int ChurchBell(struct char_data *ch, int cmd, char *arg,
                struct room_data *rp, int type)
 {
-    char            buf[128];
+    char           *buf;
 
     if (cmd == PULL) {
-        arg = one_argument(arg, buf);   /* buf == object */
+        arg = get_argument(arg, &buf);   /* buf == object */
 
-        if (!strcmp("rope", buf)) {
+        if (buf && !strcmp("rope", buf)) {
             send_to_all("The bells of Karsynia's church sound 'GONG! GONG! "
                         "GONG! GONG!'\n");
             return (TRUE);
@@ -3975,8 +3983,9 @@ int archer_hth(struct char_data *ch)
             return FALSE;
         }
         for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (spid->obj_flags.type_flag == ITEM_WEAPON)
+            if (IS_WEAPON(spid)) {
                 hth = spid;
+            }
         }
 
         if (hth) {
@@ -4919,14 +4928,14 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg,
 int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
                      struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
 
     if (cmd == 11) {
         /* 
          * drink 
          */
 
-        only_argument(arg, buf);
+        arg = get_argument(arg, &buf);
 #if 0
         if (str_cmp(buf, "fountain") && str_cmp(buf, "water")) {
             return(FALSE); 
@@ -4980,8 +4989,8 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg,
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
                         struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -5001,9 +5010,9 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
         /* 
          * Talk 
          */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
@@ -5051,16 +5060,18 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
     } else if (cmd == 72) {
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name || 
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name || 
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
+
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
             IS_PC(vict)) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5069,10 +5080,11 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg,
         if (mob_index[vict->nr].virtual != BRAXIS) {
             return (FALSE);
         }
+
         /*
          * If object is not Marbles
          */
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != MARBLES)) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);
@@ -5273,7 +5285,7 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg,
 int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
-    char            vict_name[80],
+    char           *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     int             has_key = 0;
@@ -5291,12 +5303,13 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5305,6 +5318,7 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         if (mob_index[vict->nr].virtual != NADIA) {
             return (FALSE);
         }
+
         keyrnum = real_object(NADIA_KEY);
         for (i = vict->carrying; i; i = i->next_content) {
             if (has_key != 1) {
@@ -5371,8 +5385,8 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
            int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -5393,12 +5407,13 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5407,6 +5422,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         if (mob_index[vict->nr].virtual != ELAMIN) {
             return (FALSE);
         }
+
         penrnum = real_object(PEN_MIGHT);
         for (i = vict->carrying; i; i = i->next_content) {
             if (has_pen != 1) {
@@ -5463,16 +5479,18 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
     } else if (cmd == 72) {
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name || 
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name || 
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict)) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5481,7 +5499,8 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         if (mob_index[vict->nr].virtual != ELAMIN) {
             return (FALSE);
         }
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+
+        if (!IS_IMMORTAL(ch)) {
             if (obj_index[obj->item_number].virtual != PEN_MIGHT) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);
@@ -5522,7 +5541,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type)
 {
-    char            vict_name[80],
+    char           *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     int             test = 0,
@@ -5533,12 +5552,13 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
     }
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5547,7 +5567,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
         if (mob_index[vict->nr].virtual != GOBLIN_CHUIRGEON) {
             return (FALSE);
         }
-        if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+        if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
             send_to_char("Get real.  You shouldn't be playing around with "
                          "him.\n\r", ch);
             return (TRUE);
@@ -5563,7 +5583,7 @@ int goblin_chuirgeon(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     } else if (cmd == 56) {
         /* Buy */
-        if (GET_LEVEL(ch, BestClassIND(ch)) > 50) {
+        if (IS_IMMORTAL(ch) && GetMaxLevel(ch) < MAX_IMMORT) {
             send_to_char("Get real.  You shouldn't be playing around with "
                          "him.\n\r", ch);
             return (TRUE);
@@ -5621,7 +5641,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 {
     struct char_data *temp_ch;
     char            argument[150];
-    char            vict_name[80],
+    char           *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -5633,12 +5653,13 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -5647,6 +5668,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         if (mob_index[vict->nr].virtual != ZORK) {
             return (FALSE);
         }
+
         if (get_obj_vis_world(ch, "black pill thunder mountain", NULL)) {
             test = 1;
         }
@@ -5835,7 +5857,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
                       struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
     struct obj_data *i;
     struct obj_data *obj;
     int             pillrnum = 0;
@@ -5846,9 +5868,9 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
         /* 
          * Eat 
          */
-        only_argument(arg, buf);
+        arg = get_argument(arg, &buf);
 
-        if (!(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        if (!buf || !(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
             act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
             return (TRUE);
         }
@@ -5909,7 +5931,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg,
 int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
                        struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
     struct obj_data *i;
     struct obj_data *obj;
     int             pillrnum = 0;
@@ -5918,9 +5940,8 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 12) {
         /* Eat */
-        only_argument(arg, buf);
-
-        if (!(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+        arg = get_argument(arg, &buf);
+        if (!buf || !(obj = get_obj_in_list_vis(ch, buf, ch->carrying))) {
             act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
             return (TRUE);
         }
@@ -5980,8 +6001,8 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg,
 int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
                         struct room_data *rp, int type)
 {
-    char            arg1[128];
-    char            arg2[128];
+    char           *arg1;
+    char           *arg2;
     struct obj_data *obj;
     struct obj_data *obj1;
     struct obj_data *obj2;
@@ -5991,12 +6012,13 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
         /* 
          * put 
          */
-        argument_interpreter(arg, arg1, arg2);
+        arg = get_argument(arg, &arg1);
+        arg = get_argument(arg, &arg2);
 
-        if (!*arg1 || !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+        if (!arg1 || !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
             return (FALSE);
         }
-        if (!*arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+        if (!arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
             return (FALSE);
         }
         if (obj_index[obj1->item_number].virtual != EYE_DRAGON) {
@@ -6026,10 +6048,8 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg,
 int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
                         struct room_data *rp, int type)
 {
-    char            obj_name1[180],
-                    obj_name2[180];
-    char            arg1[128];
-    char            arg2[128];
+    char           *arg1;
+    char           *arg2;
     struct obj_data *obj;
     struct obj_data *obj1;
     struct obj_data *obj2;
@@ -6040,16 +6060,16 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 67) {
         /* put */
-        argument_interpreter(arg, arg1, arg2);
+        arg = get_argument(arg, &arg1);
+        arg = get_argument(arg, &arg2);
 
-        if (!*obj_name1 || 
-            !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
+        if (!arg1 || !(obj1 = get_obj_in_list_vis(ch, arg1, ch->carrying))) {
             return (FALSE);
         }
-        if (!*obj_name2 || 
-            !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+        if (!arg2 || !(obj2 = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
             return (FALSE);
         }
+
         if (obj_index[obj1->item_number].virtual != EYE_DRAGON) {
             return (FALSE);
         }
@@ -6172,7 +6192,7 @@ int bahamut_armor(struct char_data *ch, struct char_data *vict)
 int tmk_guard(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob, int type)
 {
-    char            vict_name[80];
+    char           *vict_name;
     struct char_data *vict;
 
     if (!AWAKE(ch)) {
@@ -6184,9 +6204,9 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
@@ -6305,8 +6325,8 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg,
 int starving_man(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -6329,9 +6349,9 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
 
     if (cmd == 531) {
         /* Talk */
-        arg = one_argument(arg, vict_name);
+        arg = get_argument(arg, &vict_name);
 
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) || 
             IS_PC(vict) || vict == ch) {
             return (FALSE);
         }
@@ -6367,17 +6387,18 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         }
     } else if (cmd == 72) {
         /* give */
-        arg = one_argument(arg, obj_name);
+        arg = get_argument(arg, &obj_name);
 
-        if (!*obj_name || 
+        if (!obj_name || 
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
             IS_PC(vict)) {
             return (FALSE);
         }
+
         if (vict->specials.fighting) {
             send_to_char("Not while they are fighting!\n\r", ch);
             return (TRUE);
@@ -6389,7 +6410,8 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
         if (mob_index[vict->nr].virtual != STARVING_MAN) {
             return (FALSE);
         }
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        
+        if (!IS_IMMORTAL(ch)) {
             if (obj->obj_flags.type_flag != ITEM_FOOD) {
                 sprintf(buf, "%s Thank you, but that is not what I desire.",
                         GET_NAME(ch));
@@ -6424,7 +6446,6 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
                          "nothing to offer you in return.", GET_NAME(ch));
             do_tell(vict, buf, 19);
         }
-        return (TRUE);
     }
     return (TRUE);
 }
@@ -6432,7 +6453,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg,
 int grayswandir(struct char_data *ch, int cmd, char *arg,
                 struct room_data *rp, int type)
 {
-    char            name[256];
+    char           *name;
     struct char_data *victim;
     struct obj_data *object;
     int             percent = 0;
@@ -6478,9 +6499,9 @@ int grayswandir(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        only_argument(arg, name);
+        arg = get_argument(arg, &name);
 
-        if (!(victim = get_char_room_vis(ch, name))) {
+        if (!name || !(victim = get_char_room_vis(ch, name))) {
             if (ch->specials.fighting) {
                 victim = ch->specials.fighting;
             } else {
@@ -6569,8 +6590,8 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                     percent = 0;
     struct obj_data *object,
                    *bahamut;
-    char            itemname[256],
-                    itemtype[80],
+    char           *itemname,
+                   *itemtype,
                     buf[256];
 
     if (cmd == 330) {
@@ -6588,14 +6609,15 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
         bahamut = get_obj_vis(ch, "corpse corpse of Bahamut, The Ancient "
                                   "Platinum Dragon is");
 
-        argument_interpreter(arg, itemname, itemtype);
+        arg = get_argument(arg, &itemname);
+        arg = get_argument(arg, &itemtype);
 
-        if (!*itemname) {
+        if (!itemname) {
             send_to_char("Tan what?\n\r", ch);
             return (TRUE);
         }
 
-        if (!*itemtype) {
+        if (!itemtype) {
             send_to_char("I see that, but what do you wanna make?\n\r", ch);
             return (TRUE);
         }
@@ -6634,7 +6656,9 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
                     LearnFromMistake(ch, SKILL_TAN, 0, 95);
                     WAIT_STATE(ch, PULSE_VIOLENCE * 3);
                     return (TRUE);
-                } else if ((r_num = real_object(BAHAMUT_SKIN)) >= 0) {
+                }
+                
+                if ((r_num = real_object(BAHAMUT_SKIN)) >= 0) {
                     /* make corpse unusable for another tan */
                     object->affected[1].modifier = 0;
                     sprintf(buf, "It seems you are able to make some very "
@@ -6664,15 +6688,15 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg,
 int Magic_Pool(struct char_data *ch, int cmd, char *arg,
                struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
 
     if (cmd == 11) {
         /* 
          * 11 = drink 
          */
-        only_argument(arg, buf);
+        arg = get_argument(arg, &buf);
 
-        if (str_cmp(buf, "pool")) {
+        if (!buf || strcmp(buf, "pool")) {
             return (FALSE);
         }
 
@@ -6702,7 +6726,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
     int             key_room;
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
     struct obj_data *obj;
 
     if (cmd != 63) {
@@ -6715,8 +6739,9 @@ int Read_Room(struct char_data *ch, int cmd, char *arg,
     if (!HasClass(ch, CLASS_PSI)) {
         return FALSE;
     }
-    only_argument(arg, buf);
-    if (str_cmp(buf, "book")) {
+
+    buf = get_argument(arg, &buf);
+    if (!buf || strcmp(buf, "book")) {
         return (FALSE);
     }
     
@@ -6754,8 +6779,8 @@ int             questNumber = -1;
 int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
 
     struct char_data *vict = NULL;
@@ -6794,12 +6819,9 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
         /* 
          * ask 
          */
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
-            printf("ReturnFALSE");
-#if 0            
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
             return(FALSE);
-#endif        
         }
 
         if (!(strcmp(lower(arg), " what is the quest?"))) {
@@ -6836,8 +6858,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
          * give 
          * determine the correct obj 
          */
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name) {
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name) {
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
@@ -6847,8 +6869,8 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name) {
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name) {
             send_to_char("To who?\n\r", ch);
             return (FALSE);
         }
@@ -7082,7 +7104,6 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
 int godsay(struct char_data *ch, int cmd, char *argument,
            struct obj_data *obj, int type)
 {
-    int             i;
     char            buf[MAX_INPUT_LENGTH + 80];
 
     if (cmd != 17) {
@@ -7093,22 +7114,20 @@ int godsay(struct char_data *ch, int cmd, char *argument,
     if (apply_soundproof(ch)) {
         return ( FALSE );
     }
-    for (i = 0; *(argument + i) == ' '; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*(argument + i)) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
-    } else {
-        sprintf(buf,
-                "$c0012-=$c0015$n$c0012=-$c0011 says '$c0014%s$c0011'",
-                argument + i);
-        act(buf, FALSE, ch, 0, 0, TO_ROOM);
-        if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-            sprintf(buf, "$c0015You say '$c0014%s$c0015'\n\r", argument + i);
-            send_to_char(buf, ch);
-        }
+        return( TRUE );
+    }
+
+    sprintf(buf, "$c0012-=$c0015$n$c0012=-$c0011 says '$c0014%s$c0011'",
+            argument);
+    act(buf, FALSE, ch, 0, 0, TO_ROOM);
+
+    if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
+        sprintf(buf, "$c0015You say '$c0014%s$c0015'\n\r", argument);
+        send_to_char(buf, ch);
     }
     return( TRUE );
 }
@@ -7116,7 +7135,7 @@ int godsay(struct char_data *ch, int cmd, char *argument,
 int cronus_pool(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
-    char            buf[50];
+    char           *buf;
     struct char_data *portal;
 
     if (cmd != 7) {
@@ -7126,8 +7145,8 @@ int cronus_pool(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    one_argument(arg, buf);
-    if (*buf) {
+    arg = get_argument(arg, &buf);
+    if (buf) {
         if (!str_cmp("pool", buf) || !str_cmp("color", buf) ||
             !str_cmp("color pool", buf)) {
             if ((portal = get_char_room("pool", ch->in_room))) {
@@ -7331,7 +7350,7 @@ int DarkBreather(struct char_data *ch, int cmd, char *arg,
 int rope_room(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
 
     if (cmd == 5) {
         /* 
@@ -7345,10 +7364,9 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
         /* 
          * look 
          */
-        only_argument(arg, buf);
-
-        if (*buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
-                     !str_cmp("Up", buf))) {
+        arg = get_argument(arg, &buf);
+        if (buf && (!str_cmp("up", buf) || !str_cmp("u", buf) || 
+                    !str_cmp("Up", buf))) {
             send_to_char("All you can see up there is a cliff wall.\n\r", ch);
             return (TRUE);
         }
@@ -7358,8 +7376,8 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
         /* 
          * pull 
          */
-        only_argument(arg, buf);
-        if (*buf && (!str_cmp("rope", buf) || !str_cmp("Rope", buf))) {
+        buf = get_argument(arg, &buf);
+        if (buf && (!str_cmp("rope", buf) || !str_cmp("Rope", buf))) {
             act("You grab the rope and give it a tug, but can't",
                 FALSE, ch, 0, 0, TO_CHAR);
             send_to_char("let go.  The rope jerks back and pulls you up\n\r",
@@ -7383,8 +7401,8 @@ int rope_room(struct char_data *ch, int cmd, char *arg,
 int QuestMobProc(struct char_data *ch, int cmd, char *arg,
                  struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
 
     struct char_data *vict;
@@ -7402,8 +7420,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
          *
          * determine the correct obj 
          */
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name) {
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name) {
 #if 0            
             send_to_char("Give what?\n\r",ch);
 #endif            
@@ -7416,8 +7434,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name) {
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name) {
 #if 0            
             send_to_char("To who?\n\r",ch);
 #endif            
@@ -7538,8 +7556,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
  */
 int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
 {
-    char            obj_name[80],
-                    tgt_name[80],
+    char           *obj_name,
+                   *tgt_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *tgt;
     struct obj_data *obj;
@@ -7548,11 +7566,11 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /* 
          * 72 = give command 
          */
-        arg = one_argument(arg, obj_name);
+        arg = get_argument(arg, &obj_name);
         /*
          * if object not in pc's inventory 
          */
-        if (!*obj_name) {
+        if (!obj_name) {
             send_to_char("You do not seem to have anything like that.\n\r", ch);
             return (FALSE);
         }
@@ -7568,8 +7586,8 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if receiver doesn't exist 
          */
-        arg = one_argument(arg, tgt_name);
-        if (!*tgt_name) {
+        arg = get_argument(arg, &tgt_name);
+        if (!tgt_name) {
             return (FALSE);
         }
 
@@ -7653,7 +7671,7 @@ int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
 
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
 {
-    char            tgt_name[80],
+    char           *tgt_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *tgt;
     struct affected_type af;
@@ -7663,8 +7681,8 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
         /*
          * if target doesn't exist 
          */
-        arg = one_argument(arg, tgt_name);
-        if (!*tgt_name) {
+        arg = get_argument(arg, &tgt_name);
+        if (!tgt_name) {
             return (FALSE);
         }
         /*
@@ -7809,7 +7827,7 @@ int Vaelhar(struct char_data *ch, int cmd, char *arg,
 int sinpool(struct char_data *ch, int cmd, char *arg,
             struct char_data *mob, int type)
 {
-    char            buf[50];
+    char           *buf;
     struct char_data *portal;
 
     if (cmd != 7) {
@@ -7817,9 +7835,9 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    one_argument(arg, buf);
+    arg = get_argument(arg, &buf);
 
-    if (*buf && (!str_cmp("portal", buf) || !str_cmp("gate", buf) ||
+    if (buf && (!str_cmp("portal", buf) || !str_cmp("gate", buf) ||
                  !str_cmp("gate portal", buf)) && 
         (portal = get_char_room("portal", ch->in_room))) {
 
@@ -7844,7 +7862,7 @@ int sinpool(struct char_data *ch, int cmd, char *arg,
 int pridemirror(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
 {
-    char            buf[50];
+    char           *buf;
     struct char_data *portal;
 
     if (cmd != 15) {
@@ -7852,9 +7870,9 @@ int pridemirror(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    one_argument(arg, buf);
+    arg = get_argument(arg, &buf);
 
-    if (*buf && !str_cmp("mirror", buf) && 
+    if (buf && !str_cmp("mirror", buf) && 
         (portal = get_char_room("mirror", ch->in_room))) {
 
         send_to_char("\n\r", ch);
@@ -7927,12 +7945,12 @@ int sin_spawner(struct char_data *ch, int cmd, char *arg,
 int sinbarrel(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
-    char            buf[128];
+    char           *buf;
     
     if (cmd == DRINK) {
-        arg = one_argument(arg, buf);
+        arg = get_argument(arg, &buf);
 
-        if (!strcmp("mead", buf)) {
+        if (buf && !strcmp("mead", buf)) {
             send_to_char("\n\r", ch);
             send_to_char("Out of options, you finally decide to succumb to "
                          "the tantalizing toxins of the mead \n\rand take a "
@@ -7969,7 +7987,7 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
                    *win;
     int             virtual,
                     x;
-    char            buf[MAX_INPUT_LENGTH + 80];
+    char           *buf;
     int             hasStones[7] = { 0, 0, 0, 0, 0, 0, 0 };
 
     if (cmd != 438) {
@@ -7979,9 +7997,9 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
 
     dlog("in altar");
 
-    only_argument(argument, buf);
-    if (*buf && (!str_cmp("altar", buf) || !str_cmp("Altar", buf) || 
-                 !str_cmp("ALTAR", buf))) {
+    argument = get_argument(argument, &buf);
+    if (buf && (!str_cmp("altar", buf) || !str_cmp("Altar", buf) || 
+                !str_cmp("ALTAR", buf))) {
         /*
          * rub altar 
          */
@@ -7991,9 +8009,6 @@ int altarofsin(struct char_data *ch, int cmd, char *argument,
 
             if (virtual < 51809 && virtual > 51801) {
                 hasStones[virtual - 51802] = 1;
-#if 0                
-                ch_printf(ch,"!%d",virtual-51802);
-#endif            
             }
         }
 

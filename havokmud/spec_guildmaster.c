@@ -200,14 +200,11 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     if (check_soundproof(ch)) {
         return (FALSE);
     }
-    for (; *arg == ' '; arg++) {
-        /* 
-         * ditch spaces 
-         */
-    }
 
-    if ((cmd == 164) || (cmd == 170)) {
-        if (!arg || (strlen(arg) == 0)) {
+    arg = skip_spaces(arg);
+
+    if (cmd == 164 || cmd == 170) {
+        if (!arg || !*arg) {
             sprintf(buf, " hunt           :  %s\n\r",
                     how_good(ch->skills[SKILL_HUNT].learned));
             send_to_char(buf, ch);
@@ -228,41 +225,41 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             send_to_char(buf, ch);
 
             return (TRUE);
-        } else {
-            number = old_search_block(arg, 0, strlen(arg), n_skills, FALSE);
-            send_to_char("The hunter says ", ch);
-            if (number == -1) {
-                send_to_char("'I do not know of this skill.'\n\r", ch);
-                return (TRUE);
-            }
+        } 
 
-            charge = GetMaxLevel(ch) * 100;
-            switch (number) {
-            case 0:
-            case 1:
-                sk_num = SKILL_HUNT;
-                break;
-            case 2:
-                sk_num = SKILL_FIND_TRAP;
-                break;
-            case 3:
-                sk_num = SKILL_REMOVE_TRAP;
-                break;
-            case 4:
-                sk_num = SKILL_EVALUATE;
-                break;
-            case 5:
-                sk_num = SKILL_FIND_FOOD;
-                break;
-            case 6:
-                sk_num = SKILL_FIND_WATER;
-                break;
-            default:
-                sprintf(buf, "Strangeness in hunter (%d)", number);
-                Log(buf);
-                send_to_char("'Ack!  I feel faint!'\n\r", ch);
-                return (FALSE);
-            }
+        number = old_search_block(arg, 0, strlen(arg), n_skills, FALSE);
+        send_to_char("The hunter says ", ch);
+        if (number == -1) {
+            send_to_char("'I do not know of this skill.'\n\r", ch);
+            return (TRUE);
+        }
+
+        charge = GetMaxLevel(ch) * 100;
+        switch (number) {
+        case 0:
+        case 1:
+            sk_num = SKILL_HUNT;
+            break;
+        case 2:
+            sk_num = SKILL_FIND_TRAP;
+            break;
+        case 3:
+            sk_num = SKILL_REMOVE_TRAP;
+            break;
+        case 4:
+            sk_num = SKILL_EVALUATE;
+            break;
+        case 5:
+            sk_num = SKILL_FIND_FOOD;
+            break;
+        case 6:
+            sk_num = SKILL_FIND_WATER;
+            break;
+        default:
+            sprintf(buf, "Strangeness in hunter (%d)", number);
+            Log(buf);
+            send_to_char("'Ack!  I feel faint!'\n\r", ch);
+            return (FALSE);
         }
 
         if (!HasClass(ch, CLASS_THIEF) &&
@@ -273,8 +270,8 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             return (TRUE);
         }
 
-        if ((sk_num == SKILL_HUNT) && (!HasClass(ch, CLASS_THIEF) ||
-                                       !HasClass(ch, CLASS_BARBARIAN))) {
+        if (sk_num == SKILL_HUNT && !HasClass(ch, CLASS_THIEF) && 
+            !HasClass(ch, CLASS_BARBARIAN)) {
             send_to_char("'You're not the sort I'll teach track to.'\n\r", ch);
             return (TRUE);
         }
@@ -981,12 +978,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
-
+        arg = skip_spaces(arg);
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
         index = spell_index[number];
         if (number == -1 || index == -1) {
@@ -1074,11 +1066,8 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     if (!guildmaster) {
         return (FALSE);
     }
-    for (; isspace(*arg); arg++) {
-        /* 
-         * ditch spaces 
-         */
-    }
+
+    arg = skip_spaces(arg);
 
     if ((cmd == 164) || (cmd == 170) || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_CLERIC)) {
@@ -1124,12 +1113,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
-
+        arg = skip_spaces(arg);
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
         index = spell_index[number];
         if (number == -1 || index == -1) {
@@ -1709,14 +1693,14 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
                     choose = -1,
                     avg = 0;
 
-    char            classname[128];
+    char           *classname;
 
     if (cmd != 605) {
         return (FALSE);
     }
-    only_argument(arg, classname);
 
-    if (!*classname) {
+    arg = get_argument(arg, &classname);
+    if (!classname) {
         do_mobTell2(ch, mob, "A class you must choose!");
         return (TRUE);
     }

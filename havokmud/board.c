@@ -140,11 +140,7 @@ void write_board_message(struct char_data *ch, char *arg,
     /*
      * skip blanks 
      */ 
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
+    arg = skip_spaces(arg);
     new_board_message(ch, bd, arg, -1);
 }
 
@@ -155,10 +151,10 @@ bool reply_board_message(struct char_data *ch, char *arg,
     struct bulletin_board_message *msg;
     short          tmessage;
     char           buf[128];
-    char           a1[MAX_INPUT_LENGTH];
+    char          *a1;
 
-    arg = one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1))) {
+    arg = get_argument(arg, &a1);
+    if (!a1 || !(tmessage = atoi(a1))) {
         return FALSE;
     }
 
@@ -216,12 +212,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
     /*
      * skip blanks 
      */ 
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
+    arg = skip_spaces(arg);
     if (!*arg) {
         sprintf(buf, "re: %s", msg->title);
 #if 0
@@ -319,11 +310,11 @@ bool remove_board_message(struct char_data *ch, char *arg,
     struct bulletin_board *bd;
     struct bulletin_board_message *msg;
     int            tmessage;
-    char           a1[MAX_INPUT_LENGTH],
+    char          *a1,
                    buf[MAX_STRING_LENGTH];
 
-    one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1))) {
+    arg = get_argument(arg, &a1);
+    if (!a1 || !(tmessage = atoi(a1))) {
         return FALSE;
     }
     
@@ -399,11 +390,13 @@ bool display_board_message(struct char_data * ch, char *arg,
     struct bulletin_board_message *msg;
     char           buffer[MAX_MESSAGE_LENGTH + 512];
     int            tmessage;
-    char           a1[MAX_INPUT_LENGTH];
-    one_argument(arg, a1);
-    if (!*a1 || !(tmessage = atoi(a1))) {
+    char          *a1;
+
+    arg = get_argument(arg, &a1);
+    if (!a1 || !(tmessage = atoi(a1))) {
         return FALSE;
     }
+
     if (GetMaxLevel(ch) < board->obj_flags.value[0]) {
         act("You simply cannot comprehend the alien markings upon $p.",
             TRUE, ch, board, NULL, TO_CHAR);
@@ -570,12 +563,13 @@ void list_board_messages(struct bulletin_board *bd,
 bool show_board(struct char_data *ch, char *arg, struct obj_data *board) 
 {
     struct bulletin_board *bd;
-    char           a1[MAX_INPUT_LENGTH];
+    char          *a1;
 
-    one_argument(arg, a1);
-    if (!*a1 || !isname(a1, "board bulletin")) {
+    arg = get_argument(arg, &a1);
+    if (!a1 || !isname(a1, "board bulletin")) {
         return FALSE;
     }
+
     /*
      * See if character's level is high enough to read board 
      */ 
@@ -777,7 +771,7 @@ void check_board(int board_num)
 int board(struct char_data *ch, int cmd, char *arg,
           struct obj_data *obj, int type) 
 {
-    char           a1[MAX_INPUT_LENGTH];
+    char          *a1;
 
     if ((type != PULSE_COMMAND) || (ch->desc == NULL)) {
         return FALSE;
@@ -811,14 +805,14 @@ int board(struct char_data *ch, int cmd, char *arg,
         if (!IS_IMMORTAL(ch)) {
             return FALSE;
         }
-        arg = one_argument(arg, a1);
+        arg = get_argument(arg, &a1);
         
         /*
          *  if we're reloading, we only have to free here.
          * check_board will do the actual reloading on the next
          * relevant board command. 
          */ 
-        if (!strcmp("board", a1)) {
+        if (a1 && !strcmp("board", a1)) {
             free_board(obj_index[obj->item_number].virtual);
 #if 0 
             mprintf(line_log, 0, SEV_LOW, "%s just reset bulletin board #%ld", 

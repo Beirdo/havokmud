@@ -104,6 +104,42 @@ void do_hedit(struct char_data *ch, char *argument, int cmd)
     UpdateHelpMenu(ch);
 } 
 
+
+struct help_strings {
+    char *string;
+    int   storageOffset;
+};
+
+
+struct help_strings HelpStrings[] = {
+    /*
+     * new file formats 
+     */
+    {"   Usage        : ", OFFSETOF(struct help_file_u,usage)},
+    {"   Accumulative : ", OFFSETOF(struct help_file_u,accumulative)},
+    {"   Duration     : ", OFFSETOF(struct help_file_u,duration)},
+    {"   Level        : ", OFFSETOF(struct help_file_u,level)},
+    {"   Damagetype   : ", OFFSETOF(struct help_file_u,damagetype)},
+    {"   Save         : ", OFFSETOF(struct help_file_u,saves)},
+    {"Also see", OFFSETOF(struct help_file_u,references)},
+    /*
+     * other common formats 
+     */
+    {"Usage", OFFSETOF(struct help_file_u,usage)},
+    {"Accumulative: ", OFFSETOF(struct help_file_u,accumulative)},
+    {"Duration", OFFSETOF(struct help_file_u,duration)},
+    {"Level", OFFSETOF(struct help_file_u,level)},
+    {"Save", OFFSETOF(struct help_file_u,saves)},
+    {"See also", OFFSETOF(struct help_file_u,references)},
+    {"See Also", OFFSETOF(struct help_file_u,references)},
+    {"Also See", OFFSETOF(struct help_file_u,references)},
+    {"Also see : ", OFFSETOF(struct help_file_u,references)},
+    {"Also See : ", OFFSETOF(struct help_file_u,references)},
+    {"See also : ", OFFSETOF(struct help_file_u,references)},
+    {"See Also : ", OFFSETOF(struct help_file_u,references)}
+};
+int HelpStringCount = NELEMS(HelpStrings);
+
 /*
  * checks both old and new help files for most common formats, and 
  * writes them into their own place in the help_file_u format 
@@ -111,363 +147,65 @@ void do_hedit(struct char_data *ch, char *argument, int cmd)
 int is_help_elem(struct help_file_u *hlp, char *arg)
 {
     int             i;
-    char            arg1[120],
-                    arg2[120],
-                    arg3[120];
-
-    /*
-     * new file formats 
-     */
-    char           *usage = "   Usage        : ";
-    char           *accum = "   Accumulative : ";
-    char           *durat = "   Duration     : ";
-    char           *level = "   Level        : ";
-    char           *damag = "   Damagetype   : ";
-    char           *saves = "   Save         : ";
-    char           *refer = "Also see";
-
-    /*
-     * other common formats 
-     */
-    char           *usag2 = "Usage";
-    char           *accu2 = "Accumulative: ";
-    char           *dura2 = "Duration";
-    char           *leve2 = "Level";
-    char           *save2 = "Save";
-    char           *refe2 = "See also";
-    char           *refe3 = "See Also";
-    char           *refe4 = "Also See";
-    char           *refe5 = "Also see : ";
-    char           *refe6 = "Also See : ";
-    char           *refe7 = "See also : ";
-    char           *refe8 = "See Also : ";
+    int             length;
+    char           *arg1;
+    char           *ptrLoc,
+                  **storagePtr;
 
     /*
      * ignore formats of this kind 
      */
     char           *modby = "Done by ";
-    if (!hlp) {
-        return (0);
+
+    if (!hlp || !arg) {
+        return (FALSE);
     }
-    if (!arg) {
-        return (0);
-    }
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != usage[i]) {
-            break;
-        }
-        if (i == 17) {
-            /* 
-             * first 18 chars are identical, should be good 
-             *
-             * put everything from : * to end of line into * arg2 
-             */
-            half_chop(arg, arg1, arg2); 
+
+    for( i = 0; i < HelpStringCount; i++ ) {
+        arg1 = arg;
+        length = strlen(HelpStrings[i].string);
+
+        if( !strncmp(arg1, HelpStrings[i].string, length) ) {
+            /* skip past the matched string */
+            arg1 += length;
+            arg1 = skip_spaces( arg1 );
 
             /* 
-             * get rid of the : 
+             * get rid of carriage return 
              */
-            half_chop(arg2, arg1, arg3);
+            if( arg1 ) {
+                while (arg1[strlen(arg1) - 1] == '\n' || 
+                       arg1[strlen(arg1) - 1] == '\r' ) {
+                    arg1[strlen(arg1) - 1] = '\0';
+                }
 
-            /* 
-             * get rid of * carriage return 
-             */
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
+                /* This will require explanation :)
+                 * the storageOffset is a byte offset within the structure
+                 * pointed to by hlp.  At that offset into the strructure,
+                 * there is a (char *whatever), which is what we want to store
+                 * in.
+                 */
+                ptrLoc = (char *)hlp + HelpStrings[i].storageOffset;
+
+                /* OK that's the location, now to say that pointer's pointing
+                 * at a char *
+                 */
+                storagePtr = (char **)ptrLoc;
+
+                /* Finally, write to it.  Trust me, this looks one hell of a
+                 * lot cleaner in assembler :)
+                 */
+                *storagePtr = strdup(arg1);
             }
-            hlp->usage = (char *) strdup(arg3);
-            return (1);
+            return (TRUE);
         }
     }
 
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != accum[i]) {
-            break;
-        }
-        if (i == 17) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->accumulative = (char *) strdup(arg3);
-            return (1);
-        }
+    if( !strncmp( arg, modby, strlen(modby) ) ) {
+        return ( TRUE );
     }
 
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != durat[i]) {
-            break;
-        }
-        if (i == 17) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->duration = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != level[i]) {
-            break;
-        }
-        if (i == 17) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->level = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != damag[i]) {
-            break;
-        }
-        if (i == 17) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->damagetype = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 18; i++) {
-        if (arg[i] != saves[i]) {
-            break;
-        }
-        if (i == 17) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->saves = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != refer[i]) {
-            break;
-        }
-        if (i == 7) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 5; i++) {
-        if (arg[i] != usag2[i]) {
-            break;
-        }
-        if (i == 4) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->usage = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 14; i++) {
-        if (arg[i] != accu2[i]) {
-            break;
-        }
-        if (i == 13) {
-            /*
-             * take one out, missing space 
-             */
-            half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->accumulative = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != dura2[i]) {
-            break;
-        }
-        if (i == 7) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->duration = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 5; i++) {
-        if (arg[i] != leve2[i]) {
-            break;
-        }
-        if (i == 4) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->level = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 4; i++) {
-        if (arg[i] != save2[i]) {
-            break;
-        }
-        if (i == 3) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->saves = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != refe2[i]) {
-            break;
-        }
-        if (i == 7) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != refe3[i]) {
-            break;
-        }
-        if (i == 7) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != refe4[i]) {
-            break;
-        }
-        if (i == 7) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 10; i++) {
-        if (arg[i] != refe5[i]) {
-            break;
-        }
-        if (i == 9) {
-            /*
-             * add another halfchop due to extra space 
-             */
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg);
-            half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 10; i++) {
-        if (arg[i] != refe6[i]) {
-            break;
-        }
-        if (i == 9) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg);
-            half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 10; i++) {
-        if (arg[i] != refe7[i]) {
-            break;
-        }
-        if (i == 9) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg);
-            half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 10; i++) {
-        if (arg[i] != refe8[i]) {
-            break;
-        }
-        if (i == 9) {
-            half_chop(arg, arg1, arg2);
-            half_chop(arg2, arg1, arg);
-            half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n') {
-                arg3[strlen(arg3) - 1] = '\0';
-            }
-            hlp->references = (char *) strdup(arg3);
-            return (1);
-        }
-    }
-
-    for (i = 0; i < 8; i++) {
-        if (arg[i] != modby[i]) {
-            break;
-        }
-        if (i == 7) {
-            return (1);
-        }
-    }
-    return (0);
+    return ( FALSE );
 }
 
 int read_help_from_file(struct char_data *ch, char *argument, int cmd)
@@ -482,12 +220,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         return (FALSE);
     }
     
-    for (; isspace(*argument); argument++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
+    argument = skip_spaces(argument);
     if (*argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);

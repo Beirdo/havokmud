@@ -112,7 +112,7 @@ void do_redit(struct char_data *ch, char *arg, int cmd)
     if (IS_NPC(ch)) {
         return;
     }
-    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (!IS_IMMORTAL(ch)) {
         return;
     }
     /* 

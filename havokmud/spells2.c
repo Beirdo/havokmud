@@ -750,22 +750,23 @@ void cast_control_weather(int level, struct char_data *ch, char *arg,
                           int type, struct char_data *tar_ch,
                           struct obj_data *tar_obj)
 {
-    char            buffer[MAX_STRING_LENGTH];
+    char           *arg1;
 
     switch (type) {
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_SPELL:
-        one_argument(arg, buffer);
+        arg = get_argument(arg, &arg1);
 
-        if (str_cmp("better", buffer) && str_cmp("worse", buffer)) {
+        if (arg1 && strcmp("better", arg1) && strcmp("worse", arg1)) {
             send_to_char("Do you want it to get better or worse?\n\r", ch);
             return;
         }
+
         if (!OUTSIDE(ch)) {
             send_to_char("You need to be outside.\n\r", ch);
         }
 
-        if (!str_cmp("better", buffer)) {
+        if (!strcmp("better", arg1)) {
             if (weather_info.sky == SKY_CLOUDLESS) {
                 return;
             }
@@ -2387,8 +2388,8 @@ void cast_knock(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
-    char            dir[MAX_INPUT_LENGTH];
-    char            otype[MAX_INPUT_LENGTH];
+    char           *dir;
+    char           *otype;
     struct obj_data *obj;
     struct char_data *victim;
     struct room_direction_data *exitdata;
@@ -2397,7 +2398,8 @@ void cast_knock(int level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_WAND:
-        argument_interpreter(arg, otype, dir);
+        arg = get_argument(arg, &otype);
+        arg = get_argument(arg, &dir);
 
         if (!otype) {
             send_to_char("Knock on what?\n\r", ch);
@@ -2745,13 +2747,17 @@ void cast_faerie_fog(int level, struct char_data *ch, char *arg, int type,
 void cast_poly_self(int level, struct char_data *ch, char *arg, int type,
                     struct char_data *tar_ch, struct obj_data *tar_obj)
 {
-    char            buffer[40];
+    char           *buffer;
     int             mobn = 0,
                     X = LAST_POLY_MOB,
                     found = FALSE;
     struct char_data *mob;
 
-    one_argument(arg, buffer);
+    arg = get_argument(arg, &buffer);
+    if( !buffer ) {
+        send_to_char("Just what are you trying to do?\n\r", ch);
+        return;
+    }
 
     if (IS_NPC(ch)) {
         send_to_char("You don't really want to do that.\n\r", ch);
@@ -2807,11 +2813,15 @@ void cast_minor_creation(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj)
 {
-    char            buffer[40];
+    char           *buffer;
     int             obj;
     struct obj_data *o;
 
-    one_argument(arg, buffer);
+    arg = get_argument(arg, &buffer);
+    if( !buffer ) {
+        send_to_char( "Whatcha trying to create, numbskull?\n\r", ch );
+        return;
+    }
 
     if (!str_cmp(buffer, "sword")) {
         obj = LONG_SWORD;
@@ -2861,17 +2871,22 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
                             int type, struct char_data *tar_ch,
                             struct obj_data *tar_obj)
 {
-    char            buffer[40];
+    char           *buffer;
     int             mob,
                     obj;
     struct obj_data *sac;
     struct char_data *el;
 
-    one_argument(arg, buffer);
+    arg = get_argument(arg, &buffer);
+    if( !buffer ) {
+        send_to_char( "What are you trying to conjure?\n\r", ch );
+        return;
+    }
 
     if (NoSummon(ch)) {
         return;
     }
+
     if (!str_cmp(buffer, "fire")) {
         mob = FIRE_ELEMENTAL;
         obj = RED_STONE;
@@ -2942,7 +2957,7 @@ void cast_conjure_elemental(int level, struct char_data *ch, char *arg,
 void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
                      struct char_data *tar_ch, struct obj_data *tar_obj)
 {
-    char            buffer[40];
+    char           *buffer;
     int             mob,
                     obj;
     struct obj_data *sac;
@@ -2950,11 +2965,16 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
     int             held = FALSE,
                     wielded = FALSE;
 
-    one_argument(arg, buffer);
+    arg = get_argument(arg, &buffer);
+    if( !buffer ) {
+        send_to_char( "Huh?\n\r", ch );
+        return;
+    }
 
     if (NoSummon(ch)) {
         return;
     }
+
     if (!str_cmp(buffer, "one")) {
         mob = DEMON_TYPE_I;
         obj = TYPE_I_ITEM;
@@ -3361,13 +3381,10 @@ void cast_changestaff(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
-    char            buffer[40];
-
-    one_argument(arg, buffer);
-
     if (NoSummon(ch)) {
         return;
     }
+
     if (!ch->equipment[HOLD]) {
         send_to_char(" You must be holding a staff!\n\r", ch);
         return;
@@ -3608,14 +3625,18 @@ void cast_change_form(int level, struct char_data *ch, char *arg,
                       int type, struct char_data *tar_ch,
                       struct obj_data *tar_obj)
 {
-    char            buffer[40];
+    char           *buffer;
     int             mobn = 0,
                     X = LAST_DRUID_MOB,
                     found = FALSE;
     struct char_data *mob;
     struct affected_type af;
 
-    one_argument(arg, buffer);
+    arg = get_argument(arg, &buffer);
+    if( !buffer ) {
+        send_to_char( "Change form to what?\n\r", ch );
+        return;
+    }
 
     if (IS_NPC(ch)) {
         send_to_char("You don't really want to do that.\n\r", ch);
@@ -3763,11 +3784,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
         /*
          * get the argument, parse it into a direction 
          */
-        for (; *arg == ' '; arg++) {
-            /*
-             * Empty loop
-             */
-        }
+        arg = skip_spaces(arg);
         if (!*arg) {
             send_to_char("you must supply a direction!\n\r", ch);
             return;

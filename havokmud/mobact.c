@@ -23,7 +23,6 @@ int             top_of_comp = 0;
 extern int      no_specials;
 
 void            do_move(struct char_data *ch, char *argument, int cmd);
-void            do_get(struct char_data *ch, char *argument, int cmd);
 
 
 void mobile_guardian(struct char_data *ch)
@@ -566,7 +565,9 @@ void mobile_activity(struct char_data *ch)
 int UseViolentHeldItem(struct char_data *ch)
 {
     char            buf[255];
-    char            tmp[255];
+    char           *objname;
+    char           *tmp;
+    char           *tmp2;
     struct obj_data *obj;
     int             i,
                     index,
@@ -585,7 +586,15 @@ int UseViolentHeldItem(struct char_data *ch)
             /* 
              * item has charges 
              */
-            one_argument(obj->name, tmp);
+
+            objname = strdup(obj->name);
+            if( !objname ) {
+                Log( "Error in UseViolentHeldItem" );
+                return( FALSE );
+            }
+            tmp2 = objname;
+            tmp = strsep( &tmp2, " " );
+            tmp = skip_spaces(tmp);
 
             if (isname(GET_NAME(ch), GET_NAME(ch->specials.fighting))) {
                 i = 0;
@@ -615,6 +624,7 @@ int UseViolentHeldItem(struct char_data *ch)
                         GET_NAME(ch->specials.fighting));
             }
             do_use(ch, buf, 0);
+            free( objname );
 
 #if LOG_DEBUG
             slog("end UseViolentHeld");

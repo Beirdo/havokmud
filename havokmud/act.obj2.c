@@ -118,15 +118,16 @@ void name_to_drinkcon(struct obj_data *obj, int type)
 void do_drink(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[255];
+    char           *arg;
     struct obj_data *temp;
     struct affected_type af;
     int             amount;
 
     dlog("in do_drink");
 
-    only_argument(argument, buf);
+    argument = get_argument(argument, &arg);
 
-    if (!(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -249,7 +250,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
 
 void do_eat(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[100];
+    char           *buf;
     int             j,
                     index,
                     num;
@@ -258,9 +259,9 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_eat");
 
-    one_argument(argument, buf);
+    argument = get_argument(argument, &buf);
 
-    if (!(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
+    if (!buf || !(temp = get_obj_in_list_vis(ch, buf, ch->carrying))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -307,7 +308,7 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (temp->obj_flags.value[3] && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (temp->obj_flags.value[3] && !IS_IMMORTAL(ch)) {
         act("That tasted rather strange !!", FALSE, ch, 0, 0, TO_CHAR);
         act("$n coughs and utters some strange sounds.", FALSE, ch, 0, 0,
             TO_ROOM);
@@ -324,8 +325,8 @@ void do_eat(struct char_data *ch, char *argument, int cmd)
 
 void do_pour(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[132];
-    char            arg2[132];
+    char           *arg1;
+    char           *arg2;
     char            buf[256];
     struct obj_data *from_obj;
     struct obj_data *to_obj;
@@ -333,9 +334,10 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_pour");
 
-    argument_interpreter(argument, arg1, arg2);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
 
-    if (!*arg1) {               
+    if (!arg1) {               
          act("What do you want to pour from?", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -355,7 +357,7 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!*arg2) {
+    if (!arg2) {
         act("Where do you want it? Out or in what?", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -441,15 +443,15 @@ void do_pour(struct char_data *ch, char *argument, int cmd)
 void do_sip(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
-    char            arg[MAX_STRING_LENGTH];
+    char           *arg;
     char            buf[MAX_STRING_LENGTH];
     struct obj_data *temp;
 
     dlog("in do_sip");
 
-    one_argument(argument, arg);
+    argument = get_argument(argument, &arg);
 
-    if (!(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -531,14 +533,14 @@ void do_sip(struct char_data *ch, char *argument, int cmd)
 void do_taste(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
-    char            arg[80];
+    char           *arg;
     struct obj_data *temp;
 
     dlog("in do_taste");
 
-    one_argument(argument, arg);
+    argument = get_argument(argument, &arg);
 
-    if (!(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
+    if (!arg || !(temp = get_obj_in_list_vis(ch, arg, ch->carrying))) {
         act("You can't find it!", FALSE, ch, 0, 0, TO_CHAR);
         return;
     }
@@ -721,8 +723,7 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     }
 
     if (anti_barbarian_stuff(obj_object) && 
-        GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && 
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+        GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 && !IS_IMMORTAL(ch)) {
         send_to_char("Eck! Not that! You sense magic on it!!! You quickly "
                 "drop it!\n\r", ch);
         act("$n shivers and drops $p!", FALSE, ch, obj_object, 0, TO_ROOM);
@@ -1186,8 +1187,8 @@ void wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
 
 void do_wear(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[MAX_INPUT_LENGTH + 80];
-    char            arg2[MAX_INPUT_LENGTH + 80];
+    char           *arg1;
+    char           *arg2;
     char            buf[256];
     char            buffer[MAX_INPUT_LENGTH + 80];
     struct obj_data *obj_object,
@@ -1216,8 +1217,10 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_wear");
 
-    argument_interpreter(argument, arg1, arg2);
-    if (*arg1) {
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
+    if (arg1) {
         if (!strcmp(arg1, "all")) {
             for (obj_object = ch->carrying; obj_object; obj_object = next_obj) {
                 next_obj = obj_object->next_content;
@@ -1284,7 +1287,7 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
         } else {
             obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
             if (obj_object) {
-                if (*arg2) {
+                if (arg2) {
                     /* 
                      * Partial Match 
                      */
@@ -1366,16 +1369,18 @@ void do_wear(struct char_data *ch, char *argument, int cmd)
 
 void do_wield(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[MAX_INPUT_LENGTH + 80];
-    char            arg2[MAX_INPUT_LENGTH + 80];
+    char           *arg1;
+    char           *arg2;
     char            buffer[MAX_INPUT_LENGTH + 80];
     struct obj_data *obj_object;
     int             keyword = 12;
 
     dlog("in do_wield");
 
-    argument_interpreter(argument, arg1, arg2);
-    if (*arg1) {
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
+    if (arg1) {
         obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
         if (obj_object) {
             wear(ch, obj_object, keyword);
@@ -1390,8 +1395,8 @@ void do_wield(struct char_data *ch, char *argument, int cmd)
 
 void do_draw(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[MAX_INPUT_LENGTH + 80];
-    char            arg2[MAX_INPUT_LENGTH + 80];
+    char           *arg1;
+    char           *arg2;
     char            buffer[MAX_INPUT_LENGTH + 80];
     struct obj_data *obj_object,
                    *obj2;
@@ -1399,8 +1404,10 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_draw");
 
-    argument_interpreter(argument, arg1, arg2);
-    if (*arg1) {
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
+
+    if (arg1) {
         obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
         if (obj_object) {
             if (ch->equipment[WIELD]) {
@@ -1430,16 +1437,17 @@ void do_draw(struct char_data *ch, char *argument, int cmd)
 
 void do_grab(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[128];
-    char            arg2[128];
+    char           *arg1;
+    char           *arg2;
     char            buffer[256];
     struct obj_data *obj_object;
 
     dlog("in do_grab");
 
-    argument_interpreter(argument, arg1, arg2);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
 
-    if (*arg1) {
+    if (arg1) {
         obj_object = get_obj_in_list(arg1, ch->carrying);
         if (obj_object) {
             if (obj_object->obj_flags.type_flag == ITEM_LIGHT) {
@@ -1458,7 +1466,7 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
 
 void do_remove(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[128],
+    char           *arg1,
                    *T,
                    *P;
     char            buffer[256];
@@ -1469,9 +1477,9 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_remove");
 
-    one_argument(argument, arg1);
+    argument = get_argument(argument, &arg1);
 
-    if (*arg1) {
+    if (arg1) {
         if (!strcmp(arg1, "all")) {
             for (j = 0; j < MAX_WEAR; j++) {
                 if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
@@ -1510,10 +1518,8 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
              */
 
             for (Num_Equip = j = 0; j < MAX_WEAR; j++) {
-                if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
-                    if (ch->equipment[j]) {
-                        Rem_List[Num_Equip++] = j;
-                    }
+                if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch) && ch->equipment[j]) {
+                    Rem_List[Num_Equip++] = j;
                 }
             }
 
@@ -1521,10 +1527,12 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
             while (isdigit(*T) && (*T != '\0')) {
                 P = T;
+
                 if (strchr(T, ',')) {
                     P = strchr(T, ',');
                     *P = '\0';
                 }
+
                 if (atoi(T) > 0 && atoi(T) <= Num_Equip) {
                     if (CAN_CARRY_N(ch) != IS_CARRYING_N(ch)) {
                         j = Rem_List[atoi(T) - 1];
@@ -1592,8 +1600,8 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
 
 void do_auction(struct char_data *ch, char *argument, int cmd)
 {
-    char            item[50],
-                    bid[20],
+    char           *item,
+                   *bid,
                     buf[MAX_INPUT_LENGTH];
     struct obj_data *auctionobj;
 
@@ -1632,9 +1640,10 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    half_chop(argument, item, bid);
+    argument = get_argument(argument, &item);
+    bid = skip_spaces(argument);
 
-    if (!(auctionobj = get_obj_in_list_vis(ch, item, ch->carrying))) {
+    if (!item || !(auctionobj = get_obj_in_list_vis(ch, item, ch->carrying))) {
         send_to_char("You don't seem to have that item.\n\r", ch);
         return;
     }
@@ -1657,7 +1666,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     } 
 #endif     
 
-    if (!(minbid = atoi(bid))) {
+    if (!bid || !(minbid = atoi(bid))) {
         minbid = 1;             
         /* 
          * min bid is 1 coin, and we got an auction runnin. 
@@ -1691,7 +1700,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
 void do_bid(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[MAX_INPUT_LENGTH],
-                    arg[254];
+                   *arg;
     long            bid = 0;
     long            newminbid = 0;
     float           fnewminbid = 0;
@@ -1743,7 +1752,12 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    only_argument(argument, arg);
+    argument = get_argument(argument, &arg);
+    if( !arg ) {
+        send_to_char( "Hey, bozo, you wanna bid something, or are ya just "
+                      "wasting my time?\n\r", ch );
+        return;
+    }
 
     if (isdigit(*arg)) {
         /*
@@ -1754,6 +1768,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
                          "likes of you.\n\r", ch);
             return;
         }
+
         /*
          * can't bid on your own auctions 
          */
@@ -1761,6 +1776,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
             send_to_char("Meh, stop bidding on your own stuff, punk!\n\r", ch);
             return;
         }
+
         /*
          * can't bid higher than your own bid 
          */
@@ -1768,10 +1784,12 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
             send_to_char("You already have the highest bid.\n\r", ch);
             return;
         }
+
         if (!(bid = atoi(arg))) {
             send_to_char("That is not a valid number.\n\r", ch);
             return;
         }
+
         /*
          * Is the bid 5% higher than the current? 
          */
@@ -1780,18 +1798,21 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         if (newminbid == intbid) {
             newminbid++;
         }
+
         if (bid < newminbid) {
             sprintf(buf, "Sorry, your bid has to be at least 5%% higher "
                          "(min. %ld).\n\r", newminbid);
             send_to_char(buf, ch);
             return;
         }
+
         if (bid < minbid) {
             sprintf(buf, "Sorry, your bid has to be at least the minimum bid "
                          "(%ld).\n\r", minbid);
             send_to_char(buf, ch);
             return;
         }
+
         /*
          * does player have the coin on hand? 
          */
@@ -1800,6 +1821,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
                          ch);
             return;
         }
+
         /*
          * bid seems to be okay 
          * reset previous bidder, if any 

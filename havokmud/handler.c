@@ -269,8 +269,8 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         return;
     } else if (add) {
         SET_BIT(ch->specials.affected_by, bitv);
-        if (IS_SET(ch->specials.act, PLR_NOFLY) &&
-            IS_SET(ch->specials.affected_by, AFF_FLYING)) {
+        if (IS_SET(ch->specials.act, PLR_NOFLY) && 
+            IS_AFFECTED(ch, AFF_FLYING)) {
             REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
         }
     } else {
@@ -2684,8 +2684,7 @@ struct obj_data *create_money(int amount)
  * ch      This is the person that is trying to "find" 
  * *tar_ch Will be NULL if no character was found, otherwise points
  * *tar_obj Will be NULL if no object was found, otherwise points 
- * The routine returns a pointer to the next word in *arg (just like the 
- * one_argument routine).  
+ * The routine returns a pointer to the next word in *arg 
  */
 
 int generic_find(char *arg, int bitvector, struct char_data *ch,
@@ -2709,13 +2708,9 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
      * Eliminate spaces and "ignore" words 
      */
     while (*arg && !found) {
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
+        arg = skip_spaces(arg);
 
-        for (i = 0; (name[i] = *(arg + i)) && (name[i] != ' '); i++) {
+        for (i = 0; (name[i] = arg[i]) && (name[i] != ' '); i++) {
             /* 
              * Empty loop 
              */

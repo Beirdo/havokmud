@@ -30,20 +30,13 @@ extern int      gSeason;
 int             monkpreproom = 550;
 int             druidpreproom = 500;
 
-#if 0
-void            page_string(struct descriptor_data *d, char *str,
-                            int keep_internal);
-void            do_emote(struct char_data *ch, char *arg, int cmd);
-void            do_stand(struct char_data *ch, char *arg, int cmd);
-void            do_sit(struct char_data *ch, char *arg, int cmd);
 
-#endif
-
-#define MONK_CHALLENGE_ROOM 551
-#define DRUID_CHALLENGE_ROOM 501
 /*
  * extern procedures 
  */
+
+#define MONK_CHALLENGE_ROOM 551
+#define DRUID_CHALLENGE_ROOM 501
 
 #define Bandits_Path   2180
 #define BASIL_GATEKEEPER_MAX_LEVEL 10
@@ -111,7 +104,7 @@ int druid_protector(struct char_data *ch, int cmd, char *arg,
                 send_to_char("Basil Great Druid looks at you\n\r", ch);
                 if (ch->in_room == Bandits_Path && cmd == 1 &&
                     BASIL_GATEKEEPER_MAX_LEVEL < GetMaxLevel(ch) &&
-                    GetMaxLevel(ch) < LOW_IMMORTAL) {
+                    !IS_IMMORTAL(ch)) {
                     if (!check_soundproof(ch)) {
                         act("Basil the Great Druid tells you 'Begone "
                             "Unbelievers!'", TRUE, ch, 0, 0, TO_CHAR);
@@ -145,16 +138,16 @@ int Magic_Fountain(struct char_data *ch, int cmd, char *arg,
                    struct room_data *rp, int type)
 {
 
-    char            buf[MAX_INPUT_LENGTH];
+    char           *buf;
 
     if (cmd == 11) {
         /* 
          * drink 
          */
 
-        only_argument(arg, buf);
+        arg = get_argument(arg, &buf);
 
-        if (str_cmp(buf, "fountain") && str_cmp(buf, "water")) {
+        if (!buf || (str_cmp(buf, "fountain") && str_cmp(buf, "water"))) {
             return (FALSE);
         }
 
@@ -594,46 +587,68 @@ int monk(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 }
 
 
-void invert(char *arg1, char *arg2)
+char *invert(char *arg1)
 {
-    register int    i = 0;
-    register int    len = strlen(arg1) - 1;
+    int    i;
+    int    len;
+    char  *arg2,
+          *head;
 
-    while (i <= len) {
-        *(arg2 + i) = *(arg1 + (len - i));
-        i++;
+    arg2 = strdup(arg1);
+    if( !arg2 ) {
+        return( arg1 );
     }
-    *(arg2 + i) = '\0';
+    head = arg2;
+
+    len = strlen(arg1);
+    arg1 += len - 1;
+
+    for( i = 0; i < len; i++ ) {
+        *(arg2++) = *(arg1--);
+    }
+    *arg2 = '\0';
+
+    return( head );
 }
 
 int jive_box(struct char_data *ch, int cmd, char *arg,
              struct obj_data *obj, int type)
 {
-    char            buf[255],
-                    buf2[255],
-                    buf3[255],
-                    tmp[255];
+    char           *buf,
+                   *buf2,
+                    buf3[MAX_STRING_LENGTH],
+                   *tmp;
 
-    if (type != PULSE_COMMAND) {
+    if (type != PULSE_COMMAND || !arg) {
         return (FALSE);
     }
+
     switch (cmd) {
     case 17:
     case 169:
-        invert(arg, buf);
+        buf = invert(arg);
         do_say(ch, buf, cmd);
+        free( buf );
         return (TRUE);
         break;
     case 19:
-        half_chop(arg, tmp, buf);
-        invert(buf, buf2);
-        sprintf(buf3, "%s %s", tmp, buf);
+        arg = get_argument(arg, &tmp);
+        buf = skip_spaces(arg);
+
+        if( !tmp || !buf ) {
+            return( FALSE );
+        }
+
+        buf2 = invert(buf);
+        sprintf(buf3, "%s %s", tmp, buf2);
         do_tell(ch, buf3, cmd);
+        free( buf2 );
         return (TRUE);
         break;
     case 18:
-        invert(arg, buf);
+        buf = invert(arg);
         do_shout(ch, buf, cmd);
+        free( buf );
         return (TRUE);
         break;
     default:
@@ -2422,8 +2437,8 @@ int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int RepairGuy(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     int             cost,
                     ave;
@@ -2443,16 +2458,18 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
 
     if (IS_NPC(ch)) {
         if (cmd == 72) {
-            arg = one_argument(arg, obj_name);
-            if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name,
-                                ch->carrying)))) {
+            arg = get_argument(arg, &obj_name);
+            if (!obj_name || !(obj = get_obj_in_list_vis(ch, obj_name,
+                                                         ch->carrying))) {
                 return (FALSE);
             }
-            arg = one_argument(arg, vict_name);
-            if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
-                || (!IS_NPC(vict))) {
+
+            arg = get_argument(arg, &vict_name);
+            if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)) ||
+                !IS_NPC(vict)) {
                 return (FALSE);
             }
+
             if (mob_index[vict->nr].func == rep_guy) {
                 send_to_char("Nah, you really wouldn't want to do that.", ch);
                 return (TRUE);
@@ -2468,14 +2485,15 @@ int RepairGuy(struct char_data *ch, int cmd, char *arg,
          *
          * determine the correct obj 
          */
-        arg = one_argument(arg, obj_name);
-        if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name,
-                               ch->carrying)))){
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name || !(obj = get_obj_in_list_vis(ch, obj_name,
+                                                     ch->carrying))){
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
-        arg = one_argument(arg, vict_name);
-        if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))) {
+
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
             send_to_char("To who?\n\r", ch);
             return (FALSE);
         }
@@ -2668,7 +2686,7 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     if (cmd) {
         if (GET_RACE(ch) == RACE_SARTAN || GET_RACE(ch) == RACE_PATRYN ||
-            GetMaxLevel(ch) == BIG_GUY) {
+            GetMaxLevel(ch) == MAX_IMMORT) {
             return (FALSE);
         }
 
@@ -2836,13 +2854,6 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
               char *arg, int cmd)
 {
-#if 0
-    char            obj_name[50],
-                    vict_name[50];
-    struct char_data *vict;
-    struct obj_data *obj;
-#endif
-
 #if EASY_LEVELS
     if (GET_LEVEL(ch, Class) > 0 && cmd == GAIN) {
         /* 
@@ -2850,80 +2861,6 @@ int MakeQuest(struct char_data *ch, struct char_data *gm, int Class,
          */
         GainLevel(ch, Class);
         return (TRUE);
-    }
-    return (FALSE);
-#endif
-
-#if 0
-    if (cmd == GIVE) {
-        arg = one_argument(arg, obj_name);
-        arg = one_argument(arg, vict_name);
-        if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
-            send_to_char("You do not seem to have anything like that.\n\r",
-                         ch);
-            return (FALSE);
-        }
-        if (!(vict = get_char_room_vis(ch, vict_name))) {
-            send_to_char("No one by that name around here.\n\r", ch);
-            return;
-        }
-        if (vict == gm) {
-            if (obj_index[obj->item_number].virtual ==
-                QuestList[Class][GET_LEVEL(ch, Class)].item) {
-                act("$n graciously takes your gift of $p", FALSE, gm, obj,
-                    ch, TO_VICT);
-                obj_from_char(obj);
-                extract_obj(obj);
-                GainLevel(ch, Class);
-                return (TRUE);
-            } else {
-                act("$n shakes $s head", FALSE, gm, 0, 0, TO_ROOM);
-                act("$n says 'That is not the item which i desire'", FALSE,
-                    gm, 0, 0, TO_ROOM);
-                return (FALSE);
-            }
-        } else {
-            return (FALSE);
-        }
-
-    } else if (cmd == GAIN) {
-        if (GET_EXP(ch) < classes[Class].titles[[GET_LEVEL(ch, Class) + 1].exp)
-        {
-            send_to_char("You are not yet ready to gain\n\r", ch);
-            return (FALSE);
-        }
-
-        if (GET_LEVEL(ch, Class) < 10) {
-            GainLevel(ch, Class);
-            return (TRUE);
-        }
-
-        if (QuestList[Class][GET_LEVEL(ch, Class)].item) {
-            act("$n shakes $s head", FALSE, gm, 0, 0, TO_ROOM);
-            act("$n tells you 'First you must prove your mastery of knowledge'", FALSE, gm, 0, ch, TO_VICT);
-            act("$n tells you 'Give to me the item that answers this riddle'", FALSE, gm, 0, ch, TO_VICT);
-            act("$n tells you 'And you shall have your level'\n\r",
-                FALSE, gm, 0, ch, TO_VICT);
-            send_to_char(QuestList[Class][GET_LEVEL(ch, Class)].where, ch);
-            send_to_char("\n\rGood luck", ch);
-            /*
-             * fix to handle limited items: Dunno how it will turn out..
-             * but hopefully it should be ok. 
-             */
-            if (obj_index
-                [real_object(QuestList[Class][GET_LEVEL(ch, Class)].item)].
-                number > 5 && GET_LEVEL(ch, Class) < 40)
-                obj_index[real_object
-                          (QuestList[Class][GET_LEVEL(ch, Class)].item)].
-                    number = 0;
-
-            return (FALSE);
-        } else {
-            GainLevel(ch, Class);
-            return (TRUE);
-        }
-    } else {
-        return (FALSE);
     }
 #endif
     return (FALSE);
@@ -3625,8 +3562,8 @@ int ABShout(struct char_data *ch, int cmd, char *arg,
 int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
                     struct char_data *mob, int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -3662,8 +3599,8 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
          *
          * determine the correct obj 
          */
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name) {
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name) {
             send_to_char("Give what?\n\r", ch);
             return (FALSE);
         }
@@ -3673,8 +3610,8 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
 
-        arg = one_argument(arg, vict_name);
-        if (!*vict_name) {
+        arg = get_argument(arg, &vict_name);
+        if (!vict_name) {
             send_to_char("To who?\n\r", ch);
             return (FALSE);
         }
@@ -3701,7 +3638,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
         /*
          * The object is not the Ankh of Posereisn 
          */
-        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+        if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != 28180)) {
                 sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
                 do_tell(vict, buf, 19);
@@ -4832,14 +4769,15 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj,
            int type)
 {
     struct obj_data *port;
-    char            obj_name[50];
+    char           *obj_name;
 
     if (type == PULSE_COMMAND) {
         if (cmd != ENTER) {
             return (FALSE);
         }
-        arg = one_argument(arg, obj_name);
-        if (!(port = get_obj_in_list_vis(ch, obj_name,
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name ||
+            !(port = get_obj_in_list_vis(ch, obj_name,
                                          real_roomp(ch->in_room)->contents))) {
             return (FALSE);
         }
@@ -5336,56 +5274,67 @@ int SlotMachine(struct char_data *ch, int cmd, char *arg,
 }
 
 
+int astral_destination[] = {
+    41925,     /* mob 2715 */
+    21108,     /* mob 2716 */
+    1474,      /* ... */
+    1633,
+    4109,
+    5000,
+    5126,
+    5221,
+    6513,
+    7069,
+    6601,
+    9359,
+    13809,
+    16925,
+    20031,
+    27431,
+    21210,
+    25041,    /* mob 2732 */
+    26109,    /* mob 2733 */
+    18233,
+    15841,
+    13423,
+    44980,    /* mob 2737 */
+    31908,    /* Ash's winterfell */
+    49302    /* Tarantis Bazaar */
+};
+int astral_dest_count = NELEMS(astral_destination);
+
 int astral_portal(struct char_data *ch, int cmd, char *arg,
                   struct char_data *mob, int type)
 {
-    int             destination[25];
-    char            buf[50];
+    char           *arg1;
+    char            buf[255];
+    int             i;
     int             j;
     struct char_data *portal;
 
-    destination[0] = 41925;     /* mob 2715 */
-    destination[1] = 21108;     /* mob 2716 */
-    destination[2] = 1474;      /* ... */
-    destination[3] = 1633;
-    destination[4] = 4109;
-    destination[5] = 5000;
-    destination[6] = 5126;
-    destination[7] = 5221;
-    destination[8] = 6513;
-    destination[9] = 7069;
-    destination[10] = 6601;
-    destination[11] = 9359;
-    destination[12] = 13809;
-    destination[13] = 16925;
-    destination[14] = 20031;
-    destination[15] = 27431;
-    destination[16] = 21210;
-    destination[17] = 25041;    /* mob 2732 */
-    destination[18] = 26109;    /* mob 2733 */
-    destination[19] = 18233;
-    destination[20] = 15841;
-    destination[21] = 13423;
-    destination[22] = 44980;    /* mob 2737 */
-    destination[23] = 31908;    /* Ash's winterfell */
-    destination[24] = 49302;    /* Tarantis Bazaar */
     /*
      * To add another color pool, create another mobile (2733, etc) and
      * add another destination.  
      */
 
     if (cmd != 7) {
-        return (FALSE);         
         /* 
          * enter 
          */
+        return (FALSE);
     }
 
-
-    one_argument(arg, buf);
-    if (*buf && (is_abbrev(buf, "pool") || is_abbrev(buf, "color pool")) && 
+    arg = get_argument(arg, &arg1);
+    if (arg1 && (is_abbrev(arg1, "pool") || is_abbrev(arg1, "color pool")) && 
         (portal = get_char_room("color pool", ch->in_room))) {
-        j = destination[mob_index[portal->nr].virtual - AST_MOB_NUM];
+        i = mob_index[portal->nr].virtual - AST_MOB_NUM;
+        if( i < 0 || i >= astral_dest_count ) {
+            sprintf( buf, "Astral destination bugger-up: index %d", i );
+            Log(buf);
+            return(FALSE);
+        }
+
+        j = astral_destination[i];
         if (j > 0 && j < 50000) {
             send_to_char("\n\r", ch);
             send_to_char("You attempt to enter the pool, and it gives.\n\r",
@@ -5424,7 +5373,9 @@ const int       post_list[] = {
     32803,
     32802
 };
-const int       destination[] = {
+int post_count = NELEMS(post_list);
+
+const int       post_destination[] = {
     31804,
     33180,
     32300,
@@ -5446,7 +5397,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
 {
     int             check = -1,
                     x = 0;
-    char            buf[50];
+    char           *arg1;
     int             j;
     struct char_data *post;
 
@@ -5457,18 +5408,17 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    one_argument(arg, buf);
-    if (*buf) {
-        *buf = tolower(*buf);
-        if (!str_cmp("post", buf) || !str_cmp("ethereal", buf) ||
-            !str_cmp("ethereal post", buf)) {
+    arg = get_argument(arg, &arg1);
+    if (arg1) {
+        if (!str_cmp("post", arg1) || !str_cmp("ethereal", arg1) ||
+            !str_cmp("ethereal post", arg1)) {
             if ((post = get_char_room("ethereal post", ch->in_room))) {
                 /*
                  * Check to see where the post is going 
                  */
                 check = -1;
 
-                for (x = 0; x < 14; x++) {
+                for (x = 0; x < post_count; x++) {
                     if (mob_index[post->nr].virtual == post_list[x]) {
                         check = x;
                     }
@@ -5486,7 +5436,7 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg,
                     return (TRUE);
                 }
 
-                j = destination[check];
+                j = post_destination[check];
 
                 send_to_char("You touch the strange post and suddenly feel "
                              "your mind", ch);
@@ -5511,18 +5461,17 @@ int board_ship(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {
     int             j;
-    char            buf[256];
+    char           *arg1;
     struct char_data *ship;
 
     if (cmd != 620) {
         return (FALSE);
     }
 
-    one_argument(arg, buf);
-    if (*buf) {
-        *buf = tolower(*buf);
-        if ((!str_cmp("ship", buf) || !str_cmp("corsair", buf) || 
-             !str_cmp("corsair ship", buf)) &&  
+    arg = get_argument(arg, &arg1);
+    if (arg1) {
+        if ((!str_cmp("ship", arg1) || !str_cmp("corsair", arg1) || 
+             !str_cmp("corsair ship", arg1)) &&  
             (ship = get_char_room("corsair ship", ch->in_room))) {
             j = 32033;
 

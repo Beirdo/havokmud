@@ -96,8 +96,8 @@ void get(struct char_data *ch, struct obj_data *obj_object,
 
 void do_get(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg1[MAX_STRING_LENGTH];
-    char            arg2[MAX_STRING_LENGTH];
+    char           *arg1;
+    char           *arg2;
     char            buffer[MAX_STRING_LENGTH];
     struct obj_data *sub_object,
                    *obj_object,
@@ -113,16 +113,17 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_get");
 
-    argument_interpreter(argument, arg1, arg2);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
 
     /*
      * get type
      */
-    if (!*arg1) {
+    if (!arg1) {
         type = 0;
     }
 
-    if (*arg1 && !*arg2) {
+    if (arg1 && !arg2) {
         if (!str_cmp(arg1, "all")) {
             /*
              * plain "get all"
@@ -136,7 +137,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (*arg1 && *arg2) {
+    if (arg1 && arg2) {
         if (!str_cmp(arg1, "all")) {
             if (!str_cmp(arg2, "all")) {
                 /*
@@ -465,7 +466,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 
 void do_drop(struct char_data *ch, char *argument, int cmd)
 {
-    char            arg[MAX_INPUT_LENGTH + 80];
+    char           *arg;
     int             amount;
     char            buffer[MAX_STRING_LENGTH];
     struct obj_data *tmp_object;
@@ -477,26 +478,26 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_drop");
 
-    argument = one_argument(argument, arg);
-    if (is_number(arg)) {
+    argument = get_argument(argument, &arg);
+    if (arg && is_number(arg)) {
         amount = advatoi(arg);
-#if 0
-        atoi(arg);
-#endif
-        argument = one_argument(argument, arg);
+        argument = get_argument(argument, &arg);
 
-        if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0) {
+        if (arg && str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0) {
             send_to_char("Do you mean 'drop <number> coins' ?\n\r", ch);
             return;
         }
+
         if (amount < 0) {
             send_to_char("Sorry, you can't do that!\n\r", ch);
             return;
         }
+
         if (GET_GOLD(ch) < amount) {
             send_to_char("You haven't got that many coins!\n\r", ch);
             return;
         }
+
         sprintf(buffer, "You drop %s coins.\n\r", formatNum(amount));
         send_to_char(buffer, ch);
         if (amount == 0) {
@@ -509,11 +510,9 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         GET_GOLD(ch) -= amount;
         return;
     }
-    /*
-     * else { only_argument(argument, arg); }
-     */
-    if (*arg) {
-        if (!str_cmp(arg, "all")) {
+
+    if (arg) {
+        if (!strcmp(arg, "all")) {
             for (tmp_object = ch->carrying;
                  tmp_object; tmp_object = next_obj) {
                 next_obj = tmp_object->next_content;
@@ -542,7 +541,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                 act("You drop everything you own.", 1, ch, 0, 0, TO_CHAR);
                 act("$n drops everything $e owns.", 1, ch, 0, 0, TO_ROOM);
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         } else {
@@ -591,7 +590,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                     num--;
                 }
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         }
@@ -603,8 +602,8 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 void do_put(struct char_data *ch, char *argument, int cmd)
 {
     char            buffer[256];
-    char            arg1[128];
-    char            arg2[128];
+    char           *arg1;
+    char           *arg2;
     struct obj_data *obj_object;
     struct obj_data *sub_object;
     struct obj_data *tmp_object;
@@ -617,10 +616,11 @@ void do_put(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_put");
 
-    argument_interpreter(argument, arg1, arg2);
+    argument = get_argument(argument, &arg1);
+    argument = get_argument(argument, &arg2);
 
-    if (*arg1) {
-        if (*arg2) {
+    if (arg1) {
+        if (arg2) {
             if (getall(arg1, newarg) == TRUE) {
                 num = -1;
                 strcpy(arg1, newarg);
@@ -684,13 +684,8 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                 }
             } else {
                 while (num != 0) {
-#if 1
                     bits = generic_find(arg1, FIND_OBJ_INV, ch, &tmp_char,
                                         &obj_object);
-#else
-                    obj_object = get_obj_in_list_vis(ch, arg1, ch->carrying);
-#endif
-
                     if (obj_object) {
                         if (IS_OBJ_STAT(obj_object, ITEM_NODROP)) {
                             if (singular(obj_object)) {
@@ -736,17 +731,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                             }
                                             obj_to_obj(obj_object, sub_object);
                                         }
-#if 0
-                                        else {
-                                            /*
-                                             * This isn't used
-                                             */
-                                             obj_from_room(obj_object);
-                                             obj_to_obj(obj_object,
-                                             sub_object);
 
-                                        }
-#endif
                                         act("$n puts $p in $P", TRUE, ch,
                                             obj_object, sub_object, TO_ROOM);
                                         num--;
@@ -789,7 +774,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         num = 0;
                     }
                 }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
                 do_save(ch, "", 0);
 #endif
             }
@@ -802,22 +787,13 @@ void do_put(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-#if 0
-int newstrlen(char *p)
-{
-    int             i;
-
-    for (i = 0; i < 10 && *p; i++, p++);
-    return (i);
-}
-#endif
 
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
-    char            obj_name[200],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[132];
-    char            arg[80],
+    char           *arg,
                     newarg[100];
     int             amount,
                     num,
@@ -828,24 +804,22 @@ void do_give(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_give");
 
-    argument = one_argument(argument, obj_name);
+    argument = get_argument(argument, &obj_name);
+    if( !obj_name ) {
+        send_to_char("Give what to who?\n\r", ch);
+        return;
+    }
+
     obj = get_obj_in_list_vis(ch, obj_name, ch->carrying);
-    /*
-     * sprintf(buf,"obj_name: %s",obj_name);
-     */
     if (!obj && is_number(obj_name)) {
         if (strnlen(obj_name, 10) == 10) {
             obj_name[10] = '\0';
         }
         amount = advatoi(obj_name);
-        /*
-         * atoi(obj_name);
-         */
-        argument = one_argument(argument, arg);
+        argument = get_argument(argument, &arg);
 
-        if (str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 &&
-            str_cmp("gold", arg) != 0)
-        {
+        if (arg && str_cmp("coins", arg) != 0 && str_cmp("coin", arg) != 0 &&
+            str_cmp("gold", arg) != 0) {
             send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r",
                          ch);
             return;
@@ -855,15 +829,16 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             send_to_char("Sorry, you can't do that!\n\r", ch);
             return;
         }
+
         if (GET_GOLD(ch) < amount &&
             (IS_NPC(ch) || GetMaxLevel(ch) < DEMIGOD)) {
             send_to_char("You haven't got that many coins!\n\r", ch);
             return;
         }
 
-        argument = one_argument(argument, vict_name);
+        argument = get_argument(argument, &vict_name);
 
-        if (!*vict_name) {
+        if (!vict_name) {
             send_to_char("To who?\n\r", ch);
             return;
         }
@@ -872,6 +847,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             send_to_char("To who?\n\r", ch);
             return;
         }
+
         sprintf(buf, "You give %s gold coins to %s.\n\r", formatNum(amount),
                 PERS(vict, ch));
         send_to_char(buf, ch);
@@ -879,20 +855,23 @@ void do_give(struct char_data *ch, char *argument, int cmd)
                 formatNum(amount));
         send_to_char(buf, vict);
         act("$n gives some gold coins to $N.", 1, ch, 0, vict, TO_NOTVICT);
+
         if (IS_NPC(ch) || GetMaxLevel(ch) < DEMIGOD) {
             GET_GOLD(ch) -= amount;
         }
+
         GET_GOLD(vict) += amount;
         save_char(ch, AUTO_RENT);
+
         if (GET_GOLD(vict) > 500000 && amount > 100000) {
             sprintf(buf, "%s gave %d coins to %s", GET_NAME(ch), amount,
                     GET_NAME(vict));
             Log(buf);
         }
     } else {
-        argument = one_argument(argument, vict_name);
+        argument = get_argument(argument, &vict_name);
 
-        if (!*obj_name || !*vict_name) {
+        if (!vict_name) {
             send_to_char("Give what to who?\n\r", ch);
             return;
         }
@@ -976,7 +955,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             }
 
         }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
         do_save(ch, "", 0);
         do_save(vict, "", 0);
 #endif
@@ -989,22 +968,21 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
     const int       donations1 = 13510;
     const int       donations2 = 99;
 
-    char            arg[MAX_INPUT_LENGTH + 80];
+    char           *arg;
     int             value;
     char            buffer[MAX_STRING_LENGTH];
     struct obj_data *tmp_object;
     struct obj_data *next_obj;
     bool            test = FALSE;
     char            newarg[1000];
-    char           *s;
     int             num,
                     p;
 
     dlog("in do_donate");
 
-    s = one_argument(argument, arg);
+    argument = get_argument(argument, &arg);
 
-    if (*arg) {
+    if (arg) {
         if (!str_cmp(arg, "all")) {
             value = 0;
             for (tmp_object = ch->carrying;
@@ -1013,8 +991,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                 if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
                     obj_from_char(tmp_object);
                     obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
-                                donations1 :
-                                donations2);
+                                donations1 : donations2);
                     value += ((tmp_object->obj_flags.cost) * 10 / 100);
                     test = TRUE;
                 } else {
@@ -1040,7 +1017,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     0, 0, TO_CHAR);
                 act("$n donates everything he carries!.", 1, ch, 0, 0, TO_ROOM);
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
         } else {
@@ -1070,8 +1047,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                             tmp_object, 0, TO_ROOM);
                         obj_from_char(tmp_object);
                         obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
-                                    donations1 :
-                                    donations2);
+                                    donations1 : donations2);
                         value += ((tmp_object->obj_flags.cost) * 10 / 100);
                     } else {
                         if (singular(tmp_object)) {
@@ -1095,7 +1071,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     num--;
                 }
             }
-#if   NODUPLICATES
+#ifdef NODUPLICATES
             do_save(ch, "", 0);
 #endif
             /*

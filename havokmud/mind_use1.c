@@ -130,12 +130,7 @@ void mind_use_telekinesis(int level, struct char_data *ch, char *arg,
             /*
              * get the argument, parse it into a direction 
              */
-            for (; *arg == ' '; arg++) {
-                /* 
-                 * Empty loop 
-                 */
-            }
-
+            arg = skip_spaces(arg);
             if (!*arg) {
                 mind_telekinesis(level, ch, victim, i);
                 return;

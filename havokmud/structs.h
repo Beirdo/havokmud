@@ -137,28 +137,6 @@ struct QuestItem {
 };
 
 /*
- * tailoring stuff
- */
-                /*
-                 * I define all these as TRUE, see makefile for more info
-                 */
-
-#define LIMITED_ITEMS 1
-#define SITELOCK      1
-#define NODUPLICATES  1
-#define EGO           1
-#define LEVEL_LOSS      1
-#define NEWEXP          1
-#define NEWGAIN         1
-#define LOW_GOLD        1
-#define ZONE_COMM_ONLY  1
-#define PREVENT_PKILL 1
-#define PERSONAL_PERM_LOCKOUTS  1
-#define LAG_MOBILES     1
-
-#define WEAPONSKLZ 1
-
-/*
  * efficiency stuff
  */
 #define MIN_GLOB_TRACK_LEV 31   /* mininum level for global track */
@@ -320,7 +298,6 @@ struct QuestItem {
 
 #define ABS_MAX_LVL  70
 #define MAX_MORT     50
-#define LOW_IMMORTAL 51
 #define IMMORTAL     51
 #define CREATOR      52
 #define SAINT        53
@@ -330,7 +307,6 @@ struct QuestItem {
 #define GREATER_GOD  57
 #define SILLYLORD    58
 #define IMPLEMENTOR  59
-#define BIG_GUY      60
 #define MAX_IMMORT   60
 #define NEVER_USE    61
 
@@ -2255,6 +2231,17 @@ struct class_def {
     struct skillset mainskills[64];
     struct title_type titles[ABS_MAX_LVL];
 };
+
+/*
+ **  just for polymorph spell(s)
+ */
+
+struct PolyType {
+    char            name[20];
+    int             level;
+    long            number;
+};
+
 
 #endif
 

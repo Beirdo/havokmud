@@ -115,7 +115,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
                     FALSE, re, obj, ch, TO_VICT);
                 cost->ok = FALSE;
             } else {
-#if NODUPLICATES
+#ifdef NODUPLICATES
 #else
                 act("Sorry, but $p don't keep in storage.", FALSE, ch, obj,
                     0, TO_CHAR);
@@ -181,7 +181,7 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         return (FALSE);
     }
 
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
     if (limited_items > MaxLimited(GetMaxLevel(ch))) {
         if (receptionist) {
             sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'Sorry, but I can't"
@@ -301,16 +301,14 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
     } 
 #endif
      
-#if NEW_RENT
+#ifdef NEW_RENT
     /*
      * RENTAL COST ADJUSTMENT 
      */
     cost->total_cost = 100;
-#else
 #endif
 
     if (receptionist) {
-#if 1
         discount = 0;
         /* 
          * (GH) discounts for same race and 
@@ -362,7 +360,6 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
             cost->total_cost = 1;
             act(buf, FALSE, receptionist, 0, ch, TO_VICT);
         }
-#endif
 
         sprintf(buf, "$c0013[$c0015$n$c0013] tells you 'It will cost you %d "
                      "coin%s per day.'", cost->total_cost, 
@@ -396,10 +393,10 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
         act(buf, FALSE, receptionist, 0, ch, TO_VICT);
 
         if (cost->total_cost > GET_GOLD(ch)) {
-            if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+            if (!IS_IMMORTAL(ch)) {
                 act("$c0013[$c0015$n$c0013] tells you 'Which I can see you "
                     "can't afford'", FALSE, receptionist, 0, ch, TO_VICT);
-            } else if (GetMaxLevel(ch) > LOW_IMMORTAL) {
+            } else {
                 act("$c0013[$c0015$n$c0013] tells you 'Well, since you're a "
                     "God, I guess it's okay'", FALSE, receptionist, 0, ch, 
                     TO_VICT);
@@ -439,7 +436,7 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
 
 #if 0
     /*
-     * this appears to fuck with saving for polies.. not exactly sure why. 
+     * this appears to interfere with saving for polies.. not exactly sure why. 
      * (jdb) 
      */
     if (IS_SET(ch->specials.act, ACT_POLYSELF))
@@ -889,16 +886,14 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     }
 
     if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
-#if NODUPLICATES
-#else
+#ifndef NODUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
     } else if (obj->obj_flags.cost_per_day < 0) {
 
-#if NODUPLICATES
-#else
+#ifndef NODUPLICATES
         if (ch != '/0') {
             sprintf(buf, "You're told: '%s is just old junk, I'll throw it "
                          "away for you.'\n\r", obj->short_description);
@@ -949,16 +944,14 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
     obj_to_store(obj->next_content, st, ch, delete);
 
     if (obj->obj_flags.timer < 0 && obj->obj_flags.timer != OBJ_NOTIMER) {
-#if NODUPLICATES
-#else
+#ifndef NODUPLICATES
         sprintf(buf, "You're told: '%s is just old junk, I'll throw it away "
                      "for you.'\n\r", obj->short_description);
         send_to_char(buf, ch);
 #endif
     } else if (obj->obj_flags.cost_per_day < 0) {
 
-#if NODUPLICATES
-#else
+#ifndef NODUPLICATES
         if (ch != '\0') {
             sprintf(buf, "You're told: '%s is just old junk, I'll throw it "
                          "away for you.'\n\r", obj->short_description);
@@ -1146,7 +1139,7 @@ void update_obj_file(void)
                     sprintf(buf, "   Deautorenting %s", st.owner);
                     Log(buf);
 
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
                     CountLimitedItems(&st);
 #endif
                     rewind(char_file);
@@ -1185,12 +1178,12 @@ void update_obj_file(void)
                         rewind(fl);
                         WriteObjs(fl, &st);
                         fclose(fl);
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
                         CountLimitedItems(&st);
 #endif
                     }
                 } else {
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
                     CountLimitedItems(&st);
 #endif
                     sprintf(buf, "  same day update on %s", st.owner);
@@ -1518,11 +1511,7 @@ void load_char_extra(struct char_data *ch)
 
             if( s ) {
                 /* eat leading spaces and trailing carriage return/linefeed */
-                for (; isspace(*s); s++) {
-                    /*
-                     * Empty loop
-                     */
-                }
+                s = skip_spaces(s);
 
                 while(strchr(s, '\n')) {
                     *(strchr(s, '\n')) = '\0';

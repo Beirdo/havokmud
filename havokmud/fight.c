@@ -55,7 +55,7 @@ char            DestroyedItems; /* set in MakeScraps */
 /*
  * External structures
  */
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
@@ -729,9 +729,10 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
                     diff,
                     d2;
 
-    if (IS_NPC(ch)) {
+    if (IS_NPC(ch) || IS_IMMORTAL(ch) ) {
         return;
     }
+
     if (IS_GOOD(ch) && (IS_GOOD(victim))) {
         change = (GET_ALIGNMENT(victim) / 200) *
                  (MAX(1, GetMaxLevel(victim) - GetMaxLevel(ch)));
@@ -757,7 +758,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_DRUID) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_DRUID)) {
         diff = 0 - GET_ALIGNMENT(ch);
         d2 = 0 - (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -784,7 +785,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
 
     }
 
-    if (HasClass(ch, CLASS_PALADIN) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_PALADIN)) {
         diff = GET_ALIGNMENT(ch);
         d2 = (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -810,7 +811,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_RANGER)) {
         diff = GET_ALIGNMENT(ch);
         d2 = (GET_ALIGNMENT(ch) - change);
         if (diff < 0) {
@@ -838,7 +839,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
 
     GET_ALIGNMENT(ch) -= change;
 
-    if (HasClass(ch, CLASS_DRUID) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_DRUID)) {
         if (GET_ALIGNMENT(ch) > 350 || GET_ALIGNMENT(ch) < -350) {
             send_to_char("The Patron of Druids and Rangers, has "
                          "excommunicated you for your heresies.\n\r", ch);
@@ -854,8 +855,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
             /*
              * Used for the Dr/Ra Multiclass
              */
-            if (HasClass(ch, CLASS_RANGER)
-                && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+            if (HasClass(ch, CLASS_RANGER)) {
                 send_to_char("The Patron of Rangers has excommunicated "
                              "you for your heresies.\n\r", ch);
                 send_to_char("You are forever more a mere warrior!\n\r", ch);
@@ -870,7 +870,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_PALADIN) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_PALADIN)) {
         if (GET_ALIGNMENT(ch) < 350) {
             send_to_char("The Patron of Paladins has excommunicated you "
                          "for your heresies.\n\r", ch);
@@ -885,7 +885,7 @@ void change_alignment(struct char_data *ch, struct char_data *victim)
         }
     }
 
-    if (HasClass(ch, CLASS_RANGER) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+    if (HasClass(ch, CLASS_RANGER)) {
         if (GET_ALIGNMENT(ch) < -350) {
             send_to_char("The Patron of Rangers has excommunicated "
                          "you for your heresies\n\r", ch);
@@ -957,9 +957,12 @@ void raw_kill(struct char_data *ch, int killedbytype)
     /*
      * give them some food and water so they don't whine.
      */
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_COND(ch, THIRST) = 20;
         GET_COND(ch, FULL) = 20;
+    } else {
+        GET_COND(ch, THIRST) = -1;
+        GET_COND(ch, FULL) = -1;
     }
 
     /*
@@ -1022,11 +1025,11 @@ void die(struct char_data *ch, int killedbytype)
                  */
             }
         }
-#if LEVEL_LOSS
-
+#ifdef LEVEL_LOSS
+        
         for (i = 0; i < MAX_CLASS; i++) {
             if (GET_LEVEL(ch, i) > 1) {
-                if (GET_LEVEL(ch, i) >= LOW_IMMORTAL) {
+                if (IS_IMMORTAL(ch)) {
                     break;
                 }
                 if (GET_EXP(ch) <
@@ -1059,7 +1062,7 @@ void die(struct char_data *ch, int killedbytype)
 
         GET_LEADERSHIP_EXP(ch) -= GET_LEADERSHIP_EXP(ch) / 2;
 
-#if LEVEL_LOSS
+#ifdef LEVEL_LOSS
 
         /*
          * warn people if their next death will result in a level loss
@@ -1399,17 +1402,13 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
         if (*str == '#') {
             switch (*(++str)) {
             case 'W':
-                for (; *weapon; *(cp++) = *(weapon++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*weapon) {
+                    *(cp++) = *(weapon++);
                 }
                 break;
             case 'w':
-                for (; *weapon_s; *(cp++) = *(weapon_s++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*weapon_s) {
+                    *(cp++) = *(weapon_s++);
                 }
                 break;
 
@@ -1417,17 +1416,13 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
                  * added this to show where the person was hit
                  */
             case 'L':
-                for (; *location_hit; *(cp++) = *(location_hit++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*location_hit) {
+                    *(cp++) = *(location_hit++);
                 }
                 break;
             case 'l':
-                for (; *location_hit_s; *(cp++) = *(location_hit_s++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*location_hit_s) {
+                    *(cp++) = *(location_hit_s++);
                 }
                 break;
 
@@ -1930,11 +1925,11 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type)
         REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
     }
 
-#if PREVENT_PKILL
+#ifdef PREVENT_PKILL
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         (IS_PC(v) || IS_SET(v->specials.act, ACT_POLYSELF)) &&
         (ch != v) && !CanFightEachOther(ch, v)) {
-        act("Your attack seems usless against $N!", FALSE, ch, 0, v, TO_CHAR);
+        act("Your attack seems useless against $N!", FALSE, ch, 0, v, TO_CHAR);
         act("The attack from $n is futile!", FALSE, ch, 0, v, TO_VICT);
         dam = -1;
     }
@@ -2627,9 +2622,7 @@ int GetWeaponType(struct char_data *ch, struct obj_data **wielded)
 {
     int             w_type;
 
-    if (ch->equipment[WIELD] &&
-        (ch->equipment[WIELD]->obj_flags.type_flag == ITEM_WEAPON)) {
-
+    if (ch->equipment[WIELD] && IS_WEAPON(ch->equipment[WIELD])) {
         *wielded = ch->equipment[WIELD];
         w_type = Getw_type(*wielded);
     } else {
@@ -2719,7 +2712,7 @@ int HitCheckDeny(struct char_data *ch, struct char_data *victim, int type,
         return (TRUE);
     }
 
-#if PREVENT_PKILL
+#ifdef PREVENT_PKILL
     /*
      * this should help stop pkills
      */
@@ -3529,7 +3522,6 @@ void perform_violence(int pulse)
                     }
 
                     if (x > .01) {
-#if 1
                         /*
                          * check to see if the chance to make the last
                          * attack is successful
@@ -3539,14 +3531,6 @@ void perform_violence(int pulse)
                             ch->specials.fighting) {
                             hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
                         }
-#else
-                        /*
-                         * lets give them the hit
-                         */
-                        if (ch->specials.fighting) {
-                            hit(ch, ch->specials.fighting, TYPE_UNDEFINED);
-                        }
-#endif
                     }
 
                     if (tmp) {
@@ -3556,7 +3540,6 @@ void perform_violence(int pulse)
                         equip_char(ch, tmp2, HOLD);
                     }
 
-#if 1
                     /*
                      * check for the second attack
                      */
@@ -3700,7 +3683,6 @@ void perform_violence(int pulse)
                             }
                         }
                     }
-#endif
                 } else {
                     /*
                      * We are a NPC
@@ -5196,7 +5178,7 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
     if (IS_NPC(v) && (IS_SET(v->specials.act, ACT_IMMORTAL))) {
         amnt = -1;
     }
-#if 1
+
     if (IS_PC(v) && IS_LINKDEAD(v) &&
         (attacktype == TYPE_SUFFERING || attacktype == SPELL_DECAY ||
          attacktype == SPELL_DISEASE || attacktype == SPELL_POISON ||
@@ -5206,7 +5188,6 @@ int SkipImmortals(struct char_data *v, int amnt, int attacktype)
          */
         amnt = -1;
     }
-#endif
 
     return (amnt);
 
@@ -5981,8 +5962,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                 if (rng == 0) {
                     hit(targ, ch, TYPE_UNDEFINED);
                 } else {
-
-#if 1
                     cdir = can_see_linear(targ, ch, &rang, &cdr);
                     if (!(targ->specials.charging) && number(1, 10) < 4 &&
                         cdir != -1 && GET_POS(targ) == POSITION_STANDING) {
@@ -5995,7 +5974,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                         targ->specials.charging = ch;
                         targ->specials.charge_dir = cdr;
                     }
-#endif
                 }
             }
         }
@@ -6017,7 +5995,6 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
             WeaponSpell(ch, targ, missile, TYPE_RANGE_WEAPON);
         }
 
-#if 1
         if (GET_POS(targ) != POSITION_FIGHTING &&
             GET_POS(targ) > POSITION_STUNNED && IS_NPC(targ) &&
             !targ->specials.charging) {
@@ -6035,9 +6012,9 @@ int range_hit(struct char_data *ch, struct char_data *targ, int rng, struct
                 }
             }
         }
-#endif
         return 1;
     }
+    return 0;
 }
 
 void raw_kill_arena(struct char_data *ch)

@@ -9,14 +9,12 @@
 #include "hash.h"
 #include "heap.h"
 #include "interpreter.h"
-#include "poly.h"
 #include "race.h"
 #include "script.h"
 #include "spells.h"
 #include "trap.h"
 #include "utils.h"
 #include "vt100c.h"
-#include "wizlist.h"
 #include "parser.h"
 #include "mail.h"
 #include "dimd.h"
@@ -137,8 +135,6 @@ void            do_resize(struct char_data *ch, char *arg, int cmd);
 void            ScreenOff(struct char_data *ch);
 void            do_display(struct char_data *ch, char *arg, int cmd);
 int             singular(struct obj_data *o);
-void            argument_split_2(char *argument, char *first_arg,
-                                 char *second_arg);
 struct obj_data *get_object_in_equip_vis(struct char_data *ch, char *arg,
                                          struct obj_data *equipment[],
                                          int *j);
@@ -573,7 +569,6 @@ struct room_data *real_roomp(long virtual);
 int             real_mobile(int virtual);
 int             real_object(int virtual);
 int             ObjRoomCount(int nr, struct room_data *rp);
-int             str_len(char *buf);
 int             load(void);
 void            gr(int s);
 int             workhours(void);
@@ -805,14 +800,12 @@ int             search_block(char *arg, char **list, bool exact);
 int             old_search_block(char *argument, int begin, int length,
                                  char **list, int mode);
 void            command_interpreter(struct char_data *ch, char *argument);
-void            argument_interpreter(char *argument, char *first_arg,
-                                     char *second_arg);
+char           *get_argument(char *line_in, char **arg_out);
+char           *get_argument_nofill(char *line_in, char **arg_out);
+char           *get_argument_delim(char *line_in, char **arg_out, char delim);
 int             is_number(char *str);
-char           *one_argument(char *argument, char *first_arg);
-void            only_argument(char *argument, char *dest);
 int             fill_word(char *argument);
 int             is_abbrev(char *arg1, char *arg2);
-void            half_chop(char *string, char *arg1, char *arg2);
 int             special(struct char_data *ch, int cmd, char *arg);
 void            assign_command_pointers(void);
 int             find_name(char *name);
@@ -1397,7 +1390,6 @@ void            bisect_arg(char *arg, int *field, char *string);
 void            do_edit(struct char_data *ch, char *arg, int cmd);
 
 void            do_setskill(struct char_data *ch, char *arg, int cmd);
-char           *one_word(char *argument, char *first_arg);
 void            page_string(struct descriptor_data *d, char *str,
                             int keep_internal);
 
@@ -1877,7 +1869,7 @@ int             Summoner(struct char_data *ch, int cmd, char *arg,
                          struct char_data *mob, int type);
 int             monk(struct char_data *ch, int cmd, char *arg,
                      struct char_data *mob, int type);
-void            invert(char *arg1, char *arg2);
+char           *invert(char *arg1);
 int             jive_box(struct char_data *ch, int cmd, char *arg,
                          struct obj_data *obj, int type);
 int             godsay(struct char_data *ch, int cmd, char *argument,
@@ -2241,6 +2233,7 @@ bool            saves_spell(struct char_data *ch, sh_int save_type);
 bool            ImpSaveSpell(struct char_data *ch, sh_int save_type,
                              int mod);
 char           *skip_spaces(char *string);
+char           *skip_word(char *string);
 void            do_cast(struct char_data *ch, char *argument, int cmd);
 void            assign_spell_pointers(void);
 void            SpellWearOffSoon(int s, struct char_data *ch);
@@ -3521,8 +3514,6 @@ int clearpath(struct char_data *ch, long room, int direc);
 long            CalcPowerLevel(struct char_data *ch);
 char           *PowerLevelDesc(long a);
 int find_door(struct char_data *ch, char *type, char *dir);
-void three_arg(char *argument, char *first_arg, char *second_arg,
-               char *third_arg);
 int TotalMemorized(struct char_data *ch);
 int TotalMaxCanMem(struct char_data *ch);
 void list_init(struct descriptor_data *d);
@@ -4176,6 +4167,12 @@ void show_skills(struct char_data *ch, char *buffer,
 
 void            do_mobTell2(struct char_data *ch,
                             struct char_data *mob, char *sentence);
+
+FILE           *MakeZoneFile(struct char_data *c, int zone);
+int             SaveZoneFile(FILE * fp, int start_room, int end_room);
+FILE           *OpenZoneFile(struct char_data *c, int zone);
+void            insert_object(struct obj_data *obj, long vnum);
+void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 
 #if defined( __CYGWIN__ )
 /* Since stupid cygwin doesn't define this in the standard place */

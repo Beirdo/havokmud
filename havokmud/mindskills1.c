@@ -49,7 +49,7 @@ void mind_burn(int level, struct char_data *ch,
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
             if (!in_group(ch, tmp_victim)) {
@@ -134,7 +134,7 @@ void mind_teleport(int level, struct char_data *ch,
     do_look(ch, "", 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+        !IS_IMMORTAL(ch)) {
         NailThisSucker(ch);
         return;
     }
@@ -227,7 +227,7 @@ void mind_clairvoyance(int level, struct char_data *ch,
         }
 
         af.type = SKILL_CLAIRVOYANCE;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_SCRYING;
@@ -410,7 +410,7 @@ void mind_cell_adjustment(int level, struct char_data *ch,
         GET_HIT(victim) += 100;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         act("You are overcome by exhaustion.", FALSE, ch, 0, 0, TO_CHAR);
         act("$n slumps to the ground exhausted.", FALSE, ch, 0, 0, TO_ROOM);
         WAIT_STATE(ch, PULSE_VIOLENCE * 12);
@@ -637,7 +637,7 @@ void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     int             dam,
-                    fulldam,
+                    rdam,
                     count = 0;
     struct char_data *tmp_victim,
                    *temp;
@@ -645,48 +645,41 @@ void mind_ultra_blast(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 1) && (level <= ABS_MAX_LVL));
 
-    /*
-     * damage = level d4, +level 
-     */
-    dam = dice(level, 4);
-    dam += level;
-    fulldam = dam;
+    dam = dice(level, 4) + level;
+    rdam = dam;
 
     act("You blast out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, victim, TO_CHAR);
     act("$n blasts out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
-        temp = tmp_victim->next;
-        dam = fulldam;
-        count ++;
+    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim; 
+         tmp_victim = temp) {
+        temp = tmp_victim->next_in_room;
+        rdam = dam;
         if (count >= 7) {
             break;
         }
-        if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
+        if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
+            if (IS_IMMORTAL(tmp_victim)) {
+                return;
+            }
+            if (!in_group(ch, tmp_victim)) {
+                
+                count ++; 
                 if (!saves_spell(tmp_victim, SAVING_SPELL)) {
-                    /*
-                     * half damage if effected by TOWER OF IRON WILL 
-                     */
                     if (affected_by_spell(tmp_victim, SKILL_TOWER_IRON_WILL)) {
-                        dam >>= 1;
+                        rdam >>= 1;
                     }
-                    MissileDamage(ch, tmp_victim, dam, SKILL_ULTRA_BLAST);
+                    MissileDamage(ch, tmp_victim, rdam, SKILL_ULTRA_BLAST);
                 } else {
-                    dam >>= 1;  
-                    /* 
-                     * half dam 
-                     */
-                    /*
-                     * NO damage if effected by TOWER OF IRON WILL 
-                     */
+                    rdam >>= 1;  
                     if (affected_by_spell(tmp_victim, SKILL_TOWER_IRON_WILL)) {
-                        dam = 0;
+                        rdam = 0;
                     }
-                    MissileDamage(ch, tmp_victim, dam, SKILL_ULTRA_BLAST);
+                    MissileDamage(ch, tmp_victim, rdam, SKILL_ULTRA_BLAST);
                 }
+            
             } else {
                 act("You manage to get out of the way of the massive psionic "
                     "blast!", FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -756,14 +749,15 @@ void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
-    char            dir[MAX_INPUT_LENGTH];
-    char            otype[MAX_INPUT_LENGTH];
+    char           *dir;
+    char           *otype;
     struct obj_data *obj;
     struct char_data *victim;
 
-    argument_interpreter(arg, otype, dir);
+    arg = get_argument(arg, &otype);
+    arg = get_argument(arg, &dir);
 
-    if (!*arg) {
+    if (!otype) {
         send_to_char("Kinolock what?\n\r", ch);
         return;
     }
@@ -854,15 +848,15 @@ void mind_sense_object(int level, struct char_data *ch,
                          real_roomp(target->in_room)->zone) || 
                         (!IS_SET(SystemFlags, SYS_ZONELOCATE))) && 
                         !IS_IMMORTAL(target) && 
-                        !IS_SET(target->specials.act, ACT_PSI) && 
-                        GetMaxLevel(target) > GetMaxLevel(ch)) {
+                        !(IS_SET(target->specials.act, ACT_PSI) && 
+                          GetMaxLevel(target) > GetMaxLevel(ch))) {
                         room = target->in_room;
                     }
                 } else if (i->equipped_by) {
                     target = i->equipped_by;
                     if (!IS_IMMORTAL(target) && 
-                        !IS_SET(target->specials.act, ACT_PSI) && 
-                        GetMaxLevel(target) > GetMaxLevel(ch) && 
+                        !(IS_SET(target->specials.act, ACT_PSI) && 
+                          GetMaxLevel(target) > GetMaxLevel(ch)) && 
                         ((IS_SET(SystemFlags, SYS_ZONELOCATE) && 
                          real_roomp(ch->in_room)->zone ==
                          real_roomp(target->in_room)->zone) ||

@@ -9,6 +9,7 @@
 #endif
 
 #define NELEMS(x)   (sizeof(x) / sizeof(x[0]))
+#define OFFSETOF(type,elem) ((int)&(((type *)NULL)->elem))
 
 #define URANGE(a, b, c)          ((b) < (a) ? (a) : ((b) > (c) ? (c) : (b)))
 
@@ -256,7 +257,7 @@
 
 #define OUTSIDE(ch) (!IS_SET(real_roomp((ch)->in_room)->room_flags,INDOORS))
 
-#define IS_IMMORTAL(ch) (!IS_NPC(ch)&&(GetMaxLevel(ch)>=LOW_IMMORTAL))
+#define IS_IMMORTAL(ch) (!IS_NPC(ch) && (GetMaxLevel(ch) >= IMMORTAL))
 
 #define IS_POLICE(ch) ((mob_index[ch->nr].virtual == 3060) || \
                        (mob_index[ch->nr].virtual == 3069) || \

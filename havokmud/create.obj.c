@@ -205,9 +205,8 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
 
 void do_oedit(struct char_data *ch, char *argument, int cmd)
 {
-    char            name[20];
+    char           *name;
     struct obj_data *obj;
-    int             i;
 
     if (IS_NPC(ch)) {
         return;
@@ -222,6 +221,7 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     if (!ch->desc) {
         return;
     }
+
 #if 0    
     if (GetMaxLevel(ch) < GREATER_GOD && 
             !IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) { 
@@ -232,17 +232,12 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
      * this has been temporarilly removed... 
      */
 #endif
-    for (i = 0; *(argument + i) == ' '; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*(argument + i)) {
+
+    argument = get_argument(argument, &name);
+    if (!name) {
         send_to_char("Oedit what?\n\r", ch);
         return;
     }
-
-    argument = one_argument(argument, name);
 
     if (!(obj = (struct obj_data *) get_obj_vis_accessible(ch, name))) {
         send_to_char("I don't see that object here.\n\r", ch);

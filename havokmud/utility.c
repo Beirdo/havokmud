@@ -21,9 +21,6 @@ void load_one_room(FILE * fl, struct room_data *rp);
 void            log_sev(char *s, int i);
 extern char    *exits[];
 extern long     SystemFlags;
-#if 0
-extern struct time_data time_info;
-#endif
 extern struct descriptor_data *descriptor_list;
 extern struct char_data *character_list;
 extern struct index_data *mob_index,
@@ -32,7 +29,7 @@ extern struct chr_app_type chr_apply[];
 extern struct zone_data *zone_table;
 extern const struct race_type race_list[];
 
-#if HASH
+#ifdef HASH
 extern struct hash_header room_db;      /* In db.c */
 #else
 extern struct room_data *room_db[];     /* In db.c */
@@ -65,9 +62,11 @@ void Log(char *s)
 }
 
 
-#if EGO
 int EgoBladeSave(struct char_data *ch)
 {
+#ifndef USE_EGOS
+    return( TRUE );
+#else
     int             total;
 
     if (GetMaxLevel(ch) <= 10) {
@@ -83,8 +82,8 @@ int EgoBladeSave(struct char_data *ch)
     } else {
         return (TRUE);
     }
-}
 #endif
+}
 
 int MIN(int a, int b)
 {
@@ -729,18 +728,18 @@ char           *strip_ansi(char *newbuf, const char *orig, size_t maxlen)
     int             i = 0,
                     k = 0;
 
-    while ((orig + i) && (k < (maxlen - 1))) {
-        if ((*(orig + i) == '$')
-            && ((orig + i + 1) && (LOWER(*(orig + i + 1)) == 'c'))
-            && ((orig + i + 2) && isdigit(*(orig + i + 2)))
-            && ((orig + i + 3) && isdigit(*(orig + i + 3)))
-            && ((orig + i + 4) && isdigit(*(orig + i + 4)))
-            && ((orig + i + 5) && isdigit(*(orig + i + 5)))) {
+    while (orig[i] && (k < (maxlen - 1))) {
+        while (orig[i] && orig[i] == '$' && 
+               orig[i + 1] && LOWER(orig[i + 1]) == 'c' && 
+               orig[i + 2] && isdigit(orig[i + 2]) && 
+               orig[i + 3] && isdigit(orig[i + 3]) && 
+               orig[i + 4] && isdigit(orig[i + 4]) && 
+               orig[i + 5] && isdigit(orig[i + 5])) {
             i += 6;
         }
         newbuf[k++] = orig[i];
 
-        if (orig + i) {
+        if (orig[i]) {
             i++;
         }
     }
@@ -864,7 +863,7 @@ void log_sev(char *str, int sev)
         sprintf(buf, "/* %s */\n\r", str);
     }
     for (i = descriptor_list; i; i = i->next) {
-        if (!i->connected && GetMaxLevel(i->character) >= LOW_IMMORTAL &&
+        if (!i->connected && IS_IMMORTAL(i->character) &&
             i->character->specials.sev <= sev &&
             !IS_SET(i->character->specials.act, PLR_NOSHOUT)) {
             SEND_TO_Q(buf, i);
@@ -1184,11 +1183,7 @@ int getabunch(char *name, char *newname)
     }
     name++;
 
-    for (; (*newname = *name); name++, newname++) {
-        /*
-         * Empty loop
-         */
-    }
+    strcpy(newname, name);
     return (num);
 }
 
@@ -1818,7 +1813,7 @@ void down_river(int pulse)
                         }
                     }
                     if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                        GetMaxLevel(ch) < LOW_IMMORTAL) {
+                        IS_IMMORTAL(ch)) {
                         if (RIDDEN(ch)) {
                             NailThisSucker(RIDDEN(ch));
                         }
@@ -2177,7 +2172,7 @@ void RoomLoad(struct char_data *ch, int start, int end)
             if (rp) {
                 bzero(rp, sizeof(struct room_data));
             }
-#if HASH
+#ifdef HASH
             /*
              * this still does not work and needs work by someone
              */
@@ -2717,7 +2712,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     int             persist,
                     dist;
 
-#if NOTRACK
+#ifdef NOTRACK
     return;
 #endif
 
@@ -2744,7 +2739,7 @@ void SetHunting(struct char_data *ch, struct char_data *tch)
     ch->old_room = ch->in_room;
 
 #if 0
-    if (GetMaxLevel(tch) >= IMMORTAL) {
+    if (IS_IMMORTAL(tch)) {
         sprintf(buf, ">>%s is hunting you from %s\n\r",
                 (ch->player.short_descr[0] ? ch->player.
                  short_descr : "(null)"),
@@ -3089,7 +3084,7 @@ void RestoreChar(struct char_data *ch)
     GET_MANA(ch) = GET_MAX_MANA(ch);
     GET_HIT(ch) = GET_MAX_HIT(ch);
     GET_MOVE(ch) = GET_MAX_MOVE(ch);
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if (!IS_IMMORTAL(ch)) {
         GET_COND(ch, THIRST) = 24;
         GET_COND(ch, FULL) = 24;
     } else {
@@ -3312,10 +3307,11 @@ char           *advicelist[] = {
     "Use $c0015GET ALL.<ITEMNAME>$c0007 to pick up all of a specific item in "
         "a room, such as all.coins"
 };
+int advicecount = NELEMS(advicelist);
 
 void AdvicePulseStuff(int pulse)
 {
-    int             numberadvice = 37;
+    int             numberadvice;
     struct descriptor_data *i;
     register struct char_data *ch;
     char            buffer[150];
@@ -3329,8 +3325,11 @@ void AdvicePulseStuff(int pulse)
 
             if (IS_PC(ch) && ch->in_room != NOWHERE &&
                 IS_SET(ch->player.user_flags, NEW_USER)) {
-                sprintf(buffer, "$c000GAdvice: '$c000w%s$c000G'\n\r",
-                        advicelist[number(0, numberadvice)]);
+                numberadvice = number(0, advicecount - 1);
+                snprintf(buffer, 150, "$c000GAdvice: '$c000w%s$c000G'\n\r",
+                        advicelist[numberadvice]);
+                buffer[149] = '\0';
+
                 if (AWAKE(ch)) {
                     send_to_char(buffer, ch);
                 }
@@ -3758,7 +3757,7 @@ void RiverPulseStuff(int pulse)
                         }
 
                         if (IS_SET(RM_FLAGS(ch->in_room), DEATH) &&
-                            GetMaxLevel(ch) < LOW_IMMORTAL) {
+                            !IS_IMMORTAL(ch)) {
                             NailThisSucker(ch);
                             if (RIDDEN(ch)) {
                                 NailThisSucker(RIDDEN(ch));
@@ -4740,7 +4739,7 @@ int ItemAlignClash(struct char_data *ch, struct obj_data *obj)
 
 int ItemEgoClash(struct char_data *ch, struct obj_data *obj, int bon)
 {
-#ifndef EGO
+#ifndef USE_EGOS
     return (FALSE);
 #else
     int             obj_ego,
@@ -4858,7 +4857,7 @@ int CheckGetBarbarianOK(struct char_data *ch, struct obj_data *obj_object)
 {
 #ifndef BARB_GET_DISABLE
     if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
-        anti_barbarian_stuff(obj_object) && GetMaxLevel(ch) < LOW_IMMORTAL) {
+        anti_barbarian_stuff(obj_object) && !IS_IMMORTAL(ch)) {
         act("You sense magic on $p and drop it.", FALSE, ch, obj_object, 0,
             TO_CHAR);
         act("$n shakes $s head and refuses to take $p.", FALSE, ch,
@@ -4876,7 +4875,7 @@ int CheckGiveBarbarianOK(struct char_data *ch, struct char_data *vict,
 
 #ifndef BARB_GET_DISABLE
     if (GET_LEVEL(vict, BARBARIAN_LEVEL_IND) != 0 &&
-        anti_barbarian_stuff(obj) && GetMaxLevel(vict) < LOW_IMMORTAL) {
+        anti_barbarian_stuff(obj) && !IS_IMMORTAL(vict)) {
         if (GET_POS(vict) <= POSITION_SLEEPING) {
             sprintf(buf, "You think it best to not give this item to %s.\n\r",
                     GET_NAME(vict));
@@ -4896,7 +4895,7 @@ int CheckEgo(struct char_data *ch, struct obj_data *obj)
 {
     int             j = 0;
 
-#if DISABLE_EGO
+#ifndef USE_EGOS
     return (TRUE);
 #else
     if (!obj || !ch) {
@@ -4957,7 +4956,7 @@ int CheckEgoGive(struct char_data *ch, struct char_data *vict,
 {
     int             j = 0;
 
-#if DISABLE_EGO
+#ifndef USE_EGOS
     return (TRUE);
 #else
     /*
@@ -5068,7 +5067,7 @@ int MaxLimited(int lev)
 
 int SiteLock(char *site)
 {
-#if SITELOCK
+#ifdef SITELOCK
     int             i,
                     length;
     extern int      numberhosts;
@@ -5318,7 +5317,7 @@ int MaxCanMemorize(struct char_data *ch, int spell)
         return (8 + BONUS);
     } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 46) {
         return (9 + BONUS);
-    } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 51) {
+    } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < IMMORTAL) {
         return (10 + BONUS);
     } else {
         /*
@@ -5852,7 +5851,7 @@ int opdir(int dir)
  */
 void memory_check(char *p)
 {
-#if DEBUG
+#ifdef DEBUG
     if (!malloc_verify()) {
         /*
          * some systems might not have this lib
@@ -5866,7 +5865,7 @@ void memory_check(char *p)
 
 void dlog(char *s)
 {
-#if DEBUG_LOG
+#ifdef DEBUG_LOG
     slog(s);
 #endif
 }
@@ -6575,28 +6574,31 @@ int count_People_in_room(int room)
     return count;
 }
 
-#if 0
-/*
- * put in support for GNU-specific system calls that are missing in Cygwin
- */
-#if defined(__CYGWIN__)
-
-size_t strnlen(const char *s, size_t maxlen)
+char           *skip_spaces(char *string)
 {
-    int             i;
+    if( !string ) {
+        return( NULL );
+    }
 
-    for (i = 0; *s && i < maxlen; s++, i++) {
-        /*
+    for (; *string && isspace(*string); string++) {
+        /* 
          * Empty loop 
          */
     }
 
-    return (i);
+    return (string);
 }
 
-#endif
-#endif
+char           *skip_word(char *string)
+{
+    for (; *string && !isspace(*string); string++) {
+        /* 
+         * Empty loop 
+         */
+    }
 
+    return (string);
+}
 
 
 /*

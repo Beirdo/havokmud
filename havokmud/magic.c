@@ -151,8 +151,7 @@ void spell_burning_hands(int level, struct char_data *ch,
 		rdam = dam;
         temp = tmp_victim->next_in_room;
         if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
-            if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL &&
-                !IS_NPC(tmp_victim)) {
+            if (IS_IMMORTAL(tmp_victim)) {
                 return;
             }
             if (!in_group(ch, tmp_victim)) {
@@ -296,7 +295,7 @@ void spell_energy_drain(int level, struct char_data *ch,
              * Kill the sucker
              */
             damage(ch, victim, 100, SPELL_ENERGY_DRAIN);
-        } else if (!IS_NPC(victim) && GetMaxLevel(victim) >= LOW_IMMORTAL) {
+        } else if (IS_IMMORTAL(victim)) {
             send_to_char("Some puny mortal just tried to drain you...\n\r",
                          victim);
         } else if (!IS_SET(victim->M_immune, IMM_DRAIN) &&
@@ -646,7 +645,7 @@ void spell_teleport(int level, struct char_data *ch,
     do_look(ch, "", 0);
 
     if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
-        GetMaxLevel(ch) < LOW_IMMORTAL) {
+        !IS_IMMORTAL(ch)) {
         NailThisSucker(ch);
         return;
     }
@@ -878,7 +877,7 @@ void spell_curse(int level, struct char_data *ch,
         /*
          * LOWER ATTACK DICE BY -1
          */
-        if (obj->obj_flags.type_flag == ITEM_WEAPON) {
+        if (IS_WEAPON(obj)) {
             obj->obj_flags.value[2]--;
         }
         act("$p glows red.", FALSE, ch, obj, 0, TO_CHAR);
@@ -1117,7 +1116,7 @@ void spell_enchant_weapon(int level, struct char_data *ch,
         if (level > MAX_MORT) {
             obj->affected[i].modifier += 1;
         }
-        if (level == BIG_GUY) {
+        if (level == MAX_IMMORT) {
             obj->affected[i].modifier += 1;
         }
         i = getFreeAffSlot(obj);
@@ -1133,7 +1132,7 @@ void spell_enchant_weapon(int level, struct char_data *ch,
         if (level > MAX_MORT) {
             obj->affected[i].modifier += 1;
         }
-        if (level == BIG_GUY) {
+        if (level == MAX_IMMORT) {
             obj->affected[i].modifier += 1;
         }
         if (IS_GOOD(ch)) {
@@ -1677,7 +1676,7 @@ void spell_fireshield(int level, struct char_data *ch,
         act("$c000RYou start glowing red.", TRUE, victim, 0, 0, TO_CHAR);
 
         af.type = SPELL_FIRESHIELD;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_FIRESHIELD;
@@ -1699,10 +1698,11 @@ void spell_sanctuary(int level, struct char_data *ch,
 
         af.type = SPELL_SANCTUARY;
 
-        if (ch->specials.remortclass != CLERIC_LEVEL_IND + 1) {
-            af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        if (IS_IMMORTAL(ch)) {
+            af.duration = level;
         } else {
-            af.duration = (level < LOW_IMMORTAL) ? 4 : level;
+            af.duration = (ch->specials.remortclass == CLERIC_LEVEL_IND + 1 ? 
+                           4 : 3); 
         }
         af.modifier = 0;
         af.location = APPLY_NONE;
@@ -1778,10 +1778,14 @@ void spell_strength(int level, struct char_data *ch,
             } else {
                 af.modifier = number(1, 6);
             }
-        } else if (HasClass(ch, CLASS_WARRIOR) ||
-                   HasClass(ch, CLASS_BARBARIAN)) {
+        } else if (HasClass(ch, CLASS_WARRIOR) || 
+                   HasClass(ch, CLASS_RANGER) ||
+                   HasClass(ch, CLASS_BARBARIAN) || 
+                   HasClass(ch, CLASS_PALADIN)) {
             af.modifier = number(1, 8);
-        } else if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_THIEF)) {
+        } else if (HasClass(ch, CLASS_CLERIC) || 
+                   HasClass(ch, CLASS_THIEF) ||
+                   HasClass(ch, CLASS_PSI)) {
             af.modifier = number(1, 6);
         } else {
                 af.modifier = number(1, 4);
@@ -1798,8 +1802,6 @@ void spell_word_of_recall(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
     int             location;
-
-    void            do_look(struct char_data *ch, char *argument, int cmd);
 
     assert(victim);
 
@@ -1902,7 +1904,7 @@ void spell_summon(int level, struct char_data *ch,
         return;
     }
 
-    if (GetMaxLevel(victim) > LOW_IMMORTAL) {
+    if (IS_IMMORTAL(victim)) {
         send_to_char("A large hand suddenly appears before you and thumps "
                      "your head!\n\r", ch);
         return;
@@ -2265,7 +2267,7 @@ void spell_globe_minor_inv(int level, struct char_data *ch,
         }
 
         af.type = SPELL_GLOBE_MINOR_INV;
-        af.duration = (level < LOW_IMMORTAL) ? level / 10 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? level / 10 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = 0;
@@ -2302,7 +2304,7 @@ void spell_globe_major_inv(int level, struct char_data *ch,
         }
 
         af.type = SPELL_GLOBE_MAJOR_INV;
-        af.duration = (level < LOW_IMMORTAL) ? level / 10 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? level / 10 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = 0;
@@ -2332,7 +2334,7 @@ void spell_anti_magic_shell(int level, struct char_data *ch,
         /*
          * one tic only!
          */
-        af.duration = (level < LOW_IMMORTAL) ? 1 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 1 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = 0;
@@ -2554,7 +2556,7 @@ void spell_comp_languages(int level, struct char_data *ch,
         /*
          * one tic only!
          */
-        af.duration = (level < LOW_IMMORTAL) ? (int) level / 2 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? level / 2 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = 0;
@@ -2634,7 +2636,7 @@ void spell_identify(int level, struct char_data *ch,
         /*
          * alittle more info for immortals -bcw
          */
-        if (GetMaxLevel(ch) > LOW_IMMORTAL) {
+        if (IS_IMMORTAL(ch)) {
             sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%ld%s]",
                     color1, color2, obj->item_number, color1, color2,
                     (obj->item_number >= 0) ?
@@ -2862,14 +2864,8 @@ void spell_identify(int level, struct char_data *ch,
     } else {
         send_to_char("You learn nothing new.\n\r", ch);
     }
-    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
-#if 0
-        act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
-        act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
-        GET_POS(ch) = POSITION_STUNNED;
-#endif
+    if (!IS_IMMORTAL(ch)) {
         WAIT_STATE(ch, PULSE_VIOLENCE * 2);
-
     }
 }
 
@@ -2891,13 +2887,13 @@ void spell_enchant_armor(int level, struct char_data *ch,
                 count++;
             }
             if (obj->affected[i].location == APPLY_ARMOR ||
-                obj->affected[i].location == APPLY_SAVE_ALL ||
-                obj->affected[i].location == APPLY_SAVING_PARA ||
-                obj->affected[i].location == APPLY_SAVING_ROD ||
-                obj->affected[i].location == APPLY_SAVING_PETRI ||
-                obj->affected[i].location == APPLY_SAVING_BREATH ||
-                obj->affected[i].location == APPLY_SAVING_SPELL ||
-                obj->affected[i].location == APPLY_SAVE_ALL) {
+                ((obj->affected[i].location == APPLY_SAVING_PARA ||
+                  obj->affected[i].location == APPLY_SAVING_ROD ||
+                  obj->affected[i].location == APPLY_SAVING_PETRI ||
+                  obj->affected[i].location == APPLY_SAVING_BREATH ||
+                  obj->affected[i].location == APPLY_SAVING_SPELL ||
+                  obj->affected[i].location == APPLY_SAVE_ALL) &&
+                 obj->affected[i].modifier != 0)) {
                 send_to_char("This item may not hold further enchantments.\n\r",
                              ch);
                 return;
@@ -2927,7 +2923,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
         if (level > MAX_MORT) {
             obj->affected[i].modifier -= 1;
         }
-        if (level >= BIG_GUY) {
+        if (level >= MAX_IMMORT) {
             obj->affected[i].modifier -= 1;
         }
         i = getFreeAffSlot(obj);
@@ -2940,7 +2936,7 @@ void spell_enchant_armor(int level, struct char_data *ch,
         if (level > MAX_MORT) {
             obj->affected[i].modifier -= 1;
         }
-        if (level >= BIG_GUY) {
+        if (level >= MAX_IMMORT) {
             obj->affected[i].modifier -= 1;
         }
         if (IS_GOOD(ch)) {
@@ -3143,7 +3139,7 @@ void spell_wizard_eye(int level, struct char_data *ch,
             0, 0, TO_CHAR);
 
         af.type = SPELL_WIZARDEYE;
-        af.duration = (level < LOW_IMMORTAL) ? 3 : level;
+        af.duration = (!IS_IMMORTAL(ch) ? 3 : level);
         af.modifier = 0;
         af.location = APPLY_NONE;
         af.bitvector = AFF_SCRYING;

@@ -942,7 +942,7 @@ int green_slime(struct char_data *ch, int cmd, char *arg,
     }
     for (cons = real_roomp(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
-        if (!IS_NPC(cons) && GetMaxLevel(cons) < LOW_IMMORTAL) {
+        if (cons != ch  && !IS_IMMORTAL(cons)) {
             cast_green_slime(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL,
                              cons, 0);
         }
@@ -1024,8 +1024,7 @@ int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     }
     for (cons = real_roomp(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
-        if (!IS_NPC(cons) && GetMaxLevel(cons) < LOW_IMMORTAL &&
-            !number(0, 4)) {
+        if (cons != ch && !IS_IMMORTAL(cons) && !number(0, 4)) {
             npc_steal(ch, cons);
         }
     }
@@ -2422,7 +2421,8 @@ int pet_shops(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
     char            buf[MAX_STRING_LENGTH],
-                    pet_name[256];
+                   *arg1,
+                   *pet_name;
     int             pet_room;
     struct char_data *pet;
 
@@ -2446,13 +2446,14 @@ int pet_shops(struct char_data *ch, int cmd, char *arg,
         /*
          * Buy
          */
-        arg = one_argument(arg, buf);
-        only_argument(arg, pet_name);
+        arg = get_argument(arg, &arg1);
+        pet_name = skip_spaces(arg);
+
         /*
          * Pet_Name is for later use when I feel like it
          */
 
-        if (!(pet = get_char_room(buf, pet_room))) {
+        if (!arg1 || !pet_name || !(pet = get_char_room(arg1, pet_room))) {
             send_to_char("There is no such pet!\n\r", ch);
             return (TRUE);
         }
@@ -2468,15 +2469,15 @@ int pet_shops(struct char_data *ch, int cmd, char *arg,
         GET_EXP(pet) = 0;
         SET_BIT(pet->specials.affected_by, AFF_CHARM);
 
-        if (*pet_name) {
+        if (pet_name) {
             sprintf(buf, "%s %s", pet->player.name, pet_name);
             free(pet->player.name);
-            pet->player.name = (char *) strdup(buf);
+            pet->player.name = strdup(buf);
 
             sprintf(buf, "%sA small sign on a chain around the neck says 'My "
                          "Name is %s'\n\r", pet->player.description, pet_name);
             free(pet->player.description);
-            pet->player.description = (char *) strdup(buf);
+            pet->player.description = strdup(buf);
         }
 
         char_to_room(pet, ch->in_room);
@@ -2504,6 +2505,7 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
     int             bits,
                     water;
     char            buf[MAX_INPUT_LENGTH];
+    char           *arg1;
     struct char_data *tmp_char;
     char            container[20];
     struct obj_data *obj;
@@ -2513,13 +2515,19 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
          * fill
          */
 
-        arg = one_argument(arg, buf);
-        bits = generic_find(buf, FIND_OBJ_INV | FIND_OBJ_ROOM | FIND_OBJ_EQUIP,
+        arg = get_argument(arg, &arg1);
+        if( !arg1 ) {
+            send_to_char( "Fill what?", ch );
+            return( FALSE );
+        }
+
+        bits = generic_find(arg1, FIND_OBJ_INV | FIND_OBJ_ROOM | FIND_OBJ_EQUIP,
                             ch, &tmp_char, &obj);
 
         if (!bits) {
             return (FALSE);
         }
+
         if (ITEM_TYPE(obj) != ITEM_DRINKCON) {
             send_to_char("Thats not a drink container!\n\r", ch);
             return (TRUE);
@@ -2574,9 +2582,9 @@ int Fountain(struct char_data *ch, int cmd, char *arg,
             strncpy(container, "fountain", 20);
         };
 
-        only_argument(arg, buf);
+        arg1 = skip_spaces(arg);
 
-        if (str_cmp(buf, container) && str_cmp(buf, "water")) {
+        if (arg1 && str_cmp(arg1, container) && str_cmp(arg1, "water")) {
             return (FALSE);
         }
 
@@ -2769,8 +2777,8 @@ int pray_for_items(struct char_data *ch, int cmd, char *arg,
 int chalice(struct char_data *ch, int cmd, char *arg)
 {
     struct obj_data *chalice;
-    char            buf1[MAX_INPUT_LENGTH],
-                    buf2[MAX_INPUT_LENGTH];
+    char           *buf1,
+                   *buf2;
     static int      chl = -1,
                     achl = -1;
 
@@ -2821,8 +2829,11 @@ int chalice(struct char_data *ch, int cmd, char *arg)
         if (!(chalice = get_obj_in_list_num(chl, ch->carrying))) {
             return (FALSE);
         }
-        argument_interpreter(arg, buf1, buf2);
-        if (!str_cmp(buf1, "chalice") && !str_cmp(buf2, "altar")) {
+        arg = get_argument(arg, &buf1);
+        arg = get_argument(arg, &buf2);
+
+        if (buf1 && buf2 && !str_cmp(buf1, "chalice") && 
+            !str_cmp(buf2, "altar")) {
             extract_obj(chalice);
             chalice = read_object(achl, VIRTUAL);
             obj_to_room(chalice, ch->in_room);
@@ -2887,24 +2898,25 @@ int kings_hall(struct char_data *ch, int cmd, char *arg)
 int Donation(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
-    char            arg1[40];
-    char            arg2[40];
+    char           *arg1;
+    char           *arg2;
     struct obj_data *sub_object;
     
     if ((cmd != 10) && (cmd != 167)) {
         return (FALSE);
     }
     
-    argument_interpreter(arg, arg1, arg2);
+    arg = get_argument(arg, &arg1);
+    arg = get_argument(arg, &arg2);
 
-    if (*arg1 && !strncmp(arg1, "all", 3) && !*arg2) {
+    if (arg1 && !strncmp(arg1, "all", 3) && !arg2) {
        
         /* removed check for immortal to test */
         send_to_char("Now now, that would be greedy!\n\r", ch);
         return (TRUE);
     }
 
-    if (*arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
+    if (arg2 && (sub_object = get_obj_vis_accessible(ch, arg2))) {
         if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
             if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
                 return (FALSE);
@@ -2967,7 +2979,7 @@ int House(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
         return (FALSE);
     }
 
-#if LIMITED_ITEMS
+#ifdef LIMITED_ITEMS
     if (count > MaxLimited(GetMaxLevel(ch))) {
         send_to_char("I'm sorry, but you to many limited items.\n\r", ch);
         return (FALSE);
@@ -3024,7 +3036,7 @@ int sisyphus(struct char_data *ch, int cmd, char *arg,
             }
             if (ch->in_room == Ivory_Gate && cmd == 4 &&
                 SISYPHUS_MAX_LEVEL < GetMaxLevel(ch) &&
-                GetMaxLevel(ch) < LOW_IMMORTAL) {
+                !IS_IMMORTAL(ch)) {
                 if (!check_soundproof(ch)) {
                     act("$n tells you 'First you'll have to get past me!'",
                         TRUE, mob, 0, ch, TO_VICT);
@@ -4145,8 +4157,7 @@ void ThrowChar(struct char_data *ch, struct char_data *v, int dir)
         char_to_room(v, (real_roomp(or))->dir_option[dir]->to_room);
         do_look(v, "\0", 15);
 
-        if (IS_SET(RM_FLAGS(v->in_room), DEATH) &&
-            GetMaxLevel(v) < LOW_IMMORTAL) {
+        if (IS_SET(RM_FLAGS(v->in_room), DEATH) && !IS_IMMORTAL(v)) {
             NailThisSucker(v);
         }
     }
@@ -4320,8 +4331,8 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
 {
     struct char_data *t;
     struct obj_data *obj;
-    char            dummy[80],
-                    name[80];
+    char           *dummy,
+                   *name;
     int             (*wash) ();
 
     wash = soap;
@@ -4329,26 +4340,33 @@ int soap(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     if (type != PULSE_COMMAND) {
         return (FALSE);
     }
+
     if (cmd != 172) {
         return (FALSE);
     }
+
     if (!(obj = ch->equipment[HOLD])) {
         return (FALSE);
     }
+
     if (obj_index[obj->item_number].func != wash) {
         return (FALSE);
     }
-    arg = one_argument(arg, dummy);
-    if (!(*dummy)) {
+
+    arg = get_argument(arg, &dummy);
+    if (!dummy) {
         return (FALSE);
     }
-    only_argument(arg, name);
-    if (!(*name)) {
+
+    name = skip_spaces(arg);
+    if (!name) {
         return (FALSE);
     }
+
     if (!(t = get_char_room_vis(ch, name))) {
         return (FALSE);
     }
+
     if (affected_by_spell(t, SPELL_WEB)) {
         affect_from_char(t, SPELL_WEB);
         act("$n washes some webbing off $N with $p.", TRUE, ch, obj, t,
@@ -4377,8 +4395,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     struct obj_data *obj,
                    *i;
     char            buf[80],
-                    obj_name[80],
-                    vict_name[80],
+                   *obj_name,
+                   *vict_name,
                    *name;
     bool            do_all;
     int             j,
@@ -4400,11 +4418,13 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
     if (type != PULSE_COMMAND) {
         return (FALSE);
     }
-    arg = one_argument(arg, obj_name);
-    if (!*obj_name) {
+
+    arg = get_argument(arg, &obj_name);
+    if (!obj_name) {
         return (FALSE);
     }
-    obj = 0x0;
+
+    obj = NULL;
     do_all = FALSE;
 
     if (!strncmp(obj_name, "all", 3)) {
@@ -4469,8 +4489,8 @@ int nodrop(struct char_data *ch, int cmd, char *arg, struct obj_data *tobj,
         return (FALSE);
     }
     if (cmd == 72 || cmd == 156) {
-        only_argument(arg, vict_name);
-        if (!*vict_name || !(t = get_char_room_vis(ch, vict_name))) {
+        vict_name = skip_spaces(arg);
+        if (!vict_name || !(t = get_char_room_vis(ch, vict_name))) {
             return (FALSE);
         }
     }
@@ -4603,8 +4623,8 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
     struct char_data *latt,
                    *t;
     struct obj_data *obj;
-    char            obj_name[80],
-                    player_name[80];
+    char           *obj_name,
+                   *player_name;
     int             dir;
     int             (*Lattimore) ();
 
@@ -4858,13 +4878,14 @@ int lattimore(struct char_data *ch, int cmd, char *arg,
 
         }
     } else if (cmd == 72) {
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name ||
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name ||
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
-        only_argument(arg, player_name);
-        if (!*player_name || !(latt = get_char_room_vis(ch, player_name))) {
+
+        player_name = skip_spaces(arg);
+        if (!player_name || !(latt = get_char_room_vis(ch, player_name))) {
             return (FALSE);
         }
 
@@ -5496,8 +5517,8 @@ char           *quest_intro[] = {
 int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
           int type)
 {
-    char            obj_name[80],
-                    vict_name[80],
+    char           *obj_name,
+                   *vict_name,
                     buf[MAX_INPUT_LENGTH];
     int             i;
     struct char_data *vict,
@@ -5555,13 +5576,13 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             /*
              * give
              */
-            arg = one_argument(arg, obj_name);
-            if (!*obj_name ||
+            arg = get_argument(arg, &obj_name);
+            if (!obj_name ||
                 !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))
                 return (FALSE);
 
-            only_argument(arg, vict_name);
-            if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name)))
+            vict_name = skip_spaces(arg);
+            if (!vict_name || !(vict = get_char_room_vis(ch, vict_name)))
                 return (FALSE);
 
             /*
@@ -5578,10 +5599,11 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
             /*
              * ask
              */
-            arg = one_argument(arg, vict_name);
-            if (!*vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
+            arg = get_argument(arg, &vict_name);
+            if (!vict_name || !(vict = get_char_room_vis(ch, vict_name))) {
                 return (FALSE);
             }
+
             if (mob_index[vict->nr].func != valik) {
                 return (FALSE);
             } else {
@@ -5611,7 +5633,7 @@ int Valik(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         } else {
             for (vict = real_roomp(ch->in_room)->people; vict;
                  vict = vict->next_in_room) {
-                if (!IS_NPC(vict) && GetMaxLevel(vict) < LOW_IMMORTAL &&
+                if (ch != vict && !IS_NPC(vict) && !IS_IMMORTAL(vict) && 
                     !number(0, 3)) {
                     act("$n snaps out of his meditation.", FALSE, ch, 0, 0,
                         TO_ROOM);
@@ -5810,8 +5832,8 @@ int guardian(struct char_data *ch, int cmd, char *arg,
     struct room_data *rp;
     int             j = 0;
     struct follow_type *fol;
-    char            player_name[80],
-                    obj_name[80],
+    char           *player_name,
+                   *obj_name,
                     name[15];
     int             (*guard) ();
 
@@ -5874,13 +5896,14 @@ int guardian(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 72) {
-        arg = one_argument(arg, obj_name);
-        if (!*obj_name ||
+        arg = get_argument(arg, &obj_name);
+        if (!obj_name ||
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
-        only_argument(arg, player_name);
-        if (!*player_name || !(g = get_char_room_vis(ch, player_name))) {
+
+        player_name = skip_spaces(arg);
+        if (!player_name || !(g = get_char_room_vis(ch, player_name))) {
             return (FALSE);
         }
         guard = guardian;

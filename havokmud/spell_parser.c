@@ -1277,16 +1277,16 @@ struct spell_info_type spell_info[] = {
       1, IMMORTAL, 1, 1, IMMORTAL, 1, IMMORTAL, IMMORTAL,
       0, 0, 0 },
     { 163, cast_teleport_wo_error, 20, 12, POSITION_STANDING, 
-      30, BIG_GUY, BIG_GUY, 30, BIG_GUY, BIG_GUY, BIG_GUY, 35,
+      30, MAX_IMMORT, MAX_IMMORT, 30, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 35,
       TAR_CHAR_WORLD, 0, 1 },
     { 164, cast_portal, 50, 12, POSITION_STANDING, 
-      43, BIG_GUY, BIG_GUY, 43, BIG_GUY, BIG_GUY, BIG_GUY, IMMORTAL,
-      TAR_CHAR_WORLD, 0, 0 },
+      43, MAX_IMMORT, MAX_IMMORT, 43, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      IMMORTAL, TAR_CHAR_WORLD, 0, 0 },
     { 165, cast_dragon_ride, 20, 12, POSITION_STANDING, 
-      BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
-      TAR_IGNORE, 0, 0 },
+      MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, MAX_IMMORT, TAR_IGNORE, 0, 0 },
     { 166, cast_mount, 20, 12, POSITION_STANDING, 
-      47, BIG_GUY, 15, 47, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
+      47, MAX_IMMORT, 15, 47, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT,
       TAR_IGNORE, 0, 0 },
     { 167, cast_energy_restore, 50, 1, POSITION_STANDING,
       IMMORTAL, 48, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
@@ -1389,8 +1389,8 @@ struct spell_info_type spell_info[] = {
       IMMORTAL,
       TAR_CHAR_ROOM, 0, 1 },
     { 220, cast_anti_magic_shell, 100, 24, POSITION_STANDING, 
-      48, BIG_GUY, BIG_GUY, 48, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
-      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+      48, MAX_IMMORT, MAX_IMMORT, 48, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     /* doorway */
     { 221, NULL, 20, 0, POSITION_STANDING,
       IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, 3, IMMORTAL,
@@ -1495,17 +1495,17 @@ struct spell_info_type spell_info[] = {
       1, 3, IMMORTAL, 1, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM, 0, 0 },
     { 256, cast_prot_fire, 40, 12, POSITION_STANDING,
-      BIG_GUY, 21, 22, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
-      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+      MAX_IMMORT, 21, 22, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 257, cast_prot_cold, 40, 12, POSITION_STANDING,
-      BIG_GUY, 20, 21, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, 
-      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+      MAX_IMMORT, 20, 21, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 258, cast_prot_energy, 40, 12, POSITION_STANDING,
-      BIG_GUY, 19, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
-      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+      MAX_IMMORT, 19, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, MAX_IMMORT, TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 259, cast_prot_elec, 40, 12, POSITION_STANDING,
-      BIG_GUY, 18, 19, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY, BIG_GUY,
-      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+      MAX_IMMORT, 18, 19, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, MAX_IMMORT, 
+      MAX_IMMORT, TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 260, cast_enchant_armor, 100, 48, POSITION_STANDING,
       16, IMMORTAL, IMMORTAL, 16, IMMORTAL, IMMORTAL, IMMORTAL, 17,
       TAR_OBJ_INV | TAR_OBJ_EQUIP, 0, 1 },
@@ -2952,7 +2952,7 @@ bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
     if (!IS_NPC(ch)) {
         save += saving_throws[BestMagicClass(ch)][save_type]
                              [(int)GET_LEVEL(ch, BestMagicClass(ch))];
-        if (GetMaxLevel(ch) >= IMMORTAL) {
+        if (IS_IMMORTAL(ch)) {
             return (TRUE);
         }
     }
@@ -2960,16 +2960,6 @@ bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
     return (MAX(1, save) < number(1, 20));
 }
 
-char           *skip_spaces(char *string)
-{
-    for (; *string && isspace(*string); string++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    return (string);
-}
 
 void do_id(struct char_data *ch, char *argument, int cmd)
 {
@@ -2987,10 +2977,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     char            buf[254];
     struct obj_data *tar_obj;
     struct char_data *tar_char;
-    char            name[MAX_INPUT_LENGTH];
-    char            ori_argument[256];
-    int             qend,
-                    spl,
+    char           *name;
+    char           *ori_argument,
+                   *spellnm;
+    int             spl,
                     index,
                     i,
                     exp;
@@ -3041,7 +3031,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && 
-        GET_ALIGNMENT(ch) >= -350) {
+        !IS_EVIL(ch)) {
         /*
          * necro too GOOD to cast 
          */
@@ -3051,15 +3041,16 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     argument = skip_spaces(argument);
-    for (i = 0; argument[i] && (i < 255); i++) {
-        ori_argument[i] = argument[i];
+    ori_argument = strdup(argument);
+    if( !ori_argument ) {
+        Log( "Out of memory in cast!\n\r" );
+        return;
     }
-    ori_argument[i] = '\0';
 
     /*
      * If there is no chars in argument 
      */
-    if (!(*argument)) {
+    if (!*argument) {
         if (cmd != 600) {
             send_to_char("Cast which what where?\n\r", ch);
         } else {
@@ -3068,7 +3059,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (*argument != '\'') {
+    argument = get_argument_delim(argument, &spellnm, '\'');
+    if (!spellnm || spellnm[-1] != '\'') {
         if (cmd != 600) {
             send_to_char("Magic must always be enclosed by the holy magic "
                          "symbols : '\n\r", ch);
@@ -3078,26 +3070,9 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
         }
         return;
     }
+     
 
-    /*
-     * Locate the last quote && lowercase the magic words (if any) 
-     */
-    for (qend = 1; *(argument + qend) && (*(argument + qend) != '\''); qend++) {
-        *(argument + qend) = LOWER(*(argument + qend));
-    }
-
-    if (*(argument + qend) != '\'') {
-        if (cmd != 600) {
-            send_to_char("Magic must always be enclosed by the holy magic "
-                         "symbols : '\n\r", ch);
-        } else {
-            send_to_char("Songs must always be enclosed by the vibrant symbols"
-                         " : '\n\r", ch);
-        }
-        return;
-    }
-
-    spl = old_search_block(argument, 1, qend - 1, spells, 0);
+    spl = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
 
     if (!spl) {
         send_to_char("Nothing seems to happen! Wow! \n\r", ch);
@@ -3179,16 +3154,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 send_to_char("Sorry, you can't do that.\n\r", ch);
                 return;
             }
-            argument += qend + 1;       
             /* 
              * Point to the last ' 
              */
-            for (; isspace(*argument); argument++) {
-                /* 
-                 * Empty loop 
-                 */
-            }
 
+            argument = skip_spaces(argument);
             /*
              **************** Locate targets **************** */
             target_ok = FALSE;
@@ -3210,15 +3180,16 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s cast %s", GET_NAME(ch), ori_argument);
                 Log(buf);
             }
+            free(ori_argument);
 
             if (!IS_SET(spell_info[index].targets, TAR_IGNORE)) {
-                argument = one_argument(argument, name);
+                argument = get_argument(argument, &name);
 
-                if (str_cmp(name, "self") == 0) {
+                if (name && strcmp(name, "self") == 0) {
                     sprintf(name, "%s", GET_NAME(ch));
                 }
 
-                if (*name) {
+                if (name) {
                     /*
                      * room char spells 
                      */
@@ -3371,7 +3342,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             }
 
             if (!target_ok) {
-                if (*name) {
+                if (name) {
                     if (IS_SET(spell_info[index].targets, TAR_CHAR_WORLD)) {
                         send_to_char("Nobody playing by that name.\n\r", ch);
                     } else if (IS_SET(spell_info[index].targets, 
@@ -3467,8 +3438,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 return;
             } 
             
-            if (GetMaxLevel(ch) < IMMORTAL &&
-                (GET_MANA(ch) < USE_MANA(ch, spl) || GET_MANA(ch) <= 0)) {
+            if (!IS_IMMORTAL(ch) && (GET_MANA(ch) < USE_MANA(ch, spl) || 
+                                     GET_MANA(ch) <= 0)) {
                 send_to_char("You can't summon enough energy!\n\r", ch);
                 return;
             }
