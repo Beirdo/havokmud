@@ -953,6 +953,8 @@ struct room_data
 #define AFF2_GUARDIAN_ANGEL	   BV17 /* bard mad sneak spell. blame xenon, not me */
 #define AFF2_SONG_OF_WANDERER  BV18 /* no move use */
 
+#define AFF2_SKILL_SNEAK       BV19
+
 /* Flag spells as brewable or single class */
 #define BREWABLE_SPELL         BV00
 #define SINGLE_CLASS_SPELL     BV01

@@ -1756,8 +1756,7 @@ void spell_ventriloquate(byte level, struct char_data *ch,
 
 
 
-void spell_word_of_recall(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_word_of_recall(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
   extern int top_of_world;
   int location;
@@ -1795,6 +1794,7 @@ if (victim->specials.fighting) {
   }
 
 	/* a location has been found. */
+send_to_char("You think of better times and close your eyes.",victim);
 
   act("$n disappears.", TRUE, victim, 0, 0, TO_ROOM);
   char_from_room(victim);

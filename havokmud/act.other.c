@@ -482,6 +482,50 @@ void do_not_here(struct char_data *ch, char *argument, int cmd)
 {
 	send_to_char("Sorry, but you cannot do that here!\n\r",ch);
 }
+void do_recallhome(struct char_data *victim, char *argument, int cmd) {
+	int location;
+
+	if(GET_AVE_LEVEL(victim) > 10) {
+		send_to_char("You think of home but nothing happens.",victim);
+		return;
+	}
+
+	if (victim->player.hometown) {
+	    location = victim->player.hometown;
+	} else {
+	    location = 3001;
+	}
+
+	if (!real_roomp(location))    {
+	    send_to_char("You are completely lost.\n\r", victim);
+	    location = 0;
+	    return;
+	}
+
+	if (victim->specials.fighting) {
+		send_to_char("HAH, not in a fight!\n\r",victim);
+		return;
+	}
+
+	if (!IsOnPmp(victim->in_room)) {
+	    send_to_char("You can't recall!, you're on a different plane!\n\r", victim);
+	    return;
+	}
+
+		/* a location has been found. */
+
+	act("$n thinks of home and then disappears.", TRUE, victim, 0, 0, TO_ROOM);
+	char_from_room(victim);
+	char_to_room(victim, location);
+	act("$n appears in the middle of the room.", TRUE, victim, 0, 0, TO_ROOM);
+	send_to_char("You close your eyes and think of home!  Suddently, you find yourself in a familiar location.",victim);
+	do_look(victim, "",15);
+
+
+	GET_MOVE(victim) = 0;
+	send_to_char("\n\rYou feel rather tired now!", victim);
+
+}
 
 
 void do_sneak(struct char_data *ch, char *argument, int cmd)
@@ -491,10 +535,11 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_sneak");
 
-  if (IS_AFFECTED(ch, AFF_SNEAK)) {
-    affect_from_char(ch, SKILL_SNEAK);
+  if (IS_AFFECTED2(ch, AFF2_SKILL_SNEAK)) {
+    //affect_from_char(ch, SKILL_SNEAK);
     if (IS_AFFECTED(ch, AFF_HIDE))
       REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
+    REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
     send_to_char("You are no longer sneaky.\n\r",ch);
     return;
   }
@@ -514,10 +559,12 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
   }
 
   if (!IS_AFFECTED(ch, AFF_SILENCE)) {
+    /*  removed this.. skill sneak sucks ass enough as it is.. (GH)
     if (EqWBits(ch, ITEM_ANTI_THIEF)) {
       send_to_char("Gonna be hard to sneak around in that!\n\r", ch);
       return;
     }
+    */
     if (HasWBits(ch, ITEM_HUM)) {
      send_to_char("Gonna be hard to sneak around with that thing humming\n\r",
 		 ch);
@@ -532,16 +579,24 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
   if (!ch->skills)
     return;
 
-  if (IS_AFFECTED(ch, AFF_SILENCE))
-    percent = MIN(1, percent-35);  /* much easier when silenced */
-
-  if (percent > ch->skills[SKILL_SNEAK].learned +
-      dex_app_skill[GET_DEX(ch)].sneak) {
+/*
+  if (percent > ch->skills[SKILL_SNEAK].learned + dex_app_skill[GET_DEX(ch)].sneak) {
       LearnFromMistake(ch, SKILL_SNEAK, 1, 90);
       WAIT_STATE(ch, PULSE_VIOLENCE);
       return;
     }
+*/
+ if(IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
+	 send_to_char("You stop being sneaky!",ch);
+	 //affect_from_char(ch, SKILL_SNEAK);
+	 REMOVE_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
+ } else {
+   send_to_char("You start jumping from shadow to shadow.",ch);
+   SET_BIT(ch->specials.affected_by2, AFF2_SKILL_SNEAK);
+   WAIT_STATE(ch, PULSE_VIOLENCE*1);
+ }
 
+/*
   af.type = SKILL_SNEAK;
   af.duration = GET_LEVEL(ch, BestThiefClass(ch));
   af.modifier = 0;
@@ -549,9 +604,9 @@ if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
   af.bitvector = AFF_SNEAK;
   affect_to_char(ch, &af);
   WAIT_STATE(ch, PULSE_VIOLENCE);
+*/
 
 }
-
 
 
 void do_hide(struct char_data *ch, char *argument, int cmd)

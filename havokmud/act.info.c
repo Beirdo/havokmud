@@ -2278,6 +2278,9 @@ dlog("in do_weather");
     send_to_char("You have no feeling about the weather at all.\n\r", ch);
 }
 
+void do_list_zones(struct char_data *ch, char *argument, int cmd) {
+	do_help(ch,"areas",0);
+}
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
@@ -2529,7 +2532,7 @@ char *GetLevelTitle(struct char_data *ch) {
 	int level = GetMaxLevel(ch);
 	static char buf[256]="";
 	char buf2[256];
-	int i;
+	int i, h;
 	int high=0;
 	int class=0;
 //	int exp = 0;
@@ -2596,6 +2599,16 @@ char *GetLevelTitle(struct char_data *ch) {
 		return buf;
 	} else {
 		/* determine the highest xp value gained level */
+#if 0
+//Conflict.. my quick solution.... lennyas is better....just in case tho.. i'll leave..
+		exp = GET_EXP(ch);
+		for (i=1,h=0;i<=CLASS_NECROMANCER;i*=2, h++) {
+			if (HasClass(ch, i)) {
+				if (titles[h][GET_LEVEL(ch, h)].exp >= high) {
+					high = titles[h][GET_LEVEL(ch, h)].exp;
+					class = h;
+
+#else
 //		exp = GET_EXP(ch);
 		for (i=0;i < MAX_CLASS;i++) {
 //			if (HasClass(ch, i)) {
@@ -2603,6 +2616,7 @@ char *GetLevelTitle(struct char_data *ch) {
 				if(titles[i][GET_LEVEL(ch, i)].exp > high) {
 					high = titles[i][GET_LEVEL(ch, i)].exp;
 					class = i;
+#endif
 				}
 			}
 		}

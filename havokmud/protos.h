@@ -148,6 +148,10 @@ void do_score(struct char_data *ch, char *argument, int cmd);
 void do_time(struct char_data *ch, char *argument, int cmd);
 void do_weather(struct char_data *ch, char *argument, int cmd);
 void do_help(struct char_data *ch, char *argument, int cmd);
+
+void do_list_zones(struct char_data *ch, char *argument, int cmd);
+void do_recallhome(struct char_data *victim, char *argument, int cmd);
+
 void do_wizhelp(struct char_data *ch, char *argument, int cmd);
 void do_who(struct char_data *ch, char *argument, int cmd);
 void do_users(struct char_data *ch, char *argument, int cmd);

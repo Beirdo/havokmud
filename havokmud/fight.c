@@ -878,25 +878,26 @@ void die(struct char_data *ch,int killedbytype)
         ch->points.max_hit -= tmp;
         GET_LEVEL(ch, i) -= 1;
         ch->specials.spells_to_learn -= MAX(1, MAX(2, wis_app[GET_RWIS(ch)].bonus)/HowManyClasses(ch));
-        send_to_char("\n\rInsufficient experience has cost you a level.\n\r",
-                     ch);
+       send_to_char("\n\rInsufficient experience has cost you a level.\n\r", ch);
       }
     }
   }
 #endif
 
-#if NEWEXP
-  if (GetMaxLevel(ch) > 15)
-    gain_exp(ch, -GET_EXP(ch)/2);
-  else if (GetMaxLevel(ch) > 10)
-    gain_exp(ch, -GET_EXP(ch)/3);
+
+  if (GetMaxLevel(ch) > 20)
+    gain_exp(ch, -GET_EXP(ch)*0.25);
+  else if (GetMaxLevel(ch) > 15)
+    gain_exp(ch, -GET_EXP(ch)*0.20);
   else if (GetMaxLevel(ch) > 5)
-    gain_exp(ch, -GET_EXP(ch)/4);
+    gain_exp(ch, -GET_EXP(ch)*0.15);
   else
-    gain_exp(ch, -GET_EXP(ch)/5);
-#else
-  gain_exp(ch, -GET_EXP(ch)/2);
-#endif
+    gain_exp(ch, -GET_EXP(ch)*0.10);
+
+
+
+
+
 	GET_LEADERSHIP_EXP(ch) -= GET_LEADERSHIP_EXP(ch)/2;
 
 #if LEVEL_LOSS

@@ -1625,6 +1625,13 @@ AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
 AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
 AddCommand("chtextfile", do_chtextfile, 615, POSITION_RESTING, 53);
+
+
+ AddCommand("retreat", do_flee, 616, POSITION_SITTING, 1);
+ AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
+ AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
+AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
+
 }
 
 

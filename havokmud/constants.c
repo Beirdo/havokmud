@@ -3338,6 +3338,7 @@ const char *affected_bits2[] =
 	"Invis to Undead",
 	"Guardian Angel",
 	"Song of the Wanderer",
+	"Sneak Skill",
 	"\n"
 };
 

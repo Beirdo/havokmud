@@ -904,10 +904,10 @@ void gain_exp(struct char_data *ch, int gain)
   if (!IS_PC(ch) && ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
     if (ch->master->in_room == ch->in_room) {
       if (gain > 1) {
-	gain/=2;
-	sprintf(buf, "you gain $N's share of %d exp", gain);
-	act(buf, 0, ch->master, 0, ch, TO_CHAR);
-	gain_exp(ch->master, gain);
+	    gain/=2;
+	    sprintf(buf, "you gain $N's share of %d exp", gain);
+	    act(buf, 0, ch->master, 0, ch, TO_CHAR);
+	    gain_exp(ch->master, gain);
       }
     }
     return;
@@ -972,7 +972,9 @@ void gain_exp(struct char_data *ch, int gain)
     if (gain < 0) {
       GET_EXP(ch) += gain;
       if (GET_EXP(ch) < 0)
-	GET_EXP(ch) = 0;
+		GET_EXP(ch) = 0;
+	   ch_printf(ch,"$c000RYou have lost $c000w%d $c000Rexperience!",gain);
+
     }
   }
 }

@@ -948,9 +948,11 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
  	send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
 	gain_exp(ch, 100);
    stop_fighting(ch);
+
     for (t = rp->people;t;t=t->next_in_room) {
       if (t->specials.fighting == ch) {
 	stop_fighting(t);
+	ZeroHatred(t, ch); //t thinks ch is dead.. don't be hatin'(GH)
 	if (number(1,101) < ch->skills[SKILL_FEIGN_DEATH].learned/2)
 	  SET_BIT(ch->specials.affected_by, AFF_HIDE);
 	GET_POS(ch) = POSITION_SLEEPING;
