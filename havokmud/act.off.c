@@ -737,7 +737,7 @@ dlog("in do_bash");
 			GET_POS(ch) = POSITION_SITTING;
 		}
 		LearnFromMistake(ch, SKILL_BASH, 0, 90);
-		WAIT_STATE(ch, PULSE_VIOLENCE*3);
+		WAIT_STATE(ch, PULSE_VIOLENCE*2);
 	} else {
 		if (GET_POS(victim) > POSITION_DEAD) {
 			GET_POS(victim) = POSITION_SITTING;

@@ -671,36 +671,33 @@ if (ed->description)
 
   case 8:
     /*  this is where the teleport stuff will go */
-    tele_room = -1; tele_time = -1; tele_mask = -1;
+	tele_room = -1; tele_time = -1; tele_mask = -1;
     sscanf(string,"%d %d %d",&tele_time,&tele_room,&tele_mask);
     if (tele_room < 0 || tele_time < 0 || tele_mask < 0) {
-      send_to_char(" edit tele <time> <room_nr> <tele-flags>\n\r", ch);
-      return;
-      break;
-    } else {
-      if (IS_SET(TELE_COUNT, tele_mask)) {
-	sscanf(string,"%d %d %d %d",
-	       &tele_time, &tele_room, &tele_mask, &tele_cnt);
-	if (tele_cnt < 0) {
-	  send_to_char
-	    (" edit tele <time> <room_nr> <tele-flags> [tele-count]\n\r", ch);
-	  return;
+		send_to_char(" edit tele <time> <room_nr> <tele-flags>\n\r", ch);
+		return;
+		break;
 	} else {
-	  real_roomp(ch->in_room)->tele_time = tele_time;
-	  real_roomp(ch->in_room)->tele_targ = tele_room;
-	  real_roomp(ch->in_room)->tele_mask = tele_mask;
-	  real_roomp(ch->in_room)->tele_cnt  = tele_cnt;
+		if (IS_SET(TELE_COUNT, tele_mask)) {
+			sscanf(string,"%d %d %d %d", &tele_time, &tele_room, &tele_mask, &tele_cnt);
+			if (tele_cnt < 0) {
+				send_to_char(" edit tele <time> <room_nr> <tele-flags> [tele-count]\n\r", ch);
+				return;
+			} else {
+				real_roomp(ch->in_room)->tele_time = tele_time;
+				real_roomp(ch->in_room)->tele_targ = tele_room;
+				real_roomp(ch->in_room)->tele_mask = tele_mask;
+				real_roomp(ch->in_room)->tele_cnt  = tele_cnt;
+			}
+		} else {
+			real_roomp(ch->in_room)->tele_time = tele_time;
+			real_roomp(ch->in_room)->tele_targ = tele_room;
+			real_roomp(ch->in_room)->tele_mask = tele_mask;
+			real_roomp(ch->in_room)->tele_cnt  = 0;
+			return;
+		}
 	}
-      } else {
-	real_roomp(ch->in_room)->tele_time = tele_time;
-	real_roomp(ch->in_room)->tele_targ = tele_room;
-	real_roomp(ch->in_room)->tele_mask = tele_mask;
-	real_roomp(ch->in_room)->tele_cnt  = 0;
-        return;
-      }
-    }
-
-    return;
+	return;
   case 9:
     if (sscanf(string, "%d", &moblim) < 1) {
       send_to_char("edit tunn <mob_limit>\n\r", ch);

@@ -4444,7 +4444,7 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_BLADE_BARRIER);
 		}
-		if (IS_AFFECTED2(ch, AFF_BLADE_BARRIER)) {
+		if (IS_AFFECTED(ch, AFF_BLADE_BARRIER)) {
 			act("The whirling blades around $n freeze up and shatter.",TRUE,ch,0,0,TO_ROOM);
 			act("The cold of your spell shatters the blade barrier surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			REMOVE_BIT(ch->specials.affected_by, AFF_BLADE_BARRIER);
@@ -4484,7 +4484,7 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 			act("our blades rip away the last vistiges of the chillshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			affect_from_char(ch,SPELL_CHILLSHIELD);
 		}
-		if (IS_AFFECTED2(ch, AFF_CHILLSHIELD)) {
+		if (IS_AFFECTED(ch, AFF_CHILLSHIELD)) {
 			act("The cold aura around $n is extinguished.",TRUE,ch,0,0,TO_ROOM);
 			act("our blades rip away the last vistiges of the chillshield surrounding you.",TRUE,ch,0,0,TO_CHAR);
 			REMOVE_BIT(ch->specials.affected_by, AFF_CHILLSHIELD);
@@ -4504,3 +4504,34 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 	}
 }
 
+void spell_song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+	struct char_data *tmp, *tmp2;
+	struct room_data *rp;
+
+	if(ch->in_room)
+		rp = real_roomp(ch->in_room);
+	if(!rp) {
+		log("fuckup in song of battle");
+		return;
+	}
+
+	for (tmp = rp->people;tmp;tmp=tmp2) {
+		tmp2 = tmp->next_in_room;
+		if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
+			if(!affected_by_spell(ch, SONG_OF_BATTLE)) {
+				send_to_char("You feel like a fight!\n\r",ch);
+				act("$n gets a bloodthirsty look in $s eyes.", FALSE, tmp, 0, 0, TO_ROOM);
+
+				af.type      = SONG_OF_BATTLE;
+				af.duration  = 10;
+				af.modifier  = 3;
+				af.location  = APPLY_HITNDAM;
+				af.bitvector = 0;
+
+				affect_to_char(tmp, &af);
+			}
+		}
+	}
+}

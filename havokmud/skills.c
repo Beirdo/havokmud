@@ -4092,6 +4092,8 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
 	int mhit = 1;
 	struct char_data *steed;
 
+dlog("in do_steed");
+
 	if(!HasClass(ch, CLASS_PALADIN)) {
 		send_to_char("The Guardians of Law laugh at your feeble request!\n\r",ch);
 		return;
@@ -4157,4 +4159,365 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
 		}
 	}
 	WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}
+
+void do_stop(struct char_data *ch, char *argument, int cmd)
+{
+	struct room_data *rp;
+	struct char_data *tmp, *tmp2;
+	int spl = 0;
+
+dlog("in do_stop");
+
+	if(!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Guh?\n\r",ch);
+		return;
+	}
+
+	if(ch->specials.is_playing) {
+		spl = ch->specials.is_playing;
+		ch_printf(ch,"You stop playing the %s.\n\r",spells[spl-1]);
+		act("$n lets the notes fade from $s voice as $e stop playing.",FALSE, ch, 0, 0, TO_ROOM);
+		ch->specials.is_playing = 0;
+
+		if(ch->in_room)
+			rp = real_roomp(ch->in_room);
+		if(!rp) {
+			log("weirdness in do_stop");
+			return;
+		}
+
+		for (tmp = rp->people;tmp;tmp=tmp2) {
+			tmp2 = tmp->next_in_room;
+			if(affected_by_spell(tmp, spl)) {
+				send_to_char("As the bard song ends, you feel more like yourself again.\n\r",tmp);
+				affect_from_char(tmp, spl);
+			}
+		}
+	} else {
+		send_to_char("But you're not playing a song in the first place?!\n\r",ch);
+	}
+}
+
+#define USE_MANA(ch, sn) \
+  MAX((int)spell_info[sn].min_usesmana,100/MAX(2,(2+GET_LEVEL(ch, BestMagicClass(ch))-SPELL_LEVEL(ch,sn))))
+
+void do_play(struct char_data *ch, char *argument, int cmd)
+{
+	char buf[254];
+	struct obj_data *tar_obj;
+	struct char_data *tar_char;
+	char name[MAX_INPUT_LENGTH];
+	char ori_argument[256];     /* make a copy of argument for log */
+	int qend, spl, i,exp;
+	bool target_ok;
+
+	if (!IsHumanoid(ch)) {
+		send_to_char("Sorry, you don't have the right form for that.\n\r",ch);
+		return;
+	}
+
+	if (!HasClass(ch, CLASS_BARD)) {
+		send_to_char("Err, no. You just don't have the skills to make pretty music.\n\r", ch);
+		return;
+	}
+
+	if (apply_soundproof(ch)) {
+		send_to_char("Aye, good plan, but it's too quiet to play here!\n\r", ch);
+		return;
+	}
+
+	argument = skip_spaces(argument);
+	for(i=0;argument[i] && (i < 255);i++)
+		ori_argument[i] = argument[i];
+	ori_argument[i] = '\0';
+
+	/* If there is no chars in argument */
+	if (!(*argument)) {
+		send_to_char("Play which what where?\n\r", ch);
+		return;
+	}
+
+	if (*argument != '\'') {
+		send_to_char("Song names must always be enclosed by the holy magic symbols : '\n\r",ch);
+		return;
+	}
+
+	/* Locate the last quote && lowercase the magic words (if any) */
+	for (qend=1; *(argument+qend) && (*(argument+qend) != '\'') ; qend++)
+		*(argument+qend) = LOWER(*(argument+qend));
+	if (*(argument+qend) != '\'') {
+		send_to_char("Song names must always be enclosed by the holy magic symbols : '\n\r",ch);
+		return;
+	}
+
+	if(ch->specials.is_playing)
+		do_stop(ch,"",0);
+
+	spl = old_search_block(argument, 1, qend-1,spells, 0);
+
+	if (!spl) {
+		send_to_char("Nothing seems to happen! Wow! \n\r",ch);
+		return;
+	}
+
+	if(spl < FIRST_SUSTAINED_SONG || spl > LAST_SUSTAINED_SONG) {
+		send_to_char("Alas, you cannot play that song. Try weaving it.\n\r",ch);
+		return;
+	}
+
+
+	if (!ch->skills)
+		if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF)) {
+			send_to_char("You do not have skills!\n\r",ch);
+			return;
+		}
+
+	if(ch->skills[spl].learned == 0) {
+		send_to_char("You have no knowledge of this song.\n\r",ch);
+		return;
+	}
+
+	if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
+		if (!IS_IMMORTAL(ch)) {
+			if ((spell_info[spl].min_level_bard > GET_LEVEL(ch, BARD_LEVEL_IND))) {
+				send_to_char("Sorry, you can't quite reach those notes yet.\n\r", ch);
+				return;
+			}
+		}
+		argument+=qend+1;	/* Point to the last ' */
+		for(;*argument == ' '; argument++);
+			/* **************** Locate targets **************** */
+		target_ok = FALSE;
+		tar_char = 0;
+		tar_obj = 0;
+		if (IS_SET(spell_info[spl].targets, TAR_VIOLENT) && check_peaceful(ch,"Ah, no battle songs in here, matey!\n\r"))
+			return;
+
+		if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
+			sprintf(buf,"%s plays %s",GET_NAME(ch),ori_argument);
+			log(buf);
+		}
+		if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
+			argument = one_argument(argument, name);
+			if (str_cmp(name,"self")==0) {
+				sprintf(name,"%s",GET_NAME(ch));
+			}
+
+			if (*name) {
+				/* room char songs */
+				if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
+					if ((tar_char = get_char_room_vis(ch, name)) || (str_cmp(GET_NAME(ch),name)==0)) {
+						if (str_cmp(GET_NAME(ch),name)==0)
+							tar_char = ch;
+						if (tar_char == ch || tar_char == ch->specials.fighting || tar_char->specials.fighting == ch)
+							target_ok = TRUE;
+					} else {
+						target_ok = FALSE;
+					}
+				}
+				/* world char songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+					if (tar_char = get_char_vis(ch, name))
+						target_ok = TRUE;
+				/* inv obj songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+					if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
+						target_ok = TRUE;
+				/* room obj songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+					if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
+						target_ok = TRUE;
+				/* world obj songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD)) {
+					target_ok = TRUE;
+					sprintf(argument,"%s",name);
+				}
+				/* eq obj songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP)) {
+					for(i=0; i<MAX_WEAR && !target_ok; i++)
+						if (ch->equipment[i] && str_cmp(name, ch->equipment[i]->name) == 0) {
+							tar_obj = ch->equipment[i];
+							target_ok = TRUE;
+						}
+				}
+				/* self only songs */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY))
+					if (str_cmp(GET_NAME(ch), name) == 0) {
+						tar_char = ch;
+						target_ok = TRUE;
+					}
+				/* name songs (?) */
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
+					tar_obj = (void*)name;
+					target_ok = TRUE;
+				}
+				if (tar_char) {
+					if (IS_NPC(tar_char))
+						if (IS_SET(tar_char->specials.act, ACT_IMMORTAL)) {
+							send_to_char("You can't sing to that!",ch);
+							return;
+						}
+				}
+			} else { /* No argument was typed */
+				if (IS_SET(spell_info[spl].targets, TAR_FIGHT_SELF))
+					if (ch->specials.fighting) {
+						tar_char = ch;
+						target_ok = TRUE;
+					}
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_FIGHT_VICT))
+					if (ch->specials.fighting) {
+						/* WARNING, MAKE INTO POINTER */
+						tar_char = ch->specials.fighting;
+						target_ok = TRUE;
+					}
+				if (!target_ok && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
+					tar_char = ch;
+					target_ok = TRUE;
+				}
+			}
+		} else {
+			target_ok = TRUE; /* No target, is a good target */
+		}
+
+		if (!target_ok) {
+			if (*name) {
+				if (IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
+					send_to_char("Nobody playing by that name.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM))
+					send_to_char("Nobody here by that name.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
+					send_to_char("You are not carrying anything like that.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
+					send_to_char("Nothing here by that name.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
+					send_to_char("Nothing at all by that name.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_OBJ_EQUIP))
+					send_to_char("You are not wearing anything like that.\n\r", ch);
+				else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
+					send_to_char("Nothing at all by that name.\n\r", ch);
+			} else { /* Nothing was given as argument */
+				if (spell_info[spl].targets < TAR_OBJ_INV)
+					send_to_char("Who should the song be aimed at?\n\r", ch);
+				else
+					send_to_char("What should the song be aimed at?\n\r", ch);
+			}
+			return;
+		} else { /* TARGET IS OK */
+			if ((tar_char == ch) && IS_SET(spell_info[spl].targets, TAR_SELF_NONO)) {
+				send_to_char("You cannot aim this song at yourself.\n\r", ch);
+				return;
+			} else if ((tar_char != ch) && IS_SET(spell_info[spl].targets, TAR_SELF_ONLY)) {
+				send_to_char("You can only aim this song at yourself.\n\r", ch);
+				return;
+			} else if (IS_AFFECTED(ch, AFF_CHARM) && (ch->master == tar_char)) {
+				send_to_char("You are afraid that it could harm your master.\n\r", ch);
+				return;
+			} else if(!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
+				if (A_NOASSIST(ch,tar_char)) {
+					act("$N is engaged with someone else, no can do.",FALSE,ch,0,tar_char,TO_CHAR);
+					return;
+				}
+			}
+		}
+		if (GetMaxLevel(ch) < LOW_IMMORTAL) {
+			if (GET_MANA(ch) < (unsigned int)USE_MANA(ch, (int)spl) || GET_MANA(ch) <=0) {
+				send_to_char("You don't have the vocal resources to sing that song.\n\r", ch);
+				return;
+			}
+		}
+
+		ch_printf(ch,"You start playing the %s.\n\r",spells[spl-1]);
+		act("$n takes a deep breath, and bursts into a song.",FALSE, ch, 0, 0, TO_ROOM);
+
+		WAIT_STATE(ch, spell_info[spl].beats);
+
+		if ((spell_info[spl].spell_pointer == 0) && spl>0)
+			send_to_char("Sorry, this song has not yet been implemented \n\r",ch);
+		else {
+			int max, cost;
+
+			max = ch->specials.spellfail;
+			max += GET_COND(ch, DRUNK)*10; /* 0 - 240 */
+			if(EqWBits(ch, ITEM_ANTI_BARD))
+				max+=10;
+			if (ch->attackers > 0)
+				max += spell_info[spl].spellfail;
+			else if (ch->specials.fighting)
+				max += spell_info[spl].spellfail/2;
+
+			if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special)) {
+				send_to_char("You croak loudly, then blush furiously!\n\r", ch);
+				act("$n emits a loud croak, and blushes furiously.\n\r",FALSE, ch, 0, 0, TO_ROOM);
+				cost = 10*((int)USE_MANA(ch, (int)spl)); /* ten times the round cost */
+				GET_MANA(ch) -= (cost>>1);
+				LearnFromMistake(ch, spl, 0, 95);
+				return;
+			}
+
+			if (!IS_IMMORTAL(ch)) {
+				if (tar_char == ch) {
+					if (IS_AFFECTED(tar_char,AFF_SILENCE)) {
+						act("Sing while you're silenced? Err, no.", FALSE, ch, 0, 0, TO_CHAR);
+						act("$n tries to sing, but nothing comes out.", FALSE, ch, 0, 0, TO_ROOM);
+						return;
+					}
+				}
+				if (tar_char) {
+					if (IS_AFFECTED(tar_char,AFF_SILENCE)) {
+						act("Your song seems to have no impact on $N.",FALSE,ch,0,tar_char,TO_CHAR);
+						act("$n's song seems to leave &N unaffected.",FALSE,ch,0,tar_char,TO_NOTVICT);
+						act("$n seems to yell something at you, but you're in a state of blessed silence.",FALSE,ch,0,0,TO_VICT);
+						return;
+					}
+					if (GET_POS(tar_char) == POSITION_DEAD) {
+						send_to_char("The song has no impact on the dead body.\n", ch);
+						return;
+					}
+				}
+			}
+			send_to_char("Ok.\n\r",ch);
+			((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
+			cost = 10*((int)USE_MANA(ch, (int)spl));
+			exp = NewExpCap(ch, cost*50);
+			ch->specials.is_playing = spl;
+			if (cmd == 601) {
+				struct obj_data *instrument;
+				if(instrument=ch->equipment[HOLD]) {
+					if(ITEM_TYPE(instrument) == ITEM_INSTRUMENT) {
+						if(instrument->obj_flags.value[0] > -1 && instrument->obj_flags.value[0] < 51) {
+							cost = (int) cost *(1 - ((float)(instrument->obj_flags.value[0])/100));
+							GET_MANA(ch) -= cost;
+						} else {
+							log("some instrument has an invalid mana reduction value!");
+						}
+					}
+				}
+				GET_MANA(ch) -= cost;
+			} else {
+				GET_MANA(ch) -= cost;
+			}
+			sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience from your expert playing abilities.$c000w\n\r",exp);
+			send_to_char(buf,ch);
+			gain_exp(ch, exp);
+		}
+		return;
+	}
+	switch (number(1,5)) {
+		case 1:
+			send_to_char("Do re mi fa sol la ti do?\n\r", ch);
+			break;
+		case 2:
+			send_to_char("Mi do sol sol la ti!\n\r",ch);
+			break;
+		case 3:
+			send_to_char("Fa fa la la ti do ti do?!?\n\r",ch);
+			break;
+		case 4:
+			send_to_char("Re mi sol fa mi re do??\n\r",ch);
+			break;
+		default:
+			send_to_char("Do do la la re re mi sol?\n\r",ch);
+			break;
+	}
 }

@@ -349,7 +349,8 @@ struct QuestItem {
 #define PULSE_ADVICE       200
 #define PULSE_DARKNESS	250
 #define PULSE_ARENA	100 /* see if there's a winner in arena */
-#define PULSE_AUCTION 100
+#define PULSE_AUCTION 80 /* every 20 seconds */
+#define PULSE_PLAYSONG 12 /* every 3 seconds */
 #define MAX_ROOMS   5000
 
 
@@ -905,10 +906,7 @@ struct room_data
 #define AFF_HIDE              BV20//0x00100000
 #define AFF_SILENCE           BV21//0x00200000
 #define AFF_CHARM             BV22//0x00400000
-
-//#define AFF_FOLLOW            BV23//0x00800000 /* this doesn't seem to do anything, placed darkness here -Lennya */
 #define AFF_DARKNESS	       BV23
-
 #define AFF_PROTECT_FROM_EVIL BV24//0x01000000  /*  */
 #define AFF_TRUE_SIGHT        BV25//0x02000000
 #define AFF_SCRYING           BV26//0x04000000   /* looking in adjacent rooms */
@@ -927,19 +925,18 @@ struct room_data
 #define AFF2_AFK               BV05//0x00000020
 #define AFF2_DETECT_GOOD       BV06//0x00000040
 #define AFF2_PROTECT_FROM_GOOD BV07//0x00000080
-
-#define AFF2_FOLLOW			   BV08
-//#define AFF2_DARKNESS	       BV08//0x00000100
-
+#define AFF2_FOLLOW			   BV08 /* doesn't do shit  -Lennya */
 #define AFF2_HASTE             BV09//0x00000200
 #define AFF2_SLOW			   BV10//0x00000400
 #define AFF2_WINGSBURNED	   BV11
 #define AFF2_STYLE_BERSERK     BV12//0x00001000
 #define AFF2_QUEST			   BV13
 #define AFF2_NO_OUTDOOR		   BV14
-/* necro stuff */
 #define AFF2_WINGSTIRED        BV15// 0x40000000
+/* necro stuff */
 #define AFF2_INVIS_TO_UNDEAD   BV16
+/* bard stuff */
+#define AFF2_SONGWEAVING	   BV17
 
 /* Flag spells as brewable or single class */
 #define BREWABLE_SPELL         BV00
@@ -1356,6 +1353,8 @@ struct char_special_data
 	char *talks;		 /* what mob says when talked to */
 	char *quest_yes; /* what mob says if returning correct item and dishing out prize */
 	char *quest_no;	 /* what mob says when returning wrong item */
+
+	int is_playing;
 
   };
 

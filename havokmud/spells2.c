@@ -5235,3 +5235,16 @@ void cast_blade_barrier( byte level, struct char_data *ch, char *arg,
       break;
   }
 }
+
+void play_song_of_battle( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+    spell_song_of_battle(level, ch, 0, 0);
+    break;
+  default:
+      log("serious screw-up in play_song_of_battle");
+      break;
+  }
+}

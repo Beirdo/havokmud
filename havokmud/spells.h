@@ -405,7 +405,11 @@
 
 #define SPELL_BLADE_BARRIER		341
 
-#define MAX_EXIST_SPELL         341   /* max number of skills/spells */
+#define FIRST_SUSTAINED_SONG	342
+#define SONG_OF_BATTLE			342
+#define LAST_SUSTAINED_SONG	    342
+
+#define MAX_EXIST_SPELL         342   /* max number of skills/spells */
 
 
 #define FIRST_BREATH_WEAPON	     356 /*	201 */ //306
@@ -562,7 +566,8 @@ struct spell_info_type
 	byte min_level_paladin;
 	byte min_level_ranger;
 	byte min_level_psi;
-	       byte min_level_bard;
+
+    byte min_level_bard;
 
 	sh_int targets;         /* See below for use with TAR_XXX  */
         sh_int spellfail;       /* modifier for spell failure      */

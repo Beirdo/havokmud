@@ -2516,6 +2516,8 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*da
 					ch_printf(ch,"Your attack against %s is futile.\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
 				else if(temp < dam)
 					ch_printf(ch,"%s seems to resist your attack!\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
+				else if(temp > dam)
+					send_to_char("Your attack seems to do an extraordinary amount of damage!\n\r",ch);
 			}
 			HitVictim(ch, victim, dam, type, w_type, dam_func);
 		} else {
@@ -3405,6 +3407,7 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 {
 
   unsigned Our_Bit;
+  char sus_buf[120], res_buf[120];
 
   /*
     long, intricate list, with the various bits and the various spells and
@@ -3505,16 +3508,17 @@ int PreProcDam(struct char_data *ch, int type, int dam)
     return(dam);
     break;
   }
-
-  if (IS_SET(ch->susc, Our_Bit))
-    dam <<= 1;
-
-  if (IS_SET(ch->immune, Our_Bit) && !IS_SET(ch->susc, Our_Bit)) /* Make suscept override resist */
-    dam >>= 1;
-
-  if (IS_SET(ch->M_immune, Our_Bit)) /* immune overrides boths suspect and resist */
-    dam = -1;
-
+	if (IS_SET(ch->M_immune, Our_Bit)) /* immune overrides boths suspect and resist */
+		dam = -1;
+	else if (IS_SET(ch->immune, Our_Bit) && !IS_SET(ch->susc, Our_Bit)) {/* Make suscept override resist */
+		dam >>= 1;
+		if(!(number(0,9)))
+			send_to_char("Your resistances help to protect you from the attack.\n\r",ch);
+	} else if (IS_SET(ch->susc, Our_Bit)) {
+		dam <<= 1;
+		if(!(number(0,9)))
+			send_to_char("Your susceptibility makes the attack do even more damage.\n\r",ch);
+	}
   return(dam);
 }
 

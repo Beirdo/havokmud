@@ -2042,84 +2042,68 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			}
 		}
 
-		if(!found1 && !found2 && !found3 && !found4 && !found5) {
-				/* nothing found */
+		if(!found1 && !found2 && !found3 && !found4 && !found5) { /* nothing found */
 				send_to_char("When he's finished, Yeelorn says, 'Hmm, no, ye gots nothin of interest to me, matey.\n\r",ch);
 				send_to_char("Come back when ya got some. Quit wasting me time now, there's work to do.'\n\r",ch);
 				return(TRUE);
-		} else if(found1 && found2 && found3 && found4 && found5) {
-				/* has everything, tell him the price */
-				send_to_char("When he's finished, Yeelorn exclaims, 'Woah mate, I see ye'ns got everything I be needin.\n\r",ch);
+		} else if(found1 && found2 && found3 && found4 && found5) { /* has everything, tell him the price */
+				send_to_char("When he's finished, Yeelorn exclaims, 'Woah mate, I see ye'ns got everything I be needin\n\r",ch);
 				send_to_char("to fix you up with a pretty shield. The shield of thought, to start out with. Then we\n\r",ch);
 				send_to_char("gots to reinforce it with a dragon bone and a shield spell, enamel it with the silver\n\r",ch);
 				send_to_char("from the sheet, and finally, we bring it to life with the runes from the ring. Aye, that\n\r",ch);
-				send_to_char("Will be a nice piece of work. Course, I'll have to charge ye a builder's fee. I'd think\n\r",ch);
+				send_to_char("will be a nice piece of work. Course, I'll have to charge ye a builder's fee. I'd think\n\r",ch);
 				send_to_char("a million coins would do nicely. So. Whatcha think? You wanna buy this service from me?'\n\r",ch);
 				return(TRUE);
 		} else if(found1 || found2 || found3 || found4 || found5) { /* has at least one item */
-			send_to_char("When he's finished, Yeelorn says, 'Hmm, I see ye've got yerself some pretty items.\n\r",ch);
+			send_to_char("When he's finished, Yeelorn says, 'Hmm, I see ye've got yerself some pretty items.",ch);
 			if(found1 == 1) {
-				/* got the ring */
-				send_to_char("This runed ring here, for instance. With the aid of them runes, I may be able to embue\n\r",ch);
-				send_to_char("a creation of mine with some powerful magicks.  Aye, sure looks promisin.'\n\r",ch);
+				send_to_char("\n\rThis runed ring here, for instance. With the aid of them runes, I may be able to embue\n\r",ch);
+				send_to_char("a creation of mine with some powerful magicks.  Aye, sure looks promisin.",ch);
 			}
 			if(found2 == 1) {
-				/* got the bone */
-				send_to_char("This here dragon bone looks like the right kind to reinforce a certain piece of armor\n\r",ch);
-				send_to_char("with.  Oh golly, I bet I could do somethin funky with that.'\n\r",ch);
+				send_to_char("\n\rThis here dragon bone looks like the right kind to reinforce a certain piece of armor\n\r",ch);
+				send_to_char("with.  Oh golly, I bet I could do somethin funky with that.",ch);
 			}
 			if(found3 == 1) {
-				/* got the sheet */
-				send_to_char("What a pretty silver sheet ye've got there, mate.  Could put that to some good use\n\r",ch);
-				send_to_char("if I were to have to pretty up a little summat or another.'\n\r",ch);
+				send_to_char("\n\rWhat a pretty silver sheet ye've got there, mate.  Could put that to some good use\n\r",ch);
+				send_to_char("if I were to have to pretty up a little summat or another.",ch);
 			}
 			if(found4 == 1) {
-				/* got the spell */
-				send_to_char("Hmmm, a scroll of shield.. I could use that when hammering some crafty bit of armor.'\n\r",ch);
+				send_to_char("\n\rHmmm, a scroll of shield.. I could use that when hammering some crafty bit of armor.",ch);
 			}
 			if(found5 == 1) {
-				/* got the shield */
-				send_to_char("A shield with a mind of its own, eh? That looks int'resting. Bet I could sharpen up\n\r",ch);
-				send_to_char("that mind a wee bit. Aye, but I'd need some more materials to do so..'\n\r",ch);
+				send_to_char("\n\rA shield with a mind of its own, eh? That looks int'resting. Bet I could sharpen up\n\r",ch);
+				send_to_char("that mind a wee bit. Aye, but I'd need some more materials to do so..",ch);
 			}
 			/* maybe they'll get a hint */
 			switch(number(1,20)) {
 				case 1:
-					if(!found1) {
-						/* hint for ring */
-						send_to_char("\n\rThe other day, I heard there's this tiny gnome who's nicked herself a useful ring.\n\r",ch);
-					}
+					if(!found1)
+						send_to_char("\n\r\n\rThe other day, I heard there's this tiny gnome who's nicked herself a useful ring.",ch);
 					break;
 				case 2:
-					if(!found2) {
-						/* hint for bone */
-						send_to_char("\n\rYa know, dragonbone is ever a useful ingredient for crafty pieces of armor.\n\r",ch);
-					}
+					if(!found2)
+						send_to_char("\n\r\n\rYa know, dragonbone is ever a useful ingredient for crafty pieces of armor.",ch);
 					break;
 				case 3:
-					if(!found3) {
-						/* hint for sheet */
-						send_to_char("\n\rI just ran out of silver filigree too. Maybe ye kin find me a sheet or two?\n\r",ch);
-					}
+					if(!found3)
+						send_to_char("\n\r\n\rI just ran out of silver filigree too. Maybe ye kin find me a sheet or two?",ch);
 					break;
 				case 4:
-					if(!found4) {
-						/* hint for spell */
-						send_to_char("\n\rAye, iffen ye want to imbue the metal with real power, ye'd need a scroll of spell too.\n\r",ch);
-					}
+					if(!found4)
+						send_to_char("\n\r\n\rAye, iffen ye want to imbue the metal with real power, ye'd need a scroll of spell too.",ch);
 					break;
 				case 5:
-					if(!found5) {
-						/* hint for shield */
-						send_to_char("\n\rHeard there's a shield with a mind of its own. Wouldn't that be something to see, eh?\n\r",ch);
-					}
+					if(!found5)
+						send_to_char("\n\r\n\rHeard there's a shield with a mind of its own. Wouldn't that be something to see, eh?",ch);
 					break;
 				default:
 					break;
 			}
+			send_to_char("'\n\r",ch);
 		}
 		return(TRUE);
-	} // end ask
+	}
 
 	if(cmd == 56) { /* buy */
 		for (i = object_list; i; i = i->next) {
@@ -2183,6 +2167,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 					return(TRUE);
 				}
 			}
+			found = 0;
 		}
 
 		if(obj1 && obj2 && obj3 && obj && obj5) {

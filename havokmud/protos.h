@@ -1600,7 +1600,7 @@ int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,
 	    byte slev, byte plev, byte rlev, byte ilev,
 	    ubyte mana, sh_int tar, void *func, sh_int sf,
-	    byte brewable, byte nlev);
+	    byte brewable, byte blev, byte nlev);
 
 int SPELL_LEVEL(struct char_data *ch, int sn);
 void affect_update( int pulse );
@@ -1987,8 +1987,8 @@ void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
 
 void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
 void do_steed(struct char_data *ch, char *argument, int cmd);
-
-
+void do_stop(struct char_data *ch, char *argument, int cmd);
+void do_play(struct char_data *ch, char *argument, int cmd);
 
 /* From utility.c */
 int advatoi (const char *s);
@@ -2107,6 +2107,7 @@ void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
 void DarknessPulseStuff(int pulse);
 void ArenaPulseStuff(int pulse);
+void PlaysongPulseStuff(int pulse);
 void AuctionPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
@@ -2383,4 +2384,5 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
 void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
+void spell_song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 

@@ -3031,7 +3031,7 @@ char *advicelist[] = {
 	"Type $c000WNEWS$c000w to see the last news and events that occurred on Havok",
 	"Use $c000WBPROMPT$c000w to set your battle prompt the same was as the regular $c000WPROMPT$c000w command.",
 	"Type $c000WHELP COLOR$c000w to get a list of the color code characters.",
-	"You cannot $c000WSHOUT$c000w or use $c000WOOC$c000w until level 2." //32
+	"You cannot $c000WSHOUT$c000w or use $c000WOOC$c000w until level 2.", //32
 	"If you're curious about the function of a spell, type $c0015HELP SPELL <spellname>$c0007.",
 	"If you're curious about the function of a skill, type $c0015HELP SKILL <skillname>$c0007.",
 	"You may want to read $c0015HELP NEWBIE$c0007 for some useful information to get you started.",
@@ -3148,6 +3148,63 @@ void ArenaPulseStuff(int pulse)
 		} /* not enough or too many people in arena */
 	} /* arena not closed */
 }
+
+extern struct spell_info_type spell_info[MAX_SPL_LIST];
+#define USE_MANA(ch, sn) \
+  MAX((int)spell_info[sn].min_usesmana,100/MAX(2,(2+GET_LEVEL(ch, BestMagicClass(ch))-SPELL_LEVEL(ch,sn))))
+
+void PlaysongPulseStuff(int pulse)
+{
+	struct descriptor_data *i;
+	register struct char_data *ch;
+	struct room_data *rp;
+	struct char_data *tmp, *tmp2;
+	char buf[80];
+	int spl = 0, cost = 0;
+
+	if (pulse < 0)
+		return;
+
+	for (i = descriptor_list; i; i=i->next) {
+		if (!i->connected) {
+			ch = i->character;
+			if(ch->specials.is_playing) {
+				spl = ch->specials.is_playing;
+				/* let's see what the mana cost per round is: */
+				cost = (int)USE_MANA(ch, (int)spl);
+				GET_MANA(ch) -= cost;
+				if(cost > GET_MANA(ch)) {
+					/* outta mana, stop playing */
+					send_to_char("Your voice drained, there's no other option but to end your song.\n\r",ch);
+					act("$n's voice turns into a croak, and, blushing furiously, $e ends $s song.",FALSE, ch, 0,0,TO_ROOM);
+					ch->specials.is_playing = 0;
+					/* is there someone else in the room playing this song? */
+					if(ch->in_room)
+						rp = real_roomp(ch->in_room);
+					if(!rp) {
+						log("weirdness in PlaysongPulseStuff");
+						return;
+					}
+					for (tmp = rp->people; tmp; tmp = tmp2) {
+						tmp2 = tmp->next_in_room;
+						if(tmp->specials.is_playing == spl) /* there is, don't remove affects, we're done here */
+							return;
+					}
+
+					/* remove spell affects from all people in room */
+					for (tmp = rp->people;tmp;tmp=tmp2) {
+						tmp2 = tmp->next_in_room;
+						if(affected_by_spell(tmp, spl)) {
+							send_to_char("As the bard song ends, you feel more like yourself again.\n\r",tmp);
+							affect_from_char(tmp, spl);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void AuctionPulseStuff(int pulse)
 {
 	extern int auct_loop;

@@ -53,10 +53,13 @@ void get(struct char_data *ch, struct obj_data *obj_object,
 		(obj_object->obj_flags.value[0]>=1))
 	{
 		obj_from_char(obj_object);
-		sprintf(buffer,"There was %s coins.\n\r", formatNum(obj_object->obj_flags.value[0]));
-		send_to_char(buffer,ch);
+		if(obj_object->obj_flags.value[0] > 1) { /* don't notify if it's 1 coin or less */
+			sprintf(buffer,"There was %s coins.\n\r", formatNum(obj_object->obj_flags.value[0]));
+			send_to_char(buffer,ch);
+		}
 
-		if (IS_SET(ch->specials.act, PLR_AUTOSPLIT)) {
+		if (IS_SET(ch->specials.act, PLR_AUTOSPLIT) && (obj_object->obj_flags.value[0]>1) /* don't split less than 1 coins */
+			&& (ch->followers || ch->master)) { /* and only try to split if you've got groupies */
 		   sprintf(buffer,"%d",obj_object->obj_flags.value[0]);
 		   GET_GOLD(ch) += obj_object->obj_flags.value[0];
 		   do_split(ch, buffer, 0);
