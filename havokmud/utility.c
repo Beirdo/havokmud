@@ -3262,41 +3262,41 @@ void traveling_qp(int pulse)
 		f = 1;
 		if(!(travelqp = find_tqp(k))) {
 			f = 0;
-		}
-
-		if(init_counter()<MIN_INIT_TQP) {
-			extract_obj(travelqp);
-			f = 0;
-		}
-
-		if(!(ch = travelqp->carried_by)) {
-			log("not carried, extracting");
-			extract_obj(travelqp);
-			f = 0;
-		}
-
-		if(!IS_NPC(ch)) {
-	//		ch->player.q_points++;
-			send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
-			if(qt = read_object(27, VIRTUAL)) {
-				obj_to_char(qt, ch);
-			}
-			log("carried by player, gained a QT");
-			sprintf(buf,"%s just found a quest token.\n\r", GET_NAME(ch));
-			qlog(buf);
-			extract_obj(travelqp);
-			f = 0;
-		}
-
-		if(qp_patience < 8) { // hasn't been in inventory long enough yet
-			f = 0;
-		}
-
-		if(!(qp_patience > 60)) // hasn't been sitting here too long yet
-			if(number(k,3)==3) { // 67, 50, 0% chance of not moving
+		} else {
+			if(init_counter()<MIN_INIT_TQP) {
+				extract_obj(travelqp);
 				f = 0;
+			} else {
+				if(!(ch = travelqp->carried_by)) {
+					log("not carried, extracting");
+					extract_obj(travelqp);
+					f = 0;
+				} else {
+					if(!IS_NPC(ch)) {
+				//		ch->player.q_points++;
+						send_to_char("You found yourself some booty, and are rewarded by the gods with a $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000w token.\n\r",ch);
+						if(qt = read_object(27, VIRTUAL)) {
+							obj_to_char(qt, ch);
+						}
+						log("carried by player, gained a QT");
+						sprintf(buf,"%s just found a quest token.\n\r", GET_NAME(ch));
+						qlog(buf);
+						extract_obj(travelqp);
+						f = 0;
+					} else {
+						if(qp_patience < 8) { // hasn't been in inventory long enough yet
+							f = 0;
+						} else {
+							if(!(qp_patience > 60)) {// hasn't been sitting here too long yet
+								if(number(k,3)==3) { // 67, 50, 0% chance of not moving
+									f = 0;
+								}
+							}
+						}
+					}
+				}
 			}
-
+		}
 		// find a new mob
 		if(f) {
 			newch = 0;
