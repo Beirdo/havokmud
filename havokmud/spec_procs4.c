@@ -553,16 +553,39 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
 	char name[32];
+
+	int *concost;
+
+	int *strcost;
+	int *dexcost;
+	int *chrcost;
+	int *intcost;
+	int *wiscost;
+
+	if((GET_RCON(ch) -3) < 3){concost = 3;}
+	else{concost = (GET_RCON(ch) -3);}
+	if((GET_RSTR(ch) -3) < 3){strcost = 3;}
+	else{strcost = (GET_RSTR(ch) -3);}
+	if((GET_RDEX(ch) -3) < 3){dexcost = 3;}
+	else{dexcost = (GET_RDEX(ch) -3);}
+	if((GET_RCHR(ch) -3) < 3){chrcost = 3;}
+	else{chrcost = (GET_RCHR(ch) -3);}
+	if((GET_RINT(ch) -3) < 3){intcost = 3;}
+	else{intcost = (GET_RINT(ch) -3);}
+	if((GET_RWIS(ch) -3) < 3){wiscost = 3;}
+	else{wiscost = (GET_RWIS(ch) -3);}
+
+
 	const struct skillset traininglist[] = {
 //	  { "hitpoints",    1,      2},
 //	  { "movement",  	2,      1},
 //	  { "mana",         3,      2},
-	  { "constitution",	4,		(GET_RCON(ch) - 3)},  /*cost is current real stat -3 -Gordon Jan202004- */
-	  { "strength",     5,      (GET_RSTR(ch) - 3)},
-	  { "dexterity",    6,      (GET_RDEX(ch) - 3)},
-	  { "charisma",     7,      (GET_RCHR(ch) - 3)},
-	  { "intelligence", 8,      (GET_RINT(ch) - 3)},
-	  { "wisdom",       9,      (GET_RWIS(ch) - 3)},
+	  { "constitution",	4,		concost},  /*cost is current real stat -3 -Gordon Jan202004- */
+	  { "strength",     5,      strcost},
+	  { "dexterity",    6,      dexcost},
+	  { "charisma",     7,      chrcost},
+	  { "intelligence", 8,      intcost},
+	  { "wisdom",       9,      wiscost},
 	  { "None",		    -1,	    -1}
 
 	};
