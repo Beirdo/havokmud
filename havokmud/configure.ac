@@ -5,9 +5,7 @@ AC_INIT(havokmud, [1.10/1.11], [gjhurlbu@users.sourceforge.net])
 AC_CONFIG_SRCDIR([act.comm.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([scripts])
-AC_REVISION($Revision: 1.1.2.1 $)
-
-AC_GNU_SOURCE
+AC_REVISION($Revision: 1.1.2.2 $)
 
 AC_ARG_VAR(AWK, [location of the awk command])
 AC_PROG_AWK
@@ -29,6 +27,10 @@ AC_SUBST(VERSIONMAJOR)
 AC_SUBST(VERSIONMINOR)
 AC_SUBST(VERSIONPATCH)
 AC_SUBST(VERSIONDATE)
+
+AC_CANONICAL_SYSTEM
+
+AC_GNU_SOURCE
 
 
 # Checks for programs.
