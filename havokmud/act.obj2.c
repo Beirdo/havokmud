@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -69,11 +70,11 @@ void weight_change_object(struct obj_data *obj, int weight)
 
     if (obj->in_room != NOWHERE) {
         GET_OBJ_WEIGHT(obj) += weight;
-    } else if (tmp_ch = obj->carried_by) {
+    } else if ((tmp_ch = obj->carried_by)) {
         obj_from_char(obj);
         GET_OBJ_WEIGHT(obj) += weight;
         obj_to_char(obj, tmp_ch);
-    } else if (tmp_obj = obj->in_obj) {
+    } else if ((tmp_obj = obj->in_obj)) {
         obj_from_obj(obj);
         GET_OBJ_WEIGHT(obj) += weight;
         obj_to_obj(obj, tmp_obj);
@@ -1457,7 +1458,7 @@ void do_remove(struct char_data *ch, char *argument, int cmd)
     char            buffer[256];
     int             Rem_List[20],
                     Num_Equip;
-    struct obj_data *obj_object;
+    struct obj_data *obj_object = NULL;
     int             j;
 
     dlog("in do_remove");
@@ -1588,7 +1589,6 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     char            item[50],
                     bid[20],
                     buf[MAX_INPUT_LENGTH];
-    extern int      Silence;
     struct obj_data *auctionobj;
 
     dlog("in do_auction");
@@ -1608,12 +1608,12 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
         }
         if (!bidder) {
             sprintf(buf, "%s is currently auctioning %s, minimum bid set "
-                         "at %d. Wait your turn.\n\r",
+                         "at %ld. Wait your turn.\n\r",
                     GET_NAME(auctioneer), auctionobj->short_description,
                     minbid);
         } else {
             sprintf(buf, "%s is currently auctioning %s, current bid of "
-                         "%d by %s. Wait your turn.\n\r",
+                         "%ld by %s. Wait your turn.\n\r",
                     GET_NAME(auctioneer), auctionobj->short_description,
                     intbid, GET_NAME(bidder));
         }
@@ -1664,7 +1664,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
     }
 
     sprintf(buf, "$c000cAuction:  $c000w%s$c000c auctions $c000w%s$c000c. "
-                 "Minimum bid set at $c000w%d$c000c coins.\n\r",
+                 "Minimum bid set at $c000w%ld$c000c coins.\n\r",
             GET_NAME(ch), auctionobj->short_description, minbid);
     send_to_all(buf);
 
@@ -1684,8 +1684,7 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
 
 void do_bid(struct char_data *ch, char *argument, int cmd)
 {
-    char            item[50],
-                    buf[MAX_INPUT_LENGTH],
+    char            buf[MAX_INPUT_LENGTH],
                     arg[254];
     long            bid = 0;
     long            newminbid = 0;
@@ -1777,13 +1776,13 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         }
         if (bid < newminbid) {
             sprintf(buf, "Sorry, your bid has to be at least 5%% higher "
-                         "(min. %d).\n\r", newminbid);
+                         "(min. %ld).\n\r", newminbid);
             send_to_char(buf, ch);
             return;
         }
         if (bid < minbid) {
             sprintf(buf, "Sorry, your bid has to be at least the minimum bid "
-                         "(%d).\n\r", minbid);
+                         "(%ld).\n\r", minbid);
             send_to_char(buf, ch);
             return;
         }
@@ -1820,7 +1819,7 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         do_save(ch, "", 0);
 
         sprintf(buf, "$c000cAuction:  $c000w%s$c000c places a bid of "
-                     "$c000w%d$c000c coins for $c000w%s$c000c.\n\r",
+                     "$c000w%ld$c000c coins for $c000w%s$c000c.\n\r",
                 GET_NAME(ch), intbid, auctionobj->short_description);
         send_to_all(buf);
         /*

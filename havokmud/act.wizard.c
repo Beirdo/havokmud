@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "protos.h"
 #define NEWHELP_FILE      "ADD_HELP"
@@ -375,7 +376,6 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
 {
     char            buf[255];
     int             len;
-    struct char_data *v;
 
     dlog("in do_bamfin");
     /*
@@ -389,7 +389,7 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
 
     if (!*arg) {
         send_to_char("Your current bamfin is:\n\r", ch);
-        act(ch->specials.poofin, FALSE, ch, 0, v, TO_CHAR);
+        act(ch->specials.poofin, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfin <bamf definition>\n\r", ch);
         send_to_char(" Additional arguments can include ~N for where you\n\r",
                      ch);
@@ -429,7 +429,6 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
 
 void do_bamfout(struct char_data *ch, char *arg, int cmd)
 {
-    struct char_data *v;
     char            buf[255];
     int             len;
 
@@ -444,7 +443,7 @@ void do_bamfout(struct char_data *ch, char *arg, int cmd)
     }
     if (!*arg) {
         send_to_char("Your current bamfout is:\n\r", ch);
-        act(ch->specials.poofout, FALSE, ch, 0, v, TO_CHAR);
+        act(ch->specials.poofout, FALSE, ch, 0, NULL, TO_CHAR);
         send_to_char("Bamfout <bamf definition>\n\r", ch);
         send_to_char("  Additional arguments can include ~N for where you\n\r",
                      ch);
@@ -1478,7 +1477,7 @@ void do_goto(struct char_data *ch, char *argument, int cmd)
                     i;
     struct char_data *target_mob,
                    *pers,
-                   *v;
+                   *v = NULL;
     struct obj_data *target_obj;
     void            do_look(struct char_data *ch, char *argument, int cmd);
 
@@ -2659,7 +2658,7 @@ void do_set(struct char_data *ch, char *argument, int cmd)
     char            field[20],
                     name[20],
                     parmstr[50];
-    struct char_data *mob;
+    struct char_data *mob = NULL;
     int             parm,
                     parm2,
                     x;
@@ -3333,11 +3332,8 @@ void do_switch(struct char_data *ch, char *argument, int cmd)
 
 void do_return(struct char_data *ch, char *argument, int cmd)
 {
-    struct char_data *mob,
+    struct char_data *mob = NULL,
                    *per;
-
-    void            do_snoop(struct char_data *ch, char *argument,
-                             int cmd);
 
     dlog("in do_return");
 
@@ -4769,8 +4765,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                     zonenum[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     struct index_data *which_i;
-    int             bottom,
-                    top,
+    int             bottom = 0,
+                    top = 0,
                     topi;
     struct string_block sb;
     struct zone_data *zd;
@@ -6774,7 +6770,7 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
 
 void do_home(struct char_data *ch, char *argument, int cmd)
 {
-    struct char_data *v;
+    struct char_data *v = NULL;
 
     dlog("in do_home");
 
@@ -7892,7 +7888,7 @@ void do_zconv(struct char_data *ch, char *argument, int cmdnum)
                     end_room,
                     zone;
     char            c;
-    FILE           *fp;
+    FILE           *fp = NULL;
 
     dlog("in do_zconv");
 

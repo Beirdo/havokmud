@@ -5228,7 +5228,7 @@ void do_attribute(struct char_data *ch, char *argument, int cmd)
     int             i = 0,
                     j2 = 0,
                     Worn_Index = 0;
-    short           last_type;
+    short           last_type = 0;
     char            buf2[MAX_STRING_LENGTH];
     struct obj_data *j = 0;
     extern char    *affected_bits[];
@@ -6673,8 +6673,6 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                     rm,
                     nfnd;
     struct char_data *spud;
-    long            CalcPowerLevel(struct char_data *ch);
-    char           *PowerLevelDesc(long a);
 
     dlog("in do_scan");
 

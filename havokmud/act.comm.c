@@ -4,6 +4,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -48,9 +49,6 @@ void do_say(struct char_data *ch, char *argument, int cmd)
 void do_report(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[100];
-    int             i,
-                    ii,
-                    iii;
 
     dlog("in do_report");
 
@@ -124,8 +122,8 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (GET_MOVE(ch) < 5 || GET_MANA(ch) < 5
-        && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) &&
+        GetMaxLevel(ch) < LOW_IMMORTAL) {
         send_to_char("You do not have the strength to shout!\n\r", ch);
         return;
     }
@@ -261,7 +259,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
                         } else if (GetMaxLevel(i->character) >=
                                    LOW_IMMORTAL) {
                             sprintf(buf2,
-                                    "$c0011[$c0015$n$c0011] yells from zone %d '%s'",
+                                    "$c0011[$c0015$n$c0011] yells from zone %ld '%s'",
                                     real_roomp(ch->in_room)->zone,
                                     argument);
                             act(buf2, 0, ch, 0, i->character, TO_VICT);
@@ -741,8 +739,7 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 void do_speak(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[255];
-    int             i,
-                    ii;
+    int             i;
 
 #define MAX_LANGS 10
 
@@ -810,8 +807,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
  */
 void do_new_say(struct char_data *ch, char *argument, int cmd)
 {
-    int             i,
-                    ii,
+    int             ii,
                     learned,
                     skill_num;
     char            buf[MAX_INPUT_LENGTH + 80];
@@ -951,11 +947,11 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
         for (t = rp->people; t; t = t->next_in_room) {
             if (t != ch) {
                 if ((t->skills)
-                    && number(1, diff) < t->skills[skill_num].learned
+                    && (number(1, diff) < t->skills[skill_num].learned
                     || GetMaxLevel(t) >= LOW_IMMORTAL || IS_NPC(t)
                     || affected_by_spell(t, SKILL_ESP)
                     || affected_by_spell(t, SPELL_COMP_LANGUAGES)
-                    || ch->player.speaks == 9) {
+                    || ch->player.speaks == 9)) {
                     /*
                      * these guys always understand
                      */
@@ -984,8 +980,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
 void do_gtell(struct char_data *ch, char *argument, int cmd)
 {
     int             i;
-    struct char_data *victim,
-                   *k;
+    struct char_data *k;
     struct follow_type *f;
     char            buf[MAX_STRING_LENGTH];
 
@@ -1015,7 +1010,7 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
             k = ch;
 		}
         for (f = k->followers; f; f = f->next) {
-            if (IS_AFFECTED(f->follower, AFF_GROUP))
+            if (IS_AFFECTED(f->follower, AFF_GROUP)) {
                 if (!f->follower->desc) {
                     /*
                      * link dead
@@ -1031,6 +1026,7 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
                              short_descr : GET_NAME(ch)), argument + i);
                     act(buf, FALSE, f->follower, 0, 0, TO_CHAR);
                 }
+            }
         }
 
         /*
@@ -1309,9 +1305,9 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_ooc");
 
-    if (!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)
+    if (!IS_NPC(ch) && (IS_SET(ch->specials.act, PLR_NOSHOUT)
         || IS_SET(ch->specials.act, PLR_NOOOC)
-        || IS_SET(ch->specials.act, PLR_WIZNOOOC)) {
+        || IS_SET(ch->specials.act, PLR_WIZNOOOC))) {
         send_to_char("You can't use this command!!\n\r", ch);
         return;
     }
@@ -1328,8 +1324,8 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         send_to_char("It may return after a bit.\n\r", ch);
         return;
     }
-    if (GET_MOVE(ch) < 5 || GET_MANA(ch) < 5
-        && GetMaxLevel(ch) < LOW_IMMORTAL) {
+    if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && 
+        GetMaxLevel(ch) < LOW_IMMORTAL) {
         send_to_char("You do not have the strength to shout!\n\r", ch);
         return;
     }
@@ -1394,7 +1390,6 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd)
                     CMD_GOSSIP = 302,
                     CMD_SHOUT = 18;
     struct descriptor_data *i;
-    extern int      Silence;
 
     if (cmd == CMD_OOC) {
 		/*
@@ -1436,7 +1431,6 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
     char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
                     buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_reply");
@@ -1502,8 +1496,7 @@ void do_talk(struct char_data *ch, char *argument, int cmd)
 {
     struct char_data *vict;
     char            name[100],
-                    message[MAX_INPUT_LENGTH + 80],
-                    buf[MAX_INPUT_LENGTH + 80];
+                    message[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_talk");
 

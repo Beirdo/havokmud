@@ -5,6 +5,10 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
 #include "protos.h"
 
 extern FILE    *wizhelp_fl;
@@ -66,11 +70,8 @@ struct help_index_element *build_help_index(FILE *fl, int *num);
 
 void do_hedit(struct char_data *ch, char *argument, int cmd)
 {
-    FILE           *f;
-    char            name[30],
-                    buf[120];
+    char            name[30];
     struct help_file_u *hlp;
-    int             i;
 
     if (IS_NPC(ch)) {
         return;
@@ -112,8 +113,7 @@ void do_hedit(struct char_data *ch, char *argument, int cmd)
  */
 int is_help_elem(struct help_file_u *hlp, char *arg)
 {
-    int             i,
-                    j;
+    int             i;
     char            arg1[120],
                     arg2[120],
                     arg3[120];
@@ -479,8 +479,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
     int             minlen,
                     i;
     char            buf[MAX_STRING_LENGTH],
-                    buffer[MAX_STRING_LENGTH],
-                    tmp[126];
+                    buffer[MAX_STRING_LENGTH];
 
     if (!ch->desc) {
         return (FALSE);
@@ -907,11 +906,9 @@ int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
 {
     FILE           *f;
     FILE           *f_temp;
-    char            buf[MAX_STRING_LENGTH * 2],
-                    buffer[MAX_STRING_LENGTH * 2];
+    char            buf[MAX_STRING_LENGTH * 2];
     int             i,
                     top = 0,
-                    last = 0,
                     tmp = 0;
     char            store[3];
 
@@ -1247,7 +1244,7 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
     char            buf[255];
     struct help_file_u *hlp;
     hlp = ch->specials.help;
-    if (type != ENTER_CHECK && !*arg || (*arg == '\n')) {
+    if (type != ENTER_CHECK && (!*arg || (*arg == '\n'))) {
         if (hlp->level) {
             free(hlp->level);
         }

@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdlib.h>
     
 #include "protos.h"
 #include "utils.h"
@@ -153,8 +154,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
     struct bulletin_board *bd;
     struct bulletin_board_message *msg;
     short          tmessage;
-    char           buf[128],
-                   ansi_buf[128];
+    char           buf[128];
     char           a1[MAX_INPUT_LENGTH];
 
     arg = one_argument(arg, a1);

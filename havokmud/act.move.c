@@ -1913,7 +1913,7 @@ void do_run(struct char_data *ch, char *argument, int cmd)
 
 void do_land(struct char_data *ch)
 {
-    int             dur_remaining;
+    int             dur_remaining = 0;
     struct affected_type *af;
     struct affected_type af2;
     struct room_data *rp;
@@ -2001,7 +2001,7 @@ void do_launch(struct char_data *ch)
 {
     struct affected_type *af;
     struct affected_type af2;
-    int             tired_remaining;
+    int             tired_remaining = 0;
 
     if (IS_SET(ch->specials.act, PLR_NOFLY)) {
         REMOVE_BIT(ch->specials.act, PLR_NOFLY);

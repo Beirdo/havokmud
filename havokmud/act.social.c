@@ -306,8 +306,8 @@ void do_insult(struct char_data *ch, char *argument, int cmd)
 void boot_pose_messages(void)
 {
     FILE           *fl;
-    byte            counter;
-    byte            class;
+    int             counter;
+    int             class;
 
     if (!(fl = fopen(POSEMESS_FILE, "r"))) {
         perror("boot_pose_messages");
@@ -329,8 +329,8 @@ void boot_pose_messages(void)
 
 void do_pose(struct char_data *ch, char *argument, int cmd)
 {
-    byte            to_pose;
-    byte            counter;
+    int             to_pose;
+    int             counter;
     int             lev,
                     class;
 

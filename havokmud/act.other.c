@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "protos.h"
 
@@ -35,6 +37,8 @@ extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern int      MaxArenaLevel,
                 MinArenaLevel;
 struct char_data *mem_list = 0;
+extern int      top_of_p_table;
+extern struct player_index_element *player_table;
 /*
  * head for the list of memorizers
  */
@@ -96,7 +100,6 @@ void do_gain(struct char_data *ch, char *argument, int cmd)
 
 void do_guard(struct char_data *ch, char *argument, int cmd)
 {
-    char            comm[100];
     dlog("in do_guard");
 
     if (!IS_NPC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
@@ -497,9 +500,7 @@ void do_save(struct char_data *ch, char *argument, int cmd)
     struct char_data *tmp;
     struct obj_data *tl;
     struct obj_data *teq[MAX_WEAR],
-                   *eq[MAX_WEAR],
                    *o;
-    char            buf[256];
     int             i;
 
     dlog("in do_save");
@@ -628,7 +629,6 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd)
 
 void do_sneak(struct char_data *ch, char *argument, int cmd)
 {
-    struct affected_type af;
     byte            percent;
 
     dlog("in do_sneak");
@@ -755,7 +755,7 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (percent > ch->skills[SKILL_HIDE].learned +
-        dex_app_skill[GET_DEX(ch)].hide) {
+        dex_app_skill[(int)GET_DEX(ch)].hide) {
         LearnFromMistake(ch, SKILL_HIDE, 1, 90);
         if (cmd) {
             WAIT_STATE(ch, PULSE_VIOLENCE * 1);
@@ -828,7 +828,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
     /*
      * 101% is a complete failure
      */
-    percent = number(1, 101) - dex_app_skill[GET_DEX(ch)].p_pocket;
+    percent = number(1, 101) - dex_app_skill[(int)GET_DEX(ch)].p_pocket;
 
     if (GET_POS(victim) < POSITION_SLEEPING || GetMaxLevel(ch) >= IMPLEMENTOR) {
         /*
@@ -2311,7 +2311,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    sprintf(str, "**%s[%d]: %s\n", GET_NAME(ch), ch->in_room, argument);
+    sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
     fputs(str, fl);
     fclose(fl);
     send_to_char("Ok. thanks.\n\r", ch);
@@ -2348,7 +2348,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    sprintf(str, "**%s[%d]: %s\n", GET_NAME(ch), ch->in_room, argument);
+    sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
     fputs(str, fl);
     fclose(fl);
     send_to_char("Ok.\n\r", ch);
@@ -2437,13 +2437,12 @@ char           *Tiredness(struct char_data *ch)
 void do_group(struct char_data *ch, char *argument, int cmd)
 {
     char            name[256],
-                    buf[256],
-                    tmp_buf[1000];
+                    buf[256];
     struct char_data *victim,
                    *k;
     struct follow_type *f;
     bool            found;
-    char            gnum;
+    int             gnum;
 
     static char    *rand_groupname[] = {
         "The Seekers",          /* 0 */
@@ -2549,7 +2548,7 @@ void do_group(struct char_data *ch, char *argument, int cmd)
                 TO_CHAR);
         }
 
-        for (f = ch->followers; f; f = f->next) {
+        for (found = FALSE, f = ch->followers; f; f = f->next) {
             victim = f->follower;
             if (IS_IMMORTAL(victim) && !IS_IMMORTAL(ch)) {
                 /*
@@ -2856,13 +2855,11 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[100],
                     buf2[100],
-                    buf3[100],
-                    buffer[120];
+                    buf3[100];
     struct obj_data *scroll,
                    *obj;
     struct char_data *victim;
     int             i,
-                    bits,
                     spl;
     bool            equipped;
     bool            target_ok;
@@ -2941,21 +2938,20 @@ void do_recite(struct char_data *ch, char *argument, int cmd)
             }
         }
         if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD)) {
-            if (victim = get_char_vis(ch, buf2)) {
+            if ((victim = get_char_vis(ch, buf2))) {
                 target_ok = TRUE;
                 target = TAR_CHAR_WORLD;
             }
         }
         if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV)) {
-            if (obj = get_obj_in_list_vis(ch, buf2, ch->carrying)) {
+            if ((obj = get_obj_in_list_vis(ch, buf2, ch->carrying))) {
                 target = TAR_OBJ_INV;
                 target_ok = TRUE;
             }
         }
         if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM)) {
-            if (obj =
-                get_obj_in_list_vis(ch, buf2,
-                                    real_roomp(ch->in_room)->contents)) {
+            if ((obj = get_obj_in_list_vis(ch, buf2,
+                                     real_roomp(ch->in_room)->contents))) {
                 target_ok = TRUE;
                 target = TAR_OBJ_ROOM;
             }
@@ -3487,7 +3483,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
     }
 }
 
-int Dismount(struct char_data *ch, struct char_data *h, int pos)
+void Dismount(struct char_data *ch, struct char_data *h, int pos)
 {
     MOUNTED(ch) = 0;
     RIDDEN(h) = 0;
@@ -3498,7 +3494,6 @@ int Dismount(struct char_data *ch, struct char_data *h, int pos)
 
 void do_mount(struct char_data *ch, char *arg, int cmd)
 {
-    char            buf[256];
     char            name[112];
     int             check;
     struct char_data *horse;
@@ -3674,7 +3669,7 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
             }
         }
         page_string(ch->desc, buffer, 0);
-        sprintf(buffer, "");
+        buffer[0] = '\0';
         return;
     }
 
@@ -3862,7 +3857,7 @@ int TotalMaxCanMem(struct char_data *ch)
                    0.5);
     }
 
-    i += (int) int_app[GET_INT(ch)].learn / 2;
+    i += int_app[(int)GET_INT(ch)].learn / 2;
     return (i);
 }
 
@@ -4207,8 +4202,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 {
     char            type[255],
                     field[255],
-                    name[254],
-                    gname[254];
+                    name[254];
 
     dlog("in do_set_flags");
 
@@ -4460,7 +4454,6 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
     struct char_data *finger = 0;
     struct char_data *i;
     struct char_file_u tmp_store;
-    int             ratio;
     int             akills = 0,
                     adeaths = 0;
 
@@ -4689,11 +4682,9 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
     int             x = 0;
     struct char_data *c[25];
     char            buf[100];
-    struct char_data *ch2,
-                   *tmp;
+    struct char_data *ch2;
     char            name[100];
-    struct follow_type *f,
-                   *k;
+    struct follow_type *k;
 
     if (!arg) {
         send_to_char("Proper usage is:\n\rpromote <name>\n\r", ch);
@@ -4806,8 +4797,8 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 
 void do_behead(struct char_data *ch, char *argument, int cmd)
 {
-    struct obj_data *j = 0;
-    struct obj_data *head;
+    struct obj_data *j = NULL;
+    struct obj_data *head = NULL;
     char            temp[256],
                     itemname[80],
                     buf[MAX_STRING_LENGTH];
@@ -4942,24 +4933,10 @@ void do_top10(struct char_data *ch, char *arg, int cmd)
 {
     struct char_data *tmp;
     struct char_file_u player;
-    char            buf[254],
-                    name[MAX_STRING_LENGTH],
-                    tmp_name[254],
-                    tmp_short[254];
-    int             x = 0,
-                    j = 0,
-                    i = 0,
-                    clan = 0,
-                    length = 35,
-                    clength = 0;
-    extern int      top_of_p_table;
-    extern struct player_index_element *player_table;
-    extern const struct clan clan_list[MAX_CLAN];
-
+    int             i = 0;
     int             deadly = 0,
                     tempd = 0,
-                    richest = 0,
-                    tempr = 0;
+                    richest = 0;
     char            deadlyname[16],
                     richestname[16];
 

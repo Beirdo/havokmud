@@ -313,7 +313,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
             sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
             if (sub_object) {
                 if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
-                    if (blah = get_obj_in_list_vis(ch, arg2, ch->carrying)) {
+                    if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
                         has = TRUE;
                     }
                     for (obj_object = sub_object->contains;
@@ -390,7 +390,7 @@ void do_get(struct char_data *ch, char *argument, int cmd)
             sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
             if (sub_object) {
                 if (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER) {
-                    if (blah = get_obj_in_list_vis(ch, arg2, ch->carrying))
+                    if ((blah = get_obj_in_list_vis(ch, arg2, ch->carrying)))
                         has = TRUE;
                     if (getall(arg1, newarg) == TRUE) {
                         num = -1;
@@ -483,7 +483,6 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
     struct obj_data *next_obj;
     bool            test = FALSE;
     char            newarg[1000];
-    char           *s;
     int             num,
                     p;
 
@@ -833,7 +832,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
                     num,
                     p,
                     count;
-    struct char_data *vict;
+    struct char_data *vict = NULL;
     struct obj_data *obj;
 
     dlog("in do_give");
@@ -1000,8 +999,7 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
     const int       donations2 = 99;
 
     char            arg[MAX_INPUT_LENGTH + 80];
-    int             amount,
-                    value;
+    int             value;
     char            buffer[MAX_STRING_LENGTH];
     struct obj_data *tmp_object;
     struct obj_data *next_obj;

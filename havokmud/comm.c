@@ -17,12 +17,12 @@
 #include <signal.h>
 #include <sys/resource.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
 #include "protos.h"
 #include "utils.h"
 
-void            str2ansi(char *p2, char *p1, int start, int stop);
-char           *ParseAnsiColors(int UsingAnsi, char *txt);
-int             construct_prompt(char *buf, struct char_data *ch);
 void            identd_test(struct sockaddr_in in_addr);
 
 #define MAX_CONNECTS 256        
@@ -122,7 +122,7 @@ int __main()
  * getting to select 
  */
 
-int close_socket_fd(int desc)
+void close_socket_fd(int desc)
 {
     struct descriptor_data *d;
 
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
     close(0);
 
     run_the_game(mud_port);
-    close(log_f);
+    fclose(log_f);
     return (0);
 }
 
@@ -358,7 +358,7 @@ int run_the_game(int port)
 /*
  * Accept new connects, relay commands, and call 'heartbeat-functs' 
  */
-int game_loop(int s)
+void game_loop(int s)
 {
     fd_set          input_set,
                     output_set,
@@ -371,7 +371,6 @@ int game_loop(int s)
                     mtout,
                     mtex;
 #endif
-    static int      cap;
     struct timeval  last_time,
                     now,
                     timespent,
@@ -383,7 +382,6 @@ int game_loop(int s)
     struct descriptor_data *point,
                    *next_point;
     int             mask;
-    struct room_data *rm;
     struct char_data *ch;
     int             update = 0;
 
@@ -570,10 +568,11 @@ int game_loop(int s)
                 if (point->str) {
                     string_add(point, comm);
                 } else if (!point->connected) {
-                    if (point->showstr_count) { 
+                    if (point->showstr_count) 
 #if 0
-                    if (point->showstr_point) {
+                    if (point->showstr_point) 
 #endif                   
+                    {
                         show_string(point, comm);
                     } else {
                         command_interpreter(point->character, comm);
@@ -1167,7 +1166,6 @@ int new_connection(int s)
 #endif
     int             i;
     int             t;
-    char            buf[100];
 
     i = sizeof(isa);
 #if 0
@@ -1832,8 +1830,6 @@ void close_sockets(int s)
 void close_socket(struct descriptor_data *d)
 {
     char            buf[MAX_STRING_LENGTH];
-    struct txt_block *txt,
-                   *txt2;
     struct descriptor_data *tmp;
 
     if (!d) {
@@ -2369,13 +2365,11 @@ void act(char *str, int hide_invisible, struct char_data *ch,
 {
     register char  *strp,
                    *point,
-                   *i;
+                   *i = NULL;
     int             KLUDGE = TRUE;
-    struct char_data *to;
+    struct char_data *to = NULL;
     char            buf[MAX_STRING_LENGTH],
                     tmp[MAX_INPUT_LENGTH];
-
-    extern long     SystemFlags;
 
     if (!str) {
         return;
@@ -2418,7 +2412,13 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                          * $C1411 would be bold, blue back, light yellow
                          * fore 
                          */
-                      act_switch_c:
+                    case '$':
+                        if (*strp != '$' || toupper(*(strp + 1)) != 'C' ||
+                            !isdigit(*(strp + 2)) || !isdigit(*(strp + 3))) {
+                            i = "$";
+                            break;
+                        }
+                        strp++;
                     case 'C':
                     case 'c':
                         if (IS_SET(to->player.user_flags, USE_ANSI)) {
@@ -2485,24 +2485,13 @@ void act(char *str, int hide_invisible, struct char_data *ch,
                     case 'F':
                         i = fname((char *) vict_obj);
                         break;
-                    case '$':
-                        if (*strp == '$' && toupper(*(strp + 1)) == 'C' &&
-                            isdigit(*(strp + 2)) && isdigit(*(strp + 3))) {
-                            strp++;
-                            goto act_switch_c;
-                        }       /*
-                                 * we don't want to parse ANS that way...
-                                 * -Manwe
-                                 */
-                        i = "$";
-                        break;
                     default:
                         Log("Illegal $-code to act():");
                         Log(str);
                         break;
                     }
 
-                    while (*point = *(i++))
+                    while ((*point = *(i++)))
                         ++point;
 
                     ++strp;
@@ -2543,13 +2532,11 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
 {
     register char  *strp,
                    *point,
-                   *i;
+                   *i = NULL;
     int             KLUDGE = TRUE;
-    struct char_data *to;
+    struct char_data *to = NULL;
     char            buf[MAX_STRING_LENGTH],
                     tmp[MAX_INPUT_LENGTH];
-
-    extern long     SystemFlags;
 
     if (!str) {
         return;
@@ -2590,7 +2577,13 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                          * $C1411 would be bold, blue back, light yellow
                          * fore 
                          */
-                      act_switch_c:
+                    case '$':
+                        if (*strp != '$' || toupper(*(strp + 1)) != 'C' ||
+                            !isdigit(*(strp + 2)) || !isdigit(*(strp + 3))) {
+                            i = "$";
+                            break;
+                        }
+                        strp++;
                     case 'C':
                     case 'c':
                         if (IS_SET(to->player.user_flags, USE_ANSI)) {
@@ -2658,24 +2651,13 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
                     case 'F':
                         i = fname((char *) vict_obj);
                         break;
-                    case '$':
-                        if (*strp == '$' && toupper(*(strp + 1)) == 'C' &&
-                            isdigit(*(strp + 2)) && isdigit(*(strp + 3))) {
-                            strp++;
-                            goto act_switch_c;
-                        }       /* 
-                                 * we don't want to parse ANS that way...
-                                 * -Manwe
-                                 */
-                        i = "$";
-                        break;
                     default:
                         Log("Illegal $-code to act():");
                         Log(str);
                         break;
                     }
 
-                    while (*point = *(i++)) {
+                    while ((*point = *(i++))) {
                         ++point;
                     }
 
@@ -2716,7 +2698,7 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
     }
 }
 
-int raw_force_all(char *to_force)
+void raw_force_all(char *to_force)
 {
     struct descriptor_data *i;
     char            buf[400];
@@ -2805,9 +2787,8 @@ int _affected_by_s(struct char_data *ch, int skill)
     }
 }
 
-int construct_prompt(char *outbuf, struct char_data *ch)
+void construct_prompt(char *outbuf, struct char_data *ch)
 {
-    struct zone_data *zd;
     struct room_data *rm;
     extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
     char            tbuf[255],
@@ -2818,7 +2799,6 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     texp;
     int             i,
                     s_flag = 0;
-    long            curr_time = 0;
 
     *outbuf = 0;
 
@@ -2870,13 +2850,13 @@ int construct_prompt(char *outbuf, struct char_data *ch)
                     sprintf(tbuf, "%d", GET_MOVE(ch));
                     break;
                 case 'G':
-                    sprintf(tbuf, "%ld", GET_BANK(ch));
+                    sprintf(tbuf, "%d", GET_BANK(ch));
                     break;
                 case 'g':
-                    sprintf(tbuf, "%ld", GET_GOLD(ch));
+                    sprintf(tbuf, "%d", GET_GOLD(ch));
                     break;
                 case 'X':       /* xp stuff */
-                    sprintf(tbuf, "%ld", GET_EXP(ch));
+                    sprintf(tbuf, "%d", GET_EXP(ch));
                     break;
                 case 'x':
                     /* 

@@ -179,7 +179,6 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
     char            name[256];
     byte            percent,
                     base = 0;
-    char            buff[255];
 
     dlog("in do_backstab");
 
@@ -396,7 +395,6 @@ void do_order(struct char_data *ch, char *argument, int cmd)
     char            name[100],
                     message[256];
     char            buf[256];
-    char            tbuf[80];
     bool            found = FALSE;
     int             org_room;
     struct char_data *victim;
@@ -506,7 +504,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     charm;
     void            gain_exp(struct char_data *ch, int gain);
     int             special(struct char_data *ch, int cmd, char *arg);
-    struct char_data *tmp;
     struct room_data *rp;
     int             panic,
                     j;
@@ -577,7 +574,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 act("$n panics, and attempts to flee.", TRUE, ch, 0, 0,
                     TO_ROOM);
                 if (RIDDEN(ch)) {
-                    if ((die = MoveOne(RIDDEN(ch), attempt, FALSE)) == 1) {
+                    if ((die = MoveOne(RIDDEN(ch), attempt)) == 1) {
                         /*
                          * The escape has succeeded
                          */
@@ -591,7 +588,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                         return;
                     }
                 } else {
-                    if ((die = MoveOne(ch, attempt, FALSE)) == 1) {
+                    if ((die = MoveOne(ch, attempt)) == 1) {
                         /*
                          * The escape has succeeded
                          */
@@ -664,6 +661,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                 /*
                  * The escape has succeeded. We'll be nice.
                  */
+                loose = 0;
                 if (GetMaxLevel(ch) > 3) {
                     if (panic ||
                         !HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN |
@@ -675,8 +673,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                                  (GetThirdMaxLev(ch->specials.fighting) / 3);
                         loose *= GetMaxLevel(ch);
                     }
-                } else {
-                    loose = 0;
                 }
                 if (loose < 0) {
                     loose = 1;
@@ -850,8 +846,8 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
     /*
      * some modifications to account for dexterity, and level
      */
-    percent -= dex_app[GET_DEX(ch)].reaction * 10;
-    percent += dex_app[GET_DEX(victim)].reaction * 10;
+    percent -= dex_app[(int)GET_DEX(ch)].reaction * 10;
+    percent += dex_app[(int)GET_DEX(victim)].reaction * 10;
 
     if (GetMaxLevel(victim) > 12) {
         percent += ((GetMaxLevel(victim) - 10) * 5);
@@ -870,7 +866,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
                 WAIT_STATE(victim, PULSE_VIOLENCE * 2);
                 GET_POS(victim) = POSITION_SITTING;
                 sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r", ch);
+                             "for using your combat abilities.$c0007\n\r");
                 send_to_char(buf, ch);
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -885,7 +881,6 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
     char            name[256];
     byte            percent;
     char            buf[100];
-    char            buffer[254];
 
     dlog("in do_leg_sweep");
 
@@ -946,8 +941,8 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
      *
      * some modifications to account for dexterity, and level
      */
-    percent -= dex_app[GET_DEX(ch)].reaction * 10;
-    percent += dex_app[GET_DEX(victim)].reaction * 10;
+    percent -= dex_app[(int)GET_DEX(ch)].reaction * 10;
+    percent += dex_app[(int)GET_DEX(victim)].reaction * 10;
     if (GetMaxLevel(victim) > 12) {
         percent += ((GetMaxLevel(victim) - 10) * 5);
     }
@@ -975,7 +970,7 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                 act("$c000C$n does a quick spin and knocks your legs out from "
                     "underneath you.", FALSE, ch, 0, victim, TO_VICT);
                 sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r", ch);
+                             "for using your combat abilities.$c0007\n\r");
                 send_to_char(buf, ch);
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -989,7 +984,7 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                    "head.",FALSE, ch,0,victim,TO_VICT);
 #endif
                 sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r", ch);
+                             "for using your combat abilities.$c0007\n\r");
                 send_to_char(buf, ch);
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -1037,11 +1032,10 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             if (obj->obj_flags.value[0] == 0 ||
                 obj->obj_flags.value[1] == 0) {
                 sprintf(buf, "%s tried to mend an invalid armor value: %s, "
-                             "vnum %d.",
+                             "vnum %ld.",
                         GET_NAME(ch), obj->short_description,
                         (obj->item_number >= 0) ?
-                         obj_index[obj->item_number].virtual :
-                         0);
+                         obj_index[obj->item_number].virtual : 0);
                 Log(buf);
                 return;
             }
@@ -1157,7 +1151,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can't mend that!", ch);
         }
     } else {
-        sprintf(buf, "Mend what?\n\r", arg);
+        sprintf(buf, "Mend what?\n\r");
         send_to_char(buf, ch);
     }
 }
@@ -1320,7 +1314,7 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
             "disengage.", TRUE, ch, 0, ch->specials.fighting, TO_VICT);
         stop_fighting(ch);
         sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience for using "
-                     "your combat abilities.$c0007\n\r", ch);
+                     "your combat abilities.$c0007\n\r");
         send_to_char(buf, ch);
         gain_exp(ch, 100);
         WAIT_STATE(ch, PULSE_VIOLENCE * 2);
@@ -2127,9 +2121,7 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
                     sz,
                     max_range,
                     range,
-                    there,
-                    ps,
-                    ps2;
+                    there;
     int             rm = ch->in_room,
                     opdir[] = { 2, 3, 0, 1, 5, 4 };
     int             broken = FALSE;
@@ -2256,7 +2248,6 @@ void throw_weapon(struct obj_data *o, int dir, struct char_data *targ,
 
 void throw_object(struct obj_data *o, int dir, int from)
 {
-    struct char_data *catcher;
     const char     *directions[][2] = {
         {"north", "south"},
         {"east", "west"},
@@ -2266,8 +2257,7 @@ void throw_object(struct obj_data *o, int dir, int from)
         {"down", "up"}
     };
 
-    char            buf1[100],
-                    buf2[100];
+    char            buf1[100];
     int             distance = 0;
 
     while (distance < 20 && real_roomp(from)->dir_option[dir] &&
@@ -2372,7 +2362,6 @@ void do_weapon_load(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *fw,
                    *ms;
-    struct affected_type *laf;
     char            arg1[MAX_STRING_LENGTH],
                     arg2[MAX_STRING_LENGTH];
 
@@ -2437,16 +2426,6 @@ void do_fire(struct char_data *ch, char *argument, int cmd)
     struct obj_data *fw,
                    *ms;
     char            arg[MAX_STRING_LENGTH];
-    char            buf[MAX_STRING_LENGTH];
-    char           *keywords[] = {
-        "north",
-        "east",
-        "south",
-        "west",
-        "up",
-        "down",
-        "\n"
-    };
     struct char_data *targ;
     int             tdir,
                     rng,
@@ -2517,8 +2496,7 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
         "down",
         "\n"
     };
-    int             i,
-                    rng,
+    int             rng,
                     dr,
                     tdir;
     struct char_data *targ;
@@ -2614,14 +2592,13 @@ void do_style(struct char_data *ch, char *argument, int cmd)
                     buf[254],
                     buffer[MAX_STRING_LENGTH + 30];
     int             x = 0;
-    int             found = 0;
     extern struct skillset styleskillset[];
 
     if (IS_NPC(ch))
         return;
 
     only_argument(argument, style);
-    sprintf(buffer, "");
+    buffer[0] = '\0';
     if (!*style) {
         /*
          * If no style, list all styles and how good
@@ -2775,7 +2752,7 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         send_to_char("You can't use this command!!\n\r", ch);
         return;
     }
-    if (clannum = GET_CLAN(ch) <= 1) {
+    if ((clannum = GET_CLAN(ch)) <= 1) {
         send_to_char("You can't clan chat. You don't belong to a clan.\n\r",
                      ch);
         return;
@@ -2852,7 +2829,6 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
     char            buf1[MAX_STRING_LENGTH + 80];
     struct descriptor_data *i;
     extern int      Silence;
-    int             clannum = 0;
 
     dlog("in do_qchat");
 

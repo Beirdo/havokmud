@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -149,7 +151,7 @@ void UpdateRoomMenu(struct char_data *ch)
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 1, 40);
     send_to_char(buf, ch);
-    sprintf(buf, "Number: %d", rp->number);
+    sprintf(buf, "Number: %ld", rp->number);
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 1, 60);
     send_to_char(buf, ch);
@@ -453,7 +455,7 @@ void ChangeExitDir(struct room_data *rp, struct char_data *ch, char *arg,
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 1, 40);
     send_to_char(buf, ch);
-    sprintf(buf, "Room Number: %d", rp->number);
+    sprintf(buf, "Room Number: %ld", rp->number);
     send_to_char(buf, ch);
     sprintf(buf, VT_CURSPOS, 4, 1);
     send_to_char(buf, ch);
@@ -465,7 +467,7 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
                    int type)
 {
     int             update,
-                    dir,
+                    dir = 0,
                     row,
                     i = 0;
     char            buf[255];
@@ -562,7 +564,7 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
 void ChangeExitNumber(struct room_data *rp, struct char_data *ch,
                       char *arg, int type)
 {
-    int             dir,
+    int             dir = 0,
                     update;
     char            buf[255];
 
@@ -631,9 +633,8 @@ void ChangeExitNumber(struct room_data *rp, struct char_data *ch,
 void ChangeKeyNumber(struct room_data *rp, struct char_data *ch, char *arg,
                      int type)
 {
-    int             dir,
+    int             dir = 0,
                     update;
-    char            buf[255];
 
     switch (ch->specials.edit) {
     case CHANGE_KEY_NORTH:
