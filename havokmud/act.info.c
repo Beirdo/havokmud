@@ -1473,12 +1473,12 @@ dlog("in do_look");
 	  for (j = 0; j< MAX_WEAR && !found; j++) {
 	    if (ch->equipment[j]) {
 	      if (CAN_SEE_OBJ(ch,ch->equipment[j])) {
-		tmp_desc = find_ex_description(arg2, 
-					       ch->equipment[j]->ex_description);
+		tmp_desc = find_ex_description(arg2, ch->equipment[j]->ex_description);
 		if (tmp_desc) {
 		  page_string(ch->desc, tmp_desc, 1);
 		  found = TRUE;
 		}
+		
 	      }
 	    }
 	  }

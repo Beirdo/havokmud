@@ -181,6 +181,8 @@ struct QuestItem {
 #define CAN_MOB_EDIT	8192	/* this user can use medit to edit mobs */
 #define FAST_AREA_EDIT  16384	/* immort is using fast online mapping */
 #define PKILLING        32768
+#define CLOAKED         65536   /* Used for mortal cloaking of there eq */
+
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */

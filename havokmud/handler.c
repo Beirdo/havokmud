@@ -1623,8 +1623,11 @@ void extract_obj(struct obj_data *obj)
   }
   
   if(obj->item_number>=0) {
-    (obj_index[obj->item_number].number)--;
-    obj_count--;
+    /*  Taken out by Greg Hovey for object maxxes
+     * (obj_index[obj->item_number].number)--;
+     * Feb. 26,2001
+     */
+     obj_count--;
   }
   free_obj(obj);
 

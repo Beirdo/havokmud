@@ -11,7 +11,7 @@
 #include "protos.h"
 
 /* extern variables */
-
+extern struct index_data *obj_index; /*Object maxxes*/
 extern struct str_app_type str_app[];
 extern struct descriptor_data *descriptor_list;
 extern char *drinks[];
@@ -248,7 +248,7 @@ dlog("in do_eat");
                 af.bitvector = AFF_POISON;
                 affect_join(ch,&af, FALSE, FALSE);
         }
-
+	obj_index[temp->item_number].number--;
         extract_obj(temp);
 }
 

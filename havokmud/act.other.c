@@ -111,6 +111,7 @@ dlog("in do_junk");
       }
       value+=(MIN(1000,MAX(tmp_object->obj_flags.cost/4,1)));
       obj_from_char(tmp_object);
+      obj_index[tmp_object->item_number].number--;
       extract_obj(tmp_object);
       if (num > 0) num--;
       count++;
@@ -2371,7 +2372,26 @@ dlog("in do_set_flags");
    send_to_char("Be sure to READ the help on RACE WAR.\n\r",ch);
    return;
  }
- 
+
+ /*Cloak Set - Allows you to set the cloak flag so people can't see your eq
+  * By Greg Hovey -Banon
+  * Usage: set cloak  (Will toggle on and off like a light switch)
+  * Currently disabled until further coding has been done.. (FALSE)
+  */
+ if (!strcmp(type,"cloak")&& FALSE) {
+   if (!IS_SET(ch->player.user_flags, CLOAKED)) {
+     SET_BIT(ch->player.user_flags,CLOAKED);
+     act("You pull your cloak down over your body.", TRUE, ch, 0, 0, TO_VICT);
+     act("$n pulls down $s cloak down ever $s body.", TRUE, ch, 0, 0, TO_NOTVICT);
+     //send_to_char("You pull your cloak over your body!\n\r",ch);
+     return;
+   } else {
+     REMOVE_BIT(ch->player.user_flags, CLOAKED);
+     send_to_char("You pull back your cloak.\n\r",ch);
+   }
+   return;
+ }
+
  if (!*field) {
    send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
    return;
@@ -2383,7 +2403,7 @@ dlog("in do_set_flags");
     send_to_char("YOU CAN BE ATTACKED BY YOUR RACIAL ENEMIES!\n\r",ch);
     return;
    } else
-  send_to_char("READ HELP on RACE WAR.\n\r",ch);
+     send_to_char("READ HELP on RACE WAR.\n\r",ch);
    return;
  }
  

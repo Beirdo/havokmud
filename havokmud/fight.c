@@ -13,7 +13,7 @@
 
 /* Structures */
 
-
+extern struct index_data *obj_index; /*Object maxxing*/
 struct char_data *combat_list = 0;   /* head of l-list of fighting chars    */
 struct char_data *missile_list = 0;   /* head of l-list of fighting chars    */
 struct char_data *combat_next_dude = 0; /* Next dude global trick           */
@@ -3086,26 +3086,26 @@ void MakeScrap( struct char_data *ch,struct char_data *v, struct obj_data *obj)
   
   sprintf(buf, "Scraps from %s lie in a pile here.", 
 	  obj->short_description);
-if (t->description)
-  free(t->description);
+  if (t->description)
+    free(t->description);
   t->description = (char *)strdup(buf);
   if (obj->carried_by) {
-     obj_from_char(obj);
+    obj_from_char(obj);
   } else if (obj->equipped_by) {
-     obj = unequip_char(ch, obj->eq_pos);
+    obj = unequip_char(ch, obj->eq_pos);
   }
-
-if (v) {
+  
+  if (v) {
 #if 0
   if  (v->in_room != ch->in_room)	/* for shooting missles */
-       obj_to_room(t,v->in_room); else
+    obj_to_room(t,v->in_room); else
 #endif       
-       obj_to_room(t, ch->in_room);
-   } else 
-     obj_to_room(t, ch->in_room);
-   
+      obj_to_room(t, ch->in_room);
+  } else 
+    obj_to_room(t, ch->in_room);
+  
   t->obj_flags.value[0] = 20;
-
+  
   while (obj->contains) {
     x = obj->contains;
     obj_from_obj(x);
@@ -3114,7 +3114,7 @@ if (v) {
     
 
   check_falling_obj(t, ch->in_room);
-
+  obj_index[obj->item_number].number--;
   extract_obj(obj);
 
   DestroyedItems = 1;
@@ -3761,6 +3761,7 @@ if (IS_SET(rp->room_flags,DEATH)) {
       log(buf);
       for (obj = real_roomp(room_num)->contents;obj; obj = next_o) {
 	next_o = obj->next_content;
+	obj_index[obj->item_number].number--; /*added for maxxes (GH)*/
 	extract_obj(obj);
       }  /* end DT for */
     }

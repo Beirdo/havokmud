@@ -2840,6 +2840,7 @@ dlog("in do_purge");
       } else if (obj = get_obj_in_list_vis
 			 (ch, name, real_roomp(ch->in_room)->contents)) {
 	act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
+	obj_index[obj->item_number].number--;
 	extract_obj(obj);
       } else    {
 	argument = one_argument(argument, name);
@@ -2907,6 +2908,7 @@ dlog("in do_purge");
       
       for (obj = real_roomp(ch->in_room)->contents; obj; obj = next_o) {
 	next_o = obj->next_content;
+	obj_index[obj->item_number].number--;
 	extract_obj(obj);
       }
     }
