@@ -4262,6 +4262,87 @@ void spell_iron_skins(int level, struct char_data *ch,
     }
 }
 
+void spell_circle_protection(int level, struct char_data *ch,
+                             struct char_data *victim,
+                             struct obj_data *obj)
+{
+    struct affected_type af;
+    
+    assert(ch);
+    
+    if (!victim) {
+        victim = ch;
+    }
+    
+    if (!affected_by_spell(ch, SPELL_CIRCLE_PROTECTION)) {
+        act("$n prays in a strange language and is surrounded by a"
+            " circle of protection!", TRUE, ch, 0, 0, TO_ROOM);
+        send_to_char("You pray in a strange language and are surrounded by a"
+                     " circle of protection!\n\r", ch);
+            
+        if (!IS_AFFECTED(ch, SPELL_PROT_COLD)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_COLD;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from cold!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 30 && !IS_AFFECTED(ch, SPELL_PROT_ELEC)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.modifier = IMM_ELEC;
+            af.location = APPLY_IMMUNE;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from electricity!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 35 && !IS_AFFECTED(ch, SPELL_PROT_ENERGY)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_ENERGY;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from energy!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 40 && !IS_AFFECTED(ch, 
+                                                  SPELL_PROT_ENERGY_DRAIN)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_DRAIN;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from vampires!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 45 && !IS_AFFECTED(ch, SPELL_PROT_FIRE)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_FIRE;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from fire!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 50 && !IS_AFFECTED(ch, 
+                                                  SPELL_PROT_DRAGON_BREATH)) {
+            af.type = SPELL_PROT_DRAGON_BREATH;
+            af.modifier = 0;
+            af.location = APPLY_NONE;
+            af.bitvector = 0;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from dragon breath!\n\r", ch);
+        }
+    } else {
+        send_to_char("You are allready protected!\n\r", ch);
+        return;
+    }
+}
+            
+        
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

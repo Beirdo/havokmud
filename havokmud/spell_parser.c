@@ -429,7 +429,6 @@ char           *spells[] = {
     "flurry of blows",
     "scribe",                   /* 348 */
     "group heal",
-
     "plant gate",               /* 350 */
     "\n"
 };
@@ -1595,6 +1594,9 @@ struct spell_info_type spell_info[] = {
       IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, 3, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 291, cast_enlightenment, 10, 0, POSITION_STANDING,
+      IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, 25, IMMORTAL, IMMORTAL, IMMORTAL,
+      TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
+    { 292, cast_circle_protection, 50, 0, POSITION_STANDING,
       IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL, 25, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM | TAR_SELF_ONLY, 0, 0 },
     { 293, cast_wrath_god, 200, 0, POSITION_STANDING,

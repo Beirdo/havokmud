@@ -3400,7 +3400,29 @@ void cast_iron_skins(int level, struct char_data *ch, char *arg,
         break;
     }
 }
-
+void cast_circle_protection(int level, struct char_data *ch, char *arg,
+                            int type, struct char_data *tar_ch,
+                            struct obj_data *tar_obj)
+{
+    if (!tar_ch) {
+        tar_ch = ch;
+    }
+    
+    switch (type) {
+        case SPELL_TYPE_SPELL:
+            spell_circle_protection(level, ch, 0, 0);
+            break;
+        case SPELL_TYPE_SCROLL:
+        case SPELL_TYPE_POTION:
+        case SPELL_TYPE_WAND:
+        case SPELL_TYPE_STAFF:
+            Log("Someone just tried to use a circle of protection item!");
+            break;
+        default:
+            Log("Serious screw-up in cast_circle_protection");
+            break;
+    }
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */
