@@ -1353,9 +1353,6 @@ void            spell_holy_strength(int level, struct char_data *ch,
 void            spell_enlightenment(int level, struct char_data *ch,
                                     struct char_data *victim,
                                     struct obj_data *obj);
-void            spell_circle_protection(int level, struct char_data *ch,
-                                        struct char_data *victim,
-                                        struct obj_data *obj);
 void            spell_wrath_god(int level, struct char_data *ch,
                                 struct char_data *victim,
                                 struct obj_data *obj);
@@ -2920,10 +2917,6 @@ void            cast_enlightenment(int level, struct char_data *ch,
                                    struct char_data *tar_ch,
                                    struct obj_data *tar_obj);
 
-void            cast_circle_protection(int level, struct char_data *ch,
-                                       char *arg, int type,
-                                       struct char_data *tar_ch,
-                                       struct obj_data *tar_obj);
 void            cast_wrath_god(int level, struct char_data *ch, char *arg,
                                int type, struct char_data *tar_ch,
                                struct obj_data *tar_obj);

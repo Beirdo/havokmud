@@ -4972,22 +4972,6 @@ void cast_wrath_god(int level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_circle_protection(int level, struct char_data *ch, char *arg,
-                            int type, struct char_data *tar_ch,
-                            struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_circle_protection(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in circle of protection.");
-        break;
-    }
-}
 
 void cast_enlightenment(int level, struct char_data *ch, char *arg,
                         int type, struct char_data *tar_ch,

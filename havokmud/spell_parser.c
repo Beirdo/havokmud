@@ -4004,11 +4004,6 @@ void assign_spell_pointers(void)
            10, TAR_CHAR_ROOM | TAR_SELF_ONLY, cast_enlightenment, 0, 0,
            LOW_IMMORTAL, LOW_IMMORTAL);
 
-    spello(292, 0, POSITION_STANDING, IMMORTAL, IMMORTAL, IMMORTAL,
-           LOW_IMMORTAL, 1, LOW_IMMORTAL, LOW_IMMORTAL,
-           200, TAR_CHAR_ROOM | TAR_SELF_ONLY, cast_circle_protection, 0,
-           0, LOW_IMMORTAL, LOW_IMMORTAL);
-
     spello(293, 0, POSITION_STANDING, IMMORTAL, IMMORTAL, IMMORTAL,
            LOW_IMMORTAL, 51, LOW_IMMORTAL, LOW_IMMORTAL,
            200, TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT,
