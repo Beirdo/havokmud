@@ -1282,11 +1282,14 @@ void assign_mobiles()
 
 /*Beginning of Thunder Mountain Keep*/
 
+  {45401, tmk_guard},
+  {45402, tmk_guard},
   {45406, braxis_swamp_dragon},
   {45409, nadia},
   {45410, mime_jerry},
   {45413, zork},
   {45417, elamin},
+  {45440, starving_man},
   {45443, goblin_chuirgeon},
 
 /*End of Thunder Mountain Keep*/
@@ -1443,6 +1446,7 @@ void assign_rooms()
 
     /*Thunder Mountain Keep */
     {45450, Thunder_Fountain},
+
     {31860, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
     /* Ash's Monk and Druid challenge rooms     

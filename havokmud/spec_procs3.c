@@ -4156,11 +4156,15 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
 #define BLACK_PILL 45492
 #define BLUE_PILL 45493
 
+#define BAHAMUT 45400
+#define TMK_GUARD_ONE 45401
+#define TMK_GUARD_TWO 45402
 #define BRAXIS 45406
 #define NADIA 45409
 #define MIME_JERRY 45410
 #define ZORK 45413
 #define ELAMIN 45417
+#define STARVING_MAN 45440
 #define GOBLIN_CHUIRGEON 45443
 
 #define ZORK_ROOM 45496
@@ -5231,4 +5235,260 @@ room_data *rp, int type)
 	}
 
 	return(FALSE);
+}
+
+int bahamut(struct char_data *ch, struct char_data *vict)
+{
+  char buf[256];
+  int hitp = 0;
+  int test = 0;
+  struct char_data *tmp_ch;
+  struct char_data *i;
+
+	if (GET_HIT(ch) <= 2000)
+	{
+		if (ch->mult_att < 4)
+		{
+			ch->mult_att = 4;
+		}
+
+		for (i=real_roomp(ch->in_room)->people; i; i = i->next_in_room)
+		{
+			GET_HIT(i) -= 25;
+			send_to_char("$c0011A blinding holy light engulfs the room and seers your life away!\n\r", i);
+			if (mob_index[i->nr].virtual == BAHAMUT) { 
+				GET_HIT(i) += 25;
+			}					
+		}
+
+	return(FALSE);
+	}
+
+	if (GET_HIT(ch) <= 3000)
+	{
+		if (ch->mult_att >= 4)
+		{
+			ch->mult_att = 1;
+		}
+		else if (ch->mult_att == 1)
+		{
+			act("$c0011$n bows down and prays to the dragon lord.", FALSE, ch, 0, 0, TO_ROOM);
+		}
+		else
+		{
+			ch->mult_att = 4;
+		}
+
+	return(FALSE);
+	}
+
+return(FALSE);
+}
+
+int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
+	struct char_data *vict;
+	struct obj_data *obj;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	/*TALK TO ME!!!*/
+
+	if (cmd == 531)	/*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+		
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+	      	if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+	      	if (mob_index[vict->nr].virtual == TMK_GUARD_ONE || mob_index[vict->nr].virtual == TMK_GUARD_TWO)
+		{
+			switch(number(1, 10)) {
+		
+			case 1:
+				act("$n says, 'That Bahamut scares me to no end.  I know he's supposed to be good'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'and all, but anything with that much power is just too dangerous!'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'I've heard rumors that his skin is magically empowered to make him'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'resistant to attacks from clubs and such weapons.  Heh.  What I'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'wouldn't give to get some armor made of that skin.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n grins slyly, but turns away quickly to prevent you from seeing.", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 2:
+				act("$n says, 'Have you heard the legend of Bahamut, The Platinum Dragon?  According'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'to the stories, when Bahamut feels that he may be in danger, he pauses'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'to pray to the great dragon lord.  And his prayers are answered by an'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'enormous blazing light that virtually melts away the skin.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 3:
+				act("$n says, 'Hello!  Hmmm.  Dragons?  From what I understand, there is a great'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'power in the keep that can get you to a mysterious realm of dragons'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'This realm is a gigantic, shifting maze where danger lurks around'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'every corner.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 4:
+				act("$n says, 'Watch out for that fountain.  Wierd things happen around that thing.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 5:
+				act("$n says, 'I had this wierd dream last night.  Wonder if it means anything.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'These colors kept flashing over and over again in the same pattern:'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'White, Prismatic, Crystaline, Dark Gray, Blue, Black, Gold, Platinum.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'I wonder what it means.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n frowns thoughtfully", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 6:
+				act("$n says, 'Stories are spreading about some strange creature in the surounding'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'mountains that can increase a person's stamina.  Wild stories of'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'animal sacrifice and the lord only knows what else.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 7:
+				act("$n says, 'A long time ago, the king's magician made a great staff that, when held,'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'could knock over even the largests of beasts.  The king bestowed this'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'staff to Bahamut as a gift for his protection of the keep in a great'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'battle against Tiamat.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			case 8:
+				act("$n rubs his chin in deep thought", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'Tales of fantasy...  I seem to remember a story from when I was a child.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'Crazy stuff really.  But there was this one that really intriqued me.'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'Supposedly, there is a spring hidden somewhere in the realm who's waters'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'can restore a person's age if they give some ancient staff to a nymph'", FALSE, vict, 0, 0, TO_ROOM);
+				act("$n says, 'that guards the it.  Probably rediculous fancy.'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			default:
+				act("$n says, 'Leave me alone.  I've got work to do!'", FALSE, vict, 0, 0, TO_ROOM);
+			break;
+			}
+		}
+	return(TRUE);
+	}
+return(FALSE);
+}
+
+int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+   char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+   char tbuf[80];
+   struct char_data *vict;
+   struct obj_data *obj;
+   int test=0;
+   int has_danish = 0;
+   struct obj_data *i;
+
+   if(!AWAKE(ch)) return(FALSE);
+
+   if(!cmd) 
+   {
+   		if(number(0,10) == 0) 
+		{
+   			act("$n says, 'Pardon me sire, might you spare a poor man some food?'",FALSE, mob, 0, 0, TO_ROOM);
+	      		return(TRUE);
+   		}
+   }
+
+	/*TALK TO ME!!!*/
+
+	if (cmd == 531)	/*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+
+		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+
+      		if (vict->specials.fighting) 
+		{
+		   	send_to_char("Not while they are fighting!\n\r", ch);
+		   	return(TRUE);
+		}
+
+ 	      	if (mob_index[vict->nr].virtual != STARVING_MAN) return(FALSE);
+
+		for (i = vict->carrying; i; i = i->next_content)
+			if (has_danish == 0) {
+				if(i->obj_flags.type_flag == ITEM_FOOD) has_danish = 1;
+				else has_danish = 0;
+			}
+
+	      	/*Quest Text*/
+		if (has_danish == 0)
+		{
+   			act("$n says, 'Pardon me sire, might you spare a poor man some food?'",FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+
+		else
+		{
+   			act("$n says, 'I'm too busy eating to talk!  Go Away!'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+	}
+
+	else if (cmd == 72) /*give*/
+	{ 
+		arg=one_argument(arg,obj_name);
+
+	    	if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))) return(FALSE);
+
+   		arg=one_argument(arg, vict_name);
+	    	if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
+
+		if (vict->specials.fighting) 
+		{
+ 			send_to_char("Not while they are fighting!\n\r",ch);
+	        	return(TRUE);
+		}
+		
+		/*Mob is not Starving Man*/
+		if (mob_index[vict->nr].virtual != STARVING_MAN) return(FALSE);
+
+		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+      			if(obj->obj_flags.type_flag != ITEM_FOOD)
+			{
+      				sprintf(buf, "%s Thank you, but that is not what I desire.",GET_NAME(ch));
+    				do_tell(vict,buf,19);
+         			return(TRUE);
+      			}
+			else test = 1;
+   		}
+
+		else 
+		{
+			sprintf(buf,"%s %s",obj_name,vict_name);
+      			do_give(ch,buf,0);
+     			if(obj->obj_flags.type_flag == ITEM_FOOD) test=1;
+		}
+   		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+			sprintf(buf,"%s %s",obj_name,vict_name);
+      			do_give(ch,buf,0);
+   		}	
+	}
+   
+	else return(FALSE);
+
+	if(test==1) 
+	{
+		if (vict->equipment[WIELD]) 
+		{
+      			sprintf(buf, "%s Thank you mighty hero.  Take this as a token of my appreciation.",GET_NAME(ch));
+    			do_tell(vict,buf,19);
+   			do_remove(vict,vict->equipment[WIELD]->name,0);
+      			sprintf(buf,"Staff %s",GET_NAME(ch));
+      			do_give(vict,buf,0);
+			return(TRUE);
+   		} 
+		else 
+		{
+	      		sprintf(buf, "%s You are indeed a generous person, but I have nothing to offer you in return.", GET_NAME(ch));
+			do_tell(vict,buf,19);
+			return(TRUE);
+   		}
+	}
+return(TRUE);	
 }

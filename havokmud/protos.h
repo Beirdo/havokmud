@@ -1466,6 +1466,8 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 #endif
 
 /*Assigns for Thunder Mountain Keep */
+int bahamut(struct char_data *ch, struct char_data *vict);
+int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -1476,6 +1478,8 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data
 int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,
