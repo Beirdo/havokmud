@@ -1653,7 +1653,13 @@ void do_auction(struct char_data *ch, char *argument, int cmd)
      * don't auction corpses 
      */
     if (IS_CORPSE(auctionobj)) {
-        send_to_char("Hey now, none of that!\n\r", ch);
+        send_to_char("You can't auction corpses.\n\r", ch);
+        return;
+    }
+
+    if(auctionobj->obj_flags.timer > 0) {
+        send_to_char("You can't auction temporary objects "
+                     "that dissolve.\n\r", ch);
         return;
     }
 
@@ -1906,6 +1912,116 @@ void do_bid(struct char_data *ch, char *argument, int cmd)
         }
         send_to_char("That is not a valid argument. Type bid without "
                      "arguments for help.\n\r", ch);
+    }
+}
+
+
+#define SEVERED_HEAD_BASE 30
+
+/* just scraps to start with, then we modify */
+int make_severed_head(struct char_data *beheader, struct char_data *beheadee,
+                      struct obj_data *corpse)
+{
+    struct obj_data *head;
+    int r_num;
+    char keywords[256];
+    char shortdesc[256];
+    char longdesc[512];
+    char *argument;
+    char *tempptr;
+
+    if(!((beheadee && corpse) || (beheader && corpse))) {
+        Log("No valid arguments for make_severed_head()");
+        return(FALSE);
+    }
+
+
+    if(beheadee) {
+        /* made when creature dies */
+        sprintf(keywords, "head severed %s",
+                (IS_NPC(beheadee) ?
+                 beheadee->player.short_descr :
+                 GET_NAME(beheadee)));
+        sprintf(shortdesc, "the severed head of %s",
+                (IS_NPC(beheadee) ?
+                 beheadee->player.short_descr :
+                 GET_NAME(beheadee)));
+        sprintf(longdesc, "%s is lying here", shortdesc);
+    } else  { 
+        /* made by behead command */
+        if((argument = strdup(corpse->short_description))){
+            tempptr = argument;
+            strsep( &argument, " " );
+            strsep( &argument, " " );
+            strsep( &argument, " " );
+
+            if(argument) {
+                sprintf(keywords, "head severed %s", argument);
+                sprintf(shortdesc, "the severed head of %s", argument);
+                sprintf(longdesc, "%s is lying here", shortdesc);
+            } else {
+                strcpy(keywords, "head severed opponent");
+                strcpy(shortdesc, "the severed head of your opponent");
+                strcpy(longdesc, "the severed head of your opponent lies here");
+            }
+            free(tempptr);
+        } else {
+            Log("Failed strdup in make_severed_head()");
+            strcpy(keywords, "head severed opponent");
+            strcpy(shortdesc, "the severed head of your opponent");
+            strcpy(longdesc, "the severed head of your opponent lies here");
+        }
+    }
+
+    if ((r_num = real_object(SEVERED_HEAD_BASE)) >= 0) {
+        head = read_object(r_num, REAL);
+        corpse->beheaded_corpse = TRUE;
+        corpse->affected[0].modifier = 0;
+        corpse->affected[1].modifier = 0;
+
+        if (head->name) {
+            free(head->name);
+        }
+        head->name = strdup(keywords);
+
+        if (head->short_description) {
+            free(head->short_description);
+        }
+        head->short_description = strdup(shortdesc);
+
+        if (head->action_description) {
+            free(head->action_description);
+        }
+        head->action_description = strdup(shortdesc);
+
+        if (head->description) {
+            free(head->description);
+        }
+        head->description = strdup(longdesc);
+
+        head->obj_flags.type_flag = ITEM_CONTAINER;
+        head->obj_flags.wear_flags = ITEM_TAKE;
+
+        /*
+         * Can't store items in heads.
+         */
+        head->obj_flags.value[0] = 0;
+
+        /* corpse identifier */
+        head->obj_flags.value[3] = 1;
+
+        head->obj_flags.timer = 5;
+
+        if(beheader) {
+            obj_to_room(head, beheader->in_room);
+        } else {
+            obj_to_room(head, beheadee->in_room);
+        }
+
+        return(TRUE);
+    } else {
+        Log("No valid base object found for beheading in make_severed_head");
+        return(FALSE);
     }
 }
 

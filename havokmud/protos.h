@@ -251,7 +251,9 @@ void            do_wield(struct char_data *ch, char *argument, int cmd);
 void            do_draw(struct char_data *ch, char *argument, int cmd);
 void            do_grab(struct char_data *ch, char *argument, int cmd);
 void            do_remove(struct char_data *ch, char *argument, int cmd);
-
+int             make_severed_head(struct char_data *beheader,
+                                  struct char_data *beheadee,
+                                  struct obj_data *corpse);
 /*
  * From act.off.c 
  */

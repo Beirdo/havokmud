@@ -3517,12 +3517,8 @@ void do_promote(struct char_data *ch, char *arg, int cmd)
 void do_behead(struct char_data *ch, char *argument, int cmd)
 {
     struct obj_data *j = NULL;
-    struct obj_data *head = NULL;
-    char           *arg1,
-                   *itemname,
-                    temp[MAX_STRING_LENGTH],
+    char            *itemname,
                     buf[MAX_STRING_LENGTH];
-    int             r_num = 0;
 
     if (IS_NPC(ch)) {
         return;
@@ -3556,7 +3552,8 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
     /*
      * affect[0] == race of corpse, affect[1] == level of corpse
      */
-    if (j->affected[0].modifier != 0 && j->affected[1].modifier != 0) {
+    if (j->affected[0].modifier != 0 && j->affected[1].modifier != 0 &&
+        j->beheaded_corpse == FALSE) {
         /*
          * item not a corpse if v3 = 0
          */
@@ -3584,69 +3581,18 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        /* Take the "corpse of the blah" and remove the corpse part */
-        argument = strdup( j->short_description );
-        arg1 = argument;
-        strsep( &argument, " " );
-        strsep( &argument, " " );
-        sprintf(buf, "%s", argument);
-        free( arg1 );
-
-        /*
-         * load up the head object
-         */
-        if ((r_num = real_object(SEVERED_HEAD)) >= 0) {
-            head = read_object(r_num, REAL);
-            if (!head) {
-                Log("ERROR IN BEhead.. make head object");
-                return;
-
-            }
-            obj_to_room(head, ch->in_room);
-            /*
-             * to room perhaps?
-             */
-        }
-        /*
-         * CHange name of head
-         */
-        if (head->name) {
-            free(head->name);
-        }
-        sprintf(temp, "head %s", buf);
-        head->name = strdup(temp);
-
-        if (head->short_description) {
-            free(head->short_description);
-        }
-        sprintf(temp, "The head %s", buf);
-        head->short_description = strdup(temp);
-
-        if (head->description) {
-            free(head->description);
-        }
-        sprintf(temp, "The head %s lies here.", buf);
-        head->description = strdup(temp);
-
-        /*
-         * make corpse unusable for another behead
-         */
-        j->affected[1].modifier = 0;
-
-        if (j->description) {
-            arg1 = j->description;
-            strsep( &arg1, " " );
-            sprintf(buf, "The beheaded %s", arg1);
-            free(j->description);
-        }
-        j->description = strdup(buf);
-
+        if(make_severed_head(ch, NULL, j)) {
         sprintf(buf, "You behead %s.\n\r", j->short_description);
         send_to_char(buf, ch);
-
         sprintf(buf, "%s beheads %s.", GET_NAME(ch), j->short_description);
         act(buf, TRUE, ch, 0, 0, TO_ROOM);
         WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+            return;
+        }
+        else {
+            send_to_char("You can't seem to behead "
+                         "that corpse, sorry.",ch);
+        }
     } else {
         send_to_char("Sorry, the corpse is too mangled up to behead.\n\r", ch);
     }

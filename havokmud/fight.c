@@ -456,13 +456,11 @@ void stop_fighting(struct char_data *ch)
 void make_corpse(struct char_data *ch, int killedbytype)
 {
     struct obj_data *corpse,
-                   *o,
-                   *cp;
+                   *o;
     struct obj_data *money;
     char            buf[MAX_INPUT_LENGTH + 80],
                     spec_desc[255];
-    int             r_num,
-                    i,
+    int             i,
                     ADeadBody = FALSE;
 
     struct obj_data *create_money(int amount);
@@ -481,54 +479,10 @@ void make_corpse(struct char_data *ch, int killedbytype)
          */
         if ((GET_HIT(ch) < -50) && (killedbytype == TYPE_SLASH ||
                                     killedbytype == TYPE_CLEAVE)) {
-            if ((r_num = real_object(SEVERED_HEAD)) >= 0) {
-                cp = read_object(r_num, REAL);
-                sprintf(buf, "head severed %s", corpse->name);
-                corpse->beheaded_corpse = TRUE;
-                if (cp->name) {
-                    free(cp->name);
-                }
-                cp->name = strdup(buf);
-                sprintf(buf, "the severed head of %s",
-                        (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
-                if (cp->short_description) {
-                    free(cp->short_description);
-                }
-                cp->short_description = strdup(buf);
-                if (cp->action_description) {
-                    free(cp->action_description);
-                }
-                cp->action_description = strdup(buf);
-                sprintf(buf, "%s is lying on the ground.", buf);
-                if (cp->description) {
-                    free(cp->description);
-                }
-                cp->description = strdup(buf);
-
-                cp->obj_flags.type_flag = ITEM_CONTAINER;
-                cp->obj_flags.wear_flags = ITEM_TAKE;
-
-                /*
-                 * You can't store stuff in a corpse.
-                 * Lennya: this makes corpses return a negative fullness %
-                 */
-                cp->obj_flags.value[0] = 0;
-
-                /* race of corpse NOT USED HERE */
-                cp->affected[0].modifier = GET_RACE(ch);
-
-                /* level of corpse NOT USED HERE */
-                cp->affected[1].modifier = GetMaxLevel(ch);
-
-                /* corpse identifier */
-                cp->obj_flags.value[3] = 1;
-
-                if (IS_NPC(ch)) {
-                    cp->obj_flags.timer = MAX_NPC_CORPSE_TIME + 2;
-                } else {
-                    cp->obj_flags.timer = MAX_PC_CORPSE_TIME + 3;
-                }
-                obj_to_room(cp, ch->in_room);
+                 if(make_severed_head(NULL, ch, corpse)) {
+                     act("The head of $n flies through the air "
+                             "bouncing as it hits the ground.", FALSE, ch,
+                             0, 0, TO_ROOM);
             }
         }
 
