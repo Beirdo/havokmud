@@ -278,7 +278,61 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv, bool add
 			      GET_DAMROLL(ch) += mod;
 	      break;
 	    case APPLY_NONE:
+			break;
 		case APPLY_STR:
+
+		/* str greater than 18 ... */
+		      if (GET_STR(ch) >= 18 ) {
+		        temp = GET_ADD(ch) + (mod * 10);
+		        if ( temp > 100 && (GET_STR(ch)+1 <= MaxStrForRace(ch))) {
+		/* subtract an extra 10 to account for the +1 */
+		          GET_STR(ch) +=1;
+		          GET_ADD(ch) = (temp - 110);
+		        } else if ( temp > 100 ) {
+		          GET_ADD(ch) = 100;
+		        } else if ( temp < 0 && (GET_STR(ch) - 1) < 18 ) {
+		/* adding a negative number */
+		          GET_STR(ch) += (temp/10);
+		          GET_ADD(ch) = 0;
+		        } else if ( temp < 0 ) {
+		/* add 10 to temp to account for the -1 here */
+		          GET_STR(ch) -= 1;
+		/* eg: 19/10 mod(-3) == 18/90 again with the negative adding ;) */
+		          GET_ADD(ch) = 110 + temp;
+		        } else {
+		          GET_ADD(ch) = temp;
+		        }
+		      }
+		/* str less than 18 ... */
+		      else {
+		        temp2 = GET_STR(ch) + mod;
+		        temp = GET_ADD(ch);
+		        if (temp2 >= 18 && 18 <= MaxStrForRace(ch)) {
+		          temp = GET_ADD(ch) + ((temp2 - 18)*10);
+		          temp2 = 18;
+		          if ( temp > 100 && (temp2 + 1) <= MaxStrForRace(ch)) {
+		            GET_STR(ch) = temp2 + 1;
+		            GET_ADD(ch) = (temp - 110);
+		          } else if ( temp > 100 ) {
+		            GET_STR(ch) = temp2;
+		            GET_ADD(ch) = 100;
+		/* really shouldn't get here */
+		          } else if ( temp < 0 ) {
+		/* adding a negative number */
+		            GET_STR(ch) = temp2 + (temp/10);
+		            GET_ADD(ch) = 0;
+		          } else {
+		            GET_STR(ch) = temp2;
+		            GET_ADD(ch) = temp;
+		          }
+		        } else if ( temp2 >= MaxStrForRace(ch)) {
+		          GET_STR(ch) = MaxStrForRace(ch);
+		        } else {
+		          GET_STR(ch) = temp2;
+		        }
+		      }
+      break;
+
 		case APPLY_DEX:
 		case APPLY_INT:
 		case APPLY_WIS:
