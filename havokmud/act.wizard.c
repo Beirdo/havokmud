@@ -5052,6 +5052,9 @@ void do_viewfile(struct char_data *ch, char *argument, int cmd)
 dlog("in do_viewfile");
 
     only_argument(argument, namefile);
+    if(!strcmp(namefile,"help"))
+	  file_to_string("ADD_HELP",bigbuf);
+    else
     if(!strcmp(namefile,"bug"))
       file_to_string(WIZBUG_FILE,bigbuf);
     else if(!strcmp(namefile,"idea"))
@@ -5094,7 +5097,8 @@ dlog("in do_viewfile");
       return;
     }
     else {
-      send_to_char("Commands: view <bug|typo|idea|mortbug|morttypo|mortidea|motd|wmotd>.\n\r", ch);
+      send_to_char("Commands: view <bug|typo|idea|mortbug|morttypo|"
+                   "mortidea|motd|wmotd|help>.\n\r", ch);
       return;
     }
 

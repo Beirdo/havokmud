@@ -2486,8 +2486,7 @@ dlog("in do_weather");
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
-
-
+  FILE *fl;
   int chk, bot, top, mid, minlen;
   char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
 
@@ -2532,6 +2531,15 @@ dlog("in do_help");
 	      return;
 	    }     else if (bot >= top)      {
 	      send_to_char("There is no help on that word.\n\r", ch);
+	       //(GH)NO help so add that key word to a file called ADD_HELP
+		  if (!(fl = fopen("ADD_HELP", "a")))	{
+		    log("Could not open the ADD_HELP-file.\n\r");
+		    return;
+		  }
+		  sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
+		  fputs(buf, fl);
+	      fclose(fl);
+
 	      return;
 	    }
 	  else if (chk > 0)
