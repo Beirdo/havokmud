@@ -18,7 +18,7 @@ SRCS =	act.comm.c act.info.c act.move.c act.obj1.c act.obj2.c act.off.c \
 	create.obj.c db.c fight.c handler.c hash.c heap.c interpreter.c \
 	limits.c magicutils.c mail.c mobact.c modify.c mod.text.c \
         multiclass.c opinion.c paginate.c parser.c reception.c security.c \
-        shop.c signals.c skills_breath.c skills_cleric.c \
+        shop.c signals.c skills_breath.c skills_barbarian.c skills_cleric.c \
         skills_druid.c skills_mage.c skills_monk.c skills_necromancer.c \
         skills_paladin.c skills_psionist.c skills_ranger.c skills_thief.c \
         skills_warrior.c sound.c spec_assign.c spec_guildmaster.c \
