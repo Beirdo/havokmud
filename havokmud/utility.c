@@ -9,6 +9,9 @@
 
 #include "protos.h"
 
+#define NEWHELP_FILE      "ADD_HELP"      /* New help to add            */
+#define QUESTLOG_FILE     "quest_log"     /* Log of quest transactions  */
+
 /* move to protos.h later */
 
 int SetDefaultLang(struct char_data *ch);
@@ -4887,5 +4890,27 @@ char *DescAge(int age,int race) {
   else if (age > race_list[race].young)
     return "Young";
   else return "ERROR";
-  
+
+}
+/* Quest Log - Basically responsible for keeping a log of all quest transactions.
+ * param desc - This is the data to be entered into the log.
+ * By: Greg Hovey.
+ */
+void qlog(char *desc) {
+FILE *fl;
+char buf[256];
+  long ct;
+  char *tmstr;
+
+  ct = time(0);
+  tmstr = asctime(localtime(&ct));
+  *(tmstr + strlen(tmstr) - 1) = '\0';
+
+   	if (!(fl = fopen(QUESTLOG_FILE, "a")))	{
+	  log("Could not open the QuestLog-file.\n\r");
+    } else {
+		sprintf(buf, "**:%s-> %s",tmstr, desc);
+		fputs(buf, fl);
+		fclose(fl);
+	}
 }

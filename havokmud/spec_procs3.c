@@ -4095,6 +4095,8 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	    sprintf(buf,"The QPSalesman gives you %s\n\r",obj->short_description);
 	    send_to_char(buf,ch);
 	    obj_to_char(obj,ch);
+	  	sprintf(buf,"$s just bought %s\n\r",GET_NAME(ch), obj->short_description);
+	  	qlog(buf);
 	  } else
 	    act("$c0013[$c0015The QuestPoint Salesman$c0013] tells you"
 		" 'You don't have enought QPoints for that item'"
@@ -4200,7 +4202,7 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
     if(GET_COND(ch,THIRST)>20) {
            act("You do not feel thirsty.",FALSE,ch,0,0,TO_CHAR);
 	   return(TRUE);
-	}	
+	}
     if(GET_COND(ch,FULL)>20) {
            act("You are full.",FALSE,ch,0,0,TO_CHAR);
 	   return(TRUE);
@@ -4251,10 +4253,10 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 	if (cmd == 531)	/*Talk*/
 	{
 		arg=one_argument(arg, vict_name);
-		
+
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-	      if (vict->specials.fighting) 
+	      if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
@@ -4268,16 +4270,16 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 				else has_marbles = 0;
 	                }
 		}
-   
+
 		/*Quest Text*/
 		if (has_marbles == 0)
-		{			
-			act("$n says, 'Kind warriors, I seem to have misplaced my marbles.'", FALSE, vict, 0, 0, TO_ROOM); 
+		{
+			act("$n says, 'Kind warriors, I seem to have misplaced my marbles.'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'How I so long to play with them again. If you can'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'return my marbles, I will tell you of a great land'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'of riches and powerful items.'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n shivers in anticipation.", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'Ignatius will fall to my master marble skills if I'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'Ignatius will fall to my master marble skills if I'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'can ever find them.'", FALSE, vict, 0, 0, TO_ROOM);
 			return(TRUE);
 		}
@@ -4297,48 +4299,48 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 
 		arg=one_argument(arg, vict_name);
 		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
-		
+
 		if (vict->specials.fighting)
 		{
 			send_to_char("Not while they are fighting!\n\r", ch);
 			return(TRUE);
 		}
-		
+
 		/*If mob is not Braxis*/
 		if (mob_index[vict->nr].virtual != BRAXIS) return(FALSE);
 
 		/*If object is not Marbles*/
-        	if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+        	if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
-      		if ((obj_index[obj->item_number].virtual != MARBLES)) 
+      		if ((obj_index[obj->item_number].virtual != MARBLES))
 			{
       		sprintf(buf, "%s That is not the item I seek.",GET_NAME(ch));
     			do_tell(vict,buf,19);
          		return(TRUE);
 			}
 		}
-   		else 
+   		else
 		{
 			sprintf(buf,"%s %s",obj_name,vict_name);
       		do_give(ch,buf,0);
 			if(obj_index[obj->item_number].virtual == MARBLES) test=1;
 			else return(TRUE);
 		}
- 		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+ 		if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
 			test=1;
 	  		do_give(ch,"bag-marbles braxis-swamp-dragon",0);
  		}
 	}
-   
+
 	else return(FALSE);
 
 	if (test==1) /* It is the Braxis, and the marbles */
-	{  
-		act("$n says, 'There is a mighty power in the sceptre that rests in'", FALSE, vict, 0, 0, TO_ROOM); 
+	{
+		act("$n says, 'There is a mighty power in the sceptre that rests in'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'the Great King's throne room. However, this power has'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'been split into three separate pieces that must be united.'", FALSE, vict, 0, 0, TO_ROOM);
-		act("$n says, 'You must reunite the head of the sceptre with its severed'", FALSE, vict, 0, 0, TO_ROOM); 
+		act("$n says, 'You must reunite the head of the sceptre with its severed'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'eyes.  Once you do so you will be transported to a wondrous'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'world of monsters and danger.  You must be brave as well as'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'strong to survive, but if you do, the rewards will be great.'", FALSE, vict, 0, 0, TO_ROOM);
@@ -4353,7 +4355,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 		}
 		return(TRUE);
 	}
-	
+
 	return(FALSE);
 
 }
@@ -4367,12 +4369,12 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   static int mimenum=0;
 
   void do_emote(struct char_data *ch, char *argument, int cmd);
-  
+
   if(IS_PC(ch))
     return(0);
 
   inroom = ch->in_room;
-   
+
 	if(type == EVENT_DEATH) {
 			sprintf(buf,"nadia thunder mountain", 0);
 			if (tmp_ch = get_char_vis_world(ch, buf, 0)) {
@@ -4543,16 +4545,16 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 	{
 
 		arg=one_argument(arg, vict_name);
-		
+
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-		
-		if (vict->specials.fighting) 
+
+		if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
 		}
-	      	
+
 		if (mob_index[vict->nr].virtual != NADIA) return(FALSE);
 
 		keyrnum = real_object(NADIA_KEY);
@@ -4562,10 +4564,10 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				else has_key = 0;
 			}
 		}
-	                   
+
 		/*Quest Text*/
 		if (has_key == 0)
-		{	
+		{
 			pillrnum = real_object(NADIA_PILL);
 			for (i = vict->carrying; i; i = i->next_content) {
 				if (has_pill != 1) {
@@ -4574,13 +4576,13 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				}
 			}
 
-			if (has_pill == 0) 
+			if (has_pill == 0)
 			{
-				act("$n says, 'I don't know anything about a sceptre or any dragons, but I'", FALSE, vict, 0, 0, TO_ROOM); 
+				act("$n says, 'I don't know anything about a sceptre or any dragons, but I'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'do know who might be able to help you.  Elamin, a great magician'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'used to work for the king is imprisoned in the keep tower.'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'If you do me a favor and kill that dastardly Mime Jerry, I will'", FALSE, vict, 0, 0, TO_ROOM);
-				act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM); 
+				act("$n says, 'give you the key to Elamin's prison.  That fool king will learn'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'to pay the consequences when he doesn't come to see me for weeks!'", FALSE, vict, 0, 0, TO_ROOM);
 				if (vict->equipment[HOLD]) {
 					do_remove(vict,vict->equipment[HOLD]->name,0);
@@ -4592,7 +4594,7 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 			}
 		}
-		
+
 		else if (has_key == 1)
 		{
 			act("$n says, 'Here is the key.  I will tell you no more.  Go, before I change my mind.'", FALSE, vict, 0, 0, TO_ROOM);
@@ -4623,10 +4625,10 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 	if (cmd == 531)	/*Talk*/
 	{
 		arg=one_argument(arg, vict_name);
-		
+
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-	      if (vict->specials.fighting) 
+	      if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
@@ -4640,15 +4642,15 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 				else has_pen = 0;
 	                }
 		}
-   
+
 		/*Quest Text*/
 		if (has_pen == 0)
-		{			
-			act("$n says, 'Hello there.  How did you manage to get so far into'", FALSE, vict, 0, 0, TO_ROOM); 
+		{
+			act("$n says, 'Hello there.  How did you manage to get so far into'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'the keep?  Nevermind, it is of no importance.  So'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'you are looking for the infamous realm of dragons eh?'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'Very well.  I'll help you since that bugger of a king'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'locked me up here.  I will give you the sceptre head'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'locked me up here.  I will give you the sceptre head'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'if you do me a favor.  This pain in the neck jester'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'took a very powerful magical item from me a short time'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'back.  If you will go to the Jester and obtain my pen'", FALSE, vict, 0, 0, TO_ROOM);
@@ -4685,43 +4687,43 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
 
 		arg=one_argument(arg, vict_name);
 		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
-		
+
 		if (vict->specials.fighting)
 		{
 			send_to_char("Not while they are fighting!\n\r", ch);
 			return(TRUE);
 		}
-		
+
 		if (mob_index[vict->nr].virtual != ELAMIN) return(FALSE);
 
-        	if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+        	if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
-      		if ((obj_index[obj->item_number].virtual != PEN_MIGHT)) 
+      		if ((obj_index[obj->item_number].virtual != PEN_MIGHT))
 			{
       		sprintf(buf, "%s That is not the item I seek.",GET_NAME(ch));
     			do_tell(vict,buf,19);
          		return(TRUE);
 			}
 		}
-   		else 
+   		else
 		{
 			sprintf(buf,"%s %s",obj_name,vict_name);
       		do_give(ch,buf,0);
 			if(obj_index[obj->item_number].virtual == PEN_MIGHT) test=1;
 			else return(TRUE);
 		}
- 		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+ 		if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
 			test=1;
 	  		do_give(ch,"pen-might elamin",0);
  		}
 	}
-   
+
 	else return(FALSE);
 
 	if (test==1)
-	{ 
-		act("$n says, 'Thank you so much.  Here is the sceptre.  Please be'", FALSE, vict, 0, 0, TO_ROOM); 
+	{
+		act("$n says, 'Thank you so much.  Here is the sceptre.  Please be'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'careful.  I wouldn't want anything bad to happen to'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'you in your journeys.'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n hands over the dragon sceptre.", FALSE, vict, 0, 0, TO_ROOM);
@@ -4731,7 +4733,7 @@ int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
                 }
 		return(TRUE);
 	}
-	
+
 	return(FALSE);
 
 }
@@ -4750,10 +4752,10 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 	if (cmd == 531)	/*Talk*/
 	{
 		arg=one_argument(arg, vict_name);
-		
+
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-		if (vict->specials.fighting) 
+		if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
@@ -4764,7 +4766,7 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 			send_to_char("Get real.  You shouldn't be playing around with him.\n\r", ch);
 			return (TRUE);
 		}
-		
+
 		act("$n says, 'Lo.  Yoo be lookin for abit o doctrin?  I offa my'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'ade fo a wee tiny gold pyle.  Yoo be stronga, I'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'swayr.  Jus type 'buy' and I get right ta work.'", FALSE, vict, 0, 0, TO_ROOM);
@@ -4802,15 +4804,15 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 		act("$n walks over to one of the cages and pulls a small bunny out.", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n slowly returns, gutting the bunny then quickly slicing your stomach open.", FALSE, mob, 0, 0, TO_ROOM);
 		WAIT_STATE(ch,PULSE_VIOLENCE*12);
-		GET_POS(ch) = POSITION_STUNNED;		
+		GET_POS(ch) = POSITION_STUNNED;
        		GET_MANA(ch) = 1;
 		GET_MOVE(ch) = 1;
 		GET_HIT(ch) = 1;
 		GET_CON(ch) += 1;
 		GET_GOLD(ch) -= test;
 		GET_EXP(ch) -= GET_CON(ch)*5000000;
-		return (TRUE);	
-		}	
+		return (TRUE);
+		}
 	}
 	else {
 		return (FALSE);
@@ -4838,13 +4840,13 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-	      	if (vict->specials.fighting) 
+	      	if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
 		}
-	      	if (mob_index[vict->nr].virtual != ZORK) return(FALSE);		
-		
+	      	if (mob_index[vict->nr].virtual != ZORK) return(FALSE);
+
 		if (get_obj_vis_world(ch, "black pill thunder mountain", NULL))
 		{
 			test = 1;
@@ -4865,7 +4867,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 			act("$n says, 'you can figure out a simple riddle, I will grant'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'poor Elamin's pen.  Eat the correct pill and the'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'pen will be yours.  Eat the wrong pill and you will'", FALSE, vict, 0, 0, TO_ROOM);
-			act("$n says, 'face an instant death.'", FALSE, vict, 0, 0, TO_ROOM);			
+			act("$n says, 'face an instant death.'", FALSE, vict, 0, 0, TO_ROOM);
 			if ((r_num = real_object(BLACK_PILL)) >= 0) {
 				obj = read_object(r_num, REAL);
 				obj_to_char(obj, ch);
@@ -4890,7 +4892,7 @@ int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
 			act("$n says, 'They look up and cannot deny'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'That the law of nature's demand'", FALSE, vict, 0, 0, TO_ROOM);
 			act("$n says, 'Determines the shade of this cloudless sky'", FALSE, vict, 0, 0, TO_ROOM);
-			
+
 			return(TRUE);
 		}
 	}
@@ -5049,7 +5051,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data
 			extract_obj(obj);
 
 			if (time_info.hours > 6)
-			{	
+			{
 				if (time_info.hours < 20)
 				{
 				if ((r_num = real_object(PEN_MIGHT)) >= 0) {
@@ -5080,7 +5082,7 @@ int thunder_blue_pill(struct char_data *ch, int cmd, char *arg, struct room_data
 	}
 
 	return(FALSE);
-}	
+}
 
 int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
@@ -5154,7 +5156,7 @@ int thunder_black_pill(struct char_data *ch, int cmd, char *arg, struct room_dat
 
 	return(FALSE);
 }
-				
+
 int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
   char buf[256], obj_name1[180], obj_name2[180];
@@ -5177,7 +5179,7 @@ int thunder_sceptre_one(struct char_data *ch, int cmd, char *arg, struct room_da
 		if ((obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_ONE)) return(FALSE);
 
 		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_ROOM);
-		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);	
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);
 		extract_obj(obj1);
 		extract_obj(obj2);
 		if ((r_num = real_object(DRAGON_SCEPTRE_TWO)) >= 0) {
@@ -5217,14 +5219,14 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_da
 		if ((obj_index[obj2->item_number].virtual != DRAGON_SCEPTRE_TWO)) return(FALSE);
 
 		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_ROOM);
-		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);	
+		act("The sceptre rumbles slightly as it unites with the eye of the dragon.", FALSE, ch, 0, 0, TO_CHAR);
 		act("The sceptre flies out of $n's grasp and spins rapidly in the air.", FALSE, ch, 0, 0, TO_ROOM);
 		act("The sceptre flies out of your grasp and spins rapidly in the air.", FALSE, ch, 0, 0, TO_CHAR);
 		act("A blinding white light fills the room.  You blink and find yourself in a new room.", FALSE, ch, 0, 0, TO_ROOM);
 		act("A blinding white light fills the room.  You blink and find yourself in a new room.", FALSE, ch, 0, 0, TO_CHAR);
 		extract_obj(obj1);
 		extract_obj(obj2);
-  		
+
 		room = real_roomp(ch->in_room);
 
   		for (tmp = room->people;tmp;tmp=tmp2) {
@@ -5265,9 +5267,9 @@ int bahamut_prayer(struct char_data *ch, struct char_data *vict)
 		{
 			GET_HIT(i) -= 25;
 			send_to_char("$c0011A blinding holy light engulfs the room and seers your life away!\n\r", i);
-			if (mob_index[i->nr].virtual == BAHAMUT) { 
+			if (mob_index[i->nr].virtual == BAHAMUT) {
 				GET_HIT(i) += 25;
-			}					
+			}
 		}
 
 	return(FALSE);
@@ -5308,10 +5310,10 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, i
 	if (cmd == 531)	/*Talk*/
 	{
 		arg=one_argument(arg, vict_name);
-		
+
 		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
-	      	if (vict->specials.fighting) 
+	      	if (vict->specials.fighting)
 		{
 		   send_to_char("Not while they are fighting!\n\r", ch);
 		   return(TRUE);
@@ -5319,7 +5321,7 @@ int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, i
 	      	if (mob_index[vict->nr].virtual == TMK_GUARD_ONE || mob_index[vict->nr].virtual == TMK_GUARD_TWO)
 		{
 			switch(number(1, 10)) {
-		
+
 			case 1:
 				act("$n says, 'That Bahamut scares me to no end.  I know he's supposed to be good'", FALSE, vict, 0, 0, TO_ROOM);
 				act("$n says, 'and all, but anything with that much power is just too dangerous!'", FALSE, vict, 0, 0, TO_ROOM);
@@ -5398,9 +5400,9 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
    if(!AWAKE(ch)) return(FALSE);
 
-   	if(!cmd) 
+   	if(!cmd)
    	{
-   		if(number(0,10) == 0) 
+   		if(number(0,10) == 0)
 		{
    			act("$n says, 'Pardon me sire, might you spare a poor man some food?'",FALSE, mob, 0, 0, TO_ROOM);
 	      		return(TRUE);
@@ -5416,7 +5418,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
 			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
 
-      		if (vict->specials.fighting) 
+      		if (vict->specials.fighting)
 		{
 		   	send_to_char("Not while they are fighting!\n\r", ch);
 		   	return(TRUE);
@@ -5445,7 +5447,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	}
 
 	else if (cmd == 72) /*give*/
-	{ 
+	{
 		arg=one_argument(arg,obj_name);
 
 	    	if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))) return(FALSE);
@@ -5453,16 +5455,16 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
    		arg=one_argument(arg, vict_name);
 	    	if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
 
-		if (vict->specials.fighting) 
+		if (vict->specials.fighting)
 		{
  			send_to_char("Not while they are fighting!\n\r",ch);
 	        	return(TRUE);
 		}
-		
+
 		/*Mob is not Starving Man*/
 		if (mob_index[vict->nr].virtual != STARVING_MAN) return(FALSE);
 
-		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
       			if(obj->obj_flags.type_flag != ITEM_FOOD)
 			{
@@ -5473,24 +5475,24 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			else test = 1;
    		}
 
-		else 
+		else
 		{
 			sprintf(buf,"%s %s",obj_name,vict_name);
       			do_give(ch,buf,0);
      			if(obj->obj_flags.type_flag == ITEM_FOOD) test=1;
 		}
-   		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+   		if (GetMaxLevel(ch)<LOW_IMMORTAL)
 		{
 			sprintf(buf,"%s %s",obj_name,vict_name);
       			do_give(ch,buf,0);
-   		}	
+   		}
 	}
-   
+
 	else return(FALSE);
 
-	if(test==1) 
+	if(test==1)
 	{
-		if (vict->equipment[WIELD]) 
+		if (vict->equipment[WIELD])
 		{
       			sprintf(buf, "%s Thank you mighty hero.  Take this as a token of my appreciation.",GET_NAME(ch));
     			do_tell(vict,buf,19);
@@ -5498,8 +5500,8 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
       			sprintf(buf,"Staff %s",GET_NAME(ch));
       			do_give(vict,buf,0);
 			return(TRUE);
-   		} 
-		else 
+   		}
+		else
 		{
 	      		sprintf(buf, "%s You are indeed a generous person, but I have nothing to offer you in return.", GET_NAME(ch));
 			do_tell(vict,buf,19);
@@ -5507,7 +5509,7 @@ int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob
    		}
 	}
 
-return(TRUE);	
+return(TRUE);
 
 }
 
@@ -5516,12 +5518,12 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
     char buf[256], name[256];
     struct char_data *victim;
     struct obj_data *object;
-    int percent = 0; 
+    int percent = 0;
     int r_num = 0;
     int v_num1 = 0;
     int v_num2 = 0;
     extern struct dex_app_type dex_app[];
-    
+
 
 	if (cmd == 157) /* Bash */
 	{
@@ -5529,18 +5531,18 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 			object = read_object(r_num, REAL);
 			v_num1 = obj_index[object->item_number].virtual;
 		}
-		
+
 		if (!ch->equipment[HOLD]) return(FALSE);
- 
+
 		object =  ch->equipment[HOLD];
-		
+
 		v_num2 = obj_index[object->item_number].virtual;
 
 		if (v_num1 != v_num2) return(FALSE);
-		
+
 /*		if (ch->equipment[HOLD] != object) return (FALSE);*/
 
-  		if (!ch->skills) return(TRUE);		
+  		if (!ch->skills) return(TRUE);
 
    		if (check_peaceful(ch,"You feel too peaceful to contemplate violence.\n\r")) return(TRUE);
 
@@ -5556,7 +5558,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
   		if (!(victim = get_char_room_vis(ch, name))) {
     			if (ch->specials.fighting) {
       				victim = ch->specials.fighting;
-    			} 
+    			}
 			else {
      		 		send_to_char("Bash who?\n\r", ch);
       				return(TRUE);
@@ -5566,7 +5568,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
   		if (!(victim = get_char_room_vis(ch, name))) {
     			if (ch->specials.fighting) {
       				victim = ch->specials.fighting;
-    			} 
+    			}
 			else {
       				send_to_char("Bash who?\n\r", ch);
       				return(TRUE);
@@ -5627,7 +5629,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
     			}
   		}
 	  WAIT_STATE(ch, PULSE_VIOLENCE*2);
-	} 
+	}
 	else return(FALSE);
 
 	return(TRUE);
@@ -5676,10 +5678,10 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 		if (bahamut != object) return(FALSE);
 
 		if (strcmp(itemtype,"jacket")) return(FALSE);
-         
-        	if (object->affected[0].modifier != 0 && object->affected[1].modifier != 0) 
+
+        	if (object->affected[0].modifier != 0 && object->affected[1].modifier != 0)
 		{
-	
+
  			percent = number(1,101); /* 101% is a complete failure */
 
 			if (ch->skills && ch->skills[SKILL_TAN].learned && GET_POS(ch) > POSITION_SLEEPING) {
@@ -5693,7 +5695,7 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
    					WAIT_STATE(ch, PULSE_VIOLENCE*3);
   					return(TRUE);
  				}
-				else 
+				else
 				{
            				if ((r_num = real_object(BAHAMUT_SKIN)) >= 0)
            				{
@@ -5708,7 +5710,7 @@ int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
            				}
 				}
 			}
-			else return(FALSE);			
+			else return(FALSE);
 		}
 		else
 		{

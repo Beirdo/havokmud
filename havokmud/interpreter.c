@@ -458,7 +458,7 @@ if (HasClass(ch,TempDis) && GetMaxLevel(ch) < 58 && IS_PC(ch)) {
 }
 
   REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
-  
+
   /* Removed by Greg Hovey  (FALSE) */
   if(IS_AFFECTED2(ch,AFF2_AFK) && FALSE) {
     act("$c0006$n has returned to $s keyboard", TRUE, ch, 0, 0, TO_ROOM);
@@ -1177,7 +1177,7 @@ void assign_command_pointers ()
   AddCommand("title",do_title,233,POSITION_DEAD,20);
   AddCommand("whozone",do_who,234,POSITION_DEAD,0);
   AddCommand("assist",do_assist,235,POSITION_FIGHTING,1);
-  AddCommand("attribute",do_attribute,236,POSITION_DEAD,5);
+  AddCommand("attribute",do_attribute,236,POSITION_DEAD,1);
   AddCommand("world",do_world,237,POSITION_DEAD,0);
   AddCommand("allspells",do_spells,238,POSITION_DEAD,0);
   AddCommand("breath",do_breath,239,POSITION_FIGHTING,1);
@@ -2817,7 +2817,7 @@ case CON_CHECK_MAGE_TYPE:{
     if(d->character->term != 0)
        ScreenOff(d->character);
     send_to_char(MENU,d->character);
-    
+
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host))  {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
@@ -2831,7 +2831,7 @@ case CON_CHECK_MAGE_TYPE:{
 
   case CON_WMOTD:               /* read CR after printing motd  */
     send_to_char(MENU,d->character);
-    
+
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
@@ -3066,7 +3066,7 @@ if ((player_table+i)->name)
    }
    send_to_char(MENU,d->character);
    //SEND_TO_Q(MENU,d);
-   
+
       STATE(d)= CON_SLCT;
      }
     break;
@@ -3219,7 +3219,7 @@ if (d->character->player.description)
     default:
       SEND_TO_Q("Wrong option.\n\r", d);
       send_to_char(MENU,d->character);
-      
+
       break;
     }
     break;
@@ -3270,7 +3270,7 @@ if (d->character->player.description)
 	      "\n\rDone. You must enter the game to make the change final\n\r",
 	      d);
     send_to_char(MENU,d->character);
-    
+
     STATE(d) = CON_SLCT;
     break;
 

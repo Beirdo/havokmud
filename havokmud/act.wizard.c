@@ -9,6 +9,9 @@
 
 
 #include "protos.h"
+#define NEWHELP_FILE      "ADD_HELP"      /* New help to add            */
+#define QUESTLOG_FILE     "quest_log"     /* Log of quest transactions  */
+
 
 int SetDefaultLang(struct char_data *ch);
 void switch_light(byte why);
@@ -3227,9 +3230,11 @@ if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
 	SET_BIT(ch->player.user_flags,USE_PAGING);/* set each user topause screens*/
 	if(temp==1)
 	  SET_BIT(ch->player.user_flags,USE_ANSI);
-	//commented out for now.. (GH)
-	//SET_BIT(ch->player.user_flags, ACT_WIMPY);
-	//send_to_char("Wimpy mode activated\n\r",ch);
+
+
+	if (!IS_SET(ch->specials.act, PLR_WIMPY))
+    	SET_BIT(ch->specials.act, PLR_WIMPY);
+    send_to_char("Wimpy mode activated\n\r",ch);
 
   if (IS_SET(ch->player.class, CLASS_THIEF))   {
     if (GET_RACE(ch) == RACE_HUMAN)
@@ -5058,7 +5063,10 @@ dlog("in do_viewfile");
 
     only_argument(argument, namefile);
     if(!strcmp(namefile,"help"))
-	  file_to_string("ADD_HELP",bigbuf);
+	  file_to_string(NEWHELP_FILE,bigbuf);
+    else
+    if(!strcmp(namefile,"quest"))
+      file_to_string(QUESTLOG_FILE,bigbuf);
     else
     if(!strcmp(namefile,"bug"))
       file_to_string(WIZBUG_FILE,bigbuf);
@@ -5656,6 +5664,10 @@ dlog("in do_reward");
 	 d->character->player.q_points += amount;
 	 sprintf(buf,"You just awarded %d Quest points to %s\n\r",amount,GET_NAME(d->character));
 	 send_to_char(buf,ch);
+
+     sprintf(buf,"%s just awarded %d quest points to %s\n\r",GET_NAME(ch), amount,GET_NAME(d->character));
+     qlog(buf);
+
      sprintf(buf,"You were just awarded %d Quest points. You now have %d Quest points\n\r",amount,d->character->player.q_points);
 	 send_to_char(buf,d->character);
 	 save_char(d->character,AUTO_RENT);
@@ -5729,6 +5741,8 @@ dlog("in do_punish");
 	 d->character->player.q_points -= amount;
 	 sprintf(buf,"You just punished %s of  %u Quest points\n\r",GET_NAME(d->character),amount);
 	 send_to_char(buf,ch);
+	 sprintf(buf,"%s just punished %d quest points from %s\n\r",GET_NAME(ch), amount,GET_NAME(d->character));
+     qlog(buf);
      sprintf(buf,"You were just punished of  %u Quest points. You now have %u Quest points\n\r",amount,d->character->player.q_points);
 	 send_to_char(buf,d->character);
 	 save_char(d->character,AUTO_RENT);
@@ -5801,6 +5815,10 @@ dlog("in do_spend");
 	 d->character->player.q_points -= amount;
 	 sprintf(buf,"%s just spent %u Quest points\n\r",GET_NAME(d->character),amount);
 	 send_to_char(buf,ch);
+
+	 sprintf(buf,"%s just spent %d of %s quest points.\n\r",GET_NAME(ch), amount,GET_NAME(d->character));
+     qlog(buf);
+
      sprintf(buf,"You just spent %u Quest points. You now have %u Quest points\n\r",amount,d->character->player.q_points);
 	 send_to_char(buf,d->character);
 	 save_char(d->character,AUTO_RENT);

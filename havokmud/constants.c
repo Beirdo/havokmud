@@ -4343,7 +4343,7 @@ const struct skillset bardskills[] = {
   {"minor creation",SPELL_MINOR_CREATE, 12},
   {"fear",          SPELL_FEAR,           12},
   {"dispel magic",  SPELL_DISPEL_MAGIC,   13},  //40X
-  
+
   {"water breath",  SPELL_WATER_BREATH,   13},
   {"monsum three",  SPELL_MON_SUM_3,      13},
   {"know monster",  SPELL_KNOW_MONSTER,   13},
@@ -4382,7 +4382,7 @@ const struct skillset bardskills[] = {
   {"summon",         SPELL_SUMMON,        31},
   {"teleport without error", SPELL_TELEPORT_WO_ERROR, 34},
   {"chain lightning", SPELL_CHAIN_LIGHTNING, 40},
- 
+
   {"none",            -1,             -1}
 };
 
@@ -4973,6 +4973,8 @@ const char *AttackType[]= {
     "Sting",
     "Pierce",
     "Impale",
+	"Smite",
+	"Impale",
     "\n"
 };
 
