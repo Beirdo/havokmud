@@ -1396,8 +1396,6 @@ struct char_special_data {
     byte            oedit;      /* obj editing menu at */
     struct obj_data *objedit;   /* object editing */
 
-    byte            hedit;
-    struct help_file_u *help;   /* helpfile editing */
     byte            tfd;
     struct edit_txt_msg *txtedit;       /* motd/wmotd/news editing */
 
@@ -1710,27 +1708,6 @@ struct char_file_u {
     int             grade8;
 };
 
-/*
- ***********************************************************************
- *  file element for help   file. BEWARE: Changing it will ruin the file  *
- *********************************************************************** */
-
-struct help_file_u {
-    char           *name;
-    char           *usage;      /* for later use.... */
-    char           *accumulative;
-    char           *duration;
-    char           *level;
-    char           *damagetype;
-    char           *saves;
-    char           *description;
-    char           *references;
-    int             wizard;
-    char           *modBy;
-    time_t          modified;
-    int             newfile;
-    long            index;
-};
 
 /*
  ***********************************************************************

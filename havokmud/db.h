@@ -18,10 +18,6 @@
 #define ZONE_FILE         "tinyworld.zon"       /* zone defs & command
                                                  * tables */
 #define PLAYER_FILE       "players"     /* the player database */
-#define TIME_FILE         "time"        /* game calendar information */
-#define WIZLIST_FILE      "wizlist"     /* for WIZLIST */
-
-#define IWIZLIST_FILE      "iwizlist"   /* for WIZLIST */
 
 #define REAL 0
 #define VIRTUAL 1

@@ -93,14 +93,10 @@ char           iwizlist[MAX_STRING_LENGTH * 2];    /* the wizlist */
 char           *login = NULL;
 
 FILE           *mob_f,          /* file containing mob prototypes */
-               *obj_f,          /* obj prototypes */
-               *help_fl,        /* file for help texts (HELP <kwd>) */
-               *wizhelp_fl;     /* file for wizhelp */
+               *obj_f;          /* obj prototypes */
 
 struct index_data *mob_index;   /* index table for mobile file */
 struct index_data *obj_index;   /* index table for object file */
-struct help_index_element *help_index = 0;
-struct help_index_element *wizhelp_index = 0;
 int             top_of_mobt = 0;        /* top of mobile index table */
 int             top_of_objt = 0;        /* top of object index table */
 int             top_of_sort_mobt = 0;
@@ -108,8 +104,6 @@ int             top_of_sort_objt = 0;
 
 int             top_of_alloc_mobt = 99999;
 int             top_of_alloc_objt = 99999;
-int             top_of_helpt;           /* top of help index table */
-int             top_of_wizhelpt;        /* top of wiz help index table */
 
 struct time_info_data time_info;        /* the infomation about the time */
 struct weather_data weather_info;       /* the infomation about the
@@ -133,7 +127,6 @@ int             wizcenter(char *buf);
 void            setup_dir(FILE * fl, long room, int dir);
 struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
                                     int *alloc_top, char *dirname);
-struct help_index_element *build_help_index(FILE *fl, int *num);
 
 
 int             qp_patience;
@@ -158,7 +151,7 @@ void boot_db(void)
     Log("Resetting the game time:");
     reset_time();
 
-    Log("Reading newsfile, credits, help-page, info and motd.");
+    Log("Reading newsfile, credits, info and motd.");
 
     db_load_textfiles();
 
@@ -4554,7 +4547,6 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 
     ch->specials.mobedit = 0;
     ch->specials.objedit = 0;
-    ch->specials.help = 0;
     ch->specials.misc = 0;
     ch->specials.fighting = 0;
     ch->specials.hunting = 0;
