@@ -1783,11 +1783,18 @@ void spell_paralyze(byte level, struct char_data *ch,
 	FailPara(victim, ch);
 	return;
       }
-    } else if (!IsSusc(victim, IMM_HOLD)) {
+    } if (!IsSusc(victim, IMM_HOLD)) {
       if (saves_spell(victim, SAVING_PARA)) {
 	FailPara(victim, ch);
 	return;
       }    
+    } else if (IsSusc(victim, IMM_HOLD)) {
+	if (saves_spell(victim, SAVING_PARA)) {
+		if (saves_spell(victim, SAVING_PARA)) {
+		  FailPara(victim, ch);
+		  return;
+		}
+	}
     }
     
     af.type      = SPELL_PARALYSIS;
