@@ -156,6 +156,7 @@ void do_credits(struct char_data *ch, char *argument, int cmd);
 void do_news(struct char_data *ch, char *argument, int cmd);
 void do_info(struct char_data *ch, char *argument, int cmd);
 void do_wizlist(struct char_data *ch, char *argument, int cmd);
+void do_iwizlist(struct char_data *ch, char *argument, int cmd);
 int which_number_mobile(struct char_data *ch, struct char_data *mob);
 char *numbered_person(struct char_data *ch, struct char_data *person);
 void do_where_person(struct char_data *ch, struct char_data *p,

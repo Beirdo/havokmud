@@ -57,6 +57,7 @@ char motd[MAX_STRING_LENGTH];         /* the messages of today           */
 char help[MAX_STRING_LENGTH];         /* the main help page              */
 char info[MAX_STRING_LENGTH];         /* the info text                   */
 char wizlist[MAX_STRING_LENGTH*2];      /* the wizlist                     */
+char iwizlist[MAX_STRING_LENGTH*2];      /* the wizlist                     */
 char login[MAX_STRING_LENGTH];
 
 
@@ -370,6 +371,7 @@ int intcomp(struct wizs *j, struct wizs *k) {
 	/*a function to center wizards with color in their titles*/
 int wizcenter(char *buf)
 {
+
 int center = 38;
 int buflen = strlen(buf);
 int codes = 6;
@@ -393,11 +395,11 @@ void build_player_index()
   int nr = -1, i;
   struct char_file_u dummy;
   FILE *fl;
-
+  int active = 0;
   char tempbuf[MAX_STRING_LENGTH];
   char title[MAX_STRING_LENGTH], tmp2[MAX_STRING_LENGTH], blank[MAX_STRING_LENGTH];
   char buf[MAX_STRING_LENGTH*2];
-
+  char buf2[MAX_STRING_LENGTH*2];
   register int max=0, j;
   int center;
 
@@ -465,6 +467,9 @@ void build_player_index()
 	  (char *)strdup(dummy.name);
 	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].title =
 	  (char *)strdup(dummy.title);
+
+	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].active = ((time(0) - dummy.last_logon < 3000000) ? 1 : 0);
+
 	list_wiz.number[max - 51]++;
 	break;
       }
@@ -484,186 +489,316 @@ void build_player_index()
   log("Began Wizlist Generation.");
 
   sprintf(wizlist, "\033[2J\033[0;0H\n\r\n\r");
+  sprintf(iwizlist,  "\033[2J\033[0;0H\n\r\n\r");
   sprintf(buf, "$$c0012-* $$c0009Creator and Supreme Being [$$c0015%d$$c0009] $$c0012*-\n\r",list_wiz.number[9]);
 
 
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
-
+     strcat(iwizlist, " ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist, buf);
 
 
   for(i = 0; i < list_wiz.number[9]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[9].stuff[i].title);
-
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+	  if(list_wiz.lookup[9].stuff[i].active == 1) {
+     	sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[9].stuff[i].title);//,  list_wiz.lookup[9].stuff[i].active ? "ACTIVE": "INACTIVE" );
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+		  strcat(wizlist, " ");
+        strcat(wizlist, buf);
+        active++;
+      } else {
+        sprintf(buf2, "$$c0007%s\n\r", list_wiz.lookup[9].stuff[i].title);
+        center = wizcenter(buf);
+ 	     for(j = 0; j <= center; j++)
+			strcat(wizlist, " ");
+ 	     strcat(wizlist, buf);
+ 	}
   }
 
   strcat(wizlist, "\n\r\n\r");
-  log("Creator Generated.");
+  strcat(iwizlist,"\n\r\n\r");
+ log("Creator Generated.");
 
   sprintf(buf, "$$c0012-*$$c0009 Supreme Lords and Ladies [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[8]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist, " ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
   for(i = 0; i < list_wiz.number[8]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[8].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+	if(list_wiz.lookup[8].stuff[i].active == 1) {
+       sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[8].stuff[i].title);
+       center = wizcenter(buf);
+       for(j = 0; j <= center; j++)
+	     strcat(wizlist, " ");
+       strcat(wizlist, buf);
+       active++;
+	} else {
+       sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[8].stuff[i].title);
+       center = wizcenter(buf);
+       for(j = 0; j <= center; j++)
+          strcat(iwizlist, " ");
+       strcat(iwizlist, buf);
+	}
   }
 
   strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist, "\n\r\n\r");
   log("Implementors Generated.");
 
   sprintf(buf, "$$c0012-*$$c0009 Lords and Ladies [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[7]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+     strcat(iwizlist, " ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist, buf);
 
   for(i = 0; i < list_wiz.number[7]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[7].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+	if(list_wiz.lookup[7].stuff[i].active == 1) {
+       sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[7].stuff[i].title);
+       center = wizcenter(buf);
+       for(j = 0; j <= center; j++)
+	     strcat(wizlist, " ");
+       strcat(wizlist, buf);
+       active++;
+    } else {
+       sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[7].stuff[i].title);
+       center = wizcenter(buf);
+       for(j = 0; j <= center; j++)
+	     strcat(iwizlist, " ");
+       strcat(iwizlist, buf);
+	}
+
   }
 
   strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist, "\n\r\n\r");
   log("Gods of Final Judgement Generated.");
 
   sprintf(buf, "$$c0012-*$$c0009 Gods and Goddesses of Judgement [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[6]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
   for(i = 0; i < list_wiz.number[6]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[6].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+	if(list_wiz.lookup[6].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[6].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+        active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[6].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
   }
 
   strcat(wizlist, "\n\r\n\r");
-
+  strcat(iwizlist,"\n\r\n\r");
 
   sprintf(buf, "$$c0012-*$$c0009 Greater Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[5]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
   for(i = 0; i < list_wiz.number[5]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[5].stuff[i].title);
-    center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+	if(list_wiz.lookup[5].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[5].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+        active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[5].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
   }
 
   strcat(wizlist, "\n\r\n\r");
-
-
-  sprintf(buf, "$$c0012-*$$c0009 Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[4]);
-  center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
-     strcat(wizlist, " ");
-  strcat(wizlist, buf);
-
-  for(i = 0; i < list_wiz.number[4]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[4].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
-  }
-
-  strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist,"\n\r\n\r");
 
 
   sprintf(buf, "$$c0012-*$$c0009 Lesser Gods and Goddesses [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[3]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
-  for(i = 0; i < list_wiz.number[3]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[3].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+  for(i = 0; i < list_wiz.number[4]; i++) {
+	if(list_wiz.lookup[4].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[4].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+        active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[4].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
   }
 
   strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist,"\n\r\n\r");
+
+
 
 
   sprintf(buf, "$$c0012-*$$c0009 Greater Deities [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[2]);
   center = wizcenter(buf);
-
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
-  for(i = 0; i < list_wiz.number[2]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+  for(i = 0; i < list_wiz.number[3]; i++) {
+	if(list_wiz.lookup[3].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[3].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+		active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[3].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
   }
 
   strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist,"\n\r\n\r");
+
 
 
   sprintf(buf, "$$c0012-*$$c0009 Deities [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[1]);
-     center = wizcenter(buf);
+    center = wizcenter(buf);
+    for(i = 0; i <= center; i++) {
+       strcat(wizlist, " ");
+    	 strcat(iwizlist," ");
+    }
+    strcat(wizlist, buf);
+    strcat(iwizlist,buf);
 
-  for(i = 0; i <= center; i++)
-     strcat(wizlist, " ");
-  strcat(wizlist, buf);
+    for(i = 0; i < list_wiz.number[2]; i++) {
+  	if(list_wiz.lookup[2].stuff[i].active == 1) {
+    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
+          center = wizcenter(buf);
+          for(j = 0; j <= center; j++)
+  	      strcat(wizlist, " ");
+          strcat(wizlist, buf);
+          active++;
+   	} else {
+    		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[2].stuff[i].title);
+          center = wizcenter(buf);
+          for(j = 0; j <= center; j++)
+  	      strcat(iwizlist, " ");
+          strcat(iwizlist, buf);
 
-  for(i = 0; i < list_wiz.number[1]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
-  }
 
-  strcat(wizlist, "\n\r\n\r");
+
+      }
+    }
+
+    strcat(wizlist, "\n\r\n\r");
+    strcat(iwizlist,"\n\r\n\r");
 
 
   sprintf(buf, "$$c0012-*$$c0009 Lesser Deities [$$c0015%d$$c0009] $$c0012*-\n\r", list_wiz.number[0]);
   center = wizcenter(buf);
-  for(i = 0; i <= center; i++)
+  for(i = 0; i <= center; i++) {
      strcat(wizlist, " ");
+  	 strcat(iwizlist," ");
+  }
   strcat(wizlist, buf);
+  strcat(iwizlist,buf);
 
-  for(i = 0; i < list_wiz.number[0]; i++) {
-     sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[0].stuff[i].title);
-     center = wizcenter(buf);
-     for(j = 0; j <= center; j++)
-	strcat(wizlist, " ");
-     strcat(wizlist, buf);
+  for(i = 0; i < list_wiz.number[1]; i++) {
+	if(list_wiz.lookup[1].stuff[i].active == 1) {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+
+	      strcat(wizlist, " ");
+        strcat(wizlist, buf);
+        active++;
+ 	} else {
+  		sprintf(buf, "$$c0007%s\n\r", list_wiz.lookup[1].stuff[i].title);
+        center = wizcenter(buf);
+        for(j = 0; j <= center; j++)
+	      strcat(iwizlist, " ");
+        strcat(iwizlist, buf);
+
+
+
+    }
   }
 
   strcat(wizlist, "\n\r\n\r");
+  strcat(iwizlist,"\n\r\n\r");
+
+
+
+
   max = 0;
   for(i = 0; i <= 9; i++)
     max += list_wiz.number[i];
-  sprintf(buf, "Total Gods: %d\n\r\n\r", max);
+
+
+
+  sprintf(buf, "Total Gods: $c000W%d$c000w\n\r\n\r", active);
   strcat(wizlist, buf);
+
+
+  sprintf(buf, "Total Gods: $c000W%d$c000w\n\r\n\r", max - active);
+  strcat(iwizlist, buf);
 
   return;
 }

@@ -34,7 +34,9 @@ extern char *exits[];
 extern char credits[MAX_STRING_LENGTH];
 extern char news[MAX_STRING_LENGTH];
 extern char info[MAX_STRING_LENGTH];
+
 extern char wizlist[MAX_STRING_LENGTH];
+extern char iwizlist[MAX_STRING_LENGTH];
 extern char *dirs[];
 extern char *where[];
 extern char *color_liquid[];
@@ -3258,12 +3260,21 @@ dlog("in do_info");
   page_string(ch->desc, info, 0);
 }
 
+void do_iwizlist(struct char_data *ch, char *argument, int cmd) {
+
+  dlog("in do_iwizlist");
+  page_string(ch->desc, iwizlist, TRUE);
+}
+
+
 
 void do_wizlist(struct char_data *ch, char *argument, int cmd) {
 
 dlog("in do_wizlist");
   page_string(ch->desc, wizlist, TRUE);
 }
+
+
 
 int which_number_mobile(struct char_data *ch, struct char_data *mob)
 {

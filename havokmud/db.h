@@ -26,6 +26,9 @@
 #define WIZ_HELP_FILE	  "wizhelp_table"/* For wizhelp <keyword>	*/
 #define INFO_FILE         "info"          /* for INFO                   */
 #define WIZLIST_FILE      "wizlist"       /* for WIZLIST                */
+
+#define IWIZLIST_FILE      "iwizlist"       /* for WIZLIST                */
+
 #define POSEMESS_FILE     "poses"         /* for 'pose'-command         */
 #define MAIL_FILE	  "mud_mail"	/* */
 
