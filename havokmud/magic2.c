@@ -1776,7 +1776,7 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 			affect_from_char(victim,SPELL_GLOBE_DARKNESS);
 			send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
-			act("The globe of darkness surrounding $N vanishes.", FALSE, ch, 0, victim, TO_NOTVICT);
+			act("The globe of darkness surrounding $n vanishes.", FALSE, victim, 0, 0, TO_ROOM);
 		}
     } else {
 		if (IS_AFFECTED(victim, AFF_DARKNESS)) {

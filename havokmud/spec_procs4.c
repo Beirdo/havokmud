@@ -1680,6 +1680,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeeper, int type)
 {
 	struct room_data *rp;
+	struct char_data *j, *next;
 	struct obj_data *obj, *cond_ptr[50], *store_obj;
 	char buf[120], itemname[120], newarg[100];
 	float modifier = 1.0;
@@ -1721,14 +1722,16 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopk
 		cmd !=  57)		/* sell */
 		return(FALSE);
 
-	if(!(shopkeeper = get_char_room("shopkeeper",ch->in_room))) {
-		sprintf(buf,"shopkeeper proc is attached to a mob without shopkeeper in its name, in room %d",ch->in_room);
-		log(buf);
-		return(FALSE);
+	for(j = rp->people; j; next) {
+		next = j->next_in_room;
+		if(j->specials.proc == PROC_SHOPKEEPER) {
+			shopkeeper = j;
+			break;
+		}
 	}
 
 	if(!shopkeeper) {
-		log("weirdness in shopkeeper, shopkeeper found but not assigned");
+		log("weirdness in shopkeeper, shopkeeper assigned but not found");
 		return(FALSE);
 	}
 
@@ -2072,6 +2075,7 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
 #if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
@@ -2083,6 +2087,16 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 		if (!HasClass(ch, CLASS_NECROMANCER)) {
 			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
 							" 'You're not a necromancer.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, NecromancerGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,NECROMANCER_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -2170,4 +2184,80 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 	}
 #endif
 	return (FALSE);
+}
+
+int generic_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH], classname[120];
+	static int percent = 0;
+	static int x=0;
+	int i = 0, class = 0, level_ind = 0, level = 0;
+	struct char_data *guildmaster, *j, *next;
+	struct room_data *rp;
+	struct skillset skillz[] = {};
+	long s_known;
+	int end = 0;
+
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
+
+	if(!ch->in_room)
+		return(FALSE);
+
+	if(!(rp = real_roomp(ch->in_room)))
+		return(FALSE);
+
+	for(j = rp->people; j; next) {
+		next = j->next_in_room;
+		if(j->specials.proc == PROC_GUILDMASTER) {
+			guildmaster = j;
+			break;
+		}
+	}
+
+	if(!guildmaster) {
+		log("weirdness in generic_guildmaster, assigned but not found");
+		return(FALSE);
+	}
+
+	if(!IS_NPC(guildmaster)) {
+		log("weirdness in guildmaster, is not a mob");
+		return(FALSE);
+	}
+
+	if (cmd!=164 && cmd != 170 && cmd != 243)
+		return(FALSE);
+
+
+	/* let's see which GM we got here */
+	if(IS_SET(guildmaster->specials.act, ACT_MAGIC_USER)) {
+		MageGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_CLERIC)) {
+		ClericGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_WARRIOR)) {
+		WarriorGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_THIEF)) {
+		ThiefGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_DRUID)) {
+		DruidGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_MONK)) {
+		monk_master(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_BARBARIAN)) {
+		barbarian_guildmaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_PALADIN)) {
+		PaladinGuildmaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_RANGER)) {
+		RangerGuildmaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_PSI)) {
+		PsiGuildmaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_BARD)) {
+		BardGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else if(IS_SET(guildmaster->specials.act, ACT_NECROMANCER)) {
+		NecromancerGuildMaster(ch, cmd, 0, guildmaster, 0);
+	} else {
+		log("guildmaster proc attached to mobile without a class, autoset to warrior");
+		SET_BIT(guildmaster->specials.act, ACT_WARRIOR);
+	}
+	return(TRUE);
 }

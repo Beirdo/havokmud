@@ -1653,7 +1653,8 @@ int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
 	int lev;
 
-	specdamage(ch,v);
+	if(type >= TYPE_HIT && type <= TYPE_STRIKE)
+		specdamage(ch,v);
 
 	if (dam > 0) {
 		GET_HIT(v)-=dam;
@@ -4773,7 +4774,7 @@ int FSkillCheck(struct char_data *ch, int fskill)
 	if (perc > ch->skills[fskill].learned) { /* fail */
 		/* let's see if he learned */
 		if (ch->skills[fskill].learned > 75 && ch->skills[fskill].learned < max) { /* only learn if skill is high enough */
-			if (number(1, 96) > ch->skills[fskill].learned /* && (number(1,4) == 1)*/) {
+			if (/*number(1, 96) > ch->skills[fskill].learned  &&*/ (number(1,10) == 1)) {
 				send_to_char("You notice improvement with fighting in your current style.\n\r", ch);
 				ch->skills[fskill].learned += 1;
 				if (ch->skills[fskill].learned >= max) {

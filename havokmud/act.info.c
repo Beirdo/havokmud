@@ -202,13 +202,17 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg) {
 struct obj_data *get_object_in_equip_vis(struct char_data *ch,
 		 char *arg, struct obj_data *equipment[], int *j) {
 
-  for ((*j) = 0; (*j) < MAX_WEAR ; (*j)++)
-    if (equipment[(*j)])
-      if (CAN_SEE_OBJ(ch,equipment[(*j)]))
-	if (isname(arg, equipment[(*j)]->name))
-	  return(equipment[(*j)]);
-
-  return (0);
+	for ((*j) = 0; (*j) < MAX_WEAR ; (*j)++)
+		if (equipment[(*j)])
+			if (CAN_SEE_OBJ(ch,equipment[(*j)]))
+				if (isname(arg, equipment[(*j)]->name))
+					return(equipment[(*j)]);
+	for ((*j) = 0; (*j) < MAX_WEAR ; (*j)++)
+		if (equipment[(*j)])
+			if (CAN_SEE_OBJ(ch,equipment[(*j)]))
+				if (isname2(arg, equipment[(*j)]->name))
+					return(equipment[(*j)]);
+	return (0);
 }
 
 char *find_ex_description(char *word, struct extra_descr_data *list)
@@ -564,7 +568,7 @@ void list_obj_to_char(struct obj_data *list,struct char_data *ch, int mode,
 void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
 {
 
-  char buffer[MAX_STRING_LENGTH];
+  char buffer[MAX_STRING_LENGTH],buf[MAX_STRING_LENGTH];
   int j, found, percent, otype;
   struct obj_data *tmp_obj;
   struct affected_type *aff;
@@ -679,10 +683,6 @@ if (!ch || !i) {
 	if (IS_AFFECTED2(i,AFF2_AFK))
 		strcat(buffer,"$c0006 (AFK)$c0007");
 
-//  this may lag a bit, commented out for now  -Lennya
-//	if (IS_AFFECTED2(i,AFF2_QUEST))
-//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
-
 	if (IS_LINKDEAD(i))
 		strcat(buffer,"$c0015 (Linkdead)$c0007");
 
@@ -732,29 +732,48 @@ if (!ch || !i) {
       act(buffer,FALSE, ch,0,0,TO_CHAR);
     }
 
- if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
-   }
-
-
-    if (IS_AFFECTED(i,AFF_GROWTH))
-      act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
-
-    if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
-   }
-    if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
-   }
-
-   if  (IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0008$n is surrounded by darkness!", FALSE, i, 0, ch, TO_VICT);
-
-   if  (IS_AFFECTED(i,AFF_BLADE_BARRIER))
-      act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
+	if (IS_AFFECTED(i,AFF_SANCTUARY)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)) {
+			sprintf(buffer,"%s glows with a bright light!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000W%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if (IS_AFFECTED(i,AFF_GROWTH)) {
+		sprintf(buffer,"%s is extremely large!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c0003%s",buf);
+		send_to_char(buffer,ch);
+	}
+	if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"%s is surrounded by burning flames!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c0001%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"%s is surrounded by cold flames!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000C%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if  (IS_AFFECTED(i,AFF_DARKNESS)){
+		sprintf(buffer,"%s is surrounded by darkness!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c0008%s",buf);
+			send_to_char(buffer,ch);
+	}
+	if  (IS_AFFECTED(i,AFF_BLADE_BARRIER)){
+		sprintf(buffer,"%s is surrounded by whirling blades!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c000B%s",buf);
+		send_to_char(buffer,ch);
+	}
 
   } else if (mode == 1) {
 
@@ -818,16 +837,16 @@ if (!ch || !i) {
 /*
   spell_descriptions, etc.
 */
-    for (aff = i->affected; aff; aff = aff->next) {
-      if (aff->type < MAX_EXIST_SPELL) {
-	otype = -1;
-	if (spell_desc[aff->type] && *spell_desc[aff->type])
-	  if (aff->type != otype) {
-	    act(spell_desc[aff->type], FALSE, i, 0, ch, TO_VICT);
-	    otype = aff->type;
-	  }
-      }
-    }
+	for (aff = i->affected; aff; aff = aff->next) {
+		if (aff->type < MAX_EXIST_SPELL) {
+			otype = -1;
+			if (spell_desc[aff->type] && *spell_desc[aff->type])
+				if (aff->type != otype) {
+					act(spell_desc[aff->type], FALSE, i, 0, ch, TO_VICT);
+					otype = aff->type;
+				}
+		}
+	}
 
 
     found = FALSE;
@@ -955,7 +974,7 @@ for (aff = i->affected; aff; aff = aff->next) {
 
 void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode, int num)
 {
-  char buffer[MAX_STRING_LENGTH];
+  char buffer[MAX_STRING_LENGTH],buf[MAX_STRING_LENGTH];
   char tmp[10];
   int j, found, percent;
   struct obj_data *tmp_obj;
@@ -1065,10 +1084,6 @@ void show_mult_char_to_char(struct char_data *i, struct char_data *ch, int mode,
 if (IS_AFFECTED2(i,AFF2_AFK))
 	strcat(buffer,"$c0006 (AFK)$c0007");
 
-//  this may lag a bit, commented out for now  -Lennya
-//	if (IS_AFFECTED2(i,AFF2_QUEST))
-//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
-
 if (IS_LINKDEAD(i))
 	strcat(buffer,"$c0015 (Linkdead)$c0007");
 
@@ -1101,9 +1116,6 @@ if (IS_LINKDEAD(i))
 		}
 		if (IS_AFFECTED2(i,AFF2_AFK))
 			strcat(buffer,"$c0006 (AFK)$c0007");
-//  this may lag a bit, commented out for now  -Lennya
-//	if (IS_AFFECTED2(i,AFF2_QUEST))
-//		strcat(buffer,"$c0008 ($c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008)$c0007");
 		if (IS_LINKDEAD(i))
 			strcat(buffer,"$c0015 (Linkdead)$c0007");
       /* this gets a little annoying */
@@ -1121,29 +1133,48 @@ if (IS_LINKDEAD(i))
       act(buffer,FALSE, ch,0,0,TO_CHAR);
     }
 
- if (IS_AFFECTED(i,AFF_SANCTUARY)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0015$n glows with a bright light!", FALSE, i, 0, ch, TO_VICT);
-   }
-
-    if (IS_AFFECTED(i,AFF_GROWTH))
-      act("$c0003$n is extremely large!", FALSE, i, 0, ch, TO_VICT);
-
-    if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0001$n is surrounded by burning flames!", FALSE, i, 0, ch, TO_VICT);
-   }
-
-    if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
-   if (!IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c000C$n is surrounded by cold flames!", FALSE, i, 0, ch, TO_VICT);
-   }
-
-    if (IS_AFFECTED(i,AFF_DARKNESS))
-      act("$c0008$n is surround by darkness!", FALSE, i, 0, ch, TO_VICT);
-
-   if  (IS_AFFECTED(i,AFF_BLADE_BARRIER))
-      act("$c000B$n is surrounded by whirling blades!", FALSE, i, 0, ch, TO_VICT);
+	if (IS_AFFECTED(i,AFF_SANCTUARY)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)) {
+			sprintf(buffer,"%s glows with a bright light!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000W%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if (IS_AFFECTED(i,AFF_GROWTH)) {
+		sprintf(buffer,"%s is extremely large!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c0003%s",buf);
+		send_to_char(buffer,ch);
+	}
+	if (IS_AFFECTED(i, AFF_FIRESHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"%s is surrounded by burning flames!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c0001%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if (IS_AFFECTED(i, AFF_CHILLSHIELD)) {
+		if (!IS_AFFECTED(i,AFF_DARKNESS)){
+			sprintf(buffer,"%s is surrounded by cold flames!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+			sprintf(buf,"%s", CAP(buffer));
+			sprintf(buffer,"$c000C%s",buf);
+			send_to_char(buffer,ch);
+		}
+	}
+	if  (IS_AFFECTED(i,AFF_DARKNESS)){
+		sprintf(buffer,"%s is surrounded by darkness!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c0008%s",buf);
+			send_to_char(buffer,ch);
+	}
+	if  (IS_AFFECTED(i,AFF_BLADE_BARRIER)){
+		sprintf(buffer,"%s is surrounded by whirling blades!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
+		sprintf(buf,"%s", CAP(buffer));
+		sprintf(buffer,"$c000B%s",buf);
+		send_to_char(buffer,ch);
+	}
 
   } else if (mode == 1) {
 

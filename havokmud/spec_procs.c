@@ -176,8 +176,12 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 							" 'You're not a mage.'\n\r",ch);
 			return(TRUE);
 		}
-		guildmaster = FindMobInRoomWithFunction(ch->in_room, MageGuildMaster);
-		if (GET_LEVEL(ch,MAGE_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, MageGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,MAGE_LEVEL_IND) > GetMaxLevel(guildmaster)) {
 			send_to_char("$c0013[$c0015The Mage Guildmaster$c0013] tells you"
 							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
@@ -292,7 +296,7 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 		}
 
 //		guildmaster = FindMobInRoomWithFunction(ch->in_room, SorcGuildMaster);
-//		if (GET_LEVEL(ch,SORCERER_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
+//		if (GET_LEVEL(ch,SORCERER_LEVEL_IND) > GetMaxLevel(guildmaster)) {
 //			send_to_char("$c0013[$c0015The Sorcerer Guildmaster$c0013] tells you"
 //							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 //			return(TRUE);
@@ -405,8 +409,12 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 							" 'You're not a cleric.'\n\r",ch);
 			return(TRUE);
 		}
-		guildmaster = FindMobInRoomWithFunction(ch->in_room, ClericGuildMaster);
-		if (GET_LEVEL(ch,CLERIC_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, ClericGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,CLERIC_LEVEL_IND) > GetMaxLevel(guildmaster)) {
 			send_to_char("$c0013[$c0015The Cleric Guildmaster$c0013] tells you"
 							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
@@ -520,14 +528,17 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 							" 'You're not a thief.'\n\r",ch);
 			return(TRUE);
 		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, ThiefGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
 
-		guildmaster = FindMobInRoomWithFunction(ch->in_room, ThiefGuildMaster);
-		if (GET_LEVEL(ch,THIEF_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
+		if (GET_LEVEL(ch,THIEF_LEVEL_IND) > GetMaxLevel(guildmaster)) {
 			send_to_char("$c0013[$c0015The Thief Guildmaster$c0013] tells you"
 							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
-
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[THIEF_LEVEL_IND][GET_LEVEL(ch,THIEF_LEVEL_IND)+1].exp) {
@@ -615,189 +626,6 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 	return (FALSE);
 }
 
-#if 0
-
-int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
-{
-	int count = 0;
-	char buf[256], buffer[MAX_STRING_LENGTH];
-	static int percent = 0;
-	static int x=0; //for loop
-	int i = 0; //while loop
-	struct char_data *guildmaster;
-
-
-#if 1
-	if(!AWAKE(ch) || IS_NPC(ch))
-		return(FALSE);
-
-	//170->Practice,164->Practise, 243->gain
-	if (cmd==164 || cmd == 170 || cmd == 243) {
-
-		if (!HasClass(ch, CLASS_WARRIOR)) {
-			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-							" 'You're not a warrior.'\n\r",ch);
-			return(TRUE);
-		}
-
-		guildmaster = FindMobInRoomWithFunction(ch->in_room, WarriorGuildMaster);
-		if (GET_LEVEL(ch,WARRIOR_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
-			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-							" 'You must learn from another, I can no longer train you.'\n\r",ch);
-			return(TRUE);
-		}
-
-
-		//gain
-		if(cmd == 243 && GET_EXP(ch)<titles[WARRIOR_LEVEL_IND][GET_LEVEL(ch,WARRIOR_LEVEL_IND)+1].exp) {
-			send_to_char("You're not ready to gain yet!\n\r",ch);
-			return (FALSE);
-		} else {
-			if(cmd == 243) {  //gain
-				GainLevel(ch,WARRIOR_LEVEL_IND);
-				return (TRUE);
-			}
-		}
-
-		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
-			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
-			strcat(buffer,buf);
-			x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
-			/* list by level, so new skills show at top of list */
-			while (x != 0) {
-				while(warriorskills[i].level != -1) {
-					if (warriorskills[i].level == x) {
-						sprintf(buf,"[%-2d] %-30s %-15s",warriorskills[i].level,
-								warriorskills[i].name,how_good(ch->skills[warriorskills[i].skillnum].learned));
-						if (IsSpecialized(ch->skills[warriorskills[i].skillnum].special))
-							strcat(buf," (special)");
-						strcat(buf," \n\r");
-						if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-							break;
-						strcat(buffer, buf);
-						strcat(buffer, "\r");
-					}
-					i++;
-				}
-				i=0;
-				x--;
-			}
-			if(OnlyClass(ch,CLASS_WARRIOR)) {
-				x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
-				while (x != 0) {
-					while(scwarskills[i].level != -1) {
-						if (scwarskills[i].level == x) {
-							sprintf(buf,"[%-2d] %-30s %-15s",scwarskills[i].level,
-									scwarskills[i].name,how_good(ch->skills[scwarskills[i].skillnum].learned));
-							if (IsSpecialized(ch->skills[scwarskills[i].skillnum].special))
-								strcat(buf," (special)");
-							strcat(buf," \n\r");
-							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
-								break;
-							strcat(buffer, buf);
-							strcat(buffer, "\r");
-						}
-						i++;
-					}
-					i=0;
-					x--;
-				}
-			}
-			page_string(ch->desc, buffer, 1);
-			return(TRUE);
-		} else {
-			x=0;
-			while (warriorskills[x].level != -1) {
-				if(is_abbrev(arg,warriorskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
-					if(warriorskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
-						send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-								" 'You're not experienced enough to learn this skill.'",ch);
-						return(TRUE);
-					}
-
-					if(ch->skills[warriorskills[x].skillnum].learned > 45) {
-						//check if skill already practiced
-						send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-									 " 'You must learn from experience and practice to get"
-									 " any better at that skill.'\n\r",ch);
-						return(TRUE);
-					}
-
-					if(ch->specials.spells_to_learn <=0) {
-						send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-									" 'You don't have enough practice points.'\n\r",ch);
-						return(TRUE);
-					}
-
-					sprintf(buf,"You practice %s for a while.\n\r",warriorskills[x].name);
-					send_to_char(buf,ch);
-					ch->specials.spells_to_learn--;
-
-					if(!IS_SET(ch->skills[warriorskills[x].skillnum].flags,SKILL_KNOWN)) {
-						SET_BIT(ch->skills[warriorskills[x].skillnum].flags,SKILL_KNOWN);
-						SET_BIT(ch->skills[warriorskills[x].skillnum].flags,SKILL_KNOWN_WARRIOR);
-					}
-					percent=ch->skills[warriorskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
-					ch->skills[warriorskills[x].skillnum].learned = MIN(95,percent);
-					if(ch->skills[warriorskills[x].skillnum].learned >= 95)
-						send_to_char("'You are now a master of this art.'\n\r",ch);
-					return(TRUE);
-				}
-				x++;
-			}
-			if(OnlyClass(ch,CLASS_WARRIOR)) {
-				x=0;
-				while (scwarskills[x].level != -1) {
-					if(is_abbrev(arg,scwarskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
-						if(scwarskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
-							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-									" 'You're not experienced enough to learn this skill.'",ch);
-							return(TRUE);
-						}
-
-						if(ch->skills[scwarskills[x].skillnum].learned > 45) {
-							//check if skill already practiced
-							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-										 " 'You must learn from experience and practice to get"
-										 " any better at that skill.'\n\r",ch);
-							return(TRUE);
-						}
-
-						if(ch->specials.spells_to_learn <=0) {
-							send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
-										" 'You don't have enough practice points.'\n\r",ch);
-							return(TRUE);
-						}
-
-						sprintf(buf,"You practice %s for a while.\n\r",scwarskills[x].name);
-						send_to_char(buf,ch);
-						ch->specials.spells_to_learn--;
-
-						if(!IS_SET(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN)) {
-							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN);
-							SET_BIT(ch->skills[scwarskills[x].skillnum].flags,SKILL_KNOWN_WARRIOR);
-						}
-						percent=ch->skills[scwarskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
-						ch->skills[scwarskills[x].skillnum].learned = MIN(95,percent);
-						if(ch->skills[scwarskills[x].skillnum].learned >= 95)
-							send_to_char("'You are now a master of this art.'\n\r",ch);
-						return(TRUE);
-					}
-					x++;
-				}
-			}
-			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you '"
-							"I do not know of that skill!'\n\r",ch);
-			return(TRUE);
-		}
-	}
-#endif
-	return (FALSE);
-}
-
-#endif
-
 int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	int count = 0;
@@ -807,8 +635,6 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	int i = 0; //while loop
 	struct char_data *guildmaster;
 
-
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -821,13 +647,16 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 			return(TRUE);
 		}
 
-		guildmaster = FindMobInRoomWithFunction(ch->in_room, WarriorGuildMaster);
-		if (GET_LEVEL(ch,WARRIOR_LEVEL_IND) > GetMaxLevel(guildmaster)-10) {
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, WarriorGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,WARRIOR_LEVEL_IND) > GetMaxLevel(guildmaster)) {
 			send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
 							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
-
 
 		//gain
 		if(cmd == 243 && GET_EXP(ch)<titles[WARRIOR_LEVEL_IND][GET_LEVEL(ch,WARRIOR_LEVEL_IND)+1].exp) {
@@ -973,7 +802,6 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -7016,8 +6844,8 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -7027,6 +6855,16 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 		if (!HasClass(ch, CLASS_BARD)) {
 			send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
 							" 'You're not a bard.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, BardGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,BARD_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -7112,7 +6950,6 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 

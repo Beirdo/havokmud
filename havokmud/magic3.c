@@ -234,20 +234,23 @@ void spell_pword_blind(byte level, struct char_data *ch,
 void spell_chain_lightn(byte level, struct char_data *ch,
 		       struct char_data *victim, struct obj_data *obj)
 {
-  int lev = level;
+  int lev = level, dam;
   struct char_data *t, *next;
 
   /* victim = levd6 damage */
   damage(ch, victim, dice(lev,6), SPELL_LIGHTNING_BOLT);
   lev--;
 
-  for (t = real_roomp(ch->in_room)->people; t; t=next) {
-    next = t->next_in_room;
-    if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
-      damage(ch, t, dice(lev,6), SPELL_LIGHTNING_BOLT);
-      lev--;
-    }
-  }
+	for (t = real_roomp(ch->in_room)->people; t; t=next) {
+		next = t->next_in_room;
+		if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
+			dam = dice(lev,8);
+			if ( saves_spell(t, SAVING_SPELL))
+				dam >>= 1;
+			damage(ch, t, dam, SPELL_LIGHTNING_BOLT);
+			lev--;
+		}
+	}
 }
 
 

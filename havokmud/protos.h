@@ -2252,6 +2252,7 @@ void do_mobTell(struct char_data *ch,char *mob, char *sentence);
 /*Utilities */
 void qlog(char *desc);
 void do_orebuild(struct char_data *ch, char *argument, char cmd);
+void do_mrebuild(struct char_data *ch, char *argument, char cmd);
 
 /* Leaves of Silver */
 int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
@@ -2298,6 +2299,7 @@ int ValidRoom(struct char_data *ch );
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int qp_potion(struct char_data *ch, int cmd, char *arg);
 int close_doors(struct char_data *ch, struct room_data *rp, int cmd);
+int generic_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

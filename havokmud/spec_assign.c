@@ -1412,7 +1412,7 @@ void assign_mobiles()
 
 /* King's Grove */
 	{702, DruidGuildMaster },
-	{703, shopkeeper },
+//	{703, shopkeeper },
 	{705, gnome_collector },
 
 

@@ -1032,10 +1032,10 @@ char buf[200];
 		exp_flags =1;
 
 
-   if (exp_flags > 100) {
-     sprintf(buf, "Exp flags on %s are > 100 (%d)", GET_NAME(mob), exp_flags);
-     log(buf);
-   }
+//   if (exp_flags > 31) {
+//     sprintf(buf, "Exp flags on %s are > 31 (%d)", GET_NAME(mob), exp_flags);
+//     log(buf);
+//   }
 
 /*
 reads in the monster, and adds the flags together
@@ -3242,44 +3242,32 @@ void RiverPulseStuff(int pulse)
       }
     }
   }
-
-  if (!number(0,4)) {
-    for (ch = character_list; ch; ch = tmp) {
-      tmp = ch->next;
-
-      /*
-       *   mobiles
-       */
-      if (!IS_PC(ch) && (ch->player.sounds) && (number(0,5)==0)) {
-	if (ch->specials.default_pos > POSITION_SLEEPING) {
-	  if (GET_POS(ch) > POSITION_SLEEPING) {
-	    /*
-	     *  Make the sound;
-	     */
-	    MakeNoise(ch->in_room, ch->player.sounds,
-		      ch->player.distant_snds);
-	  } else if (GET_POS(ch) == POSITION_SLEEPING) {
-	    /*
-	     * snore
-	     */
-	    sprintf(buffer, "%s snores loudly.\n\r",
-		    ch->player.short_descr);
-	    MakeNoise(ch->in_room, buffer,
-		      "You hear a loud snore nearby.\n\r");
-	  }
-	} else if (GET_POS(ch) == ch->specials.default_pos) {
-	  /*
-	   * Make the sound
-	   */
-      if(*ch->player.distant_snds != '\'')
-		MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
-	  else
-		MakeNoise(ch->in_room,ch->player.sounds,"");
-
+	if (!number(0,4)) {
+		for (ch = character_list; ch; ch = tmp) {
+			tmp = ch->next;
+			/* mobiles */
+			if (!IS_PC(ch) && (ch->player.sounds) && (number(0,5)==0)) {
+				if(strcmp(ch->player.sounds,"")) { /* don't make sound if empty sound string */
+					if (ch->specials.default_pos > POSITION_SLEEPING) {
+						if (GET_POS(ch) > POSITION_SLEEPING) {
+							/* Make the sound */
+								MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+						} else if (GET_POS(ch) == POSITION_SLEEPING) {
+							/* snore */
+							sprintf(buffer, "%s snores loudly.\n\r", ch->player.short_descr);
+							MakeNoise(ch->in_room, buffer,"You hear a loud snore nearby.\n\r");
+						}
+					} else if (GET_POS(ch) == ch->specials.default_pos) {
+						/* Make the sound */
+//						if(*ch->player.distant_snds != '\'')
+							MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+//						else
+//							MakeNoise(ch->in_room,ch->player.sounds,"");
+					}
+				}
+			}
+		}
 	}
-      }
-    }
-  }
 }
 
 /*
@@ -5304,6 +5292,84 @@ char buf[256];
 	}
 }
 
+void do_mrebuild(struct char_data *ch, char *argument, char cmd)
+{
+	/* First create a tinyworld.mob.new file in the world/lib/ directory.
+	   Next, compile the code from scratch with NEWMOBSTRUCTURE set as 0
+	   Boot the mud, and do a mrebuild (this is some heavy processing stuff)
+	   After that, shutdown the mud, #define NEWMOBSTRUCTURE 1
+	   Recompile from scratch, and boot the mud.
+	   It should now use the loading and msaving functions that can interpret
+	   the new mobile structure in the MOB_FILE (or the loose mob files).
+	   Once this works without any big fuckups, I'll get rid of some deprecated
+	   stuff in the code.                                   -Lennya 20030805
+	 */
+
+	char fn[80], temp[2048], buf[128];
+	long m_start, m_end, i, j, k, x, r, nr;
+	FILE *mob_file;
+	FILE *vnum_f;
+	extern int top_of_mobt;
+	struct char_data *mob;
+	int count = 0;
+
+	extern int HpBonus;
+
+	if(!ch->desc)
+		return;
+
+	m_start = 0;
+	m_end = top_of_mobt;
+
+	if((mob_file=fopen("tinyworld.mob.new","w")) == NULL) {
+		send_to_char("Can't create .mob.new file\r\n",ch);
+		return;
+	}
+
+	sprintf(buf,"%s resorts the mobiles (The game will pause for a few moments).\r\n", ch->player.name);
+	send_to_all(buf);
+
+	sprintf(buf,"Saving Mobiles (%ld mobiles)\n\r",(long)m_end);
+	send_to_char(buf,ch);
+
+	for (i = m_start; i <= WORLD_SIZE; i++) {
+		if (mob = read_mobile(i, VIRTUAL)) {
+
+			nr = real_mobile(i);
+
+			sprintf(buf,"mobiles/%ld",i);
+			if ((vnum_f = fopen(buf,"wt")) == NULL) {
+				send_to_char("Can't write to disk now..try later.\n\r",ch);
+				return;
+			}
+
+			fprintf(vnum_f,"#%ld\n",i);
+			save_new_mobile_structure(mob, vnum_f, HpBonus);
+			fclose(vnum_f);
+			if (nr == -1)
+				insert_mobile(mob, i);
+			else
+				mob_index[nr].pos = -1;
+
+
+			fprintf(mob_file,"#%ld\n",i);
+			save_new_mobile_structure(mob,mob_file, HpBonus);
+			count++;
+			extract_char(mob);
+		}
+	}
+
+	fwrite_string(mob_file, "#99999\n%");
+
+	fclose(mob_file);
+
+	sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
+	send_to_all(buf);
+	send_to_char("\n\rDone.\n\r",ch);
+	sprintf(buf,"(%d) mobiles saved!\n\r",count);
+	send_to_char(buf,ch);
+	return;
+}
 
 
 

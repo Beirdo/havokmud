@@ -96,37 +96,31 @@ MakeSound(int pulse)
 /*
  *   mobiles
  */
-
-  for (ch = character_list; ch; ch = ch->next) {
-    if (IS_NPC(ch) && (ch->player.sounds) && (number(0,5)==0)) {
-      if (ch->specials.default_pos > POSITION_SLEEPING) {
-	if (GET_POS(ch) > POSITION_SLEEPING) {
-	  /*
-	   *  Make the sound;
-	   */
-	  if(*ch->player.distant_snds != '\'')
-	  	  MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
-	  else
-		  MakeNoise(ch->in_room,ch->player.sounds,"");
-	} else if (GET_POS(ch) == POSITION_SLEEPING) {
-	  /*
-	   * snore
-	   */
-	  sprintf(buffer, "%s snores loudly.\n\r", ch->player.short_descr);
-	  MakeNoise(ch->in_room, buffer, "You hear a loud snore nearby.\n\r");
+	for (ch = character_list; ch; ch = ch->next) {
+		if (IS_NPC(ch) && (ch->player.sounds) && (number(0,5)==0)) {
+			if(strcmp(ch->player.sounds,"")) { /* don't make sound if empty sound string */
+				if (ch->specials.default_pos > POSITION_SLEEPING) {
+					if (GET_POS(ch) > POSITION_SLEEPING) {
+						/* Make the sound */
+//						if(*ch->player.distant_snds != '\'')
+							MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+//						else
+//							MakeNoise(ch->in_room, ch->player.sounds,"");
+					} else if (GET_POS(ch) == POSITION_SLEEPING) {
+						/* snore */
+						sprintf(buffer, "%s snores loudly.\n\r", ch->player.short_descr);
+						MakeNoise(ch->in_room, buffer, "You hear a loud snore nearby.\n\r");
+					}
+				} else if (GET_POS(ch) == ch->specials.default_pos) {
+					/* Make the sound */
+//					if(*ch->player.distant_snds != '\'')
+						MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+//					else
+//						MakeNoise(ch->in_room,ch->player.sounds,"");
+				}
+			}
+		}
 	}
-      } else if (GET_POS(ch) == ch->specials.default_pos) {
-	/*
-	 * Make the sound
-	 */
-	if(*ch->player.distant_snds != '\'')
-		MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
-      else
-		  MakeNoise(ch->in_room,ch->player.sounds,"");
-
-    }
-    }
-  }
 }
 
 

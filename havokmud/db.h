@@ -5,7 +5,13 @@
 #define DFLT_DIR          "../lib"           /* default data directory     */
 
 #define WORLD_FILE        "tinyworld.wld" /* room definitions           */
-#define MOB_FILE          "tinyworld.mob" /* monster prototypes         */
+
+#if NEWMOBSTRUCTURE
+	#define MOB_FILE          "tinyworld.mob.new" /* monster prototypes         */
+#else
+	#define MOB_FILE          "tinyworld.mob" /* monster prototypes         */
+#endif
+
 #define OBJ_FILE          "tinyworld.obj" /* object prototypes          */
 #define ZONE_FILE         "tinyworld.zon" /* zone defs & command tables */
 #define CREDITS_FILE      "credits"       /* for the 'credits' command  */

@@ -1265,6 +1265,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
   extern char *pc_class_types[];
   extern char *npc_class_types[];
   extern char *action_bits[];
+  extern char *procedure_bits[];
   extern char *player_bits[];
   extern char *position_types[];
   extern char *connected_types[];
@@ -1516,29 +1517,32 @@ act(buf,FALSE,ch,0,0,TO_CHAR);
       sprinttype((k->specials.default_pos),position_types,buf2);
       strcat(buf, buf2);
       if (IS_NPC(k))    {
-	strcat(buf,"$c0005,NPC flags:$c0014 ");
+	strcat(buf,"$c0005, NPC Action flags:$c0014 ");
 	sprintbit(k->specials.act,action_bits,buf2);
       }  else   {
-	strcat(buf,"$c0005,PC flags:$c0014 ");
+	strcat(buf,"$c0005, PC flags:$c0014 ");
 	sprintbit(k->specials.act,player_bits,buf2);
       }
 
 strcat(buf, buf2);
 
-sprintf(buf2,"$c0005,Timer [$c0014%d$c0005]", k->specials.timer);
+sprintf(buf2,"$c0005, Timer [$c0014%d$c0005]", k->specials.timer);
 strcat(buf, buf2);
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
-
+	if (IS_NPC(k))    {
+		sprintf(buf,"$c0005Mobile common procedure:  $c0014%s$c0005.", procedure_bits[k->specials.proc]);
+		act(buf,FALSE,ch,0,0,TO_CHAR);
+	}
       if (IS_MOB(k)) {
-	strcpy(buf, "\n\r$c0005Mobile Special procedure :$c0014 ");
+	    strcpy(buf, "$c0005Mobile special procedure: $c0014");
 	strcat(buf, (mob_index[k->nr].func ? "Exists " : "None "));
 
 	act(buf,FALSE,ch,0,0,TO_CHAR);
       }
 
       if (IS_NPC(k)) {
-	sprintf(buf, "$c0005 NPC Bare Hand Damage $c0015%d$c0014d$c0015%d$c0005.",
+	sprintf(buf, "$c0005NPC Bare Hand Damage $c0015%d$c0014d$c0015%d$c0005.",
 		k->specials.damnodice, k->specials.damsizedice);
 
 	act(buf,FALSE,ch,0,0,TO_CHAR);
@@ -5844,7 +5848,7 @@ dlog("in do_msave");
 	start=GET_ZONE(ch) ?(zone_table[GET_ZONE(ch)-1].top+1) : 0;
 	end=zone_table[GET_ZONE(ch)].top;
 	 if (vnum >end) {
-	  send_to_char("VNum is larger than your zone allows.\n\r",ch);
+	  send_to_char("VNUM is larger than your zone allows.\n\r",ch);
 	  return;
 	 }
 	 if (vnum < start) {
@@ -5855,25 +5859,26 @@ dlog("in do_msave");
   }
 
 	/* check for valid VNUM period */
- if ((nr=real_mobile(vnum)) != -1)
-   send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r",ch);
+	if ((nr=real_mobile(vnum)) != -1)
+		send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r",ch);
 
-  sprintf(buf,"mobiles/%ld",vnum);
-  if ((f = fopen(buf,"wt")) == NULL) {
-    send_to_char("Can't write to disk now..try later.\n\r",ch);
-    return;
-  }
+	sprintf(buf,"mobiles/%ld",vnum);
+	if ((f = fopen(buf,"wt")) == NULL) {
+		send_to_char("Can't write to disk now..try later.\n\r",ch);
+		return;
+	}
 
-  fprintf(f,"#%ld\n",vnum);
-  write_mob_to_file(mob,f,hpB);
-  fclose(f);
-  if (nr == -1)
-     insert_mobile(mob,vnum);
-  else
-     mob_index[nr].pos = -1;
-  sprintf(buf, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
-  log(buf);
-  send_to_char(buf,ch);
+	fprintf(f,"#%ld\n",vnum);
+	write_mob_to_file(mob,f,hpB);
+	fclose(f);
+	if (nr == -1)
+		insert_mobile(mob,vnum);
+	else
+		mob_index[nr].pos = -1;
+	sprintf(buf, "Mobile %s saved as vnum %ld", mob->player.name, vnum);
+	log(buf);
+	sprintf(buf, "Mobile %s saved as vnum %ld\n\r", mob->player.name, vnum);
+	send_to_char(buf,ch);
 }
 
 

@@ -568,6 +568,7 @@ int DisplayMove( struct char_data *ch, int dir, int was_in, int total)
 	      }
 	    }
 	  }
+	sprintf(tmp,"%s",CAP(tmp));
 	  send_to_char(tmp, tmp_ch);
 	}
       }
@@ -672,6 +673,7 @@ int DisplayMove( struct char_data *ch, int dir, int was_in, int total)
 	  sprintf(tmp+strlen(tmp), " [%d]", total);
 	}
 	strcat(tmp, "\n\r");
+	sprintf(tmp,"%s",CAP(tmp));
 	send_to_char(tmp, tmp_ch);
       }
     }

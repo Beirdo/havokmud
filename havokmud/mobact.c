@@ -311,28 +311,35 @@ void mobile_activity(struct char_data *ch)
 
   /* Execute a script if there is one */
 
-  if(IS_SET(ch->specials.act, ACT_SCRIPT) && !IS_PC(ch))
-    DoScript(ch);
+	if(IS_SET(ch->specials.act, ACT_SCRIPT) && !IS_PC(ch))
+		DoScript(ch);
 
-if (!IS_SET(ch->specials.act, ACT_SPEC) && mob_index[ch->nr].func) {
-  	SET_BIT(ch->specials.act,ACT_SPEC);
-   }
+	if (!IS_SET(ch->specials.act, ACT_SPEC) && mob_index[ch->nr].func) {
+		SET_BIT(ch->specials.act,ACT_SPEC);
+	}
 
-if (((IS_SET(ch->specials.act, ACT_SPEC) || mob_index[ch->nr].func)) && !no_specials)
- {
-    if (!mob_index[ch->nr].func)     {
-      char buf[180];
-      sprintf(buf, "Attempting to call a non-existing mob func on %s", GET_NAME(ch));
-      log(buf);
-      REMOVE_BIT(ch->specials.act, ACT_SPEC);
-    } else {
-    char buf[256];
-  if ((*mob_index[ch->nr].func)(ch, 0, "", ch, PULSE_TICK))  {
-      return;
-      }
-   }
+	if (((IS_SET(ch->specials.act, ACT_SPEC) || mob_index[ch->nr].func)) && !no_specials) {
+		if (!mob_index[ch->nr].func) {
+			char buf[180];
 
-}
+			sprintf(buf, "Attempting to call a non-existing mob func on %s", GET_NAME(ch));
+			log(buf);
+			REMOVE_BIT(ch->specials.act, ACT_SPEC);
+		} else {
+			char buf[256];
+
+			if ((*mob_index[ch->nr].func)(ch, 0, "", ch, PULSE_TICK))  {
+				return;
+			}
+		}
+
+	}
+
+	if (IS_SET(ch->specials.proc, PROC_SHOPKEEPER)) {
+		if (shopkeeper(ch,0,"",ch,PULSE_TICK)) {
+			return;
+        }
+    }
 
 
 if (!no_specials) {		/* do not run these if disabled */
@@ -400,22 +407,6 @@ if (!no_specials) {		/* do not run these if disabled */
        }
     }
 
-    /*
-    if (IS_SET(ch->specials.act,ACT_SWALLOWER)) {
-	    if (Tyrannosaurus_swallower(ch,0,"",ch,PULSE_TICK)) {
-	        return;
-	        }
-    }
-    */
-	/* newly added. */
-    /*
-    if (IS_SET(ch->specials.act,ACT_QUEST)) {
-
-	    if(mob_index[ch->nr].func == QuestMobProc)
-	       mob_index[ch->nr].func = *QuestMobProc;//(*QuestMobProc)();
-
-    }
-	*/
   } /* !no_special */
 
   /* check to see if the monster is possessed */

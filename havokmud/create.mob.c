@@ -28,11 +28,18 @@
 #define CHANGE_MOB_DSOUND    21
 #define CHANGE_MOB_SEX       22
 #define CHANGE_MOB_HITPLUS   23
+#define CHANGE_MOB_PROCS     24
+#define CHANGE_MOB_TALKS     25
+#define CHANGE_MOB_QUEST_YES 26
+#define CHANGE_MOB_QUEST_NO  27
+#define CHANGE_MOB_HPS       28
+
 #define MOB_HIT_RETURN       99
 
 #define ENTER_CHECK        1
 
 extern const char *action_bits[];
+extern const char *procedure_bits[];
 extern const char *affected_bits[];
 extern const char *RaceName[];
 extern const char *immunity_names[];
@@ -45,11 +52,13 @@ char *mob_edit_menu = "    1) Name                    2) Short description\n\r"
                       "    9) Armor class            10) Damage size of die\n\r"
                       "   11) Damage number of die   12) Damage roll plus\n\r"
                       "   13) Race                   14) Number of attacks\n\r"
-		      "   15) Exp flags/amount       16) Default position\n\r"
-		      "   17) Resistances            18) Immunities\n\r"
-		      "   19) Susceptibilities       20) Sounds\n\r"
-		      "   21) Distant sounds         22) Sex\n\r"
-		      "   23) Hit roll plus\n\r\n\r";
+		              "   15) Exp flags/amount       16) Default position\n\r"
+		              "   17) Resistances            18) Immunities\n\r"
+		              "   19) Susceptibilities       20) Sounds\n\r"
+		              "   21) Distant sounds         22) Sex\n\r"
+		              "   23) Hit roll plus          24) Common Procedure\n\r"
+		              "   25) Talk response          26) Quest solved response\n\r"
+		              "   27) Quest wrong response   28) Max Hitpoints\n\r\n\r";
 
 
 void ChangeMobName(struct char_data *ch, char *arg, int type);
@@ -78,12 +87,17 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type);
 void ChangeMobDsound(struct char_data *ch, char *arg, int type);
 void ChangeMobLevel(struct char_data *ch, char *arg, int type);
 void ChangeMobHitplus(struct char_data *ch, char *arg, int type);
+void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type);
+void ChangeMobTalks(struct char_data *ch, char *arg, int type);
+void ChangeMobQuestYes(struct char_data *ch, char *arg, int type);
+void ChangeMobQuestNo(struct char_data *ch, char *arg, int type);
+void ChangeMobHps(struct char_data *ch, char *arg, int type);
 
 void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 {
  int i, row, update;
  char buf[255];
-int totalActionFlags = 33;
+int totalActionFlags = 32;
 
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
@@ -335,6 +349,21 @@ void MobEdit(struct char_data *ch, char *arg)
            case 23: ch->specials.medit = CHANGE_MOB_HITPLUS;
                    ChangeMobHitplus(ch, "", ENTER_CHECK);
                    return;
+           case 24: ch->specials.medit = CHANGE_MOB_PROCS;
+                   ChangeMobProcedureFlags(ch, "", ENTER_CHECK);
+                   return;
+           case 25: ch->specials.medit = CHANGE_MOB_TALKS;
+                   ChangeMobTalks(ch, "", ENTER_CHECK);
+                   return;
+           case 26: ch->specials.medit = CHANGE_MOB_QUEST_YES;
+                   ChangeMobQuestYes(ch, "", ENTER_CHECK);
+                   return;
+           case 27: ch->specials.medit = CHANGE_MOB_QUEST_NO;
+                   ChangeMobQuestNo(ch, "", ENTER_CHECK);
+                   return;
+           case 28: ch->specials.medit = CHANGE_MOB_HPS;
+                   ChangeMobHps(ch, "", ENTER_CHECK);
+                   return;
            default: UpdateMobMenu(ch);
                    return;
     }
@@ -389,7 +418,17 @@ void MobEdit(struct char_data *ch, char *arg)
          return;
  case CHANGE_MOB_HITPLUS: ChangeMobHitplus(ch, arg, 0);
          return;
- default: log("Got to bad spot in MobEdit");
+  case CHANGE_MOB_PROCS: ChangeMobProcedureFlags(ch, arg, 0);
+         return;
+ case CHANGE_MOB_TALKS: ChangeMobTalks(ch, arg, 0);
+         return;
+ case CHANGE_MOB_QUEST_YES: ChangeMobQuestYes(ch, arg, 0);
+         return;
+ case CHANGE_MOB_QUEST_NO: ChangeMobQuestNo(ch, arg, 0);
+         return;
+ case CHANGE_MOB_HPS: ChangeMobHps(ch, arg, 0);
+         return;
+default: log("Got to bad spot in MobEdit");
           return;
  }
 }
@@ -901,9 +940,6 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
     }
 
  update = atoi(arg);
-/* this is out of sync with EVERY OTHER REFRENCE TO RaceName in the code
- update--;
- removed bcw 12/july/1999 */
 
  if(type != ENTER_CHECK) {
     switch(ch->specials.medit) {
@@ -922,21 +958,6 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  sprintf(buf, "Mobile race: %s", RaceName[GET_RACE(ch->specials.mobedit)]);
  send_to_char(buf, ch);
-
-/* for(i = 0; i < MAX_RACE; i++) {
-    a++;
-    if(a==1) column=5;
-    else if(a==2) column = 30;
-    else if(a==3) column = 55;
-    sprintf(buf, VT_CURSPOS, row + 1, column);
-    if(a==3) {
-      row++;
-      a=0;
-    }
-    send_to_char(buf, ch);
-    sprintf(buf, "%-2d %s", i + 1, RaceName[i]);
-    send_to_char(buf, ch);
-  } This list was too long... didn't work well, so i removed it -MW 090797 */
 
  sprintf(buf, VT_CURSPOS, 21, 1);
  send_to_char(buf, ch);
@@ -1129,7 +1150,7 @@ if (mob->player.sounds!=0) {
     send_to_char(mob->player.sounds, ch);
  }
  send_to_char("\n\r\n\rNew Mobile Sound:\n\r", ch);
- send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
 if (mob->player.sounds)
  free(mob->player.sounds);
  mob->player.sounds = NULL;
@@ -1167,7 +1188,7 @@ if (mob->player.distant_snds!=0){
  }
 
  send_to_char("\n\r\n\rNew Mobile Distant Sound:\n\r", ch);
- send_to_char("(Terminate with a ~. Press <C/R> again to continue)\n\r",ch);
+ send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
 if (mob->player.distant_snds)
  free(mob->player.distant_snds);
  mob->player.distant_snds = NULL;
@@ -1285,4 +1306,184 @@ void ChangeMobHitplus(struct char_data *ch, char *arg, int type)
  send_to_char("\n\r\n\rNew Hitroll Plus: ", ch);
 
  return;
+}
+
+void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+	int change;
+
+	if(type != ENTER_CHECK)
+		if(!*arg || (*arg == '\n')) {
+			ch->specials.medit = MOB_MAIN_MENU;
+			UpdateMobMenu(ch);
+			return;
+		}
+
+	mob=ch->specials.mobedit;
+	if(type != ENTER_CHECK) {
+		change=atoi(arg);
+		if(change < 0 || change > 18)
+			change=0;
+
+		mob->specials.proc = change;
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+		return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	sprintf(buf, "Current Mobile Common Procedure: %s\n\r\n\r", procedure_bits[mob->specials.proc]);
+	send_to_char(buf, ch);
+	send_to_char("  0) None                             1) Shopkeeper\n\r",ch);
+	send_to_char("  2) Guildmaster                      3) Swallower\n\r",ch);
+	send_to_char("  4) Drainer                          5) Quest\n\r",ch);
+	send_to_char("  6) Old Breath Weapon                7) Fire Breather\n\r",ch);
+	send_to_char("  8) Gas Breather                     9) Frost Breather (buggy, don't use yet)\n\r",ch);
+	send_to_char(" 10) Acid Breather                   11) Electric Breather\n\r",ch);
+	send_to_char(" 12) Dehydration Breather            13) Vapor Breather\n\r",ch);
+	send_to_char(" 14) Sound Breather                  15) Shard Breather\n\r",ch);
+	send_to_char(" 16) Sleep Breather                  17) Light Breather\n\r",ch);
+	send_to_char(" 18) Dark Breather                   \n\r",ch);
+
+	send_to_char("\n\r", ch);
+	send_to_char("For Guildmasters: set (one!) class in Action Flags, and mob\n\r", ch);
+	send_to_char("level determines up to which level this GM will train.\n\r\n\r", ch);
+
+	send_to_char("For Quest mobs: If player gives item with vnum equal to this\n\r", ch);
+	send_to_char("mobile's vnum to this mobile, mobile will in turn load object\n\r", ch);
+	send_to_char("with vnum+1 (if any such thing exists) and give it to player. \n\r", ch);
+	send_to_char("It will also send the texts in QuestSolvedResponse to the \n\r", ch);
+	send_to_char("room, or QuestWrongResponse if player tries to return wrong item.\n\r", ch);
+
+	send_to_char("\n\r", ch);
+	send_to_char("Procedure will start working after saving and loading this mobile.\n\r\n\r", ch);
+	send_to_char("New Mobile Common Procedure: ", ch);
+
+	return;
+}
+
+void ChangeMobTalks(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+
+	if(type != ENTER_CHECK) {
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+	return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	mob=ch->specials.mobedit;
+	sprintf(buf, "Current mobile talk response:\n\r");
+	send_to_char(buf, ch);
+	send_to_char(mob->specials.talks, ch);
+	send_to_char("\n\r\n\rNew mobile talk response:\n\r", ch);
+	send_to_char("\n\rTo delete, use ~ only.\n\r", ch);
+	send_to_char("Terminate with a ~ on a new line. Press <C/R> again to continue.\n\r",ch);
+	if (mob->specials.talks)
+		free(mob->specials.talks);
+	mob->specials.talks = NULL;
+	ch->desc->str = &mob->specials.talks;
+	ch->desc->max_str = MAX_STRING_LENGTH;
+	return;
+}
+
+void ChangeMobQuestYes(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+
+	if(type != ENTER_CHECK) {
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+	return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	mob=ch->specials.mobedit;
+	send_to_char("This function only works if the common Quest procedure is set.\n\r", ch);
+	sprintf(buf, "Current mobile gave-correct-quest-item response:\n\r");
+	send_to_char(buf, ch);
+	send_to_char(mob->specials.quest_yes, ch);
+	send_to_char("\n\r\n\rNew mobile gave-correct-quest-item response:\n\r", ch);
+	send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+	if (mob->specials.quest_yes)
+		free(mob->specials.quest_yes);
+	mob->specials.quest_yes = NULL;
+	ch->desc->str = &mob->specials.quest_yes;
+	ch->desc->max_str = MAX_STRING_LENGTH;
+	return;
+}
+
+void ChangeMobQuestNo(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+
+	if(type != ENTER_CHECK) {
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+	return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	mob=ch->specials.mobedit;
+	send_to_char("This function only works if the common Quest procedure is set.\n\r", ch);
+	sprintf(buf, "Current mobile gave-wrong-quest-item response:\n\r");
+	send_to_char(buf, ch);
+	send_to_char(mob->specials.quest_no, ch);
+	send_to_char("\n\r\n\rNew mobile gave-wrong-quest-item response:\n\r", ch);
+	send_to_char("(Terminate with a ~ on a new line. Press <C/R> again to continue)\n\r",ch);
+	if (mob->specials.quest_no)
+		free(mob->specials.quest_no);
+	mob->specials.quest_no = NULL;
+	ch->desc->str = &mob->specials.quest_no;
+	ch->desc->max_str = MAX_STRING_LENGTH;
+	return;
+}
+
+void ChangeMobHps(struct char_data *ch, char *arg, int type)
+{
+	char buf[255];
+	struct char_data *mob;
+	int change;
+
+	if(type != ENTER_CHECK)
+		if(!*arg || (*arg == '\n')) {
+			ch->specials.medit = MOB_MAIN_MENU;
+			UpdateMobMenu(ch);
+			return;
+		}
+
+	mob=ch->specials.mobedit;
+	if(type != ENTER_CHECK) {
+		change=atoi(arg);
+		if(change < 1 || change > 15000)
+			change=1;
+
+		mob->points.max_hit = change;
+		ch->specials.medit = MOB_MAIN_MENU;
+		UpdateMobMenu(ch);
+		return;
+	}
+
+	sprintf(buf, VT_HOMECLR);
+	send_to_char(buf, ch);
+
+	sprintf(buf, "Current Mobile Hps: %d\n\r\n\r", mob->points.max_hit);
+	send_to_char("Pick number between 0 and 15000.\n\r\n\r", ch);
+	send_to_char("New Mobile Hps:\n\r", ch);
+
+	return;
 }

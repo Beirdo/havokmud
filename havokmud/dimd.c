@@ -40,7 +40,7 @@
 
 #include "protos.h"
 
-#define USE_COLOR FALSE		/* do not use DaleMUD color codes. */
+//#define USE_COLOR FALSE		/* do not use DaleMUD color codes. */
 #define USE_COLOR TRUE         /* DO use them :P - MW 230797       */
 void isname_init(const char *str);
 bool isname_iter(const char *namelist);

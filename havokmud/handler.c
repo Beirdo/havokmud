@@ -1683,7 +1683,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
   }
 
   if (ch->in_room == NOWHERE) {
-    log("NOWHERE extracting char. (handler.c, extract_char)");
+//    log("NOWHERE extracting char. (handler.c, extract_char)");
     /*
      **  problem from linkdeath
      */

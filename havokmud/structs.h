@@ -145,6 +145,8 @@ struct QuestItem {
 /* #define PREVENT_PKILL	1 */
 #define PERSONAL_PERM_LOCKOUTS	1
 #define LAG_MOBILES     1
+
+#define NEWMOBSTRUCTURE 0
 /*
  efficiency stuff
 */
@@ -1071,7 +1073,7 @@ struct room_data
 #define ACT_POLYSELF  (1<<14)  /* MOB is a polymorphed person             */
 #define ACT_META_AGG  (1<<15)  /* MOB is _very_ aggressive                */
 #define ACT_GUARDIAN  (1<<16)  /* MOB will guard master                   */
-#define ACT_QUEST     (1<<17)  /* MOB is illusionary                      */
+#define ACT_NECROMANCER     (1<<17)
 #define ACT_HUGE      (1<<18)  /* MOB is too large to go indoors          */
 #define ACT_SCRIPT    (1<<19)  /* MOB has a script assigned to it DO NOT SET */
 #define ACT_GREET     (1<<20)  /* MOB greets people */
@@ -1087,7 +1089,29 @@ struct room_data
 #define ACT_RANGER	(1<<29)
 #define ACT_PSI		(1<<30)
 #define ACT_BARD        (1<<31)
-#define ACT_SWALLOWER (1<< 32)
+
+/* for common mobile procedures: specials.proc */
+#define PROC_NONE			0  /* no proc */
+#define PROC_SHOPKEEPER		1  /* int shopkeeper() behaviour  */
+#define PROC_GUILDMASTER	2  /* GM, dependant on class in MobAct & level */ //Not imped yet
+#define PROC_SWALLOWER		3  /* Swallows when not bashed              */
+#define PROC_DRAIN			4  /* Drains when not bashed   */
+#define PROC_QUEST          5  /* it's a give/receive mob */
+
+#define PROC_OLD_BREATH           6
+#define PROC_FIRE_BREATH          7
+#define PROC_GAS_BREATH           8
+#define PROC_FROST_BREATH         9
+#define PROC_ACID_BREATH         10
+#define PROC_LIGHTNING_BREATH    11
+#define PROC_DEHYDRATION_BREATH  12
+#define PROC_VAPOR_BREATH	     13
+#define PROC_SOUND_BREATH	     14
+#define PROC_SHARD_BREATH	     15
+#define PROC_SLEEP_BREATH	     16
+#define PROC_LIGHT_BREATH	     17
+#define PROC_DARK_BREATH	     18
+
 /* For players : specials.act */
 #define PLR_BRIEF     (1<<0)
 /* (1<<1) */
@@ -1167,7 +1191,7 @@ struct char_player_data
   char *description;  /* Extra descriptions                   */
   char *title;        /* PC / NPC s title                     */
   char *sounds;       /* Sound that the monster makes (in room) */
-  char *distant_snds; /* Sound that the monster makes (other) */
+  char *distant_snds; /* Sound that the monster makes (adjacent to room) */
 
   long class;         /* PC s class or NPC alignment          */
   int hometown;       /* PC s Hometown (zone)                 */
@@ -1323,6 +1347,12 @@ struct char_special_data
   	int a_kills;
   	int m_deaths;
   	long m_kills;
+
+  	int proc;	/* flags for more common NPC behaviour (shopkeeper, GM, swallower, drainer, etc) */
+
+	char *talks;		 /* what mob says when talked to */
+	char *quest_yes; /* what mob says if returning correct item and dishing out prize */
+	char *quest_no;	 /* what mob says when returning wrong item */
 
   };
 

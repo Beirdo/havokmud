@@ -338,7 +338,7 @@ int GetMaxLevel(struct char_data *ch)
 {
   register int max=0, i;
 
-  for (i=0; i< MAX_CLASS; i++) {
+  for (i=0; i<= MAX_CLASS-1; i++) {
     if (GET_LEVEL(ch, i) > max)
       max = GET_LEVEL(ch,i);
   }

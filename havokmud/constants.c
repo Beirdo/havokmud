@@ -3368,34 +3368,56 @@ const char *action_bits[] = {
 	"AGGRESSIVE",
 	"STAY-ZONE",
 	"WIMPY",
-        "ANNOYING",
+	"ANNOYING",
 	"HATEFUL",
 	"AFRAID",
 	"IMMORTAL",
 	"HUNTING",
-        "DEADLY",
+	"DEADLY",
 	"POLYMORPHED",
 	"META_AGGRESSIVE",
 	"GUARDING",
-        "QUEST",
-        "HUGE",
-        "SCRIPT",
-        "GREET",
-        "MAGIC-USER",
-        "WARRIOR",
-        "CLERIC",
-        "THIEF",
-        "DRUID",
-        "MONK",
-        "BARBARIAN",
-        "PALADIN",
-        "RANGER",
-        "PSIONIST",
-        "BARD",
-        "SWALLOWER",
+	"NECROMANCER",
+	"HUGE",
+	"SCRIPT",
+	"GREET",
+	"MAGIC-USER",
+	"WARRIOR",
+	"CLERIC",
+	"THIEF",
+	"DRUID",
+	"MONK",
+	"BARBARIAN",
+	"PALADIN",
+	"RANGER",
+	"PSIONIST",
+	"BARD",
 	"\n"
 };
 
+const char *procedure_bits[] = {
+	"None",
+	"Shopkeeper",
+	"Guildmaster",
+	"Swallower",
+	"Drainer",
+	"Quest (see wizhelp questmob)",
+	"Old Breath Weapon",
+	"Fire Breather",
+	"Gas Breather",
+	"Frost Breather",
+	"Acid Breather",
+	"Electric Breather",
+	"Dehydration Breather",
+	"Vapor Breather",
+	"Sound Breather",
+	"Shard Breather",
+	"Sleep Breather",
+	"Light Breather",
+	"Dark Breather",
+
+	"\n"
+};
 
 const char *player_bits[] = {
 	"BRIEF",
@@ -3848,11 +3870,11 @@ struct chr_app_type chr_apply[26] = {
 };
 
 
-const char *spell_desc[] = {
+const char *spell_desc[] = { /* Last reviewed by Sentinel, big thanks */
   "!ERROR!",
   "$n is surrounded by a armor-like magical shield",
   "!Teleport!",
-  "",
+  "$n is blessed",
   "$n is temporarily blinded",
   "",
   "!Call Lightning",
@@ -3866,11 +3888,11 @@ const char *spell_desc[] = {
   "!Cure Blind!",
   "!Cure Critic!",
   "!Cure Light!",
-  "",
+  "$n has trouble hitting anything",
   "$n's eyes glow red",
   "$n's eyes glow yellow",
-  "",
-  "",
+  "$n's eyes glow blue",
+  "$n can see poison",
   "!Dispel Evil!",
   "!Earthquake!",
   "!Enchant Weapon!",
@@ -3883,17 +3905,17 @@ const char *spell_desc[] = {
   "!Locate object!",
   "!Magic Missile!",		/* haha, made you look! */
   "$n looks very ill.",
-  "",
+  "$n is protected from evil",
   "!Remove Curse!",
   "$n is surrounded by a white aura",
   "!Shocking Grasp!",
   "",
-  "",
+  "$n looks really strong",
   "!Summon!",
   "!Ventriloquate!",
   "!Word of Recall!",
   "!Remove Poison!",
-  "",
+  "$n possesses acute senses",
   "",  /* NO MESSAGE FOR SNEAK*/
   "!Hide!",
   "!Steal!",
@@ -3956,8 +3978,8 @@ const char *spell_desc[] = {
   "$n is flying",
   "spell 105 please report.",
   "$n is covered by sticky webs.",
-  "",
-  "",   /* 108 */
+  "$n can find things",
+  "$n can find anyone",   /* 108 */
   "spell 109 please report.",
   "",
   "spell 111 please report.",
@@ -3975,7 +3997,7 @@ const char *spell_desc[] = {
   "spell 123 please report.",
   "spell 124 please report.",
   "$n seems unnaturally large.",
-  "spell 126 please report.",
+  "$n seems unnaturally large",
   "spell 127 please report.",
   "spell 128 please report.",
   "", /*animal summon one*/
@@ -3991,9 +4013,9 @@ const char *spell_desc[] = {
   "spell 139 please report.",
   "",
   "$n seems a bit shadowy",
-  "",
-  "",
-  "",
+  "$n moves rather fluidly",
+  "creatures love $n",
+  "predators ignore $n",
   "", /*slow poison*/
   "$n is firmly entangled in vines.",
   "spell 147 please report.", /*Snare*/
@@ -4010,7 +4032,7 @@ const char *spell_desc[] = {
   "spell 158 please report.",
   "spell 159 please report.",
   "spell 160 please report.",
-  "",
+  "$n is very quiet.",
   "spell 162 please report.",
   "spell 163 please report.",
   "spell 164 please report.",
@@ -4018,7 +4040,7 @@ const char *spell_desc[] = {
   "",
   "",
   "$n's eyes glow white.",
-  "", /* 169 */
+  "$n is protected from good.", /* 169 */
   "",
   "",
   "",
@@ -4039,7 +4061,7 @@ const char *spell_desc[] = {
   "",
   "",
   "",
-  "",
+  "", /* 190 */
   "",
   "",
   "",
@@ -4051,8 +4073,10 @@ const char *spell_desc[] = {
   "",
   "", /* 200 */
  "$n is using $s wings to stay aloft.", /*Wings flying*/
- "",
+ "$n's wings are resting.",
  "$n's wings are a painful mass of charred skin and feathers.",/*wings burned*/
+ "$n is protected from good.",
+ "$n is gigantic.",
  "",
  "",
  "",
@@ -4062,20 +4086,18 @@ const char *spell_desc[] = {
  "",
  "",
  "",
- "",
- "",
- "A thick dark globe surrounds $n",    /* 215 */
- "$n is protected by a minor globe of protection",
- "$n is protected by a major globe of protection",
- "",   /* 218 */
- "",   /* 219 */
- "$n has a pulsing antimagic shell about $s body",
- "",
+ "A thick dark globe surrounds $n.",    /* 215 */
+ "$n is protected by a minor globe of protection.",
+ "$n is protected by a major globe of protection.",
+ "$n is resistant to drain.",   /* 218 */
+ "$n is resistant to breath.",   /* 219 */
+ "$n has a pulsing antimagic shell about $s body.",
  "",
  "",
  "",
+ "$n is invisible.",
  "",   /* 225 */
- "",
+ "$n is surrounded by burning flames.",
  "",
  "",
  "",
@@ -4090,32 +4112,42 @@ const char *spell_desc[] = {
  "",
  "",
  "", /* 240 */
- "$n is protected by a strong psionic shield", /* 241 */
- "", "spell 243","spell 244","spell 245","spell 246","spell 247","spell 248",
- "spell 249","spell 250","spell 251","spell 252","spell 253",
+ "$n is protected by a strong psionic shield.", /* 241 */
+ "$n is protected from evil.",
+ "spell 243",
+ "spell 244",
+ "spell 245",
+ "spell 246",
+ "spell 247",
+ "spell 248",
+ "spell 249",
+ "spell 250",
+ "spell 251",
+ "spell 252",
+ "spell 253",
  "",
  "", /* 255 */
- "$n has protectection from fire surrounding $mself",
- "$n has protectection from cold surrounding $mself",
- "$n has protectection from energy surrounding $mself",
- "$n has protectection from electricity surrounding $mself",
+ "$n has protectection from fire surrounding $mself.",
+ "$n has protectection from cold surrounding $mself.",
+ "$n has protectection from energy surrounding $mself.",
+ "$n has protectection from electricity surrounding $mself.",
  "",  /* 260 */
  "",
- "$n is surrounded by a globe of protection from fire breath", /* 262 */
- "$n is surrounded by a globe of protection from frost breath",
- "$n is surrounded by a globe of protection from electric breath",
- "$n is surrounded by a globe of protection from acid breath",
- "$n is surrounded by a globe of protection from gas breath",
+ "$n is surrounded by a globe of protection from fire breath.", /* 262 */
+ "$n is surrounded by a globe of protection from frost breath.",
+ "$n is surrounded by a globe of protection from electric breath.",
+ "$n is surrounded by a globe of protection from acid breath.",
+ "$n is surrounded by a globe of protection from gas breath.",
+ "$n sees far ahead.",
  "",
  "",
+ "$n knows where to step.",
  "",
  "",
+ "$n levitates gently in the air.",
  "",
  "",
- "$n levitates gently in the air",
- "",
- "",
- "",
+ "$n seems stronger.",
  "",
  "",
  "",
@@ -4128,8 +4160,8 @@ const char *spell_desc[] = {
  "",
  "",
  "", /* 288 */
- "$n's eyes glow white",
- "",
+ "$n is surrounded by a armor-like magical shield.",
+ "$n is strong.",
  "",
  "",
  "",
@@ -4146,18 +4178,18 @@ const char *spell_desc[] = {
  "",
  "",
  "",
+ "Blackness surrounds $n.",
+ "",
+ "Bones cover $n.",
+ "$n is surrounded by spirits.",//310
  "",
  "",
  "",
- "",//310
+ "$n is unnaturally strong.",
+ "Shadows writhe around $n.",
  "",
  "",
- "",
- "",
- "",
- "",
- "",
- "",
+ "$n skin seems cold.",
  "",
  "",//320
  "",
@@ -4167,12 +4199,12 @@ const char *spell_desc[] = {
  "",
  "",
  "",
- "",
+ "$n eyes glow black.",
  "",
  "",//330
+ "$n's soul belongs to the Dark Lord.",
  "",
- "",
- "",
+ "Dark energy surrounds $n.",
  "",
  "",
  "",
@@ -4192,6 +4224,7 @@ const char *spell_desc[] = {
  "",//350
  "\n"
 };
+
 
 #if 1
 const struct QuestItem QuestList[4][IMMORTAL] = {

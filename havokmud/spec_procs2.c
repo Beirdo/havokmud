@@ -3926,7 +3926,6 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 	static int x=0; //for loop
 	int i = 0,charge = 0; //while loop
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -4008,7 +4007,6 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -4019,8 +4017,8 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -4030,6 +4028,16 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 		if (!HasClass(ch, CLASS_MONK)) {
 			send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
 							" 'You're not a monk.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, monk_master);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,MONK_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -4218,7 +4226,6 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -4229,8 +4236,8 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -4240,6 +4247,17 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 		if (!HasClass(ch, CLASS_DRUID)) {
 			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
 							" 'You're not a druid.'\n\r",ch);
+			return(TRUE);
+		}
+
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, DruidGuildMaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,DRUID_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -4330,7 +4348,6 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -5795,8 +5812,8 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -5806,6 +5823,16 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 		if (!HasClass(ch, CLASS_BARBARIAN)) {
 			send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
 							" 'You're not a barbarian.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, barbarian_guildmaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,BARBARIAN_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Barbarian Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -5891,7 +5918,6 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -5903,8 +5929,8 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -5914,6 +5940,16 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 		if (!HasClass(ch, CLASS_RANGER)) {
 			send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
 							" 'You're not a ranger.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, RangerGuildmaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,RANGER_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Ranger Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -5999,7 +6035,6 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -6145,8 +6180,8 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -6156,6 +6191,16 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 		if (!HasClass(ch, CLASS_PSI)) {
 			send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
 							" 'You're not a psi.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, PsiGuildmaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,PSI_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Psi Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -6241,7 +6286,6 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 
@@ -6252,8 +6296,8 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	static int percent = 0;
 	static int x=0; //for loop
 	int i = 0; //while loop
+	struct char_data *guildmaster;
 
-#if 1
 	if(!AWAKE(ch) || IS_NPC(ch))
 		return(FALSE);
 
@@ -6263,6 +6307,16 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 		if (!HasClass(ch, CLASS_PALADIN)) {
 			send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
 							" 'You're not a paladin.'\n\r",ch);
+			return(TRUE);
+		}
+		if(!mob) {
+			guildmaster = FindMobInRoomWithFunction(ch->in_room, PaladinGuildmaster);
+		} else {
+			guildmaster = mob;
+		}
+		if (GET_LEVEL(ch,PALADIN_LEVEL_IND) > GetMaxLevel(guildmaster)) {
+			send_to_char("$c0013[$c0015The Paladin Guildmaster$c0013] tells you"
+							" 'You must learn from another, I can no longer train you.'\n\r",ch);
 			return(TRUE);
 		}
 
@@ -6348,7 +6402,6 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 			return(TRUE);
 		}
 	}
-#endif
 	return (FALSE);
 }
 

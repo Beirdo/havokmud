@@ -6456,88 +6456,99 @@ int rope_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 
 int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-
 	//extern struct QuestItem QuestList[4][IMMORTAL];
-   char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
-   char tbuf[80];
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
 
-   struct char_data *vict;
-   struct obj_data *obj;
-   struct obj_data *obj2;
-   int universal;
+	struct char_data *vict;
+	struct obj_data *obj;
+	struct obj_data *obj2;
+	int universal;
 
-   if(!AWAKE(ch)) return(FALSE);
+	if(!AWAKE(ch)) return(FALSE);
 
-   if (cmd == 72) { /* give */
-   	/* determine the correct obj */
-   	  arg=one_argument(arg,obj_name);
-      if (!*obj_name) {
-     	send_to_char("Give what?\n\r",ch);
-      	return(FALSE);
-      }
-      if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
-      	send_to_char("Give what?\n\r",ch);
-      	return(TRUE);
-      }
-   	  arg=one_argument(arg, vict_name);
-      if(!*vict_name)	{
-      	send_to_char("To who?\n\r",ch);
-      	return(FALSE);
-      }
-      if (!(vict = get_char_room_vis(ch, vict_name)))	{
-        send_to_char("To who?\n\r",ch);
-        return(FALSE);
-      }
-      if (vict->specials.fighting) {
- 	 	send_to_char("Not while they are fighting!\n\r",ch);
-       	return(TRUE);
-      }
+	if (cmd == 72) { /* give */
+		/* determine the correct obj */
+		arg=one_argument(arg,obj_name);
+		if (!*obj_name) {
+//			send_to_char("Give what?\n\r",ch);
+			return(FALSE);
+		}
+		if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+//			send_to_char("Give what?\n\r",ch);
+			return(FALSE);
+		}
 
-      if(IS_PC(vict)) return(FALSE);
+		arg=one_argument(arg, vict_name);
+		if(!*vict_name)	{
+//			send_to_char("To who?\n\r",ch);
+			return(FALSE);
+		}
+		if (!(vict = get_char_room_vis(ch, vict_name)))	{
+//			send_to_char("To who?\n\r",ch);
+			return(FALSE);
+		}
+		if (vict->specials.fighting) {
+			send_to_char("Not while they are fighting!\n\r",ch);
+			return(TRUE);
+		}
 
-      universal= mob_index[vict->nr].virtual;
+		if(IS_PC(vict))
+			return(FALSE);
 
+		universal= mob_index[vict->nr].virtual;
 
-      	if ((obj_index[obj->item_number].virtual != universal)) {
-      		if(IS_GOOD(vict))
-      			sprintf(buf, "%s Oh.. You must be mistakened, I'm not looking for that object.",GET_NAME(ch));
-    		else
-    			sprintf(buf, "%s Blah.. Quit wasting my time with this garabage.",GET_NAME(ch));
-    		do_tell(vict,buf,19);
+		if ((obj_index[obj->item_number].virtual != universal)) {
+			if(!strcmp(vict->specials.quest_no,"")) {
 
+				if(IS_GOOD(vict))
+					sprintf(buf, "%s Oh.. You must be mistakened, I'm not looking for that object.",GET_NAME(ch));
+				else
+					sprintf(buf, "%s Blah.. Quit wasting my time with this garbage.",GET_NAME(ch));
+				do_tell(vict,buf,19);
+			} else {
+				send_to_room(vict->specials.quest_no, ch->in_room);
+			}
          	return(TRUE);
-      	} else {
-			obj2 = read_object(universal+1, VIRTUAL);
-			if(obj2) {
+		} else {
+			if(obj2 = read_object(universal+1, VIRTUAL) ) {
 				act("You give $p to $N",FALSE,ch,obj,vict,TO_CHAR);
 				act("$n gives $p to $N",FALSE,ch,obj,vict,TO_ROOM);
 
-				if(IS_GOOD(vict))
-			      do_say(vict, "Thanks you very much.  Here is something for your troubles.", 0);
-				else
-			      do_say(vict, "Thanks..Here ya go.. Now get lost will ya.", 0);
+				if(!strcmp(vict->specials.quest_yes,"")) {
+					if(IS_GOOD(vict))
+						do_say(vict, "Thank you very much.  Here is something for your troubles.", 0);
+					else
+						do_say(vict, "Thanks..Here ya go.. Now get lost will ya.", 0);
+				} else {
+					send_to_room(vict->specials.quest_yes, ch->in_room);
+				}
 
 				act("$N gives you $p",FALSE,ch,obj2,vict,TO_CHAR);
 				act("$N gives $p to $n",FALSE,ch,obj2,vict,TO_ROOM);
 				obj_to_char(obj2,ch);
 
-				act("$N puts $p into his pocket.",TRUE,ch,obj,vict,TO_ROOM);
-				act("$N puts $p into $s pocket.",TRUE,ch,obj,vict,TO_CHAR);
+				act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
 				obj_from_char(obj);
 				extract_obj(obj);
-
 				return(TRUE);
 			} else {
-				/* Else big errer */
-				log("Find Banon again, Can't find object for quest mob..");
-				send_to_char("Ahh.. better find banon..",ch);
+				if(!strcmp(vict->specials.quest_yes,"")) {
+					if(IS_GOOD(vict))
+						do_say(vict, "Thank you very much!", 0);
+					else
+						do_say(vict, "Thanks mate.", 0);
+				} else {
+					send_to_room(vict->specials.quest_yes, ch->in_room);
+				}
+				act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
+				obj_from_char(obj);
+				extract_obj(obj);
+				return(TRUE);
 			}
 		}
-
-	return(FALSE);
-
+		return(FALSE);
 	}
-
 	return(FALSE);
 }
 

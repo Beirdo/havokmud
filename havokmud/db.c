@@ -38,6 +38,7 @@ struct message_list fight_messages[MAX_MESSAGES]; /* fighting messages   */
 struct player_index_element *player_table = 0; /* index to player file   */
 int top_of_p_table = 0;               /* ref to top of table             */
 int top_of_p_file = 0;
+int HpBonus;						/* used for the mob file conversion, mrebuild */
 long total_bc = 0;
 long room_count=0;
 long mob_count=0;
@@ -93,6 +94,7 @@ struct index_data *insert_index(struct index_data *index, void *data, long vnum)
 struct index_data *insert_objindex(struct index_data *index, void *data, long vnum);
 void clean_playerfile(void);
 int  read_mob_from_file(struct char_data *mob,FILE *mob_fi);
+int  read_mob_from_new_file(struct char_data *mob,FILE *mob_fi);
 int GetExpFlags( struct char_data *mob, int exp);
 int wizcenter(char *buf);
 /************************************************************************
@@ -903,105 +905,105 @@ int read_object_to_memory(long vnum)
 #define MAX_INDICES 5000
 struct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *alloc_top, char *dirname)
 {
-  FILE *f;
-  DIR *dir;
-  struct index_data *index;
-  struct dirent *ent;
-  long i = 0, di = 0, vnum, j;
-  long bc=MAX_INDICES;
-  long dvnums[MAX_INDICES];
-  char buf[82], tbuf[128];
+	FILE *f;
+	DIR *dir;
+	struct index_data *index;
+	struct dirent *ent;
+	long i = 0, di = 0, vnum, j;
+	long bc=MAX_INDICES;
+	long dvnums[MAX_INDICES];
+	char buf[82], tbuf[128];
 
 /* scan main obj file */
-  rewind(fl);
-  for (;;) {
-    if (fgets(buf, sizeof(buf), fl)) {
-      if (*buf == '#') {
-	if (!i)                                          /* first cell */
-	  CREATE(index, struct index_data, bc);
-	else
-	  if (i >= bc) {
-	    if (!(index = (struct index_data*)
-			      realloc(index, (i + 50) * sizeof(struct index_data)))) {
-	      perror("load indices");
-	      assert(0);
-	    }
-	    bc += 50;
-	  }
-	sscanf(buf, "#%ld", &index[i].virtual);
-	sprintf(tbuf,"%s/%ld",dirname,index[i].virtual);
-	if((f=fopen(tbuf,"rt"))==NULL) {
-	  index[i].pos = ftell(fl);
-	  index[i].name = (index[i].virtual<99999)?fread_string(fl):strdup("omega");
-	} else {
-	  index[i].pos = -1;
-	  fscanf(f, "#%*ld\n");
-	  index[i].name = (index[i].virtual<99999)?fread_string(f):strdup("omega");
-	  dvnums[di++] = index[i].virtual;
-	  fclose(f);
+	rewind(fl);
+	for (;;) {
+		if (fgets(buf, sizeof(buf), fl)) {
+			if (*buf == '#') {
+				if (!i)                                          /* first cell */
+					CREATE(index, struct index_data, bc);
+				else
+					if (i >= bc) {
+						if (!(index = (struct index_data*)realloc(index, (i + 50) * sizeof(struct index_data)))) {
+							perror("load indices");
+							assert(0);
+						}
+						bc += 50;
+					}
+				sscanf(buf, "#%ld", &index[i].virtual);
+				sprintf(tbuf,"%s/%ld",dirname,index[i].virtual);
+				if((f=fopen(tbuf,"rt"))==NULL) {
+					index[i].pos = ftell(fl);
+					index[i].name = (index[i].virtual<99999)?fread_string(fl):strdup("omega");
+				} else {
+					index[i].pos = -1;
+					fscanf(f, "#%*ld\n");
+					index[i].name = (index[i].virtual<99999)?fread_string(f):strdup("omega");
+					dvnums[di++] = index[i].virtual;
+					fclose(f);
+				}
+				index[i].number = 0;
+				index[i].func = 0;
+				index[i].data = NULL;
+				i++;
+			} else {
+				if (*buf == '%')        /* EOF */
+					break;
+			}
+		} else {
+			fprintf(stderr,"generate indices");
+			assert(0);
+		}
 	}
-	index[i].number = 0;
-	index[i].func = 0;
-	index[i].data = NULL;
-	i++;
-      } else {
-	if (*buf == '%')        /* EOF */
-	  break;
-      }
-    } else {
-      fprintf(stderr,"generate indices");
-      assert(0);
-    }
-  }
-  *sort_top = i - 1;
-  *alloc_top = bc;
-  *top = i;
+	*sort_top = i - 1;
+	*alloc_top = bc;
+	*top = i;
 /* scan for directory entrys */
-  if((dir=opendir(dirname))==NULL) {
-    sprintf(tbuf,"unable to open index directory %s",dirname);
-    log(tbuf);
-    return(index);
-  }
-  while((ent=readdir(dir)) != NULL) {
-    if(*ent->d_name=='.') continue;
-    vnum=atoi(ent->d_name);
-    if(vnum == 0) continue;
-    /* search if vnum was already sorted in main database */
-    for(j=0;j<di;j++)
-      if(dvnums[j] == vnum)
-	break;
-    if(dvnums[j] == vnum)
-      continue;
-    sprintf(buf,"%s/%s",dirname, ent->d_name);
-    if((f=fopen(buf,"rt")) == NULL) {
-      sprintf(tbuf, "Can't open file %s for reading\n",buf);
-      log(tbuf);
-      continue;
-    }
-    if (!i)
-      CREATE(index, struct index_data, bc);
-    else
-	  if (i >= bc) {
-	    if (!(index = (struct index_data*)
-			      realloc(index, (i + 50) * sizeof(struct index_data)))) {
-	    perror("load indices");
-	    assert(0);
-	    }
-	  bc += 50;
-	  }
-    fscanf(f, "#%*ld\n");
-    index[i].virtual = vnum;
-    index[i].pos = -1;
-    index[i].name = (index[i].virtual<99999)?fread_string(f):strdup("omega");
-    index[i].number = 0;
-    index[i].func = 0;
-    index[i].data = NULL;
-    fclose(f);
-    i++;
-  }
-  *alloc_top = bc;
-  *top = i ;
-  return(index);
+	if((dir=opendir(dirname))==NULL) {
+		sprintf(tbuf,"unable to open index directory %s",dirname);
+		log(tbuf);
+		return(index);
+	}
+	while((ent=readdir(dir)) != NULL) {
+		if(*ent->d_name=='.')
+			continue;
+		vnum=atoi(ent->d_name);
+		if(vnum == 0)
+			continue;
+		/* search if vnum was already sorted in main database */
+		for(j=0;j<di;j++)
+			if(dvnums[j] == vnum)
+				break;
+		if(dvnums[j] == vnum)
+			continue;
+		sprintf(buf,"%s/%s",dirname, ent->d_name);
+		if((f=fopen(buf,"rt")) == NULL) {
+			sprintf(tbuf, "Can't open file %s for reading\n",buf);
+			log(tbuf);
+			continue;
+		}
+		if (!i)
+			CREATE(index, struct index_data, bc);
+		else
+			if (i >= bc) {
+				if (!(index = (struct index_data*)realloc(index, (i + 50) * sizeof(struct index_data)))) {
+					perror("load indices");
+					assert(0);
+				}
+				bc += 50;
+			}
+		fscanf(f, "#%*ld\n");
+		index[i].virtual = vnum;
+		index[i].pos = -1;
+		index[i].name = (index[i].virtual<99999)?fread_string(f):strdup("omega");
+		index[i].number = 0;
+		index[i].func = 0;
+		index[i].data = NULL;
+		fclose(f);
+		i++;
+	}
+	*alloc_top = bc;
+	*top = i ;
+	return(index);
 }
 
 
@@ -1602,62 +1604,152 @@ if (check)
 /* read a mobile from MOB_FILE */
 struct char_data *read_mobile(int nr, int type)
 {
-  FILE *f;
-  struct char_data *mob;
-  int tmp, i;
-  long bc;
-  char chk[50], buf[100];
+	FILE *f;
+	FILE *newmobfile;
+	struct char_data *mob;
+	int tmp, i;
+	long bc;
+	char chk[50], buf[100];
 
+	i = nr;
+	if (type == VIRTUAL)
+		if ((nr = real_mobile(nr)) < 0) {
+			sprintf(buf, "Mobile (V) %d does not exist in database.", i);
+			return(0);
+		}
 
-  i = nr;
-  if (type == VIRTUAL)
-    if ((nr = real_mobile(nr)) < 0)     {
-      sprintf(buf, "Mobile (V) %d does not exist in database.", i);
-      return(0);
+	CREATE(mob, struct char_data, 1);
+
+	if (!mob){
+		log("Cannot create mob?! db.c read_mobile");
+		return(FALSE);
+	}
+
+	bc = sizeof(struct char_data);
+	clear_char(mob);
+	mob->nr = nr;
+
+	if(mob_index[nr].pos == -1) { /* mobile in external file */
+		sprintf(buf,"%s/%ld",MOB_DIR,mob_index[nr].virtual);
+		if((f = fopen(buf,"rt"))==NULL) {
+			sprintf(buf,"can't open mobile file for mob %ld" ,mob_index[nr].virtual);
+			log(buf);
+			free_char(mob);
+			return(0);
+		}
+		fscanf(f, "#%*ld\n");
+
+#if NEWMOBSTRUCTURE
+		bc += read_mob_from_new_file(mob,f);
+		fclose(f);
+	} else {
+		rewind(mob_f);
+		fseek(mob_f, mob_index[nr].pos, 0);
+		bc += read_mob_from_new_file(mob, mob_f);
+#else
+		bc += read_mob_from_file(mob,f);
+		fclose(f);
+	} else {
+		rewind(mob_f);
+		fseek(mob_f, mob_index[nr].pos, 0);
+		bc += read_mob_from_file(mob, mob_f);
+#endif
+
     }
 
-  CREATE(mob, struct char_data, 1);
-
-  if (!mob){
-    log("Cannot create mob?! db.c read_mobile");
-    return(FALSE);
-    }
-
-  bc = sizeof(struct char_data);
-  clear_char(mob);
-  mob->nr = nr;
-
-  if(mob_index[nr].pos == -1) {         /* object in external file */
-      sprintf(buf,"%s/%ld",MOB_DIR,mob_index[nr].virtual);
-      if((f = fopen(buf,"rt"))==NULL) {
-	sprintf(buf,"can't open mobile file for mob %ld" ,mob_index[nr].virtual);
-	log(buf);
-	free_char(mob);
-	return(0);
-      }
-      fscanf(f, "#%*ld\n");
-      bc += read_mob_from_file(mob,f);
-      fclose(f);
-    } else {
-      rewind(mob_f);
-      fseek(mob_f, mob_index[nr].pos, 0);
-      bc += read_mob_from_file(mob, mob_f);
-    }
-
-   total_mbc += bc;
-   mob_count++;
-	/*assign Quest flag (GH) */
-	if (IS_SET(mob->specials.act,ACT_QUEST)) {
-//		log("Has the proc");
-		    if(mob_index[mob->nr].func != QuestMobProc){
-		       mob_index[mob->nr].func = *QuestMobProc;//(*QuestMobProc)();
-//				log("assigning proc");
-			} else {
-//				log("Already has proc");
+	total_mbc += bc;
+	mob_count++;
+	/* assign common proc flags */
+	if(mob->specials.proc != 0) {
+		if(mob->specials.proc == PROC_QUEST) {
+			if(mob_index[mob->nr].func != QuestMobProc){
+				mob_index[mob->nr].func = *QuestMobProc;
+				log("assigning quest proc");
 			}
-    }
-   return(mob);
- }
+		} else if (mob->specials.proc == PROC_SHOPKEEPER) {
+			if(mob_index[mob->nr].func != shopkeeper){
+				mob_index[mob->nr].func = *shopkeeper;
+				log("assigning shopkeeper proc");
+			}
+		} else if (mob->specials.proc == PROC_GUILDMASTER) {
+			if(mob_index[mob->nr].func != generic_guildmaster){
+				mob_index[mob->nr].func = *generic_guildmaster;
+				log("assigning guildmaster proc");
+			}
+		} else if (mob->specials.proc == PROC_SWALLOWER) {
+			if(mob_index[mob->nr].func != Tyrannosaurus_swallower){
+				mob_index[mob->nr].func = *Tyrannosaurus_swallower;
+				log("assigning swallower proc");
+			}
+		} else if (mob->specials.proc == PROC_OLD_BREATH) {
+			if(mob_index[mob->nr].func != BreathWeapon){
+				mob_index[mob->nr].func = *BreathWeapon;
+				log("assigning old breath proc");
+			}
+		} else if (mob->specials.proc == PROC_FIRE_BREATH) {
+			if(mob_index[mob->nr].func != FireBreather){
+				mob_index[mob->nr].func = *FireBreather;
+				log("assigning fire breath proc");
+			}
+		} else if (mob->specials.proc == PROC_GAS_BREATH) {
+			if(mob_index[mob->nr].func != GasBreather){
+				mob_index[mob->nr].func = *GasBreather;
+				log("assigning gas breath proc");
+			}
+		} else if (mob->specials.proc == PROC_FROST_BREATH) {
+			if(mob_index[mob->nr].func != FrostBreather){
+				mob_index[mob->nr].func = *FrostBreather;
+				log("assigning frost breath proc");
+			}
+		} else if (mob->specials.proc == PROC_ACID_BREATH) {
+			if(mob_index[mob->nr].func != AcidBreather){
+				mob_index[mob->nr].func = *AcidBreather;
+				log("assigning acid breath proc");
+			}
+		} else if (mob->specials.proc == PROC_LIGHTNING_BREATH) {
+			if(mob_index[mob->nr].func != LightningBreather){
+				mob_index[mob->nr].func = *LightningBreather;
+				log("assigning electric breath proc");
+			}
+		} else if (mob->specials.proc == PROC_DEHYDRATION_BREATH) {
+			if(mob_index[mob->nr].func != DehydBreather){
+				mob_index[mob->nr].func = *DehydBreather;
+				log("assigning dehydration breath proc");
+			}
+		} else if (mob->specials.proc == PROC_VAPOR_BREATH) {
+			if(mob_index[mob->nr].func != VaporBreather){
+				mob_index[mob->nr].func = *VaporBreather;
+				log("assigning vapor breath proc");
+			}
+		} else if (mob->specials.proc == PROC_SOUND_BREATH) {
+			if(mob_index[mob->nr].func != SoundBreather){
+				mob_index[mob->nr].func = *SoundBreather;
+				log("assigning sound breath proc");
+			}
+		} else if (mob->specials.proc == PROC_SHARD_BREATH) {
+			if(mob_index[mob->nr].func != ShardBreather){
+				mob_index[mob->nr].func = *ShardBreather;
+				log("assigning shard breath proc");
+			}
+		} else if (mob->specials.proc == PROC_SLEEP_BREATH) {
+			if(mob_index[mob->nr].func != SleepBreather){
+				mob_index[mob->nr].func = *SleepBreather;
+				log("assigning sleep breath proc");
+			}
+		} else if (mob->specials.proc == PROC_LIGHT_BREATH) {
+			if(mob_index[mob->nr].func != LightBreather){
+				mob_index[mob->nr].func = *LightBreather;
+				log("assigning light breath proc");
+			}
+		} else if (mob->specials.proc == PROC_DARK_BREATH) {
+			if(mob_index[mob->nr].func != DarkBreather){
+				mob_index[mob->nr].func = *DarkBreather;
+				log("assigning dark breath proc");
+			}
+		}
+	}
+	return(mob);
+}
 
 int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 {
@@ -1668,6 +1760,9 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 
   extern int mob_tick_count;
   extern long mob_count;
+
+  HpBonus=0;
+
   nr = mob->nr;
   mob->player.name = fread_string(mob_fi);
   if (*mob->player.name)
@@ -1706,436 +1801,644 @@ int read_mob_from_file(struct char_data *mob, FILE *mob_fi)
 
   fscanf(mob_fi, " %c ", &letter);
 
-  if (letter == 'S') {
+	if (letter == 'S') {
 
-    fscanf(mob_fi, "\n");
+		fscanf(mob_fi, "\n");
 
-    fscanf(mob_fi, " %d ", &tmp);
-    GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
 
+		mob->abilities.str   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.intel =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.wis   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.dex   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.con   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.chr   =  9+number(1,(MAX(1,tmp/5 - 1)));
 
-    mob->abilities.str   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.intel =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.wis   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.dex   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.con   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.chr   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.hitroll = 20-tmp;
 
+		fscanf(mob_fi, " %d ", &tmp);
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.hitroll = 20-tmp;
+		if (tmp > 10 || tmp < -10)
+			tmp /= 10;
+		mob->points.armor = 10*tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
+		fscanf(mob_fi, " %dd%d+%d ", &tmp, &tmp2, &tmp3);
+		mob->points.max_hit = dice(tmp, tmp2)+tmp3;
+		mob->points.hit = mob->points.max_hit;
 
-    if (tmp > 10 || tmp < -10)
-      tmp /= 10;
+		fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
+		mob->points.damroll = tmp3;
+		mob->specials.damnodice = tmp;
+		mob->specials.damsizedice = tmp2;
 
-    mob->points.armor = 10*tmp;
-
-    fscanf(mob_fi, " %dd%d+%d ", &tmp, &tmp2, &tmp3);
-    mob->points.max_hit = dice(tmp, tmp2)+tmp3;
-    mob->points.hit = mob->points.max_hit;
-
-    fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
-    mob->points.damroll = tmp3;
-    mob->specials.damnodice = tmp;
-    mob->specials.damsizedice = tmp2;
-
-    mob->points.mana = 10;
-    mob->points.max_mana = 10;
+		mob->points.mana = 10;
+		mob->points.max_mana = 10;
 
 
-    mob->points.move = 50;
-    mob->points.max_move = 50;
+		mob->points.move = 50;
+		mob->points.max_move = 50;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    if (tmp == -1) {
-      fscanf(mob_fi, " %d ", &tmp);
-// sprintf(buf,"money = %d",tmp);
-// log(buf);
-      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);
-// sprintf(buf,"money = %d",mob->points.gold);
-// log(buf);
-      fscanf(mob_fi, " %d ", &tmp);
-      GET_EXP(mob) = tmp;
-      fscanf(mob_fi, " %d \n", &tmp);
-      GET_RACE(mob) = tmp;
-      if(IsGiant(mob))
-	mob->abilities.str += number(1,4);
-      if(IsSmall(mob))
-	mob->abilities.str -= 1;
-    } else {
-// sprintf(buf,"beepmoney = %d",tmp);
-// log(buf);
-      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
-      fscanf(mob_fi, " %d \n", &tmp);
-      GET_EXP(mob) = tmp;
-    }
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.position = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		if (tmp == -1) {
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.default_pos = tmp;
+			fscanf(mob_fi, " %d ", &tmp);
+			tmp = MAX(tmp,GET_LEVEL(mob, WARRIOR_LEVEL_IND)*mob->points.max_hit);
+			GET_EXP(mob) = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    if (tmp < 3) {
-      mob->player.sex = tmp;
-      mob->immune = 0;
-      mob->M_immune = 0;
-      mob->susc = 0;
-    } else if (tmp < 6) {
-      mob->player.sex = (tmp-3);
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->immune = tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->M_immune = tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->susc = tmp;
-    } else {
-      mob->player.sex = 0;
-      mob->immune = 0;
-      mob->M_immune = 0;
-      mob->susc = 0;
-    }
+			fscanf(mob_fi, " %d \n", &tmp);
+			GET_RACE(mob) = tmp;
+			if(IsGiant(mob))
+				mob->abilities.str += number(1,4);
+			if(IsSmall(mob))
+				mob->abilities.str -= 1;
+		} else {
+			mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
 
-    fscanf(mob_fi,"\n");
+			fscanf(mob_fi, " %d \n", &tmp);
+			if (tmp >= 0)
+				GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
+			else
+				GET_EXP(mob) = -tmp;
+			GET_EXP(mob) = tmp;
+		}
 
-    mob->player.class = 0;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.position = tmp;
 
-    mob->player.time.birth = time(0);
-    mob->player.time.played     = 0;
-    mob->player.time.logon  = time(0);
-    mob->player.weight = 200;
-    mob->player.height = 198;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.default_pos = tmp;
 
-    for (i = 0; i < 3; i++)
-      GET_COND(mob, i) = -1;
+		fscanf(mob_fi, " %d ", &tmp);
+		if (tmp < 3) {
+			mob->player.sex = tmp;
+			mob->immune = 0;
+			mob->M_immune = 0;
+			mob->susc = 0;
+		} else if (tmp < 6) {
+			mob->player.sex = (tmp-3);
 
-    for (i = 0; i < MAX_SAVES; i++)
-      mob->specials.apply_saving_throw[i] =
-	MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->immune = tmp;
 
-  } else if ((letter == 'A') || (letter == 'N') || (letter == 'B') ||
-	     (letter == 'L')) {
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->M_immune = tmp;
 
-    if ((letter == 'A') || (letter == 'B') || (letter == 'L')) {
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->mult_att = (float)tmp;
-      /*
-      **  read in types:
-      */
-      /*
-	for (i=0;i<mob->mult_att && i < 10; i++) {
-	   fscanf(mob_fi, " %d ", &tmp);
-	   mob->att_type[i] = tmp;
-	}
-      */
-    }
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->susc = tmp;
+		} else {
+			mob->player.sex = 0;
+			mob->immune = 0;
+			mob->M_immune = 0;
+			mob->susc = 0;
+		}
 
-    fscanf(mob_fi, "\n");
+		fscanf(mob_fi,"\n");
 
-    fscanf(mob_fi, " %d ", &tmp);
-    GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
+		mob->player.class = 0;
 
+		mob->player.time.birth = time(0);
+		mob->player.time.played     = 0;
+		mob->player.time.logon  = time(0);
+		mob->player.weight = 200;
+		mob->player.height = 198;
 
-    mob->abilities.str   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.intel =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.wis   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.dex   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.con   =  9+number(1,(MAX(1,tmp/5 - 1)));
-    mob->abilities.chr   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		for (i = 0; i < 3; i++)
+			GET_COND(mob, i) = -1;
 
+		for (i = 0; i < MAX_SAVES; i++)
+			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
 
+	} else if ((letter == 'A') || (letter == 'N') || (letter == 'B') || (letter == 'L')) {
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.hitroll = 20-tmp;
+		if ((letter == 'A') || (letter == 'B') || (letter == 'L')) {
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->mult_att = (float)tmp;
+		}
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.armor = 10*tmp;
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.max_hit = dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8)+tmp;
-    mob->points.hit = mob->points.max_hit;
+		fscanf(mob_fi, "\n");
 
-    fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
-    mob->points.damroll = tmp3;
-    mob->specials.damnodice = tmp;
-    mob->specials.damsizedice = tmp2;
+		fscanf(mob_fi, " %d ", &tmp);
+		GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
 
-    mob->points.mana = 10;
-    mob->points.max_mana = 10;
+		mob->abilities.str   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.intel =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.wis   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.dex   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.con   =  9+number(1,(MAX(1,tmp/5 - 1)));
+		mob->abilities.chr   =  9+number(1,(MAX(1,tmp/5 - 1)));
 
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.hitroll = 20-tmp;
 
-    mob->points.move = 50;
-    mob->points.max_move = 50;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.armor = 10*tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
+		fscanf(mob_fi, " %d ", &tmp);
+//		HpBonus = tmp;
+		mob->points.max_hit = dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8)+tmp;
+		mob->points.hit = mob->points.max_hit;
+HpBonus = mob->points.max_hit;
 
-    if (tmp == -1) {
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      if (tmp >= 0)
-	GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
-      else
-	GET_EXP(mob) = -tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      GET_RACE(mob) = tmp;
-      if(IsGiant(mob))
-	mob->abilities.str += number(1,4);
-      if(IsSmall(mob))
-	mob->abilities.str -= 1;
-    } else {
+		fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
+		mob->points.damroll = tmp3;
+		mob->specials.damnodice = tmp;
+		mob->specials.damsizedice = tmp2;
 
-      mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
+		mob->points.mana = 10;
+		mob->points.max_mana = 10;
+
+		mob->points.move = 50;
+		mob->points.max_move = 50;
+
+		fscanf(mob_fi, " %d ", &tmp);
+
+		if (tmp == -1) {
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
+
+			fscanf(mob_fi, " %d ", &tmp);
+			if (tmp >= 0)
+				GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
+			else
+				GET_EXP(mob) = -tmp;
+
+			fscanf(mob_fi, " %d ", &tmp);
+			GET_RACE(mob) = tmp;
+
+			if(IsGiant(mob))
+				mob->abilities.str += number(1,4);
+			if(IsSmall(mob))
+				mob->abilities.str -= 1;
+		} else {
+			mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
 
       /*
 	this is where the new exp will come into play
 	*/
-      fscanf(mob_fi, " %d \n", &tmp);
-      if (tmp >=0)
-      GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
-      else
-      GET_EXP(mob) = -tmp;
+			fscanf(mob_fi, " %d \n", &tmp);
+			if (tmp >=0)
+				GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
+			else
+				GET_EXP(mob) = -tmp;
+		}
 
-    }
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.position = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.position = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.default_pos = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.default_pos = tmp;
+		fscanf(mob_fi, " %d \n", &tmp);
+		if (tmp < 3) {
+			mob->player.sex = tmp;
+			mob->immune = 0;
+			mob->M_immune = 0;
+			mob->susc = 0;
+		} else if (tmp < 6) {
+			mob->player.sex = (tmp-3);
 
-    fscanf(mob_fi, " %d \n", &tmp);
-    if (tmp < 3) {
-      mob->player.sex = tmp;
-      mob->immune = 0;
-      mob->M_immune = 0;
-      mob->susc = 0;
-    } else if (tmp < 6) {
-      mob->player.sex = (tmp-3);
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->immune = tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->M_immune = tmp;
-      fscanf(mob_fi, " %d ", &tmp);
-      mob->susc = tmp;
-    } else {
-      mob->player.sex = 0;
-      mob->immune = 0;
-      mob->M_immune = 0;
-      mob->susc = 0;
-    }
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->immune = tmp;
+
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->M_immune = tmp;
+
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->susc = tmp;
+		} else {
+			mob->player.sex = 0;
+			mob->immune = 0;
+			mob->M_immune = 0;
+			mob->susc = 0;
+		}
 
     /*
      *   read in the sound string for a mobile
      */
-    if (letter == 'L') {
-       mob->player.sounds = fread_string(mob_fi);
-       if (mob->player.sounds && *mob->player.sounds)
-	   bc += strlen(mob->player.sounds);
 
-       mob->player.distant_snds = fread_string(mob_fi);
-       if (mob->player.distant_snds && *mob->player.distant_snds)
-	   bc += strlen(mob->player.distant_snds);
-    } else {
-      mob->player.sounds = 0;
-      mob->player.distant_snds = 0;
-    }
+		if (letter == 'L') {
+			mob->player.sounds = fread_string(mob_fi);
+			if (mob->player.sounds && *mob->player.sounds)
+				bc += strlen(mob->player.sounds);
 
-    if (letter == 'B') {
-      SET_BIT(mob->specials.act, ACT_HUGE);
-    }
+			mob->player.distant_snds = fread_string(mob_fi);
+			if (mob->player.distant_snds && *mob->player.distant_snds)
+				bc += strlen(mob->player.distant_snds);
+		} else {
+			mob->player.sounds = 0;
+			mob->player.distant_snds = 0;
+		}
 
-    mob->player.class = 0;
+		if (letter == 'B') {
+			SET_BIT(mob->specials.act, ACT_HUGE);
+		}
 
-    mob->player.time.birth = time(0);
-    mob->player.time.played     = 0;
-    mob->player.time.logon  = time(0);
-    mob->player.weight = 200;
-    mob->player.height = 198;
+		mob->player.class = 0;
 
-    for (i = 0; i < 3; i++)
-      GET_COND(mob, i) = -1;
+		mob->player.time.birth = time(0);
+		mob->player.time.played     = 0;
+		mob->player.time.logon  = time(0);
+		mob->player.weight = 200;
+		mob->player.height = 198;
 
-    for (i = 0; i < MAX_SAVES; i++)
-      mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+		for (i = 0; i < 3; i++)
+			GET_COND(mob, i) = -1;
 
-  } else {  /* The old monsters are down below here */
+		for (i = 0; i < MAX_SAVES; i++)
+			mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
 
-    fscanf(mob_fi, "\n");
+	} else {  /* The old monsters are down below here */
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->abilities.str = tmp;
+		fscanf(mob_fi, "\n");
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->abilities.intel = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->abilities.str = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->abilities.wis = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->abilities.intel = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->abilities.dex = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->abilities.wis = tmp;
 
-    fscanf(mob_fi, " %d \n", &tmp);
-    mob->abilities.con = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->abilities.dex = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    fscanf(mob_fi, " %d ", &tmp2);
+		fscanf(mob_fi, " %d \n", &tmp);
+		mob->abilities.con = tmp;
 
-    mob->points.max_hit = number(tmp, tmp2);
-    mob->points.hit = mob->points.max_hit;
+		fscanf(mob_fi, " %d ", &tmp);
+		fscanf(mob_fi, " %d ", &tmp2);
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.armor = 10*tmp;
+		mob->points.max_hit = number(tmp, tmp2);
+		mob->points.hit = mob->points.max_hit;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.mana = tmp;
-    mob->points.max_mana = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.armor = 10*tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.move = tmp;
-    mob->points.max_move = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.mana = tmp;
+		mob->points.max_mana = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.move = tmp;
+		mob->points.max_move = tmp;
 
-    fscanf(mob_fi, " %d \n", &tmp);
-    GET_EXP(mob) = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);//tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.position = tmp;
+		fscanf(mob_fi, " %d \n", &tmp);
+		if (tmp >= 0)
+			GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
+		else
+			GET_EXP(mob) = -tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->specials.default_pos = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.position = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->player.sex = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->specials.default_pos = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->player.class = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->player.sex = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->player.class = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->player.time.birth = time(0);
-    mob->player.time.played     = 0;
-    mob->player.time.logon  = time(0);
+		fscanf(mob_fi, " %d ", &tmp);
+		GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
 
-    fscanf(mob_fi, " %d ", &tmp);
-    mob->player.weight = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->player.time.birth = time(0);
+		mob->player.time.played     = 0;
+		mob->player.time.logon  = time(0);
 
-    fscanf(mob_fi, " %d \n", &tmp);
-    mob->player.height = tmp;
+		fscanf(mob_fi, " %d ", &tmp);
+		mob->player.weight = tmp;
 
-    for (i = 0; i < 3; i++)
-      {
-	fscanf(mob_fi, " %d ", &tmp);
-	GET_COND(mob, i) = tmp;
-      }
-    fscanf(mob_fi, " \n ");
+		fscanf(mob_fi, " %d \n", &tmp);
+		mob->player.height = tmp;
 
-    for (i = 0; i < MAX_SAVES; i++)
-      {
-	fscanf(mob_fi, " %d ", &tmp);
-	mob->specials.apply_saving_throw[i] = tmp;
-      }
+		for (i = 0; i < 3; i++) {
+			fscanf(mob_fi, " %d ", &tmp);
+			GET_COND(mob, i) = tmp;
+		}
+		fscanf(mob_fi, " \n ");
 
-    fscanf(mob_fi, " \n ");
+		for (i = 0; i < MAX_SAVES; i++) {
+			fscanf(mob_fi, " %d ", &tmp);
+			mob->specials.apply_saving_throw[i] = tmp;
+		}
 
-    /* Set the damage as some standard 1d4 */
-    mob->points.damroll = 0;
-    mob->specials.damnodice = 1;
-    mob->specials.damsizedice = 6;
+		fscanf(mob_fi, " \n ");
 
-    /* Calculate THAC0 as a formular of Level */
-    mob->points.hitroll = MAX(1, GET_LEVEL(mob,WARRIOR_LEVEL_IND)-3);
-  }
+		/* Set the damage as some standard 1d4 */
+		mob->points.damroll = 0;
+		mob->specials.damnodice = 1;
+		mob->specials.damsizedice = 6;
 
-  mob->tmpabilities = mob->abilities;
+		/* Calculate THAC0 as a formular of Level */
+		mob->points.hitroll = MAX(1, GET_LEVEL(mob,WARRIOR_LEVEL_IND)-3);
+	}
 
-  for (i = 0; i < MAX_WEAR; i++) /* Initialisering Ok */
-    mob->equipment[i] = 0;
+	mob->tmpabilities = mob->abilities;
 
+	for (i = 0; i < MAX_WEAR; i++) /* Initialisering Ok */
+		mob->equipment[i] = 0;
 
-  mob->desc = 0;
+	mob->desc = 0;
 
-  if (!IS_SET(mob->specials.act, ACT_ISNPC))
-    SET_BIT(mob->specials.act, ACT_ISNPC);
+	if (!IS_SET(mob->specials.act, ACT_ISNPC))
+		SET_BIT(mob->specials.act, ACT_ISNPC);
 
-  mob->generic = 0;
-  mob->commandp = 0;
-  mob->commandp2 = 0;
-  mob->waitp = 0;
+	mob->generic = 0;
+	mob->commandp = 0;
+	mob->commandp2 = 0;
+	mob->waitp = 0;
 
-  /* Check to see if associated with a script, if so, set it up */
-  if(IS_SET(mob->specials.act, ACT_SCRIPT))
-     REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
+	/* Check to see if associated with a script, if so, set it up */
+	if(IS_SET(mob->specials.act, ACT_SCRIPT))
+		REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
 
-  for(i = 0; i < top_of_scripts; i++) {
+	for(i = 0; i < top_of_scripts; i++) {
+		if(script_data[i].virtual == mob_index[nr].virtual) {
+			SET_BIT(mob->specials.act, ACT_SCRIPT);
+			mob->script = i;
+			break;
+		}
+	}
+	/* tell the spec_proc (if there is one) that we've been born */
+	/* insert in list */
 
-    if(script_data[i].virtual == mob_index[nr].virtual) {
-       SET_BIT(mob->specials.act, ACT_SCRIPT);
-       mob->script = i;
-       break;
-  }
-}
-  /* tell the spec_proc (if there is one) that we've been born */
-  /* insert in list */
-
-  mob->next = character_list;
-  character_list = mob;
+	mob->next = character_list;
+	character_list = mob;
 
 #if LOW_GOLD
-  if (mob->points.gold >= 10)
-/*     mob->points.gold /= 10; */
-     mob->points.gold /= 5;
-  else if (mob->points.gold > 0)
-    mob->points.gold = 1;
+	if (mob->points.gold >= 50)
+		mob->points.gold /= 5;
+	else if (mob->points.gold < 10)
+		mob->points.gold = 0;
 #endif
 
-  if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
-//sprintf(buf,"number = %d",nr);
-//log(buf);
-//	  if(mob->nr != 51817) { /* ginayro can carry more, him being greedy and unkillable and all */
-	if (mob_index[mob->nr].virtual != 51817) {
-//	if(strcmp(mob->player.name,"guardian greed Ginayro 14000")) {
-	    char buf[200];
-	    sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr, mob->points.gold);
-	    log(buf);
+/* Meh this creates such a lot of spam
+	if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
+		char buf[200];
+		sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr, mob->points.gold);
+		log(buf);
 	}
-  }
+*/
+	/* set up things that all members of the race have */
+	SetRacialStuff(mob);
 
-  /* set up things that all members of the race have */
-  SetRacialStuff(mob);
+	/* change exp for wimpy mobs (lower) */
+	if (IS_SET(mob->specials.act, ACT_WIMPY))
+		GET_EXP(mob) -= GET_EXP(mob)/10;
 
-  /* change exp for wimpy mobs (lower) */
-  if (IS_SET(mob->specials.act, ACT_WIMPY))
-    GET_EXP(mob) -= GET_EXP(mob)/10;
+	/* change exp for agressive mobs (higher) */
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		GET_EXP(mob) += GET_EXP(mob)/10;
+		/* big bonus for fully aggressive mobs for now */
+		if (!IS_SET(mob->specials.act, ACT_WIMPY)|| IS_SET(mob->specials.act, ACT_META_AGG))
+			GET_EXP(mob) += (GET_EXP(mob)/2);
+	}
 
-  /* change exp for agressive mobs (higher) */
-  if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
-      GET_EXP(mob) += GET_EXP(mob)/10;
-/* big bonus for fully aggressive mobs for now */
-      if (!IS_SET(mob->specials.act, ACT_WIMPY)||
-	  IS_SET(mob->specials.act, ACT_META_AGG))
-	GET_EXP(mob) += (GET_EXP(mob)/2);
-  }
+	/* set up distributed movement system */
+	mob->specials.tick = mob_tick_count++;
 
-  /* set up distributed movement system */
+	if (mob_tick_count == TICK_WRAP_COUNT)
+		mob_tick_count=0;
 
-  mob->specials.tick = mob_tick_count++;
-
-  if (mob_tick_count == TICK_WRAP_COUNT)
-    mob_tick_count=0;
-
-  mob_index[nr].number++;
+	mob_index[nr].number++;
 
 #if BYTE_COUNT
-  fprintf(stderr,"Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
+	fprintf(stderr,"Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
 #endif
+	return(bc);
+}
 
-  return(bc);
+int read_mob_from_new_file(struct char_data *mob, FILE *mob_fi)
+{
+  int i,nr;
+  long tmp, tmp2, tmp3, bc = 0;
+  char buf[100], buffer[255];
+  char letter;
+  int HpBonus;
+  float att;
+
+  extern int mob_tick_count;
+  extern long mob_count;
+
+  HpBonus=0;
+
+  nr = mob->nr;
+
+	mob->player.name = fread_string(mob_fi);
+	if (*mob->player.name)
+		bc += strlen(mob->player.name);
+	mob->player.short_descr = fread_string(mob_fi);
+	if (*mob->player.short_descr)
+		bc += strlen(mob->player.short_descr);
+	mob->player.long_descr = fread_string(mob_fi);
+	if (*mob->player.long_descr)
+		bc += strlen(mob->player.long_descr);
+	mob->player.description = fread_string(mob_fi);
+	if (mob->player.description && *mob->player.description)
+		bc += strlen(mob->player.description);
+
+	mob->player.sounds = fread_string(mob_fi);
+	if (mob->player.sounds && *mob->player.sounds)
+		bc += strlen(mob->player.sounds);
+	mob->player.distant_snds = fread_string(mob_fi);
+	if (mob->player.distant_snds && *mob->player.distant_snds)
+		bc += strlen(mob->player.distant_snds);
+
+
+	mob->player.title = 0;
+
+	/* *** Numeric data *** */
+	mob->specials.spellfail = 101;
+
+	fscanf(mob_fi, "%d ", &tmp);
+	mob->specials.act = tmp;
+	SET_BIT(mob->specials.act, ACT_ISNPC);
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->specials.affected_by = tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->specials.alignment = tmp;
+
+	fscanf(mob_fi, " %f \n", &att);
+	mob->mult_att = att;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	GET_LEVEL(mob, WARRIOR_LEVEL_IND) = tmp;
+
+	mob->abilities.str   =  9+number(1,(MAX(1,tmp/5 - 1)));
+	mob->abilities.intel =  9+number(1,(MAX(1,tmp/5 - 1)));
+	mob->abilities.wis   =  9+number(1,(MAX(1,tmp/5 - 1)));
+	mob->abilities.dex   =  9+number(1,(MAX(1,tmp/5 - 1)));
+	mob->abilities.con   =  9+number(1,(MAX(1,tmp/5 - 1)));
+	mob->abilities.chr   =  9+number(1,(MAX(1,tmp/5 - 1)));
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->points.hitroll = 20-tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	if (tmp > 10 || tmp < -10)
+		tmp /= 10;
+	mob->points.armor = 10*tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->points.hit = tmp;
+//	mob->points.max_hit = dice(GET_LEVEL(mob, WARRIOR_LEVEL_IND), 8)+tmp;
+//	mob->points.hit = mob->points.max_hit;
+
+	fscanf(mob_fi, " %dd%d+%d \n", &tmp, &tmp2, &tmp3);
+	mob->points.damroll = tmp3;
+	mob->specials.damnodice = tmp;
+	mob->specials.damsizedice = tmp2;
+
+	mob->points.mana = 10;
+	mob->points.max_mana = 10;
+
+	mob->points.move = 50;
+	mob->points.max_move = 50;
+
+
+	fscanf(mob_fi, " -1 ", &tmp);
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->points.gold = (int) 1 * (float)((number(900,1100)*tmp)/1000);
+
+	fscanf(mob_fi, " %d ", &tmp);
+	if (tmp < 1)
+		tmp = 1;
+	GET_EXP(mob) = (DetermineExp(mob, tmp)+mob->points.gold);
+
+	fscanf(mob_fi, " %d \n", &tmp);
+	GET_RACE(mob) = tmp;
+
+	if(IsGiant(mob))
+		mob->abilities.str += number(1,4);
+	if(IsSmall(mob))
+		mob->abilities.str -= 1;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->specials.position = tmp;
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->specials.default_pos = tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->player.sex = tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->immune = tmp;
+
+	fscanf(mob_fi, " %d ", &tmp);
+	mob->M_immune = tmp;
+
+	fscanf(mob_fi, " %d \n", &tmp);
+	mob->susc = tmp;
+
+	fscanf(mob_fi, " %d \n", &tmp);
+	mob->specials.proc = tmp;
+
+	mob->specials.talks = fread_string(mob_fi);
+	if (mob->specials.talks && *mob->specials.talks)
+		bc += strlen(mob->specials.talks);
+	mob->specials.quest_yes = fread_string(mob_fi);
+	if (mob->specials.quest_yes && *mob->specials.quest_yes)
+		bc += strlen(mob->specials.quest_yes);
+	mob->specials.quest_no = fread_string(mob_fi);
+	if (mob->specials.quest_no && *mob->specials.quest_no)
+		bc += strlen(mob->specials.quest_no);
+
+
+
+	mob->player.class = 0;
+
+	mob->player.time.birth = time(0);
+	mob->player.time.played     = 0;
+	mob->player.time.logon  = time(0);
+	mob->player.weight = 200;
+	mob->player.height = 198;
+
+	for (i = 0; i < 3; i++)
+		GET_COND(mob, i) = -1;
+
+	for (i = 0; i < MAX_SAVES; i++)
+		mob->specials.apply_saving_throw[i] = MAX(20-GET_LEVEL(mob, WARRIOR_LEVEL_IND), 2);
+
+	mob->tmpabilities = mob->abilities;
+
+	for (i = 0; i < MAX_WEAR; i++) /* Initialisering Ok */
+		mob->equipment[i] = 0;
+
+	mob->desc = 0;
+
+	if (!IS_SET(mob->specials.act, ACT_ISNPC))
+		SET_BIT(mob->specials.act, ACT_ISNPC);
+
+	mob->generic = 0;
+	mob->commandp = 0;
+	mob->commandp2 = 0;
+	mob->waitp = 0;
+
+	/* Check to see if associated with a script, if so, set it up */
+	if(IS_SET(mob->specials.act, ACT_SCRIPT))
+		REMOVE_BIT(mob->specials.act, ACT_SCRIPT);
+
+	for(i = 0; i < top_of_scripts; i++) {
+		if(script_data[i].virtual == mob_index[nr].virtual) {
+			SET_BIT(mob->specials.act, ACT_SCRIPT);
+			mob->script = i;
+			break;
+		}
+	}
+	/* tell the spec_proc (if there is one) that we've been born */
+	/* insert in list */
+
+	mob->next = character_list;
+	character_list = mob;
+
+/* Meh this creates such a lot of spam
+	if (mob->points.gold > GET_LEVEL(mob, WARRIOR_LEVEL_IND)*1500) {
+		char buf[200];
+		sprintf(buf, "%s has gold > level * 1500 (%d)", mob->player.short_descr, mob->points.gold);
+		log(buf);
+	}
+*/
+	/* set up things that all members of the race have */
+	SetRacialStuff(mob);
+
+	/* change exp for wimpy mobs (lower) */
+	if (IS_SET(mob->specials.act, ACT_WIMPY))
+		GET_EXP(mob) -= GET_EXP(mob)/10;
+
+	/* change exp for agressive mobs (higher) */
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		GET_EXP(mob) += GET_EXP(mob)/10;
+		/* big bonus for fully aggressive mobs for now */
+		if (!IS_SET(mob->specials.act, ACT_WIMPY)|| IS_SET(mob->specials.act, ACT_META_AGG))
+			GET_EXP(mob) += (GET_EXP(mob)/2);
+	}
+
+	/* set up distributed movement system */
+	mob->specials.tick = mob_tick_count++;
+
+	if (mob_tick_count == TICK_WRAP_COUNT)
+		mob_tick_count=0;
+
+	mob_index[nr].number++;
+
+#if BYTE_COUNT
+	fprintf(stderr,"Mobile [%d]: byte count: %d\n", mob_index[nr].virtual, bc);
+#endif
+	return(bc);
 }
 
 
@@ -2319,8 +2622,142 @@ void remove_cr(char *output, char *input)
 /* ---------- Start of write_mob_to_file ---------- */
 /* write a mobile to a file */
 
+
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                          *
+ *  Redone By Lennya, 20030802                                              *
+ *  Mob files will now have this format:                                    *
+ *                                                                          *
+ *  #vnum                                                                   *
+ *  name~                                                                   *
+ *  short description~                                                      *
+ *  long description~                                                       *
+ *  description                                                             *
+ *  ~                                                                       *
+ *  local sound                                                             *
+ *  ~                                                                       *
+ *  distant sound                                                           *
+ *  ~                                                                       *
+ *  ActionFlags  AffectFlags  Alignment  NumAttacks                         *
+ *  Level  HitRoll  ArmorClass/10  TotalHp  Damage(Example: 1d8+2)          *
+ *  -1  Gold  ExpFlag  Race                                                 *
+ *  Position  DefaultPosition  Sex  Immunities  Resistance  Susceptibilies  *
+ *  CommonProcedure                                                         *
+ *  talk string                                                             *
+ *  ~                                                                       *
+ *  quest solved string                                                     *
+ *  ~                                                                       *
+ *  wrong quest item string                                                 *
+ *  ~                                                                       *
+ *                                                                          *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
 {
+#if NEWMOBSTRUCTURE
+	long    bc,ltmp;
+	int i, xpflag;
+	long tmp, tmp2, tmp3;
+	float tmpexp;
+	char letter;
+	char buff[MAX_STRING_LENGTH];
+
+	/***** String data *** */
+	fwrite_string(mob_fi,mob->player.name);
+	fwrite_string(mob_fi,mob->player.short_descr);
+	remove_cr(buff,mob->player.long_descr);  // remove carriage return
+	fwrite_string(mob_fi,buff);
+	remove_cr(buff,mob->player.description);
+	fwrite_string(mob_fi,buff);
+	if(mob->player.sounds) {
+		remove_cr(buff,mob->player.sounds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->player.distant_snds) {
+		remove_cr(buff,mob->player.distant_snds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+
+	/* *** Numeric data *** */
+	tmp = mob->specials.act;    	// get actions flags
+	REMOVE_BIT(tmp, ACT_ISNPC);   	// remove flag IS NPC
+	REMOVE_BIT(tmp, ACT_HATEFUL);   // remove flag HATEFUL, these are of no import
+	REMOVE_BIT(tmp, ACT_GUARDIAN);  // remove flag GUARDIAN
+	REMOVE_BIT(tmp, ACT_HUNTING);	// remove flag HUNTING
+	REMOVE_BIT(tmp, ACT_AFRAID);	// remove flag AFRAID
+
+	fprintf(mob_fi, "%d ", tmp);    // write action flags
+	fprintf(mob_fi, " %d ", mob->specials.affected_by);
+	fprintf(mob_fi, " %d ",mob->specials.alignment );
+	fprintf(mob_fi, " %.1f \n",mob->mult_att );
+
+	fprintf(mob_fi, " %d ",GET_LEVEL(mob, WARRIOR_LEVEL_IND) );
+	fprintf(mob_fi, " %d ",(mob->points.hitroll-20)*-1 );
+	fprintf(mob_fi, " %d ",mob->points.armor/10 );
+	fprintf(mob_fi, " %d ", mob->points.max_hit);
+	fprintf(mob_fi, " %dd%d+%d \n", mob->specials.damnodice, mob->specials.damsizedice, mob->points.damroll);
+
+	tmpexp = GET_EXP(mob);    // convert Exp to float for calculation
+	/* revert exp for agressive	 mobs (lower) */
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		/* big bonus for fully aggressive mobs for now */
+		if (!IS_SET(mob->specials.act, ACT_WIMPY) || IS_SET(mob->specials.act, ACT_META_AGG))
+			tmpexp = tmpexp / 1.5;
+		tmpexp = tmpexp / 1.1;
+	}
+	/* revert exp for wimpy mobs (higher) */
+	if (IS_SET(mob->specials.act, ACT_WIMPY))
+		tmpexp = tmpexp/ 0.9;
+	i = (int) tmpexp;   // reconvert to long after calculation
+
+	fprintf(mob_fi, " %d ", -1);
+	fprintf(mob_fi, " %d ", mob->points.gold);
+
+	xpflag = GetExpFlags(mob, i); /* make sure this mob gets an xp flag from 1 - 31 */
+	if(xpflag < 1)
+		xpflag = 1;
+	if(xpflag > 31)
+		xpflag = 31;
+
+	fprintf(mob_fi, " %d ", xpflag);
+	fprintf(mob_fi, " %d \n", GET_RACE(mob));
+
+	fprintf(mob_fi, " %d ",mob->specials.position );
+	fprintf(mob_fi, " %d ", mob->specials.default_pos);
+
+	fprintf(mob_fi, " %d ",mob->player.sex);
+	fprintf(mob_fi, " %d ",mob->immune);
+	fprintf(mob_fi, " %d ",mob->M_immune);
+	fprintf(mob_fi, " %d \n", mob->susc);
+
+	fprintf(mob_fi, " %d \n", mob->specials.proc);
+
+	if(mob->specials.talks) {
+		remove_cr(buff,mob->specials.talks);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->specials.quest_yes) {
+		remove_cr(buff,mob->specials.quest_yes);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->specials.quest_no) {
+		remove_cr(buff,mob->specials.quest_no);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+
+
+#else
+
   int i;
   long tmp, tmp2, tmp3;
   float tmpexp;
@@ -2424,13 +2861,123 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
      *   write in the sound string for a mobile
      */
     if (letter == 'L') {
+		remove_cr(buff,mob->player.sounds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+		remove_cr(buff,mob->player.distant_snds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+	}
+#endif
+}
 
-	remove_cr(buff,mob->player.sounds);  // remove carriage return
-	fwrite_string(mob_fi,buff);
-	remove_cr(buff,mob->player.distant_snds);  // remove carriage return
-	fwrite_string(mob_fi,buff);
-    }
+int save_new_mobile_structure(struct char_data *mob, FILE *mob_fi, int hpB)
+{
+	long    bc,ltmp;
+	int i, xpflag;
+	long tmp, tmp2, tmp3;
+	float tmpexp;
+	char letter;
+	char buff[MAX_STRING_LENGTH];
 
+	/***** String data *** */
+	fwrite_string(mob_fi,mob->player.name);
+	fwrite_string(mob_fi,mob->player.short_descr);
+	remove_cr(buff,mob->player.long_descr);  // remove carriage return
+	fwrite_string(mob_fi,buff);
+	remove_cr(buff,mob->player.description);
+	fwrite_string(mob_fi,buff);
+	if(mob->player.sounds) {
+		remove_cr(buff,mob->player.sounds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->player.distant_snds) {
+		remove_cr(buff,mob->player.distant_snds);  // remove carriage return
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+
+	/* *** Numeric data *** */
+	if(IS_SET(mob->specials.act,ACT_NECROMANCER)) {
+		REMOVE_BIT(mob->specials.act, ACT_NECROMANCER); // replace old quest flag to new quest flag location
+		mob->specials.proc = PROC_QUEST;
+	}
+
+	tmp = mob->specials.act;    	// get actions flags
+	REMOVE_BIT(tmp, ACT_ISNPC);   	// remove flag IS NPC
+	REMOVE_BIT(tmp, ACT_HATEFUL);   // remove flag HATEFUL
+	REMOVE_BIT(tmp, ACT_GUARDIAN);  // remove flag GUARDIAN
+	REMOVE_BIT(tmp, ACT_HUNTING);	// remove flag HUNTING
+	REMOVE_BIT(tmp, ACT_AFRAID);	// remove flag AFRAID
+
+	fprintf(mob_fi, "%d ", tmp);    // write action flags
+	fprintf(mob_fi, " %d ", mob->specials.affected_by);
+	fprintf(mob_fi, " %d ",mob->specials.alignment );
+	fprintf(mob_fi, " %.1f \n",mob->mult_att );
+
+	fprintf(mob_fi, " %d ",GET_LEVEL(mob, WARRIOR_LEVEL_IND) );
+	fprintf(mob_fi, " %d ",(mob->points.hitroll-20)*-1 );
+	fprintf(mob_fi, " %d ",mob->points.armor/10 );
+	fprintf(mob_fi, " %d ", hpB);
+	fprintf(mob_fi, " %dd%d+%d \n", mob->specials.damnodice, mob->specials.damsizedice, mob->points.damroll);
+
+	tmpexp = GET_EXP(mob);    // convert Exp to float for calculation
+	/* revert exp for agressive	 mobs (lower) */
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		/* big bonus for fully aggressive mobs for now */
+		if (!IS_SET(mob->specials.act, ACT_WIMPY) || IS_SET(mob->specials.act, ACT_META_AGG))
+			tmpexp = tmpexp / 1.5;
+		tmpexp = tmpexp / 1.1;
+	}
+	/* revert exp for wimpy mobs (higher) */
+	if (IS_SET(mob->specials.act, ACT_WIMPY))
+		tmpexp = tmpexp/ 0.9;
+	i = (int) tmpexp;   // reconvert to long after calculation
+	if(mob->points.gold < 0)
+		mob->points.gold = 0;
+	i -= mob->points.gold;
+
+	fprintf(mob_fi, " %d ", -1);
+	fprintf(mob_fi, " %d ", mob->points.gold);
+
+	xpflag = GetExpFlags(mob, i); /* make sure this mob gets an xp flag from 1 - 31 */
+	if(xpflag < 1)
+		xpflag = 1;
+	if(xpflag > 31)
+		xpflag = 31;
+
+	fprintf(mob_fi, " %d ", xpflag);
+	fprintf(mob_fi, " %d \n", GET_RACE(mob));
+
+	fprintf(mob_fi, " %d ",mob->specials.position );
+	fprintf(mob_fi, " %d ", mob->specials.default_pos);
+
+	fprintf(mob_fi, " %d ",mob->player.sex);
+	fprintf(mob_fi, " %d ",mob->immune);
+	fprintf(mob_fi, " %d ",mob->M_immune);
+	fprintf(mob_fi, " %d \n", mob->susc);
+
+	fprintf(mob_fi, " %d \n", mob->specials.proc);
+
+	if(mob->specials.talks) {
+		remove_cr(buff,mob->specials.talks);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->specials.quest_yes) {
+		remove_cr(buff,mob->specials.quest_yes);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
+	if(mob->specials.quest_no) {
+		remove_cr(buff,mob->specials.quest_no);
+		fwrite_string(mob_fi,buff);
+	} else {
+		fwrite_string(mob_fi,"");
+	}
 }
 
 
