@@ -174,7 +174,6 @@ void TfdEdit(struct char_data *ch, char *arg)
             ch->specials.tfd = 0;
             break;
         default:
-            UpdateHelpMenu(ch);
             break;
         }
         return;

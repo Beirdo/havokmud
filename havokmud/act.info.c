@@ -19,11 +19,7 @@
 #include "version.h"
 #include "externs.h"
 
-#define NEWHELP_FILE      "ADD_HELP"    /* New help to add (In db.h too) */
-
 int             GET_RADIUS(struct char_data *ch);
-void            do_actual_wiz_help(struct char_data *ch, char *argument,
-                                   int cmd);
 int             MobLevBonus(struct char_data *ch);
 void            generate_map(struct char_data *ch, int size, int x, int y);
 void            print_map(struct char_data *ch);
@@ -33,6 +29,7 @@ struct time_info_data real_time_passed(time_t t2, time_t t1);
 void show_who_immortal(struct char_data *ch, struct char_data *person, 
                        char type);
 void show_who_mortal(struct char_data *ch, struct char_data *person, char type);
+void do_help_common(struct char_data *ch, char *argument, int type);
 
 
 int singular(struct obj_data *o)
@@ -2454,14 +2451,12 @@ void do_list_zones(struct char_data *ch, char *argument, int cmd)
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
+    do_help_common(ch, argument, HELP_MORTAL);
+}
 
-    int             i,
-                    match,
-                    toomany,
-                    possible;
-    char            buf[256],
-                    buffer[MAX_STRING_LENGTH],
-                   *keywordtopic;
+void do_help_common(struct char_data *ch, char *argument, int type)
+{
+    char           *helptext;
 
     dlog("in do_help");
 
@@ -2475,105 +2470,37 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         argument = "help help";
     }
 
-    if (!help_index) {
-        send_to_char("No help available.\n\r", ch);
-        return;
-    }
-
-    match = -1;
-    possible = 0;
-    toomany = 0;
-
     /* Look for an exact match */
-    for (i = 0; i <= top_of_helpt && match == -1; i++) {
-        if (!strcasecmp(argument, help_index[i].keyword)) {
-            match = i;
-        }
-    }
+    helptext = db_lookup_help( type, argument );
 
     /* Look for close matches */
-    if( match == -1 ) {
-        *buffer = '\0';
-
-        for (i = 0; i <= top_of_helpt && !toomany; i++) {
-            keywordtopic = skip_spaces(skip_word(help_index[i].keyword));
-            if (is_abbrev(argument, help_index[i].keyword) ||
-                is_abbrev(argument, keywordtopic) ||
-                is_abbrev(help_index[i].keyword, argument) ||
-                is_abbrev(keywordtopic, argument)) {
-
-                if (!possible) {
-                    match = i;
-                }
-                possible++;
-
-                sprintf(buf, "help %s\n\r", help_index[i].keyword);
-
-                if(strlen(buffer) + strlen(buf) <= MAX_STRING_LENGTH - 2) {
-                    strcat(buffer, buf);
-                } else {
-                    toomany = 1;
-                }
-            }
-        }
-    } 
-
-    if( possible > 1 ) {
-        /* We found several close matches */
-        if( toomany ) {
-            send_to_char("Your help request produced too many returns, "
-                         "please try to narrow it down.\n\r", ch);
-        }
-
-        send_to_char("No exact match found.  Please specify which one you "
-                     "wanted.\n\r"
-                     "Only exact matches will work.  Possible matches are:\n\r",
-                     ch);
-        page_string(ch->desc, buffer, 1);
-        return;
+    if( !helptext ) {
+        helptext = db_lookup_help_similar( type, argument );
     }
 
-    if( possible ) {
-        /* we found exactly one close match, warn that it's a close match */
-        send_to_char("No exact match found.  Possible match is:\n\r\n\r", ch);
-    }
-
-    if( !possible && match == -1 ) {
+    if( !helptext ) {
         /* no matches at all! */
         send_to_char("No remote or exact matches found.\n\r", ch);
-        Log("%s is looking for a help on \"%s\". Can someone help %s?", 
-            GET_NAME(ch), argument, HMHR(ch));
 
-        /*
-         * add query to ADD_HELP
-         */
-        db_report_entry( REPORT_HELP, ch, argument );
+        switch(type) {
+        case HELP_MORTAL:
+            Log("%s is looking for help on \"%s\". Can someone help %s?", 
+                GET_NAME(ch), argument, HMHR(ch));
+
+            db_report_entry( REPORT_HELP, ch, argument );
+            break;
+        case HELP_IMMORTAL:
+            Log("%s is looking for wizhelp on \"%s\". Can someone help %s?", 
+                GET_NAME(ch), argument, HMHR(ch));
+
+            db_report_entry( REPORT_WIZHELP, ch, argument );
+            break;
+        }
         return;
     }
 
-    /* We have exact or one close match */
-    *buffer = '\0';
-
-    rewind(help_fl);
-    fseek(help_fl, help_index[match].pos, 0);
-    while( TRUE ) {
-        fgets(buf, 80, help_fl);
-        if (*buf == '#' || feof(help_fl)) {
-            break;
-        }
-
-        if (strlen(buf) + strlen(buffer) > MAX_STRING_LENGTH - 3) {
-            break;
-        }
-
-        while (buf[strlen(buf) - 1] == '~') {
-            buf[strlen(buf) - 1] = '\0';
-        }
-
-        strcat(buffer, buf);
-    }
-
-    page_string(ch->desc, buffer, 1);
+    page_string(ch->desc, helptext, 1);
+    free( helptext );
 }
         
 
@@ -2597,7 +2524,7 @@ void do_wizhelp(struct char_data *ch, char *arg, int cmd)
         /*
          * asking for help on keyword, try looking in file
          */
-        do_actual_wiz_help(ch, keyword, cmd);
+        do_help_common(ch, keyword, HELP_IMMORTAL);
         return;
     }
 
@@ -2631,67 +2558,6 @@ void do_wizhelp(struct char_data *ch, char *arg, int cmd)
     page_string(ch->desc, buf, 1);
 }
 
-void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
-{
-
-    int             chk,
-                    bot,
-                    top,
-                    mid,
-                    minlen;
-    char            buf[MAX_STRING_LENGTH],
-                    buffer[MAX_STRING_LENGTH];
-
-    dlog("in do_actual_wiz");
-
-    if (!ch->desc) {
-        return;
-	}
-
-    argument = skip_spaces(argument);
-    if (argument) {
-        if (!wizhelp_index) {
-            send_to_char("No wizhelp available.\n\r", ch);
-            return;
-        }
-        bot = 0;
-        top = top_of_wizhelpt;
-
-        for (;;) {
-            mid = (bot + top) / 2;
-            minlen = strlen(argument);
-
-            if (!(chk =
-                  strncasecmp(argument, wizhelp_index[mid].keyword, minlen))) {
-                rewind(wizhelp_fl);
-                fseek(wizhelp_fl, wizhelp_index[mid].pos, 0);
-                *buffer = '\0';
-                for (;;) {
-                    fgets(buf, 80, wizhelp_fl);
-                    if (*buf == '#') {
-                        break;
-					}
-                    if (strlen(buf) + strlen(buffer) >
-                        MAX_STRING_LENGTH - 2) {
-                        break;
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                }
-                page_string(ch->desc, buffer, 1);
-                return;
-            } else if (bot >= top) {
-                send_to_char("There is no wizhelp on that word.\n\r", ch);
-                return;
-            } else if (chk > 0) {
-                bot = ++mid;
-			} else {
-                top = --mid;
-			}
-        }
-        return;
-    }
-}
 
 void do_command_list(struct char_data *ch, char *arg, int cmd)
 {

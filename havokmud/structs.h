@@ -1864,7 +1864,6 @@ struct txt_q {
 #define CON_ANSI            32
 #define CON_CREATION_MENU   33
 #define CON_ALIGNMENT       34
-#define CON_HELP_EDITING    35
 #define CON_EMAILREG        36
 #define CON_TFD_EDITING     37
 #define CON_MCLASS          38
@@ -2538,6 +2537,7 @@ struct lang_def {
 #define REPORT_WIZIDEA      6
 #define REPORT_WIZTYPO      7
 #define REPORT_QUEST        8
+#define REPORT_WIZHELP      9
 
 struct user_report {
     void               *res;
@@ -2562,6 +2562,10 @@ struct user_report {
  * Maximum size of mail in bytes (arbitrary) 
  */
 #define MAX_MAIL_SIZE 4000
+
+
+#define HELP_MORTAL   1
+#define HELP_IMMORTAL 2
 
 
 #endif

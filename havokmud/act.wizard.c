@@ -109,43 +109,6 @@ void do_auth(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-void do_imptest(struct char_data *ch, char *arg, int cmd)
-{
-    int             bot,
-                    top,
-                    x;
-    char            buf[100];
-
-    bot = 0;
-    top = top_of_helpt;
-
-    for (x = 17; x < top; x++) {
-        sprintf(buf, "%s", help_index[x].keyword);
-
-        /*
-         * strstr(buf,"SPELL"))
-         */
-
-        ch_printf(ch, "[<a href=\"#%s\"><strong>%s</strong></a>]", buf,
-                      buf);
-        if (x % 1 == 0)
-            send_to_char("\n\r", ch);
-    }
-
-    for (x = 17; x < top; x++) {
-        sprintf(buf, "%s", help_index[x].keyword);
-
-        /*
-         * strstr(buf,"SPELL"))
-         */
-        ch_printf(ch, "<h2><a name=\"%s\">%s</a></h2><P>", buf, buf);
-        do_help(ch, buf, 1);
-        send_to_char("</P>", ch);
-        if (x % 1 == 0) {
-            send_to_char("\n\r", ch);
-        }
-    }
-}
 
 void do_passwd(struct char_data *ch, char *argument, int cmdnum)
 {

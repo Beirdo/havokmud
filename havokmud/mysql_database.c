@@ -1177,11 +1177,6 @@ void db_load_textfiles(void)
     }
     mysql_free_result(res);
 
-    if( help ) {
-        free( help );
-    }
-    help = file_to_string(HELP_PAGE_FILE);
-
     if( info ) {
         free( info );
     }
@@ -1654,6 +1649,76 @@ int CheckKillFile(long virtual)
     mysql_free_result(res);
     return (count);
 }
+
+
+char *db_lookup_help( int type, char *keywords )
+{
+    char            buf[MAX_STRING_LENGTH];
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT `keywords`, `helpText` FROM `helpTopics` "
+                 "WHERE `helpType` = %d AND "
+                 "UPPER(`keywords`) = UPPER('%s')", type, keywords );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
+        return(NULL);
+    }
+
+    row = mysql_fetch_row(res);
+
+    sprintf(buf, "\"%s\"\n\r\n\r"
+                 "%s\n\r", row[0], row[1] );
+    mysql_free_result(res);
+
+    return( strdup(buf) );
+}
+
+char *db_lookup_help_similar( int type, char *keywords )
+{
+    char            buf[MAX_STRING_LENGTH];
+    char            line[256];
+    int             count,
+                    i;
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT UPPER(`keywords`), "
+                 "MATCH(`keywords`, `helpText`) AGAINST('%s') AS score "
+                 "FROM  `helpTopics` WHERE `helpType` = %d AND "
+                 "MATCH(keywords, helpText) AGAINST('%s') "
+                 "ORDER BY score DESC LIMIT 10", keywords, type, keywords );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        mysql_free_result(res);
+        return(NULL);
+    }
+
+    sprintf(buf, "No exact matches found for \"%s\".  Top %d relevant topics "
+                 "are:\n\r  %-68s Score\n\r", keywords, count, "Keywords" );
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        snprintf(line, 255, "    %-66s %6.3f\n\r", row[0],
+                            strtod(row[1], NULL));
+        strcat(buf, line);
+    }
+
+    mysql_free_result(res);
+
+    strcat(buf, "Please retry help using one of these keywords.\n\r");
+
+    return( strdup(buf) );
+}
+
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -87,7 +87,6 @@ char           *wmotd = NULL;
 char           *credits = NULL;     /* the Credits List */
 char           *news = NULL;        /* the news */
 char           *motd = NULL;        /* the messages of today */
-char           *help = NULL;        /* the main help page */
 char           *info = NULL;        /* the info text */
 char           wizlist[MAX_STRING_LENGTH * 2];     /* the wizlist */
 char           iwizlist[MAX_STRING_LENGTH * 2];    /* the wizlist */
@@ -174,7 +173,7 @@ void boot_db(void)
     InitScripts();
 #endif
 
-    Log("Opening mobile, object and help files.");
+    Log("Opening mobile and object files.");
     if (!(mob_f = fopen(MOB_FILE, "r"))) {
         perror("boot");
         assert(0);
@@ -183,16 +182,6 @@ void boot_db(void)
     if (!(obj_f = fopen(OBJ_FILE, "r"))) {
         perror("boot");
         assert(0);
-    }
-    if (!(help_fl = fopen(HELP_KWRD_FILE, "r"))) {
-        Log("   Could not open help file.");
-    } else {
-        help_index = build_help_index(help_fl, &top_of_helpt);
-    }
-    if (!(wizhelp_fl = fopen(WIZ_HELP_FILE, "r"))) {
-        Log("   Could not open wizhelp file.");
-    } else {
-        wizhelp_index = build_help_index(wizhelp_fl, &top_of_wizhelpt);
     }
 
 #ifdef CLEAN_AT_BOOT

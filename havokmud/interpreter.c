@@ -436,7 +436,9 @@ struct command_def commandList[] = {
     { "bonk", do_action, 246, POSITION_SITTING, 1 },
     { "chpwd", do_passwd, 247, POSITION_SITTING, IMPLEMENTOR },
     { "fill", do_not_here, 248, POSITION_SITTING, 0 },
+#if 0
     { "imptest", do_imptest, 249, POSITION_SITTING, 60 },
+#endif
     { "shoot", do_fire, 250, POSITION_STANDING, 1 },
     { "silence", do_silence, 251, POSITION_STANDING, 54 },
 #if 0

@@ -65,12 +65,7 @@ extern long     room_count;
 extern long     mob_count;
 extern long     obj_count;
 extern int      spell_status[];
-extern int      top_of_wizhelpt;
-extern struct help_index_element *wizhelp_index;
-extern FILE    *wizhelp_fl;
 extern struct radix_list radix_head[];
-extern FILE    *help_fl;
-extern char    *help;
 extern const char *weekdays[];
 extern const char *month_name[];
 extern const char *fight_styles[];
@@ -128,8 +123,6 @@ extern struct int_app_type int_app[];
 
 extern struct zone_data *zone_table;
 
-extern int      top_of_helpt;
-extern struct help_index_element *help_index;
 extern char    *spells[];
 /*
  * for objects

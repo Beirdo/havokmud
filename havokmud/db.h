@@ -19,9 +19,6 @@
                                                  * tables */
 #define PLAYER_FILE       "players"     /* the player database */
 #define TIME_FILE         "time"        /* game calendar information */
-#define HELP_PAGE_FILE    "help"        /* for HELP <CR> */
-#define HELP_KWRD_FILE    "help_table"  /* for HELP <keywrd> */
-#define WIZ_HELP_FILE     "wizhelp_table"       /* For wizhelp <keyword> */
 #define WIZLIST_FILE      "wizlist"     /* for WIZLIST */
 
 #define IWIZLIST_FILE      "iwizlist"   /* for WIZLIST */

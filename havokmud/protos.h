@@ -366,7 +366,6 @@ void            do_ghost(struct char_data *ch, char *argument, int cmd);
 void            do_spot(struct char_data *ch, char *argument, int cmd);
 void            do_cset(struct char_data *ch, char *arg, int cmd);
 void            do_auth(struct char_data *ch, char *argument, int cmd);
-void            do_imptest(struct char_data *ch, char *arg, int cmd);
 void            do_passwd(struct char_data *ch, char *argument,
                           int cmdnum);
 void            do_setsev(struct char_data *ch, char *arg, int cmd);
@@ -4150,6 +4149,9 @@ int             db_has_mail(char *recipient);
 int   db_get_mail_ids(char *recipient, int *messageNum, int count);
 char *db_get_mail_message(int messageId);
 void db_delete_mail_message(int messageId);
+
+char *db_lookup_help( int type, char *keywords );
+char *db_lookup_help_similar( int type, char *keywords );
 
 
 /*************************************************************************
