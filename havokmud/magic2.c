@@ -1941,6 +1941,10 @@ void spell_dispel_magic(int level, struct char_data *ch,
         if (affected_by_spell(victim, SPELL_FEEBLEMIND)) {
             affect_from_char(victim, SPELL_FEEBLEMIND);
         }
+        if (affected_by_spell(victim, SKILL_WALL_OF_THOUGHT)) {
+            affect_from_char(victim, SKILL_WALL_OF_THOUGHT);
+            send_to_char("Your wall of thought suddenly fails!\n\r", victim);
+        }
     }
 }
 
@@ -2938,37 +2942,6 @@ void spell_prot_dragon_breath_gas(int level, struct char_data *ch,
     } else {
         sprintf(buf, "You are already surrounded by a gas protective globe.");
         act(buf, FALSE, ch, 0, victim, TO_CHAR);
-    }
-}
-
-void spell_wall_of_thought(int level, struct char_data *ch,
-                           struct char_data *victim, struct obj_data *obj)
-{
-    struct affected_type af;
-
-    assert(ch);
-
-    if (!affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
-        act("$n's wall of thought.", TRUE, ch, 0, 0, TO_ROOM);
-        act("A wall of thought comes up.", TRUE, ch, 0, 0, TO_CHAR);
-
-        af.type = SPELL_WALL_OF_THOUGHT;
-        af.duration = level;
-        af.modifier = -40;
-        af.location = APPLY_AC;
-        af.bitvector = 0;
-        affect_to_char(ch, &af);
-
-        /*
-         * resistance to piercing weapons
-         */
-
-        af.type = SPELL_WALL_OF_THOUGHT;
-        af.duration = level;
-        af.modifier = IMM_BLUNT;
-        af.location = APPLY_IMMUNE;
-        af.bitvector = 0;
-        affect_to_char(ch, &af);
     }
 }
 

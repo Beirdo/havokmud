@@ -1272,6 +1272,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"telekinesis", SKILL_TELEKINESIS, 35, 45},
         {"tower of iron will", SKILL_TOWER_IRON_WILL, 34, 45},
         {"ultra blast", SKILL_ULTRA_BLAST, 20, 45},
+        {"wall of thought", SKILL_WALL_OF_THOUGHT, 30, 45},
         {"None", -1, -1, -1}
       },
       /* Mainskills */
@@ -1818,7 +1819,7 @@ const char     *spell_wear_off_msg[] = {
     "",
     "Your mental reserves have restored enough to raise another flesh golem.",
     "The aura of freezing flames that surrounds you melts.",    /* 338 */
-    "wall of thought",
+    "Your wall of thought vanishes.",
     "mind tap",
     "Your blade barrier winks out of existence.",
     "Mana no longer protects you.",     /* 342 SPELL_MANA_SHIELD */
@@ -2170,7 +2171,7 @@ const char     *spell_wear_off_room_msg[] = {
     "",
     "",
     "The aura of freezing flames surrounding $n melts.",        /* 338 */
-    "wall of thought",
+    "The wall of thought surrounding $n vanishes.",
     "mind tap",
     "$n's blade barrier winks out of existence.",
     "$n's mana shield exhausts itself", /* 342 SPELL_MANA_SHIELD */
@@ -2528,7 +2529,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "",
     "",
     "Your aura of freezing flames hisses softly.",      /* 338 */
-    "wall of thought",
+    "Your wall of thought wavers a moment.",
     "mind tap",
     "Your blade barrier wavers a moment.",
     "Your mana protection weakens some.",       /* SPELL_MANA_SHIELD */
@@ -2882,7 +2883,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "",
     "$n's aura of freezing flames hisses softly.",      /* 338 */
-    "wall of thought",
+    "$n's wall of thought wavers a moment.",
     "mind tap",
     "$n's blade barrier wavers a moment.",
     "$n's mana protection fades momentarily.",  /* SPELL_MANA_SHIELD */

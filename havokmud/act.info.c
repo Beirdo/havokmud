@@ -2868,6 +2868,8 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         return;
 
         send_to_char(help, ch);
+    } else {
+        do_help(ch, "help help", 38);
     }
 }
 

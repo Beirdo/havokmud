@@ -902,7 +902,26 @@ void mind_sense_object(int level, struct char_data *ch,
         }
     }
 }
+void mind_wall_of_thought(int level, struct char_data *ch,
+                          struct char_data *victim, struct obj_data *obj)
+{
+    struct affected_type af;
 
+    assert (ch);
+
+    if (!affected_by_spell(ch, SKILL_WALL_OF_THOUGHT)) {
+        act("A wall of thought surrounds $n.", TRUE, ch, 0, 0, TO_ROOM);
+        act("You surround yourself with a wall of thought.", 
+           TRUE, ch, 0, 0, TO_CHAR);
+        
+        af.type = SKILL_WALL_OF_THOUGHT;
+        af.duration = level/2;
+        af.modifier = IMM_BLUNT;
+        af.location = APPLY_IMMUNE;
+        af.bitvector = 0;
+        affect_to_char(ch, &af);
+    }
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

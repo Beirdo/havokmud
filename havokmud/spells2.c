@@ -5350,42 +5350,6 @@ void cast_chillshield(int level, struct char_data *ch, char *arg,
     }
 }
 
-void cast_wall_of_thought(int level, struct char_data *ch, char *arg,
-                          int type, struct char_data *tar_ch,
-                          struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-        if (affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
-            send_to_char("Nothing seems to happen.\n\r", ch);
-            return;
-        }
-        spell_wall_of_thought(level, ch, ch, 0);
-        break;
-    case SPELL_TYPE_POTION:
-        if (affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
-            return;
-        }
-        spell_wall_of_thought(level, ch, ch, 0);
-        break;
-    case SPELL_TYPE_SCROLL:
-        if (tar_obj || affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
-            return;
-        }
-        spell_wall_of_thought(level, ch, ch, 0);
-        break;
-    case SPELL_TYPE_WAND:
-        if (tar_obj || affected_by_spell(ch, SPELL_WALL_OF_THOUGHT)) {
-            return;
-        }
-        spell_wall_of_thought(level, ch, ch, 0);
-        break;
-    default:
-        Log("Serious screw-up in wall_of_thought!");
-        break;
-    }
-}
-
 void cast_cold_light(int level, struct char_data *ch, char *arg,
                      int type, struct char_data *tar_ch,
                      struct obj_data *tar_obj)
