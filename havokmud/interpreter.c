@@ -3632,6 +3632,7 @@ if (d->character->player.description)
 	&d->character->player.description;
       d->max_str = 240;
       STATE(d) = CON_EXDSCR;
+      SEND_TO_Q("<type \\w to save.>\n\r",d);
       break;
 
     case '3':
@@ -3702,6 +3703,15 @@ if (d->character->player.description)
 
 
     break;
+
+	case CON_EXDSCR:
+
+	    send_to_char(MENU,d->character);
+
+	    STATE(d) = CON_SLCT;
+    break;
+
+
   case CON_PWDNCNF:
     /* skip whitespaces */
     for (; isspace(*arg); arg++);
