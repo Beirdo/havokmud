@@ -486,6 +486,8 @@ int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type);
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type);
 int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 		    int attacktype);
+void specdamage (struct char_data *ch, struct char_data*victim);
+
 /* msw changed */
 void make_corpse(struct char_data *ch, int killedbytype);
 void raw_kill(struct char_data *ch,int killedbytype);
@@ -1486,6 +1488,8 @@ int marbles(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 /*Assigns for Thunder Mountain Keep */
 int bahamut_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int bahamut_prayer(struct char_data *ch, struct char_data *vict);
+int bahamut_armor(struct char_data *ch, struct char_data *vict);
+int cronus_pool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

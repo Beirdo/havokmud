@@ -1292,6 +1292,7 @@ void assign_mobiles()
   {45417, elamin},
   {45440, starving_man},
   {45443, goblin_chuirgeon},
+  {45463, cronus_pool},
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */

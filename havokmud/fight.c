@@ -1535,11 +1535,13 @@ if (affected_by_spell(v,SPELL_ANTI_MAGIC_SHELL) && IsMagicSpell(type)) {
   return(dam);
 }
 
-#define BAHAMUT 45400
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
+  
+  specdamage(ch,v);
+
   /*This was added solely for Bahamut.  Its a cludge, but it works.*/
-  if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v);
+  /*if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v);*/
 
   if (dam >= 0) {
     GET_HIT(v)-=dam;
@@ -4211,5 +4213,20 @@ if(GET_RACE(ch) == RACE_AVARIEL)   /*Races with fire prone wings*/
     return;
 
    }else
+return;
+}
+
+#define BAHAMUT 45461
+#define BAHAMUT_ARMOR 45495
+void specdamage(struct char_data *ch, struct char_data *v)
+{
+  struct obj_data *object;  
+
+  if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v);
+  if (ch->equipment[WEAR_BODY]) { 
+	object = ch->equipment[WEAR_BODY];
+  	if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR) bahamut_armor(ch, v);
+  }
+
 return;
 }

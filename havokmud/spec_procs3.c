@@ -4214,7 +4214,7 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 #define BAHAMUT_SKIN 45495
 #define WEST_WING_KEY 45500
 
-#define BAHAMUT 45400
+#define BAHAMUT 45461
 #define TMK_GUARD_ONE 45401
 #define TMK_GUARD_TWO 45402
 #define BRAXIS 45406
@@ -4227,6 +4227,7 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 #define ZORK_ROOM 45496
 #define CALM_BEFORE_STORM 45517
+#define BAHAMUT_HOME 46378
 
 int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
@@ -5352,6 +5353,34 @@ int bahamut_prayer(struct char_data *ch, struct char_data *vict)
 return(FALSE);
 }
 
+int bahamut_armor(struct char_data *ch, struct char_data *vict)
+{
+
+  switch (number(0, 30)) {
+	case 1:
+		act("$c0011A blinding beam of light bursts from you and sears your enemy's life away.", FALSE, ch, 0, 0, TO_CHAR);
+		act("$c0011A blinding beam of light bursts from $n.",FALSE, ch, 0, 0, TO_ROOM);
+		GET_HIT(ch) += 15;
+		GET_HIT(vict) -= 15;
+		break;	
+	case 3:
+		act("$c0011A bright light flickers around you briefly.", FALSE, ch, 0, 0, TO_CHAR);
+		act("$c0011A bright light flickers around $n briefly.", FALSE, ch, 0, 0, TO_ROOM);
+		break;
+	case 4:
+		act("$c0011A bright light flickers around you briefly.", FALSE, ch, 0, 0, TO_CHAR);
+		act("$c0011A bright light flickers around $n briefly.", FALSE, ch, 0, 0, TO_ROOM);
+		break;
+	case 5:
+		act("$c0011A bright light flickers around you briefly.", FALSE, ch, 0, 0, TO_CHAR);
+		act("$c0011A bright light flickers around $n briefly.", FALSE, ch, 0, 0, TO_ROOM);
+		break;
+	default:
+		break;
+  }
+return(FALSE);
+}
+
 int tmk_guard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
@@ -6026,4 +6055,32 @@ int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, 
        }
   }
 
+}
+
+int cronus_pool(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  char buf[50];
+  struct char_data *portal;
+
+  if(cmd!=7) return(FALSE);     /* enter */
+  one_argument(arg,buf);
+  if(*buf) {
+    if(!(str_cmp("pool",buf)) || !(str_cmp("color",buf)) ||
+       !(str_cmp("color pool",buf))) {
+      if(portal=get_char_room("pool",ch->in_room)) {
+          send_to_char("\n\r",ch);
+          send_to_char("You attempt to enter the pool, and it gives.\n\r",ch);
+          send_to_char("You press on further and the pool surrounds you, like some soft membrane.\n\r",ch);
+          send_to_char("There is a slight wrenching sensation, and then the color disappears.\n\r",ch);
+          send_to_char("\n\r",ch);
+          act("$n enters a color and dissapears!", FALSE , ch, 0, 0, TO_ROOM);
+          char_from_room(ch);
+          char_to_room(ch,BAHAMUT_HOME);
+          act("$n appears in a dazzling explosion of light!", FALSE, ch, 0, 0, TO_ROOM);
+          do_look(ch, "", 0);
+          return(TRUE);
+      }
+    } else return(FALSE);
+  }
+return(FALSE);
 }
