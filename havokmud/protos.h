@@ -54,7 +54,7 @@ void DeleteFears(struct char_data *ch);
 
 int RecGetObjRoom(struct obj_data *obj);
 void MakeNoise(int room, char *local_snd, char *distant_snd);
-int MakeSound(int pulse);
+void MakeSound(int pulse);
 
 
 /* From Trap.c */
