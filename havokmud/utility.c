@@ -3423,7 +3423,7 @@ void AuctionPulseStuff(int pulse)
 //				assert(!auctionobj->in_obj);
 				auctionobj->in_obj = 0;
 //				assert(auctionobj->in_room == NOWHERE);
-				auctionobj->in_room = 0;
+				auctionobj->in_room = -1;
 //				assert(!auctionobj->carried_by);
 				auctionobj->carried_by = 0;
 
