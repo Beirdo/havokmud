@@ -941,23 +941,28 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
 
     case 5:
+        if (!string) {
+            send_to_char("You must provide a valid exit (0-5).\n\r", ch);
+            return;
+        }
+        
         dir = atoi(string);
-        if (string && (dir >= 0) && (dir <= 5)) {
+        if (dir >= 0 && dir <= 5) {
             send_to_char("Enter text, term. with '/w' on a blank line\n\r", ch);
             if (rp->dir_option[dir]) {
                 ch->desc->str = &rp->dir_option[dir]->general_description;
             } else {
                 CREATE(rp->dir_option[dir], struct room_direction_data, 1);
                 ch->desc->str = &rp->dir_option[dir]->general_description;
-            }
-            string = NULL;
-            break;
+            } 
         } else {
-            send_to_char("Illegal direction\n\r", ch);
-            send_to_char("Must enter 0-5. I will ask for text.\n\r", ch);
-            return;
+            send_to_char("That is not a valid exit.\n\r", ch);
+            send_to_char("0 = North\n\r1 = East\n\r2 = South\n\r3 = West"
+                         "\n\r4 = Up\n\r5 = Down\n\r", ch);
         }
+        string = NULL;
         break;
+    
     case 6:
         /*
          * extra descriptions
