@@ -343,34 +343,6 @@ void spell_changestaff(int level, struct char_data *ch,
  * cleric
  */
 
-void spell_aid(int level, struct char_data *ch,
-               struct char_data *victim, struct obj_data *obj)
-{
-    /*
-     * combo bless, cure light woundsish
-     */
-    struct affected_type af;
-
-    if (affected_by_spell(victim, SPELL_AID)) {
-        send_to_char("Already in effect\n\r", ch);
-        return;
-    }
-
-    GET_HIT(victim) += number(1, 8);
-
-    update_pos(victim);
-
-    act("$n looks aided", FALSE, victim, 0, 0, TO_ROOM);
-    send_to_char("You feel better!\n\r", victim);
-
-    af.type = SPELL_AID;
-    af.duration = 10;
-    af.modifier = 1;
-    af.location = APPLY_HITROLL;
-    af.bitvector = 0;
-    affect_to_char(victim, &af);
-}
-
 void spell_holyword(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {

@@ -6564,64 +6564,32 @@ void cast_teleport(int level, struct char_data *ch, char *arg, int type,
         break;
     }
 }
-
+#define ASTRAL_ENTRANCE 2701
 void spell_teleport_wo_error(int level, struct char_data *ch,
                              struct char_data *victim,
                              struct obj_data *obj)
+
 {
-    int             location;
+    struct char_data *tmp,
+                   *tmp2;
     struct room_data *rp;
 
-    /*
-     * replaces the current functionality of astral walk
-     */
-    assert(ch && victim);
-
-    location = victim->in_room;
-    rp = real_roomp(location);
-
-    if (A_NOTRAVEL(ch)) {
-        send_to_char("The arena rules do not permit you to use travelling "
-                     "spells!\n\r", ch);
+    if (IS_SET(SystemFlags, SYS_NOASTRAL)) {
+        send_to_char("The astral planes are shifting, you cannot!\n", ch);
         return;
     }
 
-    if (GetMaxLevel(victim) > MAX_MORT || !rp ||
-        IS_SET(rp->room_flags, PRIVATE) || IS_SET(rp->room_flags, NO_SUM) ||
-        IS_SET(rp->room_flags, NO_MAGIC) ||
-        (IS_SET(rp->room_flags, TUNNEL) &&
-         MobCountInRoom(rp->people) > rp->moblim)) {
-        send_to_char("You failed.\n\r", ch);
-        return;
-    }
+    rp = real_roomp(ch->in_room);
 
-    if (!IsOnPmp(location)) {
-        send_to_char("That place is on an extra-dimensional plane!\n", ch);
-        return;
-    }
-
-    if (!IsOnPmp(ch->in_room)) {
-        send_to_char("You're on an extra-dimensional plane!\n\r", ch);
-        return;
-    }
-
-    if (dice(1, 20) == 20) {
-        send_to_char("You fail the magic, and spin out of control!\n\r", ch);
-        spell_teleport(level, ch, ch, 0);
-        return;
-    } else {
-        act("$n opens a door to another dimension and steps through!",
-            FALSE, ch, 0, 0, TO_ROOM);
-        char_from_room(ch);
-        char_to_room(ch, location);
-        act("You are blinded for a moment as $n appears in a flash of light!",
-            FALSE, ch, 0, 0, TO_ROOM);
-        do_look(ch, NULL, 15);
-        check_falling(ch);
-
-        if (IS_SET(real_roomp(ch->in_room)->room_flags, DEATH) &&
-            !IS_IMMORTAL(ch)) {
-            NailThisSucker(ch);
+    for (tmp = rp->people; tmp; tmp = tmp2) {
+        tmp2 = tmp->next_in_room;
+        if (in_group(ch, tmp) && !tmp->specials.fighting &&
+            (IS_PC(tmp) || IS_SET(tmp->specials.act, ACT_POLYSELF)) &&
+            IS_AFFECTED(tmp, AFF_GROUP)) {
+            act("$n wavers, fades and dissappears", FALSE, tmp, 0, 0, TO_ROOM);
+            char_from_room(tmp);
+            char_to_room(tmp, ASTRAL_ENTRANCE);
+            do_look(tmp, NULL, 0);
         }
     }
 }
@@ -6637,9 +6605,9 @@ void cast_teleport_wo_error(int level, struct char_data *ch, char *arg,
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_STAFF:
         if (!tar_ch) {
-            send_to_char("Yes, but who do you wish to teleport to?\n", ch);
+            tar_ch = ch;
         } else {
-            spell_astral_walk(level, ch, tar_ch, 0);
+            spell_teleport_wo_error(level, ch, tar_ch, 0);
         }
         break;
     default:

@@ -122,31 +122,6 @@ void cast_mana(int level, struct char_data *ch, char *arg, int type,
     }
 }
 
-
-
-void cast_astral_walk(int level, struct char_data *ch, char *arg,
-                      int type, struct char_data *tar_ch,
-                      struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_POTION:
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_STAFF:
-        if (!tar_ch) {
-            tar_ch = ch;
-        } else {
-            spell_astral_walk(level, ch, tar_ch, 0);
-        }
-        break;
-    default:
-        Log("Serious screw-up in astral walk!");
-        break;
-    }
-}
-
-
 void cast_bless(int level, struct char_data *ch, char *arg, int type,
                 struct char_data *tar_ch, struct obj_data *tar_obj)
 {
@@ -1451,30 +1426,6 @@ void cast_changestaff(int level, struct char_data *ch, char *arg,
         break;
     default:
         Log("serious screw-up in changestaff.");
-        break;
-    }
-}
-
-
-
-
-
-
-void cast_aid(int level, struct char_data *ch, char *arg,
-              int type, struct char_data *tar_ch, struct obj_data *tar_obj)
-{
-    if (!tar_ch) {
-        tar_ch = ch;
-    }
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-    case SPELL_TYPE_STAFF:
-        spell_aid(level, ch, tar_ch, 0);
-        break;
-    default:
-        Log("serious screw-up in scare.");
         break;
     }
 }

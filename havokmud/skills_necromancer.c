@@ -19,52 +19,6 @@
  * Extern functions 
  */
 
-
-void cast_animate_dead(int level, struct char_data *ch, char *arg,
-                       int type, struct char_data *tar_ch,
-                       struct obj_data *tar_obj)
-{
-
-    struct obj_data *i;
-
-    if (NoSummon(ch)) {
-        return;
-    }
-    switch (type) {
-
-    case SPELL_TYPE_SPELL:
-    case SPELL_TYPE_SCROLL:
-    case SPELL_TYPE_WAND:
-        if (tar_obj) {
-            if (IS_CORPSE(tar_obj)) {
-                spell_animate_dead(level, ch, 0, tar_obj);
-            } else {
-                send_to_char("That's not a corpse!\n\r", ch);
-                return;
-            }
-        } else {
-            send_to_char("That isn't a corpse!\n\r", ch);
-            return;
-        }
-        break;
-    case SPELL_TYPE_POTION:
-        send_to_char("Your body revolts against the magic liquid.\n\r", ch);
-        ch->points.hit = 0;
-        break;
-    case SPELL_TYPE_STAFF:
-        for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
-            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->obj_flags.value[3]) {
-                spell_animate_dead(level, ch, 0, i);
-            }
-        }
-        break;
-    default:
-        Log("Serious screw-up in animate_dead!");
-        break;
-    }
-}
-
-
 void spell_animate_dead(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *corpse)
 {
@@ -137,6 +91,53 @@ void spell_animate_dead(int level, struct char_data *ch,
      */
     extract_obj(corpse);
 }
+
+void cast_animate_dead(int level, struct char_data *ch, char *arg,
+                       int type, struct char_data *tar_ch,
+                       struct obj_data *tar_obj)
+{
+
+    struct obj_data *i;
+
+    if (NoSummon(ch)) {
+        return;
+    }
+    switch (type) {
+
+    case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:
+        if (tar_obj) {
+            if (IS_CORPSE(tar_obj)) {
+                spell_animate_dead(level, ch, 0, tar_obj);
+            } else {
+                send_to_char("That's not a corpse!\n\r", ch);
+                return;
+            }
+        } else {
+            send_to_char("That isn't a corpse!\n\r", ch);
+            return;
+        }
+        break;
+    case SPELL_TYPE_POTION:
+        send_to_char("Your body revolts against the magic liquid.\n\r", ch);
+        ch->points.hit = 0;
+        break;
+    case SPELL_TYPE_STAFF:
+        for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content) {
+            if (GET_ITEM_TYPE(i) == ITEM_CONTAINER && i->obj_flags.value[3]) {
+                spell_animate_dead(level, ch, 0, i);
+            }
+        }
+        break;
+    default:
+        Log("Serious screw-up in animate_dead!");
+        break;
+    }
+}
+
+
+
 
 
 

@@ -267,37 +267,6 @@ void spell_harm(int level, struct char_data *ch,
     }
 }
 
-
-
-
-void spell_astral_walk(int level, struct char_data *ch,
-                       struct char_data *victim, struct obj_data *obj)
-{
-    struct char_data *tmp,
-                   *tmp2;
-    struct room_data *rp;
-
-    if (IS_SET(SystemFlags, SYS_NOASTRAL)) {
-        send_to_char("The astral planes are shifting, you cannot!\n", ch);
-        return;
-    }
-
-    rp = real_roomp(ch->in_room);
-
-    for (tmp = rp->people; tmp; tmp = tmp2) {
-        tmp2 = tmp->next_in_room;
-        if (in_group(ch, tmp) && !tmp->specials.fighting &&
-            (IS_PC(tmp) || IS_SET(tmp->specials.act, ACT_POLYSELF)) &&
-            IS_AFFECTED(tmp, AFF_GROUP)) {
-            act("$n wavers, fades and dissappears", FALSE, tmp, 0, 0, TO_ROOM);
-            char_from_room(tmp);
-            char_to_room(tmp, ASTRAL_ENTRANCE);
-            do_look(tmp, NULL, 0);
-        }
-    }
-}
-
-
 void spell_bless(int level, struct char_data *ch,
                  struct char_data *victim, struct obj_data *obj)
 {
