@@ -21,14 +21,19 @@ extern long     SystemFlags;
 
 char           *ansi_parse(char *code)
 {
-    static char     m[MAX_STRING_LENGTH];       /* increased from 255 to
-                                                 * MAX 2-18 msw */
+    static char     m[MAX_STRING_LENGTH];       
+    /* increased from 255 to
+     * MAX 2-18 msw 
+     */
     char            b[128],
                     f[128];
 
-    if (!code)
-        return ("");            /* changed this from NULL to "" 2-18 msw */
-
+    if (!code) {
+        return ("");            
+        /* 
+         * changed this from NULL to "" 2-18 msw 
+         */
+    }
     /*
      * do modifier 
      */
