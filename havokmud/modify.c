@@ -1228,7 +1228,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
 
 void night_watchman(void)
 {
-    long            tc;
+    time_t            tc;
     struct tm      *t_info;
 
     extern int      mudshutdown;
@@ -1253,7 +1253,7 @@ void night_watchman(void)
 
 void check_reboot()
 {
-    long            tc;
+    time_t            tc;
     struct tm      *t_info;
     char            dummy;
     FILE           *boot;

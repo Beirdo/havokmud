@@ -782,7 +782,7 @@ char           *strip_cr(char *newbuf, const char *orig, size_t maxlen)
  */
 void log_sev(char *str, int sev)
 {
-    long            ct;
+    time_t            ct;
     char           *tmstr;
     static char     buf[500];
     struct descriptor_data *i;
@@ -5879,7 +5879,7 @@ void qlog(char *desc)
 {
     FILE           *fl;
     char            buf[256];
-    long            ct;
+    time_t            ct;
     char           *tmstr;
 
     ct = time(0);

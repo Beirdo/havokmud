@@ -52,7 +52,7 @@ void save_board(struct bulletin_board *bd, int vnum)
         fwrite_string(fl, msg->author);
         fwrite_string(fl, msg->title);
         fwrite_string(fl, strip_cr(msg_txt, msg->text, MAX_MESSAGE_LENGTH));
-        fprintf(fl, "%ld %d %d %d\n", msg->date, msg->char_id,
+        fprintf(fl, "%d %d %d %d\n", msg->date, msg->char_id,
                  msg->reply_to, msg->language);
     }
     fclose(fl);
@@ -702,7 +702,7 @@ struct bulletin_board *board_from_file(FILE * fl)
          * looking for the problem. 
          */ 
         msg->message_id = ++i;
-        fscanf(fl, "%ld %d %d %d\n", &msg->date, &msg->char_id, t, t + 1);
+        fscanf(fl, "%d %d %d %d\n", &msg->date, &msg->char_id, t, t + 1);
         msg->reply_to = t[0];
         msg->language = t[1];
         
