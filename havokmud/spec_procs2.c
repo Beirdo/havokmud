@@ -5480,7 +5480,8 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
   int j;
   struct char_data *post;
 
-  if(cmd!=463) return(FALSE);	/* board */
+  if(cmd!=463) return(FALSE);	/* touch */
+
   one_argument(arg,buf);
   if(*buf) {
 
@@ -5498,6 +5499,12 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	}
 	if(check==-1)
 	  return (FALSE);
+
+	if(GetMaxLevel(ch) < 41) { /* level fix */
+		send_to_char("You touch the post, and a brief sensation of unworthiness runs through you.\n\r",ch);
+		return(TRUE);
+	}
+
 
 	//sprintf(buf2,"Check=%d",check);
 	//send_to_char(buf2,ch);

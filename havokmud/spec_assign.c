@@ -1615,7 +1615,7 @@ void assign_rooms()
 	{ 721, pick_berries },
 
 /* Citystate of Tarantis */
-//	{736, timed_door },
+	{737, timed_door },
 
 /* Rocky's Zone */
 	{17429, close_doors},

@@ -1620,7 +1620,7 @@ AddCommand("chat", do_chat, 592, POSITION_RESTING, 1);
 //AddCommand("goodiebag" ,do_goodiebag,593, POSITION_STANDING,51);
 AddCommand("qchat", do_qchat, 594, POSITION_RESTING, 1);
 AddCommand("clanlist", do_clanlist, 595, POSITION_RESTING, 1);
-AddCommand("clen", color_strlen, 596, POSITION_RESTING, 1); /* lennya test */
+AddCommand("call steed",do_steed, 596, POSITION_STANDING,1);
 
 AddCommand("top10", do_top10, 597, POSITION_RESTING, 59);
 

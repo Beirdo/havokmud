@@ -4061,7 +4061,7 @@ if (!ch->skills)
     if (percent > ch->skills[SKILL_CHARGE].learned) {
 	char buff[255];
    	  send_to_char("You totally miss your target!\n\r",ch);
-	  act("$n charges at $N on his stead and totally misses $M.",FALSE, ch, 0,victim,TO_ROOM);
+	  act("$n charges at $N on his steed and totally misses $M.",FALSE, ch, 0,victim,TO_ROOM);
       LearnFromMistake(ch, SKILL_CHARGE, 0, 95);
     }
 
@@ -4069,8 +4069,8 @@ if (!ch->skills)
 	   char buff[256];
 
         GET_HITROLL(ch) += 100;
-		act("You charge agressively at $N on your sturdy stead.\n\r",FALSE,ch,0,victim,TO_CHAR);
-		act("$n charges agressively forward on his stead at $N", FALSE,ch,0,victim,TO_ROOM);
+		act("You charge agressively at $N on your sturdy steed.\n\r",FALSE,ch,0,victim,TO_CHAR);
+		act("$n charges agressively forward on his steed at $N", FALSE,ch,0,victim,TO_ROOM);
         //AddHated(victim, ch);
 		damage(ch,victim,GET_DAMROLL(ch)*3, SKILL_CHARGE);
         //hit(ch,victim,SKILL_CHARGE);
@@ -4084,3 +4084,77 @@ if (!ch->skills)
   WAIT_STATE(ch, PULSE_VIOLENCE*2);
 }
 
+/* Paladin calls a steed skill  -Lennya */
+#define STEED_TEMPLATE 44
+void do_steed(struct char_data *ch, char *argument, int cmd)
+{
+	int percent = 0;
+	int mhit = 1;
+	struct char_data *steed;
+
+	if(!HasClass(ch, CLASS_PALADIN)) {
+		send_to_char("The Guardians of Law laugh at your feeble request!\n\r",ch);
+		return;
+	}
+
+	if(!ch->skills) {
+		log("Char without skills trying to call a steed");
+		return;
+	}
+
+	if(!ch->skills[SKILL_STEED].learned) {
+		send_to_char("The Guardians of Righteousness do not see fit to grant you a mount just yet.\n\r",ch);
+		return;
+	}
+
+	if(IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+		send_to_char("Call a mount indoors? Where's your manners!\n\r",ch);
+		return;
+	}
+
+	if (ch->specials.fighting) {
+		send_to_char("Not while yer fighting, lad!\n\r", ch);
+		return;
+	}
+
+	if (MOUNTED(ch)) {
+		send_to_char("Hey now, you're already riding a courageous steed!\n\r", ch);
+		return;
+	}
+
+	percent=number(1,101);
+
+	if (ch->skills[SKILL_STEED].learned) {
+		if (percent > ch->skills[SKILL_STEED].learned) {
+			send_to_char("You whistle a lively tune.\n\r",ch);
+			act("$n whistles a lively tune.",FALSE, ch, 0,0,TO_ROOM);
+			LearnFromMistake(ch, SKILL_STEED, 0, 95);
+		} else {
+			if(steed = read_mobile(STEED_TEMPLATE, VIRTUAL)) {
+				act("You whistle loudly.",FALSE,ch,0,0,TO_CHAR);
+				act("$n whistles loudly.", FALSE,ch,0,0,TO_ROOM);
+//				GET_MAX_HIT(steed) = 2*(GET_HIT(ch));
+				mhit = GET_HIT(ch);
+				mhit *= 2;
+				steed->points.max_hit = mhit;
+				GET_HIT(steed) = GET_MAX_HIT(steed);
+				GET_AC(steed) = GET_AC(ch);
+				GET_LEVEL(steed, WARRIOR_LEVEL_IND) = GET_LEVEL(ch, PALADIN_LEVEL_IND) - 10;
+				GET_HITROLL(steed) = GET_HITROLL(ch);
+				char_to_room(steed, ch->in_room);
+				act("Suddenly, $N comes galloping in, and you jump on $S back.",FALSE,ch,0,steed,TO_CHAR);
+				act("Suddenly, $N comes galloping in, and $n jumps on $S back.", FALSE,ch,0,steed,TO_ROOM);
+				MOUNTED(ch) = steed;
+				RIDDEN(steed) = ch;
+				GET_POS(ch) = POSITION_MOUNTED;
+			} else {
+				log("No mount found for paladin's call steed skill");
+				send_to_char("Woops, code screwup, can't find your horse. Use the bug command.\n\r",ch);
+				return;
+			}
+			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your abilities.$c0007\n\r",ch);
+			gain_exp(ch, 100);
+		}
+	}
+	WAIT_STATE(ch, PULSE_VIOLENCE*2);
+}

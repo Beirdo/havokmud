@@ -2963,9 +2963,17 @@ dlog("in do_set_quest");
 	  	if (IS_IMMORTAL(ch)) {
 			REMOVE_BIT(ch->specials.affected_by2, AFF2_QUEST); /* make him stop */
 			for (i = descriptor_list; i; i = i->next) { /* see if another visible imm sports a qflag */
-				if (IS_IMMORTAL(i->character) && IS_AFFECTED2(i->character, AFF2_QUEST) && i->character->invis_level < 51) {
-					/* there is, just stop questing */
-					qcheck = 1;
+				if(i->character) {
+					if (!i->connected) {
+						if (IS_IMMORTAL(i->character)) {
+							if(IS_AFFECTED2(i->character, AFF2_QUEST)) {
+								if(i->character->invis_level < 51) {
+									/* there is, just stop questing */
+									qcheck = 1;
+								}
+							}
+						}
+					}
 				}
 			}
 			if (qcheck) { /* just stop */
@@ -2974,11 +2982,17 @@ dlog("in do_set_quest");
 			} else { /* make all morts stop questing too */
 				act("You end the quest.", TRUE, ch, 0, 0, TO_CHAR);
 				for (i = descriptor_list; i; i = i->next) { /* see if another imm sports a qflag */
-					if (!IS_IMMORTAL(i->character) && IS_AFFECTED2(i->character, AFF2_QUEST)) {
-						/* there is, just stop questing */
-						tmp = i->character;
-						act("$N has ended the quest.", TRUE, tmp, 0, ch, TO_CHAR);
-						REMOVE_BIT(tmp->specials.affected_by2, AFF2_QUEST);
+					if (i->character) {
+						if (!i->connected) {
+							if (!IS_IMMORTAL(i->character)) {
+								if (IS_AFFECTED2(i->character, AFF2_QUEST)) {
+									/* there is, just stop questing */
+									tmp = i->character;
+									act("$N has ended the quest.", TRUE, tmp, 0, ch, TO_CHAR);
+									REMOVE_BIT(tmp->specials.affected_by2, AFF2_QUEST);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -2999,11 +3013,13 @@ dlog("in do_set_quest");
 		} else {
 			/* see if there's a connected, questy imm */
 			for (i = descriptor_list; i; i = i->next) {
-				if (CAN_SEE(ch, i->character)) {
-					if (!i->connected) {
-						if (IS_IMMORTAL(i->character)) {
-							if (IS_AFFECTED2(i->character, AFF2_QUEST)) {
-								qcheck = 1;
+				if (i->character) {
+					if (CAN_SEE(ch, i->character)) {
+						if (!i->connected) {
+							if (IS_IMMORTAL(i->character)) {
+								if (IS_AFFECTED2(i->character, AFF2_QUEST)) {
+									qcheck = 1;
+								}
 							}
 						}
 					}
@@ -3478,7 +3494,7 @@ dlog("in do_plr_noooc");
 
 }
 
-#define ARENA_ZONE 5//124
+#define ARENA_ZONE 124
 void do_arena(struct char_data *ch, char *argument, int cmd)
 {
 char buf[MAX_STRING_LENGTH];

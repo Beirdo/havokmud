@@ -1979,6 +1979,8 @@ void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
 		struct char_data *tar_ch, struct obj_data *tar_obj );
 
 void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
+void do_steed(struct char_data *ch, char *argument, int cmd);
+
 
 
 /* From utility.c */
@@ -2095,7 +2097,6 @@ void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
 void DarknessPulseStuff(int pulse);
 void ArenaPulseStuff(int pulse);
-void TarantisPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);
@@ -2297,6 +2298,7 @@ int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int timed_door(struct char_data *ch, struct room_data *rp, int cmd);
 
 /* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);

@@ -3090,7 +3090,7 @@ void DarknessPulseStuff(int pulse)
 	}
 }
 
-#define ARENA_ZONE 5//124
+#define ARENA_ZONE 124
 void ArenaPulseStuff(int pulse)
 {
 	struct descriptor_data *i;
@@ -3132,94 +3132,6 @@ void ArenaPulseStuff(int pulse)
 		} /* not enough or too many people in arena */
 	} /* arena not closed */
 }
-
-/* Proc that makes a door open at nighttime 8pm, and close at dawn 5pm. */
-#define WAITROOM 737
-#define SPAWNROOM 740
-void TarantisPulseStuff(int pulse)
-{
-	struct room_direction_data *exitp, *back;
-	struct room_data *rp, *spawnroom;
-	struct char_data *nightwalker;
-	extern int rev_dir[];
-	extern struct time_info_data time_info;
-	char doorname[MAX_STRING_LENGTH +30], buf[MAX_STRING_LENGTH +30];
-	char buffer[MAX_STRING_LENGTH +30];
-	int doordir = 0;
-	char *dir_name[] = {
-       "to the north",
-       "to the east",
-       "to the south",
-       "to the west",
-       "above",
-       "below"};
-
-	/* initialize exit info */
-	sprintf(doorname,"door");
-	doordir = 2;
-
-	rp = real_roomp(WAITROOM);
-	exitp = rp->dir_option[doordir];
-
-	if(!exitp) {
-		log("No exitp in said dir? Make that exit, Ash!");
-		return;
-	}
-
-	if(!exitp->exit_info) {
-		log("No exit_info in said dir? Ash must have made a really weird room.");
-		return;
-	}
-
-	if (IS_SET(exitp->exit_info, EX_CLOSED)) { /* it's closed, should it be open? */
-		if(time_info.hours > 19 || time_info.hours < 5) { /* it should indeed */
-			if(SET_BIT(exitp->exit_info, EX_LOCKED))
-				REMOVE_BIT(exitp->exit_info, EX_LOCKED);
-			REMOVE_BIT(exitp->exit_info, EX_CLOSED);
-			sprintf(buf,"The %s %s creaks open.\n\r",doorname, dir_name[doordir]);
-			send_to_room(buf, WAITROOM);
-			/* open other side as well */
-			if (exit_ok(exitp, &rp) && (back = rp->dir_option[rev_dir[doordir]]) && (back->to_room == WAITROOM)) {
-				if(SET_BIT(back->exit_info, EX_CLOSED)) {
-					if(SET_BIT(exitp->exit_info, EX_LOCKED))
-						REMOVE_BIT(exitp->exit_info, EX_LOCKED);
-					REMOVE_BIT(back->exit_info, EX_CLOSED);
-					sprintf(buf,"The %s %s creaks open.\n\r",doorname, dir_name[rev_dir[doordir]]);
-					send_to_room(buf, exitp->to_room);
-				}
-			}
-		}
-	} else { /* it's open. should it be closed? */
-		if(4 < time_info.hours && time_info.hours < 20) { /* yah man, let's close that bugger */
-			SET_BIT(exitp->exit_info, EX_CLOSED);
-			if(!SET_BIT(exitp->exit_info, EX_LOCKED))
-				SET_BIT(exitp->exit_info, EX_LOCKED);
-			sprintf(buf,"The %s %s slams shut.\n\r",doorname, dir_name[doordir]);
-			send_to_room(buf, WAITROOM);
-			/* close other side as well */
-			if (exit_ok(exitp, &rp) && (back = rp->dir_option[rev_dir[doordir]]) && (back->to_room == WAITROOM)) {
-				log("closing other side");
-				if(!SET_BIT(back->exit_info, EX_CLOSED)) {
-					SET_BIT(back->exit_info, EX_CLOSED);
-					if(!SET_BIT(exitp->exit_info, EX_LOCKED))
-						SET_BIT(exitp->exit_info, EX_LOCKED);
-				}
-				sprintf(buf,"The %s %s slams shut.\n\r",doorname, dir_name[rev_dir[doordir]]);
-				send_to_room(buf, exitp->to_room);
-			}
-			/* now that it's firmly closed, we can transfer any nightwalkers from the spawnroom to waitroom */
-			log("transfering nightwalkers");
-			spawnroom = real_roomp(SPAWNROOM);
-			while (spawnroom->people) {
-				nightwalker = spawnroom->people;
-				char_from_room(nightwalker);
-				char_to_room(nightwalker, WAITROOM);
-			}
-		}
-	}
-	return;
-}
-
 
 void RiverPulseStuff(int pulse)
 {

@@ -338,7 +338,7 @@ struct QuestItem {
 #define PULSE_ADVICE       200
 #define PULSE_DARKNESS	200
 #define PULSE_ARENA	100 /* see if there's a winner in arena */
-#define PULSE_TARANTIS 20 /* check time, close/open door accordingly */
+//#define PULSE_TARANTIS 20 /* check time, close/open door accordingly */
 #define MAX_ROOMS   5000
 
 

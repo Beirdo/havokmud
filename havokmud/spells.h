@@ -361,8 +361,9 @@
 
 /* Repair skill for sc warriors */
 #define SKILL_MEND		 303
+#define SKILL_STEED		 304
 
-#define MAX_EXIST_SPELL         303   /* max number of skills/spells */
+#define MAX_EXIST_SPELL         304   /* max number of skills/spells */
 
 #define FIRST_BREATH_WEAPON	     306 /*	201 */
 #define SPELL_FIRE_BREATH            306 /*	201 */
