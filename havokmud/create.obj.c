@@ -207,7 +207,6 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
 {
     char            name[20];
     struct obj_data *obj;
-    int             i;
 
     if (IS_NPC(ch)) {
         return;
@@ -232,12 +231,9 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
      * this has been temporarilly removed... 
      */
 #endif
-    for (i = 0; *(argument + i) == ' '; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*(argument + i)) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Oedit what?\n\r", ch);
         return;
     }

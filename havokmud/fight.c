@@ -1402,17 +1402,13 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
         if (*str == '#') {
             switch (*(++str)) {
             case 'W':
-                for (; *weapon; *(cp++) = *(weapon++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*weapon) {
+                    *(cp++) = *(weapon++);
                 }
                 break;
             case 'w':
-                for (; *weapon_s; *(cp++) = *(weapon_s++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*weapon_s) {
+                    *(cp++) = *(weapon_s++);
                 }
                 break;
 
@@ -1420,17 +1416,13 @@ char           *replace_string(char *str, char *weapon, char *weapon_s,
                  * added this to show where the person was hit
                  */
             case 'L':
-                for (; *location_hit; *(cp++) = *(location_hit++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*location_hit) {
+                    *(cp++) = *(location_hit++);
                 }
                 break;
             case 'l':
-                for (; *location_hit_s; *(cp++) = *(location_hit_s++)) {
-                    /*
-                     * Empty loop
-                     */
+                while (*location_hit_s) {
+                    *(cp++) = *(location_hit_s++);
                 }
                 break;
 

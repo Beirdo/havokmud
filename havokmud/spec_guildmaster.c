@@ -981,12 +981,7 @@ int mage_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
-
+        arg = skip_spaces(arg);
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
         index = spell_index[number];
         if (number == -1 || index == -1) {
@@ -1074,11 +1069,8 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
     if (!guildmaster) {
         return (FALSE);
     }
-    for (; isspace(*arg); arg++) {
-        /* 
-         * ditch spaces 
-         */
-    }
+
+    arg = skip_spaces(arg);
 
     if ((cmd == 164) || (cmd == 170) || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_CLERIC)) {
@@ -1124,12 +1116,7 @@ int cleric_specialist_guildmaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
-
+        arg = skip_spaces(arg);
         number = old_search_block(arg, 0, strlen(arg), spells, FALSE);
         index = spell_index[number];
         if (number == -1 || index == -1) {

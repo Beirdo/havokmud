@@ -1617,23 +1617,21 @@ void argument_interpreter(char *argument, char *first_arg, char *second_arg)
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to first_arg
              */
-            *(first_arg + look_at) = LOWER(*(argument + begin + look_at));
+            first_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(first_arg + look_at) = '\0';
+        first_arg[look_at] = '\0';
         begin += look_at;
 
     } while (fill_word(first_arg));
@@ -1642,23 +1640,21 @@ void argument_interpreter(char *argument, char *first_arg, char *second_arg)
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to second_arg
              */
-            *(second_arg + look_at) = LOWER(*(argument + begin + look_at));
+            second_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(second_arg + look_at) = '\0';
+        second_arg[look_at] = '\0';
         begin += look_at;
 
     } while (fill_word(second_arg));
@@ -1679,23 +1675,21 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin]) ) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to first_arg
              */
-            *(first_arg + look_at) = LOWER(*(argument + begin + look_at));
+            first_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(first_arg + look_at) = '\0';
+        first_arg[look_at] = '\0';
         begin += look_at;
 
     } while (fill_word(first_arg));
@@ -1704,23 +1698,21 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to second_arg
              */
-            *(second_arg + look_at) = LOWER(*(argument + begin + look_at));
+            second_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(second_arg + look_at) = '\0';
+        second_arg[look_at] = '\0';
         begin += look_at;
 
     } while (fill_word(second_arg));
@@ -1729,23 +1721,21 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to third_arg
              */
-            *(third_arg + look_at) = LOWER(*(argument + begin + look_at));
+            third_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(third_arg + look_at) = '\0';
+        third_arg[look_at] = '\0';
         begin += look_at;
 
     } while (fill_word(third_arg));
@@ -1795,34 +1785,30 @@ char           *one_argument(char *argument, char *first_arg)
         /*
          * Find first non blank
          */
-        for (; isspace(*(argument + begin)); begin++) {
-            /*
-             * Empty loop
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         /*
          * Find length of first word
          */
-        for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+        for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
             /*
              * Make all letters lower case, AND copy them to first_arg
              */
-            *(first_arg + look_at) = LOWER(*(argument + begin + look_at));
+            first_arg[look_at] = LOWER(argument[begin + look_at]);
         }
 
-        *(first_arg + look_at) = '\0';
+        first_arg[look_at] = '\0';
         begin += look_at;
     } while (fill_word(first_arg));
 
-    return (argument + begin);
+    return (&argument[begin]);
 }
 
 void only_argument(char *argument, char *dest)
 {
-    while (*argument && isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     strcpy(dest, argument);
 }
 
@@ -1852,31 +1838,18 @@ int is_abbrev(char *arg1, char *arg2)
  */
 void half_chop(char *string, char *arg1, char *arg2)
 {
-    for (; isspace(*string); string++) {
-        /*
-         * Empty loop
-         */
-    }
+    string = skip_spaces(string);
 
-    for (; !isspace(*arg1 = *string) && *string; string++, arg1++) {
-        /*
-         * Empty loop
-         */
+    while (!isspace(*arg1 = *string) && *string ) {
+        string++;
+        arg1++;
     }
 
     *arg1 = '\0';
 
-    for (; isspace(*string); string++) {
-        /*
-         * Empty loop
-         */
-    }
+    string = skip_spaces(string);
 
-    for (; (*arg2 = *string); string++, arg2++) {
-        /*
-         * Empty loop
-         */
-    }
+    strcpy( arg2, string );
 }
 
 int special(struct char_data *ch, int cmd, char *arg)
@@ -2010,11 +1983,7 @@ int _parse_name(char *arg, char *name)
     /*
      * skip whitespaces
      */
-    for (; isspace(*arg); arg++) {
-        /*
-         * Empty loop
-         */
-    }
+    arg = skip_spaces(arg);
 
     for (i = 0; (*name = *arg); arg++, i++, name++) {
         if ((*arg < 0) || !isalpha(*arg) || i > MAX_NAME_LENGTH) {
@@ -2255,11 +2224,7 @@ void nanny(struct descriptor_data *d, char *arg)
 #if 0
         show_menu(d);
 #endif
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
+        arg = skip_spaces(arg);
         switch (*arg) {
         case '1':
             SEND_TO_Q("What is your sex (M/F) ? ", d);
@@ -2418,12 +2383,7 @@ void nanny(struct descriptor_data *d, char *arg)
         }
         break;
     case CON_ALIGNMENT:
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         switch (*arg) {
         case 'n':
         case 'N':
@@ -2467,14 +2427,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_ANSI:
-
-
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         switch (*arg) {
         case 'y':
         case 'Y':
@@ -2507,12 +2460,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_QRACE:
         d->character->reroll = 20;
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!*arg) {
             show_race_choice(d);
             SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
@@ -2558,12 +2506,7 @@ void nanny(struct descriptor_data *d, char *arg)
             d->character->desc = d;
         }
 
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!*arg) {
             close_socket(d);
         } else {
@@ -2625,12 +2568,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (*arg == 'y' || *arg == 'Y') {
             write(d->descriptor, echo_on, 4);
             SEND_TO_Q("New character.\n\r", d);
@@ -2661,12 +2599,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!*arg) {
             close_socket(d);
         } else {
@@ -2814,12 +2747,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!*arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Illegal password.\n\r", d);
@@ -2845,12 +2773,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             write(d->descriptor, echo_on, 6);
 
@@ -2880,12 +2803,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         switch (*arg) {
         case 'm':
         case 'M':
@@ -2918,10 +2836,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /* Empty loop */
-        }
-
+        arg = skip_spaces(arg);
         index = 0;
         while (*arg && index < MAX_STAT) {
             if (*arg == 'S' || *arg == 's') {
@@ -3012,13 +2927,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_REROLL:
-
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         d->character->reroll--;
 
         if (*arg != 'r' && *arg != 'R') {
@@ -3126,12 +3035,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_MCLASS:
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         d->character->specials.remortclass = 0;
 
         pick = atoi(arg);
@@ -3161,12 +3065,7 @@ void nanny(struct descriptor_data *d, char *arg)
          * skip whitespaces
          */
 
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         d->character->player.class = 0;
         count = 0;
         oops = FALSE;
@@ -3672,12 +3571,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_CHECK_MAGE_TYPE:
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!strcmp(arg, "yes")) {
             d->character->player.class -= CLASS_MAGIC_USER;
             d->character->player.class += CLASS_SORCERER;
@@ -3735,12 +3629,7 @@ void nanny(struct descriptor_data *d, char *arg)
         break;
 
     case CON_DELETE_ME:
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!strcmp(arg, "yes") && strcmp("Guest", GET_NAME(d->character))) {
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
             Log(buf);
@@ -3795,12 +3684,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         switch (*arg) {
         case '0':
             close_socket(d);
@@ -3951,12 +3835,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (!*arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
 
@@ -3987,12 +3866,7 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * skip whitespaces
          */
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
-
+        arg = skip_spaces(arg);
         if (strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Passwords don't match.\n\r", d);

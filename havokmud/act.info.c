@@ -177,43 +177,39 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg)
     /*
      * Find first non blank
      */
-    for (; *(argument + begin) == ' '; begin++) {
-		/*
-		 * Empty loop
-		 */
+    while (isspace(argument[begin])) {
+        begin++;
 	}
 
     /*
      * Find length of first word
      */
-    for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+    for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
         /*
          * Make all letters lower case, AND copy them to first_arg
          */
-        *(first_arg + look_at) = LOWER(*(argument + begin + look_at));
+        first_arg[look_at] = LOWER(argument[begin + look_at]);
     }
-    *(first_arg + look_at) = '\0';
+    first_arg[look_at] = '\0';
     begin += look_at;
 
     /*
      * Find first non blank
      */
-    for (; *(argument + begin) == ' '; begin++) {
-		/*
-		 * Empty loop
-		 */
+    while (isspace(argument[begin])) {
+        begin++;
 	}
 
     /*
      * Find length of second word
      */
-    for (look_at = 0; *(argument + begin + look_at) > ' '; look_at++) {
+    for (look_at = 0; argument[begin + look_at] > ' '; look_at++) {
         /*
          * Make all letters lower case, AND copy them to second_arg
          */
-        *(second_arg + look_at) = LOWER(*(argument + begin + look_at));
+        second_arg[look_at] = LOWER(argument[begin + look_at]);
     }
-    *(second_arg + look_at) = '\0';
+    second_arg[look_at] = '\0';
     begin += look_at;
 }
 
@@ -2848,11 +2844,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; isspace(*argument); argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
+    argument = skip_spaces(argument);
 
     if (*argument) {
         if (!help_index) {
@@ -2963,11 +2955,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     found = 0;
     spellcheck = 0;
 
-    for (; isspace(*argument); argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
+    argument = skip_spaces(argument);
 
     if (*argument) {
         if (!help_index) {
@@ -3184,11 +3172,7 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; isspace(*argument); argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
+    argument = skip_spaces(argument);
 
     if (*argument) {
         if (!wizhelp_index) {
@@ -4130,11 +4114,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
      * get the class
      */
 
-    for (; isspace(*argument); argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
+    argument = skip_spaces(argument);
 
     if (!*argument) {
         send_to_char("You must supply a class!\n\r", ch);
@@ -5269,16 +5249,13 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     if (!ch->skills) {
         return;
 	}
-    for (; isspace(*arg); arg++) {
-		/*
-		 * Empty loop
-		 */
-	}
 
     if (!arg) {
         send_to_char("You need to supply a class for that.", ch);
         return;
     }
+
+    arg = skip_spaces(arg);
 
     switch (*arg) {
     case 'w':

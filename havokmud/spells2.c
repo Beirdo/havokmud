@@ -3763,11 +3763,7 @@ void cast_creeping_death(int level, struct char_data *ch, char *arg,
         /*
          * get the argument, parse it into a direction 
          */
-        for (; *arg == ' '; arg++) {
-            /*
-             * Empty loop
-             */
-        }
+        arg = skip_spaces(arg);
         if (!*arg) {
             send_to_char("you must supply a direction!\n\r", ch);
             return;

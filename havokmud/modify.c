@@ -385,17 +385,8 @@ void quad_arg(char *arg, int *type, char *name, int *field, char *string)
     /*
      * string 
      */
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    for (; (*string = *arg); arg++, string++) {
-        /* 
-         * Empty loop 
-         */
-    }
+    arg = skip_spaces(arg);
+    strcpy(string, arg);
 }
 
 /*
@@ -668,17 +659,8 @@ void bisect_arg(char *arg, int *field, char *string)
     /*
      * string 
      */
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    for (; (*string = *arg); arg++, string++) {
-        /* 
-         * Empty loop 
-         */
-    }
+    arg = skip_spaces(arg);
+    strcpy(string, arg);
 }
 
 void do_edit(struct char_data *ch, char *arg, int cmd)
@@ -1162,10 +1144,8 @@ char           *one_word(char *argument, char *first_arg)
     begin = 0;
 
     do {
-        for (; isspace(argument[begin]); begin++) {
-            /* 
-             * Empty loop 
-             */
+        while (isspace(argument[begin])) {
+            begin++;
         }
 
         if (argument[begin] == '\"') {
@@ -1192,7 +1172,7 @@ char           *one_word(char *argument, char *first_arg)
         begin += look_at;
     } while (fill_word(first_arg));
 
-    return (argument + begin);
+    return (&(argument[begin]));
 }
 
 struct help_index_element *build_help_index(FILE * fl, int *num)
@@ -1327,7 +1307,7 @@ void show_string(struct descriptor_data *d, char *input)
             /*
              * see if this is the end (or near the end) of the string 
              */
-            for (chk = d->showstr_point; isspace(*chk); chk++);
+            chk = skip_spaces(d->showstr_point);
             if (!*chk) {
                 if (d->showstr_head) {
                     free(d->showstr_head);

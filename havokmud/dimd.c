@@ -148,9 +148,7 @@ char           *one_lc_dimd_argument(char *argument, char *first_arg)
     char           *scan;
 
     do {
-        while (isspace(*argument)) {
-            argument++;
-        }
+        argument = skip_spaces(argument);
         scan = first_arg;
         while (*argument && *argument != '^') {
             *scan++ = LOWER(*argument), argument++;
@@ -172,9 +170,7 @@ char           *one_dimd_argument(char *argument, char *first_arg)
 {
     char           *scan;
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     scan = first_arg;
     while (*argument && *argument != '^') {
         *scan++ = *argument++;
@@ -300,9 +296,7 @@ void do_dgossip(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if (!*argument) {
         msg("Surely you have something to gossip!", ch);
         return;
@@ -358,9 +352,7 @@ void do_dlink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
@@ -392,9 +384,7 @@ void do_dunlink(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if ((mud = getmud(ch, argument, FALSE)) == UNDEFINED) {
         return;
     }
@@ -423,9 +413,9 @@ void do_drestrict(struct char_data *ch, char *argument, int cmd)
     if ((mud = getmud(ch, buf, FALSE)) == UNDEFINED) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
-    }
+
+    argument = skip_spaces(argument);
+
     if (is_abbrev(argument, "refuse")) {
         SET_BIT(muds[mud].flags, DD_REFUSE);
         sprintf(buf, "Now refusing new connections with %s.",
@@ -492,9 +482,8 @@ void do_dlist(struct char_data *ch, char *argument, int cmd)
 
 void do_dmanage(struct char_data *ch, char *argument, int cmd)
 {
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
+
     if (!str_cmp(argument, "on")) {
         if (dimd_on) {
             msg("The server was already activated.", ch);
@@ -584,9 +573,7 @@ void do_dmuse(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if (!*argument) {
         msg("Sure you have something to muse!", ch);
         return;
@@ -646,9 +633,8 @@ void do_dtell(struct char_data *ch, char *argument, int cmd)
     if ((i = getmud(ch, mudname, TRUE)) == UNDEFINED) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
-    }
+
+    argument = skip_spaces(argument);
     if (!*argument) {
         msg("Surely you have SOMETHING to say ... ?", ch);
         return;
@@ -677,9 +663,7 @@ void do_dthink(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    while (isspace(*argument)) {
-        argument++;
-    }
+    argument = skip_spaces(argument);
     if (!*argument) {
         msg("Sure you have something to think!", ch);
         return;
@@ -732,9 +716,8 @@ void do_dwho(struct char_data *ch, char *argument, int cmd)
     if (!dimd_credit(ch, 2)) {
         return;
     }
-    while (isspace(*argument)) {
-        argument++;
-    }
+
+    argument = skip_spaces(argument);
     sprintf(buf, "^%s^%s^%d^w^%s\n\r",
             PER(ch), GET_KEYNAME(ch), GetMaxLevel(ch), argument);
     write_to_descriptor(muds[i].desc, buf);
@@ -1155,8 +1138,7 @@ void dimd_loop(void)
 
                         case 't':
                             scan = one_lc_dimd_argument(scan, toname);
-                            while (isspace(*scan))
-                                scan++;
+                            scan = skip_spaces(scan);
 
                             if (!(vict = get_char(toname)) || 
                                 !dimd_can_see(fromgodlevel, vict)) {
@@ -1517,20 +1499,16 @@ int process_dimd_input(int mud)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(muds[mud].buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(muds[mud].buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(muds[mud].buf + i)); i++) {
-                /*
-                 * Empty loop
-                 */
+            while (ISNEWL(muds[mud].buf[i])) {
+                i++;
             }
 
             /*

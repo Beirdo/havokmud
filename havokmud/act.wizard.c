@@ -381,12 +381,7 @@ void do_bamfin(struct char_data *ch, char *arg, int cmd)
     /*
      * pass all those spaces
      */
-    for (; isspace(*arg); arg++) {
-        /*
-         * Empty loop
-         */
-    }
-
+    arg = skip_spaces(arg);
     if (!*arg) {
         send_to_char("Your current bamfin is:\n\r", ch);
         act(ch->specials.poofin, FALSE, ch, 0, NULL, TO_CHAR);
@@ -436,11 +431,7 @@ void do_bamfout(struct char_data *ch, char *arg, int cmd)
     /*
      * pass all those spaces
      */
-    for (; isspace(*arg); arg++) {
-        /*
-         * Empty loop
-         */
-    }
+    arg = skip_spaces(arg);
     if (!*arg) {
         send_to_char("Your current bamfout is:\n\r", ch);
         act(ch->specials.poofout, FALSE, ch, 0, NULL, TO_CHAR);
@@ -685,7 +676,6 @@ void do_silence(struct char_data *ch, char *argument, int cmd)
 void do_wizlock(struct char_data *ch, char *argument, int cmd)
 {
 #if SITELOCK
-    char           *test;
     int             a,
                     length,
                     b;
@@ -708,15 +698,10 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
      * all, add (place), list, rem (place)
      */
 
-    for (test = argument; *test && isspace(*test); test++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*test) {
+    argument = skip_spaces(argument);
+    if (!*argument) {
         return;
     }
-    argument = test;
     /*
      * get first piece..
      */
@@ -753,16 +738,11 @@ void do_wizlock(struct char_data *ch, char *argument, int cmd)
             send_to_char("Host list is empty.\n\r", ch);
             return;
         }
-        for (test = argument; *test && isspace(*test); test++) {
-            /*
-             * Empty loop
-             */
-        }
-        if (!*test) {
+        argument = skip_spaces(argument);
+        if (!*argument) {
             send_to_char("Siteban rem <host_name>\n\r", ch);
             return;
         }
-        argument = test;
         argument = one_argument(argument, buf);
         if (!*buf) {
             send_to_char("Siteban rem <host_name>\n\r", ch);
@@ -816,12 +796,9 @@ void do_rload(struct char_data *ch, char *argument, int cmd)
     if (GetMaxLevel(ch) < IMMORTAL) {
         return;
     }
-    for (i = 0; isspace(argument[i]); i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!argument[i]) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("rload <start> [<end>]\n\r", ch);
         return;
     }
@@ -872,12 +849,9 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
     if (GetMaxLevel(ch) < IMMORTAL) {
         return;
     }
-    for (i = 0; isspace(argument[i]); i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!argument[i]) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         start = ch->in_room;
         if (!(start > 0 && start < WORLD_SIZE)) {
             send_to_char("Save? rsave <startnum> [<endnum>].\n\r", ch);
@@ -919,218 +893,31 @@ void do_rsave(struct char_data *ch, char *argument, int cmd)
 
 void do_emote(struct char_data *ch, char *arg, int cmd)
 {
-    int             i;
     char            buf[MAX_INPUT_LENGTH + 40];
-#if 0
-    char            name[255], oriarg[MAX_STRING_LENGTH], *copy;
-    int             j, k, found, extra;
-    char            part1[MAX_STRING_LENGTH],part2[MAX_STRING_LENGTH], sign[10];
-    struct          char_data *vict;
-#endif
     dlog("in do_emote");
 
     if (check_soundproof(ch)) {
         return;
     }
-    for (i = 0; *(arg + i) == ' '; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*(arg + i)) {
-        send_to_char("Yes.. But what?\n\r", ch);
-    } else {
-        sprintf(buf, "$n %s", arg + i);
-        act(buf, FALSE, ch, 0, 0, TO_ROOM);
-        if (IS_SET(ch->specials.act, PLR_ECHO)) {
-            act(buf, FALSE, ch, 0, 0, TO_CHAR);
-        } else {
-            send_to_char("Ok.\n\r", ch);
-        }
-    }
-#if 0
-#if 1
-    i = 0;
-    j = 0;
-    k = 0;
-    found = 0;
-    sprintf(name, "");
-    sprintf(part1, "");
-    sprintf(oriarg, "%s",arg);
 
+    arg = skip_spaces(arg);
     if (!*arg) {
-        send_to_char("Yes, but what?\n\r",ch);
+        send_to_char("Yes.. But what?\n\r", ch);
         return;
     }
-    while (*arg && arg[0] != '*') {
-        half_chop(arg, buf, arg); sprintf(part1, "%s %s",part1, buf);
-    }
-    if (*arg && arg[0] == '*' && arg[1] == ' ') {
-        half_chop(arg, sign, arg);
-        half_chop(arg, name, part2);
-        found = 1;
-    }
-    if(found) {
-        if (!(vict = get_char_room_vis(ch, name))) {
-            sprintf(buf, "Noone here by the name of %s.\n\r",name);
-            send_to_char(buf, ch);
-            return;
-        } else {
-            sprintf(buf, "$n%s $N %s", part1, part2);
-            act(buf, FALSE, ch, 0, vict, TO_NOTVICT);
-            act(buf, FALSE, ch, 0, vict, TO_CHAR);
-            sprintf(buf, "$n%s you %s", part1, part2);
-            act(buf, FALSE, ch, 0, vict, TO_VICT);
-        }
-    } else {
-        for (i = 0; *(oriarg + i) == ' '; i++) {
-            /*
-             * Empty loop
-             */
-        }
-        if (!*(oriarg + i)) {
-            send_to_char("Yes.. But what?\n\r", ch);
-        } else {
-            sprintf(buf,"$n %s", oriarg + i);
-            act(buf,FALSE,ch,0,0,TO_ROOM);
-            if (IS_SET(ch->specials.act,PLR_ECHO)) {
-                act(buf,FALSE,ch,0,0,TO_CHAR);
-            } else {
-                send_to_char("Ok.\n\r",ch);
-            }
-        }
-    }
-#else
-    Log("enter");
-    i = 0;
-    j = 0;
-    k = 0;
-    found = 0;
-    extra = 0;
-    /*
-     * sprintf(name, "");
-     */
-    /*
-     * (remember to make a *name)
-     */
-    sprintf(part1, "");
-    sprintf(oriarg, "%s",arg);
 
-    if(!*arg) {
-        Log("no arg");
-        send_to_char("Yes, but what?\n\r",ch);
-        return;
-    }
-    while(*arg && arg[0] != '*'&& arg[1] != ' ') {
-        Log("processing words before asterisk");
-        half_chop(arg, buf, arg);
-        sprintf(part1, "%s %s",part1, buf);
-    }
-    if(*arg && arg[0] == '*' && arg[1] != ' ') {
-        sprintf(copy, "%s",arg);
-        if (GetMaxLevel(ch) < IMMORTAL) {
-            for (; *copy == '*'; copy++) {
-                /*
-                 * Empty loop
-                 */
-            }
-        }
-        for (; *copy; copy++, name++) {
-            if (*copy == ' ') {
-                break;
-            }
-            if(*copy == '*') {
-                extra = 1;
-                break;
-            }
-            *name = *copy;
-        }
-        *name = '\0';
-        if (extra) {
-            for (; !isspace(*copy); copy++) {
-                /*
-                 * Empty loop
-                 */
-            }
-        }
-        /*
-         * get rid of any junk til we meet a space
-         */
-        for (; isspace(*copy); copy++){
-            /*
-             * Empty loop
-             */
-        }
-        /*
-         * get rid of space
-         */
-        for (; *arg = *copy; arg++, copy++) {
-            /*
-             * Empty loop
-             */
-        }
-        /*
-         * stick remainder into arg
-         */
-        found = 1;
-        Log("found legal asterisk");
-    }
-    if(found) {
-        Log("entered the complicated emote");
-        /*
-         * see if there's a dude in the room with this name
-         */
-        if (!(vict = get_char_room_vis(ch, name))) {
-            Log("no target found");
-            sprintf(buf, "Noone here by the name of %s.\n\r",name);
-            send_to_char(buf, ch);
-            return;
-        } else {
-        Log("target found");
-        /*
-         * now fix up buffers, do the acts
-         */
-        if (extra) {
-            sprintf(buf, "$n%s $N's %s", part1, part2);
-        } else {
-            sprintf(buf, "$n%s $N %s", part1, part2);
-        }
-        act(buf, FALSE, ch, 0, vict, TO_NOTVICT);
-        act(buf, FALSE, ch, 0, vict, TO_CHAR);
-        if (extra) {
-            sprintf(buf, "$n%s your %s", part1, part2);
-        } else {
-            sprintf(buf, "$n%s you %s", part1, part2);
-        }
-        act(buf, FALSE, ch, 0, vict, TO_VICT);
-        }
+    sprintf(buf, "$n %s", arg);
+    act(buf, FALSE, ch, 0, 0, TO_ROOM);
+    if (IS_SET(ch->specials.act, PLR_ECHO)) {
+        act(buf, FALSE, ch, 0, 0, TO_CHAR);
     } else {
-        Log("entered the simple emote");
-        for (i = 0; *(oriarg + i) == ' '; i++) {
-            /*
-             * Empty loop
-             */
-        }
-        if (!*(oriarg + i)) {
-            send_to_char("Yes.. But what?\n\r", ch);
-        } else {
-            sprintf(buf,"$n %s", oriarg + i);
-            act(buf,FALSE,ch,0,0,TO_ROOM);
-            if (IS_SET(ch->specials.act,PLR_ECHO)) {
-                act(buf,FALSE,ch,0,0,TO_CHAR);
-            } else {
-                send_to_char("Ok.\n\r",ch);
-            }
-        }
+        send_to_char("Ok.\n\r", ch);
     }
-#endif
-#endif
-
 }
+
 
 void do_echo(struct char_data *ch, char *argument, int cmd)
 {
-    int             i;
     char            buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_echo");
@@ -1138,12 +925,9 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch)) {
         return;
     }
-    for (i = 0; *(argument + i) == ' '; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!*(argument + i)) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         if (IS_SET(ch->specials.act, PLR_ECHO)) {
             send_to_char("echo off\n\r", ch);
             REMOVE_BIT(ch->specials.act, PLR_ECHO);
@@ -1153,7 +937,7 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
         }
     } else {
         if (IS_IMMORTAL(ch)) {
-            sprintf(buf, "%s\n\r", argument + i);
+            sprintf(buf, "%s\n\r", argument);
             send_to_room_except(buf, ch->in_room, ch);
             send_to_char("Ok.\n\r", ch);
         }
@@ -1162,7 +946,6 @@ void do_echo(struct char_data *ch, char *argument, int cmd)
 
 void do_system(struct char_data *ch, char *argument, int cmd)
 {
-    int             i;
     char            buf[2256];
 
     dlog("in do_system");
@@ -1170,88 +953,86 @@ void do_system(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch)) {
         return;
     }
-    for (i = 0; isspace(argument[i]); i++) {
-        /*
-         * Empty loop
-         */
-    }
-    if (!argument[i]) {
+
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("That must be a mistake...\n\rTry arguments 1-8 (Info, "
                      "Ann, Upd, sys, warn, reb, wel, note)\n\r", ch);
-    } else {
-        switch (argument[0]) {
-        case '1':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RINFO$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '2':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RANNOUNCEMENT$c000Y=-$c000w "
-                         "%s\n\r$c000w", argument);
-            break;
-        case '3':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RUPDATE$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '4':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RSYSTEM$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '5':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RWARNING$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '6':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RREBOOT$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '7':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RWELCOME$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-        case '8':
-            /*
-             * Remove the number..
-             */
-            argument++;
-            sprintf(buf, "$c000Y-=$c000RNOTE$c000Y=-$c000w %s\n\r$c000w",
-                    argument);
-            break;
-
-        default:
-            sprintf(buf, "%s\n\r", argument + i);
-            break;
-        }
-
-        send_to_all(buf);
+        return;
     }
+
+    switch (*argument) {
+    case '1':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RINFO$c000Y=-$c000w %s\n\r$c000w", 
+                argument);
+        break;
+    case '2':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RANNOUNCEMENT$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '3':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RUPDATE$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '4':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RSYSTEM$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '5':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RWARNING$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '6':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RREBOOT$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '7':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RWELCOME$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+    case '8':
+        /*
+         * Remove the number..
+         */
+        argument++;
+        sprintf(buf, "$c000Y-=$c000RNOTE$c000Y=-$c000w %s\n\r$c000w",
+                argument);
+        break;
+
+    default:
+        sprintf(buf, "%s\n\r", argument);
+        break;
+    }
+
+    send_to_all(buf);
 }
 
 void do_trans(struct char_data *ch, char *argument, int cmd)
@@ -2477,13 +2258,8 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
             if (j->name) {
                 free(j->name);
             }
-            for (; isspace(*argument); argument++) {
-                /*
-                 * Empty loop
-                 */
-            }
-            strcpy(parmstr, argument);
-            j->name = strdup(parmstr);
+            argument = skip_spaces(argument);
+            j->name = strdup(argument);
             return;
         }
 
@@ -2491,26 +2267,17 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
             if (j->description) {
                 free(j->description);
             }
-            for (; isspace(*argument); argument++) {
-                /*
-                 * Empty loop
-                 */
-            }
-            strcpy(parmstr, argument);
-            j->description = strdup(parmstr);
+            argument = skip_spaces(argument);
+            j->description = strdup(argument);
             return;
         }
+
         if (!strcmp(field, "sdesc")) {
             if (j->short_description) {
                 free(j->short_description);
             }
-            for (; isspace(*argument); argument++) {
-                /*
-                 * Empty loop
-                 */
-            }
-            strcpy(parmstr, argument);
-            j->short_description = strdup(parmstr);
+            argument = skip_spaces(argument);
+            j->short_description = strdup(argument);
             return;
         }
 
@@ -2666,7 +2433,6 @@ void do_ooedit(struct char_data *ch, char *argument, int cmd)
     } else {
         send_to_char("You do not have that object.\n\r", ch);
     }
-
 }
 
 void do_set(struct char_data *ch, char *argument, int cmd)
@@ -7059,20 +6825,16 @@ void do_lgos(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch))
         return;
 
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
+    argument = skip_spaces(argument);
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) && !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
 
-    if (!(*argument))
+    if (!(*argument)) {
         send_to_char("yell? Yes! but what!\n\r", ch);
-    else {
+    } else {
         if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
             sprintf(buf1, "$c0011You yell '%s'", argument);
             act(buf1, FALSE, ch, 0, 0, TO_CHAR);

@@ -1184,11 +1184,7 @@ int getabunch(char *name, char *newname)
     }
     name++;
 
-    for (; (*newname = *name); name++, newname++) {
-        /*
-         * Empty loop
-         */
-    }
+    strcpy(newname, name);
     return (num);
 }
 
@@ -6418,11 +6414,7 @@ void tweak(struct obj_data *obj)
                     } else if (mod > 5) {
                         mod = 5;
                     }
-                    if( mod ) {
-                        obj->affected[i].modifier = mod;
-                    } else {
-                        obj->affected[i].location = APPLY_NONE;
-                    }
+                    obj->affected[i].modifier = mod;
                 }
                 break;
             case APPLY_SAVING_PARA:
@@ -6444,9 +6436,6 @@ void tweak(struct obj_data *obj)
                         roll = number(1, 2);
                     }
                     obj->affected[i].modifier += roll;
-                    if( obj->affected[i].modifier == 0 ) {
-                        obj->affected[i].location = APPLY_NONE;
-                    }
                 }
                 break;
             case APPLY_AGE:
@@ -6478,9 +6467,6 @@ void tweak(struct obj_data *obj)
                         obj->affected[i].modifier += mod;
                     } else if (number(0, 1)) {
                         obj->affected[i].modifier -= mod;
-                    }
-                    if( obj->affected[i].modifier == 0 ) {
-                        obj->affected[i].location = APPLY_NONE;
                     }
                 }
                 break;
@@ -6587,6 +6573,28 @@ int count_People_in_room(int room)
         }
     }
     return count;
+}
+
+char           *skip_spaces(char *string)
+{
+    for (; *string && isspace(*string); string++) {
+        /* 
+         * Empty loop 
+         */
+    }
+
+    return (string);
+}
+
+char           *skip_word(char *string)
+{
+    for (; *string && !isspace(*string); string++) {
+        /* 
+         * Empty loop 
+         */
+    }
+
+    return (string);
 }
 
 #if 0

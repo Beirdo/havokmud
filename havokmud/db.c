@@ -520,7 +520,7 @@ void build_player_index()
 
             CREATE(player_table[nr].name, char, strlen(dummy.name) + 1);
             for (i = 0;
-                 (*(player_table[nr].name + i) = LOWER(*(dummy.name + i)));
+                 (player_table[nr].name[i] = LOWER(dummy.name[i]));
                  i++) {
                 /*
                  * Empty loop
@@ -4898,7 +4898,7 @@ int create_entry(char *name)
     /*
      * copy lowercase equivalent of name to table field
      */
-    for (i = 0; (*(player_table[top_of_p_table].name + i) = LOWER(*(name + i)));
+    for (i = 0; (player_table[top_of_p_table].name[i] = LOWER(name[i]));
          i++) {
         /*
          * Empty loop
@@ -5822,16 +5822,6 @@ int ObjRoomCount(int nr, struct room_data *rp)
     return (count);
 }
 
-int str_len(char *buf)
-{
-    int             i = 0;
-    for (; buf[i] != '\0'; i++) {
-        /*
-         * Empty loop
-         */
-    }
-    return (i);
-}
 
 void reboot_text(struct char_data *ch, char *arg, int cmd)
 {
@@ -6034,9 +6024,6 @@ void ReloadRooms()
 #if 0
          load_room_objs(saved_rooms[i])
 #endif
-         /*
-          * Empty loop
-          */
     }
 }
 

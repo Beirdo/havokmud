@@ -2960,16 +2960,6 @@ bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
     return (MAX(1, save) < number(1, 20));
 }
 
-char           *skip_spaces(char *string)
-{
-    for (; *string && isspace(*string); string++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
-    return (string);
-}
 
 void do_id(struct char_data *ch, char *argument, int cmd)
 {
@@ -3183,12 +3173,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             /* 
              * Point to the last ' 
              */
-            for (; isspace(*argument); argument++) {
-                /* 
-                 * Empty loop 
-                 */
-            }
 
+            argument = skip_spaces(argument);
             /*
              **************** Locate targets **************** */
             target_ok = FALSE;

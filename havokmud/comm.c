@@ -1644,20 +1644,16 @@ int process_input(struct descriptor_data *t)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(t->buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(t->buf + i)); i++) {
-                /* 
-                 * Empty loop 
-                 */
+            while (ISNEWL(t->buf[i])) {
+                i++;
             }
 
             /*
@@ -1789,20 +1785,16 @@ int process_input(struct descriptor_data *t)
                 /*
                  * skip the rest of the line 
                  */
-                for (; !ISNEWL(*(t->buf + i)); i++) {
-                    /* 
-                     * Empty loop 
-                     */
+                while (!ISNEWL(t->buf[i])) {
+                    i++;
                 }
             }
 
             /*
              * find end of entry 
              */
-            for (; ISNEWL(*(t->buf + i)); i++) {
-                /* 
-                 * Empty loop 
-                 */
+            while (ISNEWL(t->buf[i])) {
+                i++;
             }
 
             /*

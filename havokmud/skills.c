@@ -681,12 +681,7 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
     /*
      * make sure that the argument is a direction, or a keyword. 
      */
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
+    arg = skip_spaces(arg);
     argument_interpreter(arg, type, direction);
 
     if ((dir = find_door(ch, type, direction)) >= 0) {
@@ -1178,12 +1173,7 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
      * make sure that the argument is a direction, or a keyword. 
      */
 
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loops 
-         */
-    }
-
+    arg = skip_spaces(arg);
     only_argument(arg, direction);
 
     if ((dir = search_block(direction, dirs, FALSE)) < 0) {

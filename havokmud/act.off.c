@@ -2763,51 +2763,48 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
     }
-    for (; *argument == ' '; argument++) {
-        /*
-         * Empty loop
-         */
-    }
+
+    argument = skip_spaces(argument);
+
     if ((ch->master && IS_AFFECTED(ch, AFF_CHARM)) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
+
     if (!(*argument)) {
         send_to_char("Hrm... normally, you should CHAT something...\n\r", ch);
-    } else {
-        if (strlen(argument) > 150) {
-            send_to_char("Line too long, truncated\n", ch);
-            *(argument + 151) = '\0';
-        }
-        if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            sprintf(buf1, "$c000cYou chat '$c0008%s$c000c'", argument);
-            act(buf1, FALSE, ch, 0, 0, TO_CHAR);
-        }
-        sprintf(buf1, "$c000c-=$c0008%s$c000c=- clan chats '$c0008%s"
-                      "$c000c'\n\r",
-                GET_NAME(ch), argument);
+        return;
+    }
 
-        if (!IS_IMMORTAL(ch)) {
-            GET_MOVE(ch) -= 5;
-            GET_MANA(ch) -= 5;
-        }
+    if (strlen(argument) > 150) {
+        send_to_char("Line too long, truncated\n", ch);
+        argument[151] = '\0';
+    }
 
-        for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected &&
-                (IS_NPC(i->character) ||
-                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
-                  !IS_SET(i->character->specials.act, PLR_NOOOC) &&
-                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
-                !check_soundproof(i->character)) {
-#if 0
-                ch_printf(ch,"My clan: %d Other clan: %d",
-                    GET_CLAN(clannum), GET_CLAN(i->character) );
-#endif
-                if (GET_CLAN(i->character) == GET_CLAN(ch)) {
-                    send_to_char(buf1, i->character);
-                }
-            }
+    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+        sprintf(buf1, "$c000cYou chat '$c0008%s$c000c'", argument);
+        act(buf1, FALSE, ch, 0, 0, TO_CHAR);
+    }
+    
+    sprintf(buf1, "$c000c-=$c0008%s$c000c=- clan chats '$c0008%s$c000c'\n\r",
+            GET_NAME(ch), argument);
+
+    if (!IS_IMMORTAL(ch)) {
+        GET_MOVE(ch) -= 5;
+        GET_MANA(ch) -= 5;
+    }
+
+    for (i = descriptor_list; i; i = i->next) {
+        if (i->character != ch && !i->connected &&
+            (IS_NPC(i->character) ||
+             (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+              !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+              !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
+            !check_soundproof(i->character) && 
+            GET_CLAN(i->character) == GET_CLAN(ch)) {
+
+            send_to_char(buf1, i->character);
         }
     }
 }
@@ -2843,43 +2840,45 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
     }
-    for (; *argument == ' '; argument++) {
-        /*
-         * Empty loop
-         */
-    }
+
+    argument = skip_spaces(argument);
+
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM) &&
         !IS_IMMORTAL(ch->master)) {
         send_to_char("I don't think so :-)", ch->master);
         return;
     }
+
     if (!(*argument)) {
-        send_to_char
-            ("Your fellow questees aren't interested in hearing nothing.\n\r",
-             ch);
-    } else {
-        if (strlen(argument) > 150) {
-            send_to_char("Line too long, truncated\n", ch);
-            *(argument + 151) = '\0';
-        }
-        if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            sprintf(buf1, "$c0008You $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct "
-                          "$c0008'$c000C%s$c0008'", argument);
-            act(buf1, FALSE, ch, 0, 0, TO_CHAR);
-        }
-        sprintf(buf1, "$c0008-=$c000c%s$c0008=- $c000Rq$c000Yu$c000Ge$c000Bs"
-                      "$c000Ct$c000Ps $c0008'$c000C%s$c0008'\n\r",
-                GET_NAME(ch), argument);
-        for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected &&
-                (IS_NPC(i->character) ||
-                 (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
-                  !IS_SET(i->character->specials.act, PLR_NOOOC) &&
-                  !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
-                !check_soundproof(i->character) &&
-                IS_AFFECTED2(i->character, AFF2_QUEST)) {
-                send_to_char(buf1, i->character);
-            }
+        send_to_char("Your fellow questees aren't interested in hearing "
+                     "nothing.\n\r", ch);
+        return;
+    }
+
+    if (strlen(argument) > 150) {
+        send_to_char("Line too long, truncated\n", ch);
+        argument[151] = '\0';
+    }
+
+    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+        sprintf(buf1, "$c0008You $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct "
+                      "$c0008'$c000C%s$c0008'", argument);
+        act(buf1, FALSE, ch, 0, 0, TO_CHAR);
+    }
+
+    sprintf(buf1, "$c0008-=$c000c%s$c0008=- $c000Rq$c000Yu$c000Ge$c000Bs"
+                  "$c000Ct$c000Ps $c0008'$c000C%s$c0008'\n\r",
+            GET_NAME(ch), argument);
+
+    for (i = descriptor_list; i; i = i->next) {
+        if (i->character != ch && !i->connected &&
+            (IS_NPC(i->character) ||
+             (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
+              !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+              !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) &&
+            !check_soundproof(i->character) &&
+            IS_AFFECTED2(i->character, AFF2_QUEST)) {
+            send_to_char(buf1, i->character);
         }
     }
 }

@@ -573,7 +573,6 @@ struct room_data *real_roomp(long virtual);
 int             real_mobile(int virtual);
 int             real_object(int virtual);
 int             ObjRoomCount(int nr, struct room_data *rp);
-int             str_len(char *buf);
 int             load(void);
 void            gr(int s);
 int             workhours(void);
@@ -2241,6 +2240,7 @@ bool            saves_spell(struct char_data *ch, sh_int save_type);
 bool            ImpSaveSpell(struct char_data *ch, sh_int save_type,
                              int mod);
 char           *skip_spaces(char *string);
+char           *skip_word(char *string);
 void            do_cast(struct char_data *ch, char *argument, int cmd);
 void            assign_spell_pointers(void);
 void            SpellWearOffSoon(int s, struct char_data *ch);

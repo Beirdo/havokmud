@@ -85,11 +85,8 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
                      "autopilot!\n\r", ch);
         return;
     }
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty got loop
-         */
-    }
+
+    argument = skip_spaces(argument);
     if (!*argument) {
         if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
             act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
@@ -243,11 +240,7 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
     }
 #endif
 
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
+    argument = skip_spaces(argument);
     if (*argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
@@ -326,11 +319,7 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch) || !ch->desc) return;
 #endif
 
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
+    argument = skip_spaces(argument);
     if (*argument) {
         if ((n = atoi(argument)) != 0) {
             if (n > 39 && !IS_IMMORTAL(ch)) {
@@ -395,11 +384,8 @@ void do_title(struct char_data *ch, char *argument, int cmd)
     if (IS_NPC(ch) || !ch->desc) {
         return;
     }
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty  for loop
-         */
-    }
+
+    argument = skip_spaces(argument);
     if (*argument) {
         if (strlen(argument) > 150) {
             send_to_char("Line too long, truncated\n", ch);
@@ -979,12 +965,7 @@ void do_practice(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    for (; isspace(*arg); arg++) {
-        /*
-         * Empty loop
-         */
-    }
-
+    arg = skip_spaces(arg);
     if (!arg) {
         send_to_char("You need to supply a class for that.", ch);
         return;
@@ -1092,12 +1073,7 @@ void do_idea(struct char_data *ch, char *argument, int cmd)
     /*
      * skip whites
      */
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
-
+    argument = skip_spaces(argument);
     if (!*argument) {
         send_to_char("That doesn't sound like a good idea to me.. Sorry.\n\r",
                      ch);
@@ -1131,12 +1107,7 @@ void do_typo(struct char_data *ch, char *argument, int cmd)
     /*
      * skip whites
      */
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
-
+    argument = skip_spaces(argument);
     if (!*argument) {
         send_to_char("I beg your pardon?\n\r", ch);
         return;
@@ -1168,12 +1139,7 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
     /*
      * skip whites
      */
-    for (; isspace(*argument); argument++) {
-        /*
-         * Empty loop
-         */
-    }
-
+    argument = skip_spaces(argument);
     if (!*argument) {
         send_to_char("Pardon?\n\r", ch);
         return;
@@ -1596,11 +1562,7 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
     /*
      * set ch->specials.group_name to the argument
      */
-    for (; isspace(*arg); arg++) {
-        /*
-         * Empty loop
-         */
-    }
+    arg = skip_spaces(arg);
 
     send_to_char("Setting your group name to: ", ch);
     send_to_char(arg, ch);
@@ -2240,11 +2202,7 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
     dlog("in do_alias");
 
     if (cmd == 260) {
-        for (; isspace(*arg); arg++) {
-            /*
-             * Empty loop
-             */
-        }
+        arg = skip_spaces(arg);
 
         if (!*arg) {
             /*

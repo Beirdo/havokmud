@@ -482,12 +482,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         return (FALSE);
     }
     
-    for (; isspace(*argument); argument++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
+    argument = skip_spaces(argument);
     if (*argument) {
         if (!help_index) {
             send_to_char("No help available.\n\r", ch);

@@ -2709,13 +2709,9 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
      * Eliminate spaces and "ignore" words 
      */
     while (*arg && !found) {
-        for (; isspace(*arg); arg++) {
-            /* 
-             * Empty loop 
-             */
-        }
+        arg = skip_spaces(arg);
 
-        for (i = 0; (name[i] = *(arg + i)) && (name[i] != ' '); i++) {
+        for (i = 0; (name[i] = arg[i]) && (name[i] != ' '); i++) {
             /* 
              * Empty loop 
              */

@@ -3783,7 +3783,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
     }
 
     if (!strn_cmp(buf, "at", 2) && isspace(buf[2])) {
-        only_argument(arg + 3, buf);
+        only_argument(&arg[3], buf);
     }
     if (!str_cmp("green", buf) || !strcmp("powder", buf) || 
         !strcmp("powder-green", buf) || !strcmp("green-powder", buf)) {

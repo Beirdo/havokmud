@@ -140,11 +140,7 @@ void write_board_message(struct char_data *ch, char *arg,
     /*
      * skip blanks 
      */ 
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
+    arg = skip_spaces(arg);
     new_board_message(ch, bd, arg, -1);
 }
 
@@ -216,12 +212,7 @@ bool reply_board_message(struct char_data *ch, char *arg,
     /*
      * skip blanks 
      */ 
-    for (; isspace(*arg); arg++) {
-        /* 
-         * Empty loop 
-         */
-    }
-
+    arg = skip_spaces(arg);
     if (!*arg) {
         sprintf(buf, "re: %s", msg->title);
 #if 0

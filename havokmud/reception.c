@@ -1518,11 +1518,7 @@ void load_char_extra(struct char_data *ch)
 
             if( s ) {
                 /* eat leading spaces and trailing carriage return/linefeed */
-                for (; isspace(*s); s++) {
-                    /*
-                     * Empty loop
-                     */
-                }
+                s = skip_spaces(s);
 
                 while(strchr(s, '\n')) {
                     *(strchr(s, '\n')) = '\0';

@@ -22,7 +22,6 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd);
 
 void do_say(struct char_data *ch, char *argument, int cmd)
 {
-    int             i;
     char            buf[MAX_INPUT_LENGTH + 80];
 
     dlog("in do_say");
@@ -30,19 +29,14 @@ void do_say(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch))
         return;
 
-    for (i = 0; *(argument + i) == ' '; i++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
-    if (!*(argument + i)) {
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
     } else {
-        sprintf(buf, "$c0015$n says '%s'", argument + i);
+        sprintf(buf, "$c0015$n says '%s'", argument);
         act(buf, FALSE, ch, 0, 0, TO_ROOM);
         if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-            sprintf(buf, "$c0015You say '%s'\n\r", argument + i);
+            sprintf(buf, "$c0015You say '%s'\n\r", argument);
             send_to_char(buf, ch);
         }
     }
@@ -111,12 +105,7 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; *argument == ' '; argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
+    argument = skip_spaces(argument);
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
             send_to_char("I don't think so :-)", ch->master);
@@ -196,12 +185,7 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; *argument == ' '; argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
+    argument = skip_spaces(argument);
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
             send_to_char("I don't think so :-)", ch->master);
@@ -277,15 +261,9 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_commune,think");
 
-    for (; *argument == ' '; argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
+    argument = skip_spaces(argument);
     if (!(*argument)) {
-        send_to_char("Communing among the gods is fine, but WHAT?\n\r",
-                     ch);
+        send_to_char("Communing among the gods is fine, but WHAT?\n\r", ch);
 	} else {
         if (argument[0] == '%') {
             do_OOCaction(ch, argument, cmd);
@@ -625,25 +603,18 @@ char           *RandomWord()
         "yoyodine",
         "yaazr",
         "bipsnop",              /* 50 */
-        "\n"
     };
+    int rstringcount = NELEMS(rstring);
 
-    int             i;
-    for (i = 0; *rstring[i] != '\n'; i++) {
-		/*
-		 * Empty loop
-		 */
-	}
     /*
      * count max number in
      * array
      */
-    return (rstring[number(0, i)]);
+    return (rstring[number(0, rstringcount-1)]);
 }
 
 void do_sign(struct char_data *ch, char *argument, int cmd)
 {
-    int             i;
     char            buf[MAX_INPUT_LENGTH + 80];
     char            buf2[MAX_INPUT_LENGTH + 80];
     char           *p;
@@ -653,75 +624,69 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_sign");
 
-    for (i = 0; *(argument + i) == ' '; i++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
-    if (!*(argument + i)) {
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Yes, but WHAT do you want to sign?\n\r", ch);
-    } else {
-		rp = real_roomp(ch->in_room);
-        if (!rp) {
-            return;
-		}
-        if (!HasHands(ch)) {
-            send_to_char("Yeah right... WHAT HANDS!!!!!!!!\n\r", ch);
-            return;
+        return;
+    }
+
+    rp = real_roomp(ch->in_room);
+    if (!rp) {
+        return;
+    }
+
+    if (!HasHands(ch)) {
+        send_to_char("Yeah right... WHAT HANDS!!!!!!!!\n\r", ch);
+        return;
+    }
+
+    strcpy(buf, argument);
+    buf2[0] = '\0';         /*
+                             * work through the argument, word by
+                             * word.  if you fail your skill roll, the
+                             * word comes out garbled. */
+    p = strtok(buf, " ");   /* first word */
+
+    diff = strlen(buf);
+
+    while (p) {
+        if (ch->skills && 
+            number(1, 75 + strlen(p)) < ch->skills[SKILL_SIGN].learned) {
+            strcat(buf2, p);
+        } else {
+            strcat(buf2, RandomWord());
         }
+        strcat(buf2, " ");
+        diff -= 1;
+        p = strtok(0, " ");
+        /*
+         * next word
+         */
+    }
+    /*
+     * if a recipient fails a roll, a word comes out garbled.
+     */
 
-        strcpy(buf, argument + i);
-        buf2[0] = '\0';         /*
-                                 * work through the argument, word by
-                                 * word.  if you fail your skill roll, the
-                                 * word comes out garbled. */
-        p = strtok(buf, " ");   /* first word */
+    /*
+     * buf2 is now the "corrected" string.
+     */
 
-        diff = strlen(buf);
+    sprintf(buf, "$n signs '%s'", buf2);
 
-        while (p) {
-            if (ch->skills
-                && number(1,
-                          75 + strlen(p)) <
-                ch->skills[SKILL_SIGN].learned) {
-                strcat(buf2, p);
+    for (t = rp->people; t; t = t->next_in_room) {
+        if (t != ch) {
+            if (t->skills && number(1, diff) < t->skills[SKILL_SIGN].learned) {
+                act(buf, FALSE, ch, 0, t, TO_VICT);
             } else {
-                strcat(buf2, RandomWord());
-            }
-            strcat(buf2, " ");
-            diff -= 1;
-            p = strtok(0, " ");
-            /*
-             * next word
-             */
-        }
-        /*
-         * if a recipient fails a roll, a word comes out garbled.
-         */
-
-        /*
-         * buf2 is now the "corrected" string.
-         */
-
-        sprintf(buf, "$n signs '%s'", buf2);
-
-        for (t = rp->people; t; t = t->next_in_room) {
-            if (t != ch) {
-                if (t->skills
-                    && number(1, diff) < t->skills[SKILL_SIGN].learned) {
-                    act(buf, FALSE, ch, 0, t, TO_VICT);
-                } else {
-                    act("$n makes funny motions with $s hands",
-                        FALSE, ch, 0, t, TO_VICT);
-                }
+                act("$n makes funny motions with $s hands",
+                    FALSE, ch, 0, t, TO_VICT);
             }
         }
+    }
 
-        if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-            sprintf(buf, "You sign '%s'\n\r", argument + i);
-            send_to_char(buf, ch);
-        }
+    if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
+        sprintf(buf, "You sign '%s'\n\r", argument);
+        send_to_char(buf, ch);
     }
 }
 
@@ -799,8 +764,7 @@ void do_speak(struct char_data *ch, char *argument, int cmd)
  */
 void do_new_say(struct char_data *ch, char *argument, int cmd)
 {
-    int             ii,
-                    learned,
+    int             learned,
                     skill_num;
     char            buf[MAX_INPUT_LENGTH + 80];
     char            buf2[MAX_INPUT_LENGTH + 80];
@@ -815,163 +779,158 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
     if (!argument)
         return;
 
-    for (ii = 0; *(argument + ii) == ' '; ii++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
-    if (!argument[ii]) {
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
-    } else {
+        return;
+    }
 
-        if (apply_soundproof(ch)) {
-            return;
-		}
-        rp = real_roomp(ch->in_room);
-        if (!rp) {
-            return;
-		}
-        if (!ch->skills) {
-            learned = 0;
+    if (apply_soundproof(ch)) {
+        return;
+    }
+
+    rp = real_roomp(ch->in_room);
+    if (!rp) {
+        return;
+    }
+
+    if (!ch->skills) {
+        learned = 0;
+        skill_num = LANG_COMMON;
+    } else {
+        /*
+         * find the language we are speaking
+         */
+
+        switch (ch->player.speaks) {
+        case SPEAK_COMMON:
+            learned = ch->skills[LANG_COMMON].learned;
             skill_num = LANG_COMMON;
+            break;
+        case SPEAK_ELVISH:
+            learned = ch->skills[LANG_ELVISH].learned;
+            skill_num = LANG_ELVISH;
+            break;
+        case SPEAK_HALFLING:
+            learned = ch->skills[LANG_HALFLING].learned;
+            skill_num = LANG_HALFLING;
+            break;
+        case SPEAK_DWARVISH:
+            learned = ch->skills[LANG_DWARVISH].learned;
+            skill_num = LANG_DWARVISH;
+            break;
+        case SPEAK_ORCISH:
+            learned = ch->skills[LANG_ORCISH].learned;
+            skill_num = LANG_ORCISH;
+            break;
+        case SPEAK_GIANTISH:
+            learned = ch->skills[LANG_GIANTISH].learned;
+            skill_num = LANG_GIANTISH;
+            break;
+        case SPEAK_OGRE:
+            learned = ch->skills[LANG_OGRE].learned;
+            skill_num = LANG_OGRE;
+            break;
+        case SPEAK_GNOMISH:
+            learned = ch->skills[LANG_GNOMISH].learned;
+            skill_num = LANG_GNOMISH;
+            break;
+        case SPEAK_ALL:
+            learned = 100;
+            skill_num = LANG_COMMON;
+            break;
+        default:
+            learned = ch->skills[LANG_COMMON].learned;
+            skill_num = LANG_COMMON;
+            break;
+        }
+    }
+
+    strcpy(buf, argument);
+    buf2[0] = '\0';
+
+    /*
+     * we use this for ESP and immortals and comprehend lang
+     */
+    sprintf(buf3, "$c0015[$c0005$n$c0015] says '%s'", buf);
+
+    /*
+     * work through the argument, word by word.  if you fail your
+     * skill roll, the word comes out garbled.
+     */
+    p = strtok(buf, " ");
+    /*
+     * first word
+     */
+
+    diff = strlen(buf);
+
+    while (p) {
+        if (number(1, 75 + strlen(p)) < learned || IS_IMMORTAL(ch)) {
+            strcat(buf2, p);
         } else {
             /*
-             * find the language we are speaking
+             * add case statement here to use random words from clips
+             * of elvish, dwarvish etc so the words look like they came
+             * from that language
              */
-
-            switch (ch->player.speaks) {
-            case SPEAK_COMMON:
-                learned = ch->skills[LANG_COMMON].learned;
-                skill_num = LANG_COMMON;
-                break;
-            case SPEAK_ELVISH:
-                learned = ch->skills[LANG_ELVISH].learned;
-                skill_num = LANG_ELVISH;
-                break;
-            case SPEAK_HALFLING:
-                learned = ch->skills[LANG_HALFLING].learned;
-                skill_num = LANG_HALFLING;
-                break;
-            case SPEAK_DWARVISH:
-                learned = ch->skills[LANG_DWARVISH].learned;
-                skill_num = LANG_DWARVISH;
-                break;
-            case SPEAK_ORCISH:
-                learned = ch->skills[LANG_ORCISH].learned;
-                skill_num = LANG_ORCISH;
-                break;
-            case SPEAK_GIANTISH:
-                learned = ch->skills[LANG_GIANTISH].learned;
-                skill_num = LANG_GIANTISH;
-                break;
-            case SPEAK_OGRE:
-                learned = ch->skills[LANG_OGRE].learned;
-                skill_num = LANG_OGRE;
-                break;
-            case SPEAK_GNOMISH:
-                learned = ch->skills[LANG_GNOMISH].learned;
-                skill_num = LANG_GNOMISH;
-                break;
-            case SPEAK_ALL:
-                learned = 100;
-                skill_num = LANG_COMMON;
-                break;
-            default:
-                learned = ch->skills[LANG_COMMON].learned;
-                skill_num = LANG_COMMON;
-                break;
-            }
+            strcat(buf2, RandomWord());
         }
-
-        strcpy(buf, argument + ii);
-        buf2[0] = '\0';
-
+        strcat(buf2, " ");
+        diff -= 1;
+        p = strtok(0, " ");
         /*
-         * we use this for ESP and immortals and comprehend lang
+         * next word
          */
-        sprintf(buf3, "$c0015[$c0005$n$c0015] says '%s'", buf);
+    }
+    /*
+     * if a recipient fails a roll, a word comes out garbled.
+     */
 
-        /*
-         * work through the argument, word by word.  if you fail your
-         * skill roll, the word comes out garbled.
-         */
-        p = strtok(buf, " ");
-        /*
-         * first word
-         */
+    /*
+     * buf2 is now the "corrected" string.
+     */
+    if (!buf2 || !*buf2) {
+        send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
+        return;
+    }
 
-        diff = strlen(buf);
+    sprintf(buf, "$c0015[$c0005$n$c0015] says '%s'", buf2);
 
-        while (p) {
-            if (number(1, 75 + strlen(p)) < learned
-                || IS_IMMORTAL(ch)) {
-                strcat(buf2, p);
-            } else {
+    for (t = rp->people; t; t = t->next_in_room) {
+        if (t != ch) {
+            if ((t->skills) && 
+                (number(1, diff) < t->skills[skill_num].learned || 
+                 IS_IMMORTAL(t) || IS_NPC(t) || 
+                 affected_by_spell(t, SKILL_ESP) || 
+                 affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
+                 ch->player.speaks == 9)) {
                 /*
-                 * add case statement here to use random words from clips
-                 * of elvish, dwarvish etc so the words look like they came
-                 * from that language
+                 * these guys always understand
                  */
-                strcat(buf2, RandomWord());
-            }
-            strcat(buf2, " ");
-            diff -= 1;
-            p = strtok(0, " ");
-            /*
-             * next word
-             */
-        }
-        /*
-         * if a recipient fails a roll, a word comes out garbled.
-         */
-
-        /*
-         * buf2 is now the "corrected" string.
-         */
-        if (!*buf2 || !buf2) {
-            send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
-            return;
-        }
-
-        sprintf(buf, "$c0015[$c0005$n$c0015] says '%s'", buf2);
-
-        for (t = rp->people; t; t = t->next_in_room) {
-            if (t != ch) {
-                if ((t->skills) && 
-                    (number(1, diff) < t->skills[skill_num].learned || 
-                     IS_IMMORTAL(t) || IS_NPC(t) || 
-                     affected_by_spell(t, SKILL_ESP) || 
-                     affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
-                     ch->player.speaks == 9)) {
-                    /*
-                     * these guys always understand
-                     */
-                    if (IS_IMMORTAL(t)  || IS_NPC(t) ||
-                        affected_by_spell(t, SKILL_ESP) ||
-                        affected_by_spell(t, SPELL_COMP_LANGUAGES) ||
-                        IS_NPC(t) || ch->player.speaks == SPEAK_ALL) {
-                        act(buf3, FALSE, ch, 0, t, TO_VICT);
-                    } else {
-                        act(buf, FALSE, ch, 0, t, TO_VICT);
-					}
+                if (IS_IMMORTAL(t)  || IS_NPC(t) ||
+                    affected_by_spell(t, SKILL_ESP) ||
+                    affected_by_spell(t, SPELL_COMP_LANGUAGES) ||
+                    IS_NPC(t) || ch->player.speaks == SPEAK_ALL) {
+                    act(buf3, FALSE, ch, 0, t, TO_VICT);
                 } else {
-                    act("$c0010$n speaks in a language you can't quite "
-                        "understand.", FALSE, ch, 0, t, TO_VICT);
+                    act(buf, FALSE, ch, 0, t, TO_VICT);
                 }
+            } else {
+                act("$c0010$n speaks in a language you can't quite "
+                    "understand.", FALSE, ch, 0, t, TO_VICT);
             }
         }
+    }
 
-        if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
-            sprintf(buf, "$c0015You say '%s'", argument + ii);
-            act(buf, FALSE, ch, 0, 0, TO_CHAR);
-        }
+    if (IS_NPC(ch) || (IS_SET(ch->specials.act, PLR_ECHO))) {
+        sprintf(buf, "$c0015You say '%s'", argument);
+        act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
 }
 
 void do_gtell(struct char_data *ch, char *argument, int cmd)
 {
-    int             i;
     struct char_data *k;
     struct follow_type *f;
     char            buf[MAX_STRING_LENGTH];
@@ -981,13 +940,10 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
 	}
-    for (i = 0; *(argument + i) == ' '; i++) {
-		/*
-		 * Empty loop
-		 */
-	}
 
-    if (!*(argument + i)) {
+    argument = skip_spaces(argument);
+
+    if (!*argument) {
         send_to_char("What do you want to group tell!??\n\r", ch);
         return;
     }
@@ -995,66 +951,62 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
     if (!IS_AFFECTED(ch, AFF_GROUP)) {
         send_to_char("But you are a member of no group?!\n\r", ch);
         return;
+    }
+
+    if (ch->master) {
+        k = ch->master;
     } else {
-        if (ch->master) {
-            k = ch->master;
-		} else {
-            k = ch;
-		}
-        for (f = k->followers; f; f = f->next) {
-            if (IS_AFFECTED(f->follower, AFF_GROUP)) {
-                if (!f->follower->desc) {
-                    /*
-                     * link dead
-                     */
-                } else if (ch == f->follower) {
-                    /*
-                     * can't tell yourself!
-                     */
-                } else if (!check_soundproof(f->follower)) {
-                    sprintf(buf,
-                            "$c0012[$c0015%s$c0012] group tells you '%s'",
-                            (IS_NPC(ch) ? ch->player.
-                             short_descr : GET_NAME(ch)), argument + i);
-                    act(buf, FALSE, f->follower, 0, 0, TO_CHAR);
-                }
+        k = ch;
+    }
+    for (f = k->followers; f; f = f->next) {
+        if (IS_AFFECTED(f->follower, AFF_GROUP)) {
+            if (!f->follower->desc) {
+                /*
+                 * link dead
+                 */
+            } else if (ch == f->follower) {
+                /*
+                 * can't tell yourself!
+                 */
+            } else if (!check_soundproof(f->follower)) {
+                sprintf(buf,
+                        "$c0012[$c0015%s$c0012] group tells you '%s'",
+                        (IS_NPC(ch) ? ch->player.
+                         short_descr : GET_NAME(ch)), argument);
+                act(buf, FALSE, f->follower, 0, 0, TO_CHAR);
             }
         }
+    }
 
-        /*
-         * send to master now
-         */
-        if (ch->master) {
-            if (IS_AFFECTED(ch->master, AFF_GROUP)) {
-                if (!ch->master->desc) {
-                    /*
-                     * link dead
-                     */
-                } else if (ch == ch->master) {
-                    /*
-                     * can't tell yourself!
-                     */
-                } else if (!check_soundproof(ch->master)) {
-                    sprintf(buf,
-                            "$c0012[$c0015%s$c0012] group tells you '%s'",
-                            (IS_NPC(ch) ? ch->player.
-                             short_descr : GET_NAME(ch)), argument + i);
-                    act(buf, FALSE, ch->master, 0, 0, TO_CHAR);
-                }
-			}
+    /*
+     * send to master now
+     */
+    if (ch->master) {
+        if (IS_AFFECTED(ch->master, AFF_GROUP)) {
+            if (!ch->master->desc) {
+                /*
+                 * link dead
+                 */
+            } else if (ch == ch->master) {
+                /*
+                 * can't tell yourself!
+                 */
+            } else if (!check_soundproof(ch->master)) {
+                sprintf(buf,
+                        "$c0012[$c0015%s$c0012] group tells you '%s'",
+                        (IS_NPC(ch) ? ch->player.
+                         short_descr : GET_NAME(ch)), argument);
+                act(buf, FALSE, ch->master, 0, 0, TO_CHAR);
+            }
         }
+    }
 
-        if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            sprintf(buf, "$c0012You group tell '%s'", argument + i);
-            act(buf, FALSE, ch, 0, 0, TO_CHAR);
-        }
+    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+        sprintf(buf, "$c0012You group tell '%s'", argument);
+        act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
 }
 
-/*
- * 'Split' originally by Gnort, God of Chaos. I stole it from Merc
- * and changed it to work with mine :) Heh msw
- */
 
 void do_split(struct char_data *ch, char *argument, int cmd)
 {
@@ -1155,48 +1107,45 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    for (; *argument == ' '; argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
-
-    if (!(*argument)) {
+    argument = skip_spaces(argument);
+    if (!*argument) {
         send_to_char("Pray to a deity, but what?!?! (pray <DeityName> "
                      "<prayer>)\n\r", ch);
-    } else {
-        ii = ((int) GetMaxLevel(ch) * 3.5);
-		if (HasClass(ch, CLASS_CLERIC | CLASS_DRUID)) {
-            ii += 10;
-            /*
-             * clerics get a 10% bonus :)
-             */
-		}
-        if (ii > number(1, 101)) {
-            if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-                sprintf(buf1, "You pray '%s'\n\r", argument);
-                send_to_char(buf1, ch);
-            }
-            sprintf(buf1, "$c0014:*:$c0012$n$c0014:*: prays '$c0012%s$c0014'",
-                    argument);
-
-            for (i = descriptor_list; i; i = i->next) {
-                if (i->character != ch && !i->connected && 
-                    !IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
-                    IS_IMMORTAL(i->character)) {
-                    act(buf1, 0, ch, 0, i->character, TO_VICT);
-				}
-            }
-		} else {
-            send_to_char("Your prayer is ignored at this time.\n\r", ch);
-		}
-        af.type = SPELL_PRAYER;
-        af.duration = 24;
-        af.modifier = 0;
-        af.location = APPLY_NONE;
-        af.bitvector = 0;
-        affect_to_char(ch, &af);
+        return;
     }
+
+    ii = ((int) GetMaxLevel(ch) * 3.5);
+    if (HasClass(ch, CLASS_CLERIC | CLASS_DRUID)) {
+        ii += 10;
+        /*
+         * clerics get a 10% bonus :)
+         */
+    }
+
+    if (ii > number(1, 101)) {
+        if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+            sprintf(buf1, "You pray '%s'\n\r", argument);
+            send_to_char(buf1, ch);
+        }
+        sprintf(buf1, "$c0014:*:$c0012$n$c0014:*: prays '$c0012%s$c0014'",
+                argument);
+
+        for (i = descriptor_list; i; i = i->next) {
+            if (i->character != ch && !i->connected && 
+                !IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
+                IS_IMMORTAL(i->character)) {
+                act(buf1, 0, ch, 0, i->character, TO_VICT);
+            }
+        }
+    } else {
+        send_to_char("Your prayer is ignored at this time.\n\r", ch);
+    }
+    af.type = SPELL_PRAYER;
+    af.duration = 24;
+    af.modifier = 0;
+    af.location = APPLY_NONE;
+    af.bitvector = 0;
+    affect_to_char(ch, &af);
 }
 
 bool is_same_group(struct char_data * ach, struct char_data * bch)
@@ -1321,11 +1270,8 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
 	}
-    for (; *argument == ' '; argument++) {
-		/*
-		 * Empty loop
-		 */
-	}
+
+    argument = skip_spaces(argument);
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
@@ -1334,39 +1280,40 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
         }
     }
 
-    if (!(*argument)) {
-        send_to_char("Hrm... normally, you should OOC something...\n\r",
-                     ch);
-    } else {
-        if (argument[0] == '%') {
-            do_OOCaction(ch, argument, cmd);
-            return;
-        } else if (argument[0] == '#') {
-            do_OOCemote(ch, argument, cmd);
-            return;
+    if (!*argument) {
+        send_to_char("Hrm... normally, you should OOC something...\n\r", ch);
+        return;
+    }
+
+    if (*argument == '%') {
+        do_OOCaction(ch, argument, cmd);
+        return;
+    } 
+    
+    if (*argument == '#') {
+        do_OOCemote(ch, argument, cmd);
+        return;
+    }
+
+    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+        sprintf(buf1, "$c0012You $c0015OOC$c0012 '$c0015%s$c0012'", argument);
+        act(buf1, FALSE, ch, 0, 0, TO_CHAR);
+    }
+    sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'", argument);
+    if (!IS_IMMORTAL(ch)) {
+        GET_MOVE(ch) -= 5;
+        GET_MANA(ch) -= 5;
+    }
+
+    for (i = descriptor_list; i; i = i->next) {
+        if (i->character != ch && !i->connected &&
+            (IS_NPC(i->character) || 
+             (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && 
+              !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+              !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && 
+            !check_soundproof(i->character)) {
+            act(buf1, 0, ch, 0, i->character, TO_VICT);
         }
-		if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-            sprintf(buf1, "$c0012You $c0015OOC$c0012 '$c0015%s$c0012'",
-                    argument);
-            act(buf1, FALSE, ch, 0, 0, TO_CHAR);
-        }
-        sprintf(buf1, "$c0012-=$c0015$n$c0012=- OOCs '$c0015%s$c0012'",
-                argument);
-        if (!IS_IMMORTAL(ch)) {
-            GET_MOVE(ch) -= 5;
-            GET_MANA(ch) -= 5;
-        }
-		for (i = descriptor_list; i; i = i->next) {
-            if (i->character != ch && !i->connected
-                && (IS_NPC(i->character)
-                    || (!IS_SET(i->character->specials.act, PLR_NOSHOUT)
-                        && !IS_SET(i->character->specials.act, PLR_NOOOC)
-                        && !IS_SET(i->character->specials.act,
-                                   PLR_WIZNOOOC)))
-                && !check_soundproof(i->character)) {
-                act(buf1, 0, ch, 0, i->character, TO_VICT);
-            }
-		}
     }
 }
 
