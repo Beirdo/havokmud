@@ -82,16 +82,16 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
     struct obj_data *w,
                    *trap;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (check_peaceful(ch, "You feel too peaceful to contemplate "
-                           "violence.\n\r"))
+                           "violence.\n\r")) {
         return;
-
-    if (!IS_PC(ch) && cmd)
+    }
+    if (!IS_PC(ch) && cmd) {
         return;
-
+    }
     /*
      *   get victim
      */
@@ -150,7 +150,9 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);   
 
     percent -= dex_app[GET_DEX(ch)].reaction * 10;
@@ -160,9 +162,9 @@ void do_disarm(struct char_data *ch, char *argument, int cmd)
     }
 
     percent += GetMaxLevel(victim);
-    if (HasClass(victim, CLASS_MONK))
+    if (HasClass(victim, CLASS_MONK)) {
         percent += GetMaxLevel(victim);
-
+    }
     if (HasClass(ch, CLASS_MONK)) {
         percent -= GetMaxLevel(ch);
     } else {
@@ -288,18 +290,18 @@ void do_track(struct char_data *ch, char *argument, int cmd)
         break;
     }
 
-    if (GetMaxLevel(ch) >= IMMORTAL)
+    if (GetMaxLevel(ch) >= IMMORTAL) {
         dist = MAX_ROOMS;
-
+    }
     if (affected_by_spell(ch, SPELL_MINOR_TRACK)) {
         dist = GetMaxLevel(ch) * 50;
     } else if (affected_by_spell(ch, SPELL_MAJOR_TRACK)) {
         dist = GetMaxLevel(ch) * 100;
     }
 
-    if (dist == 0)
+    if (dist == 0) {
         return;
-
+    }
     ch->hunt_dist = dist;
 
     ch->specials.hunting = 0;
@@ -333,9 +335,9 @@ int track(struct char_data *ch, struct char_data *vict)
     char            buf[256];
     int             code;
 
-    if ((!ch) || (!vict))
+    if ((!ch) || (!vict)) {
         return (-1);
-
+    }
     if (GetMaxLevel(ch) < MIN_GLOB_TRACK_LEV ||
         affected_by_spell(ch, SPELL_MINOR_TRACK) ||
         affected_by_spell(ch, SPELL_MAJOR_TRACK)) {
@@ -344,12 +346,14 @@ int track(struct char_data *ch, struct char_data *vict)
         code = choose_exit_global(ch->in_room, vict->in_room, ch->hunt_dist);
     }
 
-    if ((!ch) || (!vict))
+    if ((!ch) || (!vict)) {
         return (-1);
-
+    }
     if (ch->in_room == vict->in_room) {
         send_to_char("##You have found your target!\n\r", ch);
-        /* false to continue the hunt */
+        /* 
+         * false to continue the hunt 
+         */
         return (FALSE);
     }
     if (code == -1) {
@@ -367,9 +371,9 @@ int dir_track(struct char_data *ch, struct char_data *vict)
     char            buf[256];
     int             code;
 
-    if ((!ch) || (!vict))
+    if ((!ch) || (!vict)) {
         return (-1);
-
+    }
     if (GetMaxLevel(ch) >= MIN_GLOB_TRACK_LEV ||
         affected_by_spell(ch, SPELL_MINOR_TRACK) ||
         affected_by_spell(ch, SPELL_MAJOR_TRACK)) {
@@ -378,9 +382,9 @@ int dir_track(struct char_data *ch, struct char_data *vict)
         code = choose_exit_in_zone(ch->in_room, vict->in_room, ch->hunt_dist);
     }
 
-    if ((!ch) || (!vict))
+    if ((!ch) || (!vict)) {
         return (-1);
-
+    }
     if (code == -1) {
         if (ch->in_room == vict->in_room) {
             send_to_char("##You have found your target!\n\r", ch);
@@ -395,10 +399,11 @@ int dir_track(struct char_data *ch, struct char_data *vict)
     }
 }
 
-/** Perform breadth first search on rooms from start (in_room) **/
-/** until end (tgt_room) is reached. Then return the correct   **/
-/** direction to take from start to reach end.                 **/
-
+/* 
+ * Perform breadth first search on rooms from start (in_room)
+ * until end (tgt_room) is reached. Then return the correct   
+ * direction to take from start to reach end.               
+ */
 /*
  * thoth@manatee.cis.ufl.edu if dvar<0 then search THROUGH closed but not
  * locked doors, for mobiles that know how to open doors. 
@@ -439,9 +444,9 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
     /*
      * If start = destination we are done 
      */
-    if ((predicate)(in_room, c_data))
+    if ((predicate)(in_room, c_data)) {
         return -1;
-
+    }
 #if 0
     if (top_of_world > MAX_ROOMS) {
         log("TRACK Is disabled, too many rooms.\n\rContact Loki soon.\n\r");
@@ -532,23 +537,30 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
                         tmp_room = q_head->room_nr;
                         for (; q_head; q_head = tmp_q) {
                             tmp_q = q_head->next_q;
-                            if (q_head)
+                            if (q_head) {
                                 free(q_head);
+                            }
                         }
                         /*
                          * return direction if first layer 
                          */
                         if ((int) hash_find(&x_room, tmp_room) == -1) {
                             if (x_room.buckets) {
-                                /* junk left over from a previous track */
+                                /* 
+                                 * junk left over from a previous track 
+                                 */
                                 destroy_hash_table(&x_room, donothing);
                             }
                             return (i);
                         } else {
-                            /* else return the ancestor */
+                            /* 
+                             * else return the ancestor 
+                             */
                             i = (int) hash_find(&x_room, tmp_room);
                             if (x_room.buckets) {
-                                /* junk left over from a previous track */
+                                /* 
+                                 * junk left over from a previous track 
+                                 */
                                 destroy_hash_table(&x_room, donothing);
                             }
                             return (-1 + i);
@@ -562,8 +574,9 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
          * free queue head and point to next entry 
          */
         tmp_q = q_head->next_q;
-        if (q_head)
+        if (q_head) {
             free(q_head);
+        }
         q_head = tmp_q;
     }
 
@@ -571,7 +584,9 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
      * couldn't find path 
      */
     if (x_room.buckets) {
-        /* junk left over from a previous track */
+        /* 
+         * junk left over from a previous track 
+         */
         destroy_hash_table(&x_room, donothing);
     }
     return (-1);
@@ -590,9 +605,9 @@ int choose_exit_in_zone(int in_room, int tgt_room, int depth)
 
 int go_direction(struct char_data *ch, int dir)
 {
-    if (ch->specials.fighting)
+    if (ch->specials.fighting) {
         return 0;
-
+    }
     if (!IS_SET(EXIT(ch, dir)->exit_info, EX_CLOSED)) {
         do_move(ch, "", dir + 1);
     } else if (IsHumanoid(ch) && !IS_SET(EXIT(ch, dir)->exit_info, EX_LOCKED) &&
@@ -626,8 +641,9 @@ void slam_into_wall(struct char_data *ch,
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
 
     GET_HIT(ch) -= number(1, 10) * 2;
-    if (GET_HIT(ch) < 0)
+    if (GET_HIT(ch) < 0) {
         GET_HIT(ch) = 0;
+    }
     GET_POS(ch) = POSITION_STUNNED;
 }
 
@@ -646,9 +662,9 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
                     type[128],
                     direction[128];
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (GET_MOVE(ch) < 10) {
         send_to_char("You're too tired to do that\n\r", ch);
         return;
@@ -663,7 +679,9 @@ void do_doorbash(struct char_data *ch, char *arg, int cmd)
      * make sure that the argument is a direction, or a keyword. 
      */
     for (; isspace(*arg); arg++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     argument_interpreter(arg, type, direction);
@@ -832,12 +850,14 @@ void do_swim(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (percent > ch->skills[SKILL_SWIM].learned) {
         send_to_char("You're too afraid to enter the water\n\r", ch);
         if (ch->skills[SKILL_SWIM].learned < 95 &&
@@ -867,12 +887,12 @@ void do_swim(struct char_data *ch, char *arg, int cmd)
 
 int SpyCheck(struct char_data *ch)
 {
-    if (!ch->skills)
+    if (!ch->skills) {
         return (FALSE);
-
-    if (number(1, 101) > ch->skills[SKILL_SPY].learned)
+    }
+    if (number(1, 101) > ch->skills[SKILL_SPY].learned) {
         return (FALSE);
-
+    }
     return (TRUE);
 }
 
@@ -896,12 +916,14 @@ void do_spy(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (percent > ch->skills[SKILL_SPY].learned) {
         if (ch->skills[SKILL_SPY].learned < 95 && 
             ch->skills[SKILL_SPY].learned > 0 &&
@@ -972,9 +994,9 @@ void do_feign_death(struct char_data *ch, char *arg, int cmd)
     struct room_data *rp;
     struct char_data *t;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (!ch->specials.fighting) {
         send_to_char("But you are not fighting anything...\n\r", ch);
         return;
@@ -997,9 +1019,9 @@ void do_feign_death(struct char_data *ch, char *arg, int cmd)
     }
 
     rp = real_roomp(ch->in_room);
-    if (!rp)
+    if (!rp) {
         return;
-
+    }
     send_to_char("You try to fake your own demise\n\r", ch);
 
     death_cry(ch);
@@ -1041,26 +1063,26 @@ void do_first_aid(struct char_data *ch, char *arg, int cmd)
     struct affected_type af;
     int             exp_level = 0;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (affected_by_spell(ch, SKILL_FIRST_AID)) {
         send_to_char("You can only do this once per day.\n\r", ch);
         return;
     }
 
-    if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF))
+    if (IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) {
         exp_level = GetMaxLevel(ch);
-
+    }
     if (number(1, 101) < ch->skills[SKILL_FIRST_AID].learned) {
         send_to_char("You render first aid unto yourself.\n\r", ch);
         send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using"
                      " your combat abilities.$c0007\n\r", ch);
         gain_exp(ch, 100);
         GET_HIT(ch) += ((number(3, 15)) + exp_level);
-        if (GET_HIT(ch) > GET_MAX_HIT(ch))
+        if (GET_HIT(ch) > GET_MAX_HIT(ch)) {
             GET_HIT(ch) = GET_MAX_HIT(ch);
-
+        }
         af.duration = 24;
     } else {
         af.duration = 6;
@@ -1086,9 +1108,9 @@ void do_disguise(struct char_data *ch, char *argument, int cmd)
     struct affected_type af;
     struct char_data *k;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     send_to_char("You attempt to disguise yourself\n\r", ch);
 
     if (affected_by_spell(ch, SKILL_DISGUISE)) {
@@ -1155,7 +1177,9 @@ void do_climb(struct char_data *ch, char *arg, int cmd)
      */
 
     for (; isspace(*arg); arg++) {
-        /* Empty loops */
+        /* 
+         * Empty loops 
+         */
     }
 
     only_argument(arg, direction);
@@ -1251,10 +1275,11 @@ void slip_in_climb(struct char_data *ch, int dir, int room)
     }
 
     GET_POS(ch) = POSITION_SITTING;
-    if (i > GET_HIT(ch))
+    if (i > GET_HIT(ch)) {
         GET_HIT(ch) = 1;
-    else
+    } else {
         GET_HIT(ch) -= i;
+    }
 }
 
 void do_tan(struct char_data *ch, char *arg, int cmd)
@@ -1271,11 +1296,12 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
     int             lev = 0;
     int             r_num = 0;
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
-    if (!ch->skills)
+    }
+    if (!ch->skills) {
         return;
+    }
     if (MOUNTED(ch)) {
         send_to_char("Not from this mount you cannot!\n\r", ch);
         return;
@@ -1310,7 +1336,9 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
      * affect[0] == race of corpse, affect[1] == level of corpse 
      */
     if (j->affected[0].modifier != 0 && j->affected[1].modifier != 0) {
-        /* 101% is a complete failure */
+        /* 
+         * 101% is a complete failure 
+         */
         percent = number(1, 101);
 
         if (!ch->skills || !ch->skills[SKILL_TAN].learned ||
@@ -1319,7 +1347,9 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         }
 
         if (percent > ch->skills[SKILL_TAN].learned) {
-            /* make corpse unusable for another tan */
+            /* 
+             * make corpse unusable for another tan 
+             */
             j->affected[1].modifier = 0;
 
             sprintf(buf, "You hack at %s but manage to only destroy the "
@@ -1589,11 +1619,12 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
          * racial bonus 
          */
 
-        if (acbonus < 0)
+        if (acbonus < 0) {
             acbonus = 0;
-        if (acapply < 0)
+        }
+        if (acapply < 0) {
             acapply = 0;
-
+        }
         if (!strcmp(itemtype, "shield")) {
             if ((r_num = real_object(TAN_SHIELD)) >= 0) {
                 hide = read_object(r_num, REAL);
@@ -1616,11 +1647,13 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
                 obj_to_char(hide, ch);
             }
             acapply--;
-            if (acapply < 0)
+            if (acapply < 0) {
                 acapply = 0;
+            }
             acbonus--;
-            if (acbonus < 0)
+            if (acbonus < 0) {
                 acbonus = 0;
+            }
             strcat(hidetype, " pair of boots");
         } else if (!strcmp(itemtype, "gloves")) {
             if ((r_num = real_object(TAN_GLOVES)) >= 0) {
@@ -1629,11 +1662,13 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
             }
 
             acapply--;
-            if (acapply < 0)
+            if (acapply < 0) {
                 acapply = 0;
+            }
             acbonus--;
-            if (acbonus < 0)
+            if (acbonus < 0) {
                 acbonus = 0;
+            }
             strcat(hidetype, " pair of gloves");
         } else if (!strcmp(itemtype, "leggings")) {
             if ((r_num = real_object(TAN_LEGGINGS)) >= 0) {
@@ -1657,11 +1692,13 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
                 obj_to_char(hide, ch);
             }
             acapply--;
-            if (acapply < 0)
+            if (acapply < 0) {
                 acapply = 0;
+            }
             acbonus--;
-            if (acbonus < 0)
+            if (acbonus < 0) {
                 acbonus = 0;
+            }
             strcat(hidetype, " helmet");
         } else if (!strcmp(itemtype, "bag")) {
             if ((r_num = real_object(TAN_BAG)) >= 0) {
@@ -1704,8 +1741,11 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         /*
          * was not a bag ^ 
          */
-        j->affected[1].modifier = 0;    /* make corpse unusable
-                                         * for another tan */
+        j->affected[1].modifier = 0;    
+        /* 
+         * make corpse unusable
+         * for another tan 
+         */
 
         sprintf(buf, "You hack at the %s and finally make the %s.\n\r",
                 j->short_description, itemtype);
@@ -1733,9 +1773,9 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
                     percent = 0;
     struct obj_data *obj;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (!ch->skills[SKILL_FIND_FOOD].learned > 0) {
         send_to_char("You search blindly for anything, but fail.\n\r.", ch);
         return;
@@ -1746,7 +1786,9 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);
 
     if (ch->skills && ch->skills[SKILL_FIND_FOOD].learned &&
@@ -1767,7 +1809,7 @@ void do_find_food(struct char_data *ch, char *arg, int cmd)
                 obj = read_object(r_num, REAL);
                 obj_to_char(obj, ch);
                 send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
-                             "using your combat abilities.$c0007\n\r", ch);
+                             "using your abilities.$c0007\n\r", ch);
                 gain_exp(ch, 100);
             }
         }
@@ -1787,9 +1829,9 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
                     percent = 0;
     struct obj_data *obj;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (!ch->skills[SKILL_FIND_WATER].learned > 0) {
         send_to_char("You search blindly for anything, but fail.\n\r.", ch);
         return;
@@ -1800,13 +1842,14 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);
 
     if (ch->skills && ch->skills[SKILL_FIND_WATER].learned &&
         GET_POS(ch) > POSITION_SITTING) {
-        if (percent > ch->skills[SKILL_FIND_WATER].learned)
-        {
+        if (percent > ch->skills[SKILL_FIND_WATER].learned) {
             act("You search around for stream or puddle of water but failed "
                 "to find anything.", TRUE, ch, 0, 0, TO_CHAR);
             act("$n searches and searches for something to drink but comes up "
@@ -1821,7 +1864,7 @@ void do_find_water(struct char_data *ch, char *arg, int cmd)
                 obj = read_object(r_num, REAL);
                 obj_to_char(obj, ch);
                 send_to_char("$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r", ch);
+                             "for using your abilities.$c0007\n\r", ch);
                 gain_exp(ch, 100);
             }
         }
@@ -1838,12 +1881,12 @@ void do_find_traps(struct char_data *ch, char *arg, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
-    if (!IS_PC(ch))
+    }
+    if (!IS_PC(ch)) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_THIEF)) {
         send_to_char("What do you think you are?!?\n\r", ch);
@@ -1862,9 +1905,9 @@ void do_find(struct char_data *ch, char *arg, int cmd)
 {
     char            findwhat[30];
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     arg = one_argument(arg, findwhat);
 
     if (!strcmp(findwhat, "water")) {
@@ -1873,8 +1916,9 @@ void do_find(struct char_data *ch, char *arg, int cmd)
         do_find_food(ch, arg, cmd);
     } else if (!strcmp(findwhat, "traps")) {
         do_find_traps(ch, arg, cmd);
-    } else
+    } else {
         send_to_char("Find what?!?!?\n\r", ch);
+    }
 }
 
 void do_bellow(struct char_data *ch, char *arg, int cmd)
@@ -1882,9 +1926,9 @@ void do_bellow(struct char_data *ch, char *arg, int cmd)
     struct char_data *vict,
                    *tmp;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_BARBARIAN) && !HasClass(ch, CLASS_WARRIOR)) {
         send_to_char("What do you think you are, a warrior!\n\r", ch);
@@ -1892,7 +1936,7 @@ void do_bellow(struct char_data *ch, char *arg, int cmd)
     }
 
     if (check_peaceful(ch, "You feel too peaceful to contemplate "
-                           "violence.\n\r")) {
+                           "violence.\n\r")) { 
         return;
     }
 
@@ -1989,9 +2033,9 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
                     r_num;
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_RANGER)) {
         send_to_char("Hum, you wonder how you would do this...\n\r", ch);
@@ -2051,9 +2095,9 @@ void do_carve(struct char_data *ch, char *argument, int cmd)
         corpse->obj_flags.weight = corpse->obj_flags.weight - 50;
 
         i = number(1, 6);
-        if (i == 6)
+        if (i == 6) {
             food->obj_flags.value[3] = 1;
-
+        }
         obj_to_room(food, ch->in_room);
         WAIT_STATE(ch, PULSE_VIOLENCE * 3);
     }
@@ -2066,9 +2110,9 @@ void do_doorway(struct char_data *ch, char *argument, int cmd)
     int             location;
     struct room_data *rp;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this\n\r", ch);
@@ -2172,9 +2216,9 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
     int             check = 0;
     struct room_data *rp;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this.\n\r", ch);
@@ -2300,9 +2344,10 @@ void do_psi_portal(struct char_data *ch, char *argument, int cmd)
             }
         }
 
-        if (check == 1)
+        if (check == 1) {
             send_to_char("Now that all your comrades are through, you follow "
                          "them and close the portal.\n\r", ch);
+        }
         act("$n steps into the portal just before it disappears.", FALSE,
             ch, 0, 0, TO_ROOM);
         char_from_room(ch);
@@ -2325,9 +2370,9 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     struct room_data *rp;
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this\n\r", ch);
@@ -2461,15 +2506,16 @@ void do_mindsummon(struct char_data *ch, char *argument, int cmd)
     }
 
     act("You open a portal and bring forth $N!", FALSE, ch, 0, target, TO_CHAR);
-    if (GetMaxLevel(target) < GetMaxLevel(ch) + 2 && !IS_PC(target))
+    if (GetMaxLevel(target) < GetMaxLevel(ch) + 2 && !IS_PC(target)) {
         send_to_char("Their head is reeling. Give them a moment to "
                      "recover.\n\r", ch);
+    }
     act("$n disappears in a shimmering wave of light!", TRUE, target, 0, 0,
         TO_ROOM);
 
-    if (IS_PC(target))
+    if (IS_PC(target)) {
         act("You are summoned by $n!", TRUE, ch, 0, target, TO_VICT);
-
+    }
     char_from_room(target);
     char_to_room(target, ch->in_room);
     do_look(target, "", 0);
@@ -2495,9 +2541,9 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
     char            count;
     bool            num_found = TRUE;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (!HasClass(ch, CLASS_PSI) || !ch->skills[SKILL_CANIBALIZE].learned) {
         send_to_char("You don't have any kind of control over your body like "
                      "that!\n\r", ch);
@@ -2519,7 +2565,9 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
     for (count = 0; num_found && (count < 9) && (number[count] != '\0');
          count++) {
         if (number[count] < '0' || number[count] > '9') {
-            /* leading zero is ok */
+            /* 
+             * leading zero is ok 
+             */
             num_found = FALSE;
         }
     }
@@ -2537,11 +2585,15 @@ void do_canibalize(struct char_data *ch, char *argument, int cmd)
         send_to_char("Please include a number after the command.\n\r", ch);
         return;
     } else {
-        /* forced the string to be proper length */
+        /* 
+         * forced the string to be proper length 
+         */
         number[count] = '\0';
     }
 
-    /* long int conversion */
+    /* 
+     * long int conversion 
+     */
     sscanf(number, "%ld", &hit_points);
 
     if ((hit_points < 1) || (hit_points > 65535)) {
@@ -2601,9 +2653,9 @@ void do_flame_shroud(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You couldn't even light a match!\n\r", ch);
@@ -2664,9 +2716,9 @@ void do_aura_sight(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You better find a mage or cleric.\n\r", ch);
@@ -2720,9 +2772,9 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You need a cleric or mage for better sight.\n\r", ch);
@@ -2784,9 +2836,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                     dam;
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     only_argument(argument, name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
@@ -2858,32 +2910,42 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
 
         GET_MANA(ch) -= 25;
         level = GET_LEVEL(ch, PSI_LEVEL_IND);
-        if (level > 0)
+        if (level > 0) {
             potency = 1;
-        if (level > 1)
+        }
+        if (level > 1) {
             potency++;
-        if (level > 4)
+        }
+        if (level > 4) {
             potency++;
-        if (level > 7)
+        }
+        if (level > 7) {
             potency++;
-        if (level > 10)
+        }
+        if (level > 10) {
             potency++;
-        if (level > 20)
+        }
+        if (level > 20) {
             potency += 2;
-        if (level > 30)
+        }
+        if (level > 30) {
             potency += 2;
-        if (level > 40)
+        }
+        if (level > 40) {
             potency += 2;
-        if (level > 49)
+        }
+        if (level > 49) {
             potency += 2;
-        if (level > 50)
+        }
+        if (level > 50) {
             potency += 2;
-        if (GetMaxLevel(ch) > 57)
+        }
+        if (GetMaxLevel(ch) > 57) {
             potency = 17;
-
-        if ((potency < 14) && (number(1, 50) < GetMaxLevel(victim)))
+        }
+        if ((potency < 14) && (number(1, 50) < GetMaxLevel(victim))) {
             potency--;
-
+        }
         switch (potency) {
         case 0:
             dam = 1;
@@ -2930,8 +2992,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 af.modifier = 20;
                 affect_to_char(victim, &af);
             }
-            if (GET_POS(victim) > POSITION_STUNNED)
+            if (GET_POS(victim) > POSITION_STUNNED) {
                 GET_POS(victim) = POSITION_STUNNED;
+            }
             break;
         case 8:
             dam = 50;
@@ -2949,8 +3012,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 af.modifier = 20;
                 affect_to_char(victim, &af);
             }
-            if (GET_POS(victim) > POSITION_STUNNED)
+            if (GET_POS(victim) > POSITION_STUNNED) {
                 GET_POS(victim) = POSITION_STUNNED;
+            }
             if (GET_HITROLL(victim) > -50) {
                 af.type = SKILL_PSIONIC_BLAST;
                 af.duration = 5;
@@ -2976,8 +3040,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 af.modifier = 20;
                 affect_to_char(victim, &af);
             }
-            if (GET_POS(victim) > POSITION_STUNNED)
+            if (GET_POS(victim) > POSITION_STUNNED) {
                 GET_POS(victim) = POSITION_STUNNED;
+            }
             if (GET_HITROLL(victim) > -50) {
                 af.type = SKILL_PSIONIC_BLAST;
                 af.duration = 5;
@@ -3030,8 +3095,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 af.bitvector = 0;
                 affect_join(victim, &af, FALSE, FALSE);
             }
-            if (GET_POS(victim) > POSITION_STUNNED)
+            if (GET_POS(victim) > POSITION_STUNNED) {
                 GET_POS(victim) = POSITION_STUNNED;
+            }
             if ((!IsImmune(victim, IMM_HOLD)) &&
                 (!IS_AFFECTED(victim, AFF_PARALYSIS))) {
                 af.type = SPELL_PARALYSIS;
@@ -3067,8 +3133,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 affect_join(victim, &af, FALSE, FALSE);
             }
 
-            if (GET_POS(victim) > POSITION_STUNNED)
+            if (GET_POS(victim) > POSITION_STUNNED) {
                 GET_POS(victim) = POSITION_STUNNED;
+            }
             af.type = SPELL_PARALYSIS;
             af.duration = 100;
             af.modifier = 0;
@@ -3088,8 +3155,9 @@ void do_blast(struct char_data *ch, char *argument, int cmd)
                 victim, 0, 0, TO_ROOM);
 #endif
 
-        if (!ch->specials.fighting)
+        if (!ch->specials.fighting) {
             set_fighting(ch, victim);
+        }
     }
     WAIT_STATE(ch, PULSE_VIOLENCE);
 }
@@ -3100,9 +3168,9 @@ void do_hypnosis(struct char_data *ch, char *argument, int cmd)
     struct char_data *victim;
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You're not capable of this.\n\r", ch);
@@ -3205,15 +3273,16 @@ void do_hypnosis(struct char_data *ch, char *argument, int cmd)
 
     act("$n hypnotizes $N!", TRUE, ch, 0, victim, TO_ROOM);
     act("You hypnotize $N!", TRUE, ch, 0, victim, TO_CHAR);
-    if (IS_PC(victim))
+    if (IS_PC(victim)) {
         act("$n hypotizes you!", TRUE, ch, 0, victim, TO_VICT);
-
+    }
     add_follower(victim, ch);
-    if (IS_SET(victim->specials.act, ACT_AGGRESSIVE))
+    if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
         REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
-    if (!IS_SET(victim->specials.act, ACT_SENTINEL))
+    }
+    if (!IS_SET(victim->specials.act, ACT_SENTINEL)) {
         SET_BIT(victim->specials.act, ACT_SENTINEL);
-
+    }
     af.type = SPELL_CHARM_MONSTER;
     af.duration = 36;
     af.modifier = 0;
@@ -3235,9 +3304,9 @@ void do_scry(struct char_data *ch, char *argument, int cmd)
                     old_location;
     struct room_data *rp;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Your mind is not developed enough to do this\n\r", ch);
@@ -3297,9 +3366,9 @@ void do_invisibililty(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("Get a mage if you want to go Invisible!\n\r", ch);
@@ -3351,9 +3420,9 @@ void do_adrenalize(struct char_data *ch, char *argument, int cmd)
     struct affected_type af;
     char            strength;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You're no psionicist!\n\r", ch);
@@ -3398,9 +3467,9 @@ void do_adrenalize(struct char_data *ch, char *argument, int cmd)
     }
 
     strength = 1 + (GET_LEVEL(ch, PSI_LEVEL_IND) / 10);
-    if (strength > 4)
-        strength = 4;
-
+    if (strength > 4) {
+        strength = 4;   
+    }
     af.type = SKILL_ADRENALIZE;
     af.location = APPLY_HITROLL;
     af.modifier = -strength;
@@ -3443,9 +3512,9 @@ void do_meditate(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You can't stand sitting down and waiting like this.\n\r",
@@ -3498,12 +3567,12 @@ void do_meditate(struct char_data *ch, char *argument, int cmd)
 
 int IS_FOLLOWING(struct char_data *tch, struct char_data *person)
 {
-    if (person->master)
+    if (person->master) {
         person = person->master;
-
-    if (tch->master)
+    }
+    if (tch->master) {
         tch = tch->master;
-
+    }
     return (person == tch && IS_AFFECTED(person, AFF_GROUP) && 
             IS_AFFECTED(tch, AFF_GROUP));
 }
@@ -3513,9 +3582,9 @@ void do_heroic_rescue(struct char_data *ch, char *arguement, int command)
     struct char_data *dude,
                    *enemy;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PALADIN)) {
         send_to_char("You're not a holy warrior!\n\r", ch);
@@ -3529,7 +3598,9 @@ void do_heroic_rescue(struct char_data *ch, char *arguement, int command)
 
     for (dude = real_roomp(ch->in_room)->people;
          dude && !(dude->specials.fighting); dude = dude->next_in_room) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     if (!dude) {
@@ -3564,10 +3635,12 @@ void do_heroic_rescue(struct char_data *ch, char *arguement, int command)
             stop_fighting(enemy);
             set_fighting(enemy, ch);
 
-            if (GET_ALIGNMENT(dude) >= 350)
+            if (GET_ALIGNMENT(dude) >= 350) {
                 GET_ALIGNMENT(ch) += 10;
-            if (GET_ALIGNMENT(dude) >= 950)
+            }
+            if (GET_ALIGNMENT(dude) >= 950) {
                 GET_ALIGNMENT(ch) += 10;
+            }
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -3591,9 +3664,9 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
     struct affected_type af;
     char            dude_name[140];
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     only_argument(argument, dude_name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
@@ -3628,12 +3701,15 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
 
     GET_MANA(ch) -= GET_LEVEL(ch, PALADIN_LEVEL_IND) * 2;
     factor = 0;
-    if (ch == dude)
+    if (ch == dude) {
         factor++;
-    if (dude->specials.alignment > 350)
+    }
+    if (dude->specials.alignment > 350) {
         factor++;
-    if (dude->specials.alignment == 1000)
+    }
+    if (dude->specials.alignment == 1000) {
         factor++;
+    }
 
     level = GET_LEVEL(ch, PALADIN_LEVEL_IND);
     rating = (int) ((level) * (GET_ALIGNMENT(ch)) / 1000) + factor;
@@ -3658,60 +3734,57 @@ void do_blessing(struct char_data *ch, char *argument, int cmd)
         spell_paralyze(level, ch, ch, 0);
         return;
     }
-
     if (rating == 0) {
         send_to_char("There's no one in your group to bless", ch);
         return;
     }
-
-    if (!(affected_by_spell(dude, SPELL_BLESS)))
+    if (!(affected_by_spell(dude, SPELL_BLESS))) {
         spell_bless(level, ch, dude, 0);
-
-    if (rating > 1 && !(affected_by_spell(dude, SPELL_ARMOR)))
+    }
+    if (rating > 1 && !(affected_by_spell(dude, SPELL_ARMOR))) {
         spell_armor(level, ch, dude, 0);
-
-    if (rating > 4 && !(affected_by_spell(dude, SPELL_STRENGTH)))
+    }
+    if (rating > 4 && !(affected_by_spell(dude, SPELL_STRENGTH))) {
         spell_strength(level, ch, dude, 0);
-
-    if (rating > 6)
+    }
+    if (rating > 6) {
         spell_second_wind(level, ch, dude, 0);
-
-    if (rating > 9 && !(affected_by_spell(dude, SPELL_SENSE_LIFE)))
+    }
+    if (rating > 9 && !(affected_by_spell(dude, SPELL_SENSE_LIFE))) {
         spell_sense_life(level, ch, dude, 0);
-
-    if (rating > 14 && !(affected_by_spell(dude, SPELL_TRUE_SIGHT)))
+    }
+    if (rating > 14 && !(affected_by_spell(dude, SPELL_TRUE_SIGHT))) {
         spell_true_seeing(level, ch, dude, 0);
-
-    if (rating > 19)
+    }
+    if (rating > 19) {
         spell_cure_critic(level, ch, dude, 0);
-
-    if (rating > 24 && !(affected_by_spell(dude, SPELL_SANCTUARY)))
+    }
+    if (rating > 24 && !(affected_by_spell(dude, SPELL_SANCTUARY))) {
             spell_sanctuary(level, ch, dude, 0);
-
-    if (rating > 29)
+    }
+    if (rating > 29) {
         spell_heal(level, ch, dude, 0);
-
+    }
     if (rating > 34) {
         spell_remove_poison(level, ch, dude, 0);
         spell_remove_paralysis(level, ch, dude, 0);
     }
-
-    if (rating > 39)
+    if (rating > 39) {
         spell_heal(level, ch, dude, 0);
-
-    if (rating > 44) {
-        if (dude->specials.conditions[FULL] != -1)
-            dude->specials.conditions[FULL] = 24;
-        if (dude->specials.conditions[THIRST] != -1)
-            dude->specials.conditions[THIRST] = 24;
     }
-
+    if (rating > 44) {
+        if (dude->specials.conditions[FULL] != -1) {
+            dude->specials.conditions[FULL] = 24;
+        }
+        if (dude->specials.conditions[THIRST] != -1) {
+            dude->specials.conditions[THIRST] = 24;
+        }
+    }
     if (rating > 54) {
         spell_heal(level, ch, dude, 0);
         send_to_char("An awesome feeling of holy power overcomes you!\n\r",
                      dude);
     }
-
     act("$n asks $s deity to bless $N!", TRUE, ch, 0, dude, TO_NOTVICT);
     act("You pray for a blessing on $N!", TRUE, ch, 0, dude, TO_CHAR);
     act("$n's deity blesses you!", TRUE, ch, 0, dude, TO_VICT);
@@ -3736,9 +3809,9 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
                     healing;
     char            victim_name[240];
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     only_argument(argument, victim_name);
 
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
@@ -3746,23 +3819,19 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
         send_to_char("You are not a holy warrior!\n\r", ch);
         return;
     }
-
     if (!(victim = get_char_room_vis(ch, victim_name))) {
         send_to_char("Your hands cannot reach that person\n\r", ch);
         return;
     }
-
     if (affected_by_spell(ch, SKILL_LAY_ON_HANDS)) {
         send_to_char("You have already healed once today.\n\r", ch);
         return;
     }
-
     wounds = GET_MAX_HIT(victim) - GET_HIT(victim);
     if (!wounds) {
         send_to_char("Don't try to heal what ain't hurt!\n\r", ch);
         return;
     }
-
     if (ch->skills[SKILL_LAY_ON_HANDS].learned < number(1, 101)) {
         send_to_char("You cannot seem to call on your deity right now.\n\r",
                      ch);
@@ -3770,7 +3839,6 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
         WAIT_STATE(ch, PULSE_VIOLENCE);
         return;
     }
-
     act("$n lays hands on $N.", FALSE, ch, 0, victim, TO_NOTVICT);
     act("You lay hands on $N.", FALSE, ch, 0, victim, TO_CHAR);
     act("$n lays hands on you.", FALSE, ch, 0, victim, TO_VICT);
@@ -3782,19 +3850,20 @@ void do_lay_on_hands(struct char_data *ch, char *argument, int cmd)
             victim, 0, ch, TO_ROOM);
         return;
     }
-
     if (GET_ALIGNMENT(victim) < 350) {
-        /* should never be since they get converted after 349 */
+        /* 
+         * should never be since they get converted after 349 
+         */
         healing = GET_LEVEL(ch, PALADIN_LEVEL_IND);
     } else {
         healing = GET_LEVEL(ch, PALADIN_LEVEL_IND) * 2;
     }
 
-    if (healing > wounds)
+    if (healing > wounds) {
         GET_HIT(victim) = GET_MAX_HIT(victim);
-    else
+    } else {
         GET_HIT(victim) += healing;
-
+    }
     af.type = SKILL_LAY_ON_HANDS;
     af.modifier = 0;
     af.location = APPLY_NONE;
@@ -3815,29 +3884,25 @@ void do_holy_warcry(struct char_data *ch, char *argument, int cmd)
                     level;
     struct char_data *dude;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     only_argument(argument, name);
-
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PALADIN)) {
         send_to_char("Your feeble attempt at a war cry makes your victim "
                      "laugh at you.\n\r", ch);
         return;
     }
-
     if (GET_ALIGNMENT(ch) < 350) {
         send_to_char("You're too ashamed of your behavior to warcry.\n\r",
                      ch);
         return;
     }
-
     if (check_peaceful(ch, "You warcry is completely silenced by the "
                            "tranquility of this room.\n\r")) {
         return;
     }
-
     if (ch->specials.fighting) {
         dude = ch->specials.fighting;
     } else if (!(dude = get_char_room_vis(ch, name))) {
@@ -3845,13 +3910,11 @@ void do_holy_warcry(struct char_data *ch, char *argument, int cmd)
                      " wasn't here to hear it.\n\r", ch);
         return;
     }
-
     if (IS_IMMORTAL(dude)) {
         send_to_char("The gods are not impressed by people shouting at them.\n",
                      ch);
         return;
     }
-
     if (ch->skills[SKILL_HOLY_WARCRY].learned < number(1, 101)) {
         send_to_char("Your mighty warcry emerges from your throat as a tiny "
                      "squeak.\n\r", ch);
@@ -3868,21 +3931,22 @@ void do_holy_warcry(struct char_data *ch, char *argument, int cmd)
         if (dif > 19) {
             spell_paralyze(0, ch, dude, 0);
             dam = (int) (level * 2.5);
-        } else if (dif > 14)
+        } else if (dif > 14) {
             dam = (int) (level * 2.5);
-        else if (dif > 10)
+        } else if (dif > 10) {
             dam = (int) (level * 2);
-        else if (dif > 6)
+        } else if (dif > 6) {
             dam = (int) (level * 1.5);
-        else if (dif > -6)
+        } else if (dif > -6) {
             dam = (int) (level);
-        else if (dif > -11)
+        } else if (dif > -11) {
             dam = (int) (level * .5);
-        else
+        } else {
             dam = 0;
-
-        if (saves_spell(dude, SAVING_SPELL))
+        }
+        if (saves_spell(dude, SAVING_SPELL)) {
             dam /= 2;
+        }
         act("You are attacked by $n who shouts a heroic warcry!", TRUE, ch,
             0, dude, TO_VICT);
         act("$n screams a warcry at $N with a tremendous fury!", TRUE, ch,
@@ -3905,9 +3969,9 @@ void do_psi_shield(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) && 
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You do not have the mental power to bring forth a "
@@ -3967,9 +4031,9 @@ void do_esp(struct char_data *ch, char *argument, int cmd)
 {
     struct affected_type af;
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if ((IS_PC(ch) || IS_SET(ch->specials.act, ACT_POLYSELF)) &&
         !HasClass(ch, CLASS_PSI)) {
         send_to_char("You do not have the mental power to do this!\n\r", ch);
@@ -4023,9 +4087,9 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
                     buf[1024],
                     message[MAX_INPUT_LENGTH + 20];
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
+    }
     if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
         send_to_char("Der, what is that ?\n\r", ch);
         return;
@@ -4051,9 +4115,9 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 
     if (skill_check < number(1, 101)) {
         send_to_char("You fumble and screw up the spell.\n\r", ch);
-        if (GetMaxLevel(ch) < LOW_IMMORTAL)
+        if (GetMaxLevel(ch) < LOW_IMMORTAL) {
             GET_MANA(ch) -= 3;
-
+        }
         if (ch->skills[SPELL_SENDING].learned >
             ch->skills[SPELL_MESSENGER].learned) {
             LearnFromMistake(ch, SPELL_SENDING, 0, 95);
@@ -4063,9 +4127,9 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (GetMaxLevel(ch) < LOW_IMMORTAL)
+    if (GetMaxLevel(ch) < LOW_IMMORTAL) {
         GET_MANA(ch) -= 5;
-
+    }
     half_chop(argument, target_name, message);
     if (!(target = get_char_vis_world(ch, target_name, NULL))) {
         send_to_char("You can't sense that person anywhere.\n\r", ch);
@@ -4095,7 +4159,7 @@ void do_sending(struct char_data *ch, char *argument, int cmd)
 }
 
 /*
- ** BREW for mages, done by Greg Hovey..
+ * BREW for mages, done by Greg Hovey..
  */
 
 
@@ -4175,7 +4239,9 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     sn = old_search_block(argument, 1, qend - 1, spells, 0);
     sn = sn - 1;
 
-    // find spell number..
+    /* 
+     * find spell number..
+     */
     for (x = 0; x < 250; x++) {
         if (is_abbrev(arg, spells[x])) {
             sn = x;
@@ -4184,19 +4250,25 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     }
 
     if (sn == -1) {
-        // no spell found?
+        /* 
+         * no spell found?
+         */
         send_to_char("Scribe what??.\n\r", ch);
         return;
     }
 
     if (!ch->skills[sn + 1].learned) {
-        // do you know that spell?
+        /* 
+         * do you know that spell?
+         */
         send_to_char("You don't know of this spell.\n\r", ch);
         return;
     }
 
     if (!(spell_info[sn + 1].min_level_cleric)) {
-        // is it a mage spell?
+        /*
+         * is it a mage spell?
+         */
         send_to_char("Alas, you cannot scribe that spell, it's not in your "
                      "sphere.\n\r", ch);
         return;
@@ -4222,9 +4294,9 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     formula = ((ch->skills[SKILL_SCRIBE].learned) + GET_INT(ch) / 3) + 
               (GET_WIS(ch) / 3);
 
-    if (formula > 98)
+    if (formula > 98) {
         formula = 98;
-
+    }
     if ((number(1, 101) >= formula || ch->skills[SKILL_SCRIBE].learned < 10) &&
         !IS_IMMORTAL(ch)) {
 
@@ -4245,38 +4317,49 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
         send_to_char("The scribing process was a success!\n\r", ch);
 
-        if (obj->short_description)
+        if (obj->short_description) {
             free(obj->short_description);
-
+        }
         sprintf(buf, "a scroll of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
-        if (obj->name)
+        if (obj->name) {
             free(obj->name);
-
+        }
         sprintf(buf, "scroll %s", spells[sn]);
         obj->name = (char *) strdup(buf);
 
-        if (obj->description)
+        if (obj->description) {
             free(obj->description);
+        }
         obj->description = strdup("A scroll, bound with enchantments, lies on "
                                   "the ground.");
 
         if (GetMaxLevel(ch) > 50) {
-            // set spell level.
+            /* 
+             * set spell level.
+             */
             obj->obj_flags.value[0] = 50;
             
-            // set ego to level.
+            /* 
+             * set ego to level.
+             */
             obj->level = 50;
         } else {
-            // set spell level.
+            /* 
+             * set spell level.
+             */
             obj->obj_flags.value[0] = GetMaxLevel(ch);
 
-            // set ego to level.
+            /*
+             * set ego to level.
+             */
             obj->level = GetMaxLevel(ch);
         }
         
-        // set spell in slot.
+        /* 
+         * set spell in slot.
+         */
         obj->obj_flags.value[1] = sn + 1;
         obj->obj_flags.timer = 42;
 
@@ -4364,19 +4447,25 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
     sn = sn - 1;
 
     if (sn == -1) {
-        // no spell found?
+        /* 
+         * no spell found?
+         */
         send_to_char("Brew what??.\n\r", ch);
         return;
     }
 
     if (!ch->skills[sn + 1].learned) {
-        // do you know that spell?
+        /*
+         * do you know that spell?
+         */
         send_to_char("You don't know of this spell.\n\r", ch);
         return;
     }
 
     if (!(spell_info[sn + 1].min_level_magic)) {
-        // is it a mage spell?
+        /*
+         * is it a mage spell?
+         */
         send_to_char("You cannot concoct that spell!\n\r", ch);
         return;
     }
@@ -4398,9 +4487,9 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
     formula = ((ch->skills[SKILL_BREW].learned) + GET_INT(ch) / 3) +
               (GET_WIS(ch) / 3);
 
-    if (formula > 98)
+    if (formula > 98) {
         formula = 98;
-
+    }
     if ((number(1, 101) >= formula || ch->skills[SKILL_BREW].learned < 10) &&
         !IS_IMMORTAL(ch)) {
         WAIT_STATE(ch, PULSE_VIOLENCE * 5);
@@ -4420,33 +4509,39 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         send_to_char(buf, ch);
         send_to_char("The brew was a success!\n\r", ch);
 
-        if (obj->short_description)
+        if (obj->short_description) {
             free(obj->short_description);
-
+        }
         sprintf(buf, "a potion of %s", spells[sn]);
         obj->short_description = (char *) strdup(buf);
 
-        if (obj->name)
+        if (obj->name) {
             free(obj->name);
-
+        }
         sprintf(buf, "potion %s", spells[sn]);
         obj->name = (char *) strdup(buf);
 
-        if (obj->description)
+        if (obj->description) {
             free(obj->description);
-
+        }
         sprintf(buf, "%s", "A weird coloured potion is on the ground.");
         obj->description = (char *) strdup(buf);
 
         if (GetMaxLevel(ch) > 50) {
-            // set spell level.
+            /* 
+             * set spell level.
+             */
             obj->obj_flags.value[0] = 50;
         } else {
-            // set spell level.
+            /* 
+             * set spell level.
+             */
             obj->obj_flags.value[0] = GetMaxLevel(ch);
         }
 
-        // set spell in slot.
+        /*
+         * set spell in slot.
+         */
         obj->obj_flags.value[1] = sn + 1;
         obj->obj_flags.timer = 60;
 
@@ -4475,70 +4570,65 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_charge");
 
-    if (!ch->skills)
+    if (!ch->skills) {
         return;
-
-    if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r"))
+    }
+    if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r")) {
         return;
-
+    }
     only_argument(argument, name);
 
     if (!(victim = get_char_room_vis(ch, name))) {
         send_to_char("charge who?\n\r", ch);
         return;
     }
-
     if (victim == ch) {
         send_to_char("How can you charge yourself?\n\r", ch);
         return;
     }
-
     if (!HasClass(ch, CLASS_PALADIN)) {
         send_to_char("You're no paladin!\n\r", ch);
         return;
     }
-
     if (!ch->equipment[WIELD]) {
         send_to_char("You need to wield a weapon, to make it a success.\n\r",
                      ch);
         return;
     }
-
     if (!MOUNTED(ch)) {
         send_to_char("You need a mount to that.\n", ch);
         return;
     }
-
     if (ch->attackers) {
         send_to_char("There's no way to reach that charge while you're "
                      "fighting!\n\r", ch);
         return;
     }
-
     if (victim->attackers >= 3) {
         send_to_char("There is to many people in the way to do that!\n\r", ch);
         return;
     }
-
     if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE) && 
         !IsGiant(ch)) {
         act("$N is too big to charge at", FALSE, ch, 0, victim, TO_CHAR);
         return;
     }
-
     if (ch->equipment[WIELD]->obj_flags.value[3] != 13) {
-        /* TYPE_IMPALE */
+        /* 
+         * TYPE_IMPALE 
+         */
         send_to_char("Only true and honourable lances should be used for "
                      "charging.\n\r", ch);
         return;
     }
-
     if (ch->specials.fighting) {
         send_to_char("You're too busy to charge on them\n\r", ch);
         return;
     }
 
-    /* 101% is a complete failure */
+    /* 
+     * 101% is a complete failure 
+     */
     percent = number(1, 101);   
 
     if (ch->skills[SKILL_CHARGE].learned) {
@@ -4553,9 +4643,13 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
                 FALSE, ch, 0, victim, TO_CHAR);
             act("$n charges agressively forward on his steed at $N", FALSE,
                 ch, 0, victim, TO_ROOM);
-            // AddHated(victim, ch);
+#if 0                
+            AddHated(victim, ch);
+#endif            
             damage(ch, victim, GET_DAMROLL(ch) * 6, SKILL_CHARGE);
-            // hit(ch,victim,SKILL_CHARGE);
+#if 0            
+            hit(ch,victim,SKILL_CHARGE);
+#endif            
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -4583,36 +4677,29 @@ void do_steed(struct char_data *ch, char *argument, int cmd)
                      ch);
         return;
     }
-
     if (!ch->skills) {
         log("Char without skills trying to call a steed");
         return;
     }
-
     if (!ch->skills[SKILL_STEED].learned) {
         send_to_char("The Guardians of Righteousness do not see fit to grant "
                      "you a mount just yet.\n\r", ch);
         return;
     }
-
     if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("Call a mount indoors? Where's your manners!\n\r", ch);
         return;
     }
-
     if (ch->specials.fighting) {
         send_to_char("Not while yer fighting, lad!\n\r", ch);
         return;
     }
-
     if (MOUNTED(ch)) {
         send_to_char("Hey now, you're already riding a courageous steed!\n\r",
                      ch);
         return;
     }
-
     percent = number(1, 101);
-
     if (ch->skills[SKILL_STEED].learned) {
         if (percent > ch->skills[SKILL_STEED].learned) {
             send_to_char("You whistle a lively tune.\n\r", ch);
@@ -4665,27 +4752,22 @@ void do_flurry(struct char_data *ch, char *argument, int cmd)
         send_to_char("Err, you're likely to trip.\n\r", ch);
         return;
     }
-
     if (!ch->skills) {
         log("Char without skills trying to flurry");
         return;
     }
-
     if (!ch->skills[SKILL_FLURRY].learned) {
         send_to_char("You need some guidance before attempting this.\n\r", ch);
         return;
     }
-
     if (!ch->specials.fighting) {
         send_to_char("You can only do this when engaged in battle.\n\r", ch);
         return;
     }
-
     if (affected_by_spell(ch, SKILL_FLURRY)) {
         send_to_char("You're doing the best you can!\n\r", ch);
         return;
     }
-
     percent = number(1, 101);
 
     if (ch->skills[SKILL_FLURRY].learned) {
