@@ -1921,7 +1921,7 @@ void obj_to_obj(struct obj_data *obj, struct obj_data *obj_to)
 void obj_from_obj(struct obj_data *obj)
 {
     struct obj_data *tmp,
-                   *obj_from;
+                   *obj_from = NULL;
     char            buf[100];
 
     if (obj->carried_by) {
