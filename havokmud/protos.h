@@ -4109,7 +4109,7 @@ struct obj_data *get_object_in_equip(struct char_data *ch, char *arg,
 
 int dragon(struct char_data *ch, int cmd, char *arg, 
            struct char_data *mob, int type);
-
+void do_find_traps(struct char_data *ch, char *arg, int cmd);
 /*************************************************************************
  * Support for different platforms
  *************************************************************************/
