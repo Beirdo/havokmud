@@ -2863,7 +2863,7 @@ void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim
 	      tmp_obj->obj_flags.value[2] = 24+level;
 	      obj_to_char(tmp_obj,ch);
 	  } else {
-	    send_to_char("Sorry, I can't create the cold ball of ice\n\r", ch);
+	    send_to_char("Sorry, I can't create the cold ball of ice.\n\r", ch);
 	    return;
 	  }
 
@@ -2954,11 +2954,7 @@ void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, 
 
 
 	dicen = (int)level/10 + 2;
-//sprintf(buf,"dice = %d",dicen);
-//log(buf);
 	dam = dice(dicen,5) + 1; /* avg 12.5 | max 20 | min 5 */
-//sprintf(buf,"dam = %dD5 + 3 = %d",dicen,dam);
-//log(buf);
 	damage(ch, victim, dam, SPELL_LIFE_TAP);
 
 	if(IsResist(victim, IMM_DRAIN))

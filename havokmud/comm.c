@@ -557,7 +557,7 @@ memory_check("end 5, begin 6");
 	  write_to_descriptor(point->descriptor, "-> ");
 	else if (!point->connected)
 	  if (point->showstr_count) { //point->showstr_point) {
-	  	    sprintf(promptbuf, "[ Enter to continue, (q)uit, (r)efresh, (b)ack, or page number (%d/%d) ]",
+	  	    sprintf(promptbuf, "[ Enter to continue, (q)uit, (r)efresh, (b)ack, or page number (%d/%d) ]\n\r",
 	  	            point->showstr_page, point->showstr_count);
 	  	    write_to_descriptor(point->descriptor, promptbuf);
 	  	    //write_to_descriptor(point->descriptor,"[Return to continue/Q to quit]");
