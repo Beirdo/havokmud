@@ -219,6 +219,11 @@ void page_string(struct descriptor_data *d, char *str, int keep_internal)
         return;
     }
 
+    if (!IS_SET(d->character->player.user_flags, USE_PAGING)) {
+        SEND_TO_Q(str, d);
+        return;
+    }
+
     d->showstr_count = count_pages(str);
     CREATE(d->showstr_vector, char *, d->showstr_count);
 
