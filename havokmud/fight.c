@@ -2224,7 +2224,7 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 	  else if ( wielded->affected[j].modifier == 1
                && (!IS_GOOD(v) && !IS_EVIL(v)))
 	    dam *=2;
-	  else if (IS_EVIL(v)) /* less than 1 == slay evil */
+	  else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
 	    dam *= 2;
 	}
       }
