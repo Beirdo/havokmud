@@ -144,8 +144,8 @@ void string_add(struct descriptor_data *d, char *str)
                       "the character /\r\n\r\n"
                       "Commands:\r\n"
                       "------------------------------------------------------"
-                      "----------------\r\n"
-                      " /w -- This will save your message and exit the "
+                      "----------------\r\n", d);
+            SEND_TO_Q(" /w -- This will save your message and exit the "
                       "editor.\r\n"
                       " /q -- This aborts your message without saving and "
                       "exits the editor.\r\n"

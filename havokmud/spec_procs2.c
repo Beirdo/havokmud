@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -59,16 +61,15 @@ extern int      gSeason;
 
 int             monkpreproom = 550;
 int             druidpreproom = 500;
+
+#if 0
 void            page_string(struct descriptor_data *d, char *str,
                             int keep_internal);
-void            cast_energy_drain(byte level, struct char_data *ch,
-                                  char *arg, int type,
-                                  struct char_data *tar_ch,
-                                  struct obj_data *tar_obj);
 void            do_emote(struct char_data *ch, char *arg, int cmd);
 void            do_stand(struct char_data *ch, char *arg, int cmd);
 void            do_sit(struct char_data *ch, char *arg, int cmd);
 
+#endif
 
 #define MONK_CHALLENGE_ROOM 551
 #define DRUID_CHALLENGE_ROOM 501

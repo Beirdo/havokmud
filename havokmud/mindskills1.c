@@ -28,7 +28,7 @@ extern int      ArenaNoGroup,
 
 #define PROBABILITY_TRAVEL_ENTRANCE   2701
 
-void mind_burn(byte level, struct char_data *ch,
+void mind_burn(int level, struct char_data *ch,
                struct char_data *victim, struct obj_data *obj)
 {
     int             dam;
@@ -70,7 +70,7 @@ void mind_burn(byte level, struct char_data *ch,
     }
 }
 
-void mind_teleport(byte level, struct char_data *ch,
+void mind_teleport(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj)
 {
     int             to_room,
@@ -144,7 +144,7 @@ void mind_teleport(byte level, struct char_data *ch,
 /*
  * astral travel 
  */
-void mind_probability_travel(byte level, struct char_data *ch,
+void mind_probability_travel(int level, struct char_data *ch,
                              struct char_data *victim, struct obj_data *obj)
 {
     struct char_data *tmp,
@@ -176,7 +176,7 @@ void mind_probability_travel(byte level, struct char_data *ch,
 /*
  * sense DT's 
  */
-void mind_danger_sense(byte level, struct char_data *ch,
+void mind_danger_sense(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -210,7 +210,7 @@ void mind_danger_sense(byte level, struct char_data *ch,
 /*
  * same as thief spy skil, see into the next room 
  */
-void mind_clairvoyance(byte level, struct char_data *ch,
+void mind_clairvoyance(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -243,7 +243,7 @@ void mind_clairvoyance(byte level, struct char_data *ch,
 /*
  * single person attack skill 
  */
-void mind_disintegrate(byte level, struct char_data *ch,
+void mind_disintegrate(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
     spell_disintegrate(level, ch, victim, obj);
@@ -255,7 +255,7 @@ void mind_disintegrate(byte level, struct char_data *ch,
  * then if they fail, treat as bashed and the mobs/pc sits 
  */
 
-void mind_telekinesis(byte level, struct char_data *ch,
+void mind_telekinesis(int level, struct char_data *ch,
                       struct char_data *victim, int dir_num)
 {
     int             percent = 0;
@@ -344,7 +344,7 @@ void mind_telekinesis(byte level, struct char_data *ch,
 /*
  * same as fly 
  */
-void mind_levitation(byte level, struct char_data *ch,
+void mind_levitation(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -383,7 +383,7 @@ void mind_levitation(byte level, struct char_data *ch,
  * healing, 100 points max, cost 100 mana, and stuns the 
  * psi and lags along time, simular results as mage spell id 
  */
-void mind_cell_adjustment(byte level, struct char_data *ch,
+void mind_cell_adjustment(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
     if (!ch) {
@@ -420,7 +420,7 @@ void mind_cell_adjustment(byte level, struct char_data *ch,
 /*
  * hide 
  */
-void mind_chameleon(byte level, struct char_data *ch,
+void mind_chameleon(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
     if (!ch) {
@@ -439,7 +439,7 @@ void mind_chameleon(byte level, struct char_data *ch,
 /*
  * strength 
  */
-void mind_psi_strength(byte level, struct char_data *ch,
+void mind_psi_strength(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -479,7 +479,7 @@ void mind_psi_strength(byte level, struct char_data *ch,
  * long lag time, but after that they get 12 hrs of no
  * hunger/thirst 
  */
-void mind_mind_over_body(byte level, struct char_data *ch,
+void mind_mind_over_body(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -518,7 +518,7 @@ void mind_mind_over_body(byte level, struct char_data *ch,
 /*
  * feeblemind
  */
-void mind_mind_wipe(byte level, struct char_data *ch,
+void mind_mind_wipe(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
     spell_feeblemind(level, ch, victim, obj);
@@ -527,7 +527,7 @@ void mind_mind_wipe(byte level, struct char_data *ch,
 /*
  * psi protective skill, immune to some psi skills 
  */
-void mind_tower_iron_will(byte level, struct char_data *ch,
+void mind_tower_iron_will(int level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -558,7 +558,7 @@ void mind_tower_iron_will(byte level, struct char_data *ch,
 /*
  * psi protivtive skill, immune to feeblemind, etc... 
  */
-void mind_mindblank(byte level, struct char_data *ch,
+void mind_mindblank(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -590,7 +590,7 @@ void mind_mindblank(byte level, struct char_data *ch,
 /*
  * same as thief disguise 
  */
-void mind_psychic_impersonation(byte level, struct char_data *ch,
+void mind_psychic_impersonation(int level, struct char_data *ch,
                                 struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
@@ -632,7 +632,7 @@ void mind_psychic_impersonation(byte level, struct char_data *ch,
 /*
  * area effect psionic blast type skill 
  */
-void mind_ultra_blast(byte level, struct char_data *ch,
+void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     int             dam;
@@ -689,7 +689,7 @@ void mind_ultra_blast(byte level, struct char_data *ch,
 /*
  * massive single person attack 
  */
-void mind_psychic_crush(byte level, struct char_data *ch,
+void mind_psychic_crush(int level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
     int             dam;
@@ -724,7 +724,7 @@ void mind_psychic_crush(byte level, struct char_data *ch,
 /*
  * increate int,wis or con, reduce the unselected attribs the same 
  */
-void mind_intensify(byte level, struct char_data *ch,
+void mind_intensify(int level, struct char_data *ch,
                     struct char_data *victim, struct obj_data *obj)
 {
 }
@@ -732,12 +732,12 @@ void mind_intensify(byte level, struct char_data *ch,
 /*
  * same as cleric COMMAND spell 
  */
-void mind_domination(byte level, struct char_data *ch,
+void mind_domination(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj)
 {
 }
 
-void mind_mind_tap(byte level, struct char_data *ch,
+void mind_mind_tap(int level, struct char_data *ch,
                    struct char_data *victim, struct obj_data *obj)
 {
     int             mana,
@@ -759,7 +759,7 @@ void mind_mind_tap(byte level, struct char_data *ch,
     }
 }
 
-void mind_kinolock(byte level, struct char_data *ch, char *arg, int type,
+void mind_kinolock(int level, struct char_data *ch, char *arg, int type,
                    struct char_data *tar_ch, struct obj_data *tar_obj)
 {
     int             door;
@@ -810,7 +810,7 @@ void mind_kinolock(byte level, struct char_data *ch, char *arg, int type,
     }
 }
 
-void mind_sense_object(byte level, struct char_data *ch,
+void mind_sense_object(int level, struct char_data *ch,
                        struct char_data *victim, char *arg)
 {
     char            name[256];

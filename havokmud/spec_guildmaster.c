@@ -1377,15 +1377,22 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
                     stat = 0,
                     cost = 3;
 
-    const struct skillset traininglist[] = {
-        {"constitution", 4, (GET_RCON(ch) - 3)},
-        {"strength", 5, (GET_RSTR(ch) - 3)},
-        {"dexterity", 6, (GET_RDEX(ch) - 3)},
-        {"charisma", 7, (GET_RCHR(ch) - 3)},
-        {"intelligence", 8, (GET_RINT(ch) - 3)},
-        {"wisdom", 9, (GET_RWIS(ch) - 3)},
+    struct skillset traininglist[] = {
+        {"constitution", 4, 0},
+        {"strength", 5, 0},
+        {"dexterity", 6, 0},
+        {"charisma", 7, 0},
+        {"intelligence", 8, 0},
+        {"wisdom", 9, 0},
         {"None", -1, -1}
     };
+
+    traininglist[0].maxlearn = GET_RCON(ch) - 3;
+    traininglist[1].maxlearn = GET_RSTR(ch) - 3;
+    traininglist[2].maxlearn = GET_RDEX(ch) - 3;
+    traininglist[3].maxlearn = GET_RCHR(ch) - 3;
+    traininglist[4].maxlearn = GET_RINT(ch) - 3;
+    traininglist[5].maxlearn = GET_RWIS(ch) - 3;
 
     if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);

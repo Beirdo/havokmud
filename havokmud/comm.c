@@ -3,6 +3,8 @@
  **             SillyMUD.
  */
 
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -1173,7 +1175,7 @@ int new_connection(int s)
     getsockname(s, &isa, &i);
 #endif
 
-    if ((t = accept(s, (struct sockaddr *) &isa, &i)) < 0) {
+    if ((t = accept(s, (struct sockaddr *) &isa, (unsigned int *)&i)) < 0) {
         perror("Accept");
         return (-1);
     }
@@ -1263,7 +1265,8 @@ int new_descriptor(int s)
      * find info 
      */
     size = sizeof(sock);
-    if (getpeername(desc, (struct sockaddr *) &sock, &size) < 0) {
+    if (getpeername(desc, (struct sockaddr *) &sock, 
+                    (unsigned int *)&size) < 0) {
         perror("getpeername");
         *newd->host = '\0';
     } else if (IS_SET(SystemFlags, SYS_SKIPDNS) || 
@@ -3303,7 +3306,8 @@ void identd_test(struct sockaddr_in in_addr)
     }
 
     addrlen = sizeof(addr);
-    if (getsockname(fd, (struct sockaddr *) &addr, &addrlen) == -1) {
+    if (getsockname(fd, (struct sockaddr *) &addr, 
+                    (unsigned int *)&addrlen) == -1) {
         perror("getsockname");
     }
 

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 
 #include <string.h>
 #include <stdio.h>
@@ -1581,7 +1582,7 @@ int get_number(char **name)
 
     number[0] = 0;
 
-    if ((ppos = (char *) index(*name, '.')) && ppos[1]) {
+    if ((ppos = strchr(*name, '.')) && ppos[1]) {
         *ppos++ = '\0';
         strcpy(number, *name);
         strcpy(*name, ppos);

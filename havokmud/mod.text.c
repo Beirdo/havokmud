@@ -2,6 +2,9 @@
  * Online textfile editor for motd, wmotd, news.
  * Done by Lennya, Sept 2003
  */
+
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

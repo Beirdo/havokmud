@@ -1431,8 +1431,7 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
                 return;
             } else {
                 to_room = portal->obj_flags.value[0];
-                if (rp < 0) {
-                    rp = 0;
+                if (!rp) {
                     sprintf(tmp, "Bad ObjValue1 for portal object, vnum %ld",
                             obj_index[portal->item_number].virtual);
                     Log(tmp);

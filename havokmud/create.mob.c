@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +47,7 @@ extern const char *affected_bits[];
 extern const char *RaceName[];
 extern const char *immunity_names[];
 
-char           *mob_edit_menu =
+char           *mob_edit_menu1 =
     "    1) Name                    2) Short description\n\r"
     "    3) Long description        4) Description\n\r"
     "    5) Action flags            6) Affect flags\n\r"
@@ -54,7 +55,9 @@ char           *mob_edit_menu =
     "    9) Armor class            10) Damage size of die\n\r"
     "   11) Damage number of die   12) Damage roll plus\n\r"
     "   13) Race                   14) Number of attacks\n\r"
-    "   15) Exp flags/amount       16) Default position\n\r"
+    "   15) Exp flags/amount       16) Default position\n\r";
+
+char           *mob_edit_menu2 =
     "   17) Resistances            18) Immunities\n\r"
     "   19) Susceptibilities       20) Sounds\n\r"
     "   21) Distant sounds         22) Sex\n\r"
@@ -284,7 +287,8 @@ void UpdateMobMenu(struct char_data *ch)
     sprintf(buf, VT_CURSPOS, 3, 1);
     send_to_char(buf, ch);
     send_to_char("Menu:\n\r", ch);
-    send_to_char(mob_edit_menu, ch);
+    send_to_char(mob_edit_menu1, ch);
+    send_to_char(mob_edit_menu2, ch);
     send_to_char("--> ", ch);
 }
 

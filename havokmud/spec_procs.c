@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -39,6 +41,7 @@ extern char    *dirs[];
 extern int      drink_aff[][3];
 extern struct weather_data weather_info;
 
+#if 0
 void            name_to_drinkcon(struct obj_data *obj, int type);
 void            name_from_drinkcon(struct obj_data *obj);
 
@@ -67,6 +70,7 @@ void            cast_weakness(byte level, struct char_data *ch,
                               char *arg, int type,
                               struct char_data *tar_ch,
                               struct obj_data *tar_obj);
+#endif
 
 /*
  * Data declarations
@@ -824,11 +828,6 @@ int CarrionCrawler(struct char_data *ch, int cmd, char *arg,
 {
     struct char_data *tar;
     int             i;
-
-    void            cast_paralyze(byte level, struct char_data *ch,
-                                  char *arg, int type,
-                                  struct char_data *tar_ch,
-                                  struct obj_data *tar_obj);
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);

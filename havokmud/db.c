@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -1169,7 +1171,7 @@ void load_one_room(FILE * fl, struct room_data *rp)
 {
     char            chk[50];
     int             bc = 0;
-    unsigned long int tmp;
+    long int tmp;
 
     struct extra_descr_data *new_descr;
 

@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -1829,7 +1831,7 @@ void down_river(int pulse)
     }
 }
 
-void do_WorldSave(struct char_data *ch, char *argument, char cmd)
+void do_WorldSave(struct char_data *ch, char *argument, int cmd)
 {
     char            temp[2048],
                     buf[128];
@@ -5946,7 +5948,7 @@ void qlog(char *desc)
     }
 }
 
-void do_mrebuild(struct char_data *ch, char *argument, char cmd)
+void do_mrebuild(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[128];
     long            m_start,
@@ -6015,7 +6017,7 @@ void do_mrebuild(struct char_data *ch, char *argument, char cmd)
     send_to_char(buf, ch);
 }
 
-void do_orebuild(struct char_data *ch, char *argument, char cmd)
+void do_orebuild(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[128],
                     buf2[511];

@@ -7,6 +7,7 @@
  * portion of this source code.
  *****************************************************************************/
      
+#define _GNU_SOURCE
     
 #include <string.h>
 #include <stdio.h>

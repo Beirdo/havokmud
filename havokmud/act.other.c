@@ -3,6 +3,8 @@
  * DaleMUD is based on DIKUMUD
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

@@ -960,7 +960,7 @@ int CommandSearch(char *arg)
     return (-1);
 }
 
-void CommandAssign(char *arg, void (*p))
+void CommandAssign(char *arg, void (*p)())
 {
     if (top_of_comp == 0) {
         comp = (struct script_com *) malloc(sizeof(struct script_com));
