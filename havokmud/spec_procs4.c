@@ -2547,6 +2547,11 @@ shopkeep = FindMobInRoomWithFunction(ch->in_room, shopkeeper);
 		} else {
 			if (obj = get_obj_in_list_vis(ch, itemname, ch->carrying)) {
 				cost = (int) obj->obj_flags.cost/(3*modifier);
+				/*lets not have shops buying non-rentables*/
+				if(obj->obj_flags.cost_per_day == -1){
+					ch_printf(ch,"%s doesn't buy items that cannot be rented.\n\r",shopkeep->player.short_descr);
+					return(TRUE);
+				}
 				if(cost < 400) {
 					ch_printf(ch,"%s doesn't buy worthless junk like that.\n\r",shopkeep->player.short_descr);
 					return(TRUE);
