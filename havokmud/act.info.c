@@ -3129,16 +3129,13 @@ dlog("in do_who");
 		case 60: sprintf(levels, "Supreme Being");
 		}
 
-		if(!strcmp(GET_NAME(person), "Tsaron"))       // Hardcoded the names of the current
-			sprintf(levels, "Supreme Dictator");      // High council members, this should be
-		else if(!strcmp(GET_NAME(person), "Banon"))   // fixxed with new immortal system code
+												       // Hardcoded the names of the current
+												      // High council members, this should be
+			 if(!strcmp(GET_NAME(person), "Banon"))   // fixxed with new immortal system code
 			sprintf(levels, "$c000BC$c000Rr$c000Ye$c000Ba$c000Rt$c000Yo$c000Br");// -MW 02/20/2001
-		else if(!strcmp(GET_NAME(person), "Keirstad"))
-			sprintf(levels, "Lord of Building");
-		else if(!str_cmp(GET_NAME(person), "Ignatius"))
-			sprintf(levels, "Dragon Lord");
-		else if(!str_cmp(GET_NAME(person), "Pentak"))
-			sprintf(levels, "Creator");
+
+
+
 
 		sprintf(tbuf, "%s",levels);
 		sprintf(levels,"%30s","");
