@@ -67,8 +67,8 @@ void assign_mobiles()
     { 1, WeaponsMaster },//puff },
     { 2, Ringwraith },
     { 3, tormentor },
-    { 4, Inquisitor},
-    { 6, AcidBlob },
+//    { 4, Inquisitor},
+//    { 6, AcidBlob },
     { 25, magic_user },
 
     { 30, MageGuildMaster },

@@ -5514,11 +5514,11 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 
 	//sprintf(buf2,"Going to Room# %d\n\r",j);
 	//send_to_char(buf2,ch);
-	send_to_char("You touch the strange post and suddently feel your mind",ch);
+	send_to_char("You touch the strange post and suddenly feel your mind",ch);
     send_to_char(" and body being torn appart.\n\r",ch);
 
 
-	act("$n touches the strange post and suddently dissapears!"
+	act("$n touches the strange post and suddenly disappears!"
 	    , FALSE , ch, 0, 0, TO_ROOM);
 	char_from_room(ch);
 	char_to_room(ch,j);

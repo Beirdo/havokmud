@@ -364,40 +364,40 @@
 #define SKILL_STEED		 304
 
 /* Necromancer/Death mage stuff */
-#define SPELL_COLD_LIGHT		305 //DONE
-#define SPELL_DISEASE			306	// 1 aff
-#define SPELL_INVIS_TO_UNDEAD	307	// 2 DONE
-#define SPELL_LIFE_TAP			308
-#define SPELL_SUIT_OF_BONE		309	// 3DONE
-#define SPELL_SPECTRAL_SHIELD	310 // 4DONE
-#define SPELL_CLINGING_DARKNESS	311 // 5
-#define SPELL_DOMINATE_UNDEAD	312 //DONE
-#define SPELL_UNSUMMON			313
-#define SPELL_SIPHON_STRENGTH	314 // 6
-#define SPELL_GATHER_SHADOWS	315 // 7 DONE
-#define SPELL_MEND_BONES		316  //  DONE
-#define SPELL_TRACE_CORPSE		317
-#define	SPELL_ENDURE_COLD		318 // 8 DONE
-#define SPELL_LIFE_DRAW			319  /*first 15 by (GH) */
-#define SPELL_NUMB_DEAD		    320
-#define SPELL_BINDING			321
-#define SPELL_DECAY				322 // 9
-#define SPELL_SHADOW_STEP		323 /* last 15 by Lennya */
-#define SPELL_CAVORTING_BONES	324 // 10
-#define SPELL_MIST_OF_DEATH		325
-#define SPELL_NULLIFY			326
-#define SPELL_DARK_EMPATHY		327
-#define SPELL_EYE_OF_THE_DEAD	328 // 11
-#define SPELL_SOUL_STEAL		329
-#define SPELL_LIFE_LEECH		330
-#define SPELL_DARK_PACT			331 // 12
-#define SPELL_DARKTRAVEL		332
-#define SPELL_VAMPIRIC_EMBRACE	333 // 13
-#define SPELL_BIND_AFFINITY		334
-#define SPELL_SCOURGE_WARLOCK	335
-#define SPELL_FINGER_OF_DEATH	336
-#define SPELL_FLESH_GOLEM		337 // 14
-#define SPELL_CHILLSHIELD		338
+#define SPELL_COLD_LIGHT		305 // DONE - checked
+#define SPELL_DISEASE			306 // done - checked
+#define SPELL_INVIS_TO_UNDEAD	307	// DONE - checked
+#define SPELL_LIFE_TAP			308 // done - checked
+#define SPELL_SUIT_OF_BONE		309	// DONE - checked
+#define SPELL_SPECTRAL_SHIELD	310 // DONE - checked
+#define SPELL_CLINGING_DARKNESS	311 //
+#define SPELL_DOMINATE_UNDEAD	312 // DONE - can't seem to cast this one?
+#define SPELL_UNSUMMON			313 //
+#define SPELL_SIPHON_STRENGTH	314 //
+#define SPELL_GATHER_SHADOWS	315 // DONE - checked.. make this a self only spell?
+#define SPELL_MEND_BONES		316 // DONE - checked.. no message for caster yet.
+#define SPELL_TRACE_CORPSE		317 //
+#define	SPELL_ENDURE_COLD		318 // DONE - checked
+#define SPELL_LIFE_DRAW			319 // done - checked
+#define SPELL_NUMB_DEAD		    320 // done - checked
+#define SPELL_BINDING			321 // done - checked
+#define SPELL_DECAY				322 // done - checked
+#define SPELL_SHADOW_STEP		323 // done - fixed & checked
+#define SPELL_CAVORTING_BONES	324 // done - checked
+#define SPELL_MIST_OF_DEATH		325 // done - checked
+#define SPELL_NULLIFY			326 // done - checked
+#define SPELL_DARK_EMPATHY		327 // done - checked
+#define SPELL_EYE_OF_THE_DEAD	328 // done - checked - needs some works still
+#define SPELL_SOUL_STEAL		329 // done - checked
+#define SPELL_LIFE_LEECH		330 // done - checked
+#define SPELL_DARK_PACT			331 // done - checked
+#define SPELL_DARKTRAVEL		332 // done - checked - mislocate not quite workin yet
+#define SPELL_VAMPIRIC_EMBRACE	333 // done - checked
+#define SPELL_BIND_AFFINITY		334 // done - checked
+#define SPELL_SCOURGE_WARLOCK	335 // done - **bugged** can't cast it twice due to eye comparison? Am I usin the wrong struct?
+#define SPELL_FINGER_OF_DEATH	336 // done - checked
+#define SPELL_FLESH_GOLEM		337 // done - checked
+#define SPELL_CHILLSHIELD		338 //
 
 
 /*PSI Spells */

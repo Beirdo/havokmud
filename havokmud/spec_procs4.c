@@ -1442,7 +1442,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
 		open_door(ch, 0);
 		ch_printf(ch,"You knock on the big wooden door and then slowly, it opens.\n\r");
 
-		act("$n knocks on the big door and then suddently, the big door opens up.",TRUE,ch,0,0,TO_ROOM);
+		act("$n knocks on the big door and then suddenly, the big door opens up.",TRUE,ch,0,0,TO_ROOM);
 		return(TRUE);
 	}
 

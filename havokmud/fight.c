@@ -465,6 +465,8 @@ case    SPELL_FIREBALL:sprintf(spec_desc,"smoldering remains of %s are",
                         break;
 case	SPELL_FINGER_OF_DEATH:
 case	SPELL_LIFE_TAP:
+case	SPELL_LIFE_DRAW:
+case	SPELL_LIFE_LEECH:
 case	SPELL_MIST_OF_DEATH:sprintf(spec_desc,"drained remains of %s are",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
                          corpse->beheaded_corpse = TRUE;
@@ -2582,7 +2584,7 @@ void perform_violence(int pulse)
 
                if(ch->style==FIGHTING_STYLE_BERSERKED && !IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
 				   	if (FSkillCheck(ch, FIGHTING_STYLE_BERSERKED)) { /* yay, let's go 'zerk! */
-						act("$c000B$n turns red and suddently becomes raged with anger!$c000w",TRUE,ch,0,0,TO_ROOM);
+						act("$c000B$n turns red and suddenly becomes raged with anger!$c000w",TRUE,ch,0,0,TO_ROOM);
 						send_to_char("$c000BYou feel your rage overcome you!!\n\r$c000w",ch);
 						SET_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
 					}
@@ -3391,6 +3393,8 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 
   case SPELL_FINGER_OF_DEATH:
   case SPELL_LIFE_TAP:
+  case SPELL_LIFE_DRAW:
+  case SPELL_LIFE_LEECH:
   case SPELL_MIST_OF_DEATH:
   case SPELL_ENERGY_DRAIN:
     Our_Bit = IMM_DRAIN;

@@ -3560,7 +3560,7 @@ if (GetMaxLevel(ch) > MaxArenaLevel){
   GET_MANA(ch) = GET_MAX_MANA(ch);
   GET_HIT(ch) = GET_MAX_HIT(ch);
   GET_MOVE(ch) = GET_MAX_MOVE(ch);
-  sprintf(buf, "%s disappears suddently!\n\r", GET_NAME(ch));
+  sprintf(buf, "%s disappears suddenly!\n\r", GET_NAME(ch));
   send_to_room_except(buf, ch->in_room, ch);
   char_from_room(ch);
   char_to_room(ch, ARENA_ENTRANCE);

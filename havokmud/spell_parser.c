@@ -511,6 +511,12 @@ void cast_energy_restore( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj ); //Reverse drain -MW
 
 /* Necro spells */
+void cast_life_tap( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_disease( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_life_draw( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_numb_dead( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_binding( byte level, struct char_data *ch, char *arg,
@@ -3721,21 +3727,19 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   spello(305,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_IGNORE , cast_cold_light, 0,0, 1);
-/*
+
   spello(306,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_disease, 0,1, 1);
-*/
+
   spello(307,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_IGNORE , cast_invis_to_undead, 0,1, 2);
 
-/*
   spello(308,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_tap, 0,0, 2);
 
-*/
   spello(309,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   5,	 TAR_IGNORE , cast_suit_of_bone, 0,1, 3);
@@ -3779,11 +3783,10 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   25,	 TAR_IGNORE , cast_endure_cold, 0,0, 12);
 
-/*
   spello(319,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   12,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_draw, 0,0, 15);
-*/
+
   spello(320,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_numb_dead, 0,0, 15);

@@ -5233,7 +5233,7 @@ const struct skillset necroskills[] = {
 	{"detect magic",		SPELL_DETECT_MAGIC			,3},
 	{"disease",				SPELL_DISEASE				,1},
 	{"dispel magic",		SPELL_DISPEL_MAGIC			,14},
-//	{"dominate undead",		SPELL_DOMINATE_UNDEAD		,6},
+	{"dominate undead",		SPELL_DOMINATE_UNDEAD		,6},
 	{"enchant armor",		SPELL_ENCHANT_ARMOR			,17},
 	{"enchant weapon",		SPELL_ENCHANT_WEAPON		,21},
 	{"endure cold",			SPELL_ENDURE_COLD			,12},

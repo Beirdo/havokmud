@@ -4221,7 +4221,7 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
       act("$n slowly raises $s hands.", TRUE, ch, 0, 0, TO_ROOM);
 
       if (!saves_spell(targ, SAVING_PARA)) {
-	act("Suddently $n utters some strange words!",
+	act("Suddenly $n utters some strange words!",
 	    TRUE, ch, 0, targ, TO_ROOM);
 	cast_dispel_magic(60, ch, "", SPELL_TYPE_SPELL, targ,0);
 	cast_incendiary_cloud(60, ch, "", SPELL_TYPE_SPELL, targ,0);
@@ -4259,7 +4259,7 @@ int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 		char_from_room(targ);
 		char_to_room(targ,location);  /*Find the room that 	the corsair ship is in*/
-		act("$n suddently falls from above.", TRUE, targ, 0, 0, TO_ROOM);
+		act("$n suddenly falls from above.", TRUE, targ, 0, 0, TO_ROOM);
     	act("You fall helplessly downward off the ship.", FALSE, ch, 0, 0, TO_CHAR);
     }
   }
@@ -5914,7 +5914,7 @@ int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
     GET_COND(ch,THIRST) = 24;
     GET_COND(ch,FULL)+=1;
 
-    act("You suddently feel much better.",FALSE,ch,0,0,TO_CHAR);
+    act("You suddenly feel much better.",FALSE,ch,0,0,TO_CHAR);
     cast_heal(50, ch, "", SPELL_TYPE_SCROLL, ch, 0);
     return(TRUE);
   }
@@ -5956,7 +5956,7 @@ int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
   	act("You read the book and feel your body being torn to another location",FALSE,ch,0,0,TO_CHAR);
   	char_from_room(ch);
   	char_to_room(ch, key_room);
-  	act("$n suddently appears.", FALSE, ch, 0, 0, TO_ROOM);
+  	act("$n suddenly appears.", FALSE, ch, 0, 0, TO_ROOM);
   	do_look(ch, "", 0);
   	return TRUE;
   }
