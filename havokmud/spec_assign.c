@@ -1338,13 +1338,10 @@ void assign_mobiles()
 {31818, StatTeller },     /* Damage teller */
 {31931, citizen },        /* for guards and clerics shouting for help */
 {31913, citizen },        /* for guards and clerics shouting for help */
-{31886, RepairGuy },
+//{31886, RepairGuy },
 {33185, board_ship },   /* note.. Not sure which corsair does waht */
 {32034, CorsairPush },
-
-
-{ 44129,  Magic_Pool},//  in proc_assign and add to protos
-{ 44115,  Read_Room},// in proc_assign and add to protos..
+{33188, Tyrannosaurus_swallower },
 
 
 #endif
@@ -1402,6 +1399,8 @@ void assign_objects()
    {45493, thunder_blue_pill},
    {45494, grayswandir},
 /*End Thunder Mountain Keep Objects*/
+{ 44129,  Magic_Pool},//  in proc_assign and add to protos
+{ 44115,  Read_Room},// in proc_assign and add to protos..
 
     { -1, NULL },
   };

@@ -1205,6 +1205,18 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
      "$n $c0009devastates$c0007 $N with $s #w #l.",
      "You $c0009devastate$c0007 $N with your #w #l.",
      "$n $c0009devastates$c0007 you with $s #w on your #L."
+    },
+
+    {
+	     "$n $c0012decimates$c0007 $N with $s #w #l.",
+	     "You $c0012decimate$c0007 $N with your #w #l.",
+	     "$n $c0012decimates$c0007 you with $s #w on your #L."
+    },
+
+    {
+	     "$n $c0008annihilates$c0007 $N with $s #w #l.",
+	     "You $c0008annihilate$c0007 $N with your #w #l.",
+	     "$n $c0008annihilates$c0007 you with $s #w on your #L."
     }
 
   };
@@ -1231,8 +1243,12 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
     snum = 6;
   } else if (dam <= 45) {
     snum = 7;
-  } else {
+  } else if (dam <= 55) {
     snum = 8;
+  } else if (dam <= 65) {
+    snum = 9;
+  } else {
+    snum = 10;
   }
 
 /* generate random hit location */

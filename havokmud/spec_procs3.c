@@ -5783,10 +5783,13 @@ return(FALSE);
 int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
   char buf[MAX_INPUT_LENGTH];
+
+  //send_to_char("Start proc",ch);
   if (cmd==11) { /*11 = drink */
     only_argument(arg,buf);
-
+	 send_to_char("pool?",ch);
     if (!str_cmp(buf, "pool")) {
+       send_to_char("not pool",ch);
       return(FALSE);
     }
 
@@ -5804,6 +5807,7 @@ int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
     cast_heal(50, ch, "", SPELL_TYPE_SPELL, ch, 0);
     return(TRUE);
   }
+  return(FALSE);
 }
 
 
@@ -5814,20 +5818,22 @@ int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
   int key_room;
   char buf[MAX_INPUT_LENGTH];
   struct obj_data *obj;
-
-  if (cmd==63)  /*63 = read */
+	//send_to_char("entering proc",ch);
+  if (cmd!=63)  /*63 = read */
     return FALSE;
   if (!HasClass(ch, CLASS_PSI))
 	return FALSE;
 
   only_argument(arg,buf);
-  if (!str_cmp(buf, "book")) {
-    return(FALSE);
+  if (str_cmp(buf, "book")) {
+   	 send_to_char("cmp book and buf .. not same",ch);
+     return(FALSE);
   }
 
   obj = get_obj_in_list_vis(ch,buf,ch->carrying);
-
-  if(obj->item_number == ch->in_room)  {
+	if (!obj)
+		return(FALSE);
+  if(obj_index[obj->item_number].virtual == real_roomp(ch->in_room))  {
   	key_room = 1+ch->in_room;
   	act("$n reads the book then disappears.", FALSE, ch, 0, 0, TO_ROOM);
   	char_from_room(ch);

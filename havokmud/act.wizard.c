@@ -3895,6 +3895,7 @@ dlog("in do_show");
       case 0: mode = "never";      break;
       case 1: mode = "ifempty";    break;
       case 2: mode = "always";     break;
+      case 3: mode = "closed";     break;
       default:
 	if (zd->reset_mode > 2) {
 	  if (IS_SET(zd->reset_mode, ZONE_ALWAYS))

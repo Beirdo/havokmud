@@ -5213,16 +5213,18 @@ int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 {
   int choice;
   char buf[200];
-
+	extern struct str_app_type str_app[];
   if (cmd) {
     if (cmd == 56) { /* buy */
 
 
 
    /* for Ash's dam/hitroll teller */
-   if(mob->nr==31818) {
+
+   if(mob_index[mob->nr].virtual==31818) {
      if (GET_GOLD(ch)< 10000) {
-    	send_to_char("You do not have the money to pay me.\n\r", ch);
+    	//send_to_char("You do not have the money to pay me.\n\r", ch);
+    	act("$c0013[$c0015$N$c0013] tells you 'You do not have the money to pay me.\n\r",FALSE,ch,0,mob,TO_CHAR);
     	return(TRUE);
       } else {
      	GET_GOLD(ch)-=10000;
@@ -5230,11 +5232,15 @@ int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 		choice = number(0,1);
 		if (choice==0)
-		  sprintf(buf,"I sense your damroll is about %d.",ch->points.damroll);
+		  sprintf(buf,"$c0013[$c0015$N$c0013] tells you 'I sense your damroll is about %d.'"
+		  		,ch->points.damroll+str_app[STRENGTH_APPLY_INDEX(ch)].todam,ch->points.damroll);
 		else
-		  sprintf(buf,"I sense your hitroll is about %d.",ch->points.hitroll);
+		  sprintf(buf,"$c0013[$c0015$N$c0013] tells you 'I sense your hitroll is about %d.'"
+		  		,ch->points.hitroll+str_app[STRENGTH_APPLY_INDEX(ch)].tohit);
 
-  		send_to_char(buf,ch);
+		act(buf,FALSE,ch,0,mob,TO_CHAR);
+  		act("$n gives some gold to $N",FALSE,ch,0,mob,TO_ROOM);
+  		act("You give $N some gold.",FALSE,ch,0,mob,TO_ROOM);
   		return(TRUE);
 
 	}

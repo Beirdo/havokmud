@@ -1,7 +1,7 @@
 
 /* data files used by the game system */
 
-#define RLIMIT_OFILE      99999 
+#define RLIMIT_OFILE      99999
 #define DFLT_DIR          "../lib"           /* default data directory     */
 
 #define WORLD_FILE        "tinyworld.wld" /* room definitions           */
@@ -36,13 +36,13 @@
 /* structure for the reset commands */
 struct reset_com
 {
-	char command;   /* current command                      */ 
+	char command;   /* current command                      */
 	bool if_flag;   /* if TRUE: exe only if preceding exe'd */
 	int arg1;       /*                                      */
 	int arg2;       /* Arguments to the command             */
 	int arg3;       /*                                      */
 
-	/* 
+	/*
 	*  Commands:              *
 	*  'M': Read a mobile     *
 	*  'O': Read an object    *
@@ -65,7 +65,7 @@ struct zone_data
   int age;                /* current age of this zone (minutes) */
   long top;                /* upper limit for rooms in this zone */
   short start;            /* has this zone been reset yet?      */
-  
+
   int reset_mode;         /* conditions for reset (see below)   */
   struct reset_com *cmd;  /* command table for reset	           */
   char races[84];  /* races that are tolerated here */
@@ -104,7 +104,7 @@ struct index_data
 struct reset_q_element
 {
 	int zone_to_reset;            /* ref to zone_data */
-	struct reset_q_element *next;	
+	struct reset_q_element *next;
 };
 
 
@@ -139,3 +139,4 @@ struct help_index_element
 #define ZONE_DESERT 	 8
 #define ZONE_ARCTIC      16
 #define ZONE_UNDER_GROUND 32
+#define ZONE_CLOSED       64

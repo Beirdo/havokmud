@@ -2855,7 +2855,11 @@ dlog("in do_who");
 	if (classn <= 0 )
 		classn =1;
 	      total/=classn;
-		   if(GetMaxLevel(person)==50) strcpy (levels,"$c0012Hero");
+		   if(GetMaxLevel(person)==50) {
+			  strcpy (levels,"$c0012Hero");
+		      if(GET_EXP(person) > 100000000 )  strcpy(levels,"$c0015Hero");
+		      if(GET_EXP(person) > 200000000 )  strcpy(levels,"$c0009Legend");
+	  	  }
 	      else if(total<11) strcpy(levels,"$c0008Apprentice");
 	      else if(total<21) strcpy(levels,"$c0004Pilgrim");
 	      else if(total<31) strcpy(levels,"$c0006Explorer");
@@ -4545,10 +4549,135 @@ if (spell_info[i+1].spell_pointer && spell_info[i+1].min_level_psi<51) {
 
 }
 
+
+
+
 /* this command will only be used for immorts as I am using it as a way */
 /* to figure out how to look into rooms next to this room. Will be using*/
 /* the code for throwing items. I figure there is no IC reason for a PC */
 /* to have a command like this. Do what ya want on your on MUD          */
+void do_spot(struct char_data *ch, char *argument, int cmd)
+{
+   static char *keywords[]= {
+	"north",
+	"east",
+	"south",
+	"west",
+	"up",
+	"down",
+	"\n"};
+   char *dir_desc[] = {
+      "to the north",
+      "to the east",
+      "to the south",
+      "to the west",
+      "upwards",
+      "downwards"};
+   char *rng_desc[] = {
+      "right here",
+      "immediately",
+      "nearby",
+      "a ways",
+      "a ways",
+      "far",
+      "far",
+      "very far",
+      "very far"};
+   char buf[MAX_STRING_LENGTH], buf2[MAX_STRING_LENGTH];
+   char arg1[MAX_STRING_LENGTH], arg2[MAX_STRING_LENGTH];
+   int sd, smin, smax, swt, i, max_range = 6, range, rm, nfnd;
+   struct char_data *spud;
+
+dlog("in do_scan");
+
+/*
+   sprintf(buf,"In scan - Room #%d, %s scanning.", ch->in_room,GET_NAME(ch));
+   slog(buf);
+*/
+	/*
+		Check mortals spot skill, and give THEM a max scan of
+		2 rooms.
+	*/
+
+	if (!ch->skills) {
+		send_to_char("You do not have skills!\n\r",ch);
+		return;
+	    }
+
+	if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+	   if (!ch->skills[SKILL_SPOT].learned)   {
+		 send_to_char ("You have not been trained to spot.\n\r",ch);
+		 return;
+		}
+
+	      if (dice(1,101) > ch->skills[SKILL_SPOT].learned)      {
+		send_to_char("Absolutely no-one anywhere.\n\r",ch);
+		WAIT_STATE(ch,2);
+		return;
+	      } /* failed */
+
+	max_range=2;    /* morts can only spot two rooms away */
+
+	}       /* was mortal */
+
+   argument_split_2(argument,arg1,arg2);
+   sd = search_block(arg1, keywords, FALSE);
+   if (sd==-1) {
+      smin = 0;
+      smax = 5;
+      swt = 3;
+      sprintf(buf,"$n peers intently all around.");
+      sprintf(buf2,"You peer intently all around, and see :\n\r");
+   } else {
+      smin = sd;
+      smax = sd;
+      swt = 1;
+      sprintf(buf,"$n peers intently %s.",dir_desc[sd]);
+      sprintf(buf2,"You peer intently %s, and see :\n\r",dir_desc[sd]);
+   }
+
+   act(buf, FALSE, ch, 0, 0, TO_ROOM);
+   send_to_char(buf2,ch);
+   nfnd = 0;
+   /* Check in room first */
+   for (spud=real_roomp(ch->in_room)->people;spud;spud=spud->next_in_room) {
+      if ((CAN_SEE(ch,spud))&&(!IS_SET(spud->specials.affected_by,AFF_HIDE))&&(spud!=ch)) {
+	 if (IS_NPC(spud)) {
+	    sprintf(buf,"%30s : right here\n\r",spud->player.short_descr);
+	 } else {
+	    sprintf(buf,"%30s : right here\n\r",GET_NAME(spud));
+	 }
+	 send_to_char(buf,ch);
+	 nfnd++;
+      }
+   }
+   for (i=smin;i<=smax;i++) {
+      rm = ch->in_room;
+      range = 0;
+      while (range<max_range) {
+	 range++;
+	 if (clearpath(ch, rm,i)) {
+	    rm = real_roomp(rm)->dir_option[i]->to_room;
+	    for (spud=real_roomp(rm)->people;spud;spud=spud->next_in_room) {
+	       if ((CAN_SEE(ch,spud))&&(!(IS_SET(spud->specials.affected_by,AFF_HIDE)))) {
+		  if (IS_NPC(spud)) {
+		     sprintf(buf,"%30s : %s %s\n\r",spud->player.short_descr,rng_desc[range],dir_desc[i]);
+		  } else {
+		     sprintf(buf,"%30s : %s %s\n\r",GET_NAME(spud),rng_desc[range],dir_desc[i]);
+		  }
+		  send_to_char(buf,ch);
+		  nfnd++;
+	       }
+	    }
+	 } else {
+	    range = max_range + 1;
+	 }
+      }
+    }
+    if (nfnd==0) send_to_char("Absolutely no-one anywhere.\n\r",ch);
+    WAIT_STATE(ch,swt);
+}
+
 void do_scan(struct char_data *ch, char *argument, int cmd)
 {
    static char *keywords[]= {

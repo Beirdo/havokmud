@@ -31,7 +31,7 @@ extern struct hash_header room_db;
 #else
 extern struct room_data *room_db;
 #endif
-
+void do_spot(struct char_data *ch, char *argument, int cmd);
 extern long SystemFlags;         /* used for making teleport/astral/stuff not work */
 extern long TempDis;
 
@@ -911,7 +911,7 @@ int special(struct char_data *ch, int cmd, char *arg)
 
   /* special in inventory? */
   for (i = ch->carrying; i; i = i->next_content)
-    if (i->item_number>=0)
+    if (i->item_number>=0)  /* Crashes here when saving item twice */
       if (obj_index[i->item_number].func)
 	if ((*obj_index[i->item_number].func)(ch, cmd, arg, i, PULSE_COMMAND))
 	  return(1);
@@ -925,7 +925,7 @@ int special(struct char_data *ch, int cmd, char *arg)
 
   /* special in object present? */
   for (i = real_roomp(ch->in_room)->contents; i; i = i->next_content)
-    if (i->item_number>=0)
+    if (i->item_number>=0)  /* Crash here maybe?? */
       if (obj_index[i->item_number].func)
 	if ((*obj_index[i->item_number].func)(ch, cmd, arg, i, PULSE_COMMAND))
 	  return(1);
@@ -1352,7 +1352,7 @@ AddCommand("run" ,do_run ,384, POSITION_STANDING,0);
 AddCommand("notch" ,do_weapon_load ,385, POSITION_RESTING,0);
 AddCommand("load" ,do_weapon_load ,386, POSITION_RESTING,0);
 
-AddCommand("spot" ,do_scan ,387, POSITION_STANDING,0);
+AddCommand("spot" ,do_spot ,387, POSITION_STANDING,0);
 AddCommand("view" ,do_viewfile ,388, POSITION_DEAD,51);
 AddCommand("afk" ,do_set_afk,389, POSITION_DEAD,1);
 
