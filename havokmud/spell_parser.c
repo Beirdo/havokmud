@@ -2660,7 +2660,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                         return;
                     }
                     
-                    if (GET_POS(tar_char) == POSITION_DEAD) {
+                    if (tar_char && GET_POS(tar_char) == POSITION_DEAD) {
                         send_to_char("The magic fizzles against the dead "
                                      "body.\n", ch);
                         return;
