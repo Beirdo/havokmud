@@ -854,15 +854,17 @@ void affect_from_char( struct char_data *ch, int skill)
    not affected                                                        */
 bool affected_by_spell( struct char_data *ch, int skill )
 {
-  struct affected_type *hjp,*old_af;
+	struct affected_type *hjp,*old_af;
 
-  for (hjp = ch->affected; hjp;old_af=hjp, hjp = hjp->next)
-    {if(!hjp)
-      return( FALSE );
-     if ( hjp->type == skill )
-      return( TRUE );
-    }
-  return( FALSE );
+	for (hjp = ch->affected; hjp;old_af=hjp, hjp = hjp->next)
+	{
+		if(!hjp)
+			return( FALSE );
+		if(hjp->type)
+			if ( hjp->type == skill )
+				return( TRUE );
+	}
+	return( FALSE );
 }
 
 

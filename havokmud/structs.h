@@ -1446,7 +1446,7 @@ struct char_skill_data
 /* Used in CHAR_FILE_U *DO*NOT*CHANGE* */
 struct affected_type
 {
-	short type;           /* The type of spell that caused this      */
+	int type;           /* The type of spell that caused this      */
 	sh_int duration;      /* For how long its effects will last      */
 	long modifier;       /* This is added to apropriate ability     */
 	long location;        /* Tells which ability to change(APPLY_XXX)*/
