@@ -2640,25 +2640,29 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
             return (TRUE);
         }
 
+        if (!arg || !money <= 0) {
+            send_to_char("Go away, you bother me.\n\r", ch);
+            return (TRUE);
+        } 
+
         if (money > GET_GOLD(ch)) {
             send_to_char("You don't have enough for that!\n\r", ch);
             return (TRUE);
-        } else if (money <= 0) {
-            send_to_char("Go away, you bother me.\n\r", ch);
-            return (TRUE);
-        } else if (money + GET_BANK(ch) > GetMaxLevel(ch) * 40000 &&
-                   GetMaxLevel(ch) < 40) {
+        } 
+
+        if (money + GET_BANK(ch) > GetMaxLevel(ch) * 40000 &&
+            GetMaxLevel(ch) < 40) {
             send_to_char("I'm sorry, Regulations only allow us to ensure 40000"
                          " coins per level.\n\r", ch);
             return (TRUE);
-        } else {
-            send_to_char("Thank you.\n\r", ch);
-            GET_GOLD(ch) = GET_GOLD(ch) - money;
-            GET_BANK(ch) = GET_BANK(ch) + money;
-            sprintf(buf, "Your balance is %d.\n\r", GET_BANK(ch));
-            send_to_char(buf, ch);
-            return (TRUE);
         }
+        
+        send_to_char("Thank you.\n\r", ch);
+        GET_GOLD(ch) = GET_GOLD(ch) - money;
+        GET_BANK(ch) = GET_BANK(ch) + money;
+        sprintf(buf, "Your balance is %d.\n\r", GET_BANK(ch));
+        send_to_char(buf, ch);
+        return (TRUE);
     }
 
     if (cmd == 220) {
@@ -2671,20 +2675,22 @@ int bank(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
             return (TRUE);
         }
 
+        if (!arg || money <= 0) {
+            send_to_char("Go away, you bother me.\n\r", ch);
+            return (TRUE);
+        } 
+
         if (money > GET_BANK(ch)) {
             send_to_char("You don't have enough in the bank for that!\n\r", ch);
             return (TRUE);
-        } else if (money <= 0) {
-            send_to_char("Go away, you bother me.\n\r", ch);
-            return (TRUE);
-        } else {
-            send_to_char("Thank you.\n\r", ch);
-            GET_GOLD(ch) = GET_GOLD(ch) + money;
-            GET_BANK(ch) = GET_BANK(ch) - money;
-            sprintf(buf, "Your balance is %d.\n\r", GET_BANK(ch));
-            send_to_char(buf, ch);
-            return (TRUE);
-        }
+        } 
+
+        send_to_char("Thank you.\n\r", ch);
+        GET_GOLD(ch) = GET_GOLD(ch) + money;
+        GET_BANK(ch) = GET_BANK(ch) - money;
+        sprintf(buf, "Your balance is %d.\n\r", GET_BANK(ch));
+        send_to_char(buf, ch);
+        return (TRUE);
     }
 
     if (cmd == 221) {

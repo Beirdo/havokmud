@@ -6033,12 +6033,9 @@ void do_orebuild(struct char_data *ch, char *argument, int cmd)
 
 int advatoi(const char *s)
 {
-    char            string[MAX_INPUT_LENGTH];   /* a buffer to hold a copy
-                                                 * of the argument */
-    char           *stringptr = string; /* a pointer to the buffer so we
-                                         * can move around */
-    char            tempstring[2];      /* a small temp buffer to pass to
-                                         * atoi */
+    char           *string;   /* a buffer to hold a copy of the argument */
+    char           *stringptr; /* a pointer to the buffer so we
+                               * can move around */
     int             number = 0; /* number to be returned */
     int             multiplier = 0;     /* multiplier used to get the
                                          * extra digits right */
@@ -6049,21 +6046,22 @@ int advatoi(const char *s)
      * hell, it works:) (read: it seems to work:)
      */
 
-    strcpy(string, s);          /* working copy */
+    if( !s ) {
+        return( 0 );
+    }
+
+    string = strdup(s);
+    if( !string ) {
+        return( 0 );
+    }
+    stringptr = string;
 
     while (isdigit(*stringptr)) {
         /*
          * as long as the current character is a digit
          */
 
-        /*
-         * copy first digit
-         */
-        strncpy(tempstring, stringptr, 1);
-        /*
-         * add to current * number
-         */
-        number = (number * 10) + atoi(tempstring);
+        number = (number * 10) + (int)(*stringptr - 0x30);
         /*
          * advance
          */
@@ -6084,6 +6082,7 @@ int advatoi(const char *s)
     case '\0':
         break;
     default:
+        free( string );
         return 0;
         /*
          * not k nor m nor NUL - return 0!
@@ -6093,16 +6092,10 @@ int advatoi(const char *s)
     while (isdigit(*stringptr) && (multiplier > 1)) {
         /*
          * if any digits follow k/m, add those too
-         */
-        /*
-         * copy first digit
-         */
-        strncpy(tempstring, stringptr, 1);
-        /*
          * the further we get to right, the less are the digit 'worth'
          */
         multiplier = multiplier / 10;
-        number = number + (atoi(tempstring) * multiplier);
+        number = number + ((int)(*stringptr - 0x30) * multiplier);
         stringptr++;
     }
 
@@ -6112,9 +6105,11 @@ int advatoi(const char *s)
          * If a digit is found, it means the multiplier is 1 - i.e. extra
          * digits that just have to be ignore, liked 14k4443 -> 3 is ignored
          */
+        free( string );
         return 0;
     }
 
+    free( string );
     return (number);
 }
 
