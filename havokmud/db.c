@@ -2404,7 +2404,27 @@ void zone_update()
 }
 
 
+int does_Load(int num, int max ) {
+  int temp;
+  int temp2;
+  char buff[200];
+  sprintf(buff,"num=%d  max=%d", num, max);
+  log(buff);
+  if (max == 0)
+    return (TRUE);
 
+  if (num > max) { /* Maxxed.. but there is a slight chance of loading (GH)*/
+    temp = (max / 2) + 1;  /* 20/2 would be a 10% chance of loading..*/
+  }else
+    temp = 100 - (num / 2*max) * 100;   
+  temp2 = number(1,101);
+  if (temp2 <= temp)
+    return TRUE;
+  else {
+    log("ITEM NEVER LOADED");
+    return FALSE;
+  }
+}
 
 #define ZCMD zone_table[zone].cmd[cmd_no]
 
@@ -2534,8 +2554,9 @@ void reset_zone(int zone)
 	}
 	break;
 
-      case 'O': /* read an object */
-	if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 ) {
+      case 'O': /* read an object */ /*On ground load (GH) */
+	
+	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE) {
 	  if (ZCMD.arg3 >= 0 && ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
 	    if((ZCMD.if_flag>0&&ObjRoomCount(ZCMD.arg1,rp)<ZCMD.if_flag) ||
 	      (ZCMD.if_flag<=0&&ObjRoomCount(ZCMD.arg1,rp)<(-ZCMD.if_flag)+1)){
@@ -2560,7 +2581,7 @@ void reset_zone(int zone)
 	break;
 
       case 'P': /* object to object */
-	if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 )  {
+	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE )  {
 	  obj = read_object(ZCMD.arg1, REAL);
 	  obj_to = get_obj_num(ZCMD.arg3);
 	  if (obj_to && obj) {
@@ -2576,7 +2597,7 @@ void reset_zone(int zone)
 	break;
 
       case 'G': /* obj_to_char */
-	if (obj_index[ZCMD.arg1].number <= ZCMD.arg2  &&
+	if (does_Load(obj_index[ZCMD.arg1].number, ZCMD.arg2)==TRUE  &&
 	    (obj = read_object(ZCMD.arg1, REAL)) && mob) {
 	  obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
           obj_to_char(obj, mob);
@@ -2602,7 +2623,7 @@ void reset_zone(int zone)
 	break;
 
       case 'E': /* object to equipment list */
-	if (obj_index[ZCMD.arg1].number <= ZCMD.arg2 &&
+	if (does_Load(obj_index[ZCMD.arg1].number ,ZCMD.arg2)==TRUE &&
 	    (obj = read_object(ZCMD.arg1, REAL))) {
 	  if (!mob->equipment[ZCMD.arg3]) {
 	     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;

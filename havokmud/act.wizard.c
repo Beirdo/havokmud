@@ -5902,6 +5902,8 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
      obj_index[rnum].MaxObjCount = number;
      sprintf(buf,"Maximum object count set to %d on object %s. \n\r",number,(char *) obj->name);
      send_to_char(buf,ch);
+     /* Temporary.. Object doesnt' get destroyed here */
+     obj_index[obj->item_number].number--;
     }
   else send_to_char("Error on Read Object. maximum not set. \n\r",ch);
 }

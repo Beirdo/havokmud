@@ -60,7 +60,7 @@ int EgoBladeSave(struct char_data *ch)
    total = (GetMaxLevel(ch) + GET_STR(ch) + GET_CON(ch));
    if (GET_HIT(ch) == 0) return(FALSE);
    total = total - (GET_MAX_HIT(ch) / GET_HIT(ch));
-   if (number(1,101) > total) {
+   if (((int) number(1,101)) > total) {
       return(FALSE);
    } else return(TRUE);
 }
