@@ -2040,6 +2040,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
              * look ''
              */
         case 8:
+        case 9:    
             ch_printf(ch, "$c000W%s", real_roomp(ch->in_room)->name);
 
             send_to_char("\n\r", ch);
@@ -2103,6 +2104,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             /*
              * look 'room'
              */
+#if 0        
         case 9:
             send_to_char(real_roomp(ch->in_room)->name, ch);
             send_to_char("\n\r", ch);
@@ -2141,6 +2143,7 @@ void do_look(struct char_data *ch, char *argument, int cmd)
             list_obj_in_room(real_roomp(ch->in_room)->contents, ch);
             list_char_in_room(real_roomp(ch->in_room)->people, ch);
             break;
+#endif
         }
     }
 }
