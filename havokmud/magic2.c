@@ -2064,9 +2064,21 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		if (affected_by_spell(victim,SPELL_FLESH_GOLEM))
 			affect_from_char(victim,SPELL_FLESH_GOLEM);
 
-	}
-}
+		if (affected_by_spell(victim, SPELL_MANA_SHIELD)){
+			if (yes || !saves_spell(victim, SAVING_SPELL)) {
+			  affect_from_char(victim, SPELL_MANA_SHIELD);
+		  	  send_to_char("Your mana shield is disrupted and fails.\n\r", victim);
+		  }
+	  }
 
+	   if (affected_by_spell(victim, SPELL_IRON_SKINS)){
+		  if (yes || !saves_spell(victim, SAVING_SPELL)) {
+			  affect_from_char(victim, SPELL_IRON_SKINS);
+			  send_to_char("Your iron skins shatter leaving you unprotected.\n\r", victim);
+				}
+			  }
+}
+}
 
 
 void spell_paralyze(byte level, struct char_data *ch,
