@@ -338,19 +338,24 @@ void spell_chain_lightn(byte level, struct char_data *ch,
 {
   int lev = level, dam;
   struct char_data *t, *next;
-
+  int count = 0;
   /* victim = levd6 damage */
   damage(ch, victim, dice(lev,6), SPELL_LIGHTNING_BOLT);
   lev--;
-
+  count++;
+/*change 2004FEB10 -Gordon-*/
 	for (t = real_roomp(ch->in_room)->people; t; t=next) {
 		next = t->next_in_room;
 		if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
-			dam = dice(lev,8);
+			if(count > 8){
+				break;}
+			dam = dice(lev,6);
 			if ( saves_spell(t, SAVING_SPELL))
 				dam >>= 1;
 			damage(ch, t, dam, SPELL_LIGHTNING_BOLT);
 			lev--;
+			count++;
+		/*end change 2004FEB10 -Gordon-*/
 		}
 	}
 }
