@@ -4172,6 +4172,24 @@ int GetFormType(struct char_data *ch)
   int num;
 
   num = number(1,100);
+
+	/* PC monks should do the monk thing, regardless of race   -Lennya */
+	if (HasClass(ch, CLASS_MONK) && IS_PC(ch)) {
+		switch(number(1,5)) {
+			case 1:
+				return(TYPE_HIT);
+			case 2:
+				return(TYPE_SMASH);
+			case 3:
+				return(TYPE_JAB);
+			case 4:
+				return(TYPE_PUNCH);
+			case 5:
+				return(TYPE_STRIKE);
+			default:
+				return(TYPE_HIT);
+		}
+	}
   switch(GET_RACE(ch)) {
   case RACE_REPTILE:
     if (num <= 50) {

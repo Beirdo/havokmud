@@ -445,6 +445,7 @@ dlog("in do_zsave");
 
 }
 
+#define STATUE_ZONE 4
 void do_zload(struct char_data *ch, char *argument, int cmdnum)
 {
   char buf[80];
@@ -471,8 +472,9 @@ dlog("in do_ zload");
     send_to_char("Invalid zone number\r\n",ch);
     return;
   }
+
 /* make some permission checks */
-  if( (GetMaxLevel(ch)<56 && zone != GET_ZONE(ch)) || cmdnum!=0)  {
+  if( (GetMaxLevel(ch)<56 && zone != GET_ZONE(ch)) /*|| cmdnum!=0*/)  {
     send_to_char("Sorry, you are not authorized to load this zone.\n\r", ch);
     return;
   }
@@ -491,7 +493,8 @@ dlog("in do_ zload");
   renum_zone_table(zone);
   zone_table[zone].start=0;
   reset_zone(zone);
-
+  if(zone == STATUE_ZONE) /* if statue zone, make sure the statues are rebuilt too! */
+  	generate_legend_statue();
   send_to_char("Ok\r\n",ch);
 }
 
@@ -2915,7 +2918,7 @@ dlog("in do_genstatue");
 	only_argument(argument, buf);
 
 	if (!*buf) {
-		generate_legend_statue(ch, "", 584);
+		generate_legend_statue(); //ch, "", 584);
 	} else
 		send_to_char("No need to add an argument, Usage: 'genstatue'.\n\r",ch);
 }
@@ -4159,150 +4162,163 @@ void show_room_zone(int rnum, struct room_data *rp,
 
 void do_show(struct char_data *ch, char *argument, int cmd)
 {
-
 	int i;
-	 extern char *spells[];
+	extern char *spells[];
+	extern char *RaceName[];
+	extern char *AttackType[];
+	extern char *item_types[];
+	extern char *extra_bits[];
+	extern char *apply_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *wear_bits[];
+	char buf2[256];
+	char temp1[128], temp2[128];
 
-	  /* races */
-	  extern char *RaceName[];
-
-
-	  /* For Objects */
-	  extern char *AttackType[];
-
-
-
-	  extern char *item_types[];
-	  extern char *extra_bits[];
-	  extern char *apply_types[];
-	  extern char *affected_bits[];
-	  extern char *affected_bits2[];
-	  extern char *immunity_names[];
-	  extern char *wear_bits[];
-	  char buf2[256];
-	  char temp1[128], temp2[128];
-
-  int   zone;
-  char buf[MAX_STRING_LENGTH], zonenum[MAX_INPUT_LENGTH];
-  struct obj_data *obj;
-  struct index_data     *which_i;
-  int   bottom, top, topi;
-  struct string_block   sb;
+	int   zone;
+	char buf[MAX_STRING_LENGTH], zonenum[MAX_INPUT_LENGTH];
+	struct obj_data *obj;
+	struct index_data     *which_i;
+	int   bottom, top, topi;
+	struct string_block   sb;
 
 dlog("in do_show");
 
-  if (IS_NPC(ch))
-    return;
+	if (IS_NPC(ch))
+		return;
 
-  argument = one_argument(argument, buf);
+	argument = one_argument(argument, buf);
 
-  init_string_block(&sb);
+	init_string_block(&sb);
 
-  if (is_abbrev(buf, "zones")) {
-    struct zone_data    *zd;
-    int bottom=0;
-    append_to_string_block(&sb, "# Zone   name                                lifespan age     rooms     reset\n\r");
+	if (is_abbrev(buf, "zones")) {
+		struct zone_data    *zd;
+		int bottom=0;
+		append_to_string_block(&sb, "# Zone   name                                lifespan age     rooms     reset\n\r");
 
-    for(zone=0; zone<=top_of_zone_table; zone++) {
-      char      *mode;
+		for(zone=0; zone<=top_of_zone_table; zone++) {
+			char      *mode;
 
-      zd = zone_table+zone;
-      switch(zd->reset_mode) {
-      case 0: mode = "never";      break;
-      case 1: mode = "ifempty";    break;
-      case 2: mode = "always";     break;
-      case 3: mode = "closed";     break;
-      default:
-	if (zd->reset_mode > 2) {
-	  if (IS_SET(zd->reset_mode, ZONE_ALWAYS))
-	    mode = "#always";
-	  else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
-	    mode = "#empty";
-	  else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
-	  	mode = "#closed";
-	  	else
-	    mode = "#never";
+			zd = zone_table+zone;
+			switch(zd->reset_mode) {
+			case 0: mode = "never";      break;
+			case 1: mode = "ifempty";    break;
+			case 2: mode = "always";     break;
+			case 3: mode = "closed";     break;
+			default:
+				if (zd->reset_mode > 2) {
+					if (IS_SET(zd->reset_mode, ZONE_ALWAYS))
+						mode = "#always";
+					else if (IS_SET(zd->reset_mode, ZONE_EMPTY))
+						mode = "#empty";
+					else if (IS_SET(zd->reset_mode, ZONE_CLOSED))
+						mode = "#closed";
+					else
+						mode = "#never";
+				} else {
+					mode = "!unknown!";
+				}
+			}
+			sprintf(buf,"%4d %-40s %4dm %4dm %6d-%-6d %s\n\r", zone, zd->name,zd->lifespan, zd->age, bottom, zd->top, mode);
+			append_to_string_block(&sb, buf);
+			bottom = zd->top+1;
+		}
+	} else if (is_abbrev(buf, "objects") &&
+				(which_i=obj_index,topi=top_of_objt) ||
+				is_abbrev(buf, "mobiles") &&
+				(which_i=mob_index,topi=top_of_mobt)) {
+		int objn;
+		struct index_data   *oi;
 
-	} else {
-	  mode = "!unknown!";
-	}
-      }
-      sprintf(buf,"%4d %-40s %4dm %4dm %6d-%-6d %s\n\r", zone, zd->name,
-	      zd->lifespan, zd->age, bottom, zd->top, mode);
-      append_to_string_block(&sb, buf);
-      bottom = zd->top+1;
-    }
+		only_argument(argument, zonenum);
+		zone = -1;
+		if (1==sscanf(zonenum,"%i", &zone) &&
+					( zone<0 || zone>top_of_zone_table )) {
+			append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+			return;
+		}
+		if (zone>=0) {
+			bottom = zone ? (zone_table[zone-1].top+1) : 0;
+			top = zone_table[zone].top;
+		}
+		append_to_string_block(&sb, "VNUM  rnum count names\n\r");
+		for (objn=0; objn<topi; objn++) {
+			oi = which_i + objn;
+			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
+								zone<0 && !isname(zonenum, oi->name))
+				continue; /* optimize later*/
+			sprintf(buf,"%5d %4d %3d  %s\n\r", oi->virtual, objn, oi->number, oi->name);
+			append_to_string_block(&sb, buf);
+		}
+	} else if (is_abbrev(buf, "rooms")) {
+		only_argument(argument, zonenum);
+		append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
+		if (is_abbrev(zonenum, "death")) {
+#if HASH
+			hash_iterate(&room_db, print_death_room, &sb);
+#else
+			room_iterate(room_db, print_death_room, &sb);
+#endif
+		} else if (is_abbrev(zonenum, "private")) {
+#if HASH
+			hash_iterate(&room_db, print_private_room, &sb);
+#else
+			room_iterate(room_db, print_private_room, &sb);
+#endif
+		} else if (1!=sscanf(zonenum,"%i", &zone) || zone<0 || zone>top_of_zone_table) {
+			append_to_string_block(&sb, "I need a zone number with this command\n\r");
+		} else {
+			struct show_room_zone_struct      srzs;
+			srzs.bottom = zone ? (zone_table[zone-1].top+1) : 0;
+			srzs.top = zone_table[zone].top;
+			srzs.blank = 0;
+			srzs.sb = &sb;
+#if HASH
+			hash_iterate(&room_db, show_room_zone, &srzs);
+#else
+			room_iterate(room_db, show_room_zone, &srzs);
+#endif
+			if (srzs.blank){
+				sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank,
+				srzs.lastblank);
+				append_to_string_block(&sb, buf);
+				srzs.blank = 0;
+			}
+		}
+	} else  if (is_abbrev(buf, "report") && (which_i=obj_index,topi=top_of_objt) ||
+				is_abbrev(buf, "stats") && (which_i=mob_index,topi=top_of_mobt) ) {
 
+		if(GetMaxLevel(ch) < 56) {
+			send_to_char("Alas, the report option is only viewable for level 56 and higher.\n\r",ch);
+			return;
+		}
+		int objn;
+		struct index_data *oi;
 
-  } else if (is_abbrev(buf, "objects") &&
-	     (which_i=obj_index,topi=top_of_objt) ||
-	     is_abbrev(buf, "mobiles") &&
-	     (which_i=mob_index,topi=top_of_mobt) ) {
-    int         objn;
-    struct index_data   *oi;
+		only_argument(argument, zonenum);
+		zone = -1;
+		if (1==sscanf(zonenum,"%i", &zone) && ( zone<0 || zone>top_of_zone_table )) {
+			append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+			return;
+		}
+		if (zone>=0) {
+			bottom = zone ? (zone_table[zone-1].top+1) : 0;
+			top = zone_table[zone].top;
+		}
 
-    only_argument(argument, zonenum);
-    zone = -1;
-    if (1==sscanf(zonenum,"%i", &zone) &&
-	( zone<0 || zone>top_of_zone_table )) {
-      append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-      return;
-    }
-    if (zone>=0) {
-      bottom = zone ? (zone_table[zone-1].top+1) : 0;
-      top = zone_table[zone].top;
-    }
-
-    append_to_string_block(&sb, "VNUM  rnum count names\n\r");
-    for (objn=0; objn<topi; objn++) {
-      oi = which_i + objn;
-
-      if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
-	  zone<0 && !isname(zonenum, oi->name))
-	continue; /* optimize later*/
-
-      sprintf(buf,"%5d %4d %3d  %s\n\r", oi->virtual, objn,
-	      oi->number, oi->name);
-      append_to_string_block(&sb, buf);
-    }
-} else if (is_abbrev(buf, "report") &&
-	     (which_i=obj_index,topi=top_of_objt) ||
-	     is_abbrev(buf, "stats") &&
-	     (which_i=mob_index,topi=top_of_mobt) ) {
-    int         objn;
-    struct index_data   *oi;
-
-    only_argument(argument, zonenum);
-    zone = -1;
-    if (1==sscanf(zonenum,"%i", &zone) &&
-	( zone<0 || zone>top_of_zone_table )) {
-      append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-      return;
-    }
-    if (zone>=0) {
-      bottom = zone ? (zone_table[zone-1].top+1) : 0;
-      top = zone_table[zone].top;
-    }
-
-    append_to_string_block(&sb, "VNUM  rnum count names\n\r");
-    for (objn=0; objn<topi; objn++) {
-      oi = which_i + objn;
-
-      if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) || zone<0 && !isname(zonenum, oi->name))
-		continue; /* optimize later*/
-		obj = read_object(oi->virtual, VIRTUAL);
-		  if(obj) {
-
+		append_to_string_block(&sb, "VNUM  rnum count names\n\r");
+		for (objn=0; objn<topi; objn++) {
+			oi = which_i + objn;
+			if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) || zone<0 && !isname(zonenum, oi->name))
+				continue; /* optimize later*/
+			obj = read_object(oi->virtual, VIRTUAL);
+			if(obj) {
 				sprintbit((unsigned)obj->obj_flags.wear_flags,wear_bits,temp1);
 			    sprintbit( (unsigned)obj->obj_flags.extra_flags,extra_bits,temp2);
-
-
-
 				if(oi->number-1!=0) {
-
-
 				//VNUM; NAME; TYPE; FLAGS; Affect1; Affect2; Affect3; Affect4
-    			  sprintf(buf,"%d;%d;%d;%d;%s;%s;%s;",
+    				sprintf(buf,"%d;%d;%d;%d;%s;%s;%s;",
     			    zone,
     			  	oi->virtual,
     			  	((oi->number-1==0)?0:1),
@@ -4310,232 +4326,152 @@ dlog("in do_show");
     			  	oi->name,
     			  	temp1,
     			  	temp2);
+					append_to_string_block(&sb, buf);
 
-
-    			  append_to_string_block(&sb, buf);
-
-				switch (GET_ITEM_TYPE(obj)) {
-
-				    case ITEM_SCROLL :
-				    case ITEM_POTION :
-				      sprintf(buf, "Level %d:",
-					      obj->obj_flags.value[0]);
-				      append_to_string_block(&sb, buf);
-				      if (obj->obj_flags.value[1] >= 1) {
-						sprinttype(obj->obj_flags.value[1]-1,spells,buf);
-						sprintf(buf2,"%s",buf);
-
-						append_to_string_block(&sb, buf2);
-				      }
-				      if (obj->obj_flags.value[2] >= 1) {
-						sprinttype(obj->obj_flags.value[2]-1,spells,buf);
-
-						sprintf(buf2,"%s",buf);
-
-						append_to_string_block(&sb, buf2);
-				      }
-				      if (obj->obj_flags.value[3] >= 1) {
-						sprinttype(obj->obj_flags.value[3]-1,spells,buf);
-						sprintf(buf2,"%s",buf);
-
-						append_to_string_block(&sb, buf2);
-				      }
-				      break;
-
-				    case ITEM_WAND :
-				    case ITEM_STAFF :
-				      sprintf(buf, "L:%d spell of:",	obj->obj_flags.value[0]);
-				      append_to_string_block(&sb, buf);
-
-				      if (obj->obj_flags.value[3] >= 1) {
-						sprinttype(obj->obj_flags.value[3]-1,spells,buf);
-						sprintf(buf2,"%s",buf);
-						append_to_string_block(&sb, buf2);
-				      }
-				      break;
-
-				    case ITEM_WEAPON :
-				      sprintf(buf, "damage:'%dD%d'[%s]",
-					      obj->obj_flags.value[1],
-					      obj->obj_flags.value[2],
-					      AttackType[obj->obj_flags.value[3]-1]);
-				      append_to_string_block(&sb, buf);
-				      break;
-
-				    case ITEM_ARMOR :
-				      sprintf(buf, "AC-apply: %d,",
-					      obj->obj_flags.value[0]);
-
-				      append_to_string_block(&sb, buf);
-
-				      sprintf(buf, "Size:%d",
-					  	      obj->obj_flags.value[2]);
-
-				      append_to_string_block(&sb, buf);
-				      break;
+					switch (GET_ITEM_TYPE(obj)) {
+				    	case ITEM_SCROLL :
+				    	case ITEM_POTION :
+							sprintf(buf, "Level %d:",obj->obj_flags.value[0]);
+							append_to_string_block(&sb, buf);
+							if (obj->obj_flags.value[1] >= 1) {
+								sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+								sprintf(buf2,"%s",buf);
+								append_to_string_block(&sb, buf2);
+				     		}
+							if (obj->obj_flags.value[2] >= 1) {
+								sprinttype(obj->obj_flags.value[2]-1,spells,buf);
+								sprintf(buf2,"%s",buf);
+								append_to_string_block(&sb, buf2);
+							}
+							if (obj->obj_flags.value[3] >= 1) {
+								sprinttype(obj->obj_flags.value[3]-1,spells,buf);
+								sprintf(buf2,"%s",buf);
+								append_to_string_block(&sb, buf2);
+							}
+							break;
+						case ITEM_WAND :
+						case ITEM_STAFF :
+							sprintf(buf, "L:%d spell of:",	obj->obj_flags.value[0]);
+							append_to_string_block(&sb, buf);
+							if (obj->obj_flags.value[3] >= 1) {
+								sprinttype(obj->obj_flags.value[3]-1,spells,buf);
+								sprintf(buf2,"%s",buf);
+								append_to_string_block(&sb, buf2);
+							}
+							break;
+						case ITEM_WEAPON :
+							sprintf(buf, "damage:'%dD%d'[%s]",
+							obj->obj_flags.value[1],
+							obj->obj_flags.value[2],
+							AttackType[obj->obj_flags.value[3]-1]);
+							append_to_string_block(&sb, buf);
+							break;
+						case ITEM_ARMOR :
+							sprintf(buf, "AC-apply: %d,",obj->obj_flags.value[0]);
+							append_to_string_block(&sb, buf);
+							sprintf(buf, "Size:%d",obj->obj_flags.value[2]);
+							append_to_string_block(&sb, buf);
+							break;
 						default:
 							append_to_string_block(&sb,"None");
-				    }
+					}
+    				for (i=0;i<MAX_OBJ_AFFECT;i++) {
+						append_to_string_block(&sb, ";");
+						sprinttype(obj->affected[i].location,apply_types,temp1);
+						sprintf(buf,"%s ",temp1);
+						append_to_string_block(&sb, buf);
+						switch(obj->affected[i].location) {
+							case APPLY_M_IMMUNE:
+							case APPLY_IMMUNE:
+							case APPLY_SUSC:
+								sprintbit(obj->affected[i].modifier,immunity_names,buf2);
+								strcat(buf,buf2);
+								sprintf(buf2,buf);
+								strcat(buf2,"");
+								break;
+							case APPLY_ATTACKS:
+								sprintf(buf2,"%f", obj->affected[i].modifier/10);
+								break;
+							case APPLY_WEAPON_SPELL:
+							case APPLY_EAT_SPELL:
+							   sprintf(buf2,"%s", spells[obj->affected[i].modifier-1]);
+							   break;
+							case APPLY_SPELL:
+								sprintbit(obj->affected[i].modifier,affected_bits, buf2);
+								sprintf(buf,"");
+								strcat(buf,buf2);
+								sprintf(buf2,buf);
+								break;
+						//(GH)Should i put this here??  case APPLY_BV2:
+							case APPLY_BV2:
+							case APPLY_SPELL2:
+								sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
+								sprintf(buf,"");
+								strcat(buf,buf2);
+								sprintf(buf2,buf);
+								break;
+							case APPLY_RACE_SLAYER:
+							sprintf(buf2,"%s", RaceName[obj->affected[i].modifier]);
+								break;
+							case APPLY_ALIGN_SLAYER:
+								if (obj->affected[i].modifier > 1 )
+									sprintf(buf2,"SLAY GOOD");
+								else if (obj->affected[i].modifier == 1 )
+									sprintf(buf2,"SLAY NEUTRAL");
+								else /* less than 1 == slay evil */
+									sprintf(buf2,"SLAY EVIL");
+								break;
+							default:
+								sprintf(buf2,"%d", obj->affected[i].modifier);
+								break;
+						}
+						append_to_string_block(&sb, buf2);
+					} //For loop
+				append_to_string_block(&sb, "\n\r");
+				}
+			extract_obj(obj);
+			} //if object
+		}//for loop
+	} else if (is_abbrev(buf, "maxxes") && (which_i=obj_index,topi=top_of_objt)) {
+		int objn;
+		struct index_data *oi;
 
-
-
-    			  for (i=0;i<MAX_OBJ_AFFECT;i++) {
-							append_to_string_block(&sb, ";");
-							sprinttype(obj->affected[i].location,apply_types,temp1);
-							sprintf(buf,"%s ",temp1);
-							append_to_string_block(&sb, buf);
-
-
-								switch(obj->affected[i].location) {
-								case APPLY_M_IMMUNE:
-								case APPLY_IMMUNE:
-								case APPLY_SUSC:
-								  sprintbit(obj->affected[i].modifier,immunity_names,buf2);
-
-								  strcat(buf,buf2);
-								  sprintf(buf2,buf);
-								  strcat(buf2,"");
-								  break;
-								case APPLY_ATTACKS:
-								   sprintf(buf2,"%f", obj->affected[i].modifier/10);
-								   break;
-							        case APPLY_WEAPON_SPELL:
-								case APPLY_EAT_SPELL:
-								   sprintf(buf2,"%s", spells[obj->affected[i].modifier-1]);
-								   break;
-								case APPLY_SPELL:
-
-								   sprintbit(obj->affected[i].modifier,affected_bits, buf2);
-								   sprintf(buf,"");
-								   strcat(buf,buf2);
-								   sprintf(buf2,buf);
-								   break;
-								//(GH)Should i put this here??  case APPLY_BV2:
-								case APPLY_BV2:
-								case APPLY_SPELL2:
-								   sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
-								   sprintf(buf,"");
-								   strcat(buf,buf2);
-								   sprintf(buf2,buf);
-								   break;
-
-							        case APPLY_RACE_SLAYER:
-							           sprintf(buf2,"%s", RaceName[obj->affected[i].modifier]);
-							           break;
-							        case APPLY_ALIGN_SLAYER:
-							          if (obj->affected[i].modifier > 1 )
-							            sprintf(buf2,"SLAY GOOD");
-							          else if (obj->affected[i].modifier == 1 )
-							            sprintf(buf2,"SLAY NEUTRAL");
-							          else /* less than 1 == slay evil */
-							            sprintf(buf2,"SLAY EVIL");
-							           break;
-
-								 default:
-								   sprintf(buf2,"%d", obj->affected[i].modifier);
-								   break;
-								}
-									append_to_string_block(&sb, buf2);
-				      } //For loop
-
-					append_to_string_block(&sb, "\n\r");
-			   		}
+		only_argument(argument, zonenum);
+		zone = -1;
+		if (1==sscanf(zonenum,"%i", &zone) && ( zone<0 || zone>top_of_zone_table )) {
+			append_to_string_block(&sb, "That is not a valid zone_number\n\r");
+			return;
+		}
+		if (zone>=0) {
+			bottom = zone ? (zone_table[zone-1].top+1) : 0;
+			top = zone_table[zone].top;
+		}
+		append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
+			for (objn=0; objn<topi; objn++) {
+				oi = which_i + objn;
+				if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) || zone<0 && !isname(zonenum, oi->name))
+					continue; /* optimize later*/
+				obj = read_object(oi->virtual, VIRTUAL);
+				if(obj) {
+					if(obj->max!=0) {
+						sprintf(buf,"%5d %4d %3d/%3d  %s   (%d)\n\r", oi->virtual, objn, oi->number-1, obj->max, oi->name);
+						append_to_string_block(&sb, buf);
+					}
+				}
 				extract_obj(obj);
-				} //if object
-
-    	}//for loop
-
-}  //objects case
-else if (is_abbrev(buf, "maxxes") && (which_i=obj_index,topi=top_of_objt)) {
-    int         objn;
-    struct index_data   *oi;
-
-    only_argument(argument, zonenum);
-    zone = -1;
-    if (1==sscanf(zonenum,"%i", &zone) &&
-	( zone<0 || zone>top_of_zone_table )) {
-      append_to_string_block(&sb, "That is not a valid zone_number\n\r");
-      return;
-    }
-    if (zone>=0) {
-      bottom = zone ? (zone_table[zone-1].top+1) : 0;
-      top = zone_table[zone].top;
-    }
-
-    append_to_string_block(&sb, "VNUM  rnum count/max names\n\r");
-    for (objn=0; objn<topi; objn++) {
-      oi = which_i + objn;
-
-      if (zone>=0 && (oi->virtual<bottom || oi->virtual>top) ||
-	  zone<0 && !isname(zonenum, oi->name))
-	continue; /* optimize later*/
-		  obj = read_object(oi->virtual, VIRTUAL);
-		  if(obj) {
-
-      		if(obj->max!=0) {
-    			  sprintf(buf,"%5d %4d %3d/%3d  %s   (%d)\n\r", oi->virtual, objn,
-	  		    oi->number-1, obj->max, oi->name);
-    			  append_to_string_block(&sb, buf);
-
-  	  		}
-  		  }
-		extract_obj(obj);
-    }
-
-
-  } else if (is_abbrev(buf, "rooms")) {
-
-    only_argument(argument, zonenum);
-
-    append_to_string_block(&sb, "VNUM  rnum type         name [BITS]\n\r");
-    if (is_abbrev(zonenum, "death")) {
-#if HASH
-      hash_iterate(&room_db, print_death_room, &sb);
-#else
-      room_iterate(room_db, print_death_room, &sb);
-#endif
-
-    } else if (is_abbrev(zonenum, "private")) {
-#if HASH
-      hash_iterate(&room_db, print_private_room, &sb);
-#else
-      room_iterate(room_db, print_private_room, &sb);
-#endif
-
-    } else if (1!=sscanf(zonenum,"%i", &zone) ||
-	       zone<0 || zone>top_of_zone_table) {
-      append_to_string_block(&sb, "I need a zone number with this command\n\r");
-
-
-    } else {
-      struct show_room_zone_struct      srzs;
-
-      srzs.bottom = zone ? (zone_table[zone-1].top+1) : 0;
-      srzs.top = zone_table[zone].top;
-
-      srzs.blank = 0;
-      srzs.sb = &sb;
-#if HASH
-      hash_iterate(&room_db, show_room_zone, &srzs);
-#else
-      room_iterate(room_db, show_room_zone, &srzs);
-#endif
-
-      if (srzs.blank){
-	sprintf(buf, "rooms %d-%d are blank\n\r", srzs.startblank,
-		srzs.lastblank);
-	append_to_string_block(&sb, buf);
-	srzs.blank = 0;
+			}
+// count brackets up to here.
+	} else {
+		append_to_string_block(&sb,"Usage:\n\r"
+			 "  show zones\n\r"
+			 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
+			 "  show rooms (zone#|death|private)\n\r");
+		if(GetMaxLevel(ch) > 55) {
+			append_to_string_block(&sb,"  show report (zone#)\n\r");
+		}
 	}
-	  }
-  } else {
-    append_to_string_block(&sb,"Usage:\n\r"
-		 "  show zones\n\r"
-		 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
-		 "  show rooms (zone#|death|private)\n\r");
-  }
-  page_string_block(&sb,ch);
-  destroy_string_block(&sb);
+	page_string_block(&sb,ch);
+	destroy_string_block(&sb);
 }
 
 

@@ -665,7 +665,11 @@ memory_check("end 5, begin 6");
 	      AdvicePulseStuff(pulse);
     }
 
-
+	if (!(pulse % PULSE_DARKNESS)) {
+		dlog("Before darkness pulse");
+		memory_check("darkness pulse");
+	      DarknessPulseStuff(pulse);
+    }
 
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");

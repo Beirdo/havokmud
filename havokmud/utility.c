@@ -3032,7 +3032,7 @@ char *advicelist[] = {
 
 void AdvicePulseStuff(int pulse)
 {
-	int numberadvice = 32;
+	int numberadvice = 38;
   struct descriptor_data *i;
   register struct char_data *ch;
   char buf[80], buffer[150];
@@ -3060,6 +3060,32 @@ void AdvicePulseStuff(int pulse)
    }
 }
 
+void DarknessPulseStuff(int pulse)
+{
+	struct descriptor_data *i;
+	register struct char_data *ch;
+	char buf[80], buffer[150];
+
+	if (pulse < 0)
+		return;
+
+	if(number(0,1)==1)
+		return;
+
+	for (i = descriptor_list; i; i=i->next) {
+		if (!i->connected) {
+			ch = i->character;
+			if (IS_PC(ch) && IsDarkrace(ch)) {
+				if(AWAKE(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)
+							&& !IS_UNDERGROUND(ch) && !IS_DARK(ch->in_room)) {
+					act("$n uses $s innate powers of darkness.",FALSE,ch,0,0,TO_ROOM);
+					act("You use your innate powers of darkness.",FALSE,ch,0,0,TO_CHAR);
+					cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
+				}
+			}
+		}
+	}
+}
 
 void RiverPulseStuff(int pulse)
 {

@@ -2089,6 +2089,7 @@ int CheckForBlockedMove
   (struct char_data *ch, int cmd, char *arg, int room, int dir, int class);
 void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
+void DarknessPulseStuff(int pulse);
 void RiverPulseStuff(int pulse);
 int apply_soundproof(struct char_data *ch);
 int check_soundproof(struct char_data *ch);
@@ -2282,10 +2283,11 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-int generate_legend_statue(struct char_data *ch, char *argument, int cmd);
+int generate_legend_statue();
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
+int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+void do_dismiss(struct char_data *ch, char *arg, int cmd);
 				/* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

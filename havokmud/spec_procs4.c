@@ -708,7 +708,7 @@ int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 #define LEGEND_STATUE 701
 #define LEGEND_PAINTING 703
 #define LEGEND_BIOGRAPHY 702
-int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
+int generate_legend_statue()//struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
 	struct char_data *tmp;
@@ -719,8 +719,9 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 	extern int top_of_p_table;
 	extern struct player_index_element *player_table;
 
-	/* determine number of pfiles */
-	for(i=0;i<top_of_p_table;i++) {
+	/* Determine number of pfiles. Add one for last player made, though that
+	 * one isn't very likely to have enough kills. Still, we wanna be thorough. */
+	for(i=0;i<top_of_p_table+1;i++) {
 		/* load up each of them */
 		if (load_char((player_table + i)->name, &player) > -1) {
 			/* store to a tmp char that we can deal with */
@@ -800,9 +801,82 @@ int generate_legend_statue(struct char_data *ch, char *argument, int cmd)
 			return(TRUE);
 		}
 	}
-	sprintf(buf,"processed %d pfiles for legend statue check", top_of_p_table);
+	sprintf(buf,"processed %d pfiles for legend statue check", top_of_p_table+1);
 	log(buf);
 }
+
+#define BERRYBASE 711
+int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[MAX_INPUT_LENGTH];
+	int affect = 1;
+	int berry = 0;
+	struct obj_data *obj;
+
+	if (!ch)
+		return(FALSE);
+	if (!cmd)
+		return(FALSE);
+	if (cmd != 155)
+		return(FALSE);
+	else {
+		only_argument(arg,buf);
+  		if(*buf) {
+			if(!(str_cmp("berry",buf)) || !(str_cmp("berries",buf))) {
+				if(number(0,4)) {
+					switch(GET_WIS(ch)+number(0,10)) {
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+						case 7:
+							affect = 0;
+							break;
+						case 21:
+						case 22:
+						case 23:
+						case 24:
+						case 25:
+							affect = 2;
+							break;
+						case 26:
+						case 27:
+						case 28:
+							affect = 3;
+							break;
+						case 29:
+							affect = 4;
+							break;
+						default:
+							affect = 1;
+							break;
+					}
+					berry = BERRYBASE + affect;
+					act("You pick some berries.", FALSE, ch, 0, 0, TO_CHAR);
+					act("$n picks some berries.", FALSE, ch, 0, 0, TO_ROOM);
+					WAIT_STATE(ch, PULSE_VIOLENCE);
+					if ((real_object(berry)) >= 0) {
+						obj = read_object(berry, VIRTUAL);
+						obj_to_char(obj, ch);
+					} else {
+						log("no berries found for pick_berries");
+					}
+					return(TRUE);
+				} else {
+					act("You try to pick some berries, but hurt yourself on a thorn.", FALSE, ch, 0, 0, TO_CHAR);
+					act("$n tries to pick some berries, but hurts $mself on a thorn.", FALSE, ch, 0, 0, TO_ROOM);
+					WAIT_STATE(ch, PULSE_VIOLENCE);
+					return(TRUE);
+				}
+			}
+		}
+		return(FALSE);
+	}
+}
+
+
 
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
@@ -975,7 +1049,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 			}
 
 			/* mid level spellup */
-			if (GetMaxLevel(ch)>24) {
+			if (GetMaxLevel(ch)>23) {
 				if (!affected_by_spell(ch,SPELL_PROT_FIRE)) {
 					act("$n utters the words 'resist fire'.",FALSE,ch,0,0,TO_ROOM);
 					cast_prot_fire(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
@@ -996,7 +1070,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 					cast_prot_elec(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
 					return(TRUE);
 				}
+			}
 
+			if (GetMaxLevel(ch)>24) {
 				/* let's give dr00d some pets */
 				if (!affected_by_spell(ch,SPELL_ANIMAL_SUM_1) && OUTSIDE(ch) && !ch->followers
 								&& !IS_SET(real_roomp((ch)->in_room)->room_flags,PEACEFUL)
@@ -1260,6 +1336,58 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 				break;
 		}
 		return(TRUE);
+	}
+}
+
+/* How to get rid of charmies in a neat way    -Lennya 20030604 */
+void do_dismiss(struct char_data *ch, char *arg, int cmd)
+{
+	int bits;
+	char buf[254], buf2[254];
+	struct char_data *tmp_char;
+	struct obj_data *dummy;
+
+	if(!ch)
+		return;
+	if(cmd != 588) /* dismiss */
+		return;
+
+	only_argument(arg,buf);
+	if(!arg) {
+		send_to_char("Dismiss whom?\n\r",ch);
+		return;
+	} else {
+		bits = generic_find(buf, FIND_CHAR_ROOM, ch, &tmp_char, &dummy);
+		if(tmp_char) {
+			if(tmp_char != ch) {
+				if(IS_NPC(tmp_char) && !IS_SET(tmp_char->specials.act,ACT_POLYSELF)) {
+					if(tmp_char->master == ch && IS_AFFECTED(tmp_char, AFF_CHARM)) {
+						/*valid target, let's get rid of it */
+						act("You wave you hand, and dismiss $N from your service.", FALSE, ch, 0, tmp_char, TO_CHAR);
+						act("$N wanders back to $S home.", FALSE, ch, 0, tmp_char, TO_CHAR);
+						act("$n waves $s hands, dismissing $N from $s service.", FALSE, ch, 0, tmp_char, TO_NOTVICT);
+						act("$N wanders back to $S home.", FALSE, ch, 0, tmp_char, TO_NOTVICT);
+						act("$n waves $s hands at you, dismissing you from $s service.", FALSE, ch, 0, tmp_char, TO_VICT);
+						act("You wander back to your home.", FALSE, ch, 0, tmp_char, TO_VICT);
+						extract_char(tmp_char);
+						return;
+					} else {
+						sprintf(buf2,"%s isn't under your control.\n\r",tmp_char->player.short_descr);
+						send_to_char(buf2, ch);
+						return;
+					}
+				} else {
+					send_to_char("Dismissing other players? I think not!\n\r",ch);
+					return;
+				}
+			} else {
+				send_to_char("Dismiss yourself? I think not!\n\r",ch);
+				return;
+			}
+		} else { /* no matching name found */
+			send_to_char("Dismiss whom?\n\r",ch);
+			return;
+		}
 	}
 }
 

@@ -1571,7 +1571,7 @@ AddCommand("genstatue",do_genstatue,584,POSITION_STANDING,51); /* temporary test
 AddCommand("quest" ,do_set_quest,585, POSITION_RESTING,1);
 AddCommand("qtrans" ,do_qtrans,586, POSITION_STANDING,51);
 AddCommand("nooutdoor" ,do_set_nooutdoor,587, POSITION_RESTING,51);
-
+AddCommand("dismiss" ,do_dismiss,588, POSITION_RESTING,1);
 
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses

@@ -135,7 +135,7 @@ const char *spell_wear_off_msg[] = {
   "spell 122 please report.",
   "spell 123 please report.",
   "spell 124 please report.",
-  "spell 125 please report.",
+  "You shrink down to your original size.",
   "spell 126 please report.",
   "Your head clears and you feel you can shape your spell energies again.",
   "spell 128 please report.",
@@ -438,7 +438,7 @@ const char *spell_wear_off_room_msg[] = {
   "spell 122 please report.",
   "spell 123 please report.",
   "spell 124 please report.",
-  "spell 125 please report.",
+  "$n shrinks down to $s original size.", /* animal growth */
   "spell 126 please report.",
   "", /* no message for creep wearing off */
   "spell 128 please report.",
@@ -748,7 +748,7 @@ const char *spell_wear_off_soon_msg[] = {
   "spell 122 please report.",
   "spell 123 please report.",
   "spell 124 please report.",
-  "spell 125 please report.",
+  "Maybe size isn't all that matters.", /* animal growth */
   "spell 126 please report.",
   "Your head begins to clear, but your mind isn't up to shaping spell energies yet.",
   "spell 128 please report.",
@@ -1058,7 +1058,7 @@ const char *spell_wear_off_soon_room_msg[] = {
   "spell 122 please report.",
   "spell 123 please report.",
   "spell 124 please report.",
-  "spell 125 please report.",
+  "", /* animal growth */
   "spell 126 please report.",
   "", /* no message for creeping death */
   "spell 128 please report.",
@@ -1326,7 +1326,9 @@ const char *ItemDamType[] =
 	"frozen",
 	"electrified",
 	"crushed",
-	"corroded"
+	"corroded",
+	"burned",
+	"\n"
 };
 
 const char *weekdays[7] = {
@@ -2786,6 +2788,7 @@ const char *room_bits[] = {
 "MANA_ROOM",
 "NO_FLEE",
 "NO_SPY",
+"EVER_LIGHT",
 	"\n"
 };
 
@@ -3659,7 +3662,7 @@ const char *spell_desc[] = {
   "spell 122 please report.",
   "spell 123 please report.",
   "spell 124 please report.",
-  "spell 125 please report.",
+  "$n seems unnaturally large.",
   "spell 126 please report.",
   "spell 127 please report.",
   "spell 128 please report.",
@@ -4525,8 +4528,8 @@ const struct skillset rangerskills[] = {
 	{"animal friendship",		SPELL_ANIMAL_FRIENDSHIP	,3},
 	{"animal growth",			SPELL_ANIMAL_GROWTH		,35},
 	{"animal summon one",		SPELL_ANIMAL_SUM_1		,20},
-	{"animal summon three",		SPELL_ANIMAL_SUM_3		,30},
-	{"animal summon two",		SPELL_ANIMAL_SUM_2		,25},
+//	{"animal summon three",		SPELL_ANIMAL_SUM_3		,30},
+//	{"animal summon two",		SPELL_ANIMAL_SUM_2		,25},
 	{"bash",					SKILL_BASH				,1},
 	{"climb",					SKILL_CLIMB				,1},
 	{"commune",					SPELL_COMMUNE			,20},
@@ -4600,8 +4603,8 @@ const struct skillset druidskills[] = {
 	{"animal friendship",		SPELL_ANIMAL_FRIENDSHIP		,5},
 	{"animal growth",			SPELL_ANIMAL_GROWTH			,35},
 	{"animal summon one",		SPELL_ANIMAL_SUM_1			,15},
-	{"animal summon three",		SPELL_ANIMAL_SUM_3			,25},
-	{"animal summon two",		SPELL_ANIMAL_SUM_2			,20},
+//	{"animal summon three",		SPELL_ANIMAL_SUM_3			,25},
+//	{"animal summon two",		SPELL_ANIMAL_SUM_2			,20},
 	{"animate rock",			SPELL_ANIMATE_ROCK			,31},
 	{"barkskin",				SPELL_BARKSKIN				,3},
 	{"call lightning",			SPELL_CALL_LIGHTNING		,18},

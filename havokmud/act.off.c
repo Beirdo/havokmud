@@ -2291,6 +2291,9 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 	int found=0;
 	extern struct skillset styleskillset[];
 
+	if(IS_NPC(ch))
+		return;
+
   	only_argument(argument, style);
 	sprintf(buffer,"");
 	if(!*style) { /* If no style, list all styles and how good*/

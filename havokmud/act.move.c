@@ -1602,6 +1602,10 @@ dlog("in do_follow");
   only_argument(argument, name);
 
   if (*name) {
+	if (str_cmp(name,"self")==0) {
+		sprintf(name,"%s",GET_NAME(ch));
+	}
+
     if (!(leader = get_char_room_vis(ch, name))) {
       send_to_char("I see no person by that name here!\n\r", ch);
       return;
@@ -1626,7 +1630,7 @@ dlog("in do_follow");
 	 }
 	 /* your stronger?? */
 	if ((GetMaxLevel(ch) - GetMaxLevel(leader))  > 8) {
-		act("$N looks to be too puny and week to join you.", FALSE, ch, 0, leader, TO_CHAR);
+		act("$N looks to be too puny and weak to join you.", FALSE, ch, 0, leader, TO_CHAR);
 		return;
 	 }
 #endif

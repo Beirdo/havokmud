@@ -1597,14 +1597,14 @@ void assign_rooms()
 
 
 /* Heximal's riddles */
- {50962, riddle_exit },
- {50963, riddle_exit },
- {50964, riddle_exit },
+	{50962, riddle_exit },
+	{50963, riddle_exit },
+	{50964, riddle_exit },
 
 /* The King's Grove */
- { 706, climb_room },
- { 717, legendfountain },
-
+   { 706, climb_room },
+   { 717, legendfountain },
+   { 721, pick_berries },
    /* Cthol (Xenon) */
    {40233, dispel_room},
    //{40285, fiery_alley},
@@ -1614,13 +1614,11 @@ void assign_rooms()
     {45450, Thunder_Fountain},
     {45409, rope_room},
     {46378, bahamut_home},
-
     {31943, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
     /* Ash's Monk and Druid challenge rooms
        { 500,   druid_challenge_prep_room},
        { 501,   druid_challenge_room},
-
        { 550,   monk_challenge_prep_room},
        { 551,   monk_challenge_room},
     */

@@ -1026,22 +1026,17 @@ void spell_commune(byte level, struct char_data *ch,
 
 }
 
-#define ANISUM1  9007
-#define ANISUM2  9014
-#define ANISUM3  9021
-
+#define ANISUM  9007
 void spell_animal_summon(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {
   struct affected_type af;
   struct char_data *mob;
-  int num, i;
+  int lev= 1, i, mlev, mhps, mtohit;
   struct room_data *rp;
+  char buf[254];
 
-   /* load in a monster of the correct type, determined by
-      level of the spell */
-
-/* really simple to start out with */
+/* modified by Lennya. Load a random mob, and adjust its stats according to caster level */
 
    if ((rp = real_roomp(ch->in_room)) == NULL)
      return;
@@ -1067,76 +1062,74 @@ void spell_animal_summon(byte level, struct char_data *ch,
     return;
   }
 
+	act("$n performs a complicated ritual!", TRUE, ch, 0, 0, TO_ROOM);
+	act("You perform the ritual of summoning.", TRUE, ch, 0, 0, TO_CHAR);
+	lev = GetMaxLevel(ch);
+	for (i=0;i<4;i++) {
+		mob = read_mobile(ANISUM + number(0,20), VIRTUAL);
+		if (!mob)
+			continue;
+		/* let's modify this guy according to caster level */
+		if(lev >45) {
+			mlev = number(20,23);
+			mhps = number(37,46);
+			mtohit = 8;
+		} else if(lev >37) {
+			mlev = number(17,19);
+			mhps = number(28,35);
+			mtohit = 6;
+		} else if(lev >28) {
+			mlev = number(12,14);
+			mhps = number(18,25);
+			mtohit = 4;
+		} else if(lev >18) {
+			mlev = number(7,9);
+			mhps = number(10,17);
+			mtohit = 2;
+		} else {
+			mlev = number(4,6);
+			mhps = number(0,5);
+			mtohit = 0;
+		}
+		mob->player.level[2] = mlev;
+		mob->points.max_hit = mob->points.max_hit + mhps;
+		mob->points.hit = mob->points.max_hit;
+		mob->points.hitroll = mob->points.hitroll + mtohit;
+		char_to_room(mob, ch->in_room);
 
-
-  switch(level) {
-  case 1:
-    num = ANISUM1;
-    break;
-  case 2:
-    num = ANISUM2;
-    break;
-  case 3:
-    num = ANISUM3;
-    break;
-  }
-
-
-  act("$n performs a complicated ritual!", TRUE, ch, 0, 0, TO_ROOM);
-  act("You perform the ritual of summoning", TRUE, ch, 0, 0, TO_CHAR);
-
-  for (i=0;i<4;i++) {
-
-    mob = read_mobile(num+number(0,6), VIRTUAL);
-
-    if (!mob) continue;
-
-    char_to_room(mob, ch->in_room);
-    act("$n strides into the room.", FALSE, mob, 0, 0, TO_ROOM);
-  if(too_many_followers(ch)){
-	act("$N takes one look at the size of your posse and justs says no!",
-	    TRUE, ch, 0, victim, TO_CHAR);
-	act("You take one look at the size of $n's posse and just say no!",
-	    TRUE, ch, 0, victim, TO_ROOM);
-
-  } else {
-
-    /* charm them for a while */
-    if (mob->master)
-      stop_follower(mob);
-
-    add_follower(mob, ch);
-
-    af.type      = SPELL_CHARM_PERSON;
-
-    if (IS_PC(ch) || ch->master) {
-      af.duration  = GET_CHR(ch);
-      af.modifier  = 0;
-      af.location  = 0;
-      af.bitvector = AFF_CHARM;
-      affect_to_char(mob, &af);
-
-    } else {
-      SET_BIT(mob->specials.affected_by, AFF_CHARM);
-    }
-  }
-    if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
-      REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
-    }
-    if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
-      SET_BIT(mob->specials.act, ACT_SENTINEL);
-    }
-
-  }
-
-  af.type =      SPELL_ANIMAL_SUM_1;
-  af.duration  = 36;
-  af.modifier  = 0;
-  af.location  = 0;
-  af.bitvector = 0;
-  affect_to_char(ch, &af);
-
-
+		act("$n strides into the room.", FALSE, mob, 0, 0, TO_ROOM);
+		if(too_many_followers(ch)) {
+			act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, victim, TO_CHAR);
+			act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, victim, TO_ROOM);
+		} else {
+			/* charm them for a while */
+			if (mob->master)
+				stop_follower(mob);
+			add_follower(mob, ch);
+			af.type      = SPELL_CHARM_PERSON;
+			if (IS_PC(ch) || ch->master) {
+				af.duration  = GET_CHR(ch);
+				af.modifier  = 0;
+				af.location  = 0;
+				af.bitvector = AFF_CHARM;
+				affect_to_char(mob, &af);
+			} else {
+				SET_BIT(mob->specials.affected_by, AFF_CHARM);
+			}
+		}
+		if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+			REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+		}
+		if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+			SET_BIT(mob->specials.act, ACT_SENTINEL);
+		}
+	}
+	af.type =      SPELL_ANIMAL_SUM_1;
+	af.duration  = 48;
+	af.modifier  = 0;
+	af.location  = 0;
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
 }
 
 #define FIRE_ELEMENTAL  40
@@ -2015,8 +2008,8 @@ void spell_heat_stuff(byte level, struct char_data *ch,
 
     affect_to_char(victim, &af);
     send_to_char("Your armor starts to sizzle and smoke\n\r", victim);
-    act("$N's armor starts to sizzle\n\r", FALSE, ch, 0, victim, TO_CHAR);
-    act("$N's armor starts to sizzle\n\r", FALSE, ch, 0, victim, TO_NOTVICT);
+    act("$N's armor starts to sizzle", FALSE, ch, 0, victim, TO_CHAR);
+    act("$N's armor starts to sizzle", FALSE, ch, 0, victim, TO_NOTVICT);
 
     if (!IS_PC(victim))
       if (!victim->specials.fighting)

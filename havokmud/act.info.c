@@ -667,7 +667,12 @@ if (!ch || !i) {
 	act(buffer,FALSE, ch,0,0,TO_CHAR);
     } else {  /* npc with long */
 		sprintf(buffer,"%s",(i->player.long_descr));
-
+// lennyatest
+	while ((buffer[strlen(buffer)-1]=='\r') ||
+	       (buffer[strlen(buffer)-1]=='\n') ||
+	       (buffer[strlen(buffer)-1]==' ')) {
+	  buffer[strlen(buffer)-1] = '\0';
+	}
 		if (IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
 			strcat(buffer," (Hiding)");
 		if (IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)
@@ -1030,7 +1035,12 @@ if (IS_LINKDEAD(i))
       act(buffer,FALSE, ch,0,0,TO_CHAR);
     } else {  /* npc with long */
 		sprintf(buffer,"%s",(i->player.long_descr));
-
+// lennyatest
+	while ((buffer[strlen(buffer)-1]=='\r') ||
+	       (buffer[strlen(buffer)-1]=='\n') ||
+	       (buffer[strlen(buffer)-1]==' ')) {
+	  buffer[strlen(buffer)-1] = '\0';
+	}
 		if (IS_AFFECTED(i, AFF_HIDE) && IS_IMMORTAL(ch))
 			strcat(buffer," (Hiding)");
 		if (IS_AFFECTED(i,AFF_INVISIBLE) || i->invis_level == LOW_IMMORTAL)

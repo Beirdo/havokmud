@@ -137,24 +137,24 @@ void cast_major_track( byte level, struct char_data *ch, char *arg, int type,
   switch(type){
   case SPELL_TYPE_SPELL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, NULL);
+    spell_track(level, ch, tar_ch, 1);
     break;
   case SPELL_TYPE_POTION:
-    spell_track(level, ch, ch, NULL);
+    spell_track(level, ch, ch, 1);
     break;
   case SPELL_TYPE_WAND:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, NULL);
+    spell_track(level, ch, tar_ch, 1);
     break;
   case SPELL_TYPE_SCROLL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, NULL);
+    spell_track(level, ch, tar_ch, 1);
     break;
   case SPELL_TYPE_STAFF:
     for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
         if (tar_ch != ch)
-           spell_track(level, ch, tar_ch, NULL);
+           spell_track(level, ch, tar_ch, 1);
     }
     break;
   default:
@@ -3514,7 +3514,7 @@ void cast_animal_summon_1( byte level, struct char_data *ch, char *arg,
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
-    spell_animal_summon(1, ch, 0, 0);
+    spell_animal_summon(level, ch, 0, 0);
     break;
   default:
     log("serious screw-up in animal summon.");

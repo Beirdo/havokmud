@@ -302,7 +302,7 @@ void mobile_activity(struct char_data *ch)
       char_to_room(ch, 50);
   }
 
-	/* darkraces have autodarkness */
+	/* darkraces have autodarkness   -Lennya 20030604 */
 	if (IsDarkrace(ch) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
 		act("$n uses $s innate powers of darkness.",FALSE,ch,0,0,TO_ROOM);
 		cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);

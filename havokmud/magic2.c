@@ -1467,7 +1467,9 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 			affect_from_char(victim,SPELL_SANCTUARY);
 			send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-			act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+			if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+				act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+			}
 		}
       	/* aggressive Act. */
 		if ((victim->attackers < 6) && (!victim->specials.fighting) && (IS_NPC(victim))) {
@@ -1478,7 +1480,9 @@ void spell_dispel_magic(byte level, struct char_data *ch,
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	REMOVE_BIT(victim->specials.affected_by, AFF_SANCTUARY);
 	send_to_char("You don't feel so invulnerable anymore.\n\r",victim);
-	act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+			act("The white glow around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		}
 	}
       /*
        *  aggressive Act.
@@ -1576,9 +1580,11 @@ void spell_dispel_magic(byte level, struct char_data *ch,
     }
     if (affected_by_spell(victim,SPELL_FIRESHIELD)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_FIRESHIELD);
-	send_to_char("You don't feel so fiery anymore.\n\r",victim);
-	act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		affect_from_char(victim,SPELL_FIRESHIELD);
+		send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
+		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		}
       }
       /*
        *  aggressive Act.
@@ -1591,8 +1597,10 @@ void spell_dispel_magic(byte level, struct char_data *ch,
     if (IS_AFFECTED(victim, AFF_FIRESHIELD)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	REMOVE_BIT(victim->specials.affected_by, AFF_FIRESHIELD);
-	send_to_char("You don't fiery so invulnerable anymore.\n\r",victim);
-	act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+	send_to_char("Your aura of burning flames suddenly winks out of existence.\n\r",victim);
+		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+			act("The fiery aura around $n's body fades.",FALSE,victim,0,0,TO_ROOM);
+		}
 	}
       /*
        *  aggressive Act.
@@ -1605,10 +1613,12 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 
     if (affected_by_spell(victim,SPELL_FAERIE_FIRE))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_FAERIE_FIRE);
-	send_to_char("You don't feel so pink anymore.\n\r",victim);
-	act("The pink glow around $n's body fades.", TRUE, ch, 0, 0, TO_ROOM);
-    }
+		affect_from_char(victim,SPELL_FAERIE_FIRE);
+		send_to_char("You don't feel so pink anymore.\n\r",victim);
+		if (!affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
+			act("The pink glow around $n's body fades.", TRUE, ch, 0, 0, TO_ROOM);
+		}
+      }
 
     if (affected_by_spell(victim,SPELL_MINOR_TRACK))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
@@ -1686,7 +1696,8 @@ void spell_dispel_magic(byte level, struct char_data *ch,
     if (affected_by_spell(victim,SPELL_GLOBE_DARKNESS)) {
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	 affect_from_char(victim,SPELL_GLOBE_DARKNESS);
-	 send_to_char("Your darkness globe vanishes.\n\r",victim);
+	 send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
+	 act("The globe of darkness surrounding $n vanishes.", TRUE, ch, 0, 0, TO_ROOM);
       }
     }
     if (affected_by_spell(victim,SPELL_GLOBE_MINOR_INV)) {

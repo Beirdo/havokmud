@@ -1751,6 +1751,10 @@ dlog("in do_group");
     return;
   }
              /* ----- Start of the group all functions ----- */
+  if (str_cmp(name,"self")==0) {
+     sprintf(name,"%s",GET_NAME(ch));
+  }
+
   if(!(strcmp(name, "all"))) {
    if (ch->master) {  //If ch is not the leader of the group, why the hell would he add person??
       act("You can not enroll group members without being head of a group.",
@@ -2022,7 +2026,7 @@ dlog("in do_quaff");
 
 void do_recite(struct char_data *ch, char *argument, int cmd)
 {
-  char buf[100];
+  char buf[100],buf2[100],buf3[100];
   struct obj_data *scroll, *obj;
   struct char_data *victim;
   int i, bits;
@@ -2036,6 +2040,8 @@ dlog("in do_recite");
 
   if (!ch->skills)
     return;
+
+  three_arg(argument,buf,buf2,buf3);
 
   argument = one_argument(argument,buf);
 
@@ -2053,8 +2059,11 @@ dlog("in do_recite");
     return;
   }
 
-  if (*argument) {
-    bits = generic_find(argument, FIND_OBJ_INV | FIND_OBJ_ROOM |
+  if (*buf2) {
+	if (str_cmp(buf2,"self")==0) {
+		sprintf(buf2,"%s",GET_NAME(ch));
+	}
+    bits = generic_find(buf2, FIND_OBJ_INV | FIND_OBJ_ROOM |
 			FIND_OBJ_EQUIP | FIND_CHAR_ROOM, ch, &victim, &obj);
     if (bits == 0) {
       send_to_char("No such thing around to recite the scroll on.\n\r", ch);
@@ -2187,7 +2196,10 @@ dlog("in do_use");
 			send_to_char("The staff seems powerless.\n\r", ch);
 		}
 	} else if (stick->obj_flags.type_flag == ITEM_WAND) {
-		bits = generic_find(argument, FIND_CHAR_ROOM | FIND_OBJ_INV |
+		if (str_cmp(buf2,"self")==0) {
+			sprintf(buf2,"%s",GET_NAME(ch));
+		}
+		bits = generic_find(buf2, FIND_CHAR_ROOM | FIND_OBJ_INV |
 					FIND_OBJ_ROOM | FIND_OBJ_EQUIP, ch, &tmp_char, &tmp_object);
 		if (bits) {
 			struct spell_info_type	*spellp;
@@ -2195,10 +2207,16 @@ dlog("in do_use");
 			spellp = spell_info + (stick->obj_flags.value[3]);
 
 			if (bits == FIND_CHAR_ROOM) {
-				act("$n point $p at $N.", TRUE, ch, stick, tmp_char, TO_ROOM);
-				act("You point $p at $N.",FALSE,ch, stick, tmp_char, TO_CHAR);
+				if(ch == tmp_char) {
+					act("$n points $p at $mself.", TRUE, ch, stick, tmp_char, TO_ROOM);
+					act("You point $p at yourself.",FALSE,ch, stick, tmp_char, TO_CHAR);
+				} else {
+					act("$n points $p at $N.", TRUE, ch, stick, tmp_char, TO_NOTVICT);
+					act("$n points $p at you.", TRUE, ch, stick, tmp_char, TO_VICT);
+					act("You point $p at $N.",FALSE,ch, stick, tmp_char, TO_CHAR);
+				}
 			} else {
-				act("$n point $p at $P.", TRUE, ch, stick, tmp_object, TO_ROOM);
+				act("$n points $p at $P.", TRUE, ch, stick, tmp_object, TO_ROOM);
 				act("You point $p at $P.",FALSE,ch, stick, tmp_object, TO_CHAR);
 			}
 
@@ -3296,7 +3314,7 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
   //skip_spaces(&argument);
 
   if (!*name) {
-    send_to_char("Whois whom?!?!\n\r",ch);
+    send_to_char("Whois who?!?!\n\r",ch);
     return;
   }
 

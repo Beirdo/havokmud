@@ -331,6 +331,7 @@ struct QuestItem {
 #define PULSE_TELEPORT      10
 #define PULSE_MAILCHECK 	240
 #define PULSE_ADVICE       200
+#define PULSE_DARKNESS	200
 #define MAX_ROOMS   5000
 
 
@@ -657,6 +658,8 @@ struct obj_data
 #define MANA_ROOM     BV24
 #define NO_FLEE			BV25 /* no fleeing into this room, or out of this room, use with care! */
 #define NO_SPY			BV26 /* spying into this room not possible */
+#define EVER_LIGHT		BV27 /* on Xenon's request, a flag that sets a room to light, regardless of weather/time/place */
+
 /* For 'dir_option' */
 
 #define NORTH          0

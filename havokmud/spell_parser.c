@@ -940,7 +940,7 @@ int RoomElementalDamage(int flags,struct char_data *ch) {
 	int type=0;
 	int x;
 
-if(IS_IMMORTAL(ch)) {
+if(IS_AFFECTED2(ch,AFF2_NO_OUTDOOR)) {
 	return 0;
 
 }
@@ -986,13 +986,13 @@ if(IS_SET(flags,EARTH_ROOM)) {
 	 if(IS_IMMUNE(ch,IMM_BLUNT))
    		return 0;
    if(IsResist(ch, IMM_BLUNT)) {
-	  send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+	  send_to_char("$c000yThe earch starts to shake, the ground crumbles beneath you causing you great pain.\n\r",ch);
 	  return damage/2;
    }  else if(IsSusc(ch, IMM_BLUNT)) {
-		send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+		send_to_char("$c000yThe earch starts to shake, the ground crumbles beneath you causing you great pain.\n\r",ch);
 		return damage*2;
 	} else {
-		send_to_char("$c000BThe earch starts to shake, the ground crumbles beneath you causing you great paint.\n\r",ch);
+		send_to_char("$c000yThe earch starts to shake, the ground crumbles beneath you causing you great pain.\n\r",ch);
 		return damage;
 	}
 
@@ -1004,13 +1004,13 @@ if(IS_SET(flags,ELECTRIC_ROOM)) {
    	return 0;
 
    if(IsResist(ch, IMM_ELEC)) {
-	  send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+	  send_to_char("$c000BElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
 	  return damage/2;
    }  else if(IsSusc(ch, IMM_ELEC)) {
-		send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+		send_to_char("$c000BElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
 		return damage*2;
 	} else {
-		send_to_char("$c000XElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
+		send_to_char("$c000BElectricity surges up through the ground and through your body causing you great pain.\n\r",ch);
 		return damage;
 	}
 
@@ -1020,13 +1020,13 @@ if(IS_SET(flags,WIND_ROOM)) {
    	return 0;
 
   if(IsResist(ch, IMM_PIERCE)) {
-	  send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+	  send_to_char("$c000bA sudden wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 	  return damage/2;
    }  else if(IsSusc(ch, IMM_PIERCE)) {
-		send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		send_to_char("$c000bA sudden wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 		return damage*2;
 	} else {
-		send_to_char("$c000bThe whirl wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
+		send_to_char("$c000bA sudden wind picks up and starts tossing debris throughout the area.. The piercing sticks and rocks cause you great pain.\n\r",ch);
 		return damage;
 	}
 
@@ -1043,7 +1043,7 @@ int GetMoveRegen(struct char_data *i) {
       /*Movement*/
 	if(ValidRoom(i)==TRUE) {
 	    if(IS_SET(real_roomp(i->in_room)->room_flags, MOVE_ROOM)) {
-			send_to_char("You suddently feel a wave of tiredness overcome you.\n\r",i);
+			send_to_char("Your feel your stamina decrease.\n\r",i);
 			damagex = number(15,30);
 		}
 	}
@@ -1200,14 +1200,15 @@ if (af->type>=FIRST_BREATH_WEAPON && af->type <=LAST_BREATH_WEAPON )
 					regenroom=25;
 				else
 					regenroom=20;
-
-
-				if(GET_HIT(i)!=GET_MAX_HIT(i))
-					send_to_char("Your wounds seem to heal exceptionally quick.\n\r",i);
-				else if(GET_MANA(i)!=GET_MAX_MANA(i))
-					send_to_char("You feel your mystical abilities increase.\n\r",i);
-				else if(GET_MOVE(i)!=GET_MAX_MOVE(i))
-					send_to_char("Your stamina seems to increase rather quick.\n\r",i);
+				/* make it so imms can forego seeing this: */
+				if(!IS_AFFECTED2(i,AFF2_NO_OUTDOOR)) {
+					if(GET_HIT(i)!=GET_MAX_HIT(i))
+						send_to_char("Your wounds seem to heal exceptionally quick.\n\r",i);
+					else if(GET_MANA(i)!=GET_MAX_MANA(i))
+						send_to_char("You feel your mystical abilities increase.\n\r",i);
+					else if(GET_MOVE(i)!=GET_MAX_MOVE(i))
+						send_to_char("Your stamina seems to increase rather quick.\n\r",i);
+				}
 			}
 		}
 

@@ -2367,7 +2367,7 @@ int Drow(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int ty
     return(FALSE);
 
  if (!ch->specials.fighting) {
-   if (!IS_UNDERGROUND(ch) && !IS_DARK(ch->in_room) && !affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
+   if (!affected_by_spell(ch,SPELL_GLOBE_DARKNESS)) {
       act("$n uses $s innate powers of darkness",FALSE,ch,0,0,TO_ROOM);
       cast_globe_darkness(GetMaxLevel(ch),ch,"",SPELL_TYPE_SPELL,ch,0);
       return(TRUE);

@@ -173,66 +173,64 @@ if (sb->data)
   sb->data = NULL;
 }
 
-void affect_modify(struct char_data *ch,byte loc, long mod, long bitv,bool add)
+void affect_modify(struct char_data *ch, byte loc, long mod, long bitv, bool add)
 {
-  int i, temp,temp2;
+	int i, temp,temp2;
 	char buf[25];
 
-if (!ch)
-   return;
+	if (!ch)
+		return;
 
-  if (loc == APPLY_IMMUNE) {
-    if (add) {
-      SET_BIT(ch->immune, mod);
-    } else {
-      REMOVE_BIT(ch->immune, mod);
-    }
-  } else if (loc == APPLY_SUSC) {
-    if (add) {
-      SET_BIT(ch->susc, mod);
-    } else {
-      REMOVE_BIT(ch->susc, mod);
-    }
+	if (loc == APPLY_IMMUNE) {
+		if (add) {
+			SET_BIT(ch->immune, mod);
+		} else {
+			REMOVE_BIT(ch->immune, mod);
+		}
+	} else if (loc == APPLY_SUSC) {
+		if (add) {
+			SET_BIT(ch->susc, mod);
+		} else {
+			REMOVE_BIT(ch->susc, mod);
+		}
+	} else if (loc == APPLY_M_IMMUNE) {
+		if (add) {
+			SET_BIT(ch->M_immune, mod);
+		} else {
+			REMOVE_BIT(ch->M_immune, mod);
+		}
+	} else if (loc == APPLY_SPELL) {
+		if (add) {
+			SET_BIT(ch->specials.affected_by, mod);
+		} else {
+			REMOVE_BIT(ch->specials.affected_by, mod);
+		}
+	} else if (loc == APPLY_WEAPON_SPELL) {
+		return;
+	} else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
+		ch_printf(ch,"bitv?%d   mod?%d\n\r",bitv,mod);
+		if (add) {
+			/* do em both? this creates odd combinations, may not be the solution */
+			SET_BIT(ch->specials.affected_by2, bitv);//mod); /* bitv takes care of the spells from cast */
+			//SET_BIT(ch->specials.affected_by2, mod); /* mod takes care of the spells from items */
+		} else {
+			REMOVE_BIT(ch->specials.affected_by2, bitv);//mod);
+			//REMOVE_BIT(ch->specials.affected_by2, mod);
+		}
+		return;
+	} else {
+		if (add) {
+			SET_BIT(ch->specials.affected_by, bitv);
+			if(IS_SET(ch->specials.act, PLR_NOFLY) &&
+						IS_SET(ch->specials.affected_by, AFF_FLYING))
+				REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
+		} else {
+			REMOVE_BIT(ch->specials.affected_by, bitv);
+			mod = -mod;
+		}
+	}
 
-  } else if (loc == APPLY_M_IMMUNE) {
-    if (add) {
-      SET_BIT(ch->M_immune, mod);
-    } else {
-      REMOVE_BIT(ch->M_immune, mod);
-    }
-  } else if (loc == APPLY_SPELL) {
-    if (add) {
-      SET_BIT(ch->specials.affected_by, mod);
-    } else {
-      REMOVE_BIT(ch->specials.affected_by, mod);
-    }
-  } else if (loc == APPLY_WEAPON_SPELL) {
-    return;
-  } else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
-	ch_printf(ch,"bitv?%d   mod?%d\n\r",bitv,mod);
-    if (add) {
-		/* do em both? this creates odd combinations, may not be the solution */
-      SET_BIT(ch->specials.affected_by2, bitv);//mod); /* bitv takes care of the spells fomr cast */
-      //SET_BIT(ch->specials.affected_by2, mod); /* mod takes care fo the spells from items */
-    } else {
-      REMOVE_BIT(ch->specials.affected_by2, bitv);//mod);
-      //REMOVE_BIT(ch->specials.affected_by2, mod);
-    }
-    return;
-  } else {
-    if (add) {
-      SET_BIT(ch->specials.affected_by, bitv);
-       if(IS_SET(ch->specials.act, PLR_NOFLY) &&
-          IS_SET(ch->specials.affected_by, AFF_FLYING))
-           REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
-
-    } else {
-      REMOVE_BIT(ch->specials.affected_by, bitv);
-      mod = -mod;
-    }
-  }
-
-if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
+	if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
   switch(loc)
     {
     case APPLY_NONE:
@@ -575,70 +573,63 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 /* restoring original abilities, and then affecting all again           */
 void affect_total(struct char_data *ch)
 {
-  struct affected_type *af;
-  int i,j;
+	struct affected_type *af;
+	int i,j;
 	char buf[256];
 
+	for(i=0; i<MAX_WEAR; i++) {
+		if (ch->equipment[i])
+			for(j=0; j<MAX_OBJ_AFFECT; j++)
+				affect_modify(ch, ch->equipment[i]->affected[j].location,
+							ch->equipment[i]->affected[j].modifier,
+							ch->equipment[i]->obj_flags.bitvector, FALSE);
+	}
 
-  for(i=0; i<MAX_WEAR; i++) {
-    if (ch->equipment[i])
-      for(j=0; j<MAX_OBJ_AFFECT; j++)
-		affect_modify(ch, ch->equipment[i]->affected[j].location,
-		      ch->equipment[i]->affected[j].modifier,
-		      ch->equipment[i]->obj_flags.bitvector, FALSE);
-  }
+	for(af = ch->affected; af; af=af->next)
+		affect_modify(ch, af->location,  af->modifier, af->bitvector, FALSE);
 
-  for(af = ch->affected; af; af=af->next)
-    affect_modify(ch, af->location,  af->modifier, af->bitvector,
-		  FALSE);
+	ch->tmpabilities = ch->abilities;
 
-  ch->tmpabilities = ch->abilities;
+	for(i=0; i<MAX_WEAR; i++) {
+		if (ch->equipment[i])
+			for(j=0; j<MAX_OBJ_AFFECT; j++)
+				affect_modify(ch, ch->equipment[i]->affected[j].location,
+							ch->equipment[i]->affected[j].modifier,
+							ch->equipment[i]->obj_flags.bitvector, TRUE);
+	}
 
-  for(i=0; i<MAX_WEAR; i++) {
-    if (ch->equipment[i])
-      for(j=0; j<MAX_OBJ_AFFECT; j++)
-	affect_modify(ch, ch->equipment[i]->affected[j].location,
-		      ch->equipment[i]->affected[j].modifier,
-		      ch->equipment[i]->obj_flags.bitvector, TRUE);
-  }
+	for(af = ch->affected; af; af=af->next)
+		affect_modify(ch, af->location, af->modifier, af->bitvector, TRUE);
 
+	/* Make certain values are between 0..25, not < 0 and not > 25! */
 
-  for(af = ch->affected; af; af=af->next)
-    affect_modify(ch, af->location, af->modifier,
-		  af->bitvector, TRUE);
+	i = (IS_NPC(ch) || GetMaxLevel(ch) >= IMPLEMENTOR ? 25 :18);
 
-  /* Make certain values are between 0..25, not < 0 and not > 25! */
-
-   i = (IS_NPC(ch) || GetMaxLevel(ch) >= IMPLEMENTOR ? 25 :18);
-
-if (IS_NPC(ch) || IS_IMMORTAL(ch)) {
-
-  GET_DEX(ch) = MAX(3,MIN(GET_DEX(ch), 25));
-  GET_INT(ch) = MAX(3,MIN(GET_INT(ch), 25));
-  GET_WIS(ch) = MAX(3,MIN(GET_WIS(ch), 25));
-  GET_CON(ch) = MAX(3,MIN(GET_CON(ch), 25));
-  GET_STR(ch) = MAX(3,GET_STR(ch));
-  GET_CHR(ch) = MAX(3,MIN(GET_CHR(ch), 25));
-} else {
-  GET_DEX(ch) = MAX(3,MIN(GET_DEX(ch), MaxDexForRace(ch)));
-  GET_INT(ch) = MAX(3,MIN(GET_INT(ch), MaxIntForRace(ch)));
-  GET_WIS(ch) = MAX(3,MIN(GET_WIS(ch), MaxWisForRace(ch)));
-  GET_CON(ch) = MAX(3,MIN(GET_CON(ch), MaxConForRace(ch)));
-  GET_STR(ch) = MAX(3,GET_STR(ch));
-  GET_CHR(ch) = MAX(3,MIN(GET_CHR(ch), MaxChrForRace(ch)));
- }
-    if (IS_NPC(ch) || GetMaxLevel(ch) >= IMPLEMENTOR)
-  {
-    GET_STR(ch) = MIN(GET_STR(ch), i);
-  } else {
-    if (GET_STR(ch) > 18) {
-      i = GET_ADD(ch) + ((GET_STR(ch)-18)*10);
-      GET_ADD(ch) = MIN(i, 100);
-     if (GET_STR(ch) > MaxStrForRace(ch))
-        GET_STR(ch) = MaxStrForRace(ch);
-    }
-  }
-
+	if (IS_NPC(ch) || IS_IMMORTAL(ch)) {
+		GET_DEX(ch) = MAX(3,MIN(GET_DEX(ch), 25));
+		GET_INT(ch) = MAX(3,MIN(GET_INT(ch), 25));
+		GET_WIS(ch) = MAX(3,MIN(GET_WIS(ch), 25));
+		GET_CON(ch) = MAX(3,MIN(GET_CON(ch), 25));
+		GET_STR(ch) = MAX(3,GET_STR(ch));
+		GET_CHR(ch) = MAX(3,MIN(GET_CHR(ch), 25));
+	} else {
+		GET_DEX(ch) = MAX(3,MIN(GET_DEX(ch), MaxDexForRace(ch)));
+		GET_INT(ch) = MAX(3,MIN(GET_INT(ch), MaxIntForRace(ch)));
+		GET_WIS(ch) = MAX(3,MIN(GET_WIS(ch), MaxWisForRace(ch)));
+		GET_CON(ch) = MAX(3,MIN(GET_CON(ch), MaxConForRace(ch)));
+		GET_STR(ch) = MAX(3,GET_STR(ch));
+		GET_CHR(ch) = MAX(3,MIN(GET_CHR(ch), MaxChrForRace(ch)));
+	}
+	if (IS_NPC(ch) || GetMaxLevel(ch) >= IMPLEMENTOR) {
+		GET_STR(ch) = MIN(GET_STR(ch), i);
+	} else {
+		if (GET_STR(ch) > 18) {
+			i = GET_ADD(ch) + ((GET_STR(ch)-18)*10);
+			GET_ADD(ch) = MIN(i, 100);
+			if (GET_STR(ch) > MaxStrForRace(ch))
+				GET_STR(ch) = MaxStrForRace(ch);
+		}
+	}
 }
 
 /* Insert an affect_type in a char_data structure
@@ -816,7 +807,7 @@ void char_from_room(struct char_data *ch)
       i->next_in_room = ch->next_in_room;
     else {
 
-      sprintf(buf, "Opps! %s was not in people list of his room %d!",
+      sprintf(buf, "Oops! %s was not in people list of his room %d!",
 	      (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
 	      ch->in_room);
       log(buf);

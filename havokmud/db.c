@@ -248,6 +248,17 @@ void boot_db()
 
 	reset_q.head = reset_q.tail = 0;
 
+//	Let's see if this works for building the player statues
+/*	CleanZone(zone);
+	LoadZoneFile(fp, zone);
+	fclose(fp);
+	renum_zone_table(zone);
+	zone_table[zone].start=0;
+	reset_zone(zone);
+*/
+
+	generate_legend_statue();
+
 	log("Boot db -- DONE.");
 }
 
@@ -2372,7 +2383,7 @@ void write_mob_to_file(struct char_data *mob, FILE *mob_fi,int hpB)
 
     if GET_RACE(mob) {
       fprintf(mob_fi, " %d ", -1);
-      fprintf(mob_fi, " %d ", mob->points.gold);
+      fprintf(mob_fi, " %d ", 5* mob->points.gold); /* will this keep money from saving to 1/5th? */
       fprintf(mob_fi, " %d ",GetExpFlags(mob, i) );
       fprintf(mob_fi, " %d \n", GET_RACE(mob));
     } else {
