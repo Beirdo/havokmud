@@ -587,9 +587,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 		ch_printf(ch,"$c000B------------------------\n\r");
 	    return;
 	} else
-		sprintf(name,"%s",GET_NAME(mob));
-
-	    	if(cmd==582) { //train
+			if(cmd==582) { //train
 				while(traininglist[x].level!=-1) {
 					if(is_abbrev(arg,traininglist[x].name)) {
 						cost = traininglist[x].level;
@@ -597,7 +595,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 							cost = 3;
 						stat= x+1;
 						if(GET_PRAC(ch) - cost < 0) {
-							ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
+							ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",mob->player.short_descr,traininglist[x].name);
 							return (TRUE);
 						}
 
@@ -628,11 +626,11 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 				 	break; */
 			 	case 1://4:
 				 	if(GET_RCON(ch) >= 17){
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",mob->player.short_descr, traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RCON(ch) >=  MaxConForRace(ch)){ //check for racial maxes -Gordon Jan202004-
-						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum con for your race.'\n\r", name, traininglist [stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum con for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 
 					}else{
@@ -640,26 +638,26 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						GET_CON(ch)= GET_CON(ch)+1;
 
 						GET_PRAC(ch) -= cost;
-					 	ch_printf(ch,"$c000P%s tells you 'Lets train your con!!!'\n\r$c000wYou heed his advice and go for a jog around the room.(+1 Con)\n\r",name);
+					 	ch_printf(ch,"$c000P%s tells you 'Lets train your con!!!'\n\r$c000wYou heed his advice and go for a jog around the room.(+1 Con)\n\r",mob->player.short_descr);
 					}
 				 	break;
 			 	case 2://5:
 				 	if (affected_by_spell(ch,SPELL_STRENGTH)){
-				 		ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",name ,traininglist[stat-1].name,name);
+				 		ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",mob->player.short_descr,traininglist[stat-1].name,name);
 						break;
 					}
 
 				 	if (affected_by_spell(ch,SPELL_HOLY_STRENGTH)){
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",name ,traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s while it is magically enhanced.'\n\r",mob->player.short_descr ,traininglist[stat-1].name,name);
 						break;
 					}
 
 				 	if(GET_RSTR(ch) >= 18) {
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name ,traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",mob->player.short_descr ,traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RSTR(ch) >=  MaxStrForRace(ch)){
-				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 					}
 					else {
@@ -667,75 +665,75 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						GET_RSTR(ch) = GET_RSTR(ch)+1;
 						GET_STR(ch)  = GET_STR(ch)+1;
 
-				 		ch_printf(ch,"You start lifting some weights.  You feel stronger!!!(+1 Str)'\n\r",name);
+				 		ch_printf(ch,"$c000P%s tells you 'Lets train your strength!!!'\n\r$c000wYou start lifting some weights.  You feel stronger!!!(+1 Str)'\n\r",mob->player.short_descr);
 					}
 				 	break;
 			 	case 3://6:
 				 	if(GET_RDEX(ch) >= 17) {
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",mob->player.short_descr, traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RDEX(ch) >=  MaxDexForRace(ch)){
-						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 					}
 					else {
 					 	GET_PRAC(ch) -= cost;
 					 	GET_RDEX(ch)= GET_RDEX(ch)+1;;
 					 	GET_DEX(ch)= GET_DEX(ch)+1;
-					 	ch_printf(ch,"%s shows you some stretches.  You mimic them!!! (+1 Dex)\n\r",name);
+					 	ch_printf(ch,"$c000P%s tells you 'Lets train your dex!!!\n\r$c000w%s shows you some stretches.  You mimic them!!! (+1 Dex)\n\r",mob->player.short_descr, mob->player.short_descr);
 					}
 					break;
 			 	case 4://7:
 					if(GET_RCHR(ch) >= 17) {
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",mob->player.short_descr, traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RCHR(ch) >=  MaxChrForRace(ch)){
-						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 					}
 					else {
 					 	GET_PRAC(ch) -= cost;
 					 	GET_RCHR(ch) = GET_RCHR(ch)+1;
 					 	GET_CHR(ch)= GET_CHR(ch)+1;
-					 	ch_printf(ch,"%s gives you some lessons in manners!!(+1 Chr)\n\r",name);
+					 	ch_printf(ch,"$c000P%s tells you 'Lets train your charisma!!!'\n\r$c000w%s gives you some lessons in manners!!(+1 Chr)\n\r",mob->player.short_descr, mob->player.short_descr);
 					}
 					break;
 
 			 	case 5://8:
 			 		if(GET_RINT(ch) >= 17) {
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.\n\r",name, traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.\n\r",mob->player.short_descr, traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RINT(ch) >=  MaxIntForRace(ch)){
-				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 					}else {
 			 			GET_PRAC(ch) -= cost;
 			 			GET_RINT(ch) =GET_RINT(ch)+1;
 			 			GET_INT(ch)= GET_INT(ch)+1;
-			 			ch_printf(ch,"%s gives you a strange old book to read. You read it!!(+1 Int)\n\r",name);
+			 			ch_printf(ch,"$c000P%s tells you 'Lets train your intellingence!!!\n\r$c000w%s gives you a strange old book to read. You read it!!(+1 Int)\n\r",mob->player.short_descr, mob->player.short_descr);
 					}
 				 	break;
 			 	case 6://9:
 			 		if(GET_RWIS(ch) >= 17) {
-						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",name, traininglist[stat-1].name,name);
+						ch_printf(ch,"$c000P%s tells you 'I cannot train your %s any further.'\n\r",mob->player.short_descr, traininglist[stat-1].name,name);
 						break;
 					}
 					if(GET_RWIS(ch) >=  MaxWisForRace(ch)){
-				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", name, traininglist [stat-1].name,name);
+				        ch_printf(ch,"$c000P%s tells you 'You allready have the maximum %s for your race.'\n\r", mob->player.short_descr, traininglist [stat-1].name,name);
 						break;
 
 					}else {
 						GET_PRAC(ch) -= cost;
 						GET_RWIS(ch) = GET_RWIS(ch)+1;
 						GET_WIS(ch)= GET_WIS(ch)+1;
-					 	ch_printf(ch,"%s sits down and brings out the old chess board!!\n\rYou and him have a chat and play a few games.(+1 Wis)'\n\r",name);
+					 	ch_printf(ch,"$c000P%s tells you 'Lets train your wisdom!!!\n\r$c000w%s sits down and brings out the old chess board!!\n\rYou and him have a chat and play a few games.(+1 Wis)'\n\r",mob->player.short_descr, mob->player.short_descr);
 					}
 				 	break;
 			 	default:
-					ch_printf(ch,"$c000P%s tells you 'I'm not quite sure how to train that.'\n\r",name);
+					ch_printf(ch,"$c000P%s tells you 'I'm not quite sure how to train that.'\n\r",mob->player.short_descr);
 					break;
 			}
 
