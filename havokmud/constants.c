@@ -5265,7 +5265,7 @@ const struct skillset necroskills[] = {
 	{"suit of bone",		SPELL_SUIT_OF_BONE			,3},
 	{"trace corpse",		SPELL_TRACE_CORPSE			,11},
 	{"unsummon",			SPELL_UNSUMMON				,7},
-	{"vampiric empbrace",	SPELL_VAMPIRIC_EMBRACE		,41},
+	{"vampiric embrace",	SPELL_VAMPIRIC_EMBRACE		,41},
 	{"weakness",			SPELL_WEAKNESS				,9},
 	{"None",				-1							,-1}
 };
@@ -5351,7 +5351,7 @@ const struct skillset bardskills[] = {
   {"web",            SPELL_WEB,             15},
   {"None",			-1		,				-1}
 };
-
+/*
 const struct skillset necromancerskills[] = {
   {"acid blast", SPELL_ACID_BLAST,     10},
   {"armor",      SPELL_ARMOR,          9},
@@ -5374,7 +5374,7 @@ const struct skillset necromancerskills[] = {
   {"web",            SPELL_WEB,             15},
   {"None",			-1		,				-1}
 };
-
+*/
 
 
 // '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge, 6=gargantuan '

@@ -1585,6 +1585,9 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_da
 int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
+/* necro spell procedure */
+int vampiric_embrace(struct char_data *ch, struct char_data *vict);
+
 /* Assigns for Leaves of Silver */
 int Jessep(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
 int Tysha(struct char_data *ch, int cmd, char *arg, struct char_data *mob);

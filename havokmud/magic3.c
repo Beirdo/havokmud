@@ -11,6 +11,7 @@ extern struct obj_data  *object_list;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
 extern long SystemFlags;
+extern int top_of_world;
 extern int ArenaNoGroup, ArenaNoAssist, ArenaNoDispel, ArenaNoMagic,
 	ArenaNoWSpells, ArenaNoSlay, ArenaNoFlee, ArenaNoHaste,
 	ArenaNoPets, ArenaNoTravel, ArenaNoBash;
@@ -2838,6 +2839,8 @@ void spell_giant_growth(byte level, struct char_data *ch, struct char_data *vict
   affect_to_char(victim, &af);
 }
 
+
+/* Necromancer Spells */
 void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 
@@ -2865,7 +2868,69 @@ void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim
 
 }
 
-void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
+void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	assert(victim && ch);
+
+	if (IS_SET(victim->M_immune,IMM_POISON)) {
+		send_to_char("Unknown forces prevent your body from the disease!\n\r",victim);
+		send_to_char("Your quarry seems to resist your attempt to disease it!\n\r",ch);
+		return;
+	}
+
+	if(affected_by_spell(victim,SPELL_DISEASE)) {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+		return;
+	}
+
+	if(!ImpSaveSpell(victim, SAVING_PARA, -6)) {
+		af.type      = SPELL_DISEASE;
+	    af.duration  = 8;
+	    af.modifier  = 0;
+	    af.location  = 0;
+	    af.bitvector = 0;
+	    affect_to_char(ch, &af);
+		act("$n places a rotting hand to $N's head, spreading disease.\n\r", FALSE, ch, 0 , victim, TO_NOTVICT);
+		act("$n places a rotting hand to your head, spreading disease.\n\r", FALSE, ch, 0 , victim, TO_VICT);
+		act("You place a rotting hand to $N's head, spreading disease.\n\r", FALSE, ch, 0 , victim, TO_CHAR);
+		if (!victim->specials.fighting && !IS_PC(victim)) {
+			AddHated(victim, ch);
+			set_fighting(victim, ch);
+		}
+	} else {
+		send_to_char("A slight feeling of illness overwhelms you, but you recover.\n\r",victim);
+		send_to_char("Your quarry seems to resist your disease.\n\r",ch);
+	}
+}
+
+void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("Tap your own life? That could be a bad idea.\n\r",ch);
+		return;
+	}
+
+	if(IsUndead(victim)) {
+		act("But $N doesn't have any life in $M!",FALSE, ch, 0, victim, TO_CHAR);
+		return;
+	}
+
+	dam = dice(3,6) + 2; /* avg 12.5 | max 20 | min 5 */
+
+	GET_HIT(ch) += dam;
+	damage(ch, victim, dam, SPELL_LIFE_TAP);
+
+}
+
 void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	  struct affected_type af;
 
@@ -2885,8 +2950,6 @@ void spell_invis_to_undead(byte level, struct char_data *ch, struct char_data *v
 	  }
 }
 
-
-void spell_life_tap(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
 void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
 	  struct affected_type af;
 
@@ -3185,12 +3248,153 @@ void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victi
 
 
 }
-void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) { }
 
+void spell_life_draw(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
 
-/* Necromancer Spells */
-void spell_shadow_step(byte level, struct char_data *ch,
-		 struct char_data *victim, struct obj_data *obj)
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("Draw your own life? That could be a bad idea.\n\r",ch);
+		return;
+	}
+
+	if(IsUndead(victim)) {
+		act("But $N doesn't have any life in $M!",FALSE, ch, 0, victim, TO_CHAR);
+		return;
+	}
+
+	dam = dice(5,6) + 5; /* avg 22.5 | max 35 | min 10 */
+
+	GET_HIT(ch) += dam;
+	damage(ch, victim, dam, SPELL_LIFE_TAP);
+}
+
+void spell_numb_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int done = 0;
+
+	assert(ch && victim);
+
+	/* removes (meta)aggressive bit from undead */
+
+	if(IS_PC(victim)) {
+		send_to_char("You can only cast this spell on monsters.\n\r", victim);
+	}
+
+	if (!IsUndead(victim)) {
+		send_to_char("That's not a true undead creature!\n\r", victim);
+		return;
+	}
+
+	if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
+		if (HitOrMiss(ch, victim, CalcThaco(ch))) {
+			REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+			done = 1;
+		}
+	}
+
+	if (IS_SET(victim->specials.act, ACT_META_AGG)) {
+		if (HitOrMiss(ch, victim, CalcThaco(ch))) {
+			REMOVE_BIT(victim->specials.act, ACT_META_AGG);
+			done = 1;
+		}
+	}
+
+	if(done) {
+		act("$n stares $N in the eyes, who then becomes docile.\n\r", FALSE, ch, 0 , victim, TO_NOTVICT);
+		act("$n stares you in the eyes, and you feel cowed.\n\r", FALSE, ch, 0 , victim, TO_VICT);
+		act("You stare at $N, who then becomes docile.\n\r", FALSE, ch, 0 , victim, TO_CHAR);
+	} else {
+		send_to_char("Nothing seems to happen.\n\r", ch);
+	}
+}
+
+void spell_binding(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int location;
+
+//	void do_look(struct char_data *ch, char *argument, int cmd);
+
+	assert(ch);
+
+	if (IS_NPC(ch))
+		return;
+
+	if (ch->player.hometown) {
+		location = ch->player.hometown;
+	} else {
+		location = 3001;
+	}
+
+	if (!real_roomp(location)) {
+		send_to_char("You are completely lost.\n\r", ch);
+		location = 0;
+		return;
+	}
+
+	if (ch->specials.fighting) {
+		send_to_char("HAH, not in a fight!\n\r",ch);
+		return;
+	}
+
+	if (!IsOnPmp(ch->in_room)) {
+		send_to_char("Your binding spot seems to be on a different place.\n\r", ch);
+		return;
+	}
+
+	/* a location has been found. */
+
+	act("$n seems to biodegrade into nothingness, leaving only the stench of decay.", TRUE, ch, 0, 0, TO_ROOM);
+	char_from_room(ch);
+	char_to_room(ch, location);
+	act("A smell of death and decay wafts by as $n emerges from nothingness.", TRUE, ch, 0, 0, TO_ROOM);
+	do_look(ch, "",15);
+
+}
+
+void spell_decay(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	assert(victim && ch);
+
+	if (IS_SET(victim->M_immune,IMM_POISON)) {
+		send_to_char("Unknown forces prevent your body from decay!\n\r",victim);
+		send_to_char("Your quarry seems to resist your decay!\n\r",ch);
+		return;
+	}
+
+	if(affected_by_spell(victim,SPELL_DECAY)) {
+		send_to_char("Nothing new seems to happen.\n\r",ch);
+		return;
+	}
+
+	if(!ImpSaveSpell(victim, SAVING_PARA, -6)) {
+		af.type      = SPELL_DECAY;
+	    af.duration  = 4;
+	    af.modifier  = 0;
+	    af.location  = 0;
+	    af.bitvector = 0;
+	    affect_to_char(ch, &af);
+		act("$n's death touch causes $N's body to show signs of decay.\n\r", FALSE, ch, 0 , victim, TO_NOTVICT);
+		act("$n's death touch causes your body to show signs of decay.\n\r", FALSE, ch, 0 , victim, TO_VICT);
+		act("Your death touch causes $N's body to show signs of decay.\n\r", FALSE, ch, 0 , victim, TO_CHAR);
+		if (!victim->specials.fighting && !IS_PC(victim)) {
+			AddHated(victim, ch);
+			set_fighting(victim, ch);
+		}
+	} else {
+		send_to_char("A slight waft of decay overwhelms you, but you recover.\n\r",victim);
+		send_to_char("Your quarry seems to resist your decay!\n\r",ch);
+	}
+}
+
+void spell_shadow_step(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	int attempt = 0, i = 0;
 
@@ -3221,6 +3425,642 @@ void spell_shadow_step(byte level, struct char_data *ch,
 		}
 	} /* end for, no exits found. too bad, kiddo! */
 	send_to_char("The shadows in the vicinity didn't serve your purpose.\n\r", ch);
+}
+
+
+#define CB_TEMPLATE 4
+void spell_cavorting_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+	struct room_data *rp;
+	struct char_data *mob;
+	int lev= 1, i, mlev, mhps, mtohit;
+	char buf[254];
+
+	if ((rp = real_roomp(ch->in_room)) == NULL)
+		return;
+
+	if(!ch) {
+		log("screw up in cavorting bones, no caster found");
+		return;
+	}
+
+	if(!obj) {
+		send_to_char("Which bones would you like to see cavorting?\n\r", ch);
+		return;
+	}
+
+	if (!IS_CORPSE(obj)) {
+		send_to_char("That's not a corpse.\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(rp->room_flags, TUNNEL)) {
+		send_to_char("There's no room to cavort those bones.\n\r", ch);
+		return;
+	}
+
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to animate corpses!\n\r", ch);
+		return;
+	}
+
+	act("$n stares at $p while mumbling some arcane incantations.", TRUE, ch, obj, 0, TO_ROOM);
+	act("You stare at $p while phrasing some arcane incantations.", TRUE, ch, obj, 0, TO_CHAR);
+	lev = GetMaxLevel(ch);
+	mob = read_mobile(CB_TEMPLATE, VIRTUAL);
+	if(!mob) {
+		log("No template found for cavorting bones spells (no mobile with vnum 4)");
+		send_to_char("Screw up in this spell, no cavorting bones template found\n\r", ch);
+		return;
+	}
+	if(lev >45) {
+		mlev = number(30,40);
+		mhps = number(70,100);
+		mtohit = 8;
+	} else if(lev >37) {
+		mlev = number(25,35);
+		mhps = number(50,80);
+		mtohit = 6;
+	} else if(lev >29) {
+		mlev = number(20,29);
+		mhps = number(30,60);
+		mtohit = 4;
+	} else if(lev >21) {
+		mlev = number(14,20);
+		mhps = number(10,40);
+		mtohit = 2;
+	} else {
+		mlev = number(4,6);
+		mhps = number(0,20);
+		mtohit = 0;
+	}
+	mob->player.level[2] = mlev;
+	mob->points.max_hit = mob->points.max_hit + mhps;
+	mob->points.hit = mob->points.max_hit;
+	mob->points.hitroll = mob->points.hitroll + mtohit;
+	char_to_room(mob, ch->in_room);
+	act("$p starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
+
+	if(too_many_followers(ch)) {
+		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
+		act("$N takes one look at the size of $n's posse and justs says no!",TRUE, ch, 0, mob, TO_NOTVICT);
+		act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, mob, TO_VICT);
+	} else {
+		/* charm it for a while */
+		if (mob->master)
+			stop_follower(mob);
+		add_follower(mob, ch);
+		af.type      = SPELL_CHARM_PERSON;
+		if (IS_PC(ch) || ch->master) {
+			af.duration  = GET_CHR(ch);
+			af.modifier  = 0;
+			af.location  = 0;
+			af.bitvector = AFF_CHARM;
+			affect_to_char(mob, &af);
+		} else {
+			SET_BIT(mob->specials.affected_by, AFF_CHARM);
+		}
+	}
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+	}
+	if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+		SET_BIT(mob->specials.act, ACT_SENTINEL);
+	}
+}
+
+void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+	struct char_data *t, *next;
+
+	assert(ch);
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	act("$c0008Raising $s arms, a terrifying scream escapes $n and a cloud of death fills the air!", FALSE, ch, 0, t, TO_ROOM);
+	act("$c0008Raising your arms, a terrifying scream escapes you and a cloud of death fills the air!", FALSE, ch, 0, t, TO_CHAR);
+
+	for (t = real_roomp(ch->in_room)->people; t; t=next) {
+		next = t->next_in_room;
+		if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
+			/* 1% chance of instakill */
+			if(number(1,100) == 100) {
+				act("$c0008A look of fear fleets over $N's face, as the Dark Lord claims $M!", FALSE, ch, 0, t, TO_NOTVICT);
+				act("$c0008A look of fear fleets over $N's face, as your Lord claims $M!", FALSE, ch, 0, t, TO_CHAR);
+				act("$c0008You know a brief moment of paralyzing fear before the Dark Lord claims you!", FALSE, ch, 0, t, TO_VICT);
+				die(t, '\0');
+			} else {
+				dam = dice(level,7);
+				if (saves_spell(t, SAVING_PETRI)) /* save for half damage */
+					dam >>= 1;
+				damage(ch, t, dam, SPELL_MIST_OF_DEATH);
+			}
+		}
+	}
+}
+
+void spell_nullify(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	assert(ch && victim);
+
+	if(affected_by_spell(victim,SPELL_POISON) || affected_by_spell(victim,SPELL_DISEASE) || affected_by_spell(victim,SPELL_DECAY)) {
+		if(GetMaxLevel(victim) <= GetMaxLevel(ch) || !saves_spell(victim, SAVING_SPELL)) {
+			if(affected_by_spell(victim,SPELL_POISON))
+				affect_from_char(victim,SPELL_POISON);
+			if(affected_by_spell(victim,SPELL_DISEASE))
+				affect_from_char(victim,SPELL_DISEASE);
+			if(affected_by_spell(victim,SPELL_DECAY))
+				affect_from_char(victim,SPELL_DECAY);
+			act("A warm feeling runs through your body.",FALSE,victim,0,0,TO_CHAR);
+			act("$N looks better.",FALSE,ch,0,victim,TO_ROOM);
+		} else {
+			act("Nothing seems to happen.",FALSE,victim,0,0,TO_CHAR);
+			act("Nothing seems to happen.",FALSE,ch,0,0,TO_CHAR);
+		}
+	} else {
+		act("Nothing seems to happen.",FALSE,victim,0,0,TO_CHAR);
+		act("Nothing seems to happen.",FALSE,ch,0,0,TO_CHAR);
+	}
+}
+
+void spell_dark_empathy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int amnt = 0;
+	assert(ch && victim);
+
+	if (ch == victim) {
+		send_to_char("You cannot cast this spell upon yourself.\n\r",ch);
+		return;
+	}
+
+	if(GET_HIT(ch) < 66) {
+		send_to_char("Your corporeal state cannot bear to degrade any further.\n\r",ch);
+		return;
+	}
+
+	if(GET_HIT(victim) >= GET_MAX_HIT(victim)) {
+		act("But $N seems to be in excellent condition!",FALSE,ch,0,victim,TO_CHAR);
+		return;
+	}
+
+	if(GET_ALIGNMENT(victim) >= 600) {
+		act("The shimmering white aura around $N repels your aid.",FALSE,ch,0,victim,TO_CHAR);
+		return;
+	}
+
+	amnt = GET_MAX_HIT(victim) - GET_HIT(victim);
+	if(amnt <= 100) {
+		/* itsy bitsy heal */
+		act("$n's hand glows blue as $e places it on your shoulder.",FALSE,ch,0,0,TO_VICT);
+		act("You come back to perfect health, while $n's grows colder.",FALSE,ch,0,0,TO_VICT);
+		act("$N's condition turns pristine as $n places $s glowing blue hand on $S shoulder.",FALSE,ch,0,0,TO_NOTVICT);
+		act("Your hand glows with an eerie blue light as you place it on $N's shoulder,",FALSE,ch,0,0,TO_CHAR);
+		act("You drain yourself of some essence, reinfusing $N.",FALSE,ch,0,0,TO_CHAR);
+		GET_HIT(victim) += amnt;
+		amnt >>= 1;
+		GET_HIT(ch) -= amnt;
+	} else {
+		/* large chunk heal */
+		act("$n's hand glows blue as $e places it on your shoulder.",FALSE,ch,0,0,TO_VICT);
+		act("You feel better, while $n's grows colder.",FALSE,ch,0,0,TO_VICT);
+		act("$N's condition improves as $n places $s glowing blue hand on $S shoulder.",FALSE,ch,0,0,TO_NOTVICT);
+		act("Your hand glows with an eerie blue light as you place it on $N's shoulder,",FALSE,ch,0,0,TO_CHAR);
+		act("You drain yourself of essence, partly reinfusing $N.",FALSE,ch,0,0,TO_CHAR);
+		GET_HIT(ch) -= 50;
+		GET_HIT(victim) += 100;
+	}
+}
+
+void spell_eye_of_the_dead(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	assert(ch);
+
+	if (!affected_by_spell(ch, SPELL_EYE_OF_THE_DEAD) && !IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
+		act("One of $n's eyes pulses with an eerie blue light.",FALSE, ch, 0, 0, TO_ROOM);
+		act("You summon the eye of the dead, which increases your sight considerably.", TRUE, ch, 0, 0, TO_CHAR);
+
+		af.type      = SPELL_EYE_OF_THE_DEAD;
+	    af.duration  = 20;
+	    af.modifier  = 0;
+	    af.location  = APPLY_NONE;
+	    af.bitvector = 0;
+	    affect_to_char(ch, &af);
+
+	} else {
+		send_to_char("Nothing seems to happen.\n\r", ch);
+	}
+}
+
+void spell_soul_steal(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int mana;
+
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("You cannot steal your own soul, it is already in the Dark Lord's posession.\n\r",ch);
+		return;
+	}
+
+	mana = 20 + number(-8,30);
+
+	act("Briefly, a glowing strand of energy seems to fleet from $N to $n.",FALSE, ch, 0, victim, TO_NOTVICT);
+	act("A glowing strand of energy coming from $N fortifies your mental condition.",FALSE, ch, 0, victim, TO_CHAR);
+	act("A strand of your mental energy fleets towards $n, leaving you slightly confused.",FALSE, ch, 0, victim, TO_NOTVICT);
+
+	GET_MANA(victim) -= mana;
+	GET_MANA(ch) += mana;
+
+}
+
+void spell_life_leech(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("Leech your own life? That could be a bad idea.\n\r",ch);
+		return;
+	}
+
+	if(IsUndead(victim)) {
+		act("But $N doesn't have any life in $M!",FALSE, ch, 0, victim, TO_CHAR);
+		return;
+	}
+
+	dam = dice(8,6) + 7; /* avg 35 | max 55 | min 15 */
+
+	GET_HIT(ch) += dam;
+	damage(ch, victim, dam, SPELL_LIFE_TAP);
+}
+
+void spell_dark_pact(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	assert(ch);
+
+	if (affected_by_spell(ch, SPELL_DARK_PACT)) {
+		send_to_char("Nothing new seems to happen.\n\r", ch);
+		return;
+	}
+
+	send_to_char("$c0008Your agreement with the Dark Lord will grant you more mental stamina in echange for your health.\n\r", ch);
+	act("$c0008$n makes a pact with $s master.",FALSE,ch,0,0,TO_ROOM);
+
+	af.type =      SPELL_DARK_PACT;
+	af.duration  = 5;
+	af.modifier  = 0;
+	af.location  = 0;
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
+}
+
+void spell_darktravel(byte level, struct char_data *ch, struct char_data *tmp_ch, struct obj_data *obj)
+{
+	struct room_data *rp, *nrp, *room;
+	char buf[512];
+
+	assert(ch);
+	assert((level >= 0) && (level <= ABS_MAX_LVL));
+
+	/* check target room for legality.*/
+	rp = real_roomp(ch->in_room);
+	if (!rp) {
+		send_to_char("The magic fails\n\r", ch);
+		return;
+	}
+
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
+
+	if(A_NOTRAVEL(tmp_ch)) {
+		send_to_char("The arena rules do not permit you to use travelling spells!\n\r", ch);
+		return;
+	}
+
+	if (!(nrp = real_roomp(tmp_ch->in_room))) {
+		char str[180];
+		sprintf(str, "%s not in any room", GET_NAME(tmp_ch));
+		log(str);
+		send_to_char("The magic cannot locate the target.\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(real_roomp(tmp_ch->in_room)->room_flags, NO_SUM)) {
+		send_to_char("Ancient Magiks bar your path.\n\r", ch);
+		return;
+	}
+
+	if (!IsOnPmp(ch->in_room)) {
+		send_to_char("You're on an extra-dimensional plane!\n\r", ch);
+		return;
+	}
+
+	if (!IsOnPmp(tmp_ch->in_room)) {
+		send_to_char("They're on an extra-dimensional plane!\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
+		send_to_char("The planes are fuzzy, you cannot travel through the shadows!\n",ch);
+		return;
+	}
+
+	if (IS_PC(tmp_ch) && IS_LINKDEAD(tmp_ch)) {
+		send_to_char("Nobody playing by that name.\n\r", ch);
+		return;
+	}
+
+	if (IS_PC(tmp_ch) && IS_IMMORTAL(tmp_ch)) {
+		send_to_char("You can't travel to someone of that magnitude!\n\r", ch);
+		return;
+	}
+
+	/* target ok, let's travel */
+	int location =0;
+	send_to_char("$c0008You step into the shadows and are relocated.\n\r",ch);
+	act("$c0008$n closes $s eyes and steps into the shadows.",FALSE,ch,0,0,TO_ROOM);
+	if(number(1,33) == 33) { /* 3% chance of a mislocate */
+		while(!room) {
+			location = number(0, top_of_world);
+			room = real_roomp(location);
+			if (room) {
+				if ((IS_SET(room->room_flags, PRIVATE)) || (IS_SET(room->room_flags, TUNNEL)) ||
+						(IS_SET(room->room_flags, NO_SUM)) || (IS_SET(room->room_flags, NO_MAGIC)) ||
+						!IsOnPmp(location)) {
+					room = 0;
+				}
+			}
+		}
+		send_to_char("$c0008A sudden lapse in your concentration carries you elsewhere.\n\r",ch);
+	} else {
+		location = tmp_ch->in_room;
+	}
+	send_to_char("$c0008Travelling through the shadows, you find yourself in a different place..\n\r",ch);
+	char_from_room(ch);
+	char_to_room(ch, location);
+	act("$c0008$n steps out of the shadows.",FALSE,ch,0,0,TO_ROOM);
+	do_look(ch, "",15);
+}
+
+void spell_vampiric_embrace(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+
+	assert(ch);
+
+	if (affected_by_spell(ch, SPELL_VAMPIRIC_EMBRACE)) {
+		send_to_char("Nothing new seems to happen.\n\r", ch);
+		return;
+	}
+
+	if (ch->equipment[WIELD]) {
+		send_to_char("$c0008A negative aura surrounds your weapon, swallowing the light.\n\r", ch);
+		act("$c0008A negative aura surrounds $n's weapon, drinking in the light.",FALSE,ch,0,0,TO_ROOM);
+	} else {
+		send_to_char("$c0008A negative aura surrounds your hands, swallowing the light.\n\r", ch);
+		act("$c0008A negative aura surrounds $n's hands, drinking in the light.",FALSE,ch,0,0,TO_ROOM);
+	}
+
+	af.type =      SPELL_VAMPIRIC_EMBRACE;
+	af.duration  = 4;
+	af.modifier  = 0;
+	af.location  = 0;
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
+}
+
+void spell_bind_affinity(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct room_data *rp;
+	int roomnr;
+
+	assert(ch);
+
+	roomnr = ch->in_room;
+	if(roomnr == 0) {
+		send_to_char("You cannot set the void as your binding place.\n\r",ch);
+		return;
+	}
+	rp = real_roomp(roomnr);
+	if(!rp) {
+		log("some player got lost in a non existent room");
+		return;
+	}
+
+	send_to_char("Performing the ancient ritual of binding, you increase your affinity\n\r",ch);
+	send_to_char("with your current location so it becomes your binding space.\n\r",ch);
+
+	ch->player.hometown = roomnr;
+
+}
+
+#define TONGUE 22
+void spell_scourge_warlock(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+//	struct obj_data *obj;
+	int dam;
+	extern struct index_data *obj_index;
+
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("The Dark Lord does not permit you to harm his followers. This includes you.\n\r",ch);
+		return;
+	}
+
+	if (ch->equipment[WEAR_EYES]) {
+		obj = ch->equipment[WEAR_BODY];
+		if (obj_index[obj->item_number].virtual != TONGUE) {
+			act("Your cannot perform the Warlock's Scourge wearing $p.",FALSE, ch, obj, 0, TO_CHAR);
+			return;
+		}
+	} else {
+		/* give him a tongue to wear on his face */
+		if (obj = read_object(TONGUE, VIRTUAL)) {
+			equip_char(ch,  obj, WEAR_EYES);
+			send_to_char("$c0008The Dark Lord grants you a boon, and you feel p$c000go$c000Gi$c000gso$c0008n flow through your veins.\n\r",ch);
+		} else {
+			log("screw up in scourge of warlock, cannot load the dark lord's boon");
+			send_to_char("Alas, something's not quite right with this spell yet. Notify imms, use the bug command.\n\r",ch);
+			return;
+		}
+	}
+
+	dam = dice(level,9); /* level*9 */
+	if (saves_spell(victim, SAVING_SPELL)) /* save for half damage */
+		dam >>= 1;
+	damage(ch, victim, dam, SPELL_SCOURGE_WARLOCK);
+	/* now that we hurt the bugger, let's see if he wants some poison as well */
+	if (!affected_by_spell(victim,SPELL_POISON)) {
+		spell_poison(level, ch, victim,0);
+	}
+}
+
+void spell_finger_of_death(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	int dam;
+
+	assert(victim && ch);
+
+	if (level <0 || level >ABS_MAX_LVL)
+		return;
+
+	if(victim == ch) {
+		send_to_char("It isn't a healthy idea to point a finger of death at yourself. Try again.\n\r",ch);
+		return;
+	}
+
+	if (number(1,20) == 20) { /* instant death, wheee! */
+		act("$c0008You know a brief moment of fear as the Dark Lord's minions rise up to claim your soul.",FALSE, ch, 0, victim, TO_VICT);
+		act("$c0008A look of fear shows in $N's eyes as the Dark Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_NOTVICT);
+		act("$c0008A look of fear shows in $N's eyes as your Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_CHAR);
+		die(victim,"/0");
+	} else {
+		dam  = dice(level,6);
+		if (saves_spell(victim, SAVING_PETRI)) /* save for half damage */
+			dam >>= 1;
+
+		damage(ch, victim, dam, SPELL_FINGER_OF_DEATH);
+	}
+}
+
+#define FG_TEMPLATE 6
+void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+	struct affected_type af;
+	struct room_data *rp;
+	struct char_data *mob;
+	int lev= 1, i, mlev, mhps, mtohit;
+	char buf[254];
+
+	if ((rp = real_roomp(ch->in_room)) == NULL)
+		return;
+
+	if(!ch) {
+		log("screw up in flesh golem, no caster found");
+		return;
+	}
+
+	if(!obj) {
+		send_to_char("What would you use for a component?\n\r", ch);
+		return;
+	}
+
+	if (!IS_CORPSE(obj)) {
+		send_to_char("That's not a corpse.\n\r", ch);
+		return;
+	}
+
+	if (affected_by_spell(ch, SPELL_FLESH_GOLEM)) {
+		send_to_char("You do not yet have the mental reserves to create another flesh golem.\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(rp->room_flags, TUNNEL)) {
+		send_to_char("There's no room to create a flesh golem.\n\r", ch);
+		return;
+	}
+
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to animate corpses!\n\r", ch);
+		return;
+	}
+
+	act("$n stares at $p while phrasing some arcane incantations.", TRUE, ch, obj, 0, TO_ROOM);
+	act("You stare at $p while mumbling some arcane incantations.", TRUE, ch, obj, 0, TO_CHAR);
+	lev = GetMaxLevel(ch);
+	mob = read_mobile(FG_TEMPLATE, VIRTUAL);
+	if(!mob) {
+		log("No template found for flesh golem spell (no mobile with vnum 6)");
+		send_to_char("Screw up in this spell, no flesh golem template found\n\r", ch);
+		return;
+	}
+	if(lev >45) {
+		mlev = number(30,40);
+		mhps = number(140,200);
+		mtohit = 8;
+	} else if(lev >37) {
+		mlev = number(25,35);
+		mhps = number(90,120);
+		mtohit = 6;
+	} else if(lev >29) {
+		mlev = number(20,29);
+		mhps = number(30,60);
+		mtohit = 4;
+	} else if(lev >21) {
+		mlev = number(14,20);
+		mhps = number(10,40);
+		mtohit = 2;
+	} else {
+		mlev = number(4,6);
+		mhps = number(0,20);
+		mtohit = 0;
+	}
+	mob->player.level[2] = mlev;
+	mob->points.max_hit = mob->points.max_hit + mhps;
+	mob->points.hit = mob->points.max_hit;
+	mob->points.hitroll = mob->points.hitroll + mtohit;
+	char_to_room(mob, ch->in_room);
+	act("$p starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
+
+	if(too_many_followers(ch)) {
+		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
+		act("$N takes one look at the size of $n's posse and justs says no!",TRUE, ch, 0, mob, TO_NOTVICT);
+		act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, mob, TO_VICT);
+	} else {
+		/* charm it for a while */
+		if (mob->master)
+			stop_follower(mob);
+		add_follower(mob, ch);
+		af.type      = SPELL_CHARM_PERSON;
+		if (IS_PC(ch) || ch->master) {
+			af.duration  = GET_CHR(ch);
+			af.modifier  = 0;
+			af.location  = 0;
+			af.bitvector = AFF_CHARM;
+			affect_to_char(mob, &af);
+		} else {
+			SET_BIT(mob->specials.affected_by, AFF_CHARM);
+		}
+	}
+	if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+		REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+	}
+	if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+		SET_BIT(mob->specials.act, ACT_SENTINEL);
+	}
+
+	af.type =      SPELL_FLESH_GOLEM;
+	af.duration  = 12;
+	af.modifier  = 0;
+	af.location  = 0;
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
+
+}
+
+void spell_chillshield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
+{
+
+
 }
 
 

@@ -971,6 +971,7 @@ void assign_mobiles()
     { 3022, ThiefGuildMaster },
     { 3023, WarriorGuildMaster },
     { 3051, SorcGuildMaster },
+	{ 3052, NecromancerGuildMaster },
 
     { 3007, sailor },    /* Sailor */
     { 3024, guild_guard },

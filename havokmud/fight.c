@@ -453,6 +453,7 @@ if (cp->description)
 case    SPELL_COLOUR_SPRAY:sprintf(spec_desc,"rainbow coloured corpse of %s is",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
                         break;
+case	SPELL_SCOURGE_WARLOCK:
 case    SPELL_ACID_BLAST: sprintf(spec_desc,"dissolving remains of %s are",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
                          corpse->beheaded_corpse = TRUE;
@@ -462,6 +463,13 @@ case    SPELL_FIREBALL:sprintf(spec_desc,"smoldering remains of %s are",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
                          corpse->beheaded_corpse = TRUE;
                         break;
+case	SPELL_FINGER_OF_DEATH:
+case	SPELL_LIFE_TAP:
+case	SPELL_MIST_OF_DEATH:sprintf(spec_desc,"drained remains of %s are",
+                         (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
+                         corpse->beheaded_corpse = TRUE;
+                        break;
+
 case    SPELL_CHAIN_LIGHTNING:
 case    SPELL_LIGHTNING_BOLT:sprintf(spec_desc,"charred remains of %s are",
                          (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)));
@@ -1390,7 +1398,7 @@ if (!GET_POS(victim) > POSITION_DEAD) {
 }
 
   rp = real_roomp(ch->in_room);
-  if (rp && (rp->room_flags&PEACEFUL) && type!=SPELL_POISON &&
+  if (rp && (rp->room_flags&PEACEFUL) && type!=SPELL_POISON && type!=SPELL_DISEASE && type!=SPELL_DECAY &&
       type!=SPELL_HEAT_STUFF && type != TYPE_SUFFERING) {
     sprintf(buf, "damage(,,,%d) called in PEACEFUL room", type);
     log(buf);
@@ -1410,7 +1418,8 @@ int DamDetailsOk( struct char_data *ch, struct char_data *v, int dam, int type)
       return(FALSE);
 
   if ((ch == v) &&
-      ((type != SPELL_POISON) && (type != SPELL_HEAT_STUFF) && (type !=TYPE_SUFFERING))) return(FALSE);
+      ((type != SPELL_POISON) && (type != SPELL_HEAT_STUFF) && (type!=SPELL_DISEASE) &&
+      		(type!=SPELL_DECAY) && (type !=TYPE_SUFFERING))) return(FALSE);
 
   if (MOUNTED(ch)) {
     if (MOUNTED(ch) == v) {
@@ -3377,10 +3386,12 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case SPELL_GAS_BREATH:
   case SPELL_SUNRAY:
   case SPELL_DISINTEGRATE:
-
     Our_Bit = IMM_ENERGY;
     break;
 
+  case SPELL_FINGER_OF_DEATH:
+  case SPELL_LIFE_TAP:
+  case SPELL_MIST_OF_DEATH:
   case SPELL_ENERGY_DRAIN:
     Our_Bit = IMM_DRAIN;
     break;
@@ -3420,6 +3431,9 @@ int PreProcDam(struct char_data *ch, int type, int dam)
     Our_Bit = IMM_BLUNT;
     break;
 
+  case SPELL_SCOURGE_WARLOCK:
+  case SPELL_DECAY:
+  case SPELL_DISEASE:
   case SPELL_POISON:
     Our_Bit = IMM_POISON;
     break;
@@ -3855,8 +3869,10 @@ int SkipImmortals(struct char_data *v, int amnt,int attacktype)
 #if 1
   if (IS_PC(v) && IS_LINKDEAD(v) &&
      (attacktype == TYPE_SUFFERING ||
-       attacktype == SPELL_POISON  ||
-         attacktype == SPELL_HEAT_STUFF) ) {  /* link dead pc, no damage */
+      attacktype == SPELL_DECAY ||
+      attacktype == SPELL_DISEASE ||
+      attacktype == SPELL_POISON  ||
+      attacktype == SPELL_HEAT_STUFF) ) {  /* link dead pc, no damage */
     amnt = -1;
   }
 #endif
@@ -4634,16 +4650,21 @@ void specdamage(struct char_data *ch, struct char_data *v)
 {
   struct obj_data *object;
 
-  if (mob_index[ch->nr].virtual == BAHAMUT) bahamut_prayer(ch, v);
-  if (ch->equipment[WEAR_BODY]) {
-	object = ch->equipment[WEAR_BODY];
-  	if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR) bahamut_armor(ch, v);
-  }
-  if (ch->equipment[WIELD]) {
-  	object = ch->equipment[WIELD];
-  	if (obj_index[object->item_number].virtual == GUARDIAN_SIN) guardian_sin(ch, v);
-  }
-return;
+	if (affected_by_spell(ch, SPELL_VAMPIRIC_EMBRACE) && ch != v && !IsUndead(v) && number(1,25) == 25)
+		vampiric_embrace(ch,v);
+	if (mob_index[ch->nr].virtual == BAHAMUT)
+		bahamut_prayer(ch, v);
+	if (ch->equipment[WEAR_BODY]) {
+		object = ch->equipment[WEAR_BODY];
+		if (obj_index[object->item_number].virtual == BAHAMUT_ARMOR)
+			bahamut_armor(ch, v);
+	}
+	if (ch->equipment[WIELD]) {
+		object = ch->equipment[WIELD];
+		if (obj_index[object->item_number].virtual == GUARDIAN_SIN)
+			guardian_sin(ch, v);
+	}
+	return;
 }
 
 int FSkillCheck(struct char_data *ch, int fskill)

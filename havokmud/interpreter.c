@@ -1814,8 +1814,15 @@ strcat(bufx, buf);
 sprintf(buf,"$c00152) $c0012Ansi Colors.\n\r");
 strcat(bufx, buf);
 
-sprintf(buf,"$c00153) $c0012Race. [$c0015%s$c0012]\n\r",RaceName[GET_RACE(d->character)]);
-strcat(bufx, buf);
+if (GET_RACE(d->character) != 0) {
+	sprintf(buf,"$c00153) $c0012Race. [$c0015%s$c0012]\n\r",RaceName[GET_RACE(d->character)]);
+	strcat(bufx, buf);
+} else { /* make default race to Human rather than half-breed */
+	GET_RACE(d->character) = 1;
+	sprintf(buf,"$c00153) $c0012Race. [$c0015%s$c0012]\n\r",RaceName[GET_RACE(d->character)]);
+	strcat(bufx, buf);
+}
+
 
 sprintf(buf,"$c00154) $c0012Class.[$c0015%s$c0012]\n\r",classes);
 strcat(bufx, buf);

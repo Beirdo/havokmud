@@ -923,20 +923,20 @@ struct room_data
 #define AFF2_QUEST			   BV13
 #define AFF2_NO_OUTDOOR		   BV14
 /* necro stuff */
-#define AFF2_DISEASE		   BV15
+#define AFF2_CHILLSHIELD	   BV15
 #define AFF2_INVIS_TO_UNDEAD   BV16
-#define AFF2_SUIT_OF_BONE	   BV17
-#define AFF2_SPECTRAL_SHIELD   BV18
-#define AFF2_CLINGING_DARKNESS BV19
-#define AFF2_SIPHON_STRENGTH   BV20
-#define AFF2_GATHER_SHADOWS	   BV21
-#define AFF2_ENDURE_COLD	   BV22
-#define AFF2_DECAY			   BV23
-#define AFF2_CAVORTING_BONES   BV24
-#define AFF2_EYE_OF_THE_DEAD   BV25
-#define AFF2_DARK_PACT		   BV26
-#define AFF2_VAMPIRIC_EMBRACE  BV27
-#define AFF2_FLESH_GOLEM	   BV28
+//#define AFF2_SUIT_OF_BONE	   BV17
+//#define AFF2_SPECTRAL_SHIELD   BV18
+//#define AFF2_CLINGING_DARKNESS BV19
+//#define AFF2_SIPHON_STRENGTH   BV20
+//#define AFF2_GATHER_SHADOWS	   BV21
+//#define AFF2_ENDURE_COLD	   BV22
+//#define AFF2_DECAY			   BV23
+//#define AFF2_CAVORTING_BONES   BV24
+//#define AFF2_EYE_OF_THE_DEAD   BV25
+//#define AFF2_DARK_PACT		   BV26
+//#define AFF2_VAMPIRIC_EMBRACE  BV27
+//#define AFF2_FLESH_GOLEM	   BV28
 
 /* Flag spells as brewable or single class */
 #define BREWABLE_SPELL         BV00

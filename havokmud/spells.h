@@ -382,7 +382,7 @@
 #define SPELL_NUMB_DEAD		    320
 #define SPELL_BINDING			321
 #define SPELL_DECAY				322 // 9
-#define SPELL_SHADOW_STEP		323
+#define SPELL_SHADOW_STEP		323 /* last 15 by Lennya */
 #define SPELL_CAVORTING_BONES	324 // 10
 #define SPELL_MIST_OF_DEATH		325
 #define SPELL_NULLIFY			326
@@ -529,7 +529,7 @@
 
 	/* This one needs to be after all real damage skills, might wanna */
 	/* alter messages if you move it */
-#define TYPE_SUFFERING               330
+#define TYPE_SUFFERING               390
                                    /* MAX is MAX_SKILLS = 350 */
 
 /* More anything but spells and weapontypes can be insterted here! */

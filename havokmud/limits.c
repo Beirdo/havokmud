@@ -369,30 +369,51 @@ if (GET_RACE(ch) == RACE_HALF_ORC)
        gain += 4;    /* barbs gain hits faster... */
 
   gain += con_app[GET_CON(ch)].hitp/2;
+	if (IS_AFFECTED(ch,AFF_POISON) || affected_by_spell(ch,SPELL_DECAY) || affected_by_spell(ch,SPELL_DISEASE)) {
+		dam = 0;
+		gain = 0;
+		if (IS_AFFECTED(ch,AFF_POISON))  {
+			if (GET_RACE(ch) == RACE_HALFLING) {
+				dam += number(1,20);
+			} else {
+				dam += number(10,32);
+			}
+			if (affected_by_spell(ch, SPELL_SLOW_POISON))
+				dam /= 4;
+//			damage(ch, ch, dam, SPELL_POISON);
+		}
+		if (affected_by_spell(ch,SPELL_DECAY))  {
+			if (GET_RACE(ch) == RACE_HALFLING) {
+				dam += number(1,23);
+			} else {
+				dam += number(15,35);
+			}
+//			damage(ch, ch, dam, SPELL_DISEASE);
+		}
+		if (affected_by_spell(ch,SPELL_DISEASE))  {
+			if (GET_RACE(ch) == RACE_HALFLING) {
+				dam += number(1,12);
+			} else {
+				dam += number(14,22);
+			}
+//			damage(ch, ch, dam, SPELL_DISEASE);
+		}
+		damage(ch, ch, dam, SPELL_POISON);
+	}
 
-  if (IS_AFFECTED(ch,AFF_POISON))  {
-    gain = 0;
-    dam = number(10,32);
-    if (GET_RACE(ch) == RACE_HALFLING)
-      dam = number(1,20);
-    if (affected_by_spell(ch, SPELL_SLOW_POISON))
-      dam /= 4;
-    damage(ch, ch, dam, SPELL_POISON);
-  }
 
-  if (IS_AFFECTED2(ch, AFF2_HEAT_STUFF)) {
-    dam = 0;
+	if (IS_AFFECTED2(ch, AFF2_HEAT_STUFF)) {
+		dam = 0;
     /*
       count items in eq
       */
-    for (i=0;i<=HOLD;i++) {
-      if (ch->equipment[i]) {
-	dam += 2;
-      }
-    }
-
-    damage(ch, ch, dam, SPELL_HEAT_STUFF);
-  }
+		for (i=0;i<=HOLD;i++) {
+			if (ch->equipment[i]) {
+				dam += 2;
+			}
+		}
+		damage(ch, ch, dam, SPELL_HEAT_STUFF);
+	}
 
   gain += ch->points.hit_gain;
 

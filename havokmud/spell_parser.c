@@ -511,10 +511,45 @@ void cast_energy_restore( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj ); //Reverse drain -MW
 
 /* Necro spells */
+void cast_numb_dead( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_binding( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_decay( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 void cast_shadow_step( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
-
-
+void cast_cavorting_bones( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_mist_of_death( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_nullify( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_dark_empathy( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_eye_of_the_dead( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_soul_steal( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_life_leech( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_dark_pact( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_darktravel( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_vampiric_embrace( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_bind_affinity( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_scourge_warlock( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_finger_of_death( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_flesh_golem( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );/*
+void cast_chillshield( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj );
+*/
 struct spell_info_type spell_info[MAX_SPL_LIST];
 
 char *spells[]=
@@ -1159,7 +1194,7 @@ int GetMoveRegen(struct char_data *i) {
 }
 int GetHitRegen(struct char_data *i) {
 	char buf[256];
-	int damagex=0, trollregen=0;
+	int damagex=0, trollregen=0, darkpact = 0;
 
 	if(GET_RACE(i) == RACE_TROLL && GET_HIT(i)!=hit_limit(i)) {
 		trollregen=hit_gain(i)*0.5;
@@ -1168,6 +1203,11 @@ int GetHitRegen(struct char_data *i) {
 		send_to_room_except(buf,i->in_room,i);
 	}
 
+	/* darkpact regen penalty */
+	if (affected_by_spell(i, SPELL_DARK_PACT)) {
+		send_to_char("$c0008Your.pact with the Dark Lord grants your mental power a boost, but drains some of your life.\n\r", i);
+		darkpact = 15;
+	}
 
 			/*Damage sector regen!!!!*/
 	damagex = RoomElementalDamage(real_roomp(i->in_room)->room_flags,i);
@@ -1177,7 +1217,7 @@ int GetHitRegen(struct char_data *i) {
 	}
 	/*Lets regen the characters*/
 	/*Hitpoints*/
-	return hit_gain(i) + GET_HIT(i) - damagex +trollregen;
+	return hit_gain(i) + GET_HIT(i) - damagex +trollregen - darkpact;
 
 }
 int ValidRoom(struct char_data *ch ){
@@ -1191,7 +1231,7 @@ int ValidRoom(struct char_data *ch ){
 	return (TRUE);
 }
 int GetManaRegen(struct char_data *i) {
-	int damagex=0;
+	int damagex=0, darkpact = 0;
 
 	if (ValidRoom(i) == TRUE) {
 		if(IS_SET(real_roomp(i->in_room)->room_flags, MANA_ROOM)) {
@@ -1200,10 +1240,14 @@ int GetManaRegen(struct char_data *i) {
 		}
 	}
 
+	/* darkpact regen penalty */
+	if (affected_by_spell(i, SPELL_DARK_PACT)) {
+		darkpact = 30;
+	}
 		/*Mana*/
 
 
-    return GET_MANA(i) + mana_gain(i) - damagex;
+    return GET_MANA(i) + mana_gain(i) - damagex + darkpact;
 
 
 }
@@ -3676,32 +3720,34 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 */
   spello(305,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_cold_light, 0,0, 1);
+  5,	 TAR_IGNORE , cast_cold_light, 0,0, 1);
 /*
   spello(306,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_disease, 0,1, 1);
+  10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_disease, 0,1, 1);
 */
   spello(307,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_invis_to_undead, 0,1, 2);
+  5,	 TAR_IGNORE , cast_invis_to_undead, 0,1, 2);
+
 /*
   spello(308,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_tap, 0,0, 2);
+  5,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_tap, 0,0, 2);
 
 */
   spello(309,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_suit_of_bone, 0,1, 3);
+  5,	 TAR_IGNORE , cast_suit_of_bone, 0,1, 3);
 
   spello(310,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_spectral_shield, 0,1, 4);
+  10,	 TAR_IGNORE , cast_spectral_shield, 0,1, 4);
+/*
 
   spello(311,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_clinging_darkness, 0,0, 5);
+  10,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_clinging_darkness, 0,0, 5);
 
   spello(312,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3709,19 +3755,21 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
   spello(313,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_unsummon, 0,0, 7);
-/*
+  5,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_unsummon, 0,0, 7);
+
   spello(314,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_siphon_strength, 0,0, 8);
+  15,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_siphon_strength, 0,0, 8);
+
 */
   spello(315,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_gather_shadows, 0,0, 8);
+  5,	 TAR_IGNORE , cast_gather_shadows, 0,0, 8);
 
   spello(316,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_mend_bones, 0,0, 10);
+  11,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_mend_bones, 0,0, 10);
+
 /*
   spello(317,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3729,35 +3777,36 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 */
   spello(318,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_endure_cold, 0,0, 12);
+  25,	 TAR_IGNORE , cast_endure_cold, 0,0, 12);
+
 /*
   spello(319,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_draw, 0,0, 15);
-
+  12,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_life_draw, 0,0, 15);
+*/
   spello(320,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_numb_dead, 0,0, 15);
+  30,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT , cast_numb_dead, 0,0, 15);
 
   spello(321,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_binding, 0,0, 16);
+  15,	 TAR_IGNORE , cast_binding, 0,0, 16);
 
   spello(322,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_decay, 0,0, 18);
-*/
+
   spello(323,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
   20,	 TAR_IGNORE , cast_shadow_step, 0,0, 20);
-/*
+
   spello(324,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_OBJ_ROOM , cast_cavorting_bones, 0,0, 22);
+  25,	 TAR_OBJ_ROOM , cast_cavorting_bones, 0,0, 22);
 
   spello(325,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE | TAR_VIOLENT , cast_mist_of_death, 0,0, 28);
+  35,	 TAR_IGNORE | TAR_VIOLENT , cast_mist_of_death, 0,0, 28);
 
   spello(326,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3765,11 +3814,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
   spello(327,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM , cast_dark_empathy, 0,0, 24);
+  30,	 TAR_CHAR_ROOM , cast_dark_empathy, 0,0, 24);
 
   spello(328,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_eye_of_the_dead, 0,0, 26);
+  25,	 TAR_IGNORE , cast_eye_of_the_dead, 0,0, 26);
 
   spello(329,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3781,23 +3830,23 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
   spello(331,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_dark_pact, 0,0, 36);
+  33,	 TAR_IGNORE , cast_dark_pact, 0,0, 36);
 
   spello(332,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_WORLD , cast_darktravel, 0,0, 39);
+  30,	 TAR_CHAR_WORLD , cast_darktravel, 0,0, 39);
 
   spello(333,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_vampiric_embrace, 0,0, 41);
+  50,	 TAR_IGNORE , cast_vampiric_embrace, 0,0, 41);
 
   spello(334,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_bind_affinity, 0,0, 48);
+  50,	 TAR_IGNORE , cast_bind_affinity, 0,0, 48);
 
   spello(335,12,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_scourge_warlock, 0,0, 29);
+  35,	 TAR_CHAR_ROOM | TAR_FIGHT_VICT | TAR_VIOLENT , cast_scourge_warlock, 0,0, 29);
 
   spello(336,24,POSITION_FIGHTING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
@@ -3805,11 +3854,11 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
   spello(337,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_OBJ_ROOM , cast_flesh_golem, 0,0, 37);
-
+  33,	 TAR_OBJ_ROOM , cast_flesh_golem, 0,0, 37);
+/*
   spello(338,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
   LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-  20,	 TAR_IGNORE , cast_chillshield, 0,0, 45);
+  40,	 TAR_IGNORE , cast_chillshield, 0,0, 45);
 */
 
 

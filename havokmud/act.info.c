@@ -88,7 +88,7 @@ extern long SystemFlags;
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
   extern struct skillset bardskills[];
-    extern struct skillset necromancerskills[];
+    extern struct skillset necroskills[];
   extern struct skillset monkskills[];
   extern struct skillset mageskills[];
   extern struct skillset sorcskills[];
@@ -4518,10 +4518,10 @@ dlog("in do_show_skill");
 	return;
       }
 		send_to_char("Your class can learn these skills:\n\r", ch);
-		while(necromancerskills[i].level != -1) {
-			sprintf(buf,"[%-2d] %-30s %-15s",necromancerskills[i].level,
-						necromancerskills[i].name,how_good(ch->skills[necromancerskills[i].skillnum].learned));
-			if (IsSpecialized(ch->skills[necromancerskills[i].skillnum].special))
+		while(necroskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",necroskills[i].level,
+						necroskills[i].name,how_good(ch->skills[necroskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[necroskills[i].skillnum].special))
 				strcat(buf," (special)");
 			strcat(buf," \n\r");
 			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
@@ -4637,7 +4637,7 @@ dlog("in do_show_skill");
     break;
 
   default:
-    send_to_char("Which class? (skill [m s c w t d r p k i a])\n\r", ch);
+    send_to_char("Which class? (skill [m s c w t d r p k i a n])\n\r", ch);
   }
 
 }

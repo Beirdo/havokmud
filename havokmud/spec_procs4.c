@@ -20,7 +20,7 @@
   extern struct skillset rangerskills[];
   extern struct skillset psiskills[];
   extern struct skillset styleskillset[];
-  extern struct skillset necromancerskills[];
+  extern struct skillset necroskills[];
 extern struct room_data *world;
 extern struct char_data *character_list;
 extern struct descriptor_data *descriptor_list;
@@ -310,6 +310,33 @@ int lag_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int
    		return(FALSE);
 	}
 }
+
+int vampiric_embrace(struct char_data *ch, struct char_data *vict)
+{
+	struct obj_data *obj;
+	int dam;
+
+	if (IsImmune(vict, IMM_DRAIN))
+		return(FALSE);
+
+	if (ch->equipment[WIELD]) {
+		obj = ch->equipment[WIELD];
+		act("$c0008The negative aura surrounding your $p lashes out at $N, draining some of $S life.", FALSE, ch, obj, vict, TO_CHAR);
+		act("$c0008The negative aura surrounding $n's $p lashes out at $N, draining some of $S life.", FALSE, ch, obj, vict, TO_NOTVICT);
+		act("$c0008The negative aura surrounding $n's $p lashes out at you, draining some ofyour life.", FALSE, ch, obj, vict, TO_VICT);
+	} else {
+		act("$c0008The negative aura surrounding your hands lashes out at $N, draining some of $S life.", FALSE, ch, 0, vict, TO_CHAR);
+		act("$c0008The negative aura surrounding $n's hands lashes out at $N, draining some of $S life.", FALSE, ch, 0, vict, TO_NOTVICT);
+		act("$c0008The negative aura surrounding $n's hands lashes out at you, draining some ofyour life.", FALSE, ch, 0, vict, TO_VICT);
+	}
+	dam = dice(2,8);
+	if(IsResist(vict, IMM_DRAIN)) /* half damage for resist */
+		dam >>= 1;
+	GET_HIT(ch) += dam;
+	GET_HIT(vict) -= dam;
+	return(FALSE);
+}
+
 
 int creeping_death( struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -1446,7 +1473,7 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 	if (cmd==164 || cmd == 170 || cmd == 243) {
 
 		if (!HasClass(ch, CLASS_NECROMANCER)) {
-			send_to_char("$c0013[$c0015The necromancer Guildmaster$c0013] tells you"
+			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
 							" 'You're not a necromancer.'\n\r",ch);
 			return(TRUE);
 		}
@@ -1469,11 +1496,11 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 			x = GET_LEVEL(ch,NECROMANCER_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
 			while (x != 0) {
-				while(necromancerskills[i].level != -1) {
-					if (necromancerskills[i].level == x) {
-						sprintf(buf,"[%-2d] %-30s %-15s",necromancerskills[i].level,
-								necromancerskills[i].name,how_good(ch->skills[necromancerskills[i].skillnum].learned));
-						if (IsSpecialized(ch->skills[necromancerskills[i].skillnum].special))
+				while(necroskills[i].level != -1) {
+					if (necroskills[i].level == x) {
+						sprintf(buf,"[%-2d] %-30s %-15s",necroskills[i].level,
+								necroskills[i].name,how_good(ch->skills[necroskills[i].skillnum].learned));
+						if (IsSpecialized(ch->skills[necroskills[i].skillnum].special))
 							strcat(buf," (special)");
 						strcat(buf," \n\r");
 						if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
@@ -1490,45 +1517,45 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg, struct char
 			return(TRUE);
 		} else {
 			x=0;
-			while (necromancerskills[x].level != -1) {
-				if(is_abbrev(arg,necromancerskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
-					if(necromancerskills[x].level > GET_LEVEL(ch,NECROMANCER_LEVEL_IND)) {
-						send_to_char("$c0013[$c0015The necromancer Guildmaster$c0013] tells you"
+			while (necroskills[x].level != -1) {
+				if(is_abbrev(arg,necroskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+					if(necroskills[x].level > GET_LEVEL(ch,NECROMANCER_LEVEL_IND)) {
+						send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
 								" 'You're not experienced enough to learn this skill.'",ch);
 						return(TRUE);
 					}
 
-					if(ch->skills[necromancerskills[x].skillnum].learned > 45) {
+					if(ch->skills[necroskills[x].skillnum].learned > 45) {
 						//check if skill already practiced
-						send_to_char("$c0013[$c0015The necromancer Guildmaster$c0013] tells you"
+						send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
 									 " 'You must learn from experience and practice to get"
 									 " any better at that skill.'\n\r",ch);
 						return(TRUE);
 					}
 
 					if(ch->specials.spells_to_learn <=0) {
-						send_to_char("$c0013[$c0015The necromancer Guildmaster$c0013] tells you"
+						send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you"
 									" 'You don't have enough practice points.'\n\r",ch);
 						return(TRUE);
 					}
 
-					sprintf(buf,"You practice %s for a while.\n\r",necromancerskills[x].name);
+					sprintf(buf,"You practice %s for a while.\n\r",necroskills[x].name);
 					send_to_char(buf,ch);
 					ch->specials.spells_to_learn--;
 
-					if(!IS_SET(ch->skills[necromancerskills[x].skillnum].flags,SKILL_KNOWN)) {
-						SET_BIT(ch->skills[necromancerskills[x].skillnum].flags,SKILL_KNOWN);
-						SET_BIT(ch->skills[necromancerskills[x].skillnum].flags,SKILL_KNOWN_NECROMANCER);
+					if(!IS_SET(ch->skills[necroskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[necroskills[x].skillnum].flags,SKILL_KNOWN);
+						SET_BIT(ch->skills[necroskills[x].skillnum].flags,SKILL_KNOWN_NECROMANCER);
 					}
-					percent=ch->skills[necromancerskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
-					ch->skills[necromancerskills[x].skillnum].learned = MIN(95,percent);
-					if(ch->skills[necromancerskills[x].skillnum].learned >= 95)
+					percent=ch->skills[necroskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[necroskills[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[necroskills[x].skillnum].learned >= 95)
 						send_to_char("'You are now a master of this art.'\n\r",ch);
 					return(TRUE);
 				}
 				x++;
 			}
-			send_to_char("$c0013[$c0015The necromancer Guildmaster$c0013] tells you '"
+			send_to_char("$c0013[$c0015The Necromancer Guildmaster$c0013] tells you '"
 							"I do not know of that skill!'\n\r",ch);
 			return(TRUE);
 		}

@@ -430,7 +430,7 @@ void spell_succor(byte level, struct char_data *ch,
   o->obj_flags.cost = 0;
   o->obj_flags.cost_per_day = -1;
 
-  act("$n waves $s hand, and creates $p", TRUE, ch, o, 0, TO_ROOM);
+  act("$n waves $s hand, and creates $p.", TRUE, ch, o, 0, TO_ROOM);
   act("You wave your hand and create $p.", TRUE, ch, o, 0, TO_CHAR);
 
 }
@@ -464,7 +464,7 @@ void spell_true_seeing(byte level, struct char_data *ch,
     af.bitvector = AFF_TRUE_SIGHT;
     affect_to_char(victim, &af);
   } else {
-    send_to_char("Nothing seems to happen\n\r", ch);
+    send_to_char("Nothing seems to happen.\n\r", ch);
   }
 }
 
