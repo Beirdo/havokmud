@@ -8,6 +8,7 @@
 #include "protos.h"
 
 #define STATE(d) ((d)->connected)
+
 #define MAX_CMD_LIST 497
 #define STAT_SWORD(x) ((x >= 1 && x <= 3) ? "-]>>>" : ((x >= 4 && x<= 6) ? \
                         "-]>>>>" : ((x >= 7 && x<= 9) ? "-]>>>>>" : \
