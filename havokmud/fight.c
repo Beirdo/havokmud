@@ -1483,18 +1483,21 @@ void WeaponSkillCheck(struct char_data *ch)
 	int valid = 0;
 	int fighter = 0;
 	int specialist = 0;
-	int lowest = 0;
+	int lowest = 100;
 
 	log("entering");
 
 	if(!(obj = ch->equipment[WIELD]))
 		return;
 
+log("wielded");
+
 	if(!IS_WEAPON(obj))
 		return;
+log("weapon");
 
-	if(!(weapontype = obj->weapontype))
-		return;
+	weapontype = obj->weapontype + WEAPON_FIRST; //350 - 409
+log("type");
 
 log("survived main checks");
 
@@ -1531,21 +1534,21 @@ log("survived main checks");
 	if(!found) {
 		log("not found");
 		// assign the lowest available slot to this type
-				if(found != 1 && lowest > ch->weaponskills.grade1)
+				if(lowest > ch->weaponskills.grade1)
 					lowest = ch->weaponskills.grade1;
-				if(found != 2 && lowest > ch->weaponskills.grade2)
+				if(lowest > ch->weaponskills.grade2)
 					lowest = ch->weaponskills.grade2;
-				if(found != 3 && lowest > ch->weaponskills.grade3)
+				if(lowest > ch->weaponskills.grade3)
 					lowest = ch->weaponskills.grade3;
-				if(found != 4 && lowest > ch->weaponskills.grade4 && fighter)
+				if(lowest > ch->weaponskills.grade4 && fighter)
 					lowest = ch->weaponskills.grade4;
-				if(found != 5 && lowest > ch->weaponskills.grade5 && fighter)
+				if(lowest > ch->weaponskills.grade5 && fighter)
 					lowest = ch->weaponskills.grade5;
-				if(found != 6 && lowest > ch->weaponskills.grade6 && specialist)
+				if(lowest > ch->weaponskills.grade6 && specialist)
 					lowest = ch->weaponskills.grade6;
-				if(found != 7 && lowest > ch->weaponskills.grade7 && specialist)
+				if(lowest > ch->weaponskills.grade7 && specialist)
 					lowest = ch->weaponskills.grade7;
-				if(found != 8 && lowest > ch->weaponskills.grade8 && specialist)
+				if(lowest > ch->weaponskills.grade8 && specialist)
 					lowest = ch->weaponskills.grade8;
 
 				if(lowest == ch->weaponskills.grade1) {
@@ -1572,6 +1575,8 @@ log("survived main checks");
 				} else if(lowest == ch->weaponskills.grade8) {
 					ch->weaponskills.grade8 = 0;
 					ch->weaponskills.slot8 = weapontype;
+				} else {
+					log("got to bad spot in WeaponSkillCheck");
 				}
 
 	} else {
