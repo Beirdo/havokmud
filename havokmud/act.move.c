@@ -753,8 +753,12 @@ int find_door(struct char_data *ch, char *type, char *dir)
 
     struct room_direction_data *exitp;
 
+    if(!type) {
+        return( -1 );
+    }
+
     /* a direction was specified */
-    if (dir && *dir) {
+    if (dir) {
         /* Partial Match */
         if ((door = search_block(dir, dirs, FALSE)) == -1) {    
             send_to_char("That's not a direction.\n\r", ch);

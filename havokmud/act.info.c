@@ -4179,11 +4179,11 @@ void do_resistances(struct char_data *ch, char *argument, int cmd)
                     buf[MAX_STRING_LENGTH];
 
     if (IS_SET(ch->player.user_flags, OLD_COLORS)) {
-        sprintf(color1, "$c000p");
-        sprintf(color2, "$c000C");
+        strcpy(color1, "$c000p");
+        strcpy(color2, "$c000C");
     } else {
-        sprintf(color1, "$c000B");
-        sprintf(color2, "$c000w");
+        strcpy(color1, "$c000B");
+        strcpy(color2, "$c000w");
     }
 
     sprintf(buf, "%sCurrent resistances:\n\r--------------\n\r", color1);
@@ -4711,6 +4711,12 @@ void do_resize(struct char_data *ch, char *arg, int cmd)
     if (IS_NPC(ch)) {
         return;
 	}
+
+    if( !arg ) {
+        send_to_char("Resize to what size?\n\r", ch);
+        return;
+    }
+
     i = atoi(arg);
 
     if (i < 7) {
