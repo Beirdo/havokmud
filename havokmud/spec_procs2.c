@@ -55,7 +55,7 @@ int monkpreproom = 550;
 int druidpreproom = 500;
 #define MONK_CHALLENGE_ROOM 551
 #define DRUID_CHALLENGE_ROOM 501
-
+void page_string(struct descriptor_data *d, char *str, int keep_internal);
 /* extern procedures */
 
 /* Bjs Shit Begin */

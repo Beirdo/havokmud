@@ -19,13 +19,12 @@
 #include <sys/resource.h>
 #include <stdarg.h>
 #include "protos.h"
-
+#include "utils.h"
 
 void str2ansi(char *p2, char *p1, int start, int stop);
 char *ParseAnsiColors(int UsingAnsi, char *txt);
 int construct_prompt(char *buf, struct char_data *ch);
 void identd_test(struct sockaddr_in in_addr) ;
-
 
 #define MAX_CONNECTS 256  /* max number of descriptors (connections) */
 			  /* THIS IS SYSTEM DEPENDANT, use 64 is not sure! */
@@ -81,7 +80,6 @@ int numberhosts;
 
 int maxdesc, avail_descs;
 int tics = 0;        /* for extern checkpointing */
-
 
 
 /* *********************************************************************

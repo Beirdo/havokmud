@@ -212,3 +212,4 @@ dimd.o:
 sunmalloc.o:
 paginate.o:protos.h
 create.help.o:protos.h
+paginate.o:protos.h

@@ -22,7 +22,7 @@
 
 #define PAGE_LENGTH     25
 #define PAGE_WIDTH      72
-
+#define NULL 0
 /* Traverse down the string until the begining of the next page has been
  * reached.  Return NULL if this is the last page of the string.
  */
