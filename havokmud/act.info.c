@@ -730,7 +730,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
                     && !affected_by_spell(i, SKILL_LEVITATION)) {
                     if (real_roomp(i->in_room)->sector_type ==
                         SECT_WATER_NOSWIM) {
-                        strcat(buffer, "$c000wis floating here.");
+                        strcat(buffer, "$c000w is floating here.");
                     } else {
                         strcat(buffer, "$c000w is standing here.");
 					}
@@ -741,7 +741,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             case POSITION_SITTING:
                 if (real_roomp(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
-                    strcat(buffer, "$c000wis floating here.");
+                    strcat(buffer, "$c000w is floating here.");
                 } else {
                     strcat(buffer, "$c000w is sitting here.");
 				}
@@ -749,7 +749,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             case POSITION_RESTING:
                 if (real_roomp(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
-                    strcat(buffer, "$c000wis resting here in the water.");
+                    strcat(buffer, "$c000w is resting here in the water.");
                 } else {
                     strcat(buffer, "$c000w is resting here.");
 				}
@@ -757,7 +757,7 @@ void show_char_to_char(struct char_data *i, struct char_data *ch, int mode)
             case POSITION_SLEEPING:
                 if (real_roomp(i->in_room)->sector_type ==
                     SECT_WATER_NOSWIM) {
-                    strcat(buffer, "$c000wis sleeping here in the water.");
+                    strcat(buffer, "$c000w is sleeping here in the water.");
                 } else {
                     strcat(buffer, "$c000w is sleeping here.");
 				}
