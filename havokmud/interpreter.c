@@ -21,6 +21,7 @@
 
 char *get_argument_common(char *line_in, char **arg_out, int do_fill,
                           char delim);
+void EnterState(struct descriptor_data *d, int newstate);
 
 char *newbie_note[] = {
     "\n\rWelcome to Havok, here are a few instructions to help you get\n\r"
@@ -879,6 +880,7 @@ extern int      top_of_p_table;
 extern struct index_data *mob_index;
 extern struct index_data *obj_index;
 extern char    *pc_class_types[];
+extern char    *credits;
 #ifdef HASH
 extern struct hash_header room_db;
 #else
@@ -2036,18 +2038,192 @@ void show_menu(struct descriptor_data *d)
     send_to_char(bufx, d->character);
 }
 
+void EnterState(struct descriptor_data *d, int newstate)
+{
+    char            buf[1024];
+    char            bufx[1000];
+    int             chosen = 0;
+    char            tmp_name[20];
+    int             i;
+
+    if( !d ) {
+        return;
+    }
+
+    switch( newstate ) {
+    case CON_QSEX:
+        SEND_TO_Q("What is your sex (M/F) ? ", d);
+        break;
+    case CON_ANSI:
+        SEND_TO_Q("Would you like ansi colors? (Yes or No)", d);
+        break;
+    case CON_QRACE:
+        show_race_choice(d);
+        SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
+        d->character->player.class = 0;
+        d->character->specials.remortclass = 0;
+        break;
+    case CON_QCLASS:
+        GET_ALIGNMENT(d->character) = 0;
+        GET_CON(d->character) = 0;
+        SEND_TO_Q("\n\rSelect your class now.\n\r", d);
+        show_class_selection(d, GET_RACE(d->character));
+        SEND_TO_Q("Enter ? for help.\n\r", d);
+        SEND_TO_Q("\n\rClass :", d);
+        break;
+    case CON_MCLASS:
+        SEND_TO_Q("\n\rSelect your main class from the options below.\n\r", d);
+
+        for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
+            if (HasClass(d->character, pc_num_class(chosen))) {
+                sprintf(bufx, "[%2d] %s\n\r", chosen + 1,
+                        classes[chosen].name);
+                send_to_char(bufx, d->character);
+            }
+        }
+        SEND_TO_Q("\n\rMain Class :", d);
+        break;
+    case CON_STAT_LIST:
+        SEND_TO_Q("\n\rSelect your stat priority, by listing them from"
+                  " highest to lowest\n\r", d);
+        SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
+        SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest"
+                  " roll in Strength, \n\r", d);
+        SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly"
+                  " charisma\n\r", d);
+        SEND_TO_Q("Your choices? ", d);
+        break;
+    case CON_ALIGNMENT:
+        sprintf(bufx,
+                "Your alignment is an indication of how well or badly you"
+                " have morally\n\r"
+                "conducted yourself in the game. It ranges numerically, "
+                "from -1000\n\r"
+                "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good"
+                "$c000w), 0 being neutral. Generally, if you kill\n\r"
+                "'Good' mobs, you will gravitate towards Evil, and "
+                "vice-versa. Some spells\n\r"
+                "and skills also affect your alignment. ie Backstab makes"
+                " you evil, and\n\r"
+                "the spell heal makes you good\n\r");
+        send_to_char(bufx, d->character);
+
+        if (HasClass(d->character, CLASS_PALADIN)) {
+            sprintf(bufx, "Please select your alignment "
+                          "($c000WGood$c000w)");
+        } else if (HasClass(d->character, CLASS_DRUID)) {
+            sprintf(bufx, "Please select your alignment (Neutral)");
+        } else if (HasClass(d->character, CLASS_NECROMANCER)) {
+            sprintf(bufx, "Please select your alignment "
+                          "($c000REvil$c000w)");
+        } else if (HasClass(d->character, CLASS_RANGER)) {
+            sprintf(bufx, "Please select your alignment "
+                          "($c000WGood$c000w/Neutral$c000w)");
+        } else {
+            sprintf(bufx, "Please select your alignment "
+                          "($c000WGood$c000w/Neutral$c000w/"
+                          "$c000REvil$c000w)");
+        }
+        send_to_char(bufx, d->character);
+        break;
+
+    case CON_RMOTD:
+        send_to_char(motd, d->character);
+        SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
+        break;
+
+    case CON_CREATION_MENU:
+        show_menu(d);
+        break;
+
+    case CON_PWDNRM:
+        SEND_TO_Q("Password: ", d);
+        write(d->descriptor, echo_off, 4);
+        break;
+    case CON_NMECNF:
+        sprintf(buf, "Did I get that right, %s (Y/N)? ", tmp_name);
+        SEND_TO_Q(buf, d);
+        break;
+    case CON_PWDGET:
+        sprintf(buf, "Give me a password for %s: ", GET_NAME(d->character));
+        SEND_TO_Q(buf, d);
+        write(d->descriptor, echo_off, 4);
+        break;
+    case CON_NME:
+        if (GET_NAME(d->character)) {
+            free(GET_NAME(d->character));
+        }
+        break;
+    case CON_PLYNG:
+        break;
+    case CON_PWDCNF:
+    case CON_PWDNCNF:
+        SEND_TO_Q("Please retype password: ", d);
+        write(d->descriptor, echo_off, 4);
+        break;
+    case CON_REROLL:
+        SEND_TO_Q("Your current stats are:\n\r", d);
+        sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll, any"
+                     " other key to keep.\n\r", d->character->reroll);
+        SEND_TO_Q(buf, d);
+        break;
+    case CON_CHECK_MAGE_TYPE:
+        for( i = 0; ru_sorcerer[i]; i++ ) {
+            SEND_TO_Q(ru_sorcerer[i], d);
+        }
+        break;
+    case CON_AUTH:
+        SEND_TO_Q("Please Wait for authorization.\n\r", d);
+        break;
+    case CON_WIZLOCK:
+        SEND_TO_Q("Goodbye.\n\r", d);
+        break;
+    case CON_WMOTD:
+        send_to_char(wmotd, d->character);
+        SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
+        break;
+    case CON_SLCT:
+        send_to_char(MENU, d->character);
+        break;
+    case CON_EXDSCR:
+        SEND_TO_Q("<type /w to save.>\n\r", d);
+        break;
+    case CON_PRESS_ENTER:
+        SEND_TO_Q("\n\r<Press enter to continue>", d);
+        break;
+    case CON_PWDNEW:
+        SEND_TO_Q("Enter a new password: ", d);
+        write(d->descriptor, echo_off, 4);
+        break;
+    case CON_DELETE_ME:
+        SEND_TO_Q("Are you sure you want to delete yourself? (yes/no) ", d);
+        break;
+    }
+
+    STATE(d) = newstate;
+}
+
 void nanny(struct descriptor_data *d, char *arg)
 {
     struct descriptor_data *desc;
     char            buf[1024];
-    char            bufx[1000];
 
-    extern char *credits;
     int             player_i,
                     count = 0,
                     oops = FALSE,
-                    index = 0,
-                    chosen = 0;
+                    index = 0;
     char            tmp_name[20];
     struct char_file_u tmp_store;
     struct char_data *tmp_ch;
@@ -2079,44 +2255,20 @@ void nanny(struct descriptor_data *d, char *arg)
 
         switch (*arg) {
         case '1':
-            SEND_TO_Q("What is your sex (M/F) ? ", d);
-            STATE(d) = CON_QSEX;
+            EnterState(d, CON_QSEX);
             break;
         case '2':
-            SEND_TO_Q("Would you like ansi colors? (Yes or No)", d);
-            STATE(d) = CON_ANSI;
+            EnterState(d, CON_ANSI);
             break;
         case '3':
-            show_race_choice(d);
-            SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ",
-                      d);
-            STATE(d) = CON_QRACE;
-            d->character->player.class = 0;
+            EnterState(d, CON_QRACE);
             break;
         case '4':
-            GET_ALIGNMENT(d->character) = 0;
-            GET_CON(d->character) = 0;
-            send_to_char("class", d->character);
-            SEND_TO_Q("\n\rSelect your class now.\n\r", d);
-            show_class_selection(d, GET_RACE(d->character));
-            SEND_TO_Q("Enter ? for help.\n\r", d);
-            SEND_TO_Q("\n\rClass :", d);
-            STATE(d) = CON_QCLASS;
+            EnterState(d, CON_QCLASS);
             break;
         case '5':
             if (d->character->player.class != 0) {
-                SEND_TO_Q("\n\rSelect your main class from the options "
-                          "below.\n\r", d);
-
-                for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
-                    if (HasClass(d->character, pc_num_class(chosen))) {
-                        sprintf(bufx, "[%2d] %s\n\r", chosen + 1,
-                                classes[chosen].name);
-                        send_to_char(bufx, d->character);
-                    }
-                }
-                SEND_TO_Q("\n\rMain Class :", d);
-                STATE(d) = CON_MCLASS;
+                EnterState(d, CON_MCLASS);
             } else {
                 SEND_TO_Q("\nPlease select a class first.\n\r", d);
             }
@@ -2124,52 +2276,13 @@ void nanny(struct descriptor_data *d, char *arg)
         case '6':
             d->character->reroll = 20;
             if (d->character->player.class != 0) {
-                SEND_TO_Q("\n\rSelect your stat priority, by listing them from"
-                          " highest to lowest\n\r", d);
-                SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest"
-                          " roll in Strength, \n\r", d);
-                SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly"
-                          " charisma\n\r", d);
-                SEND_TO_Q("Your choices? ", d);
-                STATE(d) = CON_STAT_LIST;
+                EnterState(d, CON_STAT_LIST);
             } else {
                 SEND_TO_Q("\nPlease select a class first.\n\r", d);
             }
             break;
         case '7':
-            sprintf(bufx,
-                    "Your alignment is an indication of how well or badly you"
-                    " have morally\n\r"
-                    "conducted yourself in the game. It ranges numerically, "
-                    "from -1000\n\r"
-                    "($c000RChaotic Evil$c000w) to 1000 ($c000WLawful Good"
-                    "$c000w), 0 being neutral. Generally, if you kill\n\r"
-                    "'Good' mobs, you will gravitate towards Evil, and "
-                    "vice-versa. Some spells\n\r"
-                    "and skills also affect your alignment. ie Backstab makes"
-                    " you evil, and\n\r"
-                    "the spell heal makes you good\n\r");
-            send_to_char(bufx, d->character);
-
-            if (HasClass(d->character, CLASS_PALADIN)) {
-                sprintf(bufx, "Please select your alignment "
-                              "($c000WGood$c000w)");
-            } else if (HasClass(d->character, CLASS_DRUID)) {
-                sprintf(bufx, "Please select your alignment (Neutral)");
-            } else if (HasClass(d->character, CLASS_NECROMANCER)) {
-                sprintf(bufx, "Please select your alignment "
-                              "($c000REvil$c000w)");
-            } else if (HasClass(d->character, CLASS_RANGER)) {
-                sprintf(bufx, "Please select your alignment "
-                              "($c000WGood$c000w/Neutral$c000w)");
-            } else {
-                sprintf(bufx, "Please select your alignment "
-                              "($c000WGood$c000w/Neutral$c000w/"
-                              "$c000REvil$c000w)");
-            }
-            send_to_char(bufx, d->character);
-            STATE(d) = CON_ALIGNMENT;
+            EnterState(d, CON_ALIGNMENT);
             break;
 
         case 'd':
@@ -2221,12 +2334,8 @@ void nanny(struct descriptor_data *d, char *arg)
             for( i = 0; newbie_note[i]; i++ ) {
                 SEND_TO_Q(newbie_note[i], d);
             }
-#if 0
-            SEND_TO_Q(motd, d);
-#endif
-            send_to_char(motd, d->character);
-            SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-            STATE(d) = CON_RMOTD;
+
+            EnterState(d, CON_RMOTD);
             break;
         default:
             show_menu(d);
@@ -2241,39 +2350,33 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
-        switch (*arg) {
+        switch (tolower(*arg)) {
         case 'n':
-        case 'N':
             if (!HasClass(d->character, CLASS_PALADIN) &&
                 !HasClass(d->character, CLASS_NECROMANCER)) {
                 GET_ALIGNMENT(d->character) = 1;
                 send_to_char("You have chosen to be Neutral in "
                              "alignment.\n\r\n\r", d->character);
-                STATE(d) = CON_CREATION_MENU;
-                show_menu(d);
+                EnterState(d, CON_CREATION_MENU);
             }
             break;
         case 'g':
-        case 'G':
             if (!HasClass(d->character, CLASS_DRUID) &&
                 !HasClass(d->character, CLASS_NECROMANCER)) {
                 GET_ALIGNMENT(d->character) = 1000;
                 send_to_char("You have chosen to be a follower of "
                              "light.\n\r\n\r", d->character);
-                show_menu(d);
-                STATE(d) = CON_CREATION_MENU;
+                EnterState(d, CON_CREATION_MENU);
             }
             break;
         case 'e':
-        case 'E':
             if (!HasClass(d->character, CLASS_DRUID) &&
                 !HasClass(d->character, CLASS_PALADIN) &&
                 !HasClass(d->character, CLASS_RANGER)) {
                 GET_ALIGNMENT(d->character) = -1000;
                 send_to_char("You have chosen the dark side.\n\r\n\r",
                              d->character);
-                STATE(d) = CON_CREATION_MENU;
-                show_menu(d);
+                EnterState(d, CON_CREATION_MENU);
             }
             break;
 
@@ -2294,9 +2397,8 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
-        switch (*arg) {
+        switch (tolower(*arg)) {
         case 'y':
-        case 'Y':
             /*
              * Set ansi
              */
@@ -2304,22 +2406,16 @@ void nanny(struct descriptor_data *d, char *arg)
 
             send_to_char("$c0012A$c0010n$c0011s$c0014i$c0007 colors "
                     "enabled.\n\r\n\r", d->character);
-            show_menu(d);
-            STATE(d) = CON_CREATION_MENU;
+            EnterState(d, CON_CREATION_MENU);
             break;
 
         case 'n':
-        case 'N':
-            STATE(d) = CON_CREATION_MENU;
-            show_menu(d);
+            EnterState(d, CON_CREATION_MENU);
             break;
 
         default:
             SEND_TO_Q("Please type Yes or No.\n\r", d);
             SEND_TO_Q("Would you like ansi colors? :", d);
-#if 0
-            STATE(d) = CON_ANSI;
-#endif
             return;
             break;
         }
@@ -2329,37 +2425,31 @@ void nanny(struct descriptor_data *d, char *arg)
         d->character->reroll = 20;
         arg = skip_spaces(arg);
         if (!arg) {
-            show_race_choice(d);
-            SEND_TO_Q("For help, and level limits type '?'. \n\r RACE?:  ", d);
-            STATE(d) = CON_QRACE;
-        } else if (*arg == '?') {
+            EnterState(d, CON_QRACE);
+            return;
+        } 
+        
+       if (*arg == '?') {
             for( i = 0; racehelp[i]; i++ ) {
                 SEND_TO_Q(racehelp[i], d);
             }
-            show_race_choice(d);
-            SEND_TO_Q("For help type '?' - will also list level limits. \n\r"
-                      " RACE?:  ", d);
-            STATE(d) = CON_QRACE;
+            EnterState(d, CON_QRACE);
+            return;
+        } 
+       
+        while (race_choice[i] != -1) {
+            i++;
+        }
+        tmpi = atoi(arg);
+        if (tmpi >= 0 && tmpi <= i - 1) {
+            /*
+             * set the chars race to this
+             */
+            GET_RACE(d->character) = race_choice[tmpi];
+            EnterState(d, CON_CREATION_MENU);
         } else {
-            while (race_choice[i] != -1)
-                i++;
-            tmpi = atoi(arg);
-            if (tmpi >= 0 && tmpi <= i - 1) {
-                /*
-                 * set the chars race to this
-                 */
-                GET_RACE(d->character) = race_choice[tmpi];
-                show_menu(d);
-                STATE(d) = CON_CREATION_MENU;
-            } else {
-                SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
-                show_race_choice(d);
-                STATE(d) = CON_QRACE;
-                /*
-                 * bogus race selection!
-                 */
-            }
-
+            SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
+            EnterState(d, CON_QRACE);
         }
         break;
 
@@ -2376,62 +2466,58 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         if (!arg) {
             close_socket(d);
+            return;
+        } 
+        
+        if (_parse_name(arg, tmp_name)) {
+            SEND_TO_Q("Illegal name, please try another.\r\n", d);
+            SEND_TO_Q("Name: ", d);
+            return;
+        }
+
+        if (SiteLock(d->host)) {
+            SEND_TO_Q("Sorry, this site is temporarily banned.\n\r", d);
+            EnterState(d, CON_WIZLOCK);
+            return;
+        }
+
+        if ((player_i = load_char(tmp_name, &tmp_store)) > -1) {
+            /*
+             * connecting an existing character ...
+             */
+            store_to_char(&tmp_store, d->character);
+            strcpy(d->pwd, tmp_store.pwd);
+            d->pos = player_table[player_i].nr;
+            EnterState(d, CON_PWDNRM);
         } else {
-            if (_parse_name(arg, tmp_name)) {
-                SEND_TO_Q("Illegal name, please try another.\r\n", d);
+            /*
+             * player unknown gotta make a new
+             */
+            if (_check_ass_name(tmp_name)) {
+                SEND_TO_Q("\n\rIllegal name, please try another.", d);
                 SEND_TO_Q("Name: ", d);
                 return;
             }
-            if (SiteLock(d->host)) {
-                SEND_TO_Q("Sorry, this site is temporarily banned.\n\r", d);
-                STATE(d) = CON_WIZLOCK;
+
+            if (IS_SET(SystemFlags, SYS_WIZLOCKED)) {
+                sprintf(buf, "Sorry, no new characters at this time\n\r");
+                EnterState(d, CON_WIZLOCK);
                 return;
             }
 
-            if ((player_i = load_char(tmp_name, &tmp_store)) > -1) {
-                /*
-                 * connecting an existing character ...
-                 */
-                store_to_char(&tmp_store, d->character);
-                strcpy(d->pwd, tmp_store.pwd);
-                d->pos = player_table[player_i].nr;
-                SEND_TO_Q("Password: ", d);
-                write(d->descriptor, echo_off, 4);
-                STATE(d) = CON_PWDNRM;
-            } else {
-                /*
-                 * player unknown gotta make a new
-                 */
-                if (_check_ass_name(tmp_name)) {
-                    SEND_TO_Q("\n\rIllegal name, please try another.", d);
-                    SEND_TO_Q("Name: ", d);
-                    return;
-                }
-                /*
-                 * move forward creating new character
-                 */
-                if (!IS_SET(SystemFlags, SYS_WIZLOCKED)) {
-                    CREATE(GET_NAME(d->character), char, strlen(tmp_name) + 1);
-                    strcpy(GET_NAME(d->character), CAP(tmp_name));
-                    sprintf(buf, "Did I get that right, %s (Y/N)? ", tmp_name);
-                    SEND_TO_Q(buf, d);
-                    STATE(d) = CON_NMECNF;
-                    /*
-                     * We are wiz locked ...
-                     */
-                } else {
-                    sprintf(buf, "Sorry, no new characters at this time\n\r");
-                    SEND_TO_Q(buf, d);
-                    STATE(d) = CON_WIZLOCK;
-                }
-            }
+            /*
+             * move forward creating new character
+             */
+            CREATE(GET_NAME(d->character), char, strlen(tmp_name) + 1);
+            strcpy(GET_NAME(d->character), CAP(tmp_name));
+            EnterState(d, CON_NMECNF);
         }
         break;
 
     case CON_NMECNF:
-    /*
-     * wait for conf. of new name
-     */
+        /*
+         * wait for conf. of new name
+         */
         /*
          * skip whitespaces
          */
@@ -2444,33 +2530,26 @@ void nanny(struct descriptor_data *d, char *arg)
             return;
         }
 
-        if (*arg == 'y' || *arg == 'Y') {
+        switch(tolower(*arg)) {
+        case 'y':
             write(d->descriptor, echo_on, 4);
             SEND_TO_Q("New character.\n\r", d);
-
-            sprintf(buf, "Give me a password for %s: ", GET_NAME(d->character));
-
-            SEND_TO_Q(buf, d);
-            write(d->descriptor, echo_off, 4);
-            STATE(d) = CON_PWDGET;
-        } else if (*arg == 'n' || *arg == 'N') {
+            EnterState(d, CON_PWDGET);
+            break;
+        case 'n':
             SEND_TO_Q("Ok, what IS it, then? ", d);
-            if (GET_NAME(d->character)) {
-                free(GET_NAME(d->character));
-            }
-            STATE(d) = CON_NME;
-        } else {
-            /*
-             * Please do Y or N
-             */
+            EnterState(d, CON_NME);
+            break;
+        default:
             SEND_TO_Q("Please type Yes or No? ", d);
+            break;
         }
         break;
 
     case CON_PWDNRM:
-    /*
-     * get pwd for known player
-     */
+        /*
+         * get pwd for known player
+         */
         /*
          * skip whitespaces
          */
@@ -2486,6 +2565,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 close_socket(d);
                 return;
             }
+
 #ifdef IMPL_SECURITY
             if (top_of_p_table > 0) {
                 if (GetMaxLevel(d->character) >= 58) {
@@ -2545,7 +2625,7 @@ void nanny(struct descriptor_data *d, char *arg)
                      !tmp_ch->desc && !IS_NPC(tmp_ch)) ||
                     (IS_NPC(tmp_ch) && tmp_ch->orig &&
                      !strcasecmp(GET_NAME(d->character),
-                              GET_NAME(tmp_ch->orig)))) {
+                                 GET_NAME(tmp_ch->orig)))) {
 
                     write(d->descriptor, echo_on, 6);
                     SEND_TO_Q("Reconnecting.\n\r", d);
@@ -2562,7 +2642,6 @@ void nanny(struct descriptor_data *d, char *arg)
                         tmp_ch->orig = 0;
                     }
                     d->character->persist = 0;
-                    STATE(d) = CON_PLYNG;
 
                     if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
                         act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
@@ -2575,7 +2654,9 @@ void nanny(struct descriptor_data *d, char *arg)
                         free(d->character->specials.hostip);
                     }
                     d->character->specials.hostip = strdup(d->host);
+
                     write_char_extra(d->character);
+                    EnterState(d, CON_PLYNG);
                     return;
                 }
             }
@@ -2592,8 +2673,7 @@ void nanny(struct descriptor_data *d, char *arg)
                 if (!IS_IMMORTAL(d->character) ||
                     d->character->invis_level <= 58) {
                     sprintf(buf, "%s[%s] has connected - Last connected"
-                            " from[%s]",
-                            GET_NAME(d->character), d->host,
+                            " from[%s]", GET_NAME(d->character), d->host,
                             d->character->specials.hostip);
                     Log(buf);
                 }
@@ -2604,21 +2684,16 @@ void nanny(struct descriptor_data *d, char *arg)
                 free(d->character->specials.hostip);
             }
             d->character->specials.hostip = strdup(d->host);
-            write_char_extra(d->character);
 
-            send_to_char(motd, d->character);
-#if 0
-            SEND_TO_Q(motd, d);
-#endif
-            SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-            STATE(d) = CON_RMOTD;
+            write_char_extra(d->character);
+            EnterState(d, CON_RMOTD);
         }
         break;
 
     case CON_PWDGET:
-    /*
-     * get pwd for new player
-     */
+        /*
+         * get pwd for new player
+         */
         /*
          * skip whitespaces
          */
@@ -2626,25 +2701,20 @@ void nanny(struct descriptor_data *d, char *arg)
         if (!arg || strlen(arg) > 10) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Illegal password.\n\r", d);
-            SEND_TO_Q("Password: ", d);
-
-            write(d->descriptor, echo_off, 4);
+            EnterState(d, CON_PWDGET);
             return;
         }
 
         strncpy(d->pwd, (char *) crypt(arg, d->character->player.name), 10);
-        *(d->pwd + 10) = '\0';
+        d->pwd[10] = '\0';
         write(d->descriptor, echo_on, 6);
-        SEND_TO_Q("Please retype password: ", d);
-
-        write(d->descriptor, echo_off, 4);
-        STATE(d) = CON_PWDCNF;
+        EnterState(d, CON_PWDCNF);
         break;
 
     case CON_PWDCNF:
-    /*
-     * get confirmation of new pwd
-     */
+        /*
+         * get confirmation of new pwd
+         */
         /*
          * skip whitespaces
          */
@@ -2653,41 +2723,30 @@ void nanny(struct descriptor_data *d, char *arg)
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Passwords don't match.\n\r", d);
-            SEND_TO_Q("Retype password: ", d);
-            STATE(d) = CON_PWDGET;
-            write(d->descriptor, echo_off, 4);
+            EnterState(d, CON_PWDGET);
             return;
-        } else {
-            write(d->descriptor, echo_on, 6);
+        } 
 
-            SEND_TO_Q("Would you like to have ansi colors? ", d);
-#if 0
-            show_menu(d);
-#endif
-            STATE(d) = CON_ANSI;
-#if 0
-            CON_CREATION_MENU;
-#endif
-        }
+        write(d->descriptor, echo_on, 6);
+        EnterState(d, CON_ANSI);
         break;
 
     case CON_QSEX:
-    /*
-     * query sex of new user
-     */
+        /*
+         * query sex of new user
+         */
         /*
          * skip whitespaces
          */
         arg = skip_spaces(arg);
         if( !arg ) {
             SEND_TO_Q("That's not a sex..\n\r", d);
-            SEND_TO_Q("What IS your sex? :", d);
+            EnterState(d, CON_QSEX);
             return;
         }
 
-        switch (*arg) {
+        switch (tolower(*arg)) {
         case 'm':
-        case 'M':
             /*
              * sex MALE
              */
@@ -2695,7 +2754,6 @@ void nanny(struct descriptor_data *d, char *arg)
             break;
 
         case 'f':
-        case 'F':
             /*
              * sex FEMALE
              */
@@ -2704,13 +2762,12 @@ void nanny(struct descriptor_data *d, char *arg)
 
         default:
             SEND_TO_Q("That's not a sex..\n\r", d);
-            SEND_TO_Q("What IS your sex? :", d);
+            EnterState(d, CON_QSEX);
             return;
             break;
         }
 
-        show_menu(d);
-        STATE(d) = CON_CREATION_MENU;
+        EnterState(d, CON_CREATION_MENU);
         break;
 
     case CON_STAT_LIST:
@@ -2720,82 +2777,52 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         index = 0;
         while (arg && *arg && index < MAX_STAT) {
-            if (*arg == 'S' || *arg == 's') {
+            switch(tolower(*arg)) {
+            case 's':
                 d->stat[index++] = 's';
-            }
-            if (*arg == 'I' || *arg == 'i') {
+                break;
+            case 'i':
                 d->stat[index++] = 'i';
-            }
-            if (*arg == 'W' || *arg == 'w') {
+                break;
+            case 'w':
                 d->stat[index++] = 'w';
-            }
-            if (*arg == 'D' || *arg == 'd') {
+                break;
+            case 'd':
                 d->stat[index++] = 'd';
-            }
-            if (*arg == 'C' || *arg == 'c') {
+                break;
+            case 'c':
                 arg++;
-                if (*arg == 'O' || *arg == 'o') {
+                if(tolower(*arg) == 'o') {
                     d->stat[index++] = 'o';
-                } else if (*arg == 'H' || *arg == 'h') {
-                    d->stat[index++] = 'h';
-                } else {
-                    SEND_TO_Q("That was an invalid choice.\n\r", d);
-                    SEND_TO_Q("\n\rSelect your stat priority, by listing them"
-                              " from highest to lowest\n\r", d);
-                    SEND_TO_Q("Seperated by spaces.  don't duplicate letters"
-                              "\n\r", d);
-                    SEND_TO_Q("for example: 'S I W D Co Ch' would put the "
-                              "highest roll in Strength, \n\r", d);
-                    SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and "
-                              "lastly Charisma\n\r", d);
-                    SEND_TO_Q("Your choice? ", d);
-                    STATE(d) = CON_STAT_LIST;
                     break;
-                }
+                } else if (tolower(*arg) == 'h') {
+                    d->stat[index++] = 'h';
+                    break;
+                } 
+                /* If neither Co or Ch, fall through to default */
+            default:
+                SEND_TO_Q("That was an invalid choice.\n\r", d);
+                EnterState(d, CON_STAT_LIST);
+                return;
+                break;
             }
-            arg++;
+
+            while(*arg != ' ') {
+                arg++;
+            }
+            while(*arg == ' ') {
+                arg++;
+            }
         }
 
         if (index < MAX_STAT) {
             SEND_TO_Q("You did not enter enough legal stats\n\r", d);
             SEND_TO_Q("That was an invalid choice.\n\r", d);
-            SEND_TO_Q("\n\rSelect your stat priority, by listing them from "
-                      "highest to lowest\n\r", d);
-            SEND_TO_Q("Seperated by spaces, don't duplicate letters \n\r", d);
-            SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll"
-                      " in Strength, \n\r", d);
-            SEND_TO_Q("next in intelligence, Wisdom, Dex, Con and lastly "
-                      "Charisma\n\r", d);
-            SEND_TO_Q("Your choice? ", d);
-            STATE(d) = CON_STAT_LIST;
-            break;
-        } else {
-            roll_abilities(d->character);
-            SEND_TO_Q("Your current stats are:\n\r", d);
-            sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "\n\rYou have 9 rerolls left, press R to reroll, any"
-                         " other key to keep.\n\r");
-            SEND_TO_Q(buf, d);
-            if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-                /*
-                 * set the AUTH flags
-                 * (3 chances)
-                 */
-                d->character->generic = NEWBIE_REQUEST + NEWBIE_CHANCES;
-            }
-        }
-
+            EnterState(d, CON_STAT_LIST);
+            return;
+        } 
+        
+        roll_abilities(d->character);
         if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
             /*
              * set the AUTH flags
@@ -2804,89 +2831,51 @@ void nanny(struct descriptor_data *d, char *arg)
             d->character->generic = NEWBIE_REQUEST + NEWBIE_CHANCES;
         }
 
-        STATE(d) = CON_REROLL;
+        d->character->reroll--;
+        EnterState(d, CON_REROLL);
         break;
 
     case CON_REROLL:
         arg = skip_spaces(arg);
         d->character->reroll--;
 
-        if (!arg || (*arg != 'r' && *arg != 'R')) {
+        if (!arg || tolower(*arg) != 'r') {
             SEND_TO_Q("Stats chosen!\n\r", d);
 
-            STATE(d) = CON_CREATION_MENU;
-
             if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
-                show_menu(d);
-                STATE(d) = CON_CREATION_MENU;
+                EnterState(d, CON_AUTH);
             } else {
-                show_menu(d);
-                STATE(d) = CON_CREATION_MENU;
+                EnterState(d, CON_CREATION_MENU);
             }
-        } else if (d->character->reroll != 0) {
-            roll_abilities(d->character);
-            SEND_TO_Q("Your current stats are:\n\r", d);
-            sprintf(buf, "STR: %s\n\r",
-                    STAT_SWORD(GET_STR(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CON: %s\n\r",
-                    STAT_SWORD(GET_CON(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "DEX: %s\n\r",
-                    STAT_SWORD(GET_DEX(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "INT: %s\n\r",
-                    STAT_SWORD(GET_INT(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "WIS: %s\n\r",
-                    STAT_SWORD(GET_WIS(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CHR: %s\n\r",
-                    STAT_SWORD(GET_CHR(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "\n\rYou have %d rerolls left, press R to reroll,"
-                         " any other key to keep.\n\r",
-                         d->character->reroll);
-            SEND_TO_Q(buf, d);
-            STATE(d) = CON_REROLL;
-        } else {
-            roll_abilities(d->character);
-            SEND_TO_Q("Your final stats are:\n\r", d);
-            sprintf(buf, "STR: %s\n\r",
-                    STAT_SWORD(GET_STR(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CON: %s\n\r",
-                    STAT_SWORD(GET_CON(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "DEX: %s\n\r",
-                    STAT_SWORD(GET_DEX(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "INT: %s\n\r",
-                    STAT_SWORD(GET_INT(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "WIS: %s\n\r",
-                    STAT_SWORD(GET_WIS(d->character)));
-            SEND_TO_Q(buf, d);
-            sprintf(buf, "CHR: %s\n\r",
-                    STAT_SWORD(GET_CHR(d->character)));
-            SEND_TO_Q(buf, d);
-            SEND_TO_Q("Stats chosen!", d);
-            STATE(d) = CON_CREATION_MENU;
-            break;
-        }
-        break;
+            return;
+        } 
+        
+        roll_abilities(d->character);
+        if (d->character->reroll != 0) {
+            EnterState(d, CON_REROLL);
+            return;
+        } 
+        
+        SEND_TO_Q("Your final stats are:\n\r", d);
+        sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "CON: %s\n\r", STAT_SWORD(GET_CON(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "DEX: %s\n\r", STAT_SWORD(GET_DEX(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "INT: %s\n\r", STAT_SWORD(GET_INT(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "WIS: %s\n\r", STAT_SWORD(GET_WIS(d->character)));
+        SEND_TO_Q(buf, d);
+        sprintf(buf, "CHR: %s\n\r", STAT_SWORD(GET_CHR(d->character)));
+        SEND_TO_Q(buf, d);
+        SEND_TO_Q("Stats chosen!", d);
 
-    case CON_PRESS_ENTER:
-        /*
-         * page_string(d,NEWBIE_NOTE,1);
-         */
-        for( i = 0; newbie_note[i]; i++ ) {
-            SEND_TO_Q(newbie_note[i], d);
+        if (IS_SET(SystemFlags, SYS_REQAPPROVE)) {
+            EnterState(d, CON_AUTH);
+        } else {
+            EnterState(d, CON_CREATION_MENU);
         }
-        STATE(d) = CON_RMOTD;
-        send_to_char(motd, d->character);
-        SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-        STATE(d) = CON_RMOTD;
         break;
 
     case CON_MCLASS:
@@ -2896,23 +2885,12 @@ void nanny(struct descriptor_data *d, char *arg)
         if (arg && (pick = atoi(arg)) &&
             HasClass(d->character, pc_num_class(pick-1))) {
             d->character->specials.remortclass = pick;
-            STATE(d) = CON_CREATION_MENU;
-            show_menu(d);
-        } else {
-            SEND_TO_Q("\n\rInvalid class picked.\n\r", d);
-            d->character->specials.remortclass = 0;
-            SEND_TO_Q("\n\rSelect your main class from the options below.\n\r",
-                      d);
-            for (chosen = 0; chosen <= NECROMANCER_LEVEL_IND; chosen++) {
-                if (HasClass(d->character, pc_num_class(chosen))) {
-                    sprintf(bufx, "[%2d] %s\n\r", chosen + 1, 
-                            classes[chosen].name);
-                    send_to_char(bufx, d->character);
-                }
-            }
-            SEND_TO_Q("\n\rMain Class :", d);
-            STATE(d) = CON_MCLASS;
-        }
+            EnterState(d, CON_CREATION_MENU);
+            return;
+        } 
+        
+        SEND_TO_Q("\n\rInvalid class picked.\n\r", d);
+        EnterState(d, CON_MCLASS);
         break;
 
     case CON_QCLASS:
@@ -2923,9 +2901,15 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         if( !arg ) {
             SEND_TO_Q("Invalid selection!\n\r", d);
-            show_class_selection(d, GET_RACE(d->character));
-            SEND_TO_Q("Enter ? for help.\n\r", d);
-            SEND_TO_Q("\n\rClass :", d);
+            EnterState(d, CON_QCLASS);
+            return;
+        }
+
+        if( *arg == '?' ) {
+            for( i = 0; class_help[i]; i++ ) {
+                SEND_TO_Q(class_help[i], d);
+            }
+            EnterState(d, CON_QCLASS);
             return;
         }
 
@@ -2933,444 +2917,105 @@ void nanny(struct descriptor_data *d, char *arg)
         count = 0;
         oops = FALSE;
 
-        switch (*arg) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        if( isdigit((int)*arg )) {
+            ii = atoi(arg);
+
             switch (GET_RACE(d->character)) {
             case RACE_AVARIEL:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       avariel_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = avariel_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = avariel_class_choice[ii];
                 break;
 
             case RACE_GOLD_ELF:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       gold_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = gold_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = gold_elf_class_choice[ii];
                 break;
 
             case RACE_WILD_ELF:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       wild_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = wild_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else
-                    show_class_selection(d, GET_RACE(d->character));
+                d->character->player.class = wild_elf_class_choice[ii];
                 break;
 
             case RACE_SEA_ELF:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       sea_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = sea_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = sea_elf_class_choice[ii];
                 break;
 
             case RACE_MOON_ELF:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       moon_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = moon_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = moon_elf_class_choice[ii];
                 break;
 
             case RACE_HUMAN:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && human_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = human_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = human_class_choice[ii];
                 break;
 
             case RACE_HALFLING:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && halfling_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = halfling_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = halfling_class_choice[ii];
                 break;
 
             case RACE_FOREST_GNOME:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       forest_gnome_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class =
-                            forest_gnome_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = forest_gnome_class_choice[ii];
                 break;
 
             case RACE_DEEP_GNOME:
             case RACE_ROCK_GNOME:
-                ii = 0;
-                while (d->character->player.class == 0 &&
-                       rock_gnome_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class =
-                            rock_gnome_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if ((d->character->player.class != 0)) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = rock_gnome_class_choice[ii];
                 break;
 
             case RACE_DWARF:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && dwarf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = dwarf_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = dwarf_class_choice[ii];
                 break;
 
             case RACE_HALF_ELF:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && half_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = half_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = half_elf_class_choice[ii];
                 break;
 
             case RACE_HALF_OGRE:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && half_ogre_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = half_ogre_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = half_ogre_class_choice[ii];
                 break;
 
             case RACE_HALF_GIANT:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && half_giant_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class =
-                            half_giant_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = half_giant_class_choice[ii];
                 break;
 
             case RACE_HALF_ORC:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && half_orc_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = half_orc_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = half_orc_class_choice[ii];
                 break;
 
             case RACE_ORC:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && orc_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = orc_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = orc_class_choice[ii];
                 break;
 
             case RACE_GOBLIN:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && goblin_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = goblin_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = goblin_class_choice[ii];
                 break;
 
             case RACE_DROW:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && dark_elf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = dark_elf_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = dark_elf_class_choice[ii];
                 break;
 
             case RACE_DARK_DWARF:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && dark_dwarf_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class =
-                            dark_dwarf_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = dark_dwarf_class_choice[ii];
                 break;
 
             case RACE_TROLL:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && troll_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = troll_class_choice[ii];
-                    }
-                    ii++;
-                }
-
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = troll_class_choice[ii];
                 break;
 
             default:
-                ii = 0;
-                while (d->character->player.class == 0
-                       && default_class_choice[ii] != 0) {
-                    if (atoi(arg) == ii) {
-                        d->character->player.class = default_class_choice[ii];
-                    }
-                    ii++;
-                }
-                if (d->character->player.class != 0) {
-                    if (!HasClass(d->character, CLASS_MAGIC_USER)) {
-                        STATE(d) = CON_CREATION_MENU;
-                        show_menu(d);
-                    }
-                } else {
-                    show_class_selection(d, GET_RACE(d->character));
-                }
+                d->character->player.class = default_class_choice[ii];
                 break;
             }
-            break;
+        }
 
-        case '?':
-            for( i = 0; class_help[i]; i++ ) {
-                SEND_TO_Q(class_help[i], d);
-            }
-            SEND_TO_Q("\n\rSelect your class now.\n\r", d);
-            show_class_selection(d, GET_RACE(d->character));
-            SEND_TO_Q("Enter ? for help.\n\r", d);
-            SEND_TO_Q("\n\rClass :", d);
-            break;
-
-        default:
+        if (d->character->player.class == 0) {
             SEND_TO_Q("Invalid selection!\n\r", d);
-            show_class_selection(d, GET_RACE(d->character));
-            SEND_TO_Q("Enter ? for help.\n\r", d);
-            SEND_TO_Q("\n\rClass :", d);
-            break;
+            EnterState(d, CON_QCLASS);
+            return;
         }
 
         if (HasClass(d->character, CLASS_MAGIC_USER)) {
-            for( i = 0; ru_sorcerer[i]; i++ ) {
-                SEND_TO_Q(ru_sorcerer[i], d);
-            }
-            STATE(d) = CON_CHECK_MAGE_TYPE;
-            break;
+            EnterState(d, CON_CHECK_MAGE_TYPE);
+            return;
         }
 
+        EnterState(d, CON_CREATION_MENU);
         break;
 
     case CON_AUTH:
@@ -3384,34 +3029,28 @@ void nanny(struct descriptor_data *d, char *arg)
              */
             d->pos = create_entry(GET_NAME(d->character));
             save_char(d->character, AUTO_RENT);
-            send_to_char(motd, d->character);
-            SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-            STATE(d) = CON_RMOTD;
-        } else if (d->character->generic >= NEWBIE_REQUEST) {
+            EnterState(d, CON_RMOTD);
+            return;
+        } 
+        
+        if (d->character->generic >= NEWBIE_REQUEST) {
             sprintf(buf, "%s [%s] new player.", GET_NAME(d->character),
                     d->host);
             log_sev(buf, 1);
-            if (!strncmp(d->host, "128.197.152", 11)) {
-                d->character->generic = 1;
-            }
             /*
              * I decided to give them another chance.  -Steppenwolf
              * They blew it. -DM
              */
-            if (!strncmp(d->host, "oak.grove", 9) ||
-                !strncmp(d->host, "143.195.1.20", 12)) {
-                d->character->generic = 1;
+            if (top_of_p_table > 0) {
+                sprintf(buf, "Type Authorize %s [Yes | No | Message]",
+                        GET_NAME(d->character));
+                log_sev(buf, 1);
+                log_sev("type 'Wizhelp Authorize' for other commands", 1);
             } else {
-                if (top_of_p_table > 0) {
-                    sprintf(buf, "Type Authorize %s [Yes | No | Message]",
-                            GET_NAME(d->character));
-                    log_sev(buf, 1);
-                    log_sev("type 'Wizhelp Authorize' for other commands", 1);
-                } else {
-                    Log("Initial character.  Authorized Automatically");
-                    d->character->generic = NEWBIE_START + 5;
-                }
+                Log("Initial character.  Authorized Automatically");
+                d->character->generic = NEWBIE_START + 5;
             }
+
             /*
              **  enough for gods.  now player is told to shut up.
              */
@@ -3421,26 +3060,22 @@ void nanny(struct descriptor_data *d, char *arg)
                     d->character->generic);
             SEND_TO_Q(buf, d);
             if (d->character->generic == 0) {
-                SEND_TO_Q("Goodbye.", d);
-                STATE(d) = CON_WIZLOCK;
-                break;
+                EnterState(d, CON_WIZLOCK);
             } else {
-                SEND_TO_Q("Please Wait.\n\r", d);
-                STATE(d) = CON_AUTH;
+                EnterState(d, CON_AUTH);
             }
         } else {
-            STATE(d) = CON_WIZLOCK;
+            EnterState(d, CON_WIZLOCK);
         }
         break;
 
     case CON_CHECK_MAGE_TYPE:
         arg = skip_spaces(arg);
-        if (arg && !strcmp(arg, "yes")) {
+        if (arg && tolower(*arg) == 'y') {
             d->character->player.class -= CLASS_MAGIC_USER;
             d->character->player.class += CLASS_SORCERER;
         }
-        STATE(d) = CON_CREATION_MENU;
-        show_menu(d);
+        EnterState(d, CON_CREATION_MENU);
         break;
 
     case CON_RMOTD:
@@ -3448,26 +3083,23 @@ void nanny(struct descriptor_data *d, char *arg)
          * read CR after printing motd
          */
         if (IS_IMMORTAL(d->character)) {
-            send_to_char(wmotd, d->character);
-#if 0
-            SEND_TO_Q(wmotd, d);
-#endif
-            SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
-            STATE(d) = CON_WMOTD;
+            EnterState(d, CON_WMOTD);
             break;
         }
+
         if (d->character->term != 0) {
             ScreenOff(d->character);
         }
-        send_to_char(MENU, d->character);
 
-        STATE(d) = CON_SLCT;
+
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
             !IS_IMMORTAL(d->character)) {
             sprintf(buf, "Sorry, the game is locked up for repair or your "
                          "site is banned.\n\r");
             SEND_TO_Q(buf, d);
-            STATE(d) = CON_WIZLOCK;
+            EnterState(d, CON_WIZLOCK);
+        } else {
+            EnterState(d, CON_SLCT);
         }
         break;
 
@@ -3475,15 +3107,14 @@ void nanny(struct descriptor_data *d, char *arg)
         /*
          * read CR after printing motd
          */
-        send_to_char(MENU, d->character);
-
-        STATE(d) = CON_SLCT;
         if ((IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host)) &&
             !IS_IMMORTAL(d->character)) {
-            sprintf(buf, "Sorry, the game is locked up for repair or your site"
-                         " is banned.\n\r");
+            sprintf(buf, "Sorry, the game is locked up for repair or your "
+                         "site is banned.\n\r");
             SEND_TO_Q(buf, d);
-            STATE(d) = CON_WIZLOCK;
+            EnterState(d, CON_WIZLOCK);
+        } else {
+            EnterState(d, CON_SLCT);
         }
         break;
 
@@ -3493,19 +3124,16 @@ void nanny(struct descriptor_data *d, char *arg)
 
     case CON_DELETE_ME:
         arg = skip_spaces(arg);
-        if (arg && !strcmp(arg, "yes") && 
-            strcmp("Guest", GET_NAME(d->character))) {
+        if (arg && !strcasecmp(arg, "yes") && 
+            strcasecmp("Guest", GET_NAME(d->character))) {
             sprintf(buf, "%s just killed theirself!", GET_NAME(d->character));
             Log(buf);
             for (i = 0; i <= top_of_p_table; i++) {
-                if (!strcasecmp((player_table + i)->name,
-                             GET_NAME(d->character))) {
-                    if ((player_table + i)->name) {
-                        free((player_table + i)->name);
+                if (!strcasecmp(player_table[i].name, GET_NAME(d->character))) {
+                    if (player_table[i].name) {
+                        free(player_table[i].name);
                     }
-                    (player_table + i)->name =
-                        (char *) malloc(strlen("111111"));
-                    strcpy((player_table + i)->name, "111111");
+                    player_table[i].name = strdup("111111");
                     break;
                 }
             }
@@ -3538,9 +3166,12 @@ void nanny(struct descriptor_data *d, char *arg)
             remove(buf);
             close_socket(d);
         }
-        send_to_char(MENU, d->character);
 
-        STATE(d) = CON_SLCT;
+        EnterState(d, CON_SLCT);
+        break;
+
+    case CON_PRESS_ENTER:
+        EnterState(d, CON_SLCT);
         break;
 
     case CON_SLCT:
@@ -3551,10 +3182,11 @@ void nanny(struct descriptor_data *d, char *arg)
         arg = skip_spaces(arg);
         if(!arg) {
             SEND_TO_Q("Wrong option.\n\r", d);
-            send_to_char(MENU, d->character);
+            EnterState(d, CON_SLCT);
             break;
         }
-        switch (*arg) {
+
+        switch (tolower(*arg)) {
         case '0':
             close_socket(d);
             break;
@@ -3630,7 +3262,8 @@ void nanny(struct descriptor_data *d, char *arg)
                 plr_tick_count = 0;
             }
             act("$n has entered the game.", TRUE, d->character, 0, 0, TO_ROOM);
-            STATE(d) = CON_PLYNG;
+            EnterState(d, CON_PLYNG);
+
             if (!GetMaxLevel(d->character)) {
                 do_start(d->character);
             }
@@ -3661,7 +3294,6 @@ void nanny(struct descriptor_data *d, char *arg)
         case '2':
             SEND_TO_Q("Enter a text you'd like others to see when they look "
                       "at you.\n\r", d);
-            SEND_TO_Q("Terminate with a '~'.\n\r", d);
             if (d->character->player.description) {
                 SEND_TO_Q("Old description :\n\r", d);
                 SEND_TO_Q(d->character->player.description, d);
@@ -3672,35 +3304,30 @@ void nanny(struct descriptor_data *d, char *arg)
             }
             d->str = &d->character->player.description;
             d->max_str = 240;
-            STATE(d) = CON_EXDSCR;
-            SEND_TO_Q("<type /w to save.>\n\r", d);
+            EnterState(d, CON_EXDSCR);
             break;
 
         case '3':
             SEND_TO_Q(STORY, d);
-            STATE(d) = CON_RMOTD;
+            EnterState(d, CON_PRESS_ENTER);
             break;
+
         case '4':
             SEND_TO_Q(credits, d);
-            SEND_TO_Q("\n\r<Press any key to continue>", d);
-            STATE(d) = CON_RMOTD;
+            EnterState(d, CON_PRESS_ENTER);
             break;
 
         case '5':
-            SEND_TO_Q("Enter a new password: ", d);
-            write(d->descriptor, echo_off, 4);
-            STATE(d) = CON_PWDNEW;
+            EnterState(d, CON_PWDNEW);
             break;
 
-        case 'K':
         case 'k':
-            SEND_TO_Q("Are you sure you want to delete yourself? (yes/no) ", d);
-            STATE(d) = CON_DELETE_ME;
+            EnterState(d, CON_DELETE_ME);
             break;
 
         default:
             SEND_TO_Q("Wrong option.\n\r", d);
-            send_to_char(MENU, d->character);
+            EnterState(d, CON_SLCT);
             break;
         }
         break;
@@ -3714,10 +3341,7 @@ void nanny(struct descriptor_data *d, char *arg)
             write(d->descriptor, echo_on, 6);
 
             SEND_TO_Q("Illegal password.\n\r", d);
-            SEND_TO_Q("Password: ", d);
-
-            write(d->descriptor, echo_off, 4);
-
+            EnterState(d, CON_PWDNEW);
             return;
         }
 
@@ -3725,15 +3349,11 @@ void nanny(struct descriptor_data *d, char *arg)
         *(d->pwd + 10) = '\0';
         write(d->descriptor, echo_on, 6);
 
-        SEND_TO_Q("Please retype password: ", d);
-
-        STATE(d) = CON_PWDNCNF;
-        write(d->descriptor, echo_off, 4);
+        EnterState(d, CON_PWDNCNF);
         break;
 
     case CON_EXDSCR:
-        send_to_char(MENU, d->character);
-        STATE(d) = CON_SLCT;
+        EnterState(d, CON_SLCT);
         break;
 
     case CON_PWDNCNF:
@@ -3744,25 +3364,24 @@ void nanny(struct descriptor_data *d, char *arg)
         if (!arg || strncmp((char *) crypt(arg, d->pwd), d->pwd, 10)) {
             write(d->descriptor, echo_on, 6);
             SEND_TO_Q("Passwords don't match.\n\r", d);
-            SEND_TO_Q("Retype password: ", d);
-            write(d->descriptor, echo_off, 4);
-
-            STATE(d) = CON_PWDNEW;
+            EnterState(d, CON_PWDNEW);
             return;
         }
+
         write(d->descriptor, echo_on, 6);
 
         SEND_TO_Q("\n\rDone. You must enter the game to make the change "
                   "final\n\r", d);
-        send_to_char(MENU, d->character);
 
-        STATE(d) = CON_SLCT;
+        EnterState(d, CON_SLCT);
         break;
 
     default:
         sprintf(buf, "Nanny: illegal state of con'ness (%d)", STATE(d));
         Log(buf);
-        abort();
+        SEND_TO_Q("The mud has lost its brain on your connection, please "
+                  "reconnect.\n\r", d);
+        close_socket(d);
         break;
     }
 }
