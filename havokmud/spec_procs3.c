@@ -5974,10 +5974,10 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
   }
 	return(FALSE);
-<<<<<<< spec_procs3.c
+
 }
-=======
-}
+
+
 
 /* Toy for Banon.. a new say for him (GH) April 2002 */
 int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
@@ -6008,4 +6008,4 @@ int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, 
        }
   }
 
-}>>>>>>> 1.28
+}
