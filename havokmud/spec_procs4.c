@@ -499,7 +499,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
     }
 
     curr_time = time(0);
-    t_info = localtime( &curr_time);
+    t_info = localtime(&curr_time);
 
     curr_time = time(NULL);
 #if 0
@@ -5148,8 +5148,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
 int knockproc(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
-
-    time_t            curr_time;
+    time_t          curr_time;
     struct tm      *t_info;
 
     Log("Knockproc");

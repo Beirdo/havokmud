@@ -521,7 +521,7 @@ char           *read_delete(char *recipient, char *recipient_formatted)
         return 0;
     }
 
-    tmstr = asctime(localtime((time_t *) &header.mail_time));
+    tmstr = asctime(localtime(&header.mail_time));
     *(tmstr + strlen(tmstr) - 1) = '\0';
 
     sprintf(buf, " * * * * Havok Mail System * * * *\n\r"

@@ -116,7 +116,7 @@ struct header_block_type_d {
     char            from[NAME_SIZE + 1];        /* who is this letter
                                                  * from? */
     char            to[NAME_SIZE + 1];  /* who is this letter to? */
-    long            mail_time;  /* when was the letter mailed? */
+    time_t          mail_time;  /* when was the letter mailed? */
     char            txt[HEADER_BLOCK_DATASIZE + 1];     /* the actual text */
 };
 
