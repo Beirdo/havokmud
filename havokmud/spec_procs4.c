@@ -557,11 +557,6 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 
     int x=0, stat=0, cost=3;
 
-	if(!AWAKE(ch) || IS_NPC(ch))
-		return(FALSE);
-
-	if(cmd!=582 && cmd!=59)
-		return(FALSE);
 
 	const struct skillset traininglist[] = {
 //	  { "hitpoints",    1,      0},
@@ -576,6 +571,12 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	  { "None",		    -1,	    -1}
 
 	};
+
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
+
+	if(cmd!=582 && cmd!=59)
+		return(FALSE);
 
 	if(cmd==582 && !*arg) { //list if no argument
 		ch_printf(ch,"$c000B%-15s     %-3s\n\r------------------------\n\r","Stat","Cost");
@@ -594,11 +595,11 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 						cost = traininglist[x].level;
 						if(cost < 3)
 							cost = 3;
-							stat= x+1;
-							if(GET_PRAC(ch) - cost < 0) {
-								ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
-								return (TRUE);
-							}
+						stat= x+1;
+						if(GET_PRAC(ch) - cost < 0) {
+							ch_printf(ch,"$c000P%s tells you 'You don't have enough practice sessions to learn %s.'\n\r",name,traininglist[x].name);
+							return (TRUE);
+						}
 
 						break;
 					}
