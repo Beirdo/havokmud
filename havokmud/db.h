@@ -1,7 +1,9 @@
 
 /* data files used by the game system */
 
+#ifndef RLIMIT_OFILE
 #define RLIMIT_OFILE      99999
+#endif
 #define DFLT_DIR          "../lib"           /* default data directory     */
 
 #define WORLD_FILE        "tinyworld.wld" /* room definitions           */
