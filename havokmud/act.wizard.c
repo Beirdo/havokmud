@@ -4066,7 +4066,7 @@ void do_start(struct char_data *ch)
     int             r_num,
                     temp = 0;
     struct obj_data *obj;
-    char            buf[80];
+    char            buf[256];
 
     void            advance_level(struct char_data *ch, int i);
 
