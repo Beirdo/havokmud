@@ -5991,22 +5991,11 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		questNumber2 = number(0,3);
 	}
 
-/*	if(cmd == 15) { //look
+	if(cmd == 15) { //look
 		if(!(strcmp(lower(arg),"ball"))) {
 			send_to_char("You look deep into the crystal ball..\n\r\n\r",ch);
-			if(obj = find_tqp()) {
-				if(vict = obj->carried_by) {
-					if(!IS_NPC(vict)) {
-						send_to_char("The token seems to already have been tracked down by someone.\n\r",ch);
-					} else {
-						send_to_char("The crystal ball divulges some information on the current carrier of the\n\r",ch);
-						send_to_char("quest point token, though for how much longer it will stay, it cannot say.\n\r\n\r",ch);
-						if (vict->player.description)
-							send_to_char(vict->player.description, ch);
-					}
-				} else {
-					send_to_char("You cannot seem to divine the exact location of the token.\n\r",ch);
-				}
+			if(obj = find_tqp(1)) {
+				send_to_char("A slight glint, deep inside the crystal tells you that there's booty to be had.\n\r",ch);
 			} else {
 				send_to_char(".. and see nothing at all.\n\r",ch);
 			}
@@ -6014,7 +6003,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		}
 		return(FALSE);
 	}
-*/
+
 	//Ask what the quest is?
 	if (cmd == 86)
 	{ /* ask */
