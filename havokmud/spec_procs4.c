@@ -341,7 +341,7 @@ int vampiric_embrace(struct char_data *ch, struct char_data *vict)
 		act("$c0008The negative aura surrounding $n's hands lashes out at $N, draining some of $S life.", FALSE, ch, 0, vict, TO_NOTVICT);
 		act("$c0008The negative aura surrounding $n's hands lashes out at you, draining some of your life.", FALSE, ch, 0, vict, TO_VICT);
 	}
-	dam = dice(2,8);
+	dam = dice(3,8);
 	if(IsResist(vict, IMM_DRAIN)) /* half damage for resist */
 		dam >>= 1;
 	GET_HIT(ch) += dam;
