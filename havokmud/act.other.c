@@ -4408,6 +4408,17 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
             }
         }
     } else if (!strcmp(type, "email")) {
+        if (strstr(field, "disable")) {
+            if (ch->specials.email) {
+                free(ch->specials.email);
+            }
+            ch->specials.email = strdup("None");
+            if (cmd) {
+                write_char_extra(ch);
+                send_to_char("Email address disabled.\n\r", ch);
+            }
+            return;
+        }
         if (*field) {
             /*
              * set email to field
