@@ -3460,7 +3460,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	if (cmd==164 || cmd == 170) {
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
+			sprintf(buf,"You can practice any of these lores:\n\r\n\r");
 			strcat(buffer,buf);
 			while(loreskills[i].level != -1) {
 				sprintf(buf,"[%-2d] %-30s %-15s",loreskills[i].level,
@@ -5677,7 +5677,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,RANGER_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
@@ -6026,7 +6026,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,PALADIN_LEVEL_IND);
 			/* list by level, so new skills show at top of list */

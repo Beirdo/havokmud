@@ -540,7 +540,7 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,THIEF_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
@@ -659,7 +659,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
@@ -778,7 +778,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
@@ -6917,7 +6917,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 
 		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
 			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
-			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			sprintf(buf,"You can practice any of these spells and skills:\n\r\n\r");
 			strcat(buffer,buf);
 			x = GET_LEVEL(ch,BARD_LEVEL_IND);
 			/* list by level, so new skills show at top of list */
