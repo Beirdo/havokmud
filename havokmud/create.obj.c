@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include "protos.h"
- 
+
 #define OBJ_MAIN_MENU         0
 #define CHANGE_OBJ_NAME       1
 #define CHANGE_OBJ_SHORT      2
@@ -31,11 +31,11 @@
 #define CHANGE_OBJ_AFFECT5   25
 #define CHANGE_AFFECT5_MOD   26
 
-#define CHANGE_SAFFECT1_MOD 27 
+#define CHANGE_SAFFECT1_MOD 27
 #define CHANGE_SAFFECT2_MOD 28
-#define CHANGE_SAFFECT3_MOD 29 
-#define CHANGE_SAFFECT4_MOD 30 
-#define CHANGE_SAFFECT5_MOD 31 
+#define CHANGE_SAFFECT3_MOD 29
+#define CHANGE_SAFFECT4_MOD 30
+#define CHANGE_SAFFECT5_MOD 31
 
 #define CHANGE_S2AFFECT1_MOD 32
 #define CHANGE_S2AFFECT2_MOD 33
@@ -45,7 +45,7 @@
 
 #define ENTER_CHECK        1
 
-extern struct index_data *obj_index;         /* index table for object file     */ 
+extern struct index_data *obj_index;         /* index table for object file     */
 extern const char *item_types[];
 extern const char *extra_bits[];
 extern const char *wear_bits[];
@@ -54,14 +54,14 @@ extern const char *immunity_names[];
 extern const char *affected_bits[];
 extern const char *affected_bits2[];
 int functionflag;
- 
+
 char *obj_edit_menu = "    1) Name                    2) Short description\n\r"
                       "    3) Description             4) Type\n\r"
                       "    5) Wear positions          6) Extra flags\n\r"
                       "    7) Weight                  8) Value\n\r"
                       "    9) Rent cost              10) Extra affects\n\r"
 		      "   11) Object values\n\r\n\r";
- 
+
 void ChangeObjWear(struct char_data *ch, char *arg, int type);
 void UpdateObjMenu(struct char_data *ch);
 void ChangeObjName(struct char_data *ch, char *arg, int type);
@@ -80,23 +80,23 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type);
 void ObjHitReturn(struct char_data *ch, char *arg, int type);
 void ChangeObjSAffect(struct char_data *ch, char *arg, int type);
 void ChangeObjS2Affect(struct char_data *ch, char *arg, int type);
- 
+
 void ChangeObjFlags(struct char_data *ch, char *arg, int type)
 {
  int i, a, check=0, row, update;
  char buf[255];
-  
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
     }
- 
+
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
-    if(update < 0 || update > 29)
+    if(update < 0 || update > 30)
        return;
     i=1;
     if(update>0)
@@ -113,9 +113,9 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  sprintf(buf, "Object Extra Flags:");
  send_to_char(buf, ch);
- 
+
  row = 0;
- for(i = 0; i < 30; i++) {
+ for(i = 0; i < 31; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -127,26 +127,26 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->obj_flags.extra_flags & (check)) ? "X" : " "), extra_bits[i]);
     send_to_char(buf, ch);
   }
- 
- sprintf(buf, VT_CURSPOS, 20, 1);
+
+ sprintf(buf, VT_CURSPOS, 22, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);
 }
- 
- 
- 
+
+
+
 void ChangeObjWear(struct char_data *ch, char *arg, int type)
 {
  int i, a, check=0, row, update;
  char buf[255];
-  
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
     }
- 
+
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
@@ -167,7 +167,7 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  sprintf(buf, "Object Wear Flags:");
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 20; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
@@ -181,13 +181,13 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->obj_flags.wear_flags & (check)) ? "X" : " "), wear_bits[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);
 }
- 
- 
+
+
 void do_oedit(struct char_data *ch, char *argument, int cmd)
 {
  char name[20];
@@ -196,19 +196,19 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
 
  if(IS_NPC(ch))
     return;
- 
+
   if ((IS_NPC(ch)) || (GetMaxLevel(ch)<CREATOR))
     return;
- 
+
   if (!ch->desc) /* someone is forced to do something. can be bad! */
     return;      /* the ch->desc->str field will cause problems... */
- 
-/* if (GetMaxLevel(ch) < GREATER_GOD && 
+
+/* if (GetMaxLevel(ch) < GREATER_GOD &&
  	!IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) {
  	 send_to_char("You do not have access to object editing.\n\r",ch);
  	 return;
  	} this have been temporarilly removed... */
- 	
+
   for (i = 0; *(argument + i) == ' '; i++);
   if (!*(argument + i)) {
     send_to_char("Oedit what?\n\r", ch);
@@ -216,42 +216,42 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
   }
 
   argument = one_argument(argument, name);
- 
+
   if (!(obj = (struct obj_data *)get_obj_vis_accessible(ch, name)))         {
     send_to_char("I don't see that object here.\n\r",ch);
     return;
   }
 
 #if 0
- if (obj_index[obj->item_number].data == NULL) 
+ if (obj_index[obj->item_number].data == NULL)
 	read_object_to_memory(obj_index[obj->item_number].virtual);
-  
+
  ch->specials.objedit=obj_index[obj->item_number].data;
 #else
 	ch->specials.objedit=obj;
 #endif
- 
+
  ch->specials.oedit = OBJ_MAIN_MENU;
  ch->desc->connected = CON_OBJ_EDITING;
- 
+
  act("$n has begun editing an object.", FALSE, ch, 0, 0, TO_ROOM);
  GET_POS(ch)=POSITION_SLEEPING;
- 
+
 /*    if(GetMaxLevel(ch)<ROLORD)
       ch->specials.objedit->mortal_can_use=FALSE;
       */
 
  UpdateObjMenu(ch);
 }
- 
- 
+
+
 void UpdateObjMenu(struct char_data *ch)
 {
  char buf[255];
  struct obj_data *obj;
- 
+
  obj = ch->specials.objedit;
- 
+
  send_to_char(VT_HOMECLR, ch);
  sprintf(buf, VT_CURSPOS, 1, 1);
  send_to_char(buf, ch);
@@ -263,8 +263,8 @@ void UpdateObjMenu(struct char_data *ch)
  send_to_char(obj_edit_menu, ch);
  send_to_char("--> ", ch);
 }
- 
- 
+
+
 void ObjEdit(struct char_data *ch, char *arg)
 {
  if(ch->specials.oedit == OBJ_MAIN_MENU) {
@@ -314,7 +314,7 @@ void ObjEdit(struct char_data *ch, char *arg)
                    return;
     }
   }
- 
+
  switch(ch->specials.oedit) {
  case CHANGE_OBJ_NAME: ChangeObjName(ch, arg, 0);
          return;
@@ -381,17 +381,17 @@ case CHANGE_S2AFFECT3_MOD:
 case CHANGE_S2AFFECT4_MOD:
 case CHANGE_S2AFFECT5_MOD:
 	ChangeObjS2Affect(ch, arg, 0);
-	return; 
+	return;
  default: log("Got to bad spot in ObjEdit");
           return;
  }
 }
- 
- 
+
+
 void ChangeObjName(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- struct obj_data *obj; 
+ struct obj_data *obj;
 
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
@@ -400,7 +400,7 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
         return;
     }
 
- obj=ch->specials.objedit; 
+ obj=ch->specials.objedit;
  if(type != ENTER_CHECK) {
     if(obj->name)
        free(obj->name);
@@ -409,17 +409,17 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
     UpdateObjMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Object Name: %s", obj->name);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Name: ", ch);
- 
+
  return;
-} 
- 
+}
+
 void ChangeObjShort(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
@@ -444,14 +444,14 @@ void ChangeObjShort(struct char_data *ch, char *arg, int type)
 
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Object Short Description: %s", obj->short_description);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Short Description: ", ch);
- 
+
  return;
-} 
- 
+}
+
 void ChangeObjDesc(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
@@ -480,26 +480,26 @@ void ChangeObjDesc(struct char_data *ch, char *arg, int type)
  sprintf(buf, "Current Object Description: %s", obj->description);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Description: ", ch);
- 
+
  return;
-} 
- 
- 
+}
+
+
 void ChangeObjType(struct char_data *ch, char *arg, int type)
 {
  int i, row, update;
  char buf[255];
- 
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
         return;
     }
- 
+
  update = atoi(arg);
  update--;
- 
+
  if(type != ENTER_CHECK) {
     switch(ch->specials.oedit) {
     case CHANGE_OBJ_TYPE: if(update < 0 || update > 24)
@@ -512,12 +512,12 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
                           }
     }
    }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  sprintf(buf, "Object Type: %s", item_types[ch->specials.objedit->obj_flags.type_flag]);
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 25; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
@@ -527,16 +527,16 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d %s", i + 1, item_types[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to set to, <C/R> to return to main menu.\n\r--> ", ch);
 }
- 
+
 void ChangeObjWeight(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- struct obj_data *obj; 
+ struct obj_data *obj;
  long change;
 
  if(type != ENTER_CHECK)
@@ -546,7 +546,7 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
         return;
     }
 
- obj=ch->specials.objedit; 
+ obj=ch->specials.objedit;
  if(type != ENTER_CHECK) {
     change=atoi(arg);
     if(change<0) change=0;
@@ -555,22 +555,22 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
     UpdateObjMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Object Weight: %d", obj->obj_flags.weight);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Weight: ", ch);
- 
+
  return;
-} 
- 
- 
+}
+
+
 void ChangeObjCost(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- struct obj_data *obj; 
+ struct obj_data *obj;
  long change;
 
  if(type != ENTER_CHECK)
@@ -580,7 +580,7 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
         return;
     }
 
- obj=ch->specials.objedit; 
+ obj=ch->specials.objedit;
  if(type != ENTER_CHECK) {
     change=atoi(arg);
     if(change<0) change=0;
@@ -589,17 +589,17 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
     UpdateObjMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Object Rental Cost Per Day: %d", obj->obj_flags.cost_per_day);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Rental Cost Per Day: ", ch);
- 
+
  return;
-} 
- 
+}
+
 void ObjHitReturn(struct char_data *ch, char *arg, int type)
 {
 
@@ -610,15 +610,15 @@ void ObjHitReturn(struct char_data *ch, char *arg, int type)
  }
 
  send_to_char("\n\rHit return: ", ch);
- 
+
  return;
-} 
- 
- 
+}
+
+
 void ChangeObjPrice(struct char_data *ch, char *arg, int type)
 {
  char buf[255];
- struct obj_data *obj; 
+ struct obj_data *obj;
  long change;
 
  if(type != ENTER_CHECK)
@@ -628,7 +628,7 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
         return;
     }
 
- obj=ch->specials.objedit; 
+ obj=ch->specials.objedit;
  if(type != ENTER_CHECK) {
     change=atoi(arg);
     if(change<0) change=0;
@@ -637,17 +637,17 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
     UpdateObjMenu(ch);
     return;
  }
- 
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  sprintf(buf, "Current Object Value: %d", obj->obj_flags.cost);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rNew Object Value: ", ch);
- 
+
  return;
-} 
- 
+}
+
 void ChangeObjAffects(struct char_data *ch, char *arg, int type)
 {
  int update;
@@ -659,13 +659,13 @@ void ChangeObjAffects(struct char_data *ch, char *arg, int type)
         UpdateObjMenu(ch);
         return;
     }
- 
+
     update = atoi(arg);
     if(update == 0) {
        ChangeObjAffects(ch, "", ENTER_CHECK);
        return;
     }
- 
+
     switch(update) {
            case 1: ch->specials.oedit = CHANGE_OBJ_AFFECT1;
                    ChangeObjAffect(ch, "", ENTER_CHECK);
@@ -690,16 +690,16 @@ void ChangeObjAffects(struct char_data *ch, char *arg, int type)
            default: ChangeObjAffects(ch, "", ENTER_CHECK);
                     return;
     }
- 
+
  }
- 
- 
+
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rChange object affect #(1-5) --> ", ch);
  return;
 }
- 
+
 void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 {
   int update,affect,row=0,i,a=0,column,check;
@@ -726,7 +726,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
     }
 
     update = atoi(arg)-1;
- 
+
     if(update < 0 || update > 57) {
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -802,7 +802,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 	case 16: /*check*/
           ChangeObjS2Affect(ch, "", ENTER_CHECK);
           functionflag=TRUE;
-          break;          
+          break;
 	case 26:
 	case 27:
 	case 28:
@@ -826,7 +826,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
         case 29:
           ChangeObjSAffect(ch, "", ENTER_CHECK);
           functionflag=TRUE;
-          break;          
+          break;
 	case 30:
 	case 31:
 	  send_to_char("\n\rNote: Modifier will be a spell # which you can get from the allspells.\n\r",ch);
@@ -854,7 +854,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
- 
+
  for(i = 0; i < 57; i++) {
     a++;
     if(a==1) column=5;
@@ -869,12 +869,12 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d %s", i + 1, apply_types[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 21, 1);
  send_to_char(buf, ch);
  send_to_char("Select the apply number or hit enter for the main menu.\n\r--> ",ch);
 }
- 
+
 void ChangeAffectMod(struct char_data *ch, char *arg, int type)
 {
   signed long update;
@@ -898,7 +898,7 @@ void ChangeAffectMod(struct char_data *ch, char *arg, int type)
     return;
 
     update = atoi(arg);
- 
+
     if(update>32000)
       update=0;
 
@@ -907,11 +907,11 @@ void ChangeAffectMod(struct char_data *ch, char *arg, int type)
        ch->specials.objedit->affected[affect-1].location==31) {
        if(update>=45 && update<=52)
          skill=TRUE;
-       if(update>=120 && update<=127) 
+       if(update>=120 && update<=127)
          skill=TRUE;
        if(update>=129 && update<=163)
          skill=TRUE;
-       if(update>=180 && update<=187) 
+       if(update>=180 && update<=187)
          skill=TRUE;
        if(skill==TRUE) {
          send_to_char("You must use a spell, not a skill!\n\rSetting modifier to 1 (armor spell).\n\r",ch);
@@ -944,13 +944,13 @@ void ChangeObjValues(struct char_data *ch, char *arg, int type)
         UpdateObjMenu(ch);
         return;
     }
- 
+
     update = atoi(arg);
     if(update == 0) {
        ChangeObjValues(ch, "", ENTER_CHECK);
        return;
     }
- 
+
     switch(update) {
            case 1: ch->specials.oedit = CHANGE_OBJ_VALUE1;
                    ChangeObjValue(ch, "", ENTER_CHECK);
@@ -971,10 +971,10 @@ void ChangeObjValues(struct char_data *ch, char *arg, int type)
            default: ChangeObjValues(ch, "", ENTER_CHECK);
                     return;
     }
- 
+
  }
- 
- 
+
+
  sprintf(buf, VT_HOMECLR);
  send_to_char(buf, ch);
  send_to_char("\n\r\n\rChange object value #(1-4) --> ", ch);
@@ -1008,14 +1008,14 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
     }
 
     update = atoi(arg);
- 
+
     if(update < 0) {
         ch->specials.oedit=CHANGE_OBJ_VALUES;
         ChangeObjValues(ch,"",ENTER_CHECK);
         return;
     }
 
-    if ((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL && 
+    if ((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL &&
 	(value != 0)) ||
        ((ch->specials.objedit->obj_flags.type_flag==ITEM_WAND) &&
         (value == 3)) ||
@@ -1024,11 +1024,11 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
        (ch->specials.objedit->obj_flags.type_flag==ITEM_POTION && value != 0)) {
        if(update>=45 && update<=52)
          skill=TRUE;
-       if(update>=171 && update<=214) 
+       if(update>=171 && update<=214)
          skill=TRUE;
        if(update>=221 && update<=241)
          skill=TRUE;
-       if(update>=246 && update<=254) 
+       if(update>=246 && update<=254)
          skill=TRUE;
        if(update==288)
 	 skill=TRUE;
@@ -1070,7 +1070,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else if(value==1)
        send_to_char("\n\rValue2 is the first spell this scroll casts.",ch);
      else if(value==2)
-       send_to_char("\n\rValue3 is the second spell this scroll casts.",ch); 
+       send_to_char("\n\rValue3 is the second spell this scroll casts.",ch);
      else
        send_to_char("\n\rValue4 is the third spell this scroll casts.",ch);
      break;
@@ -1161,7 +1161,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else if(value==1)
        send_to_char("\n\rValue2 is the first spell this potion casts.",ch);
      else if(value==2)
-       send_to_char("\n\rValue3 is the second spell this potion casts.",ch); 
+       send_to_char("\n\rValue3 is the second spell this potion casts.",ch);
      else
        send_to_char("\n\rValue4 is the third spell this potion casts.",ch);
      break;
@@ -1229,7 +1229,7 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      break;
    break;
  }
-     
+
 
  sprintf(buf, VT_CURSPOS, 21, 1);
  send_to_char(buf, ch);
@@ -1240,7 +1240,7 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
 {
  int i, a, check=0, row, update, affect;
  char buf[255];
- 
+
    switch(ch->specials.oedit) {
         case CHANGE_SAFFECT1_MOD: affect = 1;
                                   break;
@@ -1254,14 +1254,14 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
                                   break;
         default: break;
   }
-   
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.oedit = CHANGE_OBJ_AFFECTS;
         UpdateObjMenu(ch);
         return;
-    } 
-    
+    }
+
  if(type == ENTER_CHECK) {
    switch(ch->specials.oedit) {
         case CHANGE_AFFECT1_MOD: ch->specials.oedit=CHANGE_SAFFECT1_MOD;
@@ -1280,8 +1280,8 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
         			affect=5;
                                 break;
   } }
-    
- 
+
+
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
@@ -1302,7 +1302,7 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  sprintf(buf, "Object Spell Affects:");
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 30; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
@@ -1316,7 +1316,7 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->affected[affect-1].modifier & (check)) ? "X" : " "), affected_bits[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);
@@ -1326,7 +1326,7 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
 {
  int i, a, check=0, row, update, affect;
  char buf[255];
- 
+
    switch(ch->specials.oedit) {
         case CHANGE_S2AFFECT1_MOD: affect = 1;
                                   break;
@@ -1340,14 +1340,14 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
 				  break;
         default: break;
   }
-   
+
  if(type != ENTER_CHECK)
     if(!*arg || (*arg == '\n')) {
         ch->specials.oedit = CHANGE_OBJ_AFFECTS;
         UpdateObjMenu(ch);
         return;
-    } 
-    
+    }
+
  if(type == ENTER_CHECK) {
    switch(ch->specials.oedit) {
         case CHANGE_AFFECT1_MOD: ch->specials.oedit=CHANGE_S2AFFECT1_MOD;
@@ -1366,8 +1366,8 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
 				affect=5;
 				break;
   } }
-    
- 
+
+
  update = atoi(arg);
  update--;
  if(type != ENTER_CHECK) {
@@ -1388,7 +1388,7 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
  sprintf(buf, "Object Spell Affects:");
  send_to_char(buf, ch);
- 
+
  row = 0;
  for(i = 0; i < 9; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
@@ -1402,7 +1402,7 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
     sprintf(buf, "%-2d [%s] %s", i + 1, ((ch->specials.objedit->affected[affect-1].modifier & (check)) ? "X" : " "), affected_bits2[i]);
     send_to_char(buf, ch);
   }
- 
+
  sprintf(buf, VT_CURSPOS, 20, 1);
  send_to_char(buf, ch);
  send_to_char("Select the number to toggle, <C/R> to return to main menu.\n\r--> ", ch);

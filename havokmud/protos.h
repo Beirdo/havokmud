@@ -1551,6 +1551,7 @@ int SPELL_LEVEL(struct char_data *ch, int sn);
 void affect_update( int pulse );
 void update_mem ( int pulse );
 void stop_memorizing(struct char_data *ch);
+void do_id(struct char_data *ch, char *argument, int cmd);
 /*
 void clone_char(struct char_data *ch);
 void clone_obj(struct obj_data *obj);

@@ -2467,7 +2467,11 @@ void spell_identify(byte level, struct char_data *ch,
     strcat(buf,buf2);
 
 	if(IS_WEAPON(obj)) {
-      	sprintf(buf2,"$c000p, Weapon Speed: $c000W%s$c000p",SpeedDesc(obj->speed));
+    	if(IS_IMMORTAL(ch))
+			sprintf(buf2,"$c000p, Weapon Speed: $c000C%s$c000p($c000C%.2f$c000p)",SpeedDesc(obj->speed),(float)obj->speed/100);
+	  	else
+    		sprintf(buf2,"$c000p, Weapon Speed: $c000C%s$c000p",SpeedDesc(obj->speed));
+
 		strcat(buf,buf2);
    	}
 

@@ -45,7 +45,7 @@ int MAX_NAME_LENGTH = 11;/*Max length of a characters name*/
 /* should be moved to protos.h at in a future release... */
 void do_wclean(struct char_data *ch, char *argument, int cmd);
 void do_setobjmax(struct char_data *ch, char *argument, int cmd);
-void do_seeobjmax(struct char_data *ch, char *argument, int cmd);
+void do_setobjspeed(struct char_data *ch, char *argument, int cmd);
 void do_spend(struct char_data *ch, char *argument, int cmd);
 void bugmail(struct char_data *ch, char *argument, int cmd);
 void do_see_points(struct char_data *ch, char *argument, int cmd);
@@ -973,7 +973,8 @@ void assign_command_pointers ()
   AddCommand("smile",do_action,23,POSITION_RESTING,0);
   AddCommand("dance",do_action,24,POSITION_STANDING,0);
   AddCommand("kill",do_kill,25,POSITION_FIGHTING,1);
-  AddCommand("cackle",do_action,26,POSITION_RESTING,0);
+  AddCommand("id",do_id,26,POSITION_STANDING,1);
+
   AddCommand("laugh",do_action,27,POSITION_RESTING,0);
   AddCommand("giggle",do_action,28,POSITION_RESTING,0);
   AddCommand("shake",do_action,29,POSITION_RESTING,0);
@@ -1134,7 +1135,7 @@ void assign_command_pointers ()
   AddCommand("beg",do_action,178,POSITION_RESTING,0);
   /*  AddCommand("bleed",do_not_here,179,POSITION_RESTING,0); */
   AddCommand("cringe",do_action,180,POSITION_RESTING,0);
-  AddCommand("daydream",do_action,181,POSITION_SLEEPING,0);
+  AddCommand("cackle",do_action,181,POSITION_RESTING,0);
   AddCommand("fume",do_action,182,POSITION_RESTING,0);
   AddCommand("grovel",do_action,183,POSITION_RESTING,0);
   AddCommand("hop",do_action,184,POSITION_RESTING,0);
@@ -1199,7 +1200,7 @@ void assign_command_pointers ()
   AddCommand("gain",do_gain,243,POSITION_DEAD,1);
 
 /*  AddCommand("rrload",do_rrload,244,POSITION_DEAD,CREATOR); */
-
+	AddCommand("daydream",do_action,244,POSITION_SLEEPING,0);
   AddCommand("disarm",do_disarm,245,POSITION_FIGHTING,1);
   AddCommand("bonk",do_action,246,POSITION_SITTING,1);
   AddCommand("chpwd",do_passwd,247,POSITION_SITTING,IMPLEMENTOR);
@@ -1488,7 +1489,7 @@ AddCommand("spend", do_spend, 519, POSITION_RESTING,51);
 AddCommand("seepoints", do_see_points, 520, POSITION_RESTING,51);
 AddCommand("bugmail", bugmail, 521, POSITION_STANDING,1);
 AddCommand("setobjmax", do_setobjmax, 522, POSITION_RESTING,53);
-AddCommand("seeobjmax", do_seeobjmax, 523, POSITION_RESTING,53);
+AddCommand("setobjspeed", do_setobjspeed, 523, POSITION_RESTING,53);
 AddCommand("wclean", do_wclean, 524, POSITION_RESTING,58);
 AddCommand("glance", do_glance, 525, POSITION_SITTING,1);
 AddCommand("arena", do_arena, 525, POSITION_SITTING,1);
@@ -1547,6 +1548,8 @@ AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
 AddCommand("bid",do_bid,570,POSITION_STANDING,0);
+AddCommand("study",do_practice,571,POSITION_RESTING,1);
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

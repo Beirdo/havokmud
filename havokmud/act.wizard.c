@@ -1578,8 +1578,8 @@ if (aff->type <=MAX_EXIST_SPELL) {
       strcat(buf,buf2);
 
            	if(IS_WEAPON(j)) {
-        	   sprintf(buf2,", Weapon Speed: %s",SpeedDesc(j->speed));
-				strcat(buf,buf2);
+				sprintf(buf2,", Weapon Speed: %s(%.2f)",SpeedDesc(j->speed),(float)j->speed/100);
+        	   	strcat(buf,buf2);
 	  	   	}
 
       strcat(buf,"\n\r");
@@ -6117,43 +6117,44 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
 */
 }
 
-void do_seeobjmax(struct char_data *ch, char *argument, int cmd)
-{
+void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
+ {
   struct obj_data *obj;
-  char objec[100],number[100], buf[100];
-  int  vnum, rnum ;
-
-  dlog("in do_seeobjmax");
+  char objec[100], num[100],buf[100];
+  int vnum, rnum ;
+long number;
+  dlog("in do_setobjspeed");
 
   if (IS_NPC(ch))
     return;
 
-  only_argument(argument, objec);
-  if (isdigit(*objec))
-    vnum = atoi(objec);
+  argument = one_argument(argument, objec);
+
+
+  only_argument(argument, num);
+  if (isdigit(*num))
+    number = atoi(num);
   else  {
-         send_to_char("usage is: seeobjmax Vnum.\n\r", ch);
+         send_to_char("usage is: setobjspeed item speed.\n\r", ch);
       return;
     }
 
-  rnum = real_object(vnum);
-
-
-  if ( rnum<0 || rnum>top_of_objt) {
-      send_to_char("There is no such object.\n\r", ch);
-      return;
-    }
-
-  obj = read_object(rnum, REAL);
-  if (obj) {
-     if (obj_index[rnum].MaxObjCount == 0 || obj_index[rnum].MaxObjCount == 65535) sprintf(number,"%s","unlimited");
-     else sprintf(number,"%d",obj_index[rnum].MaxObjCount);
-     sprintf(buf,"Maximum count for object %s is: %s. \n\r",(char *) obj->name,number);
-     send_to_char(buf,ch);
-     obj_index[obj->item_number].number--;
-    }
-  else send_to_char("Error on Read Object. maximum not displayed. \n\r",ch);
-
+        if (!*objec) {
+	     	send_to_char("Give what?\n\r",ch);
+	      	return(FALSE);
+	      }
+	      if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+	      	send_to_char("where is that?\n\r",ch);
+	      	return(TRUE);
+      }
+      if(number >= 0 && number <= 100) {
+      	obj->speed = number;
+		sprintf(buf,"Set object speed to %.2f\n\r",(float)number/100);
+		send_to_char(buf,ch);
+	  } else {
+	  	send_to_char("Speed values between 0 and 100 please. (0 is slow, 100 is fast)",ch);
+      }
+      return(TRUE);
 }
 
 int ZoneCleanable (int zone);

@@ -1692,7 +1692,12 @@ char *skip_spaces(char *string)
 
   return(string);
 }
+void do_id(struct char_data *ch, char *argument, int cmd) {
+	char buf[256];
 
+	sprintf(buf,"'id' %s",argument);
+	do_cast(ch,buf,0);
+}
 
 
 /* Assumes that *argument does start with first letter of chopped string */

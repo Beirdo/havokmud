@@ -1028,6 +1028,13 @@ struct room_data
 #define PLR_HAVEROOM (1<<21)    /* Player is one of the first 100 heros and have been assigned an homeroom*/
 #define PLR_MAILING    (1<<22)  /* EMPTY */
 #define PLR_ARENA   (1<<23)
+/* New Auto stuff*/
+#define PLR_AUTOASSIST		(1<<24)
+#define PLR_AUTOEXIT		(1<<25)
+#define PLR_AUTOLOOT		(1<<26)
+#define PLR_AUTOSAC         (1<<27)
+#define PLR_AUTOGOLD		(1<<28)
+#define PLR_AUTOSPLIT		(1<<29)
 
 /* This structure is purely intended to be an easy way to transfer */
 /* and return information about time (real or mudwise).            */

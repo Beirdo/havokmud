@@ -2692,6 +2692,18 @@ dlog("in do_set_flags");
 	   }
 	 }
 	 else
+	 if (!strcmp(type,"autosplit")) {
+	 	   if (strstr(field,"enable")) {
+	 	     act("Setting autosplit on.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (!IS_SET(ch->specials.act, PLR_AUTOSPLIT))
+	 	       SET_BIT(ch->specials.act, PLR_AUTOSPLIT);
+	 	   } else {
+	 	     act("Setting autosplit off.",FALSE,ch,0,0,TO_CHAR);
+	 	     if (IS_SET(ch->specials.act, PLR_AUTOSPLIT))
+	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOSPLIT);
+	 	   }
+	 	 }
+	 else
 	 if (!strcmp(type,"advice")) {
 	 	   if (strstr(field,"enable")) {
 	 	     act("Turning on Newbie Help.",FALSE,ch,0,0,TO_CHAR);
