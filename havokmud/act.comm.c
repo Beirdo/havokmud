@@ -1347,8 +1347,8 @@ dlog("in do_talk");
 
 
 	if(IS_NPC(vict)) {
-		act("$n tries to strick up a conversation with $N.",FALSE,ch,0,vict,TO_ROOM);
-		act("You try to strick up a conversation with $N.",FALSE,ch,0,vict,TO_CHAR);
+		act("$n tries to strike up a conversation with $N.",FALSE,ch,0,vict,TO_ROOM);
+		act("You try to strike up a conversation with $N.",FALSE,ch,0,vict,TO_CHAR);
 
 	  if (vict->player.distant_snds && *vict->player.distant_snds == '\'') {
 			sprintf(buf,"$c0015$N says %s'$c0007", vict->player.distant_snds);

@@ -6423,8 +6423,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
       	} else {
 			obj2 = read_object(universal+1, VIRTUAL);
 			if(obj2) {
-				act("You give $p to $N",FALSE,ch,obj2,vict,TO_CHAR);
-				act("$n gives $p to $N",FALSE,ch,obj2,vict,TO_ROOM);
+				act("You give $p to $N",FALSE,ch,obj,vict,TO_CHAR);
+				act("$n gives $p to $N",FALSE,ch,obj,vict,TO_ROOM);
 
 				if(IS_GOOD(vict))
 			      do_say(vict, "Thanks you very much.  Here is something for your troubles.", 0);

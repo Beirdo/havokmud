@@ -424,8 +424,8 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	/*Ugly fix but quick*/
 	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"messenger",how_good(ch->skills[SPELL_MESSENGER].learned));
 	send_to_char(buf,ch);
-	sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"brew",how_good(ch->skills[SPELL_MESSENGER].learned));
-	send_to_char(buf,ch);
+	//sprintf(buf,"[%-2d] %-25s %-15s \n\r",1,"brew",how_good(ch->skills[SPELL_MESSENGER].learned));
+	//send_to_char(buf,ch);
       return(TRUE);
     }
     for (;isspace(*arg);arg++);

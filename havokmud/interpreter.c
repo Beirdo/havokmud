@@ -1320,7 +1320,7 @@ AddCommand("medit",do_medit,347,POSITION_DEAD,53);
 AddCommand("hypnotize",do_hypnosis,348,POSITION_STANDING,1);
 AddCommand("scry",do_scry,349,POSITION_RESTING,1);
 AddCommand("adrenalize",do_adrenalize,350,POSITION_STANDING,1);
-AddCommand("brew",do_brew,351,POSITION_STANDING,0);
+AddCommand("brew",do_brew,351,POSITION_STANDING,51);
 AddCommand("meditate",do_meditate,352,POSITION_RESTING,0);
 AddCommand("forcerent",do_force_rent,353,POSITION_DEAD,58);
 AddCommand("warcry",do_holy_warcry,354,POSITION_FIGHTING,0);
