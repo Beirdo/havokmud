@@ -880,6 +880,7 @@ void CountLimitedItems(struct obj_file_u *st)
 	      }
 #endif
 	    }
+	    //obj_index[obj->item_number].number++;
 	    extract_obj(obj);
 	}
     }
