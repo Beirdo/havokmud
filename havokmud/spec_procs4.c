@@ -4518,10 +4518,20 @@ AddCommand("plank", do_sea_commands, 623, POSITION_STANDING, 1);
 AddCommand("sail", do_sea_commands, 624, POSITION_STANDING, 1);
 AddCommand("steer", do_sea_commands, 625, POSITION_STANDING, 1);
 */
+struct map_coord
+{
+	int x;
+	int y;
+	int room;
+	int home;
 
-int disembark_ship(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
-int x=0;
-int room=0, go=0;
+};
+
+int disembark_ship(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type)
+{
+	int x=0;
+	int room=0, go=0;
+
 	if(cmd==621) { /*disembark */
 
 			if ( oceanmap[GET_XCOORD(obj)][GET_YCOORD(obj)]=='@' ) {
@@ -4532,14 +4542,6 @@ int room=0, go=0;
 
 
 
-				  struct map_coord
-				  {
-				    int x;
-				    int y;
-				    int room;
-				    int home;
-
-				  };
 /*
 struct map_coord
 {
