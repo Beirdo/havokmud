@@ -372,6 +372,8 @@ void            do_nuke(struct char_data *ch, char *argument, int cmd);
 void            do_scan(struct char_data *ch, char *arg, int cmd);
 void            do_ghost(struct char_data *ch, char *argument, int cmd);
 
+void            do_spot(struct char_data *ch, char *argument, int cmd);
+void            do_cset(struct char_data *ch, char *arg, int cmd);
 void            do_auth(struct char_data *ch, char *argument, int cmd);
 void            do_imptest(struct char_data *ch, char *arg, int cmd);
 void            do_passwd(struct char_data *ch, char *argument,

@@ -2218,6 +2218,14 @@ struct map_coord {
 
 };
 
+struct command_def {
+    char           *name;
+    void          (*func)();
+    int             number;
+    int             min_pos;
+    int             min_lev;
+};
+
 #endif
 
 /*
