@@ -3252,7 +3252,18 @@ int Ringwraith( struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
     return(FALSE);
   }
+if(number(1,25)==1) {
+   if (!check_soundproof(ch))
+	     act("$n says 'Give me The Ring *NOW*'.", FALSE, mob, NULL, NULL, TO_ROOM);
+	   else {
+	     act("$n pokes you in the ribs very painfully.", FALSE, mob, NULL, NULL, TO_ROOM);
+	   }
+	   return(TRUE);
+} else {
+		return(FALSE);
+	}
 
+#if 0 //Disable the one ring proc...
   if (howmanyrings==-1) { /* how many one rings are in the game? */
     howmanyrings = 1;
     get_obj_vis_world(ch, "999.one ring.", &howmanyrings);
@@ -3372,7 +3383,7 @@ int Ringwraith( struct char_data *ch, int cmd, char *arg, struct char_data *mob,
   }
   return TRUE;
 
-
+#endif
 }
 
 int WarrenGuard(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)

@@ -1626,6 +1626,7 @@ AddCommand("mrebuild",do_mrebuild,599,POSITION_STANDING,59);
 AddCommand("play", do_cast, 600, POSITION_RESTING, 1);
 AddCommand("stop",do_stop,601,POSITION_STANDING,1);
 AddCommand("sharpen",do_sharpen,602,POSITION_RESTING,1);
+AddCommand("eval", do_eval, 603, POSITION_STANDING, 55);
 }
 
 

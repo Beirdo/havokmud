@@ -2385,3 +2385,5 @@ void spell_chillshield(byte level, struct char_data *ch, struct char_data *victi
 void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 
+
+void do_eval(struct char_data *ch, char *arg, int cmd);

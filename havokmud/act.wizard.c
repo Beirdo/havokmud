@@ -7095,3 +7095,426 @@ dlog("in do_zconv");
 
 
 
+void do_eval(struct char_data *ch, char *arg, int cmd)
+{
+	struct obj_data *obj;
+	struct char_data *dummy;
+	char name[100], sound[100], buf[100];
+
+
+	int total =0;
+dlog("in do_eval");
+
+	if(!ch)
+		return;
+	if(cmd != 603) /* EVAL */
+		return;
+
+	only_argument(arg,name);
+	if(!arg) {
+		send_to_char("Eval what?\n\r",ch);
+		return;
+	} else {
+		if(generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
+			if(obj) {
+				/*anti flags*/
+
+				total=eval(obj);
+				ch_printf(ch,"You evaluate %s: %d.\n\r",obj->short_description, total);
+
+			}
+		} else {
+			send_to_char("Hmm, can't find it.\n\r",ch);
+		}
+	}
+}
+int eval(struct obj_data *object) {
+	int total=0;
+	char buf[256], buf2[256];
+	int i;
+	bool found;
+	extern const struct skillset weaponskills[];
+	struct time_info_data age(struct char_data *ch);
+
+	extern char *spells[];
+	extern char *RaceName[];
+
+	extern char *AttackType[];
+	extern struct index_data *obj_index;
+	extern char *item_types[];
+	extern char *extra_bits[];
+	extern char *apply_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *wear_bits[];
+
+
+					/* anti stuff */
+					if(IS_OBJ_STAT(object,ITEM_BRITTLE))
+						total+= -10;
+					if(IS_OBJ_STAT(object,ITEM_RESISTANT))
+						total+= 5;
+					if(IS_OBJ_STAT(object,ITEM_IMMUNE))
+						total+= 10;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_EVIL))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_NEUTRAL))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_WOMEN))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_MEN))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ONLY_CLASS))
+						total+= -7;
+					if(IS_OBJ_STAT(object,ITEM_RARE))
+						total+= -7;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_SUN))
+						total+= -3;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_GOOD))
+						total+= -5;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_BARBARIAN))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_PALADIN))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_MONK))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_FIGHTER))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_CLERIC))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_MAGE))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_NECROMANCER))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_BARD))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_PSI))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_RANGER))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_DRUID))
+						total+= -2;
+					if(IS_OBJ_STAT(object,ITEM_ANTI_THIEF))
+						total+= -2;
+
+
+
+		if( object->obj_flags.cost_per_day > 10000 )
+			total-= object->obj_flags.cost_per_day/1000;
+
+			switch (GET_ITEM_TYPE(object)) {
+				case ITEM_SCROLL :
+				case ITEM_POTION :
+				case ITEM_STAFF :
+				case ITEM_FOOD:
+				case ITEM_DRINKCON:
+				case ITEM_TRAP:
+				case ITEM_NOTE:
+				case ITEM_PEN:
+				case ITEM_TRASH:
+				case ITEM_MONEY:
+					total -= 20;
+					break;
+				case ITEM_CONTAINER:
+				case ITEM_LIGHT:
+					total +=5;
+					break;
+				case ITEM_ARMOR:
+					total -= 5;
+					total += object->obj_flags.value[0]; //armor class
+					break;
+				case ITEM_WEAPON:
+					total -= 16;
+					total += object->obj_flags.value[1] * 2; //damage of sword.
+					total += object->obj_flags.value[2] * 2;
+
+					break;
+
+				default:
+					break;
+
+			}
+
+	for (i=0;i<MAX_OBJ_AFFECT;i++) {
+			switch(object->affected[i].location) {
+
+				case APPLY_STR               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_DEX               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_INT               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_WIS               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_CON               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_CHR               :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_SEX               :
+					total += 1;
+					break;
+				case APPLY_LEVEL             :
+					total += 1;
+					break;
+				case APPLY_AGE               :
+					total += 1;
+					break;
+				case APPLY_CHAR_WEIGHT       :
+					total += 1;
+					break;
+				case APPLY_CHAR_HEIGHT       :
+					total += 1;
+					break;
+				case APPLY_MANA              :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_HIT               :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_MOVE              :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_GOLD             :
+					total += 1;
+					break;
+				case APPLY_SPELL2           :
+					total += 10;
+					break;
+				case APPLY_ARMOR            :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_HITROLL          :
+					total += object->affected[i].modifier*4;
+					break;
+				case APPLY_DAMROLL          :
+					total += object->affected[i].modifier*6;
+					break;
+				case APPLY_SAVING_PARA      :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_SAVING_ROD       :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_SAVING_PETRI     :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_SAVING_BREATH    :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_SAVING_SPELL     :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_SAVE_ALL         :
+					total -= object->affected[i].modifier*3;
+					break;
+				case APPLY_IMMUNE           :
+
+
+					total += 10;
+					break;
+				case APPLY_SUSC             :
+
+					total -= 10;
+					break;
+
+				case APPLY_M_IMMUNE         :
+
+					total += 20;
+					break;
+
+				case APPLY_SPELL            :
+					//+6     per spell affect (sense life, hide, water breath, telepathy, pfe, all detects, darkness)
+					total += 10;
+					break;
+					/*
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_SENSE_LIFE))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_HIDE))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_WATERBREATH))
+					    total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+					    total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+						total += 6;
+					if(IS_SET(object->affected[i].modifier, AFF_TRUE_SIGHT))
+						total += 6;
+
+					if(IS_SET(object->affected[i].modifier,  AFF_BLIND          ))//   BV00//0x00000001
+					if(IS_SET(object->affected[i].modifier,  AFF_INVISIBLE       ))//  BV01//0x00000002
+					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_EVIL     ))//  BV02//0x00000004
+					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_INVISIBLE))//  BV03//0x00000008
+					if(IS_SET(object->affected[i].modifier,  AFF_DETECT_MAGIC    ))//  BV04//0x00000010
+					if(IS_SET(object->affected[i].modifier,  AFF_SENSE_LIFE      ))//  BV05//0x00000020
+					if(IS_SET(object->affected[i].modifier,  AFF_LIFE_PROT       ))//  BV06//0x00000040
+					if(IS_SET(object->affected[i].modifier,  AFF_SANCTUARY       ))//  BV07//0x00000080
+					if(IS_SET(object->affected[i].modifier,  AFF_DRAGON_RIDE     ))//  BV08//0x00000100
+					if(IS_SET(object->affected[i].modifier,  AFF_GROWTH          ))//  BV09//0x00000200
+					if(IS_SET(object->affected[i].modifier,  AFF_CURSE           ))//  BV10//0x00000400
+					if(IS_SET(object->affected[i].modifier,  AFF_FLYING          ))//  BV11//0x00000800
+					if(IS_SET(object->affected[i].modifier,  AFF_POISON          ))//  BV12//0x00001000
+					if(IS_SET(object->affected[i].modifier,  AFF_TREE_TRAVEL     ))//  BV13//0x00002000
+					if(IS_SET(object->affected[i].modifier,  AFF_PARALYSIS       ))//  BV14//0x00004000
+					if(IS_SET(object->affected[i].modifier,  AFF_INFRAVISION     ))//  BV15//0x00008000
+					if(IS_SET(object->affected[i].modifier,  AFF_WATERBREATH     ))//  BV16//0x00010000
+					if(IS_SET(object->affected[i].modifier,  AFF_SLEEP           ))//  BV17//0x00020000
+					if(IS_SET(object->affected[i].modifier,  AFF_TRAVELLING      ))//  BV18//0x00040000
+					if(IS_SET(object->affected[i].modifier,  AFF_SNEAK           ))//  BV19//0x00080000
+					if(IS_SET(object->affected[i].modifier,  AFF_HIDE            ))//  BV20//0x00100000
+					if(IS_SET(object->affected[i].modifier,  AFF_SILENCE         ))//  BV21//0x00200000
+					if(IS_SET(object->affected[i].modifier,  AFF_CHARM           ))//  BV22//0x00400000
+					if(IS_SET(object->affected[i].modifier,  AFF_DARKNESS	     ))//  BV23
+					if(IS_SET(object->affected[i].modifier,  AFF_PROTECT_FROM_EVIL ))// BV24//0x01000000
+					if(IS_SET(object->affected[i].modifier,  AFF_TRUE_SIGHT       ))// BV25//0x02000000
+					if(IS_SET(object->affected[i].modifier,  AFF_SCRYING          ))// BV26//0x04000000
+					if(IS_SET(object->affected[i].modifier,  AFF_FIRESHIELD       ))// BV27//0x08000000
+					if(IS_SET(object->affected[i].modifier,  AFF_GROUP            ))// BV28//0x10000000
+					if(IS_SET(object->affected[i].modifier,  AFF_TELEPATHY        ))// BV29//0x20000000
+					if(IS_SET(object->affected[i].modifier,  AFF_CHILLSHIELD      ))//  BV30// 0x40000000
+					if(IS_SET(object->affected[i].modifier,  AFF_BLADE_BARRIER    ))//   BV31// 0x80000000
+					*/
+					break;
+				case APPLY_WEAPON_SPELL     :
+					total += 30;
+					break;
+				case APPLY_EAT_SPELL        :
+					total += 1;
+					break;
+				case APPLY_BACKSTAB         :
+					total += object->affected[i].modifier*2;
+					break;
+				case APPLY_KICK             :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_SNEAK            :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_HIDE             :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_BASH             :
+					total += object->affected[i].modifier*2;
+					break;
+				case APPLY_PICK             :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_STEAL            :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_TRACK            :
+					total += 1;
+					break;
+				case APPLY_HITNDAM          :
+					total += object->affected[i].modifier*10;
+					break;
+				case APPLY_SPELLFAIL        :
+					total -= object->affected[i].modifier;
+					break;
+				case APPLY_ATTACKS          :
+					total += 20;
+					break;
+				case APPLY_HASTE            :
+					total += 30;
+					break;
+				case APPLY_SLOW             :
+					total += 1;
+					break;
+				case APPLY_BV2              :
+					total += 10;
+					break;
+				case APPLY_FIND_TRAPS       :
+					total += 1;
+					break;
+				case APPLY_RIDE             :
+					total += 1;
+					break;
+				case APPLY_RACE_SLAYER      :
+					total += 7;
+					break;
+				case APPLY_ALIGN_SLAYER     :
+					total += 20;
+					break;
+				case APPLY_MANA_REGEN       :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_HIT_REGEN        :
+					total += object->affected[i].modifier;
+					break;
+				case APPLY_MOVE_REGEN       :
+					total += object->affected[i].modifier;
+					break;
+						/* Set thirst/hunger/drunk to MOD */
+				case APPLY_MOD_THIRST	:
+					total += 1;
+					break;
+				case APPLY_MOD_HUNGER	:
+					total += 1;
+					break;
+				case APPLY_MOD_DRUNK	:
+					total += 1;
+					break;
+				default:
+					break;
+			}
+		}
+
+
+
+
+	return total;
+}
+/*
++5     if weapontype = NO-SCRAP
+
++1     per 3 points of MAX-MOVE
++1     per 3 points of MOVE-REGEN
++1     per point of -ARMOR
+
++3     per point of -SAVE_ALL
++1     per point of -SAVE-other
+
+
++6     per spell affect (sense life, hide, water breath, telepathy, pfe, all detects, darkness)
++8     per spell affect (invis)
++10     per spell affect (fly, true sight, spy, sneak)
++30     per spell affect (sanc, fireshield, chillshield, bladebarrier, haste)
+
+-3     per suscept (poison, charm, sleep)
+-6     per suscept (hold, drain)
+-10     per suscept (acid, elec, cold)
+-12     per suscept (fire, energy, pierce)
+-15     per suscept (slash, blunt)
+
++3     per resist (poison, charm, sleep)
++6     per resist (hold, drain)
++10     per resist (acid, elec, cold)
++12     per resist (fire, energy, pierce)
++15     per resist (slash, blunt)
+
+
++6     per immunity (poison, charm, sleep)
++12     per immunity (hold, drain)
++20     per immunity (acid, elec, cold)
++24     per immunity (fire, energy, pierce)
++30     per immunity (slash, blunt)
+
+total = 0 if item is NO-TAKE
+
+*/

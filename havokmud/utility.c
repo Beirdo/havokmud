@@ -3222,7 +3222,7 @@ void PlaysongPulseStuff(int pulse)
 				if(!singer) {
 					send_to_char("As the bard song fades from your hearing, you feel more like yourself again.\n\r",ch);
 					affect_from_char(ch, spl);
-					tmp->specials.is_hearing = 0;
+					ch->specials.is_hearing = 0;
 				}
 			}
 		}

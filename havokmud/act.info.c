@@ -2074,51 +2074,53 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
   	char buff[50];
   	struct time_info_data real_time_passed(time_t t2, time_t t1);
   	int x;
-	char color[10];
+	char color[10], color2[10];
  dlog("in do_score");
 
 
-	if(IS_SET(ch->player.user_flags,OLD_COLORS))
+	if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
 		sprintf(color,"$c000p");
-	else
+		sprintf(color2,"$c000C");
+	}else {
 		sprintf(color,"$c000B");
-
+		sprintf(color2,"$c000w");
+	}
   	age2(ch, &my_age);
 
   	if (GET_TITLE(ch)) {
-    	ch_printf(ch,"%sYou are $c000w%s\n\r",color, GET_TITLE(ch));
+    	ch_printf(ch,"%sYou are %s%s\n\r",color,color2, GET_TITLE(ch));
   	}
 
   playing_time = real_time_passed((time(0)-ch->player.time.logon) + ch->player.time.played, 0);
 
 
-  ch_printf(ch, "%sYou are $c000w%d$c000B years old and $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
-	  ,color, my_age.year,DescAge(my_age.year,GET_RACE(ch)), playing_time.day, playing_time.hours
+  ch_printf(ch, "%sYou are %s%d%s years old and %s%s%s. (Play time: %s%d%s days and %s%d%s hours)\n\r%s"
+	  ,color,color2, my_age.year,color,color2,DescAge(my_age.year,GET_RACE(ch)),color,color2, playing_time.day,color,color2, playing_time.hours,color,color2
 	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000w It's your birthday today.\n\r":""));
 
-  ch_printf(ch, "%sYou belong to the $c000w%s$c000B race, and speak the $c000w%s$c000B language.\n\r"
-	  ,color, RaceName[GET_RACE(ch)], languagelist[ch->player.speaks]);
+  ch_printf(ch, "%sYou belong to the %s%s%s race, and speak the %s%s%s language.\n\r"
+	  ,color,color2, RaceName[GET_RACE(ch)],color,color2, languagelist[ch->player.speaks],color);
 
-  ch_printf(ch, "%sYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.\n\r",
- 		color, GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch));
-  ch_printf(ch, "%sYou won $c000w%d$c000B Quests and own $c000w%d$c000B quest points.\n\r", color,ch->specials.questwon, ch->player.q_points);
-  ch_printf(ch, "%sYou carry $c000w%s$c000B coins, and have an additional $c000w%d$c000B in the bank.\n\r", color, formatNum(GET_GOLD(ch)), (ch->points.bankgold) );
-  ch_printf(ch, "%sYour alignment is: $c000w%s\n\r", color, AlignDesc(GET_ALIGNMENT(ch)));
+  ch_printf(ch, "%sYou have %s%d%s($c0011%d%s) hit, %s%d%s($c0011%d%s) mana, %s%d%s($c0011%d%s) mv points.\n\r",
+ 		color, color2, GET_HIT(ch),color,GET_MAX_HIT(ch),color,color2, GET_MANA(ch),color,GET_MAX_MANA(ch),color,color2, GET_MOVE(ch),color,GET_MAX_MOVE(ch),color);
+  ch_printf(ch, "%sYou won %s%d%s Quests and own %s%d%s quest points.\n\r", color,color2,ch->specials.questwon,color,color2, ch->player.q_points,color);
+  ch_printf(ch, "%sYou carry %s%s%s coins, and have an additional %s%d%s in the bank.\n\r", color, color2,formatNum(GET_GOLD(ch)),color,color2, (ch->points.bankgold),color );
+  ch_printf(ch, "%sYour alignment is: %s%s\n\r", color, color2,AlignDesc(GET_ALIGNMENT(ch)),color);
 
 
 	if ( !(GetMaxLevel(ch)>MAX_MORT || (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF)))) {
   		buf[0] = '\0';
   		sprintf(buff,"%s",formatNum(GET_LEADERSHIP_EXP(ch)));
-  		ch_printf(ch,"$c000BCombat experience:$c000w %s $c000B    Leadership experience: $c000w%s$c000B\n\r"
-  			, formatNum(GET_EXP(ch)), buff);
+  		ch_printf(ch,"%sCombat experience:%s %s %s    Leadership experience: %s%s%s\n\r"
+  			,color, color2, formatNum(GET_EXP(ch)),color,color2, buff,color);
 
 		for (x=0; x < MAX_CLASS; x++) {
   			if (HasClass(ch, pc_num_class(x))) {
 
-    			sprintf(buf2, "%-5s$c000BLevel:$c000w%-2d  %-15s$c000B", " ",GET_LEVEL(ch, x), class_names[x]);
+    			sprintf(buf2, "%-5s%sLevel:%s%-2d  %-15s%s", " ",color,GET_LEVEL(ch, x),color2, class_names[x],color);
     			strcat(buf, buf2);
     			if (GetMaxLevel(ch)<MAX_IMMORT)
-    	   			sprintf(buf2,"%s%s:$c000w%s$c000B \n\r"," ","Xp needed"	,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
+    	   			sprintf(buf2,"%s%s:%s%s%s \n\r",color," ","Xp needed", color2,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
     			else
     	   			sprintf(buf2,"%s:0  %ld", class_names[x],(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
     			strcat(buf,buf2);
@@ -2128,12 +2130,12 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	}
 
 	if(IS_IMMORTAL(ch)) {
-		ch_printf(ch,"$c000BYou are a level $c000w%d $c000Bimmortal.\n\r",GetMaxLevel(ch));
+		ch_printf(ch,"%sYou are a level %s%d %simmortal.\n\r",color, color2,GetMaxLevel(ch),color);
 	}
 
-   ch_printf(ch,"$c000BYou have killed $c000w%d$c000B monsters, and have died $c000w%d$c000B times. Arena: $c000w%d$c000B/$c000w%d$c000B\n\r",
-    	ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
-/*ch_printf(ch,"$c000BKills: $c000w%d$c000B   Deaths: $c000w%d$c000B   Arena Kills: $c000w%d$c000B   Arena Deaths: $c000w%d$c000B\n\r"
+   ch_printf(ch,"%sYou have killed %s%d%s monsters, and have died %s%d%s times. Arena: %s%d%s/%s%d%s\n\r",
+    	color, color2, ch->specials.m_kills,color, color2, ch->specials.m_deaths,color, color2, ch->specials.a_kills,color, color2, ch->specials.a_deaths,color);
+/*ch_printf(ch,"%sKills: %s%d%s   Deaths: %s%d%s   Arena Kills: %s%d%s   Arena Deaths: %s%d%s\n\r"
 	,ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
 */
 
@@ -2143,26 +2145,26 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
        ch_printf(ch,"$c0011The light is the area causes you great pain$c0009!\n\r");
 	}
 	if (IS_SET(ch->specials.affected_by2,AFF2_WINGSBURNED)) {
-	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.$c000B\n\r",ch);
+	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.%s\n\r",ch);
 	}
 	if (IS_SET(ch->specials.act,PLR_NOFLY))   {
-   		send_to_char("$c000wYou are on the ground in spite of your fly item.$c000B\n\r",ch);
+   		ch_printf(ch,"%sYou are on the ground in spite of your fly item.%s\n\r",color);
 	}
 
 	if(IS_PC(ch)) {
 	 	ch->skills[STYLE_STANDARD].learned = 95;
-		ch_printf(ch,"$c000BYou are currently fighting $c000w%s$c000B.\n\r", fight_styles[ch->style]);
+		ch_printf(ch,"%sYou are currently fighting %s%s%s.\n\r",color, color2, fight_styles[ch->style],color);
 	}
 
 	if(GET_CLAN(ch) == 0) {
-		send_to_char("$c000BYou do not belong to a clan.\n\r",ch);
+		ch_printf(ch,"%sYou do not belong to a clan.\n\r",color);
 	} else if (GET_CLAN(ch) == 1) {
-		send_to_char("$c000BYou have recently been $c000wexiled$c000B from a clan.\n\r",ch);
+		ch_printf(ch, "%sYou have recently been %sexiled%s from a clan.\n\r",color, color2,color );
 	} else {
-		ch_printf(ch,"$c000BYou belong to $c000w%s$c000B.\n\r", clan_list[GET_CLAN(ch)].name);
+		ch_printf(ch,"%sYou belong to %s%s%s.\n\r",color, color2, clan_list[GET_CLAN(ch)].name, color);
 	}
 
-	ch_printf(ch,"$c000BYou have $c000w%d$c000B practice sessions remaining.\n\r",ch->specials.spells_to_learn);
+	ch_printf(ch,"%sYou have %s%d%s practice sessions remaining.\n\r",color, color2,ch->specials.spells_to_learn, color);
 
   switch(GET_POS(ch)) {
   	case POSITION_DEAD: send_to_char("$c0009You are DEAD!\n\r", ch); break;
@@ -2574,12 +2576,12 @@ int checkflags(char *arguments) {
 	}
 }
 char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
-	char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
+	static char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
 
 	sprintf(buffer,"");
 
 				    if (IS_SET(person->player.user_flags, NEW_USER))
-					   sprintf(buffer,"%s $c000G[$c000WNEW$c000G]$c0007", buffer);
+					   sprintf(buffer,"%s$c000G[$c000WNEW$c000G]$c0007", buffer);
 				    if(IS_AFFECTED2(person,AFF2_AFK))
 				      sprintf(buffer,"%s$c0008[AFK]$c0007", buffer);
 				    if(IS_AFFECTED2(person,AFF2_QUEST))
@@ -2589,7 +2591,7 @@ char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
 				if (IS_LINKDEAD(person))
 					sprintf(buffer,"%s$c0015[LINKDEAD]$c0007", buffer);
 				if (IS_IMMORTAL(ch) && person->invis_level > 50)
-					sprintf(buffer, "%s (invis %d)",buffer, person->invis_level);
+					sprintf(buffer, "%s(invis %d)",buffer, person->invis_level);
 
 //				sprintf(buffer,"%s\n\r",buffer);
 
@@ -2731,6 +2733,7 @@ argument = one_argument(argument,tbuf);
 		//		|| IS_IMMORTAL(person)) {
 //		if(person && CAN_SEE(ch, person)) {
 //=======
+//if(strstr(CAP(buf2),GET_NAME(ch)))
 		if(person) {
 			if(GetMaxLevel(person)) { /* class reset during who/char_generation   bug fix -Lennya */
 
@@ -2763,7 +2766,7 @@ argument = one_argument(argument,tbuf);
 
 		  	/* Split off into the different groups */
 			if(IS_IMMORTAL(person)) {
-				sprintf(buf,"%15s $c000Y%-8s $c000p:$c000w %s %s\n\r",""
+				sprintf(buf,"$c000Y%s $c000p:$c000w %s%s\n\r"
 					,(person->specials.immtitle? person->specials.immtitle: GetLevelTitle(person)), PrintTitle(person,type), SPECIAL_FLAGS(ch,person) );
 
 				if(IS_AFFECTED2(person,AFF2_QUEST)) /* Quested immortals*/
@@ -2772,11 +2775,11 @@ argument = one_argument(argument,tbuf);
 					strcat(immortals, buf);
 			} else if(IS_AFFECTED2(person,AFF2_QUEST) ) {
 
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s %s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s%s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
 				strcat(quest, buf);
 			} else {
 
-				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s %s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
+				sprintf(buf,"%25s $c0012%-8s $c000p:$c000w %s%s\n\r", GetLevelTitle(person), classes, PrintTitle(person,type), SPECIAL_FLAGS(ch, person) );
 				strcat(mortals, buf);
 			}
 			count++;
