@@ -4827,7 +4827,7 @@ int skillsort(const void *s1, const void *s2) {
 }
 
 char *list_knowns(struct char_data *ch, int index) {
-    char buf[256];
+    static char buf[MAX_STRING_LENGTH];
     char *output;
     int skillflags = ch->skills[index].flags;
     int foundskills = 0;
