@@ -1459,8 +1459,8 @@ void command_interpreter(struct char_data *ch, char *argument)
         }
     }
     
-    argument = get_argument_nofill(arg, &arg1);
-    arg2 = skip_spaces( argument );
+    arg = get_argument_nofill(arg, &arg1);
+    arg2 = skip_spaces( arg );
 
     /*
      * New parser by DM
