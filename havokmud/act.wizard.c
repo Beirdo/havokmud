@@ -4347,7 +4347,26 @@ dlog("in do_show");
 		if(!(isdigit(*zonenum))) {
 			append_to_string_block(&sb,"Usage:\n\r"
 				 "  show wearslot #\n\r"
-				 "  Number ranging from 0 (lightsource) to 22 (loaded weapon)\n\r");
+				 "  Number ranging from  0   TAKE\n\r"
+	             "                       1   FINGER\n\r"
+	             "                       2   NECK\n\r"
+	             "                       3   BODY\n\r"
+	             "                       4   HEAD\n\r"
+	             "                       5   LEGS\n\r"
+	             "                       6	 FEET\n\r"
+	             "                       7   HANDS\n\r"
+	             "                       8   ARMS\n\r"
+	             "                       9   SHIELD\n\r"
+	             "                      10   ABOUT\n\r"
+	             "                      11   WAIST\n\r"
+	             "                      12   WRIST\n\r"
+	             "                      13   WIELD\n\r"
+	             "                      14   HOLD\n\r"
+	             "                      15   THROW\n\r"
+	             "                      16   LIGHT-SOURCE\n\r"
+	             "                      17   BACK\n\r"
+	             "                      18   EARS\n\r"
+	             "                      19   EYES\n\r");
 		} else {
 			wearslot = atoi(zonenum);
 			append_to_string_block(&sb, "VNUM  rnum count e-value names\n\r");
@@ -4355,7 +4374,7 @@ dlog("in do_show");
 				oi = which_i + objn;
 				obj = read_object(oi->virtual, VIRTUAL);
 				if(obj) {
-					if(IS_SET(obj->obj_flags.wear_flags, wearslot)) {
+					if(IS_SET(obj->obj_flags.wear_flags, pc_num_class(wearslot))) {
 						if(eval(obj) < -5)
 							sprintf(color,"%s","$c0008");
 						else if(eval(obj) < 20)
@@ -4364,9 +4383,9 @@ dlog("in do_show");
 							sprintf(color,"%s","$c000W");
 						sprintf(buf,"%5d %4d %3d %s%7d   $c000w%s\n\r", oi->virtual, objn, (oi->number - 1), color, eval(obj), oi->name);
 						append_to_string_block(&sb, buf);
+						extract_obj(obj);
 					}
 				}
-				extract_obj(obj);
 			}
 		}
 	} else if (is_abbrev(buf, "mobiles") &&(which_i=mob_index,topi=top_of_mobt)) {
@@ -4604,7 +4623,8 @@ dlog("in do_show");
 		append_to_string_block(&sb,"Usage:\n\r"
 			 "  show zones\n\r"
 			 "  show (objects|mobiles|maxxes) (zone#|name)\n\r"
-			 "  show rooms (zone#|death|private)\n\r");
+			 "  show rooms (zone#|death|private)\n\r"
+			 "  show wearslot (#)");
 		if(GetMaxLevel(ch) > 55) {
 			append_to_string_block(&sb,"  show report (zone#)\n\r");
 		}
