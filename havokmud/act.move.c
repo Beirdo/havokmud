@@ -20,13 +20,6 @@ int             DisplayOneMove(struct char_data *ch, int dir, int was_in);
 int             AddToCharHeap(struct char_data *heap[50], int *top,
                               int total[50], struct char_data *k);
 
-#if 0
-int             make_exit_ok(struct char_data *ch, struct room_data **rpp,
-                             int dir);
-int             clearpath(struct char_data *ch, long room, int direc);
-
-int             toupper(int c);
-#endif
 
 void NotLegalMove(struct char_data *ch)
 {

@@ -795,7 +795,9 @@ struct command_def commandList[] = {
     { "yell", do_yell, 563, POSITION_RESTING, 0 },
     { "legsweep", do_leg_sweep, 564, POSITION_FIGHTING, 0 },
     { "charge", do_charge, 565, POSITION_STANDING, 0 },
+#if 0
     { "orebuild", do_orebuild, 566, POSITION_STANDING, 59 },
+#endif
     { "draw", do_draw, 567, POSITION_FIGHTING, 0 },
     { "zconv", do_zconv, 568, POSITION_STANDING, 60 },
     { "bprompt", do_set_bprompt, 569, POSITION_RESTING, 0 },

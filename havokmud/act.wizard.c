@@ -3100,9 +3100,6 @@ void do_load(struct char_data *ch, char *argument, int cmd)
     int             start,
                     end;
 
-    extern int      top_of_mobt;
-    extern int      top_of_objt;
-
     dlog("in do_load");
 
     if (IS_NPC(ch)) {
@@ -3149,65 +3146,14 @@ void do_load(struct char_data *ch, char *argument, int cmd)
             mob, TO_CHAR);
     } else if (is_abbrev(type, "object")) {
         if (number < 0) {
-            for (number = 0; number < top_of_objt; number++) {
-                if (isname(num, obj_index[number].name)) {
-                    break;
-                }
-            }
-            if (number == top_of_objt) {
-                number = -1;
-            }
-        } else {
-            number = real_object(number);
+            number = db_find_object_named(num, -1, -1);
         }
-        if (number < 0 || number > top_of_objt) {
+
+        if (number < 0 || !(obj = read_object(number, VIRTUAL))) {
             send_to_char("There is no such object.\n\r", ch);
             return;
         }
 
-        if (GetMaxLevel(ch) < IMPLEMENTOR) {
-            switch (obj_index[number].virtual) {
-            case 5021:
-                send_to_char("no.  No more bows!  And don't kill the worm "
-                             "either!\n\r", ch);
-                return;
-            case 5112:
-                send_to_char("no, no more Ruby rings!  And don't kill for it "
-                             "either!\n\r", ch);
-                return;
-            case 233:
-            case 21150:
-            case 30012:
-            case 30013:
-            case 30014:
-            case 30015:
-            case 30016:
-            case 30017:
-            case 30018:
-                send_to_char("When monkeys fly out of Ripper's butt.\n\r", ch);
-                return;
-            case 24:
-            case 25:
-            case 26:
-            case 27:
-            case 28:
-                send_to_char("Sorry, private items.\n\r", ch);
-                return;
-            case 21113:
-            case 21117:
-            case 21120:
-            case 21121:
-            case 21122:
-                send_to_char("You can't load this item, sorry.\n\r", ch);
-                return;
-
-            }
-        }
-
-        obj = read_object(number, REAL);
-#if 0
-        obj_index[obj->item_number].number++;
-#endif
         obj_to_char(obj, ch);
 
         if (GetMaxLevel(ch) < MAX_IMMORT) {
@@ -3348,9 +3294,6 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
         } else if ((obj = get_obj_in_list_vis(ch, name,
                                          real_roomp(ch->in_room)->contents))) {
             act("$n destroys $p.", FALSE, ch, obj, 0, TO_ROOM);
-#if 0
-            obj_index[obj->item_number].number--;
-#endif
             extract_obj(obj);
         } else if (!strcasecmp("room", name)) {
             if (GetMaxLevel(ch) < IMPLEMENTOR) {
@@ -3423,9 +3366,6 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
 
         for (obj = real_roomp(ch->in_room)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-#if 0
-            obj_index[obj->item_number].number--;
-#endif
             extract_obj(obj);
         }
     }
@@ -6311,11 +6251,9 @@ void do_msave(struct char_data *ch, char *argument, int cmd)
 
 void do_osave(struct char_data *ch, char *argument, int cmd)
 {
-    FILE           *f;
     struct obj_data *obj;
     char           *oname,
-                   *field,
-                    buf[254];
+                   *field;
     long            vnum = -1;
     int             nr;
     long            start,
@@ -6379,11 +6317,6 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     if (nr != -1) {
         send_to_char("WARNING: Vnum already in use, OVER-WRITING\n\r", ch);
     }
-    sprintf(buf, "objects/%ld", vnum);
-    if ((f = fopen(buf, "wt")) == NULL) {
-        send_to_char("Can't write to disk now..try later.\n\r", ch);
-        return;
-    }
 
     if (obj->modBy) {
         free(obj->modBy);
@@ -6391,18 +6324,10 @@ void do_osave(struct char_data *ch, char *argument, int cmd)
     obj->modBy = (char *) strdup(GET_NAME(ch));
     obj->modified = time(0);
 
-    fprintf(f, "#%ld\n", vnum);
-    write_obj_to_file(obj, f);
-    fclose(f);
     if (nr == -1) {
         insert_object(obj, vnum);
-    } else {
-        obj_index[nr].pos = -1;
-        if (obj_index[nr].data != NULL) {
-            free_obj((struct obj_data *) obj_index[nr].data);
-            obj_index[nr].data = NULL;
-        }
     }
+    db_save_object(obj, -1, -1);
 
     Log("Object %s saved as vnum %ld", obj->name, vnum);
     ch_printf(ch, "Object %s saved as vnum %ld\n\r", obj->name, vnum);
@@ -7104,21 +7029,6 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
 
     obj->max = number;
     ch_printf(ch, "Set object loadrate to %d.\n\r", number);
-
-#if 0
-    obj = read_object(rnum, REAL);
-    if (obj) {
-        obj_index[rnum].MaxObjCount = number;
-        ch_printf(ch,"Maximum object count set to %d "
-            "on object %s. \n\r",number,(char *) obj->name);
-        /*
-         * Temporary.. Object doesnt' get destroyed here
-         */
-        obj_index[obj->item_number].number--;
-    } else {
-        send_to_char("Error on Read Object. maximum not set. \n\r",ch);
-    }
-#endif
 }
 
 void do_setobjspeed(struct char_data *ch, char *argument, int cmd)

@@ -7099,22 +7099,12 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg,
                 act("$N waves $s hands and makes something disappear.",
                     TRUE, ch, obj, vict, TO_CHAR);
                 obj_from_char(obj);
-#if 0                
-                obj_index[tmp_object->item_number].number--;
-#endif                
                 extract_obj(obj);
-#if 0
-                do_junk(vict, obj->name,0);
-#endif
                 /*
                  * pick new quest 
                  */
                 questNumber = number(0, 49);
                 questNumber2 = number(0, 3);
-#if 0
-                do_say(vict, "Hey.. I got something else for you "
-                             "to get too.",0);
-#endif                
                 time_diff = 201;
             }
             return (TRUE);
@@ -7447,30 +7437,18 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg,
          */
         arg = get_argument(arg, &obj_name);
         if (!obj_name) {
-#if 0            
-            send_to_char("Give what?\n\r",ch);
-#endif            
             return (FALSE);
         }
         if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
-#if 0            
-            send_to_char("Give what?\n\r",ch);
-#endif            
             return (FALSE);
         }
 
         arg = get_argument(arg, &vict_name);
         if (!vict_name) {
-#if 0            
-            send_to_char("To who?\n\r",ch);
-#endif            
             return (FALSE);
         }
 
         if (!(vict = get_char_room_vis(ch, vict_name))) {
-#if 0            
-            send_to_char("To who?\n\r",ch);
-#endif            
             return (FALSE);
         }
 

@@ -3229,8 +3229,6 @@ void            do_mobTell(struct char_data *ch, char *mob,
  * Utilities 
  */
 void qlog(struct char_data *ch, char *text);
-void            do_orebuild(struct char_data *ch, char *argument,
-                            int cmd);
 void            do_mrebuild(struct char_data *ch, char *argument,
                             int cmd);
 
@@ -3553,12 +3551,9 @@ void remove_cr(char *output, char *input);
 void ReadTextZone(FILE * fl);
 int CheckKillFile(long virtual);
 void CleanZone(int zone);
-void save_new_object_structure(struct obj_data *obj, FILE * f);
-void write_obj_to_file(struct obj_data *obj, FILE * f);
 void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi);
 int LoadZoneFile(FILE * fl, int zon);
 void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc);
-void read_object_to_memory(long vnum);
 void ClassSpecificStuff(struct char_data *ch);
 void ObjFromCorpse(struct obj_data *c);
 char           *ArmorSize(int a);
@@ -4152,6 +4147,12 @@ void db_delete_mail_message(int messageId);
 
 char *db_lookup_help( int type, char *keywords );
 char *db_lookup_help_similar( int type, char *keywords );
+void db_save_object(struct obj_data *obj, int owner, int ownerItem );
+struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
+                                int ownerItem );
+int db_find_object_named(char *string, int owner, int ownerItem);
+struct index_data *db_generate_object_index(int *top, int *sort_top,
+                                            int *alloc_top);
 
 
 /*************************************************************************

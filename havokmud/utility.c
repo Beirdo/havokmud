@@ -6033,60 +6033,6 @@ void do_mrebuild(struct char_data *ch, char *argument, int cmd)
     send_to_char(buf, ch);
 }
 
-void do_orebuild(struct char_data *ch, char *argument, int cmd)
-{
-    char            buf[128],
-                    buf2[511];
-    long            rstart,
-                    rend,
-                    i;
-    FILE           *fp;
-    struct obj_data *obj;
-    int             count = 0;
-
-    if (!ch->desc) {
-        return;
-    }
-    rstart = 0;
-    rend = top_of_objt;
-
-    sprintf(buf, "%s resorts the objects (The game will pause for a few "
-                 "moments).\r\n", ch->player.name);
-    send_to_all(buf);
-
-    sprintf(buf, "Saving Objects (%ld items)\n\r", (long) rend);
-    send_to_char(buf, ch);
-
-    for (i = rstart; i <= WORLD_SIZE; i++) {
-        obj = read_object(i, VIRTUAL);
-        if (obj) {
-            sprintf(buf, "objects/%ld", i);
-            if (!(fp = fopen(buf, "w"))) {
-                sprintf(buf2, "Can't open obj file for %s\r\n", buf);
-                send_to_char(buf2, ch);
-            } else {
-                fprintf(fp, "#%ld\n", i);
-                save_new_object_structure(obj, fp);
-#if 0
-                write_obj_to_file(obj,fp);
-#endif
-                count++;
-                extract_obj(obj);
-                fclose(fp);
-            }
-        }
-    }
-#if 0
-    fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 "
-                      "0\n\r%");
-#endif
-    sprintf(buf, "The world returns to normal as %s finishes the job.\r\n",
-            ch->player.name);
-    send_to_all(buf);
-    send_to_char("\n\rDone\n\r", ch);
-    sprintf(buf, "(%d) Objects saved!\n\r", count);
-    send_to_char(buf, ch);
-}
 
 /*
  * util function, converts an 'advanced' ASCII-number-string into a

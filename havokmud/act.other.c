@@ -126,9 +126,6 @@ void do_junk(struct char_data *ch, char *argument, int cmd)
             }
             value += (MIN(1000, MAX(tmp_object->obj_flags.cost / 4, 1)));
             obj_from_char(tmp_object);
-#if 0
-            obj_index[tmp_object->item_number].number--;
-#endif
             extract_obj(tmp_object);
             if (num > 0) {
                 num--;

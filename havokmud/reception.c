@@ -212,15 +212,9 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             if (rare) {
                                 if (rare != tmp) {
                                     obj_from_char(rare);
-#if 0                                    
-                                    obj_index[rare->item_number].number++;
-#endif
                                     extract_obj(rare);
                                 } else {
                                     obj_from_char(tmp);
-#if 0                                    
-                                    obj_index[tmp->item_number].number++;
-#endif
                                     extract_obj(tmp);
                                     tmp = 0;
                                 }
@@ -249,15 +243,9 @@ bool recep_offer(struct char_data *ch, struct char_data *receptionist,
                             if (rare) {
                                 if (rare != tmp) {
                                     obj_from_char(rare);
-#if 0                                    
-                                    obj_index[rare->item_number].number++;
-#endif
                                     extract_obj(rare);
                                 } else {
                                     obj_from_char(tmp);
-#if 0                                    
-                                    obj_index[tmp->item_number].number++;
-#endif
                                     extract_obj(tmp);
                                     tmp = 0;
                                 }
@@ -1214,9 +1202,6 @@ void CountLimitedItems(struct obj_file_u *st)
                 }
                 obj_index[obj->item_number].number++;
             }
-#if 0            
-            obj_index[obj->item_number].number++;
-#endif            
             extract_obj(obj);
         }
     }

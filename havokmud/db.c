@@ -19,7 +19,6 @@
 #define RENT_INACTIVE 3         /* delete the users rent files after 1
                                  * month */
 
-#define OBJ_DIR "objects"
 #define MOB_DIR "mobiles"
 #define GET_OBJ_NAME(obj)  ((obj)->name)
 #define MAX_INDICES 5000
@@ -74,7 +73,6 @@ long            room_count = 0;
 long            mob_count = 0;
 long            obj_count = 0;
 long            total_mbc = 0;
-long            total_obc = 0;
 long            total_connections = 0;
 long            total_max_players = 0;
 
@@ -194,11 +192,18 @@ void boot_db(void)
     Log("Loading saved rooms.");
     boot_saved_rooms();
 
-    Log("Generating index tables for mobile and object files.");
+    Log("Generating index table for mobiles.");
     mob_index = generate_indices(mob_f, &top_of_mobt, &top_of_sort_mobt,
                                  &top_of_alloc_mobt, MOB_DIR);
-    obj_index = generate_indices(obj_f, &top_of_objt, &top_of_sort_objt,
-                                 &top_of_alloc_objt, OBJ_DIR);
+
+    Log("Generating index table for objects.");
+    obj_index = db_generate_object_index(&top_of_objt, &top_of_sort_objt,
+                                         &top_of_alloc_objt);
+
+    if( !obj_index ) {
+        Log( "No objects in the SQL Database, aborting" );
+        exit( 0 );
+    }
 
     Log("Renumbering zone table.");
     renum_zone_table(0);
@@ -917,23 +922,13 @@ struct index_data *insert_objindex(struct index_data *index, void *data,
     }
     index[top_of_objt].virtual = vnum;
     index[top_of_objt].pos = -1;
-    index[top_of_objt].name =
-        strdup(GET_OBJ_NAME((struct obj_data *) data));
+    index[top_of_objt].name = strdup(GET_OBJ_NAME((struct obj_data *) data));
     index[top_of_objt].number = 0;
     index[top_of_objt].func = 0;
-    index[top_of_objt].data = data;
     top_of_objt++;
     return index;
 }
 
-void read_object_to_memory(long vnum)
-{
-    int             i;
-    i = real_object(vnum);
-    if (i != -1) {
-        obj_index[i].data = (void *) read_object(i, REAL);
-    }
-}
 
 /*
  * generate index table for object or monster file
@@ -1071,6 +1066,8 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
 
     return (index);
 }
+
+
 
 void cleanout_room(struct room_data *rp)
 {
@@ -2743,137 +2740,6 @@ void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc)
     }
 }
 
-#define NEWSETUP 1
-/*
- * used for old style dale objects
- */
-int read_obj_from_file(struct obj_data *obj, FILE * f)
-{
-    int             i,
-                    tmp;
-    long            bc = 0,
-                    ltmp;
-    char            chk[50];
-    struct extra_descr_data *new_descr;
-
-    obj->name = fread_string(f);
-    if (obj->name && *obj->name) {
-        bc += strlen(obj->name);
-    }
-    obj->short_description = fread_string(f);
-    if (obj->short_description && *obj->short_description) {
-        bc += strlen(obj->short_description);
-    }
-    obj->description = fread_string(f);
-    if (obj->description && *obj->description) {
-        bc += strlen(obj->description);
-    }
-    obj->action_description = fread_string(f);
-    if (obj->action_description && *obj->action_description) {
-        bc += strlen(obj->action_description);
-    }
-
-    /*
-     * New object code(GH)
-     */
-    obj->modBy = fread_string(f);
-    if (obj->modBy && *obj->modBy) {
-        bc += strlen(obj->modBy);
-    }
-
-    /*
-     *** numeric data ***
-     */
-
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.type_flag = tmp;
-    fscanf(f, " %ld ", &ltmp);
-    obj->obj_flags.extra_flags = ltmp;
-    fscanf(f, " %ld ", &ltmp);
-    obj->obj_flags.wear_flags = ltmp;
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[0] = tmp;
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[1] = tmp;
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[2] = tmp;
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.value[3] = tmp;
-    fscanf(f, " %d ", &tmp);
-    obj->obj_flags.weight = tmp;
-    fscanf(f, " %d \n", &tmp);
-    obj->obj_flags.cost = tmp;
-    fscanf(f, " %d \n", &tmp);
-    obj->obj_flags.cost_per_day = tmp;
-
-    /*
-     * New fields (GH)
-     */
-
-    fscanf(f, " %d \n", &tmp);
-    obj->level = tmp;
-    fscanf(f, " %d \n", &tmp);
-    obj->max = tmp;
-    fscanf(f, " %ld \n", &ltmp);
-    obj->modified = ltmp;
-
-#ifdef NEWSETUP
-    fscanf(f, " %d \n", &tmp);
-    obj->speed = tmp;
-
-    fscanf(f, " %d \n", &tmp);
-    obj->weapontype = tmp;
-
-#endif
-
-    /*
-     * Let's see if this works, Lennya
-     */
-    fscanf(f, " %d \n", &tmp);
-    obj->tweak = tmp;
-
-    /*
-     *** extra descriptions ***
-     */
-
-    obj->ex_description = 0;
-
-    while (fscanf(f, " %s \n", chk), *chk == 'E') {
-        CREATE(new_descr, struct extra_descr_data, 1);
-        bc += sizeof(struct extra_descr_data);
-        new_descr->keyword = fread_string(f);
-        if (new_descr->keyword && *new_descr->keyword) {
-            bc += strlen(new_descr->keyword);
-        }
-        new_descr->description = fread_string(f);
-        if (new_descr->description && *new_descr->description) {
-            bc += strlen(new_descr->description);
-        }
-        new_descr->next = obj->ex_description;
-        obj->ex_description = new_descr;
-        chk[0] = '\0';
-    }
-
-    for (i = 0; (i < MAX_OBJ_AFFECT) && (*chk == 'A'); i++) {
-        /*
-         * inserted to fix bug with load
-         * of object in individual file
-         */
-        *chk = 'x';
-        fscanf(f, " %d ", &tmp);
-        obj->affected[i].location = tmp;
-        fscanf(f, " %d \n", &tmp);
-        obj->affected[i].modifier = tmp;
-        fscanf(f, " %s \n", chk);
-    }
-
-    for (; (i < MAX_OBJ_AFFECT); i++) {
-        obj->affected[i].location = APPLY_NONE;
-        obj->affected[i].modifier = 0;
-    }
-    return bc;
-}
-
 /*
  * ---------- Start of write_mob_to_file ----------
  */
@@ -3169,129 +3035,14 @@ int weaponconvert(struct obj_data *obj)
     return WEAPON_GENERIC;
 }
 
-void write_obj_to_file(struct obj_data *obj, FILE * f)
-{
-    int             i;
-    struct extra_descr_data *descr;
-
-#if 0
-     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual);
-#endif
-    fwrite_string(f, obj->name);
-    fwrite_string(f, obj->short_description);
-    fwrite_string(f, obj->description);
-    fwrite_string(f, obj->action_description);
-    fwrite_string(f, obj->modBy);
-
-    fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-            obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
-    fprintf(f, "%d %d %d %d\n", obj->obj_flags.value[0],
-            obj->obj_flags.value[1], obj->obj_flags.value[2],
-            obj->obj_flags.value[3]);
-
-    fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
-            obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
-            obj->max, (long)obj->modified, obj->speed, obj->weapontype, 
-            obj->tweak);
-
-    /*
-     *** extra descriptions ***
-     */
-    if (obj->ex_description) {
-        for (descr = obj->ex_description; descr; descr = descr->next) {
-            fprintf(f, "E\n");
-            fwrite_string(f, descr->keyword);
-            fwrite_string(f, descr->description);
-        }
-    }
-
-    for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-        if (obj->affected[i].location != APPLY_NONE) {
-            fprintf(f, "A\n%d %ld\n", obj->affected[i].location,
-                    obj->affected[i].modifier);
-        }
-    }
-}
-
-void save_new_object_structure(struct obj_data *obj, FILE * f)
-{
-    int             i;
-    struct extra_descr_data *descr;
-
-#if 0
-     fprintf(f,"#%ld\n",obj_index[obj->item_number].virtual);
-#endif
-    fwrite_string(f, obj->name);
-    fwrite_string(f, obj->short_description);
-    fwrite_string(f, obj->description);
-    fwrite_string(f, obj->action_description);
-    fwrite_string(f, obj->modBy);
-#if 0
-    obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN
-    obj->obj_flags.extra_flags
-#endif
-
-    /*
-     * let's get rid of the !bard flags, remove this when assigning a
-     * decent flag here
-     */
-    if (IS_SET(obj->obj_flags.extra_flags, ITEM_UNUSED)) {
-        REMOVE_BIT(obj->obj_flags.extra_flags, ITEM_UNUSED);
-    }
-    if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN) {
-        fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-                obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
-    } else {
-        fprintf(f, "%d %ld %ld\n", obj->obj_flags.type_flag,
-                obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
-    }
-    fprintf(f, "%d %d %d %d\n", obj->obj_flags.value[0],
-            obj->obj_flags.value[1], obj->obj_flags.value[2],
-            obj->obj_flags.value[3]);
-
-    if (IS_WEAPON(obj)) {
-        fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
-                obj->obj_flags.cost,
-                (obj->obj_flags.cost_per_day == -1 ? -1 :
-                 obj->obj_flags.cost_per_day), obj->level, obj->max,
-                (long)obj->modified, obj->speed, obj->weapontype,
-                obj->tweak);
-    } else {
-        fprintf(f, "%d %d %d %d %d %ld 0 0 %d\n", obj->obj_flags.weight,
-                obj->obj_flags.cost,
-                (obj->obj_flags.cost_per_day == -1 ? -1 :
-                 obj->obj_flags.cost_per_day), obj->level, obj->max,
-                (long)obj->modified, obj->tweak);
-    }
-
-    /*
-     *** extra descriptions ***
-     */
-    if (obj->ex_description) {
-        for (descr = obj->ex_description; descr; descr = descr->next) {
-            fprintf(f, "E\n");
-            fwrite_string(f, descr->keyword);
-            fwrite_string(f, descr->description);
-        }
-    }
-
-    for (i = 0; i < MAX_OBJ_AFFECT; i++) {
-        if (obj->affected[i].location != APPLY_NONE) {
-            fprintf(f, "A\n%d %ld\n", obj->affected[i].location,
-                    obj->affected[i].modifier);
-        }
-    }
-}
 
 /*
  * read an object from OBJ_FILE
  */
 struct obj_data *read_object(int nr, int type)
 {
-    FILE           *f;
     struct obj_data *obj;
     int             i;
-    long            bc;
     char            buf[100];
 
     i = nr;
@@ -3307,32 +3058,14 @@ struct obj_data *read_object(int nr, int type)
 
     if (!obj) {
         Log("Cannot create obj?! db.c read_obj");
-        return (FALSE);
+        return(NULL);
     }
-
-    bc = sizeof(struct obj_data);
 
     clear_object(obj);
 
-    if (obj_index[nr].data == NULL) {
-        if (obj_index[nr].pos == -1) {
-            sprintf(buf, "%s/%ld", OBJ_DIR, obj_index[nr].virtual);
-            if ((f = fopen(buf, "rt")) == NULL) {
-                Log("can't open object file for object %ld",
-                    obj_index[nr].virtual);
-                free_obj(obj);
-                return (0);
-            }
-            fscanf(f, "#%*d\n");
-            bc += read_obj_from_file(obj, f);
-            fclose(f);
-        } else {
-            rewind(obj_f);
-            fseek(obj_f, obj_index[nr].pos, 0);
-            bc += read_obj_from_file(obj, obj_f);
-        }
-    } else {
-        clone_obj_to_obj(obj, (struct obj_data *) obj_index[nr].data);
+    if( !db_read_object(obj, obj_index[nr].virtual, -1, -1) ) {
+        free(obj);
+        return(NULL);
     }
 
     obj->in_room = NOWHERE;
@@ -3349,14 +3082,7 @@ struct obj_data *read_object(int nr, int type)
     object_list = obj;
 
     obj_index[nr].number++;
-#if 0
-    obj->level = 0;
-#endif
     obj_count++;
-#ifdef BYTE_COUNT
-    fprintf(stderr, "Object [%d] uses %d bytes\n", obj_index[nr].virtual, bc);
-#endif
-    total_obc += bc;
     return (obj);
 }
 
@@ -3735,53 +3461,50 @@ void reset_zone(int zone, int cmd)
                  * read an object  On ground load (GH)
                  */
 
-                if (TRUE) {
-                    if (ZCMD.arg3 >= 0 &&
-                        ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
-                        if ((ZCMD.if_flag > 0 &&
-                             ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
-                            (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
-                                (-ZCMD.if_flag) + 1)) {
-                            if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
-                                obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                if (ZCMD.arg3 >= 0 &&
+                    ((rp = real_roomp(ZCMD.arg3)) != NULL)) {
+                    if ((ZCMD.if_flag > 0 &&
+                         ObjRoomCount(ZCMD.arg1, rp) < ZCMD.if_flag) ||
+                        (ZCMD.if_flag <= 0 && ObjRoomCount(ZCMD.arg1,rp) <
+                            (-ZCMD.if_flag) + 1)) {
+                        if ((obj = read_object(ZCMD.arg1, REAL)) != NULL) {
+                            obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-                                if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
-                                    tweakroll = number(1, 100);
-                                    if (obj->tweak < tweakmin) {
-                                        tweakrate = tweakmin;
-                                    } else {
-                                        tweakrate = obj->tweak;
-                                    }
-                                    if (tweakroll <= tweakrate) {
-                                        tweak(obj);
-                                    }
-                                }
-
-                                if (cmd != 375) {
-                                    if (does_Load
-                                        ((int) obj_index[ZCMD.arg1].number,
-                                         (int) obj->max) == TRUE) {
-                                        obj_to_room(obj, ZCMD.arg3);
-                                    } else {
-                                        extract_obj(obj);
-                                    }
+                            if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
+                                tweakroll = number(1, 100);
+                                if (obj->tweak < tweakmin) {
+                                    tweakrate = tweakmin;
                                 } else {
-                                    obj_to_room(obj, ZCMD.arg3);
+                                    tweakrate = obj->tweak;
                                 }
-
-                                last_cmd = 1;
-                            } else {
-                                last_cmd = 0;
+                                if (tweakroll <= tweakrate) {
+                                    tweak(obj);
+                                }
                             }
+
+                            if (cmd != 375) {
+                                if (does_Load((int)obj_index[ZCMD.arg1].number,
+                                              (int)obj->max) == TRUE) {
+                                    obj_to_room(obj, ZCMD.arg3);
+                                } else {
+                                    extract_obj(obj);
+                                }
+                            } else {
+                                obj_to_room(obj, ZCMD.arg3);
+                            }
+
+                            last_cmd = 1;
                         } else {
                             last_cmd = 0;
                         }
-                    } else if ((obj = read_object(ZCMD.arg1, REAL))) {
-                        Log("Error finding room #%d", ZCMD.arg3);
-                        last_cmd = 1;
                     } else {
                         last_cmd = 0;
                     }
+                } else if ((obj = read_object(ZCMD.arg1, REAL))) {
+                    Log("Error finding room #%d", ZCMD.arg3);
+                    last_cmd = 1;
+                } else {
+                    last_cmd = 0;
                 }
                 break;
 
@@ -3789,39 +3512,35 @@ void reset_zone(int zone, int cmd)
                 /*
                  * object to object
                  */
-                if (TRUE) {
-                    obj = read_object(ZCMD.arg1, REAL);
-                    obj_to = get_obj_num(ZCMD.arg3);
-                    if (obj_to && obj) {
-                        obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
+                obj = read_object(ZCMD.arg1, REAL);
+                obj_to = get_obj_num(ZCMD.arg3);
+                if (obj_to && obj) {
+                    obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
-                        if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
-                            tweakroll = number(1, 100);
-                            if (obj->tweak < tweakmin) {
-                                tweakrate = tweakmin;
-                            } else {
-                                tweakrate = obj->tweak;
-                            }
-                            if (tweakroll <= tweakrate) {
-                                tweak(obj);
-                            }
-                        }
-
-                        if (cmd != 375) {
-                            if (does_Load((int) obj_index[ZCMD.arg1].number,
-                                          (int) obj->max) == TRUE) {
-                                obj_to_obj(obj, obj_to);
-                            } else {
-                                extract_obj(obj);
-                            }
+                    if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
+                        tweakroll = number(1, 100);
+                        if (obj->tweak < tweakmin) {
+                            tweakrate = tweakmin;
                         } else {
-                            obj_to_obj(obj, obj_to);
+                            tweakrate = obj->tweak;
                         }
-
-                        last_cmd = 1;
-                    } else {
-                        last_cmd = 0;
+                        if (tweakroll <= tweakrate) {
+                            tweak(obj);
+                        }
                     }
+
+                    if (cmd != 375) {
+                        if (does_Load((int) obj_index[ZCMD.arg1].number,
+                                      (int) obj->max) == TRUE) {
+                            obj_to_obj(obj, obj_to);
+                        } else {
+                            extract_obj(obj);
+                        }
+                    } else {
+                        obj_to_obj(obj, obj_to);
+                    }
+
+                    last_cmd = 1;
                 } else {
                     last_cmd = 0;
                 }
@@ -3831,7 +3550,7 @@ void reset_zone(int zone, int cmd)
                 /*
                  * obj_to_char
                  */
-                if (TRUE && (obj = read_object(ZCMD.arg1, REAL)) && mob) {
+                if ((obj = read_object(ZCMD.arg1, REAL)) && mob) {
                     obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 
                     if (!IS_SET(SystemFlags, SYS_NO_TWEAK)) {
@@ -3890,7 +3609,7 @@ void reset_zone(int zone, int cmd)
             /*
              * object to equipment list
              */
-                if (TRUE && (obj = read_object(ZCMD.arg1, REAL))) {
+                if ((obj = read_object(ZCMD.arg1, REAL))) {
                     if (!mob->equipment[ZCMD.arg3]) {
                         obj_index[ZCMD.arg1].MaxObjCount = ZCMD.arg2;
 

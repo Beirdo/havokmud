@@ -17,7 +17,6 @@ char *mysql_user   = NULL;
 char *mysql_passwd = NULL;
 char *mysql_host   = NULL;
 
-#if 0
 struct class_def *classes;
 int             classCount;
 
@@ -53,7 +52,7 @@ int                 raceCount;
 
 struct lang_def    *languages;
 int                 languageCount;
-#endif
+
 
 /* Internal protos */
 char *db_quote(char *string);
@@ -68,8 +67,8 @@ void db_load_kick_messages(void);
 void db_load_poses(void);
 void db_load_races(void);
 void db_load_languages(void);
-#endif
 
+#endif
 
 void db_setup(void)
 {
@@ -1732,25 +1731,39 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
     char           *name,
                    *shortDesc,
                    *desc,
-                   *actDesc;
+                   *actDesc,
+                   *keyword,
+                   *quoted;
     int             i,
                     j;
     struct extra_descr_data *descr;
+    int             vnum;
 
-    name      = db_quote(obj->name);
     shortDesc = db_quote(obj->short_description);
     desc      = db_quote(obj->description);
     actDesc   = db_quote(obj->action_description);
+    vnum      = obj_index[obj->item_number].virtual;
+
+    i = strlen(actDesc) - 1;
+    while( i > 0 &&
+           (actDesc[i] == '\n' || actDesc[i] == '\r') &&
+           (actDesc[i-1] == '\n' || actDesc[i-1] == '\r') ) {
+        actDesc[i--] = '\0';
+    }
+
+    if( i == 0 && (actDesc[0] == '\n' || actDesc[0] == '\r') ) {
+        actDesc[0] = '\0';
+    }
 
     sprintf(buf, "REPLACE INTO `objects` (`vnum`, `ownerId`, `ownedItemId`, "
-                 "`name`, `shortDescription`, `description`, "
+                 "`shortDescription`, `description`, "
                  "`actionDescription`, `modBy`, `itemType`, `value0`, "
                  "`value1`, `value2`, `value3`, `weight`, `cost`, "
-                 "`costPerDay`, `level`, `max`, `modified`, `speed`, "
-                 "`weaponType`, `tweak`) VALUES ( %ld, %d, %d, '%s', '%s', "
-                 "'%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                 "%ld, %d, %d, %d)", obj_index[obj->item_number].virtual, 
-                 owner, ownerItem, name, shortDesc, desc, actDesc, obj->modBy,
+                 "`costPerDay`, `level`, `max`, `modified`, "
+                 "`speed`, `weaponType`, `tweak`) VALUES ( %d, %d, %d, "
+                 "'%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+                 "%d, FROM_UNIXTIME(%ld), %d, %d, %d)", vnum, owner, ownerItem,
+                 shortDesc, desc, actDesc, obj->modBy,
                  obj->obj_flags.type_flag, obj->obj_flags.value[0],
                  obj->obj_flags.value[1], obj->obj_flags.value[2],
                  obj->obj_flags.value[3], obj->obj_flags.weight,
@@ -1759,10 +1772,27 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
                  (IS_WEAPON(obj)? obj->speed : 0),
                  (IS_WEAPON(obj) ? obj->weapontype : 0), obj->tweak );
     mysql_query(sql, buf);
-    free(name);
     free(shortDesc);
     free(desc);
     free(actDesc);
+
+    name = strdup(obj->name);
+    i = 0;
+    while( (keyword = strsep(&name, " \t\n\r")) ) {
+        quoted = db_quote(keyword);
+        sprintf(buf, "REPLACE INTO `objectKeywords` (`vnum`, `ownerId`, "
+                     "`ownedItemId`, `seqNum`, `keyword`) VALUES ( %d, %d, "
+                     "%d, %d, '%s')", vnum, owner, ownerItem, i, quoted);
+        mysql_query(sql, buf);
+        free(quoted);
+        i++;
+    }
+    free(name);
+
+    sprintf(buf, "DELETE FROM `objectKeywords` WHERE `vnum` = %d AND "
+                 "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` >= %d",
+                 vnum, owner, ownerItem, i);
+    mysql_query(sql, buf);
 
     strcpy(buf, "REPLACE INTO `objectFlags` (`vnum`, `ownerId`, "
                 "`ownedItemId`, `takeable`, `wearFinger`, `wearNeck`, "
@@ -1781,15 +1811,14 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
                 "`antiDruid`, `antiMonk`, `antiBarbarian`, `antiSorcerer`, "
                 "`antiPaladin`, `antiRanger`, `antiPsionicist`, "
                 "`antiNecromancer`) VALUES (" );
-    sprintf( &buf[strlen(buf)], "%ld, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+    sprintf( &buf[strlen(buf)], "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                                 "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                                 "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                                 "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                                 "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
                                 "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-                                "%d, %d, %d, %d, %d, %d, %d)",
-                                obj_index[obj->item_number].virtual, 
-                                owner, ownerItem,
+                                "%d, %d, %d, %d, %d, %d, %d)", 
+                                vnum, owner, ownerItem,
                                 WEAR_FLAG(obj, ITEM_TAKE),
                                 WEAR_FLAG(obj, ITEM_WEAR_FINGER),
                                 WEAR_FLAG(obj, ITEM_WEAR_NECK),
@@ -1861,38 +1890,317 @@ void db_save_object(struct obj_data *obj, int owner, int ownerItem )
         name = db_quote(descr->keyword);
         sprintf(buf, "REPLACE INTO `objectExtraDesc` (`vnum`, `ownerId`, "
                      "`ownedItemId`, `seqNum`, `keyword`, `description`) "
-                     "VALUES ( %ld, %d, %d, %d, '%s', '%s')",
-                     obj_index[obj->item_number].virtual, owner, ownerItem, i,
-                     name, desc );
+                     "VALUES ( %d, %d, %d, %d, '%s', '%s')",
+                     vnum, owner, ownerItem, i, name, desc );
         mysql_query(sql, buf);
         free(name);
         free(desc);
     }
 
-    sprintf(buf, "DELETE FROM `objectExtraDesc` WHERE `vnum` = %ld AND "
+    sprintf(buf, "DELETE FROM `objectExtraDesc` WHERE `vnum` = %d AND "
                  "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                 obj_index[obj->item_number].virtual, owner, ownerItem, i );
+                 vnum, owner, ownerItem, i );
     mysql_query(sql, buf);
 
     for (i = 0, j = 0; i < MAX_OBJ_AFFECT; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
             sprintf(buf, "REPLACE INTO `objectAffects` (`vnum`, `ownerId`, "
                          "`ownedItemId`, `seqNum`, `location`, `modifier`) "
-                         "VALUES ( %ld, %d, %d, %d, %d, %ld )",
-                         obj_index[obj->item_number].virtual, owner, ownerItem,
-                         j, obj->affected[i].location,
+                         "VALUES ( %d, %d, %d, %d, %d, %ld )",
+                         vnum, owner, ownerItem, j, obj->affected[i].location,
                          obj->affected[i].modifier);
             mysql_query(sql, buf);
             j++;
         }
     }
 
-    sprintf(buf, "DELETE FROM `objectAffects` WHERE `vnum` = %ld AND "
+    sprintf(buf, "DELETE FROM `objectAffects` WHERE `vnum` = %d AND "
                  "`ownerId` = %d AND `ownedItemId` = %d AND `seqNum` > %d",
-                 obj_index[obj->item_number].virtual, owner, ownerItem, j);
+                 vnum, owner, ownerItem, j);
     mysql_query(sql, buf);
 }
 
+#if 0
+struct obj_flag_bits {
+    int var;
+    unsigned int set;
+    unsigned int clear;
+};
+
+struct obj_flag_bits obj_flags[] = {
+    { 0, ITEM_TAKE, 0 },
+    { 0, ITEM_WEAR_FINGER, 0 },
+    { 0, ITEM_WEAR_NECK, 0 },
+    { 0, ITEM_WEAR_BODY, 0 },
+    { 0, ITEM_WEAR_HEAD, 0 },
+    { 0, ITEM_WEAR_LEGS, 0 },
+    { 0, ITEM_WEAR_FEET, 0 },
+    { 0, ITEM_WEAR_HANDS, 0 },
+    { 0, ITEM_WEAR_ARMS, 0 },
+    { 0, ITEM_WEAR_SHIELD, 0 },
+    { 0, ITEM_WEAR_ABOUT, 0 },
+    { 0, ITEM_WEAR_WAISTE, 0 },
+    { 0, ITEM_WEAR_WRIST, 0 },
+    { 0, ITEM_WEAR_BACK, 0 },
+    { 0, ITEM_WEAR_EAR, 0 },
+    { 0, ITEM_WEAR_EYE, 0 },
+    { 0, ITEM_LIGHT_SOURCE, 0 },
+    { 0, ITEM_HOLD, 0 },
+    { 0, ITEM_WIELD, 0 },
+    { 0, ITEM_THROW, 0 },
+    { 1, ITEM_GLOW, 0 },
+    { 1, ITEM_HUM, 0 },
+    { 1, ITEM_METAL, 0 },
+    { 1, ITEM_MINERAL, 0 },
+    { 1, ITEM_ORGANIC, 0 },
+    { 1, ITEM_INVISIBLE, 0 },
+    { 1, ITEM_MAGIC, 0 },
+    { 1, ITEM_NODROP, 0 },
+    { 1, ITEM_BRITTLE, 0 },
+    { 1, ITEM_RESISTANT, 0 },
+    { 1, ITEM_IMMUNE, 0 },
+    { 1, ITEM_RARE, 0 },
+    { 1, ITEM_UNUSED, 0 },
+    { 1, ITEM_QUEST, 0 },
+    { 1, ITEM_ANTI_SUN, 0 },
+    { 1, ITEM_ANTI_GOOD, 0 },
+    { 1, ITEM_ANTI_EVIL, 0 },
+    { 1, ITEM_ANTI_NEUTRAL, 0 },
+    { 1, ITEM_ANTI_MEN, 0 },
+    { 1, ITEM_ANTI_WOMEN, 0 },
+    { 1, ITEM_ANTI_MAGE | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_CLERIC | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_FIGHTER | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_THIEF | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_DRUID | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_MONK | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_BARBARIAN | ITEM_ONLY_CLASS, 0 },
+    { 1, 0, 0 },
+    { 1, ITEM_ANTI_PALADIN | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_RANGER | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_PSI | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_NECROMANCER | ITEM_ONLY_CLASS, 0 },
+    { 1, ITEM_ANTI_MAGE, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_CLERIC, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_FIGHTER, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_THIEF, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_DRUID, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_MONK, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_BARBARIAN, ITEM_ONLY_CLASS },
+    { 1, 0, 0 },
+    { 1, ITEM_ANTI_PALADIN, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_RANGER, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_PSI, ITEM_ONLY_CLASS },
+    { 1, ITEM_ANTI_NECROMANCER, ITEM_ONLY_CLASS }
+};
+
+struct obj_data *db_read_object(struct obj_data *obj, int vnum, int owner,
+                                int ownerItem )
+{
+    char            buf[MAX_STRING_LENGTH];
+    unsigned int   *var;
+    struct extra_descr_data *descr;
+    struct extra_descr_data *prev;
+    int             count;
+    int             i;
+    int             len;
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT `shortDescription`, `description`, "
+                 "`actionDescription`, `modBy`, `itemType`, `value0`, "
+                 "`value1`, `value2`, `value3`, `weight`, `cost`, "
+                 "`costPerDay`, `level`, `max`, UNIX_TIMESTAMP(`modified`), "
+                 "`speed`, `weaponType`, `tweak` FROM `objects` "
+                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownedItemId` = %d",
+                 vnum, owner, ownerItem);
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
+        return(NULL);
+    }
+
+    row = mysql_fetch_row(res);
+
+    obj->short_description = strdup(row[0]);
+    obj->description = strdup(row[1]);
+    obj->action_description = strdup(row[2]);
+    obj->modBy = strdup(row[3]);
+    obj->obj_flags.type_flag = atoi(row[4]);
+    obj->obj_flags.value[0] = atoi(row[5]);
+    obj->obj_flags.value[1] = atoi(row[6]);
+    obj->obj_flags.value[2] = atoi(row[7]);
+    obj->obj_flags.value[3] = atoi(row[8]);
+    obj->obj_flags.weight = atoi(row[9]);
+    obj->obj_flags.cost = atoi(row[10]);
+    obj->obj_flags.cost_per_day = atoi(row[11]);
+    obj->level = atoi(row[12]);
+    obj->max = atoi(row[13]);
+    obj->modified = atol(row[14]); 
+    obj->speed = atoi(row[15]);
+    obj->weapontype = atoi(row[16]);
+    obj->tweak = atoi(row[17]);
+
+    mysql_free_result(res);
+
+    sprintf(buf, "SELECT `keyword` FROM `objectKeywords` WHERE `vnum` = %d "
+                 "AND `ownerId` = %d AND `ownedItemId` = %d ORDER BY `seqNum`",
+                 vnum, owner, ownerItem );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        mysql_free_result(res);
+        free_obj(obj);
+        return(NULL);
+    }
+
+    obj->name = NULL;
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+
+        obj->name = (char *)realloc(obj->name, len + strlen(row[0]) + 1);
+        if( len = 0 ) {
+            strcpy( obj->name, row[0] );
+        } else {
+            strcat( obj->name, " " );
+            strcat( obj->name, row[0] );
+        }
+        len = strlen(obj->name);
+    }
+
+    mysql_free_result(res);
+
+
+    strcpy(buf, "SELECT `takeable`, `wearFinger`, `wearNeck`, "
+                "`wearBody`, `wearHead`, `wearLegs`, `wearFeet`, `wearHands`, "
+                "`wearArms`, `wearShield`, `wearAbout`, `wearWaist`, "
+                "`wearWrist`, `wearBack`, `wearEar`, `wearEye`, "
+                "`wearLightSource`, `wearHold`, `wearWield`, `wearThrow`, "
+                "`glow`, `hum`, `metal`, `mineral`, `organic`, `invisible`, "
+                "`magic`, `cursed`, `brittle`, `resistant`, `immune`, `rare`, "
+                "`uberRare`, `quest`, `antiSun`, `antiGood`, `antiEvil`, ");
+    strcat(buf, "`antiNeutral`, `antiMale`, `antiFemale`, `onlyMage`, "
+                "`onlyCleric`, `onlyWarrior`, `onlyThief`, `onlyDruid`, "
+                "`onlyMonk`, `onlyBarbarian`, `onlySorcerer`, `onlyPaladin`, "
+                "`onlyRanger`, `onlyPsionicist`, `onlyNecromancer`, "
+                "`antiMage`, `antiCleric`, `antiWarrior`, `antiThief`, "
+                "`antiDruid`, `antiMonk`, `antiBarbarian`, `antiSorcerer`, "
+                "`antiPaladin`, `antiRanger`, `antiPsionicist`, "
+                "`antiNecromancer` FROM `objectFlags` ");
+                
+    sprintf( &buf[strlen(buf)], "WHERE `vnum` = %d AND `ownerId` = %d AND "
+                                "`ownedItemId` = %d", vnum, owner, ownerItem );
+    mysql_query(sql, buf);
+    
+    res = mysql_store_result(sql);
+    if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
+        free_obj(obj);
+        return(NULL);
+    }
+
+    row = mysql_fetch_row(res);
+
+    for( i = 0; i < 64; i++ ) {
+        switch( obj_flags[i].var ) {
+        case 0:
+            var = (unsigned int *)&(obj->obj_flags.wear_flags);
+            break;
+        default:
+        case 1:
+            var = (unsigned int *)&(obj->obj_flags.extra_flags);
+            break;
+        }
+
+        SET_BIT(*var, obj_flags[i].set);
+        REMOVE_BIT(*var, obj_flags[i].clear);
+    }
+
+    mysql_free_result(res);
+
+    obj->ex_description = NULL;
+
+    sprintf(buf, "SELECT `keyword`, `description` FROM `objectExtraDesc` "
+                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownerItemId` = %d "
+                 "ORDER BY `seqNum`", vnum, owner, ownerItem );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( res && (count = mysql_num_rows(res)) ) {
+        descr = NULL;
+        prev = NULL;
+
+        for( i = 0; i < count; i++ ) {
+            row = mysql_fetch_row(res);
+
+            descr = (struct extra_descr_data *)
+                                malloc(sizeof(struct extra_descr_data));
+            if( !prev ) {
+                obj->ex_description = descr;
+            } else {
+                prev->next = descr;
+            }
+
+            descr->next = NULL;
+            descr->keyword = strdup(row[0]);
+            descr->description = strdup(row[1]);
+
+            prev = descr;
+        }
+    }
+    mysql_free_result(res);
+
+    sprintf(buf, "SELECT `location`, `modifier` FROM `objectAffects` "
+                 "WHERE `vnum` = %d AND `ownerId` = %d AND `ownedItemId` = %d "
+                 "ORDER BY `seqNum`", vnum, owner, ownerItem);
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( res && (count = mysql_num_rows(res)) ) {
+        for( i = 0; i < count && i < MAX_OBJ_AFFECT; i++ ) {
+            row = mysql_fetch_row(res);
+
+            obj->affected[i].location = atoi(row[0]);
+            obj->affected[i].modifier = atoi(row[1]);
+        }
+    }
+    mysql_free_result(res);
+
+    return(obj);
+}
+
+int db_find_object_name(char *string, int owner, int ownerItem)
+{
+    char            buf[MAX_STRING_LENGTH];
+    char            tempbuf[256];
+    int             count;
+    int             i;
+    char           *keyword;
+    char           *quoted;
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    strcpy(buf, "SELECT `vnum` FROM `objects` WHERE ");
+
+    while( ( keyword = strsep( &string, "- \t\n\r" ) ) ) {
+        quoted = db_quote(keyword);
+        sprintf(tempbuf, "`name` LIKE '%%%s%%' ", quoted );
+        free(quoted);
+        
+        strcat( buf, tempbuf );
+    }
+
+    strcat(buf, "LIMIT 1");
+    mysql_query(sql, buf);
+
+}
+#endif
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

@@ -4655,9 +4655,6 @@ void MakeScrap(struct char_data *ch, struct char_data *v, struct obj_data *obj)
     }
 
     check_falling_obj(t, ch->in_room);
-#if 0
-    obj_index[obj->item_number].number--;
-#endif
     extract_obj(obj);
 
     DestroyedItems = 1;
@@ -5480,12 +5477,6 @@ void NailThisSucker(struct char_data *ch)
 
         for (obj = real_roomp(room_num)->contents; obj; obj = next_o) {
             next_o = obj->next_content;
-#if 0
-            obj_index[obj->item_number].number--;
-            /*
-             * added for maxxes (GH)
-             */
-#endif
             extract_obj(obj);
         }
     }

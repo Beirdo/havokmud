@@ -3,7 +3,7 @@
 # http://www.phpmyadmin.net
 #
 # Host: localhost
-# Generation Time: Aug 02, 2004 at 11:25 PM
+# Generation Time: Aug 07, 2004 at 11:31 PM
 # Server version: 3.23.58
 # PHP Version: 4.2.2
 # 
@@ -2632,6 +2632,241 @@ CREATE TABLE `mobKillfile` (
 
 #
 # Dumping data for table `mobKillfile`
+#
+
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objectAffects`
+#
+
+DROP TABLE IF EXISTS `objectAffects`;
+CREATE TABLE `objectAffects` (
+  `vnum` int(11) NOT NULL default '0',
+  `ownerId` int(11) NOT NULL default '0',
+  `ownedItemId` int(11) NOT NULL default '0',
+  `seqNum` int(11) NOT NULL default '0',
+  `location` int(11) NOT NULL default '0',
+  `modifier` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`vnum`,`ownerId`,`ownedItemId`,`seqNum`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `objectAffects`
+#
+
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objectExtraDesc`
+#
+
+DROP TABLE IF EXISTS `objectExtraDesc`;
+CREATE TABLE `objectExtraDesc` (
+  `vnum` int(11) NOT NULL default '0',
+  `ownerId` int(11) NOT NULL default '0',
+  `ownedItemId` int(11) NOT NULL default '0',
+  `seqNum` int(11) NOT NULL default '0',
+  `keyword` varchar(80) NOT NULL default '',
+  `description` text NOT NULL,
+  PRIMARY KEY  (`vnum`,`ownerId`,`ownedItemId`,`ownedItemId`),
+  FULLTEXT KEY `text` (`keyword`,`description`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `objectExtraDesc`
+#
+
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objectFlags`
+#
+
+DROP TABLE IF EXISTS `objectFlags`;
+CREATE TABLE `objectFlags` (
+  `vnum` int(11) NOT NULL default '0',
+  `ownerId` int(11) NOT NULL default '0',
+  `ownedItemId` int(11) NOT NULL default '0',
+  `takeable` tinyint(4) NOT NULL default '0',
+  `wearFinger` tinyint(4) NOT NULL default '0',
+  `wearNeck` tinyint(4) NOT NULL default '0',
+  `wearBody` tinyint(4) NOT NULL default '0',
+  `wearHead` tinyint(4) NOT NULL default '0',
+  `wearLegs` tinyint(4) NOT NULL default '0',
+  `wearFeet` tinyint(4) NOT NULL default '0',
+  `wearHands` tinyint(4) NOT NULL default '0',
+  `wearArms` tinyint(4) NOT NULL default '0',
+  `wearShield` tinyint(4) NOT NULL default '0',
+  `wearAbout` tinyint(4) NOT NULL default '0',
+  `wearWaist` tinyint(4) NOT NULL default '0',
+  `wearWrist` tinyint(4) NOT NULL default '0',
+  `wearBack` tinyint(4) NOT NULL default '0',
+  `wearEar` tinyint(4) NOT NULL default '0',
+  `wearEye` tinyint(4) NOT NULL default '0',
+  `wearLightSource` tinyint(4) NOT NULL default '0',
+  `wearHold` tinyint(4) NOT NULL default '0',
+  `wearWield` tinyint(4) NOT NULL default '0',
+  `wearThrow` tinyint(4) NOT NULL default '0',
+  `glow` tinyint(4) NOT NULL default '0',
+  `hum` tinyint(4) NOT NULL default '0',
+  `metal` tinyint(4) NOT NULL default '0',
+  `mineral` tinyint(4) NOT NULL default '0',
+  `organic` tinyint(4) NOT NULL default '0',
+  `invisible` tinyint(4) NOT NULL default '0',
+  `magic` tinyint(4) NOT NULL default '0',
+  `cursed` tinyint(4) NOT NULL default '0',
+  `brittle` tinyint(4) NOT NULL default '0',
+  `resistant` tinyint(4) NOT NULL default '0',
+  `immune` tinyint(4) NOT NULL default '0',
+  `rare` tinyint(4) NOT NULL default '0',
+  `uberRare` tinyint(4) NOT NULL default '0',
+  `quest` tinyint(4) NOT NULL default '0',
+  `antiSun` tinyint(4) NOT NULL default '0',
+  `antiGood` tinyint(4) NOT NULL default '0',
+  `antiEvil` tinyint(4) NOT NULL default '0',
+  `antiNeutral` tinyint(4) NOT NULL default '0',
+  `antiMale` tinyint(4) NOT NULL default '0',
+  `antiFemale` tinyint(4) NOT NULL default '0',
+  `onlyMage` tinyint(4) NOT NULL default '0',
+  `onlyCleric` tinyint(4) NOT NULL default '0',
+  `onlyWarrior` tinyint(4) NOT NULL default '0',
+  `onlyThief` tinyint(4) NOT NULL default '0',
+  `onlyDruid` tinyint(4) NOT NULL default '0',
+  `onlyMonk` tinyint(4) NOT NULL default '0',
+  `onlyBarbarian` tinyint(4) NOT NULL default '0',
+  `onlySorcerer` tinyint(4) NOT NULL default '0',
+  `onlyPaladin` tinyint(4) NOT NULL default '0',
+  `onlyRanger` tinyint(4) NOT NULL default '0',
+  `onlyPsionicist` tinyint(4) NOT NULL default '0',
+  `onlyNecromancer` tinyint(4) NOT NULL default '0',
+  `antiMage` tinyint(4) NOT NULL default '0',
+  `antiCleric` tinyint(4) NOT NULL default '0',
+  `antiWarrior` tinyint(4) NOT NULL default '0',
+  `antiThief` tinyint(4) NOT NULL default '0',
+  `antiDruid` tinyint(4) NOT NULL default '0',
+  `antiMonk` tinyint(4) NOT NULL default '0',
+  `antiBarbarian` tinyint(4) NOT NULL default '0',
+  `antiSorcerer` tinyint(4) NOT NULL default '0',
+  `antiPaladin` tinyint(4) NOT NULL default '0',
+  `antiRanger` tinyint(4) NOT NULL default '0',
+  `antiPsionicist` tinyint(4) NOT NULL default '0',
+  `antiNecromancer` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`vnum`,`ownerId`,`ownedItemId`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `objectFlags`
+#
+
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objectKeywords`
+#
+
+DROP TABLE IF EXISTS `objectKeywords`;
+CREATE TABLE `objectKeywords` (
+  `vnum` int(11) NOT NULL default '0',
+  `ownerId` int(11) NOT NULL default '0',
+  `ownedItemId` int(11) NOT NULL default '0',
+  `seqNum` int(11) NOT NULL default '0',
+  `keyword` varchar(80) NOT NULL default '',
+  PRIMARY KEY  (`vnum`,`ownerId`,`ownedItemId`,`seqNum`),
+  FULLTEXT KEY `text` (`keyword`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `objectKeywords`
+#
+
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objectTypes`
+#
+
+DROP TABLE IF EXISTS `objectTypes`;
+CREATE TABLE `objectTypes` (
+  `itemType` int(11) NOT NULL auto_increment,
+  `description` varchar(128) NOT NULL default '',
+  PRIMARY KEY  (`itemType`)
+) TYPE=MyISAM AUTO_INCREMENT=30 ;
+
+#
+# Dumping data for table `objectTypes`
+#
+
+INSERT INTO `objectTypes` VALUES (1, 'Light Source');
+INSERT INTO `objectTypes` VALUES (2, 'Scroll');
+INSERT INTO `objectTypes` VALUES (3, 'Wand');
+INSERT INTO `objectTypes` VALUES (4, 'Staff');
+INSERT INTO `objectTypes` VALUES (5, 'Weapon');
+INSERT INTO `objectTypes` VALUES (6, 'Ranged Weapon');
+INSERT INTO `objectTypes` VALUES (7, 'Missile');
+INSERT INTO `objectTypes` VALUES (8, 'Treasure');
+INSERT INTO `objectTypes` VALUES (9, 'Armor');
+INSERT INTO `objectTypes` VALUES (10, 'Potion');
+INSERT INTO `objectTypes` VALUES (11, 'Worn Item');
+INSERT INTO `objectTypes` VALUES (12, 'Other Miscellaneous Item');
+INSERT INTO `objectTypes` VALUES (13, 'Trash');
+INSERT INTO `objectTypes` VALUES (14, 'Trap');
+INSERT INTO `objectTypes` VALUES (15, 'Container');
+INSERT INTO `objectTypes` VALUES (16, 'Note (or mail)');
+INSERT INTO `objectTypes` VALUES (17, 'Drink Container');
+INSERT INTO `objectTypes` VALUES (18, 'Key');
+INSERT INTO `objectTypes` VALUES (19, 'Food');
+INSERT INTO `objectTypes` VALUES (20, 'Money');
+INSERT INTO `objectTypes` VALUES (21, 'Pen');
+INSERT INTO `objectTypes` VALUES (22, 'Boat');
+INSERT INTO `objectTypes` VALUES (23, 'Audio');
+INSERT INTO `objectTypes` VALUES (24, 'Bulletin Board');
+INSERT INTO `objectTypes` VALUES (25, 'Tree');
+INSERT INTO `objectTypes` VALUES (26, 'Rock');
+INSERT INTO `objectTypes` VALUES (27, 'Portal');
+INSERT INTO `objectTypes` VALUES (28, 'Musical Instrument');
+INSERT INTO `objectTypes` VALUES (29, 'Ship\'s Helm');
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `objects`
+#
+
+DROP TABLE IF EXISTS `objects`;
+CREATE TABLE `objects` (
+  `vnum` int(11) NOT NULL default '0',
+  `ownerId` int(11) NOT NULL default '0',
+  `ownedItemId` int(11) NOT NULL default '0',
+  `shortDescription` varchar(128) NOT NULL default '',
+  `description` text NOT NULL,
+  `actionDescription` text NOT NULL,
+  `modBy` varchar(80) NOT NULL default '',
+  `itemType` int(10) unsigned NOT NULL default '0',
+  `value0` int(10) unsigned NOT NULL default '0',
+  `value1` int(10) unsigned NOT NULL default '0',
+  `value2` int(10) unsigned NOT NULL default '0',
+  `value3` int(10) unsigned NOT NULL default '0',
+  `weight` int(11) NOT NULL default '0',
+  `cost` int(11) NOT NULL default '0',
+  `costPerDay` int(11) NOT NULL default '0',
+  `level` int(11) NOT NULL default '0',
+  `max` int(11) NOT NULL default '0',
+  `modified` timestamp(14) NOT NULL,
+  `speed` int(11) NOT NULL default '0',
+  `weaponType` int(11) NOT NULL default '0',
+  `tweak` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`vnum`,`ownerId`,`ownedItemId`),
+  FULLTEXT KEY `text` (`shortDescription`,`description`,`actionDescription`)
+) TYPE=MyISAM;
+
+#
+# Dumping data for table `objects`
 #
 
 

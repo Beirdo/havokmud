@@ -54,7 +54,6 @@
 
 #define ENTER_CHECK        1
 
-extern struct index_data *obj_index;    /* index table for object file */
 extern const char *item_types[];
 extern const char *extra_bits[];
 extern const char *wear_bits[];
@@ -245,16 +244,7 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-#if 0
-    if (obj_index[obj->item_number].data == NULL) {
-        read_object_to_memory(obj_index[obj->item_number].virtual);
-    }
-    ch->specials.objedit = obj_index[obj->item_number].data;
-#else
-    
     ch->specials.objedit = obj;
-#endif
-
     ch->specials.oedit = OBJ_MAIN_MENU;
     ch->desc->connected = CON_OBJ_EDITING;
 

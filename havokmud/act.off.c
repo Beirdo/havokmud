@@ -1410,7 +1410,6 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
     char            buf[254],
                    *arg;
     int             perc = 0;
-    extern struct index_data *obj_index;
 
     dlog("in do_mend");
 

@@ -20,6 +20,11 @@
 
 #define FALSE 0
 
+#define WEAR_FLAG(o,f)  (IS_SET(o->obj_flags.wear_flags, f) != 0)
+#define EXTRA_FLAG(o,f) (IS_SET(o->obj_flags.extra_flags, f) != 0)
+#define ONLY_FLAG(o,f)  (EXTRA_FLAG(o, f) && EXTRA_FLAG(o, ITEM_ONLY_CLASS))
+#define ANTI_FLAG(o,f)  (EXTRA_FLAG(o, f) && !EXTRA_FLAG(o, ITEM_ONLY_CLASS))
+
 #define LOWER(c) (((c)>='A'  && (c) <= 'Z') ? ((c)+('a'-'A')) : (c))
 
 #define UPPER(c) (((c)>='a'  && (c) <= 'z') ? ((c)+('A'-'a')) : (c) )
@@ -344,10 +349,6 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOBASH(ch)    ((ArenaNoBash == 1) && \
 		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
-
-#if 0
-#define isdigit(ch) (ch >= '0' && ch <= '9')
-#endif
 
 
 #endif
