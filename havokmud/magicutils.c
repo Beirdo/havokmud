@@ -56,9 +56,9 @@ SwitchStuff(struct char_data *giver, struct char_data *taker)
      */
 
     if (!IS_IMMORTAL(taker)) {
-        if (!IS_IMMORTAL(giver))
+        if (!IS_IMMORTAL(giver)) {
             GET_EXP(taker) = GET_EXP(giver);
-
+        }
         GET_EXP(taker) = MIN(GET_EXP(taker), ABS_MAX_EXP);
     }
 
@@ -68,8 +68,9 @@ SwitchStuff(struct char_data *giver, struct char_data *taker)
 
     if (IS_NPC(taker)) {
         taker->player.class = giver->player.class;
-        if (!taker->skills)
+        if (!taker->skills) {
             SpaceForSkills(taker);
+        }
         for (j = 0; j < MAX_SKILLS; j++) {
             taker->skills[j].learned = giver->skills[j].learned;
             taker->skills[j].flags = giver->skills[j].flags;
@@ -96,7 +97,9 @@ FailCharm(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
@@ -119,7 +122,9 @@ FailSnare(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
@@ -137,7 +142,9 @@ FailSleep(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
@@ -155,7 +162,9 @@ FailPara(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
@@ -174,7 +183,9 @@ FailCalm(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
@@ -190,16 +201,20 @@ FailPoison(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER | CLASS_NECROMANCER) &&
         number(1, 100) > 50) {
-        /* give single classed mages a break. */
+        /* 
+         * give single classed mages a break. 
+         */
         return;
     }
 
     if (!IS_PC(victim)) {
-        // AddHated(victim, ch);
+#if 0
+        AddHated(victim, ch);
+#endif
         if (!victim->specials.fighting) {
-            if (GET_POS(victim) > POSITION_SLEEPING)
+            if (GET_POS(victim) > POSITION_SLEEPING) {
                 set_fighting(victim, ch);
-            else if (number(0, 1)) {
+            } else if (number(0, 1)) {
                 set_fighting(victim, ch);
             }
         }
