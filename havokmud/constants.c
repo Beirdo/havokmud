@@ -6188,7 +6188,21 @@ const struct race_type race_list[] = {
     {RACE_SQUID, "Squids", 17, 0, 21, 41, 61, 91, 121, 0},
     {RACE_TIGER, "Tiger", 17, 0, 21, 41, 61, 91, 121, 4},
     {RACE_WIGHTS, "Wights", 17, 0, 21, 41, 61, 91, 121, 3},
-    {RACE_YETI, "Yeti", 17, 0, 21, 41, 61, 91, 121, 4}
+    {RACE_YETI, "Yeti", 17, 0, 21, 41, 61, 91, 121, 4},
+    {RACE_DRAGON_AMETHYST, "Amethyst Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_CRYSTAL, "Crystal Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_EMERALD, "Emerald Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_SAPPHIRE, "Sapphire Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_TOPAZ, "Topaz Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_BROWN, "Brown Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_CLOUD, "Cloud Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_DEEP, "Deep Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_MERCURY, "Mercury Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_MIST, "Mist Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_SHADOW, "Shadow Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_STEEL, "Steel Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_YELLOW, "Yellow Dragon", 17, 0, 21, 41, 61, 91, 121, 6},
+    {RACE_DRAGON_TURTLE, "Turtle Dragon", 17, 0, 21, 41, 61, 91, 121, 6}
 };
 
 const char     *RaceDesc[132] = {

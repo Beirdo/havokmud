@@ -212,7 +212,8 @@ struct spec_proc specProcs[] = {
     REGISTER_PROC( mazekeeper_riddle_one, PROC_MOBILE ),
     REGISTER_PROC( mazekeeper_riddle_two, PROC_MOBILE ),
     REGISTER_PROC( mazekeeper_riddle_three, PROC_MOBILE ),
-    REGISTER_PROC( mazekeeper_riddle_four, PROC_MOBILE),
+    REGISTER_PROC( mazekeeper_riddle_four, PROC_MOBILE ),
+    REGISTER_PROC( dragon, PROC_MOBILE ),
 
     REGISTER_PROC( altarofsin, PROC_OBJECT ),
     REGISTER_PROC( applepie, PROC_OBJECT ),
@@ -308,6 +309,7 @@ struct special_proc_entry mobSpecials[] = {
     {37, WarriorGuildMaster},
     {38, fighter},          /* armor golem */
     {39, creeping_death},
+    {56, dragon},
 
     {10000, QuestMobProc},  /* TEMP. Assignment!!!! */
 
@@ -346,13 +348,13 @@ struct special_proc_entry mobSpecials[] = {
     {226, fighter},         /* ogre */
     {236, ghoul},           /* ghast */
     {227, snake},           /* spider */
-    {230, BreathWeapon},    /* baby black */
+    {230, dragon},    /* baby black */
     {232, blink},           /* blink dog */
-    {233, BreathWeapon},    /* baby blue */
+    {233, dragon},    /* baby blue */
     {234, cleric},          /* cleric */
     {239, shadow},          /* shadow */
     {240, snake},           /* toad */
-    {243, BreathWeapon},    /* teenage white */
+    {243, dragon},    /* teenage white */
     {247, fighter},         /* minotaur */
     {251, CarrionCrawler},
     {261, fighter},
@@ -454,6 +456,8 @@ struct special_proc_entry mobSpecials[] = {
     {690, MonkChallenger},
     {691, monk_master},
 
+    {732, dragon},
+    {2312, dragon},
     /*
      * frost giant area 
      */
@@ -473,8 +477,8 @@ struct special_proc_entry mobSpecials[] = {
     {9414, fighter},
     {9415, fighter},
     {9416, fido},
-    {9418, BreathWeapon},
-    {9419, BreathWeapon},
+    {9418, dragon},
+    {9419, dragon},
     {9420, fighter},
     {9421, fighter},
     {9424, StormGiant},
@@ -489,6 +493,9 @@ struct special_proc_entry mobSpecials[] = {
     {9434, fighter},
     {9435, snake},
     {9436, fido},
+
+    {9724, dragon},
+    {9762, dragon},    
 
     /*
      **   shire
@@ -549,8 +556,8 @@ struct special_proc_entry mobSpecials[] = {
     {6621, fighter},
     {6622, fighter},
     {6614, PrydainGuard},
-    {6609, BreathWeapon},
-    {6642, BreathWeapon},
+    {6609, dragon},
+    {6642, dragon},
     {6640, jugglernaut},
     {6612, magic_user},
     {6615, magic_user},
@@ -582,7 +589,7 @@ struct special_proc_entry mobSpecials[] = {
     {9216, fighter},
     {9213, CarrionCrawler},
     {9208, cleric},
-    {9217, BreathWeapon},
+    {9217, dragon},
     {9218, fighter},
 
     /*
@@ -709,7 +716,7 @@ struct special_proc_entry mobSpecials[] = {
     /*
      **  Challenge
      */
-    {15858, BreathWeapon},
+    {15858, dragon},
     {15861, magic_user},
     {15862, magic_user},
     {15863, fighter},
@@ -719,7 +726,7 @@ struct special_proc_entry mobSpecials[] = {
     {15866, magic_user},
     {15810, magic_user},
     {15880, fighter},
-    {15879, BreathWeapon},
+    {15879, dragon},
     {15873, magic_user},
     {15871, magic_user},
     {15852, fighter},
@@ -758,7 +765,7 @@ struct special_proc_entry mobSpecials[] = {
     {25501, fighter},
     {25502, fighter},
     {25505, fighter},
-    {25504, BreathWeapon},
+    {25504, dragon},
     {25503, cleric},
 
     /*
@@ -821,7 +828,7 @@ struct special_proc_entry mobSpecials[] = {
     {13714, fighter},
     {13721, fighter},
     {13722, fighter},
-    {13726, LightningBreather},
+    {13726, dragon},
     {13732, snake},
     {13762, fighter},
     {13764, fighter},
@@ -898,7 +905,7 @@ struct special_proc_entry mobSpecials[] = {
      **  Bay Isle
      */
     {16610, Demon},
-    {16620, BreathWeapon},
+    {16620, dragon},
     {16640, cleric},
     {16650, cleric},
 
@@ -906,7 +913,7 @@ struct special_proc_entry mobSpecials[] = {
     /*
      **  King's Mountain
      */
-    {16700, BreathWeapon},
+    {16700, dragon},
     {16702, shadow},
     {16703, magic_user},
     {16709, vampire},
@@ -999,7 +1006,7 @@ struct special_proc_entry mobSpecials[] = {
     {12007, fighter},
     {12008, fighter},
     {12009, thief},
-    {12010, FireBreather},
+    {12010, dragon},
     {12011, FireBreather},
     /*
      **     Alun's stuff
@@ -1110,7 +1117,7 @@ struct special_proc_entry mobSpecials[] = {
     {30116, vampire},       /* spectre */
     {30117, ghost},         /* ghost */
     {30118, shadow},        /* lost souls */
-
+    {33075, dragon},
     /*
      ***     Ator's Mobs
      */
@@ -1242,11 +1249,11 @@ struct special_proc_entry mobSpecials[] = {
      */
     {6800, fighter},
     {6803, fighter},
-    {6801, BreathWeapon},
-    {6802, BreathWeapon},
+    {6801, dragon},
+    {6802, dragon},
     {6815, magic_user},
     {6821, snake},
-    {6824, BreathWeapon},
+    {6824, dragon},
     {6825, thief},
 
     /*
@@ -1256,7 +1263,7 @@ struct special_proc_entry mobSpecials[] = {
     {7006, snake},
     {7008, snake},
     {7042, magic_user},     /* naga */
-    {7040, BreathWeapon},   /* Red */
+    {7040, dragon},   /* Red */
     {7041, magic_user},     /* sea hag */
     {7200, magic_user},     /* mindflayer */
     {7201, magic_user},     /* senior */
@@ -1269,7 +1276,7 @@ struct special_proc_entry mobSpecials[] = {
     {6111, magic_user},     /* tree */
     {6113, snake},
     {6114, snake},
-    {6112, BreathWeapon},   /* green */
+    {6112, dragon},   /* green */
     {6910, magic_user},
 
     /*
@@ -1280,7 +1287,7 @@ struct special_proc_entry mobSpecials[] = {
     {5003, snake},          /* scorpion */
     {5004, acid_monster},   /* purple worm */
     {5014, cleric},         /* myconoid */
-    {5005, BreathWeapon},   /* brass */
+    {5005, dragon},   /* brass */
 
     /*
      **  Drow (edition 1)
@@ -1351,9 +1358,9 @@ struct special_proc_entry mobSpecials[] = {
     {20014, magic_user},    /* Arachnos */
     {20015, magic_user},    /* Ki Rin */
 
-    {20002, BreathWeapon},  /* Yevaud */
-    {20017, BreathWeapon},  /* Elder */
-    {20016, BreathWeapon},  /* Baby */
+    {20002, dragon},  /* Yevaud */
+    {20017, dragon},  /* Elder */
+    {20016, dragon},  /* Baby */
     {20012, fighter},       /* donjonkeeper */
 
     /*
@@ -1439,7 +1446,7 @@ struct special_proc_entry mobSpecials[] = {
     /*
      * Menzoberanza Zone 
      */
-    {9727, BreathWeapon},
+    {9727, dragon},
 
     /*
      * Clan hall stuff 
@@ -1453,7 +1460,7 @@ struct special_proc_entry mobSpecials[] = {
     /*
      * Thikahnus's zone 
      */
-    {37203, FrostBreather}, /* Iceberg */
+    {37203, dragon}, /* Iceberg */
     {37208, shadow},        /* Ministraal */
     {37209, vampire},       /* Joshua von Richten */
     {37210, ghost},         /* spectre guard */
@@ -1461,6 +1468,11 @@ struct special_proc_entry mobSpecials[] = {
     {37228, ghoul},         /* Spirit high priest */
     {37229, fido},          /* Stray dog */
     {37230, ghost},         /* Spectre roaming */
+    {37671, dragon},
+    {38783, dragon},
+    {39023, dragon},
+    {39026, dragon},
+    {39029, dragon},
     /*
      * The Realms of Delbrandor 
      */
@@ -1468,7 +1480,7 @@ struct special_proc_entry mobSpecials[] = {
     {28050, ABShout},       /* Avatar of Blibdoolpoolp */
     {28042, AvatarPosereisn},       /* Avatar of Posereisn */
     {28011, ghost},         /* Vampric Mist */
-    {28022, BreathWeapon},  /* Coral Dragon */
+    {28022, dragon},  /* Coral Dragon */
 
     /*
      * sundhaven (Banon) 
@@ -1499,8 +1511,34 @@ struct special_proc_entry mobSpecials[] = {
     /*
      * Cthol (Xenon) 
      */
-    {40343, FireBreather},  /* White Cthol Dragon */
+    {40343, dragon},  /* White Cthol Dragon */
 
+    {41035, dragon},
+    {41052, dragon},
+    {41075, dragon},
+    {41536, dragon},
+    {42032, dragon},
+    {42033, dragon},
+    {42034, dragon},
+    {42829, dragon},
+    {44901, dragon},
+    {44903, dragon},
+    {44904, dragon},
+    {44905, dragon},
+    {44909, dragon},
+    {44914, dragon},
+    {44920, dragon},
+    {44921, dragon},
+    {44923, dragon},
+    {45098, dragon},
+    {45099, dragon},
+    {45100, dragon},
+    {45101, dragon},
+    
+
+
+    
+    
     {45108, DispellerIncMob},       /* Heximals Dispeller/Incernary
                                      * cloud proc */
 
@@ -1514,39 +1552,47 @@ struct special_proc_entry mobSpecials[] = {
     {45409, nadia},
     {45410, mime_jerry},
     {45413, zork},
-    {45414, LightningBreather},     /* Mairden bronze dragon */
-    {45415, FrostBreather}, /* Gavmorak silver dragon */
-    {45416, FireBreather},  /* Tarius gold dragon */
+    {45414, dragon},     /* Mairden bronze dragon */
+    {45415, dragon}, /* Gavmorak silver dragon */
+    {45416, dragon},  /* Tarius gold dragon */
     {45417, elamin},
-    {45421, FrostBreather}, /* merick white dragon */
+    {45421, dragon}, /* merick white dragon */
     {45422, VaporBreather}, /* Viska mist dragon */
     {45423, DehydBreather}, /* Korack topaz dragon */
     {45424, SoundBreather}, /* Katsulas emerald dragon */
     {45425, GasBreather},   /* Skaer deep dragon */
     {45426, ShardBreather}, /* Barack crystal dragon */
-    {45427, SleepBreather}, /* Nevarock brass dragon */
-    {45429, AcidBreather},  /* Rhyder copper dragon */
+    {45427, dragon}, /* Nevarock brass dragon */
+    {45429, dragon},  /* Rhyder copper dragon */
     {45430, SoundBreather}, /* Irie sapphire dragon */
     {45431, LightBreather}, /* Symon mercury dragon */
-    {45432, AcidBreather},  /* Ragnorak black dragon */
+    {45432, dragon},  /* Ragnorak black dragon */
     {45433, ShardBreather}, /* Sleigh amethyst dragon */
     {45434, FrostBreather}, /* Tegellen cloud dragon */
-    {45435, LightningBreather},     /* Haddox blue dragon */
-    {45437, FireBreather},  /* Tynan red dragon */
+    {45435, dragon},     /* Haddox blue dragon */
+    {45437, dragon},  /* Tynan red dragon */
     {45439, DarkBreather},  /* Rank shadow dragon */
     {45440, starving_man},
     {45443, goblin_chuirgeon},
     {45463, cronus_pool},
-    {45600, FireBreather},  /* Cronus gold dragon */
+    {45600, dragon},  /* Cronus gold dragon */
     {45564, cleric_specialist_guildmaster},
 
     /*
      * Start Leaves of Silver 
      */
+    {46401, dragon},
+    {46475, dragon},
     {47951, Jessep},        /* Jessep */
     {47975, Tysha},         /* Tysha */
     {47905, Vaelhar},       /* Vaelhar */
-
+    {50969, dragon},
+    {50970, dragon},
+    {50971, dragon},  
+    {50973, dragon},  
+    {50975, dragon},  
+    {50998, dragon}, 
+    {50999, dragon},
     /*
      * Ash's New Zones 
      */

@@ -200,12 +200,29 @@
                    !IS_AFFECTED(ch, AFF_PARALYSIS) )
 
 #ifndef LAG_MOBILES
-#define WAIT_STATE(ch, cycle)  (((ch)->desc) ? \
-	(ch)->desc->wait = ((GetMaxLevel(ch) >= DEMIGOD) ? (0) : (cycle)) : 0)
+#define WAIT_STATE(ch, cycle) \
+{ \
+    struct char_data *_ch = (struct char_data *)(ch); \
+    int _cycle = (int)(cycle); \
+    if(_ch->desc && _ch->desc->wait < _cycle) { \
+	    _ch->desc->wait = (GetMaxLevel(_ch) >= DEMIGOD ? 0 : _cycle); \
+    } \
+} (void)(0)
 #else
-#define WAIT_STATE(ch, cycle)  if((ch)->desc) (ch)->desc->wait = \
-	((GetMaxLevel(ch) >= DEMIGOD) ? (0) : (cycle)); else \
-       	ch->specials.tick_to_lag = (cycle)
+#define WAIT_STATE(ch, cycle) \
+{ \
+    struct char_data *_ch = (struct char_data *)(ch); \
+    int _cycle = (int)(cycle); \
+    if(_ch->desc) { \
+        if(_ch->desc->wait < _cycle) { \
+            _ch->desc->wait = (GetMaxLevel(_ch) >= DEMIGOD ? 0 : _cycle); \
+        } \
+    } else { \
+        if(_ch->specials.tick_to_lag < _cycle) { \
+            _ch->specials.tick_to_lag = _cycle; \
+        } \
+    } \
+} (void)(0)
 #endif
 
 /*
