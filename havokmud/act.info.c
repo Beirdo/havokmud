@@ -2011,46 +2011,46 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
   	age2(ch, &my_age);
 
   	if (GET_TITLE(ch)) {
-    	ch_printf(ch,"$c000pYou are $c000Y%s\n\r", GET_TITLE(ch));
+    	ch_printf(ch,"$c000BYou are $c000Y%s\n\r", GET_TITLE(ch));
   	}
 
   playing_time = real_time_passed((time(0)-ch->player.time.logon) + ch->player.time.played, 0);
 
 
-  ch_printf(ch, "$c000pYou are $c000W%d$c000p years old and very $c000W%s$c000p. (Play time: $c000W%d$c000p days and $c000W%d$c000p hours)\n\r%s"
+  ch_printf(ch, "$c000BYou are $c000w%d$c000B years old and very $c000w%s$c000B. (Play time: $c000w%d$c000B days and $c000w%d$c000B hours)\n\r%s"
 	  , my_age.year,DescAge(my_age.year,GET_RACE(ch)), playing_time.day, playing_time.hours
-	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000W It's your birthday today.\n\r":""));
+	  , (((my_age.month == 0) && (my_age.year == 0))? "$c000w It's your birthday today.\n\r":""));
 
-  ch_printf(ch, "$c000pYou belong to the $c000W%s$c000p race, and speak the $c000W%s$c000p language.\n\r"
+  ch_printf(ch, "$c000BYou belong to the $c000w%s$c000B race, and speak the $c000w%s$c000B language.\n\r"
 	  , RaceName[GET_RACE(ch)], languagelist[ch->player.speaks]);
 
-  ch_printf(ch,"$c000pYou have $c000W%d$c000p($c0011%d$c000p) hit, $c000W%d$c000p($c0011%d$c000p) mana, $c000W%d$c000p($c0011%d$c000p) mv points and $c000W%d$c000p practice sessions.\n\r",
- 		GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch), ch->specials.spells_to_learn);
+  ch_printf(ch,"$c000BYou have $c000w%d$c000B($c0011%d$c000B) hit, $c000w%d$c000B($c0011%d$c000B) mana, $c000w%d$c000B($c0011%d$c000B) mv points.  Gold: $c000w%s$c000p\n\r",
+ 		GET_HIT(ch),GET_MAX_HIT(ch), GET_MANA(ch),GET_MAX_MANA(ch), GET_MOVE(ch),GET_MAX_MOVE(ch) ,formatNum(GET_GOLD(ch)));
 
-  ch_printf(ch, "$c000pYour alignment is: $c000W%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
+  ch_printf(ch, "$c000BYour alignment is: $c000w%s\n\r", AlignDesc(GET_ALIGNMENT(ch)));
 
   //sprintf(buff,"%s",formatNum(GET_GOLD(ch)));
-  //sprintf(buf,"$c000pYou have scored $c000W%s$c000p exp and you have $c000W%s$c000p gold coins, and $c000W%d$c000p Quest points ($c000W%d$c000p).\n\r",
+  //sprintf(buf,"$c000BYou have scored $c000w%s$c000B exp and you have $c000w%s$c000B gold coins, and $c000w%d$c000B Quest points ($c000w%d$c000B).\n\r",
 	//  formatNum(GET_EXP(ch)),buff,ch->player.q_points, ch->specials.questwon);
   //send_to_char(buf,ch);
 
-  //ch_printf(ch,"$c000pYou have scored $c000W%s$c000p leadership exp.\n\r", formatNum(GET_LEADERSHIP_EXP(ch)));
+  //ch_printf(ch,"$c000BYou have scored $c000w%s$c000B leadership exp.\n\r", formatNum(GET_LEADERSHIP_EXP(ch)));
 
 	if ( !(GetMaxLevel(ch)>MAX_MORT || (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF)))) {
   		buf[0] = '\0';
   		sprintf(buff,"%s",formatNum(GET_LEADERSHIP_EXP(ch)));
-  		ch_printf(ch,"$c000pExperience:\n\r       Combat experience:$c000W %s $c000p    Leadership experience: $c000W%s$c000p\n\r"
+  		ch_printf(ch,"$c000BCombat experience:$c000w %s $c000B    Leadership experience: $c000w%s$c000B\n\r"
   			, formatNum(GET_EXP(ch)), buff);
 
 		for (x=0; x < MAX_CLASS; x++) {
   			if (HasClass(ch, pc_num_class(x))) {
 
-    			sprintf(buf2, "Level:$c000W%d %s$c000p\n\r", GET_LEVEL(ch, x),class_names[x]);
+    			sprintf(buf2, "%5s$c000BLevel:$c000w%-2d %-15s$c000B", " ",GET_LEVEL(ch, x),class_names[x]);
     			strcat(buf, buf2);
     			if (GetMaxLevel(ch)<MAX_IMMORT)
-    	   			sprintf(buf2,"%-5s%-10s:$c000W%-10ld$c000p "," ",class_names[x]	,(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
+    	   			sprintf(buf2,"%s%s:$c000w%s$c000B \n\r"," ","Xp needed"	,formatNum((titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch)));
     			else
-    	   			sprintf(buf2,"%-5s:0 ", class_names[x]);
+    	   			sprintf(buf2,"%s:0  %d", class_names[x],(titles[x][GET_LEVEL(ch, x)+1].exp)- GET_EXP(ch));
     			strcat(buf,buf2);
 
 
@@ -2060,25 +2060,14 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 	}
 
 	if(IS_IMMORTAL(ch)) {
-		ch_printf(ch,"$c000pYou are a level $c000W%d $c000pimmortal.\n\r",GetMaxLevel(ch));
+		ch_printf(ch,"$c000BYou are a level $c000w%d $c000Bimmortal.\n\r",GetMaxLevel(ch));
 	}
-/*
-  buf[0] = '\0';
-  sprintf(buf, "$c000pYour levels:");
 
-  for(x=0; x < MAX_CLASS; x++) {
-  	if (HasClass(ch, pc_num_class(x))) {
-    	sprintf(buf2, " %s:$c000W%d$c000p", class_names[x],GET_LEVEL(ch, x));
-    	strcat(buf, buf2);
-  	}
-  }
-
-  strcat(buf,"\n\r");
-  send_to_char(buf,ch);
-*/
-   ch_printf(ch,"$c000pYou have killed $c000W%d$c000p monsters, and have died $c000W%d$c000p times. Arena($c000W%d$c000p/$c000W%d$c000p)\n\r",
+   ch_printf(ch,"$c000BYou have killed $c000w%d$c000B monsters, and have died $c000w%d$c000B times. Arena($c000w%d$c000B/$c000w%d$c000B)\n\r",
     	ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
-
+/*ch_printf(ch,"$c000BKills: $c000w%d$c000B   Deaths: $c000w%d$c000B   Arena Kills: $c000w%d$c000B   Arena Deaths: $c000w%d$c000B\n\r"
+	,ch->specials.m_kills, ch->specials.m_deaths, ch->specials.a_kills, ch->specials.a_deaths);
+*/
 
 
     /* Drow fight -4 in lighted rooms! */
@@ -2086,62 +2075,60 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
        ch_printf(ch,"$c0011The light is the area causes you great pain$c0009!\n\r");
 	}
 	if (IS_SET(ch->specials.affected_by,AFF_WINGSBURNED)) {
-	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.$c000p\n\r",ch);
+	   	send_to_char("$c0009Your burned and tattered wings are a source of great pain.$c000B\n\r",ch);
 	}
 	if (IS_SET(ch->specials.act,PLR_NOFLY))   {
-   		send_to_char("$c000WYou are on the ground in spite of your fly item.$c000p\n\r",ch);
+   		send_to_char("$c000wYou are on the ground in spite of your fly item.$c000B\n\r",ch);
 	}
 
 	if(IS_PC(ch)) {
 	 	ch->skills[STYLE_STANDARD].learned = 95;
-		ch_printf(ch,"$c000pYou are currently fighting $c000W%s$c000p for the %s clan.\n\r"
-			, fight_styles[ch->style],clan_list[GET_CLAN(ch)].name);
+		ch_printf(ch,"$c000BYou are currently fighting $c000w%s$c000B.\n\r", fight_styles[ch->style]);
 	}
 
 	if(GET_CLAN(ch) == 0) {
-		send_to_char("$c000pYou do not belong to a clan.\n\r",ch);
+		send_to_char("$c000BYou do not belong to a clan.\n\r",ch);
 	} else {
-		ch_printf(ch,"$c000pYou belong to the $c000W%s$c000p.\n\r", clan_list[GET_CLAN(ch)].name);
+		ch_printf(ch,"$c000BYou belong to the $c000w%s$c000B.\n\r", clan_list[GET_CLAN(ch)].name);
 	}
 
+	ch_printf(ch,"$c000BYou have $c000w%d$c000B practice sessions remaining.\n\r",ch->specials.spells_to_learn);
 
   switch(GET_POS(ch)) {
   	case POSITION_DEAD: send_to_char("$c0009You are DEAD!\n\r", ch); break;
   	case POSITION_MORTALLYW: send_to_char("$c0009You are mortally wounded!, you should seek help!\n\r",ch); break;
   	case POSITION_INCAP:  send_to_char("$c0009You are incapacitated, slowly fading away.\n\r",ch); break;
   	case POSITION_STUNNED: send_to_char("$c0011You are stunned! You can't move.\n\r", ch); break;
-  	case POSITION_SLEEPING: send_to_char("$c0010You are $c000Wsleeping.\n\r",ch); break;
-  	case POSITION_RESTING: send_to_char("$c0012You are $c000Wresting.\n\r",ch); break;
-  	case POSITION_SITTING: send_to_char("$c0013You are $c000Wsitting.\n\r",ch); break;
+  	case POSITION_SLEEPING: send_to_char("$c0010You are $c000wsleeping.\n\r",ch); break;
+  	case POSITION_RESTING: send_to_char("$c0012You are $c000wresting.\n\r",ch); break;
+  	case POSITION_SITTING: send_to_char("$c0013You are $c000wsitting.\n\r",ch); break;
   	case POSITION_FIGHTING:
   		if (ch->specials.fighting)
-  	    act("$c1009You are fighting $N.", FALSE, ch, 0, ch->specials.fighting, TO_CHAR);//<---------------ACT
-  	  else
-  	    send_to_char("$c1009You are fighting thin air.\n\r",ch);
-  	  break;
-  	case POSITION_STANDING: send_to_char("$c000pYou are $c000Wstanding.\n\r",ch); break;
+  	    	act("$c1009You are fighting $N.", FALSE, ch, 0, ch->specials.fighting, TO_CHAR);//<---------------ACT
+  	  	else
+  	    	send_to_char("$c1009You are fighting thin air.\n\r",ch);
+  	  	break;
+  	case POSITION_STANDING: send_to_char("$c000BYou are $c000wstanding.\n\r",ch); break;
   	case POSITION_MOUNTED:
   	  if (MOUNTED(ch)) {
-			sprintf(buf,"$c000pYou are riding on $c000W%s.\n\r",MOUNTED(ch)->player.short_descr);
+			sprintf(buf,"$c000BYou are riding on $c000w%s.\n\r",MOUNTED(ch)->player.short_descr);
 			send_to_char(buf,ch);
   	  } else {
-  	    send_to_char("$c000pYou are $c000Wstanding.\n\r",ch);break;
+  	    send_to_char("$c000BYou are $c000wstanding.\n\r",ch);break;
   	  }
   	  break;
-  	  default: send_to_char("$c000pYou are $c000Wfloating.\n\r",ch); break;
+  	  default: send_to_char("$c000BYou are $c000wfloating.\n\r",ch); break;
   }
 	  if (!IS_IMMORTAL(ch) && (!IS_NPC(ch))) {
 	    if (GET_COND(ch,DRUNK)>10)
 	       send_to_char("$c0011You are intoxicated.\n\r",ch);
 	    if (GET_COND(ch,FULL)<2 && GET_COND(ch,FULL) != -1)
-	      send_to_char("$c000pYou are $c000Whungry$c000p...\n\r",ch);
+	      send_to_char("$c000BYou are $c000whungry$c000B...\n\r",ch);
 	    if (GET_COND(ch,THIRST)<2  && GET_COND(ch,THIRST) != -1)
-	      send_to_char("$c000pYou are $c000Wthirsty$c000p...\n\r",ch);
+	      send_to_char("$c000BYou are $c000wthirsty$c000B...\n\r",ch);
 	  }
 
-
-
-	//send_to_char("\n\r\n\r$c000pType '$c000Wpinfo$c000p' to see list of current character flags.\n\r",ch);
+	//send_to_char("\n\r\n\r$c000BType '$c000wpinfo$c000B' to see list of current character flags.\n\r",ch);
 }
 
 
@@ -2329,7 +2316,7 @@ dlog("in do_wizhelp");
     while(n) {
 	if(n->min_level <= GetMaxLevel(ch) && n->min_level >= LOW_IMMORTAL) {
 	   if(n->min_level == GetMaxLevel(ch))
-	     sprintf((buf + strlen(buf)), "$c000BL:$c000Y%d $c000W%-11s",n->min_level,n->name);
+	     sprintf((buf + strlen(buf)), "$c000BL:$c000Y%d $c000w%-11s",n->min_level,n->name);
 	   else
 	     sprintf((buf + strlen(buf)), "$c000BL:$c000Y%d $c000w%-11s",n->min_level,n->name);
 
