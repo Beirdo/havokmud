@@ -597,8 +597,8 @@ memory_check("end 5, begin 6");
 		  ch->last.exp = GET_EXP(ch);
 		}
 	       if(update)
-		  UpdateScreen(ch, update);
-	       sprintf(promptbuf,"> ");
+		  		UpdateScreen(ch, update);
+	      		sprintf(promptbuf,"> ");
 	       } else {
 	       construct_prompt(promptbuf,point->character);
 	     }
@@ -607,14 +607,14 @@ memory_check("end 5, begin 6");
 	    /* the person has mail..   Anyway..  .. Greg Hovey  March 30/2001*/
 	    /* was fixxed.. uses has_mail flag now GH */
 	    if (point->character->player.has_mail)
-	    write_to_descriptor(point->descriptor,ParseAnsiColors( \
+	    	write_to_descriptor(point->descriptor,ParseAnsiColors( \
 			      IS_SET(point->character->player.user_flags,USE_ANSI), \
 			      "$c0003[MAIL] "));
 	    if(IS_AFFECTED2(point->character,AFF2_AFK))
-	    write_to_descriptor(point->descriptor,ParseAnsiColors( \
+	    	write_to_descriptor(point->descriptor,ParseAnsiColors( \
 			      IS_SET(point->character->player.user_flags,USE_ANSI), \
 			      "$c0006[AFK] "));
-	     write_to_descriptor(point->descriptor,ParseAnsiColors( \
+	    	write_to_descriptor(point->descriptor,ParseAnsiColors( \
 			      IS_SET(point->character->player.user_flags,USE_ANSI), \
 			      promptbuf));
 
@@ -2250,13 +2250,26 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     *outbuf=0;
 
     if(ch->specials.prompt==NULL) { /* use default prompts */
-	if(IS_IMMORTAL(ch))
-	    mask="Havok: (type help prompt) H:%h R:%R i%iI+> ";
-	else
-	    mask="Havok: (type help prompt) H:%h M:%m V:%v> ";
+		if(IS_IMMORTAL(ch))
+		    mask="Havok: (type help prompt) H:%h R:%R i%iI+> ";
+		else
+		    mask="Havok: (type help prompt) H:%h M:%m V:%v> ";
     } else {
-	mask=ch->specials.prompt;
+		if(ch->specials.fighting) {
+			send_to_char("FIGHTINGXXXX",ch);
+
+			if(ch->specials.bprompt==NULL) {
+				send_to_char("Battle prompt is null",ch);
+				mask=ch->specials.prompt;
+			} else {
+				send_to_char("Here is the battle prompt",ch);
+				 mask=ch->specials.bprompt;
+		 	}
+		}
+
     }
+
+
     for(pr_scan = mask; *pr_scan; pr_scan++) {
 	if(*pr_scan == '%') {
 	    if(*(++pr_scan)=='%') {

@@ -1187,6 +1187,11 @@ void load_char_extra(struct char_data *ch)
 	if (!strcmp(p, "zone")) { /* set zone permisions */
 	    GET_ZONE(ch) = atoi(s);
 	  } else
+	  if (!strcmp(p, "bprompt")) {  /* set upbattleprompt */
+	  	      char tmp2[256];
+	  	      sprintf(tmp2,"%s",s);
+	  	      do_set_bprompt(ch,tmp2,0);
+	    } else
 	if (!strcmp(p, "email")) {  /* set up email finger info */
 	      char tmp[256];
 	      sprintf(tmp,"email %s",s);
@@ -1279,6 +1284,10 @@ void write_char_extra( struct char_data *ch)
   if (ch->specials.email) {
     fprintf(fp, "email: %s\n",ch->specials.email);
   }
+  if (ch->specials.bprompt) {
+	 fprintf(fp, "bprompt: %s\n",ch->specials.bprompt);
+  }
+
   if (ch->specials.clan) {
     fprintf(fp, "clan: %s\n",ch->specials.clan);
   }

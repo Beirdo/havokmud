@@ -1179,13 +1179,14 @@ struct char_special_data
   char *poofin;
   char *poofout;
   char *prompt;
+  char *bprompt;
   char *email;			/* email address in aux */
+
   char *clan;
   int *clanNum;
   char *rumor;
   char *group_name; /* current group name if any... */
   char *hostip;     /* (GH)  keep track of IP */
-
   Alias   *A_list;
   struct char_data *misc;
   struct char_data *fighting; /* Opponent                          */

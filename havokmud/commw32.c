@@ -2247,12 +2247,20 @@ int construct_prompt(char *outbuf, struct char_data *ch)
     *outbuf=0;
 
     if(ch->specials.prompt==NULL) { /* use default prompts */
-	if(IS_IMMORTAL(ch))
-	    mask="Havok: (type help prompt) H:%h R:%R i%iI+> ";
-	else
-	    mask="Havok: (type help prompt) H:%h M:%m V:%v> ";
+		if(IS_IMMORTAL(ch))
+		    mask="Havok: (type help prompt) H:%h R:%R i%iI+> ";
+		else
+		    mask="Havok: (type help prompt) H:%h M:%m V:%v> ";
     } else {
-	mask=ch->specials.prompt;
+
+		if(ch->specials.fighting) {
+			if(ch->specials.bprompt==NULL) {
+				mask=ch->specials.prompt;
+			} else {
+				mask=ch->specials.bprompt;
+		 	}
+		} else
+			mask=ch->specials.prompt;
     }
     for(pr_scan = mask; *pr_scan; pr_scan++) {
 	if(*pr_scan == '%') {

@@ -1545,6 +1545,8 @@ AddCommand("charge",do_charge, 565, POSITION_STANDING,0);
 AddCommand("orebuild",do_orebuild,566,POSITION_STANDING,59);
 AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
+AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

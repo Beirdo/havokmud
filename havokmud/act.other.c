@@ -202,7 +202,11 @@ dlog("in do_set_prompt");
           if(ch->specials.prompt)
             free(ch->specials.prompt);
           ch->specials.prompt = strdup(prompts[i].pr);
-          return;
+ 			if(cmd!=0) {
+				sprintf(buf, "Your new prompt is : <%s>\n\r", ch->specials.prompt);
+          		send_to_char(buf, ch);
+			}
+ 			return;
         }
       send_to_char("Invalid prompt number\n\r",ch);
     } else {
@@ -213,6 +217,10 @@ dlog("in do_set_prompt");
       if(ch->specials.prompt)
         free(ch->specials.prompt);
       ch->specials.prompt = strdup(argument);
+		if(cmd!=0) {
+			sprintf(buf, "Your new prompt is : <%s>\n\r", ch->specials.prompt);
+       		send_to_char(buf, ch);
+		}
     }
   } else {
     sprintf(buf,"Your current prompt is : %s\n\r",ch->specials.prompt);
@@ -220,6 +228,86 @@ dlog("in do_set_prompt");
   }
 
 }
+
+void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
+{
+  static struct def_prompt {
+    int n;
+    char *pr;
+  } prompts[] = {
+    {1, "Havok> "},
+    {2, "H:%h V:%v> "},
+    {3, "H:%h M:%m V:%v> "},
+    {4, "H:%h/%H V:%v/%V> "},
+    {5, "H:%h/%H M:%m/%M V:%v/%V> "},
+    {6, "H:%h V:%v C:%C> "},
+    {7, "H:%h M:%m V:%v C:%C> "},
+    {8, "H:%h V:%v C:%C %S> "},
+    {9, "H:%h M:%m V:%v C:%C %S> "},
+    {10, "H:%h M:%m V:%v %c/%C %S> "},
+    {11, "%h/%H %m/%M %v/%V %g %c/%C> "},
+    {12, "H:%h/%H M:%m/%M V:%v/%V %g %c/%C> "},
+    {40,"H:%h R:%R> "},
+    {41,"H:%h R:%R i%iI+> "},
+    {0,NULL}};
+  char buf[512];
+  int i,n;
+
+dlog("in do_set_bprompt");
+
+/*
+  if (IS_NPC(ch) || !ch->desc)
+    return;
+*/
+
+  for(;isspace(*argument); argument++)  ;
+  if (*argument) {
+    if((n=atoi(argument))!=0) {
+      if(n>39 && !IS_IMMORTAL(ch)) {
+        send_to_char("Eh?\r\n",ch);
+        return;
+      }
+      for(i=0;prompts[i].pr;i++)
+        if(prompts[i].n==n) {
+/*
+          sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
+          send_to_char(buf, ch);
+*/
+          if(ch->specials.bprompt)
+            free(ch->specials.bprompt);
+          ch->specials.bprompt = strdup(prompts[i].pr);
+
+			if(cmd!=0) {
+				sprintf(buf, "Your new battle prompt is : <%s>\n\r", ch->specials.bprompt);
+	       		send_to_char(buf, ch);
+			}
+          return;
+        }
+      send_to_char("Invalid prompt number\n\r",ch);
+    } else {
+/*
+      sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
+      send_to_char(buf, ch);
+*/
+      if(ch->specials.bprompt)
+        free(ch->specials.bprompt);
+      ch->specials.bprompt = strdup(argument);
+
+    	if(cmd!=0) {
+			sprintf(buf, "Your new battle prompt is : <%s>\n\r", ch->specials.bprompt);
+	   		send_to_char(buf, ch);
+		}
+
+
+    }
+  } else {
+    sprintf(buf,"Your current prompt is : %s\n\r",ch->specials.bprompt);
+    send_to_char(buf,ch);
+  }
+
+}
+
+
 
 /*  New title system.. Can have name as second word in title
  * @author - Greg Hovey (GH)

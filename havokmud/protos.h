@@ -236,6 +236,9 @@ void kick_messages(struct char_data *ch, struct char_data *victim, int damage);
 void do_disengage(struct char_data *ch, char *argument,int cmd);
 /* From act.other.c */
 
+/*new battle prompt*/
+void do_set_bprompt(struct char_data *ch, char *argument, int cmd);
+
 void do_set_prompt(struct char_data *ch, char *argument, int cmd);
 void do_set_flags(struct char_data *ch, char *argument, int cmd);
 void do_set_afk(struct char_data *ch, char *argument, int cmd);
