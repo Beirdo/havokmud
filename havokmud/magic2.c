@@ -63,7 +63,7 @@ void spell_resurrection(byte level, struct char_data *ch,
 	act("$n says 'Thank you'", FALSE, ch, 0, victim, TO_ROOM);
 
       } else if(too_many_followers(ch)){
-	act("$N takes one look at the size of your posse and justs says no!",
+	act("$N takes one look at the size of your posse and just says no!",
 	    TRUE, ch, 0, victim, TO_CHAR);
 	act("You take one look at the size of $n's posse and just say no!",
 	    TRUE, ch, 0, victim, TO_ROOM);
@@ -1314,7 +1314,7 @@ void spell_animate_dead(byte level, struct char_data *ch,
     */
 
 if(too_many_followers(ch)){
-	act("$N takes one look at the size of your posse and justs says no!",
+	act("$N takes one look at the size of your posse and just says no!",
 	    TRUE, ch, 0, mob, TO_CHAR);
 	act("You take one look at the size of $n's posse and just say no!",
 	    TRUE, ch, 0, mob, TO_ROOM);

@@ -175,7 +175,7 @@ void spell_changestaff(byte level, struct char_data *ch,
   act("$n springs up in front of you!", FALSE, t, 0, 0, TO_ROOM);
 
   if(too_many_followers(ch)){
-    act("$N takes one look at the size of your posse and justs says no!",
+    act("$N takes one look at the size of your posse and just says no!",
 	TRUE, ch, ch->equipment[WIELD], victim, TO_CHAR);
     act("$N takes one look at the size of $n's posse and just says no!",
 	TRUE, ch, ch->equipment[WIELD], victim, TO_ROOM);
@@ -1143,7 +1143,7 @@ void spell_animal_summon(byte level, struct char_data *ch,
 
 		act("$n strides into the room.", FALSE, mob, 0, 0, TO_ROOM);
 		if(too_many_followers(ch)) {
-			act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, victim, TO_CHAR);
+			act("$N takes one look at the size of your posse and just says no!",TRUE, ch, 0, victim, TO_CHAR);
 			act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, victim, TO_ROOM);
 		} else {
 			/* charm them for a while */
@@ -1437,7 +1437,7 @@ void spell_charm_veggie(byte level, struct char_data *ch,
   }
 
   if (too_many_followers(ch)) {
-      act("$N takes one look at the size of your posse and justs says no!",
+      act("$N takes one look at the size of your posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_CHAR);
       act("$N takes one look at the size of $n's posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_ROOM);
@@ -1727,7 +1727,7 @@ void spell_animal_friendship(byte level, struct char_data *ch,
   }
 
     if (too_many_followers(ch)) {
-      act("$N takes one look at the size of your posse and justs says no!",
+      act("$N takes one look at the size of your posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_CHAR);
       act("$N takes one look at the size of $n's posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_ROOM);
@@ -3125,7 +3125,7 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	  }
 
 	  if (too_many_followers(ch)) {
-	    act("$N takes one look at the size of your posse and justs says no!",
+	    act("$N takes one look at the size of your posse and just says no!",
 		TRUE, ch, 0, victim, TO_CHAR);
 	    act("$N takes one look at the size of $n's posse and just says no!",
 		TRUE, ch, 0, victim, TO_ROOM);
@@ -3747,8 +3747,8 @@ void spell_cavorting_bones(byte level, struct char_data *ch, struct char_data *v
 	act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
 
 	if(too_many_followers(ch)) {
-		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
-		act("$N takes one look at the size of $n's posse and justs says no!",TRUE, ch, 0, mob, TO_NOTVICT);
+		act("$N takes one look at the size of your posse and just says no!",TRUE, ch, 0, mob, TO_CHAR);
+		act("$N takes one look at the size of $n's posse and just says no!",TRUE, ch, 0, mob, TO_NOTVICT);
 		act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, mob, TO_VICT);
 	} else {
 		/* charm it for a while */
@@ -3792,10 +3792,6 @@ void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *vic
 			/* 1% chance of instakill */
 			if(number(1,100) == 100  && !IS_IMMUNE(victim,IMM_DRAIN)) { /* woop, instant death is cool */
 				dam = GET_HIT(victim)+25;
-//				act("$c0008A look of fear fleets over $N's face, as the Dark Lord claims $M!", FALSE, ch, 0, t, TO_NOTVICT);
-//				act("$c0008A look of fear fleets over $N's face, as your Lord claims $M!", FALSE, ch, 0, t, TO_CHAR);
-//				act("$c0008You know a brief moment of paralyzing fear before the Dark Lord claims you!", FALSE, ch, 0, t, TO_VICT);
-//				die(t, SPELL_MIST_OF_DEATH);
 				damage(ch, t, dam, SPELL_MIST_OF_DEATH);
 			} else {
 				dam = dice(level,7);
@@ -4388,8 +4384,8 @@ void spell_flesh_golem(byte level, struct char_data *ch, struct char_data *victi
 	act("The corpse starts stirring, and rises as $n.", FALSE, mob, obj, 0, TO_ROOM);
 
 	if(too_many_followers(ch)) {
-		act("$N takes one look at the size of your posse and justs says no!",TRUE, ch, 0, mob, TO_CHAR);
-		act("$N takes one look at the size of $n's posse and justs says no!",TRUE, ch, 0, mob, TO_NOTVICT);
+		act("$N takes one look at the size of your posse and just says no!",TRUE, ch, 0, mob, TO_CHAR);
+		act("$N takes one look at the size of $n's posse and just says no!",TRUE, ch, 0, mob, TO_NOTVICT);
 		act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, mob, TO_VICT);
 	} else {
 		/* charm it for a while */
@@ -4638,22 +4634,159 @@ void song_of_charming(byte level, struct char_data *ch, struct char_data *victim
 	}
 }
 
+#define BARD_MONSUM_BASE 6
 void song_of_enthrallment(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+/* bleurgh, more monsum spells. I hate you, Xenon! */
+	struct affected_type af;
+	struct room_data *rp;
+	struct char_data *mob;
+	int lev= 1, i, mobnumber, mhps, mtohit, vnum;
+	char buf[254];
 
-	if(!HasInstrument(ch))
+	if ((rp = real_roomp(ch->in_room)) == NULL)
 		return;
 
+	if(!ch) {
+		log("screw up in song of enthrallment, no caster found");
+		return;
+	}
+
+	if (IS_SET(rp->room_flags, TUNNEL)) {
+		send_to_char("There's no room for an audience to gather in here.\n\r", ch);
+		return;
+	}
+
+	if(A_NOPETS(ch)) {
+		send_to_char("The arena rules do not permit you to enthrall an audience!\n\r", ch);
+		return;
+	}
+
+	lev = GetMaxLevel(ch);
+	mobnumber = (int)GET_CHR(ch)/4;
+	act("$n's song draws an audience of listeners that joins $s cause.", FALSE, ch, 0, 0, TO_ROOM);
+	act("Your song draws an audience of listeners that joins your cause.", FALSE, ch, 0, 0, TO_CHAR);
+	for(i = 0; i > mobnumber; i++) {
+		vnum = BARD_MONSUM_BASE + number(0,5); // 6 mobs to pick from
+		mob = read_mobile(vnum, VIRTUAL);
+		if(mob) {
+			if(lev >45) {
+				mhps = number(70,100);
+				mtohit = 8;
+			} else if(lev >37) {
+				mhps = number(50,80);
+				mtohit = 6;
+			} else if(lev >29) {
+				mhps = number(30,60);
+				mtohit = 4;
+			} else if(lev >21) {
+				mhps = number(10,40);
+				mtohit = 2;
+			} else {
+				mhps = number(0,20);
+				mtohit = 0;
+			}
+			mob->player.level[2] = (int)lev/2 + GET_CHR(ch);
+			mob->points.max_hit = mob->points.max_hit + mhps;
+			mob->points.hit = mob->points.max_hit;
+			mob->points.hitroll = mob->points.hitroll + mtohit;
+			char_to_room(mob, ch->in_room);
+			act("$n wanders into the room, drawn by the beautiful song.", FALSE, mob, 0, 0, TO_ROOM);
+
+			if(too_many_followers(ch)) {
+				act("$N takes one look at the size of your posse and just says no!",TRUE, ch, 0, mob, TO_CHAR);
+				act("$N takes one look at the size of $n's posse and just says no!",TRUE, ch, 0, mob, TO_NOTVICT);
+				act("You take one look at the size of $n's posse and just say no!",TRUE, ch, 0, mob, TO_VICT);
+			} else {
+				/* charm it for a while */
+				if (mob->master)
+					stop_follower(mob);
+				add_follower(mob, ch);
+				af.type      = SPELL_CHARM_PERSON;
+				if (IS_PC(ch) || ch->master) {
+					af.duration  = GET_CHR(ch);
+					af.modifier  = 0;
+					af.location  = 0;
+					af.bitvector = AFF_CHARM;
+					affect_to_char(mob, &af);
+				} else {
+					SET_BIT(mob->specials.affected_by, AFF_CHARM);
+				}
+			}
+			if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
+				REMOVE_BIT(mob->specials.act, ACT_AGGRESSIVE);
+			}
+			if (!IS_SET(mob->specials.act, ACT_SENTINEL)) {
+				SET_BIT(mob->specials.act, ACT_SENTINEL);
+			}
+		}
+	}
 }
 
 void song_of_calming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct room_data *rp;
+	struct char_data *tmp;
 
+	assert(ch);
+/*
+   removes aggressive bit from all monsters in room
+*/
+	if(!ch->in_room) {
+		log("char in invalid room, song of calming");
+		return;
+	}
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp) {
+		log("ugh no room in song of calming");
+		return;
+	}
+
+	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
+		if (IS_NPC(tmp)) {
+			if (IS_SET(tmp->specials.act, ACT_AGGRESSIVE)) {
+				if (HitOrMiss(ch, tmp, CalcThaco(ch))) {
+					REMOVE_BIT(tmp->specials.act, ACT_AGGRESSIVE);
+					send_to_char("You sense peace.\n\r", tmp);
+				}
+			} else {
+				send_to_char("You feel calm.\n\r", tmp);
+			}
+		} else {
+			send_to_char("You feel calm.\n\r", tmp);
+		}
+	}
 }
 
 void song_of_the_guardian(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	assert(ch);
+
+	if(affected_by_spell(ch, SONG_OF_THE_GUARDIAN)) {
+		send_to_char("Your current guardian angel wouldn't like to be replaced.\n\r", ch);
+		return;
+	}
+
+	send_to_char("Your guardian angel hears and protects you.\n\r", ch);
+	act("$n offers a song to the heavens and suddenly appears to be protected.",FALSE, ch, 0, 0, TO_ROOM);
+
+	af.type      = SONG_OF_THE_GUARDIAN;
+	af.duration  = 24;
+	af.modifier  = -20;
+	af.location  = APPLY_ARMOR;
+	af.bitvector = AFF_SNEAK;
+	affect_to_char(victim, &af);
+
+	af.type      = SONG_OF_THE_GUARDIAN;
+	af.duration  = 24;
+	af.modifier  = 0;
+	af.location  = APPLY_NONE;
+	af.bitvector = AFF_SNEAK;
+	affect_to_char(victim, &af);
 }
 
 void song_of_muscle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)

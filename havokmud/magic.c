@@ -2013,7 +2013,7 @@ void spell_charm_person(byte level, struct char_data *ch,
     }
 
     if (too_many_followers(ch)) {
-      act("$N takes one look at the size of your posse and justs says no!",
+      act("$N takes one look at the size of your posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_CHAR);
       act("$N takes one look at the size of $n's posse and just says no!",
 	  TRUE, ch, ch->equipment[WIELD], victim, TO_ROOM);
@@ -2112,7 +2112,7 @@ void spell_charm_monster(byte level, struct char_data *ch,
   }
 
   if (too_many_followers(ch)) {
-    act("$N takes one look at the size of your posse and justs says no!",
+    act("$N takes one look at the size of your posse and just says no!",
 	TRUE, ch, 0, victim, TO_CHAR);
     act("$N takes one look at the size of $n's posse and just says no!",
 	TRUE, ch, 0, victim, TO_ROOM);
