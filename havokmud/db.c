@@ -1484,7 +1484,15 @@ struct char_data *read_mobile(int nr, int type)
 
    total_mbc += bc;
    mob_count++;
-
+	/*assign Quest flag (GH) */
+	if (IS_SET(mob->specials.act,ACT_QUEST)) {
+		log("Has the proc");
+		    if(mob_index[mob->nr].func != QuestMobProc){
+		       mob_index[mob->nr].func = *QuestMobProc;//(*QuestMobProc)();
+				log("assigning proc");
+			}else
+				log("Already has proc");
+    }
    return(mob);
  }
 

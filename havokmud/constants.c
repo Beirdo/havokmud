@@ -3046,7 +3046,7 @@ const char *action_bits[] = {
 	"POLYMORPHED",
 	"META_AGGRESSIVE",
 	"GUARDING",
-        "ILLUSION",
+        "QUEST",
         "HUGE",
         "SCRIPT",
         "GREET",
@@ -3060,6 +3060,8 @@ const char *action_bits[] = {
         "PALADIN",
         "RANGER",
         "PSIONIST",
+        "BARD",
+        "SWALLOWER",
 	"\n"
 };
 

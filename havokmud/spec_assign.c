@@ -83,7 +83,10 @@ void assign_mobiles()
 #if 0
     { 39, creeping_death},
 #endif
-    {199, AGGRESSIVE},
+
+    { 10000, QuestMobProc },  /* TEMP. Assignment!!!! */
+
+   {199, AGGRESSIVE},
     {200, AGGRESSIVE},
 /*
 **  Doom Island
@@ -1459,7 +1462,6 @@ void assign_rooms()
 
     { 2188,  Magic_Fountain},
     { 2189,  Magic_Fountain},
-
     { 3005,  Fountain}, /* Meeting SQ */
     { 13518, Fountain},
     { 11014, Fountain},

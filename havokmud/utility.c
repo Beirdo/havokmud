@@ -3088,7 +3088,11 @@ void RiverPulseStuff(int pulse)
 	  /*
 	   * Make the sound
 	   */
-	  MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+      if(*ch->player.distant_snds != '\'')
+		MakeNoise(ch->in_room, ch->player.sounds, ch->player.distant_snds);
+	  else
+		MakeNoise(ch->in_room,ch->player.sounds,"");
+
 	}
       }
     }

@@ -1500,11 +1500,12 @@ AddCommand("disengage",do_disengage,529,POSITION_FIGHTING,1);
 AddCommand("prompt", do_set_prompt,530,POSITION_RESTING,0);
 
 /*New stuff 2001 (GH)*/
-AddCommand("talk",do_action,531,POSITION_RESTING,1);
+AddCommand("talk",do_talk,531,POSITION_RESTING,1);
 AddCommand("disagree",do_action,532,POSITION_RESTING,0);
 AddCommand("beckon",do_action,533,POSITION_RESTING,0);
 AddCommand("pounce",do_action,534,POSITION_STANDING,0);
 AddCommand("amaze",do_action,535,POSITION_RESTING,0);
+
 AddCommand("tank",do_action,536,POSITION_STANDING,0);
 AddCommand("hshake",do_action,537,POSITION_STANDING,0);
 AddCommand("backhand",do_action,538,POSITION_STANDING,0);
@@ -1540,6 +1541,7 @@ AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
 AddCommand("yell",do_yell,563,POSITION_RESTING,0);
 AddCommand("legsweep",do_leg_sweep, 564, POSITION_STANDING,0);
 AddCommand("charge",do_charge, 565, POSITION_STANDING,0);
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince

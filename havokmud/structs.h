@@ -912,7 +912,7 @@ struct room_data
 #define ACT_POLYSELF  (1<<14)  /* MOB is a polymorphed person             */
 #define ACT_META_AGG  (1<<15)  /* MOB is _very_ aggressive                */
 #define ACT_GUARDIAN  (1<<16)  /* MOB will guard master                   */
-#define ACT_ILLUSION  (1<<17)  /* MOB is illusionary                      */
+#define ACT_QUEST     (1<<17)  /* MOB is illusionary                      */
 #define ACT_HUGE      (1<<18)  /* MOB is too large to go indoors          */
 #define ACT_SCRIPT    (1<<19)  /* MOB has a script assigned to it DO NOT SET */
 #define ACT_GREET     (1<<20)  /* MOB greets people */
@@ -928,7 +928,7 @@ struct room_data
 #define ACT_RANGER	(1<<29)
 #define ACT_PSI		(1<<30)
 #define ACT_BARD        (1<<31)
-
+#define ACT_SWALLOWER (1<< 32)
 /* For players : specials.act */
 #define PLR_BRIEF     (1<<0)
 /* (1<<1) */

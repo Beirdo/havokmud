@@ -107,7 +107,7 @@ void do_open(struct char_data *ch, char *argument, int cmd);
 void do_close(struct char_data *ch, char *argument, int cmd);
 void do_enter(struct char_data *ch, char *argument, int cmd);
 void do_leave(struct char_data *ch, char *argument, int cmd);
-
+void do_talk(struct char_data *ch, char *argument, int cmd);
 
 
 
@@ -2161,7 +2161,7 @@ int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data 
 int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
+int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 /*Spec_procs2*/
 
 int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

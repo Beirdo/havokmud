@@ -1318,3 +1318,54 @@ dlog("in do_reply");
   }
 
 }
+
+
+void do_talk(struct char_data *ch, char *argument, int cmd)
+{
+  struct char_data *vict;
+  char name[100], message[MAX_INPUT_LENGTH+80],
+  buf[MAX_INPUT_LENGTH+80];
+
+dlog("in do_talk");
+
+	if (apply_soundproof(ch))
+	  return;
+
+  half_chop(argument,name,message);
+
+  if(!*name)
+    send_to_char("Who do you want to talk to??\n\r", ch);
+  else if (!(vict = get_char_room_vis(ch, name)))
+    send_to_char("No-one by that name here..\n\r", ch);
+  else if (vict == ch) {
+    act("$n whispers quietly to $mself.",FALSE,ch,0,0,TO_ROOM);
+    send_to_char
+      ("Don't you do that enough already?\n\r",ch);
+  }  else    {
+	if (check_soundproof(vict))
+	  return;
+
+
+	if(IS_NPC(vict)) {
+		act("$n tries to strick up a conversation with $N.",FALSE,ch,0,vict,TO_ROOM);
+		act("You try to strick up a conversation with $N.",FALSE,ch,0,vict,TO_CHAR);
+
+	  if (vict->player.distant_snds && *vict->player.distant_snds == '\'') {
+			sprintf(buf,"$c0015$N says %s'$c0007", vict->player.distant_snds);
+			act(buf,FALSE,ch,0,vict,TO_CHAR);
+			act(buf,FALSE,ch,0 ,vict,TO_ROOM);
+			//do_say(vict,buf,0);
+	  } else  {
+		  if(IS_GOOD(vict))
+		  	do_say(vict,"Can you please come back later, i'm rather busy at the moment",0);
+		  else if(IS_EVIL(vict))
+		  	do_say(vict,"Scram punk.  Can't you see i'm busy!",0);
+		  	else
+		  		do_say(vict,"I'm sorry, i can't talk to you right now...",0);
+
+	  }
+
+  	} else
+  		send_to_char("This is a means of talking to mobiles. Please use tell/say/shout/etc",ch);
+    }
+}
