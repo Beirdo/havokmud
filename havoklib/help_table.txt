@@ -159,6 +159,73 @@
     goodberry                          wind servant
 
 #
+"CLASS LEVEL LIMITS"
+
+    This is a list of the various races that you can become
+    permamently, either as your starting race, or because of
+    a spell, such as 'reincarnate'.
+
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Avariel         45  40  50  0   0   0   0   45  0   0   0   0
+    Cloud Giant     20  40  51  50  30  30  10  20  0   0   0   0
+    Dark Dwarf      20  51  51  35  15  40  0   20  45  30  0   0
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Deep Gnome      20  51  51  35  15  40  0   20  45  30  0   45
+    Drow Elf        50  51  30  40  20  30  0   50  40  51  40  0
+    Dwarf           0   51  51  35  0   0   0   0   45  30  0   20
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Fire Giant      20  40  51  50  30  30  10  20  0   0   0   0
+    Forest Gnome    30  50  40  45  50  0   0   30  0   50  0   0
+    Frost Giant     20  40  51  50  30  30  10  20  0   0   0   0
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Gnoll           20  40  51  50  30  30  0   20  0   0   0   0
+    Goblin          20  30  50  51  0   0   30  0   0   0   0   0
+    Gold Elf        51  35  15  51  51  20  0   51  45  51  40  50
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Half-Elf        30  35  35  51  35  30  0   30  51  51  40  51
+    Half-Giant      0   0   51  0   0   0   45  0   0   0   0   0
+    Halfling        20  40  30  51  51  20  0   20  0   0   0   40
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Half-Ogre       0   30  51  0   0   0   0   0   0   0   0   0
+    Half-Orc        0   30  45  51  0   0   0   0   0   0   0   0
+    Hill Giant      20  40  51  50  30  30  10  20  0   0   0   0
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Human           51  51  51  51  51  51  51  51  51  51  51  51
+    Kangaroo        40  30  51  30  20  50  10  40  0   0   0   0
+    Lizardman       20  51  51  35  15  40  0   20  45  30  0   0
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Mindflayer      51  40  30  30  30  50  10  51  0   0   0   0
+    Moon Elf        51  30  20  51  51  20  0   51  40  51  40  51
+    Orc             20  30  51  45  0   0   40  0   0   0   0   0
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Primate         30  30  40  50  20  51  10  30  0   0   0   0
+    Rock Gnome      51  51  30  40  20  20  0   51  0   0   0   0
+    Sea Elf         51  30  30  51  51  20  0   51  40  51  40  35
+    --------------------------------------------------------------
+    Race            ma  cl  wa  th  dr  mo  ba  so  pa  ra  ps  ne
+    --------------------------------------------------------------
+    Storm Giant     20  40  51  50  30  30  10  20  0   0   0   0
+    Troll           0   35  51  35  0   0   45  0   0   0   0   0
+    Wild Elf        30  35  51  51  51  0   0   30  0   51  40  35
+
+#
 "CLASS LIST"
 
     There are currently 12 classes available, each can be viewed in
@@ -693,6 +760,14 @@
     kick                               skin
 
 #
+"COMBAT AGGRESSIVE"
+
+    This is one of the fighting styles you can access using
+    the 'style' command.  When fighting using this style, you
+    will tend to do more damage than using the 'standard'
+    style, but will be easier to hit in combat.
+
+#
 "COMBAT ASSIST"
     Usable by   :  All 1
     Usage       :  assist <fighting mob>
@@ -706,6 +781,17 @@
     H:50/50 M:120/120 V:100/100> assist Joe
     Havok> You slash an orc very hard in his head.
 
+#
+"COMBAT BERSERK"
+
+    This is one of the fighting styles you can access using
+    the 'style' command.  When fighting using this style, you
+    will tend to do a great deal more damage than using the
+    'standard' style and possibly more attacks.  However,
+    you will be easier to hit in combat, and once going
+    berserk, you will either win or die, there is no
+    fleeing when you are fighting using this style.
+    
 #
 "COMBAT BREATH"
     Usable by   :  All 1
@@ -736,6 +822,27 @@
     Situation: You wonder how tough an orc is.
     H:50/50 M:120/120 V:100/100> consider orc
     Havok> You would need some luck!
+
+#
+"COMBAT DEFENSIVE"
+
+    This is one of the fighting styles you can access using
+    the 'style' command.  When fighting using this style, you
+    will tend to do less damage than you would using the
+    'standard' style.  However, you will receive a large
+    bonus to your 'armor class', making you harder to hit
+    in combat and possibly a slightly reduced amount of 
+    damage. 
+
+#
+"COMBAT EVASIVE"
+
+    This is one of the fighting styles you can access using
+    the 'style' command.  When fighting using this style, you
+    will be harder to hit in combat, and will flee more
+    readily in combat when injured.  Your number of attacks
+    will be reduced when using this stylem, compared to
+    the 'standard' style.
 
 #
 "COMBAT FIRE"
@@ -809,23 +916,6 @@
     Havok> You slash an orc hard in the head.
 
 #
-"COMBAT LIST"
-
-    COMBAT ASSIST
-    COMBAT BREATH
-    COMBAT CONSIDER
-    COMBAT FIRE
-    COMBAT FLEE
-    COMBAT HIT
-    COMBAT KILL
-    COMBAT LIST
-    COMBAT LOAD
-    COMBAT NOTCH
-    COMBAT SHOOT
-    COMBAT THROW
-    COMBAT WIMPY
-
-#
 "COMBAT LOAD"
     Usable by   :  All 1
     Usage       :  load <missile obj>
@@ -874,6 +964,14 @@
     Havok> You shoot at an orc with an arrow.
 
 #
+"COMBAT STANDARD"
+
+    This is one of the fighting styles you can access using
+    the 'style' command.  This is the "base" fighting style,
+    all other styles have modifications from this basic
+    style, and every character knows it automatically.
+
+#
 "COMBAT THROW"
     Usable by   :  All 1
     Usage       :  throw <obj> <mob> [<north | east | south |
@@ -888,6 +986,13 @@
     a throwing dagger in your inventory.
     H:50/50 M:120/120 V:100/100> throw dagger orc east
     Havok> FILL THIS IN
+
+#
+"COMBAT WEAPON SPEED"
+
+    'Weapon speed' refers to the idea that a person wielding
+    a smaller, faster weapon might get more attacks in a combat
+    round than a person wielding a large, slow weapon.
 
 #
 "COMBAT WIMPY"
@@ -1052,36 +1157,6 @@
     Situation: You wish for someone to cast a heal spell on you.
     H:50/50 M:120/120 V:100/100> gtell Can somebody heal me?
     Havok> You group tell 'Can somebody heal me?'
-
-#
-"COMM LIST"
-
-    COMM '
-    COMM ,
-    COMM :
-    COMM ASK
-    COMM CHAT
-    COMM DEAFEN
-    COMM EMOTE
-    COMM GOSSIP
-    COMM GTELL
-    COMM LIST
-    COMM NOAUCTION
-    COMM NOOOC
-    COMM NOTELL
-    COMM NOYELL
-    COMM OOC
-    COMM POSE
-    COMM QCHAT
-    COMM REPLY
-    COMM SAY
-    COMM SHOUT
-    COMM SIGN
-    COMM SPEAK
-    COMM TALK
-    COMM TELL
-    COMM WHISPER
-    COMM YELL
 
 #
 "COMM NOAUCTION"
@@ -1420,18 +1495,6 @@
            the goblin alertly watches you.
 
 #
-"GROUP LIST"
-
-    GROUP DISMISS
-    GROUP FOLLOW
-    GROUP GROUP
-    GROUP GUARD
-    GROUP LIST
-    GROUP ORDER
-    GROUP PROMOTE
-    GROUP SPLIT
-
-#
 "GROUP ORDER"
     Usable by   :  All 1
     Usage       :  order <mob | all> <command>
@@ -1596,7 +1659,7 @@
     category of spell and the topic of magic missile: help spell magic missile
 
     To get a listing of all the help topics available in a category, you
-    can type the category and the topic "list":  help comm list
+    can type the category:  help comm
 
     Help topics use these conventions in describing arguments:
 
@@ -2056,51 +2119,6 @@
             [ 3]      3000-6000      : Believer
             ...
             [51] 200000000-231000000 : Immortal Cardinal
-
-#
-"INFO LIST"
-
-    INFO AFFECTS
-    INFO ALLSPELLS
-    INFO ALLWEAPONS
-    INFO AREAS
-    INFO ATTRIBUTE
-    INFO BPROMPT
-    INFO CLANLIST
-    INFO COMMANDS
-    INFO CREDITS
-    INFO EXITS
-    INFO FIGHT
-    INFO GAIN
-    INFO GLANCE
-    INFO GWHO
-    INFO INFO
-    INFO IWIZLIST
-    INFO LEVELS
-    INFO LIST
-    INFO LOOK
-    INFO NEWS
-    INFO PRACTICE
-    INFO PRACTISE
-    INFO PROMPT
-    INFO REPORT
-    INFO RESIST
-    INFO SCORE
-    INFO SKILLS
-    INFO STUDY
-    INFO STYLE
-    INFO TIME
-    INFO TITLE
-    INFO WEAPONS
-    INFO WEATHER
-    INFO WHERE
-    INFO WHO
-    INFO WHOARENA
-    INFO WHOIS
-    INFO WHOZONE
-    INFO WIZLIST
-    INFO WORLD
-    INFO ZONES
 
 #
 "INFO LOOK"
@@ -3063,35 +3081,6 @@
 
 
 #
-"MIND LIST"
-
-    MIND CELL ADJUSTMENT
-    MIND CHAMELEON
-    MIND CLAIRVOYANCE
-    MIND DANGER SENSE
-    MIND DISINTEGRATE
-    MIND DOMINATION
-    MIND INTENSIFY
-    MIND KINOLOCK
-    MIND LEVITATION
-    MIND LIST
-    MIND MIND BURN
-    MIND MIND OVER BODY
-    MIND MIND TAP
-    MIND MIND WIPE
-    MIND MINDBLANK
-    MIND PROBABILITY TRAVEL
-    MIND PSIONIC STRENGTH
-    MIND PSIONIC TELEPORT
-    MIND PSYCHIC CRUSH
-    MIND PSYCHIC IMPERSONATION
-    MIND SENSE OBJECT
-    MIND TELEKINESIS
-    MIND TOWER OF IRON WILL
-    MIND ULTRA BLAST
-    MIND WALL OF THOUGHT
-
-#
 "MIND MIND BURN"
     Castable by :  psionist 5
     Usage       :  mind 'mind burn'
@@ -3636,6 +3625,32 @@
                 Affects: SAVING_ALL by -1
 
 #
+"MISC COLORS"
+
+    It is possible to use ANSI color codes in any text you input
+    to the mud.  Communications like 'gtell' or 'say' or descriptions
+    like 'title' are valid targets.  The color codes that are commonly
+    used are:
+    
+    (You should replace the "*" with a "$" in the code to activate it.)
+    
+    $c0008black         *c0008
+    $c000Rbright red    *c000R
+    $c000rdark red      *c000r
+    $c000Gbright green  *c000G
+    $c000gdark green    *c000g
+    $c000Ybright yellow *c000Y
+    $c000ydark yellow   *c000y
+    $c000Bbright blue   *c000B
+    $c000bdark blue     *c000b
+    $c000Pbright purple *c000P
+    $c000pdark purple   *c000p
+    $c000Cbright cyan   *c000C
+    $c000cdark cyan     *c000c
+    $c000Wbright white  *c000W
+    $c000wdark white    *c000w
+
+#
 "MISC COMPACT"
     Usable by   :  All 1
     Usage       :  compact
@@ -3717,38 +3732,23 @@
     Havok>  You just initated Joe into the clan, The Bacchanals.
 
 #
-"MISC LIST"
+"MISC LANGUAGES"
 
-    MISC AFK
-    MISC ARENA
-    MISC AUCTION
-    MISC BEHEAD
-    MISC BID
-    MISC COMPACT
-    MISC DISPLAY
-    MISC ECHO
-    MISC EXPEL
-    MISC INDUCT
-    MISC LIST
-    MISC PRAY
-    MISC QUEST
-    MISC QUI
-    MISC QUIT
-    MISC READ
-    MISC REMORT
-    MISC RESIZE
-    MISC REST
-    MISC RETURN
-    MISC SAVE
-    MISC SET
-    MISC SHARPEN
-    MISC SIT
-    MISC SLEEP
-    MISC STAND
-    MISC TRAIN
-    MISC VIS
-    MISC WAKE
-    MISC WRITE
+    Many races have their own language, that is only spoken by that
+    race and those who take the time and effort to learn it.  The
+    list of languages is nearly as long as the list of races, and
+    an educated adventurer will often learn them to better communicate
+    with other adventurers.
+
+#
+"MISC LORES"
+
+    It has been said that there is a person who can teach great
+    knowledge of the different races of the realms.  This knowledge
+    deals mostly with the biology of the races, and is prized by
+    thieves who can 'backstab' vital organs using this knowledge.
+    Learning the different lores of the different races can make
+    a thief's 'backstab' much more deadly.
 
 #
 "MISC PRAY"
@@ -3850,6 +3850,14 @@
             East     -    The Fire Swamp
             South    -    Florian Castle
             West     -    Cliffs of Insanity
+
+#
+"MISC READ MAGIC"
+
+    This is a skill that is learnable by non-casters that allows the
+    adventurer to 'recite' scrolls.  This can be very useful and
+    potentially lifesaving skill, well worth the effort for fighters
+    and other non-magic users.
 
 #
 "MISC REMORT"
@@ -4391,40 +4399,6 @@
     Havok>  You lift the trapdoor and open a passage downwards
 
 #
-"MOVE LIST"
-
-    MOVE BOARD
-    MOVE BRIEF
-    MOVE CLOSE
-    MOVE DISEMBARK
-    MOVE DISMOUNT
-    MOVE DOWN
-    MOVE EAST
-    MOVE EMBARK
-    MOVE ENTER
-    MOVE LAND
-    MOVE LAUNCH
-    MOVE LEAVE
-    MOVE LIFT
-    MOVE LIST
-    MOVE LOCK
-    MOVE MOUNT
-    MOVE NORTH
-    MOVE OPEN
-    MOVE PLANK
-    MOVE PULL
-    MOVE PUSH
-    MOVE RUN
-    MOVE SAIL
-    MOVE SOUTH
-    MOVE STEER
-    MOVE TURN
-    MOVE TWIST
-    MOVE UNLOCK
-    MOVE UP
-    MOVE WEST
-
-#
 "MOVE LOCK"
     Usable by   :  All 1
     Usage       :  lock <exit name> [<north | east | south | west | up | down>]
@@ -4840,26 +4814,6 @@
     Have fun, enjoy yourself.
 
 #
-"NEWBIE LIST"
-
-    NEWBIE BARBARIAN
-    NEWBIE CLERIC
-    NEWBIE DRUID
-    NEWBIE GENERAL
-    NEWBIE LIST
-    NEWBIE MAGE
-    NEWBIE MAP
-    NEWBIE MONK
-    NEWBIE NECROMANCER
-    NEWBIE PALADIN
-    NEWBIE PSIONIST
-    NEWBIE RANGER
-    NEWBIE SORCERER
-    NEWBIE THIEF
-    NEWBIE WARRIOR
-    NEWBIE ZONES
-
-#
 "NEWBIE MAGE"
 
     For a quick overview of who the mage is, type "help class
@@ -5044,6 +4998,54 @@ Druid    Temple    Common|                         ||        Idlewylde
     The ranger guildmaster is in the Guild Hall to the west of the 
     Meeting Square.  From the Temple of Karsinya, the ranger guildmaster is
     s2e4n4w3sw
+
+#
+"NEWBIE RULES"
+
+    The highest rule of the mud is the golden rule.  If you obey that,
+    you will likely never be in violation of any of the other rules of
+    the mud.  Punishments for failing to follow these rules vary, and
+    is at the discretion of the adjucating immortal.
+    
+    1.  'Player Killing' outside of the 'Arena' is forbidden.  Even
+        indirectly harming another player is illegal, such as summoning
+        an unwilling player to a dangerous area.  Casting non-beneficial
+        spells on another character is illegal as well.
+        
+    2.  Stealing from another character is illegal, even if you know them.
+    
+    3.  Kill stealing is illegal, which is when somebody has already
+        started fighting a mob and you deal the final blow, robbing
+        the original player of the experience.  When in doubt, ask.
+
+    4.  Taking items off of the corpse of a recently deceased player
+        is illegal.  Only if the player has given you permission should
+        you get the items from a player's corpse.
+        
+    5.  Foul language will not be tolerated in any form, including
+        replacing letters with symbols.  If you want to make your
+        feelings known, get creative, cursing will be punished.
+        
+    6.  Whining, while not illegal, will certainly not win you any
+        friends.
+        
+    7.  'Multi-playing' is illegal, if you are caught 'multi-playing'
+        you will be punished.
+        
+    8.  Sharing characters is illegal, your password is sacred.  Do
+        not share your character with friends, relatives, wives, 
+        sons, etc.  And if your character gets hijacked by another
+        person, the mud is not responsible for any damages that
+        result from it.
+
+    9.  "Bots" are illegal.  A bot is a set of scripts that automate
+        your character to a greater extent than is acceptable by
+        the mud.  It is a judgement call by the immortals on what
+        constitutes a bot versus a set of triggers and scripts that
+        aid a mudder.  Basically, if you don't have to be at your
+        keyboard and your character is engaged in actions more
+        complex than standing in one spot and keeping yourself from
+        starving, you are probably close to bot-like activity.
 
 #
 "NEWBIE SORCERER"
@@ -5264,6 +5266,15 @@ unknown                      -- Fist                      ????
     Situation: You wish to close the treasure chest after ransacking it.
     H:50/50 M:120/120 V:100/100> close chest
     Havok>  Ok.
+
+#
+"OBJ CORPSE"
+
+    When mobs die, their bodies turn into corpses, which act as container
+    objects.  Which means that they can be picked up and items taken from
+    the corpse.  When you see a corpse and you wish to get the items that
+    are "inside" that corpse, you use the 'get' command in the format of
+    "get all corpse" or "get ring corpse".
 
 #
 "OBJ DONATE"
@@ -5628,40 +5639,6 @@ unknown                      -- Fist                      ????
             You junk a dagger.
 
 #
-"OBJ LIST"
-
-    OBJ CLOSE
-    OBJ DONATE
-    OBJ DRAW
-    OBJ DRINK
-    OBJ DROP
-    OBJ EAT
-    OBJ EQUIPMENT
-    OBJ EXAMINE
-    OBJ FILL
-    OBJ GET
-    OBJ GIVE
-    OBJ GRAB
-    OBJ HOLD
-    OBJ INVENTORY
-    OBJ JUNK
-    OBJ LIST
-    OBJ LOCK
-    OBJ LOOK
-    OBJ OPEN
-    OBJ POUR
-    OBJ PUT
-    OBJ QUAFF
-    OBJ REMOVE
-    OBJ SIP
-    OBJ TAKE
-    OBJ TASTE
-    OBJ UNLOCK
-    OBJ USE
-    OBJ WEAR
-    OBJ WIELD
-
-#
 "OBJ LOCK"
     Usable by   :  All 1
     Usage       :  lock <lockable obj>
@@ -5791,6 +5768,13 @@ unknown                      -- Fist                      ????
     H:50/50 M:120/120 V:100/100> quaff potion-healing
     Havok>  You quaff a potion of healing which dissolves.
             You feel better!
+
+#
+"OBJ QUEST TOKEN"
+
+    If you should happen to find a quest token during your travels,
+    it will be replaced by a quest potion, which can be quaffed
+    to permanently bestow a 'quest point' on that character.
 
 #
 "OBJ REMOVE"
@@ -6491,32 +6475,6 @@ unknown                      -- Fist                      ????
     Life Span: 120 years
 
 #
-"RACE LIST"
-
-    RACE AVARIEL
-    RACE CLASS COMBINATIONS
-    RACE CLASS LIMITS
-    RACE DARK DWARF
-    RACE DROW ELF
-    RACE DWARF
-    RACE FOREST GNOME
-    RACE GOBLIN
-    RACE GOLD ELF
-    RACE HALF-ELF
-    RACE HALF-GIANT
-    RACE HALFLING
-    RACE HALF-OGRE
-    RACE HALF-ORC
-    RACE HUMAN
-    RACE LIST
-    RACE MOON-ELF
-    RACE ORC
-    RACE ROCK GNOME
-    RACE SEA ELF
-    RACE TROLL
-    RACE WILD ELF
-
-#
 "RACE MOON-ELF"
 
     This race is the most numerous of the elves.  They tend to
@@ -6594,6 +6552,54 @@ unknown                      -- Fist                      ????
     Average Weight: 105 pounds
     Size Classification: Small
     Life Span: 900 years
+
+#
+"RACE SIZE"
+
+    The sizes of the races you can become make a difference 
+    in several aspects of adventuring.  Here is a list of the
+    sizes for the races you can choose to become at the start
+    of your career as well as the races that you can reincarnate
+    into by virtue of the 'reincarnate' spell.
+
+    Avariel         Medium
+    Cloud Giant     Huge
+    Dark Dwarf      Small
+    Deep Gnome      Small
+    Drow Elf        Small
+    Dwarf           Small
+    Fire Giant      Huge
+    Forest Gnome    Huge
+    Frost Giant     Huge
+    Gnoll           Large
+    Goblin          Small
+    Gold Elf        Small
+    Half-Elf        Medium
+    Half-Giant      Huge
+    Halfling        Small
+    Half-Ogre       Large
+    Half-Orc        Large
+    Hill Giant      Huge
+    Human           Medium
+    Kangaroo        Medium
+    Lizardman       Huge
+    Mindflayer      Small
+    Moon Elf        Small
+    Orc             Large
+    Primate         Medium
+    Rock Gnome      Small
+    Sea Elf         Small
+    Storm Giant     Huge
+    Troll           Large
+    Wild Elf        Small
+
+    The current sizes are:
+    Tiny        (Giant Insects, Giant Spiders, less than 3' tall/long)
+    Small       (Elves, Dwarves, Mindflayers, Patryns, between 3' and 5' tall)
+    Medium      (Humans, Kangaroos, Rakshasa, between 5' and 7' tall)
+    Large       (Trolls, Otyughs, Tigers, between 7' and 9' tall)
+    Huge        (Half-giants, Giants, Golems, between 9' and 15' tall)
+    Gargantuan  (Dragons, Basilisks, larger than 15' tall/long)
 
 #
 "RACE TROLL"
@@ -6735,23 +6741,6 @@ unknown                      -- Fist                      ????
             A warhammer for 51 gold coins.
             A short bow for 129 gold coins.
 
-
-#
-"SHOP LIST TOPICS"
-
-    SHOP BALANCE
-    SHOP BUY
-    SHOP CHECK
-    SHOP DEPOSIT
-    SHOP LIST
-    SHOP LIST TOPICS
-    SHOP MAIL
-    SHOP OFFER
-    SHOP RECEIVE
-    SHOP RENT
-    SHOP SELL
-    SHOP SELL
-    SHOP WITHDRAW
 
 #
 "SHOP MAIL"
@@ -6979,7 +6968,7 @@ unknown                      -- Fist                      ????
     Usable by   :  warrior 1, ranger 1, pal 1, barb 1
     Usage       :  bash [<mob>]
     Positions   :  standing, fighting
-    Speed       :  Slow
+    Speed       :  Varies
     Mana        :  0
 
     This skill is the primary combat tactic of the fighting classes.
@@ -6988,14 +6977,26 @@ unknown                      -- Fist                      ????
     stunned, the opponent can not undertake any actions and will
     suffer slightly more damage than if they were standing.  Until
     the opponent stands up again, there are very few actions they
-    can effectively pursue.  The fighter has to spend some time
-    recovering from the slamming, and if things work out correctly,
-    they will recover about the same time the opponent stops being
-    stunned.  If there are many people fighting close to the target
-    the fighter will have a hard time getting close enough to bash
-    the target.  Also an opponent who is significantly larger than
-    the fighter will be impossible to bash.  If there is no target
-    specified, the fighter will bash the current opponent.
+    can effectively pursue.  If there are many people fighting close 
+    to the target the fighter will have a hard time getting close 
+    enough to bash the target.  If there is no target specified, 
+    the fighter will bash the current opponent.  Any size fighter
+    can attempt to bash any size opponent.  Large size differentials
+    between the fighter and his or her target reduces the chance
+    of succeeding at the bash.  If a small fighter, like a dwarf,
+    attempted to bash a large target, like a giant, it will be much
+    harder than a half-giant attempting to bash the giant.  Likewise,
+    a half-giant will have a hard time bashing a goblin.  Being 
+    slightly larger than your opponent grants the best chance to
+    successfully bash them, so a human attempting to bash a moon-elf
+    will have the easiest time.  The level difference between the
+    basher and the target will make a difference, so will being
+    a single-class, main-class, or a multi-class fighter, as well
+    as dexterity.  So the absolutely best opportunity is for a high 
+    level, single class fighter with a high dexterity who is one size 
+    larger than the target.  The time that the bash stuns the basher 
+    and the victim is determined by how successful the bash was and 
+    the strength of the basher.
 
 #
 "SKILL BELLOW"
@@ -7545,82 +7546,6 @@ unknown                      -- Fist                      ????
     will be ready to legsweep the opponent again when the opponent
     finally starts to stand up.  If no target is specified then
     the current opponent will be targeted.
-
-#
-"SKILL LIST"
-
-    SKILL ADRENALIZE
-    SKILL AURA
-    SKILL AVOID BACKATTACK
-    SKILL BACKSTAB
-    SKILL BASH
-    SKILL BELLOW
-    SKILL BERSERK
-    SKILL PSIONIC BLAST
-    SKILL BLESSING
-    SKILL BREW
-    SKILL BS
-    SKILL CALL STEED
-    SKILL CAMOUFLAGE
-    SKILL CANIBALIZE
-    SKILL CARVE
-    SKILL CAST
-    SKILL CHARGE
-    SKILL CLIMB
-    SKILL DISARM
-    SKILL DISENGAGE
-    SKILL DISGUISE
-    SKILL DOORBASH
-    SKILL DOORWAY
-    SKILL ESP
-    SKILL FEIGN DEATH
-    SKILL FIND FOOD
-    SKILL FIND TRAP
-    SKILL FIND WATER
-    SKILL FIRST AID
-    SKILL FLAME SHROUD
-    SKILL FLOWERFIST
-    SKILL FLURRY
-    SKILL GREAT SIGHT
-    SKILL HEROIC RESCUE
-    SKILL HIDE
-    SKILL HUNT
-    SKILL HYPNOTIZE
-    SKILL ID
-    SKILL KICK
-    SKILL LAY ON HANDS
-    SKILL LEGSWEEP
-    SKILL LIST
-    SKILL MEDITATE
-    SKILL MEMORIZE
-    SKILL MEND
-    SKILL MESSENGER
-    SKILL MIND
-    SKILL PICK
-    SKILL PSI PORTAL
-    SKILL PSIONIC INVISIBILITY
-    SKILL QUIVERING PALM
-    SKILL RECALL
-    SKILL RECALLHOME
-    SKILL RECITE
-    SKILL RESCUE
-    SKILL RETREAT
-    SKILL RIDE
-    SKILL SCRIBE
-    SKILL SCRY
-    SKILL SENDING
-    SKILL PSI SHIELD
-    SKILL SNEAK
-    SKILL SPOT
-    SKILL SPRING LEAP
-    SKILL SPY
-    SKILL STEAL
-    SKILL PSI SUMMON
-    SKILL SWIM
-    SKILL TAN
-    SKILL TELEPATHY
-    SKILL VALUE ITEM
-    SKILL WARCRY
 
 #
 "SKILL MEDITATE"
@@ -11599,241 +11524,6 @@ yodel                   yodel           [<mob | obj>]   resting
 
 
 #
-"SPELL LIST"
-
-    SPELL ACID BLAST
-    SPELL AID
-    SPELL ANIMAL FRIENDSHIP
-    SPELL ANIMAL GROWTH
-    SPELL ANIMAL SUMMON ONE
-    SPELL ANIMAL SUMMON TWO
-    SPELL ANIMAL SUMMON THREE
-    SPELL ANIMATE DEAD
-    SPELL ANIMATE ROCK
-    SPELL ANTI MAGIC SHELL
-    SPELL ARMOR
-    SPELL ASTRAL WALK
-    SPELL AURA OF POWER
-    SPELL BARKSKIN
-    SPELL BIND AFFINITY
-    SPELL BINDING
-    SPELL BLADE BARRIER
-    SPELL BLESS
-    SPELL BLINDNESS
-    SPELL BURNING HANDS
-    SPELL CACAODEMON
-    SPELL CALL LIGHTNING
-    SPELL CALM
-    SPELL CAUSE CRITICAL
-    SPELL CAUSE LIGHT
-    SPELL CAUSE SERIOUS
-    SPELL CAVORTING BONES
-    SPELL CHAIN LIGHTNING
-    SPELL CHANGE FORM
-    SPELL CHANGESTAFF
-    SPELL CHARM MONSTER
-    SPELL CHARM PERSON
-    SPELL CHARM VEGETABLE
-    SPELL CHILL TOUCH
-    SPELL CHILLSHIELD
-    SPELL CIRCLE OF PROTECTION
-    SPELL CLINGING DARKNESS
-    SPELL CLONE
-    SPELL COLD LIGHT
-    SPELL COLOUR SPRAY
-    SPELL COMMAND
-    SPELL COMMUNE
-    SPELL COMPREHEND LANGUAGES
-    SPELL CONE OF COLD
-    SPELL CONJURE ELEMENTAL
-    SPELL CONTINUAL LIGHT
-    SPELL CONTROL WEATHER
-    SPELL CREATE FOOD
-    SPELL CREATE WATER
-    SPELL CREEPING DEATH
-    SPELL CURE BLIND
-    SPELL CURE CRITIC
-    SPELL CURE LIGHT
-    SPELL CURE SERIOUS
-    SPELL CURSE
-    SPELL DARK EMPATHY
-    SPELL DARK PACT
-    SPELL DARKTRAVEL
-    SPELL DECAY
-    SPELL DETECT EVIL
-    SPELL DETECT GOOD
-    SPELL DETECT INVISIBILITY
-    SPELL DETECT MAGIC
-    SPELL DETECT POISON
-    SPELL DISEASE
-    SPELL DISINTEGRATE
-    SPELL DISPEL EVIL
-    SPELL DISPEL GOOD
-    SPELL DISPEL MAGIC
-    SPELL DOMINATE UNDEAD
-    SPELL DRAGON BREATH
-    SPELL DRAGON RIDE
-    SPELL DUST DEVIL
-    SPELL EARTH SERVANT
-    SPELL EARTHQUAKE
-    SPELL ENCHANT ARMOR
-    SPELL ENCHANT WEAPON
-    SPELL ENDURE COLD
-    SPELL ENERGY DRAIN
-    SPELL ENERGY RESTORE
-    SPELL ENLIGHTENMENT
-    SPELL ENTANGLE
-    SPELL EYE OF THE DEAD
-    SPELL FAERIE FIRE
-    SPELL FAERIE FOG
-    SPELL FIND FAMILIAR
-    SPELL FEAR
-    SPELL FEEBLEMIND
-    SPELL FIND TRAPS
-    SPELL FINGER OF DEATH
-    SPELL FIRE SERVANT
-    SPELL FIREBALL
-    SPELL FIRESHIELD
-    SPELL FIRESTORM
-    SPELL FLAME BLADE
-    SPELL FLAMESTRIKE
-    SPELL FLESH GOLEM
-    SPELL GROUP FLY
-    SPELL FLY
-    SPELL GATHER SHADOWS
-    SPELL GIANT GROWTH
-    SPELL DARKNESS
-    SPELL GOLEM
-    SPELL GOODBERRY
-    SPELL GROUP HEAL
-    SPELL GUST OF WIND
-    SPELL HARM
-    SPELL HASTE
-    SPELL HEAL
-    SPELL HEAT STUFF
-    SPELL HEROES FEAST
-    SPELL HOLY ARMOR
-    SPELL HOLY STRENGTH
-    SPELL HOLY WORD
-    SPELL ICE STORM
-    SPELL IDENTIFY
-    SPELL INCENDIARY CLOUD
-    SPELL INFRAVISION
-    SPELL INSECT GROWTH
-    SPELL INVIS TO ANIMALS
-    SPELL INVIS TO UNDEAD
-    SPELL INVISIBILITY
-    SPELL IRON SKINS
-    SPELL KNOCK
-    SPELL KNOW ALIGNMENT
-    SPELL KNOW MONSTER
-    SPELL LIFE DRAW
-    SPELL LIFE LEECH
-    SPELL LIFE TAP
-    SPELL LIGHT
-    SPELL LIGHTNING BOLT
-    SPELL LIST
-    SPELL LOCATE OBJECT
-    SPELL MAGIC MISSILE
-    SPELL MAJOR INVULNERABILITY
-    SPELL MAJOR TRACK
-    SPELL MANA
-    SPELL MANA SHIELD
-    SPELL MEND BONES
-    SPELL METEOR SWARM
-    SPELL MINOR CREATION
-    SPELL MINOR INVULNERABILITY
-    SPELL MINOR TRACK
-    SPELL MIST OF DEATH
-    SPELL MONSUM ONE
-    SPELL MONSUM TWO
-    SPELL MONSUM THREE
-    SPELL MONSUM FOUR
-    SPELL MONSUM FIVE
-    SPELL MONSUM SIX
-    SPELL MONSUM SEVEN
-    SPELL MOUNT
-    SPELL NULLIFY
-    SPELL NUMB THE DEAD
-    SPELL PACIFISM
-    SPELL PARALYZE
-    SPELL PLANT GATE
-    SPELL POISON
-    SPELL POLYMORPH SELF
-    SPELL PORTAL
-    SPELL PRISMATIC SPRAY
-    SPELL PROTECTION FROM COLD
-    SPELL PROTECTION FROM BREATH
-    SPELL PROTECTION ACID BREATH
-    SPELL PROTECTION ELECTRIC BREATH
-    SPELL PROTECTION FIRE BREATH
-    SPELL PROTECTION FROST BREATH
-    SPELL PROTECTION GAS BREATH
-    SPELL PROTECTION FROM ELECTRICITY
-    SPELL PROTECTION FROM ENERGY
-    SPELL PROTECTION FROM DRAIN
-    SPELL PROTECTION FROM FIRE
-    SPELL PROTECTION FROM EVIL
-    SPELL PROTECTION FROM EVIL GROUP
-    SPELL PROTECTION FROM GOOD
-    SPELL PROTECTION FROM GOOD GROUP
-    SPELL POWER WORD BLIND
-    SPELL POWER WORD KILL
-    SPELL REFRESH
-    SPELL REINCARNATE
-    SPELL REMOVE CURSE
-    SPELL REMOVE PARALYSIS
-    SPELL REMOVE POISON
-    SPELL RESURRECTION
-    SPELL SANCTUARY
-    SPELL SCARE
-    SPELL SCOURGE OF THE WARLOCK
-    SPELL SECOND WIND
-    SPELL SENSE LIFE
-    SPELL SHADOW STEP
-    SPELL SHIELD
-    SPELL SHILLELAGH
-    SPELL SHOCKING GRASP
-    SPELL SILENCE
-    SPELL SIPHON STRENGTH
-    SPELL SLEEP
-    SPELL SLOWNESS
-    SPELL SLOW POISON
-    SPELL SNARE
-    SPELL SOUL STEAL
-    SPELL SPEAK WITH PLANTS
-    SPELL SPECTRAL SHIELD
-    SPELL STONE SKIN
-    SPELL STRENGTH
-    SPELL SUCCOR
-    SPELL SUIT OF BONE
-    SPELL SUMMON
-    SPELL SUNRAY
-    SPELL TELEPORT
-    SPELL TELEPORT WITHOUT ERROR
-    SPELL TRACE CORPSE
-    SPELL TRANSPORT VIA PLANT
-    SPELL TRAVELLING
-    SPELL TREE
-    SPELL TREE TRAVEL
-    SPELL TRUE SIGHT
-    SPELL TURN
-    SPELL UNHOLY WORD
-    SPELL UNSUMMON
-    SPELL VAMPIRIC EMBRACE
-    SPELL VEGETABLE GROWTH
-    SPELL VENTRILOQUATE
-    SPELL WARP WEAPON
-    SPELL WATER BREATH
-    SPELL WATER SERVANT
-    SPELL WEAKNESS
-    SPELL WEB
-    SPELL WIND SERVANT
-    SPELL WIZARDEYE
-    SPELL WORD OF RECALL
-    SPELL WRATH OF GOD
-
-#
 "SPELL LOCATE OBJECT"
     Castable by :  cleric 11
     Usage       :  cast 'locate object' <obj>
@@ -14497,6 +14187,15 @@ yodel                   yodel           [<mob | obj>]   resting
     Hero
 
 #
+"TERM AGING"
+
+    Most adventurers only dream of living to a ripe old age,
+    but the effects of living past the bloom of your youth
+    are not all bad.  While you lose some vitality and health,
+    your mental facilities actually improve, giving you a
+    greater ability to regenerate magical energy.    
+
+#
 "TERM ALIGN"
 
     This refers to 'alignment', the term used to describe
@@ -14616,6 +14315,15 @@ yodel                   yodel           [<mob | obj>]   resting
     that the mob is protected by the 'blade barrier' spell.
 
 #
+"TERM BOARD"
+
+    This term refers to the fact that certain objects can act
+    as bulletin boards to post messages on.  The one that is
+    most commonly used by mortals is found in the Adventurers
+    Lodge, which is just east and north of Meeting Square in
+    'Karsinya'.
+
+#
 "TERM CHA"
 
     This term refers to 'charisma', which is a 'stat' that
@@ -14723,6 +14431,18 @@ yodel                   yodel           [<mob | obj>]   resting
     that the mob is protected by the 'chillshield' spell.
 
 #
+"TERM DAMAGE"
+
+    This term is a generic way of referring to anything
+    that reduces the 'hitpoints' of a 'mob'.  Most
+    damage is of a certain type, such as fire or slashing.
+    While rare, the non-type specific damage can be very
+    useful, since an opponent may have resistances to
+    many forms of "typed" damage.  However, the converse
+    is true, some opponents will be susceptible to a
+    particular type of damage.    
+
+#
 "TERM DAMROLL"
 
     This term refers to one of a couple related terms.  The
@@ -14743,6 +14463,78 @@ yodel                   yodel           [<mob | obj>]   resting
     Extremely good
     Magnificent
 
+#
+"TERM DEATH"
+
+    This term refers to the fact that when reduced to
+    negative 'hitpoints' your character will die.  On
+    Havok, death is a temporary, but serious, setback.
+    The order of the consequences of it happening are:
+    
+    A corpse of your body, with all your gear, is left
+    in the spot where you died.  Your corpse and your
+    gear is able to be picked up by anybody, even
+    scavenging mobs.
+
+    Your amount of experience is reduced, by up to
+    half, making it that much harder to gain your
+    next level.
+
+    Returned to the main menu, similar to when you
+    first log in.
+    --
+    
+    When you are at the main menu, you have a 
+    decision to make.  If you have a reason to
+    expect the 'resurrection' spell or 'reincarnation'
+    spell to be cast, you *SHOULD NOT RE-ENTER THE
+    WORLD BY HITTING "1"*, doing so will make it
+    impossible to cast either of the two spells.
+    For 'reincarnation' you will be automatically
+    returned to the game if you are waiting at the
+    menu.  For 'resurrection' the best thing to do
+    is to log off with the "deceased" character and
+    log in with another character and wait until you 
+    are resurrected before returning with the original
+    character.  Since returning to the game prematurely
+    will make these spells impossible, it is not
+    recommended that you make your 'alias' 1 a command
+    that you would spam in combat.  If you make "1" 
+    equivalent to the 'flee' command, you might 
+    accidently re-enter the game after dying when you
+    really meant to 'flee'.
+    --
+
+    Once you have returned to the game, you will be:
+
+    Returned to your last 'rent' inn.
+
+    'Hitpoints' is set to 1.
+    
+    --
+    
+    At this point you should be careful about hurrying
+    back to where you died.  Dying once is bad, dying
+    twice in a row can be downright depressing.  It
+    is acceptable to ask for help in what is usually
+    termed a 'corpse retrieval' or 'CR'.
+
+    It should be noted that if you die often enough,
+    you can lose levels of experience.  Basically,
+    dying multiple times quickly can reduce your
+    total amount of experience to a point where
+    the mud will strip you of your hard-earned
+    levels.        
+    
+    While dying is not a pleasant thing, it is not
+    the end of the world either.  Do not be overly
+    discouraged, and it is never worth it to 'remake'
+    a character just because of some dying.  It might
+    feel differently, but you will have an easier time
+    earning back the experience you lost with the
+    higher level "dying" character than starting over
+    with a level 1 character.
+    
 #
 "TERM DEATH TRAP"
 
@@ -14777,6 +14569,78 @@ yodel                   yodel           [<mob | obj>]   resting
     The 'attribute' command gives information on all
     of your 'stats'.
 
+#
+"TERM DIE"
+
+    This term refers to the fact that when reduced to
+    negative 'hitpoints' your character will die.  On
+    Havok, death is a temporary, but serious, setback.
+    The order of the consequences of it happening are:
+    
+    A corpse of your body, with all your gear, is left
+    in the spot where you died.  Your corpse and your
+    gear is able to be picked up by anybody, even
+    scavenging mobs.
+
+    Your amount of experience is reduced, by up to
+    half, making it that much harder to gain your
+    next level.
+
+    Returned to the main menu, similar to when you
+    first log in.
+    --
+    
+    When you are at the main menu, you have a 
+    decision to make.  If you have a reason to
+    expect the 'resurrection' spell or 'reincarnation'
+    spell to be cast, you *SHOULD NOT RE-ENTER THE
+    WORLD BY HITTING "1"*, doing so will make it
+    impossible to cast either of the two spells.
+    For 'reincarnation' you will be automatically
+    returned to the game if you are waiting at the
+    menu.  For 'resurrection' the best thing to do
+    is to log off with the "deceased" character and
+    log in with another character and wait until you 
+    are resurrected before returning with the original
+    character.  Since returning to the game prematurely
+    will make these spells impossible, it is not
+    recommended that you make your 'alias' 1 a command
+    that you would spam in combat.  If you make "1" 
+    equivalent to the 'flee' command, you might 
+    accidently re-enter the game after dying when you
+    really meant to 'flee'.
+    --
+
+    Once you have returned to the game, you will be:
+
+    Returned to your last 'rent' inn.
+
+    'Hitpoints' is set to 1.
+    
+    --
+    
+    At this point you should be careful about hurrying
+    back to where you died.  Dying once is bad, dying
+    twice in a row can be downright depressing.  It
+    is acceptable to ask for help in what is usually
+    termed a 'corpse retrieval' or 'CR'.
+
+    It should be noted that if you die often enough,
+    you can lose levels of experience.  Basically,
+    dying multiple times quickly can reduce your
+    total amount of experience to a point where
+    the mud will strip you of your hard-earned
+    levels.        
+    
+    While dying is not a pleasant thing, it is not
+    the end of the world either.  Do not be overly
+    discouraged, and it is never worth it to 'remake'
+    a character just because of some dying.  It might
+    feel differently, but you will have an easier time
+    earning back the experience you lost with the
+    higher level "dying" character than starting over
+    with a level 1 character.
+    
 #
 "TERM DIRECTIONS"
 
@@ -14829,6 +14693,15 @@ yodel                   yodel           [<mob | obj>]   resting
     They will still have all of their experience, and all of
     their gold, but the equipment will be lost.  Some consider
     this a fate worse than death.
+
+#
+"TERM EGO"
+
+    This term refers to the idea that certain items have "egos"
+    which means that they won't allow themselves to be used
+    by adventurers who aren't "worthy" of them.  Basically,
+    it means that you aren't powerful enough yet to use the
+    item and you need more experience.
 
 #
 "TERM EQ"
@@ -14914,6 +14787,16 @@ yodel                   yodel           [<mob | obj>]   resting
     Mystical
     Hero
 
+#
+"TERM FODDER"
+
+    This term refers to the act of using a summoned or
+    charmed 'mob' to take the brunt of damage inflicted
+    by opponents.  The term might be used in this way:
+    "Yeah, I use goblins from 'monsum one' as my fodder,
+    they usually die, but I have pretty much killed
+    the opponent by the time it happens."
+    
 #
 "TERM FS"
 
@@ -15085,6 +14968,15 @@ yodel                   yodel           [<mob | obj>]   resting
     to do things such as 'bash', 'backstab', and 'legsweep'.  Only
     adventurers who are huge themselves, such as half-giants can
     still 'bash', 'backstab', and 'legsweep' opponents.
+
+#
+"TERM HUNGER"
+
+    Eating and drinking are necessities of life, and 
+    failing to eat and drink will slowly kill you.  
+    Always carry a few loafs of bread and a few cups of 
+    water with you, getting stranded far from home and 
+    slowly starving to death is an ignoble way of dying.
 
 #
 "TERM IC"
@@ -15298,12 +15190,50 @@ yodel                   yodel           [<mob | obj>]   resting
     The 'attribute' command gives information on all of your 'stats'.
 
 #
+"TERM KARSINYA"
+
+    The primary town, the "adventurer headquarters" of the
+    realm of Havok.  When people talk about "Meeting Square"
+    or "Market Square", or say "I'll meet you in town", they
+    are talking about Karsinya
+    
+#
+"TERM LAG"
+
+    This is a term that is used to describe when the smooth
+    flow of information between yourself and the mud is
+    interrupted.  It appears to be a temporary "freezing"
+    of the screen, which can be caused by a variety of
+    factors, but is most likely a network problem between
+    your computer and the computer the mud is hosted on.
+    Nothing can usually be done to alleviate this, it
+    usually passes on it's own, do not bother complaining
+    about it, just wait it out.
+    
+#
+"TERM LEADERSHIP EXPERIENCE"
+
+    This is a term which refers to the fact that you gain
+    different types of experience while adventuring.  One
+    type is the general 'experience' earned by participating
+    in solving quests, or defeating monsters.  The other
+    type of experience is 'leadership experience' which
+    is earned by leading a group.  If you are the only 
+    member of your group, your amount of 'leadership
+    experience' is 60% of your normal 'experience'.  If
+    you lead a group with at least one other person in
+    it, you earn 100% of the 'experience' amount as
+    'leadership experience'.  'Leadership experience'
+    is also important if you intend to start a clan.
+
+#
 "TERM LEGEND"
 
     This term refers to mortals who have spent a great deal of
     time and effort in reaching the peak of mortal power.  Only
-    after earning more than 200 million experience can a person
-    even be considered a legend.  Usually you think of legends
+    after earning more than 200 million experience, both 
+    individually and as a leader, can a person even be 
+    considered a legend.  Usually you think of legends
     as mortals who have chosen not to move on to the ranks of
     'immortality'.  Along with a title proclaiming Legend, a
     mortal achieving this rank also gets to see in depth
@@ -15326,123 +15256,17 @@ yodel                   yodel           [<mob | obj>]   resting
     is elsewhere.
 
 #
-"TERM LIST"
+"TERM MAIN CLASS"
 
-    TERM AC
-    TERM ADVENTURER
-    TERM ALIGN
-    TERM ALIGNMENT
-    TERM APPRENTICE
-    TERM AREA EFFECT
-    TERM ARMOR CLASS
-    TERM ARMOR
-    TERM BANNING
-    TERM BB
-    TERM CHA
-    TERM CHARISMA
-    TERM CHR
-    TERM CLAN
-    TERM CON
-    TERM CONSTITUTION
-    TERM CORPSE RETRIEVAL
-    TERM CR
-    TERM CS
-    TERM DAMROLL
-    TERM DEATH TRAP
-    TERM DEX
-    TERM DEXTERITY
-    TERM DIRECTIONS
-    TERM DIRS
-    TERM DM
-    TERM DT
-    TERM EQ
-    TERM EQ RUN
-    TERM EQUIPMENT
-    TERM EXP
-    TERM EXP CAP
-    TERM EXP RUN
-    TERM EXPERIENCE
-    TERM EXPLORER
-    TERM FS
-    TERM GOD
-    TERM GUILD
-    TERM GUILDMASTER
-    TERM HERO
-    TERM HIT REGEN
-    TERM HIT-N-DAM
-    TERM HITPOINTS
-    TERM HITROLL
-    TERM HND
-    TERM HP
-    TERM HUGE
-    TERM IC
-    TERM IMM
-    TERM IMMORT
-    TERM IMMORTAL
-    TERM IMMORTALITY
-    TERM IMMUNE
-    TERM IMP
-    TERM IMPLEMENTOR
-    TERM IN CHARACTER
-    TERM INIT
-    TERM INITIALIZE
-    TERM INT
-    TERM INTELLIGENCE
-    TERM LEGEND
-    TERM LINKDEAD
-    TERM LIST
-    TERM MANA REGEN
-    TERM MANA
-    TERM MAXXED
-    TERM MYSTICAL
-    TERM MOB
-    TERM MOBILE
-    TERM MOVE REGEN
-    TERM MOVE
-    TERM MR
-    TERM MULTIPLAYING
-    TERM NEWBIE
-    TERM NPC
-    TERM NUKE
-    TERM OOC
-    TERM OUT OF CHARACTER
-    TERM PC
-    TERM PILGRIM
-    TERM PK
-    TERM PKILL
-    TERM PLAYER KILL
-    TERM POWERMUDDER
-    TERM POWERMUDDING
-    TERM PRACTICES
-    TERM PROC
-    TERM QUEST POINTS
-    TERM QUEST
-    TERM RE-EQUIP
-    TERM REIMB
-    TERM REIMBURSEMENT
-    TERM REINC
-    TERM REINCARNATION
-    TERM REPOP
-    TERM RESIST
-    TERM RESURRECTION
-    TERM REZ
-    TERM ROLEPLAYING
-    TERM RP
-    TERM SANC
-    TERM SCRAPPED
-    TERM SPEC PROC
-    TERM SPECIAL PROCEDURE
-    TERM STAT
-    TERM STATS
-    TERM STR
-    TERM STRENGTH
-    TERM SUSCEPTIBLE
-    TERM TICK
-    TERM UNDERWATER
-    TERM WB
-    TERM WIS
-    TERM WISDOM
-    TERM ZONE
+    This term refers to the fact that a 'multiclass'
+    character has to pick a class to focus on.  A character
+    who focusses on a particular class gains skills with
+    that class that are not available to someone who
+    focusses on another class.  In the casting classes,
+    most often this results in spells that are only available
+    if you make that class your main class.  The help for each
+    class will have descriptions of the benefits of choosing
+    that class as your main class.
 
 #
 "TERM MANA REGEN"
@@ -15497,20 +15321,13 @@ yodel                   yodel           [<mob | obj>]   resting
     middle of the run.
 
 #
-"TERM MYSTICAL"
+"TERM MESSAGE BOARD"
 
-    This term refers to a high level mortal, who is steadily climbing to
-    the peak of mortal power, where each new level gained is not such
-    a great change, but is a step closer to becoming as powerful as
-    possible.  There are a group of distinctions that can help to narrow
-    down how powerful an adventurer is.
-
-    Apprentice
-    Pilgrim
-    Explorer
-    Adventurer
-    Mystical
-    Hero
+    This term refers to the fact that certain objects can act
+    as bulletin boards to post messages on.  The one that is
+    most commonly used by mortals is found in the Adventurers
+    Lodge, which is just east and north of Meeting Square in
+    'Karsinya'.
 
 #
 "TERM MOB"
@@ -15586,6 +15403,54 @@ yodel                   yodel           [<mob | obj>]   resting
     regenerate 5 more 'mana' per 'tick' if you wear it.
 
 #
+"TERM MULTICLASS"
+
+    This is a term that describes any character that has
+    multiple classes, such as a warrior-thief, or a
+    mage-cleric.  Usually these are described as
+    abbreviations of the classes, such as wa/th, or ma/cl.
+    A person who has 3 classes, such as a wa/cl/ma, can
+    not remain as proficient at their skills as a character
+    with 2 classes, such as a wa/cl.  They in turn are not
+    as proficient as a single class character, such as a
+    warrior.  Multiclass characters divide their experience
+    evenly between their classes, so that it takes 3 times
+    as much experience to gain a level as a tri-class, and
+    twice as much for a bi-class.
+
+#
+"TERM MULTI-CLASS"
+
+    This is a term that describes any character that has
+    multiple classes, such as a warrior-thief, or a
+    mage-cleric.  Usually these are described as
+    abbreviations of the classes, such as wa/th, or ma/cl.
+    A person who has 3 classes, such as a wa/cl/ma, can
+    not remain as proficient at their skills as a character
+    with 2 classes, such as a wa/cl.  They in turn are not
+    as proficient as a single class character, such as a
+    warrior.  Multiclass characters divide their experience
+    evenly between their classes, so that it takes 3 times
+    as much experience to gain a level as a tri-class, and
+    twice as much for a bi-class.
+
+#
+"TERM MULTI CLASS"
+
+    This is a term that describes any character that has
+    multiple classes, such as a warrior-thief, or a
+    mage-cleric.  Usually these are described as
+    abbreviations of the classes, such as wa/th, or ma/cl.
+    A person who has 3 classes, such as a wa/cl/ma, can
+    not remain as proficient at their skills as a character
+    with 2 classes, such as a wa/cl.  They in turn are not
+    as proficient as a single class character, such as a
+    warrior.  Multiclass characters divide their experience
+    evenly between their classes, so that it takes 3 times
+    as much experience to gain a level as a tri-class, and
+    twice as much for a bi-class.
+
+#
 "TERM MULTIPLAYING"
 
     This term refers to the illegal act of playing two characters
@@ -15606,6 +15471,37 @@ yodel                   yodel           [<mob | obj>]   resting
     channels to do most of your communication.  This will go a
     long way to avoiding any resemblance of multiplaying between
     you two.
+
+#
+"TERM MV"
+
+    This term refers to the amount of vitality you possess to
+    move and fight.  Move is the mud's way of keeping track
+    of how tired you are.  Every step you take drains some
+    of your move, and every swing you take in combat drains
+    some more.  The more move you have, the farther you can
+    walk before resting and the more you can fight before
+    getting too tired to swing your weapon.  So if you say
+    "I have 120 move." you are expressing that your maximum
+    amount of vitality is 120.  An item you find might say
+    that is affects "MOVE By 10" in which case wearing that
+    item will increase your maximum amount of move by 10.
+
+#
+"TERM MYSTICAL"
+
+    This term refers to a high level mortal, who is steadily climbing to
+    the peak of mortal power, where each new level gained is not such
+    a great change, but is a step closer to becoming as powerful as
+    possible.  There are a group of distinctions that can help to narrow
+    down how powerful an adventurer is.
+
+    Apprentice
+    Pilgrim
+    Explorer
+    Adventurer
+    Mystical
+    Hero
 
 #
 "TERM NEWBIE"
@@ -15687,6 +15583,16 @@ yodel                   yodel           [<mob | obj>]   resting
     mud, so all the adventurers and immortals are PCs.  Any mud
     controlled creature is an 'NPC'.
 
+#
+"TERM PET"
+
+    This term refers to any creature that is under control
+    of an adventurer.  Creatures summoned via spells or
+    charmed to obey the caster are the usual things
+    referenced by this nomenclature.  An example of this
+    term being used might be: "After I killed the dracolich,
+    I resurrected it to make myself a new pet."
+    
 #
 "TERM PILGRIM"
 
@@ -15867,6 +15773,16 @@ yodel                   yodel           [<mob | obj>]   resting
     be one or more 'quest points'.
 
 #
+"TERM RARE"
+
+    This term refers to an item that is considered uncommonly
+    powerful.  There are some limits to the number of rare
+    items that an adventurer can 'rent' at an 'inn' with, which
+    is determined by the power of the adventurer.  A powerful
+    adventurer can have many more rare items than a young
+    adventurer.
+
+#
 "TERM RE-EQUIP"
 
     This term refers to the act of replacing recently lost equipment.
@@ -15874,6 +15790,15 @@ yodel                   yodel           [<mob | obj>]   resting
     or if you hit a 'death trap', you might spend the next few hours
     "re-equipping".
 
+#
+"TERM REGEN"
+    
+    This term can refer in a general way to many things.
+    In the case of trolls, it can refer to the ability
+    trolls have to regain hitpoints rapidly.  It could
+    refer to 'mana regen', or 'hit regen', or 'move
+    regen'.
+    
 #
 "TERM REIMB"
 
@@ -15991,6 +15916,30 @@ yodel                   yodel           [<mob | obj>]   resting
     for the details.
 
 #
+"TERM REMAKE"
+
+    This term refers to the act of creating a new
+    character exactly the same as a previous character.
+    The practice is discouraged, there usually isn't
+    a very good reason for it.  If you are determined
+    to match up to a certain set of statistics, you
+    might 'remake' a character who doesn't measure up.
+    Only a 'powermudder' would do this, as it
+    represents a lot of time and effort, for only
+    a chance at gaining an advantage.
+
+#
+"TERM REPAIR"
+
+    This term refers to the fact that during the normal
+    course of adventuring, equipment gets damaged.  When this
+    happens you must either find a warrior who can 'mend' the
+    item, or a shopkeeper who can do the same if you 'give'
+    it to him or her.  Beware, the merchants to do this type
+    of repair work tend to charge large amounts of money
+    for the service.
+
+#
 "TERM REPOP"
 
     This term refers to the fact that a 'zone' will 'initialize'
@@ -16104,6 +16053,16 @@ yodel                   yodel           [<mob | obj>]   resting
     hit by a disintegrate spell and everything scrapped."
 
 #
+"TERM SINGLE CLASS"
+
+    This term refers to a character who is proficient
+    in only one class.  They tend to be the most
+    proficient at their skills and advance quickly.
+    Single class characters often receive special
+    bonuses or skills, not available to 'multiclass'
+    characters.
+
+#
 "TERM SPEC PROC"
 
     This term is an abbreviation for the term 'special procedure which
@@ -16137,6 +16096,18 @@ yodel                   yodel           [<mob | obj>]   resting
     instantly brings 20 warriors into the room while the mage runs out
     the back door to recuperate so that he can hunt you down later at
     his leisure would be considered to have a 'special procedure'.
+
+#
+"TERM SPECIALIZATION"
+
+    This term refers to the fact that there are rumors
+    of powerful 'single class' characters who can become
+    perfectly proficient in a skill, to the point where
+    it is impossible for them to fail that skill.  It
+    costs a great deal of effort, both in attaining the
+    level of proficiency, and in finding the appropriate
+    teacher.  Currently there are rumors of teachers for
+    mages and clerics, perhaps there are others.
 
 #
 "TERM STAT"
@@ -16222,6 +16193,66 @@ yodel                   yodel           [<mob | obj>]   resting
         Sleep
 
 #
+"TERM TANK"
+
+    This term refers to the fact that in a fight with
+    a 'mob' only one person will be taking damage from
+    that mob in combat.  That person is referred to
+    as a "tank".  Usually in a group the tank is the 
+    character with the most hitpoints and who deals
+    the most damage.  'Single class' fighter types
+    make the best tanks typically, although sometimes
+    the situation calls for something different.
+
+#
+"TERM TELEPORT ROOM"
+
+    This term refers to the fact that there are some
+    rooms which can simply shift mobs or players from
+    one room to another.  The shift can be seamless
+    or it could force the player to look at the
+    description of the new room.  The teleportation
+    effect only happens after a designated interval
+    that is individualized for each teleport room.
+    
+#
+"TERM THAC0"
+
+    This term refers to a common idea that your ability
+    to hit opponents in combat is based on a mathematical
+    formula that takes into account your combat skill level
+    and your opponents 'armor class'.  This term refers to 
+    an acronym of "To Hit Armor Class Zero (0)" and 
+    represents how likely a combatant is to hit an opponent 
+    in combat.  Low level non-fighter types tend to have a 
+    high 'thac0', and a high level fighter will have a 
+    low 'thac0'.
+
+#
+"TERM THACO"
+
+    This term refers to a common idea that your ability
+    to hit opponents in combat is based on a mathematical
+    formula that takes into account your combat skill level
+    and your opponents 'armor class'.  This term refers to 
+    an acronym of "To Hit Armor Class Zero (0)" and 
+    represents how likely a combatant is to hit an opponent 
+    in combat.  Low level non-fighter types tend to have a 
+    high 'thac0', and a high level fighter will have a 
+    low 'thac0'.
+
+#
+"TERM THIRST"
+
+    Eating and drinking are necessities of life, and 
+    failing to eat and drink will slowly kill you.  Always 
+    carry a few loafs of bread and a few cups of water with 
+    you, getting stranded far from home and slowly starving
+    to death is an ignoble way of dying.  If you are
+    in a town with a fountain, you can 'drink' from that
+    fountain to quench your thirst.
+
+#
 "TERM TICK"
 
     This term refers to the fact that the game time on a mud is divided
@@ -16302,6 +16333,39 @@ yodel                   yodel           [<mob | obj>]   resting
     per level than a person with a low wisdom and you will
     regenerate more 'mana' per 'tick'.  The 'attribute' command
     will give you information about your physical 'stats'.
+
+#
+"TERM XP"
+
+    This term refers to the term 'experience'.  Experience is
+    generally considered a noun in mudding terms, and the more
+    powerful a creature is, the more experience they are worth.
+    Gaining experience is the only way to advance in level,
+    thereby gaining more powers and strength.
+
+#
+"TERM YOU ARE HUNGRY."
+
+    This term is one you will see often, it is the mud's
+    way of telling you that you need to eat.  Eating and
+    drinking are necessities of life, and failing to eat
+    and drink will slowly kill you.  Always carry a few
+    loafs of bread and a few cups of water with you, 
+    getting stranded far from home and slowly starving
+    to death is an ignoble way of dying.
+
+#
+"TERM YOU ARE THIRSTY."
+
+    This term is one you will see often, it is the mud's
+    way of telling you that you need to drink.  Eating and
+    drinking are necessities of life, and failing to eat
+    and drink will slowly kill you.  Always carry a few
+    loafs of bread and a few cups of water with you, 
+    getting stranded far from home and slowly starving
+    to death is an ignoble way of dying.  If you are
+    in a town with a fountain, you can 'drink' from that
+    fountain to quench your thirst.
 
 #
 "TERM ZONE"
@@ -16754,31 +16818,6 @@ yodel                   yodel           [<mob | obj>]   resting
     H:50/50 M:120/120 V:100/100> idea How about a foobar command, which will
     let you both foo and bar in the same round.
     Havok>  Ok. Thanks.
-
-#
-"UTIL LIST"
-
-    UTIL 0
-    UTIL 1
-    UTIL 2
-    UTIL 3
-    UTIL 4
-    UTIL 5
-    UTIL 6
-    UTIL 7
-    UTIL 8
-    UTIL 9
-    UTIL ALIAS
-    UTIL AUTOASSIST
-    UTIL AUTOEXITS
-    UTIL AUTOGOLD
-    UTIL AUTOLOOT
-    UTIL AUTOSPLIT
-    UTIL BUG
-    UTIL BUGMAIL
-    UTIL IDEA
-    UTIL LIST
-    UTIL TYPO
 
 #
 "UTIL TYPO"
