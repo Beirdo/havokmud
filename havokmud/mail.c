@@ -146,7 +146,11 @@ mail_index_type *find_char_in_index(char *searchee)
 
     for (temp_rec = mail_index;
          temp_rec && str_cmp(temp_rec->recipient, searchee);
-         temp_rec = temp_rec->next);
+         temp_rec = temp_rec->next) {
+        /*
+         * Empty loop
+         */
+    }
 
     return temp_rec;
 }
@@ -257,8 +261,9 @@ int scan_mail_file(void)
         if (next_block.block_type == HEADER_BLOCK) {
             index_mail(next_block.to, block_num * BLOCK_SIZE);
             total_messages++;
-        } else if (next_block.block_type == DELETED_BLOCK)
+        } else if (next_block.block_type == DELETED_BLOCK) {
             push_free_list(block_num * BLOCK_SIZE);
+        }
         block_num++;
     }
 
@@ -319,28 +324,36 @@ void store_mail(char *to, char *from, char *message_pointer)
     strncpy(header.from, from, NAME_SIZE);
     strncpy(header.to, to, NAME_SIZE);
 
-    for (tmp = header.to; *tmp; tmp++)
+    for (tmp = header.to; *tmp; tmp++) {
         *tmp = tolower(*tmp);
-
+    }
     header.mail_time = time(0);
     header.txt[HEADER_BLOCK_DATASIZE] = header.from[NAME_SIZE] =
         header.to[NAME_SIZE] = '\0';
 
-    /* find next free block */
+    /* 
+     * find next free block 
+     */
     target_address = pop_free_list();
 
-    /* add it to mail index in memory */
+    /* 
+     * add it to mail index in memory 
+     */
     index_mail(to, target_address);
     write_to_file(&header, BLOCK_SIZE, target_address);
 
     if (strlen(msg_txt) <= HEADER_BLOCK_DATASIZE) {
-        /* that was the whole message */
+        /* 
+         * that was the whole message 
+         */
         return;
     }
 
     bytes_written = HEADER_BLOCK_DATASIZE;
 
-    /* move pointer to next bit of text */
+    /* 
+     * move pointer to next bit of text 
+     */
     msg_txt += HEADER_BLOCK_DATASIZE;
 
     /*
@@ -441,20 +454,26 @@ char           *read_delete(char *recipient, char *recipient_formatted)
     }
 
     if (!(position_pointer->next)) {
-        /* just 1 entry in list. */
+        /* 
+         * just 1 entry in list. 
+         */
         mail_address = position_pointer->position;
 
-        if (position_pointer)
+        if (position_pointer) {
             free(position_pointer);
+        }
 
         /*
          * now free up the actual name entry 
          */
         if (mail_index == mail_pointer) {
-            /* name is 1st in list */
+            /* 
+             * name is 1st in list 
+             */
             mail_index = mail_pointer->next;
-            if (mail_pointer)
+            if (mail_pointer) {
                 free(mail_pointer);
+            }
         } else {
             /*
              * find entry before the one we're going to del 
@@ -462,25 +481,28 @@ char           *read_delete(char *recipient, char *recipient_formatted)
             for (prev_mail = mail_index;
                  prev_mail->next != mail_pointer;
                  prev_mail = prev_mail->next) {
-                /* Empty loop */
+                /* 
+                 * Empty loop 
+                 */
             }
 
             prev_mail->next = mail_pointer->next;
-            if (mail_pointer)
+            if (mail_pointer) {
                 free(mail_pointer);
+            }
         }
     } else {
         /*
          * move to next-to-last record 
          */
-        while (position_pointer->next->next)
+        while (position_pointer->next->next) {
             position_pointer = position_pointer->next;
-
+        }
         mail_address = position_pointer->next->position;
 
-        if (position_pointer->next)
+        if (position_pointer->next) {
             free(position_pointer->next);
-
+        }
         position_pointer->next = 0;
     }
 
@@ -555,9 +577,9 @@ struct char_data *find_mailman(struct char_data *ch)
     struct char_data *mailman,
                    *temp;
 
-    if (!mail_ok(ch))
+    if (!mail_ok(ch)) {
         return 0;
-
+    }
 #if 0
     for (temp = world[ch->in_room].people, mailman = 0;
          (temp) && (!mailman); temp = temp->next_in_room)
@@ -568,10 +590,10 @@ struct char_data *find_mailman(struct char_data *ch)
     mailman = FindMobInRoomWithFunction(ch->in_room, PostMaster);
 #endif
 
-    if (!mailman)
+    if (!mailman) {
         send_to_char("Whoa!  Buggy post office.  Please report this.  "
                      "Error #10.\n\r", ch);
-
+    }
     return mailman;
 }
 
@@ -583,9 +605,9 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
                    *tmp;
 
     if (cmd != BUGMAIL) {
-        if (!(mailman = find_mailman(ch)))
+        if (!(mailman = find_mailman(ch))) {
             return;
-
+        }
         if (GetMaxLevel(ch) < MIN_MAIL_LEVEL) {
             sprintf(buf, "$n tells you, 'Sorry, you have to be level %d to "
                          "send mail!'", MIN_MAIL_LEVEL);
@@ -594,7 +616,6 @@ void postmaster_send_mail(struct char_data *ch, int cmd, char *arg)
         }
     }
     if (!*arg) {
-        /* you'll get no argument from me! */
         act("$n tells you, 'Who did you want me to send this to?'",
             FALSE, mailman, 0, ch, TO_VICT);
         return;
@@ -659,14 +680,14 @@ void postmaster_check_mail(struct char_data *ch, int cmd, char *arg)
                     recipient[100],
                    *tmp;
 
-    if (!(mailman = find_mailman(ch)))
+    if (!(mailman = find_mailman(ch))) {
         return;
-
+    }
     _parse_name(GET_NAME(ch), recipient);
 
-    for (tmp = recipient; *tmp; tmp++)
+    for (tmp = recipient; *tmp; tmp++) {
         *tmp = tolower(*tmp);
-
+    }
     if (has_mail(recipient)) {
         sprintf(buf, "$n tells you, 'You DO have waiting mail.'");
     } else {
@@ -686,23 +707,26 @@ void postmaster_receive_mail(struct char_data *ch, int cmd, char *arg)
     struct obj_data *tmp_obj;
     int             i;
 
-    if (!(mailman = find_mailman(ch)))
+    if (!(mailman = find_mailman(ch))) {
         return;
-
+    }
     _parse_name(GET_NAME(ch), recipient);
 
-    for (tmp = recipient; *tmp; tmp++)
+    for (tmp = recipient; *tmp; tmp++) {
         *tmp = tolower(*tmp);
-
+    }
     if (!has_mail(recipient)) {
         sprintf(buf, "$n tells you, 'Sorry, you don't have any messages "
                      "waiting.'");
         act(buf, FALSE, mailman, 0, ch, TO_VICT);
-        /*
-         * if(strncmp(ch->specials.prompt,"$c0009[MAIL]$c0007 ",19) == 0)
-         * { for(i = 0;ch->specials.prompt[19+i] != '\0';i++) buf2[i] =
-         * ch->specials.prompt[19 + i]; ch->specials.prompt = buf2; }
-         */
+#if 0        
+        if (strncmp(ch->specials.prompt,"$c0009[MAIL]$c0007 ",19) == 0) { 
+            for(i = 0;ch->specials.prompt[19+i] != '\0';i++) {
+                buf2[i] = ch->specials.prompt[19 + i];
+            }
+            ch->specials.prompt = buf2; 
+        }
+#endif         
         return;
     }
 
