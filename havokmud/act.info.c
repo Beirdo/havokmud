@@ -83,7 +83,22 @@ extern long SystemFlags;
   extern const struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
   extern char *RaceNames[];
   extern const char *fight_styles[];
-
+  extern struct skillset warriorskills[];
+  extern struct skillset thiefskills[];
+  extern struct skillset barbskills[];
+  extern struct skillset bardskills[];
+  extern struct skillset monkskills[];
+  extern struct skillset mageskills[];
+  extern struct skillset sorcskills[];
+  extern struct skillset clericskills[];
+  extern struct skillset druidskills[];
+  extern struct skillset paladinskills[];
+  extern struct skillset rangerskills[];
+  extern struct skillset psiskills[];
+  extern struct skillset warninjaskills[];
+  extern struct skillset thfninjaskills[];
+  extern struct skillset allninjaskills[];
+  extern struct skillset loreskills[];
 
 /* extern functions */
 
@@ -4432,17 +4447,7 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
 {
   char buf[254], buffer[MAX_STRING_LENGTH];
   int i=0;
-  extern struct skillset warriorskills[];
-  extern struct skillset thiefskills[];
-  extern struct skillset barbskills[];
-  extern struct skillset bardskills[];
-  extern struct skillset monkskills[];
-  extern struct skillset mageskills[];
-  extern struct skillset clericskills[];
-  extern struct skillset druidskills[];
-  extern struct skillset paladinskills[];
-  extern struct skillset rangerskills[];
-  extern struct skillset psiskills[];
+
 dlog("in do_show_skill");
 
   buffer[0]='\0';
@@ -4467,7 +4472,7 @@ dlog("in do_show_skill");
 			send_to_char("I bet you think you're a fighter.\n\r", ch);
 			return;
 		}
-		send_to_char("Your class can learn these skills:\n\r", ch);
+		send_to_char("You can learn these warrior skills:\n\r", ch);
 		while(warriorskills[i].level != -1) {
 			sprintf(buf,"[%-2d] %-30s %-15s",warriorskills[i].level,
 						warriorskills[i].name,how_good(ch->skills[warriorskills[i].skillnum].learned));
@@ -4665,10 +4670,10 @@ dlog("in do_show_skill");
 	send_to_char("I bet you think you're a sorcerer.\n\r", ch);
 	return;
       }
-		while(mageskills[i].level != -1) {
-			sprintf(buf,"[%-2d] %-30s %-15s",mageskills[i].level,
-						mageskills[i].name,how_good(ch->skills[mageskills[i].skillnum].learned));
-			if (IsSpecialized(ch->skills[mageskills[i].skillnum].special))
+		while(sorcskills[i].level != -1) {
+			sprintf(buf,"[%-2d] %-30s %-15s",sorcskills[i].level,
+						sorcskills[i].name,how_good(ch->skills[sorcskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[sorcskills[i].skillnum].special))
 				strcat(buf," (special)");
 			strcat(buf," \n\r");
 			if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)

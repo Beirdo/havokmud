@@ -4749,7 +4749,7 @@ const struct skillset clericskills[] = {
 const struct skillset warriorskills[] = {
   {"bash",      SKILL_BASH,          1},
   {"bellow",    SKILL_BELLOW,        1},
-  {"doorbash",	SKILL_DOORBASH,		 1},
+/*{"doorbash",	SKILL_DOORBASH,		 1}, this one can be learned at the ninjamaster */
   {"kick",      SKILL_KICK,          1},
   {"rescue",    SKILL_RESCUE,        1},
   {"skin",      SKILL_TAN,           1},
@@ -4767,16 +4767,57 @@ const struct skillset thiefskills[] = {
   {"steal",     SKILL_STEAL,         1},
   {"None",		-1	,				-1}
 };
-const struct skillset ninjaskills[] = {
+const struct skillset loreskills[] = {
+	/* lores */
+	{"animal lore",		SKILL_CONS_ANIMAL,	1},
+	{"demonology",		SKILL_CONS_DEMON,	1},
+	{"giant lore",		SKILL_CONS_GIANT,	1},
+	{"necromancy",		SKILL_CONS_UNDEAD,	1},
+	{"other lore",		SKILL_CONS_OTHER,	1},
+	{"people lore",		SKILL_CONS_PEOPLE,	1},
+	{"reptile lore",	SKILL_CONS_REPTILE,	1},
+	{"vegetable lore",	SKILL_CONS_VEGGIE,	1},
+	{"read magic",		SKILL_READ_MAGIC,	1},
+	{"sign language",	SKILL_SIGN,			1},
+	/* languages */
+	{"common",			LANG_COMMON,		1},
+	{"dwarvish",		LANG_DWARVISH,		1},
+	{"elvish",			LANG_ELVISH,		1},
+	{"giantish",		LANG_GIANTISH,		1},
+	{"gnomish",			LANG_GNOMISH,		1},
+	{"halfling",		LANG_HALFLING,		1},
+	{"ogre",			LANG_OGRE,			1},
+	{"orcish",			LANG_ORCISH,		1},
+	{"None",			-1					,-1}
+};
+const struct skillset archerskills[] = {
+	{"spot",			SKILL_SPOT,			1},
+	{"None",			-1,					-1}
+};
+/* divided ninjaskills into 3 parts, seems easier */
+const struct skillset thfninjaskills[] = {
   { "climb",             SKILL_CLIMB,           1},
-  { "disarm",            SKILL_DISARM,          1},
   { "disguise",          SKILL_HIDE,            1},
-  { "doorbash",          SKILL_DOORBASH,        1},
   { "retreat",           SKILL_RETREAT,         1},
-  { "riding",            SKILL_RIDE,            1},
   { "spy",               SKILL_SPY,             1},
+  { "None",				-1						,-1}
+};
+const struct skillset warninjaskills[] = {
+  { "disarm",            SKILL_DISARM,          1},
+  { "disengage",		 SKILL_DISENGAGE,		1},
+  { "doorbash",          SKILL_DOORBASH,        1},
   { "switch opponents",  SKILL_SWITCH_OPP,      1},
   { "None",				 -1	,				   -1}
+};
+const struct skillset allninjaskills[] = {
+  { "riding",            SKILL_RIDE,            1},
+  { "None",				-1						,-1}
+};
+const struct skillset warmonkskills[] = {
+	{"dodge",			SKILL_DODGE			 ,1},
+	{"retreat",			SKILL_RETREAT		 ,1},
+	{"switch opponents",SKILL_SWITCH_OPP	 ,1},
+	{"None",			-1					,-1}
 };
 const struct skillset monkskills[] = {
 	{"disarm",			SKILL_DISARM		 ,1},
@@ -4791,7 +4832,6 @@ const struct skillset monkskills[] = {
 	{"safe fall",		SKILL_SAFE_FALL		 ,1},
 	{"sneak",			SKILL_SNEAK			 ,1},
 	{"spring leap",		SKILL_SPRING_LEAP	 ,1},
-	{"switch opponents",SKILL_SWITCH_OPP	 ,1},
 	{"None",			-1					,-1}
 };
 const struct skillset barbskills[] = {
@@ -5528,9 +5568,10 @@ const struct affect_list oedit_list[] = {
 
 
 const struct skillset styleskillset[] = {
+  { "aggressive",        STYLE_AGGRESSIVE,             10},
+  { "berserked",         STYLE_BERSERKED,        10},
+  { "defensive",         STYLE_DEFENSIVE,         10},
+  { "evasive",           STYLE_EVASIVE,      10},
   { "standard",          STYLE_STANDARD,          1},
-  { "berserked",         STYLE_BERSERKED,        1},
-  { "aggressive",        STYLE_AGGRESSIVE,             1},
-  { "defensive",         STYLE_DEFENSIVE,         1},
-  { "evasive",           STYLE_EVASIVE,      1}
+  { "None",				-1					,-1}
 };

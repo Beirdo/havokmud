@@ -2167,36 +2167,42 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 	char style[128], temp[128];
 	int x;
 	int found=0;
+
   	only_argument(argument, style);
 
 	if(!*style) { /* If no style, list all styles and how good*/
-		send_to_char("$c000pYou currently know the following fighting styles.\n\r",ch);
-		for(x=0;x<5;x++) {
-			if(ch->skills[x+298].learned!=0) {
-				ch_printf(ch,"$c000W%s $c000C%10s : $c000W%s.\n\r",ch->style==x ? "->": "  ", fight_styles[x], how_good(ch->skills[x+298].learned));
-				found=1;
-			}
+		send_to_char("You currently know the following fighting styles.\n\r",ch);
+  		while(styleskillset[x].level != -1) {
+  			if (IS_SET(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN)) {
+  				sprintf(buf,"[%-2d] %-30s %-15s",styleskillset[x].level,
+  						styleskillset[x].name,how_good(ch->skills[styleskillset[x].skillnum].learned));
+  				if (IsSpecialized(ch->skills[styleskillset[x].skillnum].special))
+  					strcat(buf," (special)");
+  				strcat(buf," \n\r");
+  				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+  					break;
+  				strcat(buffer, buf);
+  				strcat(buffer, "\r");
+  			}
+  			i++;
 		}
-		if(found==0)
-			send_to_char("  $c000CNone.\n\r",ch);
-
-		send_to_char("$c000pTo choose a fighting style, type '$c000Wstyle <style name>$c000w'\n\r\n\r",ch);
-		//ch_printf(ch,"$c000BYou are currently fighting $c000W%s.",fight_styles[ch->style]);
+		page_string(ch->desc, buffer, 1);
 		return;
-	}
-
-	for(x=0;x<5;x++) {
-		if((isname(style,fight_styles[x])) && ch->skills[x+298].learned > 0) {
-			ch_printf(ch,"You change your stance and adopt %s %s style of fighting.\n\r", style[0]=='A'|| style[0]=='E' ? "an": "a", fight_styles[x]);
-			sprintf(temp,"$n changes $s stance and adopts %s %s style of fighting.",style[0]=='A' || style[0]=='E' ? "an": "a", fight_styles[x]);
-			act(temp,TRUE,ch,0,0,TO_ROOM);
-			ch->style = x;
-			found=1;
+		send_to_char("To choose a fighting style, type '$c000Wstyle <style name>$c000w'\n\r",ch);
+		ch_printf(ch,"You are currently fighting $c000W%s$c000w.",fight_styles[ch->style]);
+		return;
+	} else {
+		while (styleskillset[x].level != -1) {
+			if(is_abbrev(style,styleskillset[x].name) && ch->skills[x+298].learned > 0) {
+				ch_printf(ch,"You change your stance and adopt %s %s style of fighting.\n\r", style[0]=='A'|| style[0]=='E' ? "an": "a", fight_styles[x]);
+				sprintf(temp,"$n changes $s stance and adopts %s %s style of fighting.",style[0]=='A' || style[0]=='E' ? "an": "a", fight_styles[x]);
+				act(temp,TRUE,ch,0,0,TO_ROOM);
+				ch->style = x;
+				return(TRUE);
+			}
+			x++;
 		}
-
-	}
-
-	if(found==0) {
-		send_to_char("You don't seem to know that fighting style. \n\r",ch);
+		send_to_char("You don't seem to know that fighting style.\n\r",ch);
+		return(TRUE);
 	}
 }

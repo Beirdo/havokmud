@@ -12,11 +12,18 @@
   extern struct skillset bardskills[];
   extern struct skillset monkskills[];
   extern struct skillset mageskills[];
+  extern struct skillset sorcskills[];
   extern struct skillset clericskills[];
   extern struct skillset druidskills[];
   extern struct skillset paladinskills[];
   extern struct skillset rangerskills[];
   extern struct skillset psiskills[];
+  extern struct skillset warninjaskills[];
+  extern struct skillset thfninjaskills[];
+  extern struct skillset allninjaskills[];
+  extern struct skillset warmonkskills[];
+  extern struct skillset archerskills[];
+  extern struct skillset loreskills[];
 
 extern struct room_data *world;
 extern struct char_data *character_list;
@@ -1456,191 +1463,132 @@ if (GetMaxLevel(ch) >24)	{
 
 int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  char buf[256];
-  static char *n_skills[] = {
-    "disarm",   /* No. 245 */
-    "doorbash", /* No. 259 */
-    "spy",
-    "retreat",
-    "switch opponents",
-    "riding",
-    "disguise",
-    "climb",
-    "disengage",
-    "\n",
-  };
-  int percent=0, number=0;
-  int charge, sk_num;
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH],skillname[254];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0,charge = 0,skillnum = 0; //while loop
+	struct char_data *guildmaster;
 
-  if (!AWAKE(ch))
-    return(FALSE);
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
-  if (!cmd) {
-    if (ch->specials.fighting) {
-      return(fighter(ch, cmd, arg, ch, 0));
-    }
-    return(FALSE);
-  }
+	//170->Practice,164->Practise,
+	if (cmd==164 || cmd == 170) {
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
+			strcat(buffer,buf);
+			if (HasClass(ch, CLASS_WARRIOR)) {
+				while(warninjaskills[i].level != -1) {
+					sprintf(buf,"[%-2d] %-30s %-15s",warninjaskills[i].level,
+							warninjaskills[i].name,how_good(ch->skills[warninjaskills[i].skillnum].learned));
+					if (IsSpecialized(ch->skills[warninjaskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+					i++;
+				}
+				i=0;
+			}
+			if (HasClass(ch, CLASS_THIEF)) {
+				while(thfninjaskills[i].level != -1) {
+					sprintf(buf,"[%-2d] %-30s %-15s",thfninjaskills[i].level,thfninjaskills[i].name,
+								(IS_SET(ch->skills[thfninjaskills[i].skillnum].flags,SKILL_KNOWN)) ?
+								(how_good(ch->skills[thfninjaskills[i].skillnum].learned)):" (not learned)");
+					if (IsSpecialized(ch->skills[thfninjaskills[i].skillnum].special))
+						strcat(buf," (special)");
+					strcat(buf," \n\r");
+					if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+						break;
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+					i++;
+				}
+				i=0;
+			}
+			sprintf(buf,"[%-2d] %-30s %-15s",allninjaskills[i].level,
+					allninjaskills[i].name,how_good(ch->skills[allninjaskills[i].skillnum].learned));
+			if (IsSpecialized(ch->skills[allninjaskills[i].skillnum].special))
+				strcat(buf," (special)");
+			strcat(buf," \n\r");
+			strcat(buffer, buf);
+			strcat(buffer, "\r");
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
+		} else { /* includes arg.. */
+			if (HasClass(ch, CLASS_WARRIOR)) {
+				while (warninjaskills[x].level != -1) {
+					if(is_abbrev(arg,warninjaskills[x].name)) {
+						skillnum = warninjaskills[x].skillnum;
+						sprintf(skillname, "%s",warninjaskills[x].name);
+					}
+					x++;
+				}
+				x=0;
+			}
+			if (HasClass(ch, CLASS_THIEF)) {
+				while (thfninjaskills[x].level != -1) {
+					if(is_abbrev(arg,thfninjaskills[x].name)) {
+						skillnum = thfninjaskills[x].skillnum;
+						sprintf(skillname, "%s",thfninjaskills[x].name);
+					}
+					x++;
+				}
+				x=0;
+			}
+			while (allninjaskills[x].level != -1) {
+				if(is_abbrev(arg,allninjaskills[x].name)) {
+					skillnum = allninjaskills[x].skillnum;
+					sprintf(skillname, "%s",allninjaskills[x].name);
+				}
+				x++;
+			}
+			x=0;
+			if (skillnum != 0) { /* arg matches a skillnum */
+				if(ch->specials.spells_to_learn <=0) {
+					send_to_char("$c0013[$c0015The Ninja Master$c0013] tells you"
+								" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+				}
 
-  if (!ch->skills) return(FALSE);
+				charge = GetMaxLevel(ch) * 100;
+				if (GET_GOLD(ch) < charge) {
+					send_to_char("$c0013[$c0015The Ninja Master$c0013] tells you"
+								" 'Ah, but you do not have enough money to pay.'\n\r",ch);
+					return(TRUE);
+				}
 
-  if (check_soundproof(ch)) return(FALSE);
+				GET_GOLD(ch) -= charge;
+				sprintf(buf,"You practice %s for a while.\n\r",skillname);
+				send_to_char(buf,ch);
+				ch->specials.spells_to_learn--;
 
-  for(; *arg==' '; arg++); /* ditch spaces */
+				if(!IS_SET(ch->skills[skillnum].flags,SKILL_KNOWN)) {
+					SET_BIT(ch->skills[skillnum].flags,SKILL_KNOWN);
+				}
 
-  if ((cmd==164)||(cmd==170)) {
-    if (!arg || (strlen(arg) == 0)) {
-      sprintf(buf," disarm  :  %s\n\r",how_good(ch->skills[SKILL_DISARM].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," doorbash:  %s\n\r",how_good(ch->skills[SKILL_DOORBASH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," spy:       %s\n\r",how_good(ch->skills[SKILL_SPY].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," retreat:   %s\n\r",how_good(ch->skills[SKILL_RETREAT].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," switch:    %s\n\r",how_good(ch->skills[SKILL_SWITCH_OPP].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," riding:    %s\n\r",how_good(ch->skills[SKILL_RIDE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," disguise:  %s\n\r",how_good(ch->skills[SKILL_DISGUISE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf, " climb:     %s\n\r",how_good(ch->skills[SKILL_CLIMB].learned));
-      send_to_char(buf,ch);
-      sprintf(buf, " disengage:     %s\n\r",how_good(ch->skills[SKILL_DISENGAGE].learned));
-      send_to_char(buf,ch);
-      return(TRUE);
-    } else {
-      number = old_search_block(arg,0,strlen(arg),n_skills,FALSE);
-      send_to_char ("The ninja master says ",ch);
-      if (number == -1) {
-	send_to_char("'I do not know of this skill.'\n\r", ch);
-	return(TRUE);
-      }
-      charge = GetMaxLevel(ch) * 100;
-      switch(number) {
-      case 0:
-      case 1:
-	sk_num = SKILL_DISARM;
-	if (!HasClass(ch, CLASS_WARRIOR)) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
+				percent=ch->skills[skillnum].learned+int_app[GET_INT(ch)].learn;
+				ch->skills[skillnum].learned = MIN(95,percent);
+
+				if(ch->skills[skillnum].learned >= 95)
+					send_to_char("'You are now a master of this art.'\n\r",ch);
+
+				return(TRUE);
+			} else { /* arg doesn't match a skillnum */
+				send_to_char("$c0013[$c0015The Ninja Master$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+				return(TRUE);
+			}
+		}
 	}
-	break;
-      case 2:
-	sk_num = SKILL_DOORBASH;
-	if (!HasClass(ch, CLASS_WARRIOR)) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 3:
-	sk_num = SKILL_SPY;
-	if (!HasClass(ch, CLASS_THIEF)) {
-	  send_to_char
-	    ("'You do not possess the necessary thieving skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 4:
-	sk_num = SKILL_RETREAT;
-	if (!HasClass(ch, CLASS_THIEF)) {
-	  send_to_char
-	    ("'I only teach this skill to thieves'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 5:
-	sk_num = SKILL_SWITCH_OPP;
-	if (!HasClass(ch, CLASS_WARRIOR)) {
-	  send_to_char
-	    ("'I only teach this to fighters'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 6:
-	sk_num = SKILL_RIDE;
-	break;
-      case 7:
-	sk_num = SKILL_DISGUISE;
-	if (!HasClass(ch, CLASS_THIEF)) {
-	  send_to_char
-	    ("'I only teach this skill to thieves'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 8:
-        sk_num = SKILL_CLIMB;
-        if(!HasClass(ch, CLASS_THIEF)) {
-          send_to_char("'I only teach this skill to thieves'\n\r", ch);
-          return(TRUE);
-	}
-        break;
-    case 9:
-        sk_num = SKILL_DISENGAGE;
-        if(!HasClass(ch, CLASS_WARRIOR)) {
-          send_to_char("'I only teach this skill to warriors.'\n\r", ch);
-          return(TRUE);
-	}
-        break;
-
-      default:
-	sprintf(buf, "Strangeness in ninjamaster (%d)", number);
-	log(buf);
-	send_to_char("'Ack!  I feel faint!'\n\r", ch);
-	return(TRUE);
-      }
-    }
-
-    if (sk_num == SKILL_HUNT || sk_num == SKILL_DODGE) {
-      if (ch->skills[sk_num].learned >= 95) {
-	send_to_char
-	  ("'You are a master of this art, I can teach you no more.'\n\r",ch);
-	return(TRUE);
-      }
-    } else {
-      if (ch->skills[sk_num].learned > 45) {
-	send_to_char("'You must learn from practice and experience now.'\n\r", ch);
-	return;
-      }
-    }
-
-    if (GET_GOLD(ch) < charge){
-      send_to_char
-	("'Ah, but you do not have enough money to pay.'\n\r",ch);
-      return(TRUE);
-    }
-
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char
-	("'You must first use the knowledge you already have.'\n\r",ch);
-      return(FALSE);
-    }
-
-    GET_GOLD(ch) -= charge;
-    send_to_char("'We will now begin.'\n\r",ch);
-    ch->specials.spells_to_learn--;
-
-if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-    }
-
-
-    percent = ch->skills[sk_num].learned +
-      int_app[GET_INT(ch)].learn;
-    ch->skills[sk_num].learned = MIN(95, percent);
-
-    if (ch->skills[sk_num].learned >= 95) {
-      send_to_char("'You are now a master of this art.'\n\r", ch);
-      return(TRUE);
-    }
-  } else {
-    return(FALSE);
-  }
+#endif
+	return (FALSE);
 }
-
-
 
 int RepairGuy( struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -3482,122 +3430,7 @@ int sailor(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
   }
 }
 
-int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
-{
-  char buf[256];
-  static char *n_skills[] = {
-    "necromancy",
-    "vegetable lore",
-    "animal lore",
-    "reptile lore",
-    "people lore",
-    "giant lore",
-    "other lore",
-    "read magic",
-    "demonology",
-    "sign language",
-    "common",
-    "elvish",
-    "halfling",
-    "dwarvish",
-    "orcish",
-    "giantish",
-    "ogre",
-    "gnomish",
-    "\n",
-  };
-  int percent=0, number=0;
-  int charge, sk_num;
-
-  if (!AWAKE(ch))
-    return(FALSE);
-
-  if (!ch->skills) return(FALSE);
-
-  if (!cmd) {
-    if (ch->specials.fighting) {
-      return(fighter(ch, cmd, arg,mob,type));
-    }
-    return(FALSE);
-  }
-
-  if (check_soundproof(ch)) return(FALSE);
-
-  for(; *arg==' '; arg++); /* ditch spaces */
-
-  if ((cmd==164)||(cmd==170)) {
-    if (!arg || (strlen(arg) == 0)) {
-      sprintf(buf," necromancy      :  %s\n\r",how_good(ch->skills[SKILL_CONS_UNDEAD].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," vegetable lore  :  %s\n\r",how_good(ch->skills[SKILL_CONS_VEGGIE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," demonology      :  %s\n\r",how_good(ch->skills[SKILL_CONS_DEMON].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," animal lore     :  %s\n\r",how_good(ch->skills[SKILL_CONS_ANIMAL].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," reptile lore  :  %s\n\r",how_good(ch->skills[SKILL_CONS_REPTILE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," people lore     :  %s\n\r",how_good(ch->skills[SKILL_CONS_PEOPLE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," giant lore      :  %s\n\r",how_good(ch->skills[SKILL_CONS_GIANT].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," other lore      :  %s\n\r",how_good(ch->skills[SKILL_CONS_OTHER].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," read magic      :  %s\n\r",how_good(ch->skills[SKILL_READ_MAGIC].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," sign language   :  %s\n\r",how_good(ch->skills[SKILL_SIGN].learned));
-      send_to_char(buf,ch);
-
-      sprintf(buf," common   :  %s\n\r",how_good(ch->skills[LANG_COMMON].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," elvish   :  %s\n\r",how_good(ch->skills[LANG_ELVISH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," halfling :  %s\n\r",how_good(ch->skills[LANG_HALFLING].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," dwarvish :  %s\n\r",how_good(ch->skills[LANG_DWARVISH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," orcish   :  %s\n\r",how_good(ch->skills[LANG_ORCISH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," giantish :  %s\n\r",how_good(ch->skills[LANG_GIANTISH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," ogre     :  %s\n\r",how_good(ch->skills[LANG_OGRE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," gnomish  :  %s\n\r",how_good(ch->skills[LANG_GNOMISH].learned));
-      send_to_char(buf,ch);
-
-      return(TRUE);
-    } else {
-      number = old_search_block(arg,0,strlen(arg),n_skills,FALSE);
-      send_to_char ("The loremaster says ",ch);
-      if (number == -1) {
-	send_to_char("'I do not know of this skill.'\n\r", ch);
-	return(TRUE);
-      }
-      charge = GetMaxLevel(ch) * 100;
-      switch(number) {
-      case 0:
-      case 1:
-	sk_num = SKILL_CONS_UNDEAD;
-	break;
-      case 2:
-	sk_num = SKILL_CONS_VEGGIE;
-	break;
-      case 3:
-	sk_num = SKILL_CONS_ANIMAL;
-	break;
-      case 4:
-	sk_num = SKILL_CONS_REPTILE;
-	break;
-      case 5:
-	sk_num = SKILL_CONS_PEOPLE;
-	break;
-      case 6:
-	sk_num = SKILL_CONS_GIANT;
-	break;
-      case 7:
-	sk_num = SKILL_CONS_OTHER;
-	break;
-      case 8:
+/*     case 8:
 	if (!HasClass(ch, CLASS_CLERIC) && !HasClass(ch, CLASS_MAGIC_USER)) {
 	  sk_num = SKILL_READ_MAGIC;
 	} else {
@@ -3608,80 +3441,96 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	  return;
 	}
 	break;
+*/
+int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH],skillname[254];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0,charge = 0,skillnum = 0; //while loop
+	struct char_data *guildmaster;
 
-      case 9:
-	sk_num = SKILL_CONS_DEMON;
-	break;
-      case 10:
-	sk_num = SKILL_SIGN;
-	break;
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
-	case 11:
-	sk_num = LANG_COMMON;
-	break;
-	case 12:
-	sk_num = LANG_ELVISH;
-	break;
-	case 13:
-	sk_num = LANG_HALFLING;
-	break;
-	case 14:
-	sk_num = LANG_DWARVISH;
-	break;
-	case 15:
-	sk_num = LANG_ORCISH;
-	break;
-	case 16:
-	sk_num = LANG_GIANTISH;
-	break;
-	case 17:
-	sk_num = LANG_OGRE;
-	break;
-	case 18:
-	sk_num = LANG_GNOMISH;
-	break;
+	//170->Practice,164->Practise,
+	if (cmd==164 || cmd == 170) {
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of these skills:\n\r\n\r");
+			strcat(buffer,buf);
+			while(loreskills[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",loreskills[i].level,
+						loreskills[i].name,how_good(ch->skills[loreskills[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[loreskills[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+		} else { /* includes arg.. */
+			while (loreskills[x].level != -1) {
+				if(is_abbrev(arg,loreskills[x].name)) {
+					if(loreskills[x].level > GetMaxLevel(ch)) {
+						send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
 
-      default:
-	sprintf(buf, "Strangeness in loremaster (%d)", number);
-	log(buf);
-	send_to_char("'Ack!  I feel faint!'\n\r", ch);
-	return(TRUE);
-      }
-    }
+					if (loreskills[x].skillnum == SKILL_READ_MAGIC) {
+						if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_MAGIC_USER)
+									 || HasClass(ch, CLASS_DRUID) || HasClass(ch, CLASS_SORCERER)
+									  || HasClass(ch, CLASS_PSI) || HasClass(ch, CLASS_BARD)) {
+							send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
+									" 'Heeheehee, you wanna pay me for knowledge you already posess?'",ch);
+							if (ch->skills)
+								if (!ch->skills[SKILL_READ_MAGIC].learned)
+									ch->skills[SKILL_READ_MAGIC].learned = 95;
+									return(TRUE);
+						}
+					}
 
-    if (GET_GOLD(ch) < charge){
-      send_to_char
-	("'Ah, but you do not have enough money to pay.'\n\r",ch);
-      return(TRUE);
-    }
+					if(ch->specials.spells_to_learn <=0) {
+						send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
 
+					charge = GetMaxLevel(ch) * 100;
+					if (GET_GOLD(ch) < charge) {
+						send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
+									" 'Ah, but you do not have enough money to pay.'\n\r",ch);
+						return(TRUE);
+					}
 
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char
-	("'You must first earn more practices you already have.\n\r",ch);
-      return(TRUE);
-    }
+					GET_GOLD(ch) -= charge;
+					sprintf(buf,"You practice %s for a while.\n\r",loreskills[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn = ch->specials.spells_to_learn-2;
 
-    GET_GOLD(ch) -= charge;
-    send_to_char("'We will now begin.'\n\r",ch);
-
-if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-    }
-
-    ch->specials.spells_to_learn--;
-
-    percent = ch->skills[sk_num].learned +
-      int_app[GET_INT(ch)].learn;
-    ch->skills[sk_num].learned = MIN(95, percent);
-
-    if (ch->skills[sk_num].learned >= 95) {
-      send_to_char("'You are now a master of this art.'\n\r", ch);
-      return(TRUE);
-    }
-  } else {
-    return(FALSE);
-  }
+					if(!IS_SET(ch->skills[loreskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[loreskills[x].skillnum].flags,SKILL_KNOWN);
+					}
+					percent=ch->skills[loreskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[loreskills[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[loreskills[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
+			send_to_char("$c0013[$c0015The loremaster$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+			return(TRUE);
+		}
+	}
+#endif
+	return (FALSE);
 }
 
 int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
@@ -3828,482 +3677,415 @@ if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
 
 int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  char buf[256];
-  static char *n_skills[] = {
-    "spot",
-    "\n",
-  };
-  int percent=0, number=0;
-  int charge, sk_num;
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0,charge = 0; //while loop
 
-  if (!AWAKE(ch))
-    return(FALSE);
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
- if (ch->specials.fighting)
-      return(archer(ch, cmd, arg,mob,type));
+	//170->Practice,164->Practise, 243->gain
+	if (cmd==164 || cmd == 170) {
 
-  if (!ch->skills)
-      return(FALSE);
+		if (!HasClass(ch, CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_RANGER|CLASS_PALADIN)) {
+			send_to_char("$c0013[$c0015The archer instructor$c0013] tells you"
+							" 'I'm not teaching the likes of you, get lost!'\n\r",ch);
+			return(TRUE);
+		}
 
-  if (check_soundproof(ch))
-     return(FALSE);
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			strcat(buffer,buf);
+			/* list by level, so new skills show at top of list */
+			while (x != 0) {
+				while(archerskills[i].level != -1) {
+					if (archerskills[i].level == x) {
+						sprintf(buf,"[%-2d] %-30s %-15s",archerskills[i].level,
+								archerskills[i].name,how_good(ch->skills[archerskills[i].skillnum].learned));
+						if (IsSpecialized(ch->skills[archerskills[i].skillnum].special))
+							strcat(buf," (special)");
+						strcat(buf," \n\r");
+						if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+							break;
+						strcat(buffer, buf);
+						strcat(buffer, "\r");
+					}
+					i++;
+				}
+				i=0;
+				x--;
+			}
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
+		} else {
+			while (archerskills[x].level != -1) {
+				if(is_abbrev(arg,archerskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+					if(archerskills[x].level > GetMaxLevel(ch)) {
+						send_to_char("$c0013[$c0015The archer instructor$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
 
-  for(; *arg==' '; arg++); /* ditch spaces */
+					if(ch->specials.spells_to_learn <=0) {
+						send_to_char("$c0013[$c0015The archer instructor$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
+					charge = GetMaxLevel(ch) * 100;
+					if (GET_GOLD(ch) < charge) {
+						send_to_char("$c0013[$c0015The archer instructor$c0013] tells you"
+									" 'Ah, but you do not have enough money to pay.'\n\r",ch);
+						return(TRUE);
+					}
 
-  if ((cmd==164)||(cmd==170)) {
-    if (!arg || (strlen(arg) == 0))
-    {
-      send_to_char("You can learn :\n\r",ch);
-      sprintf(buf," spot           :  %s\n\r",how_good(ch->skills[SKILL_SPOT].learned));
-      send_to_char(buf,ch);
-      return(TRUE);
-    } else
-    {
+					sprintf(buf,"You practice %s for a while.\n\r",archerskills[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn--;
+					GET_GOLD(ch) -= charge;
 
-      number = old_search_block(arg,0,strlen(arg),n_skills,FALSE);
-      send_to_char ("The Archer says ",ch);
-      if (number == -1) {
-	send_to_char("'I do not know of this skill.'\n\r", ch);
-	return(TRUE);
-      }
-
-      charge = GetMaxLevel(ch) * 100;
-      switch(number) {
-      case 0:
-      case 1:
-	sk_num = SKILL_SPOT;
-	break;
-      default:
-	sprintf(buf, "Strangeness in hunter (%d)", number);
-	log(buf);
-	send_to_char("'Ack!  I feel faint!'\n\r", ch);
-	return(FALSE);
-      }
-    }
-
-
-      if (!HasClass(ch,
-	      CLASS_WARRIOR|CLASS_BARBARIAN|CLASS_RANGER|CLASS_PALADIN) &&
-       		sk_num==SKILL_SPOT )  {
-	send_to_char("'You're not the sort I'll teach archery skills to.'\n\r", ch);
-	return(TRUE);
-      }
-
-    if (GET_GOLD(ch) < charge){
-      send_to_char
-	("'Ah, but you do not have enough money to pay.'\n\r",ch);
-      return(TRUE);
-    }
-
-    if (ch->skills[sk_num].learned >= 95) {
-      send_to_char
-	("'You are a master of this art, I can teach you no more.'\n\r",ch);
-      return(TRUE);
-    }
-
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char
-	("'You must first earn more practices you already have.\n\r",ch);
-      return(TRUE);
-    }
-
-    GET_GOLD(ch) -= charge;
-    send_to_char("'We will now begin.'\n\r",ch);
-    ch->specials.spells_to_learn--;
-
-    percent = ch->skills[sk_num].learned +
-      int_app[GET_INT(ch)].learn;
-
-if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-    }
-
-    ch->skills[sk_num].learned = MIN(95, percent);
-
-    if (ch->skills[sk_num].learned >= 95) {
-      send_to_char("The Archer says 'You are now a master of this art.'\n\r", ch);
-      return(TRUE);
-    }
-    return(TRUE);
-  } else {
-    return(archer(ch,cmd,arg,mob,type));
-  }
-
-  return(archer(ch,cmd,arg,mob,type));
+					if(!IS_SET(ch->skills[archerskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[archerskills[x].skillnum].flags,SKILL_KNOWN);
+					}
+					percent=ch->skills[clericskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[clericskills[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[clericskills[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
+			send_to_char("$c0013[$c0015The archer instructor$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+			return(TRUE);
+		}
+	}
+#endif
+	return (FALSE);
 }
-
 
 int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  char buf[256];
-  static char *n_skills[] = {
-    "quivering palm", /* No. 245 */
-    "feign death", /* No. 259 */
-    "retreat",
-    "kick",
-    "hide",
-    "sneak",
-    "pick locks",
-    "safe fall",
-    "disarm",
-    "dodge",
-    "switch opponents",
-    "springleap",
-    "legsweep",
-    "\n",
-  };
-  int percent=0, number=0;
-  int charge, sk_num;
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0; //while loop
 
-  if (!AWAKE(ch))
-    return(FALSE);
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
-  if (!cmd) {
-    if (ch->specials.fighting) {
-      return(fighter(ch, cmd, arg,mob,type));
-    }
-    return(FALSE);
-  }
+	//243->gain
+	if (cmd == 243) {
 
-  if (!ch->skills) return(FALSE);
+		if (!HasClass(ch, CLASS_MONK)) {
+			send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+							" 'You're not a monk.'\n\r",ch);
+			return(TRUE);
+		}
 
-  if (check_soundproof(ch)) return(FALSE);
+		//gain
+		if(cmd == 243 && GET_EXP(ch)<titles[MONK_LEVEL_IND][GET_LEVEL(ch,MONK_LEVEL_IND)+1].exp) {
+			send_to_char("You're not ready to gain yet!",ch);
+			return (FALSE);
+		} else {
+			if(cmd == 243) {  //gain
+				if (GET_LEVEL(ch,MONK_LEVEL_IND) <= 9) {
+					GainLevel(ch, MONK_LEVEL_IND);
+				} else {
+					send_to_char("You must fight another monk for this title.\n\r",ch);
+				}
+				return (TRUE);
+			}
+		}
+	} else if (cmd==164 || cmd == 170) { /* prac */
+		if (HasClass(ch,CLASS_MONK)) {
+			if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+				sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+				sprintf(buf,"You can practice any of these skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,MONK_LEVEL_IND);
+				/* list by level, so new skills show at top of list */
+				while (x != 0) {
+					while(monkskills[i].level != -1) {
+						if (monkskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",monkskills[i].level,
+									monkskills[i].name,how_good(ch->skills[monkskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[monkskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+				page_string(ch->desc, buffer, 1);
+				return(TRUE);
+			} else {
+				while (monkskills[x].level != -1) {
+					if(is_abbrev(arg,monkskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(monkskills[x].level > GET_LEVEL(ch,MONK_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
 
-  for(; *arg==' '; arg++); /* ditch spaces */
+						if (monkskills[x].skillnum == SKILL_SAFE_FALL
+											|| monkskills[x].skillnum == SKILL_DODGE) {
+							if (ch->skills[monkskills[x].skillnum].learned >= 95) {
+								send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+											" 'You are a master of this art, I can teach you no more.'\n\r",ch);
+								SET_BIT(ch->skills[monkskills[x].skillnum].flags, SKILL_KNOWN);
+								return(TRUE);
+							}
+						} else {
+							if(ch->skills[monkskills[x].skillnum].learned > 45) {
+								//check if skill already practiced
+								send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+											 " 'You must learn from experience and practice to get"
+											 " any better at that skill.'\n\r",ch);
+								return(TRUE);
+							}
+						}
 
-  if ((cmd==164)||(cmd==170))
-  {
-    if (IS_NPC(ch)) {
-    send_to_char("The Monk Master tells you 'What do i look like, an animal trainer?'\n\r",ch);
-    return(FALSE);
-  }
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
 
-    if (!arg || (strlen(arg) == 0)) {
-      sprintf(buf, "You have %d practices remaining\n\r", ch->specials.spells_to_learn);
-      send_to_char(buf, ch);
-      sprintf(buf," disarm  :        %s\n\r",how_good(ch->skills[SKILL_DISARM].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," quivering palm:  %s [Must be 30th level]\n\r",how_good(ch->skills[SKILL_QUIV_PALM].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," safe fall:       %s\n\r",how_good(ch->skills[SKILL_SAFE_FALL].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," springleap:      %s\n\r",how_good(ch->skills[SKILL_SPRING_LEAP].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," retreat:         %s\n\r",how_good(ch->skills[SKILL_RETREAT].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," pick locks:      %s\n\r",how_good(ch->skills[SKILL_PICK_LOCK].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," hide:            %s\n\r",how_good(ch->skills[SKILL_HIDE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," sneak:           %s\n\r",how_good(ch->skills[SKILL_SNEAK].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," feign death:     %s\n\r",how_good(ch->skills[SKILL_FEIGN_DEATH].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," dodge:           %s\n\r",how_good(ch->skills[SKILL_DODGE].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," switch:          %s\n\r",how_good(ch->skills[SKILL_SWITCH_OPP].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," kick:            %s\n\r",how_good(ch->skills[SKILL_KICK].learned));
-      send_to_char(buf,ch);
-      sprintf(buf," Legsweep:        %s\n\r",how_good(ch->skills[SKILL_LEG_SWEEP].learned));
-      send_to_char(buf,ch);
-      return(TRUE);
-    } else {
-      number = old_search_block(arg,0,strlen(arg),n_skills,FALSE);
-      send_to_char ("$c0015The ancient master says ",ch);
-      if (number == -1) {
-	send_to_char("'I do not know of this skill.'\n\r", ch);
-	return(TRUE);
-      }
-      charge = GetMaxLevel(ch) * 100;
-      switch(number) {
-      case 0:
-      case 1:
-	sk_num = SKILL_QUIV_PALM;
-	if (!HasClass(ch, CLASS_MONK)) {
-	  send_to_char("'You do not possess the proper skills'\n\r", ch);
-	  return(TRUE);
-	} else if (GET_LEVEL(ch, MONK_LEVEL_IND) < 30) {
-	  send_to_char("'You are not high enough level'\n\r", ch);
-	  return(TRUE);
+						sprintf(buf,"You practice %s for a while.\n\r",monkskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+
+						if(!IS_SET(ch->skills[monkskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[monkskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[monkskills[x].skillnum].flags,SKILL_KNOWN_MONK);
+						}
+						percent=ch->skills[monkskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[monkskills[x].skillnum].learned = MIN(95,percent);
+
+						if(ch->skills[monkskills[x].skillnum].learned >= 95)
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you '"
+										" 'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
+				send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you '"
+								"I do not know of that skill!'\n\r",ch);
+				return(TRUE);
+			}
+		} else if (HasClass(ch,CLASS_WARRIOR)) {
+			if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+				sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+				sprintf(buf,"You can practice these skills:\n\r\n\r");
+				strcat(buffer,buf);
+				x = GET_LEVEL(ch,WARRIOR_LEVEL_IND);
+				/* list by level, so new skills show at top of list */
+				while (x != 0) {
+					while(warmonkskills[i].level != -1) {
+						if (warmonkskills[i].level == x) {
+							sprintf(buf,"[%-2d] %-30s %-15s",warmonkskills[i].level,
+									warmonkskills[i].name,how_good(ch->skills[warmonkskills[i].skillnum].learned));
+							if (IsSpecialized(ch->skills[warmonkskills[i].skillnum].special))
+								strcat(buf," (special)");
+							strcat(buf," \n\r");
+							if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+								break;
+							strcat(buffer, buf);
+							strcat(buffer, "\r");
+						}
+						i++;
+					}
+					i=0;
+					x--;
+				}
+				page_string(ch->desc, buffer, 1);
+				return(TRUE);
+			} else {
+				while (warmonkskills[x].level != -1) {
+					if(is_abbrev(arg,warmonkskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+						if(warmonkskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+									" 'You're not experienced enough to learn this skill.'",ch);
+							return(TRUE);
+						}
+
+						if (warmonkskills[x].skillnum == SKILL_DODGE) {
+							if (ch->skills[warmonkskills[x].skillnum].learned >= 95) {
+								send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+											" 'You are a master of this art, I can teach you no more.'\n\r",ch);
+								SET_BIT(ch->skills[warmonkskills[x].skillnum].flags, SKILL_KNOWN);
+								return(TRUE);
+							}
+						} else {
+							if(ch->skills[warmonkskills[x].skillnum].learned > 45) {
+								//check if skill already practiced
+								send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+											 " 'You must learn from experience and practice to get"
+											 " any better at that skill.'\n\r",ch);
+								return(TRUE);
+							}
+						}
+
+						if(ch->specials.spells_to_learn <=0) {
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you"
+										" 'You don't have enough practice points.'\n\r",ch);
+							return(TRUE);
+						}
+
+						sprintf(buf,"You practice %s for a while.\n\r",monkskills[x].name);
+						send_to_char(buf,ch);
+						ch->specials.spells_to_learn--;
+
+						if(!IS_SET(ch->skills[warmonkskills[x].skillnum].flags,SKILL_KNOWN)) {
+							SET_BIT(ch->skills[warmonkskills[x].skillnum].flags,SKILL_KNOWN);
+							SET_BIT(ch->skills[warmonkskills[x].skillnum].flags,SKILL_KNOWN_WARRIOR);
+						}
+						percent=ch->skills[warmonkskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+						ch->skills[warmonkskills[x].skillnum].learned = MIN(95,percent);
+
+						if(ch->skills[warmonkskills[x].skillnum].learned >= 95)
+							send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you '"
+										" 'You are now a master of this art.'\n\r",ch);
+						return(TRUE);
+					}
+					x++;
+				}
+				send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you '"
+								"I do not know of that skill!'\n\r",ch);
+				return(TRUE);
+			}
+		} else {
+			send_to_char("$c0013[$c0015The Monk Guildmaster$c0013] tells you '"
+							"I don't teach the likes of you!'\n\r",ch);
+			return(TRUE);
+		}
 	}
-	break;
-      case 2:
-	sk_num = SKILL_FEIGN_DEATH;
-	if (!HasClass(ch, CLASS_MONK)) {
-	  send_to_char("'You do not possess the proper skills'\n\r", ch);
-	  return(TRUE);
-	}
-	break;
-      case 3:
-	sk_num = SKILL_RETREAT;
-	if (!HasClass(ch, CLASS_WARRIOR) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 4:
-	sk_num = SKILL_KICK;
-	if (!HasClass(ch, CLASS_WARRIOR) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 5:
-	sk_num = SKILL_HIDE;
-	if (!HasClass(ch, CLASS_THIEF) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 6:
-	sk_num = SKILL_SNEAK;
-	if (!HasClass(ch, CLASS_THIEF) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 7:
-	sk_num = SKILL_PICK_LOCK;
-	if (!HasClass(ch, CLASS_THIEF) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 8:
-	sk_num = SKILL_SAFE_FALL;
-	if (!HasClass(ch, CLASS_MONK)) {
-	  send_to_char("'You do not possess the proper skills'\n\r", ch);
-	  return(TRUE);
-	}
-	break;
-      case 9:
-	sk_num = SKILL_DISARM;
-	if (!HasClass(ch, CLASS_WARRIOR) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 10:
-	sk_num = SKILL_DODGE;
-	if (!HasClass(ch, CLASS_WARRIOR) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 11:
-	sk_num = SKILL_SWITCH_OPP;
-	if (!HasClass(ch, CLASS_WARRIOR) && !(HasClass(ch, CLASS_MONK))) {
-	  send_to_char
-	    ("'You do not possess the necessary fighting skills'\n\r",ch);
-	  return(TRUE);
-	}
-	break;
-      case 12:
-	sk_num = SKILL_SPRING_LEAP;
-	if (!HasClass(ch, CLASS_MONK)) {
-	  send_to_char("'You do not possess the proper skills'\n\r", ch);
-	  return(TRUE);
-	}
-	break;
-  case 13:
-	sk_num = SKILL_LEG_SWEEP;
-	if (!HasClass(ch, CLASS_MONK)) {
-	  send_to_char("'You do not possess the proper skills'\n\r", ch);
-	  return(TRUE);
-	}
-	break;
-      default:
-	sprintf(buf, "Strangeness in monk master (%d)", number);
-	log(buf);
-	send_to_char("'Ack!  I feel faint!'\n\r", ch);
-	return(TRUE);
-      }
-    }
-
-    if (!HasClass(ch, CLASS_MONK) && GET_GOLD(ch) < charge){
-      send_to_char
-	("'Ah, but you do not have enough money to pay.'\n\r",ch);
-      return(TRUE);
-    }
-
-    if (sk_num == SKILL_SAFE_FALL || sk_num == SKILL_DODGE) {
-      if (ch->skills[sk_num].learned >= 95) {
-	send_to_char
-	  ("'You are a master of this art, I can teach you no more.'\n\r",ch);
-        SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-	return(TRUE);
-      }
-    } else {
-      if (ch->skills[sk_num].learned > 45) {
-        SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-	send_to_char("'You must learn from practice and experience now.'\n\r", ch);
-	return;
-      }
-    }
-
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char
-	("'You must first use the knowledge you already have.\n\r",ch);
-      return(TRUE);
-    }
-
-    if (!HasClass(ch, CLASS_MONK)) {
-      GET_GOLD(ch) -= charge;
-    }
-    send_to_char("'We will now begin.'\n\r",ch);
-    ch->specials.spells_to_learn--;
-
-    percent = ch->skills[sk_num].learned +
-      int_app[GET_INT(ch)].learn;
-    ch->skills[sk_num].learned = MIN(95, percent);
-
-
-if (!IS_SET(ch->skills[sk_num].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN);
-     SET_BIT(ch->skills[sk_num].flags, SKILL_KNOWN_MONK);
-    }
-
-    if (ch->skills[sk_num].learned >= 95) {
-      send_to_char("'You are now a master of this art.'\n\r", ch);
-      return(TRUE);
-    }
-  } else if (cmd == 243){
-    if (HasClass(ch, CLASS_MONK)) {
-      if (GET_LEVEL(ch,MONK_LEVEL_IND) <= 9) {
-	GainLevel(ch, MONK_LEVEL_IND);
-      } else {
-	send_to_char("You must fight another monk for this title\n\r",ch);
-      }
-      return(TRUE);
-    }
-
-  } else {
-    return(FALSE);
-  }
+#endif
+	return (FALSE);
 }
 
 int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
-  int number, i, percent;
-  char buf[MAX_INPUT_LENGTH];
-  struct char_data *guildmaster;
-  extern char *spells[];
-  extern struct spell_info_type spell_info[MAX_SPL_LIST];
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0; //while loop
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243)) return(FALSE);
+#if 1
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
-  if (!ch->skills) return(FALSE);
+	//170->Practice,164->Practise, 243->gain
+	if (cmd==164 || cmd == 170 || cmd == 243) {
 
-  if (IS_IMMORTAL(ch))
-    return(FALSE);
+		if (!HasClass(ch, CLASS_DRUID)) {
+			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+							" 'You're not a druid.'\n\r",ch);
+			return(TRUE);
+		}
 
-  if (check_soundproof(ch)) return(FALSE);
+		//gain
+		if(cmd == 243 && GET_EXP(ch)<titles[DRUID_LEVEL_IND][GET_LEVEL(ch,DRUID_LEVEL_IND)+1].exp) {
+			send_to_char("You're not ready to gain yet!",ch);
+			return (FALSE);
+		} else {
+			if(cmd == 243) {  //gain
+				if (GET_LEVEL(ch,DRUID_LEVEL_IND) <= 9) {
+					GainLevel(ch, DRUID_LEVEL_IND);
+				} else {
+					send_to_char("You must fight another druid for this title.\n\r",ch);
+				}
+				return (TRUE);
+			}
+		}
 
-  guildmaster = FindMobInRoomWithFunction(ch->in_room, DruidGuildMaster);
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of these spells:\n\r\n\r");
+			strcat(buffer,buf);
+			x = GET_LEVEL(ch,DRUID_LEVEL_IND);
+			/* list by level, so new skills show at top of list */
+			while (x != 0) {
+				while(druidskills[i].level != -1) {
+					if (druidskills[i].level == x) {
+						sprintf(buf,"[%-2d] %-30s %-15s",druidskills[i].level,
+								druidskills[i].name,how_good(ch->skills[druidskills[i].skillnum].learned));
+						if (IsSpecialized(ch->skills[druidskills[i].skillnum].special))
+							strcat(buf," (special)");
+						strcat(buf," \n\r");
+						if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+							break;
+						strcat(buffer, buf);
+						strcat(buffer, "\r");
+					}
+					i++;
+				}
+				i=0;
+				x--;
+			}
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
+		} else {
+			while (druidskills[x].level != -1) {
+				if(is_abbrev(arg,druidskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
+					if(druidskills[x].level > GET_LEVEL(ch,DRUID_LEVEL_IND)) {
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
 
-  if (!guildmaster) return(FALSE);
+					if(ch->skills[druidskills[x].skillnum].learned > 45) {
+						//check if skill already practiced
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+									 " 'You must learn from experience and practice to get"
+									 " any better at that skill.'\n\r",ch);
+						return(TRUE);
+					}
 
-  if (IS_NPC(ch)) {
-    act("$N tells you 'What do i look like, an animal trainer?'", FALSE,
-	ch, 0, guildmaster, TO_CHAR);
-	return(FALSE);
-  }
+					if(ch->specials.spells_to_learn <=0) {
+						send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
 
-  if (HasClass(ch, CLASS_DRUID)) {
-     if (cmd == 243) {  /* gain */
-       if (GET_LEVEL(ch,DRUID_LEVEL_IND) <= 9) {
-          GainLevel(ch, DRUID_LEVEL_IND);
-	} else {
-	  send_to_char("You must fight another druid for this title\n\r",ch);
+					sprintf(buf,"You practice %s for a while.\n\r",druidskills[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn--;
+
+					if(!IS_SET(ch->skills[druidskills[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[druidskills[x].skillnum].flags,SKILL_KNOWN);
+						SET_BIT(ch->skills[druidskills[x].skillnum].flags,SKILL_KNOWN_DRUID);
+					}
+					percent=ch->skills[druidskills[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[druidskills[x].skillnum].learned = MIN(95,percent);
+
+					if(ch->skills[druidskills[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
+			send_to_char("$c0013[$c0015The Druid Guildmaster$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+			return(TRUE);
+		}
 	}
-        return(TRUE);
-     }
-
-     for (;*arg == ' '; arg++);
-
-     if (!*arg) {
-      sprintf(buf,"You have got %d practice sessions left.\n\r",
-	      ch->specials.spells_to_learn);
-      send_to_char(buf, ch);
-      send_to_char("You can practise any of these spells:\n\r", ch);
-      for(i=0; *spells[i] != '\n'; i++)
-	if (spell_info[i+1].spell_pointer &&
-	    (spell_info[i+1].min_level_druid<=
-	     GET_LEVEL(ch,DRUID_LEVEL_IND)) &&
-	    (spell_info[i+1].min_level_druid <=
-	     GetMaxLevel(guildmaster)-10)) {
-
-	    sprintf(buf,"[%-2d] %-25s %-15s ",
-		    spell_info[i+1].min_level_druid,
-		    spells[i],how_good(ch->skills[i+1].learned));
-	    if (spell_info[i+1].min_level_druid == GET_LEVEL(ch,DRUID_LEVEL_IND))
-	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else
-	      sprintf(buf,"%s \n\r",buf);
-
-	    send_to_char(buf, ch);
-	}
-
-      return(TRUE);
-
-    }
-    for (;isspace(*arg);arg++);
-    number = old_search_block(arg,0,strlen(arg),spells,FALSE);
-    if(number == -1) {
-      send_to_char("You do not know of this spell...\n\r", ch);
-      return(TRUE);
-    }
-    if (GET_LEVEL(ch,DRUID_LEVEL_IND) < spell_info[number].min_level_druid) {
-      send_to_char("You do not know of this spell...\n\r", ch);
-      return(TRUE);
-    }
-    if (GetMaxLevel(guildmaster)-10 < spell_info[number].min_level_druid) {
-      do_say(guildmaster, "I don't know of this spell.", 0);
-      return(TRUE);
-    }
-
-    if (ch->specials.spells_to_learn <= 0) {
-      send_to_char("You do not seem to be able to practice now.\n\r", ch);
-      return(TRUE);
-    }
-
-    if (ch->skills[number].learned >= 45) {
-      send_to_char("You must use this skill to get any better.  I cannot train you further.\n\r", ch);
-      SET_BIT(ch->skills[number].flags, SKILL_KNOWN);
-      return(TRUE);
-    }
-
-    send_to_char("You Practice for a while...\n\r", ch);
-    ch->specials.spells_to_learn--;
-
-if (!IS_SET(ch->skills[number].flags, SKILL_KNOWN)) {
-     SET_BIT(ch->skills[number].flags, SKILL_KNOWN);
-     SET_BIT(ch->skills[number].flags, SKILL_KNOWN_DRUID);
-    }
-
-    percent = ch->skills[number].learned+int_app[GET_RINT(ch)].learn;
-    ch->skills[number].learned = MIN(95, percent);
-
-    if (ch->skills[number].learned >= 95) {
-      send_to_char("You are now learned in this area.\n\r", ch);
-      return(TRUE);
-
-    }
-  } else {
-    send_to_char("Oh.. i bet you think you're a druid?\n\r", ch);
-    return(TRUE);
-  }
+#endif
+	return (FALSE);
 }
-
-
 
 int Devil(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {

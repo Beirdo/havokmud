@@ -30,6 +30,7 @@
   extern struct skillset rangerskills[];
   extern struct skillset psiskills[];
   extern struct skillset sorcskills[];
+  extern struct skillset loreskills[];
 extern struct skillset styleskillset[];
 extern struct room_data *world;
 extern struct char_data *character_list;
@@ -6982,95 +6983,86 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	return (FALSE);
 }
 
-int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
-  int count = 0;
-  char buf[256];
-  static int percent = 0;
-  static int x; //for loop..
-  struct char_data *guildmaster;
-  static int MAXSSKILLS = 5;
-  struct string_block sb;
-  //skill             level..
+int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	int count = 0;
+	char buf[256], buffer[MAX_STRING_LENGTH],skillname[254];
+	static int percent = 0;
+	static int x; //for loop
+	int i = 0; //while loop
+//	struct char_data *guildmaster;
 
 #if 1
-  if(!AWAKE(ch) || IS_NPC(ch))
-    return(FALSE);
-  //170->Practice,164->Practise, 243->gain
-  if (cmd==164 || cmd == 170 ) {
+	if(!AWAKE(ch) || IS_NPC(ch))
+		return(FALSE);
 
+	if (cmd==164 || cmd == 170) {
 
-    if(!*arg && (cmd == 170 || cmd == 164)) {
-      init_string_block(&sb);
-      sprintf(buf,"You have got %d practice sessions left.\n\r",
-	      ch->specials.spells_to_learn);
-      //send_to_char(buf,ch);
-      append_to_string_block(&sb,buf);
-      //practice,Practise
-      append_to_string_block(&sb,"You can practice any of these spells.\n\r");
-	for(x = 0; x < MAXSSKILLS;x++) {  //practice
-	  if(1) {
+		if (!HasClass(ch, CLASS_WARRIOR|CLASS_THIEF|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN|CLASS_MONK)) {
+			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+						" 'You don't have any combat skills to begin with!'\n\r",ch);
+			return(TRUE);
+		}
 
-	    count++;
-	    //if(count%25 == 0)
+		if (GetMaxLevel(ch) < 10) {
+			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+						" 'You need some more experience before I can help ya, matey.'\n\r",ch);
+			return(TRUE);
+		}
 
-	    sprintf(buf,"%-20s:%-15s   Level: %-15d\n\r"
-		    ,styleskillset[x].name,
-		    how_good(ch->skills[styleskillset[x].skillnum].learned),
-		    styleskillset[x].level);
-	    /* Display New Spell.. not done..
-	      if(spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
-	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	      else
-	      sprintf(buf,"%s \n\r",buf);
-	    */
+		if(!*arg && (cmd == 170 || cmd == 164)) { /* practice||practise, without argument */
+			sprintf(buffer,"You have got %d practice sessions left.\n\r",ch->specials.spells_to_learn);
+			sprintf(buf,"You can practice any of the following skills.\n\rBear in mind.. training here costs two practice points!\n\r\n\r");
+			strcat(buffer,buf);
+			while(styleskillset[i].level != -1) {
+				sprintf(buf,"[%-2d] %-30s %-15s",styleskillset[i].level,
+						styleskillset[i].name,how_good(ch->skills[styleskillset[i].skillnum].learned));
+				if (IsSpecialized(ch->skills[styleskillset[i].skillnum].special))
+					strcat(buf," (special)");
+				strcat(buf," \n\r");
+				if (strlen(buf)+strlen(buffer) > (MAX_STRING_LENGTH*2)-2)
+					break;
+				strcat(buffer, buf);
+				strcat(buffer, "\r");
+				i++;
+			}
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
+		} else { /* includes arg.. */
+			while (styleskillset[x].level != -1) {
+				if(is_abbrev(arg,styleskillset[x].name)) {
+					if(styleskillset[x].level > GetMaxLevel(ch)) {
+						send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+								" 'You're not experienced enough to learn this skill.'",ch);
+						return(TRUE);
+					}
 
-	    append_to_string_block(&sb,buf);
-	  }
+					if(ch->specials.spells_to_learn <=1) {
+						send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
+
+					sprintf(buf,"You practice %s for a while.\n\r",styleskillset[x].name);
+					send_to_char(buf,ch);
+					ch->specials.spells_to_learn = ch->specials.spells_to_learn-2;
+
+					if(!IS_SET(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN)) {
+						SET_BIT(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN);
+					}
+					percent=ch->skills[styleskillset[x].skillnum].learned+int_app[GET_INT(ch)].learn;
+					ch->skills[styleskillset[x].skillnum].learned = MIN(95,percent);
+					if(ch->skills[styleskillset[x].skillnum].learned >= 95)
+						send_to_char("'You are now a master of this art.'\n\r",ch);
+					return(TRUE);
+				}
+				x++;
+			}
+			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you '"
+							"I do not know of that skill!'\n\r",ch);
+			return(TRUE);
+		}
 	}
-	page_string_block(&sb,ch);
-	destroy_string_block(&sb);
-	return(TRUE);
-
-    } else {
-      for (x = 0;x < MAXSSKILLS;x++) {
-	if(is_abbrev(arg,styleskillset[x].name)){  //!str_cmp(arg,n_skills[x])){
-
-	  if(ch->skills[styleskillset[x].skillnum].learned > 45) {
-	    //check if skill already practised
-	    send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
-			 " 'You must learn from experience and practice to get"
-			 " any better at that skill.\n\r",ch);
-	    return(TRUE);
-	  }
-	  if(ch->specials.spells_to_learn <2){
-	    send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
-			 " 'You don't have enough practice points.'\n\r",ch);
-	    return(TRUE);
-	  }
-
-	  sprintf(buf,"You practice %s for a while.\n\r",styleskillset[x].name);
-	  send_to_char(buf,ch);
-	  ch->specials.spells_to_learn = ch->specials.spells_to_learn-2;
-
-	  if(!IS_SET(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN)) {
-	    SET_BIT(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN);
-	    SET_BIT(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN_BARD);
-	  }
-	 percent=ch->skills[styleskillset[x].skillnum].learned+int_app[GET_INT(ch)].learn;
-	  ch->skills[styleskillset[x].skillnum].learned = MIN(95,percent);
-	  if(ch->skills[styleskillset[x].skillnum].learned >= 95)
-	    send_to_char("'You are now a master of this art.'\n\r",ch);
-	  return(TRUE);
-	}
-      }
-      send_to_char("$c0013[$c0015Darkthorn$c0013] tells you '"
-		   "I do not know of that skill!'",ch);
-      return(TRUE);
-    }
-  }
 #endif
-  return (FALSE);
+	return (FALSE);
 }
-
-
-

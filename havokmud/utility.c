@@ -1017,6 +1017,10 @@ int phit;
 int sab;
 char buf[200];
 
+	if (exp_flags == 0) /* fix for 0 xp mobs -Lennya*/
+		exp_flags =1;
+
+
    if (exp_flags > 100) {
      sprintf(buf, "Exp flags on %s are > 100 (%d)", GET_NAME(mob), exp_flags);
      log(buf);
