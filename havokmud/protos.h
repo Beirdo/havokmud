@@ -342,8 +342,7 @@ void            do_plr_noauction(struct char_data *ch, char *argument,
 void            do_plr_notell(struct char_data *ch, char *argument,
                               int cmd);
 void            do_alias(struct char_data *ch, char *arg, int cmd);
-int             Dismount(struct char_data *ch, struct char_data *h,
-                         int pos);
+void            Dismount(struct char_data *ch, struct char_data *h, int pos);
 void            do_mount(struct char_data *ch, char *arg, int cmd);
 void            do_promote(struct char_data *ch, char *arg, int cmd);
 
@@ -478,10 +477,10 @@ int             board_check_locks(int bnum, struct char_data *ch);
  */
 
 int             __main(void);
-int             close_socket_fd(int desc);
+void            close_socket_fd(int desc);
 int             main(int argc, char **argv);
 int             run_the_game(int port);
-int             game_loop(int s);
+void            game_loop(int s);
 int             get_from_q(struct txt_q *queue, char *dest);
 
 #if BLOCK_WRITE
@@ -525,7 +524,7 @@ void            act2(char *str, int hide_invisible, struct char_data *ch,
                      struct obj_data *obj, void *vict_obj,
                      struct char_data *vict, int type);
 
-int             raw_force_all(char *to_force);
+void             raw_force_all(char *to_force);
 
 /*
  * From constants.c 
@@ -3561,6 +3560,26 @@ int             ships_helm(struct char_data *ch, int cmd, char *argument,
                            struct obj_data *obj, int type);
 int             embark_ship(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob, int type);
+char           *formatNum(int foo);
+int CAN_SEE_OBJ(struct char_data *ch, struct obj_data *obj);
+int MoveOne(struct char_data *ch, int dir);
+int clearpath(struct char_data *ch, long room, int direc);
+long            CalcPowerLevel(struct char_data *ch);
+char           *PowerLevelDesc(long a);
+int find_door(struct char_data *ch, char *type, char *dir);
+void three_arg(char *argument, char *first_arg, char *second_arg,
+               char *third_arg);
+int TotalMemorized(struct char_data *ch);
+int TotalMaxCanMem(struct char_data *ch);
+void list_init(struct descriptor_data *d);
+void list_append(struct descriptor_data *d, char *fmt, ...);
+void list_end(struct descriptor_data *d);
+int fwrite_string(FILE * fl, char *buf);
+char           *strip_cr(char *newbuf, const char *orig, size_t maxlen);
+void            str2ansi(char *p2, char *p1, int start, int stop);
+char           *ParseAnsiColors(int UsingAnsi, char *txt);
+void             construct_prompt(char *buf, struct char_data *ch);
+void remove_cr(char *output, char *input);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()
