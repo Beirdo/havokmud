@@ -7,7 +7,8 @@ $c00150) $c0012Exit from Havok Mud.\n\r\
 $c00151) $c0012Enter the game at Karsynia\n\r\
 $c00152) $c0012Enter description.\n\r\
 $c00153) $c0012Read the background story\n\r\
-$c00154) $c0012Change password.\n\r\
+$c00154) $c0012Credits & Developer Info\n\r\
+$c00155) $c0012Change password.\n\r\
 \
 $c0015K) $c0012Kill this character!\n\r\n\r\
    $c0011Make your choice: "

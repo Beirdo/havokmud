@@ -2042,6 +2042,7 @@ void nanny(struct descriptor_data *d, char *arg)
     char            buf[1024];
     char            bufx[1000];
 
+    extern char *credits;
     int             player_i,
                     count = 0,
                     oops = FALSE,
@@ -3678,8 +3679,13 @@ void nanny(struct descriptor_data *d, char *arg)
             SEND_TO_Q(STORY, d);
             STATE(d) = CON_RMOTD;
             break;
-
         case '4':
+            SEND_TO_Q(credits, d);
+            SEND_TO_Q("\n\r<Press any key to continue>", d);
+            STATE(d) = CON_RMOTD;
+            break;
+
+        case '5':
             SEND_TO_Q("Enter a new password: ", d);
             write(d->descriptor, echo_off, 4);
             STATE(d) = CON_PWDNEW;
