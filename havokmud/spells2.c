@@ -1981,8 +1981,8 @@ void cast_identify( byte level, struct char_data *ch, char *arg, int type,
   		spell_identify(level, ch, tar_ch, tar_obj);
   		if (!IS_IMMORTAL(ch)) {
       		send_to_char("A wave of nausea overcomes you.  You collapse!\n\r",ch);
-      		WAIT_STATE(ch, PULSE_VIOLENCE*6);
-      		GET_POS(ch) = POSITION_STUNNED;
+      		WAIT_STATE(ch, PULSE_VIOLENCE*2);
+//      		GET_POS(ch) = POSITION_STUNNED;
      	      }
   		break;
   case SPELL_TYPE_WAND:
