@@ -1825,9 +1825,15 @@ void close_socket(struct descriptor_data *d)
                 0, 0, TO_ROOM);
 
             if (!IS_IMMORTAL(d->character) || d->character->invis_level <= 58) {
-                sprintf(buf, "Closing link to: %s.", GET_NAME(d->character));
-                Log(buf);
-            }
+                if (!GET_NAME(d->character)) {
+                    sprintf(buf, "Closing link to: %s.", 
+                            GET_NAME(d->character));
+                    Log(buf);
+                } else {
+                    sprintf(buf, "Closing link to: NULL.");
+                    Log(buf);
+                }
+            }   
 
             /* 
              * poly, or switched god 
