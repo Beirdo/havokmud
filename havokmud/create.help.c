@@ -72,16 +72,20 @@ void do_hedit(struct char_data *ch, char *argument, int cmd)
     struct help_file_u *hlp;
     int             i;
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-    if ((IS_NPC(ch)) || !IS_IMMORTAL(ch))
+    }
+    if ((IS_NPC(ch)) || !IS_IMMORTAL(ch)) {
         return;
+    }
 
-    /* someone is forced to do something. can be bad!
+    /* 
+     * someone is forced to do something. can be bad!
      * the ch->desc->str field will cause problems... 
      */
-    if (!ch->desc)
-        return;                 
+    if (!ch->desc) {
+        return;
+    }
 
     CREATE(hlp, struct help_file_u, 1);
     ch->specials.help = hlp;
@@ -145,217 +149,256 @@ int is_help_elem(struct help_file_u *hlp, char *arg)
      * ignore formats of this kind 
      */
     char           *modby = "Done by ";
-    if (!hlp)
+    if (!hlp) {
         return (0);
-    if (!arg)
+    }
+    if (!arg) {
         return (0);
+    }
     for (i = 0; i < 18; i++) {
-        if (arg[i] != usage[i])
+        if (arg[i] != usage[i]) {
             break;
+        }
         if (i == 17) {
-            /* first 18 chars are identical, should be good */
-
-            /* put everything from : * to end of line into * arg2 */
+            /* 
+             * first 18 chars are identical, should be good 
+             *
+             * put everything from : * to end of line into * arg2 
+             */
             half_chop(arg, arg1, arg2); 
 
-            /* get rid of the : */
+            /* 
+             * get rid of the : 
+             */
             half_chop(arg2, arg1, arg3);
 
-            /* get rid of * carriage return */
-            if (arg3[strlen(arg3) - 1] == '\n')
+            /* 
+             * get rid of * carriage return 
+             */
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->usage = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 18; i++) {
-        if (arg[i] != accum[i])
+        if (arg[i] != accum[i]) {
             break;
+        }
         if (i == 17) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->accumulative = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 18; i++) {
-        if (arg[i] != durat[i])
+        if (arg[i] != durat[i]) {
             break;
+        }
         if (i == 17) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->duration = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 18; i++) {
-        if (arg[i] != level[i])
+        if (arg[i] != level[i]) {
             break;
+        }
         if (i == 17) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->level = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 18; i++) {
-        if (arg[i] != damag[i])
+        if (arg[i] != damag[i]) {
             break;
+        }
         if (i == 17) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->damagetype = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 18; i++) {
-        if (arg[i] != saves[i])
+        if (arg[i] != saves[i]) {
             break;
+        }
         if (i == 17) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->saves = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != refer[i])
+        if (arg[i] != refer[i]) {
             break;
+        }
         if (i == 7) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 5; i++) {
-        if (arg[i] != usag2[i])
+        if (arg[i] != usag2[i]) {
             break;
+        }
         if (i == 4) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->usage = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 14; i++) {
-        if (arg[i] != accu2[i])
+        if (arg[i] != accu2[i]) {
             break;
+        }
         if (i == 13) {
             /*
              * take one out, missing space 
              */
             half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->accumulative = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != dura2[i])
+        if (arg[i] != dura2[i]) {
             break;
+        }
         if (i == 7) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->duration = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 5; i++) {
-        if (arg[i] != leve2[i])
+        if (arg[i] != leve2[i]) {
             break;
+        }
         if (i == 4) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->level = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 4; i++) {
-        if (arg[i] != save2[i])
+        if (arg[i] != save2[i]) {
             break;
+        }
         if (i == 3) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->saves = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != refe2[i])
+        if (arg[i] != refe2[i]) {
             break;
+        }
         if (i == 7) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != refe3[i])
+        if (arg[i] != refe3[i]) {
             break;
+        }
         if (i == 7) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != refe4[i])
+        if (arg[i] != refe4[i]) {
             break;
+        }
         if (i == 7) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 10; i++) {
-        if (arg[i] != refe5[i])
+        if (arg[i] != refe5[i]) {
             break;
+        }
         if (i == 9) {
             /*
              * add another halfchop due to extra space 
@@ -363,58 +406,66 @@ int is_help_elem(struct help_file_u *hlp, char *arg)
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg);
             half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 10; i++) {
-        if (arg[i] != refe6[i])
+        if (arg[i] != refe6[i]) {
             break;
+        }
         if (i == 9) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg);
             half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 10; i++) {
-        if (arg[i] != refe7[i])
+        if (arg[i] != refe7[i]) {
             break;
+        }
         if (i == 9) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg);
             half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 10; i++) {
-        if (arg[i] != refe8[i])
+        if (arg[i] != refe8[i]) {
             break;
+        }
         if (i == 9) {
             half_chop(arg, arg1, arg2);
             half_chop(arg2, arg1, arg);
             half_chop(arg, arg1, arg3);
-            if (arg3[strlen(arg3) - 1] == '\n')
+            if (arg3[strlen(arg3) - 1] == '\n') {
                 arg3[strlen(arg3) - 1] = '\0';
+            }
             hlp->references = (char *) strdup(arg3);
             return (1);
         }
     }
 
     for (i = 0; i < 8; i++) {
-        if (arg[i] != modby[i])
+        if (arg[i] != modby[i]) {
             break;
+        }
         if (i == 7) {
             return (1);
         }
@@ -431,11 +482,14 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
                     buffer[MAX_STRING_LENGTH],
                     tmp[126];
 
-    if (!ch->desc)
+    if (!ch->desc) {
         return (FALSE);
+    }
     
     for (; isspace(*argument); argument++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     if (*argument) {
@@ -450,9 +504,13 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         for (i = 0; i <= top_of_helpt; i++) {
             minlen = strlen(argument);
             if (!(strn_cmp(argument, help_index[i].keyword, minlen))) {
-                if (!(hlp = ch->specials.help))
+                if (!(hlp = ch->specials.help)) {
                     return (FALSE);
-                hlp->wizard = 0;        /* found in mortal helpfiles */
+                }
+                hlp->wizard = 0;        
+                /* 
+                 * found in mortal helpfiles 
+                 */
                 hlp->newfile = 0;
                 hlp->index = i;
                 rewind(help_fl);
@@ -460,8 +518,9 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
                 *buffer = '\0';
                 fgets(buf, 80, help_fl);
 
-                if (buf[strlen(buf) - 1] == '~')
+                if (buf[strlen(buf) - 1] == '~') {
                     buf[strlen(buf) - 1] = '\0';
+                }
                 hlp->name = (char *) strdup(buf);
 
                 for (;;) {
@@ -470,14 +529,18 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
                     /*
                      * don't store whitelines 
                      */
-                    if (*buf == '\n' || *buf == '\r')
+                    if (*buf == '\n' || *buf == '\r') {
                         *buf = '\0';
-                    if (*buf == '#')
+                    }
+                    if (*buf == '#') {
                         break;
-                    if (strlen(buf) > MAX_STRING_LENGTH - 2)
+                    }
+                    if (strlen(buf) > MAX_STRING_LENGTH - 2) {
                         break;
-                    if (buf[strlen(buf) - 1] == '~')
+                    }
+                    if (buf[strlen(buf) - 1] == '~') {
                         buf[strlen(buf) - 1] = '\0';
+                    }
                     if (!is_help_elem(hlp, buf)) {
                         strcat(buffer, buf);
                         strcat(buffer, "\r");
@@ -499,26 +562,34 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
         for (i = 0; i <= top_of_wizhelpt; i++) {
             minlen = strlen(argument);
             if (!(strn_cmp(argument, wizhelp_index[i].keyword, minlen))) {
-                if (!(hlp = ch->specials.help))
+                if (!(hlp = ch->specials.help)) {
                     return (FALSE);
-                hlp->wizard = 1;        /* found in wizhelpfiles */
+                }
+                hlp->wizard = 1;        
+                /* 
+                 * found in wizhelpfiles 
+                 */
                 hlp->newfile = 0;
                 hlp->index = wizhelp_index[i].pos;
                 rewind(wizhelp_fl);
                 fseek(wizhelp_fl, wizhelp_index[i].pos, 0);
                 *buffer = '\0';
                 fgets(buf, 80, wizhelp_fl);
-                if (buf[strlen(buf) - 1] == '\n')
+                if (buf[strlen(buf) - 1] == '\n') {
                     buf[strlen(buf) - 1] = '\0';
+                }
                 hlp->name = (char *) strdup(buf);
                 for (;;) {
                     fgets(buf, 80, wizhelp_fl);
-                    if (*buf == '\n' || *buf == '\r')
+                    if (*buf == '\n' || *buf == '\r') {
                         *buf = '\0';
-                    if (*buf == '#')
+                    }
+                    if (*buf == '#') {
                         break;
-                    if (strlen(buf) > MAX_STRING_LENGTH - 2)
+                    }
+                    if (strlen(buf) > MAX_STRING_LENGTH - 2) {
                         break;
+                    }
                     if (!is_help_elem(hlp, buf)) {
                         strcat(buffer, buf);
                         strcat(buffer, "\r");
@@ -586,8 +657,9 @@ void UpdateHelpMenu(struct char_data *ch)
         send_to_char("\n\rAlso see: -", ch);
     }
 
-    if (hlp->wizard)
+    if (hlp->wizard) {
         send_to_char("\n\r\n\rThis is a wizhelp file.", ch);
+    }
 
     send_to_char("\n\r\n\r", ch);
     send_to_char("Menu:\n\r", ch);
@@ -657,11 +729,12 @@ void HelpEdit(struct char_data *ch, char *arg)
             /*
              * write helpfile here 
              */
-            if (write_help_to_file(ch, ch->specials.help))
+            if (write_help_to_file(ch, ch->specials.help)) {
                 send_to_char("File saved successfully.\n\r", ch);
-            else
+            } else {
                 send_to_char("File save unsuccessful. Something went pear "
                              "shaped :(\n\r", ch);
+            }
             if (ch->specials.help->wizard) {
                 send_to_char("Reindexing wizhelp table...\n\r", ch);
                 wizhelp_index = build_help_index(wizhelp_fl, &top_of_wizhelpt);
@@ -731,69 +804,79 @@ int write_one_help(struct char_data *ch, FILE * f_temp)
                     buffer[MAX_STRING_LENGTH * 2];
     struct help_file_u *hlp;
 
-    if (!f_temp)
+    if (!f_temp) {
         return (FALSE);
-    if (!ch)
+    }
+    if (!ch) {
         return (FALSE);
-
+    }
     hlp = ch->specials.help;
-    if (!hlp)
+    if (!hlp) {
         return (FALSE);
-    if (hlp->modBy)
+    }
+    if (hlp->modBy) {
         free(hlp->modBy);
+    }
 
     hlp->modBy = (char *) strdup(GET_NAME(ch));
     hlp->modified = time(0);
     sprintf(buf, "%s", hlp->name);
-    if (buf[strlen(buffer) - 1] == '~')
+    if (buf[strlen(buffer) - 1] == '~') {
         buf[strlen(buffer) - 1] = '\0';
+    }
     strcat(buf, "\n");
     fputs(buf, f_temp);
 
     if (hlp->usage) {
         sprintf(buf, "   Usage        : %s", hlp->usage);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
 
     if (hlp->accumulative) {
         sprintf(buf, "   Accumulative : %s", hlp->accumulative);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
 
     if (hlp->duration) {
         sprintf(buf, "   Duration     : %s", hlp->duration);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
 
     if (hlp->level) {
         sprintf(buf, "   Level        : %s", hlp->level);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
 
     if (hlp->damagetype) {
         sprintf(buf, "   Damagetype   : %s", hlp->damagetype);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
 
     if (hlp->saves) {
         sprintf(buf, "   Save         : %s", hlp->saves);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         strcat(buf, "\n");
         fputs(buf, f_temp);
     }
@@ -801,14 +884,16 @@ int write_one_help(struct char_data *ch, FILE * f_temp)
     if (hlp->description) {
         fputs("\n", f_temp);
         remove_cr(buf, hlp->description);
-        if (buf[strlen(buffer) - 1] == '~')
+        if (buf[strlen(buffer) - 1] == '~') {
             buf[strlen(buffer) - 1] = '\0';
+        }
         fputs(buf, f_temp);
     }
 
     sprintf(buf, "\nAlso see: %s\n", hlp->references ? hlp->references : "-");
-    if (buf[strlen(buffer) - 1] == '~')
+    if (buf[strlen(buffer) - 1] == '~') {
         buf[strlen(buffer) - 1] = '\0';
+    }
     fputs(buf, f_temp);
 
     sprintf(buf, "\nDone by %s, %s", hlp->modBy,
@@ -919,8 +1004,9 @@ int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
          */
         while (i < 2) {
             fgets(buf, 81, f);
-            if (*buf == '#')
+            if (*buf == '#') {
                 i++;
+            }
             fputs(buf, f_temp);
         }
 
@@ -1024,8 +1110,9 @@ void ChangeHelpName(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK) {
-        if (hlp->name)
+        if (hlp->name) {
             free(hlp->name);
+        }
         hlp->name = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1049,8 +1136,9 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->usage)
+        if (hlp->usage) {
             free(hlp->usage);
+        }
         hlp->usage = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1058,8 +1146,9 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->usage)
+        if (hlp->usage) {
             free(hlp->usage);
+        }
         hlp->usage = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1083,8 +1172,9 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->accumulative)
+        if (hlp->accumulative) {
             free(hlp->accumulative);
+        }
         hlp->accumulative = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1092,8 +1182,9 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
     }
     
     if (type != ENTER_CHECK) {
-        if (hlp->accumulative)
+        if (hlp->accumulative) {
             free(hlp->accumulative);
+        }
         hlp->accumulative = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1118,8 +1209,9 @@ void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->duration)
+        if (hlp->duration) {
             free(hlp->duration);
+        }
         hlp->duration = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1127,8 +1219,9 @@ void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->duration)
+        if (hlp->duration) {
             free(hlp->duration);
+        }
         hlp->duration = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1155,8 +1248,9 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
     struct help_file_u *hlp;
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && !*arg || (*arg == '\n')) {
-        if (hlp->level)
+        if (hlp->level) {
             free(hlp->level);
+        }
         hlp->level = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1164,8 +1258,9 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->level)
+        if (hlp->level) {
             free(hlp->level);
+        }
         hlp->level = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1192,8 +1287,9 @@ void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->damagetype)
+        if (hlp->damagetype) {
             free(hlp->damagetype);
+        }
         hlp->damagetype = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1201,8 +1297,9 @@ void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->damagetype)
+        if (hlp->damagetype) {
             free(hlp->damagetype);
+        }
         hlp->damagetype = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1228,8 +1325,9 @@ void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->saves)
+        if (hlp->saves) {
             free(hlp->saves);
+        }
         hlp->saves = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1237,8 +1335,9 @@ void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->saves)
+        if (hlp->saves) {
             free(hlp->saves);
+        }
         hlp->saves = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1279,8 +1378,9 @@ void ChangeHelpDescription(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew Helpfile Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to"
                  " continue)\n\r", ch);
-    if (hlp->description)
+    if (hlp->description) {
         free(hlp->description);
+    }
     hlp->description = NULL;
     ch->desc->str = &hlp->description;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1293,8 +1393,9 @@ void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
 
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
-        if (hlp->references)
+        if (hlp->references) {
             free(hlp->references);
+        }
         hlp->references = NULL;
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1302,8 +1403,9 @@ void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        if (hlp->references)
+        if (hlp->references) {
             free(hlp->references);
+        }
         hlp->references = (char *) strdup(arg);
         ch->specials.hedit = HELP_MAIN_MENU;
         UpdateHelpMenu(ch);
@@ -1340,12 +1442,12 @@ void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.hedit) {
         case CHANGE_HELP_WIZARD:
-            if (update < 0 || update > 1)
+            if (update < 0 || update > 1) {
                 return;
-
-            else {
-                if (hlp->newfile)
+            } else {
+                if (hlp->newfile) {
                     hlp->wizard = update;
+                }
                 ch->specials.hedit = HELP_MAIN_MENU;
                 UpdateHelpMenu(ch);
                 return;

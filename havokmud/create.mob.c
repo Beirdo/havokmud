@@ -113,16 +113,18 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
     update--;
 
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 32)
+        if (update < 0 || update > 32) {
             return;
+        }
         i = 1 << update;
 
         if (i != ACT_POLYSELF) {
-            if (IS_SET(ch->specials.mobedit->specials.act, i))
+            if (IS_SET(ch->specials.mobedit->specials.act, i))  {
                 REMOVE_BIT(ch->specials.mobedit->specials.act, i);
-            else
+            } else {
                 SET_BIT(ch->specials.mobedit->specials.act, i);
-        }
+            }
+        }   
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -134,8 +136,9 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 
     for (i = 0; i < totalActionFlags; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         sprintf(buf, "%-2d [%s] %s", i + 1,
                 ((ch->specials.mobedit->specials.act & (1 << i)) ? "X" : " "), 
@@ -172,10 +175,11 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
         }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.mobedit->specials.affected_by, i))
+        if (IS_SET(ch->specials.mobedit->specials.affected_by, i)) {
             REMOVE_BIT(ch->specials.mobedit->specials.affected_by, i);
-        else
+        } else {
             SET_BIT(ch->specials.mobedit->specials.affected_by, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -186,8 +190,9 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 32; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -209,20 +214,23 @@ void do_medit(struct char_data *ch, char *argument, int cmd)
     struct char_data *mob;
     int             i;
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
-    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR))
+    }
+    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR)) {
         return;
-
-    /* someone is forced to do something. can be bad!
+    }
+    /* 
+     * someone is forced to do something. can be bad!
      * the ch->desc->str field will cause problems... 
      */
-    if (!ch->desc)
+    if (!ch->desc) {
         return;                 
-
+    }
     for (i = 0; *(argument + i) == ' '; i++) {
-        /* Empty loop */
+        /* 
+         * Empty loop 
+         */
     }
 
     if (!*(argument + i)) {
@@ -241,14 +249,15 @@ void do_medit(struct char_data *ch, char *argument, int cmd)
         send_to_char("You can not mobedit players.\n\r", ch);
         return;
     }
-
-    /*
-     * if (GetMaxLevel(ch) < GOD &&
-     * !IS_SET(ch->player.user_flags,CAN_MOB_EDIT)) { send_to_char("You do 
-     * not have access to edit mobiles.\n\r",ch); return; } this was
+#if 0
+    if (GetMaxLevel(ch) < GOD && !IS_SET(ch->player.user_flags,CAN_MOB_EDIT)) {         send_to_char("You do not have access to edit mobiles.\n\r",ch); 
+        return; 
+    } 
+    /* 
+     * this was
      * annoying for low-level builders
      */
-
+#endif
     ch->specials.mobedit = mob;
     ch->specials.medit = MOB_MAIN_MENU;
     ch->desc->connected = CON_MOB_EDITING;
@@ -526,8 +535,9 @@ void ChangeMobName(struct char_data *ch, char *arg, int type)
 
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
-        if (mob->player.name)
+        if (mob->player.name) {
             free(mob->player.name);
+        }
         mob->player.name = (char *) strdup(arg);
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -555,8 +565,9 @@ void ChangeMobShort(struct char_data *ch, char *arg, int type)
 
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
-        if (mob->player.short_descr)
+        if (mob->player.short_descr) {
             free(mob->player.short_descr);
+        }
         mob->player.short_descr = (char *) strdup(arg);
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -585,8 +596,9 @@ void ChangeMobLong(struct char_data *ch, char *arg, int type)
 
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
-        if (mob->player.long_descr)
+        if (mob->player.long_descr) {
             free(mob->player.long_descr);
+        }
         mob->player.long_descr = (char *) strdup(arg);
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -623,8 +635,9 @@ void ChangeMobDesc(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew Mobile Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to"
                  " continue)\n\r", ch);
-    if (mob->player.description)
+    if (mob->player.description) {
         free(mob->player.description);
+    }
     mob->player.description = NULL;
     ch->desc->str = &mob->player.description;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -645,8 +658,9 @@ void ChangeMobAlign(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < -1000 || change > 1000)
+        if (change < -1000 || change > 1000) {
             change = 0;
+        }
         GET_ALIGNMENT(mob) = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -678,8 +692,9 @@ void ChangeMobArmor(struct char_data *ch, char *arg, int type)
 
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < -100 || change > 100)
+        if (change < -100 || change > 100) {
             change = 0;
+        }
         mob->points.armor = change;
         sprintf(buf, "%d %d", change, mob->points.armor);
         ch->specials.medit = MOB_MAIN_MENU;
@@ -711,8 +726,9 @@ void ChangeMobDamplus(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change <= 0 || change > 255)
+        if (change <= 0 || change > 255) {
             change = 1;
+        }
         mob->points.damroll = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -742,8 +758,9 @@ void ChangeMobDamsize(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change <= 0 || change > 255)
+        if (change <= 0 || change > 255) {
             change = 1;
+        }
         mob->specials.damsizedice = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -774,10 +791,12 @@ void ChangeMobDamnumb(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change <= 0)
+        if (change <= 0) {
             change = 1;
-        if (change <= 0 || change > 255)
+        }
+        if (change <= 0 || change > 255) {
             change = 1;
+        }
         mob->specials.damnodice = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -809,11 +828,17 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
     }
 
     if (type != ENTER_CHECK) {
-        // change=atoi(arg); /* make an argument into an integer?! no
-        // wonder it won't take floating #s -Lennya */
+#if 0
+        change=atoi(arg); 
+        /* make an argument into an integer?! 
+         * no wonder it won't take floating 
+         * #s -Lennya 
+         */
+#endif       
         change = arg_to_float(arg);
-        if (change < 0.0)
+        if (change < 0.0) {
             change = 0.0;
+        }
         mob->mult_att = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -862,11 +887,12 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0)
+        if (change < 0) {
             change = 0;
-        if (mob->specials.mobtype == 'S')
+        }
+        if (mob->specials.mobtype == 'S') {
             GET_EXP(mob) = change;
-        else {
+        } else {
             if (change > 32) {
                 send_to_char("That expflag is too high!\n\r", ch);
                 ch->specials.medit = MOB_HIT_RETURN;
@@ -893,16 +919,17 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    if (mob->specials.mobtype == 'S')
+    if (mob->specials.mobtype == 'S') {
         sprintf(buf, "Current Mob Exp: %d", GET_EXP(mob));
-    else
+    } else {
         sprintf(buf, "Current Mob Expflag: %d", mob->specials.exp_flag);
-
+    }
     send_to_char(buf, ch);
-    if (mob->specials.mobtype == 'S')
+    if (mob->specials.mobtype == 'S') {
         send_to_char("\n\r\n\rNew Exp Amount: ", ch);
-    else
+    } else {
         send_to_char("\n\r\n\rNew Expflag: ", ch);
+    }
 }
 
 void ChangeMobDpos(struct char_data *ch, char *arg, int type)
@@ -920,8 +947,9 @@ void ChangeMobDpos(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0 || change > 9)
+        if (change < 0 || change > 9) {
             change = 0;
+        }
         mob->specials.default_pos = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -963,9 +991,9 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.medit) {
         case CHANGE_MOB_RACE:
-            if (update < 0 || update > MAX_RACE)
+            if (update < 0 || update > MAX_RACE) {
                 return;
-            else {
+            } else {
                 GET_RACE(ch->specials.mobedit) = update;
                 ch->specials.medit = MOB_MAIN_MENU;
                 UpdateMobMenu(ch);
@@ -1003,15 +1031,16 @@ void ChangeMobResist(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 17)
+        if (update < 0 || update > 17) {
             return;
-
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.mobedit->immune, i))
+        if (IS_SET(ch->specials.mobedit->immune, i)) {
             REMOVE_BIT(ch->specials.mobedit->immune, i);
-        else
+        } else {
             SET_BIT(ch->specials.mobedit->immune, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -1022,8 +1051,9 @@ void ChangeMobResist(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 18; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -1057,14 +1087,16 @@ void ChangeMobImmune(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 17)
+        if (update < 0 || update > 17) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.mobedit->M_immune, i))
+        if (IS_SET(ch->specials.mobedit->M_immune, i)) {
             REMOVE_BIT(ch->specials.mobedit->M_immune, i);
-        else
+        } else {
             SET_BIT(ch->specials.mobedit->M_immune, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -1075,8 +1107,9 @@ void ChangeMobImmune(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 18; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -1110,14 +1143,16 @@ void ChangeMobSuscep(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 17)
+        if (update < 0 || update > 17) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.mobedit->susc, i))
+        if (IS_SET(ch->specials.mobedit->susc, i)) {
             REMOVE_BIT(ch->specials.mobedit->susc, i);
-        else
+        } else {
             SET_BIT(ch->specials.mobedit->susc, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -1128,8 +1163,9 @@ void ChangeMobSuscep(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 18; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -1160,12 +1196,17 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     mob = ch->specials.mobedit;
-    /*
-     * if(mob->specials.mobtype!='L') { send_to_char("Please use a base
-     * mobile that already has sound, this one does not.\n\r",ch);
-     * ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "",
-     * ENTER_CHECK); return; } 
-     */
+    
+#if 0
+    if(mob->specials.mobtype!='L') { 
+        send_to_char("Please use a base mobile that already has "
+                "sound, this one does not.\n\r",ch);
+        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "", 
+                ENTER_CHECK); 
+        return; 
+    } 
+#endif
+    
     if (mob->player.sounds != 0) {
         sprintf(buf, "Current Mobile Sound:\n\r");
         send_to_char(buf, ch);
@@ -1174,8 +1215,9 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew Mobile Sound:\n\r", ch);
     send_to_char("(Terminate with a /w on a new line. Press <C/R> again to"
                  " continue)\n\r", ch);
-    if (mob->player.sounds)
+    if (mob->player.sounds) {
         free(mob->player.sounds);
+    }
     mob->player.sounds = NULL;
     ch->desc->str = &mob->player.sounds;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1196,12 +1238,17 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     mob = ch->specials.mobedit;
-    /*
-     * if(mob->specials.mobtype!='L') { send_to_char("Please use a base
-     * mobile that already has sound, this one does not.\n\r",ch);
-     * ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "",
-     * ENTER_CHECK); return; }
-     */
+    
+#if 0
+    if (mob->specials.mobtype!='L') { 
+        send_to_char("Please use a base mobile that already has sound, "
+                "this one does not.\n\r",ch);
+        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "", 
+                ENTER_CHECK); 
+        return; 
+    }
+#endif
+          
     if (mob->player.distant_snds != 0) {
         sprintf(buf, "Current Mobile Distant Sound:\n\r");
         send_to_char(buf, ch);
@@ -1211,8 +1258,9 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew Mobile Distant Sound:\n\r", ch);
     send_to_char("(Terminate with a /w on a new line. Press <C/R> again to "
                  "continue)\n\r", ch);
-    if (mob->player.distant_snds)
+    if (mob->player.distant_snds) {
         free(mob->player.distant_snds);
+    }
     mob->player.distant_snds = NULL;
     ch->desc->str = &mob->player.distant_snds;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1233,8 +1281,9 @@ void ChangeMobLevel(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 1 || change > 60)
+        if (change < 1 || change > 60) {
             change = 1;
+        }
         GET_LEVEL(mob, WARRIOR_LEVEL_IND) = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -1311,8 +1360,9 @@ void ChangeMobHitplus(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change <= 0 || change > 255)
+        if (change <= 0 || change > 255) {
             change = 1;
+        }
         mob->points.hitroll = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -1342,9 +1392,9 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0 || change > 20)
+        if (change < 0 || change > 20) {
             change = 0;
-
+        }
         mob->specials.proc = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -1421,8 +1471,9 @@ void ChangeMobTalks(struct char_data *ch, char *arg, int type)
     send_to_char("\n\rTo delete, use /w only.\n\r", ch);
     send_to_char("Terminate with a /w on a new line. Press <C/R> again to "
                  "continue. /? for more help.\n\r", ch);
-    if (mob->specials.talks)
+    if (mob->specials.talks) {
         free(mob->specials.talks);
+    }
     mob->specials.talks = NULL;
     ch->desc->str = &mob->specials.talks;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1452,8 +1503,9 @@ void ChangeMobQuestYes(struct char_data *ch, char *arg, int type)
                  ch);
     send_to_char("(Terminate with a /w on a new line. Press <C/R> again to "
                  "continue)\n\r", ch);
-    if (mob->specials.quest_yes)
+    if (mob->specials.quest_yes) {
         free(mob->specials.quest_yes);
+    }
     mob->specials.quest_yes = NULL;
     ch->desc->str = &mob->specials.quest_yes;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1482,8 +1534,9 @@ void ChangeMobQuestNo(struct char_data *ch, char *arg, int type)
     send_to_char("\n\r\n\rNew mobile gave-wrong-quest-item response:\n\r", ch);
     send_to_char("(Terminate with a /w on a new line. Press <C/R> again to "
                  "continue)\n\r", ch);
-    if (mob->specials.quest_no)
+    if (mob->specials.quest_no) {
         free(mob->specials.quest_no);
+    }
     mob->specials.quest_no = NULL;
     ch->desc->str = &mob->specials.quest_no;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -1504,9 +1557,9 @@ void ChangeMobHps(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 1 || change > 15000)
+        if (change < 1 || change > 15000) {
             change = 1;
-
+        }
         mob->points.max_hit = change;
         mob->points.hit = change;
         ch->specials.medit = MOB_MAIN_MENU;
@@ -1537,9 +1590,9 @@ void ChangeMobCoinage(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0 || change > 20000)
+        if (change < 0 || change > 20000) {
             change = 1;
-
+        }
         mob->points.gold = change;
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);

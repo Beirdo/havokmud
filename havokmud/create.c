@@ -55,24 +55,27 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg,
                     update;
     char            buf[255];
 
-    if (type != ENTER_CHECK)
+    if (type != ENTER_CHECK) {
         if (!*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
         }
+    }
 
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 28)
+        if (update < 0 || update > 28) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(rp->room_flags, i))
+        if (IS_SET(rp->room_flags, i)) {
             REMOVE_BIT(rp->room_flags, i);
-        else
+        } else {
             SET_BIT(rp->room_flags, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -83,8 +86,9 @@ void ChangeRoomFlags(struct room_data *rp, struct char_data *ch, char *arg,
     row = 0;
     for (i = 0; i < 29; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         sprintf(buf, "%-2d [%s] %s", i + 1,
                 ((rp->room_flags & (1 << i)) ? "X" : " "), room_bits[i]);
@@ -103,17 +107,17 @@ void do_redit(struct char_data *ch, char *arg, int cmd)
 
     rp = real_roomp(ch->in_room);
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
-    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < LOW_IMMORTAL))
+    }
+    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < LOW_IMMORTAL)) {
         return;
-
+    }
     /* 
      * someone is forced to do something. can be bad! 
      * the ch->desc->str field will cause problems... 
      */
-    if (!ch->desc)               {
+    if (!ch->desc) {
         return;
     }
 
@@ -250,16 +254,17 @@ void ChangeRoomName(struct room_data *rp, struct char_data *ch, char *arg,
 {
     char            buf[255];
 
-    if (type != ENTER_CHECK)
+    if (type != ENTER_CHECK) {
         if (!*arg || (*arg == '\n')) {
             ch->specials.edit = MAIN_MENU;
             UpdateRoomMenu(ch);
             return;
         }
-
+    }
     if (type != ENTER_CHECK) {
-        if (rp->name)
+        if (rp->name) {
             free(rp->name);
+        }
         rp->name = (char *) strdup(arg);
         ch->specials.edit = MAIN_MENU;
         UpdateRoomMenu(ch);
@@ -296,8 +301,9 @@ void ChangeRoomDesc(struct room_data *rp, struct char_data *ch, char *arg,
     send_to_char("\n\r\n\rNew Room Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to "
                  "continue)\n\r", ch);
-    if (rp->description)
+    if (rp->description) {
         free(rp->description);
+    }
     rp->description = NULL;
     ch->desc->str = &rp->description;
     ch->desc->max_str = MAX_STRING_LENGTH;
@@ -365,8 +371,9 @@ void ChangeRoomType(struct room_data *rp, struct char_data *ch, char *arg,
     row = 0;
     for (i = 0; i < 23; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         sprintf(buf, "%-2d %s", i + 1, sector_types[i]);
         send_to_char(buf, ch);
@@ -513,14 +520,16 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
 
         update = atoi(arg) - 1;
 
-        if (update < 0 || update > 6)
+        if (update < 0 || update > 6) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(rp->dir_option[dir]->exit_info, i))
+        if (IS_SET(rp->dir_option[dir]->exit_info, i)) {
             REMOVE_BIT(rp->dir_option[dir]->exit_info, i);
-        else
+        } else {
             SET_BIT(rp->dir_option[dir]->exit_info, i);
+        }
     } else if (!rp->dir_option[dir]) {
         CREATE(rp->dir_option[dir], struct room_direction_data, 1);
         rp->dir_option[dir]->exit_info = 0;
@@ -534,8 +543,9 @@ void AddExitToRoom(struct room_data *rp, struct char_data *ch, char *arg,
     row = 0;
     for (i = 0; i < 7; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         sprintf(buf, "%-2d [%s] %s", i + 1,
                 ((rp->dir_option[dir]->exit_info & (1 << i)) ? "X" : " "),
@@ -577,9 +587,9 @@ void ChangeExitNumber(struct room_data *rp, struct char_data *ch,
         break;
     }
 
-    if (type == ENTER_CHECK)
+    if (type == ENTER_CHECK) {
         return;
-
+    }
     update = atoi(arg);
 
     if (update < 0 || update > WORLD_SIZE) {
@@ -646,14 +656,14 @@ void ChangeKeyNumber(struct room_data *rp, struct char_data *ch, char *arg,
         break;
     }
 
-    if (type == ENTER_CHECK)
+    if (type == ENTER_CHECK) {
         return;
-
+    }
     update = atoi(arg);
 
-    if (!rp->dir_option[dir]->keyword)
+    if (!rp->dir_option[dir]->keyword) {
         rp->dir_option[dir]->keyword = (char *) strdup("door");
-
+    }
     if (update < 0) {
         send_to_char("\n\rKey number must be greater than 0.\n\r", ch);
         send_to_char("\n\rKey Number (0 for none): ", ch);

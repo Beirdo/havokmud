@@ -109,14 +109,16 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 31)
+        if (update < 0 || update > 31) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->obj_flags.extra_flags, i))
+        if (IS_SET(ch->specials.objedit->obj_flags.extra_flags, i)) {
             REMOVE_BIT(ch->specials.objedit->obj_flags.extra_flags, i);
-        else
+        } else {
             SET_BIT(ch->specials.objedit->obj_flags.extra_flags, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -127,8 +129,9 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 32; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -162,14 +165,16 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 19)
+        if (update < 0 || update > 19) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->obj_flags.wear_flags, i))
+        if (IS_SET(ch->specials.objedit->obj_flags.wear_flags, i)) {
             REMOVE_BIT(ch->specials.objedit->obj_flags.wear_flags, i);
-        else
+        } else {
             SET_BIT(ch->specials.objedit->obj_flags.wear_flags, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -180,8 +185,9 @@ void ChangeObjWear(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 20; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -203,26 +209,34 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     struct obj_data *obj;
     int             i;
 
-    if (IS_NPC(ch))
+    if (IS_NPC(ch)) {
         return;
-
-    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR))
+    }
+    if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR)) {
         return;
-
-    /* someone is forced to do something. can be bad!
+    }
+    /* 
+     * someone is forced to do something. can be bad!
      * the ch->desc->str field will cause problems...
      */
-    if (!ch->desc)
+    if (!ch->desc) {
         return;
-
+    }
+#if 0    
+    if (GetMaxLevel(ch) < GREATER_GOD && 
+            !IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) { 
+        send_to_char("You do not have access to object editing.\n\r",ch); 
+        return; 
+    } 
     /*
-     * if (GetMaxLevel(ch) < GREATER_GOD &&
-     * !IS_SET(ch->player.user_flags,CAN_OBJ_EDIT)) { send_to_char("You do 
-     * not have access to object editing.\n\r",ch); return; } this have
-     * been temporarilly removed... 
+     * this has been temporarilly removed... 
      */
-
-    for (i = 0; *(argument + i) == ' '; i++);
+#endif
+    for (i = 0; *(argument + i) == ' '; i++) {
+        /*
+         * Empty loop
+         */
+    }
     if (!*(argument + i)) {
         send_to_char("Oedit what?\n\r", ch);
         return;
@@ -236,11 +250,12 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     }
 
 #if 0
-    if (obj_index[obj->item_number].data == NULL)
+    if (obj_index[obj->item_number].data == NULL) {
         read_object_to_memory(obj_index[obj->item_number].virtual);
-
+    }
     ch->specials.objedit = obj_index[obj->item_number].data;
 #else
+    
     ch->specials.objedit = obj;
 #endif
 
@@ -250,10 +265,11 @@ void do_oedit(struct char_data *ch, char *argument, int cmd)
     act("$n has begun editing an object.", FALSE, ch, 0, 0, TO_ROOM);
     GET_POS(ch) = POSITION_SLEEPING;
 
-    /*
-     * if(GetMaxLevel(ch)<ROLORD)
-     * ch->specials.objedit->mortal_can_use=FALSE; 
-     */
+#if 0
+    if(GetMaxLevel(ch)<ROLORD) {
+        ch->specials.objedit->mortal_can_use=FALSE;
+    }
+#endif
 
     UpdateObjMenu(ch);
 }
@@ -447,8 +463,9 @@ void ChangeObjName(struct char_data *ch, char *arg, int type)
 
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
-        if (obj->name)
+        if (obj->name) {
             free(obj->name);
+        }
         obj->name = (char *) strdup(arg);
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -476,8 +493,9 @@ void ChangeObjShort(struct char_data *ch, char *arg, int type)
 
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
-        if (obj->short_description)
+        if (obj->short_description) {
             free(obj->short_description);
+        }
         obj->short_description = (char *) strdup(arg);
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -506,8 +524,9 @@ void ChangeObjDesc(struct char_data *ch, char *arg, int type)
 
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
-        if (obj->description)
+        if (obj->description) {
             free(obj->description);
+        }
         obj->description = (char *) strdup(arg);
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -541,9 +560,9 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     if (type != ENTER_CHECK) {
         switch (ch->specials.oedit) {
         case CHANGE_OBJ_TYPE:
-            if (update < 0 || update > 29)
+            if (update < 0 || update > 29) {
                 return;
-            else {
+            } else {
                 ch->specials.objedit->obj_flags.type_flag = update;
                 ch->specials.oedit = OBJ_MAIN_MENU;
                 UpdateObjMenu(ch);
@@ -561,8 +580,9 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 30; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         sprintf(buf, "%-2d %s", i + 1, item_types[i]);
         send_to_char(buf, ch);
@@ -589,8 +609,9 @@ void ChangeObjWeight(struct char_data *ch, char *arg, int type)
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0)
+        if (change < 0) {
             change = 0;
+        }
         obj->obj_flags.weight = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -620,8 +641,9 @@ void ChangeObjCost(struct char_data *ch, char *arg, int type)
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0)
+        if (change < 0) {
             change = -1;
+        }
         obj->obj_flags.cost_per_day = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -663,8 +685,9 @@ void ChangeObjPrice(struct char_data *ch, char *arg, int type)
     obj = ch->specials.objedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0)
+        if (change < 0) {
             change = 0;
+        }
         obj->obj_flags.cost = change;
         ch->specials.oedit = OBJ_MAIN_MENU;
         UpdateObjMenu(ch);
@@ -841,7 +864,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
         case 41:
         case 42:
         case 50:
-        case 51:
+        case 51:    
         case 52:
         case 53:
         case 54:
@@ -857,8 +880,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
                          "adding.\n\r      0=neutral, 1=male, 2=female\n\r",
                          ch);
             break;
-        case 16:
-            /* check */
+        case 16:                /* check */
             ChangeObjS2Affect(ch, "", ENTER_CHECK);
             functionflag = TRUE;
             break;
@@ -870,8 +892,9 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
             row = 0;
             for (i = 0; i < 18; i++) {
                 sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-                if (i & 1)
+                if (i & 1) {
                     row++;
+                }
                 send_to_char(buf, ch);
                 check = 1 << i;
 
@@ -919,12 +942,13 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 
     for (i = 0; i < 57; i++) {
         a++;
-        if (a == 1)
+        if (a == 1) {
             column = 5;
-        else if (a == 2)
+        } else if (a == 2) {
             column = 30;
-        else if (a == 3)
+        } else if (a == 3) {
             column = 55;
+        }
         sprintf(buf, VT_CURSPOS, row + 1, column);
         if (a == 3) {
             row++;
@@ -965,25 +989,29 @@ void ChangeAffectMod(struct char_data *ch, char *arg, int type)
         break;
     }
 
-    if (type == ENTER_CHECK)
+    if (type == ENTER_CHECK) {
         return;
-
+    }
     update = atoi(arg);
 
-    if (update > 32000)
+    if (update > 32000) {
         update = 0;
-
+    }
     if (ch->specials.objedit->affected[affect - 1].location == 29 ||
         ch->specials.objedit->affected[affect - 1].location == 30 ||
         ch->specials.objedit->affected[affect - 1].location == 31) {
-        if (update >= 45 && update <= 52)
+        if (update >= 45 && update <= 52) {
             skill = TRUE;
-        if (update >= 120 && update <= 127)
+        }
+        if (update >= 120 && update <= 127) {
             skill = TRUE;
-        if (update >= 129 && update <= 163)
+        }
+        if (update >= 129 && update <= 163) {
             skill = TRUE;
-        if (update >= 180 && update <= 187)
+        }
+        if (update >= 180 && update <= 187) {
             skill = TRUE;
+        }
         if (skill == TRUE) {
             send_to_char("You must use a spell, not a skill!\n\r"
                          "Setting modifier to 1 (armor spell).\n\r", ch);
@@ -1132,38 +1160,38 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 
         switch (ch->specials.oedit) {
         case CHANGE_OBJ_EGO:
-            if (update < 51 && update >= 0)
+            if (update < 51 && update >= 0) {
                 ch->specials.objedit->level = update;
-            else {
+            } else {
                 temp = 1;
             }
             break;
         case CHANGE_OBJ_SPEED:
-            if (update < 101 && update >= 0)
+            if (update < 101 && update >= 0) {
                 ch->specials.objedit->speed = update;
-            else {
+            } else {
                 temp = 1;
             }
             break;
         case CHANGE_OBJ_MAX:
-            if (update < 101 && update >= 0)
+            if (update < 101 && update >= 0) {
                 ch->specials.objedit->max = update;
-            else {
+            } else {
                 temp = 1;
             }
             break;
         case CHANGE_OBJ_TWEAK:
-            if (update < 101 && update >= 0)
+            if (update < 101 && update >= 0) {
                 ch->specials.objedit->tweak = update;
-            else {
+            } else {
                 temp = 1;
             }
             break;
         case CHANGE_OBJ_WTYPE:
             if (update <= WEAPON_LAST - 340
-                && update >= WEAPON_FIRST - 340)
+                && update >= WEAPON_FIRST - 340) {
                 ch->specials.objedit->weapontype = update;
-            else {
+            } else {
                 temp = 1;
             }
             break;
@@ -1183,10 +1211,10 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
                       "Current (%d)", ch->specials.objedit->level);
         break;
     case CHANGE_OBJ_SPEED:
-        if (IS_WEAPON(ch->specials.objedit))
+        if (IS_WEAPON(ch->specials.objedit)) {
             ch_printf(ch, "Please enter weapon speed: Param(0-100)   "
                           "Current(%d)", ch->specials.objedit->speed);
-        else {
+        } else {
             send_to_char("Can only do this to weapons.\n\r", ch);
             ch->specials.oedit = CHANGE_OBJ_SPECIAL;
             ChangeObjSpecial(ch, "", ENTER_CHECK);
@@ -1201,17 +1229,19 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
                       "Current(%d)", ch->specials.objedit->tweak);
         break;
     case CHANGE_OBJ_WTYPE:
-        if (IS_WEAPON(ch->specials.objedit))
+        if (IS_WEAPON(ch->specials.objedit)) {
             ch_printf(ch, "Please enter the Weapon Type. Param(0-59)    "
                           "Current(%d)", ch->specials.objedit->weapontype);
-        else {
+        } else {
             send_to_char("Can only do this to weapons.\n\r", ch);
             ch->specials.oedit = CHANGE_OBJ_SPECIAL;
             ChangeObjSpecial(ch, "", ENTER_CHECK);
         }
         break;
     default:
-        // send_to_char("Bad value",ch);
+#if 0
+        send_to_char("Bad value",ch);
+#endif        
         break;
     }
 }
@@ -1266,16 +1296,21 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
              value == 3) || 
             (ch->specials.objedit->obj_flags.type_flag == ITEM_POTION && 
              value != 0)) {
-            if (update >= 45 && update <= 52)
+            if (update >= 45 && update <= 52) {
                 skill = TRUE;
-            if (update >= 171 && update <= 214)
+            }
+            if (update >= 171 && update <= 214) {
                 skill = TRUE;
-            if (update >= 221 && update <= 241)
+            }
+            if (update >= 221 && update <= 241) {
                 skill = TRUE;
-            if (update >= 246 && update <= 254)
+            }
+            if (update >= 246 && update <= 254) {
                 skill = TRUE;
-            if (update == 288)
+            }
+            if (update == 288) {
                 skill = TRUE;
+            }
             if (skill == TRUE) {
                 send_to_char ("You must use a spell number, not a skill!\n\r"
                               "Setting modifier to 1 (armor spell).\n\r", ch);
@@ -1300,67 +1335,71 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
     switch (ch->specials.objedit->obj_flags.type_flag) {
     case ITEM_LIGHT:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the color (Because we all know its "
                          "spelled without a 'u').", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the type.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the number of hours the light source "
                          "will last.", ch);
-        else
+        } else {
             send_to_char("\n\rValue is not used for this item type.", ch);
+        }
         break;
     case ITEM_SCROLL:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this scroll "
                          "casts.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the first spell this scroll casts.", 
                          ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the second spell this scroll casts.",
                          ch);
-        else
+        } else {
             send_to_char("\n\rValue4 is the third spell this scroll casts.",
                          ch);
+        }
         break;
     case ITEM_WAND:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this wand casts.",
                          ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the mana the wand takes to use each "
                          "time.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the number of charges the wand has.",
                          ch);
-        else
+        } else {
             send_to_char("\n\rValue4 is the spell the wand casts.", ch);
+        }
         break;
     case ITEM_STAFF:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the level of casting this staff "
                          "casts.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the mana the staff takes to use each "
                          "time.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the number of charges the staff has.",
                          ch);
-        else
+        } else {
             send_to_char("\n\rValue4 is the spell the staff casts.", ch);
+        }
         break;
     case ITEM_WEAPON:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the plus to hit.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the number of times the damage die is "
                          "rolled.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the number of of faces on damage die.",
                          ch);
-        else {
+        } else {
             send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r",
                          ch);
             send_to_char("0  - smite\n\r", ch);
@@ -1370,19 +1409,21 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("7  - pound       8 - claw\n\r", ch);
             send_to_char("9  - bite       10 - sting\n\r", ch);
             send_to_char("11 - pierce     12 - blast\n\r", ch);
-            // send_to_char("13 - smite 14 - impale weapon\n\r",ch);
+#if 0
+            send_to_char("13 - smite 14 - impale weapon\n\r",ch);
+#endif
             send_to_char("13 - impale     14 - ranged weapon\n\r", ch);
         }
         break;
     case ITEM_FIREWEAPON:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the strength required to draw.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the tohit bonus.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the max range [in rooms] and the "
                          "todam.", ch);
-        else {
+        } else {
             send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r", 
                          ch);
             send_to_char("1  - hit         2 - pound\n\r", ch);
@@ -1396,16 +1437,16 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
         }
         break;
     case ITEM_MISSILE:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the % chance that the missile will "
                          "break.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the number of sides on the damage die.",
                          ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the number of sides the damage die is "
                          "rolled.", ch);
-        else {
+        } else {
             send_to_char("\n\rValue4 is the type of weapon damage.\n\r\n\r",
                          ch);
             send_to_char("1  - hit         2 - pound\n\r", ch);
@@ -1418,66 +1459,71 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
         }
         break;
     case ITEM_ARMOR:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the Armor Class Apply.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the Full Strengh of the armor.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the size of the armor.\n\r"
                          " 0=Adjustable,1=Tiny,2=Small,3=Medium,4=large,"
                          "5=Huge,6=Enormous", ch);
-        else
+        } else {
             send_to_char("\n\rValue is not used for this item type.", ch);
+        }
         break;
     case ITEM_POTION:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the level of the spells this potion "
                          "casts.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the first spell this potion casts.",
                          ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the second spell this potion casts.",
                          ch);
-        else
+        } else {
             send_to_char("\n\rValue4 is the third spell this potion casts.",
                          ch);
+        }
         break;
     case ITEM_TRAP:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the trap damage level.", ch);
-        else if (value == 1) {
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the attack type of the trap.\n\r\n\r",
                          ch);
             send_to_char(" 10 - blasted          26 - seared\n\r", ch);
             send_to_char(" 67 - corroded        203 - frozen\n\r", ch);
             send_to_char("207 - pounded         208 - pierced\n\r", ch);
             send_to_char("209 - sliced\n\r", ch);
-        } else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 should be set to 80.", ch);
-        else
-            send_to_char("\n\rValue4 are the number of trap charges left.", ch);
+        } else {
+            send_to_char("\n\rValue4 are the number of trap charges "
+                    "left.", ch);
+        }
         break;
     case ITEM_CONTAINER:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the max number of items that can fit.",
                          ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the locktype.\n\r\n\r", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the vnum of the key needed to unlock "
                          "container, 0 for none.", ch);
-        else
+        } else {
             send_to_char("\n\rValue4 determines whether the container is a "
                          "corpse (1=yes, 0=no).", ch);
+        }
         break;
     case ITEM_DRINKCON:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the amount of fluid the container can "
                          "hold.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rValue2 is the amount of fluid left.\n\r\n\r", ch);
-        else if (value == 2) {
+        } else if (value == 2) {
             send_to_char("\n\rValue3 is the type of liquid in the "
                          "container.\n\r\n\r", ch);
             send_to_char(" 0 - water        1 - beer\n\r", ch);
@@ -1488,48 +1534,54 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("10 - milk        11 - tea\n\r", ch);
             send_to_char("12 - coffee      13 - blood\n\r", ch);
             send_to_char("14 - salt water  15 - coca cola\n\r", ch);
-        } else
+        } else {
             send_to_char("\n\rValue4 determines whether the liquid is poisoned"
                          " (1=yes, 0=no).", ch);
+        }
         break;
     case ITEM_NOTE:
         send_to_char("\n\rValue not used for this item type.\n\r", ch);
         break;
     case ITEM_KEY:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the keytype.", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_FOOD:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is how full you get from eating the food.",
                          ch);
-        else if (value == 3)
+        } else if (value == 3) {
             send_to_char("\n\rValue4 is whether the food is poisoned (1=yes, "
                          "0=no).\n\r\n\r", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_AUDIO:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rTo set the sound on the item, use the setsound "
                          "command.", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_ROCK:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rRock Mobs are determined by weight, not obj "
                          "value.", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_PORTAL:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rValue1 is the room to portal to.", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_TREE:
         if (value == 0) {
@@ -1538,27 +1590,30 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
             send_to_char("Example: 'Rufus tree'.  Don't do: 'tree Rufus'.\n\r",
                          ch);
             send_to_char("Value not used for this item type.\n\r", ch);
-        } else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_INSTRUMENT:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rThis value determines the mana reduction of song"
                          " weaving (1-50%).", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     case ITEM_SHIPS_HELM:
-        if (value == 0)
+        if (value == 0) {
             send_to_char("\n\rX coordinate of ship.", ch);
-        else if (value == 1)
+        } else if (value == 1) {
             send_to_char("\n\rY coordinate of ship.", ch);
-        else if (value == 2)
+        } else if (value == 2) {
             send_to_char("\n\rSpeed of ship.", ch);
-        else if (value == 3)
+        } else if (value == 3) {            
             send_to_char("\n\rSize of ship.", ch);
-        else
+        } else {
             send_to_char("\n\rValue not used for this item type.\n\r", ch);
+        }
         break;
     default:
         send_to_char("Value not used for this item type.\n\r", ch);
@@ -1634,14 +1689,16 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 31)
+        if (update < 0 || update > 31) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->affected[affect - 1].modifier, i))
+        if (IS_SET(ch->specials.objedit->affected[affect - 1].modifier, i)) {
             REMOVE_BIT(ch->specials.objedit->affected[affect - 1].modifier, i);
-        else
+        } else {
             SET_BIT(ch->specials.objedit->affected[affect - 1].modifier, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -1652,8 +1709,9 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 32; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
@@ -1733,14 +1791,16 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
     update = atoi(arg);
     update--;
     if (type != ENTER_CHECK) {
-        if (update < 0 || update > 29)
+        if (update < 0 || update > 29) {
             return;
+        }
         i = 1 << update;
 
-        if (IS_SET(ch->specials.objedit->affected[affect - 1].modifier, i))
+        if (IS_SET(ch->specials.objedit->affected[affect - 1].modifier, i)) {
             REMOVE_BIT(ch->specials.objedit->affected[affect - 1].modifier, i);
-        else
+        } else {
             SET_BIT(ch->specials.objedit->affected[affect - 1].modifier, i);
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -1751,8 +1811,9 @@ void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
     row = 0;
     for (i = 0; i < 9; i++) {
         sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
-        if (i & 1)
+        if (i & 1) {
             row++;
+        }
         send_to_char(buf, ch);
         check = 1 << i;
 
