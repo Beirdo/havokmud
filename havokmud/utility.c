@@ -1945,6 +1945,7 @@ void RoomSave(struct char_data *ch, long start, long end)
                     i,
                     j,
                     k,
+                    len,
                     x;
     struct extra_descr_data *exptr;
     FILE           *fp = NULL;
@@ -2052,7 +2053,16 @@ void RoomSave(struct char_data *ch, long start, long end)
                 }
 
                 if (rdd->keyword) {
-                    if (strlen(rdd->keyword) > 0) {
+                    do {
+                        len = strlen(rdd->keyword);
+                        if( len == 0 || (rdd->keyword[len-1] != '\n' &&
+                                         rdd->keyword[len-1] != '\r') ) {
+                            break;
+                        }
+                        rdd->keyword[len-1] = '\0';
+                    } while( len > 0 );
+
+                    if (len > 0) {
                         fprintf(fp, "%s~\n", rdd->keyword);
                     } else {
                         fprintf(fp, "~\n");
@@ -5331,27 +5341,40 @@ void SetDefaultLang(struct char_data *ch)
     case RACE_AVARIEL:
     case RACE_DROW:
         i = LANG_ELVISH;
+        ch->player.speaks = SPEAK_ELVISH;
         break;
     case RACE_TROLL:
     case RACE_HALF_GIANT:
         i = LANG_GIANTISH;
+        ch->player.speaks = SPEAK_GIANTISH;
         break;
     case RACE_HALF_OGRE:
         i = LANG_OGRE;
+        ch->player.speaks = SPEAK_OGRE;
         break;
     case RACE_HALFLING:
         i = LANG_HALFLING;
+        ch->player.speaks = SPEAK_HALFLING;
+        break;
+    case RACE_HALF_ORC:
+    case RACE_ORC:
+        i = LANG_ORCISH;
+        ch->player.speaks = SPEAK_ORCISH;
         break;
     case RACE_DWARF:
+    case RACE_DARK_DWARF:
         i = LANG_DWARVISH;
+        ch->player.speaks = SPEAK_DWARVISH;
         break;
     case RACE_DEEP_GNOME:
     case RACE_FOREST_GNOME:
     case RACE_ROCK_GNOME:
         i = LANG_GNOMISH;
+        ch->player.speaks = SPEAK_GNOMISH;
         break;
     default:
         i = LANG_COMMON;
+        ch->player.speaks = SPEAK_COMMON;
         break;
     }
     ch->skills[i].learned = 95;

@@ -336,7 +336,9 @@ int check_peaceful(struct char_data *ch, char *msg)
 void set_fighting(struct char_data *ch, struct char_data *vict)
 {
     if (ch->specials.fighting) {
+#if 0
         Log("Fighting character set to fighting another.");
+#endif
         return;
     }
 

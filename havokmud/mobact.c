@@ -290,7 +290,7 @@ void mobile_activity(struct char_data *ch)
     if ((ch->in_room < 0) || !room_find(&room_db, ch->in_room)) {
 #endif
 
-        Log("/----- Char not in correct room.  moving to 50");
+        Log("/----- Char not in correct room.  moving to 49");
         Log(GET_NAME(ch));
 
         /* 
@@ -298,7 +298,7 @@ void mobile_activity(struct char_data *ch)
          */
         assert(ch->in_room >= 0);
         char_from_room(ch);
-        char_to_room(ch, 50);
+        char_to_room(ch, 49);
     }
 
     /*

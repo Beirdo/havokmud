@@ -2986,7 +2986,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     exp;
     bool            target_ok;
     int             max,
-                    cost;
+                    cost = 0;
 
     if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
         send_to_char("Der, what is that?\n\r", ch);
@@ -3052,23 +3052,14 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
      * If there is no chars in argument 
      */
     if (!argument || !*argument) {
-        if (cmd != 600) {
-            send_to_char("Cast which what where?\n\r", ch);
-        } else {
-            send_to_char("Sing which what where?\n\r", ch);
-        }
+        send_to_char("Cast which what where?\n\r", ch);
         return;
     }
 
     argument = get_argument_delim(argument, &spellnm, '\'');
     if (!spellnm || spellnm[-1] != '\'') {
-        if (cmd != 600) {
-            send_to_char("Magic must always be enclosed by the holy magic "
-                         "symbols : '\n\r", ch);
-        } else {
-            send_to_char("Songs must always be enclosed by the vibrant symbols"
-                         " : '\n\r", ch);
-        }
+        send_to_char("Magic must always be enclosed by the holy magic "
+                     "symbols : '\n\r", ch);
         return;
     }
      
@@ -3162,14 +3153,9 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             tar_char = 0;
             tar_obj = 0;
 
-            if (cmd != 600 && IS_SET(spell_info[index].targets, TAR_VIOLENT) && 
+            if (IS_SET(spell_info[index].targets, TAR_VIOLENT) && 
                 check_peaceful(ch, 
                                "This seems to be an dead magic zone!\n\r")) {
-                return;
-            }
-
-            if (cmd == 600 && IS_SET(spell_info[index].targets, TAR_VIOLENT) && 
-                check_peaceful(ch, "Ah, no battle songs in here, matey!\n\r")) {
                 return;
             }
 
@@ -3205,7 +3191,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                                 tar_char->attackers < 6 || 
                                 tar_char->specials.fighting == ch) {
                                 target_ok = TRUE;
-                            } else if (cmd != 600) {
+                            } else {
                                 send_to_char("Too much fighting, you can't get"
                                              " a clear shot.\n\r", ch);
                                 target_ok = FALSE;
@@ -3380,21 +3366,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                         send_to_char("You can only cast this spell when "
                                      "grouped.\n\r", ch);
                     } else if (spell_info[index].targets < TAR_OBJ_INV) {
-                        if (cmd != 600) {
-                            send_to_char("Who should the spell be cast "
-                                         "upon?\n\r", ch);
-                        } else {
-                            send_to_char("Who should the song be aimed "
-                                         "at?\n\r", ch);
-                        }
+                        send_to_char("Who should the spell be cast upon?\n\r",
+                                     ch);
                     } else {
-                        if (cmd != 600) {
-                            send_to_char("What should the spell be cast "
-                                         "upon?\n\r", ch);
-                        } else {
-                            send_to_char("What should the song be aimed "
-                                         "at?\n\r", ch);
-                        }
+                        send_to_char("What should the spell be cast upon?\n\r",
+                                     ch);
                     }
                 }
                 return;
@@ -3405,23 +3381,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
              */
             if (tar_char == ch && 
                 IS_SET(spell_info[index].targets, TAR_SELF_NONO)) {
-                if (cmd != 600) {
-                    send_to_char("You can not cast this spell upon "
-                                 "yourself.\n\r", ch);
-                } else {
-                    send_to_char("You can not aim this song at yourself.\n\r",
-                                 ch);
-                }
+                send_to_char("You can not cast this spell upon yourself.\n\r",
+                             ch);
                 return;
             } else if (tar_char != ch && 
                        IS_SET(spell_info[index].targets, TAR_SELF_ONLY)) {
-                if (cmd != 600) {
-                    send_to_char("You can only cast this spell upon "
-                                 "yourself.\n\r", ch);
-                } else {
-                    send_to_char("You can only aim this song at yourself.\n\r",
-                                 ch);
-                }
+                send_to_char("You can only cast this spell upon yourself.\n\r",
+                             ch);
                 return;
             } else if (IS_AFFECTED(ch, AFF_CHARM) && ch->master == tar_char) {
                 send_to_char("You are afraid that it could harm your "
@@ -3443,7 +3409,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
             } 
             
             if (!IS_IMMORTAL(ch) && (GET_MANA(ch) < USE_MANA(ch, spl) || 
-                                     GET_MANA(ch) <= 0)) {
+                                     GET_MANA(ch) <= 0) && cmd != 283 ) {
                 send_to_char("You can't summon enough energy!\n\r", ch);
                 return;
             }
@@ -3605,7 +3571,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                     (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, 
                      SPELL_TYPE_SPELL, tar_char, tar_obj);
 
-                cost = USE_MANA(ch, spl);
+                if( cmd != 283 ) {
+                    cost = USE_MANA(ch, spl);
+                }
+
                 exp = NewExpCap(ch, cost * 50);
 
                 if (cmd == 283) {

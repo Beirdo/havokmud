@@ -23,13 +23,12 @@ typedef char    byte;
 #define FOREST_DARK     2
 #define NO_DARK         3
 
-#define cmd_look       15
-#define cmd_write      149
-#define cmd_read       63
-#define cmd_remove     66
-#define cmd_reply      515
-#define cmd_reload     284
-#define cmd_first_move 1
+#define CMD_LOOK       15
+#define CMD_WRITE      149
+#define CMD_READ       63
+#define CMD_REMOVE     66
+#define CMD_REPLY      515
+#define CMD_RELOAD     284
 
 #define ONE_WORD                  24
 #define ONE_LINE                  96

@@ -1060,6 +1060,11 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
     sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
     fputs(str, fl);
     fclose(fl);
+
+    sprintf(str, "BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room,
+            argument);
+    Log(str);
+
     send_to_char("Ok.\n\r", ch);
 }
 
@@ -2363,6 +2368,8 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
                 TotalMemorized(ch));
         send_to_char(buf, ch);
         send_to_char("Your spellbook holds these spells:\n\r", ch);
+
+        buffer[0] = '\0';
         for (i = 0; i < spell_info_count; i++) {
             index = spell_index[i + 1];
             if( index == -1 ) {
@@ -2396,7 +2403,6 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
             }
         }
         page_string(ch->desc, buffer, 0);
-        buffer[0] = '\0';
         return;
     }
 

@@ -2429,7 +2429,7 @@ int LearnSkill(struct char_data *ch, const struct skillset *skills, char *arg,
                 } else {
                     ch_printf(ch, "$c0013[$c0015%s$c0013] tells you 'You are a"
                                   " master of this art, I can teach you no "
-                                  "more.'\n\r", ch);
+                                  "more.'\n\r", teacher);
                 }
                 return (TRUE);
             }

@@ -917,7 +917,7 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
                  IS_IMMORTAL(t) || IS_NPC(t) || 
                  affected_by_spell(t, SKILL_ESP) || 
                  affected_by_spell(t, SPELL_COMP_LANGUAGES) || 
-                 ch->player.speaks == 9)) {
+                 ch->player.speaks == SPEAK_ALL)) {
                 /*
                  * these guys always understand
                  */
@@ -1386,10 +1386,18 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
         return;
 	}
     strncpy(name, ch->last_tell, 80);
+
+    if(!strcasecmp(name, GET_NAME(ch)) || strlen(name) == 0) {
+        send_to_char("You would be replying to yourself, how strange.", ch);
+        return;
+    }
+
+
     if (!(vict = get_char(name))) {
         send_to_char("They seem to have left...", ch);
         return;
     }
+
 	if (!(vict = get_char_vis(ch, name))) {
         send_to_char("They seem to have left...", ch);
         return;

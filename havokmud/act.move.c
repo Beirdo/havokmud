@@ -996,23 +996,12 @@ void do_open(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
     char           *type,
-                   *arg,
                    *dir;
     struct obj_data *obj;
     struct char_data *victim;
     struct room_direction_data *exitp;
 
     dlog("in do_open");
-
-    if( argument ) {
-        arg = strdup(argument);
-        if( !arg ) {
-            Log( "Serious buggerup in open" );
-            return;
-        }
-    } else {
-        arg = NULL;
-    }
 
     argument = get_argument(argument, &type);
     argument = get_argument(argument, &dir);
@@ -1022,8 +1011,8 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (arg && generic_find(arg, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                            &obj)) {
+    if (!dir && generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                             &obj)) {
         /*
          * this is an object 
          */
@@ -1041,7 +1030,6 @@ void do_open(struct char_data *ch, char *argument, int cmd)
             act("$n opens $p.", FALSE, ch, obj, 0, TO_ROOM);
         }
     } else if ((door = find_door(ch, type, dir)) >= 0) {
-
         /*
          * perhaps it is a door 
          */
@@ -1058,10 +1046,6 @@ void do_open(struct char_data *ch, char *argument, int cmd)
         } else {
             send_to_char("You can't OPEN that.\r\n", ch);
         }
-    }
-
-    if( arg ) {
-        free(arg);
     }
 }
 
@@ -1087,8 +1071,8 @@ void do_close(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                     &obj)) {
+    if (!dir && generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                             &obj)) {
         /*
          * this is an object 
          */
@@ -1235,8 +1219,8 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
         return;
     } 
     
-    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                     &obj)) {
+    if (!dir && generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                             &obj)) {
         /*
          * this is an object 
          */
@@ -1304,8 +1288,8 @@ void do_unlock(struct char_data *ch, char *argument, int cmd)
         return;
     }
     
-    if (generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
-                     &obj)) {
+    if (!dir && generic_find(type, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, 
+                             &obj)) {
         /*
          * this is an object 
          */

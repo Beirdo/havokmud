@@ -253,6 +253,7 @@ void string_add(struct descriptor_data *d, char *str)
                 SEND_TO_Q("Message posted.\r\n", d);
                 act("$n has finished posting $s message.", TRUE,
                     d->character, NULL, NULL, TO_ROOM);
+                REMOVE_BIT(d->character->specials.act, PLR_MAILING);
             } else {
                 /* user has aborted the post */
                 if (*d->str) {
@@ -695,11 +696,16 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
      * field name and number 
      */
     arg = get_argument(arg, &buf);
-    if (!buf ||
-        !(field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
+    if( !buf ) {
+        send_to_char("Edit what?  Silly immortal!\n\r", ch);
         return;
     }
 
+    if (!(field = old_search_block(buf, 0, strlen(buf), room_fields, 0))) {
+        ch_printf(ch, "I don't understand the field \"%s\"\n\r", buf);
+        return;
+    }
+    
     /*
      * string 
      */
@@ -926,7 +932,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         if (rp->dir_option[dir]->exit_info <= 0) {
             return;
         }
-        string[0] = 0;
+        string = NULL;
         send_to_char("enter keywords, 1 line only. \n\r", ch);
         send_to_char("terminate with /w on the SECOND line.\n\r", ch);
         ch->desc->str = &rp->dir_option[dir]->keyword;

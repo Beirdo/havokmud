@@ -2451,6 +2451,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
      * set up things that all members of the race have
      */
     SetRacialStuff(mob);
+    SpaceForSkills(mob);
+    SetDefaultLang(mob);
 
     /*
      * change exp for wimpy mobs (lower)
@@ -2724,6 +2726,8 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
      * set up things that all members of the race have
      */
     SetRacialStuff(mob);
+    SpaceForSkills(mob);
+    SetDefaultLang(mob);
 
     /*
      * change exp for wimpy mobs (lower)

@@ -771,6 +771,8 @@ int board(struct char_data *ch, int cmd, char *arg,
           struct obj_data *obj, int type)
 {
     char          *a1;
+    char          *argument;
+    int            ret = FALSE;
 
     if ((type != PULSE_COMMAND) || (ch->desc == NULL)) {
         return FALSE;
@@ -779,55 +781,60 @@ int board(struct char_data *ch, int cmd, char *arg,
     /*
      *  Call me paranoid but I just want to make sure the check_board
      * procedure isn't hit all the time on a big MUD with lots of
-     * boards and busy board rooms.
-     */
-    if ((cmd != cmd_look) && (cmd != cmd_write) && (cmd != cmd_read) &&
-        (cmd != cmd_remove) && (cmd != cmd_reply) && (cmd != cmd_reload)) {
+     * boards and busy board rooms. 
+     */ 
+    if (cmd != CMD_LOOK && cmd != CMD_WRITE && cmd != CMD_READ && 
+        cmd != CMD_REMOVE && cmd != CMD_REPLY && cmd != CMD_RELOAD) {
         return FALSE;
     }
 
+
+    /* So we don't bugger it up if the proc returns FALSE */
+    if( arg ) {
+        argument = strdup(arg);
+    } else {
+        argument = NULL;
+    }
+
+    /* leave the original argument for the caller */
+    arg = argument;
 
     check_board(obj_index[obj->item_number].virtual);
-    if (cmd == cmd_look) {
-        return show_board(ch, arg, obj);
-    }
-    if (cmd == cmd_read) {
-        return display_board_message(ch, arg, obj);
-    }
-    if (cmd == cmd_remove) {
-        return remove_board_message(ch, arg, obj);
-    }
-    if (cmd == cmd_reply) {
-        return reply_board_message(ch, arg, obj);
-    }
-    if (cmd == cmd_reload) {
-        if (!IS_IMMORTAL(ch)) {
-            return FALSE;
-        }
-        arg = get_argument(arg, &a1);
 
-        /*
-         *  if we're reloading, we only have to free here.
-         * check_board will do the actual reloading on the next
-         * relevant board command.
-         */
-        if (a1 && !strcmp("board", a1)) {
-            free_board(obj_index[obj->item_number].virtual);
-#if 0
-            mprintf(line_log, 0, SEV_LOW, "%s just reset bulletin board #%ld",
-                    GET_NAME(ch), obj_index[obj->item_number].virtual);
-#endif
-            Log("Someone just reset a board");
-            return TRUE;
+    switch( cmd ) {
+    case CMD_LOOK:
+        ret = show_board(ch, arg, obj);
+        break;
+    case CMD_READ:
+        ret = display_board_message(ch, arg, obj);
+        break;
+    case CMD_REMOVE:
+        ret = remove_board_message(ch, arg, obj);
+        break;
+    case CMD_REPLY:
+        ret = reply_board_message(ch, arg, obj);
+        break;
+    case CMD_RELOAD:
+        ret = FALSE;
+        if (IS_IMMORTAL(ch)) {
+            arg = get_argument(arg, &a1);
+            
+            if (a1 && !strcmp("board", a1)) {
+                free_board(obj_index[obj->item_number].virtual);
+                Log("Someone just reset a board");
+                ret = TRUE;
+            }
         }
-        return FALSE;
+        break;
+    case CMD_WRITE:
+        write_board_message(ch, arg, obj);
+        ret = TRUE;
+        break;
     }
-
-    /*
-     * only other command
-     */
-    write_board_message(ch, arg, obj);
-    return TRUE;
+    
+    /* Get rid of our local argument */
+    free( argument );
+    return( ret );
 }
 
 
