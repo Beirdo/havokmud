@@ -3699,11 +3699,13 @@ void spell_mist_of_death(byte level, struct char_data *ch, struct char_data *vic
 		next = t->next_in_room;
 		if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
 			/* 1% chance of instakill */
-			if(number(1,100) == 100) {
-				act("$c0008A look of fear fleets over $N's face, as the Dark Lord claims $M!", FALSE, ch, 0, t, TO_NOTVICT);
-				act("$c0008A look of fear fleets over $N's face, as your Lord claims $M!", FALSE, ch, 0, t, TO_CHAR);
-				act("$c0008You know a brief moment of paralyzing fear before the Dark Lord claims you!", FALSE, ch, 0, t, TO_VICT);
-				die(t, SPELL_MIST_OF_DEATH);
+			if(number(1,100) == 100  && !IS_IMMUNE(victim,IMM_DRAIN)) { /* woop, instant death is cool */
+				dam = GET_HIT(victim)+25;
+//				act("$c0008A look of fear fleets over $N's face, as the Dark Lord claims $M!", FALSE, ch, 0, t, TO_NOTVICT);
+//				act("$c0008A look of fear fleets over $N's face, as your Lord claims $M!", FALSE, ch, 0, t, TO_CHAR);
+//				act("$c0008You know a brief moment of paralyzing fear before the Dark Lord claims you!", FALSE, ch, 0, t, TO_VICT);
+//				die(t, SPELL_MIST_OF_DEATH);
+				damage(ch, t, dam, SPELL_MIST_OF_DEATH);
 			} else {
 				dam = dice(level,7);
 				if (saves_spell(t, SAVING_PETRI)) /* save for half damage */
@@ -3794,7 +3796,7 @@ void spell_eye_of_the_dead(byte level, struct char_data *ch, struct char_data *v
 
 	if (!affected_by_spell(ch, SPELL_EYE_OF_THE_DEAD) && !IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
 		act("One of $n's eyes pulses with an eerie blue light.",FALSE, ch, 0, 0, TO_ROOM);
-		act("You summon the eye of the dead, which increases your sight considerably.", TRUE, ch, 0, 0, TO_CHAR);
+		send_to_char("You summon the eye of the dead, which increases your sight considerably.",ch);
 
 		af.type      = SPELL_EYE_OF_THE_DEAD;
 	    af.duration  = 20;
@@ -4193,11 +4195,13 @@ void spell_finger_of_death(byte level, struct char_data *ch, struct char_data *v
 		return;
 	}
 
-	if (number(1,20) == 20) { /* instant death, wheee! */
-		act("$c0008You know a brief moment of fear as the Dark Lord's minions rise up to claim your soul.",FALSE, ch, 0, victim, TO_VICT);
-		act("$c0008A look of fear shows in $N's eyes as the Dark Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_NOTVICT);
-		act("$c0008A look of fear shows in $N's eyes as your Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_CHAR);
-		die(victim,SPELL_FINGER_OF_DEATH);
+	if (number(1,20) == 20 && !IS_IMMUNE(victim,IMM_DRAIN)) { /* instant death, wheee! */
+		dam = GET_HIT(victim)+25;
+//		act("$c0008You know a brief moment of fear as the Dark Lord's minions rise up to claim your soul.",FALSE, ch, 0, victim, TO_VICT);
+//		act("$c0008A look of fear shows in $N's eyes as the Dark Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_NOTVICT);
+//		act("$c0008A look of fear shows in $N's eyes as your Lord's minions come to collect $S soul.",FALSE, ch, 0, victim, TO_CHAR);
+//		die(victim,SPELL_FINGER_OF_DEATH);
+		damage(ch, victim, dam, SPELL_FINGER_OF_DEATH);
 	} else {
 		dam  = dice(level,6);
 		if (saves_spell(victim, SAVING_PETRI)) /* save for half damage */

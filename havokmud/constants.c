@@ -1404,7 +1404,7 @@ const char *spell_wear_off_soon_room_msg[] = {
  	"",
  	"",
  	"",
- 	"The cold blue light in $n's eyes pulses a momemt..",
+ 	"The cold blue light in $n's eye pulses a moment.",
  	"",
  	"",//330
  	"",
