@@ -891,6 +891,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
 	struct obj_data *cmp;
 	char buf[254], arg[254];
 	int perc = 0;
+	extern struct index_data *obj_index;
 
 dlog("in do_mend");
 
@@ -926,7 +927,7 @@ dlog("in do_mend");
 	if(obj) {
 		if(ITEM_TYPE(obj) == ITEM_ARMOR) {
 			if(obj->obj_flags.value[0] == 0 || obj->obj_flags.value[1] == 0) {
-				sprintf(buf,"%s tried to mend an invalid armor value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+				sprintf(buf,"%s tried to mend an invalid armor value: %s, vnum %d.",GET_NAME(ch),obj->short_description,(obj->item_number >= 0) ? obj_index[obj->item_number].virtual: 0);
 				log(buf);
 				return;
 			}
