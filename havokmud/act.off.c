@@ -846,7 +846,16 @@ dlog("in do_leg_sweep");
 				WAIT_STATE(victim, PULSE_VIOLENCE*2);
 				GET_POS(victim) = POSITION_SITTING;
 				act("$c000CYou do a quick spin and knock $N's legs out from underneath $M.",FALSE, ch, 0, victim,TO_CHAR);
-				act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M.",FALSE, ch,0,victim,TO_ROOM);
+				act("$c000C$n does a quick spin and knocks $N's legs out from underneath $M.",FALSE, ch,0,victim,TO_NOTVICT);
+				act("$c000C$n does a quick spin and knocks your legs out from underneath you.",FALSE, ch,0,victim,TO_VICT);
+				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+				send_to_char(buf,ch);
+				gain_exp(ch, 100);
+				WAIT_STATE(ch, PULSE_VIOLENCE*2);
+			} else {
+				act("$c000CYour legsweep lands a killing blow to $M.",FALSE, ch, 0, victim,TO_CHAR);
+				act("$c000C$n's legsweep lands a killing blow to $M.",FALSE, ch,0,victim,TO_ROOM);
+//				act("$c000C$n's legsweep lands a killing blow to your head.",FALSE, ch,0,victim,TO_VICT);
 				sprintf(buf,"$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
 				send_to_char(buf,ch);
 				gain_exp(ch, 100);

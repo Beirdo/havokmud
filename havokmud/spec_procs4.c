@@ -2881,6 +2881,8 @@ int troll_regen(struct char_data *ch)
 		return;
 
 	GET_HIT(ch) += number(1,3);
+	if(GET_HIT(ch) > GET_MAX_HIT(ch))
+		GET_HIT(ch) = GET_MAX_HIT(ch);
 	act("$n's wounds seem to close of their own.",FALSE, ch, 0, 0, TO_ROOM);
 	act("Your wounds close of their own accord.",FALSE, ch, 0, 0, TO_CHAR);
 }

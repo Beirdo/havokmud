@@ -1023,7 +1023,7 @@ void assign_command_pointers ()
   AddCommand("nuzzle",do_action,52,POSITION_RESTING,0);
   AddCommand("cry",do_action,53,POSITION_RESTING,0);
   AddCommand("news",do_news,54,POSITION_SLEEPING,0);
-  AddCommand("equipment",do_equipment,55,POSITION_SLEEPING,0);
+  AddCommand("equipment",do_equipment,55,POSITION_STUNNED,0);
   AddCommand("buy",do_not_here,56,POSITION_STANDING,0);
   AddCommand("sell",do_not_here,57,POSITION_STANDING,0);
   AddCommand("value",do_value,58,POSITION_RESTING,0);
