@@ -1615,6 +1615,14 @@ AddCommand("remort", do_not_here, 605, POSITION_STANDING, 50);
 AddCommand("affects", do_attribute,606, POSITION_DEAD,1);
 
 // room here
+//BOARD DISEMBARK EMBARK PLANK
+/* New command for sailing/ships */
+AddCommand("board", do_not_here, 607, POSITION_RESTING, 1);
+AddCommand("disembark", do_not_here, 608, POSITION_SITTING, 1);
+AddCommand("embark", do_not_here, 609, POSITION_STANDING, 1);
+AddCommand("plank", do_not_here, 610, POSITION_STANDING, 1);
+
+
 
 AddCommand("weapons", do_weapons, 610, POSITION_RESTING, 1);
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
@@ -1627,6 +1635,8 @@ AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
 AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
+
+
 
 
 }
