@@ -437,7 +437,6 @@ void build_player_index()
 	   LOWER(*(dummy.name + i)); i++);
       
 
-      dummy.level[11] = 0;
 	
       for (j=0;j<ABS_MAX_CLASS;j++)
 	   if (dummy.level[j] > 60)
@@ -3610,7 +3609,7 @@ void reset_char(struct char_data *ch)
   ch->M_immune = 0;
   ch->susc = 0;
   ch->mult_att = 1.0;
-
+  
   if (!GET_RACE(ch))
     GET_RACE(ch) = RACE_HUMAN;
 
@@ -3624,7 +3623,10 @@ void reset_char(struct char_data *ch)
       GET_LEVEL(ch,i) = 51;
     }
   }
-
+  
+  /* Setting Bard level (GH) */
+  GET_LEVEL(ch, 11) = 0;
+  
   SET_BIT(ch->specials.act, PLR_ECHO);
 
   ch->hunt_dist = 0;
