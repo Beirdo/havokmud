@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #include "protos.h"
 
@@ -63,7 +64,7 @@ int split_string(char *str, char *sep, char **argv)
         return 1;
     }
 
-    while (s = strtok(NULL, sep)) {
+    while ((s = strtok(NULL, sep))) {
         argv[argc++] = s;
     }
     return argc;
@@ -212,7 +213,6 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
     int             i,
                     temp,
                     temp2;
-    char            buf[25];
 
     if (!ch) {
         return;
@@ -888,7 +888,6 @@ void affect_total(struct char_data *ch)
     struct affected_type *af;
     int             i,
                     j;
-    char            buf[256];
 
     for (i = 0; i < MAX_WEAR; i++) {
         if (ch->equipment[i]) {
@@ -986,7 +985,6 @@ void affect_to_char(struct char_data *ch, struct affected_type *af)
 void affect_remove(struct char_data *ch, struct affected_type *af)
 {
     struct affected_type *hjp;
-    char            buf[256];
 
     if (!ch->affected) {
         Log("affect removed from char without affect");
@@ -1141,7 +1139,7 @@ void char_from_room(struct char_data *ch)
 
     rp = real_roomp(ch->in_room);
     if (rp == NULL) {
-        sprintf(buf, "ERROR: char_from_room: %s was not in a valid room (%d)",
+        sprintf(buf, "ERROR: char_from_room: %s was not in a valid room (%ld)",
                 (!IS_NPC(ch) ? (ch)->player.name : (ch)->player.short_descr),
                  ch->in_room);
         Log(buf);
@@ -1166,7 +1164,7 @@ void char_from_room(struct char_data *ch)
         if (i) {
             i->next_in_room = ch->next_in_room;
         } else {
-            sprintf(buf, "Oops! %s was not in people list of his room %d!",
+            sprintf(buf, "Oops! %s was not in people list of his room %ld!",
                     (!IS_NPC(ch) ? (ch)->player.name : 
                      (ch)->player.short_descr), ch->in_room);
             Log(buf);
@@ -1544,7 +1542,7 @@ struct obj_data *unequip_char(struct char_data *ch, int pos)
 
     if (pos > MAX_WEAR || pos < 0) {
         Log("pos > MAX_WEAR || pos < 0 in handler.c unequip");
-        return;
+        return (NULL);
     }
 
     /*
@@ -2027,7 +2025,7 @@ void extract_obj(struct obj_data *obj)
              * set players equipment slot to 0; that will avoid the garbage
              * items.
              */
-            obj->equipped_by->equipment[obj->eq_pos] = 0;
+            obj->equipped_by->equipment[(int)obj->eq_pos] = 0;
         } else {
             Log("Extract on equipped item in slot -1 on:");
             Log(obj->equipped_by->player.name);
@@ -2143,9 +2141,7 @@ void extract_char_smarter(struct char_data *ch, long save_room)
     struct descriptor_data *t_desc;
     int             l,
                     was_in,
-                    j,
-                    amount;
-    struct obj_data *tmp_object;
+                    j;
 
     extern long     mob_count;
     extern struct char_data *combat_list;
@@ -2470,7 +2466,7 @@ struct char_data *get_char_vis(struct char_data *ch, char *name)
     /*
      * check location 
      */
-    if (i = get_char_room_vis(ch, name)) {
+    if ((i = get_char_room_vis(ch, name))) {
         return (i);
     }
     return get_char_vis_world(ch, name, NULL);
@@ -2575,13 +2571,14 @@ struct obj_data *get_obj_vis(struct char_data *ch, char *name)
     /*
      * scan items carried 
      */
-    if (i = get_obj_in_list_vis(ch, name, ch->carrying)) {
+    if ((i = get_obj_in_list_vis(ch, name, ch->carrying))) {
         return (i);
     }
     /*
      * scan room 
      */
-    if (i = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents)) {
+    if ((i = get_obj_in_list_vis(ch, name, 
+                                 real_roomp(ch->in_room)->contents))) {
         return (i);
     }
     return get_obj_vis_world(ch, name, NULL);
@@ -2763,11 +2760,11 @@ int generic_find(char *arg, int bitvector, struct char_data *ch,
 
     if (IS_SET(bitvector, FIND_OBJ_INV)) {
         if (IS_SET(bitvector, FIND_OBJ_ROOM)) {
-            if (*tar_obj = get_obj_vis_accessible(ch, name)) {
+            if ((*tar_obj = get_obj_vis_accessible(ch, name))) {
                 return (FIND_OBJ_INV);
             }
         } else {
-            if (*tar_obj = get_obj_in_list_vis(ch, name, ch->carrying)) {
+            if ((*tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))) {
                 return (FIND_OBJ_INV);
             }
         }

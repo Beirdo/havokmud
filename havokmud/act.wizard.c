@@ -61,7 +61,6 @@ void            CleanZone(int zone);
 void            ch_printf(struct char_data *ch, char *fmt, ...);
 char           *formatNum(int foo);
 void            insert_mobile(struct char_data *obj, long vnum);
-int             write_obj_to_file(struct obj_data *obj, FILE * f);
 void            insert_object(struct obj_data *obj, long vnum);
 void            Log(char *s);
 void            abort(void);
@@ -70,10 +69,8 @@ char           *crypt(const char *key, const char *salt);
 FILE           *MakeZoneFile(struct char_data *c, int zone);
 int             SaveZoneFile(FILE * fp, int start_room, int end_room);
 FILE           *OpenZoneFile(struct char_data *c, int zone);
-int             LoadZoneFile(FILE * fl, int zon);
 long            atol(const char *str);
 int             pc_num_class(int clss);
-int             eval(struct obj_data *object);
 void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 char            EasySummon = 1;
 int             MinArenaLevel,

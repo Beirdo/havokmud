@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -61,7 +63,6 @@ void            stop_follower(struct char_data *ch);
  * Extern procedures 
  */
 
-char           *strdup(char *source);
 
 /*
  * druid spells 
@@ -93,9 +94,8 @@ void spell_transport_via_plant(byte level, struct char_data *ch,
     struct room_data *rp;
     struct obj_data *o;
     struct obj_data *i;
-    struct obj_data *obj;
-    char            name[254],
-                    buf[200];
+    struct obj_data *obj = NULL;
+    char            name[254];
     int             found = 0;
 
     /*
@@ -166,12 +166,11 @@ void spell_plant_gate(byte level, struct char_data *ch,
     struct room_data *rp;
     struct obj_data *o,
                    *i,
-                   *obj;
+                   *obj = NULL;
     struct char_data *tch,
                    *tch2;
     int             has_companions = 0;
-    char            name[254],
-                    buf[200];
+    char            name[254];
     /*
      * find the tree in the room 
      */
@@ -793,8 +792,6 @@ void spell_feeblemind(byte level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
-    int             t,
-                    i;
 
     if (!affected_by_spell(victim, SKILL_MINDBLANK) ||
         !saves_spell(victim, SAVING_SPELL)) {
@@ -1112,7 +1109,6 @@ void spell_insect_growth(byte level, struct char_data *ch,
 void spell_creeping_death(byte level, struct char_data *ch,
                           struct char_data *victim, int dir)
 {
-    char            buf[254];
     struct affected_type af;
     struct char_data *cd;
 
@@ -1221,7 +1217,6 @@ void spell_animal_summon(byte level, struct char_data *ch,
                     mhps,
                     mtohit;
     struct room_data *rp;
-    char            buf[254];
 
     /*
      * modified by Lennya. Load a random mob, and adjust its stats
@@ -1422,9 +1417,7 @@ void spell_elemental_summoning(byte level, struct char_data *ch,
 void spell_reincarnate(byte level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
-    char           *buf[100];
     struct char_data *newch;
-    struct time_info_data *g = 0;
     struct char_file_u st;
     struct descriptor_data *d;
     FILE           *fl;
@@ -2351,7 +2344,6 @@ void spell_sunray(byte level, struct char_data *ch,
                    *n;
     int             dam = 0,
                     j = 0;
-    char            buf[MAX_STRING_LENGTH + 30];
 
     /*
      * blind all in room 
@@ -2791,8 +2783,6 @@ void spell_enlightenment(byte level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
-    int             t,
-                    i;
 
     if (!affected_by_spell(victim, SPELL_ENLIGHTENMENT) ||
         !saves_spell(victim, SAVING_SPELL)) {
@@ -3092,7 +3082,6 @@ void spell_life_tap(byte level, struct char_data *ch,
 {
     int             dam,
                     dicen = 1;
-    char            buf[100];
 
     assert(victim && ch);
 
@@ -3275,7 +3264,6 @@ void spell_clinging_darkness(byte level, struct char_data *ch,
 void spell_dominate_undead(byte level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj)
 {
-    char            buf[MAX_INPUT_LENGTH];
     struct affected_type af;
 
     assert(ch && victim);
@@ -3393,7 +3381,6 @@ void spell_siphon_strength(byte level, struct char_data *ch,
 #if 0    
     struct room_data *rp;
 #endif    
-    float           modifier;
     int             mod = 0;
 
     assert(ch && victim);
@@ -3526,7 +3513,7 @@ void spell_trace_corpse(byte level, struct char_data *ch,
                         struct char_data *victim, char *arg)
 {
     struct obj_data *i,
-                   *corpse;
+                   *corpse = NULL;
     char            name[255];
     char            buf[255];
     int             j = 0,
@@ -3536,7 +3523,7 @@ void spell_trace_corpse(byte level, struct char_data *ch,
 
     assert(ch);
     sprintf(name, "%s", arg);
-    sprintf(buf, "");
+    buf[0] = '\0';
 
     /*
      * when starting out, no corpse has been found yet 
@@ -3918,11 +3905,9 @@ void spell_cavorting_bones(byte level, struct char_data *ch,
     struct room_data *rp;
     struct char_data *mob;
     int             lev = 1,
-                    i,
                     mlev,
                     mhps,
                     mtohit;
-    char            buf[254];
 
     if ((rp = real_roomp(ch->in_room)) == NULL) {
         return;
@@ -4038,9 +4023,8 @@ void spell_mist_of_death(byte level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
     int             dam;
-    struct char_data *t,
+    struct char_data *t = NULL,
                    *next;
-    char           *tmp;
 
     assert(ch);
     if (level < 0 || level > ABS_MAX_LVL) {
@@ -4305,7 +4289,6 @@ void spell_darktravel(byte level, struct char_data *ch,
     struct room_data *rp,
                    *nrp,
                    *room;
-    char            buf[512];
     char            str[180];
     int             location = 0,
                     tmp = 0;
@@ -4504,7 +4487,7 @@ void spell_scourge_warlock(byte level, struct char_data *ch,
         /*
          * give him a tongue to wear on his face 
          */
-        if (obj = read_object(TONGUE_ITEM, VIRTUAL)) {
+        if ((obj = read_object(TONGUE_ITEM, VIRTUAL))) {
             /*
              * add a random Dark Lord's boon to it 
              */
@@ -4676,11 +4659,9 @@ void spell_flesh_golem(byte level, struct char_data *ch,
     struct room_data *rp;
     struct char_data *mob;
     int             lev = 1,
-                    i,
                     mlev,
                     mhps,
                     mtohit;
-    char            buf[254];
 
     if ((rp = real_roomp(ch->in_room)) == NULL) {
         return;

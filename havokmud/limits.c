@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -278,7 +280,7 @@ int mana_gain(struct char_data *ch)
 
     gain += gain;
 
-    gain += wis_app[GET_WIS(ch)].bonus * 2;
+    gain += wis_app[(int)GET_WIS(ch)].bonus * 2;
 
     gain += ch->points.mana_gain;
 
@@ -406,7 +408,7 @@ int hit_gain(struct char_data *ch)
     if (GET_CLASS(ch) == CLASS_BARBARIAN) {
         gain += 4;
     }
-    gain += con_app[GET_CON(ch)].hitp / 2;
+    gain += con_app[(int)GET_CON(ch)].hitp / 2;
     if (IS_AFFECTED(ch, AFF_POISON)) {
         dam = 0;
         gain = 0;
@@ -601,7 +603,7 @@ void advance_level(struct char_data *ch, int class)
     add_move = GET_MAX_MOVE(ch);
     add_mana = GET_MAX_MANA(ch);
     if (GET_LEVEL(ch, class) > 0 && 
-        GET_EXP(ch) < titles[class][GET_LEVEL(ch, class) + 1].exp) {
+        GET_EXP(ch) < titles[class][(int)GET_LEVEL(ch, class) + 1].exp) {
         /*
          * they can't advance here 
          */
@@ -612,9 +614,9 @@ void advance_level(struct char_data *ch, int class)
     GET_LEVEL(ch, class) += 1;
     if (class == WARRIOR_LEVEL_IND || class == BARBARIAN_LEVEL_IND || 
         class == PALADIN_LEVEL_IND || class == RANGER_LEVEL_IND) {
-        add_hp = con_app[GET_RCON(ch)].hitp;
+        add_hp = con_app[(int)GET_RCON(ch)].hitp;
     } else {
-        add_hp = MIN(con_app[GET_RCON(ch)].hitp, 2);
+        add_hp = MIN(con_app[(int)GET_RCON(ch)].hitp, 2);
     }
     switch (class) {
 
@@ -723,8 +725,8 @@ void advance_level(struct char_data *ch, int class)
     ch->points.max_hit += add_hp;
 
     if (ch->specials.spells_to_learn < 70) {
-        ch->specials.spells_to_learn +=
-            MAX(1, MAX(2, wis_app[GET_RWIS(ch)].bonus) / HowManyClasses(ch));
+        ch->specials.spells_to_learn += MAX(1, MAX(2, 
+                    wis_app[(int)GET_RWIS(ch)].bonus) / HowManyClasses(ch));
     } else {
         send_to_char("Practices: Use them or lose them.\n\r", ch);
     }
@@ -761,7 +763,7 @@ void advance_level(struct char_data *ch, int class)
 void drop_level(struct char_data *ch, int class, int goddrain)
 {
     int             add_hp,
-                    lin_class;
+                    lin_class = 0;
 
     extern struct wis_app_type wis_app[];
     extern struct con_app_type con_app[];
@@ -773,7 +775,7 @@ void drop_level(struct char_data *ch, int class, int goddrain)
     if (GetMaxLevel(ch) == 1) {
         return;
     }
-    add_hp = con_app[GET_RCON(ch)].hitp;
+    add_hp = con_app[(int)GET_RCON(ch)].hitp;
 
     switch (class) {
     case CLASS_MAGIC_USER:
@@ -893,40 +895,40 @@ void drop_level(struct char_data *ch, int class, int goddrain)
             ch->points.max_hit = 20;
         }
     }
-    if (class = CLASS_WARRIOR) {
+    if (class == CLASS_WARRIOR) {
         add_hp = MAX(add_hp, 6);
     }
-    if (class = CLASS_BARBARIAN) {
+    if (class == CLASS_BARBARIAN) {
         add_hp = MAX(add_hp, 8);
     }
-    if (class = CLASS_PALADIN) {
+    if (class == CLASS_PALADIN) {
         add_hp = MAX(add_hp, 6);
     }
-    if (class = CLASS_RANGER) {
+    if (class == CLASS_RANGER) {
         add_hp = MAX(add_hp, 5);
     }
-    if (class = CLASS_CLERIC) {
+    if (class == CLASS_CLERIC) {
         add_hp = MAX(add_hp, 5);
     }
-    if (class = CLASS_THIEF) {
+    if (class == CLASS_THIEF) {
         add_hp = MAX(add_hp, 4);
     }
-    if (class = CLASS_PSI) {
+    if (class == CLASS_PSI) {
         add_hp = MAX(add_hp, 4);
     }
-    if (class = CLASS_MAGIC_USER) {
+    if (class == CLASS_MAGIC_USER) {
         add_hp = MAX(add_hp, 3);
     }
-    if (class = CLASS_SORCERER) {
+    if (class == CLASS_SORCERER) {
         add_hp = MAX(add_hp, 3);
     }
-    if (class = CLASS_MONK) {
+    if (class == CLASS_MONK) {
         add_hp = MAX(add_hp, 4);
     }
-    if (class = CLASS_DRUID) {
+    if (class == CLASS_DRUID) {
         add_hp = MAX(add_hp, 5);
     }
-    if (class = CLASS_NECROMANCER) {
+    if (class == CLASS_NECROMANCER) {
         add_hp = MAX(add_hp, 3);
     }
     add_hp /= HowManyClasses(ch);
@@ -939,11 +941,13 @@ void drop_level(struct char_data *ch, int class, int goddrain)
         ch->points.max_hit = 1;
     }
     ch->specials.spells_to_learn -=
-        MAX(1, MAX(2, wis_app[GET_RWIS(ch)].bonus) / HowManyClasses(ch));
+        MAX(1, MAX(2, wis_app[(int)GET_RWIS(ch)].bonus) / HowManyClasses(ch));
 
     if (ch->points.exp >
-        MIN(titles[lin_class][GET_LEVEL(ch, lin_class)].exp, GET_EXP(ch))) {
-        ch->points.exp = MIN(titles[lin_class][GET_LEVEL(ch, lin_class)].exp,
+        MIN(titles[lin_class][(int)GET_LEVEL(ch, lin_class)].exp,
+            GET_EXP(ch))) {
+        ch->points.exp = MIN(titles[lin_class]
+                                   [(int)GET_LEVEL(ch, lin_class)].exp,
                              GET_EXP(ch));
     }
 
@@ -1123,9 +1127,6 @@ void gain_exp_regardless(struct char_data *ch, int gain, int class)
 void gain_condition(struct char_data *ch, int condition, int value)
 {
     bool            intoxicated;
-    struct obj_data *tmp_obj;
-    struct obj_data *next_obj;
-    char            buf[254];
 
     if (GET_COND(ch, condition) == -1) {
         /* 
@@ -1207,7 +1208,7 @@ void check_idling(struct char_data *ch)
     }
 }
 
-int ObjFromCorpse(struct obj_data *c)
+void ObjFromCorpse(struct obj_data *c)
 {
     struct obj_data *jj,
                    *next_thing;
@@ -1237,26 +1238,20 @@ int ObjFromCorpse(struct obj_data *c)
              */
             c->contains = 0;
             Log("Memory lost in ObjFromCorpse.");
-            return (TRUE);
         }
     }
     extract_obj(c);
 }
 
-int ClassSpecificStuff(struct char_data *ch)
+void ClassSpecificStuff(struct char_data *ch)
 {
-    int             i;
-
     if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_MONK) ||
         HasClass(ch, CLASS_BARBARIAN) || HasClass(ch, CLASS_PALADIN) ||
         HasClass(ch, CLASS_RANGER)) {
-#if 0        
-        reset all attacks to 1.0
-#endif        
+        /* reset all attacks to 1.0 */
         ch->mult_att = 1.0;
-#if 0        
-        apply modifiers for warrior-type classes
-#endif        
+
+        /* apply modifiers for warrior-type classes */
         if (HasClass(ch, CLASS_BARBARIAN)) {
             ch->mult_att +=
                 (MIN(30, (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))) * .05);

@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -492,11 +494,7 @@ void spell_true_seeing(byte level, struct char_data *ch,
 void spell_major_track(byte level, struct char_data *ch,
                        struct char_data *targ, struct obj_data *obj)
 {
-    char            name[256],
-                    buf[256];
     struct affected_type af;
-
-    extern struct char_data *character_list;
 
     if (ch != targ) {
         send_to_char("You feel your awareness grow!\n\r", targ);
@@ -518,11 +516,8 @@ void spell_major_track(byte level, struct char_data *ch,
 void spell_minor_track(byte level, struct char_data *ch,
                        struct char_data *targ, struct obj_data *obj)
 {
-    char            name[256],
-                    buf[256];
     struct affected_type af;
 
-    extern struct char_data *character_list;
 
     if (ch != targ) {
         send_to_char("You feel your awareness grow!\n\r", targ);

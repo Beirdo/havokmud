@@ -842,8 +842,6 @@ void            gain_exp_regardless(struct char_data *ch, int gain,
 void            gain_condition(struct char_data *ch, int condition,
                                int value);
 void            check_idling(struct char_data *ch);
-int             ObjFromCorpse(struct obj_data *c);
-int             ClassSpecificStuff(struct char_data *ch);
 
 /*
  * From magic.c 
@@ -1376,13 +1374,13 @@ void            spell_holy_armor(byte level, struct char_data *ch,
  * From magicutils.c 
  */
 
-int             SwitchStuff(struct char_data *giver,
+void            SwitchStuff(struct char_data *giver,
                             struct char_data *taker);
-int             FailCharm(struct char_data *victim, struct char_data *ch);
-int             FailSnare(struct char_data *victim, struct char_data *ch);
-int             FailSleep(struct char_data *victim, struct char_data *ch);
-int             FailPara(struct char_data *victim, struct char_data *ch);
-int             FailCalm(struct char_data *victim, struct char_data *ch);
+void            FailCharm(struct char_data *victim, struct char_data *ch);
+void            FailSnare(struct char_data *victim, struct char_data *ch);
+void            FailSleep(struct char_data *victim, struct char_data *ch);
+void            FailPara(struct char_data *victim, struct char_data *ch);
+void            FailCalm(struct char_data *victim, struct char_data *ch);
 
 /*
  * From mobact.c 
@@ -3581,6 +3579,21 @@ void            str2ansi(char *p2, char *p1, int start, int stop);
 char           *ParseAnsiColors(int UsingAnsi, char *txt);
 void             construct_prompt(char *buf, struct char_data *ch);
 void remove_cr(char *output, char *input);
+void ReadTextZone(FILE * fl);
+int CheckKillFile(long virtual);
+void CleanZone(int zone);
+void save_new_object_structure(struct obj_data *obj, FILE * f);
+void write_obj_to_file(struct obj_data *obj, FILE * f);
+void save_new_mobile_structure(struct char_data *mob, FILE * mob_fi);
+int LoadZoneFile(FILE * fl, int zon);
+void clone_obj_to_obj(struct obj_data *obj, struct obj_data *osrc);
+void read_object_to_memory(long vnum);
+void ClassSpecificStuff(struct char_data *ch);
+void ObjFromCorpse(struct obj_data *c);
+char           *ArmorSize(int a);
+int             eval(struct obj_data *object);
+void FailPoison(struct char_data *victim, struct char_data *ch);
+int IS_FOLLOWING(struct char_data *tch, struct char_data *person);
 
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()

@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "protos.h"
 
 #define OBJ_MAIN_MENU         0
@@ -94,7 +96,6 @@ void            ChangeObjSpecial(struct char_data *ch, char *arg, int type);
 void ChangeObjFlags(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update;
@@ -150,7 +151,6 @@ void ChangeObjFlags(struct char_data *ch, char *arg, int type)
 void ChangeObjWear(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update;
@@ -574,7 +574,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
     sprintf(buf, "Object Type: %s",
-            item_types[ch->specials.objedit->obj_flags.type_flag]);
+            item_types[(int)ch->specials.objedit->obj_flags.type_flag]);
     send_to_char(buf, ch);
 
     row = 0;
@@ -756,11 +756,11 @@ void ChangeObjAffects(struct char_data *ch, char *arg, int type)
 void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 {
     int             update,
-                    affect,
+                    affect = 0,
                     row = 0,
                     i,
                     a = 0,
-                    column,
+                    column = 0,
                     check;
     char            buf[1024];
 
@@ -968,7 +968,7 @@ void ChangeObjAffect(struct char_data *ch, char *arg, int type)
 void ChangeAffectMod(struct char_data *ch, char *arg, int type)
 {
     signed long     update;
-    int             affect;
+    int             affect = 0;
     bool            skill = FALSE;
 
     switch (ch->specials.oedit) {
@@ -1133,15 +1133,7 @@ void ChangeObjSpecial(struct char_data *ch, char *arg, int type)
 void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 {
     int             temp = 0;
-    int             value,
-                    row = 0,
-                    i,
-                    a = 0,
-                    column,
-                    check;
     long            update;
-    char            buf[1024];
-    bool            skill = FALSE;
 
     if (type != ENTER_CHECK) {
         if (!*arg || (*arg == '\n')) {
@@ -1248,12 +1240,7 @@ void ChangeObjSpecials(struct char_data *ch, char *arg, int type)
 
 void ChangeObjValue(struct char_data *ch, char *arg, int type)
 {
-    int             value,
-                    row = 0,
-                    i,
-                    a = 0,
-                    column,
-                    check;
+    int             value = 0;
     long            update;
     char            buf[1024];
     bool            skill = FALSE;
@@ -1628,11 +1615,10 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
 void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update,
-                    affect;
+                    affect = 0;
     char            buf[255];
 
     switch (ch->specials.oedit) {
@@ -1730,11 +1716,10 @@ void ChangeObjSAffect(struct char_data *ch, char *arg, int type)
 void ChangeObjS2Affect(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update,
-                    affect;
+                    affect = 0;
     char            buf[255];
 
     switch (ch->specials.oedit) {

@@ -1194,8 +1194,8 @@ long NewExpCap(struct char_data *ch, long total)
 
     for (x = 0; x < MAX_CLASS; x++) {
         if (GET_LEVEL(ch, x)) {
-            temp += titles[x][GET_LEVEL(ch, x) + 1].exp - 
-                    titles[x][GET_LEVEL(ch, x)].exp;
+            temp += titles[x][(int)GET_LEVEL(ch, x) + 1].exp - 
+                    titles[x][(int)GET_LEVEL(ch, x)].exp;
         }
     }
 
@@ -2840,7 +2840,7 @@ int CalcThaco(struct char_data *ch)
 
     if (!IS_NPC(ch)) {
         bestclass = BestFightingClass(ch);
-        calc_thaco = thaco[bestclass][GET_LEVEL(ch, bestclass)];
+        calc_thaco = thaco[bestclass][(int)GET_LEVEL(ch, bestclass)];
     } else {
         /*
          * THAC0 for monsters is set in the HitRoll 
@@ -3125,9 +3125,9 @@ void HitVictim(struct char_data *ch, struct char_data *v, int dam,
     if (type == SKILL_BACKSTAB) {
         if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
             if (!(ch->specials.remortclass == THIEF_LEVEL_IND + 1)) {
-                tmp = lesser_backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+                tmp = lesser_backstab_mult[(int)GET_LEVEL(ch, THIEF_LEVEL_IND)];
             } else {
-                tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+                tmp = backstab_mult[(int)GET_LEVEL(ch, THIEF_LEVEL_IND)];
             }
             tmp += LoreBackstabBonus(ch, v);
         } else {
@@ -3888,8 +3888,8 @@ struct char_data *FindVictim(struct char_data *ch)
             found = TRUE;
 
             if (!IS_NPC(tmp_ch)) {
-                if (affected_by_spell(tmp_ch, SKILL_DISGUISE) || 
-                    affected_by_spell(tmp_ch, SKILL_PSYCHIC_IMPERSONATION) && 
+                if ((affected_by_spell(tmp_ch, SKILL_DISGUISE) || 
+                     affected_by_spell(tmp_ch, SKILL_PSYCHIC_IMPERSONATION)) && 
                     number(1, 101) > 50) {
                     /*
                      * 50/50 chance to not attack disguised person 

@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -154,8 +156,7 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
 
 void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
 {
-    int             a,
-                    row,
+    int             row,
                     update;
     char            buf[255];
     long            i,
@@ -196,7 +197,7 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
         send_to_char(buf, ch);
         check = 1 << i;
 
-        sprintf(buf, "%-2d [%s] %s", i + 1,
+        sprintf(buf, "%-2ld [%s] %s", i + 1,
                 ((ch->specials.mobedit->specials.affected_by & (check)) ? 
                  "X" : " "), affected_bits[i]);
         send_to_char(buf, ch);
@@ -902,7 +903,7 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
             mob->specials.exp_flag = change;
             expamount = (DetermineExp(mob, mob->specials.exp_flag) + 
                          mob->points.gold);
-            sprintf(buf, "This mobile will have around %d exp the next time "
+            sprintf(buf, "This mobile will have around %ld exp the next time "
                          "it is loaded.\n\r", expamount);
             send_to_char(buf, ch);
             GET_EXP(mob) = expamount;
@@ -922,7 +923,7 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
     if (mob->specials.mobtype == 'S') {
         sprintf(buf, "Current Mob Exp: %d", GET_EXP(mob));
     } else {
-        sprintf(buf, "Current Mob Expflag: %d", mob->specials.exp_flag);
+        sprintf(buf, "Current Mob Expflag: %ld", mob->specials.exp_flag);
     }
     send_to_char(buf, ch);
     if (mob->specials.mobtype == 'S') {
@@ -973,11 +974,7 @@ void ChangeMobDpos(struct char_data *ch, char *arg, int type)
 
 void ChangeMobRace(struct char_data *ch, char *arg, int type)
 {
-    int             update,
-                    row = 2,
-                    i,
-                    a = 0,
-                    column;
+    int             update;
     char            buf[255];
 
     if (type != ENTER_CHECK && (!*arg || *arg == '\n')) {
@@ -1016,7 +1013,6 @@ void ChangeMobRace(struct char_data *ch, char *arg, int type)
 void ChangeMobResist(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update;
@@ -1072,7 +1068,6 @@ void ChangeMobResist(struct char_data *ch, char *arg, int type)
 void ChangeMobImmune(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update;
@@ -1128,7 +1123,6 @@ void ChangeMobImmune(struct char_data *ch, char *arg, int type)
 void ChangeMobSuscep(struct char_data *ch, char *arg, int type)
 {
     int             i,
-                    a,
                     check = 0,
                     row,
                     update;
@@ -1339,7 +1333,7 @@ void ChangeMobSex(struct char_data *ch, char *arg, int type)
     sprintf(buf, VT_HOMECLR);
     send_to_char(buf, ch);
 
-    sprintf(buf, "Current Mobile sex is : %s", Sex[GET_SEX(mob)]);
+    sprintf(buf, "Current Mobile sex is : %s", Sex[(int)GET_SEX(mob)]);
     send_to_char(buf, ch);
     send_to_char("\n\rEnter Mobile Sex as N=neutral F=female or M=male ", ch);
     send_to_char("\n\r\n\rNew Mobile Sex: ", ch);

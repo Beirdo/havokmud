@@ -11,7 +11,7 @@ extern struct room_data *world;
 extern struct obj_data *object_list;
 extern struct char_data *character_list;
 
-SwitchStuff(struct char_data *giver, struct char_data *taker)
+void SwitchStuff(struct char_data *giver, struct char_data *taker)
 {
     struct obj_data *obj,
                    *next;
@@ -93,7 +93,7 @@ SwitchStuff(struct char_data *giver, struct char_data *taker)
     GET_ALIGNMENT(taker) = GET_ALIGNMENT(giver);
 }
 
-FailCharm(struct char_data *victim, struct char_data *ch)
+void FailCharm(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
@@ -118,7 +118,7 @@ FailCharm(struct char_data *victim, struct char_data *ch)
     }
 }
 
-FailSnare(struct char_data *victim, struct char_data *ch)
+void FailSnare(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
@@ -138,7 +138,7 @@ FailSnare(struct char_data *victim, struct char_data *ch)
     }
 }
 
-FailSleep(struct char_data *victim, struct char_data *ch)
+void FailSleep(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
@@ -158,7 +158,7 @@ FailSleep(struct char_data *victim, struct char_data *ch)
     }
 }
 
-FailPara(struct char_data *victim, struct char_data *ch)
+void FailPara(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
@@ -179,7 +179,7 @@ FailPara(struct char_data *victim, struct char_data *ch)
     }
 }
 
-FailCalm(struct char_data *victim, struct char_data *ch)
+void FailCalm(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER) && 
         number(1, 100) > 50) {
@@ -197,7 +197,7 @@ FailCalm(struct char_data *victim, struct char_data *ch)
     }
 }
 
-FailPoison(struct char_data *victim, struct char_data *ch)
+void FailPoison(struct char_data *victim, struct char_data *ch)
 {
     if (OnlyClass(ch, CLASS_MAGIC_USER | CLASS_SORCERER | CLASS_NECROMANCER) &&
         number(1, 100) > 50) {

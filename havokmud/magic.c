@@ -1,6 +1,9 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "protos.h"
 
@@ -231,7 +234,6 @@ void spell_colour_spray(byte level, struct char_data *ch,
 void spell_energy_restore(byte level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
-    int             tmp;
     char            buf[100];
 
     if (IS_IMMORTAL(victim)) {
@@ -1355,7 +1357,7 @@ void spell_locate_object(byte level, struct char_data *ch,
     if (j < 2) {
         j = 2;
     }
-    sprintf(buf, "");
+    buf[0] = '\0';
 
     for (i = object_list; i && (j > 0); i = i->next) {
         if (isname(name, i->name) &&
@@ -1825,7 +1827,6 @@ void spell_ventriloquate(byte level, struct char_data *ch,
 void spell_word_of_recall(byte level, struct char_data *ch,
                           struct char_data *victim, struct obj_data *obj)
 {
-    extern int      top_of_world;
     int             location;
 
     void            do_look(struct char_data *ch, char *argument, int cmd);
@@ -1994,11 +1995,9 @@ void spell_summon(byte level, struct char_data *ch,
 void RawSummon(struct char_data *v, struct char_data *c)
 {
     long            target;
-    struct char_data *tmp;
     struct obj_data *o,
                    *n;
-    int             j,
-                    i;
+    int             j;
     extern char     EasySummon;
     char            buf[400];
 
@@ -2147,7 +2146,6 @@ void spell_charm_person(byte level, struct char_data *ch,
 void spell_charm_monster(byte level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
-    char            buf[MAX_INPUT_LENGTH];
     struct affected_type af;
 
     assert(ch && victim);
@@ -2665,7 +2663,7 @@ void spell_identify(byte level, struct char_data *ch,
          * alittle more info for immortals -bcw 
          */
         if (GetMaxLevel(ch) > LOW_IMMORTAL) {
-            sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%d%s]",
+            sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%ld%s]",
                     color1, color2, obj->item_number, color1, color2,
                     (obj->item_number >= 0) ? 
                      obj_index[obj->item_number].virtual : 0, color1);
@@ -2673,7 +2671,7 @@ void spell_identify(byte level, struct char_data *ch,
             if (obj->max == 0) {
                 sprintf(buf2, "%s", "unlimited");
             } else {
-                sprintf(buf2, "%d", obj->max, obj->level);
+                sprintf(buf2, "%d", obj->max);
             }
 
             sprintf(buf, "%s %sLoadrate: [%s%s%s], Tweak Rate: [%s%d%s], "
@@ -2821,7 +2819,7 @@ void spell_identify(byte level, struct char_data *ch,
                     break;
 
                 case APPLY_ATTACKS:
-                    sprintf(buf2, "%.2f\n\r", obj->affected[i].modifier / 10);
+                    sprintf(buf2, "%.2f\n\r", obj->affected[i].modifier / 10.0);
                     break;
 
                 case APPLY_WEAPON_SPELL:
@@ -2856,7 +2854,7 @@ void spell_identify(byte level, struct char_data *ch,
                     break;
 
                 default:
-                    sprintf(buf2, "%d\n\r", obj->affected[i].modifier);
+                    sprintf(buf2, "%ld\n\r", obj->affected[i].modifier);
                     break;
                 }
                 send_to_char(buf2, ch);
@@ -3200,8 +3198,7 @@ void spell_disintegrate(byte level, struct char_data *ch,
                         struct char_data *victim, struct obj_data *obj)
 {
     int             i,
-                    damage,
-                    found = FALSE;
+                    damage;
     struct obj_data *x;
     char            buf[MAX_STRING_LENGTH + 30];
 
@@ -3272,7 +3269,7 @@ void spell_disintegrate(byte level, struct char_data *ch,
              * player hitting player with disint outside arena 
              */
             sprintf(buf, "%s just hit %s with a disintegrate outside the "
-                         "arena!", ch, victim);
+                         "arena!", GET_NAME(ch), GET_NAME(victim));
             Log(buf);
         }
     } else {
