@@ -674,8 +674,10 @@ int AssistFriend(struct char_data *ch)
     targ = 0;
 
     if (check_peaceful(ch, "")) {
-        return(0);
+        /* If we return 0 here, mobs will collect in peaceful rooms */
+        return(1);
     }
+    
 #if 0
     assert(ch->in_room >= 0);
 #else
