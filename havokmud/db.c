@@ -435,8 +435,11 @@ void build_player_index()
 	     strlen(dummy.name) + 1);
       for (i = 0; *(player_table[nr].name + i) =
 	   LOWER(*(dummy.name + i)); i++);
+      
 
-	for (j=0;j<ABS_MAX_CLASS;j++)
+      dummy.level[11] = 0;
+	
+      for (j=0;j<ABS_MAX_CLASS;j++)
 	   if (dummy.level[j] > 60)
 	      dummy.level[j] = 0;
 
@@ -457,7 +460,7 @@ void build_player_index()
 	     max = dummy.level[j];
 	    }
 
-
+	 
 	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].name =
 	  (char *)strdup(dummy.name);
 	list_wiz.lookup[max - 51].stuff[list_wiz.number[max - 51]].title =

@@ -2460,9 +2460,9 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
       {"Immortal Psionist","Immortal Psionist",237000000},
       {"Immortal Psionist","Immortal Psionist",238000000},
       {"Immortal Psionist","Immortal Psionist",239000000} /* 60 */
- }
+ },
 
-#if 0
+#if 1
 {
         {"Man",		"Woman",	0},/*Bard*/
 	{"Singer",	"Singer",	1},/*1*/
