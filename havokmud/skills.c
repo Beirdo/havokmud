@@ -873,7 +873,7 @@ void do_swim(struct char_data *ch, char *arg, int cmd)
         return;
     }
 
-    af.type = SKILL_SWIM;
+    af.type = SPELL_WATER_BREATH;
     af.duration = (ch->skills[SKILL_SWIM].learned / 10) + 1;
     af.modifier = 0;
     af.location = APPLY_NONE;
