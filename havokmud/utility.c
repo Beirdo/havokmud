@@ -3261,7 +3261,7 @@ void traveling_qp(int pulse)
 			obj_to_char(qt, ch);
 		}
 		log("carried by player, gained a QT");
-		sprinft(buf,"%s just found a quest token", GET_NAME(ch));
+		sprintf(buf,"%s just found a quest token", GET_NAME(ch));
 		qlog(buf);
 		extract_obj(travelqp);
 		return;
