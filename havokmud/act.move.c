@@ -870,6 +870,8 @@ dlog("in do_open_exit");
     exitp = EXIT(ch, door);
     if (!IS_SET(exitp->exit_info, EX_ISDOOR))
       send_to_char("That's impossible, I'm afraid.\n\r", ch);
+    else if (IS_SET(exitp->exit_info, EX_LOCKED))
+      send_to_char("It seems to be locked.\n\r", ch);
     else if(exitp->open_cmd!=-1 && cmd==exitp->open_cmd) {
       if (!IS_SET(exitp->exit_info, EX_CLOSED)) {
         SET_BIT(exitp->exit_info, EX_CLOSED);
@@ -1036,7 +1038,7 @@ int has_key(struct char_data *ch, int key)
     if (obj_index[o->item_number].virtual == key) {
       if (IS_OBJ_STAT(o,ITEM_BRITTLE)) {
         MakeScrap(ch,NULL, o);
-        send_to_char("As you trun the key in the lock it crumbles.\n\r", ch);
+        send_to_char("As you turn the key in the lock it crumbles.\n\r", ch);
       }
       return(1);
     }
