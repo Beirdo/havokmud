@@ -553,8 +553,10 @@ dlog("in do_sneak");
   }
 
 if (HasClass(ch,CLASS_RANGER) && !OUTSIDE(ch)) {
+   if (!IS_IMMORTAL(ch)){
   send_to_char("You must do this outdoors!\n\r",ch);
   return;
+}
 }
 
   if (MOUNTED(ch)) {

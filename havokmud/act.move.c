@@ -331,7 +331,7 @@ if (!IS_AFFECTED(ch,AFF_FLYING))
 
   if(IS_SET(ch->specials.affected_by2, AFF2_SKILL_SNEAK)) {
 	  need_movement += 2;
-	  send_to_char("YOur sneak skill slows you down some",ch);
+	  send_to_char("Your sneak skill slows you down some.\n\r",ch);
   }
 
   if (!IS_IMMORTAL(ch) || MOUNTED(ch)) {
