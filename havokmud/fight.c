@@ -2655,7 +2655,7 @@ void perform_violence(int pulse)
 */
 			if(!A_NOHASTE(ch)) {
 				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
-					x = x * 2;
+					x = x + 1.5;/* I did this for the remortskills changes. Maybe I'll look at slow later (Gordon) */
 
 				if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
 					x = x / 2;
@@ -2854,7 +2854,7 @@ void perform_violence(int pulse)
 
 			if(!A_NOHASTE(ch)) {
 				if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
-					x = x * 2;
+					x = x + 1.5; /* I did this for the remortskills changes. Maybe I'll look at slow later (Gordon) */
 
 				if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
 					x = x / 2;
