@@ -5125,6 +5125,7 @@ const struct skillset druidskills[] = {
 const struct skillset mainclericskills[] = {
 	{"energy restore",			SPELL_ENERGY_RESTORE		,48},
 	{"group heal",				SPELL_GROUP_HEAL			,29},
+	{"protection from drain",	SPELL_PROT_ENERGY_DRAIN		,48},
 	{"resurrection",			SPELL_RESURRECTION			,36},
 	{"scribe",					SKILL_SCRIBE				,1},
 	{"None", 					-1							,-1}
@@ -5183,7 +5184,6 @@ const struct skillset clericskills[] = {
 	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
 	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},
 	{"protection from cold",	SPELL_PROT_COLD				,20},
-	{"protection from drain",	SPELL_PROT_ENERGY_DRAIN		,48},
 	{"protection from energy",	SPELL_PROT_ENERGY			,19},
 	{"protection from electricity",SPELL_PROT_ELEC			,18},
 	{"protection from evil",	SPELL_PROTECT_FROM_EVIL		,7},
