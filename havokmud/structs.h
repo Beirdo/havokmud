@@ -161,6 +161,7 @@ struct QuestItem {
 #define PALADIN_LEVEL_IND   8
 #define RANGER_LEVEL_IND    9
 #define PSI_LEVEL_IND	    10
+#define BARD_LEVEL_IND      11
 
 /* user flags */
 #define NO_DELETE	1	/* do not delete me, well until 6 months pass! */
@@ -454,7 +455,9 @@ typedef struct {
 #define ITEM_ANTI_PSI		33554432
 #define ITEM_ANTI_MONK		67108864
 #define ITEM_ANTI_DRUID		134217728
-#define ITEM_ONLY_CLASS		 268435456
+#define ITEM_ONLY_CLASS	        268435456
+#define ITEM_ANTI_BARD          536870912
+/* UNIQUE AND PC CORPSE HERE */
 
 /* Some different kind of liquids */
 #define LIQ_WATER      0
@@ -1155,6 +1158,7 @@ struct char_special_data
 #define SKILL_KNOWN_PALADIN	512
 #define SKILL_KNOWN_RANGER	1024
 #define SKILL_KNOWN_PSI		2048
+#define SKILL_KNOWN_BARD        4096
 /* end */
 
 /* skill_data special */

@@ -4834,9 +4834,9 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
 */
 int glass_teleport_ring(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
-
-
-
+  
+  
+  
 }
 
 #endif
@@ -4847,18 +4847,18 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 {
   struct obj_data *port;
   char obj_name[50];
-
+  
   if (type == PULSE_COMMAND) {
     if (cmd != ENTER) return(FALSE);
-
+    
     arg=one_argument(arg,obj_name);
     if (!(port = get_obj_in_list_vis(ch, obj_name, real_roomp(ch->in_room)->contents)))	{
       return(FALSE);
     }
-
+    
     if (port != obj)
       return(FALSE);
-
+    
     if (port->obj_flags.value[1] <= 0 ||
 	port->obj_flags.value[1] > 50000) {
       send_to_char("The portal leads nowhere\n\r", ch);
@@ -4887,13 +4887,13 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 
 int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
-
+  
   if (type == PULSE_COMMAND) {
     return(FALSE);
   } else {
     if (obj->obj_flags.value[0])
       obj->obj_flags.value[0]--;
-
+    
     if (obj->obj_flags.value[0] == 0 && obj->in_room) {
       if ((obj->in_room != NOWHERE) &&(real_roomp(obj->in_room)->people)) {
 	act("$p disintegrates into atomic particles!",
@@ -4911,18 +4911,18 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 int attack_rats(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
  int dir;
-
+ 
  if(type == PULSE_COMMAND)
    return(FALSE);
-
+ 
  if(type == EVENT_WINTER) {
    ch->generic = ATTACK_ROOM+number(0,26);
    AddHatred(ch,OP_RACE,RACE_HUMAN);  /* so they'll attack beggars, etc */
  }
-
+ 
  if(type == EVENT_SPRING)
    ch->generic = 0;
-
+ 
  if (ch->generic == 0)
    return(FALSE);
 
@@ -4931,7 +4931,7 @@ int attack_rats(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
    ch->generic = 0; /* assume we found it.. start wandering */
    return(FALSE); /* We Can't Go Anywhere. */
  }
-
+ 
  go_direction(ch, dir);
 }
 
@@ -4941,161 +4941,161 @@ int attack_rats(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 
 int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
- register struct char_data *i, *j;
- int found = FALSE, dir, count;
- char buf[255];
-
-/* if(type == PULSE_COMMAND) {
-   if(cmd == 19)
+  register struct char_data *i, *j;
+  int found = FALSE, dir, count;
+  char buf[255];
+  
+  /* if(type == PULSE_COMMAND) {
+     if(cmd == 19)
      if(!strncasecmp(arg, "biff", 4)) {
-        do_follow(ch, arg, cmd);
-        do_group(mob, GET_NAME(ch), 0);
-        return(TRUE);
-      }
-   return(FALSE);
+     do_follow(ch, arg, cmd);
+     do_group(mob, GET_NAME(ch), 0);
+     return(TRUE);
+     }
+     return(FALSE);
  }*/
-
- if(type == PULSE_TICK) {
-   if(ch->specials.position == POSITION_SITTING) {
+  
+  if(type == PULSE_TICK) {
+    if(ch->specials.position == POSITION_SITTING) {
       ch->generic = 0;
       switch(number(1, 10)) {
       case 1: do_emote(ch, "mumbles something about in his day the tavern being a popular hangout.", 0);
-              break;
+	break;
       case 2: do_say(ch, "I really miss the good old days of fighting dragons all day.", 0);
-              do_say(ch, "I really should do it more often to keep in shape.", 0);
-              break;
+	do_say(ch, "I really should do it more often to keep in shape.", 0);
+	break;
       default: break;
       }
-
+      
       return(TRUE);
     }
-      if(ch->specials.position == POSITION_STANDING) {
-        if(ch->generic <= 20) {
+    if(ch->specials.position == POSITION_STANDING) {
+      if(ch->generic <= 20) {
            ch->generic++;
            return(FALSE);
-	 }
-
-        else if(ch->generic == 21) {
-           for(i = character_list; i; i = i->next)
-              if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
-                 found = TRUE;
-                 break;
-	       }
-              if(!found) {
-                ch->generic = 25;
-                do_say(ch, "Ack! The dragon is dead! I'm going back to the bar!", 0);
-              }
+      }
+      
+      else if(ch->generic == 21) {
+	for(i = character_list; i; i = i->next)
+	  if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
+	    found = TRUE;
+	    break;
+	  }
+	if(!found) {
+	  ch->generic = 25;
+	  do_say(ch, "Ack! The dragon is dead! I'm going back to the bar!", 0);
+	}
               else {
                 do_say(ch, "Ok, Follow me and let's go kill ourselves a dragon!", 0);
                 ch->generic = 23;
                 count = 1;
                 for(i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
-                   if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL)) {
-                     (*mob_index[i->nr].func)(i, 0, "", ch, EVENT_FOLLOW);
+		  if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL)) {
+		    (*mob_index[i->nr].func)(i, 0, "", ch, EVENT_FOLLOW);
                      sprintf(buf, "%d.%s", count, GET_NAME(i));
                      do_group(ch, buf, 0);
                      count++;
-		   }
-                   else if((i->master) && (i->master == ch) && (GetMaxLevel(i) > 10)) {
-                     sprintf(buf, "%s", GET_NAME(i));
-                     do_group(ch, buf, 0);
-		   }
+		  }
+		  else if((i->master) && (i->master == ch) && (GetMaxLevel(i) > 10)) {
+		    sprintf(buf, "%s", GET_NAME(i));
+		    do_group(ch, buf, 0);
+		  }
                   else if((i->master) && (i->master == ch)) {
-                     sprintf(buf, "%s You're too little! Get Lost!", GET_NAME(i));
-                     do_tell(ch, buf, 0);
-		   }
-		 }
+		    sprintf(buf, "%s You're too little! Get Lost!", GET_NAME(i));
+		    do_tell(ch, buf, 0);
+		  }
+		}
 	      }
-              if(!IS_AFFECTED(ch, AFF_GROUP))
-                SET_BIT(ch->specials.affected_by, AFF_GROUP);
+	if(!IS_AFFECTED(ch, AFF_GROUP))
+	  SET_BIT(ch->specials.affected_by, AFF_GROUP);
               spell_fly_group(40, ch, 0, 0);
               return(FALSE);
-	 }
-       else if(ch->generic == 23) {
-           for(i = character_list; i; i = i->next)
-              if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
-                 found = TRUE;
-                 break;
-	       }
-              if(!found) {
-                ch->generic = 25;
-                do_say(ch, "Ack! The dragon is dead! I'm going back to the bar!", 0);
-              }
-
-              else {
-                dir = choose_exit_global(ch->in_room, i->in_room, MAX_ROOMS);
-                if(dir == -1) /* can't go anywhere, wait... */
-                  return(FALSE);
-                go_direction(ch, dir);
-
-                if(ch->in_room == i->in_room) { /* we're here! */
+      }
+      else if(ch->generic == 23) {
+	for(i = character_list; i; i = i->next)
+	  if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
+	    found = TRUE;
+	    break;
+	  }
+	if(!found) {
+	  ch->generic = 25;
+	  do_say(ch, "Ack! The dragon is dead! I'm going back to the bar!", 0);
+	}
+	
+	else {
+	  dir = choose_exit_global(ch->in_room, i->in_room, MAX_ROOMS);
+	  if(dir == -1) /* can't go anywhere, wait... */
+	    return(FALSE);
+	  go_direction(ch, dir);
+	  
+	  if(ch->in_room == i->in_room) { /* we're here! */
                   do_shout(ch, "The dragon must die!", 0);
-
+		  
                   for(j = real_roomp(ch->in_room)->people; j; j = j->next_in_room)
                     if(IS_MOB(j) && (mob_index[j->nr].virtual == WHO_TO_CALL))
                       (*mob_index[j->nr].func)(j, 0, "", i, EVENT_ATTACK);
-
+		  
                   ch->generic = 24;
                   hit(ch, i, TYPE_UNDEFINED);
-		}
-                return(FALSE);
-	      }
-	 }
-
-         else if(ch->generic == 24) {
+	  }
+	  return(FALSE);
+	}
+      }
+      
+      else if(ch->generic == 24) {
               do_say(ch, "Guess it's back to the bar for me! I need a drink!", 0);
               ch->generic = 25;
-	    }
-        else if(ch->generic == 25) {
-              dir = choose_exit_global(ch->in_room, WHERE_TO_SIT, MAX_ROOMS);
-              if(dir == -1) /* no place to go, wait */
-                return(FALSE);
-              go_direction(ch, dir);
+      }
+      else if(ch->generic == 25) {
+	dir = choose_exit_global(ch->in_room, WHERE_TO_SIT, MAX_ROOMS);
+	if(dir == -1) /* no place to go, wait */
+	  return(FALSE);
+	go_direction(ch, dir);
               if(ch->in_room == WHERE_TO_SIT) {
                 do_say(ch, "Ahhh, time for a drink!", 0);
                 for(i = real_roomp(ch->in_room)->people; i; i = i->next_in_room)
-                   if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL))
-                     (*mob_index[i->nr].func)(i, 0, "", i, EVENT_FOLLOW);
+		  if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL))
+		    (*mob_index[i->nr].func)(i, 0, "", i, EVENT_FOLLOW);
                 do_sit(ch, "", 0);
                 do_say(ch, "Bartender, how about a drink?", 0);
                 ch->generic = 0;
 	      }
-	    }
       }
- }
-
- if(type == EVENT_WEEK) { /* months are TOO long */
+    }
+  }
+  
+  if(type == EVENT_WEEK) { /* months are TOO long */
     if(ch->specials.position != POSITION_SITTING)
       return(FALSE); /* We're doing something else, ignore */
-
+    
     for(i = character_list; i; i = i->next)
       if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
-         found = TRUE;
-         break;
+	found = TRUE;
+	break;
       }
     if(!found)
       return(FALSE); /* No Dragon in the game, ignore */
-
+    
     for(i = character_list; i; i = i->next)
       if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL)) {
         (*mob_index[i->nr].func)(i, 0, "", ch, EVENT_GATHER);
       }
-
+    
     do_shout(ch, "All who want to hunt a dragon, come to me!", 0);
     do_stand(ch, "", 0);
   }
-
- return(FALSE);
+  
+  return(FALSE);
 }
 
 int HuntingMercenary(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
- int dir;
-
- if(type == PULSE_COMMAND)
-   return(FALSE);
-
- if(type == PULSE_TICK) {
+  int dir;
+  
+  if(type == PULSE_COMMAND)
+    return(FALSE);
+  
+  if(type == PULSE_TICK) {
     if(ch->generic == 1) { /* Going to room */
       if(!IS_SET(ch->specials.act, ACT_SENTINEL) )
         SET_BIT(ch->specials.act, ACT_SENTINEL);
@@ -5103,35 +5103,35 @@ int HuntingMercenary(struct char_data *ch, int cmd, char *arg, struct char_data 
       if(dir == -1)
         return(FALSE);
       go_direction(ch, dir);
-
+      
       if(ch->in_room == WHERE_TO_SIT)
         ch->generic = 0;
     }
-   return(FALSE);
+    return(FALSE);
   }
 
- if(type == EVENT_GATHER) {
-   ch->generic = 1;
-   return(FALSE);
+  if(type == EVENT_GATHER) {
+    ch->generic = 1;
+    return(FALSE);
  }
-
- if(type == EVENT_ATTACK) {
-   hit(ch, mob, TYPE_UNDEFINED);
-   return(FALSE);
+  
+  if(type == EVENT_ATTACK) {
+    hit(ch, mob, TYPE_UNDEFINED);
+    return(FALSE);
  }
-
- if(type == EVENT_FOLLOW) {
+  
+  if(type == EVENT_FOLLOW) {
    if(ch == mob) {
      if(IS_SET(ch->specials.act, ACT_SENTINEL))
-        REMOVE_BIT(ch->specials.act, ACT_SENTINEL);
+       REMOVE_BIT(ch->specials.act, ACT_SENTINEL);
      ch->generic = 0;
      stop_follower(ch);
    }
    else
      add_follower(ch, mob);
-}
+  }
 
-return(FALSE);
+  return(FALSE);
 }
 
 
@@ -5253,7 +5253,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   char buf[50];
   int j;
   struct char_data *portal;
-
+  
   destination[0]=41925;		/* mob 2715 */
   destination[1]=21108;		/* mob 2716 */
   destination[2]=1474;		/* ... */
@@ -5279,7 +5279,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   destination[22]=44980;        /* mob 2737 */
   /* To add another color pool, create another mobile (2733, etc) and add */
   /* another destination.                                                 */
-
+  
   if(cmd!=7) return(FALSE);	/* enter */
   one_argument(arg,buf);
   if(*buf) {
@@ -5306,6 +5306,89 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   return(FALSE);
 }
 
+
+
+//{32001, Etheral_post },   /*(in room 32000, to Winterfell/room 31804) */
+//{32004,  Etheral_post  }, /* (in room 32004, to High Seas/room 33180) */
+//{32009,  Etheral_post  }, /* (in room 32009, to Sewers/room 32300) */
+//{32011,  Etheral_post  }, /* in room 32011, to Great Northern Keep/room 32600) */
+//{32030,  Etheral_post  }, /* in room 32030, to Desolate Caves/room 32800) */
+//{32024, Etheral_post }, /*  ethereal post (in room 32024, to Karsinya/room 3014)*/
+//{32032,  Etheral_post  }, /*  ethereal post (in room 32032, to Abyss/room 25002)*/
+ 
+const int post_list[] = { 
+  32001,
+  32004,
+  32009,
+  32011,
+  32030,
+  32024,
+  3203
+};
+const int destination[] = {
+  31804,
+  33180,
+  32300,
+  32600,
+  32800,
+  3014,
+  25002
+};
+int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+#if 1
+  int check = -1,x=0;
+ 
+  int destination[10];
+  char buf[50];
+  char buf2[256];
+  int j;
+  struct char_data *post;
+  
+  if(cmd!=ENTER) return(FALSE);	/* enter */
+  one_argument(arg,buf);
+  if(*buf) {
+    
+    *buf = tolower(*buf);
+    if(!(str_cmp("post",buf)) || !(str_cmp("ethereal",buf)) ||
+       !(str_cmp("ethereal post",buf))) {
+      if(post=get_char_room("ethereal post",ch->in_room)) {
+	/* Check to see where the post is going */
+	check = -1;
+	
+	for (x = 0; x < 7; x++) {
+	  if (mob_index[post->nr].virtual==post_list[x]){
+	    check=x;
+	  }
+	}
+	if(check==-1)
+	  return (FALSE);
+
+	sprintf(buf2,"Check=%d",check);
+	send_to_char(buf2,ch);
+
+	j=destination[check]; 
+
+	sprintf(buf2,"Going to Room# %d\n\r",j);
+	send_to_char(buf2,ch);
+	send_to_char("You touch the strange post and suddently feel your mind"
+		     " and body being torn appart.\n\r",ch);
+	
+	act("$n touches the strange post and suddently dissapears!"
+	    , FALSE , ch, 0, 0, TO_ROOM);
+	char_from_room(ch);
+	char_to_room(ch,j);
+	act("A strange rift like portal appears and $n steps out!"
+	    , FALSE, ch, 0, 0, TO_ROOM);
+	do_look(ch, "", 0);
+	return(TRUE);
+      }
+      
+    } else return(FALSE);
+  }
+#endif
+  return(FALSE);
+}
 
 
 

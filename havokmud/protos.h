@@ -2078,3 +2078,8 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 /*Spec_procs3*/
 int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+
+/*Spec_procs2*/
+
+int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+

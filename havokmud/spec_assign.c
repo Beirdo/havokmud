@@ -1288,7 +1288,7 @@ void assign_mobiles()
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */
-#if 0 
+#if 1
     
     {31811,  MageGuildMaster },       /* Maeister gm guildmaster mage */
     {31825,  PsiGuildmaster },       /* Psikill psionist gm guildmaster */
@@ -1311,7 +1311,13 @@ void assign_mobiles()
   /*{31880,    }, */    /* Ziik grocer (sell bread and barrels of water) */
   /*{31889,    }, */    /* Magelius (sell neutral potions for brew) */
 {31886,  RepairGuy },   /* Ned armorer (repair like super repair) */
-
+{32001, Etheral_post },   /*(in room 32000, to Winterfell/room 31804) */
+{32004,  Etheral_post  }, /* (in room 32004, to High Seas/room 33180) */
+{32009,  Etheral_post  }, /* (in room 32009, to Sewers/room 32300) */
+{32011,  Etheral_post  }, /* in room 32011, to Great Northern Keep/room 32600) */
+{32030,  Etheral_post  }, /* in room 32030, to Desolate Caves/room 32800) */
+{32024,  Etheral_post  }, /*  ethereal post (in room 32024, to Karsinya/room 3014)*/
+{32032,  Etheral_post  }, /*  ethereal post (in room 32032, to Abyss/room 25002)*/
 #endif
 
     { -1, NULL },
@@ -1428,6 +1434,13 @@ void assign_rooms()
     {45450, Thunder_Fountain},
     {31860, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
+    /* Ash's Monk and Druid challenge rooms     
+       { 500,   druid_challenge_prep_room},
+       { 501,   druid_challenge_room},
+       
+       { 550,   monk_challenge_prep_room},
+       { 551,   monk_challenge_room},
+    */
     { -1, NULL},
   };
   int i;
