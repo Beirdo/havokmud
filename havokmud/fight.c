@@ -1326,6 +1326,18 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
 	     "$n $c0008annihilates$c0007 $N with $s #w #l.",
 	     "You $c0008annihilate$c0007 $N with your #w #l.",
 	     "$n $c0008annihilates$c0007 you with $s #w on your #L."
+    },
+
+    {
+	     "dodge - please report seeing this",
+	     "dodge - please report seeing this",
+	     "dodge - please report seeing this."
+    },
+
+    {
+	     "shield block - please report seeing this",
+	     "shield block - please report seeing this",
+	     "shield block - please report seeing this"
     }
 
   };
@@ -1336,7 +1348,11 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
 
   wield = ch->equipment[WIELD];
 
-  if (dam <= 0) {
+  if (dam == -3) {
+    snum = 11;
+  } else if (dam == -2) {
+    snum = 12;
+  } else if (dam <= 0) {
     snum = 0;
   } else if (dam <= 2) {
     snum = 1;
@@ -2429,8 +2445,8 @@ int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
   return(mult);
 }
 
-int HitVictim(struct char_data *ch, struct char_data *v, int dam,
-		   int type, int w_type, int (*dam_func)())
+#define SMITH_SHIELD 727
+int HitVictim(struct char_data *ch, struct char_data *v, int dam, int type, int w_type, int (*dam_func)())
 {
 	extern byte backstab_mult[];
 	int dead, scheck = 0;
@@ -2457,6 +2473,13 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 				}
 			}
 		}
+		if(v->equipment[WEAR_SHIELD]) {
+			struct obj_data *shield;
+			shield = v->equipment[WEAR_SHIELD];
+			if(obj_index[shield->item_number].virtual == SMITH_SHIELD) {
+				SmithShield(ch, v, shield, &dam);
+			}
+		}
 		dead = (*dam_func)(ch, v, dam, w_type);
 	}
 	/* if the victim survives, lets hit him with a weapon spell */
@@ -2466,7 +2489,6 @@ int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 		}
 	}
 }
-
 
 void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*dam_func)(), int DistanceWeapon)
 {
@@ -4428,16 +4450,36 @@ int MonkDodge( struct char_data *ch, struct char_data *v, int *dam)
 
   if (number(1, 20000) < (x==0 ? v->skills[SKILL_DODGE].learned : x)*
                          GET_LEVEL(v , MONK_LEVEL_IND)) {
-    *dam = 0;
-    act("You dodge the attack", FALSE, ch, 0, v, TO_VICT);
-    act("$N dodges the attack", FALSE, ch, 0, v, TO_CHAR);
-    act("$N dodges $n's attack", FALSE, ch, 0, v, TO_NOTVICT);
+    *dam = -3;
+    act("You dodge the attack.", FALSE, ch, 0, v, TO_VICT);
+    act("$N dodges $n's attack.", FALSE, ch, 0, v, TO_NOTVICT);
+		if(IS_PC(ch) && (GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND)))
+			act("$N dodges your attack. $c000Y($c000W0$c000Y)", FALSE, ch, 0, v, TO_CHAR);
+		else
+			act("$N dodges your attack.", FALSE, ch, 0, v, TO_CHAR);
   } else {
     *dam -= GET_LEVEL(ch, MONK_LEVEL_IND)/10;
   }
 
   return(0);
 }
+
+int SmithShield(struct char_data *ch, struct char_data *v, struct obj_data *obj, int *dam)
+{
+	int x=0, scheck = 0;
+
+	if(number(1,180) <= GET_DEX(v)) {
+		*dam = -2;
+			act("$c000WYour shield seems to have a mind of its own and shifts to your defense.", FALSE, ch, 0, v, TO_VICT);
+			act("$c000W$N uses $S $p to block $n's hit.", FALSE, ch, obj, v, TO_NOTVICT);
+		if(IS_PC(ch) && (GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND)))
+			act("$c000W$N uses $S $p to block your hit. $c000Y($c000W0$c000Y)", FALSE, ch, obj, v, TO_CHAR);
+		else
+			act("$c000W$N uses $S $p to block your hit.", FALSE, ch, obj, v, TO_CHAR);
+	}
+	return(0);
+}
+
 
 int BarbarianToHitMagicBonus ( struct char_data *ch)
 {

@@ -6464,6 +6464,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	struct obj_data *obj;
 	struct obj_data *obj2;
 	int universal;
+	int xps;
+	float align;
 
 	if(!AWAKE(ch)) return(FALSE);
 
@@ -6512,8 +6514,8 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
          	return(TRUE);
 		} else {
 			if(obj2 = read_object(universal+1, VIRTUAL) ) {
-				act("You give $p to $N",FALSE,ch,obj,vict,TO_CHAR);
-				act("$n gives $p to $N",FALSE,ch,obj,vict,TO_ROOM);
+				act("You give $p to $N.",FALSE,ch,obj,vict,TO_CHAR);
+				act("$n gives $p to $N.",FALSE,ch,obj,vict,TO_ROOM);
 
 				if(!strcmp(vict->specials.quest_yes,"")) {
 					if(IS_GOOD(vict))
@@ -6524,15 +6526,15 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 					send_to_room(vict->specials.quest_yes, ch->in_room);
 				}
 
-				act("$N gives you $p",FALSE,ch,obj2,vict,TO_CHAR);
-				act("$N gives $p to $n",FALSE,ch,obj2,vict,TO_ROOM);
+				act("$N gives you $p.",FALSE,ch,obj2,vict,TO_CHAR);
+				act("$N gives $p to $n.",FALSE,ch,obj2,vict,TO_ROOM);
 				obj_to_char(obj2,ch);
 
-				act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
+//				act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
 				obj_from_char(obj);
 				extract_obj(obj);
 				return(TRUE);
-			} else {
+			} else { /* there's no reward. give quester xps + alignshift */
 				if(!strcmp(vict->specials.quest_yes,"")) {
 					if(IS_GOOD(vict))
 						do_say(vict, "Thank you very much!", 0);
@@ -6544,6 +6546,22 @@ int QuestMobProc(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 				act("$n puts $p into $s pocket.",TRUE,vict,obj,0,TO_ROOM);
 				obj_from_char(obj);
 				extract_obj(obj);
+				xps = GetMaxLevel(vict)*1000; /* gain xps if there's no obj to be had */
+				align = (float)GET_ALIGNMENT(vict)/20; /* align shifts too */
+				GET_ALIGNMENT(ch) += (int)align;
+				if(align > 0) {
+					send_to_char("Your alignment just shifted towards good.\n\r",ch);
+					if(GET_ALIGNMENT(ch) > 1000)
+						GET_ALIGNMENT(ch) = 1000;
+				} else if(align < 0) {
+					send_to_char("Your alignment just shifted towards evil.\n\r",ch);
+					if(GET_ALIGNMENT(ch) < -1000)
+						GET_ALIGNMENT(ch) = -1000;
+				}
+				if(xps > 0) {
+					sprintf(buf,"$c000BYou receive $c000W%d $c000Bexperience for completing this quest.\n\r",xps);
+					send_to_char(buf,ch);
+				}
 				return(TRUE);
 			}
 		}

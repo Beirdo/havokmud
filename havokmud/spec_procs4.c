@@ -38,7 +38,9 @@ extern char *dirs[];
 extern int rev_dir[];
 extern struct zone_data *zone_table;
 
-
+/* two global integers for Sentinel's cog room procedure */
+extern int cog_sequence;
+int chest_pointer = 0;
 
 
 
@@ -920,8 +922,49 @@ int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp,
 		}
 		return(FALSE);
 	}
+	return(FALSE);
 }
 
+#define ACORN 733
+int pick_acorns(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	char buf[MAX_INPUT_LENGTH];
+	int affect = 1;
+	int berry = 0;
+	struct obj_data *obj;
+
+	if (!ch)
+		return(FALSE);
+	if (!cmd)
+		return(FALSE);
+	if (cmd != 155)
+		return(FALSE);
+	else {
+		only_argument(arg,buf);
+  		if(*buf) {
+			if(!(str_cmp("acorn",buf)) || !(str_cmp("acorns",buf))) {
+				if(number(0,2)) {
+					act("You pick a delicious looking acorn.", FALSE, ch, 0, 0, TO_CHAR);
+					act("$n picks an acorn.", FALSE, ch, 0, 0, TO_ROOM);
+					WAIT_STATE(ch, PULSE_VIOLENCE);
+					if (obj = read_object(ACORN, VIRTUAL)) {
+						obj_to_char(obj, ch);
+					} else {
+						log("no acorns found for pick_acorns");
+					}
+					return(TRUE);
+				} else {
+					act("You try to pick an acorn, but the one you want hangs just out of your reach.", FALSE, ch, 0, 0, TO_CHAR);
+					act("$n tries to pick an acorn, but can't reach it.", FALSE, ch, 0, 0, TO_ROOM);
+					WAIT_STATE(ch, PULSE_VIOLENCE);
+					return(TRUE);
+				}
+			}
+		}
+		return(FALSE);
+	}
+	return(FALSE);
+}
 
 
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
@@ -1363,6 +1406,289 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 	}
 	return(FALSE);
 }
+
+#define SHARPENING_STONE 735
+void do_sharpen(struct char_data *ch, char *argument, int cmd)
+{
+	struct obj_data *obj, *cmp, *stone;
+	char buf[254], buff[123];
+	int w_type = 0;
+
+	if(!ch || !cmd)
+		return;
+
+	if(cmd != 601) /* sharpen */
+		return;
+
+	if(ch->specials.fighting) {
+		send_to_char("In the middle of a fight?! Hah.\n\r",ch);
+		return;
+	}
+
+	if(ch->equipment) {
+		if(stone = ch->equipment[HOLD]) {
+			if(obj_index[stone->item_number].virtual != SHARPENING_STONE) {
+				send_to_char("How can you sharpen stuff if you're not holding a sharpening stone?\n\r",ch);
+				return;
+			}
+		} else {
+			send_to_char("How can you sharpen stuff if you're not holding a sharpening stone?\n\r",ch);
+			return;
+		}
+	}
+
+	/* is holding the stone */
+	if(!argument) {
+		send_to_char("Sharpen what?\n\r",ch);
+		return;
+	}
+
+	only_argument(argument,buf);
+	if(!*buf) {
+		send_to_char("Sharpen what?\n\r",ch);
+		return;
+	} else {
+		if(obj = get_obj_in_list_vis(ch, buf, ch->carrying)) {
+			if((ITEM_TYPE(obj) == ITEM_WEAPON)) {
+				/* can only sharpen edged weapons */
+				switch(obj->obj_flags.value[3]) {
+					case 0  : w_type = TYPE_SMITE; break;
+					case 1  : w_type = TYPE_STAB;  break;
+					case 2  : w_type = TYPE_WHIP; break;
+					case 3  : w_type = TYPE_SLASH; break;
+					case 4  : w_type = TYPE_SMASH; break;
+					case 5  : w_type = TYPE_CLEAVE; break;
+					case 6  : w_type = TYPE_CRUSH; break;
+					case 7  : w_type = TYPE_BLUDGEON; break;
+					case 8  : w_type = TYPE_CLAW; break;
+					case 9  : w_type = TYPE_BITE; break;
+					case 10 : w_type = TYPE_STING; break;
+					case 11 : w_type = TYPE_PIERCE; break;
+					case 12 : w_type = TYPE_BLAST; break;
+					case 13 : w_type = TYPE_IMPALE; break;
+					case 14 : w_type = TYPE_RANGE_WEAPON; break;
+					default : w_type = TYPE_HIT; break;
+				}
+
+				if ((w_type >= TYPE_PIERCE && w_type <= TYPE_STING)
+					|| (w_type >= TYPE_CLEAVE && w_type <= TYPE_STAB)
+					|| w_type == TYPE_IMPALE) {
+
+					if(obj->obj_flags.value[2] == 0) {
+						sprintf(buf,"%s tried to sharpen a weapon with invalid value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+						log(buf);
+						return;
+					}
+
+					if(!(cmp = read_object(obj->item_number, REAL))) {
+						log("Could not load comparison weapon in do_sharpen");
+						return;
+					}
+
+					if(cmp->obj_flags.value[2] == 0) {
+						sprintf(buf,"%s tried to sharpen a weapon with invalid value: %s, vnum %d.",GET_NAME(ch),obj->short_description,obj->item_number);
+						log(buf);
+						extract_obj(cmp);
+						return;
+					}
+
+					if(cmp->obj_flags.value[2] == obj->obj_flags.value[2]) {
+						send_to_char("That item has no need of your attention.\n\r",ch);
+						extract_obj(cmp);
+						return;
+					} else {
+						obj->obj_flags.value[2] = cmp->obj_flags.value[2];
+						if(GET_POS(ch) > POSITION_RESTING)
+							do_rest(ch, "", -1);
+						sprintf(buf,"%s diligently starts to sharpen %s.",GET_NAME(ch),obj->short_description);
+						act(buf,FALSE,ch,0,0,TO_ROOM);
+						sprintf(buf,"You diligently sharpen %s.\n\r",obj->short_description);
+						send_to_char(buf,ch);
+						extract_obj(cmp);
+						WAIT_STATE(ch, PULSE_VIOLENCE*2);
+						return;
+					}
+				} else {
+					send_to_char("You can only sharpen edged or pointy weapons.\n\r",ch);
+					return;
+				}
+			} else {
+				send_to_char("You can only sharpen weapons.\n\r",ch);
+				return;
+			}
+		} else {
+			send_to_char("You don't seem to have that.\n\r",ch);
+			return;
+		}
+	}
+	return;
+}
+
+/* end King's Grove */
+
+/* Sentinel's Zone */
+
+/* chests in room 51161
+they type push cog in each of the room numbers in the right order will open
+a different chest.
+
+1. push cog in r#s 51195, 51204, 51231, 51258, 51300 opens vnum 51168.
+2. push cog in r#s 51204, 51231, 51258, 51300, 51195 opens vnum 51169.
+3. push cog in r#s 51231, 51258, 51300, 51195, 51204 opens vnum 51170.
+4. push cog in r#s 51258, 51300, 51195, 51204, 51231 opens vnum 51171.
+5. push cog in r#s 51300, 51258, 51231, 51204, 51195 opens vnum 51172.
+
+If they push the cogs in the wrong order, then they have to come back after
+repop and try again.
+
+After they push each cog, should make some noise like: As the cog moves
+into place, the hum of the machinery grows deafening.
+
+If they push in wrong order, should have some message saying they failed
+like: As the cog moves into place, the hum of the machinery ceases.
+
+Sentinel
+*/
+
+#define CHESTS_ROOM 51161
+int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
+{
+	struct obj_data *obj;
+	char cogname[254];
+
+	if(!cmd || !ch)
+		return(FALSE);
+
+	if(cmd != 374)
+		return(FALSE);
+
+	if(!(ch->in_room))
+		return(FALSE);
+
+	if(!*arg)
+		return(FALSE);
+
+	only_argument(arg, cogname);
+
+
+	if(!strcmp(cogname, "cog") || !strcmp(cogname, "Cog") || !strcmp(cogname, "COG")) {
+		if(cog_sequence < 0) {
+			/* alas, you made an error earlier */
+			send_to_char("Nothing seems to happen. the gears must have jammed somewhere.\n\r",ch);
+			return(TRUE);
+		} else if(cog_sequence == 0) {
+			/* we got a new chance. determine chest by this room */
+			switch(ch->in_room) {
+				case 51195:
+					chest_pointer = 51168;
+					break;
+				case 51204:
+					chest_pointer = 51169;
+					break;
+				case 51231:
+					chest_pointer = 51170;
+					break;
+				case 51258:
+					chest_pointer = 51171;
+					break;
+				case 51300:
+					chest_pointer = 51172;
+					break;
+				default:
+					chest_pointer = 0;
+					cog_sequence = 0;
+					break;
+			}
+			cog_sequence++;
+			send_to_room("As the cog moves into place, the hum of machinery running fills the air.\n\r",ch->in_room);
+			return(TRUE);
+
+		} else if(cog_sequence == 1) {
+			if( (ch->in_room == 51204 && chest_pointer == 51168) ||
+				(ch->in_room == 51231 && chest_pointer == 51169) ||
+				(ch->in_room == 51258 && chest_pointer == 51170) ||
+				(ch->in_room == 51300 && chest_pointer == 51171) ||
+				(ch->in_room == 51258 && chest_pointer == 51172)) {
+
+				cog_sequence++;
+				send_to_room("As the cog moves into place, the hum of of the machines becomes louder.\n\r",ch->in_room);
+			} else {
+				cog_sequence = -1;
+				send_to_room("As the cog moves into place, the hum of of the machines creaks and stops.\n\r",ch->in_room);
+			}
+			return(TRUE);
+
+		} else if(cog_sequence == 2) {
+			if( (ch->in_room == 51231 && chest_pointer == 51168) ||
+				(ch->in_room == 51258 && chest_pointer == 51169) ||
+				(ch->in_room == 51300 && chest_pointer == 51170) ||
+				(ch->in_room == 51195 && chest_pointer == 51171) ||
+				(ch->in_room == 51231 && chest_pointer == 51172)) {
+
+				cog_sequence++;
+				send_to_room("As the cog moves into place, the hum of of the machines becomes louder.\n\r",ch->in_room);
+			} else {
+				cog_sequence = -1;
+				send_to_room("As the cog moves into place, the hum of of the machines creaks and stops.\n\r",ch->in_room);
+			}
+			return(TRUE);
+
+		} else if(cog_sequence == 3) {
+			if( (ch->in_room == 51258 && chest_pointer == 51168) ||
+				(ch->in_room == 51300 && chest_pointer == 51169) ||
+				(ch->in_room == 51195 && chest_pointer == 51170) ||
+				(ch->in_room == 51204 && chest_pointer == 51171) ||
+				(ch->in_room == 51204 && chest_pointer == 51172)) {
+
+				cog_sequence++;
+				send_to_room("As the cog moves into place, the hum of of the machines becomes louder.\n\r",ch->in_room);
+			} else {
+				cog_sequence = -1;
+				send_to_room("As the cog moves into place, the hum of of the machines creaks and stops.\n\r",ch->in_room);
+			}
+			return(TRUE);
+
+		} else if(cog_sequence == 4) {
+			if( (ch->in_room == 51300 && chest_pointer == 51168) ||
+				(ch->in_room == 51195 && chest_pointer == 51169) ||
+				(ch->in_room == 51204 && chest_pointer == 51170) ||
+				(ch->in_room == 51231 && chest_pointer == 51171) ||
+				(ch->in_room == 51195 && chest_pointer == 51172)) {
+
+				cog_sequence = -1;
+				send_to_room("As the cog moves into place, the machine grinds to a halt and a loud click can be heard nearby.\n\r",ch->in_room);
+				/* unlock and open chest */
+				rp = real_roomp(CHESTS_ROOM);
+				if(!rp) {
+					log("no room found for chest storage in cog_room proc");
+					return(TRUE);
+				}
+				for(obj = rp->contents; obj; obj = obj->next_content) {
+					if(obj_index[obj->item_number].virtual == chest_pointer) {
+						if(IS_SET(obj->obj_flags.value[1], CONT_LOCKED))
+							REMOVE_BIT(obj->obj_flags.value[1], CONT_LOCKED);
+						if (IS_SET(obj->obj_flags.value[1], CONT_CLOSED))
+							REMOVE_BIT(obj->obj_flags.value[1], CONT_CLOSED);
+						send_to_room("The machine grinds to a halt and one of the chests emits a loud click.\n\r",CHESTS_ROOM);
+						return(TRUE);
+					}
+				}
+				log("Couldn't find appropriate chest in CHESTS_ROOM");
+				return(TRUE);
+			} else {
+				cog_sequence = -1;
+				send_to_room("As the cog moves into place, the hum of of the machines creaks and stops.\n\r",ch->in_room);
+			}
+			return(TRUE);
+		} else {
+			log("got to bad spot in cog_room");
+			return(TRUE);
+		}
+	}
+	return(FALSE); /* trying to push something else than cog */
+}
+
+/* End Sentinel's Zone */
 
 /* Rocky's Zone Stuff */
 int close_doors(struct char_data *ch, struct room_data *rp, int cmd)

@@ -1418,8 +1418,8 @@ dlog("in do_talk");
 
 		if(IS_NPC(vict)) {
 			if(strcmp(vict->specials.talks,"")) {
-				act("$n strikes up a conversation with $N.\n\r",FALSE,ch,0,vict,TO_ROOM);
-				act("You strike up a conversation with $N.\n\r",FALSE,ch,0,vict,TO_CHAR);
+				act("$n strikes up a conversation with $N.",FALSE,ch,0,vict,TO_ROOM);
+				act("You strike up a conversation with $N.",FALSE,ch,0,vict,TO_CHAR);
 				send_to_room(vict->specials.talks, ch->in_room);
 			} else {
 				act("$n tries to strike up a conversation with $N.",FALSE,ch,0,vict,TO_ROOM);

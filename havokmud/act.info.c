@@ -259,7 +259,7 @@ void show_obj_to_char(struct obj_data *object, struct char_data *ch, int mode)
 
   if (mode != 3) {
     if (IS_OBJ_STAT(object,ITEM_INVISIBLE)) {
-      strcat(buffer,"(invisible)");
+      strcat(buffer," (invisible)");
     }
     if (IS_OBJ_STAT(object,ITEM_ANTI_GOOD) && IS_AFFECTED(ch,AFF_DETECT_EVIL)) {
       if (singular(object))
@@ -393,7 +393,7 @@ void show_mult_obj_to_char(struct obj_data *object, struct char_data *ch, int mo
 
   if (mode != 3) {
     if (IS_OBJ_STAT(object,ITEM_INVISIBLE)) {
-      strcat(buffer,"(invisible)");
+      strcat(buffer," (invisible)");
     }
     if (IS_OBJ_STAT(object,ITEM_ANTI_GOOD) && IS_AFFECTED(ch,AFF_DETECT_EVIL)) {
       strcat(buffer,"..It glows red!");
@@ -2895,7 +2895,7 @@ dlog("in do_who");
 			classn =1;
 		total/=classn;
 		if(GetMaxLevel(person)==50) {
-			if(GET_EXP(person) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND))
+			if(GET_EXP(person) > 200000000 || IS_SET(person->specials.act, PLR_LEGEND))
 				strcpy(levels,"$c0009Legend");
 			else strcpy (levels,"$c0012Hero");
 		}

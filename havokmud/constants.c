@@ -3401,7 +3401,7 @@ const char *procedure_bits[] = {
 	"Guildmaster",
 	"Swallower",
 	"Drainer",
-	"Quest (see wizhelp questmob)",
+	"Quest",
 	"Old Breath Weapon",
 	"Fire Breather",
 	"Gas Breather",

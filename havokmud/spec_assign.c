@@ -1641,8 +1641,16 @@ void assign_rooms()
 /* The King's Grove */
 	{ 697, gnome_home },
 	{ 706, climb_room },
+	{ 708, pick_acorns },
 	{ 717, legendfountain },
 	{ 721, pick_berries },
+
+/* Sentinel's Zone */
+	{ 51195, cog_room },
+	{ 51204, cog_room },
+	{ 51231, cog_room },
+	{ 51258, cog_room },
+	{ 51300, cog_room },
 
 /* Citystate of Tarantis */
 //	{737, timed_door },

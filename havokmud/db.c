@@ -39,6 +39,8 @@ struct player_index_element *player_table = 0; /* index to player file   */
 int top_of_p_table = 0;               /* ref to top of table             */
 int top_of_p_file = 0;
 int HpBonus;						/* used for the mob file conversion, mrebuild */
+int cog_sequence = 0;
+
 long total_bc = 0;
 long room_count=0;
 long mob_count=0;
@@ -3313,6 +3315,10 @@ void reset_zone(int zone)
   extern long SystemFlags;
   mob = 0;
 
+	if(zone == 189) {
+		log("resetting cog sequence to 0 for Sentinel's Zone (189)");
+		cog_sequence = 0;
+	}
 
 #if OLD_ZONE_STUFF
 #if 0

@@ -569,6 +569,7 @@ struct char_data *FindMetaVictim( struct char_data *ch);
 void NailThisSucker( struct char_data *ch);
 int GetFormType(struct char_data *ch);
 int MonkDodge( struct char_data *ch, struct char_data *v, int *dam);
+int SmithShield( struct char_data *ch, struct char_data *v, struct obj_data *obj, int *dam);
 void BurnWings(struct char_data *ch);
 
 /* From handler.c */
@@ -2306,8 +2307,13 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 int generate_legend_statue();
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int pick_acorns(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int gnome_collector(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+void do_sharpen(struct char_data *ch, char *argument, int cmd);
+
+/* Sentinel's Zone */
+int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

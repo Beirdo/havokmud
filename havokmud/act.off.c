@@ -2652,6 +2652,7 @@ void do_qchat(struct char_data *ch, char *argument, int cmd) {
 			  //ch_printf(ch,"My clan: %d   Other clan: %d", GET_CLAN(clannum), GET_CLAN(i->character) );
 			  if(IS_AFFECTED2(i->character,AFF2_QUEST))
 			    send_to_char(buf1,i->character);
-	      }
-	  }
+		}
+	}
 }
+
