@@ -448,7 +448,7 @@ dlog("in do_flee");
 	if (IS_AFFECTED(ch, AFF_PARALYSIS))
 		return;
 
-	if(!(rp = real_roomp(ch->in_room))
+	if(!(rp = real_roomp(ch->in_room)))
 		return;
 
 	if (GET_POS(ch) < POSITION_SLEEPING) {
