@@ -5926,6 +5926,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 void do_weapons(struct char_data *ch, char *argument, int cmd)
 {
 	char buf[MAX_STRING_LENGTH];
+	extern const struct skillset weaponskills[];
 
 	if(!ch)
 		return;

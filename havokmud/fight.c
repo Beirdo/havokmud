@@ -43,6 +43,7 @@ extern struct descriptor_data *descriptor_list;
 extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct int_app_type int_app[26];
 extern struct wis_app_type wis_app[26];
+	extern const struct skillset weaponskills[];
 extern char *room_bits[];
 extern int thaco[MAX_CLASS][ABS_MAX_LVL];
 int can_see_linear(struct char_data *ch, struct char_data *targ, int *rng, int *dr) ;
