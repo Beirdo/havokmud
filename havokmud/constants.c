@@ -5434,357 +5434,370 @@ const char     *spell_desc[] = {        /* Last reviewed by Sentinel */
     "\n"
 };
 
-#if 1
 const struct QuestItem QuestList[4][IMMORTAL] = {
-    {                           /* magic user */
-        {2402, "An unusual way of looking at things."},
-        {1, "It can be found in the donation room, or on your head\n\r"},
-        {1410, "Its a heavy bag of white powder\n\r"},
-        {6010, "You can make pies out of them, deer seem to like them too\n\r"},
-        {3013, "Its a yummy breakfast food, they go great with eggs and "
-               "cheese\n\r"},
-        {20, "If you twiddle your thumbs enough, you'll find one.\n\r"},
-        {24764, "Dead people might wear them on their hands\n\r"},
+    {
+        {2402, "An unusual way of looking at things.\n\r"},
+        {1, "It can be found in the donation room or on your head.\n\r"},
+        {1410, "It's a heavy bag of white powder.\n\r"},
+        {6010, "You can make pies out of them, deer seem to like them "
+               "too.\n\r"},
+        {3013, "It's a yummy breakfast food, which goes great with eggs and "
+               "cheese.\n\r"},
+        {20, "If you twiddle your thumbs enough you'll find one.\n\r"},
+        {24764, "Dead people might wear them on their hands.\n\r"},
         {112, "If you found one of these, it would be mighty strange!\n\r"},
-        {106, "Eye of Toad and Toe of Frog, bring me one or the other\n\r"},
-        {109, "A child's favorite place holds the object of my desire, on "
-              "the dark river\n\r"},
+        {106, "Eye of Toad and Toe of Frog, bring me one or the other.\n\r"},
+        {109, "A child's favorite place holds the object of my desire, on the "
+              "dark river.\n\r"},
         /*
-         * 10
+         * 10 
          */
-        {3628, "The latest in New padded footwear\n\r"},
-        {113, "A child might play with one, when the skexies aren't "
-              "around\n\r"},
-        {19204, "A precious moon in a misty castle\n\r"},
-        {20006, "Are you a fly? You might run into one. Beware..\n\r"},
-        {1109, "Little people have tiny weapons.. bring me one\n\r"},
-        {6203, "IReallyReallyWantACurvedBlade\n\r"},
-        {21007, "I want to be taller and younger, find the nasty children\n\r"},
+        {3628, "The latest in New padded footwear.\n\r"},
+        {113, "A child might play with one when the skexies aren't "
+              "around.\n\r"},
+        {19204, "A precious moon in a misty castle.\n\r"},
+        {20006, "Are you a fly? You might run into one of these, "
+                "beware...\n\r"},
+        {1109, "Little people have tiny weapons...bring me one.\n\r"},
+        {6203, "IReallyReallyWantACurvedBlade.\n\r"},
+        {21007, "I want to be taller and younger, find the nasty "
+                "children.\n\r"},
         {5228, "Don't you find screaming women so disarming?\n\r"},
-        {7204, "Vaulted lightning\n\r"},
-        {16043, "Precious elements can come in dull, dark mines\n\r"},
+        {7204, "Vaulted lightning.\n\r"},
+        {16043, "Precious elements can come in dull, dark mines.\n\r"},
         /*
-         * 20
+         * 20 
          */
-        {20007, "You'll catch him napping, no guardian of passing time."},
-        {16903, "Nature's mistake, carried by a man on a new moon, "
-                "fish on full."},
-        {5226, "Sealed in the hands of a city's failed guardian."},
+        {20007, "You'll catch him napping, no guardian of passing time.\n\r"},
+        {16903, "Nature's mistake, carried by a man on a new moon, fish on "
+                "full.\n\r"},
+        {5226, "Sealed in the hands of a city's failed guardian.\n\r"},
         {10900, "Anachronistic rectangular receptacle holds circular "
-                "plane."}, /* Sentry, TL */
-        {13840, "What kind of conditioner does one use for "
-                "asps?"},/* Medusa, GQ */
-        {7406, "If you don't bring a scroll of recall, you might die a "
-               "fiery death"},      /* Room 7284, SM */
-        {120, "Dock down anchor"}, /* Ixitxachitl, NT */
-        {21008, "Very useful, behind a hearth."},  /* Dog, OR */
+                "plane.\n\r"},
+        {13840, "What kind of conditioner does one use for asps?\n\r"},
+        {7406, "If you don't bring a scroll of recall, you might die a fiery "
+               "death.\n\r"},
+        {120, "Dock down anchor.\n\r"},
+        {21008, "Very useful, behind a hearth.\n\r"},
         {10002, "He didn't put them to sleep with these, the results were "
-                "quite deadly"},  /* On Corpse, DCE */
-        {3648, "Unsummoned, they pose large problems. What you want is on "
-               "their queen."},  /* Chieftess, HGS */
-        {15805, "A single sample of fine plumage, held by a guard and "
-             "a ghost."},  /* Guard & Brack, SK */
-        {21141, "In the land of the troglodytes there is a headpiece with "
-             "unpleasant powers."},    /* Case, TR */
-        {1532, "Three witches have the flighty component you need."},/*Pot,MT*/
-        {5304, "A spectral force holds the key to advancement in a geometric "
-               "dead end."},  /* Spectre, PY */
-        {9496, "A great golden sword was once taken by the giants of the "
-               "great with north.  return it. Bring friends."},
-        {5105, "What you need is as dark as the heart of the elf "
-               "who wields it."}, /* Weaponsmaster, DR */
-        {21011, "The key to your current problem is in Orshingal, on a "
-                "haughty strutter."},  /* Enfan, OR */
-        {27004, "A small explosive pinapple shaped object. Ever see "
-                "Monty-Python?, you might find it in the hands of sorcerous "
-                "undead men"},       /* ???, Haplo's */
-        {6616, "You might smile if drinking a can of this. Look in "
-               "Prydain."},     /* ???, PRY */
-        {21125, "With enough of this strong amber drink you'd forget about "
-                "the nightly ghosts."},  /* Crate, ARO */
+                "quite deadly.\n\r"},
+        {3648, "Unsummoned they pose large problems. What you want is on "
+               "their queen.\n\r"},
         /*
-         * 40
+         * 30
+         */
+        {15805, "A single sample of fine plumage held by a guard and a "
+                "ghost.\n\r"},
+        {21141, "In the land of the troglodytes there is a headpiece with "
+                "unpleasant powers.\n\r"},
+        {1532, "Three witches have the flighty component you need.\n\r"},
+        {5304, "A spectral force holds the key to advancement in a geometric "
+               "dead end.\n\r"},
+        {9496, "A great golden sword was once taken by the giants of the great"
+               " north. Return it to me.\n\r"},
+        {5105, "What you need is as dark as the heart of the elf who wields "
+               "it.\n\r"},
+        {21011, "The key to your current problem is in Orshingal on a haughty"
+                " strutter.\n\r"},
+        {11011, "Brave Sir Robin seems to have experienced a fright!\n\r"},
+        {6616, "You might smile if drinking a can of this. Look in "
+               "Prydain.\n\r"},
+        {21125, "With enough of this strong amber drink you'd forget about the"
+                " nightly ghosts.\n\r"},
+        /*
+         * 40 
          */
         {5309, "Powerful items of magic follow... first bring me a medallion "
-               "of mana\n\r"},
-        {1585, "Bubble bubble, toil and trouble, bring me a staff on the "
-               "double\n\r"},
+               "of mana.\n\r"},
+        {1585, "Bubble bubble toil and trouble, bring me a staff on the "
+               "double.\n\r"},
         {21003, "I need some good boots, you know how strange it is to find "
-                "them\n\r"},
-        {13704, "Watch for a dragon, find his ring\n\r"},
-        {252, "Dead-makers cloaks, buried deep in stone\n\r"},
-        {3670, "bottled mana\n\r"},
-        {1104, "The master of fireworks, take his silver"},
-        {5020, "You're not a real mage till you get platinum from purple\n\r"},
-        {1599, "Grand Major\n\r"},
-        {20002, "She's hiding in her room, but she has my hat!\n\r"}
+                "them.\n\r"},
+        {13704, "Watch for a dragon, find his ring.\n\r"},
+        {252, "I don't want a normal cloak, maybe one that's a little "
+              "distorted.\n\r"},
+        {3670, "Bottled mana is what I need.\n\r"},
+        {1104, "The master of fireworks, take his silver.\n\r"},
+        {5020, "You're not a real mage until you get platinum from "
+               "purple.\n\r"},
+        {1599, "Grand Major.\n\r"},
+        {20002, "She's hiding in her web, but she has my hat!\n\r"}
     },
-    {                       /* cleric */
-        {0, ""},
-        {1, "It can be found in the donation room, or on your head\n\r"},
-        {1110, "White and young, with no corners or sides, a golden "
-               "treasure can be found inside\n\r"},
-        {3070, "The armorer might have a pair, but they're not his "
-               "best on hand\n\r"},
-        {3057, "judicandus dies\n\r"},
-        {6001, "I want clothes i can play chess on\n\r"},
-        {16033, "A goblin's favorite food, the eastern path\n\r"},
-        {107, "Every righteous cleric should have one, but few do\n\r"},
-        {4000, "I have a weakness for cheap rings\n\r"},
-        {3025, "cleaver for hire, just outside of midgaard\n\r"},
+    /*
+     * 50
+     */
+    {
+        {1401, "I was thinking about going fishing but don't have any gear, "
+               "can you help?\n\r"},
+        {41257, "Some new guys told me that a Dwarven Warrior has a pair of "
+                "these.\n\r"},
+        {1110, "White and young, with no corners or sides, a golden treasure "
+               "can be found inside.\n\r"},
+        {3070, "The armorer might have a pair, but they're only his third best "
+               "on hand.\n\r"},
+        {3057, "Judicandus dies.\n\r"},
+        {6001, "I want clothes I can play chess on.\n\r"},
+        {16033, "A goblin's favorite food, around the eastern path.\n\r"},
+        {107, "Every righteous cleric should have one, but few of them "
+              "do.\n\r"},
+        {4000, "I have a weakness for cheap rings.\n\r"},
+        {3025, "Cleaver for hire, just outside of Karsinya.\n\r"},
         /*
-         * 10
+         * 60 
          */
         {3649, "My wife needs something New, to help keep her girlish "
-               "figure\n\r"},
-        {7202, "mindflayers have small ones, especially in the sewers\n\r"},
-        {19203, "the weapon of a traitor, lost in a fog\n\r"},
-        {15814, "striped black and white, take what this gelfling-friend "
-                "offers\n\r"},
-        {119, "Play with a gypsy child when he asks you to\n\r"},
+               "figure.\n\r"},
+        {7202, "Mindflayers have small ones, especially in the sewers.\n\r"},
+        {19203, "The weapon of a traitor, lost in a fog.\n\r"},
+        {15814, "Beautiful as can be, take what this gelfling friend "
+                "offers.\n\r"},
+        {119, "Play with a gypsy child when he asks you to or else!\n\r"},
         {5012, "You might use these to kill a vampire, they are in the "
-               "desert\n\r"},
-        {6809, "Really cool sunglasses, on a really cool guy, in a really "
-               "cool place\n\r"},
-        {17021, "The proof is in the volcano\n\r"},
-        {3648, "Giant women have great fashion sense\n\r"},
-        {27001, "Undead have the strangest law enforcement tools, near a "
-                "split in the river\n\r"},
+               "desert.\n\r"},
+        {6809, "Really cool sunglasses on a really cool guy in a really cool "
+               "place.\n\r"},
+        {17021, "J-E-L-L-O!\n\r"},
+        {3648, "Giant women have great fashion sense.\n\r"},
+        {27001, "A hideously ugly woman making a hideously disgusting "
+                "brew.\n\r"},
         /*
-         * 20
+         * 70
          */
-        {105, "A venomed bite will end your life - you need the jaws that "
-              "do it."},    /* Rattler fangs, MidT */
-        {3668, "Buy some wine from a fortuneteller's "
-               "brother."}, /* Gypsy Bartender */
-        {1703, "On a cat, but not in the petting zoo."},/* Bengal tiger, MZ */
-        {13758, "Held by a doggie with who will bite you and bite you "
-                "and bite you."}, /* Cerebus, Hades */
-        {5240, "In the old city you'll find the accursed vibrant stone "
-               "you require."}, /* Lamia, OT */
-        {5013, "Where can you go for directions in the desert? Try the "
-               "wet spot."},    /* Oasis Map, GED */
-        {17011, "{An unholy symbol on an unholy creature under a fuming "
-                "mountain."},   /* Amelia, WPM */
-        {1708, "Some liar's got it in a cul-de-sac. The high priests of "
-               "Odin know the way."},  /* Liar in room 10911, TL */
-        {9203, "What would you use to swat a very large mosquito? Get it "
-               "from the giants."},   /* Giant, HGS */
-        {21109, "A bow made of dark wood, carried by a "
-                "troglodyte."},  /* Trog, CT */
+        {105, "A venomed bite will end your life - you need the jaws that do "
+              "it.\n\r"},
+        {3668, "Buy some wine from a fortuneteller's brother.\n\r"},
+        {1703, "On a cat, but not in the petting zoo.\n\r"},
+        {13758, "Held by a doggie with who will bite you and bite you and "
+                "bite you.\n\r"},
+        {5240, "In the old city you'll find the accursed vibrant stone you "
+               "require.\n\r"},
+        {5013, "Where can you go for directions in the desert? Try the wet "
+               "spot.\n\r"},
+        {17011, "An unholy symbol on an unholy creature under a fuming "
+                "mountain.\n\r"},
+        {1708, "The color of the bird that carries it.\n\r"},
+        {9203, "What would you use to swat a very large mosquito? Get it from "
+               "the giants.\n\r"},
+        {21109, "A bow made of dark wood, carried by a troglodyte.\n\r"},
         /*
-         * 30
+         * 80 
          */
         {15817, "In an secret cold place, a dark flower is carried by a "
-                "midnight one."},  /* Bechemel, SK */
-        {9430, "Argent Ursa, Crevasse of the Arctic Enlargements"},
+                "midnight one.\n\r"},
+        {9430, "Argent Ursa, Crevasse of the Arctic Enlargements.\n\r"},
         {6112, "If you would be king, you'd need one. With a wooded "
-               "worm."},   /* Dragon, DH-D */
-        {1758, "Carried by a hag in the dark lake under the "
-               "sewers."}, /* Sea Hag, SM */
-        {27411, "This Roo's better than you and she has the stick to "
-                "prove it."},      /* Queen Roo, LDU */
-        {5317, "The dead don't lie still when properly "
-               "prepared."},    /* Mummy, PY */
-        {5033, "You can get it off a drider, but he won't give it to "
-               "you."},   /* Drider, DR */
+               "wyrm.\n\r"},
+        {1758, "Carried by a hag in the dark lake under the sewers.\n\r"},
+        {27411, "This Roo's better than you and she has the stick to prove "
+                "it.\n\r"},
+        {5317, "The dead don't lie still when properly prepared.\n\r"},
+        {5033, "You can get it off a drider, but he won't give it to you.\n\r"},
         {16615, "South of a bay, past a portal, into a tower, be "
-                "prepared"},   /* Hoeur, HR */
-        {121, "To the far southeast, in the lair of a pair of "
-              "arachnids."},    /* Cave Spiders, TR */
-        {13901, "On the shore, down the river from the "
-                "troll-bridge"}, /* RHY */
+                "prepared.\n\r"},
+        {121, "To the far southeast, in the lair of a pair of arachnids.\n\r"},
+        {13901, "On the shore, down the river from the troll-bridge.\n\r"},
         /*
-         * 40
+         * 90 
          */
-        {5104, "Four heads are better than one\n\r"},
-        {15806, "You don't stand a ghost of a chance against a glow of "
-                "white and a cloak of fire"},
-        {16022, "a Powerful, blunt, and fragile weapon\n\r"},
-        {122, "The sole possession of a devil down-under\n\r"},
-        {7220, "The highest thing at the top of a chain"},
-        {13785, "From the fairest\n\r"},
-        {1597, "Mana in a green ring\n\r"},
-        {1563, "Famous, blue and very very rare"},
-        {5001, "Search for a banded male\n\r"},
-        {20003, "Ensnared for power, she holds the helmet of the wise"}
+        {5104, "Four heads are better than one.\n\r"},
+        {15806, "You don't stand a ghost of a chance against a glow of white "
+                "and a cloak of fire.\n\r"},
+        {16022, "A powerful, blunt, and extremely fragile weapon.\n\r"},
+        {122, "The sole possession of a devil down-under.\n\r"},
+        {7220, "The highest thing at the top of a chain.\n\r"},
+        {13785, "From the fairest.\n\r"},
+        {1597, "Mana in a green ring.\n\r"},
+        {1563, "Enchanting, blue and very rare.\n\r"},
+        {5001, "Search for a banded male.\n\r"},
+        {20003, "Ensnared for power, she holds the helmet of the wise.\n\r"}
     },
-    {                   /* warrior */
-        {2402, "An unusual way of looking at things."},
-        {11, "Something you might find in the donation room, or on "
-             "your body\n\r"},
-        {16034, "Goblins have been known to play with these, especially "
-             "in dark caves\n\r"},
-        {6000, "A decent weapon, just the right size for a tree\n\r"},
-        {24760, "Dead men's feet look like this\n\r"},
+    /*
+     * 100
+     */
+    {
+        {2402, "An unusual way of looking at things.\n\r"},
+        {11, "Something you might find in the donation room, or on your "
+             "body.\n\r"},
+        {16034, "Goblins have been known to play with these, especially in "
+                "dark caves.\n\r"},
+        {6000, "A decent weapon, just the right size for a tree.\n\r"},
+        {24760, "Dead men's feet look like this.\n\r"},
         {1413, "You were SUPPOSED to bell the CAT!\n\r"},
-        {18256, "In the city of Mordilnia, a shield of roygiv\n\r"},
-        {8121, "A bag that opens with a ripping sound\n\r"},
-        {108, "Floating for safety on the dark\n\r"},
+        {18256, "In the city of Mordilnia, a shield of Roy G. Biv.\n\r"},
+        {8121, "A bag that opens with a ripping sound.\n\r"},
+        {108, "Floating for safety on the dark.\n\r"},
         {123, "A mule stole my hat, now he fights in front of an "
-              "audience\n\r"},
+              "audience.\n\r"},
         /*
-         * 10
+         * 110 
          */
-        {3621, "Thank goodness when I broke my arm, I still had my New "
-               "shield\n\r"},
-        {117, "If you get this, someone will be quite howling angry\n\r"},
-        {7405, "Sewer Secret Light Sources\n\r"},
-        {6205, "my eyes just arent as fast to focus as they used to be\n\r"},
-        {4051, "These warriors seem scarred, but its all in their "
-               "head"},  /* Scarred Warrior, MM */
-        {5219, "Fresh deer.. yum!\n\r"},
-        {16015, "An ugly bird in the mountains once told me: 'A despotic "
-                "ruler rules with one of these'\n\r"},
-        {1718, "Hey, that's not a painting at all! But boy is she ugly! "
-               "In the new city."},        /* Mimic, NT */
-        {5032, "Bushwhacked, Bushwhacked, West, West, Green. Start at "
-               "the obvious\n\r"},
-        {3685, "Mightier than a sword, wielded by a four man\n\r"},
+        {3621, "Thank goodness when I broke my arm I still had my New "
+               "shield.\n\r"},
+        {117, "If you get this, someone will be quite howling angry.\n\r"},
+        {7405, "Sewer secret light sources.\n\r"},
+        {6205, "My eyes just aren't as fast to focus as they used to be.\n\r"},
+        {4051, "These warriors seem scarred, but its all in their head."},
+        {5219, "Fresh deer...yum!\n\r"},
+        {16015, "An ugly bird in the mountains once told me this: 'A despotic "
+                "ruler rules with one of these.'\n\r"},
+        {1718, "Hey, that's not a painting at all, but boy is it ugly! In the "
+               "new city.\n\r"},
+        {5032, "Guarded by a brass dragon, bring me this precious stone.\n\r"},
+        {3685, "Mightier than a sword, wielded by a four man.\n\r"},
         /*
-         * 20
+         * 120 
          */
-        {5100, "Learn humility: I want a common sword\n\r"},
-        {16902, "They'd all be normal in a moonless world. You need to "
-                "steal a silver stole"},     /* Werefox, LY */
-        {17022, "A lion with a woman's torso holds the book you "
-                "need."},   /* Gynosphinx, WPM */
-        {5206, "To hold the girth of a corpulent man, it must be ferrous. "
-               "In the old city hall."}, /* Cabinet, OT */
-        {1737, "In the hands of an elf with a green thumb."},/* Gardener, NT */
-        {5306, "my mommy gave me a knife, but i lost it\n\r"},
+        {5100, "Learn humility: I want a common sword.\n\r"},
+        {16902, "They'd all be normal in a moonless world. You need to steal a "
+                "silver stole.\n\r"},
+        {17022, "A lion with a woman's torso holds the book you need.\n\r"},
+        {5206, "To hold the girth of a corpulent man it must be ferrous. In "
+               "the old city hall.\n\r"},
+        {1737, "In the hands of an elf with a green thumb, trying to learn as "
+               "much New material as possible.\n\r"},
+        {5306, "My mommy gave me a knife, but i lost it in the pyramid.\n\r"},
         {21006, "Childlike, maybe, but they're not children. You need the "
-                "locked up cloth."},      /* Case, OR */
-        {9204, "The largest in the hands of the largest of the "
-               "large"},    /* Giant Chief, HGS */
-        {1721, "Get the toolbook of the trade from the royal cook in the "
-               "new city."},      /* Chef, NT */
-        {16901, "Only an elephant's might be as big as this bores' "
-                "mouthpiece."},  /* Boarish, LY */
+                "locked up cloth.\n\r"},
+        {9204, "The largest in the hands of the largest of the large.\n\r"},
+        {1721, "Get the toolbook of the trade from the royal cook in the new "
+               "city.\n\r"},
+        {16901, "Only an elephant's might be as big as this boar's "
+                "mouthpiece.\n\r"},
         /*
-         * 30
+         * 130 
          */
-        {6511, "A bearded woman might be so engaged, but a guard's got "
-               "this one."},
-        {5101, "Dark elves can be noble too, but they won't let you take "
-               "their arms."},    /* Drow Noble, DR */
-        {1761, "In a suspended polygon, in a chest which is not."},/*Mimic, PY*/
+        {6511, "A bearded woman might be so engaged, but a guard's got this "
+               "one.\n\r"},
+        {5101, "Dark elves can be noble too, but they won't let you take their"
+               " arms.\n\r"},
+        {1761, "In a suspended polygon, in a chest which is not.\n\r"},
         {15812, "You think that water can't be sharp? Look under "
-                "birdland."},      /* Ice Pick, SK */
-        {16046, "A miner's tool in the dwarven mines"}, /* Shovel, ?? */
+                "birdland.\n\r"},
+        {16046, "A miner's tool in the dwarven mines.\n\r"},
         {21114, "These skeletal beasts will reel you in, you want the "
-                "crowbar."},  /* Cave Fisher, MVE */
-        {13762, "Once in Hades, the key to getting out lies with a long "
-                "dead warrior."},   /* Skeletal Warrior, Hades */
+                "crowbar.\n\r"},
+        {13762, "Once in Hades, the key to getting out lies with a long dead "
+                "warrior.\n\r"},
         {20005, "This usurper will think you very tasty, defeat him for the "
-                "thing you need."},     /* Yevaud, AR */
+                "thing you need.\n\r"},
         {5019, "A nasty potion in the hands of an even nastier desert "
-               "worm."},     /* Worm, GED */
-        {10002, "This item can be found on 'Al'"}, /* On Corpse, DCE */
+               "worm.\n\r"},
+        {10002, "This item can be found on 'Al'\n\r"},
         /*
-         * 40
+         * 140 
          */
-        {5221, "Weapons are the keys to the remaining quests. First, bring "
-               "me a Stone golem's sword"},
-        {9442, "The weapon of the largest giant in the rift"},
-        {15808, "Weapon of champions"},
-        {13775, "By the light of the moon\n\r"},
-        {21004, "By name, you can assume its the largest weapon in the "
-                "game\n\r"},
-        {3092, "He's always pissed, and so are his guards. take his weapon "
-               "and make it yours\n\r"},
-        {5002, "The weapon of the oldest wyrm\n\r"},
-        {5107, "One Two Three Four Five Six\n\r"},
-        {1430, "It rises from the ashes, and guards a tower\n\r"},
-        {5019, "You're not a REAL fighter til you've had one of these, "
-               "enchanted\n\r"}
+        {5221, "Weapons are the keys to many quests. First, bring me a Stone "
+               "golem's sword.\n\r"},
+        {9442, "The weapon of the largest giant in the rift.\n\r"},
+        {15808, "Weapon of champions.\n\r"},
+        {13775, "By the light of this sharp moon.\n\r"},
+        {21004, "By name, you can assume it's the largest weapon in the "
+                "game.\n\r"},
+        {3092, "He's always pissed, and so are his guards. Take his weapon "
+               "and make it yours.\n\r"},
+        {5002, "The weapon of the oldest wyrm.\n\r"},
+        {5107, "One Two Three Four Five Six.\n\r"},
+        {1430, "It rises from the ashes, and guards a tower.\n\r"},
+        {5021, "You're not a REAL fighter until you've had one of these "
+               "enchanted.\n\r"}
     },
-    {               /* thief */
-        {2402, "An unusual way of looking at things."},
-        {4, "You might find one of these in the donation room, or in "
-            "your hand\n\r"},
-        {3071, "They're the best on hand for 5 coins\n\r"},
-        {30, "At the wrong end of a nasty spell, or a heavy hitter\n\r"},
-        {3902, "Michelob or Guiness Stout. which is better?\n\r"},
-        {24767, "I've heard that skeletons love bleach\n\r"},
-        {6006, "Nearly useless in a hearth\n\r"},
-        {4104, "Its what makes kobolds green\n\r"},
+    /*
+     * 150 
+     */
+    {
+        {2402, "An unusual way of looking at things.\n\r"},
+        {4, "You might find one of these in the donation room, or in your "
+            "hand.\n\r"},
+        {3071, "They're the best on hand for 5 coins.\n\r"},
+        {30, "At the wrong end of a nasty spell, or a heavy hitter.\n\r"},
+        {3012, "I'm hungry, get me something to eat, and make it a foreign "
+               "food!\n\r"},
+        {24767, "I've heard that skeletons love bleach.\n\r"},
+        {6006, "Nearly useless in a hearth.\n\r"},
+        {4104, "It's what makes kobolds green.\n\r"},
         {42, "Do she-devils steal, as they flap their bat wings?\n\r"},
-        {19202, "Animal light, lost in a fog\n\r"},
-        {3647, "These New boots were made for walking\n\r"},
-        {4101, "Hands only a warrior could love\n\r"},
-        {116, "Near a road to somewhere city\n\r"},
-        {111, "Only a fool would look at the end of the river\n\r"},
-        {15812, "I'd love a really cool backstabbing weapon..  Make sure "
-                "it doesn't melt\n\r"},
+        {19202, "Animal light, lost in a fog.\n\r"},
+        /*
+         * 160 
+         */
+        {3647, "These New boots were made for walking.\n\r"},
+        {4101, "Hands only a warrior could love.\n\r"},
+        {116, "Near the eastern road, it only grows on the north side of "
+              "rocks.\n\r"},
+        {111, "Only a fool would look at the end of the river.\n\r"},
+        {15812, "I'd love a really cool backstabbing weapon...Make sure it "
+                "doesn't melt.\n\r"},
         {17023, "Being charming can be offensive, especially in a plumed "
-                "white cap\n\r"},
-        {9205, "You could hide a giant in this stuff\n\r"},
-        {10002, "feeling tired and fuzzy?  Exhibit some stealth, or you "
-                "just might get eaten\n\r"},
-        {3690, "I am an old man, but I will crush you at chess\n\r"},
-        {5000, "Find a dark dwarf. Pick something silver\n\r"},
+                "white cap.\n\r"},
+        {9205, "You could hide a giant in this stuff.\n\r"},
+        {10002, "feeling tired and fuzzy?  Exhibit some stealth, or you just "
+                "might get eaten.\n\r"},
+        {3690, "I am an old man, but I will crush you at chess.\n\r"},
+        {5000, "Find the dark elves. Pick something silver.\n\r"},
         /*
-         * 20
+         * 170 
          */
-        {15802, "It's easy work to work a rejected bird for the means "
-                "to his former home."},   /* Skexie Reject, SK */
-        {1750, "In the twisted forest of the Graecians a man in a black "
-               "cloak has it."},       /* Put on 13731, GRF */
-        {5012, "Vampire's bane in a wicker basket near a desert "
-               "pool."},   /* Basket, GED */
-        {20008, "The toothless dragon eats the means to your "
-                "advancement."},   /* Young Wormkin, AR */
-        {6810, "You are everywhere you look in this frozen northern "
-               "maze of ice."},    /* Room 6854, ART */
-        {255, "Get the happy stick from a desert worm."},/* Young Worm, GED */
+        {15802, "It's easy work to work a rejected bird for the means to his "
+                "former home.\n\r"},
+        {1750, "In the twisted forest of the Graecians a man in a black cloak "
+               "has it.\n\r"},
+        {5012, "Vampire's bane in a wicker basket near a desert pool.\n\r"},
+        {20008, "The toothless dragon eats the means to your advancement.\n\r"},
+        {6810, "You are everywhere you look in this frozen northern maze of "
+               "ice.\n\r"},
+        {255, "Get the happy stick from this hick.\n\r"},
         {7190, "In a secret sewer place a squeaking rodent wears a "
-               "trinket."}, /* Rat, SM */
-        {7205, "The master flayer under the city has it on him, but "
-               "not in use. Steal it!"},   /* Master mind, SM */
-        {7230, "You could be stoned for skinning this subterranean "
-               "reptilian monster."},       /* Basilisk, SM */
-        {3690, "An old man at the park might have one, but these old men "
-               "are in the new city."},       /* Old man, NT */
+               "trinket.\n\r"},
+        {7205, "The master flayer under the city has it on him, but not in "
+               "use. Steal it!\n\r"},
+        {7230, "You could be stoned for skinning this subterranean reptilian "
+               "monster.\n\r"},
+        {3690, "An old man at the park might have one, but these old men are "
+               "in the new city.\n\r"},
         /*
-         * 30
+         * 180 
          */
-        {1729, "In the forest north of the new city a traveller lost "
-               "his way. It's on him."},  /* Lost Adventurer, MT */
+        {1729, "In the forest north of the new city a traveller lost his way. "
+               "It's on him.\n\r"},
         {1708, "It's growing on a cliff face, on the way to the lost "
-               "kingdom."},       /* In room 21170, MVE */
+               "kingdom.\n\r"},
         {1759, "The moon's phase can change a man. Find the badger in a "
-               "tavern."},     /* Werebadger, LY */
-        {1718, "You'll find it in the only ice cave a stone's throw from "
-               "a desert."},  /* In room 10010, DCE */
-        {5243, "I hope it is clear which stone you will need"}, /* Lamia, OT */
-        {5302, "In a hanging desert artifact, the softest golem has the "
-               "key to your success."},        /* Clay Golem, PY */
-        {21008, "If your dog were this ugly, you'd lock him in a "
-                "fireplace too!"},     /* Dog, OR */
-        {9206, "It can be electrifying scaling a dragon; a big guy must "
-               "have done it."},       /* Chieftain, HGS */
-        {6524, "The dwarven mazekeeper has the only pair, if you can "
-               "find him."},      /* Mazekeeper, Dwarf Mines */
-        {1533, "Three witches in the mage's tower have the orb you "
-               "need"},     /* Pot, MT */
+               "tavern.\n\r"},
+        {1718, "Getting a tan doesn't mean you haven't been studying at all. "
+               "Check out the history of the New city.\n\r"},
+        {5243, "I hope it is clear which stone you will need.\n\r"},
+        {5302, "In a hanging desert artifact, the softest golem has the key to"
+               " your success.\n\r"},
+        {21008, "If your dog were this ugly, you'd lock him in a fireplace "
+                "too! Bring me what he's guarding.\n\r"},
+        {9206, "It can be electrifying scaling a dragon; a big guy must have "
+               "done it.\n\r"},
+        {6524, "The dwarven mazekeeper has the only pair, if you can find "
+               "him.\n\r"},
+        {1533, "Three witches in the mage's tower have the orb you need.\n\r"},
         /*
-         * 40
+         * 190 
          */
-        {9425, "A huge gemstone, guarded by ice toads, beware their poison"},
-        {5113, "The weapon of a maiden, shaped like a goddess"},
-        {21014, "The dagger of a yellow-belly"},
-        {5037, "A thief of great reknown, at least he doesn't use a spoon"},
-        {1101, "Elven blade of ancient lore, matches insects blow for blow"},
-        {27000, "It strikes like a rattlesnake, but not as deadly"},
-        {27409, "The weapon of a primitive man, just right for killing "
-                "his mortal foe"},
-        {1594, "White wielded by white, glowing white\n\r"},
-        {20001, "He judges your soul, wields a weapon that shares your name"},
-        {13703, "Watch for a dragon, he wears that which you seek"}
+        {9425, "A huge gemstone, guarded by ice toads, beware their "
+               "poison.\n\r"},
+        {5113, "The weapon of a maiden, shaped like a goddess.\n\r"},
+        {21014, "The dagger of a yellow-belly.\n\r"},
+        {5037, "A thief of great reknown, at least he doesn't use a "
+               "spoon.\n\r"},
+        {1101, "Elven blade of ancient lore, matches insects blow for "
+               "blow.\n\r"},
+        {27000, "Grithas can be annoying, even jagged sometimes.\n\r"},
+        {27409, "The weapon of a primitive man, just right for killing his "
+                "mortal foe.\n\r"},
+        {1594, "White wielded by white, glowing white.\n\r"},
+        {20001, "He judges your soul, he wields a weapon that can pierce it "
+                "too.\n\r"},
+        {13703, "Watch for a dragon, he wears that which you seek.\n\r"}
     }
+    /*
+     * 200 
+     */
 };
-#endif
 
 const char     *att_kick_kill_ch[] = {
     "Your kick caves $N's chest in, which kills $M.",

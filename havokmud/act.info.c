@@ -2679,24 +2679,24 @@ void do_weather(struct char_data *ch, char *argument, int cmd)
 	}
 }
 
+
 void do_list_zones(struct char_data *ch, char *argument, int cmd)
 {
-    do_help(ch, "areas", 0);
+    do_help(ch, "newbie zones", 0);
 }
 
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
+
     FILE           *fl;
+
     int             i,
-                    possible,
-                    found,
-                    spellcheck;
-    char            buf[MAX_STRING_LENGTH],
+                    match,
+                    possible;
+    char            buf[256],
                     buffer[MAX_STRING_LENGTH],
-                   *arg1,
-                   *arg2,
-                    keyword[256];
+                   *keywordtopic;
 
     dlog("in do_help");
 
@@ -2704,165 +2704,132 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    possible = 0;
-    found = 0;
-    spellcheck = 0;
-
     argument = skip_spaces(argument);
-    if (argument) {
-        if (!help_index) {
-            send_to_char("No help available.\n\r", ch);
-            return;
+
+    if(!argument) {
+        argument = "help help";
+    }
+
+    if (!help_index) {
+        send_to_char("No help available.\n\r", ch);
+        return;
+    }
+
+    match = -1;
+    possible = 0;
+
+    /* Look for an exact match */
+    for (i = 0; i <= top_of_helpt && match == -1; i++) {
+        if (!strcasecmp(argument, help_index[i].keyword)) {
+            match = i;
         }
+    }
+
+    /* Look for close matches */
+    if( match == -1 ) {
+        *buffer = '\0';
 
         for (i = 0; i <= top_of_helpt; i++) {
-            if (!strcasecmp(argument, help_index[i].keyword)) {
-                rewind(help_fl);
-                fseek(help_fl, help_index[i].pos, 0);
-                *buffer = '\0';
-                for (;;) {
-                    fgets(buf, 80, help_fl);
-                    if (*buf == '#') {
-                        break;
-					}
-                    if (strlen(buf) + strlen(buffer) >
-                        MAX_STRING_LENGTH - 2) {
-                        break;
-					}
-                    if (buf[strlen(buf) - 1] == '~') {
-                        buf[strlen(buf) - 1] = '\0';
-					}
-                    strcat(buffer, buf);
-                    strcat(buffer, "\r");
-                }
-                page_string(ch->desc, buffer, 1);
-                return;
-            } 
-            
-            if (is_abbrev(argument, help_index[i].keyword)) {
+            keywordtopic = skip_spaces(skip_word(help_index[i].keyword));
+            if (is_abbrev(argument, help_index[i].keyword) ||
+                is_abbrev(argument, keywordtopic) ||
+                is_abbrev(help_index[i].keyword, argument) ||
+                is_abbrev(keywordtopic, argument)) {
+
                 if (!possible) {
-                    send_to_char("No exact match found. Possible matches "
-                                 "are:\n\r\n\r", ch);
+                    match = i;
                 }
 
                 if (possible > 10) {
                     send_to_char("Too many matches found. Please be more "
                                  "specific.\n\r", ch);
+                    send_to_char("If you wish to see a listing of all help "
+                                 "topics in a particular category, try: \n\r"
+                                 "help <topic> list\n\r\n\r", ch);
+                    send_to_char("No exact match found. Possible matches "
+                                 "are:\n\r\n\r", ch);
+                    send_to_char(buffer, ch);
                     return;
                 }
-
                 possible++;
                 sprintf(buf, "help %s\n\r", help_index[i].keyword);
-                send_to_char(buf, ch);
-            } else if (is_abbrev(help_index[i].keyword, argument)) {
-                sprintf(keyword, help_index[i].keyword);
-                if (keyword[strlen(keyword - 1)] ==
-                    argument[strlen(keyword - 1)]) {
-                    if (!possible) {
-                        send_to_char("No exact match found. Possible matches "
-                                     "are:\n\r\n\r", ch);
-                    }
-                    if (possible > 10) {
-                        send_to_char("Too many matches found. Please be more "
-                                     "specific.\n\r", ch);
-                        return;
-                    }
-                    possible++;
-                    sprintf(buf, "help %s\n\r", help_index[i].keyword);
-                    send_to_char(buf, ch);
-                }
             }
+
+            if(strlen(buffer) + strlen(buf) > MAX_STRING_LENGTH - 2) {
+                send_to_char("Your help request produced too many returns, "
+                             "please try to narrow it down.\n\r", ch);
+                send_to_char(buffer, ch);
+                send_to_char("\n\rPlease specify. Only exact matches will "
+                             "work.\n\r", ch);
+                return;
+            } 
+
+            strcat(buffer, buf);
+        }
+    } 
+
+    if( possible > 1 ) {
+        /* We found several close matches */
+        send_to_char("No exact match found. Possible matches are:\n\r\n\r",
+                     ch);
+        send_to_char(buffer, ch);
+        send_to_char("\n\rPlease specify. Only exact matches will work.\n\r",
+                     ch);
+        return;
+    }
+
+    if( possible ) {
+        /* we found exactly one close match, warn that it's a close match */
+        send_to_char("No exact match found.  Possible match is:\n\r\n\r",
+                     ch);
+    }
+
+    if( !possible && match == -1 ) {
+        /* no matches at all! */
+        send_to_char("No remote or exact matches found.\n\r", ch);
+        sprintf(buf, "%s is looking for a help on \"%s\". Can "
+                     "someone help %s?", GET_NAME(ch), argument, HMHR(ch));
+        Log(buf);
+
+        /*
+         * add query to ADD_HELP
+         */
+        if (!(fl = fopen(NEWHELP_FILE, "a"))) {
+            Log("Could not open the ADD_HELP-file.\n\r");
+            return;
         }
 
-        if (possible) {
-            send_to_char("\n\rPlease specify. Only exact matches will "
-                         "work.\n\r", ch);
-            return;
-        } 
-        
-        if (!found) {
-            /*
-             * see if dude already did spell/skill in his query
-             */
-            if (strlen(argument) > 5 && cmd == 38 && argument[0] == 's' && 
-                argument[3] == 'l' && argument[4] == 'l') {
-                /*
-                 * s..ll likely to be in order
-                 */
-                send_to_char("No remote or exact matches found.\n\r", ch);
-                sprintf(buf, "%s is looking for a help on \"%s\". Can "
-                             "someone help %s?",
-                        GET_NAME(ch), argument, HMHR(ch));
-                Log(buf);
-                return;
-            }
-
-            /*
-             * Banon's gizmo, added a bit to it
-             */
-            if (cmd == 38) {
-                sprintf(buf, "spell %s", argument);
-                do_help(ch, buf, 1);
-                return;
-            } 
-            
-            if (cmd == 1) {
-                argument = get_argument(argument, &arg1);
-                arg2 = skip_spaces(argument);
-                /*
-                 * remove spell
-                 */
-                if( arg2 ) {
-                    sprintf(buf, "skill %s", arg2);
-                    /*
-                     * add skill
-                     */
-                    do_help(ch, buf, 0);
-                }
-                return;
-            } 
-            
-            if (cmd == 0) {
-                argument = get_argument(argument, &arg1);
-                argument = skip_spaces(argument);
-                /*
-                 * remove skill
-                 */
-                send_to_char("No remote or exact matches found.\n\r", ch);
-                send_to_char("Try a different query.\n\r", ch);
-                if( argument ) {
-                    sprintf(buf, "%s is looking for a help on \"%s\". Can "
-                                 "someone help %s?", GET_NAME(ch), argument, 
-                            HMHR(ch));
-                    Log(buf);
-
-                    /*
-                     * add query to ADD_HELP
-                     */
-                    if (!(fl = fopen(NEWHELP_FILE, "a"))) {
-                        Log("Could not open the ADD_HELP-file.\n\r");
-                        return;
-                    }
-                    sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
-                    fputs(buf, fl);
-                    fclose(fl);
-                }
-                return;
-            } 
-            
-            Log("got to bad spot in do_help");
-            return;
-        } 
-        
-        send_to_char("No remote or exact matches found.\n\r", ch);
+        fprintf(fl, "**%s: help %s\n", GET_NAME(ch), argument);
+        fclose(fl);
         return;
-
-        send_to_char(help, ch);
-    } else {
-        do_help(ch, "help help", 38);
     }
-}
 
+    /* We have exact or one close match */
+    *buffer = '\0';
+
+    rewind(help_fl);
+    fseek(help_fl, help_index[match].pos, 0);
+    while( TRUE ) {
+        fgets(buf, 80, help_fl);
+        if (*buf == '#' || feof(help_fl)) {
+            break;
+        }
+
+        if (strlen(buf) + strlen(buffer) > MAX_STRING_LENGTH - 3) {
+            break;
+        }
+
+        while (buf[strlen(buf) - 1] == '~') {
+            buf[strlen(buf) - 1] = '\0';
+        }
+
+        strcat(buffer, buf);
+        strcat(buffer, "\n\r");
+    }
+
+    page_string(ch->desc, buffer, 1);
+}
+        
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
@@ -4813,7 +4780,7 @@ void show_class_skills(struct char_data *ch, char *buffer, int classnum,
     if (ch->specials.remortclass == classnum + 1) {
         if( skills ) {
             sprintf( buf, "\n\rSince you picked %s as your main class, you get"
-                          "these bonus skills:\n\r", classes[classnum].name );
+                          " these bonus skills:\n\r", classes[classnum].name );
             strcat(buffer, buf);
         }
 

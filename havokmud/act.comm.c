@@ -122,10 +122,10 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         send_to_char("Shout? Yes! Fine! Shout we must, but WHAT??\n\r", ch);
     } else {
 		if (argument[0] == '%') {
-            do_OOCaction(ch, argument, cmd);
+            do_OOCaction(ch, ++argument, cmd);
             return;
         } else if (argument[0] == '#') {
-            do_OOCemote(ch, argument, cmd);
+            do_OOCemote(ch, ++argument, cmd);
             return;
         }
 
@@ -265,10 +265,10 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
         send_to_char("Communing among the gods is fine, but WHAT?\n\r", ch);
 	} else {
         if (argument[0] == '%') {
-            do_OOCaction(ch, argument, cmd);
+            do_OOCaction(ch, ++argument, cmd);
             return;
         } else if (argument[0] == '#') {
-            do_OOCemote(ch, argument, cmd);
+            do_OOCemote(ch, ++argument, cmd);
             return;
         }
 
@@ -1298,12 +1298,12 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
     }
 
     if (*argument == '%') {
-        do_OOCaction(ch, argument, cmd);
+        do_OOCaction(ch, ++argument, cmd);
         return;
     } 
     
     if (*argument == '#') {
-        do_OOCemote(ch, argument, cmd);
+        do_OOCemote(ch, ++argument, cmd);
         return;
     }
 

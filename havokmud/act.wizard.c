@@ -615,8 +615,8 @@ void do_highfive(struct char_data *ch, char *argument, int cmd)
                 act("$n and $N do a high five.", TRUE, ch, 0, tch, TO_NOTVICT);
             }
         } else {
-            sprintf(buf, "I don't see anyone here like that.\n\r");
-            send_to_char(buf, ch);
+            sprintf(mess, "I don't see anyone here like that.\n\r");
+            send_to_char(mess, ch);
         }
     }
 }
@@ -6736,7 +6736,7 @@ void do_wizreport(struct char_data *ch, char *argument, int cmd)
     dlog("in do_godreport");
 
     if (!IS_SET(ch->specials.act, PLR_WIZREPORT) && GetMaxLevel(ch) < 60) {
-        send_to_char("You do not have acess to this command!\n", ch);
+        send_to_char("You do not have access to this command!\n", ch);
         return;
     }
 
