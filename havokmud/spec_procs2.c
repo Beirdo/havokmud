@@ -354,102 +354,6 @@ int DruidAttackSpells(struct char_data *ch, struct char_data *vict,
     }
 }
 
-#if 0
-int Summoner(struct char_data *ch, int cmd, char *arg,
-             struct char_data *mob, int type)
-{
-    /*
-     * extern struct descriptor_data *descriptor_list; 
-     */
-    struct descriptor_data *d;
-    struct char_data *targ = 0;
-    struct char_list *i;
-    char            buf[128];
-
-    extern char     EasySummon;
-
-    if (cmd || !AWAKE(ch)) {
-        return (FALSE);
-    }
-    if (check_soundproof(ch)) {
-        return (FALSE);
-    }
-    if (ch->specials.fighting) {
-        return (FALSE);
-    }
-    if (check_nomagic(ch, 0, 0)) {
-        return (TRUE);
-    }
-    /*
-     **  wait till at 75% of hitpoints.
-     */
-
-    if (GET_HIT(ch) > ((GET_MAX_HIT(ch) * 3) / 4)) {
-        /*
-         **  check for hatreds
-         */
-        if (IS_SET(ch->hatefield, HATE_CHAR)) {
-            if (ch->hates.clist) {
-                for (i = ch->hates.clist; i; i = i->next) {
-                    if (i->op_ch) {     /* if there is a char_ptr */
-                        targ = i->op_ch;
-                        if (IS_PC(targ)) {
-                            sprintf(buf, "You hate %s\n\r", targ);
-                            send_to_char(buf, ch);
-                            break;
-                        }
-                    } else {    /* look up the char_ptr */
-                        for (d = descriptor_list; d; d = d->next) {
-                            if (d->character && i->name
-                                && (strcmp(GET_NAME(d->character), i->name)
-                                    == 0)) {
-                                targ = d->character;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (targ) {
-            act("$n utters the words 'Your ass is mine!'.",
-                1, ch, 0, 0, TO_ROOM);
-            if (EasySummon == 1) {
-                spell_summon(GetMaxLevel(ch), ch, targ, 0);
-            } else {
-                if (GetMaxLevel(ch) < 32) {
-                    if (number(0, 10)) {
-                        do_say(ch, "Curses!  Foiled again!\n\r", 0);
-                        return (0);
-                    }
-                }
-
-                /*
-                 * Easy Summon was turned off and they where < 32nd level 
-                 */
-                /*
-                 * so we portal to them! 
-                 */
-                spell_portal(GetMaxLevel(ch), ch, targ, 0);
-                command_interpreter(ch, "enter portal");
-            }
-            if (targ->in_room == ch->in_room) {
-                if (NumCharmedFollowersInRoom(ch) > 0) {
-                    sprintf(buf, "followers kill %s", GET_NAME(targ));
-                    do_order(ch, buf, 0);
-                }
-                hit(ch, targ, 0);
-            }
-            return (FALSE);
-        } else {
-            return (FALSE);
-        }
-
-    } else {
-        return (FALSE);
-    }
-}
-#endif
 int Summoner(struct char_data *ch, int cmd, char *arg,
              struct char_data *mob, int type)
 {
@@ -457,6 +361,7 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
     struct char_list *i;
     char            buf[255];
     extern char     EasySummon;
+    char           *name;
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -490,26 +395,11 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
                         break;
                     }
                 }
-#if 0
-                else {
-                    /* look up the char_ptr */
-                    for (d = descriptor_list; d; d = d->next) {
-                        /*
-                         * disabled case of crashes, FIX IT msw 
-                         */
-                        if (GET_NAME(d->character) && i->name &&
-                            d->character && i->name && 
-                            !strcmp(GET_NAME(d->character), i->name)) {
-                            targ = d->character;
-                            break;
-                        }
-                    }
-                }
-#endif
             }
         }
 
         if (targ) {
+            name = strdup(targ->player.name);
             act("$n utters the words 'Your ass is mine!'", 1, ch, 0, 0,
                 TO_ROOM);
             if (EasySummon == 1) {
@@ -517,16 +407,21 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
                     spell_summon(GetMaxLevel(ch), ch, targ, 0);
                 } else if (GET_MAX_HIT(targ) <= GET_HIT(ch)) {
                     ch->skills[SKILL_SUMMON].learned = 100;
-                    do_mindsummon(ch, targ->player.name, 0);
+                    sprintf( buf, "summon %s", name );
+                    command_interpreter(ch, buf);
                     ch->points.mana = 100;
                 } else {
                     ch->skills[SKILL_PORTAL].learned = 100;
-                    do_psi_portal(ch, targ->player.name, 0);
+                    sprintf( buf, "portal %s", name );
+                    command_interpreter(ch, buf);
                     ch->points.mana = 100;
                 }
             } else {
                 if (GetMaxLevel(ch) > 32 && number(0, 3)) {
-                    do_say(ch, "Curses!  Foiled again!\n\r", 0);
+                    command_interpreter(ch, "say Curses!  Foiled again!\n\r");
+                    if( name ) {
+                        free( name );
+                    }
                     return (0);
                 }
 
@@ -546,23 +441,29 @@ int Summoner(struct char_data *ch, int cmd, char *arg,
                     if (!ch->skills[SKILL_PORTAL].learned) {
                         ch->skills[SKILL_PORTAL].learned = 100;
                     }
-                    do_psi_portal(ch, targ->player.name, 0);
+                    sprintf(buf, "portal %s", name);
+                    command_interpreter(ch, targ->player.name);
                     ch->points.mana = 100;
                 }
             }
 
             if (targ->in_room == ch->in_room) {
                 if (NumCharmedFollowersInRoom(ch) > 0) {
-                    sprintf(buf, "followers kill %s", GET_NAME(targ));
-                    do_order(ch, buf, 0);
+                    sprintf(buf, "order followers kill %s", GET_NAME(targ));
+                    command_interpreter(ch, buf);
                 }
                 act("$n says, 'And now my young $N... You will DIE!", 0,
                     ch, 0, targ, TO_ROOM);
                 if (!IS_SET(ch->player.class, CLASS_PSI)) {
                     spell_dispel_magic(GetMaxLevel(ch), ch, targ, 0);
                 } else {
-                    do_blast(ch, targ->player.name, 1);
+                    sprintf(buf, "blast %s", name);
+                    command_interpreter(ch, buf);
                 }
+            }
+
+            if( name ) {
+                free( name );
             }
             return (FALSE);
         } else {
@@ -640,8 +541,8 @@ int jive_box(struct char_data *ch, int cmd, char *arg,
         }
 
         buf2 = invert(buf);
-        sprintf(buf3, "%s %s", tmp, buf2);
-        do_tell(ch, buf3, cmd);
+        sprintf(buf3, "tell %s %s", tmp, buf2);
+        command_interpreter(ch, buf3);
         free( buf2 );
         return (TRUE);
         break;
@@ -673,7 +574,7 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
         if(ch->specials.fighting) { 
             act("$n reevaluates his priorities, and decides it's"
                 " best to get out.", 1, ch, 0, 0, TO_ROOM);
-            do_flee(ch, "", 0); 
+            do_flee(ch, NULL, 0); 
         } else { 
             /* 
              * mages get funky skillz 
@@ -700,7 +601,7 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
                 IS_SET(ch->hatefield, HATE_CHAR)) {
                 act("$n utters the words 'Here boy!'", 1, ch, 0, 0, TO_ROOM);
                 cast_mon_sum7(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, ch, 0);
-                do_order(ch, "followers guard on", 0);
+                command_interpreter(ch, "order followers guard on");
                 return (TRUE);
             }
         }
@@ -802,7 +703,7 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
             StandUp(ch);
         } else {
             StandUp(ch);
-            do_flee(ch, "\0", 0);
+            do_flee(ch, NULL, 0);
         }
         return (TRUE);
     }
@@ -926,13 +827,12 @@ int magic_user(struct char_data *ch, int cmd, char *arg,
 
             if (IS_AFFECTED(vict, AFF_CHARM)) {
                 if (!vict->specials.fighting) {
-                    sprintf(buf, "%s kill %s", GET_NAME(vict),
+                    sprintf(buf, "order %s kill %s", GET_NAME(vict),
                             GET_NAME(ch->specials.fighting));
-                    do_order(ch, buf, 0);
                 } else {
-                    sprintf(buf, "%s remove all", GET_NAME(vict));
-                    do_order(ch, buf, 0);
+                    sprintf(buf, "order %s remove all", GET_NAME(vict));
                 }
+                command_interpreter(ch, buf);
             }
         }
     } else {
@@ -1711,9 +1611,9 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     if (affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                         ch->followers) {
                         act("", FALSE, ch, 0, 0, TO_ROOM);
-                        do_order(ch, "followers guard on", 0);
+                        command_interpreter(ch, "order followers guard on");
                         act("", FALSE, ch, 0, 0, TO_ROOM);
-                        do_group(ch, "all", 0);
+                        command_interpreter(ch, "group all");
                         act("\n\r$n utters the words 'size of the behemoth "
                             "lord'", FALSE, ch, 0, 0, TO_ROOM);
 
@@ -1949,7 +1849,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
         case 17:
             act("$n utters the words 'here boy'", FALSE, ch, 0, 0, TO_ROOM);
             cast_fire_servant(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, 0, 0);
-            do_order(ch, "followers guard on", 0);
+            command_interpreter(ch, "order followers guard on");
             break;
         case 18:
         case 19:
@@ -2837,7 +2737,7 @@ int Samah(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                         0, 0, TO_ROOM);
                     act("$n has forced you to return to your original form!",
                         FALSE, ch, 0, t, TO_VICT);
-                    do_return(t, "", 1);
+                    command_interpreter(t, "return");
                     return (TRUE);
                 }
             }
@@ -2965,80 +2865,88 @@ void SayHello(struct char_data *ch, struct char_data *t)
 
     switch (number(1, 10)) {
     case 1:
-        do_say(ch, "Greetings, adventurer", 0);
+        command_interpreter(ch, "say Greetings, adventurer");
         break;
     case 2:
-        if (t->player.sex == SEX_FEMALE)
-            do_say(ch, "Good day, milady", 0);
-        else
-            do_say(ch, "Good day, lord", 0);
+        if (t->player.sex == SEX_FEMALE) {
+            command_interpreter(ch, "say Good day, milady");
+        } else {
+            command_interpreter(ch, "say Good day, lord");
+        }
         break;
     case 3:
-        if (t->player.sex == SEX_FEMALE)
-            do_say(ch, "Pleasant Journey, Mistress", 0);
-        else
-            do_say(ch, "Pleasant Journey, Master", 0);
+        if (t->player.sex == SEX_FEMALE) {
+            command_interpreter(ch, "say Pleasant Journey, Mistress");
+        } else {
+            command_interpreter(ch, "say Pleasant Journey, Master");
+        }
         break;
     case 4:
-        if (t->player.sex == SEX_FEMALE)
-            sprintf(buf, "Make way!  Make way for the lady %s!", GET_NAME(t));
-        else
-            sprintf(buf, "Make way!  Make way for the lord %s!", GET_NAME(t));
-        do_say(ch, buf, 0);
+        if (t->player.sex == SEX_FEMALE) {
+            sprintf(buf, "say Make way!  Make way for the lady %s!",
+                    GET_NAME(t));
+        } else {
+            sprintf(buf, "say Make way!  Make way for the lord %s!",
+                    GET_NAME(t));
+        }
+        command_interpreter(ch, buf);
         break;
     case 5:
-        do_say(ch, "May the prophet smile upon you", 0);
+        command_interpreter(ch, "say May the prophet smile upon you");
         break;
     case 6:
-        do_say(ch, "It is a pleasure to see you again.", 0);
+        command_interpreter(ch, "say It is a pleasure to see you again.");
         break;
     case 7:
-        do_say(ch, "You are always welcome here, great one", 0);
+        command_interpreter(ch, "say You are always welcome here, great one");
         break;
     case 8:
-        do_say(ch, "My lord bids you greetings", 0);
+        command_interpreter(ch, "say My lord bids you greetings");
         break;
     case 9:
-        if (time_info.hours > 6 && time_info.hours < 12)
-            sprintf(buf, "Good morning, %s", GET_NAME(t));
-        else if (time_info.hours >= 12 && time_info.hours < 20)
-            sprintf(buf, "Good afternoon, %s", GET_NAME(t));
-        else if (time_info.hours >= 20 && time_info.hours <= 24)
-            sprintf(buf, "Good evening, %s", GET_NAME(t));
-        else
-            sprintf(buf, "Up for a midnight stroll, %s?\n", GET_NAME(t));
-        do_say(ch, buf, 0);
+        if (time_info.hours > 6 && time_info.hours < 12) {
+            sprintf(buf, "say Good morning, %s", GET_NAME(t));
+        } else if (time_info.hours >= 12 && time_info.hours < 20) {
+            sprintf(buf, "say Good afternoon, %s", GET_NAME(t));
+        } else if (time_info.hours >= 20 && time_info.hours <= 24) {
+            sprintf(buf, "say Good evening, %s", GET_NAME(t));
+        } else {
+            sprintf(buf, "say Up for a midnight stroll, %s?\n", GET_NAME(t));
+        }
+        command_interpreter(ch, buf);
         break;
     case 10:
-        if (time_info.hours < 6)
+        if (time_info.hours < 6) {
             strcpy(buf2, "evening");
-        else if (time_info.hours < 12)
+        } else if (time_info.hours < 12) {
             strcpy(buf2, "morning");
-        else if (time_info.hours < 20)
+        } else if (time_info.hours < 20) {
             strcpy(buf2, "afternoon");
-        else
+        } else {
             strcpy(buf2, "evening");
+        }
 
         switch (weather_info.sky) {
         case SKY_CLOUDLESS:
-            sprintf(buf, "Lovely weather we're having this %s, isn't it, %s.",
-                    buf2, GET_NAME(t));
+            sprintf(buf, "say Lovely weather we're having this %s, isn't it, "
+                         "%s.", buf2, GET_NAME(t));
         case SKY_CLOUDY:
-            sprintf(buf, "Nice %s to go for a walk, %s.", buf2, GET_NAME(t));
+            sprintf(buf, "say Nice %s to go for a walk, %s.", buf2, 
+                    GET_NAME(t));
             break;
         case SKY_RAINING:
-            sprintf(buf, "I hope %s's rain clears up.. don't you %s?",
+            sprintf(buf, "say I hope %s's rain clears up.. don't you %s?",
                     buf2, GET_NAME(t));
             break;
         case SKY_LIGHTNING:
-            sprintf(buf, "How can you be out on such a miserable %s, %s!",
+            sprintf(buf, "say How can you be out on such a miserable %s, %s!",
                     buf2, GET_NAME(t));
             break;
         default:
-            sprintf(buf, "Such a pleasant %s, don't you think?", buf2);
+            sprintf(buf, "say Such a pleasant %s, don't you think?", buf2);
             break;
         }
-        do_say(ch, buf, 0);
+        command_interpreter(ch, buf);
         break;
     }
 }
@@ -3093,9 +3001,10 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
         if (PGuard->in_room == t->in_room && PGuard != t && !IS_IMMORTAL(t)) {
             i++;
             if (GET_POS(t) < POSITION_STANDING) {
-                do_stand(t, "", 0);
-                sprintf(buf, "This is not a vacation %s, get up!", GET_NAME(t));
-                do_say(PGuard, buf, 0);
+                do_stand(t, NULL, 0);
+                sprintf(buf, "say This is not a vacation %s, get up!", 
+                        GET_NAME(t));
+                command_interpreter(PGuard, buf);
             }
 
             if (IS_MURDER(t)) { /* do murder kick out */
@@ -3114,9 +3023,9 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                     char_from_room(t);
                     char_to_room(t, PRISON_LET_OUT_ROOM);
                     do_look(t, NULL, 0);
-                    sprintf(buf, "The prisoner convicted of murder, %s, is now"
-                                 " free!", GET_NAME(t));
-                    do_shout(PGuard, buf, 0);
+                    sprintf(buf, "shout The prisoner convicted of murder, %s, "
+                                 "is now free!", GET_NAME(t));
+                    command_interpreter(PGuard, buf);
                     timehere = 0;
                     return (TRUE);
                 } else if (number(0, 1))
@@ -3141,9 +3050,9 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                     char_to_room(t, PRISON_LET_OUT_ROOM);
                     do_look(t, NULL, 0);
 
-                    sprintf(buf, "The prisoner convicted of robbery, %s, is "
-                                 "now free!", GET_NAME(t));
-                    do_shout(PGuard, buf, 0);
+                    sprintf(buf, "shout The prisoner convicted of robbery, %s, "
+                                 "is now free!", GET_NAME(t));
+                    command_interpreter(PGuard, buf);
                     timehere = 0;
                     return (TRUE);
                 } else if (number(0, 1)) {
@@ -3301,7 +3210,7 @@ int PrisonGuard(struct char_data *ch, int cmd, char *arg,
                             ch, 0, 0, TO_ROOM);
                         act("$n has forced you to return to your original "
                             "form!", FALSE, ch, 0, t, TO_VICT);
-                        do_return(t, "", 1);
+                        command_interpreter(t, "return");
                         return (TRUE);
                     }
                 }
@@ -3318,6 +3227,7 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
     struct char_data *tch,
                    *evil;
     int             max_evil;
+    char            buf[MAX_STRING_LENGTH];
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -3327,7 +3237,8 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
 
         if (!check_soundproof(ch)) {
             if (number(0, 100) == 0) {
-                do_shout(ch, "To me, my fellows! I am in need of thy aid!", 0);
+                command_interpreter(ch, "shout To me, my fellows! I am in "
+                                        "need of thy aid!");
             } else {
                 act("$n shouts 'To me, my fellows! I need thy aid!'",
                     TRUE, ch, 0, 0, TO_ROOM);
@@ -3444,7 +3355,8 @@ int GenericCityguardHateUndead(struct char_data *ch, int cmd, char *arg,
             if (!ch->skills[SKILL_RESCUE].learned) {
                 ch->skills[SKILL_RESCUE].learned = GetMaxLevel(ch) * 3 + 30;
             }
-            do_rescue(ch, GET_NAME(evil->specials.fighting), 0);
+            sprintf( buf, "rescue %s", GET_NAME(evil->specials.fighting) );
+            command_interpreter(ch, buf );
         }
     }
 
@@ -3468,7 +3380,8 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg,
 
         if (!check_soundproof(ch)) {
             if (number(0, 120) == 0) {
-                do_shout(ch, "To me, my fellows! I am in need of thy aid!", 0);
+                command_interpreter(ch, "shout To me, my fellows! I am in "
+                                        "need of thy aid!");
             } else {
                 act("$n shouts 'To me, my fellows! I need thy aid!'",
                     TRUE, ch, 0, 0, TO_ROOM);
@@ -3535,9 +3448,9 @@ int ABShout(struct char_data *ch, int cmd, char *arg,
          * reset 
          */
         last_time = time(NULL);
-        do_shout(ch, "You puny mortals, come release me!  I have a pest dragon"
-                     " whom imprisoned me to slay, and some sea elves to boot!",
-                 0);
+        command_interpreter(ch, "shout You puny mortals, come release me!  I "
+                                "have a pest dragon whom imprisoned me to "
+                                "slay, and some sea elves to boot!");
         return (TRUE);
     } else {
         /* 
@@ -3557,6 +3470,7 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
 {
     char           *obj_name,
                    *vict_name,
+                   *temp,
                     buf[MAX_INPUT_LENGTH];
     struct char_data *vict;
     struct obj_data *obj;
@@ -3574,8 +3488,9 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
              * reset 
              */
             last_time = time(NULL);
-            do_shout(ch, "Might a noble mortal bring me what is rightfully "
-                         "mine?  You shall be generously rewarded!", 0);
+            command_interpreter(ch, "shout Might a noble mortal bring me what "
+                                    "is rightfully mine?  You shall be "
+                                    "generously rewarded!");
             return (TRUE);
         } else {
             time_diff = time(NULL) - last_time;
@@ -3633,13 +3548,14 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
          */
         if (!IS_IMMORTAL(ch)) {
             if ((obj_index[obj->item_number].virtual != 28180)) {
-                sprintf(buf, "%s That is not the item I seek.", GET_NAME(ch));
-                do_tell(vict, buf, 19);
+                sprintf(buf, "tell %s That is not the item I seek.",
+                        GET_NAME(ch));
+                command_interpreter(vict, buf);
                 return (TRUE);
             }
         } else {
-            sprintf(buf, "%s %s", obj_name, vict_name);
-            do_give(ch, buf, 0);
+            sprintf(buf, "give %s %s", obj_name, vict_name);
+            command_interpreter(ch, buf);
             if (obj_index[obj->item_number].virtual == 28180) {
                 test = 1;
             }
@@ -3647,7 +3563,11 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
 
         if (!IS_IMMORTAL(ch)) {
             test = 1;
-            do_give(ch, "Ankh-Posereisn Avatar-Posereisn", 0);
+            temp = strdup("Ankh-Posereisn Avatar-Posereisn");
+            do_give(ch, temp, 0);
+            if( temp ) {
+                free( temp );
+            }
         }
     } else
         return (FALSE);
@@ -3660,23 +3580,24 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg,
             /* 
              * This is only done if he is wielding hellreaper 
              */
-            sprintf(buf, "%s Thank you mighty hero.  Take this as a token of "
-                         "my appreciation.", GET_NAME(ch));
-            do_tell(vict, buf, 19);
-            do_remove(vict, vict->equipment[WIELD]->name, 0);
-            sprintf(buf, "Hellreaper %s", GET_NAME(ch));
-            do_give(vict, buf, 0);
+            sprintf(buf, "tell %s Thank you mighty hero.  Take this as a "
+                         "token of my appreciation.", GET_NAME(ch));
+            command_interpreter(vict, buf);
+            sprintf(buf, "remove %s", vict->equipment[WIELD]->name);
+            command_interpreter(vict, buf);
+            sprintf(buf, "give Hellreaper %s", GET_NAME(ch));
+            command_interpreter(vict, buf);
             return (TRUE);
         } else {
             /* 
              * This is done if he is not wielding hellreaper 
              */
-            sprintf(buf, "%s You are indeed a mighty hero, but I cannot take "
-                         "this, for I have nothing to offer you in return.",
-                    GET_NAME(ch));
-            do_tell(vict, buf, 19);
-            sprintf(buf, "Ankh-Posereisn %s", GET_NAME(ch));
-            do_give(vict, buf, 0);
+            sprintf(buf, "tell %s You are indeed a mighty hero, but I cannot "
+                         "take this, for I have nothing to offer you in "
+                         "return.", GET_NAME(ch));
+            command_interpreter(vict, buf);
+            sprintf(buf, "give Ankh-Posereisn %s", GET_NAME(ch));
+            command_interpreter(vict, buf);
             return (TRUE);
         }
     }
@@ -3694,7 +3615,8 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         if (!check_soundproof(ch) && !number(0, 120)) {
-            do_shout(ch, "To me, my fellows! I am in need of thy aid!", 0);
+            command_interpreter(ch, "shout To me, my fellows! I am in need of"
+                                    " thy aid!");
             if (ch->specials.fighting) {
                 CallForGuard(ch, ch->specials.fighting, 3, type);
             }
@@ -3836,21 +3758,23 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
     if (!number(0, 10)) {
         switch (number(1, 4)) {
         case 1:
-            do_say(ch, "Curses!  Animals in my city leaving droppings!", 0);
+            command_interpreter(ch, "say Curses!  Animals in my city leaving "
+                                    "droppings!");
             break;
         case 2:
-            do_say(ch, "Got them locked in my pen, never bother me again.", 0);
+            command_interpreter(ch, "say Got them locked in my pen, never "
+                                    "bother me again.");
             break;
         case 3:
-            do_say(ch, "Hrm... I do not have inspiration...", 0);
-            do_action(ch, "", 188);
-            do_action(ch, "", 128);
+            command_interpreter(ch, "say Hrm... I do not have inspiration...");
+            do_action(ch, NULL, 188);
+            do_action(ch, NULL, 128);
             break;
         case 4:
-            do_say(ch, "Where has that scribe run off to!?", 0);
+            command_interpreter(ch, "say Where has that scribe run off to!?");
             break;
         default:
-            do_say(ch, "You seen the invaders?", 0);
+            command_interpreter(ch, "say You seen the invaders?");
             break;
 
         }
@@ -3858,18 +3782,22 @@ int DogCatcher(struct char_data *ch, int cmd, char *arg,
     } else if (!number(0, 50)) {
         switch (number(1, 4)) {
         case 1:
-            do_shout(ch, "Hey! Where is that beautiful babe Crystera?!?", 0);
-            do_shout(ch, "Uh... Noone tell Ugha i said that k?", 0);
+            command_interpreter(ch, "shout Hey! Where is that beautiful babe "
+                                    "Crystera?!?");
+            command_interpreter(ch, "shout Uh... Noone tell Ugha i said that "
+                                    "k?");
             break;
         case 2:
-            do_shout(ch, "I found someone that spams even more than me!", 0);
-            do_shout(ch, "Where is that Ugha now??", 0);
+            command_interpreter(ch, "shout I found someone that spams even "
+                                    "more than me!");
+            command_interpreter(ch, "shout Where is that Ugha now??");
             break;
         case 3:
-            do_shout(ch, "Anyone seen that scribe?", 0);
+            command_interpreter(ch, "shout Anyone seen that scribe?");
             break;
         case 4:
-            do_shout(ch, "Manwe will help us get rid of the invaders!", 0);
+            command_interpreter(ch, "shout Manwe will help us get rid of the "
+                                    "invaders!");
             break;
         default:
             break;
@@ -3982,7 +3910,7 @@ void breath_weapon(struct char_data *ch, struct char_data *target,
     } else {
         act("$n Breathes...coughs and sputters...", 1, ch, 0, 
             ch->specials.fighting, TO_ROOM);
-        do_flee(ch, "", 0);
+        do_flee(ch, NULL, 0);
     }
 
     free_victims(hitlist);
@@ -4186,6 +4114,7 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
     int             level;
     struct char_data *vict;
     int             i;
+    char           *name;
 
     if ((cmd) || (!AWAKE(ch))) {
         return (FALSE);
@@ -4233,7 +4162,11 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
         if (ch->in_room == 501 && (vict = FindAHatee(ch)) == NULL) {
             vict = FindVictim(ch);
             if (vict) {
-                do_hit(ch, GET_NAME(vict), 0);
+                name = strdup(GET_NAME(vict));
+                do_hit(ch, name, 0);
+                if( name ) {
+                    free( name );
+                }
             }
             return (FALSE);
         }
@@ -4310,7 +4243,8 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
 
                 if (level >= 8 && !number(0, 3)) {
                     act("$n utters the words 'snap!'", 1, ch, 0, 0, TO_ROOM);
-                    cast_snare(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict, 0);
+                    cast_snare(GetMaxLevel(ch), ch, "", SPELL_TYPE_SPELL, vict,
+                               0);
                     return (FALSE);
                 }
 
@@ -4329,30 +4263,30 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
                         FALSE, ch, 0, 0, TO_ROOM);
                     cast_fire_servant(GetMaxLevel(ch), ch, "",
                                       SPELL_TYPE_SPELL, 0, 0);
+                    command_interpreter(ch, "order followers guard on");
                     return (FALSE);
-                    do_order(ch, "followers guard on", 0);
-                } else {
-                    if (level > 10 && !number(0, 5)) {
-                        act("$n whistles", FALSE, ch, 0, 0, TO_ROOM);
-                        cast_animal_summon_1(GetMaxLevel(ch), ch, "",
-                                             SPELL_TYPE_SPELL, 0, 0);
-                        return (FALSE);
-                    }
+                } 
+                
+                if (level > 10 && !number(0, 5)) {
+                    act("$n whistles", FALSE, ch, 0, 0, TO_ROOM);
+                    cast_animal_summon_1(GetMaxLevel(ch), ch, "",
+                                         SPELL_TYPE_SPELL, 0, 0);
+                    return (FALSE);
+                }
 
-                    if (level > 16 && !number(0, 5)) {
-                        act("$n whistles loudly", FALSE, ch, 0, 0, TO_ROOM);
-                        cast_animal_summon_2(GetMaxLevel(ch), ch, "",
-                                             SPELL_TYPE_SPELL, 0, 0);
-                        return (FALSE);
-                    }
+                if (level > 16 && !number(0, 5)) {
+                    act("$n whistles loudly", FALSE, ch, 0, 0, TO_ROOM);
+                    cast_animal_summon_2(GetMaxLevel(ch), ch, "",
+                                         SPELL_TYPE_SPELL, 0, 0);
+                    return (FALSE);
+                }
 
-                    if (level > 24 && !number(0, 5)) {
-                        act("$n whistles extremely loudly", FALSE, ch, 0,
-                            0, TO_ROOM);
-                        cast_animal_summon_3(GetMaxLevel(ch), ch, "",
-                                             SPELL_TYPE_SPELL, 0, 0);
-                        return (FALSE);
-                    }
+                if (level > 24 && !number(0, 5)) {
+                    act("$n whistles extremely loudly", FALSE, ch, 0,
+                        0, TO_ROOM);
+                    cast_animal_summon_3(GetMaxLevel(ch), ch, "",
+                                         SPELL_TYPE_SPELL, 0, 0);
+                    return (FALSE);
                 }
             } else if (!IS_SET(rp->room_flags, INDOORS)) {
                 if (level > 8 && !number(0, 3)) {
@@ -4381,6 +4315,7 @@ int MonkChallenger(struct char_data *ch, int cmd, char *arg,
                    struct char_data *mob, int type)
 {
     struct char_data *vict;
+    char                *name;
 
     if ((cmd) || (!AWAKE(ch))) {
         return (FALSE);
@@ -4391,7 +4326,11 @@ int MonkChallenger(struct char_data *ch, int cmd, char *arg,
         (vict = FindAHatee(ch)) == NULL) {
         vict = FindVictim(ch);
         if (vict) {
-            do_hit(ch, GET_NAME(vict), 0);
+            name = strdup(GET_NAME(vict));
+            do_hit(ch, name, 0);
+            if( name ) {
+                free( name );
+            }
         }
         return (FALSE);
     }
@@ -4519,7 +4458,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
         send_to_char("You lose\n\r", ch);
         if (IS_PC(ch)) {
             if (IS_NPC(ch)) {
-                do_return(ch, "", 0);
+                command_interpreter(ch, "return");
             }
             GET_EXP(ch) = 
                 MIN(classes[DRUID_LEVEL_IND].
@@ -4543,7 +4482,7 @@ int druid_challenge_room(struct char_data *ch, int cmd, char *arg,
                 for (i = me->people; i; i = i->next_in_room)
                     if (IS_PC(i)) {
                         if (IS_NPC(i)) {
-                            do_return(i, "", 0);
+                            command_interpreter(i, "return");
                         }
                         GET_EXP(i) = 
                             MAX(classes[DRUID_LEVEL_IND].
@@ -4607,7 +4546,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
         send_to_char("You lose.\n\r", ch);
         if (IS_PC(ch)) {
             if (IS_NPC(ch)) {
-                do_return(ch, "", 0);
+                command_interpreter(ch, "return");
             }
             GET_EXP(ch) = 
                 MIN(classes[MONK_LEVEL_IND].
@@ -4628,7 +4567,7 @@ int monk_challenge_room(struct char_data *ch, int cmd, char *arg,
                 for (i = me->people; i; i = i->next_in_room)
                     if (IS_PC(i)) {
                         if (IS_NPC(i)) {
-                            do_return(i, "", 0);
+                            command_interpreter(i, "return");
                         }
                         GET_EXP(i) = 
                             MAX(classes[MONK_LEVEL_IND].
@@ -4878,12 +4817,19 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     dir,
                     count;
     char            buf[255];
+
 #if 0
+    char           *name;
+
     if(type == PULSE_COMMAND) { 
         if(cmd == 19) {
             if(!strncasecmp(arg,"biff", 4)) { 
                 do_follow(ch, arg, cmd); 
-                do_group(mob, GET_NAME(ch), 0); 
+                name = strdup(GET_NAME(ch));
+                do_group(mob, name, 0); 
+                if( name ) {
+                    free( name );
+                }
                 return(TRUE); 
             }
         }
@@ -4896,14 +4842,15 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
             ch->generic = 0;
             switch (number(1, 10)) {
             case 1:
-                do_emote(ch, "mumbles something about in his day the tavern "
-                             "being a popular hangout.", 0);
+                command_interpreter(ch, "emote mumbles something about in his "
+                                        "day the tavern being a popular "
+                                        "hangout.");
                 break;
             case 2:
-                do_say(ch, "I really miss the good old days of fighting "
-                           "dragons all day.", 0);
-                do_say(ch, "I really should do it more often to keep in shape.",
-                       0);
+                command_interpreter(ch, "say I really miss the good old days "
+                                        "of fighting dragons all day.");
+                command_interpreter(ch, "say I really should do it more often "
+                                        "to keep in shape.");
                 break;
             default:
                 break;
@@ -4925,11 +4872,11 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
 
                 if (!found) {
                     ch->generic = 25;
-                    do_say(ch, "Ack! The dragon is dead! I'm going back to the"
-                               " bar!", 0);
+                    command_interpreter(ch, "say Ack! The dragon is dead! I'm "
+                                            "going back to the bar!");
                 } else {
-                    do_say(ch, "Ok, Follow me and let's go kill ourselves a "
-                               "dragon!", 0);
+                    command_interpreter(ch, "say Ok, Follow me and let's go "
+                                            "kill ourselves a dragon!");
                     ch->generic = 23;
                     count = 1;
                     for (i = real_roomp(ch->in_room)->people; i;
@@ -4938,17 +4885,17 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                             mob_index[i->nr].virtual == WHO_TO_CALL) {
                             (*mob_index[i->nr].func) (i, 0, "", ch,
                                                       EVENT_FOLLOW);
-                            sprintf(buf, "%d.%s", count, GET_NAME(i));
-                            do_group(ch, buf, 0);
+                            sprintf(buf, "group %d.%s", count, GET_NAME(i));
+                            command_interpreter(ch, buf);
                             count++;
                         } else if (i->master && i->master == ch && 
                                    GetMaxLevel(i) > 10) {
-                            sprintf(buf, "%s", GET_NAME(i));
-                            do_group(ch, buf, 0);
+                            sprintf(buf, "group %s", GET_NAME(i));
+                            command_interpreter(ch, buf);
                         } else if (i->master && i->master == ch) {
-                            sprintf(buf, "%s You're too little! Get Lost!",
+                            sprintf(buf, "tell %s You're too little! Get Lost!",
                                     GET_NAME(i));
-                            do_tell(ch, buf, 0);
+                            command_interpreter(ch, buf);
                         }
                     }
                 }
@@ -4968,8 +4915,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
 
                 if (!found) {
                     ch->generic = 25;
-                    do_say(ch, "Ack! The dragon is dead! I'm going back to the"
-                               " bar!", 0);
+                    command_interpreter(ch, "say Ack! The dragon is dead! I'm "
+                                            "going back to the bar!");
                 } else {
                     dir = choose_exit_global(ch->in_room, i->in_room,
                                              MAX_ROOMS);
@@ -4985,7 +4932,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                         /* 
                          * we're here! 
                          */
-                        do_shout(ch, "The dragon must die!", 0);
+                        command_interpreter(ch, "shout The dragon must die!");
 
                         for (j = real_roomp(ch->in_room)->people; j;
                              j = j->next_in_room) {
@@ -5002,8 +4949,8 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                     return (FALSE);
                 }
             } else if (ch->generic == 24) {
-                do_say(ch, "Guess it's back to the bar for me! I need a drink!",
-                       0);
+                command_interpreter(ch, "say Guess it's back to the bar for me!"
+                                        " I need a drink!");
                 ch->generic = 25;
             } else if (ch->generic == 25) {
                 dir = choose_exit_global(ch->in_room, WHERE_TO_SIT, MAX_ROOMS);
@@ -5015,7 +4962,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                 }
                 go_direction(ch, dir);
                 if (ch->in_room == WHERE_TO_SIT) {
-                    do_say(ch, "Ahhh, time for a drink!", 0);
+                    command_interpreter(ch, "say Ahhh, time for a drink!");
                     for (i = real_roomp(ch->in_room)->people; i;
                          i = i->next_in_room) {
                         if (IS_MOB(i) && 
@@ -5025,8 +4972,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
                         }
                     }
 
-                    do_sit(ch, "", 0);
-                    do_say(ch, "Bartender, how about a drink?", 0);
+                    do_sit(ch, NULL, 0);
+                    command_interpreter(ch, "say Bartender, how about a "
+                                            "drink?");
                     ch->generic = 0;
                 }
             }
@@ -5064,8 +5012,9 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        do_shout(ch, "All who want to hunt a dragon, come to me!", 0);
-        do_stand(ch, "", 0);
+        command_interpreter(ch, "shout All who want to hunt a dragon, come to "
+                                "me!");
+        do_stand(ch, NULL, 0);
     }
 
     return (FALSE);
@@ -5493,8 +5442,8 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     if (type == EVENT_END_STRIKE && ch->specials.position == POSITION_SITTING) {
-        do_emote(ch, "is off strike.", 0);
-        do_stand(ch, "", 0);
+        command_interpreter(ch, "emote is off strike.");
+        do_stand(ch, NULL, 0);
         ch->specials.default_pos = POSITION_STANDING;
         ch->player.long_descr = (char *) realloc(ch->player.long_descr,
                                                  sizeof(char) * 54);
@@ -5508,8 +5457,8 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
 
     if (type == EVENT_DWARVES_STRIKE) {
         if (ch->specials.position == POSITION_STANDING) {
-            do_emote(ch, "is on strike.", 0);
-            do_sit(ch, "", 0);
+            command_interpreter(ch, "emote is on strike.");
+            do_sit(ch, NULL, 0);
             ch->specials.default_pos = POSITION_SITTING;
             ch->player.long_descr = (char *) realloc(ch->player.long_descr,
                                                      sizeof(char) * 55);
@@ -5533,8 +5482,8 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
              */
             PulseMobiles(EVENT_END_STRIKE);
             if (ch->specials.position == POSITION_SITTING) {
-                do_emote(ch, "is off strike.", 0);
-                do_stand(ch, "", 0);
+                command_interpreter(ch, "emote is off strike.");
+                do_stand(ch, NULL, 0);
                 ch->specials.default_pos = POSITION_STANDING;
                 ch->player.long_descr = (char *) realloc(ch->player.long_descr,
                                                          sizeof(char) * 65);
@@ -5554,8 +5503,8 @@ int DwarvenMiners(struct char_data *ch, int cmd, char *arg,
     }
     if (type == EVENT_BIRTH) {
         if (ch->specials.position == POSITION_STANDING) {
-            do_emote(ch, "is on strike.", 0);
-            do_sit(ch, "", 0);
+            command_interpreter(ch, "emote is on strike.");
+            do_sit(ch, NULL, 0);
             ch->specials.default_pos = POSITION_SITTING;
             ch->player.long_descr = (char *) realloc(ch->player.long_descr,
                                                      sizeof(char) * 55);
@@ -5618,8 +5567,9 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
     }
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].virtual == 6005 && !number(0, 3)) {
-            do_emote(ch, "sees the damn fox and runs like hell.", 0);
-            do_flee(ch, "\0", 0);
+            command_interpreter(ch, "emote sees the damn fox and runs like "
+                                    "hell.");
+            do_flee(ch, NULL, 0);
             return TRUE;
         }
     }
@@ -5627,10 +5577,11 @@ int real_rabbit(struct char_data *ch, int cmd, char *arg,
     if (!number(0, 5)) {
         switch (number(1, 2)) {
         case 1:
-            do_emote(ch, "nibbles on some grass.", 0);
+            command_interpreter(ch, "emote nibbles on some grass.");
             break;
         case 2:
-            do_emote(ch, "bounces lighty to another patch of grass.", 0);
+            command_interpreter(ch, "emote bounces lightly to another patch of"
+                                    " grass.");
             break;
         }
         return TRUE;
@@ -5657,7 +5608,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
     for (j = real_roomp(ch->in_room)->contents; j; j = j->next_content) {
         if (GET_ITEM_TYPE(j) == ITEM_CONTAINER && j->obj_flags.value[3] &&
             !strcmp(j->name, "corpse rabbit")) {
-            do_emote(ch, "gorges on the corpse of a rabbit.", 0);
+            command_interpreter(ch, "emote gorges on the corpse of a rabbit.");
             for (k = j->contains; k; k = next) {
                 next = k->next_content;
                 obj_from_obj(k);
@@ -5671,7 +5622,7 @@ int real_fox(struct char_data *ch, int cmd, char *arg,
 
     for (i = real_roomp(ch->in_room)->people; i; i = i->next_in_room) {
         if (IS_NPC(i) && mob_index[i->nr].virtual == 6001 && !number(0, 3)) {
-            do_emote(ch, "yips and starts to make dinner.", 0);
+            command_interpreter(ch, "emote yips and starts to make dinner.");
             hit(ch, i, TYPE_UNDEFINED);
             return TRUE;
         }
