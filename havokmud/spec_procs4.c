@@ -3334,8 +3334,11 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 
 		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
 			if(!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
-				act("A wave of stench rolls out from $n, if a skunk's spray is like a dagger, \n\r
-				     this is like a claymore.  You immediately feel incredibly sick.", TRUE, mob, 0, tempchar, TO_VICT);
+				act("A wave of stench rolls out from $n, if a"
+				" skunk's spray is like a dagger, \n\r"
+				    "this is like a claymore.  You immediately"
+					" feel incredibly sick.", TRUE, mob, 0,
+					 tempchar, TO_VICT);
 				if(!saves_spell(tempchar, SAVING_BREATH)) {
 					affect_join(tempchar, &af, TRUE, FALSE);
 				}
