@@ -1638,6 +1638,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
                     color2[10],
                     color3[10];
     struct time_info_data ma;
+    char           *proc;
 
     dlog("in do_stat");
 
@@ -1674,11 +1675,16 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             send_to_char(buf, ch);
 
             sprinttype(rm->sector_type, sector_types, buf2);
-            sprintf(buf, "Sector type : %s ", buf2);
+            sprintf(buf, "Sector type : %s\n\r", buf2);
             send_to_char(buf, ch);
 
             strcpy(buf, "Special procedure : ");
-            strcat(buf, (rm->funct) ? "Exists\n\r" : "No\n\r");
+            if( (proc = procGetNameByFunc( rm->funct, PROC_ROOM )) ) {
+                strcat( buf, proc );
+                strcat( buf, "\n\r" );
+            } else {
+                strcat( buf, "None\n\r" );
+            }
             send_to_char(buf, ch);
 
             send_to_char("Room flags: ", ch);
@@ -1942,7 +1948,13 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
             if (IS_MOB(k)) {
                 sprintf(buf, "%sMobile special procedure: %s", color1, color2);
-                strcat(buf, (mob_index[k->nr].func ? "Exists " : "None "));
+                if( (proc = procGetNameByFunc( mob_index[k->nr].func,
+                                               PROC_MOBILE )) ) {
+                    strcat( buf, proc );
+                    strcat( buf, "\n\r" );
+                } else {
+                    strcat( buf, "None\n\r" );
+                }
                 act(buf, FALSE, ch, 0, 0, TO_CHAR);
             }
 
@@ -2309,11 +2321,13 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
             }
             send_to_char(buf, ch);
             strcpy(buf, "\n\rSpecial procedure : ");
-            if (j->item_number >= 0) {
-                strcat(buf, (obj_index[j->item_number].func ?
-                             "exists\n\r" : "No\n\r"));
+            if (j->item_number >= 0 &&
+                (proc = procGetNameByFunc( obj_index[j->item_number].func,
+                                           PROC_OBJECT )) ) {
+                strcat(buf, proc);
+                strcat(buf, "\n\r");
             } else {
-                strcat(buf, "No\n\r");
+                strcat(buf, "None\n\r");
             }
             send_to_char(buf, ch);
             strcpy(buf, "Contains :\n\r");
