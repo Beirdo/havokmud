@@ -1060,6 +1060,11 @@ void do_bug(struct char_data *ch, char *argument, int cmd)
     sprintf(str, "**%s[%ld]: %s\n", GET_NAME(ch), ch->in_room, argument);
     fputs(str, fl);
     fclose(fl);
+
+    sprintf(str, "BUG Report by %s [%ld]: %s", GET_NAME(ch), ch->in_room,
+            argument);
+    Log(str);
+
     send_to_char("Ok.\n\r", ch);
 }
 
