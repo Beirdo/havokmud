@@ -154,8 +154,10 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 			/* check carrying items first, least important */
 			if (CountLims(ch->carrying)) {
 				if (i > 0) {
+				  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
 					sprintf(buf,"Removing carried items from %s in force rent.", GET_NAME(ch));
 					log(buf);
+			      }
 				}
 
 				for (tmp = ch->carrying;tmp;tmp = tmp_next_obj) {
@@ -187,6 +189,7 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 
 			/* check equiped items next if still over max limited */
 			if (i > 0) {
+
 				sprintf(buf,"Removing equiped items from %s in force rent.", GET_NAME(ch));
 				log(buf);
 
@@ -218,8 +221,10 @@ bool recep_offer(struct char_data *ch,  struct char_data *receptionist, struct o
 			}
 
 			if (i > 0) {
-				sprintf(buf, "%s force rented and still had more limited items than suppose to.", GET_NAME(ch));
-				log(buf);
+				if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+				  sprintf(buf, "%s force rented and still had more limited items than suppose to.", GET_NAME(ch));
+				  log(buf);
+				}
 			}
 		} /* end remove limited on force rent */
 
@@ -499,14 +504,18 @@ void load_char_objs(struct char_data *ch)
 	sprintf(tbuf, "rent/%s", lower(ch->player.name));
 	/* r+b is for Binary Reading/Writing */
 	if (!(fl = fopen(tbuf, "r+b")))  {
+	  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
 		log("Char has no equipment");
 		return;
+      }
 	}
 
 	rewind(fl);
 	if (!ReadObjs(fl, &st)) {
+	  if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
 		log("No objects found");
 		return;
+      }
 	}
 
 	if (str_cmp(st.owner, GET_NAME(ch)) != 0) {
@@ -528,22 +537,27 @@ void load_char_objs(struct char_data *ch)
 
 	if (ch->in_room == NOWHERE && st.last_update + 1*SECS_PER_REAL_HOUR > time(0)) {
 /* you made it back from the crash in time, 1 hour grace period. */
-		log("Character reconnecting.");
+		if (!IS_IMMORTAL(ch) || ch->invis_level == 0){
+		  log("Character reconnecting.");
+	    }
 		found = TRUE;
 	} else {
 		char buf[MAX_STRING_LENGTH];
 
 		if (ch->in_room == NOWHERE)
-			log("Char reconnecting after autorent");
-
+			if (!IS_IMMORTAL(ch) || ch->invis_level == 0){
+			  log("Char reconnecting after autorent");
+	 		}
 #if NEW_RENT
 		timegold = (int) ( (100*((float)time(0) - st.last_update))/(SECS_PER_REAL_DAY) );
 #else
 		timegold = (int) (	(st.total_cost*((float)time(0) - st.last_update))/(SECS_PER_REAL_DAY)	);
 #endif
 		//timegold=timegold+100000;
-		sprintf(buf, "Char ran up charges of %g gold in rent", timegold);
-		log(buf);
+		if(!IS_IMMORTAL(ch) || ch->invis_level == 0){
+		  sprintf(buf, "Char ran up charges of %g gold in rent", timegold);
+		  log(buf);
+		}
 		sprintf(buf, "You ran up charges of %g gold in rent.\n\r", timegold);
 		send_to_char(buf, ch);
 		GET_GOLD(ch) -= timegold;

@@ -2333,31 +2333,38 @@ if (GET_NAME(d->character))
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
 
-          act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-          sprintf(buf, "%s[%s] has reconnected.",
-          GET_NAME(d->character), d->host);
-          log(buf);
-          return;
+          if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level == 0) {
+            act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
+            sprintf(buf, "%s[%s] has reconnected.",GET_NAME(d->character), d->host);
+            log(buf);
+          }
+        return;
         }
       }
 
 	load_char_extra(d->character); /*Load extra fromfile*/
-
-	if(d->character->specials.hostip==NULL || 1)
-      sprintf(buf, "%s[%s] has connected.\n\r"
-      	, GET_NAME(d->character), d->host);
-	else{
-		sprintf(buf, "%s[%s] has connected.\n\r. Last connected from[%s]"
+      if(d->character->specials.hostip==NULL || 1){
+        if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+          sprintf(buf, "%s[%s] has connected.\n\r", GET_NAME(d->character), d->host);
+	      log(buf);
+	    }
+	  }else{
+		if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+		  sprintf(buf, "%s[%s] has connected.\n\r. Last connected from[%s]"
       	, GET_NAME(d->character), d->host, d->character->specials.hostip);
+	    log(buf);
+	  }
+	  SEND_TO_Q(buf,d);
 	}
+
 	/*
 
 		if (d->character->specials.hostip)
 		   free(d->character->specials.hostip);
 	  d->character->specials.hostip = d->host;
 */
-      log(buf);
-      SEND_TO_Q(buf,d);
+
+
       send_to_char(motd,d->character);
       //SEND_TO_Q(motd, d);
       SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
@@ -2399,11 +2406,12 @@ if (GET_NAME(d->character))
           d->character->persist = 0;
           STATE(d) = CON_PLYNG;
 
-          act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
-          sprintf(buf, "%s[%s] has reconnected.",
-            GET_NAME(d->character), d->host);
-          log(buf);
-          return;
+          if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+            act("$n has reconnected.", TRUE, tmp_ch, 0, 0, TO_ROOM);
+            sprintf(buf, "%s[%s] has reconnected.", GET_NAME(d->character), d->host);
+            log(buf);
+            return;
+		  }
         }
       }
 /* ooppss .... */
@@ -3513,8 +3521,11 @@ if ((player_table+i)->name)
 
     case '1':
       reset_char(d->character);
-      sprintf(buf, "Loading %s's equipment", d->character->player.name);
-    total_connections++;
+      total_connections++;
+      if (!IS_IMMORTAL(d->character) || d->character->invis_level == 0) {
+        sprintf(buf, "Loading %s's equipment", d->character->player.name);
+  	    log(buf);
+  	  }
 
       count_players=1;
       for (i = descriptor_list; i; i = i->next)
@@ -3524,7 +3535,7 @@ if ((player_table+i)->name)
       if(total_max_players < count_players)
       	total_max_players = count_players;
 
-      log(buf);
+
       load_char_objs(d->character);
 
 	  //	if ((r_num = real_object(12)) >= 0)   {
