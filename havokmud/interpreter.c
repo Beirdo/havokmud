@@ -1614,7 +1614,7 @@ AddCommand("zones", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("areas", do_list_zones, 617, POSITION_SITTING, 1);
 AddCommand("recallhome", do_recallhome, 618, POSITION_SITTING, 1);
 AddCommand("scribe", do_scribe, 619, POSITION_STANDING, 1);
-
+ AddCommand("affects",do_attribute,620, POSITION_DEAD,1);
 
 }
 
