@@ -607,7 +607,7 @@ void bugmail(struct char_data *ch,  char *arg, int cmd)
   int tmp_cmd = 0;
 
   postmaster_send_mail(ch, cmd,"Manwe") ;
-  postmaster_send_mail(ch, cmd,"Banon") ;
+
 
  }
 

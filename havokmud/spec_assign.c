@@ -1371,68 +1371,12 @@ void assign_rooms()
     { 22648,  Fountain},
     { 26010,	Fountain},
     { 26109,   Fountain},  /* Stormcloak fountain*/
-    { 13530, pet_shops },
 
     { 2000,  bank },
     { 13521, bank },
     { 18224, bank},
 /* sundhaven bank */
     {11558, bank},
-#if 0
-    { 250,   House },
-    { 715,   House },
-    { 716,   House },
-    { 718,   House },
-    { 3099,  House },  /* Franz's house   */
-    { 3143,  House },  /* justine's house */
-    { 3144,  House },  /* zip's house     */
-    { 3145,  House },  /* crimson's house */
-    { 3146,  House },  /* hugh's house    */
-    { 3147,  House },  /* crimson's house */
-    { 3148,  House },  /* hugh's house    */
-    { 3152,  House },  /* Kojiro's house    */
-    { 3154,  House },  /* Magnus's house    */
-    { 3155,  House },  /* Rincewinds's house    */
-    { 3156,  House },  /* Comptons's house    */
-    { 3158,  House },
-    { 3159,  House },
-    { 3160,  House },
-    { 3161,  House }, /* rodgrim  */
-    { 3162,  House }, /* riffraff */
-    { 3163,  House }, /* fanchon  */
-    { 13495,  House }, /* conner */
-    { 13496,  House }, /* conner */
-    { 13497,  House }, /* conner */
-    { 13498,  House }, /* conner */
-    { 3827,  House },
-    { 5198,  House }, /*  Rambozo */
-    { 5199,  House }, /*  shadowspawns */
-    { 5700,  House }, /*  Dalamar */
-    { 5896,  House }, /*  Dalamar */
-    { 6697,  House },
-    { 6698,  House },
-    { 6699,  House },
-    { 7697,  House },
-    { 7698,  House },
-    { 9260,  House },
-    { 9261,  House },
-    { 9262,  House },
-    { 9265,  House },
-    { 9266,  House },
-    { 13100, House },  /* SEDUCTIoN */
-    { 13729, House },
-    { 13730, House },
-    { 13799, House },  /* Glopglyph's house   */
-    { 17995, House },
-    { 17998, House },
-    { 17990, House },  /* Turnip */
-    { 10100, House },  /* Darrel's house      */
-    { 20200, House },  /* Bag's house         */
-    { 21336, House }, /* House for Blah */
-    { 21337, House },  /* House for Insane */
-    { 24000, House },  /* Pat's House         */
-    { 27081, House },
-#endif
 	{3422,ChurchBell},
 	{37334, Fountain},
 	{39900, arena_prep_room},
