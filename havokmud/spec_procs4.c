@@ -9,10 +9,10 @@
 #include "protos.h"
 
 /*
- * external vars 
+ * external vars
  */
 /*
- * external vars 
+ * external vars
  */
 extern const struct map_coord map_coords[];
 extern struct room_data *world;
@@ -37,7 +37,7 @@ struct riddle_answer {
     int     reward;
     char   *rewardText;
 };
-    
+
 int mazekeeper_riddle_common(struct char_data *ch, char *arg,
                              struct char_data *mob, struct riddle_answer *rid,
                              int ridCount, int exp, int portal);
@@ -49,7 +49,7 @@ int             CanSail(struct obj_data *obj, int direction);
 int ReadObjs(FILE * fl, struct obj_file_u *st);
 
 /*
- * two global integers for Sentinel's cog room procedure 
+ * two global integers for Sentinel's cog room procedure
  */
 extern int      cog_sequence;
 int             chest_pointer = 0;
@@ -459,14 +459,14 @@ char            oceanmap[101][260] = {
 /*
  * @Name: This is the chest part of the royal rumble proc. @description:
  * Once there is only 1 person left in the arena, the chest will open.
- * @Author: Greg Hovey (Banon) @Assigned to obj/mob/room: Obj(51152) 
+ * @Author: Greg Hovey (Banon) @Assigned to obj/mob/room: Obj(51152)
  */
 #define RUMBLE_ZONE 188
 int chestproc(struct char_data *ch, int cmd, char *argument,
               struct obj_data *obj, int type)
 {
     if (cmd != 99) {
-        /* 
+        /*
          * open chest
          */
         return (FALSE);
@@ -477,7 +477,7 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
     if (countPeople(RUMBLE_ZONE) > 1) {
 #if 0
         ch_printf(ch,"You can't open the chest yet, there is still "
-                     "people in the battle arena!%d", 
+                     "people in the battle arena!%d",
                   countPeople(RUMBLE_ZONE));
 #endif
         ch_printf(ch, "The chest seems to resist your touch...", ch);
@@ -490,7 +490,7 @@ int chestproc(struct char_data *ch, int cmd, char *argument,
 /*
  * @Name: This is the chest part of the royal rumble proc. @description:
  * Once there is only 1 person left in the arena, the chest will open.
- * @Author: Greg Hovey (Banon) @Assigned to obj/mob/room: Room(51151) 
+ * @Author: Greg Hovey (Banon) @Assigned to obj/mob/room: Room(51151)
  */
 #define THE_HOUR  17
 int preperationproc(struct char_data *ch, int cmd, char *arg,
@@ -505,7 +505,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
     struct tm      *t_info;
 
     if (cmd != 224) {
-        /* 
+        /*
          * pull
          */
         return (FALSE);
@@ -521,10 +521,10 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
     count = count_People_in_room(ch->in_room);
     zone = countPeople(RUMBLE_ZONE);
 
-    if ((zone - count == 1 || zone - count == 0) && 
+    if ((zone - count == 1 || zone - count == 0) &&
         t_info->tm_hour == THE_HOUR) {
 
-        if (!IS_SET(rp->dir_option[2]->exit_info, EX_LOCKED) || 
+        if (!IS_SET(rp->dir_option[2]->exit_info, EX_LOCKED) ||
             !IS_SET(rp->dir_option[2]->exit_info, EX_CLOSED)) {
             command_interpreter(ch, "close door");
             raw_lock_door(ch, EXIT(ch, 2), 2);
@@ -583,10 +583,10 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
     int             doordir = 0;
 
     /*
-     * initialize info for different rooms here 
+     * initialize info for different rooms here
      */
     /*
-     * use (0,1,2,3,4,5) for dirs (north,east,south,west,up,down) 
+     * use (0,1,2,3,4,5) for dirs (north,east,south,west,up,down)
      */
     if (ch->in_room == 50962) {
         sprintf(answer, "coffin");
@@ -605,8 +605,8 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
     rp = real_roomp(ch->in_room);
     exitp = rp->dir_option[doordir];
     if (!IS_SET(exitp->exit_info, EX_CLOSED)) {
-        /* 
-         * if door is open, no need for proc 
+        /*
+         * if door is open, no need for proc
          */
         return (FALSE);
     }
@@ -631,16 +631,16 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 99) {
-        /* 
-         * open 
+        /*
+         * open
          */
         arg = get_argument(arg, &buffer);
         if (buffer) {
             if (strcasecmp(buffer, doorname)) {
                 return (FALSE);
             } else {
-                /* 
-                 * open portal 
+                /*
+                 * open portal
                  */
                 sprintf(buf, "You attempt to open the %s, but a strange force "
                              "prevents\n\r", doorname);
@@ -659,13 +659,13 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 17) {
-        /* 
-         * say 
+        /*
+         * say
          */
         arg = get_argument(arg, &guess);
         if (guess && !strcasecmp(guess, answer)) {
             /*
-             * open the exit in this room 
+             * open the exit in this room
              */
             rp = real_roomp(ch->in_room);
             exitp = rp->dir_option[doordir];
@@ -678,10 +678,10 @@ int riddle_exit(struct char_data *ch, int cmd, char *arg,
             sprintf(buf, "The %s silently opens.\n\r", doorname);
             send_to_room(buf, ch->in_room);
             /*
-             * gotta open the exit at the other side as well 
+             * gotta open the exit at the other side as well
              */
-            if (exit_ok(exitp, &rp) && 
-                (back = rp->dir_option[rev_dir[doordir]]) && 
+            if (exit_ok(exitp, &rp) &&
+                (back = rp->dir_option[rev_dir[doordir]]) &&
                 back->to_room == ch->in_room) {
                 REMOVE_BIT(back->exit_info, EX_CLOSED);
                 send_to_room(buf, exitp->to_room);
@@ -696,8 +696,8 @@ int greed_disabler(struct char_data *ch, int cmd, char *arg,
                    struct room_data *rp, int type)
 {
     if (cmd == 60) {
-        /* 
-         * drop 
+        /*
+         * drop
          */
         act("Just when $n is about to drop something, $e seems to change $s "
             "mind.", FALSE, ch, 0, 0, TO_ROOM);
@@ -712,9 +712,9 @@ int lag_room(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
     if (cmd) {
-        /* 
-         * if a player enters ANY command, they'll experience two rounds of 
-         * lag 
+        /*
+         * if a player enters ANY command, they'll experience two rounds of
+         * lag
          */
 
         if (IS_NPC(ch) || IS_IMMORTAL(ch)) {
@@ -756,9 +756,9 @@ int vampiric_embrace(struct char_data *ch, struct char_data *vict)
             "draining some of your life.", FALSE, ch, 0, vict, TO_VICT);
     }
     dam = dice(3, 8);
-    if (IsResist(vict, IMM_DRAIN)) {     
-        /* 
-         * half damage for resist 
+    if (IsResist(vict, IMM_DRAIN)) {
+        /*
+         * half damage for resist
          */
         dam >>= 1;
     }
@@ -787,8 +787,8 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
     }
 
     if (ch->specials.fighting && IS_SET(ch->specials.act, ACT_SPEC)) {
-        /* 
-         * kill 
+        /*
+         * kill
          */
         t = ch->specials.fighting;
         if (t->in_room == ch->in_room) {
@@ -804,7 +804,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
             die(t, '\0');
 
             /*
-             * find the corpse and destroy it 
+             * find the corpse and destroy it
              */
             rp = real_roomp(ch->in_room);
             if (!rp) {
@@ -814,8 +814,8 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
 
             for (co = rp->contents; co; co = co->next_content) {
                 if (IS_CORPSE(co)) {
-                    /* 
-                     * assume 1st corpse is victim's 
+                    /*
+                     * assume 1st corpse is victim's
                      */
                     while (co->contains) {
                         o = co->contains;
@@ -841,16 +841,16 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * the generic is the direction of travel 
+     * the generic is the direction of travel
      */
     if (number(0, 2) == 0) {
-        /* 
-         * move 
+        /*
+         * move
          */
         if (!ValidMove(ch, (ch->generic) - 1)) {
             if (number(0, 2) != 0) {
-                /* 
-                 * 66% chance it dies 
+                /*
+                 * 66% chance it dies
                  */
                 act("$n dissipates, you breathe a sigh of relief.", FALSE,
                     ch, 0, 0, TO_ROOM);
@@ -862,7 +862,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     } else {
         /*
-         * make everyone with any brains flee 
+         * make everyone with any brains flee
          */
         for (t = real_roomp(ch->in_room)->people; t; t = next) {
             next = t->next_in_room;
@@ -872,7 +872,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
         }
 
         /*
-         * find someone in the room to flay 
+         * find someone in the room to flay
          */
         for (t = real_roomp(ch->in_room)->people; t; t = next) {
             if (!t) {
@@ -881,7 +881,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
             }
 
             next = t->next_in_room;
-            if (!IS_IMMORTAL(t) && t != ch && !number(0, 1) && 
+            if (!IS_IMMORTAL(t) && t != ch && !number(0, 1) &&
                 IS_SET(ch->specials.act, ACT_SPEC)) {
                 act("$N is engulfed by $n!", FALSE, ch, 0, t, TO_NOTVICT);
                 act("You are engulfed by $n, and are quickly disassembled.",
@@ -892,7 +892,7 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                 die(t, '\0');
 
                 /*
-                 * find the corpse and destroy it 
+                 * find the corpse and destroy it
                  */
                 rp = real_roomp(ch->in_room);
                 if (!rp) {
@@ -908,8 +908,8 @@ int creeping_death(struct char_data *ch, int cmd, char *arg,
                             obj_from_obj(o);
                             obj_to_room(o, ch->in_room);
                         }
-                        /* 
-                         * remove the corpse 
+                        /*
+                         * remove the corpse
                          */
                         extract_obj(co);
                     }
@@ -941,7 +941,7 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
     char            buf[MAX_STRING_LENGTH + 30];
 
     /*
-     * Deshima was meant to paralyze through immunity 
+     * Deshima was meant to paralyze through immunity
      */
 
     if (!ch) {
@@ -959,8 +959,8 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     if ((GET_DEX(ch)) != 21) {
-        /* 
-         * Deshima wants to have a nice dex value - how about 21? 
+        /*
+         * Deshima wants to have a nice dex value - how about 21?
          */
         GET_DEX(ch) = 21;
     }
@@ -968,23 +968,23 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
     if (!ch->specials.fighting) {
         return (FALSE);
     } else {
-        /* 
-         * we're fighting 
+        /*
+         * we're fighting
          */
         vict = ch->specials.fighting;
         if (!IS_AFFECTED(vict, AFF_PARALYSIS)) {
             if (!IS_IMMORTAL(vict) && (ch != vict)) {
-                /* 
-                 * let's see if he got lucky (25%) 
+                /*
+                 * let's see if he got lucky (25%)
                  */
                 switch (number(0, 3)) {
-                case 1: 
+                case 1:
                     /* he got lucky */
                     act("$c0008Deshima's eyes glow a dark c$c000rr$c000Rims"
-                        "$c000ro$c0008n as he gazes into $n's eyes.", FALSE, 
+                        "$c000ro$c0008n as he gazes into $n's eyes.", FALSE,
                         vict, 0, 0, TO_NOTVICT);
                     act("$c0008$n's muscles seem to contract, but he manages "
-                        "to break away from Deshima's gaze in time.$c0007", 
+                        "to break away from Deshima's gaze in time.$c0007",
                         FALSE, vict, 0, 0, TO_NOTVICT);
 
                     sprintf(buf, "$c0008Deshima's eyes glow a dark c$c000rr"
@@ -998,8 +998,8 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
                     send_to_char(buf, vict);
                     break;
                 default:
-                    /* 
-                     * let's nail that bugger! 
+                    /*
+                     * let's nail that bugger!
                      */
                     act("$c0008Deshima's eyes glow a dark c$c000rr$c000Rims"
                         "$c000ro$c0008n as he gazes into $n's eyes.", FALSE,
@@ -1021,16 +1021,16 @@ int Deshima(struct char_data *ch, int cmd, char *arg,
                 }
             }
         } else {
-            /* 
-             * he's paralyzed, let's look for a new victim 
+            /*
+             * he's paralyzed, let's look for a new victim
              */
             for (i = rp->people; i; i = next) {
                 next = i->next_in_room;
-                if (!IS_IMMORTAL(i) && ch != i && 
+                if (!IS_IMMORTAL(i) && ch != i &&
                     !IS_AFFECTED(i, AFF_PARALYSIS)) {
                     /*
                      * We got a fresh target on our hands here, let's
-                     * start picking on him 
+                     * start picking on him
                      */
                     sprintf(buf, "$c0008Having effectively disabled %s, "
                                  "Deshima turns his attention to %s.$c0007",
@@ -1072,31 +1072,31 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     /*
-     * if ch is fighting, don't fire 
+     * if ch is fighting, don't fire
      */
     if (ch->specials.fighting) {
         return (FALSE);
     }
     /*
-     * if ch already has a follower, don't fire 
+     * if ch already has a follower, don't fire
      */
     if (ch->followers) {
         return (FALSE);
     }
     /*
-     * ch not fighting, let's look for a victim 
+     * ch not fighting, let's look for a victim
      */
     if (ch->in_room <= -1) {
         return( FALSE );
     }
 
     /*
-     * there's victims, let's see if we can harrass one 
+     * there's victims, let's see if we can harrass one
      */
     for (i = real_roomp(ch->in_room)->people; i; i = next) {
         next = i->next_in_room;
         if (GET_RACE(i) == RACE_HUMAN && GET_SEX(i) == SEX_MALE && !IS_NPC(i) &&
-            !IS_LINKDEAD(i) && !IS_IMMORTAL(i) && 
+            !IS_LINKDEAD(i) && !IS_IMMORTAL(i) &&
             !affected_by_spell(i, SPELL_CHARM_PERSON)) {
             if (!IsImmune(i, IMM_CHARM)) {
                 if (!saves_spell(i, SAVING_PARA)) {
@@ -1120,17 +1120,17 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
                     affect_to_char(i, &af);
                     return (TRUE);
                 } else {
-                    /* 
-                     * made his save, give him some notice 
+                    /*
+                     * made his save, give him some notice
                      */
                     act("$n sings a beautiful song, oh my.. You're almost "
                         "willing to follow $m.", FALSE, ch, 0, i, TO_VICT);
-                    act("$n hums a merry tune while looking $N in the eyes.", 
+                    act("$n hums a merry tune while looking $N in the eyes.",
                         TRUE, ch, 0, i, TO_NOTVICT);
                 }
             } else {
-                /* 
-                 * victim imm:charm, make him pay! 
+                /*
+                 * victim imm:charm, make him pay!
                  */
                 act("$n sings a beautiful song. At the end, you applaud and "
                     "give $m some coins.", FALSE, ch, 0, i, TO_VICT);
@@ -1147,12 +1147,12 @@ int mermaid(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * procs for the King's Grove 
+ * procs for the King's Grove
  */
 #define LEGEND_STATUE 52851
 #define LEGEND_PAINTING 52852
 #define LEGEND_BIOGRAPHY 52853
-#if 0 
+#if 0
 struct char_data *ch, char *argument, int cmd)
 #endif
 int generate_legend_statue(void)
@@ -1174,26 +1174,26 @@ int generate_legend_statue(void)
 
     /*
      * Determine number of pfiles. Add one for last player made, though
-     * that one isn't very likely to have enough kills. Still, we wanna be 
-     * thorough. 
+     * that one isn't very likely to have enough kills. Still, we wanna be
+     * thorough.
      */
     for (i = 0; i < top_of_p_table + 1; i++) {
         /*
-         * load up each of them 
+         * load up each of them
          */
         if (load_char((player_table + i)->name, &player) > -1) {
             /*
-             * store to a tmp char that we can deal with 
+             * store to a tmp char that we can deal with
              */
             CREATE(tmp, struct char_data, 1);
             clear_char(tmp);
             store_to_char(&player, tmp);
             /*
-             * are they entitled to an item? 
+             * are they entitled to an item?
              */
             if (tmp->specials.m_kills >= 10000) {
                 /*
-                 * coolness, the are! Determine the item. 
+                 * coolness, the are! Determine the item.
                  */
                 if (tmp->specials.m_kills >= 40000) {
                     itype = LEGEND_BIOGRAPHY;
@@ -1212,7 +1212,7 @@ int generate_legend_statue(void)
                     sprintf(name, "painting %s", GET_NAME(tmp));
                     sprintf(shdesc, "a painting of %s", GET_NAME(tmp));
                     sprintf(desc, "On the wall, one can admire a painting of "
-                                  "%s, slaying a fearsome beast.", 
+                                  "%s, slaying a fearsome beast.",
                                   GET_NAME(tmp));
                     sprintf(exdesc, "%s is in the process of slaying a fearsome"
                                     " beast.\n\rTruly, %s is one of the "
@@ -1238,11 +1238,11 @@ int generate_legend_statue(void)
                 }
 
                 /*
-                 * load the generic item 
+                 * load the generic item
                  */
                 if ((obj = read_object(itype, VIRTUAL))) {
                     /*
-                     * and string it up a bit 
+                     * and string it up a bit
                      */
                     if (obj->short_description) {
                         free(obj->short_description);
@@ -1265,27 +1265,27 @@ int generate_legend_statue(void)
                         return (TRUE);
                     } else {
                         /*
-                         * create an extra desc structure for the object 
+                         * create an extra desc structure for the object
                          */
                         CREATE(ed, struct extra_descr_data, 1);
                         ed->next = obj->ex_description;
                         obj->ex_description = ed;
 
                         /*
-                         * define the keywords 
+                         * define the keywords
                          */
                         CREATE(ed->keyword, char, strlen(name) + 1);
                         strcpy(ed->keyword, name);
 
                         /*
-                         * define the description 
+                         * define the description
                          */
                         CREATE(ed->description, char, strlen(exdesc) + 1);
                         strcpy(ed->description, exdesc);
                     }
 
                     /*
-                     * and finally place it in a room 
+                     * and finally place it in a room
                      */
                     obj_to_room(obj, rnum);
                 }
@@ -1296,7 +1296,7 @@ int generate_legend_statue(void)
             return (TRUE);
         }
     }
-    sprintf(buf, "processed %d pfiles for legend statue check", 
+    sprintf(buf, "processed %d pfiles for legend statue check",
                  top_of_p_table + 1);
     Log(buf);
     return( TRUE );
@@ -1413,8 +1413,8 @@ int legendfountain(struct char_data *ch, int cmd, char *arg,
     int             level = 50;
 
     if (cmd != 11) {
-        /* 
-         * drink 
+        /*
+         * drink
          */
         return (FALSE);
     }
@@ -1441,7 +1441,7 @@ int legendfountain(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * now for the magic spellup bonus 
+     * now for the magic spellup bonus
      */
     switch (number(0, 30)) {
     case 1:
@@ -1529,8 +1529,8 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
     struct char_data *gnome;
 
     if (cmd != 429 || !ch || !ch->in_room) {
-        /* 
-         * knock 
+        /*
+         * knock
          */
         return (FALSE);
     }
@@ -1542,15 +1542,15 @@ int gnome_home(struct char_data *ch, int cmd, char *arg,
     }
     arg = get_argument(arg, &buf);
 
-    if (buf && (!strcasecmp("door", buf) || !strcasecmp("Door", buf) || 
+    if (buf && (!strcasecmp("door", buf) || !strcasecmp("Door", buf) ||
                 !strcasecmp("DOOR", buf))) {
-        /* 
-         * knock door 
+        /*
+         * knock door
          */
         if (get_char_vis_world(ch, "gnome female collector", NULL)) {
             send_to_char("But it's already open!\n\r", ch);
             return (TRUE);
-        } 
+        }
 
         if ((gnome = read_mobile(GNOME_MOB, VIRTUAL))) {
             send_to_char("You courteously knock on the little door, and it "
@@ -1613,7 +1613,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * let's make sure gnome doesn't get killed or robbed 
+     * let's make sure gnome doesn't get killed or robbed
      */
     if (!IS_SET(rp->room_flags, PEACEFUL)) {
         SET_BIT(rp->room_flags, PEACEFUL);
@@ -1637,7 +1637,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
 
     /*
      * if there's no pcs present in room, I'm gonna get going, get some
-     * work done mate! 
+     * work done mate!
      */
 
     j = rp->people;
@@ -1647,7 +1647,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
         if (IS_PC(j)) {
             /*
              * first PC in room (should be only cuz it's tunnel 1)
-             * receives prize, if winner 
+             * receives prize, if winner
              */
             receiver = j;
             found = 1;
@@ -1656,8 +1656,8 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
 
     if (!found) {
-        /* 
-         * no pcs in room! what am I doin here?!  let's get lost 
+        /*
+         * no pcs in room! what am I doin here?!  let's get lost
          */
         act("$n steps into $s little door, and it seals shut behind $s.",
             FALSE, gnome, 0, 0, TO_ROOM);
@@ -1719,7 +1719,7 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
                 FALSE, gnome, 0, 0, TO_ROOM);
 
             /*
-             * extract carried items if any 
+             * extract carried items if any
              */
             while (gnome->carrying) {
                 extract_obj(gnome->carrying);
@@ -1730,11 +1730,11 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * talk does nothing, she's silent 
+     * talk does nothing, she's silent
      */
     if (cmd == 531) {
         arg = get_argument(arg, &arg1);
-        if (arg1 && (tmp_ch = get_char_room_vis(ch, arg1)) && 
+        if (arg1 && (tmp_ch = get_char_room_vis(ch, arg1)) &&
             tmp_ch == gnome ) {
             ch_printf(ch, "%s looks at you in a meaningful way, but stays "
                           "silent.\n\r", gnome->player.short_descr);
@@ -1744,14 +1744,14 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * give 
+     * give
      */
     if (cmd == 72) {
         /*
-         * determine the correct obj 
+         * determine the correct obj
          */
         arg = get_argument(arg, &obj_name);
-        if (!obj_name || 
+        if (!obj_name ||
             !(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
             return (FALSE);
         }
@@ -1760,13 +1760,13 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
 
         arg = get_argument(arg, &vict_name);
 
-        if ((!vict_name || !(tmp_ch = get_char_room_vis(ch, vict_name))) && 
+        if ((!vict_name || !(tmp_ch = get_char_room_vis(ch, vict_name))) &&
             tmp_ch != gnome) {
             return (FALSE);
         }
 
         /*
-         * found an object, and the correct person to give it to 
+         * found an object, and the correct person to give it to
          */
         if (gnome->specials.fighting) {
             send_to_char("Not while she is fighting!\n\r", ch);
@@ -1774,18 +1774,18 @@ int gnome_collector(struct char_data *ch, int cmd, char *arg,
         }
 
         /*
-         * correct object? 
+         * correct object?
          */
         if (obj_num != COLLECTIBLE_1 && obj_num != COLLECTIBLE_2 &&
             obj_num != COLLECTIBLE_3 && obj_num != COLLECTIBLE_4) {
             /*
-             * nope 
+             * nope
              */
             ch_printf(ch, "%s doesn't seem to be interested in that sort of "
                           "junk.\n\r", gnome->player.short_descr);
             return (TRUE);
         }
-        
+
         act("$n says, 'Woah, good stuff! I've been looking for this thing for "
             "ages.'", FALSE, gnome, 0, 0, TO_ROOM);
         act("You give $p to $N.", FALSE, ch, obj, gnome, TO_CHAR);
@@ -1807,8 +1807,8 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
     int             has_pot = 0;
 
     if (cmd != 206) {
-        /* 
-         * quaff 
+        /*
+         * quaff
          */
         return (FALSE);
     }
@@ -1857,19 +1857,19 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
     struct obj_data *obj;
 
     if (cmd == 5) {
-        /* 
-         * up 
+        /*
+         * up
          */
         act("How did ya want to get up there?", FALSE, ch, 0, 0, TO_CHAR);
         return (TRUE);
     }
 
     if (cmd == 15) {
-        /* 
-         * look 
+        /*
+         * look
          */
         arg = get_argument(arg, &buf);
-        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) || 
+        if (buf && (!strcasecmp("up", buf) || !strcasecmp("u", buf) ||
                     !strcasecmp("Up", buf))) {
             send_to_char("One would have a marvelous view when high up in the"
                          " canopy.\n\r", ch);
@@ -1878,14 +1878,14 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 287) {
-        /* 
-         * climb 
+        /*
+         * climb
          */
         arg = get_argument(arg, &buf);
         if (buf) {
             if (!strcasecmp("tree", buf) || !strcasecmp("Tree", buf)) {
-                /* 
-                 * climb tree 
+                /*
+                 * climb tree
                  */
                 act("Freeing your hands, you climb up the tree.\n\r",
                     FALSE, ch, 0, 0, TO_CHAR);
@@ -1893,7 +1893,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                     FALSE, ch, 0, 0, TO_ROOM);
 
                 /*
-                 * remove weapon 
+                 * remove weapon
                  */
                 if (ch->equipment[WIELD]) {
                     obj = ch->equipment[WIELD];
@@ -1903,7 +1903,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 }
 
                 /*
-                 * remove held 
+                 * remove held
                  */
                 if (ch->equipment[HOLD]) {
                     obj = ch->equipment[HOLD];
@@ -1913,7 +1913,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg,
                 }
 
                 /*
-                 * remove light 
+                 * remove light
                  */
                 if (ch->equipment[WEAR_LIGHT]) {
                     obj = ch->equipment[WEAR_LIGHT];
@@ -1950,8 +1950,8 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
     int             w_type = 0;
 
     if (!ch || !cmd || cmd != 602) {
-        /* 
-         * sharpen 
+        /*
+         * sharpen
          */
         return;
     }
@@ -1961,8 +1961,8 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (ch->equipment && 
-        (!(stone = ch->equipment[HOLD]) || 
+    if (ch->equipment &&
+        (!(stone = ch->equipment[HOLD]) ||
          obj_index[stone->item_number].virtual != SHARPENING_STONE)) {
         send_to_char("How can you sharpen stuff if you're not holding a "
                      "sharpening stone?\n\r", ch);
@@ -1970,7 +1970,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
     }
 
     /*
-     * is holding the stone 
+     * is holding the stone
      */
     if (!argument) {
         send_to_char("Sharpen what?\n\r", ch);
@@ -1986,7 +1986,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
     if ((obj = get_obj_in_list_vis(ch, arg, ch->carrying))) {
         if ((ITEM_TYPE(obj) == ITEM_WEAPON)) {
             /*
-             * can only sharpen edged weapons 
+             * can only sharpen edged weapons
              */
             switch (obj->obj_flags.value[3]) {
             case 0:
@@ -2039,8 +2039,8 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                 break;
             }
 
-            if ((w_type >= TYPE_PIERCE && w_type <= TYPE_STING) || 
-                (w_type >= TYPE_CLEAVE && w_type <= TYPE_STAB) || 
+            if ((w_type >= TYPE_PIERCE && w_type <= TYPE_STING) ||
+                (w_type >= TYPE_CLEAVE && w_type <= TYPE_STAB) ||
                 w_type == TYPE_IMPALE) {
 
                 if (obj->obj_flags.value[2] == 0) {
@@ -2072,8 +2072,8 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
                                  ch);
                     extract_obj(cmp);
                     return;
-                } 
-                
+                }
+
                 obj->obj_flags.value[2] = cmp->obj_flags.value[2];
                 if (GET_POS(ch) > POSITION_RESTING) {
                     do_rest(ch, NULL, -1);
@@ -2101,7 +2101,7 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd)
 }
 
 /*
- * Sentinel's Zone 
+ * Sentinel's Zone
  */
 int janaurius(struct char_data *ch, int cmd, char *arg,
               struct char_data *mob)
@@ -2147,17 +2147,17 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
     if (cogname && !strcmp(cogname, "cog")) {
         if (cog_sequence < 0) {
             /*
-             * alas, you made an error earlier 
+             * alas, you made an error earlier
              */
             send_to_char("Nothing seems to happen. the gears must have jammed "
                          "somewhere.\n\r", ch);
             return (TRUE);
-        } 
-        
+        }
+
         switch(cog_sequence) {
         case 0:
             /*
-             * we got a new chance. determine chest by this room 
+             * we got a new chance. determine chest by this room
              */
             switch (ch->in_room) {
             case 51195:
@@ -2245,7 +2245,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
                              "nearby.\n\r", ch->in_room);
 
                 /*
-                 * unlock and open chest 
+                 * unlock and open chest
                  */
                 rp = real_roomp(CHESTS_ROOM);
                 if (!rp) {
@@ -2284,7 +2284,7 @@ int cog_room(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * Rocky's Zone Stuff 
+ * Rocky's Zone Stuff
  */
 int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 {
@@ -2303,8 +2303,8 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
     };
 
     /*
-     * initialize info for different rooms here 
-     * use (0,1,2,3,4,5) for dirs (north,east,south,west,up,down) 
+     * initialize info for different rooms here
+     * use (0,1,2,3,4,5) for dirs (north,east,south,west,up,down)
      */
     if (ch->in_room == 17429) {
         sprintf(doorname, "door");
@@ -2324,15 +2324,15 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
     exitp = rp->dir_option[doordir];
 
     if (IS_SET(exitp->exit_info, EX_CLOSED)) {
-        /* 
-         * already closed, no need to run 
+        /*
+         * already closed, no need to run
          */
         return (FALSE);
     }
 
     if (cmd) {
-        /* 
-         * when command is given, boom, door closed and locked on this side 
+        /*
+         * when command is given, boom, door closed and locked on this side
          */
         SET_BIT(exitp->exit_info, EX_CLOSED);
         SET_BIT(exitp->exit_info, EX_LOCKED);
@@ -2341,10 +2341,10 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
         send_to_room(buf, ch->in_room);
 
         /*
-         * other side closes too, but not locked 
+         * other side closes too, but not locked
          */
-        if (exit_ok(exitp, &rp) && 
-            (back = rp->dir_option[rev_dir[doordir]]) && 
+        if (exit_ok(exitp, &rp) &&
+            (back = rp->dir_option[rev_dir[doordir]]) &&
             back->to_room == ch->in_room) {
 
             SET_BIT(back->exit_info, EX_CLOSED);
@@ -2357,7 +2357,7 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 }
 
 /*
- * Ashamael's Citystate of Tarantis 
+ * Ashamael's Citystate of Tarantis
  */
 #define NIGHTWALKER 49600
 #define SPAWNROOM 49799
@@ -2369,7 +2369,7 @@ int close_doors(struct char_data *ch, struct room_data *rp, int cmd)
 #define REAVER_PORTAL 49460
 
 /*
- * Proc that makes a portal spawn at nighttime 8pm, and close at dawn 5pm. 
+ * Proc that makes a portal spawn at nighttime 8pm, and close at dawn 5pm.
  */
 int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
 {
@@ -2380,8 +2380,8 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
     int             check = 0;
 
     if (time_info.hours < 20 && time_info.hours > 5) {
-        /* 
-         * it should not be there 
+        /*
+         * it should not be there
          */
         rp = real_roomp(WAITROOM);
         if (rp) {
@@ -2417,10 +2417,10 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
                     extract_obj(obj);
                 }
             }
-        }                       
-        
-        /* 
-         * all portals are gone, now do the transfer mob thing 
+        }
+
+        /*
+         * all portals are gone, now do the transfer mob thing
          */
         if (time_info.hours == 9) {
             spawnroom = real_roomp(SPAWNROOM);
@@ -2436,8 +2436,8 @@ int portal_regulator(struct char_data *ch, struct room_data *rp, int cmd)
             }
         }
     } else {
-        /* 
-         * portals should appear 
+        /*
+         * portals should appear
          */
         rp = real_roomp(WAITROOM);
         check = 0;
@@ -2536,9 +2536,9 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (cmd == 72) { 
-        /* 
-         * give 
+    if (cmd == 72) {
+        /*
+         * give
          */
         send_to_char("Giving away your stuff for free? Better rethink "
                      "this.\n\r", ch);
@@ -2546,8 +2546,8 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 86) {
-        /* 
-         * ask 
+        /*
+         * ask
          */
         send_to_char("Yeelorn says, 'Aye, yer curious if yev got summat that I"
                      " could use, eh? Right, lemme\n\r", ch);
@@ -2563,7 +2563,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
         send_to_char("\n\r", ch);
 
         /*
-         * check items 
+         * check items
          */
         for (i = object_list; i; i = i->next) {
             if (obj_index[i->item_number].virtual == ING_1) {
@@ -2575,7 +2575,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                 if (obj->carried_by == ch || obj->equipped_by == ch) {
                     found1 = 1;
                 }
-            }   
+            }
 
             if (obj_index[i->item_number].virtual == ING_2) {
                 obj = i;
@@ -2620,19 +2620,19 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!found1 && !found2 && !found3 && !found4 && !found5) {
-            /* 
-             * nothing found 
+            /*
+             * nothing found
              */
             send_to_char("When he's finished, Yeelorn says, 'Hmm, no, ye gots "
                          "nothin of interest to me, matey.\n\r", ch);
             send_to_char("Come back when ya got some. Quit wasting me time "
                          "now, there's work to do.'\n\r", ch);
             return (TRUE);
-        } 
-        
+        }
+
         if (found1 && found2 && found3 && found4 && found5) {
-            /* 
-             * has everything, tell him the price 
+            /*
+             * has everything, tell him the price
              */
             send_to_char("When he's finished, Yeelorn exclaims, 'Woah mate, I"
                          " see ye'ns got everything I be needin\n\r", ch);
@@ -2648,10 +2648,10 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                          "You wanna buy this service from me?'\n\r", ch);
             return (TRUE);
         }
-        
+
         if (found1 || found2 || found3 || found4 || found5) {
-            /* 
-             * has at least one item 
+            /*
+             * has at least one item
              */
             send_to_char("When he's finished, Yeelorn says, 'Hmm, I see ye've "
                          "got yerself some pretty items.", ch);
@@ -2692,7 +2692,7 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
             }
 
             /*
-             * maybe they'll get a hint 
+             * maybe they'll get a hint
              */
             switch (number(1, 20)) {
             case 1:
@@ -2738,8 +2738,8 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 56) {
-        /* 
-         * buy 
+        /*
+         * buy
          */
         obj1 = obj2 = obj3 = obj4 = obj5 = 0;
         for (i = object_list; i; i = i->next) {
@@ -2757,19 +2757,19 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
 
             if (obj_index[i->item_number].virtual == ING_2) {
                 obj = i;
-                
+
                 while (obj->in_obj) {
                     obj = obj->in_obj;
-                }    
+                }
                 if (obj->carried_by == ch || obj->equipped_by == ch) {
                     obj2 = i;
                     found = 1;
                 }
             }
-            
+
             if (obj_index[i->item_number].virtual == ING_3) {
                 obj = i;
-            
+
                 while (obj->in_obj) {
                     obj = obj->in_obj;
                 }
@@ -2778,10 +2778,10 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                     found = 1;
                 }
             }
-            
+
             if (obj_index[i->item_number].virtual == ING_4) {
                 obj = i;
-                
+
                 while (obj->in_obj) {
                     obj = obj->in_obj;
                 }
@@ -2790,22 +2790,22 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
                     found = 1;
                 }
             }
-            
+
             if (obj_index[i->item_number].virtual == ING_5) {
                 obj = i;
-            
+
                 while (obj->in_obj) {
                     obj = obj->in_obj;
-                }    
+                }
                 if (obj->carried_by == ch || obj->equipped_by == ch) {
                     obj5 = i;
                     found = 1;
                 }
             }
-            
+
             if (found) {
-                /* 
-                 * transfer items to inventory for easy work later 
+                /*
+                 * transfer items to inventory for easy work later
                  */
                 if (i->equipped_by) {
                     obj = unequip_char(ch, i->eq_pos);
@@ -2825,14 +2825,14 @@ int master_smith(struct char_data *ch, int cmd, char *arg,
 
         if (obj1 && obj2 && obj3 && obj4 && obj5) {
             /*
-             * got all the items.. how about a million coins? 
+             * got all the items.. how about a million coins?
              */
             if (GET_GOLD(ch) < 1000000) {
                 send_to_char("Yeelorn says, 'Aye laddie, ye've got yerself "
                              "the items, but yer still some money short.'\n\r",
                              ch);
                 return (TRUE);
-            } 
+            }
 
             GET_GOLD(ch) -= 1000000;
             if (obj1->carried_by) {
@@ -2915,7 +2915,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     }
     /*
      * if event death, do the die thing and load up a new mob at a
-     * spawn_room 
+     * spawn_room
      */
     if (type == EVENT_DEATH) {
         freshmob = read_mobile(real_mobile(NIGHTWALKER), REAL);
@@ -2927,10 +2927,10 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
 
     /*
      * else if light && not in spawn_room && not in a DARK room then burn
-     * to a cinder, and load up a new one in the spawn room 
+     * to a cinder, and load up a new one in the spawn room
      */
-    if (ch->in_room != SPAWNROOM && ch->in_room != WAITROOM && 
-        !IS_SET(real_roomp(ch->in_room)->room_flags, DARK) && 
+    if (ch->in_room != SPAWNROOM && ch->in_room != WAITROOM &&
+        !IS_SET(real_roomp(ch->in_room)->room_flags, DARK) &&
         time_info.hours > 6 && time_info.hours < 19) {
         act("A young ray of sunlight peeps over the horizon and strikes $n.",
             FALSE, ch, 0, 0, TO_ROOM);
@@ -2942,7 +2942,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * Make them enter portal if they're in the right spot 
+     * Make them enter portal if they're in the right spot
      */
     if (ch->in_room && ch->in_room == WAITROOM && (rp = real_roomp(WAITROOM))) {
         for (obj = rp->contents; obj; obj = obj->next_content) {
@@ -2958,10 +2958,10 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
 
 
 /*
- * start Talesian's procs 
+ * start Talesian's procs
  */
 
-/* 
+/*
  * vnum assignments
  */
 #define WAITTOGOHOME  98765
@@ -2974,7 +2974,7 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
 #define HOMEZONE 115
 #define ZOMBIEVNUM 37800
 #define SKELETONVNUM 37801
-/* 
+/*
  * vnums for the rooms where the 'specialty' mobs are stored
  */
 #define DEMILICHSTORAGE  37860
@@ -2982,8 +2982,8 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
 #define DEATHKNIGHTSTORAGE  37862
 #define VAMPIRESTORAGE  37863
 #define UNDEADDEMONSTORAGE 37864
-#define GUARDIANMOBVNUM 37803   
-/* 
+#define GUARDIANMOBVNUM 37803
+/*
  * MUST be same as guardianextraction proc mob
  */
 #define GUARDIANHOMEROOMVNUM 37823
@@ -2992,13 +2992,13 @@ int nightwalker(struct char_data *ch, int cmd, char *arg,
 #define GENERICMOBVNUM 37816
 
 /*
- * @Name:           sageactions 
- * @description:    The sage acts like a lich with phylactery.  
- *                  If the item (37812) is not where it should 
- *                  be, he chases it.  If it doesn't exist at all, 
+ * @Name:           sageactions
+ * @description:    The sage acts like a lich with phylactery.
+ *                  If the item (37812) is not where it should
+ *                  be, he chases it.  If it doesn't exist at all,
  *                  he dies.  In combat he can summon help
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37802) 
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37802)
  */
 int sageactions(struct char_data *ch, int cmd, char *arg,
                 struct char_data *mob, int type)
@@ -3029,7 +3029,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    /* 
+    /*
      * For the corpse that we toss around
      */
     GoodItemReal = real_object(PHYLOBJVNUM);
@@ -3069,19 +3069,19 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
 
     if (mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
         if (!number(0, 3)) {
-            /* 
-             * 1 in 4 chance of summoning an undead 
-             * helper - the special caster types load 
-             * with zone in a dark-no-everything room, 
-             * then get transferred in, so that they 
+            /*
+             * 1 in 4 chance of summoning an undead
+             * helper - the special caster types load
+             * with zone in a dark-no-everything room,
+             * then get transferred in, so that they
              * are spelled up
              */
             whatundead = number(1, 75);
 
             switch (whatundead) {
             case 1:
-                /* 
-                 * demi-lich v25000 r2069 in DEMILICHSTORAGE 
+                /*
+                 * demi-lich v25000 r2069 in DEMILICHSTORAGE
                  * if demi-lich in rnum
                  */
                 if ((tempchar = get_char_room("demi lich", DEMILICHSTORAGE))) {
@@ -3096,7 +3096,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 break;
             case 2:
                 /*
-                 * dracolich v5010 r942 in DRACOLICHSTORAGE 
+                 * dracolich v5010 r942 in DRACOLICHSTORAGE
                  * if dracolich in rnum
                  */
                 if ((tempchar = get_char_room("dracolich lich",
@@ -3109,13 +3109,13 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                         "and its malevolence.", TRUE, tempchar, 0, 0, TO_ROOM);
                     AttackRandomChar(tempchar);
                 }
-                /* 
+                /*
                  * otherwise he has enough help!
                  */
                 break;
             case 3:
-                /* 
-                 * The Wretched Vampire v2573 r2473 in VAMPIRESTORAGE 
+                /*
+                 * The Wretched Vampire v2573 r2473 in VAMPIRESTORAGE
                  * if The Wretched Vampire in rnum
                  */
                 if ((tempchar = get_char_room("The Wretched Vampire",
@@ -3125,16 +3125,16 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     char_from_room(tempchar);
                     char_to_room(tempchar, mob->in_room);
                     act("A swirl of darkness coalesces, and the horrific figure"
-                        " of $n becomes visible.", TRUE, tempchar, 0, 0, 
+                        " of $n becomes visible.", TRUE, tempchar, 0, 0,
                         TO_ROOM);
                     AttackRandomChar(tempchar);
                 }
-                /* 
+                /*
                  * otherwise he has enough help!
                  */
                 break;
             case 4:
-                /* 
+                /*
                  * death-knight v16219 r1664 in DEATHKNIGHTSTORAGE
                  * if death knight in rnum
                  */
@@ -3149,12 +3149,12 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                         "the $n steps through.", TRUE, tempchar, 0, 0, TO_ROOM);
                     AttackRandomChar(tempchar);
                 }
-                /* 
+                /*
                  * else he has enough help!
                  */
                 break;
             case 5:
-                /* 
+                /*
                  * Ghastly Undead Demon v23022 r2439 in UNDEADDEMONSTORAGE
                  * if ghastly-undead-demon in rnum
                  */
@@ -3168,53 +3168,53 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                         "you.", TRUE, tempchar, 0, 0, TO_ROOM);
                     AttackRandomChar(tempchar);
                 }
-                /* 
+                /*
                  * else he has enough help!
                  */
                 break;
             default:
-                /* 
+                /*
                  * load a slightly random, but straight fighting undead
                  */
                 act("$n makes an arcane gesture and shouts, 'Come servant, "
                     "come to my aid!'", TRUE, mob, 0, 0, TO_ROOM);
                 switch (number(1, 50)) {
                 case 1:
-                    /* 
+                    /*
                      * Death v6999 r1118
                      */
                     CreateAMob(mob, 6999, 5, "");
                     break;
                 case 2:
-                    /* 
+                    /*
                      * master-centaur v13769 r1446
                      */
                     CreateAMob(mob, 13769, 5, "");
                     break;
                 case 3:
-                    /* 
+                    /*
                      * ringwraith v26900 r2576
                      */
                     CreateAMob(mob, 26900, 5, "");
                     break;
                 case 4:
-                    /* 
+                    /*
                      * ghost-captain v21140 r1902
                      */
                     CreateAMob(mob, 21140, 5, "");
                     break;
                 case 5:
-                    /* 
+                    /*
                      * soul-lost v30118 r2239
                      */
                     CreateAMob(mob, 30118, 5, "");
                     break;
                 default:
-                    /* 
+                    /*
                      * load either a zombie or a skeleton
                      */
                     if (number(0, 1)) {
-                        /* 
+                        /*
                          * zombie v37800 r3104
                          */
                         CreateAMob(mob, ZOMBIEVNUM, 5, "");
@@ -3245,7 +3245,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
     }
 
     if (i == 0) {
-        /* 
+        /*
          * Kill off char, and all that he carries
          */
         act("$n suddenly screams in agony and falls into a pile of dust.",
@@ -3276,14 +3276,14 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         damage(mob, mob, GET_MAX_HIT(mob) * 2, TYPE_SUFFERING);
         return (TRUE);
     }
-    
+
     if (i == 1) {
-        /* 
+        /*
          * ok there's only one item found, now what is it on?
          * Check to see if it's in the correct obj, if not go hunt it
          */
         if (theitem->in_obj == ventobj) {
-            /* 
+            /*
              * In correct obj
              */
             if (mob->generic == WAITTOGOHOME) {
@@ -3298,7 +3298,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 }
 
                 if (temp) {
-                    /* 
+                    /*
                      * remove the corpse, head back for home;
                      */
                     act("With a glance, $n dissolves the corpse, looking "
@@ -3315,22 +3315,22 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     "from nothingness.", TRUE, mob, 0, 0, TO_ROOM);
                 mob->generic = 0;
                 return (TRUE);
-            } 
+            }
 
             mob->generic = 0;
             return (FALSE);
-        } 
-        
-        /* 
+        }
+
+        /*
          * Not in the vent
          */
         if (theitem->in_room != -1) {
-            /* 
-             * In room, just go get it (but use messages, and 
+            /*
+             * In room, just go get it (but use messages, and
              * ch->generic to have him take his time)
              */
             if (mob->generic != theitem->in_room) {
-                /* 
+                /*
                  * we will set ch->generic to in_room, and drop
                  * corpse there, after that we will go to corpse
                  * and get item, then return home
@@ -3354,8 +3354,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 char_from_room(mob);
                 char_to_room(mob, currroomnum);
             } else {
-                /* 
-                 * go to room, send item to storage, wait a pulse, 
+                /*
+                 * go to room, send item to storage, wait a pulse,
                  * set ch->generic to go home again
                  */
                 temp = 0;
@@ -3407,7 +3407,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                         0, 0, TO_ROOM);
                     char_from_room(mob);
                     char_to_room(mob, MOBROOMVNUM);
-                    
+
                     act("A smell of death and decay wafts by as $n "
                         "emerges from nothingness.", TRUE, mob, 0, 0,
                         TO_ROOM);
@@ -3416,9 +3416,9 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             }
             return (TRUE);
         }
-        
-        /* 
-         * object exists, but not in room, must be 
+
+        /*
+         * object exists, but not in room, must be
          * on person or in container in room
          */
         temp = 0;
@@ -3431,16 +3431,16 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
         }
 
         if (temp) {
-            /* 
+            /*
              * a character has it let's go get him/her
              */
             if (real_roomp(tempchar->in_room)->zone == HOMEZONE) {
-                /* 
+                /*
                  * don't go hunting if char is still in zone
                  */
-                if (mob->in_room == tempchar->in_room && 
+                if (mob->in_room == tempchar->in_room &&
                     mob->generic != INPEACEROOM) {
-                    /* 
+                    /*
                      * what to do when you find him
                      */
                     if (!IS_SET(real_roomp(mob->in_room)->room_flags,
@@ -3488,8 +3488,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             }
 
             if (mob->generic != tempchar->in_room) {
-                /* 
-                 * mob has not dropped a corpse in the correct 
+                /*
+                 * mob has not dropped a corpse in the correct
                  * room yet
                  */
                 mob->generic = tempchar->in_room;
@@ -3511,12 +3511,12 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                 char_from_room(mob);
                 char_to_room(mob, currroomnum);
                 return (TRUE);
-            } 
-            
+            }
+
             if(mob->generic == tempchar->in_room) {
-            /* 
-             * mob dropped corpse in room, and char is still there 
-             * so use corpse to transfer mob, then attack if not 
+            /*
+             * mob dropped corpse in room, and char is still there
+             * so use corpse to transfer mob, then attack if not
              * peace room
              */
                 temp = 0;
@@ -3555,7 +3555,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
                     MobHit(mob, tempchar, 0);
                     mob->generic = WAITTOGOHOME;
                     return (TRUE);
-                } 
+                }
 
                 sprintf(buf, "I will wait for you, %s.",
                         GET_NAME(tempchar));
@@ -3568,11 +3568,11 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             return (FALSE);
         }
         }
-        
-        /* 
+
+        /*
          * in container, in room -> how about
          * moving outermost container to room,
-         * then moving some items out of it, until 
+         * then moving some items out of it, until
          * the item is out
          */
         if (theitem->in_obj != NULL && theitem->in_obj != ventobj) {
@@ -3580,8 +3580,8 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             while (parentobj->in_obj != NULL) {
                 parentobj = parentobj->in_obj;
             }
-            
-            /* 
+
+            /*
              * Let's grab the parent object from the
              * floor, move it to the vent
              */
@@ -3598,7 +3598,7 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             obj_to_obj(parentobj, ventobj);
 
             while (theitem->in_obj != ventobj) {
-                /* 
+                /*
                  * it's in a container take out items until it's not
                  */
                 parentobj = theitem->in_obj;
@@ -3610,10 +3610,10 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
             }
         }
         return (FALSE);
-    } 
-    
+    }
+
     if (i > 1) {
-        /* 
+        /*
          * I say randomly remove all but one, then hunt it
          */
         j = number(1, i);
@@ -3635,11 +3635,11 @@ int sageactions(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           traproom 
+ * @Name:           traproom
  * @description:    A room which does fire damage, but only
- *                  once, and changes the room description 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    room(37840) 
+ *                  once, and changes the room description
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    room(37840)
  */
 
 int traproom(struct char_data *ch, int cmd, char *arg,
@@ -3668,7 +3668,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
         arg = get_argument(arg, &buf);
     }
 
-    if (buf && (!strcasecmp("green", buf) || !strcmp("powder", buf) || 
+    if (buf && (!strcasecmp("green", buf) || !strcmp("powder", buf) ||
                 !strcmp("powder-green", buf) || !strcmp("green-powder", buf))) {
         act("As you lean over to look at the strange powder, a drop of your "
             "sweat falls.", FALSE, ch, 0, 0, TO_CHAR);
@@ -3681,7 +3681,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
         act("$c000RThere is a flash, and the room bursts into flames!",
             FALSE, ch, 0, 0, TO_ROOM);
 
-        /* 
+        /*
          * randomize it, but average 150
          */
         trapdam = dice(50, 5);
@@ -3693,8 +3693,8 @@ int traproom(struct char_data *ch, int cmd, char *arg,
                 if (!saves_spell(tempchar, SAVING_SPELL)) {
                     if (!saves_spell(tempchar, SAVING_SPELL - 4)) {
                         BurnWings(tempchar);
-                        /* 
-                         * Fail two saves, wings burn 
+                        /*
+                         * Fail two saves, wings burn
                          */
                     }
                     heat_blind(tempchar);
@@ -3706,7 +3706,7 @@ int traproom(struct char_data *ch, int cmd, char *arg,
             }
         }
 
-        /* 
+        /*
          * Now do room description change, and set a flag to indicate
          * no more damage can be done
          */
@@ -3735,15 +3735,15 @@ int traproom(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           guardianroom 
+ * @Name:           guardianroom
  * @description:    A room which will create guardians,
- *                  prevent people from travelling north 
- *                  the first time they try, then they 
- *                  have to fight their way through and 
- *                  more mobiles will jump out and join 
- *                  the fight 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    room(37823) 
+ *                  prevent people from travelling north
+ *                  the first time they try, then they
+ *                  have to fight their way through and
+ *                  more mobiles will jump out and join
+ *                  the fight
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    room(37823)
  */
 
 int guardianroom(struct char_data *ch, int cmd, char *arg,
@@ -3781,8 +3781,8 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
         }
         rp->special = 1;
         return (TRUE);
-    } 
-    
+    }
+
     if (rp->special >= 1) {
         i = 0;
         for (tempchar = rp->people; tempchar;
@@ -3794,7 +3794,7 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
 
         if (i >= 1) {
             if (rp->special % 3 == 0) {
-                /* 
+                /*
                  * create more mobs
                  */
                 numbertocreate = MAX(1, i >> 1);
@@ -3814,13 +3814,13 @@ int guardianroom(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           guardianextraction 
- * @description:    A mob function used by the guardians 
- *                  from guardianroom to clean themselves 
- *                  out of the room if there are no PC's 
- *                  there to fight, also resets the trap 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    room(37823) 
+ * @Name:           guardianextraction
+ * @description:    A mob function used by the guardians
+ *                  from guardianroom to clean themselves
+ *                  out of the room if there are no PC's
+ *                  there to fight, also resets the trap
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    room(37823)
  */
 
 int guardianextraction(struct char_data *ch, int cmd, char *arg,
@@ -3851,7 +3851,7 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
     if (i == 0) {
         for (tempchar = rp->people; tempchar; tempchar = next_v) {
             next_v = tempchar->next_in_room;
-            if (IS_NPC(tempchar) && 
+            if (IS_NPC(tempchar) &&
                 !IS_SET(tempchar->specials.act, ACT_POLYSELF) &&
                 mob_index[tempchar->nr].virtual == GUARDIANMOBVNUM) {
                 extract_char(tempchar);
@@ -3863,13 +3863,13 @@ int guardianextraction(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           trapjawsroom 
- * @description:    A room which prevents people from going 
- *                  north, slashing them, unless they deactivate 
- *                  the trap using the toss object command.  toss 
+ * @Name:           trapjawsroom
+ * @description:    A room which prevents people from going
+ *                  north, slashing them, unless they deactivate
+ *                  the trap using the toss object command.  toss
  *                  person will result in a pissed off person
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    room(37857) 
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    room(37857)
  */
 int trapjawsroom(struct char_data *ch, int cmd, char *arg,
                  struct room_data *rp, int type)
@@ -3889,7 +3889,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
     }
 
     if (cmd == 1 || cmd == 258) {
-        /* 
+        /*
          * prevent them from going north, hit character with trap damage
          */
         act("You head north, but as you pass through the jaws, they suddenly "
@@ -3914,10 +3914,10 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
          * slice up character badly
          */
         return (TRUE);
-    } 
-    
+    }
+
     if (cmd == 459) {
-        /* 
+        /*
          * toss object, disarm trap, scrap object
          * toss person, ouch, hit them with big trap damage
          */
@@ -3935,7 +3935,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
                 " they break apart!", FALSE, ch, 0, 0, TO_CHAR);
             act("The jaws crash down together, and with a sharp snapping sound,"
                 " they break apart!", FALSE, ch, 0, 0, TO_ROOM);
-            /* 
+            /*
              * scrap item
              */
             MakeScrap(ch, NULL, tossitem);
@@ -3958,8 +3958,8 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
 
             rp->special = 1;
             return (TRUE);
-        } 
-        
+        }
+
         if (buf && (tempchar = get_char_room(buf, ch->in_room))) {
             if (tempchar == ch) {
                 act("You want to toss yourself?", FALSE, ch, 0, 0, TO_CHAR);
@@ -3973,7 +3973,7 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
                 act("$n tosses $N in the air, but the jaws suddenly slam down "
                     "on $M, slashing $M terribly!.", FALSE, ch, 0, tempchar,
                     TO_NOTVICT);
-                /* 
+                /*
                  * slice up character badly
                  */
                 dam = dice(40, 8);
@@ -3986,17 +3986,17 @@ int trapjawsroom(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           confusionmob 
- * @description:    This mob will attempt to make players flee 
- *                  using their 'best' method. Uses ability scores 
- *                  as saves rather than saves vs spells 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37811) 
+ * @Name:           confusionmob
+ * @description:    This mob will attempt to make players flee
+ *                  using their 'best' method. Uses ability scores
+ *                  as saves rather than saves vs spells
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37811)
  */
 
 /*
- * Ideally, I'd like this to force characters to do semi-random 
- * commands instead of fleeing (maybe 3 out of 4 are random, 1 is 
+ * Ideally, I'd like this to force characters to do semi-random
+ * commands instead of fleeing (maybe 3 out of 4 are random, 1 is
  * user choice), but that would probably mean adding an affect
  */
 int confusionmob(struct char_data *ch, int cmd, char *arg,
@@ -4015,17 +4015,17 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
             if (dice(3, 7) < GET_CHR(tempchar) &&
                 dice(3, 7) < GET_INT(tempchar) &&
                 dice(3, 7) < GET_WIS(tempchar)) {
-                /* 
-                 * three saves to avoid it fail any of the three, and it's 
+                /*
+                 * three saves to avoid it fail any of the three, and it's
                  * time to flee, this one is charisma
                  * to show what kind of confidence you have in yourself
-                 * two saves to avoid it, this one intelligence to 
+                 * two saves to avoid it, this one intelligence to
                  * understand what it is trying to do
-                 * final save to avoid it, this one wisdom, to show 
+                 * final save to avoid it, this one wisdom, to show
                  * strength of will to avoid fleeing
                  * 3d7 = 12 average
                  */
-                        
+
                 /*
                  * they made 3 saves, I guess they can stay
                  */
@@ -4040,7 +4040,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                     "They've even stopped fighting back!", FALSE, mob, 0,
                     tempchar, TO_NOTVICT);
 
-                /* 
+                /*
                  * mages teleport
                  */
                 stop_fighting(tempchar);
@@ -4050,7 +4050,7 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                     spell_teleport(GET_LEVEL(tempchar, MAGE_LEVEL_IND),
                                    tempchar, tempchar, 0);
                 } else if (HasClass(tempchar, CLASS_CLERIC)) {
-                    /* 
+                    /*
                      * clerics word and necromancers bind
                      */
                     act("You panic and attempt to recall to safety!",
@@ -4063,14 +4063,14 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
                     spell_binding(GET_LEVEL(tempchar, NECROMANCER_LEVEL_IND),
                                   tempchar, tempchar, 0);
                 } else if (HasClass(tempchar, CLASS_PSI)) {
-                    /* 
+                    /*
                      * psis doorway to Zifnab
                      */
                     act("You panic and attempt to doorway to safety!",
                         FALSE, tempchar, 0, 0, TO_CHAR);
                     command_interpreter(tempchar, "doorway zifnab");
                 } else {
-                    /* 
+                    /*
                      * warriors types, druids, thieves, sorcerers flee
                      */
                     act("You panic and attempt to run away!", FALSE,
@@ -4090,12 +4090,12 @@ int confusionmob(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           ventroom 
- * @description:    A room will capture commands, looking for 
- *                  object based commands to use on the vent, 
+ * @Name:           ventroom
+ * @description:    A room will capture commands, looking for
+ *                  object based commands to use on the vent,
  *                  which exists in another room
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    room(37839) 
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    room(37839)
  */
 int ventroom(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
@@ -4111,9 +4111,9 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    if (cmd != 99 && cmd != 15 && cmd != 10 && cmd != 167 && cmd != 67 && 
+    if (cmd != 99 && cmd != 15 && cmd != 10 && cmd != 167 && cmd != 67 &&
         cmd != 100) {
-        /* 
+        /*
          * open, look, get, take, put, close
          */
         return (FALSE);
@@ -4145,7 +4145,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 
     switch(cmd) {
     case 99:
-        /* 
+        /*
          * open (only with 19 strength)
          * go to room, do command
          */
@@ -4164,7 +4164,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         }
         break;
     case 15:
-        /* 
+        /*
          * look
          * go to room, do command
          */
@@ -4176,7 +4176,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         break;
     case 10:
     case 167:
-        /* 
+        /*
          * get, take
          * go to room, do command (NO TAKE FLAG on VENT OBJECT)
          */
@@ -4195,7 +4195,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
                 "have to open it again to get back into it.", FALSE, ch, 0,
                 0, TO_CHAR);
             act("With a 'BANG!' $n accidently slams the vent closed, you "
-                "will have to open it again to get back into it.", FALSE, 
+                "will have to open it again to get back into it.", FALSE,
                 ch, 0, 0, TO_ROOM);
             if (!IS_SET(ventobj->obj_flags.value[1], CONT_CLOSED)) {
                 SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
@@ -4203,7 +4203,7 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
         }
         break;
     case 67:
-        /* 
+        /*
          * put
          */
         char_from_room(ch);
@@ -4237,17 +4237,17 @@ int ventroom(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           ghastsmell 
+ * @Name:           ghastsmell
  * @description:    A mob proc which will disease people,
- *                  but only if the mob is fighting, and 
- *                  only when a player does a command, 
- *                  so the more you struggle, the worse it 
- *                  gets 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37804) 
+ *                  but only if the mob is fighting, and
+ *                  only when a player does a command,
+ *                  so the more you struggle, the worse it
+ *                  gets
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37804)
  */
-/* 
- * ghast smell which makes all in room get 
+/*
+ * ghast smell which makes all in room get
  * diseased if they are fighting someone
  */
 int ghastsmell(struct char_data *ch, int cmd, char *arg,
@@ -4293,17 +4293,17 @@ int ghastsmell(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           ghoultouch 
+ * @Name:           ghoultouch
  * @description:    A mob proc which will stun people at
- *                  pretty much every opportunity, probably 
- *                  more of an annoyance than truly deadly 
- *                  if you have a group, but potentially 
- *                  killer if you are attempting to solo 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37805) 
+ *                  pretty much every opportunity, probably
+ *                  more of an annoyance than truly deadly
+ *                  if you have a group, but potentially
+ *                  killer if you are attempting to solo
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37805)
  */
-/* 
- * ghoul touch which does stunned for a round (GET_POS(ch) == POS_STUNNED, 
+/*
+ * ghoul touch which does stunned for a round (GET_POS(ch) == POS_STUNNED,
  * WAIT_STATE) (make this happen even if bashed)
  */
 int ghoultouch(struct char_data *ch, int cmd, char *arg,
@@ -4331,15 +4331,15 @@ int ghoultouch(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           shadowtouch 
- * @description:    A mob proc which will weaken, and tire 
- *                  opponents.  Weaken bigtime, down to a 
- *                  nautral 3 str + magical effects, and 
- *                  move get reduced 40% each time 
+ * @Name:           shadowtouch
+ * @description:    A mob proc which will weaken, and tire
+ *                  opponents.  Weaken bigtime, down to a
+ *                  nautral 3 str + magical effects, and
+ *                  move get reduced 40% each time
  * @Author:         Rick Peplinski (Talesian)
- * @Assigned to:    mob(37806) 
+ * @Assigned to:    mob(37806)
  */
-/* 
+/*
  * shadow touch which does -str and -move
  */
 int shadowtouch(struct char_data *ch, int cmd, char *arg,
@@ -4368,9 +4368,9 @@ int shadowtouch(struct char_data *ch, int cmd, char *arg,
                 oppstr += GET_RADD(opponent) / 10;
             }
             oppstr += GET_RSTR(opponent);
-            /* 
-             * basically take their natural strength and 
-             * subtract enough to leave them with 3, 
+            /*
+             * basically take their natural strength and
+             * subtract enough to leave them with 3,
              * anything magical added afterwards is ok
              */
             mod = oppstr - 3;
@@ -4387,15 +4387,15 @@ int shadowtouch(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           moldexplosion 
- * @description:    A mob proc which if a player kills the mob, 
- *                  it poisons everybody in the room, no save 
+ * @Name:           moldexplosion
+ * @description:    A mob proc which if a player kills the mob,
+ *                  it poisons everybody in the room, no save
  *                  except IMM_POISON.
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37807) 
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37807)
  */
-/* 
- * mold, which is fine if left alone, and 
+/*
+ * mold, which is fine if left alone, and
  * blows up and poisons everybody
  * in room if it dies : type == EVENT_DEATH
  */
@@ -4432,13 +4432,13 @@ int moldexplosion(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           boneshardbreather 
- * @description:    A mob proc which does a breath weapon 
- *                  for a bone golem. 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    mob(37809) 
+ * @Name:           boneshardbreather
+ * @description:    A mob proc which does a breath weapon
+ *                  for a bone golem.
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    mob(37809)
  */
-/* 
+/*
  * bone golem (breathe bone shards!)
  */
 int boneshardbreather(struct char_data *ch, int cmd, char *arg,
@@ -4472,15 +4472,15 @@ int boneshardbreather(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           mistgolemtrap 
- * @description:    A mob proc which will 'capture' a PC 
- *                  (transfer him to a no-magic, no exit, 
- *                  silenced room) but everybody will be 
- *                  returned when mist golem dies. 
+ * @Name:           mistgolemtrap
+ * @description:    A mob proc which will 'capture' a PC
+ *                  (transfer him to a no-magic, no exit,
+ *                  silenced room) but everybody will be
+ *                  returned when mist golem dies.
  * @Author:         Rick Peplinski (Talesian)
- * @Assigned to:    mob(37810) 
+ * @Assigned to:    mob(37810)
  */
-/* 
+/*
  * mist golem (sucks somebody in, teleports them to a room "The Mist"
  * where can't get out until mist golem dies)
  */
@@ -4528,15 +4528,15 @@ int mistgolemtrap(struct char_data *ch, int cmd, char *arg,
 }
 
 /*
- * @Name:           mirrorofopposition 
- * @description:    An obj proc which will dopplegang a PC.  
- *                  Copies just about everything I could think 
- *                  of, makes mob hate him, and attack him using 
- *                  his own equipment.  Players will probably really 
+ * @Name:           mirrorofopposition
+ * @description:    An obj proc which will dopplegang a PC.
+ *                  Copies just about everything I could think
+ *                  of, makes mob hate him, and attack him using
+ *                  his own equipment.  Players will probably really
  *                  hate being on the receiving end of their +30 hasted
- *                  damrolls. 
- * @Author:         Rick Peplinski (Talesian) 
- * @Assigned to:    obj(37821) 
+ *                  damrolls.
+ * @Author:         Rick Peplinski (Talesian)
+ * @Assigned to:    obj(37821)
  */
 int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
                        struct obj_data *obj, int type)
@@ -4564,15 +4564,15 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
 
-    /* 
+    /*
      * CreateAMob -> generic mob (naked) -> no follower, no random attack
      */
     mob = CreateAMob(ch, GENERICMOBVNUM, 0,
                      "A figure suddenly steps out of the mirror.");
 
-    /* 
+    /*
      * start doing pc info:
-     * name, title, classes, hitroll = MAX (1,20 - biggestlevel*.5), armor 
+     * name, title, classes, hitroll = MAX (1,20 - biggestlevel*.5), armor
      * will be done by what's being worn
      */
     sprintf(buf1, "%s Bizarro", GET_NAME(ch));
@@ -4664,19 +4664,19 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
                 }
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_GOOD)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags,
                            ITEM_ANTI_GOOD);
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_EVIL)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags,
                            ITEM_ANTI_EVIL);
             }
             if(IS_OBJ_STAT(mob->equipment[i],ITEM_ANTI_NEUTRAL)) {
-                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags, 
+                REMOVE_BIT(mob->equipment[i]->obj_flags.extra_flags,
                            ITEM_ANTI_NEUTRAL);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_NECROMANCER)) {
-                SET_BIT(mob->equipment[i]->obj_flags.extra_flags, 
+                SET_BIT(mob->equipment[i]->obj_flags.extra_flags,
                         ITEM_ANTI_NECROMANCER);
             }
             if(!IS_OBJ_STAT(mob->equipment[i], ITEM_ANTI_CLERIC)) {
@@ -4734,8 +4734,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
         }
     }
 
-    /* 
-     * if has class to have 'normal' spells (sanc, fs, bb), add the affect 
+    /*
+     * if has class to have 'normal' spells (sanc, fs, bb), add the affect
      * (like casting, not by setting perma-flag)
      */
     if (IS_SET(mob->player.class, CLASS_NECROMANCER) &&
@@ -4749,7 +4749,7 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
         affect_to_char(mob, &af2);
     }
 
-    if (IS_SET(mob->player.class, CLASS_MAGIC_USER | CLASS_PSI) && 
+    if (IS_SET(mob->player.class, CLASS_MAGIC_USER | CLASS_PSI) &&
         !IS_SET(mob->player.class, CLASS_CLERIC) &&
         !affected_by_spell(mob, SPELL_FIRESHIELD) &&
         (GET_LEVEL(ch,PSI_LEVEL_IND) > 14 ||
@@ -4782,8 +4782,8 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
             affect_to_char(mob, &af2);
         }
     }
-    
-    /* 
+
+    /*
      * Make him act like class he is if possible:
      */
     if (IS_SET(mob->player.class, CLASS_NECROMANCER)) {
@@ -4834,13 +4834,13 @@ int mirrorofopposition(struct char_data *ch, int cmd, char *arg,
         SET_BIT(mob->specials.act, ACT_HUGE);
     }
 
-    /* 
+    /*
      * set experience, figure .005 of players total exp + equipment cost?
      */
     mob->points.exp = GET_EXP(ch) * .005 + total_equip_cost;
     GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
 
-    /* 
+    /*
      * have him go to town on character
      */
 
@@ -4883,7 +4883,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         return (FALSE);
     }
     /*
-     * define the shopkeep 
+     * define the shopkeep
      */
     if (ch->in_room) {
         rp = real_roomp(ch->in_room);
@@ -4898,14 +4898,14 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
     }
 
     /*
-     * let's make sure shopkeepers don't get killed or robbed 
+     * let's make sure shopkeepers don't get killed or robbed
      */
     if (!IS_SET(rp->room_flags, PEACEFUL)) {
         SET_BIT(rp->room_flags, PEACEFUL);
     }
     if (cmd != 59 && cmd != 56 && cmd != 93 && cmd != 57) {
-        /* 
-         * list  buy  offer  sell 
+        /*
+         * list  buy  offer  sell
          */
         return (FALSE);
     }
@@ -4925,7 +4925,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         SET_BIT(shopkeep->specials.act, ACT_SENTINEL);
     }
     /*
-     * players with 14 chr pay avg price 
+     * players with 14 chr pay avg price
      */
     chr = GET_CHR(ch);
     if (chr < 1) {
@@ -4934,7 +4934,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
     modifier = (float) 14 / chr;
 
     /*
-     * list 
+     * list
      */
     switch (cmd) {
     case 59:
@@ -4952,7 +4952,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                          "---------------*\n\r", ch);
             break;
         }
-        
+
         for (obj = shopkeep->carrying; obj; obj = obj->next_content) {
             if (CAN_SEE_OBJ(ch, obj)) {
                 if (cond_top < 50) {
@@ -4960,9 +4960,9 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                     for (k = 0; (k < cond_top && !found); k++) {
                         if (cond_top > 0 &&
                             obj->item_number == cond_ptr[k]->item_number &&
-                            obj->short_description && 
-                            cond_ptr[k]->short_description && 
-                            !strcmp(obj->short_description, 
+                            obj->short_description &&
+                            cond_ptr[k]->short_description &&
+                            !strcmp(obj->short_description,
                                     cond_ptr[k]->short_description)) {
                             cond_tot[k] += 1;
                             found = TRUE;
@@ -5004,14 +5004,14 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         break;
     case 56:
         /*
-         * buy 
+         * buy
          */
         arg = get_argument(arg, &itemname);
         if (!itemname) {
             send_to_char("Buy what?\n\r", ch);
             return (TRUE);
-        } 
-        
+        }
+
         if ((num = getabunch(itemname, newarg)) != FALSE) {
             strcpy(itemname, newarg);
         }
@@ -5045,7 +5045,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                               obj->short_description);
                     stop = 1;
                 } else if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) != 0 &&
-                           anti_barbarian_stuff(obj) && 
+                           anti_barbarian_stuff(obj) &&
                            !IS_IMMORTAL(ch)) {
                     send_to_char("You sense magic on the object and think "
                                  "better of buying it.\n\r", ch);
@@ -5086,14 +5086,14 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
         break;
     case 57:
     /*
-     * sell 
+     * sell
      */
         arg = get_argument(arg, &itemname);
         if (!itemname) {
             send_to_char("Sell what?\n\r", ch);
             return (TRUE);
         }
-        
+
         if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
             cost = (int) obj->obj_flags.cost / (3 * modifier);
             /*
@@ -5110,13 +5110,13 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
-            
+
             if (GET_GOLD(shopkeep) < cost) {
                 ch_printf(ch, "Alas, %s cannot afford that right now.\n\r",
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
-            
+
             obj_from_char(obj);
             obj_to_char(obj, shopkeep);
             ch_printf(ch, "You just sold %s for %d coins.\n\r",
@@ -5126,13 +5126,13 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             GET_GOLD(shopkeep) -= cost;
             return (TRUE);
         }
-        
+
         ch_printf(ch, "Alas, you don't seem to have the %s to sell.\n\r",
                   itemname);
         break;
     case 93:
     /*
-     * offer 
+     * offer
      */
         arg = get_argument(arg, &itemname);
         if (!itemname) {
@@ -5140,7 +5140,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                       shopkeep->player.short_descr);
             return (TRUE);
         }
-        
+
         if ((obj = get_obj_in_list_vis(ch, itemname, ch->carrying))) {
             cost = (int) obj->obj_flags.cost / (3 * modifier);
             if (cost < 400) {
@@ -5148,13 +5148,13 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
                           shopkeep->player.short_descr);
                 return (TRUE);
             }
-            
+
             ch_printf(ch, "%s is willing to pay you %d coins for %s.\n\r",
                       shopkeep->player.short_descr, cost,
                       obj->short_description);
             return (TRUE);
         }
-        
+
         ch_printf(ch, "You don't seem to have any %ss.\n\r", itemname);
         break;
     default:
@@ -5182,7 +5182,7 @@ int knockproc(struct char_data *ch, int cmd, char *arg,
 #if 0
     ch_printf(ch,"Well.. look at the time.. its %d ",t_info->tm_hour);
 #endif
-    if (t_info->tm_hour != THE_HOUR && 
+    if (t_info->tm_hour != THE_HOUR &&
         IS_SET(rp->dir_option[0]->exit_info, EX_LOCKED)) {
         command_interpreter(ch, "zload 188");
         raw_unlock_door(ch, EXIT(ch, 0), 0);
@@ -5226,8 +5226,8 @@ int disembark_ship(struct char_data *ch, int cmd, char *argument,
     int             x = 0;
 
     if (cmd == 621) {
-        /* 
-         * disembark 
+        /*
+         * disembark
          */
 
         if (oceanmap[GET_XCOORD(obj)][GET_YCOORD(obj)] == '@') {
@@ -5237,7 +5237,7 @@ int disembark_ship(struct char_data *ch, int cmd, char *argument,
             }
 
             /*
-             * lets find out where they are going 
+             * lets find out where they are going
              */
             while (map_coords[x].x != -1) {
                 if (map_coords[x].x == GET_XCOORD(obj) &&
@@ -5277,8 +5277,8 @@ int steer_ship(struct char_data *ch, int cmd, char *argument,
 
     argument = get_argument(argument, &buf);
     if (!buf) {
-        /* 
-         * No arguments?? so which direction anyway? 
+        /*
+         * No arguments?? so which direction anyway?
          */
         send_to_char("Sail in which direction?", ch);
         return (TRUE);
@@ -5301,7 +5301,7 @@ int steer_ship(struct char_data *ch, int cmd, char *argument,
 
     switch (keyword_no) {
     case 0:
-        /* 
+        /*
          * North
          */
         GET_XCOORD(obj)--;
@@ -5319,7 +5319,7 @@ int steer_ship(struct char_data *ch, int cmd, char *argument,
         GET_XCOORD(obj)++;
         break;
     case 3:
-        /* 
+        /*
          * west
          */
         GET_YCOORD(obj)--;
@@ -5347,8 +5347,8 @@ int ships_helm(struct char_data *ch, int cmd, char *argument,
     char           *buf;
 
     if (cmd == 621) {
-        /* 
-         * disembark 
+        /*
+         * disembark
          */
         return disembark_ship(ch, cmd, argument, obj, type);
     }
@@ -5361,7 +5361,7 @@ int ships_helm(struct char_data *ch, int cmd, char *argument,
 
     argument = get_argument(argument, &buf);
 
-    if (!buf) {                
+    if (!buf) {
         send_to_char("Sail in which direction?", ch);
         return (TRUE);
     }
@@ -5383,26 +5383,26 @@ int ships_helm(struct char_data *ch, int cmd, char *argument,
     ch_printf(ch, "You sail %sward.\n\r", keywords[keyword_no]);
 
     switch (keyword_no) {
-    case 0:         
-        /* 
+    case 0:
+        /*
          * North
          */
         GET_XCOORD(obj)--;
         break;
-    case 1:         
-        /* 
+    case 1:
+        /*
          * East
          */
         GET_YCOORD(obj)++;
         break;
-    case 2:         
-        /* 
+    case 2:
+        /*
          * south
          */
         GET_XCOORD(obj)++;
         break;
-    case 3:         
-        /* 
+    case 3:
+        /*
          * west
          */
         GET_YCOORD(obj)--;
@@ -5416,7 +5416,7 @@ int ships_helm(struct char_data *ch, int cmd, char *argument,
 }
 
 /*
- * can they sail in that directioN?? 
+ * can they sail in that directioN??
  */
 int CanSail(struct obj_data *obj, int direction)
 {
@@ -5428,25 +5428,25 @@ int CanSail(struct obj_data *obj, int direction)
 
     switch (direction) {
     case 0:
-        /* 
+        /*
          * North
          */
         x--;
         break;
     case 1:
-        /* 
+        /*
          * East
          */
         y++;
         break;
     case 2:
-        /* 
+        /*
          * south
          */
         x++;
         break;
     case 3:
-        /* 
+        /*
          * west
          */
         y--;
@@ -5458,7 +5458,7 @@ int CanSail(struct obj_data *obj, int direction)
     if (oceanmap[x][y] == '~') {
         return (TRUE);
     } else if (oceanmap[x][y] == '@') {
-        /* 
+        /*
          * Entered port city.. lets place a ship in the board city
          */
         return (TRUE);
@@ -5470,7 +5470,7 @@ int CanSail(struct obj_data *obj, int direction)
 }
 
 /*
- * lets print the map to the screen 
+ * lets print the map to the screen
  */
 void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
 {
@@ -5493,21 +5493,21 @@ void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
     send_to_char(buf, ch);
 
     for (loop = 0; loop < sizex * 2 + 1; loop++) {
-        /* 
-         * move that row of the ocean map into buf 
+        /*
+         * move that row of the ocean map into buf
          */
         sprintf(buf, "%s", oceanmap[x - sizex + loop]);
 
         if (loop == sizex) {
             buf[y] = 'X';
         }
-        /* 
-         * mark of the end of where they should see 
+        /*
+         * mark of the end of where they should see
          */
         buf[y + sizey + 1] = '\0';
-        /* 
-         * move to the start of where they should see on that row 
-         * Print that mofo out 
+        /*
+         * move to the start of where they should see on that row
+         * Print that mofo out
          */
         sprintf(buf2, "|%s|\n\r", &buf[y - sizey]);
 #if 0
@@ -5530,7 +5530,7 @@ void printmap(struct char_data *ch, int x, int y, int sizex, int sizey)
 }
 
 /*
- * Lets go through and see what terrain needs what color 
+ * Lets go through and see what terrain needs what color
  */
 void printColors(struct char_data *ch, char *buf)
 {
@@ -5599,11 +5599,11 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
     char           *buf;
     struct char_data *ship;
 
-    if (cmd != 620) {
-        /* 
-         * board ship 
+    if ( !(cmd == 620 || cmd == 622)) {
+        /*
+         * board ship
          */
-        return (FALSE);  
+        return (FALSE);
     }
 
     arg = get_argument(arg, &buf);
@@ -5611,12 +5611,12 @@ int embark_ship(struct char_data *ch, int cmd, char *arg,
         (ship = get_char_room("", ch->in_room))) {
         j = mob_index[ship->nr].virtual;
 
-        send_to_char("You enter the ship.\n\r", ch);
-        act("$n enters the ship.", FALSE, ch, 0, 0, TO_ROOM);
+        ch_printf(ch,"You climb aboard the %s.\n\r", mob->player.short_descr);
+        act("$n climbs aboard the $N.", FALSE, ch, 0, mob, TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, j);
 
-        act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
+        act("$n climbs aboard the ship.", FALSE, ch, 0, 0, TO_ROOM);
         do_look(ch, NULL, 0);
         return (TRUE);
     }
@@ -5669,8 +5669,8 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
 
         for (j = 0, m = 1; j < MAX_CLASS; j++, m <<= 1) {
             /*
-             * Currently can only do a few classes because of size 
-             * restrictions on char_skill_data 
+             * Currently can only do a few classes because of size
+             * restrictions on char_skill_data
              */
             if (!HasClass(ch, m) ||
                 (m != CLASS_CLERIC && m != CLASS_MAGIC_USER &&
@@ -5683,7 +5683,7 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
                     continue;
                 }
 
-                if (m == CLASS_CLERIC && 
+                if (m == CLASS_CLERIC &&
                     !IS_SET(ch->skills[i].flags, SKILL_KNOWN_CLERIC)) {
                     SET_BIT(ch->skills[i].flags, SKILL_KNOWN_CLERIC);
                 } else if (m == CLASS_MAGIC_USER &&
@@ -5703,7 +5703,7 @@ int skillfixer(struct char_data *ch, int cmd, char *arg,
                     continue;
                 }
 
-                if (m == CLASS_CLERIC && 
+                if (m == CLASS_CLERIC &&
                     !IS_SET(ch->skills[i].flags, SKILL_KNOWN_CLERIC)) {
                     SET_BIT(ch->skills[i].flags, SKILL_KNOWN_CLERIC);
                 } else if (m == CLASS_MAGIC_USER &&
@@ -5730,16 +5730,16 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob)
 {
     char    buf[MAX_STRING_LENGTH];
-    struct  obj_data *o;    
+    struct  obj_data *o;
     int     objnum;
     struct  char_data *i;
-    
+
     if (cmd != 17 || ch == mob || !arg || !ch || !mob) {
             return( FALSE );
     }
 
     objnum = real_object(6575);
-    
+
     for( o = real_roomp(ch->in_room)->contents; o; o = o->next_content) {
         if( o->item_number == objnum ) {
             return( FALSE );
@@ -5764,8 +5764,8 @@ int mazekeeper(struct char_data *ch, int cmd, char *arg,
         o = read_object(6575, VIRTUAL);
         obj_to_room(o, ch->in_room);
         return(TRUE);
-    } 
-    
+    }
+
     if (!strcasecmp(arg, "no")) {
         strcpy(buf, "say Fine, if you don't want to play, you can die now!");
         command_interpreter(mob, buf);
@@ -5787,7 +5787,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
     struct  obj_data *o;
     int     ret = FALSE;
     int     objnum;
-    
+
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
@@ -5807,7 +5807,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
 
     arg = get_argument(arg, &arg1);
     arg = get_argument(arg, &arg2);
-    
+
     if (arg2 && !strcasecmp(arg2, "tomorrow")) {
         strcpy(buf, "say That is correct!");
         command_interpreter(mob, buf);
@@ -5822,11 +5822,11 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
         strcpy(buf, "say Use it wisely, friend.  So long, and fare thee "
                      "well");
         command_interpreter(mob, buf);
-        
+
         o = read_object(6593, VIRTUAL);
         obj_to_char(o, ch);
         gain_exp(ch, 150000);
-        
+
         act("The riddle master waves his hand and a shimmering portal "
             "appears.", FALSE, mob, NULL, NULL, TO_ROOM);
         act("Somehow you know that your journey has come to an end, and"
@@ -5841,7 +5841,7 @@ int mazekeeper_riddle_master(struct char_data *ch, int cmd, char *arg,
     return(ret);
 }
 
-    
+
 int mazekeeper_riddle_common(struct char_data *ch, char *arg,
                              struct char_data *mob, struct riddle_answer *rid,
                              int ridCount, int exp, int portal)
@@ -5853,14 +5853,14 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
     struct  obj_data *o;
     int     ret = FALSE;
     int     i;
-    
+
     /* Keep the original arg for the caller in case we don't return TRUE */
     argument = strdup(arg);
     arg = argument;
 
     arg = get_argument(arg, &arg1);
     arg = get_argument(arg, &arg2);
-        
+
     if (!arg2) {
         free( argument );
         return( FALSE );
@@ -5875,15 +5875,15 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
             strcpy(buf, "say You may now move on to the next challenge, good "
                          "luck!");
             command_interpreter(mob, buf);
-            
+
             o = read_object(rid[i].reward, VIRTUAL);
             obj_to_char(o, ch);
             gain_exp(ch, exp);
-            sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience!$c000w", 
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bexperience!$c000w",
                     exp);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
             GET_GOLD(ch) = (GET_GOLD(ch) + exp);
-            sprintf(buf, "$c000BYou receive $c000W%d $c000Bgold coins!$c000w", 
+            sprintf(buf, "$c000BYou receive $c000W%d $c000Bgold coins!$c000w",
                     exp);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
@@ -5895,14 +5895,14 @@ int mazekeeper_riddle_common(struct char_data *ch, char *arg,
             o = read_object(portal, VIRTUAL);
             obj_to_room(o, ch->in_room);
 
-            act("The riddler disapears in a puff of smoke!", 
+            act("The riddler disapears in a puff of smoke!",
                 FALSE, mob, NULL, NULL, TO_ROOM);
             char_from_room(mob);
             extract_char(mob);
             ret = TRUE;
         }
-    } 
-    
+    }
+
     if( !ret ) {
         strcpy(buf, "say HAH! Wrong answer, now you will die!");
         command_interpreter(mob, buf);
@@ -5924,11 +5924,11 @@ int mazekeeper_riddle_one(struct char_data *ch, int cmd, char *arg,
         { "needle", 6582, "earring" },
         { "storm",  6583, "earring" }
     };
-    
+
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
-    
+
     return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
                                      10000, 6576) );
 }
@@ -5941,7 +5941,7 @@ int mazekeeper_riddle_two(struct char_data *ch, int cmd, char *arg,
         { "tongue", 6585, "ring" },
         { "temper", 6586, "ring" }
     };
-    
+
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
@@ -5949,7 +5949,7 @@ int mazekeeper_riddle_two(struct char_data *ch, int cmd, char *arg,
     return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
                                      25000, 6577) );
 }
-    
+
 int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob)
 {
@@ -5958,7 +5958,7 @@ int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
         { "temperature", 6588, "necklace" },
         { "pressure",    6589, "necklace" }
     };
-    
+
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
@@ -5966,7 +5966,7 @@ int mazekeeper_riddle_three(struct char_data *ch, int cmd, char *arg,
     return( mazekeeper_riddle_common(ch, arg, mob, rid, NELEMS(rid),
                                      50000, 6578) );
 }
- 
+
 int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
                             struct char_data *mob)
 {
@@ -5975,7 +5975,7 @@ int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
         { "sleep", 6591, "bracelet" },
         { "dream", 6592, "bracelet" }
     };
-    
+
     if (!ch || !mob || mob == ch || cmd != 83 || !arg) {
         return(FALSE);
     }
@@ -5986,7 +5986,7 @@ int mazekeeper_riddle_four(struct char_data *ch, int cmd, char *arg,
 
 int level_limiter(struct char_data *ch, int cmd, char *argument,
                   struct obj_data *obj, int type)
-{   
+{
     char    buf[MAX_STRING_LENGTH];
     int     dam = 0,
             i;
@@ -5994,7 +5994,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
     int     zapit = FALSE;
     int     inroom = FALSE;
     struct obj_data *tmp_obj;
-    
+
     if( !ch || !obj ) {
         return( FALSE );
     }
@@ -6004,7 +6004,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
         zapit = TRUE;
         inroom = TRUE;
     }
-    
+
     switch( cmd ) {
     case 72:    /* give */
     case 304:   /* auction */
@@ -6045,7 +6045,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
         dam = MAX( dam, 0 );
 
         DoDamage(ch, ch, dam, SPELL_FIRESHIELD);
-        
+
         zapit = TRUE;
     }
 
@@ -6064,7 +6064,7 @@ int level_limiter(struct char_data *ch, int cmd, char *argument,
         if( obj->carried_by ) {
             obj_from_char(obj);
         } else if( obj->equipped_by ) {
-            tmp_obj = get_object_in_equip(ch, obj->name, 
+            tmp_obj = get_object_in_equip(ch, obj->name,
                                           obj->equipped_by->equipment, &i );
             unequip_char(obj->equipped_by, i);
         } else if( obj->in_obj ) {
@@ -6086,7 +6086,7 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
     if (cmd == 7 && GetMaxLevel(ch) >= 41 && !IS_IMMORTAL(ch)){
         obj_from_room(obj);
         extract_obj(obj);
-        act("The ring of blazing white light suddenly vanishes!", 
+        act("The ring of blazing white light suddenly vanishes!",
             FALSE, ch, obj, NULL, TO_ROOM);
         act("The ring of blazing white light suddenly vanishes!",
             FALSE, ch, obj, NULL, TO_CHAR);
@@ -6096,30 +6096,30 @@ int mazekeeper_portal(struct char_data *ch, int cmd, char *argument,
 }
 
 struct dragon_def dragonTable[] = {
-    { RACE_DRAGON_RED,   
+    { RACE_DRAGON_RED,
       { { "$c000RA cone of fire",  spell_fire_breath } }, 1 },
-    { RACE_DRAGON_BLACK, 
-      { { "$c000GA cone of acid",  spell_acid_breath } }, 1 }, 
-    { RACE_DRAGON_GREEN, 
-      { { "$c000gA cloud of gas",  spell_gas_breath } }, 1 }, 
-    { RACE_DRAGON_WHITE, 
-      { { "$c000CA cone of frost", spell_frost_breath } }, 1 }, 
+    { RACE_DRAGON_BLACK,
+      { { "$c000GA cone of acid",  spell_acid_breath } }, 1 },
+    { RACE_DRAGON_GREEN,
+      { { "$c000gA cloud of gas",  spell_gas_breath } }, 1 },
+    { RACE_DRAGON_WHITE,
+      { { "$c000CA cone of frost", spell_frost_breath } }, 1 },
     { RACE_DRAGON_BLUE,
-      { { "$c000BA bolt of lightning", spell_lightning_breath } }, 1 }, 
-    { RACE_DRAGON_SILVER, 
-      { { "$c000CA cone of frost", spell_frost_breath }, 
+      { { "$c000BA bolt of lightning", spell_lightning_breath } }, 1 },
+    { RACE_DRAGON_SILVER,
+      { { "$c000CA cone of frost", spell_frost_breath },
         { "$c000YA golden ray", spell_paralyze_breath } }, 2 },
-    { RACE_DRAGON_GOLD,  
-      { { "$c000RA cone of fire", spell_fire_breath }, 
+    { RACE_DRAGON_GOLD,
+      { { "$c000RA cone of fire", spell_fire_breath },
         { "$c000gA cloud of gas", spell_gas_breath } }, 2 },
     { RACE_DRAGON_BRONZE,
-      { { "$c000BA bolt of lightning", spell_lightning_breath }, 
+      { { "$c000BA bolt of lightning", spell_lightning_breath },
         { "$c000yA repulsive cloud", spell_repulsion_breath } }, 2 },
     { RACE_DRAGON_COPPER,
-      { { "$c000PA sticky cloud", spell_slow_breath }, 
+      { { "$c000PA sticky cloud", spell_slow_breath },
         { "$c000GA cone of acid", spell_acid_breath } }, 2 },
     { RACE_DRAGON_BRASS,
-      { { "$c0008A gloomy cloud", spell_sleep_breath }, 
+      { { "$c0008A gloomy cloud", spell_sleep_breath },
         { "$c000yA cloud of blistering sand", spell_desertheat_breath } }, 2 },
     { RACE_DRAGON_AMETHYST,
       { { "$c000pA faceted violet lozenge", spell_lozenge_breath } }, 1 },
@@ -6128,7 +6128,7 @@ struct dragon_def dragonTable[] = {
     { RACE_DRAGON_EMERALD,
       { { "$c000cA loud keening wail", spell_sound_breath } }, 1 },
     { RACE_DRAGON_SAPPHIRE,
-      { { "$c000cA cone of high-pitched, almost inaudible sound", 
+      { { "$c000cA cone of high-pitched, almost inaudible sound",
          spell_sound_breath } }, 1 },
     { RACE_DRAGON_TOPAZ,
       { { "$c000yA cone of dehydration", spell_dehydration_breath } }, 1 },
@@ -6153,7 +6153,7 @@ struct dragon_def dragonTable[] = {
 };
 int dragonTableCount = NELEMS(dragonTable);
 
-int dragon(struct char_data *ch, int cmd, char *arg, 
+int dragon(struct char_data *ch, int cmd, char *arg,
            struct char_data *mob, int type)
 {
    char             buf[MAX_STRING_LENGTH];
@@ -6161,9 +6161,9 @@ int dragon(struct char_data *ch, int cmd, char *arg,
    int              i,
                     j,
                     level;
-     
-    
-    if (IS_AFFECTED(ch, AFF_PARALYSIS) || cmd || 
+
+
+    if (IS_AFFECTED(ch, AFF_PARALYSIS) || cmd ||
         GET_POS(ch) < POSITION_FIGHTING) {
         return( FALSE );
     }
@@ -6197,7 +6197,7 @@ int dragon(struct char_data *ch, int cmd, char *arg,
     act(buf, FALSE, ch, 0, 0, TO_ROOM);
 
     level = GetMaxLevel(ch);
-    
+
     for (tar_char = real_roomp(ch->in_room)->people; tar_char;
          tar_char = tar_char->next_in_room) {
         if (!in_group(ch, tar_char) && !IS_IMMORTAL(tar_char)) {

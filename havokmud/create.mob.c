@@ -130,7 +130,7 @@ void ChangeMobActFlags(struct char_data *ch, char *arg, int type)
             } else {
                 SET_BIT(ch->specials.mobedit->specials.act, i);
             }
-        }   
+        }
     }
 
     sprintf(buf, VT_HOMECLR);
@@ -198,7 +198,7 @@ void ChangeMobAffFlags(struct char_data *ch, char *arg, int type)
         check = 1 << i;
 
         sprintf(buf, "%-2ld [%s] %s", i + 1,
-                ((ch->specials.mobedit->specials.affected_by & (check)) ? 
+                ((ch->specials.mobedit->specials.affected_by & (check)) ?
                  "X" : " "), affected_bits[i]);
         send_to_char(buf, ch);
     }
@@ -220,12 +220,12 @@ void do_medit(struct char_data *ch, char *argument, int cmd)
     if ((IS_NPC(ch)) || (GetMaxLevel(ch) < CREATOR)) {
         return;
     }
-    /* 
+    /*
      * someone is forced to do something. can be bad!
-     * the ch->desc->str field will cause problems... 
+     * the ch->desc->str field will cause problems...
      */
     if (!ch->desc) {
-        return;                 
+        return;
     }
 
     argument = get_argument(argument, &name);
@@ -244,10 +244,10 @@ void do_medit(struct char_data *ch, char *argument, int cmd)
         return;
     }
 #if 0
-    if (GetMaxLevel(ch) < GOD && !IS_SET(ch->player.user_flags,CAN_MOB_EDIT)) {         send_to_char("You do not have access to edit mobiles.\n\r",ch); 
-        return; 
-    } 
-    /* 
+    if (GetMaxLevel(ch) < GOD && !IS_SET(ch->player.user_flags,CAN_MOB_EDIT)) {         send_to_char("You do not have access to edit mobiles.\n\r",ch);
+        return;
+    }
+    /*
      * this was
      * annoying for low-level builders
      */
@@ -815,7 +815,7 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
 
     mob = ch->specials.mobedit;
 
-    if (type != ENTER_CHECK &&  
+    if (type != ENTER_CHECK &&
         (!arg || !*arg || *arg == '\n' || mob->specials.mobtype == 'S')) {
         ch->specials.medit = MOB_MAIN_MENU;
         UpdateMobMenu(ch);
@@ -824,12 +824,12 @@ void ChangeMobMultatt(struct char_data *ch, char *arg, int type)
 
     if (type != ENTER_CHECK) {
 #if 0
-        change=atoi(arg); 
-        /* make an argument into an integer?! 
-         * no wonder it won't take floating 
-         * #s -Lennya 
+        change=atoi(arg);
+        /* make an argument into an integer?!
+         * no wonder it won't take floating
+         * #s -Lennya
          */
-#endif       
+#endif
         change = (float)strtod(arg, NULL);
         if (change < 0.0) {
             change = 0.0;
@@ -895,7 +895,7 @@ void ChangeMobExp(struct char_data *ch, char *arg, int type)
                 return;
             }
             mob->specials.exp_flag = change;
-            expamount = (DetermineExp(mob, mob->specials.exp_flag) + 
+            expamount = (DetermineExp(mob, mob->specials.exp_flag) +
                          mob->points.gold);
             sprintf(buf, "This mobile will have around %ld exp the next time "
                          "it is loaded.\n\r", expamount);
@@ -1184,17 +1184,17 @@ void ChangeMobSound(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     mob = ch->specials.mobedit;
-    
+
 #if 0
-    if(mob->specials.mobtype!='L') { 
+    if(mob->specials.mobtype!='L') {
         send_to_char("Please use a base mobile that already has "
                 "sound, this one does not.\n\r",ch);
-        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "", 
-                ENTER_CHECK); 
-        return; 
-    } 
+        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "",
+                ENTER_CHECK);
+        return;
+    }
 #endif
-    
+
     if (mob->player.sounds != 0) {
         sprintf(buf, "Current Mobile Sound:\n\r");
         send_to_char(buf, ch);
@@ -1226,17 +1226,17 @@ void ChangeMobDsound(struct char_data *ch, char *arg, int type)
     send_to_char(buf, ch);
 
     mob = ch->specials.mobedit;
-    
+
 #if 0
-    if (mob->specials.mobtype!='L') { 
+    if (mob->specials.mobtype!='L') {
         send_to_char("Please use a base mobile that already has sound, "
                 "this one does not.\n\r",ch);
-        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "", 
-                ENTER_CHECK); 
-        return; 
+        ch->specials.medit = MOB_HIT_RETURN; MobHitReturn(ch, "",
+                ENTER_CHECK);
+        return;
     }
 #endif
-          
+
     if (mob->player.distant_snds != 0) {
         sprintf(buf, "Current Mobile Distant Sound:\n\r");
         send_to_char(buf, ch);
@@ -1380,7 +1380,7 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
     mob = ch->specials.mobedit;
     if (type != ENTER_CHECK) {
         change = atoi(arg);
-        if (change < 0 || change > 20) {
+        if (change < 0 || change > 21) {
             change = 0;
         }
         mob->specials.proc = change;
@@ -1412,7 +1412,7 @@ void ChangeMobProcedureFlags(struct char_data *ch, char *arg, int type)
                  ch);
     send_to_char(" 18) Dark Breather                   19) Receptionist\n\r",
                  ch);
-    send_to_char(" 20) Repair Guy\n\r", ch);
+    send_to_char(" 20) Repair Guy                      21) Embark Ship\n\r", ch);
 
     send_to_char("\n\r", ch);
     send_to_char("For Guildmasters: set (one!) class in Action Flags, and "

@@ -483,7 +483,7 @@ const struct class_def classes[MAX_CLASS] = {
         {  1, "God", "Goddess", 242000000},
         {  1, "Implementor", "Implementrix", 243000000},
         {  1, "Implementor", "Implementrix", 244000000}
-      } 
+      }
     },
     { "Dr", "Druid",
       /* Skills */
@@ -641,7 +641,7 @@ const struct class_def classes[MAX_CLASS] = {
       }
     },
     { "Mo", "Monk",
-      /* Skills */ 
+      /* Skills */
       { {"disarm", SKILL_DISARM, 1, 45},
         {"dodge", SKILL_DODGE, 1, 94},
         {"feign death", SKILL_FEIGN_DEATH, 1, 45},
@@ -972,7 +972,7 @@ const struct class_def classes[MAX_CLASS] = {
         {  1, "God of Magic", "Goddess of Magic", 237000000},
         {  1, "Implementor", "Implementrix", 238000000},
         {  1, "Implementor", "Implementrix", 239000000} /* 60 */
-      } 
+      }
     },
     { "Pa", "Paladin",
       /* Skills */
@@ -4319,7 +4319,7 @@ const char     *special_user_flags[] = {
     "\n"
 };
 
-const char     *immunity_names[] = { 
+const char     *immunity_names[] = {
     "Fire",
     "Cold",
     "Electricity",
@@ -4510,7 +4510,7 @@ const char     *procedure_bits[] = {
     "Dark Breather",
     "Receptionist",
     "Repair Guy",
-
+    "Embark Ship"
     "\n"
 };
 
@@ -5392,7 +5392,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {109, "A child's favorite place holds the object of my desire, on the "
               "dark river.\n\r"},
         /*
-         * 10 
+         * 10
          */
         {3628, "The latest in New padded footwear.\n\r"},
         {113, "A child might play with one when the skexies aren't "
@@ -5408,7 +5408,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {7204, "Vaulted lightning.\n\r"},
         {16043, "Precious elements can come in dull, dark mines.\n\r"},
         /*
-         * 20 
+         * 20
          */
         {20007, "You'll catch him napping, no guardian of passing time.\n\r"},
         {16903, "Nature's mistake, carried by a man on a new moon, fish on "
@@ -5447,7 +5447,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {21125, "With enough of this strong amber drink you'd forget about the"
                 " nightly ghosts.\n\r"},
         /*
-         * 40 
+         * 40
          */
         {5309, "Powerful items of magic follow... first bring me a medallion "
                "of mana.\n\r"},
@@ -5485,7 +5485,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {4000, "I have a weakness for cheap rings.\n\r"},
         {3025, "Cleaver for hire, just outside of Karsinya.\n\r"},
         /*
-         * 60 
+         * 60
          */
         {3649, "My wife needs something New, to help keep her girlish "
                "figure.\n\r"},
@@ -5522,7 +5522,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "the giants.\n\r"},
         {21109, "A bow made of dark wood, carried by a troglodyte.\n\r"},
         /*
-         * 80 
+         * 80
          */
         {15817, "In an secret cold place, a dark flower is carried by a "
                 "midnight one.\n\r"},
@@ -5539,7 +5539,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {121, "To the far southeast, in the lair of a pair of arachnids.\n\r"},
         {13901, "On the shore, down the river from the troll-bridge.\n\r"},
         /*
-         * 90 
+         * 90
          */
         {5104, "Four heads are better than one.\n\r"},
         {15806, "You don't stand a ghost of a chance against a glow of white "
@@ -5571,7 +5571,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {123, "A mule stole my hat, now he fights in front of an "
               "audience.\n\r"},
         /*
-         * 110 
+         * 110
          */
         {3621, "Thank goodness when I broke my arm I still had my New "
                "shield.\n\r"},
@@ -5587,7 +5587,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {5032, "Guarded by a brass dragon, bring me this precious stone.\n\r"},
         {3685, "Mightier than a sword, wielded by a four man.\n\r"},
         /*
-         * 120 
+         * 120
          */
         {5100, "Learn humility: I want a common sword.\n\r"},
         {16902, "They'd all be normal in a moonless world. You need to steal a "
@@ -5606,7 +5606,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {16901, "Only an elephant's might be as big as this boar's "
                 "mouthpiece.\n\r"},
         /*
-         * 130 
+         * 130
          */
         {6511, "A bearded woman might be so engaged, but a guard's got this "
                "one.\n\r"},
@@ -5626,7 +5626,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "worm.\n\r"},
         {10002, "This item can be found on 'Al'\n\r"},
         /*
-         * 140 
+         * 140
          */
         {5221, "Weapons are the keys to many quests. First, bring me a Stone "
                "golem's sword.\n\r"},
@@ -5644,7 +5644,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "enchanted.\n\r"}
     },
     /*
-     * 150 
+     * 150
      */
     {
         {2402, "An unusual way of looking at things.\n\r"},
@@ -5660,7 +5660,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {42, "Do she-devils steal, as they flap their bat wings?\n\r"},
         {19202, "Animal light, lost in a fog.\n\r"},
         /*
-         * 160 
+         * 160
          */
         {3647, "These New boots were made for walking.\n\r"},
         {4101, "Hands only a warrior could love.\n\r"},
@@ -5677,7 +5677,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {3690, "I am an old man, but I will crush you at chess.\n\r"},
         {5000, "Find the dark elves. Pick something silver.\n\r"},
         /*
-         * 170 
+         * 170
          */
         {15802, "It's easy work to work a rejected bird for the means to his "
                 "former home.\n\r"},
@@ -5697,7 +5697,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {3690, "An old man at the park might have one, but these old men are "
                "in the new city.\n\r"},
         /*
-         * 180 
+         * 180
          */
         {1729, "In the forest north of the new city a traveller lost his way. "
                "It's on him.\n\r"},
@@ -5718,7 +5718,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "him.\n\r"},
         {1533, "Three witches in the mage's tower have the orb you need.\n\r"},
         /*
-         * 190 
+         * 190
          */
         {9425, "A huge gemstone, guarded by ice toads, beware their "
                "poison.\n\r"},
@@ -5737,7 +5737,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {13703, "Watch for a dragon, he wears that which you seek.\n\r"}
     }
     /*
-     * 200 
+     * 200
      */
 };
 

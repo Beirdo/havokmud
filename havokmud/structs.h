@@ -1163,6 +1163,7 @@ struct room_data {
 #define PROC_DARK_BREATH        18
 #define PROC_RECEPTIONIST       19
 #define PROC_REPAIRGUY          20
+#define PROC_SHIP               21
 
 /*
  * For players : specials.act

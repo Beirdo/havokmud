@@ -1938,6 +1938,10 @@ struct char_data *read_mobile(int nr, int type)
             if (mob_index[mob->nr].func != RepairGuy) {
                 mob_index[mob->nr].func = *RepairGuy;
             }
+        } else if (mob->specials.proc == PROC_SHIP) {
+            if (mob_index[mob->nr].func != embark_ship) {
+                mob_index[mob->nr].func = *embark_ship;
+            }
         }
     }
     return (mob);
