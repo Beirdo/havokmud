@@ -3715,7 +3715,9 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 	  send_to_char(buf, ch);
 	 i = get_char(name); /* used for last time sited */
     /* Last time sited?? */
-    if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
+    if(IS_IMMORTAL(finger) &&
+    	(!IS_IMMORTAL(ch)) || (GetMaxLevel(finger) > GetMaxLevel(ch)))
+    	//if vic is immortal & U arn't (or U are lower imm -gordon jan222004-)
       sprintf(buf,"$c000BLast time sited       : $c0007Unknown\n\r");
     else if(i && i->desc)  /* if there is a name, and a file descriptor */
       sprintf(buf,"$c000BLast time sited       : $c0007Currently Playing\n\r");

@@ -96,7 +96,10 @@ dlog("in do_auth");
     send_to_char("That player was not found.\n\r", ch);
     return;
   }
-
+  if (IS_IMMORTAL(d->character)){		 	             //dont let imms auth other imms since
+	send_to_char("That player was not found.\n\r", ch);	//there is no check to see if they can
+  	return;												//see the imm -gordon jan222003-
+  	}
   if (*argument) {
     /* get response (rest of argument) */
     one_argument(argument, word);

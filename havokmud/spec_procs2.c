@@ -2128,6 +2128,15 @@ int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 					return(TRUE);
 				}
 
+				if (ch->skills[skillnum].learned >= 96) {
+					send_to_char
+					("$c0013[$c0015The Ninja Master$c0013] tells you"
+					 " 'I have taught you all that i can about that skill.'\n\r",
+					 ch);
+					return (TRUE);
+				}
+
+
 				GET_GOLD(ch) -= charge;
 				sprintf(buf,"You practice %s for a while.\n\r",skillname);
 				send_to_char(buf,ch);
@@ -4168,6 +4177,13 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 									" 'Ah, but you do not have enough money to pay.'\n\r",ch);
 						return(TRUE);
 					}
+
+					if (ch->skills[archerskills[x].skillnum].learned >= 95) {
+					  send_to_char
+					      ("$c0013[$c0015The archer instructor$c0013] tells you"
+						   " 'I can taught you all I can about that skill.'\n\r", ch);
+					return (TRUE);
+		    		}
 
 					sprintf(buf,"You practice %s for a while.\n\r",archerskills[x].name);
 					send_to_char(buf,ch);

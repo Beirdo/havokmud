@@ -5269,7 +5269,7 @@ const struct skillset thfninjaskills[] = {
   { "climb",             SKILL_CLIMB,           1},
   { "disguise",          SKILL_HIDE,            1},
 //  { "retreat",           SKILL_RETREAT,         1}, Is a basic thief skill already.
-  { "spy",               SKILL_SPY,             1},
+//  { "spy",               SKILL_SPY,             1}, Is a basic thief skill already.
   { "None",				-1						,-1}
 };
 const struct skillset warninjaskills[] = {
