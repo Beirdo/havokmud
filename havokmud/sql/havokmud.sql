@@ -3,7 +3,7 @@
 # http://www.phpmyadmin.net
 #
 # Host: localhost
-# Generation Time: Jul 31, 2004 at 05:12 PM
+# Generation Time: Aug 02, 2004 at 03:49 PM
 # Server version: 3.23.58
 # PHP Version: 4.2.2
 # 
@@ -1659,6 +1659,29 @@ INSERT INTO `languages` VALUES (7, 252, 'Ogre');
 INSERT INTO `languages` VALUES (8, 253, 'Gnomish');
 INSERT INTO `languages` VALUES (9, 0, 'All languages');
 INSERT INTO `languages` VALUES (10, 0, 'GodLike');
+
+# --------------------------------------------------------
+
+#
+# Table structure for table `mailMessages`
+#
+
+DROP TABLE IF EXISTS `mailMessages`;
+CREATE TABLE `mailMessages` (
+  `messageNum` int(11) NOT NULL auto_increment,
+  `mailFrom` varchar(80) NOT NULL default '',
+  `mailTo` varchar(80) NOT NULL default '',
+  `timestamp` timestamp(14) NOT NULL,
+  `message` text NOT NULL,
+  PRIMARY KEY  (`messageNum`),
+  KEY `mailTo` (`mailTo`),
+  KEY `timestamp` (`timestamp`)
+) TYPE=MyISAM PACK_KEYS=0 AUTO_INCREMENT=1 ;
+
+#
+# Dumping data for table `mailMessages`
+#
+
 
 # --------------------------------------------------------
 
@@ -3749,7 +3772,7 @@ CREATE TABLE `reportTypes` (
   `reportId` int(11) NOT NULL auto_increment,
   `description` varchar(40) NOT NULL default '',
   PRIMARY KEY  (`reportId`)
-) TYPE=MyISAM AUTO_INCREMENT=8 ;
+) TYPE=MyISAM AUTO_INCREMENT=9 ;
 
 #
 # Dumping data for table `reportTypes`
@@ -3762,6 +3785,7 @@ INSERT INTO `reportTypes` VALUES (4, 'typo reports');
 INSERT INTO `reportTypes` VALUES (5, 'immortal-only bug reports');
 INSERT INTO `reportTypes` VALUES (6, 'immortal-only ideas');
 INSERT INTO `reportTypes` VALUES (7, 'immortal-only typos');
+INSERT INTO `reportTypes` VALUES (8, 'quest log');
 
 # --------------------------------------------------------
 

@@ -1529,6 +1529,113 @@ void db_post_message(struct board_def *board,
     db_free_board_message(msg);
 }
 
+void db_store_mail(char *to, char *from, char *message_pointer)
+{
+    char            buf[MAX_STRING_LENGTH];
+    char           *post;
+
+    post = db_quote(message_pointer);
+
+    sprintf(buf, "INSERT INTO `mailMessages` (`mailFrom`, `mailTo`, "
+                 "`timestamp`, `message`) VALUES ('%s', '%s', NULL, '%s')",
+                 from, to, post );
+    mysql_query(sql, buf);
+
+    free(post);
+}
+
+int             db_has_mail(char *recipient)
+{
+    char            buf[MAX_STRING_LENGTH];
+    int             count;
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT HIGH_PRIORITY COUNT(*) as count FROM `mailMessages` "
+                 "WHERE LOWER(`mailTo`) = LOWER('%s')", recipient );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
+        return( 0 );
+    }
+
+    row = mysql_fetch_row(res);
+    count = atoi(row[0]);
+    mysql_free_result(res);
+
+    return( count );
+}
+
+int db_get_mail_ids(char *recipient, int *messageNum, int count)
+{
+    char            buf[MAX_STRING_LENGTH];
+    int             i;
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT `messageNum` FROM `mailMessages` "
+                 "WHERE LOWER(`mailTo`) = LOWER('%s') ORDER BY `timestamp` "
+                 "LIMIT %d", recipient, count );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !(count = mysql_num_rows(res)) ) {
+        mysql_free_result(res);
+        return(0);
+    }
+
+    for( i = 0; i < count; i++ ) {
+        row = mysql_fetch_row(res);
+        messageNum[i] = atoi(row[0]);
+    }
+    mysql_free_result(res);
+
+    return( count );
+}
+
+char *db_get_mail_message(int messageId)
+{
+    char            buf[MAX_STRING_LENGTH];
+
+    MYSQL_RES      *res;
+    MYSQL_ROW       row;
+
+    sprintf(buf, "SELECT `mailFrom`, `mailTo`, "
+                 "DATE_FORMAT(`timestamp`, '%%a %%b %%c %%Y  %%H:%%i:%%S'), "
+                 "`message` FROM `mailMessages` WHERE `messageNum` = %d",
+                 messageId );
+    mysql_query(sql, buf);
+
+    res = mysql_store_result(sql);
+    if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
+        return(NULL);
+    }
+
+    row = mysql_fetch_row(res);
+
+    sprintf(buf, " * * * * Havok Mail System * * * *\n\r"
+                 "Date: %s\n\r"
+                 "  To: %s\n\r"
+                 "From: %s\n\r\n\r%s\n\r", row[2], row[1], row[0], row[3]);
+    mysql_free_result(res);
+
+    return( strdup(buf) );
+}
+
+void db_delete_mail_message(int messageId)
+{
+    char            buf[MAX_STRING_LENGTH];
+
+    sprintf(buf, "DELETE FROM `mailMessages` WHERE `messageNum` = %d",
+                 messageId );
+    mysql_query(sql, buf);
+}
+
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

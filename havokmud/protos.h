@@ -15,7 +15,6 @@
 #include "utils.h"
 #include "vt100c.h"
 #include "parser.h"
-#include "mail.h"
 #include "dimd.h"
 #include <stdio.h>
 
@@ -3136,7 +3135,6 @@ char           *ansi_parse(char *code);
  * mail.c 
  */
 
-int             mail_ok(struct char_data *ch);
 struct char_data *find_mailman(struct char_data *ch);
 void            postmaster_send_mail(struct char_data *ch, int cmd,
                                      char *arg);
@@ -4146,6 +4144,13 @@ void db_post_message(struct board_def *board,
 
 int dragon(struct char_data *ch, int cmd, char *arg, 
            struct char_data *mob, int type);
+
+void db_store_mail(char *to, char *from, char *message_pointer);
+int             db_has_mail(char *recipient);
+int   db_get_mail_ids(char *recipient, int *messageNum, int count);
+char *db_get_mail_message(int messageId);
+void db_delete_mail_message(int messageId);
+
 
 /*************************************************************************
  * Support for different platforms

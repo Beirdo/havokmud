@@ -688,7 +688,7 @@ void load_char_objs(struct char_data *ch)
             }
         }
 
-        if (has_mail((char *) GET_NAME(ch))) {
+        if (db_has_mail((char *) GET_NAME(ch))) {
             send_to_char("$c0013[$c0015The scribe$c0013] bespeaks you: 'You"
                          " have mail waiting!'", ch);
             ch->player.has_mail = TRUE;

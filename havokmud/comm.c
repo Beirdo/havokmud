@@ -799,7 +799,7 @@ void game_loop(int s)
                 if (point->character) {
                     if (!IS_NPC(point->character)) {
                         point->character->player.has_mail =
-                            has_mail(point->character->player.name);
+                            db_has_mail(point->character->player.name);
                     }
                 }
             }

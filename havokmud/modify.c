@@ -197,7 +197,7 @@ void string_add(struct descriptor_data *d, char *str)
 
         if (!d->connected && IS_SET(d->character->specials.act, PLR_MAILING)) {
             if ((terminator > 0) && *d->str) {
-                store_mail(d->name, d->character->player.name, *d->str);
+                db_store_mail(d->name, d->character->player.name, *d->str);
                 SEND_TO_Q("Message sent.\r\n", d);
             } else {
                 SEND_TO_Q("Message aborted.\r\n", d);

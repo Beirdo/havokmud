@@ -2548,6 +2548,22 @@ struct user_report {
     char               *report;
 };
 
+/*
+ * minimum level a player must be to send mail 
+ */
+#define MIN_MAIL_LEVEL 2
+
+/*
+ * # of gold coins required to send mail 
+ */
+#define STAMP_PRICE 150
+
+/*
+ * Maximum size of mail in bytes (arbitrary) 
+ */
+#define MAX_MAIL_SIZE 4000
+
+
 #endif
 
 /*

@@ -2817,6 +2817,14 @@ int goblin_sentry(struct char_data *ch, int cmd, char *arg,
     return (FALSE);
 }
 
+/*
+ * command numbers of the "mail", "check", and "receive" commands in your
+ * interpreter. 
+ */
+#define CMD_MAIL        366
+#define CMD_CHECK       367
+#define CMD_RECEIVE     368
+
 int PostMaster(struct char_data *ch, int cmd, char *arg,
                struct char_data *mob, int type)
 {

@@ -49,7 +49,6 @@ struct wizlistgen {
 /**************************************************************************
 *  declarations of most of the 'global' variables                         *
 ************************************************************************ */
-int             no_mail = 0;
 int             top_of_scripts = 0;
 int             top_of_world = 99999;   /* ref to the top element of world
                                          */
@@ -202,12 +201,6 @@ void boot_db(void)
     Log("Clearing inactive players");
     clean_playerfile();
 #endif
-
-    Log("Booting mail system.");
-    if (!scan_mail_file()) {
-        Log("   Mail system error -- mail system disabled!");
-        no_mail = 1;
-    }
 
     Log("Loading zone table.");
     boot_zones();
