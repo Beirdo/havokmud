@@ -9,7 +9,9 @@
 #include <ctype.h>
 
 #include "protos.h"
+#include "externs.h"
 
+#if 0
 int             choose_exit(int in_room, int tgt_room, int dvar);
 
 /*
@@ -21,26 +23,8 @@ int             remove_trap(struct char_data *ch, struct obj_data *trap);
 void            do_find_traps(struct char_data *ch, char *arg, int cmd);
 void            do_find_food(struct char_data *ch, char *arg, int cmd);
 void            do_find_water(struct char_data *ch, char *arg, int cmd);
+#endif
 
-extern struct spell_info_type spell_info[];
-extern int      spell_index[MAX_SPL_LIST];
-extern int      ArenaNoGroup,
-                ArenaNoAssist,
-                ArenaNoDispel,
-                ArenaNoMagic,
-                ArenaNoWSpells,
-                ArenaNoSlay,
-                ArenaNoFlee,
-                ArenaNoHaste,
-                ArenaNoPets,
-                ArenaNoTravel,
-                ArenaNoBash;
-extern char    *dirs[];
-extern struct char_data *character_list;
-extern struct room_data *world;
-extern struct dex_app_type dex_app[];
-extern long     SystemFlags;
-extern char    *spells[];
 
 struct hunting_data {
     char           *name;
@@ -4085,92 +4069,6 @@ void do_esp(struct char_data *ch, char *argument, int cmd)
     affect_to_char(ch, &af);
 }
 
-void do_sending(struct char_data *ch, char *argument, int cmd)
-{
-    struct char_data *target;
-    int             skill_check = 0;
-    char           *target_name,
-                    buf[1024],
-                   *message;
-
-    if (!ch->skills) {
-        return;
-    }
-    if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
-        send_to_char("Der, what is that ?\n\r", ch);
-        return;
-    }
-
-    if (!ch->skills[SPELL_SENDING].learned &&
-        !ch->skills[SPELL_MESSENGER].learned) {
-        send_to_char("You are unable to use this skill.\n\r", ch);
-        return;
-    }
-
-    if ((GET_MANA(ch) < 5) && !IS_IMMORTAL(ch)) {
-        send_to_char("You don't have the power to do that.\n\r", ch);
-        return;
-    }
-
-    if (ch->skills[SPELL_SENDING].learned >
-        ch->skills[SPELL_MESSENGER].learned) {
-        skill_check = ch->skills[SPELL_SENDING].learned;
-    } else {
-        skill_check = ch->skills[SPELL_MESSENGER].learned;
-    }
-
-    if (skill_check < number(1, 101)) {
-        send_to_char("You fumble and screw up the spell.\n\r", ch);
-        if (!IS_IMMORTAL(ch)) {
-            GET_MANA(ch) -= 3;
-        }
-        if (ch->skills[SPELL_SENDING].learned >
-            ch->skills[SPELL_MESSENGER].learned) {
-            LearnFromMistake(ch, SPELL_SENDING, 0, 95);
-        } else {
-            LearnFromMistake(ch, SPELL_MESSENGER, 0, 95);
-        }
-        return;
-    }
-
-    if (!IS_IMMORTAL(ch)) {
-        GET_MANA(ch) -= 5;
-    }
-
-    argument = get_argument(argument, &target_name);
-    message = skip_spaces(argument);
-
-    if (!target_name || !(target = get_char_vis_world(ch, target_name, NULL))) {
-        send_to_char("You can't sense that person anywhere.\n\r", ch);
-        return;
-    }
-
-    if (IS_NPC(target) && !IS_SET(target->specials.act, ACT_POLYSELF)) {
-        send_to_char("You can't sense that person anywhere.\n\r", ch);
-        return;
-    }
-
-    if (check_soundproof(target)) {
-        send_to_char("In a silenced room, try again later.\n\r", ch);
-        return;
-    }
-
-    if (IS_SET(target->specials.act, PLR_NOTELL)) {
-        send_to_char("They are ignoring messages at this time.\n\r", ch);
-        return;
-    }
-
-    if( !message ) {
-        send_to_char("You seem to want to send a message, but what?\n\r", ch);
-        return;
-    }
-
-    sprintf(buf, "$n sends you a mystic message:$c0013 %s", message);
-    act(buf, TRUE, ch, 0, target, TO_VICT);
-    sprintf(buf, "You send $N%s the message:$c0013 %s",
-            (IS_AFFECTED2(target, AFF2_AFK) ? " (Who is AFK)" : ""), message);
-    act(buf, TRUE, ch, 0, target, TO_CHAR);
-}
 
 /*
  * BREW for mages, done by Greg Hovey..
@@ -4372,174 +4270,6 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-void do_brew(struct char_data *ch, char *argument, int cmd)
-{
-    char            buf[MAX_INPUT_LENGTH],
-                   *spellnm;
-    struct obj_data *obj;
-    int             sn = -1,
-                    index,
-                    formula = 0;
-
-    if (affected_by_spell(ch, SPELL_FEEBLEMIND)) {
-        send_to_char("Der, what is that?\n\r", ch);
-        return;
-    }
-
-    if (!MainClass(ch, MAGE_LEVEL_IND) && !IS_IMMORTAL(ch)) {
-        send_to_char("Alas, you can only dream of brewing your own "
-                     "potions.\n\r", ch);
-        return;
-    }
-
-    if (!ch->skills) {
-        send_to_char("You don't seem to have any skills.\n\r", ch);
-        return;
-    }
-
-    if (!(ch->skills[SKILL_BREW].learned)) {
-        send_to_char("You haven't been properly trained in the art of "
-                     "brewing.\n\r", ch);
-        return;
-    }
-
-    if (!argument) {
-        send_to_char("What would you like to brew?\n\r", ch);
-        return;
-    }
-
-    if (GET_MANA(ch) < 50 && !IS_IMMORTAL(ch)) {
-        send_to_char("You don't have enough mana to brew that spell.\n\r", ch);
-        return;
-    }
-
-    if (!(obj = read_object(EMPTY_POTION, VIRTUAL))) {
-        Log("no default potion could be found for brew");
-        send_to_char("woops, something's wrong.\n\r", ch);
-        return;
-    }
-
-    argument = get_argument_delim(argument, &spellnm, '\'');
-
-    /*
-     * Check for beginning qoute 
-     */
-    if (!spellnm || spellnm[-1] != '\'') {
-        send_to_char("Magic must always be enclosed by the holy magic symbols :"
-                     " '\n\r", ch);
-        return;
-    }
-
-    sn = old_search_block(spellnm, 0, strlen(spellnm), spells, 0);
-    sn = sn - 1;
-
-    if (sn == -1) {
-        /* 
-         * no spell found?
-         */
-        send_to_char("Brew what??.\n\r", ch);
-        return;
-    }
-
-    index = spell_index[sn + 1];
-    if (!ch->skills[sn + 1].learned || index == -1) {
-        /*
-         * do you know that spell?
-         */
-        send_to_char("You don't know of this spell.\n\r", ch);
-        return;
-    }
-
-    if (!(spell_info[index].min_level_magic)) {
-        /*
-         * is it a mage spell?
-         */
-        send_to_char("You cannot concoct that spell!\n\r", ch);
-        return;
-    }
-
-    if (spell_info[index].brewable == 0 && !IS_IMMORTAL(ch)) {
-        send_to_char("You can't brew that spell.\n\r", ch);
-        return;
-    }
-
-    if (GET_MANA(ch) < spell_info[index].min_usesmana * 2 && 
-        !IS_IMMORTAL(ch)) {
-        send_to_char("You don't have enough mana to brew that spell.\n\r", ch);
-        return;
-    }
-
-    act("$n begins preparing a potion.", TRUE, ch, obj, NULL, TO_ROOM);
-    act("You start preparing a potion.", TRUE, ch, obj, NULL, TO_CHAR);
-
-    formula = ((ch->skills[SKILL_BREW].learned) + GET_INT(ch) / 3) +
-              (GET_WIS(ch) / 3);
-
-    if (formula > 98) {
-        formula = 98;
-    }
-    if ((number(1, 101) >= formula || ch->skills[SKILL_BREW].learned < 10) &&
-        !IS_IMMORTAL(ch)) {
-        WAIT_STATE(ch, PULSE_VIOLENCE * 5);
-        act("$p explodes violently!", TRUE, ch, obj, NULL, TO_CHAR);
-        act("$p explodes violently!", TRUE, ch, obj, NULL, TO_ROOM);
-        GET_HIT(ch) -= spell_info[index].min_level_magic;
-        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
-        act("$n screams in pain as $p exploded on $m.", TRUE, ch, obj,
-            NULL, TO_ROOM);
-        act("You scream in pain as $p explodes.", TRUE, ch, obj, NULL, TO_CHAR);
-        LearnFromMistake(ch, SKILL_BREW, 0, 90);
-        extract_obj(obj);
-    } else {
-        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
-        sprintf(buf, "You have imbued a new spell to %s.\n\r",
-                obj->short_description);
-        send_to_char(buf, ch);
-        send_to_char("The brew was a success!\n\r", ch);
-
-        if (obj->short_description) {
-            free(obj->short_description);
-        }
-        sprintf(buf, "a potion of %s", spells[sn]);
-        obj->short_description = (char *) strdup(buf);
-
-        if (obj->name) {
-            free(obj->name);
-        }
-        sprintf(buf, "potion %s", spells[sn]);
-        obj->name = (char *) strdup(buf);
-
-        if (obj->description) {
-            free(obj->description);
-        }
-        sprintf(buf, "%s", "A weird coloured potion is on the ground.");
-        obj->description = (char *) strdup(buf);
-
-        if (IS_IMMORTAL(ch)) {
-            /* 
-             * set spell level.
-             */
-            obj->obj_flags.value[0] = MAX_MORT;
-        } else {
-            /* 
-             * set spell level.
-             */
-            obj->obj_flags.value[0] = GetMaxLevel(ch);
-        }
-
-        /*
-         * set spell in slot.
-         */
-        obj->obj_flags.value[1] = sn + 1;
-        obj->obj_flags.timer = 60;
-
-        send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using "
-                     "your abilities.$c0007\n\r", ch);
-        gain_exp(ch, 100);
-        obj_to_char(obj, ch);
-        WAIT_STATE(ch, PULSE_VIOLENCE * 3);
-    }
-}
 
 
 /*

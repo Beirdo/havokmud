@@ -16,7 +16,7 @@
  */
 
 const struct class_def classes[MAX_CLASS] = {
-    { "Mu", "Magic User",
+    { "Ma", "Mage",
       /* THACO */
       {100, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 18, 18, 18, 18, 18, 17,
        17, 17, 17, 17, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 14, 14, 14,
@@ -24,7 +24,6 @@ const struct class_def classes[MAX_CLASS] = {
        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
        /* Skills */
       { {"acid blast", SPELL_ACID_BLAST, 6, 45},
-        {"animate dead", SPELL_ANIMATE_DEAD, 16, 45},
         {"armor", SPELL_ARMOR, 5, 45},
         {"blindness", SPELL_BLINDNESS, 12, 45},
         {"burning hands", SPELL_BURNING_HANDS, 6, 45},
@@ -33,7 +32,6 @@ const struct class_def classes[MAX_CLASS] = {
         {"chain lightning", SPELL_CHAIN_LIGHTNING, 25, 45},
         {"charm monster", SPELL_CHARM_MONSTER, 10, 45},
         {"charm person", SPELL_CHARM_PERSON, 4, 45},
-        {"chill touch", SPELL_CHILL_TOUCH, 4, 45},
         {"colour spray", SPELL_COLOUR_SPRAY, 14, 45},
         {"comprehend languages", SPELL_COMP_LANGUAGES, 1, 45},
         {"cone of cold", SPELL_CONE_OF_COLD, 17, 45},
