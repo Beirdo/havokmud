@@ -421,10 +421,10 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
 #else
     struct nodes    x_room[MAX_ROOMS];
 #endif
-    int             i,
-                    tmp_room,
+    int             tmp_room,
                     count = 0,
                     thru_doors;
+    long            i;
     struct room_data *herep,
                    *therep;
     struct room_data *startp;
@@ -515,8 +515,9 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
                             /*
                              * ancestor for first layer is the direction 
                              */
+                            /* AMD64: fix me */
                             hash_enter(&x_room, tmp_room,
-                              ((int)hash_find(&x_room, q_head->room_nr) == -1) ?
+                             ((long)hash_find(&x_room, q_head->room_nr) == -1) ?
                                (void *) (i + 1) : 
                                hash_find(&x_room, q_head->room_nr));
                         }
@@ -534,7 +535,8 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
                         /*
                          * return direction if first layer 
                          */
-                        if ((int) hash_find(&x_room, tmp_room) == -1) {
+                        /* AMD64: fix me */
+                        if ((long) hash_find(&x_room, tmp_room) == -1) {
                             if (x_room.buckets) {
                                 /* 
                                  * junk left over from a previous track 
@@ -546,7 +548,8 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
                             /* 
                              * else return the ancestor 
                              */
-                            i = (int) hash_find(&x_room, tmp_room);
+                            /* AMD64: fix me */
+                            i = (long) hash_find(&x_room, tmp_room);
                             if (x_room.buckets) {
                                 /* 
                                  * junk left over from a previous track 
@@ -585,12 +588,16 @@ int find_path(int in_room, int (*predicate) (), void *c_data,
 
 int choose_exit_global(int in_room, int tgt_room, int depth)
 {
-    return find_path(in_room, is_target_room_p, (void *) tgt_room, depth, 0);
+    /* AMD64: fix me */
+    return find_path(in_room, is_target_room_p, (void *)(long) tgt_room, 
+                     depth, 0);
 }
 
 int choose_exit_in_zone(int in_room, int tgt_room, int depth)
 {
-    return find_path(in_room, is_target_room_p, (void *) tgt_room, depth, 1);
+    /* AMD64: fix me */
+    return find_path(in_room, is_target_room_p, (void *)(long) tgt_room, 
+                     depth, 1);
 }
 
 void go_direction(struct char_data *ch, int dir)

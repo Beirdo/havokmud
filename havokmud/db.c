@@ -4742,7 +4742,7 @@ char *file_to_string(char *name)
     char           *buf;
     char           *curr;
     struct stat     stat;
-    int             size;
+    long            size;
     int             rd;
     char            tmp[256];
 

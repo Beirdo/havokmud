@@ -82,7 +82,8 @@ void UpdateTfdMenu(struct char_data *ch)
             tfd_types[tfd->file]);
     send_to_char(buf, ch);
     send_to_char("Preview:\n\r\n\r", ch);
-    if (!((char *) tfd->file)) {
+    /* AMD64: this needs to be fixed */
+    if (!((char *)(long) tfd->file)) {
         send_to_char("No file selected.\n\r", ch);
     } else {
         if ((char *) tfd->date) {

@@ -104,7 +104,7 @@ void show_string(struct descriptor_data *d, char *input)
 {
     char            bigbuf[MAX_STRING_LENGTH],
                    *tmpbuf;
-    int             diff;
+    long            diff;
 
     input = get_argument(input, &tmpbuf);
     if( tmpbuf ) {
@@ -174,8 +174,8 @@ void show_string(struct descriptor_data *d, char *input)
         /*
          * Or if we have more to show....
          */
-        diff = ((int) d->showstr_vector[d->showstr_page + 1]) -
-               ((int) d->showstr_vector[d->showstr_page]);
+        diff = ((long) d->showstr_vector[d->showstr_page + 1]) -
+               ((long) d->showstr_vector[d->showstr_page]);
         strncpy(bigbuf, d->showstr_vector[d->showstr_page], diff);
         bigbuf[diff] = '\0';
 

@@ -54,13 +54,14 @@ int affect_status(struct memory *mem, struct char_data *ch,
 
 int is_target_room_p(int room, void *tgt_room)
 {
-    return room == (int) tgt_room;
+    /* AMD64: Fix me */
+    return( room == (int)(long) tgt_room );
 }
 
 int named_object_on_ground(int room, void *c_data)
 {
     char           *name = c_data;
-    return 0 != get_obj_in_list(name, real_roomp(room)->contents);
+    return( 0 != get_obj_in_list(name, real_roomp(room)->contents) );
 }
 
 /*
@@ -5062,7 +5063,8 @@ int affect_status(struct memory *mem, struct char_data *ch,
 
     mem->names[mem->c] = (char *) malloc(strlen(GET_NAME(t) + 2));
     strcpy(mem->names[mem->c], GET_NAME(t));
-    mem->status[mem->c] = (int) malloc(sizeof(int));
+    /* AMD64: fix me */
+    mem->status[mem->c] = (int)(long) malloc(sizeof(int));
     mem->status[mem->c] = aff_status;
     ++mem->c;
     return (mem->c - 1);
