@@ -999,7 +999,7 @@ void assign_command_pointers ()
   AddCommand("remove",do_remove,66,POSITION_RESTING,0);
   AddCommand("put",do_put,67,POSITION_RESTING,0);
   AddCommand("shutdow",do_shutdow,68,POSITION_DEAD,SILLYLORD);
-  AddCommand("save",do_save,69,POSITION_SLEEPING,0);
+  AddCommand("save",do_save,69,POSITION_STUNNED,0);
   AddCommand("hit",do_hit,70,POSITION_FIGHTING,1);
   AddCommand("string",do_string,71,POSITION_SLEEPING,53);
   AddCommand("give",do_give,72,POSITION_RESTING,1);
