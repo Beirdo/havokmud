@@ -4665,7 +4665,9 @@ dlog("in do_show_skill");
 		send_to_char("Your class can learn these skills:\n\r\n\r", ch);
 		while(thiefskills[i].level != -1) {
 			sprintf(buf,"[%-2d] %-30s %-15s",thiefskills[i].level, thiefskills[i].name,
-				(how_good(ch->skills[thiefskills[i].skillnum].learned)));
+				/* kludged a bit to get rid of the dex bonus to five skills */
+				((IS_SET(ch->skills[thiefskills[i].skillnum].flags,SKILL_KNOWN)) || (!strcmp(thiefskills[i].name,"steal"))) ?
+				(how_good(ch->skills[thiefskills[i].skillnum].learned)):" (not learned)");
 			if (IsSpecialized(ch->skills[thiefskills[i].skillnum].special))
 				strcat(buf," (special)");
 			strcat(buf," \n\r");
