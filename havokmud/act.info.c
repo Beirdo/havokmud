@@ -4773,7 +4773,7 @@ void show_class_skills(struct char_data *ch, char *buffer, int classnum,
     if (ch->specials.remortclass == classnum + 1) {
         if( skills ) {
             sprintf( buf, "\n\rSince you picked %s as your main class, you get"
-                          "these bonus skills:\n\r", classes[classnum].name );
+                          " these bonus skills:\n\r", classes[classnum].name );
             strcat(buffer, buf);
         }
 
