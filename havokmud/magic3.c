@@ -4478,7 +4478,12 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 		act("$c000BYou summon a barrier of whirling blades around you.",TRUE,ch,0,0,TO_CHAR);
 
 		af.type      = SPELL_BLADE_BARRIER;
-		af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+
+		if(ch->specials.remortclass != CLERIC_LEVEL_IND + 1){
+           af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+	}else{
+		   af.duration  = (level<LOW_IMMORTAL) ? 4 : level;
+	   }
 		af.modifier  = 0;
 		af.location  = APPLY_NONE;
 		af.bitvector = AFF_BLADE_BARRIER;

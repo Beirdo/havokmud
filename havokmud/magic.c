@@ -1649,7 +1649,12 @@ void spell_sanctuary(byte level, struct char_data *ch,
 		act("You start glowing.",TRUE,victim,0,0,TO_CHAR);
 
     af.type      = SPELL_SANCTUARY;
+
+    if(ch->specials.remortclass != CLERIC_LEVEL_IND + 1){
     af.duration  = (level<LOW_IMMORTAL) ? 3 : level;
+}else{
+    af.duration  = (level<LOW_IMMORTAL) ? 4 : level;
+}
     af.modifier  = 0;
     af.location  = APPLY_NONE;
     af.bitvector = AFF_SANCTUARY;

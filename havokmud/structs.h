@@ -1971,9 +1971,10 @@ Mage
 //	+10 mana regen
 
 Cleric
-	+1 tick on blade barrier and sanctuary durations
+//	+1 tick on blade barrier and sanctuary durations					//done by Gordon
 	group heal
-//	scribe, creates scrolls with cleric spells
+//  scribe, creates scrolls with cleric spells							//done by Lennya
+
 
 Warrior
 	more weapon proficiencies

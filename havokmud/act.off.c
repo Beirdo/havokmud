@@ -881,7 +881,7 @@ dlog("in do_mend");
 	if(!ch)
 		return;
 
-	if(!IS_IMMORTAL(ch) && !OnlyClass(ch, CLASS_WARRIOR)) {
+	if(!IS_IMMORTAL(ch) && (ch->specials.remortclass != WARRIOR_LEVEL_IND + 1)) {
 		send_to_char("Pardon?\n\r",ch);
 		return;
 	}
