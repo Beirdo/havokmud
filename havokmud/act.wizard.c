@@ -6829,6 +6829,54 @@ void do_setobjspeed(struct char_data *ch, char *argument, int cmd)
       return;
 }
 
+void do_setwtype(struct char_data *ch, char *argument, int cmd)
+{
+	struct obj_data *obj;
+	char objec[100], num[100],buf[100];
+	long number;
+	extern const struct skillset weaponskills[];
+
+
+dlog("in do_setobjspeed");
+
+	if (IS_NPC(ch))
+		return;
+
+	argument = one_argument(argument, objec);
+
+	only_argument(argument, num);
+	if (isdigit(*num))
+		number = atoi(num);
+	else {
+		send_to_char("Usage: setwtype item wtype.  Get wtype from allweapons list.\n\r", ch);
+		return;
+	}
+
+	if (!*objec) {
+		send_to_char("Set which weapon?\n\r",ch);
+		return;
+	}
+
+	if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
+		send_to_char("Where is that?\n\r",ch);
+		return;
+	}
+
+	if(!IS_WEAPON(obj)) {
+		send_to_char("That's not a weapon.\n\r",ch);
+		return;
+	}
+
+	if(number >= 0 && number <= 59) {
+		obj->weapontype = number;
+		sprintf(buf,"Set weapontype to %s\n\r",weaponskills[obj->weapontype].name);
+		send_to_char(buf,ch);
+	} else {
+		send_to_char("Invalid weapontype. Get wnum from allweapons list.",ch);
+	}
+	return;
+}
+
 void do_setsound(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;

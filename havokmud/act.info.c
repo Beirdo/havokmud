@@ -5649,7 +5649,7 @@ void do_clanlist(struct char_data *ch, char *arg, int cmd)
 void do_allweapons(struct char_data *ch, char *argument, int cmd)
 {
 	int i;
-	char buf[MAX_STRING_LENGTH];
+	char buf[MAX_STRING_LENGTH], shbuf[500];
 	extern const struct skillset weaponskills[];
 
 dlog("in do_allweapons");
@@ -5661,12 +5661,13 @@ dlog("in do_allweapons");
 
 	*buf=0;
 
-	send_to_char("[  #] Weapontype\n\r", ch);
+	sprintf(buf,"[  #] Weapontype\n\r");
 
 	i = 0;
 	while (weaponskills[i].level != -1) {
-		sprintf(buf,"[%3d] %s\n\r", i, weaponskills[i].name);
-		send_to_char(buf, ch);
+		sprintf(shbuf,"[%3d] %s\n\r", i, weaponskills[i].name);
+		strcat(buf, shbuf);
 		i++;
 	}
+	page_string(ch->desc, buf, 1);
 }

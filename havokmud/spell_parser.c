@@ -1401,7 +1401,7 @@ int GetManaRegen(struct char_data *i) {
 		}
 	}
 
-	/* darkpact regen penalty */
+	/* darkpact regen bonus */
 	if (affected_by_spell(i, SPELL_DARK_PACT)) {
 		darkpact = 30;
 	}

@@ -1636,6 +1636,7 @@ AddCommand("know", do_know, 608, POSITION_RESTING, 1);
 AddCommand("lore", do_legend_lore, 609, POSITION_RESTING, 1);
 AddCommand("ventriloquate", do_ventriloquate, 610, POSITION_SITTING, 1);
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
+AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 }
 
 
