@@ -2223,12 +2223,10 @@ void spell_holy_strength(int level, struct char_data *ch,
 
         af.type = SPELL_HOLY_STRENGTH;
         af.duration = 2 * level;
-        if (IS_NPC(victim)) {
-            if (level >= CREATOR) {
-                af.modifier = 0;
-            } else {
-                af.modifier = number(1, 8);
-            }
+        if (level >= CREATOR) {
+            af.modifier = 0;
+        } else {
+            af.modifier = number(1, 8);
         }
         af.location = APPLY_STR;
         af.bitvector = 0;
