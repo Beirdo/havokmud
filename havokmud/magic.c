@@ -1794,7 +1794,7 @@ if (victim->specials.fighting) {
   }
 
 	/* a location has been found. */
-send_to_char("You think of better times and close your eyes.",victim);
+send_to_char("You think of better times and close your eyes.\n\r",victim);
 
   act("$n disappears.", TRUE, victim, 0, 0, TO_ROOM);
   char_from_room(victim);

@@ -365,6 +365,7 @@ struct QuestItem {
 #define PULSE_AUCTION 80 /* every 20 seconds */
 #define PULSE_PLAYSONG 12 /* every 3 seconds */
 #define PULSE_TROLLREGEN 14 /* every once in a while */
+#define PULSE_TQP 12 /* do a travel check for the qp, every 20 secs */
 #define MAX_ROOMS   5000
 
 
@@ -378,7 +379,9 @@ struct QuestItem {
 #define FIGHTING_STYLE_DEFENSIVE  3
 #define FIGHTING_STYLE_EVASIVE    4
 
-
+/*minimum # of zones needed to keep tqp alive */
+#define MIN_INIT_TQP 10
+#define TRAVELQP 26
 
 struct nodes
 {

@@ -103,6 +103,8 @@ char *fread_string(FILE *f1);
 void setup_dir(FILE *fl, long room, int dir);
 struct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *alloc_top, char *dirname);
 
+int qp_patience;
+
 /************************************************************************
 *  routines for booting the system                                       *
 *********************************************************************** */
@@ -3191,10 +3193,20 @@ struct obj_data *read_object(int nr, int type)
   return (obj);
 }
 
-
-
-
 #define ZO_DEAD  999
+
+/* counts the number of inited zones */
+int init_counter()
+{
+	int i, j = 0;
+
+	for (i = 0; i <= top_of_zone_table; i++) {
+		if (zone_table[i].start && zone_table[i].age < ZO_DEAD) {
+			j++;
+		}
+	}
+	return(j);
+}
 
 /* update zone ages, queue for reset if necessary, and dequeue when possible */
 void zone_update()
@@ -3203,7 +3215,10 @@ void zone_update()
   struct reset_q_element *update_u, *temp, *tmp2;
   extern struct reset_q_type reset_q;
   char buf[128];
-
+  struct char_data *newch;
+  int to_room = 0;
+  struct room_data *room;
+  struct obj_data *travelqp;
 
   /* enqueue zones */
 
@@ -3249,7 +3264,6 @@ void zone_update()
 			(IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_EMPTY) &&
 			is_empty(update_u->zone_to_reset))) {
 /* Lennya's deinit of zones stuff */
-			//IS_SET(SystemFlags,SYS_NO_DEINIT)
 			if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_NODEINIT)) {
 				/* this should never deinit, or set back to 0 */
 				reset_zone(update_u->zone_to_reset,0);
@@ -3275,6 +3289,31 @@ void zone_update()
 			if (update_u)
 				free(update_u);
 		}
+	}
+
+	i = init_counter();
+	if((i > (MIN_INIT_TQP-1)) && !(travelqp = find_tqp())) {
+		// init the travelqp thing
+		newch = 0;
+		qp_patience = 0;
+		while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
+			to_room = number(0, top_of_world);
+			room = real_roomp(to_room);
+			if (room) {
+				if(newch = room->people) {
+					if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF)) {
+						newch = 0;
+					}
+				}
+			}
+		}
+		if(!(travelqp = read_object(TRAVELQP, VIRTUAL))) {
+			log("no tqp item could be loaded");
+			return;
+		}
+		obj_to_char(travelqp, newch);
+		log("travelqp inited");
+
 	}
 }
 

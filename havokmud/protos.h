@@ -461,6 +461,7 @@ void renum_zone_table(int spec_zone);
 void boot_zones();
 struct char_data *read_mobile(int nr, int type);
 struct obj_data *read_object(int nr, int type);
+int init_counter();
 void zone_update();
 void reset_zone(int zone, int cmd);
 int is_empty(int zone_nr);
@@ -2122,6 +2123,7 @@ void TeleportPulseStuff(int pulse);
 void AdvicePulseStuff(int pulse);
 void DarknessPulseStuff(int pulse);
 void ArenaPulseStuff(int pulse);
+void traveling_qp(int pulse);
 void PlaysongPulseStuff(int pulse);
 void AuctionPulseStuff(int pulse);
 void TrollRegenPulseStuff(int pulse);
@@ -2164,6 +2166,8 @@ int CheckEgoGive(struct char_data *ch,struct char_data *vict,
 int HowManySpecials(struct char_data *ch) ;
 void tweak(struct obj_data *obj);
 int HasInstrument(struct char_data *ch);
+
+struct obj_data *find_tqp();
 
 /* From weather.c */
 

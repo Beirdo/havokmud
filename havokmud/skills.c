@@ -1649,60 +1649,46 @@ act(buf,TRUE, ch, 0, 0, TO_ROOM);
 
 void do_find_food( struct char_data *ch, char *arg, int cmd)
 {
-  int r_num,percent=0;
-  struct obj_data *obj;
+	int r_num,percent=0;
+	struct obj_data *obj;
 
-if (!ch->skills)
-	return;
+	if (!ch->skills)
+		return;
 
-if (!ch->skills[SKILL_FIND_FOOD].learned >0) {
-	send_to_char("You search blindly for anything, but fail.\n\r.",ch);
-	return;
+	if (!ch->skills[SKILL_FIND_FOOD].learned >0) {
+		send_to_char("You search blindly for anything, but fail.\n\r.",ch);
+		return;
 	}
 
-    if (!OUTSIDE(ch)) {
-      send_to_char("You need to be outside.\n\r",ch);
-      return;
-    }
+	if (!OUTSIDE(ch)) {
+		send_to_char("You need to be outside.\n\r",ch);
+		return;
+	}
 
-   percent = number(1,101); /* 101% is a complete failure */
+	percent = number(1,101); /* 101% is a complete failure */
 
- if (ch->skills && ch->skills[SKILL_FIND_FOOD].learned &&
-      GET_POS(ch) > POSITION_SITTING)
-    {
-     if (percent > ch->skills[SKILL_FIND_FOOD].learned)
+	if (ch->skills && ch->skills[SKILL_FIND_FOOD].learned &&
+		GET_POS(ch) > POSITION_SITTING) {
 
-      { /* failed */
-    act("You search around for some edibles but failed to find anything.",
-	TRUE, ch, 0, 0, TO_CHAR);
-    act("$n searches and searches for something to eat but comes up empty.",
-	TRUE, ch, 0, 0, TO_ROOM);
-      } else
-
-       { /* made it */
-    act("You search around for some edibles and managed to find some roots and berries.",
-	TRUE, ch, 0, 0, TO_CHAR);
-    act("$n searches the area for something to eat and manages to find something.",
-	TRUE, ch, 0, 0, TO_ROOM);
-  	  if ((r_num = real_object(FOUND_FOOD)) >= 0)
-  	  {
-    	    obj = read_object(r_num, REAL);
-    	    obj_to_char(obj,ch);
- 			send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
-			gain_exp(ch, 100);
-  	  }
-       }
-     WAIT_STATE(ch, PULSE_VIOLENCE*3);
-    } /* ^ had the skill */
-
-    else  /* didn't have the skill... */
-     {
-    act("You search around for some edibles but failed to find anything.",
-	TRUE, ch, 0, 0, TO_CHAR);
-    act("$n searches and searches for something to eat but comes up empty.",
-	TRUE, ch, 0, 0, TO_ROOM);
-     }
-
+		if (percent > ch->skills[SKILL_FIND_FOOD].learned) { /* failed */
+			act("You search around for some edibles but failed to find anything.",TRUE, ch, 0, 0, TO_CHAR);
+			act("$n searches and searches for something to eat but comes up empty.",TRUE, ch, 0, 0, TO_ROOM);
+			LearnFromMistake(ch, SKILL_FIND_FOOD, 0, 90);
+		} else { /* made it */
+			act("You search around for some edibles and managed to find some roots and berries.", TRUE, ch, 0, 0, TO_CHAR);
+			act("$n searches the area for something to eat and manages to find something.", TRUE, ch, 0, 0, TO_ROOM);
+			if ((r_num = real_object(FOUND_FOOD)) >= 0) {
+				obj = read_object(r_num, REAL);
+				obj_to_char(obj,ch);
+				send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your combat abilities.$c0007\n\r",ch);
+				gain_exp(ch, 100);
+			}
+		}
+		WAIT_STATE(ch, PULSE_VIOLENCE*3);
+	} else { /* didn't have the skill... */
+		act("You search around for some edibles but failed to find anything.", TRUE, ch, 0, 0, TO_CHAR);
+		act("$n searches and searches for something to eat but comes up empty.", TRUE, ch, 0, 0, TO_ROOM);
+	}
 }
 
 #define FOUND_WATER 13  /* obj found when water found */
@@ -1738,6 +1724,7 @@ if (!ch->skills[SKILL_FIND_WATER].learned >0) {
 	TRUE, ch, 0, 0, TO_CHAR);
     act("$n searches and searches for something to drink but comes up empty.",
 	TRUE, ch, 0, 0, TO_ROOM);
+	LearnFromMistake(ch, SKILL_FIND_FOOD, 0, 90);
       } else
 
        { /* made it */

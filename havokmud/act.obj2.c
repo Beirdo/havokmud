@@ -598,7 +598,7 @@ perform_wear(struct char_data *ch, struct obj_data *obj_object, long keyword)
     act("$n inserts $p in $s ear.", TRUE, ch, obj_object,0,TO_ROOM);
     break;
   case 17:
-    act("$n wears $p on $s eye.", TRUE, ch, obj_object,0,TO_ROOM);
+    act("$n wears $p on $s face.", TRUE, ch, obj_object,0,TO_ROOM);
     break;
   }
 }

@@ -709,6 +709,12 @@ memory_check("end 5, begin 6");
 	      TrollRegenPulseStuff(pulse);
     }
 
+	if (!(pulse % PULSE_TQP)) {
+		dlog("Before travelqp pulse");
+		memory_check("travelqp pulse");
+	      traveling_qp(pulse);
+    }
+
 	if (!(pulse % PULSE_PLAYSONG)) {
 		dlog("Before playing song pulse");
 		memory_check("playing song pulse");

@@ -5991,6 +5991,30 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		questNumber2 = number(0,3);
 	}
 
+	if(cmd == 15) { //look
+		if(!(strcmp(lower(arg),"ball"))) {
+			send_to_char("You look deep into the crystal ball..\n\r\n\r",ch);
+			if(obj = find_tqp()) {
+				if(vict = obj->carried_by) {
+					if(!IS_NPC(vict)) {
+						send_to_char("The token seems to already have been tracked down by someone.\n\r",ch);
+					} else {
+						send_to_char("The crystal ball divulges some information on the current carrier of the\n\r",ch);
+						send_to_char("quest point token, though for how much longer it will stay, it cannot say.\n\r\n\r",ch);
+						if (vict->player.description)
+							send_to_char(vict->player.description, ch);
+					}
+				} else {
+					send_to_char("You cannot seem to divine the exact location of the token.\n\r",ch);
+				}
+			} else {
+				send_to_char(".. and see nothing at all.\n\r",ch);
+			}
+			return(TRUE);
+		}
+		return(FALSE);
+	}
+
 	//Ask what the quest is?
 	if (cmd == 86)
 	{ /* ask */
@@ -6001,7 +6025,7 @@ int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 		//return(FALSE);
 
       if(!(strcmp(lower(arg)," what is the quest?"))) {
-		send_to_char("$c0006You ask him 'What is the quest?",ch);
+		send_to_char("$c0006You ask him 'What is the quest?'\n\r",ch);
 		do_say(vict, "Solve my quest and you shall be rewarded!",0);
 	   do_say(vict, QuestList[questNumber2][questNumber].where,0);
 		return (TRUE);
