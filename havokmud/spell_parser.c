@@ -280,7 +280,7 @@ char           *spells[] = {
     "giant growth",
     "***",
     "berserk",
-    "tan",
+    "skin",
     "avoid back attack",
     "find food",                /* 210 */
     "find water",               /* 211 */
@@ -431,6 +431,8 @@ char           *spells[] = {
     "scribe",                   /* 348 */
     "group heal",
     "plant gate",               /* 350 */
+    "camouflage",
+    "stalk",
     "\n"
 };
 
@@ -1056,7 +1058,7 @@ struct spell_info_type spell_info[] = {
       10, 26, 16, 10, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_IGNORE, 0, 1 },
     { 91, cast_calm, 15, 24, POSITION_STANDING, 
-      4, 2, IMMORTAL, 4, 18, IMMORTAL, IMMORTAL, IMMORTAL,
+      4, 2, IMMORTAL, 4, IMMORTAL, IMMORTAL, IMMORTAL, IMMORTAL,
       TAR_CHAR_ROOM, 0, 0 },
     { 92, cast_stone_skin, 40, 24, POSITION_STANDING, 
       26, IMMORTAL, IMMORTAL, 26, IMMORTAL, IMMORTAL, IMMORTAL, 32,

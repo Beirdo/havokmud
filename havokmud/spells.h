@@ -443,10 +443,11 @@
 #define SKILL_FLURRY                 347
 #define SKILL_SCRIBE                 348
 #define SPELL_GROUP_HEAL             349
-
 #define SPELL_PLANT_GATE             350
+#define SKILL_CAMOUFLAGE             351
+#define SKILL_STALK                  352
 
-#define MAX_EXIST_SPELL              350     /* max number of skills/spells */
+#define MAX_EXIST_SPELL              352     /* max number of skills/spells */
 
 #define FIRST_BREATH_WEAPON          382
 #define SPELL_FIRE_BREATH            382

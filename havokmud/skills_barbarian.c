@@ -1,5 +1,6 @@
 /*
  * HavokMUD - barbarian class skills
+ * REQUIRED BY - barbarian
  */
 #include "config.h"
 #include "platform.h"
@@ -12,9 +13,9 @@
 #include "externs.h"
 #include "utils.h"
 
+extern struct dex_skill_type dex_app_skill[];
+
 /* avoid backattack is an innate skill checked for in backstab */
-/* bash */
-/* bellow */
 
 void do_berserk(struct char_data *ch, char *arg, int cmd)
 {
@@ -96,20 +97,50 @@ void do_berserk(struct char_data *ch, char *arg, int cmd)
 
     WAIT_STATE(ch, PULSE_VIOLENCE * 3);
 }
-/* camouflage is actually the thief skill hide */
-/* climb */
-/* disarm */
-/* disguise */
-/* dodge is an innate skill checked for when fighting */
-/* doorbash */
-/* find food */
-/* find water */
-/* first aid */
-/* hunt */
-/* retreat is an innate skill checked for in flee */
-/* skin */
-/* spy */
-/* switch opponents */
+
+void do_camouflage(struct char_data *ch, char *argument, int cmd)
+{
+    byte            percent;
+
+    dlog("in do_camouflage");
+    if (!ch->skills[SKILL_CAMOUFLAGE].learned) {
+        send_to_char("Pardon?\n\r", ch);
+        return;
+    }
+    if (IS_AFFECTED(ch, AFF_HIDE)) {
+        REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
+    }
+    
+    send_to_char("You attempt to camouflage yourself.\n\r", ch);
+    
+    if (!OUTSIDE(ch)) {
+        send_to_char("You must do this outdoors.\n\r", ch);
+        return;
+    }
+    if (MOUNTED(ch)) {
+        send_to_char("Yeah... right... while mounted\n\r", ch);
+        return;
+    }
+    percent = number(1, 101);
+    /*
+     * 101% is a complete failure
+     */
+    if (!ch->skills) {
+        return;
+    }
+    if (percent > ch->skills[SKILL_CAMOUFLAGE].learned +
+        dex_app_skill[(int)GET_DEX(ch)].hide) {
+        LearnFromMistake(ch, SKILL_CAMOUFLAGE, 1, 90);
+        if (cmd) {
+            WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+        }
+        return;
+    }
+    SET_BIT(ch->specials.affected_by, AFF_HIDE);
+    if (cmd) {
+        WAIT_STATE(ch, PULSE_VIOLENCE * 1);
+    }
+}
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

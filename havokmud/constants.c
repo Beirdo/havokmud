@@ -333,7 +333,6 @@ const struct class_def classes[MAX_CLASS] = {
         {"bellow", SKILL_BELLOW, 1, 45},
         {"kick", SKILL_KICK, 1, 45},
         {"rescue", SKILL_RESCUE, 1, 45},
-        {"skin", SKILL_TAN, 1, 45},
         {"None", -1, -1, -1}
       },
       /* Mainskills */
@@ -415,6 +414,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"sneak", SKILL_SNEAK, 1, 45},
         {"spy", SKILL_SPY, 1, 45},
         {"steal", SKILL_STEAL, 1, 45},
+        {"disguise", SKILL_DISGUISE, 1, 45},
         {"None", -1, -1, -1}
       },
       /* Mainskills */
@@ -731,7 +731,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"bash", SKILL_BASH, 1, 45},
         {"bellow", SKILL_BELLOW, 1, 45},
         {"berserk", SKILL_BERSERK, 1, 45},
-        {"camouflage", SKILL_HIDE, 1, 45},      /* 5 */
+        {"camouflage", SKILL_CAMOUFLAGE, 1, 45},      /* 5 */
         {"climb", SKILL_CLIMB, 1, 45},
         {"disarm", SKILL_DISARM, 1, 45},
         {"disguise", SKILL_DISGUISE, 1, 45},
@@ -742,7 +742,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"first aid", SKILL_FIRST_AID, 1, 45},
         {"hunt", SKILL_HUNT, 1, 45},
         {"retreat", SKILL_RETREAT, 1, 45},      /* 15 */
-        {"skin", SKILL_TAN, 1, 45},
+        {"tan", SKILL_TAN, 1, 45},
         {"spy", SKILL_SPY, 1, 45},
         {"switch opponents", SKILL_SWITCH_OPP, 1, 45},  /* 18 */
         {"None", -1, -1, -1}
@@ -979,7 +979,6 @@ const struct class_def classes[MAX_CLASS] = {
       /* Skills */
       { {"bash", SKILL_BASH, 1, 45},
         {"blessing", SKILL_BLESSING, 1, 45},
-        {"calm", SPELL_CALM, 18, 45},
         {"charge", SKILL_CHARGE, 4, 45},
         {"cure light", SPELL_CURE_LIGHT, 9, 45},
         {"cure serious", SPELL_CURE_SERIOUS, 45, 45},
@@ -1092,7 +1091,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"find water", SKILL_FIND_WATER, 1, 45},
         {"first aid", SKILL_FIRST_AID, 1, 45},
         {"goodberry", SPELL_GOODBERRY, 10, 45},
-        {"hide", SKILL_HIDE, 2, 45},
+        {"camouflage", SKILL_CAMOUFLAGE, 2, 45},
         {"hunt", SKILL_HUNT, 1, 45},
         {"invis to animals", SPELL_INVIS_TO_ANIMALS, 8, 45},
         {"protection from evil", SPELL_PROTECT_FROM_EVIL, 25, 45},
@@ -1104,7 +1103,7 @@ const struct class_def classes[MAX_CLASS] = {
         {"sending", SPELL_SENDING, 1, 45},
         {"slow poison", SPELL_SLOW_POISON, 10, 45},
         {"snare", SPELL_SNARE, 5, 45},
-        {"sneak", SKILL_SNEAK, 4, 45},
+        {"stalk", SKILL_STALK, 4, 45},
         {"spot", SKILL_SPOT, 3, 45},
         {"spy", SKILL_SPY, 1, 45},
         {"switch opponents", SKILL_SWITCH_OPP, 1, 45},
@@ -6019,7 +6018,6 @@ const struct skillset archerskills[] = {
  */
 const struct skillset thfninjaskills[] = {
     {"climb", SKILL_CLIMB, 1, 94},
-    {"disguise", SKILL_HIDE, 1, 94},
     {"None", -1, -1, -1}
 };
 const struct skillset warninjaskills[] = {

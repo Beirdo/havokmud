@@ -5545,7 +5545,9 @@ int IsMagicSpell(int spell_num)
     switch (spell_num) {
     case SKILL_BACKSTAB:
     case SKILL_SNEAK:
+    case SKILL_STALK:
     case SKILL_HIDE:
+    case SKILL_CAMOUFLAGE:
     case SKILL_PICK_LOCK:
     case SKILL_KICK:
     case SKILL_BASH:

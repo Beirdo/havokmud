@@ -536,7 +536,7 @@ struct command_def commandList[] = {
     { "memorize", do_memorize, 331, POSITION_RESTING, 1 },
     { "find", do_find, 332, POSITION_STANDING, 1 },
     { "bellow", do_bellow, 333, POSITION_FIGHTING, 1 },
-    { "camouflage", do_hide, 334, POSITION_STANDING, 1 },
+    { "camouflage", do_camouflage, 334, POSITION_STANDING, 1 },
     { "carve", do_carve, 335, POSITION_STANDING, 1 },
 
     { "nuke", do_nuke, 336, POSITION_DEAD, IMPLEMENTOR },
@@ -865,7 +865,11 @@ struct command_def commandList[] = {
     { "embark", do_sea_commands, 622, POSITION_STANDING, 1 },
     { "plank", do_sea_commands, 623, POSITION_STANDING, 1 },
     { "sail", do_sea_commands, 624, POSITION_STANDING, 1 },
-    { "steer", do_sea_commands, 625, POSITION_STANDING, 1 }
+    { "steer", do_sea_commands, 625, POSITION_STANDING, 1 },
+    /*
+     * new commands for skills sort
+     */
+    { "stalk", do_stalk, 626, POSITION_STANDING, 1 },
 };
 int commandCount = NELEMS(commandList);
 
