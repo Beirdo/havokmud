@@ -121,8 +121,8 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                 if (GET_LEVEL(ch, MONK_LEVEL_IND) > 9) {
                     send_to_char("You must fight another monk for this "
                                  "title.\n\r", ch);
+                    return (TRUE);
                 }
-                return (TRUE);
             } 
             
             if (level_ind == DRUID_LEVEL_IND) {
@@ -133,8 +133,8 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
                 if (GET_LEVEL(ch, DRUID_LEVEL_IND) > 9) {
                     send_to_char("You must fight another druid for this "
                                  "title.\n\r", ch);
+                    return (TRUE);
                 }
-                return (TRUE);
             } 
 
             /*
