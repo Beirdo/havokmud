@@ -513,6 +513,7 @@ int DamCheckDeny(struct char_data *ch, struct char_data *victim, int type);
 int DamDetailsOk( struct char_data *ch, struct char_data *v, int dam, int type);
 int SetCharFighting(struct char_data *ch, struct char_data *v);
 int SetVictFighting(struct char_data *ch, struct char_data *v);
+void WeaponSkillCheck(struct char_data *ch);
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam);
 int DamageTrivia(struct char_data *ch, struct char_data *v, int dam, int type);
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type);

@@ -1473,6 +1473,146 @@ int SetVictFighting(struct char_data *ch, struct char_data *v)
   return(TRUE);
 }
 
+void WeaponSkillCheck(struct char_data *ch)
+{
+	struct obj_data *obj;
+	int weapontype = 0;
+	int found = 0;
+	int maxpoints = 0;
+	int totpoints = 0;
+	int valid = 0;
+	int fighter = 0;
+	int specialist = 0;
+	int lowest = 0;
+
+	if(!(obj = ch->equipment[WIELD]))
+		return;
+
+	if(!IS_WEAPON(obj))
+		return;
+
+	if(!(weapontype = obj->weapontype))
+		return;
+
+	if(ch->weaponskills.slot1 == weapontype)
+		found = 1;
+	else if(ch->weaponskills.slot2 == weapontype)
+		found = 2;
+	else if(ch->weaponskills.slot3 == weapontype)
+		found = 3;
+	else if(ch->weaponskills.slot4 == weapontype)
+		found = 4;
+	else if(ch->weaponskills.slot5 == weapontype)
+		found = 5;
+	else if(ch->weaponskills.slot6 == weapontype)
+		found = 6;
+	else if(ch->weaponskills.slot7 == weapontype)
+		found = 7;
+	else if(ch->weaponskills.slot8 == weapontype)
+		found = 8;
+
+			if(ch->specials.remortclass == WARRIOR_LEVEL_IND + 1) {
+				specialist = 1;
+				fighter = 1;
+				maxpoints = 400;
+			} else if ( HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) ||
+						HasClass(ch, CLASS_PALADIN) || HasClass(ch,CLASS_RANGER))   {
+				fighter = 1;
+				maxpoints = 200;
+			} else {
+				maxpoints = 100;
+			}
+
+
+	if(!found) {
+		// assign the lowest available slot to this type
+				if(found != 1 && lowest > ch->weaponskills.grade1)
+					lowest = ch->weaponskills.grade1;
+				if(found != 2 && lowest > ch->weaponskills.grade2)
+					lowest = ch->weaponskills.grade2;
+				if(found != 3 && lowest > ch->weaponskills.grade3)
+					lowest = ch->weaponskills.grade3;
+				if(found != 4 && lowest > ch->weaponskills.grade4 && fighter)
+					lowest = ch->weaponskills.grade4;
+				if(found != 5 && lowest > ch->weaponskills.grade5 && fighter)
+					lowest = ch->weaponskills.grade5;
+				if(found != 6 && lowest > ch->weaponskills.grade6 && specialist)
+					lowest = ch->weaponskills.grade6;
+				if(found != 7 && lowest > ch->weaponskills.grade7 && specialist)
+					lowest = ch->weaponskills.grade7;
+				if(found != 8 && lowest > ch->weaponskills.grade8 && specialist)
+					lowest = ch->weaponskills.grade8;
+
+				if(lowest == ch->weaponskills.grade1) {
+					ch->weaponskills.grade1 = 0;
+					ch->weaponskills.slot1 = weapontype;
+				} else if(lowest == ch->weaponskills.grade2) {
+					ch->weaponskills.grade2 = 0;
+					ch->weaponskills.slot2 = weapontype;
+				} else if(lowest == ch->weaponskills.grade3) {
+					ch->weaponskills.grade3 = 0;
+					ch->weaponskills.slot3 = weapontype;
+				} else if(lowest == ch->weaponskills.grade4) {
+					ch->weaponskills.grade4 = 0;
+					ch->weaponskills.slot4 = weapontype;
+				} else if(lowest == ch->weaponskills.grade5) {
+					ch->weaponskills.grade5 = 0;
+					ch->weaponskills.slot5 = weapontype;
+				} else if(lowest == ch->weaponskills.grade6) {
+					ch->weaponskills.grade6 = 0;
+					ch->weaponskills.slot6 = weapontype;
+				} else if(lowest == ch->weaponskills.grade7) {
+					ch->weaponskills.grade7 = 0;
+					ch->weaponskills.slot7 = weapontype;
+				} else if(lowest == ch->weaponskills.grade8) {
+					ch->weaponskills.grade8 = 0;
+					ch->weaponskills.slot8 = weapontype;
+				}
+
+	} else {
+		// 3% chance of skill increase
+		if(number(1,100)<40) { // should be 4
+			switch(found)
+			{
+				case 1: ch->weaponskills.grade1++; break;
+				case 2: ch->weaponskills.grade2++; break;
+				case 3: ch->weaponskills.grade3++; break;
+				case 4: ch->weaponskills.grade4++; break;
+				case 5: ch->weaponskills.grade5++; break;
+				case 6: ch->weaponskills.grade6++; break;
+				case 7: ch->weaponskills.grade7++; break;
+				case 8: ch->weaponskills.grade8++; break;
+				default: log("odd spot in weapon increase");break;
+			}
+			send_to_char("Practice makes perfect!\n\r", ch);
+
+			// now check for total skill points
+			totpoints =	ch->weaponskills.grade1 + ch->weaponskills.grade2 + ch->weaponskills.grade3 +
+						ch->weaponskills.grade4 + ch->weaponskills.grade5 + ch->weaponskills.grade6 +
+						ch->weaponskills.grade7 + ch->weaponskills.grade8;
+
+			if(totpoints > maxpoints) { // let's lower all the others a point
+				if(found != 1 && ch->weaponskills.grade1 > 0)
+					ch->weaponskills.grade1--;
+				if(found != 2 && ch->weaponskills.grade2 > 0)
+					ch->weaponskills.grade2--;
+				if(found != 3 && ch->weaponskills.grade3 > 0)
+					ch->weaponskills.grade3--;
+				if(found != 4 && ch->weaponskills.grade4 > 0 && fighter)
+					ch->weaponskills.grade4--;
+				if(found != 5 && ch->weaponskills.grade5 > 0 && fighter)
+					ch->weaponskills.grade5--;
+				if(found != 6 && ch->weaponskills.grade6 > 0 && specialist)
+					ch->weaponskills.grade6--;
+				if(found != 7 && ch->weaponskills.grade7 > 0 && specialist)
+					ch->weaponskills.grade7--;
+				if(found != 8 && ch->weaponskills.grade8 > 0 && specialist)
+					ch->weaponskills.grade8--;
+			}
+		}
+	}
+}
+
 int ClassDamBonus(struct char_data *ch, struct char_data *v, int dam)
 {
 	if(ch->specials.remortclass == RANGER_LEVEL_IND + 1) {
@@ -2584,6 +2724,8 @@ void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*da
 		w_type = GetFormType(ch);  /* races have different types of attack */
 
 	thaco = CalcThaco(ch);
+
+	WeaponSkillCheck(ch);
 
 	if (HitOrMiss(ch, victim, thaco)) {
 		if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
@@ -3704,7 +3846,6 @@ int PreProcDam(struct char_data *ch, int type, int dam)
 	}
   return(dam);
 }
-
 
 int DamageOneItem( struct char_data *ch, int dam_type, struct obj_data *obj)
 {
