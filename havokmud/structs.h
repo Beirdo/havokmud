@@ -20,6 +20,8 @@ typedef char byte;
 /*
    my new stuff
 */
+#define MAX_CLAN   10
+
 
 #define ALL_DARK        1
 #define FOREST_DARK     2
@@ -1089,6 +1091,8 @@ struct room_data
 #define PLR_AUTOSAC         (1<<27)
 #define PLR_AUTOGOLD		(1<<28)
 #define PLR_AUTOSPLIT		(1<<29)
+#define PLR_CLAN_LEADER     (1<<30)
+#define PLR_LEGEND          (1<<31)
 
 /* This structure is purely intended to be an easy way to transfer */
 /* and return information about time (real or mudwise).            */
@@ -1190,8 +1194,8 @@ struct char_point_data
   int gold;            /* Money carried                           */
   int bankgold;        /* gold in the bank.                       */
   int exp;             /* The experience of the player            */
-  int true_exp;        /* gonna be used for dual class		  */
-  int extra_dual;      /* case I need an extra duall class bit    */
+  int clan;        /* clan number		  */
+  int leadership_exp;      /* leadership experience    */
 
   sbyte hitroll;       /* Any bonus or penalty to the hit roll    */
   sbyte damroll;       /* Any bonus or penalty to the damage roll */
@@ -1773,3 +1777,14 @@ struct affect_list {
   int affectnumber;
   int affecttype;
 };
+
+
+struct clan {
+  int number;
+  char *name;
+  char *shortname;
+  char *desc;
+  int home;
+
+};
+

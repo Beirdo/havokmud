@@ -1259,7 +1259,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
   extern char *connected_types[];
   extern char *RaceName[];
   extern struct str_app_type str_app[];
-
+  extern const struct clan clan_list[MAX_CLAN];
 dlog("in do_stat");
 
 
@@ -1481,6 +1481,14 @@ sprintf(buf,"$c0005AC:[$c0014%d$c0005/$c001510$c0005], Coins: [$c0014%s$c0005], 
 	      k->specials.spellfail);
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
+
+
+sprintf(buf,"$c0005Leadership Exp: [$c0014%s$c0005],  Clan[$c0014%s$c0005)]",
+	      GET_LEADERSHIP_EXP(k),  clan_list[GET_CLAN(k)].name  );
+
+act(buf,FALSE,ch,0,0,TO_CHAR);
+
+
 
       sprinttype(GET_POS(k),position_types,buf2);
       sprintf(buf,"$c0005Position: $c0014%s$c0005, Fighting: $c0014%s",buf2,
@@ -2215,11 +2223,14 @@ if (!*argument)
 
 } /* end of object edit */
 
+
+
+extern const struct clan clan_list[10];
 void do_set(struct char_data *ch, char *argument, int cmd)
 {
     char field[20], name[20], parmstr[50];
     struct char_data *mob;
-    int parm, parm2;
+    int parm, parm2, x;
     char buf[256];
     extern char PeacefulWorks;
     extern char EasySummon;
@@ -2248,6 +2259,7 @@ dlog("in do_set");
 	For Multi-class characters add the numbers of the required classes together\r
 	ie: Mu/Cl/Wa would be 1 + 2 + 4 = 7.\r
 	\r
+	clan - Clan number\r
 	exp - Total Experience\r
 	lev - Level (only sets Mage level, use advance for other classes)\r
 	sex - Sex  0 = Neutral   1 = Male   2 = Female\r
@@ -2422,7 +2434,45 @@ Remember, be careful how you use this command!\n\r",ch);
       } else {
 	send_to_char("argument must be a number\n\r", ch);
       }
-    } else if (!strcmp(field, "race")) {
+    } else if (!strcmp(field, "clan")) {
+             if (is_number(parmstr)) {
+	           sscanf(parmstr,"%d",&parm);
+	           GET_CLAN(mob) = parm;
+             } else {
+				for(x=0;x<10; x++) {
+
+					ch_printf(ch,"%d: %s\n\r",x, clan_list[x].name);
+				}
+
+	            send_to_char("argument must be a number\n\r", ch);
+             }
+
+       } else if (!strcmp(field, "leaderexp")) {
+             if (is_number(parmstr)) {
+	           sscanf(parmstr,"%d",&parm);
+	           GET_LEADERSHIP_EXP(mob) = parm;
+             } else {
+	            send_to_char("argument must be a number\n\r", ch);
+             }
+
+       } else if (!strcmp(field, "clanleader")) {
+             if (!IS_SET(mob->specials.act, PLR_CLAN_LEADER)) {
+             	SET_BIT(mob->specials.act, PLR_CLAN_LEADER);
+             	send_to_char("Setting clan leader flag.",ch);
+              } else {
+             	REMOVE_BIT(mob->specials.act, PLR_CLAN_LEADER);
+            	send_to_char("Removing clan leader flag",ch);
+			  }
+
+       }else if (!strcmp(field, "legend")) {
+             if (!IS_SET(mob->specials.act, PLR_LEGEND)) {
+             	SET_BIT(mob->specials.act, PLR_LEGEND);
+             	send_to_char("Setting legend flag.",ch);
+              } else {
+             	REMOVE_BIT(mob->specials.act, PLR_CLAN_LEADER);
+            	send_to_char("Removing legend leader flag",ch);
+			  }
+		  } else if (!strcmp(field, "race")) {
       if (is_number(parmstr)) {
 	 sscanf(parmstr,"%d",&parm);
 	 GET_RACE(mob) = parm;
@@ -3567,7 +3617,10 @@ dlog("in do_start");
     obj_to_char(obj,ch);                        /* water   */
   }
 
+
 ch->skills[STYLE_STANDARD].learned = 95;
+
+
 if (HasClass(ch,
  CLASS_CLERIC|CLASS_MAGIC_USER|CLASS_SORCERER|CLASS_PSI|
  CLASS_PALADIN|CLASS_RANGER|CLASS_DRUID))

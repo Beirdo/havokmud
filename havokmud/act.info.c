@@ -1639,11 +1639,12 @@ dlog("in do_look");
 	  }
 	}
       }
-	if (ValidRoom(ch) == TRUE) {
+
+	if (ValidRoom(ch) == TRUE && !IS_SET(ch->specials.act, PLR_BRIEF)) {
 
 		if(IS_SET(real_roomp(ch->in_room)->room_flags, ROOM_WILDERNESS)) {
 
-		 	generate_map(ch, 3, 3, 3); //char, radius, x, y
+		 	generate_map(ch, GET_RADIUS(ch), 3, 3); //char, radius, x, y
 		 	print_map(ch);
 		 }
 	}
@@ -1705,6 +1706,24 @@ dlog("in do_look");
     }
   }
 }
+
+int GET_RADIUS(struct char_data *ch) {
+	int radius = 2;
+
+	if ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) && (!IS_AFFECTED(ch, AFF_TRUE_SIGHT)))
+         radius--;
+
+
+	if (IS_AFFECTED(ch, AFF_SCRYING) || IS_IMMORTAL(ch))
+		radius++;
+
+
+	if ( IS_AFFECTED(ch, AFF_BLIND))
+		radius=0;
+
+	return radius;
+}
+
 /* end of look */
 extern int map[7][7];
 
@@ -1714,7 +1733,7 @@ void print_map(struct char_data *ch) {
  	int x,y;
  *buf=0;
 
-strcat(buf," ________\n()_______)\n");
+strcat(buf," _______\n()______)\n");
 
 	for(x=0;x<7;x++) {
 		for(y=0;y<7;y++){
@@ -1740,9 +1759,9 @@ strcat(buf," ________\n()_______)\n");
   |::::::::|
   |::::::::|
   |::::::::|
-  |::::::::|
-  |::::::::|
-  @:::::::/
+  |::::::::|   n
+  |::::::::| w-+-e
+  @:::::::/    s
    ~~~~~~
 
 
@@ -1988,7 +2007,7 @@ const char *languagelist[] = {
   "GodLike"};
 
 
-
+extern const struct clan clan_list[10];
 void do_score(struct char_data *ch, char *argument, int cmd)
 {
   struct time_info_data playing_time;
@@ -2000,6 +2019,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_score");
 
+
   age2(ch, &my_age);
   sprintf(buf, "$c0005You are $c0015%d$c0005 years old and very $c0015%s$c0005.\n\r"
 	  , my_age.year,DescAge(my_age.year,GET_RACE(ch)));
@@ -2010,6 +2030,8 @@ dlog("in do_score");
   sprintf(buf, "$c0005You belong to the $c0015%s$c0005 race\n\r"
 	  , RaceName[GET_RACE(ch)]);
   send_to_char(buf,ch);
+
+
 
   sprintf(buf,"$c0005You are currently speaking the $c0015%s$c0005 language\n\r"
 	  ,languagelist[ch->player.speaks]);
@@ -2041,6 +2063,8 @@ dlog("in do_score");
 
 
 	/* the mud will crash without this check! */
+ch_printf(ch,"$c000pYou have scored $c000W%d$c000p leadership exp.\n\r", GET_LEADERSHIP_EXP(ch));
+
 if (GetMaxLevel(ch)>MAX_MORT ||
      (IS_NPC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF))) {
 		/* do nothing! */
@@ -2250,15 +2274,16 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
    sprintf(buf, "$c0015You are on the ground in spite of your fly item.$c0005\n\r");
 	send_to_char(buf,ch);
    }
-	ch->skills[STYLE_STANDARD].learned = 95;
-	ch_printf(ch,"$c000pYou are currently fighting $c000W%s$c000p.\n\r", fight_styles[ch->style]);
-
+	if(IS_PC(ch)) {
+	 	ch->skills[STYLE_STANDARD].learned = 95;
+		ch_printf(ch,"$c000pYou are currently fighting $c000W%s$c000p.\n\r", fight_styles[ch->style]);
+	}
   sprintf(buf,"$c0005You have $c0015%d $c0005practice sessions remaining.\n\r",
 	      ch->specials.spells_to_learn);
   send_to_char(buf, ch);
 
 
-
+ch_printf(ch,"$c000pYou belong to the clan $c000W%s.\n\r", clan_list[GET_CLAN(ch)].name);
   switch(GET_POS(ch)) {
   case POSITION_DEAD :
     send_to_char("$c0009You are DEAD!\n\r", ch); break;
@@ -2621,6 +2646,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   struct descriptor_data *d;
   struct char_data *person;
   char buffer[MAX_STRING_LENGTH*3]="",tbuf[1024];
+  char bufx[126];
   int count;
   char color_cnt=1;
   char flags[20]="";
@@ -2703,7 +2729,7 @@ dlog("in do_who");
 			classn =1;
 		total/=classn;
 		if(GetMaxLevel(person)==50) {
-			if(GET_EXP(person) > 200000000 )
+			if(GET_EXP(person) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND))
 				strcpy(levels,"$c0009Legend");
 			else strcpy (levels,"$c0012Hero");
 		}
@@ -2715,8 +2741,17 @@ dlog("in do_who");
 		sprintf(tbuf, "%s $c0012%s",levels, classes);
 		sprintf(levels,"%32s","");
 		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
-		sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
-		person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+
+
+		if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+			  sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
+		 else if(GET_CLAN(person)>0)
+			sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+		else
+		 	sprintf(bufx, "");
+		sprintf(tbuf, "%-32s %-6s$c0005: $c0007%s",levels, bufx,
+			person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 	} else {
 		switch(GetMaxLevel(person)) {
 		case 51: sprintf(levels, "Lesser Deity"); break;
@@ -2796,12 +2831,30 @@ dlog("in do_who");
               sprintf(levels,"%30s","");
               if(!strcmp(GET_NAME(person), "Banon")) {
                 strcpy(levels+10-((strlen(tbuf)/2)/5),tbuf);
-              sprintf(tbuf, " $c0011%-20s $c0005      : $c0007%s",levels,
-	                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+
+
+              	if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+			  	   sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
+		  		 else if(GET_CLAN(person)>0)
+			  		sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+			  	else
+			  		sprintf(bufx, "");
+
+              	sprintf(tbuf, " $c0011%-20s $c000w      %-6s$c0005: $c0007%s",levels,
+	                      bufx,person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 
     		} else {
                 strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-              sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,
+
+
+				if (IS_SET(person->specials.act, PLR_CLAN_LEADER))
+					  sprintf(bufx, "$c000R[$c000w%s$c000R]$c000w ", clan_list[GET_CLAN(person)].shortname);
+				 else if(GET_CLAN(person)>0)
+						sprintf(bufx, "$c000W[$c000w%s$c000W]$c000w ", clan_list[GET_CLAN(person)].shortname);
+					else
+			  	sprintf(bufx, "");
+
+              sprintf(tbuf, "$c0011%-20s $c000w%-6s$c0005: $c0007%s",levels, bufx,
                       person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 			  }
 	    }
@@ -5266,7 +5319,15 @@ dlog("in do_whoarena");
 		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
 	  }
-	    if(IS_AFFECTED2(person,AFF2_AFK))
+
+	    if (IS_SET(person->specials.act, PLR_CLAN_LEADER)) {
+			sprintf(tbuf+strlen(tbuf)," $c000W[$c000rLeader$c000W]$c000w ");
+
+		}
+		if(GET_CLAN(person)!=0)
+			sprintf(tbuf+strlen(tbuf)," $c000W[$c000rClan$c000W]$c000w ");
+
+	  if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
 	    if(IS_AFFECTED2(person,AFF2_QUEST))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [$c000RQ$c000Yu$c000Ge$c000Bs$c000Ct$c0008]$c0007");

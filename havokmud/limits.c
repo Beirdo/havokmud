@@ -898,7 +898,9 @@ void gain_exp(struct char_data *ch, int gain)
 		}
 
       GET_EXP(ch)+=gain;
-      if (IS_PC(ch)) {
+
+
+ 	if (IS_PC(ch)) {
          for (i=MAGE_LEVEL_IND; i< MAX_CLASS; i++) {
            if (GET_LEVEL(ch,i)&&GET_LEVEL(ch, i)<RacialMax[chrace][i]) {
              if (GET_EXP(ch) > titles[i][GET_LEVEL(ch,i)+2].exp) {

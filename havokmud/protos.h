@@ -2298,3 +2298,10 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 
 int WeaponsMaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int knockproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+
+
+
+
+void do_expel(struct char_data *ch, char *argument, int cmd);
+void do_induct(struct char_data *ch, char *argument, int cmd);
+void do_chat(struct char_data *ch, char *argument, int cmd);

@@ -1574,13 +1574,12 @@ AddCommand("qtrans" ,do_qtrans,586, POSITION_STANDING,51);
 AddCommand("nooutdoor" ,do_set_nooutdoor,587, POSITION_RESTING,51);
 AddCommand("dismiss" ,do_dismiss,588, POSITION_RESTING,1);
 AddCommand("setsound" ,do_setsound,589, POSITION_STANDING,53);
-AddCommand("goodiebag" ,do_goodiebag,590, POSITION_STANDING,51);
-/*
-  talk disagree beckon pounce amaze tank hshake backhand surrender collapses
-wince
-  tag trip grunt imitate hickey torture addict adjust anti  bbl beam
-  challenge mutter beat moon dream
-*/
+
+AddCommand("induct", do_induct, 590, POSITION_STANDING,1);
+AddCommand("expel", do_expel, 591, POSITION_STANDING, 1);
+AddCommand("chat", do_chat, 592, POSITION_STANDING, 1);
+AddCommand("goodiebag" ,do_goodiebag,593, POSITION_STANDING,51);
+
 }
 
 

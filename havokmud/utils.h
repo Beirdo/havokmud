@@ -178,6 +178,10 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #define GET_EXP(ch)     ((ch)->points.exp)
 
+#define GET_CLAN(ch)    ((ch)->points.clan)
+
+#define GET_LEADERSHIP_EXP(ch)  ((ch)->points.leadership_exp)
+
 #define GET_PRAC(ch)     ((ch)->specials.spells_to_learn)
 
 #define GET_HEIGHT(ch)  ((ch)->player.height)

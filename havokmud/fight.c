@@ -1070,6 +1070,17 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	if (!IS_IMMORTAL(k))
 		total= NewExpCap(k, total);
 
+
+	if (!ch->master && ch->followers) {  //Leadership experience
+ 		GET_LEADERSHIP_EXP(ch)+=total;
+		ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+	}
+ 	else if(!ch->master && !ch->followers) {
+ 		GET_LEADERSHIP_EXP(ch)+=total*3/5;
+ 		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+	}
+
+
       sprintf(buf,"You receive your share of %d experience.", total);
       act(buf, FALSE, k, 0, 0, TO_CHAR);
       gain_exp(k,total);
@@ -1097,6 +1108,15 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 		if (!IS_IMMORTAL(f->follower))
 			total= NewExpCap(f->follower, total);
 
+
+	  	if (!ch->master && ch->followers) {  //Leadership experience
+	   		GET_LEADERSHIP_EXP(ch)+=total;
+	  		ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+	  	}
+	   	else if(!ch->master && !ch->followers) {
+	   		GET_LEADERSHIP_EXP(ch)+=total*3/5;
+	   		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+	   }
 
 	  sprintf(buf,"You receive your share of %d experience.", total);
 	  act(buf, FALSE, f->follower,0,0,TO_CHAR);
@@ -1129,6 +1149,16 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 		  total= NewExpCap(f->follower, total);
 
 
+
+
+			if (!ch->master && ch->followers) {  //Leadership experience
+		 		GET_LEADERSHIP_EXP(ch)+=total;
+				ch_printf(ch,"Your leadership skills have served you well.\n\r", total);
+			}
+		 	else if(!ch->master && !ch->followers) {
+		 		GET_LEADERSHIP_EXP(ch)+=total*3/5;
+		 		ch_printf(ch,"Your leadership skills have served you well.\n\r", total*3/5);
+			}
 	    sprintf(buf,"You receive your share of %d experience.", total);
 	    act(buf, FALSE, f->follower,0,0,TO_CHAR);
 	    gain_exp(f->follower,  total);
@@ -1320,7 +1350,7 @@ void dam_message(int dam, struct char_data *ch, struct char_data *victim,
      @Author Greg Hovey (GH)
      @Date April 2002
   */
-  if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+  if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch) || IS_SET(ch->specials.act, PLR_LEGEND)) {
 	  sprintf(buf2,"%s $c0011($c0015%d$c0011)$c0007",buf,dam);
 	  	act(buf2, FALSE, ch, wield, victim, TO_CHAR);
   } else
@@ -1657,7 +1687,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 						sprintf(rmbuf,"%s",messages->miss_msg.room_msg);
 					}
 					/* add the damage display for imms and legends */
-					if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+					if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)  || IS_SET(ch->specials.act, PLR_LEGEND)) {
 						sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
 						strcat(chbuf,dambuf);
 						sprintf(dambuf,"");
@@ -1778,6 +1808,10 @@ int DamageEpilog(struct char_data *ch, struct char_data *victim, int killedbytyp
 				exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
 			if (!IS_IMMORTAL(ch))
 				exp= NewExpCap(ch, exp);
+
+
+			GET_LEADERSHIP_EXP(ch)+=exp*3/5;
+			ch_printf(ch,"Your leadership skills have served you well.\n\r", exp*3/5);
 
 			gain_exp(ch, exp);
 			sprintf(buf,"You receive %d experience from your battles.\n\r", exp);

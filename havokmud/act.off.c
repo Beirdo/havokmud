@@ -2405,3 +2405,173 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
 		return;
 	}
 }
+
+
+extern const struct clan clan_list[10];
+void do_induct(struct char_data *ch, char *argument, int cmd) {
+  struct char_data *victim;
+  char name[256];
+  dlog("in do_induct");
+
+  if (!ch->skills)
+    return;
+
+  if (!IS_SET(ch->specials.act, PLR_CLAN_LEADER)) {
+	  send_to_char("Only clan leaders can induct new members.\n\r",ch);
+	  return;
+  }
+
+
+
+  only_argument(argument, name);
+
+  if (!(victim = get_char_room_vis(ch, name))) {
+      send_to_char("Who do you wish to induct into your clan??\n\r", ch);
+      return;
+
+  }
+
+	if(IS_NPC(victim)) {
+		send_to_char("You can't induct a mob.\n\r",ch);
+		return;
+	}
+
+
+  if (victim == ch) {
+    send_to_char("Your already part of the clan silly!!\n\r", ch);
+    return;
+  }
+
+	if(GET_CLAN(victim)!=0) {
+		send_to_char("They already belong to a clan.\n\r",ch);
+		return;
+	}
+
+	GET_CLAN(victim) = GET_CLAN(ch);
+
+	ch_printf(victim, "You have just been inducted into the clan, %s.\n\r", clan_list[GET_CLAN(victim)].name);
+	ch_printf(ch,"You just initated %s into the clan, %s.\n\r", GET_NAME(victim), clan_list[GET_CLAN(victim)].name);
+
+
+}
+
+void do_expel(struct char_data *ch, char *argument, int cmd) {
+
+  struct char_data *victim;
+  char name[256];
+  dlog("in do_expel");
+
+  if (!ch->skills)
+    return;
+
+  if (!IS_SET(ch->specials.act, PLR_CLAN_LEADER)) {
+	  send_to_char("Only clan leaders can expel members.\n\r",ch);
+	  return;
+  }
+
+
+
+  only_argument(argument, name);
+
+  if (!(victim = get_char_room_vis(ch, name))) {
+      send_to_char("Who do you wish to expel from your clan??\n\r", ch);
+      return;
+
+  }
+
+	if(IS_NPC(victim)) {
+		send_to_char("You can't expel a mob.\n\r",ch);
+		return;
+	}
+
+  if (victim == ch) {
+    send_to_char("You can't expel yourself silly!!\n\r", ch);
+    return;
+  }
+
+	if(GET_CLAN(victim)!=GET_CLAN(ch)) {
+		send_to_char("You can't expel someone that isn't in your clan.\n\r",ch);
+		return;
+	}
+	ch_printf(victim, "You have just been exiled from %s.\n\r", clan_list[GET_CLAN(victim)].name);
+	ch_printf(ch,"You just exiled %s from %s.\n\r", GET_NAME(victim),clan_list[GET_CLAN(victim)].name);
+
+
+	GET_CLAN(victim) = 1;
+}
+
+extern long SystemFlags;
+void do_chat(struct char_data *ch, char *argument, int cmd) {
+	  char buf1[MAX_INPUT_LENGTH+80];
+	  struct descriptor_data *i;
+	  extern int Silence;
+		int clannum=0;
+	dlog("in do_chat");
+
+	  if (!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT) || IS_SET(ch->specials.act, PLR_NOOOC) ||
+	IS_SET (ch->specials.act, PLR_WIZNOOOC)) {
+	    send_to_char("You can't use this command!!\n\r", ch);
+	    return;
+	  }
+		if(clannum=GET_CLAN(ch) <=1) {
+			send_to_char("You can't clan chat. You don't belong to a clan.\n\r",ch);
+			return;
+		}
+	  if (IS_SET(SystemFlags,SYS_NOOOC))
+	  {
+	     send_to_char("The use of clan chat have been temporarilly banned.\n\r", ch);
+	     return;
+	  }
+	  if (IS_NPC(ch) &&
+	      (Silence == 1) &&
+	      (IS_SET(ch->specials.act, ACT_POLYSELF)))
+	  {
+	    send_to_char("Polymorphed worldwide comms has been banned.\n\r", ch);
+	    send_to_char("It may return after a bit.\n\r", ch);
+	    return;
+	  }
+		if (GET_MOVE(ch)<5 || GET_MANA(ch)<5 && GetMaxLevel(ch) < LOW_IMMORTAL) {
+		   send_to_char("You do not have the strength to clan chat!\n\r",ch);
+		   return;
+		}
+
+
+	  if (apply_soundproof(ch))
+	    return;
+
+	  for (; *argument == ' '; argument++);
+
+	  if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
+	    if (!IS_IMMORTAL(ch->master)) {
+	      send_to_char("I don't think so :-)", ch->master);
+	      return;
+	    }
+	  }
+
+	  if (!(*argument))
+	    send_to_char("Hrm... normally, you should CHAT something...\n\r", ch);
+	  else	{
+	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
+	      sprintf(buf1,"$c000WYou Chat '$c000r%s$c000W'", argument);
+	      act(buf1,FALSE, ch,0,0,TO_CHAR);
+	    }
+	    sprintf(buf1, "$c000W-=$c000r%s$c000W=- chats to the clan '$c000r%s$c000W'",GET_NAME(ch), argument);
+		    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+		        GET_MOVE(ch) -= 5;
+		        GET_MANA(ch) -= 5;
+		        }
+
+
+	    for (i = descriptor_list; i; i = i->next)
+	      if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
+		   (!IS_SET(i->character->specials.act, PLR_NOSHOUT) && !IS_SET(i->character->specials.act, PLR_NOOOC) &&
+	       !IS_SET(i->character->specials.act, PLR_WIZNOOOC))) && !check_soundproof(i->character)) {
+			  //ch_printf(ch,"My clan: %d   Other clan: %d", GET_CLAN(clannum), GET_CLAN(i->character) );
+			  if(GET_CLAN(i->character)==GET_CLAN(ch))
+			    send_to_char(buf1,i->character);
+	      }
+	  }
+
+
+
+}

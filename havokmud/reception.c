@@ -252,15 +252,30 @@ if (!receptionist && forcerent) {
 	if(IS_NEUTRAL(receptionist) && IS_NEUTRAL(ch))
 	  discount = discount + 5;
 
+	if(GET_CLAN(ch) > 1)
+	  discount = discount + 5;
+
+
     if (GET_CHR(ch) > GET_CHR(receptionist))
       discount = discount + (1 + GET_CHR(ch) - GET_CHR(receptionist));
 
-    if(discount > 0) {
+	if (IS_SET(ch->specials.act, PLR_CLAN_LEADER))
+		discount=100;  //100% discount for clan leaders..
+
+    if(discount > 0 && discount !=100) {
       sprintf(buf,"$n winks at you and offers you a %d%% discount. (%d coins)"
 	      , discount, ((cost->total_cost*discount/100)));
-      cost->total_cost = cost->total_cost - (cost->total_cost*discount/100);
-      act(buf,FALSE,receptionist,0,ch,TO_VICT);
-    }
+      cost->total_cost = cost->total_cost - (cost->total_cost*discount/100 +1);
+		act(buf,FALSE,receptionist,0,ch,TO_VICT);
+	}
+      if(discount==100) {
+        sprintf(buf,"$n quivers in fear and then offers you to stay for free.");
+	  	cost->total_cost=0;
+	  	act(buf,FALSE,receptionist,0,ch,TO_VICT);
+
+	  }
+
+
 #endif
 
 
