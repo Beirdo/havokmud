@@ -46,7 +46,7 @@ char           *room_fields[] = {
 };
 
 /*
- * maximum length for text field x+1 
+ * maximum length for text field x+1
  */
 int             length[] = {
     15,
@@ -92,7 +92,7 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt);
  ************************************************************************ */
 
 /*
- * Add user input to the 'current' string (as defined by d->str) 
+ * Add user input to the 'current' string (as defined by d->str)
  */
 
 #if 1
@@ -190,7 +190,7 @@ void string_add(struct descriptor_data *d, char *str)
 
     if (terminator) {
         /*
-         * NULL empty messages 
+         * NULL empty messages
          */
         if ((d->str) && (*d->str) && (**d->str == '\0')) {
             free(*d->str);
@@ -219,18 +219,18 @@ void string_add(struct descriptor_data *d, char *str)
             }
             d->name = 0;
             REMOVE_BIT(d->character->specials.act, PLR_MAILING);
-        } else if (!d->connected && 
+        } else if (!d->connected &&
                    IS_SET(d->character->specials.act, PLR_NODIMD)) {
             if ((terminator > 0) && *d->str) {
                 /*
-                 * Post finished, add it to the board's list of messages 
+                 * Post finished, add it to the board's list of messages
                  */
                 d->msg->message_id = ++d->board->num_posts;
                 d->msg->date = time(0);
 
                 /*
                  * link it up to the end of the list so lower-numbered
-                 * messages are displayed first 
+                 * messages are displayed first
                  */
                 if (d->board->messages == NULL) {
                     d->board->messages = d->msg;
@@ -241,13 +241,13 @@ void string_add(struct descriptor_data *d, char *str)
                     }
 
                     /*
-                     * tmp should be at the end of the list 
+                     * tmp should be at the end of the list
                      */
                     tmp->next = d->msg;
                 }
 
                 /*
-                 * Save the board and then toss the pointers 
+                 * Save the board and then toss the pointers
                  */
                 save_board(d->board, d->board->board_num);
 
@@ -290,7 +290,7 @@ void string_add(struct descriptor_data *d, char *str)
     int             terminator = 0;
 
     /*
-     * determine if this is the terminal string, and truncate if so 
+     * determine if this is the terminal string, and truncate if so
      */
     for (scan = str; *scan; scan++) {
         if (terminator = (*scan == '~')) {
@@ -323,7 +323,7 @@ void string_add(struct descriptor_data *d, char *str)
     }
 
     if (terminator) {
-        if (!d->connected && 
+        if (!d->connected &&
             (IS_SET(d->character->specials.act, PLR_MAILING))) {
             store_mail(d->name, d->character->player.name, *d->str);
             if (*d->str) {
@@ -354,10 +354,10 @@ void string_add(struct descriptor_data *d, char *str)
 #endif
 
 /*
- * interpret an argument for do_string 
+ * interpret an argument for do_string
  */
 /*
- * modification of malloc'ed strings in chars/objects 
+ * modification of malloc'ed strings in chars/objects
  */
 void do_string(struct char_data *ch, char *arg, int cmd)
 {
@@ -376,7 +376,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 
     /*
-     * determine type 
+     * determine type
      */
     arg = get_argument(arg, &buf);
     if (buf && is_abbrev(buf, "char")) {
@@ -390,12 +390,12 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 
     /*
-     * find name 
+     * find name
      */
     arg = get_argument(arg, &name);
 
     /*
-     * field name and number 
+     * field name and number
      */
     arg = get_argument(arg, &buf);
     if( !buf || !name ) {
@@ -410,13 +410,13 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 
     /*
-     * string 
+     * string
      */
     string = skip_spaces(arg);
 
     if (type == TP_MOB) {
         /*
-         * locate the beast 
+         * locate the beast
          */
         if (!(mob = get_char_vis(ch, name))) {
             send_to_char("I don't know anyone by that name...\n\r", ch);
@@ -495,7 +495,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         }
     } else {
         /*
-         * locate the object 
+         * locate the object
          */
         if (!(obj = get_obj_vis(ch, name))) {
             send_to_char("Can't find such a thing here..\n\r", ch);
@@ -529,7 +529,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                 return;
             }
             /*
-             * try to locate extra description 
+             * try to locate extra description
              */
             for (ed = obj->ex_description;; ed = ed->next)
                 if (!ed) {
@@ -543,8 +543,8 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     send_to_char("New field.\n\r", ch);
                     break;
                 } else if (!strcasecmp(ed->keyword, string)) {
-                    /* 
-                     * the field exists 
+                    /*
+                     * the field exists
                      */
                     if (ed->description) {
                         free(ed->description);
@@ -555,22 +555,22 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                     break;
                 }
             ch->desc->max_str = MAX_STRING_LENGTH;
-            /* 
-             * the stndrd (see below) procedure 
-             * does not apply here 
+            /*
+             * the stndrd (see below) procedure
+             * does not apply here
              */
             return;
             break;
         case 6:
-            /* 
-             * deletion 
+            /*
+             * deletion
              */
             if (!string) {
                 send_to_char("You must supply a field name.\n\r", ch);
                 return;
             }
             /*
-             * try to locate field 
+             * try to locate field
              */
             for (ed = obj->ex_description;; ed = ed->next) {
                 if (!ed) {
@@ -584,7 +584,7 @@ void do_string(struct char_data *ch, char *arg, int cmd)
                         free(ed->description);
                     }
                     /*
-                     * delete the entry in the desr list 
+                     * delete the entry in the desr list
                      */
                     if (ed == obj->ex_description) {
                         obj->ex_description = ed->next;
@@ -619,8 +619,8 @@ void do_string(struct char_data *ch, char *arg, int cmd)
     }
 
     if (string) {
-        /* 
-         * there was a string in the argument array 
+        /*
+         * there was a string in the argument array
          */
         if (strlen(string) > length[field - 1]) {
             send_to_char("String too long - truncated.\n\r", ch);
@@ -631,8 +631,8 @@ void do_string(struct char_data *ch, char *arg, int cmd)
         ch->desc->str = 0;
         send_to_char("Ok.\n\r", ch);
     } else {
-        /* 
-         * there was no string. enter string mode 
+        /*
+         * there was no string. enter string mode
          */
         send_to_char("Enter string. terminate with '/w'.\n\r", ch);
         *ch->desc->str = 0;
@@ -677,12 +677,12 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     if (!IS_IMMORTAL(ch)) {
         return;
     }
-    /* 
+    /*
      * someone is forced to do something. can be bad!
-     * the ch->desc->str field will cause problems... 
+     * the ch->desc->str field will cause problems...
      */
     if (!ch->desc) {
-        return;                     
+        return;
     }
     if ((GetMaxLevel(ch) < 56) && rp->zone != GET_ZONE(ch)) {
 #if 0
@@ -694,7 +694,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
 
     /*
-     * field name and number 
+     * field name and number
      */
     arg = get_argument(arg, &buf);
     if( !buf ) {
@@ -706,9 +706,9 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         ch_printf(ch, "I don't understand the field \"%s\"\n\r", buf);
         return;
     }
-    
+
     /*
-     * string 
+     * string
      */
     string = skip_spaces(arg);
 
@@ -739,8 +739,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                          "<sector_type>\n\r", ch);
             send_to_char("For current room only, use\n\r", ch);
             send_to_char("  edit fs 0 0 <flags> <sector_type>\n\r", ch);
-            /* 
-             * damn that's a big number.  
+            /*
+             * damn that's a big number.
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
@@ -761,8 +761,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                          "<sector_type>\n\r", ch);
             send_to_char("For current room only, use\n\r", ch);
             send_to_char("  edit fs 0 0 <flags> <sector_type>\n\r", ch);
-            /* 
-             * damn that's a big number.  
+            /*
+             * damn that's a big number.
              * mebbe move it up a bit?
              */
             maproom = 1 << 28;
@@ -774,8 +774,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         }
 
         /*
-         * Did some work to make it easier to change 
-         * flags on a range of rooms -Lennya 
+         * Did some work to make it easier to change
+         * flags on a range of rooms -Lennya
          */
 
         if ((r_start == 0) || (r_end == 0)) {
@@ -836,8 +836,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
 
     case 4:
-        /* 
-         * no cmd by default 
+        /*
+         * no cmd by default
          */
         open_cmd = -1;
         if( !string ) {
@@ -849,7 +849,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                &open_cmd);
 
         /*
-         * check if the exit exists 
+         * check if the exit exists
          */
         if ((dir < 0) || (dir > 5)) {
             send_to_char("You need to use numbers for that (0 - 5)", ch);
@@ -940,16 +940,17 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
 
     case 5:
-        dir = -1;
-        if (string && (dir = atoi(string)) && (dir >= 0) && (dir <= 5)) {
-            send_to_char("Enter text, term. with '/w' on a blank line", ch);
-            string[0] = 0;
+        dir = atoi(string);
+        if (string && (dir >= 0) && (dir <= 5)) {
+            send_to_char("Enter text, term. with '/w' on a blank line\n\r", ch);
             if (rp->dir_option[dir]) {
                 ch->desc->str = &rp->dir_option[dir]->general_description;
             } else {
                 CREATE(rp->dir_option[dir], struct room_direction_data, 1);
                 ch->desc->str = &rp->dir_option[dir]->general_description;
             }
+            string = NULL;
+            break;
         } else {
             send_to_char("Illegal direction\n\r", ch);
             send_to_char("Must enter 0-5. I will ask for text.\n\r", ch);
@@ -958,14 +959,14 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
     case 6:
         /*
-         * extra descriptions 
+         * extra descriptions
          */
         if (!string) {
             send_to_char("You have to supply a keyword.\n\r", ch);
             return;
         }
         /*
-         * try to locate extra description 
+         * try to locate extra description
          */
         for (ed = rp->ex_description;; ed = ed->next) {
             if (!ed) {
@@ -980,7 +981,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 break;
             } else if (!strcasecmp(ed->keyword, string)) {
                 /*
-                 * the field exists 
+                 * the field exists
                  */
                 if (ed->description) {
                     free(ed->description);
@@ -997,7 +998,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 
     case 7:
         /*
-         * this is where the river stuff will go 
+         * this is where the river stuff will go
          */
         rspeed = 0;
         rdir = 0;
@@ -1018,7 +1019,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
 
     case 8:
         /*
-         * this is where the teleport stuff will go 
+         * this is where the teleport stuff will go
          */
         tele_room = -1;
         tele_time = -1;
@@ -1065,7 +1066,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         break;
     case 10:
         /*
-         * deletion 
+         * deletion
          */
         if (!string) {
             send_to_char("You must supply the name of an extra "
@@ -1074,7 +1075,7 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         }
 
         /*
-         * try to locate field 
+         * try to locate field
          */
         for (ed = rp->ex_description;; ed = ed->next) {
             if (!ed) {
@@ -1090,18 +1091,18 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
                 }
 
                 /*
-                 * delete the entry in the descr list 
+                 * delete the entry in the descr list
                  */
                 if (ed == rp->ex_description) {
                     rp->ex_description = ed->next;
                 } else {
                     for (tmp = rp->ex_description; tmp->next != ed;
                          tmp = tmp->next) {
-                        /* 
-                         * Empty loop 
+                        /*
+                         * Empty loop
                          */
                     }
-                    tmp->next = ed->next; 
+                    tmp->next = ed->next;
                 }
 
                 if (ed) {
@@ -1124,8 +1125,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
     }
 
     if (string) {
-        /* 
-         * there was a string in the argument array 
+        /*
+         * there was a string in the argument array
          */
         if (strlen(string) > room_length[field - 1]) {
             send_to_char("String too long - truncated.\n\r", ch);
@@ -1136,8 +1137,8 @@ void do_edit(struct char_data *ch, char *arg, int cmd)
         ch->desc->str = 0;
         send_to_char("Ok.\n\r", ch);
     } else {
-        /* 
-         * there was no string. enter string mode 
+        /*
+         * there was no string. enter string mode
          */
         send_to_char("Enter string. Terminate with '/w'. Help with '/?'.\n\r",
                      ch);
@@ -1158,7 +1159,7 @@ void do_setskill(struct char_data *ch, char *arg, int cmd)
 }
 
 /*
- * db stuff *********************************************** 
+ * db stuff ***********************************************
  */
 
 struct help_index_element *build_help_index(FILE * fl, int *num)
@@ -1181,7 +1182,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
 
         for (;;) {
             /*
-             * extract the keywords 
+             * extract the keywords
              */
             scan = get_argument_delim(scan, &tmp, '\"');
 
@@ -1202,7 +1203,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
         }
 
         /*
-         * skip the text 
+         * skip the text
          */
         do {
             fgets(buf, 81, fl);
@@ -1214,7 +1215,7 @@ struct help_index_element *build_help_index(FILE * fl, int *num)
     }
 
     /*
-     * we might as well sort the stuff 
+     * we might as well sort the stuff
      */
     do {
         issorted = 1;
@@ -1364,7 +1365,7 @@ int load()
         return (previous[0]);
     } else {
         /*
-         * put new figure in table 
+         * put new figure in table
          */
         previous[p_point] = atoi(info.sl_load1);
         if (++p_point > 4)
@@ -1391,7 +1392,7 @@ char           *nogames()
 }
 
 /*
- * emulate the game regulator 
+ * emulate the game regulator
  */
 void gr(int s)
 {
