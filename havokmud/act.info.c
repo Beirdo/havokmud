@@ -3464,89 +3464,106 @@ char           *SPECIAL_FLAGS(struct char_data *ch,
 
 char           *PrintTitle(struct char_data *person, char type)
 {
-    static char     buffer[MAX_STRING_LENGTH] = "";
-    extern char    *RaceName[];
+    static char     buffer[MAX_STRING_LENGTH];
+    int             i;
+
+    buffer[0] = '\0';
 
     switch (type) {
-    case 'r':{
-            sprintf(buffer, "%s %s", GET_NAME(person),
-                    RaceName[GET_RACE(person)]);
-            return buffer;
-        }
+    case 'r':
+        sprintf(buffer, "%s     [ $c000BRace - < $c000W%s$c000B >$c000w ]", 
+                GET_NAME(person), RaceName[GET_RACE(person)]);
+        break;
+
     case 'i':
-        sprintf(buffer, "%s Idle:[%-3d] ", GET_NAME(person),
-                person->specials.timer);
-        return buffer;
+        sprintf(buffer, "%s     [ $c000BIdle: < $c000W%-3d$c000B>$c000w ]", 
+                GET_NAME(person), person->specials.timer);
+        break;
 
     case 'l':
-        sprintf(buffer, "%s has levels:[m%-2d.c%-2d.w%-2d.t%-2d.d%-2d.k%-2d.b"
-                        "%-2d.s%-2d.p%-2d.r%-2d.i%-2d.n%-2d] ",
-                GET_NAME(person), person->player.level[0],
-                person->player.level[1], person->player.level[2],
-                person->player.level[3], person->player.level[4],
-                person->player.level[5], person->player.level[6],
-                person->player.level[7], person->player.level[8],
-                person->player.level[9], person->player.level[10],
-                person->player.level[11]);
-        return buffer;
+        sprintf(buffer, "%s [ ", GET_NAME(person));
+
+        for( i = 0; i < MAX_CLASS; i++ ) {
+            sprintf( buffer, "%s$c000B%s%s$c000W%-2d", buffer, 
+                     ( i != 0 ? "." : "" ), classname[i],
+                     person->player.level[i] );
+        }
+
+        strcat( buffer, "$c000w ]" );
+        break;
 
     case 'h':
-        sprintf(buffer, "%s Hit:[%d/%-3d] Mana:[%d/%-3d] Move:[%d/%-3d]",
+        sprintf(buffer, "%s [ $c000BHit:<$c000W%d$c000B/$c000W%-3d$c000B> "
+                        "$c000BMana:<$c000W%d$c000B/$c000W%-3d$c000B> "
+                        "$c000BMove:<$c000W%d$c000B/$c000W%-3d$c000B>$c000w ]",
                 GET_NAME(person), GET_HIT(person), GET_MAX_HIT(person),
                 GET_MANA(person), GET_MAX_MANA(person), GET_MOVE(person),
                 GET_MAX_MOVE(person));
-        return buffer;
+        break;
 
     case 's':
         if (GET_STR(person) < 18) {
-            sprintf(buffer, "%s [STR:%-2d  INT:%-2d  WIS:%-2d  CON:%-2d  "
-                            "DEX:%-2d  CHR:%-2d] ",
+            sprintf(buffer, "%s [ $c000BSTR:$c000W%-2d  "
+                            "$c000BINT:$c000W%-2d  $c000BWIS:$c000W%-2d  "
+                            "$c000BCON:$c000W%-2d  $c000BDEX:$c000W%-2d  "
+                            "$c000BCHR:$c000W%-2d$c000w ]",
                     GET_NAME(person), GET_STR(person), GET_INT(person),
                     GET_WIS(person), GET_CON(person), GET_DEX(person),
                     GET_CHR(person));
         } else {
-            sprintf(buffer, "%s [STR:%-2d(%1d)  INT:%-2d  WIS:%-2d  CON:%-2d  "
-                            "DEX:%-2d  CHR:%-2d] ",
+            sprintf(buffer, "%s [ $c000BSTR:$c000W%-2d$c000B"
+                            "($c000W%1d$c000B)  $c000BINT:$c000W%-2d  "
+                            "$c000BWIS:$c000W%-2d  $c000BCON:$c000W%-2d  "
+                            "$c000BDEX:$c000W%-2d  $c000BCHR:$c000W%-2d"
+                            "$c000w ]",
                     GET_NAME(person), GET_STR(person), GET_ADD(person),
                     GET_INT(person), GET_WIS(person), GET_CON(person),
                     GET_DEX(person), GET_CHR(person));
 		}
-        return buffer;
+        break;
 
     case 't':
         sprintf(buffer, "%s ", (person->player.title ? person->player.title :
                                 GET_NAME(person)));
-        return buffer;
+        break;
+
     case 'v':
-        sprintf(buffer, "%s [I:%d]", GET_NAME(person), person->invis_level);
-        return buffer;
+        sprintf(buffer, "%s     [ $c000BInvis Level - <$c000W%d$c000B>"
+                        "$c000w ]", GET_NAME(person), person->invis_level);
+        break;
 
     case 'q':
-        sprintf(buffer, "%s ->Quest points[%d]", GET_NAME(person),
-                person->player.q_points);
-        return buffer;
+        sprintf(buffer, "%s     [ $c000BQuest Points - <$c000W%d$c000B>"
+                        "$c000w ]", GET_NAME(person), person->player.q_points);
+        break;
+
     case 'p':
-        sprintf(buffer, "%s ->PowerLevel:[%ld]", GET_NAME(person),
-                CalcPowerLevel(person));
-        return buffer;
+        sprintf(buffer, "%s     [ $c000BPower Level- <$c000W%ld$c000B>"
+                        "$c000w ] ", GET_NAME(person), CalcPowerLevel(person));
+        break;
+       
     case 'a':
         if (IS_GOOD(person)) {
-            sprintf(buffer, "%s     [Alignment - $c000W<%d>$c000w]",
-                    GET_NAME(person), GET_ALIGNMENT(person));
+            sprintf(buffer, "%s     [ $c000BAlignment - <$c000W%d$c000B>"
+                            "$c000w ]", GET_NAME(person), 
+                    GET_ALIGNMENT(person));
         } else if (IS_EVIL(person)) {
-            sprintf(buffer, "%s     [Alignment - $c000R<%d>$c000w]",
-                    GET_NAME(person), GET_ALIGNMENT(person));
+            sprintf(buffer, "%s     [ $c000BAlignment - <$c000R%d$c000B>"
+                            "$c000w ]", GET_NAME(person), 
+                    GET_ALIGNMENT(person));
         } else {
-            sprintf(buffer, "%s     [Alignment - $c000Y<%d>$c000w]", 
-                    GET_NAME(person), GET_ALIGNMENT(person));
+            sprintf(buffer, "%s     [ $c000BAlignment - <$c000Y%d$c000B>"
+                            "$c000w ]", GET_NAME(person), 
+                    GET_ALIGNMENT(person));
         }
-        return buffer;
+        break;
 
     default:
         sprintf(buffer, "%s ", (person->player.title ? person->player.title :
                                 GET_NAME(person)));
-        return buffer;
+        break;
     }
+    return (buffer);
 }
 
 void do_who(struct char_data *ch, char *argument, int cmd)
@@ -3562,7 +3579,7 @@ void do_who(struct char_data *ch, char *argument, int cmd)
                     temp = 0;
     char            type;
     char            color[10];
-    char            buf[256];
+    char            buf[MAX_STRING_LENGTH];
     char            levelimm[127],
                     immbuf[127];
 
@@ -3796,7 +3813,7 @@ void do_users(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_users");
 
-    strcpy(buf, "Connections:\n\r------------\n\r");
+    strcpy(buf, "$c000BConnections:\n\r$c000W------------$c000w\n\r");
 
     for (d = descriptor_list; d; d = d->next) {
         if (d->character) {
@@ -3804,22 +3821,16 @@ void do_users(struct char_data *ch, char *argument, int cmd)
                 (GetMaxLevel(ch) >= 51 &&
                  d->character->invis_level <= GetMaxLevel(ch))) {
                 if (d && d->character && d->character->player.name) {
-                    if (d->original) {
-                        sprintf(line, "%-16s: ", d->original->player.name);
-                    } else {
-                        sprintf(line, "%-16s: ",
-                                d->character->player.name);
-					}
+                    sprintf(line, "$c000W%-16s$c000w: ", 
+                            (d->original ? d->original->player.name :
+                             d->character->player.name));
                 } else {
-                    sprintf(line, "UNDEFINED       : ");
+                    sprintf(line, "$c000RUNDEFINED$c000w       : ");
 				}
-				if (d->host && *d->host) {
-                    sprintf(buf2, "%-22s [%s]\n\r",
-                            connected_types[d->connected], d->host);
-                } else {
-                    sprintf(buf2, "%-22s [%s]\n\r",
-                            connected_types[d->connected], "????");
-                }
+
+                sprintf(buf2, "$c000Y%-22s $c000B[$c000W%s$c000B]$c000w\n\r",
+                        connected_types[d->connected], 
+                        ( d->host && *d->host ? d->host : "$c000R????$c000w") );
                 strcat(line, buf2);
                 strcat(buf, line);
             }
@@ -4532,64 +4543,62 @@ void do_world(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_world");
 
-    sprintf(buf, "$c0005Base Source: $c0014HavokMUD$c0005 Version $c0015%s.",
-            VERSION);
+    sprintf(buf, "$c000BBase Source: $c000pHavokMUD$c000B Version $c000W%s."
+                 "$c000w", VERSION);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
     ot = Uptime;
     otmstr = asctime(localtime(&ot));
     *(otmstr + strlen(otmstr) - 1) = '\0';
-    sprintf(buf, "$c0005Start time was: $c0015%s $c0005(PST)", otmstr);
+    sprintf(buf, "$c000BStart time was: $c000W%s $c000B(PST)$c000w", otmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
     ct = time(0);
     tmstr = asctime(localtime(&ct));
     *(tmstr + strlen(tmstr) - 1) = '\0';
-    sprintf(buf, "$c0005Current time is: $c0015%s $c0005(PST)", tmstr);
+    sprintf(buf, "$c000BCurrent time is: $c000W%s $c000B(PST)$c000w", tmstr);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
     if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
         sprintbit((unsigned long) SystemFlags, system_flag_types, tbuf);
-        sprintf(buf, "$c0005Current system settings :[$c0015%s$c0005]",
+        sprintf(buf, "$c000BCurrent system settings: [$c000W%s$c000B]$c000w",
                 tbuf);
         act(buf, FALSE, ch, 0, 0, TO_CHAR);
     }
 #if HASH
-    sprintf(buf, "$c0005Total number of rooms in world: $c0015%d",
-            room_db.klistlen);
+    sprintf(buf, "$c000BTotal number of rooms in world: [$c000W%d$c000B]"
+                 "$c000w", room_db.klistlen);
 #else
-    sprintf(buf, "$c0005Total number of rooms in world: $c0015%ld",
-            room_count);
+    sprintf(buf, "$c000BTotal number of rooms in world: [$c000W%ld$c000B]"
+                 "$c000w", room_count);
 #endif
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$c0005Total number of zones in world: $c0015%d\n\r",
-            top_of_zone_table + 1);
+    sprintf(buf, "$c000BTotal number of zones in world: [$c000W%d$c000B]"
+                 "$c000w\n\r", top_of_zone_table + 1);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$c0005Total number of distinct mobiles in world: $c0015%d",
-            top_of_mobt + 1);
+    sprintf(buf, "$c000BTotal number of distinct mobiles in world: [$c000W%d"
+                 "$c000B]$c000w", top_of_mobt + 1);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$c0005Total number of distinct objects in world: "
-                 "$c0015%d\n\r",
-            top_of_objt + 1);
+    sprintf(buf, "$c000BTotal number of distinct objects in world: "
+                 "[$c000W%d$c000B]$c000w\n\r", top_of_objt + 1);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
-    sprintf(buf, "$c0005Total number of registered players: $c0015%d",
-            top_of_p_table + 1);
-    act(buf, FALSE, ch, 0, 0, TO_CHAR);
-
-    sprintf(buf, "$c0005Total number of monsters in game: $c0015%ld",
-            mob_count);
+    sprintf(buf, "$c000BTotal number of registered players: [$c000W%d"
+                 "$c000B]$c000w", top_of_p_table + 1);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-    sprintf(buf, "$c0005Total number of objects in game: $c0015%ld",
-            obj_count);
+    sprintf(buf, "$c000BTotal number of monsters in game: [$c000W%ld"
+                 "$c000B]$c000w", mob_count);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-    sprintf(buf, "$c0005Total number of connections since last reboot: "
-                 "$c0015%ld",
-            total_connections);
+    sprintf(buf, "$c000BTotal number of objects in game: [$c000W%ld"
+                 "$c000B]$c000w", obj_count);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
-    sprintf(buf, "$c0005Max. # of players online since last reboot: $c0015%ld",
-            total_max_players);
+    sprintf(buf, "$c000BTotal number of connections since last reboot: "
+                 "[$c000W%ld$c000B]$c000w", total_connections);
+    act(buf, FALSE, ch, 0, 0, TO_CHAR);
+
+    sprintf(buf, "$c000BMax. # of players online since last reboot: ["
+                 "$c000W%ld$c000B]$c000w", total_max_players);
     act(buf, FALSE, ch, 0, 0, TO_CHAR);
 
 }
