@@ -1376,8 +1376,8 @@ int process_output(struct descriptor_data *t)
         }
     }
 
-    if (!t->connected && !t->character && !IS_NPC(t->character) && 
-        IS_SET(t->character->specials.act, PLR_COMPACT) && 
+    if (!t->connected && !(t->character && !IS_NPC(t->character) && 
+        IS_SET(t->character->specials.act, PLR_COMPACT)) && 
         write_to_descriptor(t->descriptor, "\n\r") < 0) {
             return (-1);
     }
