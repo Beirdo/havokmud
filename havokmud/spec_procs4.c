@@ -5110,7 +5110,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
         
-        ch_printf(ch, "Alas, you don't seem to have any %ss to sell.\n\r",
+        ch_printf(ch, "Alas, you don't seem to have the %s to sell.\n\r",
                   itemname);
         break;
     case 93:

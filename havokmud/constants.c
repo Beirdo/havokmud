@@ -1461,7 +1461,7 @@ const char     *spell_wear_off_msg[] = {
     "!Ventriloquate!",
     "!Word of Recall!",
     "!Remove Poison!",
-    "You feel less aware of your suroundings.",
+    "You feel less aware of your surroundings.",
     "",                         /* NO MESSAGE FOR SNEAK */
     "!Hide!",
     "!Steal!",

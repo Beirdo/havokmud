@@ -3448,8 +3448,8 @@ void do_adrenalize(struct char_data *ch, char *argument, int cmd)
             TO_NOTVICT);
         act("$N suddenly gets a wild look in $S eyes!", TRUE, ch, 0,
             target, TO_NOTVICT);
-        act("$n touches you on the forehead lightly, you feel energy ulimited!",
-            TRUE, ch, 0, target, TO_VICT);
+        act("$n touches you on the forehead lightly, you feel energy "
+            "unlimited!", TRUE, ch, 0, target, TO_VICT);
     }
     send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your "
                  "abilities.$c0007\n\r", ch);

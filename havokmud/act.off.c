@@ -362,7 +362,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
                     /*
                      * valid target, let's get rid of it
                      */
-                    act("You wave you hand, and dismiss $N from your "
+                    act("You wave your hand, and dismiss $N from your "
                         "service.", FALSE, ch, 0, tmp_char, TO_CHAR);
                     act("$N wanders back to $S home.", FALSE, ch, 0,
                         tmp_char, TO_CHAR);
@@ -1019,7 +1019,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             vicwait = 1;
             chwait = 1.5;
             act("You barely manage to slam into $N, sending $M to the ground, "
-                "it might take you longer to recover tham $M.",
+                "it might take you longer to recover than $M.",
                 FALSE, ch, 0, victim, TO_CHAR);
             act("$n stumbles and slams into you, pushing you to the ground, "
                 "but you recover quickly, even faster than $m.",
