@@ -644,12 +644,12 @@ void advance_level(struct char_data *ch, int class)
   add_hp /= HowManyClasses(ch);
 
 
-
-	if(MAX(1, add_hp) > 0) {
+  add_hp = MAX(1, add_hp);
+	if(add_hp > 0) {
 		sprintf(bufx,"You feel healthier. +%d Health\n\r",add_hp);
 		send_to_char(bufx,ch);
 	}
-  ch->points.max_hit += MAX(1, add_hp);
+  ch->points.max_hit += add_hp;
 
   if (ch->specials.spells_to_learn < 70)
     ch->specials.spells_to_learn += MAX(1, MAX(2, wis_app[GET_RWIS(ch)].bonus)/HowManyClasses(ch));

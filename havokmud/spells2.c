@@ -1371,8 +1371,13 @@ void cast_heal( byte level, struct char_data *ch, char *arg, int type,
 {
   switch (type) {
     case SPELL_TYPE_SPELL:
-			act("$n heals $N.", FALSE, ch, 0, tar_ch, TO_NOTVICT);
-			act("You heal $N.", FALSE, ch, 0, tar_ch, TO_CHAR);
+			if(tar_ch == ch) {
+				act("$n heals $mself.", FALSE, ch, 0, 0, TO_ROOM);
+				act("You heal yourself.", FALSE, ch, 0, 0, TO_CHAR);
+			} else {
+				act("$n heals $N.", FALSE, ch, 0, tar_ch, TO_NOTVICT);
+				act("You heal $N.", FALSE, ch, 0, tar_ch, TO_CHAR);
+			}
 			spell_heal(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_POTION:

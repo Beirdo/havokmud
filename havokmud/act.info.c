@@ -2544,8 +2544,10 @@ char *GetLevelTitle(struct char_data *ch) {
 						else
 							sprintf(color,"$c000Y");
 
-
-	if(GET_SEX(ch)==SEX_FEMALE) {
+	if(GET_EXP(ch) > 200000000 || IS_SET(ch->specials.act, PLR_LEGEND)) {
+		sprintf(buf,"%s","$c0008L$c000we$c000Wge$c000wn$c0008d$c000B");
+		return buf;
+	} else if(GET_SEX(ch)==SEX_FEMALE) {
 		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_f);
 		return buf;
 	} else {
