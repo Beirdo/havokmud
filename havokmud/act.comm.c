@@ -27,7 +27,11 @@ void do_say(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch))
         return;
 
-    for (i = 0; *(argument + i) == ' '; i++);
+    for (i = 0; *(argument + i) == ' '; i++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!*(argument + i)) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
@@ -107,7 +111,11 @@ void do_shout(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; *argument == ' '; argument++);
+    for (; *argument == ' '; argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
@@ -189,7 +197,11 @@ void do_yell(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; *argument == ' '; argument++);
+    for (; *argument == ' '; argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
@@ -273,7 +285,11 @@ void do_commune(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_commune,think");
 
-    for (; *argument == ' '; argument++);
+    for (; *argument == ' '; argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!(*argument)) {
         send_to_char("Communing among the gods is fine, but WHAT?\n\r",
@@ -396,7 +412,10 @@ void do_tell(struct char_data *ch, char *argument, int cmd)
             (IS_NPC(ch) ? ch->player.short_descr : GET_NAME(ch)), message);
     act(buf, FALSE, vict, 0, 0, TO_CHAR);
 
-    strncpy(vict->last_tell, GET_NAME(ch), 80); // Used for reply
+    strncpy(vict->last_tell, GET_NAME(ch), 80);
+    /*
+     * Used for reply
+     */
 
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
         sprintf(buf, "$c0013You tell %s %s'%s'",
@@ -497,7 +516,10 @@ void do_ask(struct char_data *ch, char *argument, int cmd)
     }
 }
 
-#define MAX_NOTE_LENGTH 1000    /* arbitrary */
+#define MAX_NOTE_LENGTH 1000
+/*
+ * arbitrary
+ */
 
 void do_write(struct char_data *ch, char *argument, int cmd)
 {
@@ -515,7 +537,10 @@ void do_write(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    if (!*papername) {          /* nothing was delivered */
+    if (!*papername) {
+		/*
+		 * nothing was delivered
+		 */
         send_to_char("write (on) papername (with) penname.\n\r", ch);
         return;
     }
@@ -614,8 +639,15 @@ char           *RandomWord()
     };
 
     int             i;
-    for (i = 0; *rstring[i] != '\n'; i++);      /* count max number in
-                                                 * array */
+    for (i = 0; *rstring[i] != '\n'; i++) {
+		/*
+		 * Empty for loop
+		 */
+	}
+    /*
+     * count max number in
+     * array
+     */
     return (rstring[number(0, i)]);
 }
 
@@ -631,7 +663,11 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
 
     dlog("in do_sign");
 
-    for (i = 0; *(argument + i) == ' '; i++);
+    for (i = 0; *(argument + i) == ' '; i++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!*(argument + i)) {
         send_to_char("Yes, but WHAT do you want to sign?\n\r", ch);
@@ -665,7 +701,10 @@ void do_sign(struct char_data *ch, char *argument, int cmd)
             }
             strcat(buf2, " ");
             diff -= 1;
-            p = strtok(0, " "); /* next word */
+            p = strtok(0, " ");
+            /*
+             * next word
+             */
         }
         /*
          * if a recipient fails a roll, a word comes out garbled.
@@ -788,7 +827,11 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
     if (!argument)
         return;
 
-    for (ii = 0; *(argument + ii) == ' '; ii++);
+    for (ii = 0; *(argument + ii) == ' '; ii++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!argument[ii]) {
         send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
@@ -865,7 +908,10 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
          * work through the argument, word by word.  if you fail your
          * skill roll, the word comes out garbled.
          */
-        p = strtok(buf, " ");   /* first word */
+        p = strtok(buf, " ");
+        /*
+         * first word
+         */
 
         diff = strlen(buf);
 
@@ -883,7 +929,10 @@ void do_new_say(struct char_data *ch, char *argument, int cmd)
             }
             strcat(buf2, " ");
             diff -= 1;
-            p = strtok(0, " "); /* next word */
+            p = strtok(0, " ");
+            /*
+             * next word
+             */
         }
         /*
          * if a recipient fails a roll, a word comes out garbled.
@@ -945,7 +994,11 @@ void do_gtell(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
 	}
-    for (i = 0; *(argument + i) == ' '; i++);
+    for (i = 0; *(argument + i) == ' '; i++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!*(argument + i)) {
         send_to_char("What do you want to group tell!??\n\r", ch);
@@ -1114,7 +1167,11 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    for (; *argument == ' '; argument++);
+    for (; *argument == ' '; argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!(*argument)) {
         send_to_char("Pray to a deity, but what?!?! (pray <DeityName> "
@@ -1122,7 +1179,10 @@ void do_pray(struct char_data *ch, char *argument, int cmd)
     } else {
         ii = ((int) GetMaxLevel(ch) * 3.5);
 		if (HasClass(ch, CLASS_CLERIC | CLASS_DRUID)) {
-            ii += 10;           /* clerics get a 10% bonus :) */
+            ii += 10;
+            /*
+             * clerics get a 10% bonus :)
+             */
 		}
         if (ii > number(1, 101)) {
             if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
@@ -1277,7 +1337,11 @@ void do_ooc(struct char_data *ch, char *argument, int cmd)
     if (apply_soundproof(ch)) {
         return;
 	}
-    for (; *argument == ' '; argument++);
+    for (; *argument == ' '; argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
         if (!IS_IMMORTAL(ch->master)) {
@@ -1332,7 +1396,10 @@ void do_OOCemote(struct char_data *ch, char *argument, int cmd)
     struct descriptor_data *i;
     extern int      Silence;
 
-    if (cmd == CMD_OOC) {         /* OOC Social.. why stop there.. */
+    if (cmd == CMD_OOC) {
+		/*
+		 * OOC Social.. why stop there..
+		 */
         sprintf(command, "$c000B[$c000WOOC$c000B]$c000w");
     } else if (cmd == CMD_SHOUT) {
         sprintf(command, "$c000R[$c000WSHOUT$c000R]$c000w");
@@ -1419,8 +1486,7 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
     act(buf, FALSE, vict, 0, 0, TO_CHAR);
 	strncpy(vict->last_tell, GET_NAME(ch), 80);
    /*
-
-	*Used for reply
+	* Used for reply
 	*/
     if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
         sprintf(buf, "$c0013You reply to %s %s'%s'",

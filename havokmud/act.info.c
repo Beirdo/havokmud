@@ -194,7 +194,11 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg)
     /*
      * Find first non blank
      */
-    for (; *(argument + begin) == ' '; begin++);
+    for (; *(argument + begin) == ' '; begin++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     /*
      * Find length of first word
@@ -211,7 +215,11 @@ void argument_split_2(char *argument, char *first_arg, char *second_arg)
     /*
      * Find first non blank
      */
-    for (; *(argument + begin) == ' '; begin++);
+    for (; *(argument + begin) == ' '; begin++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     /*
      * Find length of second word
@@ -2333,7 +2341,7 @@ void recurse_map(struct room_data *rp, int size, int x, int y)
 {
     struct room_data *rm;
 
-    /* 
+    /*
      * if(map[x][y]!=0) May wasn't printing out completely.
      * return;
      */
@@ -2857,7 +2865,11 @@ void do_help(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; isspace(*argument); argument++);
+    for (; isspace(*argument); argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (*argument) {
         if (!help_index) {
@@ -2968,7 +2980,11 @@ void do_help(struct char_data *ch, char *argument, int cmd)
     found = 0;
     spellcheck = 0;
 
-    for (; isspace(*argument); argument++);
+    for (; isspace(*argument); argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (*argument) {
         if (!help_index) {
@@ -3066,19 +3082,19 @@ void do_help(struct char_data *ch, char *argument, int cmd)
                 do_help(ch, buf, 1);
                 return;
             } else if (cmd == 1) {
-                half_chop(argument, buf, buffer);       
-                /* 
+                half_chop(argument, buf, buffer);
+                /*
                  * remove spell
                  */
-                sprintf(buf, "skill %s", buffer);       
-                /* 
+                sprintf(buf, "skill %s", buffer);
+                /*
                  * add skill
                  */
                 do_help(ch, buf, 0);
                 return;
             } else if (cmd == 0) {
-                half_chop(argument, buf, argument);     
-                /* 
+                half_chop(argument, buf, argument);
+                /*
                  * remove skill
                  */
                 send_to_char("No remote or exact matches found.\n\r", ch);
@@ -3185,7 +3201,11 @@ void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
         return;
 	}
 
-    for (; isspace(*argument); argument++);
+    for (; isspace(*argument); argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (*argument) {
         if (!wizhelp_index) {
@@ -4709,7 +4729,11 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
      * get the class
      */
 
-    for (; isspace(*argument); argument++);
+    for (; isspace(*argument); argument++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!*argument) {
         send_to_char("You must supply a class!\n\r", ch);
@@ -5762,7 +5786,11 @@ void do_show_skill(struct char_data *ch, char *arg, int cmd)
     if (!ch->skills) {
         return;
 	}
-    for (; isspace(*arg); arg++);
+    for (; isspace(*arg); arg++) {
+		/*
+		 * Empty for loop
+		 */
+	}
 
     if (!arg) {
         send_to_char("You need to supply a class for that.", ch);
@@ -6491,7 +6519,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
                     rm,
                     nfnd;
     struct char_data *spud;
-    /* 
+    /*
      * char *PowerLevelDesc(long a);
      */
 
@@ -6677,9 +6705,9 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
         /*
          * failed
          */
-        max_range = 2;          
-        /* 
-         * morts can only spot two rooms away 
+        max_range = 2;
+        /*
+         * morts can only spot two rooms away
          */
 
     }
@@ -6759,10 +6787,10 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                             sprintf(buf, "You sense a %s aura %s %s.\n\r",
                                     PowerLevelDesc(CalcPowerLevel(spud)),
                                     rng_desc[range], dir_desc[i]);
-                            /* 
+                            /*
                              * spud->player.short_descr
                              *
-                             * 
+                             *
                              * if (IS_IMMORTAL(ch)) {
                              * sprintf(buf,"[%s]->%s",buf,spud->player.short_descr);
                              * }
@@ -6772,7 +6800,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                                     PowerLevelDesc(CalcPowerLevel(spud)),
                                     rng_desc[range], dir_desc[i]);
 
-                            /* 
+                            /*
                              * if (IS_IMMORTAL(ch)) {
                              * sprintf(buf,"[%s]->%s",buf,GET_NAME(spud));
                              * }
@@ -7077,9 +7105,9 @@ void do_whoarena(struct char_data *ch, char *argument, int cmd)
             (real_roomp(person->in_room)->zone == 124)) {
             if (OK_NAME(person, name_mask)) {
                 count++;
-                color_cnt = ((color_cnt + 1) % 9);      
-                /* 
-                 * range 1 to 9 
+                color_cnt = ((color_cnt + 1) % 9);
+                /*
+                 * range 1 to 9
                  */
 #if 1
                 if (!IS_IMMORTAL(person)) {
