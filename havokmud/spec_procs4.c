@@ -7,6 +7,7 @@
 
 /*   external vars  */
 /*   external vars  */
+extern const struct map_coord map_coords[];
   extern struct skillset warriorskills[];
   extern struct skillset thiefskills[];
   extern struct skillset barbskills[];
@@ -3238,6 +3239,89 @@ AddCommand("plank", do_sea_commands, 623, POSITION_STANDING, 1);
 AddCommand("sail", do_sea_commands, 624, POSITION_STANDING, 1);
 AddCommand("steer", do_sea_commands, 625, POSITION_STANDING, 1);
 */
+
+int disembark_ship(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
+
+	if(cmd==621) { /*disembark */
+
+			if ( oceanmap[GET_XCOORD(obj)][GET_YCOORD(obj)]=='@' ) {
+				  if (ch->specials.fighting) {
+						send_to_char("You can't while your fighting!",ch);
+						return(TRUE);
+				  }
+					/*lets move to the port city*/
+				  char_from_room(ch);
+				  char_to_room(ch, 3005);
+				  do_look(ch,"",0);
+			} else {
+				send_to_char("There is no place around to disembark your ship!\n\r",ch);
+				return (TRUE);
+			}
+
+		return(TRUE);
+	}
+}
+int steer_ship(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
+	void printmap(struct char_data *ch, int x, int y, int sizex, int sizey);
+	struct obj_data *SailDirection(struct obj_data *obj, int direction);
+	int CanSail(struct obj_data *obj, int direction);
+	static char *keywords[]= {
+	    "north",
+	    "east",
+	    "south",
+	    "west",
+	    "up",
+    "down" };
+    int keyword_no=0;
+	char buf[1024];
+
+  	only_argument(argument, buf);
+
+	if(!*buf) { /* No arguments?? so which direction anyway?*/
+		send_to_char("Sail in which direction?",ch);
+		return(TRUE);
+	}
+
+
+	keyword_no = search_block(buf, keywords, FALSE);
+
+    if ((keyword_no == -1)) {
+      send_to_char("Sail in which direction?",ch);
+		return(TRUE);
+
+    }
+	if(CanSail(obj, keyword_no) == TRUE) {
+		ch_printf(ch,"You sail %sward.\n\r", keywords[keyword_no] );
+
+		switch( keyword_no ) {
+			case 0: // North
+				GET_XCOORD(obj)--;
+				break;
+			case 1: //East
+				GET_YCOORD(obj)++;
+				break;
+			case 2: //south
+				GET_XCOORD(obj)++;
+				break;
+			case 3: // west
+				GET_YCOORD(obj)--;
+				break;
+			default:
+				break;
+		}
+	} else {
+
+		send_to_char("You can't sail that way, you'd be bound to sink the ship!!\n\r",ch);
+		return(TRUE);
+	}
+
+
+	printmap(ch, GET_XCOORD(obj), GET_YCOORD(obj), 5, 10);
+	return(TRUE);
+
+
+}
+
 int ships_helm(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type) {
 	void printmap(struct char_data *ch, int x, int y, int sizex, int sizey);
 	struct obj_data *SailDirection(struct obj_data *obj, int direction);
@@ -3254,26 +3338,16 @@ int ships_helm(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 
 
 	if(cmd==621) { /*disembark */
-
-			if ( oceanmap[GET_XCOORD(obj)][GET_YCOORD(obj)]=='@' ) {
-				  if (ch->specials.fighting) {
-						send_to_char("You can't while your fighting!",ch);
-						return(TRUE);
-				  }
-					/*lets move to the port city*/
-				  char_from_room(ch);
-				  char_to_room(ch, 3005);
-
-			} else {
-				send_to_char("There is no place around to disembark your ship!\n\r",ch);
-				return (TRUE);
-			}
-
-		return(TRUE);
+		return disembark_ship(ch, cmd, argument, obj, type);
+	}
+	if(cmd==625) {
+		return steer_ship(ch, cmd, argument, obj, type);
 	}
 
-	if(cmd!=625) /*Steer/sail*/
-  		return (FALSE);
+
+	return (FALSE);
+
+
 
 
   	only_argument(argument, buf);
@@ -3317,12 +3391,11 @@ int ships_helm(struct char_data *ch, int cmd, char *argument, struct obj_data *o
 	}
 
 
-
-
 	printmap(ch, GET_XCOORD(obj), GET_YCOORD(obj), 5, 10);
 	return(TRUE);
 }
 
+/* can they sail in that directioN?? */
 int CanSail(struct obj_data *obj, int direction) {
 	int x=0, y=0;
 
@@ -3358,12 +3431,15 @@ int CanSail(struct obj_data *obj, int direction) {
 		return (FALSE);
 }
 
+
+/* lets print the map to the screen */
 void printmap(struct char_data *ch, int x, int y, int sizex, int sizey) {
     int loop=0;
 	void printColors(struct char_data *ch, char *buf);
 	char buf[256];
 
 //printf("Displaying map at coord X%d-Y%d with display size of %d by %d.\n\r\n\r",x,y,sizex, sizey);
+ch_printf(ch,"Coords: %d-%d.\n\r",x, y);
 sprintf(buf,"\n\r$c000B]$c000W");
 for(loop=0;loop <sizey*2+1;loop++) {
 	sprintf(buf,"%s=",buf);
@@ -3396,7 +3472,7 @@ send_to_char(buf,ch);
 	//printColors(ch, buf);
 }
 
-
+/* Lets go threw and see what terrain needs what color */
 void printColors(struct char_data *ch, char *buf) {
 
 	int x=0;

@@ -6268,3 +6268,11 @@ const char *ImmortalLevel[10][3] = {
 
 };
 */
+
+
+const struct map_coord map_coords[] = {
+  {33,46,3005 },
+  {33,46,3005 },
+  {33,46,3005 },
+  {33,46,3005 }
+};
