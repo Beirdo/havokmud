@@ -2108,6 +2108,9 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	  return;
 	}
 
+
+  if (!IS_IMMORTAL(ch)) {
+
 	if (tar_char == ch) {
 	 if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
 	    act("Your magic fizzles against your own anti-magic shell!", FALSE, ch, 0, 0, TO_CHAR);
@@ -2141,7 +2144,7 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
 	     "Your skill appears useless in this magic dead zone.",
 	    "$n's spell dissolves like so much wet toilet paper"))
 	  return;
-
+}
 	send_to_char("Ok.\n\r",ch);
 	((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
 	cost = (int)USE_MANA(ch, (int)spl);
