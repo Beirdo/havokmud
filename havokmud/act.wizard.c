@@ -5383,8 +5383,8 @@ if (IS_NPC(ch))
 	 } else if (!strcmp("worldarena",arg)) {                   /* world arena */
 	 			if (IS_SET(SystemFlags,SYS_WLD_ARENA)) {
 	 			   	REMOVE_BIT(SystemFlags,SYS_WLD_ARENA);
-	 			   	send_to_char("World arena disable\n\r",ch);
-	 			   	log("World Arena has been disable");
+	 			   	send_to_char("World arena disabled\n\r",ch);
+	 			   	log("World Arena has been disabled");
 	 			} else {
 	 			   	SET_BIT(SystemFlags,SYS_WLD_ARENA);
 	 		    	send_to_char("World Arena enabled\n\r",ch);
@@ -5395,12 +5395,12 @@ if (IS_NPC(ch))
     } else if (!strcmp("deinit",arg)) {                   /* deinit */
 	 			if (IS_SET(SystemFlags,SYS_NO_DEINIT)) {
 	 			   	REMOVE_BIT(SystemFlags,SYS_NO_DEINIT);
-	 			   	send_to_char("Deinit zones disabled\n\r",ch);
-	 			   	log("Deinit Zones has been disabled");
+	 			   	send_to_char("Deinit zones enabled\n\r",ch);
+	 			   	log("Deinit Zones has been enabled");
 	 			} else {
 	 			   	SET_BIT(SystemFlags,SYS_NO_DEINIT);
-	 		    	send_to_char("Deinit zones enabled\n\r",ch);
-	 		    	log("Deinit zones enabled");
+	 		    	send_to_char("Deinit zones disabled\n\r",ch);
+	 		    	log("Deinit zones disabled");
 	 		    }
     } else if (!strcmp("tweak",arg)) {                   /* obj tweaking */
 	 			if (IS_SET(SystemFlags,SYS_NO_TWEAK)) {
