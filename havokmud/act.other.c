@@ -482,12 +482,17 @@ void do_not_here(struct char_data *ch, char *argument, int cmd)
 {
 	send_to_char("Sorry, but you cannot do that here!\n\r",ch);
 }
+
+
+
 void do_recallhome(struct char_data *victim, char *argument, int cmd) {
 	int location;
 
-	if(GET_AVE_LEVEL(victim) > 10) {
+	if (number(1,50) <= GetMaxLevel(victim)) {
 		send_to_char("You think of home but nothing happens.",victim);
+		WAIT_STATE(victim, PULSE_VIOLENCE*1);
 		return;
+
 	}
 
 	if (victim->player.hometown) {
@@ -507,7 +512,7 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd) {
 		return;
 	}
 
-	if (!IsOnPmp(victim->in_room)) {
+	if (!IsOnPmp(victim->in_room) && GetMaxLevel(victim) > 10) {
 	    send_to_char("You can't recall!, you're on a different plane!\n\r", victim);
 	    return;
 	}

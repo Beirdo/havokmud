@@ -884,7 +884,7 @@ void die(struct char_data *ch,int killedbytype)
   }
 #endif
 
-
+/*
   if (GetMaxLevel(ch) > 20)
     gain_exp(ch, -GET_EXP(ch)*0.25);
   else if (GetMaxLevel(ch) > 15)
@@ -893,8 +893,8 @@ void die(struct char_data *ch,int killedbytype)
     gain_exp(ch, -GET_EXP(ch)*0.15);
   else
     gain_exp(ch, -GET_EXP(ch)*0.10);
-
-
+*/
+    gain_exp(ch, -GET_EXP(ch)* (GetMaxLevel(ch)/100.0));
 
 
 
