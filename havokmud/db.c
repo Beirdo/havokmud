@@ -3792,6 +3792,8 @@ if (!HasClass(ch,CLASS_PSI))
 }
 #endif
 
+ch->player.has_mail=FALSE;
+
 }               /* end */
 
 

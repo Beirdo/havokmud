@@ -661,7 +661,14 @@ memory_check("end 5, begin 6");
 	perform_violence( pulse );
         update_mem(pulse);  /* update memorizing spells */
       }
-    
+     
+    if(!(pulse % PULSE_MAILCHECK)) {
+    	 for (point = descriptor_list; point; point = point->next) {
+			if(!(IS_NPC((point->character))))
+				point->character->player.has_mail=has_mail(point->character->player.name);
+	    }
+    }
+
     
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){
 	dlog("Before hourly tick pulse");

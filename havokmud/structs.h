@@ -281,7 +281,7 @@ struct QuestItem {
 
 #define PULSE_RIVER    15
 #define PULSE_TELEPORT      10
-
+#define PULSE_MAILCHECK 	240
 #define MAX_ROOMS   5000
 
 struct nodes
@@ -1008,6 +1008,7 @@ struct char_player_data
 
   byte level[ABS_MAX_CLASS];    /* PC / NPC s level         */
   unsigned short int q_points;   /* Quest points of player */
+  bool has_mail;				/* Has the player mail waiting? */
 };
 
 
