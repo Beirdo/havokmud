@@ -1113,6 +1113,7 @@ void do_setskill(struct char_data *ch, char *arg, int cmd);
 char *one_word(char *argument, char *first_arg );
 //struct help_index_element *build_help_index(FILE *fl, int *num);
 void page_string(struct descriptor_data *d, char *str, int keep_internal);
+
 void show_string(struct descriptor_data *d, char *input);
 void night_watchman();
 void check_reboot();
