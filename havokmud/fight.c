@@ -115,6 +115,9 @@ void appear(struct char_data *ch)
   if (affected_by_spell(ch, SPELL_INVISIBLE))
     affect_from_char(ch, SPELL_INVISIBLE);
 
+  if (affected_by_spell(ch, SPELL_GATHER_SHADOWS))
+    affect_from_char(ch, SPELL_GATHER_SHADOWS);
+
   if (affected_by_spell(ch, SPELL_INVIS_TO_ANIMALS))
     affect_from_char(ch, SPELL_INVIS_TO_ANIMALS);
 

@@ -1974,30 +1974,30 @@ if (IS_NPC(ch))
 
 if (!*item)
  {
-  send_to_char("Oedit what?!? (oedit <item> <field> <num>) Use 'oedit help'.\n\r",ch);
+  send_to_char("Oedit what?!? (oedit <item> <field> <num>) Use 'ooedit help'.\n\r",ch);
   return;
  }
 
 
 if (!strcmp(item,"help"))
  {
-send_to_char("Help for Oedit. Command line Parameters OEDIT <NAME> <FIELD> <VALUE>\r"
-"List of Fields :\r"
-"ldesc  = Long Item description | sdesc  = Short description\r"
-"extra  = Extra descriptions*NI*| name   = Item name\r"
-"wflags = wear flags            | afflags= affect flags\r"
-"exflags= extra flags           | weight = item weight\r"
-"cost   = item cost to rent per day\r"
-"value  = Item value if sold    | timer  = item timer\r"
-"type   = item type\r"
-"v0     = value[0] of item      | v1     = value[1] of item\r"
-"v2     = value[2] of item      | v3     = value[3] of item\r"
-"aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\r"
-"aff2   = special affect 2      | aff3   = special affect 3\r"
-"aff4   = special affect 4      | aff5   = special affect 5\r"
-"speed  = speed of weapon       | ego    = level of item \r"
-"max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\r"
-"\rNote: NI = Not implemented.\n\r",ch);
+send_to_char("Help for Oedit. Command line Parameters OEDIT <NAME> <FIELD> <VALUE>\n\r"
+"List of Fields :\n\r"
+"ldesc  = Long Item description | sdesc  = Short description\n\r"
+"extra  = Extra descriptions*NI*| name   = Item name\n\r"
+"wflags = wear flags            | afflags= affect flags\n\r"
+"exflags= extra flags           | weight = item weight\n\r"
+"cost   = item cost to rent per day\n\r"
+"value  = Item value if sold    | timer  = item timer\n\r"
+"type   = item type\n\r"
+"v0     = value[0] of item      | v1     = value[1] of item\n\r"
+"v2     = value[2] of item      | v3     = value[3] of item\n\r"
+"aff1   = special affect 1 (requires another value, oedit aff1 <modifer> <type>)\n\r"
+"aff2   = special affect 2      | aff3   = special affect 3\n\r"
+"aff4   = special affect 4      | aff5   = special affect 5\n\r"
+"speed  = speed of weapon       | ego    = level of item \n\r"
+"max    = max of item           | fullness = Show container fullness? 0=Yes, 1=No *NI*\n\r"
+"\n\rNote: NI = Not implemented.\n\r",ch);
   return;
  } /* End Help! */
 

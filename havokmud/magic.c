@@ -1446,6 +1446,8 @@ void spell_poison(byte level, struct char_data *ch,
        af.bitvector = AFF_POISON;
        affect_join(victim, &af, FALSE, FALSE);
 
+	act("$N looks very sick as you poison $M.",TRUE, ch, 0, victim, TO_CHAR);
+	act("$N looks very sick as $n poisons $M.",TRUE, ch, 0, victim, TO_NOTVICT);
        send_to_char("You feel very sick suddenly.\n\r", victim);
        if (!victim->specials.fighting && !IS_PC(victim))
        {

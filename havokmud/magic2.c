@@ -1885,6 +1885,63 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 	    }
 	}
 
+	/* necro spells */
+	if (affected_by_spell(victim, SPELL_INVIS_TO_UNDEAD)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_INVIS_TO_UNDEAD);
+			send_to_char("The eyes of the dead will see you.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_SUIT_OF_BONE)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_SUIT_OF_BONE);
+			send_to_char("Your suit of bones crumbles to dust.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_SPECTRAL_SHIELD);
+			send_to_char("The battlescarred armor surrounding you disappears.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_CLINGING_DARKNESS)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_CLINGING_DARKNESS);
+			send_to_char("You feel the cloak of darkness lift from your eyes.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_SIPHON_STRENGTH)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_SIPHON_STRENGTH);
+			send_to_char("Your strength turn back to normal.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_GATHER_SHADOWS)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_GATHER_SHADOWS);
+			send_to_char("The shadows around you dissipate into thin air.\n\r",victim);
+	    }
+	}
+
+	if (affected_by_spell(victim, SPELL_ENDURE_COLD)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_ENDURE_COLD);
+			send_to_char("Your skin loses it's white hue.\n\r",victim);
+	    }
+	}
+
+	if (affected_by_spell(victim, SPELL_EYE_OF_THE_DEAD)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_EYE_OF_THE_DEAD);
+			send_to_char("Your eye of the dead goes blind and strays beyond your grasp.\n\r",victim);
+	    }
+	}
+	if (affected_by_spell(victim, SPELL_VAMPIRIC_EMBRACE)) {
+		if (yes || !saves_spell(victim, SAVING_SPELL) ) {
+			affect_from_char(victim,SPELL_VAMPIRIC_EMBRACE);
+			send_to_char("The aura of negative energy leaves your hands.\n\r",victim);
+	    }
+	}
 
 	if (level >= IMPLEMENTOR)  {
 /* imp level (ie death) always gets rid of stoneskin  -Lennya */
@@ -1909,6 +1966,11 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 			send_to_char("You feel freedom of movement.\n\r",victim);
 		}
 
+		if (affected_by_spell(victim,SPELL_DARK_PACT)) {
+			affect_from_char(victim,SPELL_DARK_PACT);
+			send_to_char("Your pact with your Lord is cruelly ripped apart.\n\r",victim);
+		}
+
 		if(affected_by_spell(victim,COND_WINGS_FLY))
 			affect_from_char(victim,COND_WINGS_FLY);
 
@@ -1926,6 +1988,14 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 
 		if (affected_by_spell(victim,SPELL_POISON))
 			affect_from_char(victim,SPELL_POISON);
+		if (affected_by_spell(victim,SPELL_DECAY))
+			affect_from_char(victim,SPELL_DECAY);
+		if (affected_by_spell(victim,SPELL_DISEASE))
+			affect_from_char(victim,SPELL_DISEASE);
+
+		if (affected_by_spell(victim,SPELL_FLESH_GOLEM))
+			affect_from_char(victim,SPELL_FLESH_GOLEM);
+
 	}
 }
 

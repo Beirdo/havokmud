@@ -2841,6 +2841,7 @@ void spell_giant_growth(byte level, struct char_data *ch, struct char_data *vict
 
 
 /* Necromancer Spells */
+#define COLD_LIGHT 19
 void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 
@@ -2854,7 +2855,7 @@ void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim
 
 
 			/*Change it to the new item.. */
-	  tmp_obj = read_object(20, VIRTUAL);  /* this is all you have to do */
+	  tmp_obj = read_object(COLD_LIGHT, VIRTUAL);  /* this is all you have to do */
 	  if (tmp_obj) {
 	      tmp_obj->obj_flags.value[2] = 24+level;
 	      obj_to_char(tmp_obj,ch);
@@ -2871,6 +2872,7 @@ void spell_cold_light(byte level, struct char_data *ch, struct char_data *victim
 void spell_disease(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	struct affected_type af;
+	int dam = 0;
 
 	assert(victim && ch);
 
@@ -2886,8 +2888,11 @@ void spell_disease(byte level, struct char_data *ch, struct char_data *victim, s
 	}
 
 	if(!ImpSaveSpell(victim, SAVING_PARA, -6)) {
+
+		dam = dice(1,8);
+
 		af.type      = SPELL_DISEASE;
-	    af.duration  = 8;
+	    af.duration  = 12;
 	    af.modifier  = 0;
 	    af.location  = 0;
 	    af.bitvector = 0;
@@ -2895,6 +2900,9 @@ void spell_disease(byte level, struct char_data *ch, struct char_data *victim, s
 		act("$n places a rotting hand to $N's head, spreading disease.", FALSE, ch, 0 , victim, TO_NOTVICT);
 		act("$n places a rotting hand to your head, spreading disease.", FALSE, ch, 0 , victim, TO_VICT);
 		act("You place a rotting hand to $N's head, spreading disease.", FALSE, ch, 0 , victim, TO_CHAR);
+
+		GET_HIT(victim) -= dam;
+
 		if (!victim->specials.fighting && !IS_PC(victim)) {
 			AddHated(victim, ch);
 			set_fighting(victim, ch);
@@ -2982,28 +2990,28 @@ void spell_suit_of_bone(byte level, struct char_data *ch, struct char_data *vict
 
 void spell_spectral_shield(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-	  struct affected_type af;
+	struct affected_type af;
 
-	  assert(victim && ch);
+	assert(victim && ch);
 
-	  if (!affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
-	    act("A suit of battlescarred armor surrounds $N.",TRUE, ch, 0, victim, TO_NOTVICT);
-	    if (ch != victim) {
-	       act("A suit of battlescarred armor surrounds $N.", TRUE, ch, 0, victim, TO_CHAR);
-	       act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, victim, TO_VICT);
-	    } else {
-	       act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, 0, TO_CHAR);
-	     }
+	if (!affected_by_spell(victim, SPELL_SPECTRAL_SHIELD)) {
+		act("A suit of battlescarred armor surrounds $N.",TRUE, ch, 0, victim, TO_NOTVICT);
+		if (ch != victim) {
+			act("A suit of battlescarred armor surrounds $N.", TRUE, ch, 0, victim, TO_CHAR);
+			act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, victim, TO_VICT);
+		} else {
+			act("A suit of battlescarred armor surrounds you.", TRUE, ch, 0, 0, TO_CHAR);
+		}
 
-	    af.type      = SPELL_SPECTRAL_SHIELD;
+		af.type      = SPELL_SPECTRAL_SHIELD;
 	    af.duration  = 8+level;
 	    af.modifier  = -10;
 	    af.location  = APPLY_AC;
 	    af.bitvector = 0;
 	    affect_to_char(victim, &af);
-	  } else {
-		  send_to_char("Nothing new seems to happen\n\r", ch);
-	  }
+	} else {
+		send_to_char("Nothing new seems to happen\n\r", ch);
+	}
 }
 
 
@@ -3019,7 +3027,7 @@ void spell_clinging_darkness(byte level, struct char_data *ch, struct char_data 
 		   affected_by_spell(victim, SPELL_BLINDNESS))
 			return;
 
-	  act("Darkness seems to overcome $n eyes!", TRUE, victim, 0, 0, TO_ROOM);
+	  act("Darkness seems to overcome $n's eyes!", TRUE, victim, 0, 0, TO_ROOM);
 	  send_to_char("The darkness blinds you!!\n\r", victim);
 
 	  af.type      = SPELL_CLINGING_DARKNESS;
@@ -3053,15 +3061,15 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	    return;
 	  }
 
-	  if (IsUndead(victim)) {
-	    send_to_char("You can't charm a plant-creature!\n\r", ch);
+	  if (!IsUndead(victim)) {
+	    send_to_char("That's not an undead creature!\n\r", ch);
 	    return;
 	  }
 
-	  if (IsPerson(victim)) {
-	    send_to_char("You can't charm people! Try charm person for that!\n\r", ch);
-	    return;
-	  }
+//	  if (IsPerson(victim)) {
+//	    send_to_char("You can't charm people! Try charm person for that!\n\r", ch);
+//	    return;
+//	  }
 
 
 	  if (GetMaxLevel(victim) > GetMaxLevel(ch)+3) {
@@ -3128,7 +3136,7 @@ void spell_dominate_undead(byte level, struct char_data *ch, struct char_data *v
 	    af.bitvector = AFF_CHARM;
 	    affect_to_char(victim, &af);
 
-	    act("$n's glare, draws you towards $m.",FALSE,ch,0,victim,TO_VICT);
+	    act("$n's glare draws you towards $m.",FALSE,ch,0,victim,TO_VICT);
 
 	    if (!IS_PC(ch)) {
 	      REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
@@ -3233,22 +3241,22 @@ void spell_gather_shadows(byte level, struct char_data *ch, struct char_data *vi
 
 		assert((ch && obj) || victim);
 
-	  if (obj) {
-	     send_to_char("The shadows start to encase it, but nothing happens.",ch);
-	  } else {
-			if (!affected_by_spell(victim, SPELL_INVISIBLE)) {
+	if (obj) {
+		send_to_char("The shadows start to encase it, but nothing happens.",ch);
+	} else {
+		if (!affected_by_spell(victim, SPELL_INVISIBLE)) {
 
-			  act("$n gathers the shadows around $m and slowly fades from view.", TRUE, victim,0,0,TO_ROOM);
-	  	  send_to_char("You gather shadows around you and blend with them.\n\r", victim);
+			act("$n gathers the shadows around $m and slowly fades from view.", TRUE, victim,0,0,TO_ROOM);
+			send_to_char("You gather shadows around you and blend with them.\n\r", victim);
 
-		    af.type      = SPELL_INVISIBLE;
-	    	af.duration  = 24;
-	    	af.modifier  = -40;
-	  	  af.location  = APPLY_AC;
-		    af.bitvector = AFF_INVISIBLE;
-	  	  affect_to_char(victim, &af);
-	  	}
-	 }
+			af.type      = SPELL_GATHER_SHADOWS;
+			af.duration  = 24;
+			af.modifier  = -40;
+			af.location  = APPLY_AC;
+			af.bitvector = AFF_INVISIBLE;
+			affect_to_char(victim, &af);
+		}
+	}
 }
 
 void spell_mend_bones(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj) {
@@ -3293,7 +3301,7 @@ void spell_endure_cold(byte level, struct char_data *ch, struct char_data *victi
   if (!affected_by_spell(victim, SPELL_ENDURE_COLD)) {
  if (ch != victim) {
     act("$n points at $N, and then $N's hands turn a pale blue color.", FALSE, ch, 0, victim, TO_NOTVICT);
-    act("You point at $N, and make his skin a pale blue color.summon a electric protective globe about $N", FALSE, ch, 0, victim, TO_CHAR);
+    act("You point at $N, and make his skin a pale blue color.", FALSE, ch, 0, victim, TO_CHAR);
     act("$n points at you.  Suddenly, you feel a cold chill throughout your entire body.", FALSE, ch, 0, victim, TO_VICT);
   } else {
     act("$n concentrates for a second, then $s skin turns a weird pale blue.", FALSE, ch, 0, victim, TO_NOTVICT);
@@ -3439,6 +3447,7 @@ void spell_binding(byte level, struct char_data *ch, struct char_data *victim, s
 void spell_decay(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
 	struct affected_type af;
+	int dam = 0;
 
 	assert(victim && ch);
 
@@ -3453,16 +3462,23 @@ void spell_decay(byte level, struct char_data *ch, struct char_data *victim, str
 		return;
 	}
 
-	if(!ImpSaveSpell(victim, SAVING_PARA, -6)) {
+	if(!ImpSaveSpell(victim, SAVING_PARA, -4)) {
+
+		dam = dice(4,5);
+
 		af.type      = SPELL_DECAY;
 	    af.duration  = 4;
 	    af.modifier  = 0;
 	    af.location  = 0;
 	    af.bitvector = 0;
 	    affect_to_char(victim, &af);
+
 		act("$n's death touch causes $N's body to show signs of decay.", FALSE, ch, 0 , victim, TO_NOTVICT);
 		act("$n's death touch causes your body to show signs of decay.", FALSE, ch, 0 , victim, TO_VICT);
 		act("Your death touch causes $N's body to show signs of decay.", FALSE, ch, 0 , victim, TO_CHAR);
+
+		GET_HIT(victim) -= dam;
+
 		if (!victim->specials.fighting && !IS_PC(victim)) {
 			AddHated(victim, ch);
 			set_fighting(victim, ch);
@@ -3987,14 +4003,108 @@ void spell_scourge_warlock(byte level, struct char_data *ch, struct char_data *v
 	}
 
 	if (ch->equipment[WEAR_EYES]) {
-		obj = ch->equipment[WEAR_BODY];
-		if (!(obj_index[obj->item_number].virtual == TONGUE_ITEM)) {
-			act("Your cannot perform the Warlock's Scourge wearing $p.",FALSE, ch, obj, 0, TO_CHAR);
-			return;
+		obj = ch->equipment[WEAR_EYES];
+		if (obj) {
+			if (obj_index[obj->item_number].virtual != TONGUE_ITEM) {
+				act("Your cannot perform the Warlock's Scourge wearing $p.",FALSE, ch, obj, 0, TO_CHAR);
+				return;
+			}
 		}
 	} else {
 		/* give him a tongue to wear on his face */
 		if (obj = read_object(TONGUE_ITEM, VIRTUAL)) {
+			/* add a random Dark Lord's boon to it */
+			switch(number(1,20)) {
+				case 1:
+				case 2: {
+							/* 1dam */
+							obj->affected[0].location =  APPLY_DAMROLL;
+							obj->affected[0].modifier = 1;
+							break;
+						}
+				case 3:
+				case 4: {
+							/* 10mr */
+							obj->affected[0].location = APPLY_MANA_REGEN;
+							obj->affected[0].modifier = 10;
+							break;
+						}
+				case 5:
+				case 6: {
+							/* -10sf */
+							obj->affected[0].location = APPLY_SPELLFAIL;
+							obj->affected[0].modifier = -10;
+							break;
+						}
+				case 7: {
+							/* random resist */
+							int resist = 0;
+							switch(number(1,8)) {
+								case 1:
+									resist = IMM_FIRE;
+									break;
+								case 2:
+									resist = IMM_COLD;
+									break;
+								case 3:
+									resist = IMM_ELEC;
+									break;
+								case 4:
+									resist = IMM_ENERGY;
+									break;
+								case 5:
+									resist = IMM_ACID;
+									break;
+								case 6:
+									resist = IMM_SLEEP;
+									break;
+								case 7:
+									resist = IMM_CHARM;
+									break;
+								default:
+									resist = IMM_HOLD;
+									break;
+							}
+							obj->affected[0].location = APPLY_IMMUNE;
+							obj->affected[0].modifier = resist;
+							break;
+						}
+				case 8:
+				case 9:
+				case 10:{
+							/* -10 armor c*/
+							obj->affected[0].location = APPLY_ARMOR;
+							obj->affected[0].modifier = -10;
+							break;
+						}
+				case 11:{
+							/* +2 int c*/
+							obj->affected[0].location = APPLY_INT;
+							obj->affected[0].modifier = 2;
+							break;
+						}
+				case 12:
+				case 13:{
+							/* +1 str */
+							obj->affected[0].location = APPLY_STR;
+							obj->affected[0].modifier = 1;
+							break;
+						}
+				case 14:{
+							/* +2 wis */
+							obj->affected[0].location = APPLY_WIS;
+							obj->affected[0].modifier = 2;
+							break;
+						}
+				case 15:{
+							/* sa:spy c*/
+							obj->affected[0].location = APPLY_SPELL;
+							obj->affected[0].modifier = AFF_SCRYING;
+							break;
+						}
+				default:
+							break;
+			}
 			equip_char(ch,  obj, WEAR_EYES);
 			send_to_char("$c0008The Dark Lord grants you a boon, and you feel p$c000go$c000Gi$c000gso$c0008n flow through your veins.\n\r",ch);
 		} else {

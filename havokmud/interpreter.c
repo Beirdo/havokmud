@@ -1939,6 +1939,9 @@ void nanny(struct descriptor_data *d, char *arg)
 			else
 				if (HasClass(d->character, CLASS_DRUID))
 					sprintf(bufx,"Please select your alignment (Neutral)");
+			else
+				if (HasClass(d->character, CLASS_NECROMANCER))
+					sprintf(bufx,"Please select your alignment ($c000REvil$c000w)");
 				else
 					if (HasClass(d->character, CLASS_RANGER))
 						sprintf(bufx,"Please select your alignment ($c000WGood$c000w/Neutral$c000w)");
@@ -2014,7 +2017,7 @@ d->host);
 	      {
 			case 'n':
 		    case 'N':
-		    	if(!HasClass(d->character, CLASS_PALADIN)) {
+		    	if(!HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_NECROMANCER)) {
 			  	GET_ALIGNMENT(d->character)=1;
 			  	send_to_char("You have chosen to be Neutral in alignment.\n\r\n\r",d->character);
 			  	STATE(d) = CON_CREATION_MENU;
@@ -2026,7 +2029,7 @@ d->host);
 	      case 'G':
 		/* Set ansi */
 
-		   if(!HasClass(d->character,CLASS_DRUID)) {
+		   if(!HasClass(d->character,CLASS_DRUID) && !HasClass(d->character, CLASS_NECROMANCER)) {
 			GET_ALIGNMENT(d->character)=1000;
 			send_to_char("You have chosen to be a follower of light.\n\r\n\r",d->character);
 			show_menu(d);

@@ -2264,6 +2264,7 @@ int _affected_by_s(struct char_data *ch, int skill)
 	    if(IS_AFFECTED(ch,AFF_FIRESHIELD)) fa=1; break;
 	case SPELL_SANCTUARY:
 	    if(IS_AFFECTED(ch,AFF_SANCTUARY))  fa=1; break;
+	case SPELL_GATHER_SHADOWS:
 	case SPELL_INVISIBLE:
 	    if(IS_AFFECTED(ch,AFF_INVISIBLE))  fa=1; break;
 	case SPELL_TRUE_SIGHT:
@@ -2405,7 +2406,7 @@ int construct_prompt(char *outbuf, struct char_data *ch)
 			strcat(tbuf,(i>1)?"S":"s");
 		    else if(s_flag)
 			strcat(tbuf,"-");
-		    if((i=_affected_by_s(ch,SPELL_INVISIBLE))!=-1)
+		    if((i=_affected_by_s(ch,SPELL_INVISIBLE))!=-1 || (i=_affected_by_s(ch,SPELL_GATHER_SHADOWS))!=-1)
 			strcat(tbuf,(i>1)?"I":"i");
 		    else if(s_flag)
 			strcat(tbuf,"-");
