@@ -5938,35 +5938,35 @@ void do_weapons(struct char_data *ch, char *argument, int cmd)
 	send_to_char("You currently have expertise in use of the following weaponry:\n\r\n\r",ch);
 
 	if(ch->weaponskills.slot1) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot1-WEAPON_FIRST].name, how_good(ch->weaponskills.grade1));
+		sprintf(buf,"[1]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot1-WEAPON_FIRST].name, how_good(ch->weaponskills.grade1));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot2) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot2-WEAPON_FIRST].name, how_good(ch->weaponskills.grade2));
+		sprintf(buf,"[2]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot2-WEAPON_FIRST].name, how_good(ch->weaponskills.grade2));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot3) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot3-WEAPON_FIRST].name, how_good(ch->weaponskills.grade3));
+		sprintf(buf,"[3]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot3-WEAPON_FIRST].name, how_good(ch->weaponskills.grade3));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot4) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot4-WEAPON_FIRST].name, how_good(ch->weaponskills.grade4));
+		sprintf(buf,"[4]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot4-WEAPON_FIRST].name, how_good(ch->weaponskills.grade4));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot5) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot5-WEAPON_FIRST].name, how_good(ch->weaponskills.grade5));
+		sprintf(buf,"[5]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot5-WEAPON_FIRST].name, how_good(ch->weaponskills.grade5));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot6) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot6-WEAPON_FIRST].name, how_good(ch->weaponskills.grade6));
+		sprintf(buf,"[6]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot6-WEAPON_FIRST].name, how_good(ch->weaponskills.grade6));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot7) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot7-WEAPON_FIRST].name, how_good(ch->weaponskills.grade7));
+		sprintf(buf,"[7]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot7-WEAPON_FIRST].name, how_good(ch->weaponskills.grade7));
 		send_to_char(buf,ch);
 	}
 	if(ch->weaponskills.slot8) {
-		sprintf(buf,"[1]  %20s %10s\n\r",weaponskills[ch->weaponskills.slot8-WEAPON_FIRST].name, how_good(ch->weaponskills.grade8));
+		sprintf(buf,"[8]  %-20s %10s\n\r",weaponskills[ch->weaponskills.slot8-WEAPON_FIRST].name, how_good(ch->weaponskills.grade8));
 		send_to_char(buf,ch);
 	}
 }

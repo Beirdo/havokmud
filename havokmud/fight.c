@@ -1578,14 +1578,38 @@ void WeaponSkillCheck(struct char_data *ch)
 		if(number(1,100)<4) { // should be 4
 			switch(found)
 			{
-				case 1: ch->weaponskills.grade1++; break;
-				case 2: ch->weaponskills.grade2++; break;
-				case 3: ch->weaponskills.grade3++; break;
-				case 4: ch->weaponskills.grade4++; break;
-				case 5: ch->weaponskills.grade5++; break;
-				case 6: ch->weaponskills.grade6++; break;
-				case 7: ch->weaponskills.grade7++; break;
-				case 8: ch->weaponskills.grade8++; break;
+				case 1:
+					if(ch->weaponskills.grade1 < 100)
+						ch->weaponskills.grade1++;
+					break;
+				case 2:
+					if(ch->weaponskills.grade2 < 100)
+						ch->weaponskills.grade2++;
+					break;
+				case 3:
+					if(ch->weaponskills.grade3 < 100)
+						ch->weaponskills.grade3++;
+					break;
+				case 4:
+					if(ch->weaponskills.grade4 < 100)
+						ch->weaponskills.grade4++;
+					break;
+				case 5:
+					if(ch->weaponskills.grade5 < 100)
+						ch->weaponskills.grade5++;
+					break;
+				case 6:
+					if(ch->weaponskills.grade6 < 100)
+						ch->weaponskills.grade6++;
+					break;
+				case 7:
+					if(ch->weaponskills.grade7 < 100)
+						ch->weaponskills.grade7++;
+					break;
+				case 8:
+					if(ch->weaponskills.grade8 < 100)
+						ch->weaponskills.grade8++;
+					break;
 				default: log("odd spot in weapon increase");break;
 			}
 			send_to_char("Practice makes perfect!\n\r", ch);
