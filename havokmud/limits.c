@@ -486,13 +486,14 @@ if (!HasClass(ch,CLASS_THIEF|CLASS_MONK))
 void advance_level(struct char_data *ch, int class)
 {
   int add_hp, i;
-
-
+  char bufx[50];
+  int add_mana = 0, add_move=0;
   if (class > MAX_CLASS) {
     log("Bad advance class.. no such class");
     return;
   }
-
+  	add_move=GET_MAX_MOVE(ch);
+	add_mana=GET_MAX_MANA(ch);
   if (GET_LEVEL(ch, class) > 0 &&
       GET_EXP(ch) < titles[class][GET_LEVEL(ch, class)+1].exp) {
     /*  they can't advance here */
@@ -604,6 +605,12 @@ void advance_level(struct char_data *ch, int class)
 
   add_hp /= HowManyClasses(ch);
 
+
+
+	if(MAX(1, add_hp) > 0) {
+		sprintf(bufx,"You feel healthier. +%d Health\n\r",add_hp);
+		send_to_char(bufx,ch);
+	}
   ch->points.max_hit += MAX(1, add_hp);
 
   if (ch->specials.spells_to_learn < 70)
@@ -618,6 +625,16 @@ void advance_level(struct char_data *ch, int class)
     for (i = 0; i < 3; i++)
       ch->specials.conditions[i] = -1;
 
+
+	if(add_mana!=GET_MAX_MANA(ch)) {
+		sprintf(bufx,"You feel more magical.  +%d Mana\n\r", GET_MAX_MANA(ch)-add_mana);
+		send_to_char(bufx,ch);
+	}
+
+	if(add_move!=GET_MAX_MOVE(ch)) {
+		sprintf(bufx,"You feel your endurance increasing.  +%d Movement\n\r", GET_MAX_MOVE(ch)-add_move);
+		send_to_char(bufx,ch);
+	}
 }
 
 

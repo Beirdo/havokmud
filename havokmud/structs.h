@@ -203,27 +203,28 @@ struct QuestItem {
 #define BARD_LEVEL_IND      11
 
 /* user flags */
-#define NO_DELETE	1	/* do not delete me, well until 6 months pass! */
-#define USE_ANSI	2	/* we use ANSI color, yeah! */
-#define RACE_WAR	4	/* if enabled they can be hit by opposing race */
-#define UN_DEFINED_2	8
-#define SHOW_EXITS     16	/* for auto display exits	*/
+#define NO_DELETE	BV00//1	/* do not delete me, well until 6 months pass! */
+#define USE_ANSI	BV01//2	/* we use ANSI color, yeah! */
+#define RACE_WAR	BV02//4	/* if enabled they can be hit by opposing race */
+#define UN_DEFINED_2 BV03//	8
+#define SHOW_EXITS   BV04//   16	/* for auto display exits	*/
 
-#define MURDER_1	32	/* actually killed someone! */
-#define STOLE_1		64	/* caught stealing form someone! */
-#define MURDER_2	128	/* rumored killed someone */
-#define STOLE_2		256	/* rumored stole from someone */
+#define MURDER_1	BV05//32	/* actually killed someone! */
+#define STOLE_1		BV06//64	/* caught stealing form someone! */
+#define MURDER_2	BV07//128	/* rumored killed someone */
+#define STOLE_2		BV08//256	/* rumored stole from someone */
 
-#define STOLE_X		512	/* saved for later */
-#define MURDER_X	1024	/* saved for later */
-#define USE_PAGING	2048	/* pause screens?  */
-#define CAN_OBJ_EDIT	4096	/* this user can use oedit to edit objects */
-#define CAN_MOB_EDIT	8192	/* this user can use medit to edit mobs */
-#define FAST_AREA_EDIT  16384	/* immort is using fast online mapping */
-#define PKILLING        32768
-#define CLOAKED         65536   /* Used for mortal cloaking of there eq */
-#define ZONE_SOUNDS    131072
-#define CHAR_PRIVATE   262144
+#define STOLE_X		BV09//512	/* saved for later */
+#define MURDER_X	BV10//1024	/* saved for later */
+#define USE_PAGING	BV11//2048	/* pause screens?  */
+#define CAN_OBJ_EDIT	BV12//4096	/* this user can use oedit to edit objects */
+#define CAN_MOB_EDIT	BV13//8192	/* this user can use medit to edit mobs */
+#define FAST_AREA_EDIT  BV14//16384	/* immort is using fast online mapping */
+#define PKILLING        BV15//32768
+#define CLOAKED         BV16//65536   /* Used for mortal cloaking of there eq */
+#define ZONE_SOUNDS    BV17//131072
+#define CHAR_PRIVATE   BV18//262144
+#define CLAN_LEADER    BV19
 /* end user flags */
 
 /* system flags defined on the fly and by wizards for this boot */

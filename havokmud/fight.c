@@ -2413,7 +2413,8 @@ void hit(struct char_data *ch, struct char_data *victim, int type)
 /* control the fights going on */
 void perform_violence(int pulse)
 {
-   struct char_data *ch, *vict;
+ 	char temp[30];
+ struct char_data *ch, *vict;
    struct obj_data *tmp,*tmp2;
    int i,max,tdir,cmv,max_cmv,caught,rng,tdr,t,found;
    float x;
@@ -2481,7 +2482,7 @@ void perform_violence(int pulse)
 
                /* if dude is a monk, and is wielding something */
 
-               if (HasClass(ch, CLASS_MONK))
+               if (HasClass(ch, CLASS_MONK) && !IS_IMMORTAL(ch))
                {
                   if (ch->equipment[WIELD])
                   {
@@ -2502,6 +2503,7 @@ void perform_violence(int pulse)
 				x = x / 2;
 
 			if(ch->equipment[WIELD]) {
+				send_to_char("Wielding a weapon",ch);
 				x+=(float)ch->equipment[WIELD]->speed/100;
 			} else {
 				if(HasClass(ch,CLASS_MONK))
@@ -2526,6 +2528,12 @@ void perform_violence(int pulse)
                  tmp2 = unequip_char(ch, HOLD);
                }
 
+				if (IS_SET(ch->specials.affected_by2,AFF2_BERSERK)) {
+					x += 0.50;
+				}
+
+				//sprintf(temp,"\n\rNumatks:%.2f\n\r",x);
+				//send_to_char(temp,ch);
                while(x > 0.999)
                {
                   if(ch->specials.fighting)
@@ -2902,6 +2910,15 @@ struct char_data *FindVictim(struct char_data *ch)
   unsigned short ftot=0,ttot=0,ctot=0,ntot=0,mtot=0, ktot=0, dtot=0;
   unsigned short total;
   unsigned short fjump=0,njump=0,cjump=0,mjump=0,tjump=0,kjump=0,djump=0;
+  struct room_data *rp;
+
+  rp = real_roomp(ch->in_room);
+  if(!rp) {
+	log("No room data in FindVictim ??Crash???");
+	return(0);
+  }
+
+
 
 for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_room) {
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch!=tmp_ch)) {
@@ -3017,6 +3034,13 @@ struct char_data *FindAnyVictim( struct char_data *ch)
   unsigned short total;
   unsigned short fjump=0,njump=0,cjump=0,mjump=0,tjump=0,kjump=0,djump=0;
 
+  struct room_data *rp;
+
+  rp = real_roomp(ch->in_room);
+  if(!rp) {
+	log("No room data in FindMetaVictim ??Crash???");
+	return(0);
+  }
   if (ch->in_room < 0) return(0);
 
   for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch;tmp_ch=tmp_ch->next_in_room) {
@@ -3936,6 +3960,13 @@ struct char_data *FindMetaVictim( struct char_data *ch)
   unsigned char found=FALSE;
   unsigned short total=0;
 
+  struct room_data *rp;
+
+  rp = real_roomp(ch->in_room);
+  if(!rp) {
+	log("No room data in FindMetaVictim ??Crash???");
+	return(0);
+  }
 
   if (ch->in_room < 0) return(0);
 

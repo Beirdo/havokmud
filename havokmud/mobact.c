@@ -190,7 +190,13 @@ void MobScavenge(struct char_data *ch)
   struct obj_data *best_obj=0, *obj=0;
   int max, cc=0;
   char buf[512];
+  struct room_data *rp;
 
+  rp = real_roomp(ch->in_room);
+  if(!rp) {
+	log("No room data in MobScavenge ??Crash???");
+	return;
+  } else
   if ((real_roomp(ch->in_room))->contents && number(0,4)) {
     for (max = 1,best_obj = 0,obj = (real_roomp(ch->in_room))->contents;
 	 obj; obj = obj->next_content) {
@@ -242,6 +248,9 @@ void MobScavenge(struct char_data *ch)
       do_wear(ch, buf, 0);
     }
   }
+
+
+
 }
 
 
@@ -620,6 +629,13 @@ int AssistFriend( struct char_data *ch)
   struct char_data *damsel, *targ, *tmp_ch, *next;
   int t, found;
   char buf[256];
+  struct room_data *rp;
+
+  rp = real_roomp(ch->in_room);
+  if(!rp) {
+	log("No room data in AssistFriend ??Crash???");
+	return(0);
+  }
 
   damsel = 0;
   targ = 0;

@@ -2899,9 +2899,13 @@ const char *special_user_flags[] =
 	"OBJECT-EDITOR-OK",
 	"MOBILE-EDITOR-OK",
 	"FAST-MAP",
+	"PKILLING",
+	"CLOAKED",
+	"ZONE-SOUNDS",
+	"CHAR-PRIVATE",
+	"CLAN-LEADER",
 	"\n"
 };
-
 const char *immunity_names[] =
 {	"FIRE",
 	"COLD",

@@ -2079,8 +2079,12 @@ void act(char *str, int hide_invisible, struct char_data *ch,
   else if (type == TO_CHAR)
     {to = ch;
     }
-  else
-    to = real_roomp(ch->in_room)->people;
+  else {
+	  if(real_roomp(ch->in_room))
+    	to = real_roomp(ch->in_room)->people;
+      else
+    	log("Crash in ACT");
+	}
 
 
   for (; to; to = to->next_in_room)     {

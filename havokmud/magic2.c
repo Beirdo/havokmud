@@ -963,9 +963,9 @@ void spell_Create_Monster(byte level, struct char_data *ch,
     }
 
 	/* lets make monsum stronger.. they are pussies... (GH) */
-	GET_DAMROLL(mob) += (int) level/2 + 2;
-	GET_HITROLL(mob) += (int) level/2 + 2;
-	mob->points.max_hit += level * 2;
+	GET_DAMROLL(mob) += (int) level/2;
+	GET_HITROLL(mob) += (int) level/2;
+	mob->points.max_hit += level * 5;
 	//GET_MAX_HIT(mob) += level*2;
 
     char_to_room(mob, ch->in_room);

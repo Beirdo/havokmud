@@ -495,9 +495,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
 
     case APPLY_SLOW:
       if (mod > 0)
-	ch->mult_att /= 2.0;
+		SET_BIT(ch->specials.affected_by2, AFF2_SLOW);
       else if (mod < 0) {
-		//ch->mult_att *= 2.0;
+		REMOVE_BIT(ch->specials.affected_by2, AFF2_SLOW);
 	}
       break;
 

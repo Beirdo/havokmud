@@ -1540,10 +1540,10 @@ AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
 
 /* Changing gossip to yell  (GH) */
 AddCommand("yell",do_yell,563,POSITION_RESTING,0);
-AddCommand("legsweep",do_leg_sweep, 564, POSITION_RESTING,0);
+AddCommand("legsweep",do_leg_sweep, 564, POSITION_FIGHTING,0);
 AddCommand("charge",do_charge, 565, POSITION_STANDING,0);
 AddCommand("orebuild",do_orebuild,566,POSITION_STANDING,59);
-AddCommand("draw", do_draw, 567, POSITION_STANDING, 0);
+AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
@@ -1881,7 +1881,8 @@ d->host);
 			save_char(d->character, AUTO_RENT);
 
       	    SEND_TO_Q(NEWBIE_NOTE, d);
-			SEND_TO_Q(motd, d);
+			//SEND_TO_Q(motd, d);
+			send_to_char(motd,d->character);
 			SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
 	 		STATE(d) = CON_RMOTD;
       	    return;
@@ -2170,7 +2171,7 @@ the\n\r",d);
 	load_char_extra(d->character); /*Load extra fromfile*/
 
 	if(d->character->specials.hostip==NULL || 1)
-      sprintf(buf, "%s[%s] has connected."
+      sprintf(buf, "%s[%s] has connected.\n\r"
       	, GET_NAME(d->character), d->host);
 	else{
 		sprintf(buf, "%s[%s] has connected.\n\r. Last connected from[%s]"
@@ -2184,7 +2185,8 @@ the\n\r",d);
 */
       log(buf);
       SEND_TO_Q(buf,d);
-      SEND_TO_Q(motd, d);
+      send_to_char(motd,d->character);
+      //SEND_TO_Q(motd, d);
       SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
       STATE(d) = CON_RMOTD;
     }
@@ -2503,7 +2505,8 @@ case CON_PRESS_ENTER:
        /*   page_string(d,NEWBIE_NOTE,1); */
 	 SEND_TO_Q(NEWBIE_NOTE, d);
 	 STATE(d) = CON_RMOTD;
-	 SEND_TO_Q(motd, d);
+	 send_to_char(motd,d->character);
+	 //SEND_TO_Q(motd, d);
 	 SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
 	 STATE(d) = CON_RMOTD;
          break;
@@ -2967,7 +2970,8 @@ opponents.\n\n",d);
        /* create an entry in the file */
        d->pos = create_entry(GET_NAME(d->character));
        save_char(d->character, AUTO_RENT);
-	SEND_TO_Q(motd, d);
+	send_to_char(motd,d->character);
+	//SEND_TO_Q(motd, d);
 	SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
 	STATE(d) = CON_RMOTD;
      } else if (d->character->generic >= NEWBIE_REQUEST) {
@@ -3025,7 +3029,8 @@ case CON_CHECK_MAGE_TYPE:{
 
   case CON_RMOTD:               /* read CR after printing motd  */
     if(GetMaxLevel(d->character) > 50 ) {
-	 SEND_TO_Q(wmotd, d);
+	 send_to_char(wmotd,d->character);
+	 //SEND_TO_Q(wmotd, d);
 	 SEND_TO_Q("\n\r\n[PRESS RETURN]", d);
 	 STATE(d) = CON_WMOTD;
 	 break;

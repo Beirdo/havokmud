@@ -448,6 +448,7 @@ struct char_data *FindAHatee( struct char_data *ch)
 {
    struct char_data *tmp_ch;
 	struct room_data *rp;
+
     //for (tmp_ch = real_roomp(ch->in_room)->people; tmp_ch; tmp_ch = tmp_ch->next_in_room) {
 
   if(!ch){

@@ -5242,7 +5242,8 @@ dlog("in do_viewfile");
       file_to_string(IDEA_FILE,bigbuf);
     }
     else if(!strcmp(namefile,"motd")) {
-      page_string(ch->desc,motd,0);
+      //page_string(ch->desc,motd,0);
+      send_to_char(motd,ch);
       return; //Wizreport addon ends here... -Manwe Windmaster 010697
     }
 /*
@@ -5252,7 +5253,8 @@ dlog("in do_viewfile");
     }
 */
     else if(!strcmp(namefile,"wmotd")) {
-      page_string(ch->desc,wmotd,0);
+      send_to_char(wmotd,ch);
+      //page_string(ch->desc,wmotd,0);
       return;
     }
     else {

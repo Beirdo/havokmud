@@ -4228,8 +4228,6 @@ char *SpeedDesc(int a)
   } else {
     return("Lightning Quick");
   }
-
-
 }
 
 
