@@ -1434,14 +1434,16 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
         {"None", -1, -1}
     };
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    if (cmd != 582 && cmd != 59)
+    }
+    if (cmd != 582 && cmd != 59) {
         return (FALSE);
-
+    }
     if (cmd == 582 && !*arg) {
-        // list if no argument
+        /* 
+         * list if no argument
+         */
         ch_printf(ch, "$c000B%-15s     %-3s\n\r------------------------\n\r",
                   "Stat", "Cost");
         while (traininglist[x].level != -1) {
@@ -1455,12 +1457,15 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
     }
     
     if (cmd == 582) {
-        // train
+        /* 
+         * train
+         */
         while (traininglist[x].level != -1) {
             if (is_abbrev(arg, traininglist[x].name)) {
                 cost = traininglist[x].level;
-                if (cost < 3)
+                if (cost < 3) {
                     cost = 3;
+                }
                 stat = x + 1;
                 if (GET_PRAC(ch) - cost < 0) {
                     ch_printf(ch, "$c000P%s tells you 'You don't have enough "
@@ -1474,27 +1479,41 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg,
         }
 
         switch (stat) {
-            /*
-             * case 1: GET_PRAC(ch) -= cost; ch->points.max_hit ++;
-             * //GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
-             * ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of
-             * this! Its good for ya!!'\n\r$c000w%s hands you a foul
-             * looking health drink and you swig it down. (+1
-             * HP)\n\r",name,name); break; case 2: GET_PRAC(ch)-= cost;
-             * ch->points.max_move++;//GET_MAX_MOVE(ch) = GET_MAX_MOVE(ch) 
-             * + 1;
-             * 
-             * ch_printf(ch,"$c000P%s tells you 'Hey, take a swig of
-             * this!!!'\n\r$c000w%s hands you a high protein energy drink
-             * and you drink it down.(+1 Move)\n\r",name,name); break;
-             * case 3: GET_PRAC(ch)-= cost; ch->points.max_mana
-             * ++;//GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
-             * 
-             * ch_printf(ch,"$c000P%s tells you 'This mystical drink
-             * should do it!!!'\n\r$c000wHe hands you a mystical potion
-             * and you chug it down.(+1 Mana)\n\r",name); break; 
-             */
-        case 1:         // 4:
+#if 0
+        case 1:
+            GET_PRAC(ch) -= cost; ch->points.max_hit ++;
+#if 0            
+            GET_MAX_HIT(ch) = GET_MAX_HIT(ch) + 1;
+#endif  
+            ch_printf(ch,"$c000P%s tells you 'Hey, take a drink of "
+                         "this! Its good for ya!!'\n\r$c000w%s hands "
+                         "you a foul looking health drink and you swig "
+                         "it down. (+1 HP)\n\r",name,name); 
+            break; 
+        case 2: 
+            GET_PRAC(ch)-= cost;
+            ch->points.max_move++;
+#if 0
+            GET_MAX_MOVE(ch) = GET_MAX_MOVE(ch) + 1;
+#endif
+            ch_printf(ch,"$c000P%s tells you 'Hey, take a swig of "
+                         "this!!!'\n\r$c000w%s hands you a high protein "
+                         "energy drink and you drink it down."
+                         "(+1 Move)\n\r",name,name); 
+            break;
+        case 3: 
+            GET_PRAC(ch)-= cost; 
+            ch->points.max_mana ++;
+#if 0
+            GET_MAX_MANA(ch) = GET_MAX_MANA(ch) + 1;
+#endif       
+            ch_printf(ch,"$c000P%s tells you 'This mystical drink should "
+                         "do it!!!'\n\r$c000wHe hands you a mystical potion "
+                         "and you chug it down.(+1 Mana)\n\r",name); 
+            break; 
+             
+#endif
+        case 1:         
             if (GET_RCON(ch) >= 17) {
                 ch_printf(ch, "$c000P%s tells you 'I cannot train your %s any "
                               " further.'\n\r", mob->player.short_descr,
@@ -1678,7 +1697,9 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
 
-    // 170->Practice,164->Practise, 243->gain
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170) {
 
         if (!OnlyClass(ch, CLASS_WARRIOR)) {
@@ -1688,7 +1709,9 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these weapon "
@@ -1706,8 +1729,8 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
                 if (weaponskills[x].level > 51) {
                     send_to_char
                         ("$c0013[$c0015Weapon Master$c0013] tells you"
-                         " 'You're not experienced enough to learn this weapon.'",
-                         ch);
+                         " 'You're not experienced enough to learn this "
+                         "weapon.'", ch);
                     return (TRUE);
                 }
 
@@ -1715,16 +1738,15 @@ int WeaponsMaster(struct char_data *ch, int cmd, char *arg,
                     // check if skill already practiced
                     send_to_char
                         ("$c0013[$c0015Weapon Master$c0013] tells you"
-                         " 'You already look quite knowledgeable of that weapon.'\n\r",
-                         ch);
+                         " 'You already look quite knowledgeable of that "
+                         "weapon.'\n\r", ch);
                     return (TRUE);
                 }
 
                 if (ch->specials.spells_to_learn <= 0) {
                     send_to_char
                         ("$c0013[$c0015Weapon Master$c0013] tells you"
-                         " 'You don't have enough practice points.'\n\r",
-                         ch);
+                         " 'You don't have enough practice points.'\n\r", ch);
                     return (TRUE);
                 }
 
@@ -1779,7 +1801,9 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
 
-    // 170->Practice,164->Practise, 243->gain
+    /*
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
         if (!HasClass(ch, CLASS_NECROMANCER)) {
@@ -1803,7 +1827,9 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (cmd == 243) {
-            // gain
+            /* 
+             * gain
+             */
             if (GET_EXP(ch) < titles[NECROMANCER_LEVEL_IND]
                             [GET_LEVEL(ch, NECROMANCER_LEVEL_IND) + 1].exp) {
                 send_to_char("You're not ready to gain yet!", ch);
@@ -1815,7 +1841,9 @@ int NecromancerGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells and "
@@ -1956,9 +1984,9 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
 
     char            classname[128];
 
-    if (cmd != 605)
+    if (cmd != 605) {
         return (FALSE);
-
+    }
     only_argument(arg, classname);
 
     if (!*classname) {
@@ -1978,13 +2006,17 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
         }
         if (is_abbrev(classname, class_names[x])) {
             choose = x;
-            // ch_printf(ch,"You choose class# x%d as a new
-            // class.pc%d.\n\r",x,pc_num_class(x));
+#if 0
+            ch_printf(ch,"You choose class# x%d as a new class.pc%d.\n\r"
+                      ,x,pc_num_class(x));
+#endif
         }
     }
 
     if (avg / num < 50 || GET_LEADERSHIP_EXP(ch) < 50000000) {
-        /* Average level is 50?? they maxxed out?? */
+        /* 
+         * Average level is 50?? they maxxed out?? 
+         */
         do_mobTell2(ch, mob, "You don't look strong enough or worthy enough "
                              "to be in my presences.");
         return (TRUE);
@@ -2034,7 +2066,9 @@ int remort_guild(struct char_data *ch, int cmd, char *arg,
              */
             for (x = 0; x < MAX_CLASS; x++) {
                 if (HasClass(ch, pc_num_class(x))) {
-                    // set all classes to level 1
+                    /* 
+                     * set all classes to level 1
+                     */
                     ch->player.level[x] = 1;
                 } else
                     ch->player.level[x] = 0;
@@ -2058,25 +2092,25 @@ char           *how_good(int percent)
 {
     static char     buf[256];
 
-    if (percent == 0)
+    if (percent == 0) {
         strcpy(buf, " (not learned)");
-    else if (percent <= 10)
+    } else if (percent <= 10) {
         strcpy(buf, " (awful)");
-    else if (percent <= 20)
+    } else if (percent <= 20) {
         strcpy(buf, " (bad)");
-    else if (percent <= 40)
+    } else if (percent <= 40) {
         strcpy(buf, " (poor)");
-    else if (percent <= 55)
+    } else if (percent <= 55) {
         strcpy(buf, " (average)");
-    else if (percent <= 70)
+    } else if (percent <= 70) {
         strcpy(buf, " (fair)");
-    else if (percent <= 80)
+    } else if (percent <= 80) {
         strcpy(buf, " (good)");
-    else if (percent <= 85)
+    } else if (percent <= 85) {
         strcpy(buf, " (very good)");
-    else
+    } else {
         strcpy(buf, " (Superb)");
-
+    }
     return (buf);
 }
 
@@ -2115,10 +2149,12 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
         if (!HasClass(ch, CLASS_MAGIC_USER)) {
@@ -2141,7 +2177,9 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) < 
                 titles[MAGE_LEVEL_IND][GET_LEVEL(ch, MAGE_LEVEL_IND) + 1].exp) {
@@ -2154,7 +2192,9 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -2203,7 +2243,9 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
 
-    // 170->Practice,164->Practise, 243->gain
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
 
         if (!HasClass(ch, CLASS_SORCERER)) {
@@ -2212,7 +2254,9 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
                  " 'You're not a sorcerer.'\n\r", ch);
             return (TRUE);
         }
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if ( GET_EXP(ch) < titles[SORCERER_LEVEL_IND]
                                  [GET_LEVEL(ch, SORCERER_LEVEL_IND) + 1].exp) {
@@ -2225,7 +2269,9 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -2276,7 +2322,9 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
     if (!AWAKE(ch) || IS_NPC(ch))
         return (FALSE);
 
-    // 170->Practice,164->Practise, 243->gain
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_CLERIC)) {
             send_to_char("$c0013[$c0015The Cleric Guildmaster$c0013] tells you"
@@ -2297,7 +2345,9 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) < titles[CLERIC_LEVEL_IND]
                                 [GET_LEVEL(ch, CLERIC_LEVEL_IND) + 1].exp) {
@@ -2310,7 +2360,9 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these spells:\n\r\n\r");
@@ -2358,10 +2410,12 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_THIEF)) {
             send_to_char("$c0013[$c0015The Thief Guildmaster$c0013] tells you"
@@ -2383,7 +2437,9 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) < titles[THIEF_LEVEL_IND]
                                 [GET_LEVEL(ch, THIEF_LEVEL_IND) + 1].exp) {
@@ -2396,7 +2452,9 @@ int ThiefGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these skills:\n\r\n\r");
@@ -2443,10 +2501,12 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
     int             i = 0;
     struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
-    // 170->Practice,164->Practise, 243->gain
+    }
+    /* 
+     * 170->Practice,164->Practise, 243->gain
+     */
     if (cmd == 164 || cmd == 170 || cmd == 243 || cmd == 582) {
         if (!HasClass(ch, CLASS_WARRIOR)) {
             send_to_char("$c0013[$c0015The Warrior Guildmaster$c0013] tells you"
@@ -2468,7 +2528,9 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
             return (TRUE);
         }
 
-        // gain
+        /* 
+         * gain
+         */
         if (cmd == 243) {
             if (GET_EXP(ch) < titles[WARRIOR_LEVEL_IND]
                                 [GET_LEVEL(ch, WARRIOR_LEVEL_IND) + 1].exp) {
@@ -2481,7 +2543,9 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of these skills:\n\r\n\r");
@@ -2531,11 +2595,10 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
     static int      percent = 0;
     static int      x = 0;
     int             i = 0;
-    // struct char_data *guildmaster;
 
-    if (!AWAKE(ch) || IS_NPC(ch))
+    if (!AWAKE(ch) || IS_NPC(ch)) {
         return (FALSE);
-
+    }
     if (cmd == 164 || cmd == 170 || cmd == 582) {
         if (GetMaxLevel(ch) < 10) {
             send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
@@ -2545,7 +2608,9 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
         }
 
         if (!*arg) {
-            /* practice||practise, without argument */
+            /* 
+             * practice||practise, without argument 
+             */
             sprintf(buffer, "You have got %d practice sessions left.\n\r",
                     ch->specials.spells_to_learn);
             sprintf(buf, "You can practice any of the following skills.\n\r"
@@ -2565,7 +2630,9 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg,
 
         if( LearnSkill(ch, styleskillset, arg, GetMaxLevel(ch), "Darkthorn", 
                        0 ) ) {
-            /* LearnSkill already reduced practises by 1, these cost 2 */
+            /* 
+             * LearnSkill already reduced practises by 1, these cost 2 
+             */
             ch->specials.spells_to_learn = ch->specials.spells_to_learn - 1;
             return( TRUE );
         }
