@@ -489,10 +489,9 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd) {
 	int location;
 
 	if (number(1,50) <= GetMaxLevel(victim)) {
-		send_to_char("You think of home but nothing happens.",victim);
+		send_to_char("You think of home but nothing happens.\n\r",victim);
 		WAIT_STATE(victim, PULSE_VIOLENCE*1);
 		return;
-
 	}
 
 	if (victim->player.hometown) {
@@ -523,12 +522,12 @@ void do_recallhome(struct char_data *victim, char *argument, int cmd) {
 	char_from_room(victim);
 	char_to_room(victim, location);
 	act("$n appears in the middle of the room.", TRUE, victim, 0, 0, TO_ROOM);
-	send_to_char("You close your eyes and think of home!  Suddently, you find yourself in a familiar location.",victim);
+	send_to_char("You close your eyes and think of home!  Suddently, you find yourself in a familiar location.\n\r",victim);
 	do_look(victim, "",15);
 
 
 	GET_MOVE(victim) = 0;
-	send_to_char("\n\rYou feel rather tired now!", victim);
+	send_to_char("\n\rYou feel rather tired now!\n\r", victim);
 
 }
 
