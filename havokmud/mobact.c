@@ -533,6 +533,7 @@ if (!IS_PC(ch) && !IS_SET(ch->specials.act,ACT_POLYSELF) && ch->specials.fightin
       if (vict && vict != ch->specials.fighting)
       {
 	stop_fighting(ch);
+	act("$n switches targets!",FALSE,ch,0,0,TO_ROOM);
 	set_fighting(ch, vict);
       }
     }

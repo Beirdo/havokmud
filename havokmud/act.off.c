@@ -282,6 +282,7 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
 	char buf[254], buf2[254];
 	struct char_data *tmp_char;
 	struct obj_data *dummy;
+	struct obj_data *obj;
 
 	if(!ch)
 		return;
@@ -305,6 +306,10 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
 						act("$N wanders back to $S home.", FALSE, ch, 0, tmp_char, TO_NOTVICT);
 						act("$n waves $s hands at you, dismissing you from $s service.", FALSE, ch, 0, tmp_char, TO_VICT);
 						act("You wander back to your home.", FALSE, ch, 0, tmp_char, TO_VICT);
+						if(tmp_char->points.gold) {
+						    obj = create_money(tmp_char->points.gold);
+						    obj_to_room(obj,ch->in_room);
+						}
 						extract_char(tmp_char);
 						return;
 					} else {

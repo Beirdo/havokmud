@@ -1676,60 +1676,50 @@ void extract_char_smarter(struct char_data *ch, long save_room)
 */
 
 
-  if(!IS_NPC(ch) && !ch->desc)	{
-    for(t_desc = descriptor_list; t_desc; t_desc = t_desc->next)
-      if(t_desc->original==ch)
-	do_return(t_desc->character, "", 0);
-  }
+	if(!IS_NPC(ch) && !ch->desc)	{
+		for(t_desc = descriptor_list; t_desc; t_desc = t_desc->next)
+			if(t_desc->original==ch)
+				do_return(t_desc->character, "", 0);
+	}
 
-  if (ch->in_room == NOWHERE) {
+	if (ch->in_room == NOWHERE) {
 //    log("NOWHERE extracting char. (handler.c, extract_char)");
     /*
      **  problem from linkdeath
      */
-    char_to_room(ch, 4);  /* 4 == all purpose store */
-  }
+		char_to_room(ch, 4);  /* 4 == all purpose store */
+	}
 
-  if (ch->followers || ch->master)
-    die_follower(ch);
+	if (ch->followers || ch->master)
+		die_follower(ch);
 
-  if(ch->desc) {
-    /* Forget snooping */
-    if ((ch->desc->snoop.snooping) && (ch->desc->snoop.snooping->desc))
-      ch->desc->snoop.snooping->desc->snoop.snoop_by = 0;
+	if(ch->desc) {
+		/* Forget snooping */
+		if ((ch->desc->snoop.snooping) && (ch->desc->snoop.snooping->desc))
+			ch->desc->snoop.snooping->desc->snoop.snoop_by = 0;
 
-    if (ch->desc->snoop.snoop_by) {
-      send_to_char("Your victim is no longer among us.\n\r",
-		   ch->desc->snoop.snoop_by);
-      if (ch->desc->snoop.snoop_by->desc)
-      ch->desc->snoop.snoop_by->desc->snoop.snooping = 0;
-    }
+		if (ch->desc->snoop.snoop_by) {
+			send_to_char("Your victim is no longer among us.\n\r", ch->desc->snoop.snoop_by);
+			if (ch->desc->snoop.snoop_by->desc)
+				ch->desc->snoop.snoop_by->desc->snoop.snooping = 0;
+		}
 
-    ch->desc->snoop.snooping = ch->desc->snoop.snoop_by = 0;
-  }
+		ch->desc->snoop.snooping = ch->desc->snoop.snoop_by = 0;
+	}
 
-  /*Start Change Jan 22, 2004 Odin
-    Altered to drop gold from pets, if any, as well as equipment */
-  if (ch->carrying || ch->points.gold>0)	{
+  if (ch->carrying)	{
     /* transfer ch's objects to room */
 
-    if (!IS_IMMORTAL(ch)) 
-      {
-	amount = ch->points.gold;
-	if(amount > 0){
-	  tmp_object = create_money(amount);
-	  obj_to_room(tmp_object,ch->in_room);
-	  GET_GOLD(ch)-=amount;
-	}
-	/*End Change Jan 22, 2004 Odin */
-      
-      while(ch->carrying) {
-	i=ch->carrying;
-	obj_from_char(i);
-	obj_to_room(i, ch->in_room);
-	check_falling_obj(i, ch->in_room);
-      }
-    } else {
+	if (!IS_IMMORTAL(ch)) {
+
+
+		while(ch->carrying) {
+			i=ch->carrying;
+			obj_from_char(i);
+			obj_to_room(i, ch->in_room);
+			check_falling_obj(i, ch->in_room);
+		}
+	} else {
 
       send_to_char("Here, you dropped some stuff, let me help you get rid of that.\n\r",ch);
 
