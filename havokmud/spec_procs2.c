@@ -1607,7 +1607,7 @@ int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                     !IS_SET(real_roomp((ch)->in_room)->room_flags, PEACEFUL) &&
                     !IS_SET(real_roomp((ch)->in_room)->room_flags, TUNNEL)) {
                     act("$n whistles loudly.", FALSE, ch, 0, 0, TO_ROOM);
-                    cast_animal_summon_3(GetMaxLevel(ch), ch, "",
+                    cast_animal_summon(GetMaxLevel(ch), ch, "",
                                          SPELL_TYPE_SPELL, ch, 0);
                     if (affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 
                         ch->followers) {
@@ -4270,25 +4270,11 @@ int DruidChallenger(struct char_data *ch, int cmd, char *arg,
                 
                 if (level > 10 && !number(0, 5)) {
                     act("$n whistles", FALSE, ch, 0, 0, TO_ROOM);
-                    cast_animal_summon_1(GetMaxLevel(ch), ch, "",
+                    cast_animal_summon(GetMaxLevel(ch), ch, "",
                                          SPELL_TYPE_SPELL, 0, 0);
                     return (FALSE);
                 }
 
-                if (level > 16 && !number(0, 5)) {
-                    act("$n whistles loudly", FALSE, ch, 0, 0, TO_ROOM);
-                    cast_animal_summon_2(GetMaxLevel(ch), ch, "",
-                                         SPELL_TYPE_SPELL, 0, 0);
-                    return (FALSE);
-                }
-
-                if (level > 24 && !number(0, 5)) {
-                    act("$n whistles extremely loudly", FALSE, ch, 0,
-                        0, TO_ROOM);
-                    cast_animal_summon_3(GetMaxLevel(ch), ch, "",
-                                         SPELL_TYPE_SPELL, 0, 0);
-                    return (FALSE);
-                }
             } else if (!IS_SET(rp->room_flags, INDOORS)) {
                 if (level > 8 && !number(0, 3)) {
                     act("$n utters the words 'let it rain'", FALSE, ch,

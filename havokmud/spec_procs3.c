@@ -4086,7 +4086,7 @@ int Ranger(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
                      * let's give ranger some pets 
                      */
                     act("$n whistles loudly.", FALSE, ch, 0, 0, TO_ROOM);
-                    cast_animal_summon_3(GetMaxLevel(ch), ch, "",
+                    cast_animal_summon(GetMaxLevel(ch), ch, "",
                                          SPELL_TYPE_SPELL, ch, 0);
 
                     if (affected_by_spell(ch, SPELL_ANIMAL_SUM_1) && 

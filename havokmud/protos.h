@@ -2756,15 +2756,7 @@ void            cast_feeblemind(int level, struct char_data *ch,
                                 char *arg, int type,
                                 struct char_data *tar_ch,
                                 struct obj_data *tar_obj);
-void            cast_animal_summon_1(int level, struct char_data *ch,
-                                     char *arg, int type,
-                                     struct char_data *tar_ch,
-                                     struct obj_data *tar_obj);
-void            cast_animal_summon_2(int level, struct char_data *ch,
-                                     char *arg, int type,
-                                     struct char_data *tar_ch,
-                                     struct obj_data *tar_obj);
-void            cast_animal_summon_3(int level, struct char_data *ch,
+void            cast_animal_summon(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
                                      struct obj_data *tar_obj);

@@ -374,6 +374,111 @@ void do_charge(struct char_data *ch, char *argument, int cmd)
 
     WAIT_STATE(ch, PULSE_VIOLENCE * 2);
 }
+
+void spell_circle_protection(int level, struct char_data *ch,
+                             struct char_data *victim,
+                             struct obj_data *obj)
+{
+    struct affected_type af;
+    
+    assert(ch);
+    
+    if (!victim) {
+        victim = ch;
+    }
+    
+    if (!affected_by_spell(ch, SPELL_CIRCLE_PROTECTION)) {
+        act("$n prays in a strange language and is surrounded by a"
+            " circle of protection!", TRUE, ch, 0, 0, TO_ROOM);
+        send_to_char("You pray in a strange language and are surrounded by a"
+                     " circle of protection!\n\r", ch);
+            
+        if (!IS_AFFECTED(ch, SPELL_PROT_COLD)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_COLD;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from cold!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 30 && !IS_AFFECTED(ch, SPELL_PROT_ELEC)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.modifier = IMM_ELEC;
+            af.location = APPLY_IMMUNE;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from electricity!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 35 && !IS_AFFECTED(ch, SPELL_PROT_ENERGY)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_ENERGY;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from energy!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 40 && !IS_AFFECTED(ch, 
+                                                  SPELL_PROT_ENERGY_DRAIN)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_DRAIN;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from vampires!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 45 && !IS_AFFECTED(ch, SPELL_PROT_FIRE)) {
+            af.type = SPELL_CIRCLE_PROTECTION;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            af.bitvector = 0;
+            af.location = APPLY_IMMUNE;
+            af.modifier = IMM_FIRE;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from fire!\n\r", ch);
+        }
+        if (GetMaxLevel(ch) >= 50 && !IS_AFFECTED(ch, 
+                                                  SPELL_PROT_DRAGON_BREATH)) {
+            af.type = SPELL_PROT_DRAGON_BREATH;
+            af.modifier = 0;
+            af.location = APPLY_NONE;
+            af.bitvector = 0;
+            af.duration = !IS_IMMORTAL(ch) ? 3 : level;
+            affect_to_char(victim, &af);
+            send_to_char("You feel protected from dragon breath!\n\r", ch);
+        }
+    } else {
+        send_to_char("You are allready protected!\n\r", ch);
+        return;
+    }
+}
+
+void cast_circle_protection(int level, struct char_data *ch, char *arg,
+                            int type, struct char_data *tar_ch,
+                            struct obj_data *tar_obj)
+{
+    if (!tar_ch) {
+        tar_ch = ch;
+    }
+    
+    switch (type) {
+        case SPELL_TYPE_SPELL:
+            spell_circle_protection(level, ch, 0, 0);
+            break;
+        case SPELL_TYPE_SCROLL:
+        case SPELL_TYPE_POTION:
+        case SPELL_TYPE_WAND:
+        case SPELL_TYPE_STAFF:
+            Log("Someone just tried to use a circle of protection item!");
+            break;
+        default:
+            Log("Serious screw-up in cast_circle_protection");
+            break;
+    }
+}
+
 #if 0
 void spell_cure_light(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
@@ -745,6 +850,72 @@ void cast_holy_strength(int level, struct char_data *ch, char *arg,
         break;
     default:
         Log("Serious screw-up in holy strength!");
+        break;
+    }
+}
+
+void spell_holyword(int level, struct char_data *ch,
+                    struct char_data *victim, struct obj_data *obj)
+{
+    int             lev,
+                    t_align;
+    struct char_data *t,
+                   *next;
+
+    if (level > 0) {
+        t_align = -300;
+    } else {
+        level = -level;
+        t_align = 300;
+    }
+
+    for (t = real_roomp(ch->in_room)->people; t; t = next) {
+        next = t->next_in_room;
+        
+        if (!IS_IMMORTAL(t)) {
+            lev = GetMaxLevel(t);
+            if (GET_ALIGNMENT(t) <= t_align) {
+                if (lev <= 4) {
+                    damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_HOLY_WORD);
+                } else if (lev <= 8) {
+                    damage(ch, t, 1, SPELL_HOLY_WORD);
+                    spell_paralyze(level, ch, t, 0);
+                } else if (lev <= 12) {
+                    damage(ch, t, 1, SPELL_HOLY_WORD);
+                    spell_blindness(level, ch, t, 0);
+                } else if (lev <= 16) {
+                    damage(ch, t, 0, SPELL_HOLY_WORD);
+                    GET_POS(t) = POSITION_STUNNED;
+                }
+            } else if (GET_ALIGNMENT(t) > t_align) {
+                if (lev <= 4) {
+                    damage(ch, t, GET_MAX_HIT(t) * 20, SPELL_UNHOLY_WORD);
+                } else if (lev <= 8) {
+                    damage(ch, t, 1, SPELL_UNHOLY_WORD);
+                    spell_paralyze(level, ch, t, 0);
+                } else if (lev <= 12) {
+                    damage(ch, t, 1, SPELL_UNHOLY_WORD);
+                    spell_blindness(level, ch, t, 0);
+                } else if (lev <= 16) {
+                    damage(ch, t, 1, SPELL_UNHOLY_WORD);
+                    GET_POS(t) = POSITION_STUNNED;
+                }
+            }
+        }
+    }
+}
+
+void cast_holyword(int level, struct char_data *ch, char *arg,
+                   int type, struct char_data *tar_ch,
+                   struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_SCROLL:
+        spell_holyword(level, ch, 0, 0);
+        break;
+    default:
+        Log("serious screw-up in holy word.");
         break;
     }
 }

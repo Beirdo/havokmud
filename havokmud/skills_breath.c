@@ -9,6 +9,81 @@
 #include "protos.h"
 #include "externs.h"
 
+
+#define MAX_BREATHS 3
+
+struct pbreath {
+    int             vnum,
+                    spell[MAX_BREATHS];
+};
+
+struct pbreath breath_potions[] = {
+    { 3970, {SPELL_FIRE_BREATH, 0}},
+    { 3971, {SPELL_GAS_BREATH, 0}},
+    { 3972, {SPELL_FROST_BREATH, 0}},
+    { 3973, {SPELL_ACID_BREATH, 0}},
+    { 3974, {SPELL_LIGHTNING_BREATH, 0}},
+    {0}
+};
+
+void cast_dragon_breath(int level, struct char_data *ch, char *arg,
+                        int type, struct char_data *tar_ch,
+                        struct obj_data *potion)
+{
+    struct pbreath *scan;
+    int             i;
+    struct affected_type af;
+    char            buf[MAX_STRING_LENGTH];
+
+    if (!potion) {
+        return;
+    }
+    for (scan = breath_potions; 
+         scan->vnum && scan->vnum != obj_index[potion->item_number].virtual;
+         scan++) {
+        /* 
+         * Empty Loop 
+         */
+    }
+
+    if (scan->vnum == 0) {
+        send_to_char("Hey, this potion isn't in my list!\n\r", ch);
+        sprintf(buf, "unlisted breath potion %s %ld", potion->short_description,
+                obj_index[potion->item_number].virtual);
+        Log(buf);
+        return;
+    }
+
+    for (i = 0; i < MAX_BREATHS && scan->spell[i]; i++) {
+        if (!affected_by_spell(ch, scan->spell[i])) {
+            af.type = scan->spell[i];
+            af.duration = 1 + dice(1, 2);
+            if (GET_CON(ch) < 4) {
+                send_to_char("You are too weak to stomach the potion and spew "
+                             "it all over the floor.\n\r", ch);
+                act("$n gags and pukes glowing goop all over the floor.",
+                    FALSE, ch, 0, ch, TO_NOTVICT);
+                break;
+            }
+
+            if (level > MIN(GET_CON(ch) - 1, GetMaxLevel(ch))) {
+                send_to_char("!GACK! You are too weak to handle the full power"
+                             " of the potion.\n\r", ch);
+                act("$n gags and flops around on the floor a bit.", FALSE,
+                    ch, 0, ch, TO_NOTVICT);
+                level = MIN(GET_CON(ch) - 1, GetMaxLevel(ch));
+            }
+
+            af.modifier = -level;
+            af.location = APPLY_CON;
+            af.bitvector = 0;
+            affect_to_char(ch, &af);
+            send_to_char("You feel powerful forces build within your "
+                         "stomach...\n\r", ch);
+        }
+    }
+}
+
 void spell_fire_breath(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
@@ -49,6 +124,23 @@ void spell_fire_breath(int level, struct char_data *ch,
             act("$p burns to cinders.", 0, victim, burn, 0, TO_CHAR);
             extract_obj(burn);
         }
+    }
+}
+
+void cast_fire_breath(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *tar_ch,
+                      struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        /* 
+         * It's a spell.. But people can'c cast it! 
+         */
+        spell_fire_breath(level, ch, tar_ch, 0);
+        break;
+    default:
+        Log("Serious screw-up in firebreath!");
+        break;
     }
 }
 
@@ -94,6 +186,22 @@ void spell_frost_breath(int level, struct char_data *ch,
     }
 }
 
+void cast_frost_breath(int level, struct char_data *ch, char *arg,
+                       int type, struct char_data *tar_ch,
+                       struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        /* 
+         * It's a spell.. But people can'c cast it! 
+         */
+        spell_frost_breath(level, ch, tar_ch, 0);
+        break;
+    default:
+        Log("Serious screw-up in frostbreath!");
+        break;
+    }
+}
 void spell_acid_breath(int level, struct char_data *ch,
                        struct char_data *victim, struct obj_data *obj)
 {
@@ -135,6 +243,23 @@ void spell_acid_breath(int level, struct char_data *ch,
             act("$p is completely corroded.", 0, victim, burn, 0, TO_CHAR);
             extract_obj(burn);
         }
+    }
+}
+
+void cast_acid_breath(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *tar_ch,
+                      struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        /* 
+         * It's a spell.. But people can'c cast it! 
+         */
+        spell_acid_breath(level, ch, tar_ch, 0);
+        break; 
+    default:
+        Log("Serious screw-up in acidbreath!");
+        break;
     }
 }
 
@@ -183,6 +308,22 @@ void spell_gas_breath(int level, struct char_data *ch,
     }
 }
 
+void cast_gas_breath(int level, struct char_data *ch, char *arg, int type,
+                     struct char_data *tar_ch, struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        /*
+         * THIS ONE HURTS!! 
+         */
+        spell_gas_breath(level, ch, tar_ch, 0);
+        break;
+    default:
+        Log("Serious screw-up in gasbreath!");
+        break;
+    }
+}
+
 void spell_lightning_breath(int level, struct char_data *ch,
                             struct char_data *victim, struct obj_data *obj)
 {
@@ -224,6 +365,23 @@ void spell_lightning_breath(int level, struct char_data *ch,
                 0, TO_CHAR);
             extract_obj(burn);
         }
+    }
+}
+
+void cast_lightning_breath(int level, struct char_data *ch, char *arg,
+                           int type, struct char_data *tar_ch,
+                           struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        /* 
+         * It's a spell.. But people can'c cast it! 
+         */
+        spell_lightning_breath(level, ch, tar_ch, 0);
+        break;
+    default:
+        Log("Serious screw-up in lightningbreath!");
+        break;
     }
 }
 

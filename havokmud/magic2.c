@@ -26,6 +26,32 @@ void spell_mana(int level, struct char_data *ch,
     }
 }
 
+void cast_mana(int level, struct char_data *ch, char *arg, int type,
+               struct char_data *tar_ch, struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_POTION:
+        spell_mana(level, ch, ch, 0);
+        break;
+    case SPELL_TYPE_WAND:
+        if (!tar_ch) {
+            tar_ch = ch;
+        }
+        spell_mana(level, ch, tar_ch, 0);
+        break;
+    case SPELL_TYPE_STAFF:
+        for (tar_ch = real_roomp(ch->in_room)->people;
+             tar_ch; tar_ch = tar_ch->next_in_room)
+            if (tar_ch != ch) {
+                spell_mana(level, ch, tar_ch, 0);
+            }
+    default:
+        Log("Serious problem in 'mana'");
+        break;
+    }
+}
+
 void spell_geyser(int level, struct char_data *ch,
                   struct char_data *victim, struct obj_data *obj)
 {
@@ -317,32 +343,38 @@ void cast_wrath_god(int level, struct char_data *ch, char *arg,
     }
 }
 
-void spell_holy_word(int level, struct char_data *ch,
-                     struct char_data *victim, struct obj_data *obj)
+void spell_dragon_ride(int level, struct char_data *ch,
+                       struct char_data *victim, struct obj_data *obj)
 {
-    int             max = 80;
+    struct affected_type af;
 
-    max += level;
-    max += level / 2;
-
-    if (GET_MAX_HIT(victim) <= max || GetMaxLevel(ch) > 53) {
-        damage(ch, victim, GET_MAX_HIT(victim) * 12, SPELL_HOLY_WORD);
-    } else {
-        send_to_char("They are too powerful to destroy this way\n\r", ch);
+    if (affected_by_spell(ch, SPELL_DRAGON_RIDE)) {
+        send_to_char("Already affected\n\r", ch);
+        return;
     }
+
+    af.type = SPELL_DRAGON_RIDE;
+    af.duration = level;
+    af.modifier = 0;
+    af.location = 0;
+    af.bitvector = AFF_DRAGON_RIDE;
+    affect_to_char(ch, &af);
 }
 
-void cast_holyword(int level, struct char_data *ch, char *arg,
-                   int type, struct char_data *tar_ch,
-                   struct obj_data *tar_obj)
+void cast_dragon_ride(int level, struct char_data *ch, char *arg,
+                      int type, struct char_data *tar_ch,
+                      struct obj_data *tar_obj)
 {
     switch (type) {
+    case SPELL_TYPE_POTION:
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_SCROLL:
-        spell_holyword(level, ch, 0, 0);
+    case SPELL_TYPE_WAND:
+    case SPELL_TYPE_STAFF:
+        spell_dragon_ride(level, ch, ch, 0);
         break;
     default:
-        Log("serious screw-up in holy word.");
+        Log("serious screw-up in dragon_ride.");
         break;
     }
 }
