@@ -1270,7 +1270,7 @@ void assign_mobiles()
 {11406, fido},             /* Smoke rat */
 {11407, thief},
 
-#if 0
+#if 1
 {11402, hangman},
 {11466, stu},
 {11448, butcher},

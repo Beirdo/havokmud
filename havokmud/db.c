@@ -773,7 +773,7 @@ struct index_data *generate_indices(FILE *fl, int *top, int *sort_top, int *allo
 	index[i].data = NULL;
 	i++;
       } else {
-	if (*buf == '$')        /* EOF */
+	if (*buf == '%')        /* EOF */
 	  break;
       }
     } else {

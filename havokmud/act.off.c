@@ -696,7 +696,7 @@ dlog("in do_leg_sweep");
     return;
 
 if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
- if (!HasClass(ch, CLASS_WARRIOR|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN)) {
+ if (!HasClass(ch, CLASS_MONK)) {
      send_to_char("You're no monk!\n\r", ch);
      return;
     }

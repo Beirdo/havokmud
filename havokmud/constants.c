@@ -3915,7 +3915,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
     {20003, "Ensnared for power, she holds the helmet of the wise"}
 
   }, { /* warrior */
-    {0, ""},
+    {2402, "An unusual way of looking at things."},
     {11, "Something you might find in the donation room, or on your body\n\r"},
     {16034, "Goblins have been known to play with these, especially in dark caves\n\r"},
     {6000,  "A decent weapon, just the right size for a tree\n\r"},
@@ -3971,7 +3971,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
     {5019,"You're not a REAL fighter til you've had one of these, enchanted\n\r"}
 
   }, { /* thief   */
-    {0, "",},
+    {2402, "An unusual way of looking at things."},
     {4,    "You might find one of these in the donation room, or in your hand\n\r"},
     {3071, "They're the best on hand for 5 coins\n\r"},
     {30,   "At the wrong end of a nasty spell, or a heavy hitter\n\r"},

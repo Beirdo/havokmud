@@ -1502,7 +1502,7 @@ int NeutralBlade(struct char_data *ch, int cmd, char *arg,struct obj_data *tobj,
 
 /* Assigns for the Town of Sundhaven  */
 int sund_earl(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-#if 0
+#if 1
 int hangman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int blinder(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int silktrader(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2215,3 +2215,7 @@ void close_dimd(void);
 void dimd_loop(void);
 int process_dimd_output(int mud);
 int process_dimd_input(int mud);
+
+
+
+void do_zconv(struct char_data *ch, char *argument, int cmdnum);

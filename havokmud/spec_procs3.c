@@ -3591,7 +3591,7 @@ int sund_earl(struct char_data *ch, int cmd, char *arg, struct char_data *mob, i
 
 }
 
-#if 0
+#if 1
 int silktrader(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 
 {

@@ -6177,3 +6177,72 @@ void do_startarena(struct char_data *ch, char *argument, int cmd)
     }
     return;
  }
+
+
+
+
+
+void do_zconv(struct char_data *ch, char *argument, int cmdnum)
+{
+  char buf[80];
+  int i, start_room, end_room, zone;
+  char c;
+  FILE *fp;
+  struct room_data      *rp;
+
+dlog("in do_zsave");
+
+  if (IS_NPC(ch))
+    return;
+
+  /*
+   *   read in parameters (room #s)
+   */
+  zone=start_room=end_room = -1;
+  sscanf(argument, "%d%c%d%c%d", &zone,&c, &start_room, &c, &end_room);
+
+  if ((zone==-1)) {
+    send_to_char("Zsave <zone_number> [<start_room> <end_room>]\n\r", ch);
+    return;
+  }
+
+  if(zone>top_of_zone_table) {
+    send_to_char("Invalid zone number\r\n",ch);
+    return;
+  }
+
+/* make some permission checks */
+  if( GetMaxLevel(ch)<56 && zone != GET_ZONE(ch) )  {
+    send_to_char("Sorry, you are not authorized to save this zone.\n\r", ch);
+    return;
+  }
+
+  if( !zone_table[zone].start) {
+    send_to_char("Sorry, that zone isn't initialized yet\r\n", ch);
+    return;
+  }
+
+  if( start_room == -1 || end_room == -1) {
+    start_room=zone ? (zone_table[zone-1].top + 1) : 0;
+    end_room = zone_table[zone].top;
+  }
+
+
+  //declare file
+  //Do saving
+
+
+
+  fprintf(fp,"*Zone %d, rooms %d-%d, last modified by %s\n",
+	      zone,start_room,end_room,ch->player.name);
+
+
+
+
+
+  fclose(fp);
+
+  send_to_char("Ok\r\n",ch);
+
+}
+
