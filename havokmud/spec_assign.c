@@ -996,14 +996,6 @@ void assign_mobiles()
     { 7009, MidgaardCityguard },
 
 /*
-**   Hammor's Stuff
-*/
-    { 3900, eric_johnson },
-    { 3901, andy_wilcox },
-    { 3950, zombie_master },
-    { 3952, BreathWeapon },
-
-/*
 **  MORIA
 */
     { 4000, snake },

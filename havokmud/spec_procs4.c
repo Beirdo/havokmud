@@ -587,6 +587,7 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 	    return;
 	} else
 		sprintf(name,"%s",GET_NAME(mob));
+
 	    	if(cmd==582) { //train
 				while(traininglist[x].level!=-1) {
 					if(is_abbrev(arg,traininglist[x].name)) {
@@ -603,7 +604,6 @@ int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 					}
 
 					x++;
-
 			}
 
 
