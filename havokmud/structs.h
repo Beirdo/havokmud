@@ -1306,7 +1306,7 @@ struct weaponskills
 #endif
 struct char_special_data
 {
-  int spellfail;        /* max # for spell failure (101) */
+  byte spellfail;        /* max # for spell failure (101) */
   byte tick;             /* the tick that the mob/player is on  */
   byte pmask;            /* poof mask                           */
   byte position;         /* Standing or ...                        */
