@@ -567,6 +567,7 @@ dlog("in do_put");
 
 			if (!strcmp(arg1,"all")) {
 				bits = generic_find(arg2, FIND_OBJ_INV | FIND_OBJ_ROOM,ch, &tmp_char, &sub_object);
+
 				if(sub_object) {
 					if(IS_SET(sub_object->obj_flags.value[1], CONT_CLOSED)) {
 						send_to_char("But its closed.\n\r",ch);
@@ -599,7 +600,11 @@ dlog("in do_put");
 					}/*end for*/
 					act("$n tries to fit as much stuff as $e can into $p.",FALSE,ch,sub_object,0,TO_ROOM);
 					return;
+				}else{
+					sprintf(buffer, "You do not see or have the %s.\n\r.",arg2);
+					send_to_char(buffer, ch);
 				}
+
 			/*end all*/
 			} else {
 				while (num != 0) {
