@@ -16,9 +16,11 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 
 #define UPPER(c) (((c)>='a'  && (c) <= 'z') ? ((c)+('A'-'a')) : (c) )
 
-#define ISNEWL(ch) ((ch) == '\n' || (ch) == '\r') 
+#define ISNEWL(ch) ((ch) == '\n' || (ch) == '\r')
 
 #define IS_WEAPON(o) (o->obj_flags.type_flag == ITEM_WEAPON)
+
+#define IS_RARE(o) (IS_SET(obj->obj_flags.extra_flags, ITEM_RARE))
 
 #define IF_STR(st) ((st) ? (st) : "\0")
 
@@ -87,7 +89,7 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 	(((ch)->player.sex == 1) ? "he" : "she") : "it")
 
 #define HMHR(ch) ((ch)->player.sex ? 					\
-	(((ch)->player.sex == 1) ? "him" : "her") : "it")	
+	(((ch)->player.sex == 1) ? "him" : "her") : "it")
 
 #define ANA(obj) (index("aeiouyAEIOUY", *(obj)->name) ? "An" : "A")
 
@@ -188,7 +190,7 @@ int CAN_SEE(struct char_data *s, struct char_data *o);
 		   !IS_AFFECTED(ch, AFF_PARALYSIS) )
 
 #ifndef LAG_MOBILES
-#define WAIT_STATE(ch, cycle)  (((ch)->desc) ? (ch)->desc->wait = ((GetMaxLevel(ch) >= DEMIGOD) ? (0) : (cycle)) : 0) 
+#define WAIT_STATE(ch, cycle)  (((ch)->desc) ? (ch)->desc->wait = ((GetMaxLevel(ch) >= DEMIGOD) ? (0) : (cycle)) : 0)
 #else
 #define WAIT_STATE(ch, cycle)  if((ch)->desc) (ch)->desc->wait = ((GetMaxLevel(ch) >= DEMIGOD) ? (0) : (cycle)); else ch->specials.tick_to_lag = (cycle);
 

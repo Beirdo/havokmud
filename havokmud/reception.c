@@ -45,9 +45,9 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
    {
       if((obj->item_number > -1) && (cost->ok) && ItemEgoClash(ch,obj,0) > -5)
       {
-         temp = MAX(0, obj->obj_flags.cost_per_day)/2;     /* 1/2 price rent */
+         temp = MAX(0, obj->obj_flags.cost_per_day);     /* 1/2 price rent */
 
-         if(temp <= LIM_ITEM_COST_MIN)      /* Let's not charge for normal items */
+         if(!IS_RARE(obj))      /* Let's not charge for normal items */
             temp=0;
 
          cost->total_cost += temp;
@@ -69,7 +69,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
              * the buffer. */
             strncpy(str_pos, obj->short_description, &tmp_str[MAX_INPUT_LENGTH*2-1]-str_pos);
 
-            if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+            if(IS_RARE(obj))
                sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", tmp_str, temp);
             else
                sprintf(buf, "%30s : %d coins/day\n\r", tmp_str, temp);
@@ -383,7 +383,7 @@ char buf[128];
   for(i=0; i<st->number; i++) {
     if (st->objects[i].item_number > -1 &&        real_object(st->objects[i].item_number) > -1) {
       obj = read_object(st->objects[i].item_number, VIRTUAL);
-      if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+      if (IS_RARE(obj))
       	obj_index[obj->item_number].number--;
       obj->obj_flags.value[0] = st->objects[i].value[0];
       obj->obj_flags.value[1] = st->objects[i].value[1];
@@ -687,7 +687,7 @@ void obj_to_store(struct obj_data *obj, struct obj_file_u *st,
   if (delete) {
      if (obj->in_obj)
        obj_from_obj(obj);
-     if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+     if (IS_RARE(obj))
      	obj_index[obj->item_number].number++;
      extract_obj(obj);
   }
@@ -930,7 +930,7 @@ void CountLimitedItems(struct obj_file_u *st)
 	    /*
 	    **  if the cost is > LIM_ITEM_COST_MIN, then mark before extractin
 	    */
-	    if (cost_per_day > LIM_ITEM_COST_MIN) {
+	    if (IS_RARE(obj)) {
 	      if(obj->item_number<0) abort();
 	      obj_index[obj->item_number].number++;
 	    }
@@ -1313,7 +1313,7 @@ void obj_store_to_room(int room, struct obj_file_u *st)
 	real_object(st->objects[i].item_number) > -1) {
 
       obj = read_object(st->objects[i].item_number, VIRTUAL);
-	if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+	if (IS_RARE(obj))
       obj_index[obj->item_number].number--;
       obj->obj_flags.value[0] = st->objects[i].value[0];
       obj->obj_flags.value[1] = st->objects[i].value[1];

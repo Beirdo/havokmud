@@ -175,7 +175,7 @@ char *DamRollDesc(int a);
 char *DescRatio(float f);
 char *DescDamage(float dam);
 char *DescAttacks(float a);
-
+char *SpeedDesc(int a);
 
 /* From act.obj1.c */
 

@@ -2462,7 +2462,16 @@ void spell_identify(byte level, struct char_data *ch,
 
     sprintf(buf, "$c0005Object '$c0014%s$c0005', Item type: $c0014", obj->name);
     sprinttype(GET_ITEM_TYPE(obj),item_types,buf2);
-    strcat(buf,buf2); strcat(buf,"\n\r");
+
+
+    strcat(buf,buf2);
+
+	if(IS_WEAPON(obj)) {
+      	sprintf(buf2,"$c000p, Weapon Speed: $c000W%s$c000p",SpeedDesc(obj->speed));
+		strcat(buf,buf2);
+   	}
+
+strcat(buf,"\n\r");
     send_to_char(buf, ch);
 
     /* alittle more info for immortals -bcw */
@@ -2486,6 +2495,7 @@ void spell_identify(byte level, struct char_data *ch,
     	send_to_char(buf2,ch);
 
 
+
    }
 
     if (obj->obj_flags.bitvector) {
@@ -2506,7 +2516,7 @@ void spell_identify(byte level, struct char_data *ch,
 	    " $c0014 %d$c0014  %s\n\r",
 	    obj->obj_flags.weight, obj->obj_flags.cost,
 	    obj->obj_flags.cost_per_day
-	    , obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN?
+	    , IS_RARE(obj)?
 	    "$c0005[$c0015RARE$c0005]":" ");
 
     send_to_char(buf, ch);

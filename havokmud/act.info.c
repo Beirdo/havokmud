@@ -2623,7 +2623,8 @@ dlog("in do_help");
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
- char buf[1000];
+ char buf[50];
+ char buf2[20];
  int i, j = 1;
  NODE *n;
 
@@ -2644,18 +2645,20 @@ dlog("in do_wizhelp");
     n = radix_head[i].next;
     while(n) {
 	if(n->min_level <= GetMaxLevel(ch) && n->min_level >= LOW_IMMORTAL) {
-	   sprintf((buf + strlen(buf)), "%-10s", n->name);
-	   if(!(j % 7))
-	      sprintf((buf + strlen(buf)), "\n\r");
+	   if(n->min_level == GetMaxLevel(ch))
+	     sprintf(buf2,"$c000BL:$c000Y%d $c000W%-11s",n->min_level,n->name);
+	   else
+	     sprintf(buf2,"$c000BL:$c000Y%d $c000w%-11s",n->min_level,n->name);
+	   send_to_char(buf2,ch);
+	   if(!(j % 5)) {
+	      send_to_char("\n\r",ch);
+   	   }
 	   j++;
 	 }
 	n = n->next;
       }
   }
 
- strcat(buf, "\n\r");
-
- page_string(ch->desc, buf, 1);
 }
 
 void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)
@@ -4044,8 +4047,7 @@ dlog("in do_value");
 	  GetApprox(obj->obj_flags.cost,
 		    ch->skills[SKILL_EVALUATE].learned-10),
 	  GetApprox(obj->obj_flags.cost_per_day,
-		    ch->skills[SKILL_EVALUATE].learned-10),
-	  obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN?"[RARE]":" ");
+		    ch->skills[SKILL_EVALUATE].learned-10), IS_RARE(obj)?"[RARE]":" ");
   send_to_char(buf, ch);
 
   if (ITEM_TYPE(obj) == ITEM_WEAPON) {
@@ -4209,6 +4211,27 @@ char *DescAttacks(float a)
     return("A whole bunch");
   }
 }
+
+char *SpeedDesc(int a)
+{
+
+  if (a < 10) {
+    return("Very Slow");
+  } else if (a < 20) {
+    return("Slow");
+  } else if (a < 30) {
+    return("About Average");
+  } else if (a < 40) {
+    return("Fast");
+  } else if (a < 50) {
+    return("Very Fast");
+  } else {
+    return("Lightning Quick");
+  }
+
+
+}
+
 
 
 void do_display(struct char_data *ch, char *arg, int cmd)

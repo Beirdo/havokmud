@@ -1320,7 +1320,10 @@ sprintf(buf,"$c0005Age: [$c0014%d$c0005] Y, [$c0014%d$c0005] M, [$c0014%d$c0005]
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
-      sprintf(buf,"$c0005 Height [$c0014%d$c0005]cm, Wgt [$c0014%d$c0005]pounds NumAtks[$c0014%.1f$c0005]", GET_HEIGHT(k), GET_WEIGHT(k),k->mult_att);
+
+      sprintf(buf,"$c0005 Height [$c0014%d$c0005]cm, Wgt [$c0014%d$c0005]pounds NumAtks[$c0014%.1f$c000p+($c000C%.2f$c000p)$c0005]"
+      	, GET_HEIGHT(k), GET_WEIGHT(k),k->mult_att,
+			 ch->equipment[WIELD]?(float)ch->equipment[WIELD]->speed/100:0);
 
 act(buf,FALSE,ch,0,0,TO_CHAR);
 
@@ -1529,10 +1532,19 @@ if (aff->type <=MAX_EXIST_SPELL) {
     /* stat on object */
     if (j=(struct obj_data *)get_obj_vis_world(ch, arg1, &count)) {
       virtual = (j->item_number >= 0) ? obj_index[j->item_number].virtual : 0;
-      sprintf(buf, "Object name: [%s], R-number: [%d], V-number: [%d] Item type: ",
+      sprintf(buf, "Object name: [%s]\n\r R-number: [%d], V-number: [%d] Item type: ",
 	      j->name, j->item_number, virtual);
       sprinttype(GET_ITEM_TYPE(j),item_types,buf2);
-      strcat(buf,buf2); strcat(buf,"\n\r");
+
+
+      strcat(buf,buf2);
+
+           	if(IS_WEAPON(j)) {
+        	   sprintf(buf2,", Weapon Speed: %s",SpeedDesc(j->speed));
+				strcat(buf,buf2);
+	  	   	}
+
+      strcat(buf,"\n\r");
       send_to_char(buf, ch);
       sprintf(buf, "Short description: %s\n\rLong description:\n\r%s\n\r",
 	      ((j->short_description) ? j->short_description : "None"),
@@ -1584,6 +1596,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		   sprintf(buf,"$c0005Max: $c0014Level %d$c0005 ,",j->max);
 
 		send_to_char(buf,ch);
+
     	sprintf(buf,"$c0005Last modified by $c0014(%s) $c0005on $c0014%s",j->modBy,asctime(localtime(&j->modified)));
     	send_to_char(buf,ch);
 

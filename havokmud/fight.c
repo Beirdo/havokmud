@@ -2498,6 +2498,15 @@ void perform_violence(int pulse)
 			if(IS_SET(ch->specials.affected_by2, AFF2_HASTE))
 				x = x * 2;
 
+			if(IS_SET(ch->specials.affected_by2, AFF2_SLOW))
+				x = x / 2;
+
+			if(ch->equipment[WIELD]) {
+				x+=(float)ch->equipment[WIELD]->speed/100;
+			} else {
+				if(HasClass(ch,CLASS_MONK))
+					x+=0.25;
+			}
                /* work through all of their attacks, until there is not
                 * a full attack left */
 

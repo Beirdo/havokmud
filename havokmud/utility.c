@@ -3201,7 +3201,7 @@ int CountLims(struct obj_data *obj)
     total += CountLims(obj->contains);
   if (obj->next_content)
     total += CountLims(obj->next_content);
-  if (obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+  if (IS_RARE(obj)==TRUE)// LIM_ITEM_COST_MIN)
     total+=1;
   return(total);
 }
@@ -4989,7 +4989,7 @@ void do_orebuild(struct char_data *ch, char *argument, char cmd)
    }
 
 
-  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1\n\r%");
+  fwrite_string(fp, "#99999\n\r$~\n\r$~\n\r$~\n\r$~\n\r14 0 1 0 0 0 0 0\n\r%");
 
    fclose(fp);
 

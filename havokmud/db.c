@@ -2028,14 +2028,13 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
       bc += strlen(obj->action_description);
     }
 
-#if NEWSETUP
-
+	/*New object crap(GH)*/
     obj->modBy = fread_string(f);
     if (obj->modBy && *obj->modBy) {
       bc += strlen(obj->modBy);
     }
 
-#endif
+
     /* *** numeric data *** */
 
     fscanf(f, " %d ", &tmp);
@@ -2058,10 +2057,7 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
     obj->obj_flags.cost = tmp;
     fscanf(f, " %d \n", &tmp);
     obj->obj_flags.cost_per_day = tmp;
-
-
-#if NEWSETUP
-
+	/*New fields (GH)*/
     fscanf(f, " %d \n", &tmp);
     obj->level = tmp;
     fscanf(f, " %d \n", &tmp);
@@ -2069,6 +2065,12 @@ int read_obj_from_file(struct obj_data *obj, FILE *f)
 	fscanf(f, " %ld \n", &tmp);
 	obj->modified = tmp;
 
+#if NEWSETUP
+	fscanf(f, " %d \n", &tmp);
+    obj->speed = tmp;
+
+	fscanf(f, " %d \n", &tmp);
+	obj->weapontype = tmp;
 #endif
 /* *** extra descriptions *** */
 
@@ -2256,9 +2258,9 @@ int write_obj_to_file(struct obj_data *obj, FILE *f)
 		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
-  fprintf(f,"%d %d %d %d %d %ld\n", obj->obj_flags.weight, \
+  fprintf(f,"%d %d %d %d %d %ld %d %d\n", obj->obj_flags.weight, \
 		obj->obj_flags.cost, obj->obj_flags.cost_per_day,obj->level,obj->max
-		,obj->modified);
+		,obj->modified, obj->speed, obj->weapontype);
 
   /* *** extra descriptions *** */
   if(obj->ex_description)
@@ -2284,14 +2286,31 @@ int save_new_object_structure(struct obj_data *obj, FILE *f)
   fwrite_string(f, obj->short_description);
   fwrite_string(f, obj->description);
   fwrite_string(f, obj->action_description);
-  fwrite_string(f, "un-modified");
+  fwrite_string(f, obj->modBy);
+/* obj->obj_flags.cost_per_day>LIM_ITEM_COST_MIN         obj->obj_flags.extra_flags */
 
-  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
-		obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
+
+	if(obj->obj_flags.cost_per_day > LIM_ITEM_COST_MIN)
+	  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
+		obj->obj_flags.extra_flags+ITEM_RARE, obj->obj_flags.wear_flags);
+	else
+	  fprintf(f,"%d %ld %ld\n", obj->obj_flags.type_flag,\
+				obj->obj_flags.extra_flags, obj->obj_flags.wear_flags);
+
+
+
   fprintf(f,"%d %d %d %d\n", obj->obj_flags.value[0], obj->obj_flags.value[1],\
 		obj->obj_flags.value[2], obj->obj_flags.value[3]);
-  fprintf(f,"%d %d %d 0 0 0\n", obj->obj_flags.weight, \
-		obj->obj_flags.cost, obj->obj_flags.cost_per_day);
+
+ 	if(IS_WEAPON(obj)) {
+		fprintf(f,"%d %d %d %d %d %ld 25 0\n", obj->obj_flags.weight, \
+			obj->obj_flags.cost, obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+	} else {
+		fprintf(f,"%d %d %d %d %d %ld 0 0\n", obj->obj_flags.weight, \
+		obj->obj_flags.cost, obj->obj_flags.cost_per_day/2, obj->level, obj->max, obj->modified);
+	}
+
+
 
   /* *** extra descriptions *** */
   if(obj->ex_description)

@@ -2752,8 +2752,8 @@ const char *extra_bits[] = {
         "ANTI-DRUID",
         "ONLY-CLASS",
 	"ANTI-BARD",
+	"RARE",
 	"UNIQUE",
-	"PC-CORPSE",
 	"\n"
 };
 

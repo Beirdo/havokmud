@@ -462,42 +462,43 @@ typedef struct {
 #define ITEM_WEAR_EYE  524288
 
 /* Bitvector for 'extra_flags' */
-
-#define ITEM_GLOW            1
-#define ITEM_HUM             2
-#define ITEM_METAL           4  /* undefined...  */
-#define ITEM_MINERAL         8  /* undefined?    */
-#define ITEM_ORGANIC        16  /* undefined?    */
-#define ITEM_INVISIBLE      32
-#define ITEM_MAGIC          64
-#define ITEM_NODROP        128
-#define ITEM_BLESS         256
-#define ITEM_ANTI_GOOD     512 /* not usable by good people    */
-#define ITEM_ANTI_EVIL    1024 /* not usable by evil people    */
-#define ITEM_ANTI_NEUTRAL 2048 /* not usable by neutral people */
-#define ITEM_ANTI_CLERIC  4096
-#define ITEM_ANTI_MAGE    8192
-#define ITEM_ANTI_THIEF   16384
-#define ITEM_ANTI_FIGHTER 32768
-#define ITEM_BRITTLE      65536 /* weapons that break after 1 hit */
+#define ITEM_GLOW           BV00// 1
+#define ITEM_HUM            BV01// 2
+#define ITEM_METAL          BV02// 4  /* undefined...  */
+#define ITEM_MINERAL        BV03// 8  /* undefined?    */
+#define ITEM_ORGANIC        BV04//16  /* undefined?    */
+#define ITEM_INVISIBLE      BV05//32
+#define ITEM_MAGIC          BV06//64
+#define ITEM_NODROP         BV07//128
+#define ITEM_BLESS         BV08//256
+#define ITEM_ANTI_GOOD     BV09//512 /* not usable by good people    */
+#define ITEM_ANTI_EVIL     BV10//1024 /* not usable by evil people    */
+#define ITEM_ANTI_NEUTRAL  BV11//2048 /* not usable by neutral people */
+#define ITEM_ANTI_CLERIC   BV12//4096
+#define ITEM_ANTI_MAGE    BV13//8192
+#define ITEM_ANTI_THIEF   BV14//16384
+#define ITEM_ANTI_FIGHTER BV15//32768
+#define ITEM_BRITTLE      BV16//65536 /* weapons that break after 1 hit */
                                 /* armor that breaks when hit?    */
 
-#define ITEM_RESISTANT   131072 /* resistant to damage */
-#define ITEM_IMMUNE      262144 /* Item is iimmune to scrapping */
+#define ITEM_RESISTANT   BV17//131072 /* resistant to damage */
+#define ITEM_IMMUNE      BV18//262144 /* Item is iimmune to scrapping */
 
-#define ITEM_ANTI_MEN    524288  /* men can't wield */
-#define ITEM_ANTI_WOMEN  1048576 /* women can't wield */
+#define ITEM_ANTI_MEN    BV19//524288  /* men can't wield */
+#define ITEM_ANTI_WOMEN  BV20//1048576 /* women can't wield */
 
-#define ITEM_ANTI_SUN    2097152 /* item is sensitive to being in the sun */
+#define ITEM_ANTI_SUN    BV21//2097152 /* item is sensitive to being in the sun */
 				 /* anti-sun also not used yet */
-#define ITEM_ANTI_BARBARIAN	4194304
-#define ITEM_ANTI_RANGER	8388608
-#define ITEM_ANTI_PALADIN	16777216
-#define ITEM_ANTI_PSI		33554432
-#define ITEM_ANTI_MONK		67108864
-#define ITEM_ANTI_DRUID		134217728
-#define ITEM_ONLY_CLASS	        268435456
-#define ITEM_ANTI_BARD          536870912
+#define ITEM_ANTI_BARBARIAN	BV22//4194304
+#define ITEM_ANTI_RANGER	BV23//8388608
+#define ITEM_ANTI_PALADIN	BV24//16777216
+#define ITEM_ANTI_PSI		BV25//33554432
+#define ITEM_ANTI_MONK		BV26//67108864
+#define ITEM_ANTI_DRUID		BV27//134217728
+#define ITEM_ONLY_CLASS	    BV28//    268435456
+#define ITEM_ANTI_BARD      BV29//    536870912
+#define ITEM_RARE           BV30//
+
 /* UNIQUE AND PC CORPSE HERE */
 
 /* Some different kind of liquids */
@@ -591,6 +592,9 @@ struct obj_data
 	/*New fields (GH) */
 	int level;
 	int max;
+
+	int speed;
+	int weapontype;
 
 	char *modBy;
 	long modified;
@@ -821,18 +825,28 @@ struct room_data
 #define AFF_WINGSBURNED        0x80000000
 
 /* affects 2 */
+#define AFF2_ANIMAL_INVIS      BV00//0x00000001
+#define AFF2_HEAT_STUFF        BV01//0x00000002
+#define AFF2_LOG_ME            BV02//0x00000004
+#define AFF2_BERSERK           BV03//0x00000008
+#define AFF2_CON_ORDER	       BV04//0x00000010
+#define AFF2_AFK               BV05//0x00000020
+#define AFF2_DETECT_GOOD       BV06//0x00000040
+#define AFF2_PROTECT_FROM_GOOD BV07//0x00000080
+#define AFF2_DARKNESS	       BV08//0x00000100
+#define AFF2_HASTE             BV09//0x00000200
+#define AFF2_SLOW			   BV10//0x00000400
+#define AFF2_BLADE_BARRIER     BV11//0x00000800
 
-#define AFF2_ANIMAL_INVIS      0x00000001
-#define AFF2_HEAT_STUFF        0x00000002
-#define AFF2_LOG_ME            0x00000004
-#define AFF2_BERSERK           0x00000008
-#define AFF2_CON_ORDER	       0x00000010
-#define AFF2_AFK               0x00000020
-#define AFF2_DETECT_GOOD       0x00000040
-#define AFF2_PROTECT_FROM_GOOD 0x00000080
-#define AFF2_DARKNESS	       0x00000100
-#define AFF2_HASTE             0x00000200
-#define AFF2_SLOW			   0x00000400
+
+
+/* Flag spells as brewable or single class */
+#define BREWABLE_SPELL         BV00
+#define SINGLE_CLASS_SPELL     BV01
+#define DUAL_CLASS_SPELL       BV02
+#define TRI_CLASS_SPELL        BV03
+
+
 /* modifiers to char's abilities */
 
 #define APPLY_NONE              0
