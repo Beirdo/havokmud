@@ -871,6 +871,7 @@ struct command_def commandList[] = {
      */
     { "stalk", do_stalk, 626, POSITION_STANDING, 1 },
     { "dig", do_dig, 627, POSITION_STANDING, 1 },
+    { "justifyroom", do_justify, 628, POSITION_STANDING, 53 },
 };
 int commandCount = NELEMS(commandList);
 

@@ -205,7 +205,7 @@
     struct char_data *_ch = (struct char_data *)(ch); \
     int _cycle = (int)(cycle); \
     if(_ch->desc && _ch->desc->wait < _cycle) { \
-	    _ch->desc->wait = (GetMaxLevel(_ch) >= DEMIGOD ? 0 : _cycle); \
+        _ch->desc->wait = (GetMaxLevel(_ch) >= DEMIGOD ? 0 : _cycle); \
     } \
 } (void)(0)
 #else
@@ -226,7 +226,7 @@
 #endif
 
 /*
- * Object And Carry related macros 
+ * Object And Carry related macros
  */
 
 #define GET_ITEM_TYPE(obj) ((obj)->obj_flags.type_flag)
@@ -257,7 +257,7 @@
 #define IS_OBJ_STAT(obj,stat) (IS_SET((obj)->obj_flags.extra_flags,stat))
 
 /*
- * char name/short_desc(for mobs) or someone? 
+ * char name/short_desc(for mobs) or someone?
  */
 
 #define PERS(ch, vict)   ( \
@@ -319,31 +319,31 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 #define RIDDEN(ch) ((ch)->specials.ridden_by)
 
 /*
- * Arena flags 
+ * Arena flags
  */
 #define A_NOGROUP(ch)   ((ArenaNoGroup == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOASSIST(ch,vict)  ((ArenaNoAssist == 1) && \
-	       	(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) && \
-	       	(vict->specials.fighting ? (vict->specials.fighting != ch) : 0))
+            (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) && \
+            (vict->specials.fighting ? (vict->specials.fighting != ch) : 0))
 #define A_NODISPEL(ch)  ((ArenaNoDispel == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOMAGIC(ch)   ((ArenaNoMagic == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOWSPELLS(ch) ((ArenaNoWSpells == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOSLAY(ch)    ((ArenaNoSlay == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOFLEE(ch)    ((ArenaNoFlee == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOHASTE(ch)   ((ArenaNoHaste == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOPETS(ch)    ((ArenaNoPets == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOTRAVEL(ch)  ((ArenaNoTravel == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 #define A_NOBASH(ch)    ((ArenaNoBash == 1) && \
-		(IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
+        (IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)))
 
 #if 0
 #define isdigit(ch) (ch >= '0' && ch <= '9')
@@ -351,6 +351,39 @@ int             exit_ok(struct room_direction_data *, struct room_data **);
 
 
 #endif
+
+
+
+/******************************************************************************
+ Snippet: Text justification function.
+ Author:  Richard Woolcock (aka KaVir).
+ Date:    23rd November 1999.
+ ******************************************************************************
+ This code is copyright (C) 1999 by Richard Woolcock.  It may be used and
+ distributed freely, as long as you don't remove this copyright notice.
+ ******************************************************************************/
+
+#ifndef JUSTIFY_HEADER
+#define JUSTIFY_HEADER
+
+/******************************************************************************
+ Required enumerated types.
+ ******************************************************************************/
+
+typedef enum
+{
+   justify_left,
+   justify_right,
+   justify_centre
+} justify_type;
+
+/******************************************************************************
+ Global operation prototypes.
+ ******************************************************************************/
+
+char *Justify   ( char *szText, int iAlignment, justify_type eJustify );
+
+#endif /* JUSTIFY_HEADER */
 
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4

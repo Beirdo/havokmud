@@ -8781,8 +8781,20 @@ int list_average_mob_power_in_room(struct char_data *ch, int room) {
         return 0;
     }
 }
+void do_justify(struct char_data *ch, char *argument, int cmd) {
+    struct room_data *rm = 0;
 
+    rm = real_roomp(ch->in_room);
 
+    /*Justify( pszText, 40, justify_centre ) */
+
+    ch_printf(ch, "Starting Description: \n\r %s",rm->description);
+
+    ch_printf(ch, "Justification description: \n\r %s"
+                  ,Justify( rm->description, 60, justify_left) );
+
+    /* this is only what the room will look like. need to fix the function so*/
+}
 /*
  * vim:ts=4:sw=4:ai:et:si:sts=4
  */

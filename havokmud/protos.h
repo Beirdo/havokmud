@@ -456,7 +456,7 @@ void            do_set_nooutdoor(struct char_data *ch, char *argument,
 void            do_setwtype(struct char_data *ch, char *argument, int cmd);
 void            do_setsound(struct char_data *ch, char *argument, int cmd);
 void            do_tweak(struct char_data *ch, char *argument, int cmd);
-
+void            do_justify(struct char_data *ch, char *argument, int cmd);
 /*
  * From board.c
  */
