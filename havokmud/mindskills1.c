@@ -657,7 +657,6 @@ void mind_ultra_blast(int level, struct char_data *ch,
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
         rdam = dam;
-        count ++;
         if (count >= 7) {
             break;
         }
@@ -667,6 +666,7 @@ void mind_ultra_blast(int level, struct char_data *ch,
             }
             if (!in_group(ch, tmp_victim)) {
                 
+                count ++; 
                 if (!saves_spell(tmp_victim, SAVING_SPELL)) {
                     if (affected_by_spell(tmp_victim, SKILL_TOWER_IRON_WILL)) {
                         rdam >>= 1;

@@ -4787,7 +4787,8 @@ void do_flowerfist(struct char_data *ch, char *argument, int cmd)
     int             percent = 0,
                     dam = 0;
     struct char_data *tch;
-
+    struct char_data *tempchar;
+    
     dlog("in do_flowerfist");
 
     if (ch->specials.remortclass != MONK_LEVEL_IND + 1) {
@@ -4821,7 +4822,8 @@ void do_flowerfist(struct char_data *ch, char *argument, int cmd)
                 TRUE, ch, 0, 0, TO_CHAR);
 
             for (tch = real_roomp(ch->in_room)->people; tch;
-                 tch = tch->next_in_room) {
+                 tch = tempchar) {
+                tempchar = tch->next_in_room;
                 if (!in_group(tch, ch) && !IS_IMMORTAL(tch)) {
                     dam = dice(6, 6);
                     damage(ch, tch, dam, TYPE_HIT);
