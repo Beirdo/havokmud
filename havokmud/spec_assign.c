@@ -1464,6 +1464,8 @@ void assign_rooms()
     { 13518, Fountain},
     { 11014, Fountain},
     { 5234,  Fountain},
+    { 3120, Fountain},
+    { 1833, Fountain},
     { 3141,  Fountain},
     { 13406,  Fountain},
     { 22642,  Fountain},
