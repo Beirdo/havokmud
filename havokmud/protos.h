@@ -82,6 +82,7 @@ void InitScreen(struct char_data *ch);
 void do_report(struct char_data *ch, char *argument, int cmd);
 void do_say(struct char_data *ch, char *argument, int cmd);
 void do_shout(struct char_data *ch, char *argument, int cmd);
+void do_bid(struct char_data *ch, char *argument, int cmd);
 void do_auction(struct char_data *ch, char *argument, int cmd);
 void do_yell(struct char_data *ch, char *argument, int cmd);
 void do_commune(struct char_data *ch, char *argument, int cmd);
@@ -1931,6 +1932,7 @@ void do_charge(struct char_data *ch, char *argument, int cmd); /* in skills.c*/
 
 
 /* From utility.c */
+int advatoi (const char *s);
 int fighting_in_room(int room_n);
 void do_open_exit(struct char_data *ch, char *argument, int cmd);
 int IsGoodSide(struct char_data *ch);

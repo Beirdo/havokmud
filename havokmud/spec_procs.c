@@ -3875,7 +3875,7 @@ int bank (struct char_data *ch, int cmd, char *arg, struct room_data *rp, int ty
   static char buf[256];
   int money;
 
-  money = atoi(arg);
+  money = advatoi(arg);//atoi(arg);
 
   if (IS_NPC(ch))
     return(FALSE);

@@ -45,7 +45,11 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
    {
       if((obj->item_number > -1) && (cost->ok) && ItemEgoClash(ch,obj,0) > -5)
       {
-         temp = MAX(0, obj->obj_flags.cost_per_day);     /* 1/2 price rent */
+
+		 if(obj->obj_flags.cost_per_day > 9000)
+         	temp = MAX(0, obj->obj_flags.cost_per_day);     /* 1/2 price rent */
+		 else
+		 	temp=0;
 
          if(!IS_RARE(obj))      /* Let's not charge for normal items */
             temp=0;
@@ -70,7 +74,7 @@ void add_obj_cost(struct char_data *ch, struct char_data *re,
             strncpy(str_pos, obj->short_description, &tmp_str[MAX_INPUT_LENGTH*2-1]-str_pos);
 
             if(IS_RARE(obj))
-               sprintf(buf, "%30s : %d coins/day  [RARE]\n\r", tmp_str, temp);
+               sprintf(buf, "%30s : %d coins/day  $c000W[$c000RRARE$c000W]$c0007\n\r", tmp_str, temp);
             else
                sprintf(buf, "%30s : %d coins/day\n\r", tmp_str, temp);
 

@@ -3224,8 +3224,8 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.ridden_by=0;
 	ch->specials.mounted_on=0;
 	ch->specials.charging=0;
-
-
+	ch->specials.auction=0;
+	ch->specials.minbid=0;
 	       /* new stuff added 1-26-95 msw */
 	       /* need to malloc the space for the pc struct */
     ch->pc = (void*)malloc(sizeof(struct pc_data));

@@ -2639,7 +2639,7 @@ dlog("in do_help");
 
 void do_wizhelp(struct char_data *ch, char *arg, int cmd)
 {
- char buf[50];
+ char buf[2000];
  char buf2[20];
  int i, j = 1;
  NODE *n;
@@ -2662,19 +2662,24 @@ dlog("in do_wizhelp");
     while(n) {
 	if(n->min_level <= GetMaxLevel(ch) && n->min_level >= LOW_IMMORTAL) {
 	   if(n->min_level == GetMaxLevel(ch))
-	     sprintf(buf2,"$c000BL:$c000Y%d $c000W%-11s",n->min_level,n->name);
+	     sprintf((buf + strlen(buf)), "$c000BL:$c000Y%d $c000W%-11s",n->min_level,n->name);
 	   else
-	     sprintf(buf2,"$c000BL:$c000Y%d $c000w%-11s",n->min_level,n->name);
-	   send_to_char(buf2,ch);
+	     sprintf((buf + strlen(buf)), "$c000BL:$c000Y%d $c000w%-11s",n->min_level,n->name);
+
+
+
+
 	   if(!(j % 5)) {
-	      send_to_char("\n\r",ch);
+	           sprintf((buf + strlen(buf)), "\n\r");
    	   }
 	   j++;
 	 }
 	n = n->next;
       }
   }
+	strcat(buf, "\n\r");
 
+ page_string(ch->desc, buf, 1);
 }
 
 void do_actual_wiz_help(struct char_data *ch, char *argument, int cmd)

@@ -974,6 +974,37 @@ long GroupLevelRatioExp(struct char_data *ch,int group_max_level,long experincep
  return(experincepoints);
 }
 
+
+/*    */
+
+long NewExpCap(struct char_data *ch, long total)  {
+	long temp = 0,temp2=0;
+	int x;
+
+	char buf[40];
+	for(x = 0;x < MAX_CLASS;x++) {
+
+		if(GET_LEVEL(ch, x)) {
+			temp += titles[x][GET_LEVEL(ch, x)+2].exp - titles[x][GET_LEVEL(ch, x)+1].exp;
+  		}
+	}
+
+	temp2 = temp*0.10;
+	if(total > temp2) {
+		//sprintf(buf,"Capping at 10Percent: %dXXX%d",temp, temp2);
+		//send_to_char(buf,ch);
+
+		return (temp*0.10);
+	}
+	else {
+		//sprintf(buf,"Using actual XP %d",total);
+		//send_to_char(buf,ch);
+		return total;
+
+	}
+}
+
+
 void group_gain(struct char_data *ch,struct char_data *victim) {
   char buf[256];
   int no_members, share;
@@ -1038,6 +1069,9 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	total= GroupLevelRatioExp(k,group_max_level,total);
 	total= ExpCaps(group_count,total);	/* figure EXP MAXES */
 
+	if (!IS_IMMORTAL(k))
+		total= NewExpCap(k, total);
+
       sprintf(buf,"You receive your share of %d experience.", total);
       act(buf, FALSE, k, 0, 0, TO_CHAR);
       gain_exp(k,total);
@@ -1061,6 +1095,11 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	  total = RatioExp(f->follower, victim, total);
 	total= GroupLevelRatioExp(f->follower,group_max_level,total);
 	  total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+
+		if (!IS_IMMORTAL(f->follower))
+			total= NewExpCap(f->follower, total);
+
+
 	  sprintf(buf,"You receive your share of %d experience.", total);
 	  act(buf, FALSE, f->follower,0,0,TO_CHAR);
 	  gain_exp(f->follower,  total);
@@ -1072,8 +1111,12 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	total= GroupLevelRatioExp(f->follower,group_max_level,total);
 
             total= ExpCaps(group_count,total);	/* figure EXP MAXES */
-	    if (f->follower->master->in_room ==
-		f->follower->in_room) {
+
+
+		if (!IS_IMMORTAL(f->follower->master))
+		  total= NewExpCap(f->follower->master, total);
+
+	    if (f->follower->master->in_room == f->follower->in_room) {
 	      sprintf(buf,"You receive $N's share of %d experience.", total);
 	      act(buf, FALSE, f->follower->master,0,f->follower,TO_CHAR);
 	      gain_exp(f->follower->master,  total);
@@ -1081,9 +1124,13 @@ void group_gain(struct char_data *ch,struct char_data *victim) {
 	    }
 	  } else {
 	    total = RatioExp(f->follower, victim, total);
-	total= GroupLevelRatioExp(f->follower,group_max_level,total);
+		total= GroupLevelRatioExp(f->follower,group_max_level,total);
 
 	    total= ExpCaps(group_count,total);	/* figure EXP MAXES */
+		if (!IS_IMMORTAL(f->follower))
+		  total= NewExpCap(f->follower, total);
+
+
 	    sprintf(buf,"You receive your share of %d experience.", total);
 	    act(buf, FALSE, f->follower,0,0,TO_CHAR);
 	    gain_exp(f->follower,  total);
@@ -1748,8 +1795,12 @@ if (IS_LINKDEAD(victim)) {
 
 	exp = ExpCaps(0,exp);	/* bug fix for non_grouped peoples */
 
+	if (!IS_IMMORTAL(ch))
+		exp= NewExpCap(ch, exp);
+
 	  gain_exp(ch, exp);
 	  sprintf(buf,"You receive %d experience from your battles.", exp);
+	  send_to_char(buf,ch);
 	}
 	change_alignment(ch, victim);
       }
@@ -2503,7 +2554,7 @@ void perform_violence(int pulse)
 				x = x / 2;
 
 			if(ch->equipment[WIELD]) {
-				send_to_char("Wielding a weapon",ch);
+				//send_to_char("Wielding a weapon",ch);
 				x+=(float)ch->equipment[WIELD]->speed/100;
 			} else {
 				if(HasClass(ch,CLASS_MONK))

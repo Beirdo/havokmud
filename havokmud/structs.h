@@ -1218,9 +1218,10 @@ struct char_special_data
   sh_int apply_saving_throw[MAX_SAVES]; /* Saving throw (Bonuses)  */
 
   int questwon;
-  struct auction_data *item;
-
-};
+  struct auction_data *auctionx;
+  struct obj_data *auction;
+  long minbid;
+  };
 
 /* skill_data flags */
 #define SKILL_KNOWN    		1

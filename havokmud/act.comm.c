@@ -244,79 +244,138 @@ if (strstr(argument,"lag") || strstr(argument,"LAG") || strstr(argument,"Lag") |
   }
 }
 
+void listauctions(struct char_data *ch) {
+
+ struct descriptor_data *i;
+	char buf[100];
+struct auction_data *temp;
+
+
+
+	send_to_char("Current Auction:\n\r",ch);
+
+
+	for (i = descriptor_list; i; i = i->next) {
+	      if(i->character->specials.auction!=NULL) {//if (temp = i->character->specials.auction)  {
+			sprintf(buf,"%s is auctioning %s(Min bid %d) "
+				,GET_NAME(i->character), (i->character->specials.auction)->short_description,i->character->specials.minbid);//temp->obj->name, */temp->minbid);
+			send_to_char(buf,ch);
+
+
+	      }
+  	}
+}
 
 void do_auction(struct char_data *ch, char *argument, int cmd)
 {
-  char buf1[MAX_INPUT_LENGTH+80];
-  struct descriptor_data *i;
+#if 0
+
+	struct auction_data *auctioneditem;
+  char item[50], bid[10], buf[MAX_INPUT_LENGTH];
+  long intbid=0;
+
   extern int Silence;
+	struct obj_data *auctionobj;
 
 dlog("in do_auction");
 
-  if (!IS_NPC(ch) && IS_SET(ch->specials.act, PLR_NOSHOUT)) {
-    send_to_char("You can't shout, yell or auction.\n\r", ch);
-    return;
-  }
-  if (IS_NPC(ch) &&
-      (Silence == 1) &&
-      (IS_SET(ch->specials.act, ACT_POLYSELF)))
-  {
-    send_to_char("Polymorphed auctioning has been banned.\n\r", ch);
-    send_to_char("It may return after a bit.\n\r", ch);
-    return;
-  }
+
+	if(!*argument) {  /*LIst all the auctions taking place */
+		listauctions(ch);
+		return;
+	}
+
+  half_chop(argument,item,bid);
 
 
-  if (apply_soundproof(ch))
-    return;
 
-  for (; *argument == ' '; argument++);
+if (!(auctionobj = get_obj_in_list_vis(ch, item, ch->carrying)))	{
+	send_to_char("You dont' seem to have that item to auction off.",ch);
+	return;
+}
+	if(!(intbid=atoi(bid)))
+		intbid=0;
 
-  if (ch->master && IS_AFFECTED(ch, AFF_CHARM)) {
-    if (!IS_IMMORTAL(ch->master)) {
-      send_to_char("I don't think so :-)", ch->master);
-      return;
-    }
-  }
 
-  if (!(*argument))
-    send_to_char("Auction? Yes! But what!\n\r", ch);
-  else	{
-    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-      sprintf(buf1,"$c0010You auction '%s'", argument);
-      act(buf1,FALSE, ch,0,0,TO_CHAR);
-    }
-    sprintf(buf1, "$c0010[$c0015$n$c0010] auctions '%s'", argument);
+	sprintf(buf,"$c000YAuction: $c000w%s is auctioning off $c000R%s$c000w.  Minimun bid of $c000W%d $c000wgold coins set.\n\r"
+			,GET_NAME(ch),auctionobj->short_description,intbid);
+	send_to_all(buf);
 
-    for (i = descriptor_list; i; i = i->next)
-      if (i->character != ch && !i->connected &&
-	  (IS_NPC(i->character) ||
-	   (!IS_SET(i->character->specials.act, PLR_NOSHOUT) &&
-	    !IS_SET(i->character->specials.act, PLR_NOAUCTION))) &&
-	  !check_soundproof(i->character)) {
-#if ZONE_COMM_ONLY
-			/* gossip in zone only */
-  	 if (i->character->in_room != NOWHERE)  {
-            if (real_roomp(ch->in_room)->zone ==
-		real_roomp(i->character->in_room)->zone
-		||GetMaxLevel(i->character) >=LOW_IMMORTAL
-		||GetMaxLevel(ch) >= LOW_IMMORTAL ) 	{
-		 act(buf1, 0, ch, 0, i->character, TO_VICT);
-	    }
-	 }
-#else
-	  act(buf1, 0, ch, 0, i->character, TO_VICT);
+	//auctioneditem->obj=auctionobj;
+	//auctioneditem->minbid=intbid;
+	//auctioneditem->taker=0;
+	//ch->specials.auction= auctioneditem;
+
+	ch->specials.auction=auctionobj;
+	obj_from_char(auctionobj);
+	obj_to_room(auctionobj,4);
+	ch->specials.minbid=intbid;
+
 #endif
-      }
-  }
 }
 
 
 
+void do_bid(struct char_data *ch, char *argument, int cmd)
+{
+#if 0
+
+	struct auction_data *auctioneditem;
+  char item[50], bid[10], buf[MAX_INPUT_LENGTH];
+  long intbid=0;
+ struct descriptor_data *i;
+	//char buf[100];
+
+	struct obj_data *auctionobj;
+
+dlog("in do_bid");
+
+
+	if(!*argument) {  /*LIst all the auctions taking place */
+		send_to_char("Bid on what item?? Type AUCTION to see the list!\n\r",ch);
+		return;
+	}
+
+  half_chop(argument,item,bid);
+
+	if(!(intbid=atoi(bid)))
+		intbid=0;
+	if(intbid > ch->points.gold) {
+		send_to_char("You don't have that much.. No false bids please.",ch);
+		return;
+	}
+
+	for (i = descriptor_list; i; i = i->next) {
+	      if(i->character->specials.auction) {//if (temp = i->character->specials.auction)  {
+			if(auctionobj=get_obj_in_list_vis(i->character,item, i->character->carrying)) {
+
+
+
+				if(intbid <= i->character->specials.minbid)
+					send_to_char("You must bid higher than the min bid",ch);
+				else {
+
+
+					sprintf(buf,"$c000YAuction:$c000w New bid of %d on %s by %s.\n\r",intbid,auctionobj->short_description, GET_NAME(ch));
+					i->character->specials.minbid= intbid;
+					send_to_all(buf);
+				}
+
+					return;
+			} /*If object found */
+	      }
+	}
+
+
+	send_to_char("Object was not found.",ch);
+
+#endif
+}
 
 
 
 void do_commune(struct char_data *ch, char *argument, int cmd)
+
 {
   static char buf1[MAX_INPUT_LENGTH+80];
   struct descriptor_data *i;

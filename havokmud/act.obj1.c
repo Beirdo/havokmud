@@ -414,7 +414,7 @@ dlog("in do_drop");
 
   argument=one_argument(argument, arg);
   if(is_number(arg))	{
-    amount = atoi(arg);
+    amount = advatoi(arg);//atoi(arg);
     argument=one_argument(argument, arg);
 
     if (0!=str_cmp("coins",arg) && 0!=str_cmp("coin",arg))  {
@@ -719,7 +719,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
   if(!obj && is_number(obj_name))	{
     if(newstrlen(obj_name) >= 10)
       obj_name[10] = '\0';
-    amount = atoi(obj_name);
+    amount = advatoi(obj_name);//atoi(obj_name);
     argument=one_argument(argument, arg);
 
     if (str_cmp("coins",arg)!=0 && str_cmp("coin",arg)!=0

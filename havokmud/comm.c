@@ -658,6 +658,13 @@ memory_check("end 5, begin 6");
         update_mem(pulse);  /* update memorizing spells */
       }
 
+	/* Newbie Advice */
+	if (!(pulse % PULSE_ADVICE)) {
+		dlog("Before advice pulse");
+		memory_check("advice pulse");
+	      AdvicePulseStuff(pulse);
+    }
+
 
 
     if (!(pulse % (SECS_PER_MUD_HOUR*4))){

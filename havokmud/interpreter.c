@@ -1546,7 +1546,7 @@ AddCommand("orebuild",do_orebuild,566,POSITION_STANDING,59);
 AddCommand("draw", do_draw, 567, POSITION_FIGHTING, 0);
 AddCommand("zconv" , do_zconv,568, POSITION_STANDING,60);
 AddCommand("bprompt", do_set_bprompt,569,POSITION_RESTING,0);
-
+AddCommand("bid",do_bid,570,POSITION_STANDING,0);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince
@@ -3813,7 +3813,7 @@ sprintf(buf,"%-4s %-15s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %-3s %
 	SEND_TO_Q(buf,d);
 
 	while (race_choice[i]!=-1) {
-	  sprintf(buf,"%-3d) %-15s",i,RaceName[race_choice[i]]);
+	  sprintf(buf,"$c000W%-3d)$c0007 %-15s",i,RaceName[race_choice[i]]);
 
 	  /* show level limits */
 	   for (ii=0;ii<MAX_CLASS;ii++) {
