@@ -905,7 +905,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
     dlog("in do_open_exit");
 
     if (!cmdname) {
-        sprintf(buf, "something really wrong happen in do_open_exit, "i
+        sprintf(buf, "something really wrong happen in do_open_exit, "
                      "cmd:%d\r\n", cmd);
         log(buf);
         return;
