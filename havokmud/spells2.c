@@ -139,28 +139,28 @@ void cast_major_track( byte level, struct char_data *ch, char *arg, int type,
   switch(type){
   case SPELL_TYPE_SPELL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, tar_obj);
+    spell_major_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_POTION:
-    spell_track(level, ch, ch, tar_obj);
+    spell_major_track(level, ch, ch, 0);
     break;
   case SPELL_TYPE_WAND:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, tar_obj);
+    spell_major_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_SCROLL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, tar_obj);
+    spell_major_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
     for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
         if (tar_ch != ch)
-           spell_track(level, ch, tar_ch, tar_obj);
+           spell_major_track(level, ch, tar_ch, 0);
     }
     break;
   default:
-    log("Serious problem in 'track'");
+    log("Serious problem in major track");
     break;
   }
 
@@ -173,28 +173,28 @@ void cast_minor_track( byte level, struct char_data *ch, char *arg, int type,
   switch(type){
   case SPELL_TYPE_SPELL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 0);
+    spell_minor_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_POTION:
-    spell_track(level, ch, ch, 0);
+    spell_minor_track(level, ch, ch, 0);
     break;
   case SPELL_TYPE_WAND:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 0);
+    spell_minor_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_SCROLL:
     if (!tar_ch) tar_ch = ch;
-    spell_track(level, ch, tar_ch, 0);
+    spell_minor_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
     for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
         if (tar_ch != ch)
-           spell_track(level, ch, tar_ch, 0);
+           spell_minor_track(level, ch, tar_ch, 0);
     }
     break;
   default:
-    log("Serious problem in 'track'");
+    log("Serious problem in minor track");
     break;
   }
 
@@ -5560,7 +5560,7 @@ void play_song_of_the_hunt( byte level, struct char_data *ch, char *arg, int typ
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_the_hunt(level, ch, tar_ch, 0);
+			spell_minor_track(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_the_hunt");
@@ -5602,7 +5602,7 @@ void play_song_of_lethargy( byte level, struct char_data *ch, char *arg, int typ
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_lethargy(level, ch, tar_ch, 0);
+			spell_slow(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_lethargy");
@@ -5630,7 +5630,7 @@ void play_song_of_the_high_hunt( byte level, struct char_data *ch, char *arg, in
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_the_high_hunt(level, ch, tar_ch, 0);
+			spell_major_track(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_the_high_hunt");
@@ -5644,7 +5644,7 @@ void play_song_of_silence( byte level, struct char_data *ch, char *arg, int type
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_silence(level, ch, tar_ch, 0);
+			spell_silence(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_silence");
@@ -5658,7 +5658,7 @@ void play_song_of_speed( byte level, struct char_data *ch, char *arg, int type, 
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			song_of_speed(level, ch, tar_ch, 0);
+			spell_haste(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_song_of_speed");
@@ -5742,7 +5742,7 @@ void play_sounds_of_fear( byte level, struct char_data *ch, char *arg, int type,
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			sounds_of_fear(level, ch, tar_ch, 0);
+			sounds_of_fear(level, ch, 0, 0);
 			break;
 		default:
 			log("serious screw-up in play_sounds_of_fear");
@@ -5771,7 +5771,7 @@ void play_heros_chant( byte level, struct char_data *ch, char *arg, int type, st
 		return;
 	switch(type) {
 		case SPELL_TYPE_SPELL:
-			heros_chant(level, ch, 0, 0);
+			heros_chant(level, ch, tar_ch, 0);
 			break;
 		default:
 			log("serious screw-up in play_heros_chant");

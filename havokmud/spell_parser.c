@@ -2291,9 +2291,18 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 		send_to_char("You try to sing a pretty song, but it sounds awful.\n\r", ch);
 		return;
 	}
-	if (cmd == 84 && !IS_IMMORTAL(ch) && HasClass(ch,CLASS_NECROMANCER) && (GET_ALIGNMENT(ch) >= -350)) {
+
+	if (!IS_IMMORTAL(ch) && HasClass(ch,CLASS_NECROMANCER) && (GET_ALIGNMENT(ch) >= -350)) {
 		/* necro too GOOD to cast */
 		send_to_char("Alas, you have strayed too far from the Dark Lord's guidance.\n\r", ch);
+		return;
+	}
+	if (cmd == 600 && ch->specials.is_playing) { /* make him stop his singing first */
+		do_stop(ch, "", 601);
+	}
+	if (!IS_IMMORTAL(ch) && HasClass(ch,CLASS_BARD) && (GET_ALIGNMENT(ch) <= 350)) {
+		/* bard too EVIL to play */
+		send_to_char("Alas, your alignment doesn't allow for singing pretty songs.\n\r", ch);
 		return;
 	}
 

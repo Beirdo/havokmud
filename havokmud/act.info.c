@@ -1416,7 +1416,7 @@ dlog("in do_look");
   else if ( IS_AFFECTED(ch, AFF_BLIND) )
     send_to_char("You can't see a damn thing, you're blinded!\n\r", ch);
   else if  ((IS_DARK(ch->in_room)) && (!IS_IMMORTAL(ch)) &&
-	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT))) {
+	    (!IS_AFFECTED(ch, AFF_TRUE_SIGHT) && ch->specials.is_hearing != SONG_OF_ETERNAL_LIGHT)) {
     send_to_char("It is very dark in here.. Find a lightsource to see.\n\r", ch);
     if (IS_AFFECTED(ch, AFF_INFRAVISION)) {
       list_char_in_room(real_roomp(ch->in_room)->people, ch);

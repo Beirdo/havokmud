@@ -3018,7 +3018,7 @@ struct char_data *FindVictim( struct char_data *ch)
   while(tmp_ch) {
 
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&&
-	(!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch!=tmp_ch)) {
+	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch!=tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
 
 	if ((tmp_ch->specials.zone != ch->specials.zone &&
@@ -3094,7 +3094,7 @@ if (affected_by_spell(tmp_ch,SKILL_DISGUISE) ||
   for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch;
        tmp_ch=tmp_ch->next_in_room) {
     if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&&
-	(!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch != tmp_ch)) {
+	(!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch != tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
 	if ((tmp_ch->specials.zone != ch->specials.zone &&
 	    !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
@@ -3151,7 +3151,7 @@ struct char_data *FindVictim(struct char_data *ch)
 
 
 for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_room) {
-    if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK)) && (ch!=tmp_ch)) {
+    if ((CAN_SEE(ch,tmp_ch))&&(!IS_SET(tmp_ch->specials.act,PLR_NOHASSLE))&& (!IS_AFFECTED(tmp_ch, AFF_SNEAK) && !IS_AFFECTED2(tmp_ch, AFF2_GUARDIAN_ANGEL)) && (ch!=tmp_ch)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(tmp_ch)) {
  		if ((tmp_ch->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races, GET_RACE(tmp_ch))) ||
 	    IS_SET(tmp_ch->specials.act, ACT_ANNOYING))
@@ -3160,7 +3160,7 @@ for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_roo
 
   for (vict = rp->people; vict; vict = vict->next_in_room) {
     if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
-        (!IS_AFFECTED(vict, AFF_SNEAK)) && (ch != vict)) {
+        (!IS_AFFECTED(vict, AFF_SNEAK) && !IS_AFFECTED2(vict, AFF2_GUARDIAN_ANGEL)) && (ch != vict)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
 		if ((vict->specials.zone != ch->specials.zone && !strchr(zone_table[ch->specials.zone].races,
             GET_RACE(vict))) || IS_SET(vict->specials.act, ACT_ANNOYING)) {
@@ -3223,7 +3223,7 @@ for (tmp_ch=(real_roomp(ch->in_room))->people;tmp_ch; tmp_ch=tmp_ch->next_in_roo
 
   for (vict = rp->people; vict; vict = vict->next_in_room) {
     if ((CAN_SEE(ch, vict)) && (!IS_SET(vict->specials.act, PLR_NOHASSLE)) &&
-        (!IS_AFFECTED(vict, AFF_SNEAK)) && (ch != vict)) {
+        (!IS_AFFECTED(vict, AFF_SNEAK) && !IS_AFFECTED2(vict, AFF2_GUARDIAN_ANGEL)) && (ch != vict)) {
       if (!IS_SET(ch->specials.act, ACT_WIMPY) || !AWAKE(vict)) {
         if ((vict->specials.zone != ch->specials.zone &&
 	    !strchr(zone_table[ch->specials.zone].races, GET_RACE(vict))) ||

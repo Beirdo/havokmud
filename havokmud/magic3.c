@@ -4778,106 +4778,491 @@ void song_of_the_guardian(byte level, struct char_data *ch, struct char_data *vi
 	af.duration  = 24;
 	af.modifier  = -20;
 	af.location  = APPLY_ARMOR;
-	af.bitvector = AFF_SNEAK;
-	affect_to_char(victim, &af);
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
 
 	af.type      = SONG_OF_THE_GUARDIAN;
 	af.duration  = 24;
 	af.modifier  = 0;
-	af.location  = APPLY_NONE;
-	af.bitvector = AFF_SNEAK;
-	affect_to_char(victim, &af);
+	af.location  = APPLY_BV2;
+	af.bitvector = AFF2_GUARDIAN_ANGEL;
+	affect_to_char(ch, &af);
 }
 
 void song_of_muscle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	assert(ch && victim);
+
+	if (!affected_by_spell(victim,SPELL_STRENGTH)) {
+		act("You feel stronger.", FALSE, victim,0,0,TO_CHAR);
+		act("$n seems stronger!", FALSE, victim, 0, 0, TO_ROOM);
+		af.type      = SPELL_STRENGTH;
+		af.duration  = 2*level;
+		if (IS_NPC(victim))
+			if (level >= CREATOR) {
+				af.modifier = 25 - GET_STR(victim);
+			} else
+				af.modifier = number(1,6);
+		else {
+			if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) )
+				af.modifier = number(1,8);
+			else if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_THIEF))
+				af.modifier = number(1,6);
+			else
+				af.modifier = number(1,4);
+		}
+		af.location  = APPLY_STR;
+		af.bitvector = 0;
+		affect_to_char(victim, &af);
+	} else {
+		act("Nothing seems to happen.", FALSE, ch,0,0,TO_CHAR);
+	}
 }
 
 void song_of_mint_and_lemon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	int dam;
+	struct affected_type *k;
 
+	assert(ch && victim);
+	assert((level >= 1) && (level <= ABS_MAX_LVL));
+
+	dam = dice(level,2)+level;
+	dam = MAX(dam,40);
+
+	if ( (dam + GET_MOVE(victim)) > move_limit(victim) )
+		GET_MOVE(victim) = move_limit(victim);
+	else
+		GET_MOVE(victim) += dam;
+
+	if(affected_by_spell(victim, COND_WINGS_TIRED) || affected_by_spell(victim, COND_WINGS_FLY))
+		for(k = victim->affected;k;k = k->next) {
+			if(k->type == COND_WINGS_TIRED) {
+				k->duration = k->duration - dice(1,10);
+				if(k->duration < 0)
+					affect_from_char(victim, COND_WINGS_TIRED);
+			} else if(k->type == COND_WINGS_FLY) {
+				k->duration = k->duration + dice(1,10);
+				k->duration = MIN(k->duration,GET_CON(victim));
+			}
+		}
+	send_to_char("You feel very much refreshed.\n\r", victim);
+	act("$n seems a lot more spritely.", FALSE, victim,0,0,TO_CHAR);
 }
 
 void song_of_seeing(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	assert(victim && ch);
+
+	if (!IS_AFFECTED(victim, AFF_INFRAVISION)) {
+		send_to_char("Your eyes glow red.\n\r", victim);
+		act("$n's eyes glow red.\n\r", FALSE, victim, 0, 0, TO_ROOM);
+
+		af.type      = SONG_OF_SEEING;
+		af.duration  = 24;
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = AFF_INFRAVISION;
+		affect_to_char(victim, &af);
+	} else {
+		send_to_char("Nothing seems to happen.\n\r", ch);
+	}
 }
 
 void song_of_levitation(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	assert(ch && victim);
+	if (victim && IS_SET(victim->specials.act, PLR_NOFLY)) {
+		REMOVE_BIT(victim->specials.act, PLR_NOFLY);
+	}
+
+	if (victim && affected_by_spell(victim, SONG_OF_LEVITATION)) {
+		send_to_char("The song seems to be wasted.\n\r",ch);
+		return;
+	}
+
+	act("Your feet rise up in the air as the song gets hold of you.", TRUE, victim, 0, 0, TO_CHAR);
+	act("$n's feet rise up in the air as the song gets hold of $m.", TRUE, victim, 0, 0, TO_ROOM);
+
+    af.type      = SONG_OF_LEVITATION;
+    af.duration  = 10+level;
+    af.modifier  = 0;
+    af.location  = 0;
+    af.bitvector = AFF_FLYING;
+    affect_to_char(victim, &af);
 }
 
 void song_of_dazzling(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	assert(ch);
 
-}
+	if(!victim)
+		victim = ch->specials.fighting;
 
-void song_of_the_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
-{
+	if(!victim) {
+		send_to_char("Who did you want to dazzle?\n\r",ch);
+		return;
+	}
+	if(IS_PC(victim)) {
+		send_to_char("You try to dazzle this person, but hey, you feel all oozey yourself.\n\r",ch);
+		return;
+	}
 
-}
-
-void song_of_lethargy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
-{
-
+	if(!saves_spell(victim, SAVING_PARA)) {
+		act("You are stunned by the beauty of $N's song.", TRUE, victim, 0, ch, TO_CHAR);
+		act("$n is stunned by the beuaty of $N's song.", TRUE, victim, 0, ch, TO_ROOM);
+		act("$n is stunned by the beuaty of your song.", TRUE, victim, 0, ch, TO_VICT);
+		if (GET_POS(victim)>POSITION_STUNNED)
+			GET_POS(victim) = POSITION_STUNNED;
+	}
 }
 
 void song_of_spirits(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct room_data *rp;
+	struct char_data *tmp;
 
-}
+	assert(ch);
 
-void song_of_the_high_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
-{
+	if(!ch->in_room) {
+		log("char in invalid room, song of spirits");
+		return;
+	}
 
-}
+	rp = real_roomp(ch->in_room);
 
-void song_of_silence(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
-{
+	if(!rp) {
+		log("ugh no room in song of spirits");
+		return;
+	}
 
-}
-
-void song_of_speed(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
-{
-
+	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
+		GET_MOVE(tmp) = GET_MAX_MOVE(tmp);
+		send_to_char("You feel your spirits rising, and are good to go once more.\n\r", tmp);
+	}
 }
 
 void song_of_summoner(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct char_data *tmp;
+	struct room_data *rp;
+	int count;
 
+	assert(ch && victim);
+
+	if (victim->in_room <= NOWHERE) {
+		send_to_char("Couldn't find any of those.\n\r", ch);
+		return;
+	}
+
+	if ((rp = real_roomp(ch->in_room)) == NULL)
+		return;
+
+	if(A_NOTRAVEL(ch)) {
+		send_to_char("The arena rules do not permit you to use songs of non_linear travel!\n\r", ch);
+		return;
+	}
+	if (IS_SET(rp->room_flags, NO_SUM) || IS_SET(rp->room_flags, NO_MAGIC)) {
+		send_to_char("Your song can't seem to reach your quarry's ears.\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(rp->room_flags, TUNNEL)) {
+		send_to_char("There is no room in here to summon!\n\r", ch);
+		return;
+	}
+
+	if (rp->sector_type == SECT_UNDERWATER) {
+		send_to_char("Your sounds cannot penetrate the liquid surrounding your quarry.\n", ch);
+		return;
+	}
+
+ 	if (IS_PC(victim) && IS_LINKDEAD(victim)) {
+		send_to_char("Nobody playing by that name.\n\r", ch);
+		return;
+	}
+
+	if (IS_SET(real_roomp(victim->in_room)->room_flags, NO_SUM)) {
+		send_to_char("Your song can't seem to reach your quarry's ears.\n\r", ch);
+		return;
+	}
+
+	if (GetMaxLevel(victim) > LOW_IMMORTAL) {
+		send_to_char("A large hand suddenly appears before you and thumps your head!\n\r", ch);
+		return;
+	}
+
+	if (victim->specials.fighting) {
+		send_to_char("You can't get a clear fix on them\n", ch);
+		return;
+	}
+
+	if (IS_SET(SystemFlags,SYS_NOSUMMON)) {
+		send_to_char("A mystical fog blocks your attemps!\n",ch);
+		return;
+	}
+
+	if (!IsOnPmp(victim->in_room)) {
+		send_to_char("They're on an extra-dimensional plane!\n", ch);
+		return;
+	}
+
+	if (CanFightEachOther(ch,victim))
+		if (saves_spell(victim, SAVING_SPELL) ) {
+			act("You failed to summon $N!",FALSE,ch,0,victim,TO_CHAR);
+			act("$n tried to summon you!",FALSE,ch,0,victim,TO_VICT);
+			return;
+		}
+
+	if (!IS_PC(victim)) {
+		count = 0;
+		for (tmp=real_roomp(victim->in_room)->people; tmp; tmp = tmp->next_in_room) {
+			count++;
+		}
+		if (count==0) {
+			send_to_char("You failed.\n\r", ch);
+			return;
+		} else {
+			count = number(0,count);
+			for (tmp=real_roomp(victim->in_room)->people; count && tmp; tmp = tmp->next_in_room, count--);
+
+			if ( (tmp && GET_MAX_HIT(tmp) < GET_HIT(ch) && !saves_spell(tmp,SAVING_SPELL)) ) {
+				RawSummon(tmp, ch);
+			} else {
+				send_to_char("You failed\n\r", ch);
+				return;
+			}
+		}
+    } else {
+      RawSummon(victim, ch);
+    }
 }
 
 void song_of_sight(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
 
+	assert(ch && victim);
+
+	if(IS_AFFECTED(victim, AFF_BLIND))
+		spell_cure_blind(level, ch, victim, 0);
+
+	if(!affected_by_spell(victim, SONG_OF_SIGHT)) {
+		if (ch != victim) {
+			send_to_char("Your eyes glow gold for a moment.\n\r", victim);
+			act("$n's eyes take on a golden hue.", FALSE, victim, 0, 0, TO_ROOM);
+		} else {
+			send_to_char("Your eyes glow gold.\n\r", ch);
+			act("$n's eyes glow gold.", FALSE, ch, 0, 0, TO_ROOM);
+		}
+		af.type      = SONG_OF_SIGHT;
+		af.duration  = 16;
+		af.modifier  = 0;
+		af.location  = APPLY_NONE;
+		af.bitvector = AFF_TRUE_SIGHT + AFF_DETECT_MAGIC + AFF_SENSE_LIFE + AFF_DETECT_EVIL;
+		affect_to_char(victim, &af);
+
+		af.type      = SONG_OF_SIGHT;
+		af.duration  = 16;
+		af.modifier  = 0;
+		af.location  = APPLY_BV2;
+		af.bitvector = AFF2_DETECT_GOOD;
+		affect_to_char(victim, &af);
+	}
 }
 
 void song_of_the_hearth(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	int location;
+	struct char_data *tmp2;
+	struct room_data *rp;
 
+	assert(ch);
+
+	if (IS_NPC(ch))
+		return;
+
+	if (ch->player.hometown) {
+		location = ch->player.hometown;
+	} else {
+		location = 3001;
+	}
+
+	if (!real_roomp(location)) {
+		send_to_char("You are completely lost.\n\r", ch);
+		location = 0;
+		return;
+	}
+
+	if (ch->specials.fighting) {
+		send_to_char("HAH, not in a fight!\n\r",ch);
+		return;
+	}
+
+	if (!IsOnPmp(ch->in_room)) {
+		send_to_char("Your hearth seems to be on a different plane.\n\r", ch);
+		return;
+	}
+
+	if(!ch->in_room) {
+		log("char in invalid room, song of the hearth");
+		return;
+	}
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp) {
+		log("ugh no room in song of the hearth");
+		return;
+	}
+
+	/* a location has been found. */
+	for (victim = rp->people; victim; victim = tmp2) {
+		tmp2 = victim->next_in_room;
+		if (in_group(ch, victim) && IS_AFFECTED(victim,AFF_GROUP)) {
+			act("$n hears the song of the hearth, and fades away into another dimension.", TRUE, victim, 0, 0, TO_ROOM);
+			if(victim->specials.fighting) {
+				if(victim->specials.fighting->specials.fighting) {
+					if(victim->specials.fighting->specials.fighting == victim) {
+						stop_fighting(victim->specials.fighting);
+					}
+				}
+				stop_fighting(victim);
+			}
+			char_from_room(victim);
+			char_to_room(victim, location);
+			act("$n appears in the room, the thought of home and hearth plain on $s face.", TRUE, victim, 0, 0, TO_ROOM);
+			do_look(victim, "",15);
+		}
+	}
 }
 
 void song_of_eternal_light(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
+	struct char_data *tmp;
+	struct room_data *rp;
 
+	assert(ch);
+
+	ch->specials.is_playing = SONG_OF_ETERNAL_LIGHT;
+
+	send_to_char("The room around you turns a lot better visible.\n\r",ch);
+	act("The room around you turns a lot better visible.", FALSE, ch, 0, 0, TO_ROOM);
+
+	af.type      = SONG_OF_ETERNAL_LIGHT;
+	af.duration  = 999;
+	af.modifier  = 0;
+	af.location  = 0;
+	af.bitvector = 0;
+	affect_to_char(ch, &af);
+
+	if(!ch->in_room) {
+		log("char in invalid room, song of eternal light");
+		return;
+	}
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp) {
+		log("ugh no room in song of eternal light");
+		return;
+	}
+
+	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
+		tmp->specials.is_hearing = SONG_OF_ETERNAL_LIGHT;
+	}
 }
 
 void song_of_wanderer(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+/*
+Cost: 150 mana
+Duration: Sustained; it lasts as long as the Bard plays.
+Effect: All members of the Bard’s group who are in the same room use no Vitality points for movement.
+*/
+	struct room_data *rp;
+	struct char_data *tmp;
+	struct affected_type af;
 
+	assert(ch);
+
+	if(!ch->in_room) {
+		log("char in invalid room, song of the wanderer");
+		return;
+	}
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp) {
+		log("ugh no room in song of the wanderer");
+		return;
+	}
+
+	ch->specials.is_playing = SONG_OF_WANDERER;
+
+	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
+		if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
+			if(tmp->specials.is_hearing != SONG_OF_WANDERER) {
+				if(!affected_by_spell(tmp, SONG_OF_WANDERER)) {
+					send_to_char("You feel like you can walk around the world.\n\r",tmp);
+					act("Hearing the song of the wanderer, $n wriggles $s toes.", FALSE, tmp, 0, 0, TO_ROOM);
+				}
+				af.type      = SONG_OF_WANDERER;
+				af.duration  = 999;
+				af.modifier  = 0;
+				af.location  = APPLY_BV2;
+				af.bitvector = AFF2_SONG_OF_WANDERER;
+				affect_to_char(tmp, &af);
+
+				tmp->specials.is_hearing = SONG_OF_WANDERER;
+			}
+		}
+	}
 }
 
 void sounds_of_fear(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct room_data *rp;
+	struct char_data *tmp;
 
+	assert(ch);
+/*
+   forces all non grouped mobiles in the room to flee
+*/
+	if(!ch->in_room) {
+		log("char in invalid room, sounds of fear");
+		return;
+	}
+
+	rp = real_roomp(ch->in_room);
+
+	if(!rp) {
+		log("ugh no room in sounds of fear");
+		return;
+	}
+
+	for (tmp = rp->people; tmp; tmp = tmp->next_in_room) {
+		if (!(in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP))) {
+			do_flee(tmp, "", 0);
+		}
+	}
 }
 
 void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	// Duration 1 Hour, Casting Cost 50, Can not be cast in combat
+	// effects: Casts Armor, Shield, Bless, Strength, Aid, and Protection From Evil
+	// on anyone grouped with the Bard.
+
 	struct affected_type af;
-	struct char_data *tmp, *tmp2;
+	struct char_data *tmp2;
 	struct room_data *rp;
 
 	if(ch->in_room)
@@ -4887,29 +5272,155 @@ void song_of_battle(byte level, struct char_data *ch, struct char_data *victim, 
 		return;
 	}
 
-	for (tmp = rp->people;tmp;tmp=tmp2) {
-		tmp2 = tmp->next_in_room;
-		if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
-			if(tmp->specials.is_hearing != SONG_OF_BATTLE) {
-				if(!affected_by_spell(ch, SONG_OF_BATTLE)) {
-					send_to_char("You feel like a fight!\n\r",ch);
-					act("Hearing the song of battle, $n gets a bloodthirsty look in $s eyes.", FALSE, tmp, 0, 0, TO_ROOM);
-
-				}
-				af.type      = SONG_OF_BATTLE;
-				af.duration  = 999;
-				af.modifier  = 3;
-				af.location  = APPLY_HITNDAM;
+	for (victim = rp->people; victim; victim = tmp2) {
+		tmp2 = victim->next_in_room;
+		if (in_group(ch, victim) && IS_AFFECTED(victim,AFF_GROUP)) {
+			if (!affected_by_spell(victim, SPELL_ARMOR)) {
+				af.type      = SPELL_ARMOR;
+				af.duration  = 1;
+				af.modifier  = -20;
+				af.location  = APPLY_AC;
 				af.bitvector = 0;
-				affect_to_char(tmp, &af);
-
-				tmp->specials.is_hearing = SONG_OF_BATTLE;
+				affect_to_char(victim, &af);
 			}
+			if (!affected_by_spell(victim, SPELL_SHIELD)) {
+				af.type      = SPELL_SHIELD;
+				af.duration  = 1;
+				af.modifier  = -10;
+				af.location  = APPLY_AC;
+				af.bitvector = 0;
+				affect_to_char(victim, &af);
+			}
+			if(!affected_by_spell(victim, SPELL_BLESS)) {
+				af.type      = SPELL_BLESS;
+				af.duration  = 1;
+				af.modifier  = 1;
+				af.location  = APPLY_HITROLL;
+				af.bitvector = 0;
+				affect_to_char(victim, &af);
+
+				af.location = APPLY_SAVING_SPELL;
+				af.modifier = -1;                 /* Make better */
+				affect_to_char(victim, &af);
+			}
+			if (!affected_by_spell(victim,SPELL_STRENGTH)) {
+				af.type      = SPELL_STRENGTH;
+				af.duration  = 1;
+				if (IS_NPC(victim))
+					if (level >= CREATOR) {
+						af.modifier = 25 - GET_STR(victim);
+					} else
+						af.modifier = number(1,6);
+				else {
+					if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) )
+						af.modifier = number(1,8);
+					else if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_THIEF))
+						af.modifier = number(1,6);
+					else
+						af.modifier = number(1,4);
+				}
+				af.location  = APPLY_STR;
+				af.bitvector = 0;
+				affect_to_char(victim, &af);
+			}
+			if(!affected_by_spell(victim, SPELL_AID)) {
+				GET_HIT(victim)+=number(1,8);
+				update_pos(victim);
+				af.type      = SPELL_AID;
+				af.duration  = 1;
+				af.modifier  = 1;
+				af.location  = APPLY_HITROLL;
+				af.bitvector = 0;
+				affect_to_char(victim, &af);
+			}
+			if (!affected_by_spell(victim, SPELL_PROTECT_FROM_EVIL) ) {
+				af.type      = SPELL_PROTECT_FROM_EVIL;
+				af.duration  = 1;
+				af.modifier  = 0;
+				af.location  = APPLY_NONE;
+				af.bitvector = AFF_PROTECT_FROM_EVIL;
+				affect_to_char(victim, &af);
+			}
+			send_to_char("You feel mighty!\n\r", victim);
 		}
 	}
 }
 
 void heros_chant(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
+	struct affected_type af;
+	struct char_data *tmp, *tmp2;
+	struct room_data *rp;
 
+/*
+Target: Individual or Group only!
+If the target is an individual: +3hitndam, -20AC, -2saving_all.
+If the target is a group: +2hitndam, -10AC, -1saving_all.
+This is a sustained song.  Cost: 25% of the caster’s max (every tick).
+*/
+	assert(ch);
+
+	ch->specials.is_playing = HEROS_CHANT;
+
+	if(victim) {
+		if(victim->specials.is_hearing != HEROS_CHANT) {
+			if(!affected_by_spell(victim, HEROS_CHANT)) {
+				send_to_char("You feel like a fight!\n\r",victim);
+				act("Hearing the song of battle, $n gets a bloodthirsty look in $s eyes.", FALSE, victim, 0, 0, TO_ROOM);
+			}
+			af.type      = HEROS_CHANT;
+			af.duration  = 999;
+			af.modifier  = 3;
+			af.location  = APPLY_HITNDAM;
+			af.bitvector = 0;
+			affect_to_char(victim, &af);
+
+			af.modifier  = -20;
+			af.location  = APPLY_ARMOR;
+			affect_to_char(victim, &af);
+
+			af.modifier  = -2;
+			af.location  = APPLY_SAVE_ALL;
+			affect_to_char(victim, &af);
+
+			victim->specials.is_hearing = HEROS_CHANT;
+		} else {
+			send_to_char("Nothing new seems to happen.\n\r",victim);
+		}
+	} else {
+		if(ch->in_room)
+			rp = real_roomp(ch->in_room);
+		if(!rp) {
+			log("fuckup in hero's chant");
+			return;
+		}
+		for (tmp = rp->people;tmp;tmp=tmp2) {
+			tmp2 = tmp->next_in_room;
+			if (in_group(ch, tmp) && IS_AFFECTED(tmp,AFF_GROUP)) {
+				if(tmp->specials.is_hearing != HEROS_CHANT) {
+					if(!affected_by_spell(tmp, HEROS_CHANT)) {
+						send_to_char("You feel like a fight!\n\r",tmp);
+						act("Hearing the song of battle, $n gets a bloodthirsty look in $s eyes.", FALSE, tmp, 0, 0, TO_ROOM);
+
+					}
+					af.type      = HEROS_CHANT;
+					af.duration  = 999;
+					af.modifier  = 2;
+					af.location  = APPLY_HITNDAM;
+					af.bitvector = 0;
+					affect_to_char(tmp, &af);
+
+					af.modifier  = -10;
+					af.location  = APPLY_ARMOR;
+					affect_to_char(tmp, &af);
+
+					af.modifier  = -1;
+					af.location  = APPLY_SAVE_ALL;
+					affect_to_char(tmp, &af);
+
+					tmp->specials.is_hearing = HEROS_CHANT;
+				}
+			}
+		}
+	}
 }

@@ -146,7 +146,7 @@ struct QuestItem {
 #define PERSONAL_PERM_LOCKOUTS	1
 #define LAG_MOBILES     1
 
-#define NEWMOBSTRUCTURE 1 
+#define NEWMOBSTRUCTURE 1
 /*
  efficiency stuff
 */
@@ -936,7 +936,9 @@ struct room_data
 /* necro stuff */
 #define AFF2_INVIS_TO_UNDEAD   BV16
 /* bard stuff */
-#define AFF2_SONGWEAVING	   BV17
+#define AFF2_GUARDIAN_ANGEL	   BV17 /* bard mad sneak spell. blame xenon, not me */
+#define AFF2_SONG_OF_WANDERER  BV18 /* no move use */
+#define AFF2_SONG_OF_ETERNAL_LIGHT  BV19 /* set real_roomp(ch->in_room)->light+++++ */
 
 /* Flag spells as brewable or single class */
 #define BREWABLE_SPELL         BV00

@@ -2903,7 +2903,7 @@ int CheckForBlockedMove
   strcpy(buf2, "The guard humiliates $n, and blocks $s way.");
 
   if ((IS_NPC(ch) && (IS_POLICE(ch))) || (GetMaxLevel(ch) >= DEMIGOD) ||
-      (IS_AFFECTED(ch, AFF_SNEAK)))
+      (IS_AFFECTED(ch, AFF_SNEAK) || IS_AFFECTED2(ch, AFF2_GUARDIAN_ANGEL)))
     return(FALSE);
 
 

@@ -864,7 +864,9 @@ void spell_detect_charm(byte level, struct char_data *ch,
    struct char_data *victim, struct obj_data *obj);
 void spell_true_seeing(byte level, struct char_data *ch,
    struct char_data *victim, struct obj_data *obj);
-void spell_track(byte level, struct char_data *ch,
+void spell_major_track(byte level, struct char_data *ch,
+   struct char_data *targ, struct obj_data *obj);
+void spell_minor_track(byte level, struct char_data *ch,
    struct char_data *targ, struct obj_data *obj);
 void spell_poly_self(byte level, struct char_data *ch,
    struct char_data *mob, struct obj_data *obj);
@@ -2390,28 +2392,16 @@ void spell_blade_barrier(byte level, struct char_data *ch, struct char_data *vic
 /* bard songs, magic3.c */
 void song_of_comprehension(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_biting_words(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_the_lullaby(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_charming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_freezing_north(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_enthrallment(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_calming(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_the_guardian(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_muscle(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_mint_and_lemon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_seeing(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_spell_breaching(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_lightning(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_levitation(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_the_winter_gale(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_dazzling(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_the_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_heraldry(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-//void song_of_legendary_weapon(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_lethargy(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_spirits(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_the_high_hunt(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_silence(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
-void song_of_speed(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_summoner(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_sight(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void song_of_the_hearth(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);

@@ -1941,7 +1941,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
 
 
-			if(HasClass(d->character,CLASS_PALADIN))
+			if(HasClass(d->character,CLASS_PALADIN) || HasClass(d->character,CLASS_BARD))
 				sprintf(bufx,"Please select your alignment ($c000WGood$c000w)");
 			else
 				if (HasClass(d->character, CLASS_DRUID))
@@ -2024,7 +2024,7 @@ d->host);
 	      {
 			case 'n':
 		    case 'N':
-		    	if(!HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_NECROMANCER)) {
+		    	if(!HasClass(d->character, CLASS_BARD) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_NECROMANCER)) {
 			  	GET_ALIGNMENT(d->character)=1;
 			  	send_to_char("You have chosen to be Neutral in alignment.\n\r\n\r",d->character);
 			  	STATE(d) = CON_CREATION_MENU;
@@ -2047,7 +2047,7 @@ d->host);
 	      case 'e':
 	      case 'E':
 
-			if(!HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
+			if(!HasClass(d->character, CLASS_BARD) && !HasClass(d->character, CLASS_DRUID) && !HasClass(d->character, CLASS_PALADIN) && !HasClass(d->character, CLASS_RANGER)) {
 				GET_ALIGNMENT(d->character)=-1000;
 				send_to_char("You have chosen the dark side.\n\r\n\r",d->character);
 				STATE(d) = CON_CREATION_MENU;

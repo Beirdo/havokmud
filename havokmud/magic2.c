@@ -476,7 +476,7 @@ void spell_true_seeing(byte level, struct char_data *ch,
    magic user spells
 */
 
-void spell_track(byte level, struct char_data *ch,
+void spell_major_track(byte level, struct char_data *ch,
    struct char_data *targ, struct obj_data *obj)
 {
   char name[256], buf[256];
@@ -492,14 +492,34 @@ void spell_track(byte level, struct char_data *ch,
 
   act("$N's eyes take on an emerald hue for just a moment.", 0,  ch, 0, targ, TO_ROOM);
 
-  if (!obj) {
-     af.type      = SPELL_MINOR_TRACK;
-     af.duration  = level;
+  af.type      = SPELL_MAJOR_TRACK;
+  af.duration  = level*2;
+  af.modifier  = 0;
+  af.location  = APPLY_NONE;
+  af.bitvector = 0;
+  affect_to_char(targ, &af);
+
+
+}
+
+void spell_minor_track(byte level, struct char_data *ch,
+   struct char_data *targ, struct obj_data *obj)
+{
+  char name[256], buf[256];
+  struct affected_type af;
+
+  extern struct char_data *character_list;
+
+  if (ch != targ) {
+    send_to_char("You feel your awareness grow!\n\r", targ);
   } else {
-     af.type      = SPELL_MAJOR_TRACK;
-     af.duration  = level*2;
+    send_to_char("You feel your awareness grow!\n\r", ch);
   }
 
+  act("$N's eyes take on an emerald hue for just a moment.", 0,  ch, 0, targ, TO_ROOM);
+
+  af.type      = SPELL_MINOR_TRACK;
+  af.duration  = level;
   af.modifier  = 0;
   af.location  = APPLY_NONE;
   af.bitvector = 0;
@@ -680,7 +700,7 @@ void spell_infravision(byte level, struct char_data *ch,
 
   assert(victim && ch);
 
-  if (!IS_AFFECTED(victim, AFF_INFRAVISION)) {
+  if (!IS_AFFECTED(victim, AFF_INFRAVISION) && !IS_AFFECTED(victim, AFF_INFRAVISION)) {
     if (ch != victim) {
        send_to_char("Your eyes glow red.\n\r", victim);
        act("$n's eyes glow red.\n\r", FALSE, victim, 0, 0, TO_ROOM);
