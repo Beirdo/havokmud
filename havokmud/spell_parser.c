@@ -142,6 +142,8 @@ void mind_use_intensify( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_mind_tap( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
+void mind_use_kinolock( byte level, struct char_data *ch, char *arg, int type,
+  struct char_data *tar_ch, struct obj_data *tar_obj );
 /* end psi mind stuff */
 
 
@@ -3833,11 +3835,11 @@ void assign_spell_pointers()
 
 /*	spello(344,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// sense item
+	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);sense item */
 
-	spello(345,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
+	spello(345,12,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	40, TAR_IGNORE | TAR_GROUP, 0, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);// kinolock
+	40, TAR_IGNORE, mind_use_kinolock, 0,0, LOW_IMMORTAL, LOW_IMMORTAL);/* kinolock
 
 	spello(346,24,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,

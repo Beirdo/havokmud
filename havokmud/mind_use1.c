@@ -375,3 +375,18 @@ void mind_use_mind_tap( byte level, struct char_data *ch, char *arg, int type,
        }
 }
 
+void mind_use_kinolock( byte level, struct char_data *ch, char *arg, int type,
+  struct char_data *tar_ch, struct obj_data *tar_obj )
+  {
+	  switch (type) {
+	           	case SPELL_TYPE_WAND:
+	  		case SPELL_TYPE_SPELL:
+	  	        case SPELL_TYPE_STAFF:
+	                  case SPELL_TYPE_SCROLL:
+	  			mind_kinolock (level, ch, tar_ch, 0);
+	  			break;
+	                  default :
+	                       log("Serious screw-up in mind_telekenetic_knock");
+	                  break;
+	         }
+}
