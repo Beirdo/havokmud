@@ -3031,7 +3031,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!IS_IMMORTAL(ch) && HasClass(ch, CLASS_NECROMANCER) && 
-        GET_ALIGNMENT(ch) >= -350) {
+        !IS_EVIL(ch)) {
         /*
          * necro too GOOD to cast 
          */

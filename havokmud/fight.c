@@ -2622,9 +2622,7 @@ int GetWeaponType(struct char_data *ch, struct obj_data **wielded)
 {
     int             w_type;
 
-    if (ch->equipment[WIELD] &&
-        (ch->equipment[WIELD]->obj_flags.type_flag == ITEM_WEAPON)) {
-
+    if (ch->equipment[WIELD] && IS_WEAPON(ch->equipment[WIELD])) {
         *wielded = ch->equipment[WIELD];
         w_type = Getw_type(*wielded);
     } else {

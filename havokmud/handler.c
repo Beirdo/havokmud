@@ -269,8 +269,8 @@ void affect_modify(struct char_data *ch, byte loc, long mod, long bitv,
         return;
     } else if (add) {
         SET_BIT(ch->specials.affected_by, bitv);
-        if (IS_SET(ch->specials.act, PLR_NOFLY) &&
-            IS_SET(ch->specials.affected_by, AFF_FLYING)) {
+        if (IS_SET(ch->specials.act, PLR_NOFLY) && 
+            IS_AFFECTED(ch, AFF_FLYING)) {
             REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
         }
     } else {

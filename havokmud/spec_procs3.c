@@ -3983,8 +3983,9 @@ int archer_hth(struct char_data *ch)
             return FALSE;
         }
         for (spid = ch->carrying; spid; spid = spid->next_content) {
-            if (spid->obj_flags.type_flag == ITEM_WEAPON)
+            if (IS_WEAPON(spid)) {
                 hth = spid;
+            }
         }
 
         if (hth) {

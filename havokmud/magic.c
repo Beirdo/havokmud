@@ -877,7 +877,7 @@ void spell_curse(int level, struct char_data *ch,
         /*
          * LOWER ATTACK DICE BY -1
          */
-        if (obj->obj_flags.type_flag == ITEM_WEAPON) {
+        if (IS_WEAPON(obj)) {
             obj->obj_flags.value[2]--;
         }
         act("$p glows red.", FALSE, ch, obj, 0, TO_CHAR);
@@ -1778,10 +1778,14 @@ void spell_strength(int level, struct char_data *ch,
             } else {
                 af.modifier = number(1, 6);
             }
-        } else if (HasClass(ch, CLASS_WARRIOR) ||
-                   HasClass(ch, CLASS_BARBARIAN)) {
+        } else if (HasClass(ch, CLASS_WARRIOR) || 
+                   HasClass(ch, CLASS_RANGER) ||
+                   HasClass(ch, CLASS_BARBARIAN) || 
+                   HasClass(ch, CLASS_PALADIN)) {
             af.modifier = number(1, 8);
-        } else if (HasClass(ch, CLASS_CLERIC) || HasClass(ch, CLASS_THIEF)) {
+        } else if (HasClass(ch, CLASS_CLERIC) || 
+                   HasClass(ch, CLASS_THIEF) ||
+                   HasClass(ch, CLASS_PSI)) {
             af.modifier = number(1, 6);
         } else {
                 af.modifier = number(1, 4);

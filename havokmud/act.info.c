@@ -2620,7 +2620,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         ch_printf(ch, "$c0015The light is the area causes you great "
                       "pain!\n\r");
     }
-    if (IS_SET(ch->specials.affected_by2, AFF2_WINGSBURNED)) {
+    if IS_AFFECTED2(ch, AFF2_WINGSBURNED) {
         send_to_char("$c0009Your burned and tattered wings are a source of "
                      "great pain.\n\r", ch);
     }
@@ -5141,11 +5141,9 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
     /*
      * Check in room first
      */
-    for (spud = real_roomp(ch->in_room)->people; spud;
+    for (spud = real_roomp(ch->in_room)->people; spud; 
          spud = spud->next_in_room) {
-        if ((CAN_SEE(ch, spud))
-            && (!IS_SET(spud->specials.affected_by, AFF_HIDE))
-            && (spud != ch)) {
+        if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
                 sprintf(buf, "%30s : right here\n\r",
                         spud->player.short_descr);
@@ -5165,9 +5163,7 @@ void do_spot(struct char_data *ch, char *argument, int cmd)
                 rm = real_roomp(rm)->dir_option[i]->to_room;
                 for (spud = real_roomp(rm)->people; spud;
                      spud = spud->next_in_room) {
-                    if ((CAN_SEE(ch, spud))
-                        &&
-                        (!(IS_SET(spud->specials.affected_by, AFF_HIDE)))) {
+                    if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE)) {
                         if (IS_NPC(spud)) {
                             sprintf(buf, "%30s : %s %s\n\r",
                                     spud->player.short_descr,
@@ -5313,9 +5309,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
      */
     for (spud = real_roomp(ch->in_room)->people; spud;
          spud = spud->next_in_room) {
-        if ((CAN_SEE(ch, spud))
-            && (!IS_SET(spud->specials.affected_by, AFF_HIDE))
-            && (spud != ch)) {
+        if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE) && spud != ch) {
             if (IS_NPC(spud)) {
                 sprintf(buf, "You sense a %s aura here coming from %s.\n\r",
                         PowerLevelDesc(CalcPowerLevel(spud)),
@@ -5338,9 +5332,7 @@ void do_scan(struct char_data *ch, char *argument, int cmd)
                 rm = real_roomp(rm)->dir_option[i]->to_room;
                 for (spud = real_roomp(rm)->people; spud;
                      spud = spud->next_in_room) {
-                    if ((CAN_SEE(ch, spud)) &&
-                        (!(IS_SET(spud->specials.affected_by, AFF_HIDE))))
-                    {
+                    if (CAN_SEE(ch, spud) && !IS_AFFECTED(spud, AFF_HIDE)) {
                         if (IS_NPC(spud)) {
                             sprintf(buf, "You sense a %s aura %s %s.\n\r",
                                     PowerLevelDesc(CalcPowerLevel(spud)),
