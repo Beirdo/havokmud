@@ -2152,14 +2152,14 @@ dlog("in do_throw");
 
 void do_style(struct char_data *ch, char *argument, int cmd) {
 	char style[128], temp[128],buf[254],buffer[MAX_STRING_LENGTH +30];
-	int x;
+	int x=0;
 	int found=0;
 	extern struct skillset styleskillset[];
 
   	only_argument(argument, style);
 
 	if(!*style) { /* If no style, list all styles and how good*/
-		send_to_char("You currently know the following fighting styles.\n\r",ch);
+		sprintf(buffer,"You currently know the following fighting styles.\n\r");
   		while(styleskillset[x].level != -1) {
   			if (IS_SET(ch->skills[styleskillset[x].skillnum].flags,SKILL_KNOWN)) {
   				sprintf(buf,"[%-2d] %-30s %-15s",styleskillset[x].level,
@@ -2175,9 +2175,8 @@ void do_style(struct char_data *ch, char *argument, int cmd) {
   			x++;
 		}
 		page_string(ch->desc, buffer, 1);
-		return;
 		send_to_char("To choose a fighting style, type '$c000Wstyle <style name>$c000w'\n\r",ch);
-		ch_printf(ch,"You are currently fighting $c000W%s$c000w.",fight_styles[ch->style]);
+		ch_printf(ch,"You are currently fighting $c000W%s$c000w.\n\r",fight_styles[ch->style]);
 		return;
 	} else {
 		while (styleskillset[x].level != -1) {

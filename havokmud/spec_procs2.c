@@ -1466,7 +1466,7 @@ int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH],skillname[254];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0,charge = 0,skillnum = 0; //while loop
 	struct char_data *guildmaster;
 
@@ -1521,6 +1521,7 @@ int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else { /* includes arg.. */
+			x=0;
 			if (HasClass(ch, CLASS_WARRIOR)) {
 				while (warninjaskills[x].level != -1) {
 					if(is_abbrev(arg,warninjaskills[x].name)) {
@@ -3474,6 +3475,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 				i++;
 			}
 		} else { /* includes arg.. */
+			x=0;
 			while (loreskills[x].level != -1) {
 				if(is_abbrev(arg,loreskills[x].name)) {
 					if(loreskills[x].level > GetMaxLevel(ch)) {
@@ -3680,7 +3682,7 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0,charge = 0; //while loop
 
 #if 1
@@ -3722,6 +3724,7 @@ int archer_instructor(struct char_data *ch, int cmd, char *arg, struct char_data
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (archerskills[x].level != -1) {
 				if(is_abbrev(arg,archerskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(archerskills[x].level > GetMaxLevel(ch)) {
@@ -3772,7 +3775,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -3831,6 +3834,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 				page_string(ch->desc, buffer, 1);
 				return(TRUE);
 			} else {
+				x=0;
 				while (monkskills[x].level != -1) {
 					if(is_abbrev(arg,monkskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 						if(monkskills[x].level > GET_LEVEL(ch,MONK_LEVEL_IND)) {
@@ -3913,6 +3917,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 				page_string(ch->desc, buffer, 1);
 				return(TRUE);
 			} else {
+				x=0;
 				while (warmonkskills[x].level != -1) {
 					if(is_abbrev(arg,warmonkskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 						if(warmonkskills[x].level > GET_LEVEL(ch,WARRIOR_LEVEL_IND)) {
@@ -3981,7 +3986,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -4039,6 +4044,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (druidskills[x].level != -1) {
 				if(is_abbrev(arg,druidskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(druidskills[x].level > GET_LEVEL(ch,DRUID_LEVEL_IND)) {
@@ -5526,7 +5532,7 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -5580,6 +5586,7 @@ int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (barbskills[x].level != -1) {
 				if(is_abbrev(arg,barbskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(barbskills[x].level > GET_LEVEL(ch,BARBARIAN_LEVEL_IND)) {
@@ -5633,7 +5640,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -5687,6 +5694,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (rangerskills[x].level != -1) {
 				if(is_abbrev(arg,rangerskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(rangerskills[x].level > GET_LEVEL(ch,RANGER_LEVEL_IND)) {
@@ -5874,7 +5882,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -5928,6 +5936,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (psiskills[x].level != -1) {
 				if(is_abbrev(arg,psiskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(psiskills[x].level > GET_LEVEL(ch,PSI_LEVEL_IND)) {
@@ -5980,7 +5989,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH];
 	static int percent = 0;
-	static int x; //for loop
+	static int x=0; //for loop
 	int i = 0; //while loop
 
 #if 1
@@ -6034,6 +6043,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 			page_string(ch->desc, buffer, 1);
 			return(TRUE);
 		} else {
+			x=0;
 			while (paladinskills[x].level != -1) {
 				if(is_abbrev(arg,paladinskills[x].name)) {  //!str_cmp(arg,n_skills[x])){
 					if(paladinskills[x].level > GET_LEVEL(ch,PALADIN_LEVEL_IND)) {

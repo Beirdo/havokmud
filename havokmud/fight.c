@@ -1635,72 +1635,38 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 				nr=dice(1,fight_messages[i].number_of_attacks);
 				for(j=1,messages=fight_messages[i].msg;(j<nr)&&(messages);j++)
 					messages=messages->next;
-	/* fixed damage displays for spells/backstab/etc, Lennya 20030326 */
+/* fixed damage displays for spells/backstab/etc, Lennya 20030326 */
 					if (!IS_NPC(v) && (GetMaxLevel(v) > MAX_MORT)) {
 						sprintf(chbuf,"%s",messages->god_msg.attacker_msg);
 						sprintf(victbuf,"%s",messages->god_msg.victim_msg);
 						sprintf(rmbuf,"%s",messages->god_msg.room_msg);
-//						act(messages->god_msg.attacker_msg,
-//							  FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-//						act(messages->god_msg.victim_msg,
-//							  FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-//						act(messages->god_msg.room_msg,
-//							  FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
 					} else if (dam > 0) {
 						if (GET_POS(v) == POSITION_DEAD) {
 							sprintf(chbuf,"%s",messages->die_msg.attacker_msg);
 							sprintf(victbuf,"%s",messages->die_msg.victim_msg);
 							sprintf(rmbuf,"%s",messages->die_msg.room_msg);
-//							act(messages->die_msg.attacker_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-//							act(messages->die_msg.victim_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-//							act(messages->die_msg.room_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
 						} else {
 							sprintf(chbuf,"%s",messages->hit_msg.attacker_msg);
 							sprintf(victbuf,"%s",messages->hit_msg.victim_msg);
 							sprintf(rmbuf,"%s",messages->hit_msg.room_msg);
-//							act(messages->hit_msg.attacker_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-//							act(messages->hit_msg.victim_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-//							act(messages->hit_msg.room_msg,
-//								FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
 						}
 					/* dam >0 */
 					} else if (dam <= 0) {
 						sprintf(chbuf,"%s",messages->miss_msg.attacker_msg);
 						sprintf(victbuf,"%s",messages->miss_msg.victim_msg);
 						sprintf(rmbuf,"%s",messages->miss_msg.room_msg);
-//						act(messages->miss_msg.attacker_msg,
-//							FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-//						act(messages->miss_msg.victim_msg,
-//							FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-//						act(messages->miss_msg.room_msg,
-//							FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-					} /* dam == 0 */
+					}
+					/* add the damage display for imms and legends */
+					if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+						sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
+						strcat(chbuf,dambuf);
+						sprintf(dambuf,"");
+					}
+					act(chbuf,FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+					act(victbuf,FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+					act(rmbuf,FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
 				} /* fight messages == atk type */
 			}
-			/* add the damage display for imms and legends */
-			if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
-//				if (dam <= 0) {
-//					sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
-//				} else {
-					sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
-//				}
-				strcat(chbuf,dambuf);
-				sprintf(dambuf,"");
-			}
-			/* send the messages */
-			act(chbuf,FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-			act(victbuf,FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-			act(rmbuf,FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-			/* clear out the buffers */
-//			sprintf(chbuf,"");
-//			sprintf(victbuf,"");
-//			sprintf(rmbuf,"");
-
 		}
 
 		switch (GET_POS(v)) {

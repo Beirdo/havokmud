@@ -5622,6 +5622,7 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
 		if ((r_num = real_object(GRAYSWANDIR)) >= 0) {
 			object = read_object(r_num, REAL);
 			v_num1 = obj_index[object->item_number].virtual;
+			extract_obj(object);
 		}
 
 		if (!ch->equipment[HOLD]) return(FALSE);
@@ -5695,35 +5696,33 @@ int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, 
      		SetVictFighting(ch, victim);
      		SetCharFighting(ch, victim);
 
-		percent = number(1,101); /* 101% is a complete failure */
+		percent = number(1,130); /* Don't make it too reliable -Lennya */
   		percent -= dex_app[GET_DEX(ch)].reaction*10;
   		percent += dex_app[GET_DEX(victim)].reaction*10;
 
   		if (percent > ch->skills[SKILL_BASH].learned) {
-    			if (GET_POS(victim) > POSITION_DEAD) {
-		            	act("$c0009You wildly swings $p at $N and fall over.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
-        			act("$c0009$n wildly swings $p at you and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_VICT);
-	            		act("$c0009$n wildly swings $p at $N and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
-      				GET_POS(ch) = POSITION_SITTING;
-    			}
-    			LearnFromMistake(ch, SKILL_BASH, 0, 90);
-    			WAIT_STATE(ch, PULSE_VIOLENCE*3);
-  		}
-
-		else {
-    			if (GET_POS(victim) > POSITION_DEAD) {
-				act("$c0009You give $N a solid hit with $p that knocks them to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
+    		if (GET_POS(victim) > POSITION_DEAD) {
+			    act("$c0009You wildly swings $p at $N and fall over.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
+        		act("$c0009$n wildly swings $p at you and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_VICT);
+	            act("$c0009$n wildly swings $p at $N and falls over.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
+      			GET_POS(ch) = POSITION_SITTING;
+    		}
+    		LearnFromMistake(ch, SKILL_BASH, 0, 90);
+    		WAIT_STATE(ch, PULSE_VIOLENCE*3);
+  		} else {
+    		if (GET_POS(victim) > POSITION_DEAD) {
+				act("$c0009You give $N a solid hit with $p that knocks $M to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_CHAR);
 				act("$c0009$n gives you a solid hit with $p that knocks you to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_VICT);
-				act("$c0009$n gives $N a solid hit with $p that knocks them to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
-      				GET_POS(victim) = POSITION_SITTING;
+				act("$c0009$n gives $N a solid hit with $p that knocks $M to the ground.", FALSE, ch, ch->equipment[HOLD], victim, TO_NOTVICT);
+      			GET_POS(victim) = POSITION_SITTING;
 				WAIT_STATE(victim, PULSE_VIOLENCE*2);
-         			GET_POS(victim) = POSITION_SITTING;
-    			}
+         		GET_POS(victim) = POSITION_SITTING;
+    		}
   		}
-	  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+		WAIT_STATE(ch, PULSE_VIOLENCE*2);
+	} else {
+		return(FALSE);
 	}
-	else return(FALSE);
-
 	return(TRUE);
 }
 

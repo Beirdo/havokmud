@@ -876,7 +876,7 @@ struct room_data
 #define AFF2_HASTE             BV09//0x00000200
 #define AFF2_SLOW			   BV10//0x00000400
 #define AFF2_BLADE_BARRIER     BV11//0x00000800
-#define AFF2_STYLE_BERSERK     BV12
+#define AFF2_STYLE_BERSERK     BV12//0x00001000
 
 
 /* Flag spells as brewable or single class */

@@ -210,9 +210,12 @@ if (!ch)
     return;
   } else if (loc == APPLY_SPELL2 || loc==APPLY_BV2) {
     if (add) {
-      SET_BIT(ch->specials.affected_by2, mod);
+		/* do em both? this creates odd combinations, may not be the solution */
+      SET_BIT(ch->specials.affected_by2, bitv);//mod); /* bitv takes care of the spells fomr cast */
+      SET_BIT(ch->specials.affected_by2, mod); /* mod takes care fo the spells from items */
     } else {
-      REMOVE_BIT(ch->specials.affected_by2, mod);//bitv);
+      REMOVE_BIT(ch->specials.affected_by2, bitv);//mod);
+      REMOVE_BIT(ch->specials.affected_by2, mod);
     }
     return;
   } else {
