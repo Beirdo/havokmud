@@ -4177,6 +4177,12 @@ void show_skills(struct char_data *ch, char *buffer,
 void            do_mobTell2(struct char_data *ch,
                             struct char_data *mob, char *sentence);
 
+#if defined( __CYGWIN__ )
+/* Since stupid cygwin doesn't define this in the standard place */
+char *crypt(const char *key, const char *salt);
+#endif
+
+
 /*
  * TOTALLY break log() if someone tries to use it!  Use Log()
  */
