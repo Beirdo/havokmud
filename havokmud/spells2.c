@@ -4103,6 +4103,7 @@ void cast_globe_darkness( byte level, struct char_data *ch, char *arg,
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_POTION:
   case SPELL_TYPE_WAND:
   case SPELL_TYPE_STAFF:
     spell_globe_darkness(level, ch, tar_ch, 0);

@@ -2720,7 +2720,7 @@ dlog("in do_who");
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD]$c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)
-		sprintf(tbuf+strlen(tbuf), "(invis %d)",person->invis_level);
+		sprintf(tbuf+strlen(tbuf), " (invis %d)",person->invis_level);
 	    sprintf(tbuf+strlen(tbuf),"\n\r");
 	    if (strlen(buffer)+strlen(tbuf) < (MAX_STRING_LENGTH*2)-512)
 	      strcat(buffer,tbuf);

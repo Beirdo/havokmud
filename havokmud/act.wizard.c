@@ -6709,13 +6709,13 @@ dlog("in do_setsound");
 	}
 }
 
-#define GOODIE_START 701
-#define GOODIE_BAG   720
+#define GOODIE_START 718 //3931
+#define GOODIE_BAG   720 //3960
 void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 {
 	struct obj_data *obj;
 	struct obj_data *bag;
-	char buf[254];
+	char buf[254], tmp_shrt[254];
 	int i = 0,j = 0;
 
 	if(!ch)
@@ -6723,10 +6723,19 @@ void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 
 	if(!IS_IMMORTAL(ch))
 		return;
+	if(GOODIE_START>= GOODIE_BAG) {
+		log("Bad definitions of goodies and bag in do_goodiebag");
+		return;
+	}
 
 	/* load the bag */
-	if(bag = read_object(GOODIE_BAG, VIRTUAL))
+	if(bag = read_object(GOODIE_BAG, VIRTUAL)) {
 		obj_to_char(bag, ch);
+	} else {
+		log("Trying to load non-existent bag in do_goodiebag");
+		return;
+	}
+
 	if(GET_ITEM_TYPE(bag) != ITEM_CONTAINER) {
 		log("Bag item in goodiebag is not a container!");
 		return;
@@ -6746,14 +6755,25 @@ void do_goodiebag(struct char_data *ch, char *argument, int cmd)
 	bag->name = strdup(buf);
 
 	/* loop start -> end */
-	for (i = GOODIE_START;i < GOODIE_BAG; i++) {
+	for (i = GOODIE_START;i <= (GOODIE_BAG-1); i++) {
 		/* if item, load & place item, 5x */
-		for(j = 0; j < 5; j++) {
+		for(j = 0; j <= 4; j++) {
 			if(obj = read_object(i, VIRTUAL)) {
+//				if(obj->short_description) {
+//					sprintf(tmp_shrt,"has description %s",obj->short_description);
+//					sprintf(buf,", courtesy of %s",GET_NAME(ch));
+//					strcat(tmp_shrt,buf);
+//					free(obj->short_description);
+//					strcpy(obj->short_description,tmp_shrt);
+//					sprintf(tmp_shrt,"");
+//					sprintf(buf,"");
+//log(tmp_shrt);
+//				}
 				obj_to_obj(obj, bag);
 			}
 		}
 	}
+
 	sprintf(buf,"%s just loaded a Goodiebag",GET_NAME(ch));
 	log(buf);
 }
