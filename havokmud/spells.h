@@ -416,7 +416,8 @@ struct spell_info_type
 	byte min_level_paladin;
 	byte min_level_ranger;
 	byte min_level_psi;
-	sh_int targets;         /* See below for use with TAR_XXX  */
+	       byte min_level_bard;
+	       sh_int targets;         /* See below for use with TAR_XXX  */
         sh_int spellfail;       /* modifier for spell failure      */
 };
 

@@ -7017,3 +7017,8 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
   return (FALSE);
 }
 
+
+
+
+
+

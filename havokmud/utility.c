@@ -122,6 +122,9 @@ int GetItemClassRestrictions(struct obj_data *obj)
     total += CLASS_DRUID;
   }
 
+  if (IS_SET(obj->obj_flags.extra_flags, ITEM_ANTI_BARD)) {
+    total += CLASS_BARD;
+  }
   return(total);
 
 }

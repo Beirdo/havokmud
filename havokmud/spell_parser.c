@@ -1819,8 +1819,12 @@ if ((cmd == 84 || cmd == 370) && HasClass(ch,CLASS_SORCERER) &&
 	    (spell_info[spl].min_level_psi >
 	     GET_LEVEL(ch,PSI_LEVEL_IND)) &&
 
+	    (spell_info[spl].min_level_bard >
+	     GET_LEVEL(ch, BARD_LEVEL_IND)) &&
+
 	    (spell_info[spl].min_level_druid >
 	     GET_LEVEL(ch, DRUID_LEVEL_IND))) {
+
 	  send_to_char("Sorry, you can't do that.\n\r", ch);
 	  return;
 	}
@@ -2030,7 +2034,10 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 		case 	RANGER_LEVEL_IND:if (EqWBits(ch,ITEM_ANTI_RANGER))
 					max+=10; /* 20% harder to cast spells */
 					break;
-		default:if (EqWBits(ch,ITEM_ANTI_MAGE))
+	        case    BARD_LEVEL_IND:if(EqWBits(ch, ITEM_ANTI_BARD))
+	          max+=10;
+		break;
+	default:if (EqWBits(ch,ITEM_ANTI_MAGE))
 			max+=10; /* 20% harder to cast spells */
 			break;
 		} /* end switch */

@@ -62,7 +62,7 @@ typedef struct alias_type {
 #define PREP_ROOM_EXITS 13
 #define ARENA_ENTRANCE 39900
 
-#define MAX_CLASS 11
+#define MAX_CLASS 12
 #define OLD_MAX_CLASS 4
 
 #define ABS_MAX_CLASS 20   	  /* USER FILE, DO NOT CHANGE! */

@@ -121,7 +121,9 @@ int mana_limit(struct char_data *ch)
   if (HasClass(ch, CLASS_MONK)) {
     max += 100;
   }
-
+  if (HasClass(ch,CLASS_BARD)) {
+    max +=100;
+  }
   max /= HowManyClasses(ch);
 
 /*
@@ -581,7 +583,12 @@ void advance_level(struct char_data *ch, int class)
     else
       add_hp += 2;
     break;
-
+  case BARD_LEVEL_IND:
+    if(GET_LEVEL(ch,BARD_LEVEL_IND) < 15)
+      add_hp += number (2,10);
+    else
+      add_hp += 2;
+    break;
   }
 
   add_hp /= HowManyClasses(ch);

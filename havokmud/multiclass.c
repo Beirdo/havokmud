@@ -54,7 +54,7 @@ int OnlyClass( struct char_data *ch, int class)
 {
   int i;
 
-  for (i=1;i<=CLASS_PSI; i*=2) {
+  for (i=1;i<=CLASS_BARD; i*=2) {
     if (GetClassLevel(ch, i) != 0)
       if (i != class)
 	return(FALSE);
@@ -72,7 +72,7 @@ int HasClass(struct char_data *ch, int class)
  if (!IS_SET(class, CLASS_MONK) || !IS_SET(class, CLASS_DRUID) || 
      !IS_SET(class,CLASS_BARBARIAN) || !IS_SET(class, CLASS_SORCERER) ||
      !IS_SET(class,CLASS_PALADIN) || !IS_SET(class,CLASS_RANGER) ||
-     !IS_SET(class,CLASS_PSI)) 
+     !IS_SET(class,CLASS_PSI) || !IS_SET(class,CLASS_BARD)) 
       return(TRUE);
       /* but is seems to be needed  */
   } /* was NPC */
@@ -134,6 +134,9 @@ int HowManyClasses(struct char_data *ch)
 
     if (IS_SET(ch->player.class, CLASS_PSI))
       tot++;
+    
+    if(IS_SET(ch->player.class, CLASS_BARD))
+      tot++;
 
    }
   
@@ -170,7 +173,8 @@ int BestFightingClass(struct char_data *ch)
    return(MAGE_LEVEL_IND);
  if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) 
    return(SORCERER_LEVEL_IND);
- 
+ if (GET_LEVEL(ch, BARD_LEVEL_IND))
+   return (BARD_LEVEL_IND);
   log("Massive error.. character has no recognized class.");
   log(GET_NAME(ch));
   assert(0);
@@ -183,6 +187,8 @@ int BestThiefClass(struct char_data *ch)
 
  if (GET_LEVEL(ch, THIEF_LEVEL_IND)) 
    return(THIEF_LEVEL_IND);
+ if (GET_LEVEL(ch,BARD_LEVEL_IND))
+     return(BARD_LEVEL_IND);
  if (GET_LEVEL(ch, MONK_LEVEL_IND)) 
    return(MONK_LEVEL_IND);
  if (GET_LEVEL(ch, PSI_LEVEL_IND)) 
@@ -230,7 +236,8 @@ int BestMagicClass(struct char_data *ch)
    return(PALADIN_LEVEL_IND);   
  if (GET_LEVEL(ch, PSI_LEVEL_IND)) 
    return(PSI_LEVEL_IND);   
-
+ if (GET_LEVEL(ch, BARD_LEVEL_IND))
+   return(BARD_LEVEL_IND);
  if (GET_LEVEL(ch, RANGER_LEVEL_IND)) 
    return(RANGER_LEVEL_IND);   
   
@@ -348,7 +355,9 @@ void StartLevels(struct char_data *ch)
   if (IS_SET(ch->player.class, CLASS_PSI)) {
     advance_level(ch, PSI_LEVEL_IND);
   }  
-
+  if (IS_SET(ch->player.class, CLASS_PSI)) {
+    advance_level(ch, BARD_LEVEL_IND);
+  }
 }
 
 
@@ -396,7 +405,7 @@ int BestClassBIT(struct char_data *ch)
    case    PALADIN_LEVEL_IND :return(256);break;      
    case    RANGER_LEVEL_IND :return(512);break;   
    case    PSI_LEVEL_IND: return(1024); break;
-   
+ case    BARD_LEVEL_IND:  return(2048); break;
    default : { 
               log("Error in BestClassBIT"); 
               break; }

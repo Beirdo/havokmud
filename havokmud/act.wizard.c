@@ -3349,7 +3349,7 @@ dlog("in do_advance");
 	argument = one_argument(argument, class);
 
 	if (!*class) {
-	  send_to_char("Supply a class: M C W T D K B P R I S\n\r",ch);
+	  send_to_char("Supply a class: M C W T D K B P R I S A\n\r",ch);
 	  return;
 	}
 
@@ -3409,6 +3409,10 @@ dlog("in do_advance");
 	case 'S' :
 	case 's' :
 	  lin_class = SORCERER_LEVEL_IND;
+	  break;
+	case 'A' :
+	case 'a' :
+	  lin_class = BARD_LEVEL_IND;
 	  break;
 
 	default:

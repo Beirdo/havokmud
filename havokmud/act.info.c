@@ -2267,17 +2267,17 @@ if (GetMaxLevel(ch)>MAX_MORT ||
   (titles[MONK_LEVEL_IND][GET_LEVEL(ch, MONK_LEVEL_IND)+1].exp)-GET_EXP(ch));
   else
    sprintf(buf2,"K:0 ");
-  strcat(buf,buf2);
-  }
-  /* New Bard Class
-    if (HasClass(ch, CLASS_BARD)) {
-    if (GetMaxLevel(ch)<MAX_IMMORT)
-    sprintf(buf2,"BD:$c0015%ld$c0005 ",(titles[BARD_LEVEL_IND][GET_LEVEL(ch, BARD_LEVEL_IND)+1].exp)-GET_EXP(ch));
-    else
-    sprintf(buf2,"BD:0 ");
     strcat(buf,buf2);
-    }
-  */
+  }
+  /* New Bard Class */
+  if (HasClass(ch, CLASS_BARD)) {
+    if (GetMaxLevel(ch)<MAX_IMMORT)
+      sprintf(buf2,"BD:$c0015%ld$c0005 ",(titles[BARD_LEVEL_IND][GET_LEVEL(ch, BARD_LEVEL_IND)+1].exp)-GET_EXP(ch));
+    else
+      sprintf(buf2,"BD:0 ");
+    strcat(buf,buf2);
+  }
+  
   if (HasClass(ch, CLASS_BARBARIAN)) {
     if (GetMaxLevel(ch)<MAX_IMMORT)
   sprintf(buf2,"B:$c0015%ld$c0005 ",
@@ -2374,13 +2374,13 @@ if (GetMaxLevel(ch)>MAX_MORT ||
     sprintf(buf2, " PS:$c0015%d$c0005", GET_LEVEL(ch, PSI_LEVEL_IND));
     strcat(buf, buf2);
   }  
-  /*
-    if (HasClass(ch, CLASS_BARD)) {
+  
+  if (HasClass(ch, CLASS_BARD)) {
     sprintf(buf2, " BD:$c0015%d$c0005", GET_LEVEL(ch, BARD_LEVEL_IND));
     //, GET_LEVEL(ch, BARD_LEVEL_IND));
     strcat(buf, buf2);
-    }
-  */
+  }
+    
   strcat(buf,"\n\r");
   send_to_char(buf,ch);
   
@@ -2814,11 +2814,11 @@ dlog("in do_who");
 	    }
 	  } else {
 	       char levels[40]="", classes[20]="";
-	       char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps"};
+	       char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
 	       int i,total,classn; long bit;
 #if 1
 	    if(!IS_IMMORTAL(person)) {
-	      for(bit=1,i=total=classn=0;i<PSI_LEVEL_IND+1;i++, bit<<=1) {
+	      for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
 		if(HasClass(person,bit)) {
 /*                  if(strlen(levels)!=0) strcat(levels,"/");
 		  sprintf(levels+strlen(levels),"%d",person->player.level[i]);*/
@@ -4763,7 +4763,7 @@ dlog("in do_whoarena");
 #if 1
 	   if(!IS_IMMORTAL(person)) {
          char classes[20]="";
-	      for(bit=1,i=total=classn=0;i<PSI_LEVEL_IND+1;i++, bit<<=1) {
+	      for(bit=1,i=total=classn=0;i<BARD_LEVEL_IND+1;i++, bit<<=1) {
 
 		if(HasClass(person,bit)) {
 /*                  if(strlen(levels)!=0) strcat(levels,"/");

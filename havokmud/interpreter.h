@@ -1,6 +1,6 @@
 
 #define MENU         \
-"\n\r$c0009Welcome $c0009to '$c0015Havok $c0015MUD$c0009'\n\r\n\
+"\n\r$c0009Welcome $c0009to -=$c0015Havok $c0015MUD$c0009=-\n\r\n\
 $c00150) $c0012Exit from Havok Mud.\n\r\
 $c00151) $c0012Enter the game at Karsynia\n\r\
 $c00152) $c0012Enter description.\n\r\

@@ -641,9 +641,12 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       return;
     }
   }
-
-
-  rp = real_roomp(ch->in_room);
+ //14 is for shields..   (Bards can't wear shields);  (GH)
+  if (keyword == 14 && !IS_IMMORTAL(ch) &&
+      HasClass(ch,CLASS_BARD)){
+    send_to_char("Bards can't wear shields!!\n\r",ch);
+    return;
+  }
 
   if (!IsHumanoid(ch)) {
     if ((keyword != 13) || (!HasHands(ch))) {
@@ -651,6 +654,7 @@ if (IS_SET(obj_object->obj_flags.extra_flags,ITEM_ONLY_CLASS)) {
       return;
     }
   }
+  rp = real_roomp(ch->in_room);
 
   switch(keyword) {
   case 0: {  /* LIGHT SOURCE */

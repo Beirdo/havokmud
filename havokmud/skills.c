@@ -17,13 +17,13 @@ void do_find_traps( struct char_data *ch, char *arg, int cmd);
 void do_find_food( struct char_data *ch, char *arg, int cmd);
 void do_find_water( struct char_data *ch, char *arg, int cmd);
 
-
+struct spell_info_type spell_info[MAX_SPL_LIST];
 extern char *dirs[];
 extern struct char_data *character_list;
 extern struct room_data *world;
 extern struct dex_app_type dex_app[];
 extern long SystemFlags;
-
+extern char *spells[];
 struct hunting_data {
   char	*name;
   struct char_data **victim;
@@ -3712,246 +3712,145 @@ void do_sending( struct char_data *ch, char *argument, int cmd)
     act(buf, TRUE, ch, 0, target, TO_CHAR);
 }
 
+
 /*
-** BREW for Mages and Clerics, done by Pentak 
+** BREW for Mages and Clerics, done by Greg Hovey..
 */
 
-#define SILVER_POTION     3057     //Cure Light
-#define GOLD_POTION       3056     //Cure Serious
-#define ELECTRUM_POTION    761     //Cure Critic
-#define BRONZE_POTION      762     //Critic+Light
-#define IRON_POTION        763     //Critic+Serious
-#define STEEL_POTION       764     //2x Critic
-#define PLATINUM_POTION    765     //2x Critic+Serious
-#define MITHRIL_POTION     766     //3x Critic
-#define HEAL_POTION       9611     //heal
-
-#define WHITE_POTION      3055     //Remove Poison
-#define BLK_GRN_POTION    9612     //Refresh
-#define YELLOW_POTION      760     //Remove Curse
-#define PURPLE_POTION     4050     //Sanctuary
-#define TS_POTION        36899     //Potion of True Sight
-
-#define WARM_POTION        767    //Dtct Invis
-#define BOILING_POTION     768    //Dtct Invis,Magic
-#define WHITE_STEAM_POTION 769    //Dtct Invis,Magic,Good
-#define RED_STEAM_POTION   770    //Dtct Invis,Magic,Evil
-#define EMPTY_POTION       771    //Invisibility
-#define BLUE_POTION       9610    //Fly
-#define CRIMSON_POTION   18255    //Strength
-
+#if 1
 void do_brew( struct char_data *ch, char *argument, int cmd)
 {
-struct obj_data *potion;
-int r_num = 0;
-int potiontype = -1;
-if (!HasClass(ch, CLASS_CLERIC|CLASS_MAGIC_USER|CLASS_SORCERER))
-   {send_to_char("Alas, you can only dream of brewing your own potions.\n\r",ch);
-    return;
-   }
-if (!ch->skills)
-   {send_to_char("You don't seem to have any skills.\n\r",ch);
-    return;
-   }
-if (!(ch->skills[SKILL_BREW].learned))
-   {send_to_char("You haven't been properly trained in the art of brewing.\n\r",ch);
-    return;
-   }
-if (!argument)
-   {send_to_char("What would you like to brew?\n\r",ch);
-    return;
-   }
-/*Put in some kind of component check here...*/
-
-/*Set the kind of potion they are after*/
- if(!strcmp(argument,"cure") || !strcmp(argument,"heal"))
-   {
-   if(!HasClass(ch, CLASS_CLERIC))
-     {
-      send_to_char("You don't know much about healing wounds.\n\r",ch);
-      return;
-     }
-   
-   if(GetClassLevel(ch, CLASS_CLERIC) < 11)
-     {
-     send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-     return;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 17)
-     {potiontype = SILVER_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 21)
-     {potiontype = GOLD_POTION;
-     }else 
-   if(GetClassLevel(ch, CLASS_CLERIC) < 29)
-     {potiontype = ELECTRUM_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 35)
-     {potiontype = BRONZE_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 41)
-     {potiontype = IRON_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 47)
-     {potiontype = STEEL_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) < 50)
-     {potiontype = PLATINUM_POTION;
-     }else
-   if(GetClassLevel(ch, CLASS_CLERIC) == 50)
-     {potiontype = MITHRIL_POTION;
-     }else    
-   if(GetClassLevel(ch, CLASS_CLERIC) >= LOW_IMMORTAL)
-     {potiontype = HEAL_POTION;
-     }    
-   }else/*End of Cure*/
-
- if(!strcmp(argument, "remove poison"))
-   {if(!HasClass(ch, CLASS_CLERIC)) 
-      {send_to_char("You have no idea how to neutralize poisons.\n\r", ch);
-      return;
-      }
-    if(GetClassLevel(ch, CLASS_CLERIC) < 27)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = WHITE_POTION;
-   }else /*end remove poison*/
- if(!strcmp(argument, "remove curse"))
-   {if(!HasClass(ch, CLASS_CLERIC)) 
-      {send_to_char("Your education didn't cover curses.\n\r", ch);
-      return;
-      }
-    if(GetClassLevel(ch, CLASS_CLERIC) < 33)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = YELLOW_POTION;
-   }else/*end remove curse*/
-
- if(!strcmp(argument, "refresh"))
-   {if(!HasClass(ch, CLASS_CLERIC)) 
-      {send_to_char("You simply cannot work out the arcane formulae necessary for this potion.\n\r", ch);
-       return;
-      }
-    if(GetClassLevel(ch, CLASS_CLERIC) < 27)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = BLK_GRN_POTION;
-   }else/*end refresh*/
-
-
- if(!strcmp(argument, "detect"))
-   {if(!HasClass(ch, CLASS_MAGIC_USER))
-      {send_to_char("Your deity isn't going to help you with this kind of potion.\n\r",ch);
-       return;
-      }
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 11)
-      {send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r", ch);
-       return;
-      }else
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 17)
-      { 
-      potiontype = WARM_POTION;
-      }else
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 25)
-      {
-      potiontype = BOILING_POTION;
-      }else
-    if(ch->specials.alignment > -350)  /*Good and Neutral get dtct evil*/
-      {
-       potiontype = RED_STEAM_POTION;
-      }else                        /*Evil gets dtct good*/
-      {
-       potiontype = WHITE_STEAM_POTION;
-      }
-   }else
-
-
- if(!strcmp(argument, "invis"))
-   {if(!HasClass(ch, CLASS_MAGIC_USER))
-      {send_to_char("Your deity isn't going to help you with this kind of potion.\n\r", ch);
-       return;
-      }
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 15)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = EMPTY_POTION;
-   }else
-
-
- if(!strcmp(argument, "fly"))
-   {if(!HasClass(ch, CLASS_MAGIC_USER))
-      {send_to_char("Your deity isn't going to help you with this kind of potion.", ch);
-       return;
-      }
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 20)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = BLUE_POTION;
-   }else
-
-
- if(!strcmp(argument, "strength"))
-   {if(!HasClass(ch, CLASS_MAGIC_USER))
-      {send_to_char("Your deity isn't going to help you with this kind of potion.", ch);
-       return;
-      }
-    if(GetClassLevel(ch, CLASS_MAGIC_USER) < 30)
-      {
-       send_to_char("You are not experienced enough to attempt a potion of this difficulty.\n\r",ch);
-       return;
-      }
-    potiontype = CRIMSON_POTION;
-   }else
-
-
- if(!strcmp(argument, "true sight"))
-   {if(GetMaxLevel(ch) < LOW_IMMORTAL)
-      {send_to_char("That potion is much to complex for you.", ch);
-       return;
-      }else
-    potiontype = TS_POTION;
-   }else
- if(!strcmp(argument, "sanc"))
-   {if(GetMaxLevel(ch) < LOW_IMMORTAL)
-      {send_to_char("That potion is much too complex for you.", ch);
-       return;
-      }else
-    potiontype = PURPLE_POTION;
-   }else
-   {send_to_char("You don't possess a formula for that type of potion.",ch);
-    return;
-   }
-
- send_to_char("You carefully combine your potion and start to brew...\n\r",ch);
- /*act(blah blah to room)*/
- WAIT_STATE(ch, PULSE_VIOLENCE*8);
+  char buf[MAX_INPUT_LENGTH];
+  char buf2[MAX_INPUT_LENGTH];
+  char arg[MAX_INPUT_LENGTH];
+  struct obj_data *obj;
+  int sn = -1,x,slot = 0,percent = 0;
     
-if(ch->skills[SKILL_BREW].learned < number(1,101))
-  {
-  /*act(blah blha to room)*/
-  send_to_char("You realize the mixture is flawed and are forced to throw it out.\n\r",ch);
-  LearnFromMistake(ch, SKILL_BREW, 0, 95);
+  if(!((GetMaxLevel(ch) > 50) 
+       || OnlyClass(ch,CLASS_CLERIC) 
+       || OnlyClass(ch,CLASS_MAGIC_USER) 
+       || HasClass(ch,CLASS_SORCERER))){
+    send_to_char("Alas, you can only dream of brewing your own potions.\n\r"
+		 ,ch);
+    return;
+  }    
+  
+  if (!ch->skills) {
+    send_to_char("You don't seem to have any skills.\n\r",ch);
+    return;
+  }
+  if (!(ch->skills[SKILL_BREW].learned)) {
+    send_to_char("You haven't been properly trained in the art of brewing.\n\r"
+		 ,ch);
+    return;
+  }
+  if (!argument)  {
+    send_to_char("What would you like to brew?\n\r",ch);
+    return;
+  }
+  if((GET_MANA(ch) < 50 && GetMaxLevel(ch) < 50)) {
+    send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
+    return;
+  }
+  
+  argument = one_argument( argument, arg );
+  
+  if(!(obj = ch->equipment[17])){ /*holding=17*/
+    send_to_char("You must be holding a vial or potion.",ch);
+    return;
+  }
+  if (obj->obj_flags.type_flag!=ITEM_POTION) {
+    act("You can only brew potions.\n\r",FALSE,ch,0,0,TO_CHAR);
+    return;
+  }
+  //find spell number..
+  for(x = 0;x < 250;x++) {
+    if(is_abbrev(arg,spells[x])) {
+      sn = x;
+      break;
+    }
+  }
+  if(sn == -1) {  //no spell found?
+      send_to_char("Brew what??.\n\r",ch);
+      return;
+  }    
+  if(!ch->skills[sn].learned) {  //do you know that spell?
+    send_to_char("You don't know of this spell.\n\r",ch);
+    return;
+  }
+  /*check if defensive spell or self spell*/
+  
+  act("$n begins preparing a potion.",TRUE,ch, obj, NULL, TO_ROOM );
+  act("You start preparing a potion.",TRUE,ch,obj,NULL,TO_CHAR);
+  
+  if(!((GET_MANA(ch) < spell_info[sn].min_usesmana*3) || GetMaxLevel(ch) > 50)) {
+    send_to_char("You don't have enough mana to brew that spell.\n\r",ch);
+    return; 
+  } 
+  else     
+    if((GetMaxLevel(ch) < 50)) {
+      GET_MANA(ch) -= 50;
+    }
+  
+  //check available spell slots in potion..
+  
+  if(obj->obj_flags.value[1]==-1)
+    slot = 1;
+  else if(obj->obj_flags.value[2]==-1)
+    slot = 2;
+  else if(obj->obj_flags.value[3]==-1)
+    slot = 3;
+  else
+    slot = -1;
+   
+  if (IS_SET(spell_info[sn].targets, TAR_FIGHT_VICT|TAR_VIOLENT) 
+      || !IS_SET(spell_info[sn].targets, TAR_CHAR_ROOM)){
+    send_to_char("You can't brew that spell.\n\r",ch);
+    return;
+  }
+  /*switch (number(1,5)){
+    
+    }
+  */
+  if(ch->skills[SKILL_BREW].learned < 10 || slot == -1) {
+    WAIT_STATE(ch,PULSE_VIOLENCE*16);
+    act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_CHAR );
+    act( "$p explodes violently!",TRUE, ch, obj, NULL, TO_ROOM );
+    GET_HIT(ch) -= 50;//spell_info[sn].mana*4;
+    GET_MANA(ch)-= spell_info[sn].min_usesmana*3;
+    act("$n screams in pain as $p exploded on $m.",TRUE,ch,obj,NULL,TO_ROOM);
+    act("You scream in pain as $p explodes.",TRUE,ch,obj,NULL,TO_CHAR);
+    
+    extract_obj( obj );
+    
+    return;
   }else
-  {
+    {	
+      GET_MANA(ch)-= spell_info[sn].min_usesmana*3;
+      sprintf(buf, "You have imbued a new spell to %s.\n\r"
+	      , obj->short_description);
+      send_to_char( buf, ch );
+      send_to_char("The brew was a success!\n\r", ch);
+      
+      if(obj->short_description)
+	free(obj->short_description);
+      sprintf(buf,"%s","weird potion");
 
-   WAIT_STATE(ch,PULSE_VIOLENCE*16);
-   send_to_char("Success!", ch);
-   /*act(blah blah to room)*/
-     if((r_num = real_object(potiontype)) >= 0)
-        {potion = read_object(r_num,REAL);
-         obj_to_char(potion,ch);
-        }
-
-   return;
-  }/*end else*/
+      obj->short_description = strdup(buf);
+      if(obj->name)
+	free(obj->name);
+      
+      sprintf(buf,"%s","weird potion");
+      obj->name = strdup(buf);
+      if(obj->description)
+	free(obj->description);
+      sprintf(buf,"%s","A wierd coloured potion is on the ground.");
+      
+      obj->description = strdup(buf);	
+      obj->obj_flags.value[slot] = sn+1;  //set spell in slot..
+      WAIT_STATE(ch,PULSE_VIOLENCE*12);
+      
+      return;
+    }    
 } /*End Brew*/
+#endif
