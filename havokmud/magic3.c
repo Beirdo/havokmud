@@ -7,7 +7,7 @@
 #include "protos.h"
 
 /*
- * Extern structures 
+ * Extern structures
  */
 extern const struct race_type race_list[];
 extern struct room_data *world;
@@ -60,12 +60,12 @@ void            stop_follower(struct char_data *ch);
 #define FG_TEMPLATE 6
 
 /*
- * Extern procedures 
+ * Extern procedures
  */
 
 
 /*
- * druid spells 
+ * druid spells
  */
 
 void spell_tree_travel(int level, struct char_data *ch,
@@ -99,7 +99,7 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     int             found = 0;
 
     /*
-     * find the tree in the room 
+     * find the tree in the room
      */
     rp = real_roomp(ch->in_room);
     for (o = rp->contents; o; o = o->next_content) {
@@ -116,12 +116,12 @@ void spell_transport_via_plant(int level, struct char_data *ch,
     sprintf(name, "%s", arg);
 
     /*
-     * find the target tree 
+     * find the target tree
      */
     for (i = object_list; i; i = i->next) {
         if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
             /*
-             * we found a druid tree with the right name 
+             * we found a druid tree with the right name
              */
             obj = i;
             found = 1;
@@ -134,11 +134,11 @@ void spell_transport_via_plant(int level, struct char_data *ch,
         return;
     }
 #if 0
-    if (ITEM_TYPE(obj) != ITEM_TREE) { 
-        send_to_char("That tree is nowhere to be found.\n\r", ch); 
-        return; 
-    } 
-#endif     
+    if (ITEM_TYPE(obj) != ITEM_TREE) {
+        send_to_char("That tree is nowhere to be found.\n\r", ch);
+        return;
+    }
+#endif
 
     if (obj->in_room < 0) {
         send_to_char("That tree is nowhere to be found.\n\r", ch);
@@ -172,7 +172,7 @@ void spell_plant_gate(int level, struct char_data *ch,
     int             has_companions = 0;
     char            name[254];
     /*
-     * find the tree in the room 
+     * find the tree in the room
      */
 
     rp = real_roomp(ch->in_room);
@@ -189,12 +189,12 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     sprintf(name, "%s", arg);
     /*
-     * find the target tree 
+     * find the target tree
      */
     for (i = object_list; i; i = i->next) {
         if (isname(name, i->name) && ITEM_TYPE(i) == ITEM_TREE) {
             /*
-             * we found a druid tree with the right name 
+             * we found a druid tree with the right name
              */
             obj = i;
             break;
@@ -223,7 +223,7 @@ void spell_plant_gate(int level, struct char_data *ch,
 
     for (tch = real_roomp(ch->in_room)->people; tch; tch = tch2) {
         tch2 = tch->next_in_room;
-        if (in_group(tch, ch) && GET_POS(tch) > POSITION_SLEEPING && 
+        if (in_group(tch, ch) && GET_POS(tch) > POSITION_SLEEPING &&
             tch != ch) {
             act("$n holds open the magical gateway in $p and ushers you "
                 "through it.", FALSE, ch, o, tch, TO_VICT);
@@ -296,7 +296,7 @@ void spell_changestaff(int level, struct char_data *ch,
     struct char_data *t;
 
     /*
-     * player must be holding staff at the time 
+     * player must be holding staff at the time
      */
 
     if (!ch->equipment[HOLD]) {
@@ -343,8 +343,8 @@ void spell_changestaff(int level, struct char_data *ch,
 
         if (IS_PC(ch) || ch->master) {
             af.duration = follow_time(ch);
-           /* 
-            * num charges 
+           /*
+            * num charges
             */
             af.duration += s->obj_flags.value[2];
             af.modifier = 0;
@@ -361,7 +361,7 @@ void spell_changestaff(int level, struct char_data *ch,
 }
 
 /*
- * mage spells 
+ * mage spells
  */
 void spell_pword_kill(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
@@ -444,13 +444,13 @@ void spell_haste(int level, struct char_data *ch,
     }
 #if 0
     /*
-     * Why can't mobs haste anyway? commented out by Lennya 
+     * Why can't mobs haste anyway? commented out by Lennya
      */
-    if (IS_NPC(victim)) { 
+    if (IS_NPC(victim)) {
         send_to_char("It doesn't seem to work\n", ch);
-        return; 
-    } 
-#endif     
+        return;
+    }
+#endif
 
     if (IS_IMMUNE(victim, IMM_HOLD)) {
         act("$N seems to ignore your spell", FALSE, ch, 0, victim, TO_CHAR);
@@ -534,7 +534,7 @@ void spell_familiar(int level, struct char_data *ch,
     }
 
     /*
-     * depending on the level, one of the pet shop kids. 
+     * depending on the level, one of the pet shop kids.
      */
 
     if (level < 2) {
@@ -569,14 +569,14 @@ void spell_familiar(int level, struct char_data *ch,
 }
 
 /*
- * cleric 
+ * cleric
  */
 
 void spell_aid(int level, struct char_data *ch,
                struct char_data *victim, struct obj_data *obj)
 {
     /*
-     * combo bless, cure light woundsish 
+     * combo bless, cure light woundsish
      */
     struct affected_type af;
 
@@ -668,7 +668,7 @@ void spell_golem(int level, struct char_data *ch,
     struct room_data *rp;
 
     /*
-     * you need: helm, jacket, leggings, sleeves, gloves, boots 
+     * you need: helm, jacket, leggings, sleeves, gloves, boots
      */
 
     rp = real_roomp(ch->in_room);
@@ -727,7 +727,7 @@ void spell_golem(int level, struct char_data *ch,
 
     if (!boots || !sleeves || !gloves || !helm || !jacket || !leggings) {
         /*
-         * shouldn't get this far 
+         * shouldn't get this far
          */
         send_to_char("You don't have all the correct pieces!\n\r", ch);
         return;
@@ -737,7 +737,7 @@ void spell_golem(int level, struct char_data *ch,
     char_to_room(gol, ch->in_room);
 
     /*
-     * add up the armor values in the pieces 
+     * add up the armor values in the pieces
      */
     armor = boots->obj_flags.value[0];
     armor += helm->obj_flags.value[0];
@@ -761,7 +761,7 @@ void spell_golem(int level, struct char_data *ch,
         gol->mult_att += 0.5;
     }
     /*
-     * add all the effects from all the items to the golem 
+     * add all the effects from all the items to the golem
      */
     AddAffects(gol, boots);
     AddAffects(gol, gloves);
@@ -776,7 +776,7 @@ void spell_golem(int level, struct char_data *ch,
     act("The armor flys together to form a humanoid figure!", FALSE, ch, 0,
         0, TO_ROOM);
     act("$N is quickly assembled from the pieces", FALSE, ch, 0, gol, TO_CHAR);
-    
+
     add_follower(gol, ch);
     extract_obj(helm);
     extract_obj(boots);
@@ -834,30 +834,30 @@ void spell_feeblemind(int level, struct char_data *ch,
 #if 0
             /*
              * That is stupid... people were complaining... -MW
-             */ 
-            if (!victim->skills) { 
+             */
+            if (!victim->skills) {
                 return;
             }
             t = number(1,100);
-            while (1) { 
-                for (i=0;i<MAX_SKILLS;i++) { 
+            while (1) {
+                for (i=0;i<MAX_SKILLS;i++) {
                     if (victim->skills[i].learned)  {
-                        t--; 
+                        t--;
                     }
                     if (t==0) {
-                        victim->skills[i].learned = 0; 
+                        victim->skills[i].learned = 0;
                         victim->skills[i].flags = 0;
-                        break; 
+                        break;
                     }
                 }
-                return; 
-            } 
+                return;
+            }
 #endif
         }
     } else if (!victim->specials.fighting) {
-        /* 
-         * they saved 
-         */ 
+        /*
+         * they saved
+         */
         set_fighting(victim, ch);
     }
 }
@@ -894,7 +894,7 @@ void spell_shillelagh(int level, struct char_data *ch,
             return;
         }
         /*
-         * find the slots 
+         * find the slots
          */
         i = getFreeAffSlot(obj);
         SET_BIT(obj->obj_flags.extra_flags, ITEM_MAGIC);
@@ -933,7 +933,7 @@ void spell_goodberry(int level, struct char_data *ch,
     tmp_obj->obj_flags.cost_per_day = 1;
 
     /*
-     * give it a cure light wounds spell effect 
+     * give it a cure light wounds spell effect
      */
 
     SET_BIT(tmp_obj->obj_flags.extra_flags, ITEM_MAGIC);
@@ -1042,7 +1042,7 @@ void spell_animal_growth(int level, struct char_data *ch,
     af.bitvector = 0;
     affect_to_char(victim, &af);
     /*
-     * GET_LEVEL(victim, WARRIOR_LEVEL_IND) = 2*GetMaxLevel(victim); 
+     * GET_LEVEL(victim, WARRIOR_LEVEL_IND) = 2*GetMaxLevel(victim);
      */
 }
 
@@ -1102,7 +1102,7 @@ void spell_insect_growth(int level, struct char_data *ch,
     af.bitvector = 0;
     affect_to_char(victim, &af);
     /*
-     * GET_LEVEL(victim, WARRIOR_LEVEL_IND) = 2*GetMaxLevel(victim); 
+     * GET_LEVEL(victim, WARRIOR_LEVEL_IND) = 2*GetMaxLevel(victim);
      */
 }
 
@@ -1113,13 +1113,13 @@ void spell_creeping_death(int level, struct char_data *ch,
     struct affected_type af;
     struct char_data *cd;
 
-    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS) || 
+    if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS) ||
         IS_SET(real_roomp(ch->in_room)->sector_type, SECT_INSIDE)) {
         send_to_char("You can't cast this spell indoors!\n\r", ch);
         return;
     }
     /*
-     * obj is really the direction that the death wishes to travel in 
+     * obj is really the direction that the death wishes to travel in
      */
 
     cd = read_mobile(CREEPING_DEATH, VIRTUAL);
@@ -1141,7 +1141,7 @@ void spell_creeping_death(int level, struct char_data *ch,
         FALSE, ch, 0, 0, TO_ROOM);
     cd->generic = dir;
     /*
-     * move the creeping death in the proper direction 
+     * move the creeping death in the proper direction
      */
     do_move(cd, "\0", dir);
     act("$n slumps to the ground, exhausted.", FALSE, ch, 0, 0, TO_ROOM);
@@ -1169,7 +1169,7 @@ void spell_commune(int level, struct char_data *ch,
 
     /*
      * look up the creatures in the mob list, find the ones in this zone,
-     * in rooms that are outdoors, and tell the caster about them 
+     * in rooms that are outdoors, and tell the caster about them
      */
 
     buffer[0] = '\0';
@@ -1221,7 +1221,7 @@ void spell_animal_summon(int level, struct char_data *ch,
 
     /*
      * modified by Lennya. Load a random mob, and adjust its stats
-     * according to caster level 
+     * according to caster level
      */
 
     if ((rp = real_roomp(ch->in_room)) == NULL) {
@@ -1252,14 +1252,14 @@ void spell_animal_summon(int level, struct char_data *ch,
     act("You perform the ritual of summoning.", TRUE, ch, 0, 0, TO_CHAR);
 
     lev = GetMaxLevel(ch);
-    
+
     for (i = 0; i < 4; i++) {
         mob = read_mobile(ANISUM + number(0, 20), VIRTUAL);
         if (!mob) {
             continue;
         }
         /*
-         * let's modify this guy according to caster level 
+         * let's modify this guy according to caster level
          */
         if (lev > 45) {
             mlev = number(20, 23);
@@ -1296,7 +1296,7 @@ void spell_animal_summon(int level, struct char_data *ch,
                 TRUE, ch, 0, victim, TO_ROOM);
         } else {
             /*
-             * charm them for a while 
+             * charm them for a while
              */
             if (mob->master) {
                 stop_follower(mob);
@@ -1375,7 +1375,7 @@ void spell_elemental_summoning(int level, struct char_data *ch,
             0, mob, TO_CHAR);
     } else {
         /*
-         * charm them for a while 
+         * charm them for a while
          */
         if (mob->master) {
             stop_follower(mob);
@@ -1403,8 +1403,8 @@ void spell_elemental_summoning(int level, struct char_data *ch,
     affect_to_char(ch, &af);
 
     /*
-     * adjust the bits... 
-     * get rid of aggressive, add sentinel 
+     * adjust the bits...
+     * get rid of aggressive, add sentinel
      */
 
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
@@ -1523,7 +1523,7 @@ void spell_reincarnate(int level, struct char_data *ch,
 
                 /*
                  * if they are in the descriptor list, suck them into the
-                 * game 
+                 * game
                  */
 
                 for (d = descriptor_list; d; d = d->next) {
@@ -1737,7 +1737,7 @@ void spell_animate_rock(int level, struct char_data *ch,
     }
 
     /*
-     * get the weight of the rock, make the follower based on the weight 
+     * get the weight of the rock, make the follower based on the weight
      */
 
     if (GET_OBJ_WEIGHT(obj) > 20) {
@@ -1759,7 +1759,7 @@ void spell_animate_rock(int level, struct char_data *ch,
     if (mob) {
         char_to_room(mob, ch->in_room);
         /*
-         * charm them for a while 
+         * charm them for a while
          */
         if (mob->master) {
             stop_follower(mob);
@@ -1786,7 +1786,7 @@ void spell_animate_rock(int level, struct char_data *ch,
         }
 
         /*
-         * get rid of aggressive, add sentinel 
+         * get rid of aggressive, add sentinel
          */
 
         if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
@@ -1895,7 +1895,7 @@ void spell_animal_friendship(int level, struct char_data *ch,
     affect_to_char(victim, &af);
 
     /*
-     * get rid of aggressive, add sentinel 
+     * get rid of aggressive, add sentinel
      */
     REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
     SET_BIT(victim->specials.act, ACT_SENTINEL);
@@ -1956,7 +1956,7 @@ void spell_snare(int level, struct char_data *ch,
     }
 
     /*
-     * if victim fails save, movement = 0 
+     * if victim fails save, movement = 0
      */
     if (!saves_spell(victim, SAVING_SPELL)) {
         act("Roots and vines entangle your feet!", FALSE, victim, 0, 0,
@@ -1995,7 +1995,7 @@ void spell_entangle(int level, struct char_data *ch,
     }
 
     /*
-     * if victim fails save, paralyzed for a very short time 
+     * if victim fails save, paralyzed for a very short time
      */
     if (saves_spell(victim, SAVING_PARA)) {
         if (IsSusc(victim, IMM_HOLD)) {
@@ -2199,7 +2199,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
 
         if (IS_PC(ch)) {
             /*
-             * all metal flagged equips zap off! 
+             * all metal flagged equips zap off!
              */
             for (j = 0; j < MAX_WEAR; j++) {
                 if (ch->equipment[j]) {
@@ -2240,7 +2240,7 @@ void spell_heat_stuff(int level, struct char_data *ch,
 
         if (IS_PC(victim)) {
             /*
-             * all metal flagged equips zap off! 
+             * all metal flagged equips zap off!
              */
             for (j = 0; j < MAX_WEAR; j++) {
                 if (victim->equipment[j]) {
@@ -2299,7 +2299,7 @@ void spell_dust_devil(int level, struct char_data *ch,
         FALSE, mob, 0, 0, TO_ROOM);
 
     /*
-     * charm them for a while 
+     * charm them for a while
      */
     if (mob->master) {
         stop_follower(mob);
@@ -2326,8 +2326,8 @@ void spell_dust_devil(int level, struct char_data *ch,
     affect_to_char(ch, &af);
 
     /*
-     * adjust the bits... 
-     * get rid of aggressive, add sentinel 
+     * adjust the bits...
+     * get rid of aggressive, add sentinel
      */
 
     if (IS_SET(mob->specials.act, ACT_AGGRESSIVE)) {
@@ -2347,7 +2347,7 @@ void spell_sunray(int level, struct char_data *ch,
                     j = 0;
 
     /*
-     * blind all in room 
+     * blind all in room
      */
     for (t = real_roomp(ch->in_room)->people; t; t = n) {
         n = t->next_in_room;
@@ -2355,7 +2355,7 @@ void spell_sunray(int level, struct char_data *ch,
             spell_blindness(level, ch, t, obj);
             /*
              * if not arena, scrap any ANTI-SUN equipment worn by
-             * ungroupies 
+             * ungroupies
              */
             if (!IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
                 for (j = 0; j <= (MAX_WEAR - 1); j++) {
@@ -2375,11 +2375,11 @@ void spell_sunray(int level, struct char_data *ch,
             }
 
             /*
-             * hit undead target 
+             * hit undead target
              */
             if (IsUndead(t) || GET_RACE(t) == RACE_VEGMAN) {
                 dam = dice(6, 8);
-                if (saves_spell(t, SAVING_SPELL) && 
+                if (saves_spell(t, SAVING_SPELL) &&
                     GET_RACE(t) != RACE_VEGMAN) {
                     dam = (t == victim ? dam >> 1 : 0);
                 }
@@ -2407,7 +2407,7 @@ void spell_know_monster(int level, struct char_data *ch,
                     s;
 
     /*
-     * depending on level, give info.. sometimes inaccurate 
+     * depending on level, give info.. sometimes inaccurate
      */
 
     if (!IS_PC(victim)) {
@@ -2500,7 +2500,7 @@ void spell_find_traps(int level, struct char_data *ch,
     struct affected_type af;
 
     /*
-     * raise their detect traps skill 
+     * raise their detect traps skill
      */
     if (affected_by_spell(ch, SPELL_FIND_TRAPS)) {
         send_to_char("You area already searching for traps.\n\r", ch);
@@ -2518,7 +2518,8 @@ void spell_find_traps(int level, struct char_data *ch,
 void spell_firestorm(int level, struct char_data *ch,
                      struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *tmp_victim,
                    *temp;
 
@@ -2534,6 +2535,7 @@ void spell_firestorm(int level, struct char_data *ch,
     for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
          tmp_victim = temp) {
         temp = tmp_victim->next_in_room;
+        rdam = dam;
         if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
             if (GetMaxLevel(tmp_victim) > LOW_IMMORTAL && !IS_NPC(tmp_victim)) {
                 return;
@@ -2543,12 +2545,12 @@ void spell_firestorm(int level, struct char_data *ch,
                 act("You are seared by the burning flame!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
                 if (saves_spell(tmp_victim, SAVING_SPELL)) {
-                    dam >>= 1;
+                    rdam >>= 1;
                 } else if (!saves_spell(tmp_victim, SAVING_SPELL - 4)) {
                     BurnWings(tmp_victim);
                 }
                 heat_blind(tmp_victim);
-                MissileDamage(ch, tmp_victim, dam, SPELL_BURNING_HANDS);
+                MissileDamage(ch, tmp_victim, rdam, SPELL_BURNING_HANDS);
             } else {
                 act("You are able to avoid the flames!\n\r",
                     FALSE, ch, 0, tmp_victim, TO_VICT);
@@ -2566,7 +2568,7 @@ void spell_teleport_wo_error(int level, struct char_data *ch,
     struct room_data *rp;
 
     /*
-     * replaces the current functionality of astral walk 
+     * replaces the current functionality of astral walk
      */
     assert(ch && victim);
 
@@ -2581,8 +2583,8 @@ void spell_teleport_wo_error(int level, struct char_data *ch,
 
     if (GetMaxLevel(victim) > MAX_MORT || !rp ||
         IS_SET(rp->room_flags, PRIVATE) || IS_SET(rp->room_flags, NO_SUM) ||
-        IS_SET(rp->room_flags, NO_MAGIC) || 
-        (IS_SET(rp->room_flags, TUNNEL) && 
+        IS_SET(rp->room_flags, NO_MAGIC) ||
+        (IS_SET(rp->room_flags, TUNNEL) &&
          MobCountInRoom(rp->people) > rp->moblim)) {
         send_to_char("You failed.\n\r", ch);
         return;
@@ -2634,7 +2636,7 @@ void spell_portal(int level, struct char_data *ch,
     assert((level >= 0) && (level <= ABS_MAX_LVL));
 
     /*
-     * check target room for legality. 
+     * check target room for legality.
      */
     rp = real_roomp(ch->in_room);
     tmp_obj = read_object(PORTAL, VIRTUAL);
@@ -2722,7 +2724,7 @@ void spell_mount(int level, struct char_data *ch,
     int             mnr;
 
     /*
-     * create a ridable mount, and automatically mount said creature 
+     * create a ridable mount, and automatically mount said creature
      */
 
     mnr = MOUNT_ONE;
@@ -2846,7 +2848,7 @@ void spell_pacifism(int level, struct char_data *ch,
     assert(ch && victim);
 
     /*
-     * removes aggressive bit from monsters 
+     * removes aggressive bit from monsters
      */
     if (IS_NPC(victim)) {
         if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
@@ -2869,7 +2871,7 @@ void spell_aura_power(int level, struct char_data *ch,
     struct affected_type af;
 
     /*
-     * +2 to hit +2 dam 
+     * +2 to hit +2 dam
      */
 
     if (affected_by_spell(victim, SPELL_AURA_POWER)) {
@@ -2917,7 +2919,7 @@ void spell_holy_strength(int level, struct char_data *ch,
         } else {
             if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch, CLASS_BARBARIAN)) {
                 af.modifier = number(1, 8);
-            } else if (HasClass(ch, CLASS_CLERIC) 
+            } else if (HasClass(ch, CLASS_CLERIC)
                        || HasClass(ch, CLASS_THIEF)) {
                 af.modifier = number(1, 6);
             } else {
@@ -2962,7 +2964,7 @@ void spell_giant_growth(int level, struct char_data *ch,
     struct affected_type af;
 
     /*
-     * +3 to hit +3 dam 
+     * +3 to hit +3 dam
      */
 
     if (affected_by_spell(victim, SPELL_GIANT_GROWTH)) {
@@ -2989,13 +2991,13 @@ void spell_giant_growth(int level, struct char_data *ch,
 }
 
 /*
- * Necromancer Spells 
+ * Necromancer Spells
  */
 void spell_cold_light(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     /*
-     * creates a cold light . 
+     * creates a cold light .
      */
     struct obj_data *tmp_obj;
 
@@ -3030,7 +3032,7 @@ void spell_disease(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_PC(victim) && 
+    if (IS_PC(victim) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("Sorry. No can do.\n\r", ch);
         return;
@@ -3094,7 +3096,7 @@ void spell_life_tap(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_PC(victim) && 
+    if (IS_PC(victim) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
@@ -3107,8 +3109,8 @@ void spell_life_tap(int level, struct char_data *ch,
     }
 
     dicen = (int) level / 10 + 2;
-    /* 
-     * avg 12.5 | max 20 | min 5 
+    /*
+     * avg 12.5 | max 20 | min 5
      */
     dam = dice(dicen, 5) + 1;
     damage(ch, victim, dam, SPELL_LIFE_TAP);
@@ -3225,7 +3227,7 @@ void spell_clinging_darkness(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_PC(victim) && 
+    if (IS_PC(victim) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
@@ -3379,9 +3381,9 @@ void spell_siphon_strength(int level, struct char_data *ch,
                            struct char_data *victim, struct obj_data *obj)
 {
     struct affected_type af;
-#if 0    
+#if 0
     struct room_data *rp;
-#endif    
+#endif
     int             mod = 0;
 
     assert(ch && victim);
@@ -3391,7 +3393,7 @@ void spell_siphon_strength(int level, struct char_data *ch,
         return;
     }
 
-    if (IS_PC(victim) && 
+    if (IS_PC(victim) &&
         !IS_SET(real_roomp(ch->in_room)->room_flags, ARENA_ROOM)) {
         send_to_char("I think not. Go pester monsters instead.\n\r", ch);
         return;
@@ -3399,9 +3401,9 @@ void spell_siphon_strength(int level, struct char_data *ch,
 
     if (!affected_by_spell(ch, SPELL_SIPHON_STRENGTH)) {
         if (!saves_spell(victim, SAVING_SPELL)) {
-#if 0            
+#if 0
             modifier = level/200.0;
-#endif            
+#endif
             mod = dice(1, 5);
             act("You feel your strength being siphoned from your body.",
                 FALSE, victim, 0, 0, TO_VICT);
@@ -3410,9 +3412,9 @@ void spell_siphon_strength(int level, struct char_data *ch,
 
             af.type = SPELL_SIPHON_STRENGTH;
             af.duration = 3;
-#if 0            
+#if 0
             mod= victim->abilities.str * modifier;
-#endif            
+#endif
             af.modifier = 0 - mod;
             if (victim->abilities.str_add) {
                 af.modifier -= 2;
@@ -3436,14 +3438,14 @@ void spell_siphon_strength(int level, struct char_data *ch,
             affect_to_char(ch, &af);
 
             /*
-             * aggressive act 
+             * aggressive act
              */
             if (!victim->specials.fighting && (victim != ch)) {
                 set_fighting(victim, ch);
             }
         } else {
-            /* 
-             * made save 
+            /*
+             * made save
              */
             send_to_char("Your quarry withstands your spell.\n\r", ch);
         }
@@ -3463,7 +3465,7 @@ void spell_gather_shadows(int level, struct char_data *ch,
     if (obj) {
         send_to_char("The shadows start to encase it, but nothing happens.",
                      ch);
-    } else if (!affected_by_spell(victim, SPELL_INVISIBLE) && 
+    } else if (!affected_by_spell(victim, SPELL_INVISIBLE) &&
                !affected_by_spell(victim, SPELL_GATHER_SHADOWS)) {
         act("$n gathers the shadows around $m and slowly fades from view.",
             TRUE, victim, 0, 0, TO_ROOM);
@@ -3510,7 +3512,7 @@ void spell_mend_bones(int level, struct char_data *ch,
     update_pos(victim);
 }
 
-void spell_trace_corpse(int level, struct char_data *ch, 
+void spell_trace_corpse(int level, struct char_data *ch,
                         struct char_data *victim, char *arg)
 {
     struct obj_data *i,
@@ -3527,16 +3529,16 @@ void spell_trace_corpse(int level, struct char_data *ch,
     buf[0] = '\0';
 
     /*
-     * when starting out, no corpse has been found yet 
+     * when starting out, no corpse has been found yet
      */
     found = 0;
     send_to_char("You open your senses to recent sites of death.\n\r", ch);
 
     for (i = object_list; i && !found; i = i->next) {
         if (isname(name, i->name) && i->obj_flags.value[3]) {
-            found = 1;      
-            /* 
-             * we found a REAL corpse 
+            found = 1;
+            /*
+             * we found a REAL corpse
              */
             if (i->carried_by && strlen(PERS_LOC(i->carried_by, ch))) {
                 sprintf(buf, "You sense %s being carried by %s.\n\r",
@@ -3550,7 +3552,7 @@ void spell_trace_corpse(int level, struct char_data *ch,
                 sprintf(buf, "You sense %s in %s.\n\r",
                         i->short_description, i->in_obj->short_description);
                 /*
-                 * can't trace corpses in objects 
+                 * can't trace corpses in objects
                  */
             } else {
                 sprintf(buf, "You sense %s in %s.\n\r",
@@ -3575,8 +3577,8 @@ void spell_trace_corpse(int level, struct char_data *ch,
         act("Black spots float across $n's eyes. Then $e blinks and sighs.",
             FALSE, ch, 0, 0, TO_ROOM);
     } else {
-        /* 
-         * here goes the real corpse trace. Kinda like scry. 
+        /*
+         * here goes the real corpse trace. Kinda like scry.
          */
         if (ch->in_room) {
             player_loc = ch->in_room;
@@ -3592,8 +3594,8 @@ void spell_trace_corpse(int level, struct char_data *ch,
                 return;
             }
         } else if (j == 2) {
-            /* 
-             * equipped corpses? oh well. What a weirdo. 
+            /*
+             * equipped corpses? oh well. What a weirdo.
              */
             if ((corpse->equipped_by)->in_room) {
                 corpse_loc = (corpse->equipped_by)->in_room;
@@ -3649,7 +3651,7 @@ void spell_endure_cold(int level, struct char_data *ch,
             act("$n concentrates for a second, then $s skin turns a weird pale "
                 "blue.", FALSE, ch, 0, victim, TO_NOTVICT);
             act("You concentrate for a second, then all of a sudden, you feel a"
-                " cold chill overtake your body.", FALSE, ch, 0, victim, 
+                " cold chill overtake your body.", FALSE, ch, 0, victim,
                 TO_CHAR);
         }
 
@@ -3692,8 +3694,8 @@ void spell_life_draw(int level, struct char_data *ch,
     }
 
     dicen = (int) level / 10 + 3;
-    /* 
-     * avg 22.5 | max 35 | min 10 
+    /*
+     * avg 22.5 | max 35 | min 10
      */
     dam = dice(dicen, 6) + 3;
     damage(ch, victim, dam, SPELL_LIFE_DRAW);
@@ -3718,7 +3720,7 @@ void spell_numb_dead(int level, struct char_data *ch,
     assert(ch && victim);
 
     /*
-     * removes (meta)aggressive bit from undead 
+     * removes (meta)aggressive bit from undead
      */
     if (IS_PC(victim)) {
         send_to_char("You can only cast this spell on monsters.\n\r", ch);
@@ -3736,7 +3738,7 @@ void spell_numb_dead(int level, struct char_data *ch,
         done = 1;
     }
 
-    if (IS_SET(victim->specials.act, ACT_META_AGG) && 
+    if (IS_SET(victim->specials.act, ACT_META_AGG) &&
         HitOrMiss(ch, victim, CalcThaco(ch))) {
         REMOVE_BIT(victim->specials.act, ACT_META_AGG);
         done = 1;
@@ -3788,7 +3790,7 @@ void spell_binding(int level, struct char_data *ch,
     }
 
     /*
-     * a location has been found. 
+     * a location has been found.
      */
 
     act("$n seems to biodegrade into nothingness, leaving only the stench of "
@@ -3858,7 +3860,7 @@ void spell_shadow_step(int level, struct char_data *ch,
                     nroomnr = 0;
 
     /*
-     * gotta have someone fightin ya 
+     * gotta have someone fightin ya
      */
     if (!ch->specials.fighting) {
         send_to_char("The shadows will only aid you in battle.\n\r", ch);
@@ -3868,8 +3870,8 @@ void spell_shadow_step(int level, struct char_data *ch,
     for (i = 0; i <= 5; i++) {  /* give em lots of tries */
         attempt = number(0, 5);
         if (CAN_GO(ch, attempt) &&
-            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags, 
-                    DEATH) && 
+            !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
+                    DEATH) &&
             !IS_SET(real_roomp(EXIT(ch, attempt)->to_room)->room_flags,
                     NO_FLEE)) {
             act("$n steps into a nearby shadow and seems to dissipate.",
@@ -3887,7 +3889,7 @@ void spell_shadow_step(int level, struct char_data *ch,
 
             char_from_room(ch);
             char_to_room(ch, nroomnr);
-#if 0            
+#if 0
             EXIT(ch, attempt)->to_room);
 #endif
             do_look(ch, "\0", 15);
@@ -3995,7 +3997,7 @@ void spell_cavorting_bones(int level, struct char_data *ch,
             TRUE, ch, 0, mob, TO_VICT);
     } else {
         /*
-         * charm it for a while 
+         * charm it for a while
          */
         if (mob->master) {
             stop_follower(mob);
@@ -4023,7 +4025,8 @@ void spell_cavorting_bones(int level, struct char_data *ch,
 void spell_mist_of_death(int level, struct char_data *ch,
                          struct char_data *victim, struct obj_data *obj)
 {
-    int             dam;
+    int             dam,
+                    rdam;
     struct char_data *t = NULL,
                    *next;
 
@@ -4036,27 +4039,28 @@ void spell_mist_of_death(int level, struct char_data *ch,
     act("$c0008Raising your arms, a terrifying scream escapes you and a cloud"
         " of death fills the air!", FALSE, ch, 0, t, TO_CHAR);
 
+    dam = dice(level, 7);
     for (t = real_roomp(ch->in_room)->people; t; t = next) {
         next = t->next_in_room;
+        rdam = dam;
         if (!in_group(ch, t) && t != victim && !IS_IMMORTAL(t)) {
             /*
-             * 1% chance of instakill 
+             * 1% chance of instakill
              */
             if (number(1, 100) == 100 && !IS_IMMUNE(t, IMM_DRAIN)) {
-                /* 
-                 * woop, instant death is cool 
+                /*
+                 * woop, instant death is cool
                  */
-                dam = GET_HIT(t) + 25;
-                damage(ch, t, dam, SPELL_MIST_OF_DEATH);
+                rdam = GET_HIT(t) + 25;
+                damage(ch, t, rdam, SPELL_MIST_OF_DEATH);
             } else {
-                dam = dice(level, 7);
                 if (saves_spell(t, SAVING_PETRI)) {
-                    /* 
-                     * save for half damage 
+                    /*
+                     * save for half damage
                      */
-                    dam >>= 1;
+                    rdam >>= 1;
                 }
-                damage(ch, t, dam, SPELL_MIST_OF_DEATH);
+                damage(ch, t, rdam, SPELL_MIST_OF_DEATH);
             }
         }
     }
@@ -4067,10 +4071,10 @@ void spell_nullify(int level, struct char_data *ch,
 {
     assert(ch && victim);
 
-    if (affected_by_spell(victim, SPELL_POISON) || 
-        affected_by_spell(victim, SPELL_DISEASE) || 
+    if (affected_by_spell(victim, SPELL_POISON) ||
+        affected_by_spell(victim, SPELL_DISEASE) ||
         affected_by_spell(victim, SPELL_DECAY)) {
-        if (GetMaxLevel(victim) <= GetMaxLevel(ch) || 
+        if (GetMaxLevel(victim) <= GetMaxLevel(ch) ||
             !saves_spell(victim, SAVING_SPELL)) {
             if (affected_by_spell(victim, SPELL_POISON)) {
                 affect_from_char(victim, SPELL_POISON);
@@ -4126,7 +4130,7 @@ void spell_dark_empathy(int level, struct char_data *ch,
     amnt = GET_MAX_HIT(victim) - GET_HIT(victim);
     if (amnt <= 100) {
         /*
-         * itsy bitsy heal 
+         * itsy bitsy heal
          */
         act("$n's hand glows blue as $e places it on your shoulder.",
             FALSE, ch, 0, victim, TO_VICT);
@@ -4143,7 +4147,7 @@ void spell_dark_empathy(int level, struct char_data *ch,
         GET_HIT(ch) -= amnt;
     } else {
         /*
-         * large chunk heal 
+         * large chunk heal
          */
         act("$n's hand glows blue as $e places it on your shoulder.",
             FALSE, ch, 0, victim, TO_VICT);
@@ -4167,7 +4171,7 @@ void spell_eye_of_the_dead(int level, struct char_data *ch,
 
     assert(ch);
 
-    if (!affected_by_spell(ch, SPELL_EYE_OF_THE_DEAD) && 
+    if (!affected_by_spell(ch, SPELL_EYE_OF_THE_DEAD) &&
         !IS_AFFECTED(ch, AFF_TRUE_SIGHT)) {
         act("One of $n's eyes pulses with an eerie blue light.", FALSE, ch,
             0, 0, TO_ROOM);
@@ -4242,8 +4246,8 @@ void spell_life_leech(int level, struct char_data *ch,
     }
 
     dicen = (int) level / 10 + 4;
-    /* 
-     * avg 35 | max 55 | min 15 
+    /*
+     * avg 35 | max 55 | min 15
      */
     dam = dice(dicen, 7) + 3;
     damage(ch, victim, dam, SPELL_LIFE_LEECH);
@@ -4357,20 +4361,20 @@ void spell_darktravel(int level, struct char_data *ch,
     }
 
     /*
-     * target ok, let's travel 
+     * target ok, let's travel
      */
     send_to_char("$c0008You step into the shadows and are relocated.\n\r", ch);
     act("$c0008$n closes $s eyes and steps into the shadows.", FALSE, ch,
         0, 0, TO_ROOM);
     if (number(1, 33) == 33) {
-        /* 
-         * 3% chance of a mislocate 
+        /*
+         * 3% chance of a mislocate
          */
         while (!location) {
             tmp = number(0, top_of_world);
             room = real_roomp(tmp);
             if (room) {
-                if ((IS_SET(room->room_flags, PRIVATE)) || 
+                if ((IS_SET(room->room_flags, PRIVATE)) ||
                     (IS_SET(room->room_flags, TUNNEL)) ||
                     (IS_SET(room->room_flags, NO_SUM)) ||
                     (IS_SET(room->room_flags, NO_MAGIC)) ||
@@ -4486,17 +4490,17 @@ void spell_scourge_warlock(int level, struct char_data *ch,
         }
     } else {
         /*
-         * give him a tongue to wear on his face 
+         * give him a tongue to wear on his face
          */
         if ((obj = read_object(TONGUE_ITEM, VIRTUAL))) {
             /*
-             * add a random Dark Lord's boon to it 
+             * add a random Dark Lord's boon to it
              */
             switch (number(1, 20)) {
             case 1:
             case 2:
                 /*
-                 * 1dam 
+                 * 1dam
                  */
                 obj->affected[0].location = APPLY_DAMROLL;
                 obj->affected[0].modifier = 1;
@@ -4504,7 +4508,7 @@ void spell_scourge_warlock(int level, struct char_data *ch,
             case 3:
             case 4:
                 /*
-                 * 10mr 
+                 * 10mr
                  */
                 obj->affected[0].location = APPLY_MANA_REGEN;
                 obj->affected[0].modifier = 10;
@@ -4512,14 +4516,14 @@ void spell_scourge_warlock(int level, struct char_data *ch,
             case 5:
             case 6:
                 /*
-                 * -10sf 
+                 * -10sf
                  */
                 obj->affected[0].location = APPLY_SPELLFAIL;
                 obj->affected[0].modifier = -10;
                 break;
             case 7:
                 /*
-                 * random resist 
+                 * random resist
                  */
                 switch (number(1, 8)) {
                 case 1:
@@ -4569,14 +4573,14 @@ void spell_scourge_warlock(int level, struct char_data *ch,
             case 12:
             case 13:
                 /*
-                 * +1 str 
+                 * +1 str
                  */
                 obj->affected[0].location = APPLY_STR;
                 obj->affected[0].modifier = 1;
                 break;
             case 14:
                 /*
-                 * +2 wis 
+                 * +2 wis
                  */
                 obj->affected[0].location = APPLY_WIS;
                 obj->affected[0].modifier = 2;
@@ -4613,8 +4617,8 @@ void spell_scourge_warlock(int level, struct char_data *ch,
      */
     dam = dice(level, 9);
     if (saves_spell(victim, SAVING_SPELL)) {
-        /* 
-         * save for half damage 
+        /*
+         * save for half damage
          */
         dam >>= 1;
     }
@@ -4638,8 +4642,8 @@ void spell_finger_of_death(int level, struct char_data *ch,
     }
 
     if (number(1, 20) == 20 && !IS_IMMUNE(victim, IMM_DRAIN)) {
-        /* 
-         * instant death, wheee! 
+        /*
+         * instant death, wheee!
          */
         dam = GET_HIT(victim) + 25;
         damage(ch, victim, dam, SPELL_FINGER_OF_DEATH);
@@ -4734,7 +4738,7 @@ void spell_flesh_golem(int level, struct char_data *ch,
         mhps = number(0, 20);
         mtohit = 0;
     }
-    
+
     mob->player.level[2] = mlev;
     mob->points.max_hit = mob->points.max_hit + mhps;
     mob->points.hit = mob->points.max_hit;
@@ -4754,7 +4758,7 @@ void spell_flesh_golem(int level, struct char_data *ch,
             TRUE, ch, 0, mob, TO_VICT);
     } else {
         /*
-         * charm it for a while 
+         * charm it for a while
          */
         if (mob->master) {
             stop_follower(mob);
@@ -4946,8 +4950,8 @@ void spell_group_heal(int level, struct char_data *ch,
 void spell_iron_skins(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
-    /* 
-     * put up some iron skinned barriers 
+    /*
+     * put up some iron skinned barriers
      * that will absorb (duration) hps.
      */
     struct affected_type af;
