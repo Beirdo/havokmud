@@ -4702,6 +4702,9 @@ switch(spell_num) {
 	case TYPE_BLAST:
 	case TYPE_SUFFERING:
 	case TYPE_RANGE_WEAPON:
+	case TYPE_JAB:
+	case TYPE_PUNCH:
+	case TYPE_STRIKE:
 		tmp = FALSE;	/* these are NOT magical! */
 		break;
 

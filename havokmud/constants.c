@@ -215,7 +215,7 @@ const char *spell_wear_off_msg[] = {
  "Your wings stop feeling sore and tired.", /*202 Wings Tired*/
  "At long last your wings have healed enough to allow flight.",/*203 Wings Burned*/
  "You feel less protected from good beings.",
- "",
+ "You no longer feel big.",
  "",
  "!berserk!", /*207*/
  "!tan!",
@@ -518,7 +518,7 @@ const char *spell_wear_off_room_msg[] = {
  "",
  "",
  "$n looks a bit less unholy.",
- "",
+ "Your body starts to quiver.",
  "",
  "",
  "",
@@ -5530,6 +5530,9 @@ const char *AttackType[]= {
 	"Impale",
 	"Unknown",
 	"Unknown",
+    "Jab",
+	"Punch",
+	"Strike",
     "\n"
 };
 

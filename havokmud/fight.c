@@ -73,7 +73,10 @@ struct attack_hit_type attack_hit_text[] =
   {"smash",  "smashes"},
   {"smite",  "smites"},
   {"blast",  "blasts"},
-  {"strike","strikes"}		/* type RANGE_WEAPON */
+  {"strike", "strikes"},		/* type RANGE_WEAPON */
+  {"jab",    "jabs"},
+  {"punch",  "punches"},
+  {"strike", "strikes"}
 };
 
  /* Location of attack texts */
@@ -1621,7 +1624,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 					  hard coded in do_kick */
   else
 
-	if ((attacktype >= TYPE_HIT) && (attacktype <= TYPE_RANGE_WEAPON)) {
+	if ((attacktype >= TYPE_HIT) && (attacktype <= TYPE_STRIKE)) {
 		dam_message(dam, ch, v, attacktype);
 		/* do not wanna frag the bow, frag the arrow instead! */
 		if (ch->equipment[WIELD] && attacktype != TYPE_RANGE_WEAPON) {
@@ -1966,9 +1969,10 @@ int GetWeaponType(struct char_data *ch, struct obj_data **wielded)
   }	else {
     if (IS_NPC(ch) && (ch->specials.attack_type >= TYPE_HIT))
       w_type = ch->specials.attack_type;
-    else
-      w_type = TYPE_HIT;
+    else {
 
+	      w_type = TYPE_HIT;
+	}
     *wielded = 0;  /* no weapon */
 
   }
@@ -3376,6 +3380,9 @@ int PreProcDam(struct char_data *ch, int type, int dam)
   case TYPE_SMASH:
   case TYPE_SMITE:
   case TYPE_BLAST:
+  case TYPE_JAB:
+  case TYPE_PUNCH:
+  case TYPE_STRIKE:
     Our_Bit = IMM_BLUNT;
     break;
 
@@ -3637,7 +3644,7 @@ int DamagedByAttack( struct obj_data *i, int dam_type)
 		}
 	}
 }
-
+//monk check for damage???
 int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
 {
   int Immunity, total, j;
@@ -3662,7 +3669,7 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
   if (Immunity < 0)
     return(dam);
 
-  if ((type < TYPE_HIT) || (type > TYPE_RANGE_WEAPON))
+  if ((type < TYPE_HIT) || (type > TYPE_STRIKE))
   {
     return(dam);
   }
@@ -3670,10 +3677,11 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
   {
     if (type == TYPE_HIT || IS_NPC(ch)) {
   		if (GetMaxLevel(ch) > ((Immunity+1)*(Immunity+1))+6 ||
-     	(HasClass(ch,CLASS_BARBARIAN)  && BarbarianToHitMagicBonus(ch) >= Immunity)) {
+     	((HasClass(ch,CLASS_BARBARIAN) || HasClass(ch,CLASS_MONK))  && BarbarianToHitMagicBonus(ch) >= Immunity)) {
 			return(dam);
       }
         else {
+
 		  act("$N ignores your puny attack", FALSE, ch, 0, v, TO_CHAR);
 		  return(0);
       } /* was not TYPE_HIT or NPC */
@@ -3681,9 +3689,9 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
     } else
     {
       total = 0;
-   if (!ch->equipment[WIELD])
-	return(0);
-
+   if (!ch->equipment[WIELD]) {
+		return(0);
+	}
       for(j=0; j<MAX_OBJ_AFFECT; j++)
 		if ((ch->equipment[WIELD]->affected[j].location == APPLY_HITROLL) ||
 	    	(ch->equipment[WIELD]->affected[j].location == APPLY_HITNDAM))  {
@@ -3693,6 +3701,11 @@ int WeaponCheck(struct char_data *ch, struct char_data *v, int type, int dam)
   		if (HasClass(ch,CLASS_BARBARIAN) && BarbarianToHitMagicBonus(ch) > total)  {
       		total = BarbarianToHitMagicBonus(ch);
      	}
+
+		if (HasClass(ch,CLASS_MONK) && BarbarianToHitMagicBonus(ch) > total)  {
+		   total = BarbarianToHitMagicBonus(ch);
+     	}
+
 
       	if (total > Immunity)  {
 			return(dam);
@@ -3714,7 +3727,7 @@ int DamageStuff(struct char_data *v, int type, int dam)
 /* spell right here I would think */
 
 
-	if (type >= TYPE_HIT && type <= TYPE_RANGE_WEAPON) {
+	if (type >= TYPE_HIT && type <= TYPE_STRIKE) {
 		num = number(3,17);  /* wear_neck through hold */
 		if (v->equipment[num]) {
 			if ((type == TYPE_BLUDGEON && dam > 10) ||
@@ -3724,6 +3737,9 @@ int DamageStuff(struct char_data *v, int type, int dam)
 					(type == TYPE_CLAW && dam > 20) ||
 					(type == TYPE_SLASH && dam > 30) ||
 					(type == TYPE_SMITE && dam > 10) ||
+					(type == TYPE_JAB && dam > 20) ||
+					(type == TYPE_PUNCH && dam > 20) ||
+					(type == TYPE_STRIKE && dam > 20) ||
 					(type == TYPE_HIT && dam > 20)) {
 				if (DamageOneItem(v, BLOW_DAMAGE, v->equipment[num])) {
 					if ((obj = unequip_char(v,num))!=NULL) {
@@ -4270,6 +4286,22 @@ int GetFormType(struct char_data *ch)
     return(TYPE_BLAST);
     break;
   default:
+  		if (HasClass(ch, CLASS_MONK)) {
+  			switch(number(1,5)) {
+  				case 1:
+  					return(TYPE_HIT);
+  				case 2:
+  					return(TYPE_SMASH);
+  				case 3:
+  					return(TYPE_JAB);
+  				case 4:
+  					return(TYPE_PUNCH);
+  				case 5:
+  					return(TYPE_STRIKE);
+  				default:
+  					return(TYPE_HIT);
+  			}
+		} else
     return(TYPE_HIT);
   }
 }
@@ -4302,7 +4334,7 @@ int BarbarianToHitMagicBonus ( struct char_data *ch)
  if (GetMaxLevel(ch) <=7)
    bonus = 1;
     else
- if (GetMaxLevel(ch) <= 8)
+ if (GetMaxLevel(ch) <= 12)
     bonus = 2;
     else
  if (GetMaxLevel(ch) <= 20)

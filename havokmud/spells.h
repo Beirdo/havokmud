@@ -397,7 +397,9 @@
 #define TYPE_SMITE                   323
 #define TYPE_BLAST                   324
 #define TYPE_RANGE_WEAPON	     325
-
+#define TYPE_JAB                 326
+#define TYPE_PUNCH               327
+#define TYPE_STRIKE              328
 
 
 	/* This one needs to be after all real damage skills, might wanna */
@@ -407,7 +409,7 @@
 
 /* More anything but spells and weapontypes can be insterted here! */
 #define MAX_TYPES 70
-#define MAX_SPL_LIST	326
+#define MAX_SPL_LIST	329
 
 #define SAVING_PARA   0
 #define SAVING_ROD    1
