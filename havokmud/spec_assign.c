@@ -1213,33 +1213,33 @@ void assign_mobiles()
     { 7526, winger},
     { 7522, magic_user},
     { 7531, magic_user},
-    {7510, fighter},
-    {7514, fighter},
-    {7515, fighter},
-    {7516, fighter},
-    {7527, fighter},
-    {7528, fighter},
-    {7530, fighter},
+    { 7510, fighter},
+    { 7514, fighter},
+    { 7515, fighter},
+    { 7516, fighter},
+    { 7527, fighter},
+    { 7528, fighter},
+    { 7530, fighter},
 
 /* Menzoberanza Zone */
-    {9727, BreathWeapon},
+    { 9727, BreathWeapon},
 
 /* Clan hall stuff */
-    {22704, receptionist},
-    {22720, receptionist},
-    {22727, ninja_master},
-    { 22732,  PostMaster },/* Order */
+    { 22704, receptionist},
+    { 22720, receptionist},
+    { 22727, ninja_master},
+    { 22732, PostMaster },/* Order */
     { 22731, receptionist },/* Order */
 
 /* Thikahnus's zone */
-    {37203, FrostBreather}, //Iceberg
-    {37208, shadow},        //Ministraal
-    {37209, vampire},       //Joshua von Richten
-    {37210, ghost},         //spectre guard
-    {37227, shadow},        //spirit priest
-    {37228, ghoul},         //Spirit high priest
-    {37229, fido},          //Stray dog
-    {37230, ghost},         //Spectre roaming
+    { 37203, FrostBreather}, //Iceberg
+    { 37208, shadow},        //Ministraal
+    { 37209, vampire},       //Joshua von Richten
+    { 37210, ghost},         //spectre guard
+    { 37227, shadow},        //spirit priest
+    { 37228, ghoul},         //Spirit high priest
+    { 37229, fido},          //Stray dog
+    { 37230, ghost},         //Spectre roaming
 /*end Athabasca*/
 
 /*  {32843, FireBreather},
@@ -1248,30 +1248,30 @@ void assign_mobiles()
   /* End Thik's Zone */
 
 /* The Realms of Delbrandor */
-    {28038, receptionist}, 		    	/* Sealissa */
-    {28050, ABShout},   			/* Avatar of Blibdoolpoolp */
-    {28042, AvatarPosereisn},			/* Avatar of Posereisn */
-    {28011, ghost},				/* Vampric Mist */
-    {28022, BreathWeapon},			/* Coral Dragon */
+    { 28038, receptionist}, 		    	/* Sealissa */
+    { 28050, ABShout},   			/* Avatar of Blibdoolpoolp */
+    { 28042, AvatarPosereisn},			/* Avatar of Posereisn */
+    { 28011, ghost},				/* Vampric Mist */
+    { 28022, BreathWeapon},			/* Coral Dragon */
 
 /* End Realms of Delbrandor */
 
 /* sundhaven (Banon) */
-{11400, sund_earl},        /* Earl of Sundhaven */
-{11401, MidgaardCityguard},
-{11464, PostMaster},
-{11456, guild_guard},
-{11455, guild_guard},
-{11458, guild_guard},
-{11457, guild_guard},
-{11416, ClericGuildMaster},
-{11419, MageGuildMaster},
-{11417, ThiefGuildMaster},
-{11418, WarriorGuildMaster},
-{11459, MidgaardCityguard},
-{11460, MidgaardCityguard},
-{11406, fido},             /* Smoke rat */
-{11407, thief},
+{ 11400, sund_earl},        /* Earl of Sundhaven */
+{ 11401, MidgaardCityguard},
+{ 11464, PostMaster},
+{ 11456, guild_guard},
+{ 11455, guild_guard},
+{ 11458, guild_guard},
+{ 11457, guild_guard},
+{ 11416, ClericGuildMaster},
+{ 11419, MageGuildMaster},
+{ 11417, ThiefGuildMaster},
+{ 11418, WarriorGuildMaster},
+{ 11459, MidgaardCityguard},
+{ 11460, MidgaardCityguard},
+{ 11406, fido},             /* Smoke rat */
+{ 11407, thief},
 
 #if 1
 {11402, hangman},
@@ -1432,6 +1432,8 @@ void assign_mobiles()
     {50890, receptionist },
     {50802, RangerGuildmaster},
 
+/* Sentinel's The Estate */
+	{51300, janaurius},
 
 #endif
 

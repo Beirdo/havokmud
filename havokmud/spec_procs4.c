@@ -3052,4 +3052,29 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	return(TRUE);
 
 }
+/* proc makes guards (51166) assist janaurius (51300) for Sentinel's
+   The Estate, zone 189 */
+int janaurius(struct char_data *ch, int cmd, char *arg, struct char_data *mob)
+{
 
+   	struct char_data *guard, *i, *next, *target;
+
+   	if(!ch->specials.fighting && !ch->attackers)
+		ch->generic = 0;
+
+
+   	if (cmd || !AWAKE(ch))
+        	return(FALSE);
+
+	if(ch->generic)
+  		 return(FALSE);
+
+	if(target = ch->specials.fighting){
+		 ch->generic = 1;
+		 for (i = character_list; i; i = i->next)
+		      if (mob_index[i->nr].virtual == 51166) {
+		          AddHated(i, target);
+		          SetHunting(i, target);
+		      }
+		  }
+	  }

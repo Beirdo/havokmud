@@ -1613,6 +1613,9 @@ int thunder_sceptre_two(struct char_data *ch, int cmd, char *arg, struct room_da
 int starving_man(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int grayswandir(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 
+/* Assigns for Sentinel's The Estate */
+int janaurius(struct char_data *ch, int cmd, char *arg, struct char_data *mob);
+
 /* necro spell procedure */
 int vampiric_embrace(struct char_data *ch, struct char_data *vict);
 
@@ -2019,6 +2022,7 @@ void do_legend_lore(struct char_data *ch, char *argument, int cmd);
 void do_ventriloquate(struct char_data *ch, char *argument, int cmd);
 
 /* From utility.c */
+void log(char *s);
 int advatoi (const char *s);
 float arg_to_float (char *arg);
 int fighting_in_room(int room_n);
