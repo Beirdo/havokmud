@@ -1274,11 +1274,13 @@ void group_gain(struct char_data *ch, struct char_data *victim)
     if (pc > 10) {
         pc = 10;
     }
+
     if (no_members >= 1) {
         share = (GET_EXP(victim) / no_members);
     } else {
         share = 0;
     }
+
     if (IS_AFFECTED(k, AFF_GROUP) && (k->in_room == ch->in_room)) {
         total = share * GET_AVE_LEVEL(k);
         if (pc) {
@@ -1293,14 +1295,14 @@ void group_gain(struct char_data *ch, struct char_data *victim)
         if (!IS_IMMORTAL(k)) {
             total = NewExpCap(k, total);
         }
-        if (!ch->master && ch->followers) {
-            GET_LEADERSHIP_EXP(ch) += total;
-            ch_printf(ch, "Your leadership skills have served you well.\n\r",
-                      total);
-        } else if (!ch->master && !ch->followers) {
-            GET_LEADERSHIP_EXP(ch) += total * 3 / 5;
-            ch_printf(ch, "Your leadership skills have served you well.\n\r",
-                      total * 3 / 5);
+        if (!k->master && k->followers) {
+            GET_LEADERSHIP_EXP(k) += total;
+            ch_printf(k, "Your leadership skills have served you well, %d "
+                         "leadership exp.\n\r", total);
+        } else if (!k->master && !k->followers) {
+            GET_LEADERSHIP_EXP(k) += total * 3 / 5;
+            ch_printf(k, "Your leadership skills have served you well, %d "
+                         "leadership exp.\n\r", total * 3 / 5);
         }
 
         sprintf(buf, "You receive your share of %d experience.", total);
@@ -1313,12 +1315,14 @@ void group_gain(struct char_data *ch, struct char_data *victim)
         if (IS_AFFECTED(f->follower, AFF_GROUP) &&
             f->follower->in_room == ch->in_room) {
             total = share * GET_AVE_LEVEL(f->follower);
+
             if (IS_PC(f->follower)) {
                 total *= (100 + (1 * pc));
                 total /= 100;
             } else {
                 total /= 2;
             }
+
             if (IS_PC(f->follower)) {
                 total = RatioExp(f->follower, victim, total);
                 total = GroupLevelRatioExp(f->follower, group_max_level, total);
@@ -1327,14 +1331,17 @@ void group_gain(struct char_data *ch, struct char_data *victim)
                 if (!IS_IMMORTAL(f->follower)) {
                     total = NewExpCap(f->follower, total);
                 }
-                if (!ch->master && ch->followers) {
-                    GET_LEADERSHIP_EXP(ch) += total;
-                    ch_printf(ch, "Your leadership skills have served you "
-                                  "well.\n\r", total);
-                } else if (!ch->master && !ch->followers) {
-                    GET_LEADERSHIP_EXP(ch) += total * 3 / 5;
-                    ch_printf(ch, "Your leadership skills have served you "
-                                  "well.\n\r", total * 3 / 5);
+
+                if (!f->follower->master && f->follower->followers) {
+                    GET_LEADERSHIP_EXP(f->follower) += total;
+                    ch_printf(f->follower, "Your leadership skills have served "
+                                           "you well, %d leadership exp.\n\r",
+                              total);
+                } else if (!f->follower->master && !f->follower->followers) {
+                    GET_LEADERSHIP_EXP(f->follower) += total * 3 / 5;
+                    ch_printf(f->follower, "Your leadership skills have served "
+                                           "you well, %d leadership exp.\n\r",
+                              total * 3 / 5);
                 }
 
                 sprintf(buf, "You receive your share of %d experience.", total);
@@ -1369,14 +1376,16 @@ void group_gain(struct char_data *ch, struct char_data *victim)
                     if (!IS_IMMORTAL(f->follower)) {
                         total = NewExpCap(f->follower, total);
                     }
-                    if (!ch->master && ch->followers) {
-                        GET_LEADERSHIP_EXP(ch) += total;
-                        ch_printf(ch, "Your leadership skills have served you "
-                                      "well.\n\r", total);
-                    } else if (!ch->master && !ch->followers) {
-                        GET_LEADERSHIP_EXP(ch) += total * 3 / 5;
-                        ch_printf(ch, "Your leadership skills have served you "
-                                      "well.\n\r", total * 3 / 5);
+                    if (!f->follower->master && f->follower->followers) {
+                        GET_LEADERSHIP_EXP(f->follower) += total;
+                        ch_printf(f->follower, "Your leadership skills have "
+                                               "served you well, %d leadership "
+                                               "exp.\n\r", total);
+                    } else if (!f->follower->master && !f->follower->followers) {
+                        GET_LEADERSHIP_EXP(f->follower) += total * 3 / 5;
+                        ch_printf(f->follower, "Your leadership skills have "
+                                               "served you well, %d leadership "
+                                               "exp.\n\r", total * 3 / 5);
                     }
                     sprintf(buf, "You receive your share of %d experience.",
                             total);
