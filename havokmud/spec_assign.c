@@ -1677,6 +1677,9 @@ void assign_rooms()
 { 44114,  Read_Room},// in proc_assign and add to protos..
 { 51151, preperationproc },  //Royal rumble proc.
 
+    { 53025,   Fountain}, /* Luna's fountain */
+
+
 { 11353, knockproc },
     { -1, NULL},
   };
