@@ -1061,7 +1061,10 @@ int thief(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
     for (cons = real_roomp(ch->in_room)->people; cons;
          cons = cons->next_in_room) {
         if (cons != ch && !IS_IMMORTAL(cons) && !number(0, 4)) {
-            npc_steal(ch, cons);
+            if (ch->master && cons != ch->master && 
+                !in_group(ch->master, cons)) {
+                npc_steal(ch, cons);
+            }
         }
     }
 
