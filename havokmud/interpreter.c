@@ -3194,7 +3194,7 @@ case CON_CHECK_MAGE_TYPE:{
     STATE(d) = CON_SLCT;
     if (IS_SET(SystemFlags, SYS_WIZLOCKED) || SiteLock(d->host))  {
       if (GetMaxLevel(d->character) < LOW_IMMORTAL) {
-	sprintf(buf, "Sorry, the game is locked up for repair or your site is bannedr\n\r");
+	sprintf(buf, "Sorry, the game is locked up for repair or your site is banned.\n\r");
 	SEND_TO_Q(buf,d);
 	STATE(d) = CON_WIZLOCK;
       }
