@@ -1935,8 +1935,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
   }
 
 
-  if (cmd!=370 && apply_soundproof(ch))
-     return;
+	if (cmd!=370 && apply_soundproof(ch))
+		return;
+
+	if (cmd == 370 && !HasClass(ch,CLASS_PSI)) {
+		send_to_char("You, think, think harder.. and nearly bust a vein.\n\r", ch);
+		return;
+	}
 
   argument = skip_spaces(argument);
 

@@ -1584,32 +1584,30 @@ if (affected_by_spell(v,SPELL_ANTI_MAGIC_SHELL) && IsMagicSpell(type)) {
 
 int DoDamage(struct char_data *ch, struct char_data *v, int dam, int type)
 {
-  int lev;
+	int lev;
 
-  specdamage(ch,v);
+	specdamage(ch,v);
 
-  if (dam >= 0) {
-    GET_HIT(v)-=dam;
-
-    if (type >= TYPE_HIT)    {
-      if (IS_AFFECTED(v, AFF_FIRESHIELD) &&
-         !IS_AFFECTED(ch, AFF_FIRESHIELD))      {
-        if(!saves_spell(ch, SAVING_SPELL-4))
-          {BurnWings(ch);}
-	lev = GetMaxLevel(v);
-	dam = dice(1,6)+(lev/2);
-	if (damage(v, ch, dam, SPELL_FIREBALL)) 	{
-	  if (GET_POS(ch) == POSITION_DEAD)
-	    return(TRUE);
+	if (dam > 0) {
+		GET_HIT(v)-=dam;
+		if (type >= TYPE_HIT) {
+			if (IS_AFFECTED(v, AFF_FIRESHIELD) && !IS_AFFECTED(ch, AFF_FIRESHIELD)) {
+				if(!saves_spell(ch, SAVING_SPELL-4)) {
+					BurnWings(ch);
+				}
+				lev = GetMaxLevel(v);
+				dam = dice(1,6)+(lev/2);
+				//blip
+				if (damage(v, ch, dam, SPELL_FIRESHIELD)) {
+					if (GET_POS(ch) == POSITION_DEAD)
+						return(TRUE);
+				}
+			}
+		}
+		update_pos(v);
+//	} else {
 	}
-      }
-    }
-
-    update_pos(v);
-  } else   {
-  }
-
-  return(FALSE);
+	return(FALSE);
 }
 
 
@@ -1618,7 +1616,7 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 {
   int nr, max_hit, i, j;
   struct message_type *messages;
-  char buf[500];
+  char buf[500], chbuf[500],victbuf[500],rmbuf[500],dambuf[100];
 
   if (attacktype == SKILL_KICK) return; /* filter out kicks,
 					  hard coded in do_kick */
@@ -1632,114 +1630,133 @@ int DamageMessages( struct char_data *ch, struct char_data *v, int dam,
 		}
 	} else {
 
-    for(i = 0; i < MAX_MESSAGES; i++) {
-      if (fight_messages[i].a_type == attacktype)
-      {
-	nr=dice(1,fight_messages[i].number_of_attacks);
+		for(i = 0; i < MAX_MESSAGES; i++) {
+			if (fight_messages[i].a_type == attacktype) {
+				nr=dice(1,fight_messages[i].number_of_attacks);
+				for(j=1,messages=fight_messages[i].msg;(j<nr)&&(messages);j++)
+					messages=messages->next;
+	/* fixed damage displays for spells/backstab/etc, Lennya 20030326 */
+					if (!IS_NPC(v) && (GetMaxLevel(v) > MAX_MORT)) {
+						sprintf(chbuf,"%s",messages->god_msg.attacker_msg);
+						sprintf(victbuf,"%s",messages->god_msg.victim_msg);
+						sprintf(rmbuf,"%s",messages->god_msg.room_msg);
+//						act(messages->god_msg.attacker_msg,
+//							  FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+//						act(messages->god_msg.victim_msg,
+//							  FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+//						act(messages->god_msg.room_msg,
+//							  FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+					} else if (dam > 0) {
+						if (GET_POS(v) == POSITION_DEAD) {
+							sprintf(chbuf,"%s",messages->die_msg.attacker_msg);
+							sprintf(victbuf,"%s",messages->die_msg.victim_msg);
+							sprintf(rmbuf,"%s",messages->die_msg.room_msg);
+//							act(messages->die_msg.attacker_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+//							act(messages->die_msg.victim_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+//							act(messages->die_msg.room_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+						} else {
+							sprintf(chbuf,"%s",messages->hit_msg.attacker_msg);
+							sprintf(victbuf,"%s",messages->hit_msg.victim_msg);
+							sprintf(rmbuf,"%s",messages->hit_msg.room_msg);
+//							act(messages->hit_msg.attacker_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+//							act(messages->hit_msg.victim_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+//							act(messages->hit_msg.room_msg,
+//								FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+						}
+					/* dam >0 */
+					} else if (dam <= 0) {
+						sprintf(chbuf,"%s",messages->miss_msg.attacker_msg);
+						sprintf(victbuf,"%s",messages->miss_msg.victim_msg);
+						sprintf(rmbuf,"%s",messages->miss_msg.room_msg);
+//						act(messages->miss_msg.attacker_msg,
+//							FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+//						act(messages->miss_msg.victim_msg,
+//							FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+//						act(messages->miss_msg.room_msg,
+//							FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+					} /* dam == 0 */
+				} /* fight messages == atk type */
+			}
+			/* add the damage display for imms and legends */
+			if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+//				if (dam <= 0) {
+//					sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
+//				} else {
+					sprintf(dambuf," $c000Y($c000W%d$c000Y)$c0007",dam);
+//				}
+				strcat(chbuf,dambuf);
+				sprintf(dambuf,"");
+			}
+			/* send the messages */
+			act(chbuf,FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
+			act(victbuf,FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
+			act(rmbuf,FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
+			/* clear out the buffers */
+//			sprintf(chbuf,"");
+//			sprintf(victbuf,"");
+//			sprintf(rmbuf,"");
 
-	for(j=1,messages=fight_messages[i].msg;(j<nr)&&(messages);j++)
-	  messages=messages->next;
+		}
 
-	if (!IS_NPC(v) && (GetMaxLevel(v) > MAX_MORT))
-	{
-	  act(messages->god_msg.attacker_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-	  act(messages->god_msg.victim_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-	  act(messages->god_msg.room_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-	} else if (dam > 0)
-	{
-	  if (GET_POS(v) == POSITION_DEAD)
-	  {
-	    act(messages->die_msg.attacker_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-	    act(messages->die_msg.victim_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-	    act(messages->die_msg.room_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-	  } else
-	  {
-	    act(messages->hit_msg.attacker_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-	    act(messages->hit_msg.victim_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-	    act(messages->hit_msg.room_msg,
-		FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-	  }
-       } /* dam >0 */
-	  else if (dam == 0)
-	{
-	  act(messages->miss_msg.attacker_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_CHAR);
-	  act(messages->miss_msg.victim_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_VICT);
-	  act(messages->miss_msg.room_msg,
-	      FALSE, ch, ch->equipment[WIELD], v, TO_NOTVICT);
-	} /* dam == 0 */
-      } /* fight messages == atk type */
+		switch (GET_POS(v)) {
+			case POSITION_MORTALLYW:
+				act("$n is mortally wounded, and will die soon, if not aided.",
+					TRUE, v, 0, 0, TO_ROOM);
+				act("You are mortally wounded, and will die soon, if not aided.",
+					FALSE, v, 0, 0, TO_CHAR);
+			break;
+		case POSITION_INCAP:
+				act("$n is incapacitated and will slowly die, if not aided.",
+					TRUE, v, 0, 0, TO_ROOM);
+				act("You are incapacitated and you will slowly die, if not aided.",
+					FALSE, v, 0, 0, TO_CHAR);
+			break;
+		case POSITION_STUNNED:
+			act("$n is stunned, but will probably regain consciousness again.",
+				TRUE, v, 0, 0, TO_ROOM);
+			act("You're stunned, but you will probably regain consciousness again.",
+				FALSE, v, 0, 0, TO_CHAR);
+			break;
+		case POSITION_DEAD:
+			act("$c0015$n is dead! $c0011R.I.P.", TRUE, v, 0, 0, TO_ROOM);
+			act("$c0009You are dead!  Sorry...", FALSE, v, 0, 0, TO_CHAR);
+			//send_to_char("$c0009You are dead! Sorry..",v);
+			break;
 
-    }
-  }
-  switch (GET_POS(v)) {
-  case POSITION_MORTALLYW:
-    act("$n is mortally wounded, and will die soon, if not aided.",
-	TRUE, v, 0, 0, TO_ROOM);
-    act("You are mortally wounded, and will die soon, if not aided.",
-	FALSE, v, 0, 0, TO_CHAR);
-    break;
-  case POSITION_INCAP:
-    act("$n is incapacitated and will slowly die, if not aided.",
-	TRUE, v, 0, 0, TO_ROOM);
-    act("You are incapacitated and you will slowly die, if not aided.",
-	FALSE, v, 0, 0, TO_CHAR);
-    break;
-  case POSITION_STUNNED:
-    act("$n is stunned, but will probably regain consciousness again.",
-	TRUE, v, 0, 0, TO_ROOM);
-    act("You're stunned, but you will probably regain consciousness again.",
-	FALSE, v, 0, 0, TO_CHAR);
-    break;
-  case POSITION_DEAD:
-    act("$c0015$n is dead! $c0011R.I.P.", TRUE, v, 0, 0, TO_ROOM);
-    act("$c0009You are dead!  Sorry...", FALSE, v, 0, 0, TO_CHAR);
-    //send_to_char("$c0009You are dead! Sorry..",v);
-    break;
-
-  default:  /* >= POSITION SLEEPING */
-
-    max_hit=hit_limit(v);
-
-    if (dam > (max_hit/5)) {
-      act("That Really $c0010HURT!$c0007",FALSE, v, 0, 0, TO_CHAR);
-    }
-    if (GET_HIT(v) < (max_hit/(v->style==FIGHTING_STYLE_EVASIVE ? 3:5)) && GET_HIT(v) > 0) {
-
-      if(GET_HIT(v) < (max_hit/5))
-      act("You wish that your wounds would stop $c0010BLEEDING$c0007 so much!",
-	  FALSE,v,0,0,TO_CHAR);
-
-      if (IS_NPC(v) && (IS_SET(v->specials.act, ACT_WIMPY))) {
-	strcpy(buf, "flee");
-	command_interpreter(v, buf);
-      } else if (!IS_NPC(v)) {
-	if (IS_SET(v->specials.act, PLR_WIMPY)) {
-	  strcpy(buf, "flee");
-	  command_interpreter(v, buf);
+		default:  /* >= POSITION SLEEPING */
+			max_hit=hit_limit(v);
+			if (dam > (max_hit/5)) {
+				act("That Really $c0010HURT!$c0007",FALSE, v, 0, 0, TO_CHAR);
+			}
+			if (GET_HIT(v) < (max_hit/(v->style==FIGHTING_STYLE_EVASIVE ? 3:5)) && GET_HIT(v) > 0) {
+				if(GET_HIT(v) < (max_hit/5))
+					act("You wish that your wounds would stop $c0010BLEEDING$c0007 so much!",
+						FALSE,v,0,0,TO_CHAR);
+				if (IS_NPC(v) && (IS_SET(v->specials.act, ACT_WIMPY))) {
+					strcpy(buf, "flee");
+					command_interpreter(v, buf);
+				} else if (!IS_NPC(v)) {
+					if (IS_SET(v->specials.act, PLR_WIMPY)) {
+						strcpy(buf, "flee");
+						command_interpreter(v, buf);
+					}
+				}
+			}
+			if (MOUNTED(v)) {
+				/* chance they fall off */
+				RideCheck(v, -dam/2);
+			}
+			if (RIDDEN(v)) {
+				/* chance the rider falls off */
+				RideCheck(RIDDEN(v), -dam);
+			}
+		break;
 	}
-
-      }
-    }
-    if (MOUNTED(v)) {
-      /* chance they fall off */
-      RideCheck(v, -dam/2);
-    }
-    if (RIDDEN(v)) {
-      /* chance the rider falls off */
-      RideCheck(RIDDEN(v), -dam);
-    }
-    break;
-  }
 }
 
 
@@ -1871,7 +1888,7 @@ if (!IS_PC(victim) && !IS_SET(victim->specials.act,ACT_POLYSELF))
      *  if the victim is dead, return TRUE.
      */
      if (IS_SET(ch->specials.act, PLR_AUTOGOLD)) {
-		do_get(ch, "coins corpse", -1);
+		do_get(ch, "all.coin corpse", -1);
 	 }
 	   if (IS_SET(ch->specials.act, PLR_AUTOLOOT)) {
 		 do_get(ch, "all corpse", -1);
@@ -2249,66 +2266,56 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
     dam  = str_app[STRENGTH_APPLY_INDEX(ch)].todam;
     dam += GET_DAMROLL(ch);
 
-    if (!wielded) {
-      if (IS_NPC(ch) || HasClass(ch, CLASS_MONK ))
-		dam += dice(ch->specials.damnodice, ch->specials.damsizedice);
-      else
-		dam += number(0,2);  /* Max. 2 dam with bare hands */
-    } else {
-        if (wielded->obj_flags.value[2] > 0) {
-          dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
-        }  /* !v[2]>0 */ else
-      {
-        act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_CHAR);
-	    act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_ROOM);
-	    if ((obj = unequip_char(ch, WIELD))!=NULL) {
-	       MakeScrap(ch,v, obj);
-	       dam += 1;
-	    }
-      }
-/* aarcerak bug fix..get_str(ch) can't be used because of additional str */
-      if (wielded->obj_flags.weight > str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
-	if (ch->equipment[HOLD]) {
-	  /*
-	    its too heavy to wield properly
-	    */
-	  dam /= 2;
+	if (!wielded) {
+		if (IS_NPC(ch) || HasClass(ch, CLASS_MONK ))
+			dam += dice(ch->specials.damnodice, ch->specials.damsizedice);
+		else
+			dam += number(0,2);  /* Max. 2 dam with bare hands */
+	} else {
+		if (wielded->obj_flags.value[2] > 0) {
+			dam += dice(wielded->obj_flags.value[1],wielded->obj_flags.value[2]);
+		}  /* !v[2]>0 */ else {
+			act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_CHAR);
+			act("$p snaps into pieces!", TRUE, ch, wielded, 0, TO_ROOM);
+			if ((obj = unequip_char(ch, WIELD))!=NULL) {
+				MakeScrap(ch,v, obj);
+				dam += 1;
+			}
+		}
+		/* aarcerak bug fix..get_str(ch) can't be used because of additional str */
+		if (wielded->obj_flags.weight > str_app[STRENGTH_APPLY_INDEX(ch)].wield_w) {
+			if (ch->equipment[HOLD]) {
+				/* its too heavy to wield properly */
+				dam /= 2;
+			}
+		}
+
+      /* check for the various APPLY_RACE_SLAYER and APPLY_ALIGN_SLAYR here. */
+		for(j=0; j<MAX_OBJ_AFFECT; j++) {
+			if (wielded->affected[j].location == APPLY_RACE_SLAYER) {
+				if (wielded->affected[j].modifier == GET_RACE(v)) {
+					dam *= 2;
+				}
+			}
+			if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
+				if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
+					dam *= 2;
+				else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
+					dam *=2;
+				else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
+					dam *= 2;
+			}
+		}
 	}
-      }
 
-      /*
-	check for the various APPLY_RACE_SLAYER and APPLY_ALIGN_SLAYR
-	 here.
-       */
-
-
-      for(j=0; j<MAX_OBJ_AFFECT; j++)       {
-		if (wielded->affected[j].location == APPLY_RACE_SLAYER)         {
-		  if (wielded->affected[j].modifier == GET_RACE(v)) {
-		     dam *= 2;
-		  }
-		}
-
-		if (wielded->affected[j].location ==  APPLY_ALIGN_SLAYER) {
-		  if (wielded->affected[j].modifier > 1 && IS_GOOD(v))
-		    dam *= 2;
-		  else if ( wielded->affected[j].modifier == 1 && (!IS_GOOD(v) && !IS_EVIL(v)))
-		    dam *=2;
-		  else if ( wielded->affected[j].modifier < 1 && IS_EVIL(v))
-		    dam *= 2;
-		}
-      }
-    }
-
-    if (GET_POS(v) < POSITION_FIGHTING)
-      dam *= 1+(POSITION_FIGHTING-GET_POS(v))/3;
-    /* Position  sitting  x 1.33 */
-    /* Position  resting  x 1.66 */
-    /* Position  sleeping x 2.00 */
-    /* Position  stunned  x 2.33 */
-    /* Position  incap    x 2.66 */
-    /* Position  mortally x 3.00 */
-
+	if (GET_POS(v) < POSITION_FIGHTING)
+		dam *= 1+(POSITION_FIGHTING-GET_POS(v))/3;
+		/* Position  sitting  x 1.33 */
+		/* Position  resting  x 1.66 */
+		/* Position  sleeping x 2.00 */
+		/* Position  stunned  x 2.33 */
+		/* Position  incap    x 2.66 */
+		/* Position  mortally x 3.00 */
 
 	if(ch->style==FIGHTING_STYLE_AGGRESSIVE) {
 		if (FSkillCheck(ch, FIGHTING_STYLE_AGGRESSIVE)) /* 20% more damage if successful */
@@ -2320,13 +2327,11 @@ int GetWeaponDam(struct char_data *ch, struct char_data *v,
 		else
 			dam = dam - dam*0.20; /* 20% less damage if failed */
 	}
-    if (GET_POS(v) <= POSITION_DEAD)
-      return(0);
+	if (GET_POS(v) <= POSITION_DEAD)
+		return(0);
 
-    dam = MAX(1, dam);  /* Not less than 0 damage */
-
-    return(dam);
-
+	dam = MAX(1, dam);  /* Not less than 0 damage */
+	return(dam);
 }
 
 int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
@@ -2373,85 +2378,80 @@ int LoreBackstabBonus(struct char_data *ch, struct char_data *v)
 int HitVictim(struct char_data *ch, struct char_data *v, int dam,
 		   int type, int w_type, int (*dam_func)())
 {
-  extern byte backstab_mult[];
-  int dead, scheck = 0;
+	extern byte backstab_mult[];
+	int dead, scheck = 0;
 
-    if (type == SKILL_BACKSTAB) {
-      int tmp;
-      if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
-	tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
-	tmp += LoreBackstabBonus(ch, v);
-      } else {
-	tmp = backstab_mult[GetMaxLevel(ch)];
-      }
-
-      dam *= tmp;
-      dead = (*dam_func)(ch, v, dam, type);
-
-    } else {
-/*
-  reduce damage for dodge skill:
-*/
-	if (v->skills && v->skills[SKILL_DODGE].learned) {
-		if (v->style==FIGHTING_STYLE_DEFENSIVE) {
-			if (number(1,101) <= ((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? v->skills[SKILL_DODGE].learned * 1.25 : v->skills[SKILL_DODGE].learned)) {
-				dam -= number(1,((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? 5:3));
-				if (HasClass(v, CLASS_MONK)) {
-					MonkDodge(ch, v, &dam);
+	if (type == SKILL_BACKSTAB) {
+		int tmp;
+		if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
+			tmp = backstab_mult[GET_LEVEL(ch, THIEF_LEVEL_IND)];
+			tmp += LoreBackstabBonus(ch, v);
+		} else {
+			tmp = backstab_mult[GetMaxLevel(ch)];
+		}
+		dam *= tmp;
+		/* let's try the damage display here */
+//		if(GET_EXP(ch) > 200000000 || IS_IMMORTAL(ch)) {
+//			  sprintf(buf2,"%s $c0011($c0015%d$c0011)$c0007",buf,dam);
+//			  	act(buf2, FALSE, ch, wield, victim, TO_CHAR);
+//			ch_printf(ch,"$c000pYour backstab did %d damage.$c000w\n\r",dam);
+//		}
+		dead = (*dam_func)(ch, v, dam, type);
+	} else { /* not a backstab hit */
+		/* reduce damage for dodge skill:*/
+		if (v->skills && v->skills[SKILL_DODGE].learned) {
+			if (v->style==FIGHTING_STYLE_DEFENSIVE) {
+				if (number(1,101) <= ((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? v->skills[SKILL_DODGE].learned * 1.25 : v->skills[SKILL_DODGE].learned)) {
+					dam -= number(1,((FSkillCheck(v, FIGHTING_STYLE_DEFENSIVE)) ? 5:3));
+					if (HasClass(v, CLASS_MONK)) {
+						MonkDodge(ch, v, &dam);
+					}
 				}
 			}
 		}
+		dead = (*dam_func)(ch, v, dam, w_type);
 	}
-       dead = (*dam_func)(ch, v, dam, w_type);
-    }
-
-      /*
-       *  if the victim survives, lets hit him with a
-       *  weapon spell
-       */
-
-    if (!dead) {
-	WeaponSpell(ch,v,0,w_type);
-
-    }
+	/* if the victim survives, lets hit him with a weapon spell */
+	if (!dead) {
+		WeaponSpell(ch,v,0,w_type);
+	}
 }
 
 
-void root_hit(struct char_data *ch, struct char_data *victim, int type,
-	      int (*dam_func)(), int DistanceWeapon)
+void root_hit(struct char_data *ch, struct char_data *victim, int type, int (*dam_func)(), int DistanceWeapon)
 {
 	int temp;
-  int w_type, thaco, dam;
-  struct obj_data *wielded=0;  /* this is rather important. */
+	int w_type, thaco, dam;
+	struct obj_data *wielded=0;  /* this is rather important. */
 
-  if (HitCheckDeny(ch, victim, type, DistanceWeapon))
-     return;
+	if (HitCheckDeny(ch, victim, type, DistanceWeapon))
+		return;
 
-  GET_MOVE(ch) -= 1;
+	GET_MOVE(ch) -= 1;
 
-  w_type = GetWeaponType(ch, &wielded);
-  if (w_type == TYPE_HIT)
-    w_type = GetFormType(ch);  /* races have different types of attack */
+	w_type = GetWeaponType(ch, &wielded);
+	if (w_type == TYPE_HIT)
+		w_type = GetFormType(ch);  /* races have different types of attack */
 
-  thaco = CalcThaco(ch);
+	thaco = CalcThaco(ch);
 
-  if (HitOrMiss(ch, victim, thaco)) {
-    if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
-		//lets add resistances
-		temp = PreProcDam(victim,w_type,dam); //Lets see if the victim is resist or immune to the attack
-		if(temp == -1)
-			ch_printf(ch,"Your attack against %s is futile.\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
-		else if(temp < dam)
-			ch_printf(ch,"%s seems to resist your attack!\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
-
-       HitVictim(ch, victim, dam, type, w_type, dam_func);
-    } else {
-       MissVictim(ch, victim, type, w_type, dam_func);
-    }
-  } else {
-    MissVictim(ch, victim, type, w_type, dam_func);
-  }
-
+	if (HitOrMiss(ch, victim, thaco)) {
+		if ((dam = GetWeaponDam(ch, victim, wielded)) > 0) {
+			if (number(1,4) ==1) { /* let's give it a 25% chance of resist display -Lennya */
+				//lets add resistances
+				temp = PreProcDam(victim,w_type,dam); //Lets see if the victim is resist or immune to the attack
+				if(temp == -1)
+					ch_printf(ch,"Your attack against %s is futile.\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
+				else if(temp < dam)
+					ch_printf(ch,"%s seems to resist your attack!\n\r",IS_NPC(victim) ? victim->player.short_descr : GET_NAME(victim));
+			}
+			HitVictim(ch, victim, dam, type, w_type, dam_func);
+		} else {
+			MissVictim(ch, victim, type, w_type, dam_func);
+		}
+	} else {
+		MissVictim(ch, victim, type, w_type, dam_func);
+	}
 }
 
 void MissileHit(struct char_data *ch, struct char_data *victim, int type)
@@ -3497,7 +3497,7 @@ void DamageAllStuff( struct char_data *ch, int dam_type)
 
   /* equipment */
 
-  if (dam_type == FIRESHIELD) return; /* oddly enough, fireshield is not dam_type == FIRESHIELD */
+//  if (dam_type == FIRESHIELD) return;
 
   for (j = 0; j < MAX_WEAR; j++) {
     if (ch->equipment[j] && ch->equipment[j]->item_number>=0) {
@@ -3600,7 +3600,7 @@ int DamagedByAttack( struct obj_data *i, int dam_type)
 {
 	int num = 0;
 
-	if (dam_type == FIRE_DAMAGE) {
+	if (dam_type == FIRESHIELD) {
 		/* fireshield should scrap less -Lennya 20030322*/
 		if ((ITEM_TYPE(i) == ITEM_ARMOR) || (ITEM_TYPE(i) == ITEM_WEAPON)) {
 			while (!ItemSave(i,dam_type)) {
@@ -4646,7 +4646,7 @@ int FSkillCheck(struct char_data *ch, int fskill)
 	if (perc > ch->skills[fskill].learned) { /* fail */
 		/* let's see if he learned */
 		if (ch->skills[fskill].learned > 75 && ch->skills[fskill].learned < max) { /* only learn if skill is high enough */
-			if (number(1, 96) > ch->skills[fskill].learned) {
+			if (number(1, 96) > ch->skills[fskill].learned && (number(1,4) == 1)) {
 				send_to_char("You notice improvement with fighting in your current style.\n\r", ch);
 				ch->skills[fskill].learned += 1;
 				if (ch->skills[fskill].learned >= max) {

@@ -1535,6 +1535,8 @@ int pride_remover_five(struct char_data *ch, int cmd, char *arg, struct room_dat
 int pride_remover_six(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int pride_remover_seven(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int lust_sinner(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+/* mermaid's lagoon */
+int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 int preperationproc(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int chestproc(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);

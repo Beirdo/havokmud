@@ -2021,8 +2021,8 @@ if (IS_SET(SystemFlags,SYS_NOPORTAL)) {
       }      else      {
         GET_MANA(ch)-=20;
         send_to_char("You close your eyes and open a portal and quickly step through.\n\r",ch);
-        act("$n closes $s eyes and a shimmering portal appears!\n\r",FALSE,ch,0,0,TO_ROOM);
-        act("$n steps through the portal and the portal dissapears!\n\r",FALSE,ch,0,0,TO_ROOM);
+        act("$n closes $s eyes and a shimmering portal appears!",FALSE,ch,0,0,TO_ROOM);
+        act("$n steps through the portal and the portal dissapears!",FALSE,ch,0,0,TO_ROOM);
         char_from_room(ch);
         char_to_room(ch, location);
         act("A portal appears before you and $n steps through!",FALSE,ch,0,0,TO_ROOM);

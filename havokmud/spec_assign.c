@@ -1380,6 +1380,7 @@ void assign_mobiles()
 {32034, CorsairPush },
 {33188, Tyrannosaurus_swallower },
  {23200, FightingGuildMaster },
+ /* Tmeple of Sin */
  {51826, sinpool } , /* Lennyas pool proc*/
  {51843, pridemirror } , /* Lennyas mirror proc*/
  {51803, sin_spawner },
@@ -1390,7 +1391,10 @@ void assign_mobiles()
  {51805, lust_sinner },
  {51806, lust_sinner },
  {51812, Tyrannosaurus_swallower}, /* Hambre, Guardian of Gluttony */
-
+ /* mermaid lagoon */
+ {3907, mermaid }, /* Melodia Merqueen */
+ {3953, mermaid }, /* Sirens */
+ {3959, mermaid }, /* roaming mermaids */
 /* Heximal's new zone */
 	{50998, Deshima },
 

@@ -4831,7 +4831,7 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 		}
 
 
-		test = GET_CON(ch)+1;
+		test = GET_RCON(ch)+1;
 		test = test*100000;
 
 		if (GET_GOLD(ch) < test) {
@@ -4842,20 +4842,12 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 			act("$n says, 'Yoo need mo expuriense befo I can help yoo.'", FALSE, mob, 0, 0, TO_ROOM);
 			return (TRUE);
 		}
-		else if (GET_CON(ch) > 17) {
+		else if (GET_RCON(ch) > 17) {
 			act("$n says, 'Yoo too strong fo mee to help.'", FALSE, mob, 0, 0, TO_ROOM);
 			return (TRUE);
 		}
-		else {
-		log("entering the goblin_chuirgeon proc, warning, added con point won't stick after save.");
-		sprintf(buf,"1. Char: %s. Current con = %d",GET_NAME(ch),GET_CON(ch));
-		log(buf);
-		tmp_con = GET_CON(ch);
-		sprintf(buf,"2. temp con = %d",tmp_con);
-		log(buf);
-		tmp_con = tmp_con + 1;
-		sprintf(buf,"3. increased temp con : %d",tmp_con);
-		log(buf);
+		else { /* finally fixed this, used to use GET_CON, which isn't a hard value -Lennya */
+		tmp_con = GET_RCON(ch);
 		act("$n says, 'Vewy good.  I begin now.'", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n pushes you to the floor.", FALSE, mob, 0, 0, TO_ROOM);
 		act("$n walks over to one of the cages and pulls a small bunny out.", FALSE, mob, 0, 0, TO_ROOM);
@@ -4865,16 +4857,12 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 		GET_MANA(ch) = 1;
 		GET_MOVE(ch) = 1;
 		GET_HIT(ch) = 1;
-		log ("set mana/move/hitpoints to 1");
-		GET_CON(ch) = tmp_con;
-		sprintf(buf,"4. set con to temp con = %d",GET_CON(ch));
-		log(buf);
+		GET_RCON(ch) = (GET_RCON(ch)+1);
 		GET_GOLD(ch) -= test;
-		GET_EXP(ch) -= ((GET_CON(ch))*5000000);
-		sprintf(buf,"money and xps taken away, con = %d",GET_CON(ch));
-		log(buf);
+		GET_EXP(ch) -= ((GET_RCON(ch))*5000000);
 		do_save(ch, "", 0);
-		sprintf(buf,"saved, con = %d",GET_CON(ch));
+		sprintf(buf,"Player %s just bought a CON point, %d to %d. Payed %d xps, %d gold.",GET_NAME(ch),
+									tmp_con,GET_RCON(ch),((GET_RCON(ch))*5000000),test);
 		log(buf);
 		return (TRUE);
 		}
@@ -4882,7 +4870,6 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 	else {
 		return (FALSE);
 	}
-
 	return (FALSE);
 }
 

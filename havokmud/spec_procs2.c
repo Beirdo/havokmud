@@ -3539,7 +3539,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
   static char *n_skills[] = {
     "hunt",
     "find traps",
-    "disarm traps",
+    "remove traps",
     "value item",
     "find food",  /* 5 */
     "find water", /* 6 */
@@ -3570,7 +3570,7 @@ int hunter(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int 
       send_to_char(buf,ch);
       sprintf(buf," find traps     :  %s\n\r",how_good(ch->skills[SKILL_FIND_TRAP].learned));
       send_to_char(buf,ch);
-      sprintf(buf," disarm traps   :  %s\n\r",how_good(ch->skills[SKILL_REMOVE_TRAP].learned));
+      sprintf(buf," remove traps   :  %s\n\r",how_good(ch->skills[SKILL_REMOVE_TRAP].learned));
       send_to_char(buf,ch);
       sprintf(buf," value item     :  %s\n\r",how_good(ch->skills[SKILL_EVALUATE].learned));
       send_to_char(buf,ch);

@@ -904,17 +904,17 @@ if (!ch->skills) {
     diff = strlen(buf);
 
 
-    while (p) {
-      if (number(1,75+strlen(p))<learned || GetMaxLevel(ch) >= LOW_IMMORTAL){
-	strcat(buf2, p);
-      } else {
-	/* add case statement here to use random words from clips of elvish */
-	/* dwarvish etc so the words look like they came from that language */
-	strcat(buf2, RandomWord());
-      }
-      strcat(buf2, " ");
-      diff -= 1;
-      p = strtok(0, " ");  /* next word */
+	while (p) {
+		if (number(1,75+strlen(p))<learned || GetMaxLevel(ch) >= LOW_IMMORTAL) {
+			strcat(buf2, p);
+		} else {
+			/* add case statement here to use random words from clips of elvish */
+			/* dwarvish etc so the words look like they came from that language */
+			strcat(buf2, RandomWord());
+		}
+		strcat(buf2, " ");
+		diff -= 1;
+		p = strtok(0, " ");  /* next word */
     }
     /*
       if a recipient fails a roll, a word comes out garbled.
@@ -923,34 +923,32 @@ if (!ch->skills) {
     /*
       buf2 is now the "corrected" string.
       */
-if (!*buf2 || !buf2) {
-    send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
-    return;
-    }
+	if (!*buf2 || !buf2) {
+		send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
+		return;
+	}
 
     sprintf(buf,"$c0015[$c0005$n$c0015] says '%s'", buf2);
 
-    for (t = rp->people;t;t=t->next_in_room) {
-   if (t != ch) {
-if ((t->skills) && number(1,diff) < t->skills[skill_num].learned ||
-    GetMaxLevel(t) >= LOW_IMMORTAL || IS_NPC(t) ||
-    affected_by_spell(t,SKILL_ESP) || affected_by_spell(t,SPELL_COMP_LANGUAGES)||
-    ch->player.speaks == 9) {
-
-			/* these guys always understand */
-    if (GetMaxLevel(t) >= LOW_IMMORTAL || affected_by_spell(t,SKILL_ESP) ||
-       affected_by_spell(t,SPELL_COMP_LANGUAGES) || IS_NPC(t) ||
-       ch->player.speaks == SPEAK_ALL)  //Part 3 and last part of the speak all thing
-                                        //- Manwe Windmaster 200697
-    	  act(buf3, FALSE,ch,0,t,TO_VICT); else
-    	  		/* otherwise */
-
-	  act(buf, FALSE, ch, 0, t, TO_VICT);
-	} else {
-        act("$c0010$n speaks in a language you can't quite understand.", FALSE, ch, 0, t, TO_VICT);
+	for (t = rp->people;t;t=t->next_in_room) {
+		if (t != ch) {
+			if ((t->skills) && number(1,diff) < t->skills[skill_num].learned ||
+						GetMaxLevel(t) >= LOW_IMMORTAL || IS_NPC(t) ||
+						affected_by_spell(t,SKILL_ESP) || affected_by_spell(t,SPELL_COMP_LANGUAGES)||
+						ch->player.speaks == 9) {
+				/* these guys always understand */
+				if (GetMaxLevel(t) >= LOW_IMMORTAL || affected_by_spell(t,SKILL_ESP) ||
+								affected_by_spell(t,SPELL_COMP_LANGUAGES) || IS_NPC(t) ||
+								ch->player.speaks == SPEAK_ALL)  //Part 3 and last part of the speak all thing
+                      							                  //- Manwe Windmaster 200697
+					act(buf3, FALSE,ch,0,t,TO_VICT);
+				else /* otherwise */
+					act(buf, FALSE, ch, 0, t, TO_VICT);
+			} else {
+				act("$c0010$n speaks in a language you can't quite understand.", FALSE, ch, 0, t, TO_VICT);
+			}
+		}
 	}
-      }
-    }
 
     if (IS_NPC(ch)||(IS_SET(ch->specials.act, PLR_ECHO))) {
       sprintf(buf,"$c0015You say '%s'", argument + ii);

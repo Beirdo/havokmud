@@ -2140,7 +2140,7 @@ void spell_faerie_fire (byte level, struct char_data *ch,
   assert(ch && victim);
 
   if (affected_by_spell(victim, SPELL_FAERIE_FIRE)) {
-    send_to_char("Nothing new seems to happen",ch);
+    send_to_char("Nothing new seems to happen.\n\r",ch);
     return;
   }
 

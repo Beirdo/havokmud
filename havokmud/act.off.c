@@ -132,151 +132,138 @@ dlog("in do_kill");
 
 void do_backstab(struct char_data *ch, char *argument, int cmd)
 {
-  struct char_data *victim;
-  char name[256];
-  byte percent, base=0;
+	struct char_data *victim;
+	char name[256];
+	byte percent, base=0;
 
-dlog("in do_backstab");
+	dlog("in do_backstab");
 
-if (!ch->skills)
-	return;
+	if (!ch->skills)
+		return;
 
-  if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r"))
-    return;
+	if (check_peaceful(ch, "Naughty, naughty.  None of that here.\n\r"))
+		return;
 
-  only_argument(argument, name);
+	only_argument(argument, name);
 
-  if (!(victim = get_char_room_vis(ch, name))) {
-    send_to_char("Backstab who?\n\r", ch);
-    return;
-  }
+	if (!(victim = get_char_room_vis(ch, name))) {
+		send_to_char("Backstab who?\n\r", ch);
+		return;
+	}
 
-  if (victim == ch) {
-    send_to_char("How can you sneak up on yourself?\n\r", ch);
-    return;
-  }
+	if (victim == ch) {
+		send_to_char("How can you sneak up on yourself?\n\r", ch);
+		return;
+	}
 
-  if (!HasClass(ch, CLASS_THIEF)) {
-    send_to_char("You're no thief!\n\r", ch);
-    return;
-  }
+	if (!HasClass(ch, CLASS_THIEF)) {
+		send_to_char("You're no thief!\n\r", ch);
+		return;
+	}
 
-  if (!ch->equipment[WIELD]) {
-    send_to_char("You need to wield a weapon, to make it a success.\n\r",ch);
-    return;
-  }
+	if (!ch->equipment[WIELD]) {
+		send_to_char("You need to wield a weapon, to make it a success.\n\r",ch);
+		return;
+	}
 
-  if (MOUNTED(ch)) {
-    send_to_char("Your mount would give you away.\n", ch);
-    return;
-  }
+	if (MOUNTED(ch)) {
+		send_to_char("Your mount would give you away.\n", ch);
+		return;
+	}
 
-  if (ch->attackers) {
-    send_to_char("There's no way to reach that back while you're fighting!\n\r", ch);
-    return;
-  }
+	if (ch->attackers) {
+		send_to_char("There's no way to reach that back while you're fighting!\n\r", ch);
+		return;
+	}
 
-  if (victim->attackers >= 3) {
-    send_to_char("You can't get close enough to them to backstab!\n\r", ch);
-    return;
-  }
+	if (victim->attackers >= 3) {
+		send_to_char("You can't get close enough to them to backstab!\n\r", ch);
+		return;
+	}
 
-  if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE))   {
-    if (!IsGiant(ch))     {
-      act("$N is MUCH too large to backstab", FALSE, ch, 0, victim, TO_CHAR);
-      return;
-    }
-  }
+	if (IS_NPC(victim) && IS_SET(victim->specials.act, ACT_HUGE)) {
+		if (!IsGiant(ch)) {
+			act("$N is MUCH too large to backstab", FALSE, ch, 0, victim, TO_CHAR);
+			return;
+		}
+	}
 
-  if (ch->equipment[WIELD]->obj_flags.value[3] != 11 &&
-      ch->equipment[WIELD]->obj_flags.value[3] != 1  &&
-      ch->equipment[WIELD]->obj_flags.value[3] != 10) {
-    send_to_char("Only piercing or stabbing weapons can be used for backstabbing.\n\r",ch);
-    return;
-  }
+	if (ch->equipment[WIELD]->obj_flags.value[3] != 11 &&
+		ch->equipment[WIELD]->obj_flags.value[3] != 1  &&
+		ch->equipment[WIELD]->obj_flags.value[3] != 10) {
+		send_to_char("Only piercing or stabbing weapons can be used for backstabbing.\n\r",ch);
+		return;
+	}
 
-  if (ch->specials.fighting) {
-    send_to_char("You're too busy to backstab\n\r", ch);
-    return;
-  }
+	if (ch->specials.fighting) {
+		send_to_char("You're too busy to backstab\n\r", ch);
+		return;
+	}
 
-  if (MOUNTED(ch)) {
-    send_to_char("How can you surprise someone with all the racket that beast makes?\n\r", ch);
-    return;
-  }
+	if (MOUNTED(ch)) {
+		send_to_char("How can you surprise someone with all the racket that beast makes?\n\r", ch);
+		return;
+	}
 
-  if (victim->specials.fighting) {
-    base = 0;
-  } else {
-    base = 4;
-  }
+	if (victim->specials.fighting) {
+		base = 0;
+	} else {
+		base = 4;
+	}
 
-  if (victim->skills && victim->skills[SKILL_AVOID_BACK_ATTACK].learned &&
-      GET_POS(victim) > POSITION_SITTING && !IS_AFFECTED(victim, AFF_PARALYSIS))    {
-      percent=number(1,101); /* 101% is a complete failure */
-      if (percent < victim->skills[SKILL_AVOID_BACK_ATTACK].learned)       {
-           act("You sense a back attack from $N and avoid it skillfully!",
-	      FALSE, victim, 0, ch, TO_CHAR);
-           act("$n avoids a back attack from $N!",
-              FALSE, victim, 0, ch, TO_ROOM);
-              SetVictFighting(ch,victim); /* he avoided, so make him hit! */
-              SetCharFighting(ch,victim);
-              AddHated(victim, ch);
-          return;
-         } else {
-          act("You failed to sense a back attack from $N!",
-               FALSE, victim, 0, ch, TO_CHAR);
-          act("$n fails to avoid a back attack from $N!",
-              FALSE, victim, 0, ch, TO_ROOM);
-	  LearnFromMistake(victim, SKILL_AVOID_BACK_ATTACK, 0, 95);
-         }
+	if (victim->skills && victim->skills[SKILL_AVOID_BACK_ATTACK].learned &&
+		GET_POS(victim) > POSITION_SITTING && !IS_AFFECTED(victim, AFF_PARALYSIS)) {
+		percent=number(1,101); /* 101% is a complete failure */
+		if (percent < victim->skills[SKILL_AVOID_BACK_ATTACK].learned) {
+			act("You sense a back attack from $N and avoid it skillfully!",FALSE, victim, 0, ch, TO_CHAR);
+			act("$n avoids a back attack from $N!",FALSE, victim, 0, ch, TO_ROOM);
+			SetVictFighting(ch,victim); /* he avoided, so make him hit! */
+			SetCharFighting(ch,victim);
+			AddHated(victim, ch);
+			return;
+		} else {
+			act("You failed to sense a back attack from $N!",FALSE, victim, 0, ch, TO_CHAR);
+			act("$n fails to avoid a back attack from $N!",FALSE, victim, 0, ch, TO_ROOM);
+			LearnFromMistake(victim, SKILL_AVOID_BACK_ATTACK, 0, 95);
+		}
+	}  /* ^ they had skill avoid ba and where awake! ^ */
 
-    }  /* ^ they had skill avoid ba and where awake! ^ */
+	percent=number(1,101); /* 101% is a complete failure */
 
+	if (ch->skills[SKILL_BACKSTAB].learned) {
+		if (percent > ch->skills[SKILL_BACKSTAB].learned) { /* failure */
+			char buff[255];
+			if (AWAKE(victim)) {
+				AddHated(victim, ch);
+				damage(ch, victim, 0, SKILL_BACKSTAB); /* damage (third arg) = 0 */
+			} else { /* failed but vic is asleep */
+				base += 2;
+				GET_HITROLL(ch) += base;
+				AddHated(victim, ch);
+				hit(ch,victim,SKILL_BACKSTAB);
+				GET_HITROLL(ch) -= base;
+			}
+			LearnFromMistake(ch, SKILL_BACKSTAB, 0, 95);
+		} else { /* success */
+			char buff[256];
+			GET_HITROLL(ch) += base;
+			AddHated(victim, ch);
+			if (IS_PC(ch) && IS_PC(victim))
+				GET_ALIGNMENT(ch)-=50;
+			hit(ch,victim,SKILL_BACKSTAB);
+			GET_HITROLL(ch) -= base;
+		}
+	} else {
+		char buff[256];
+		AddHated(victim, ch);
+		damage(ch, victim, 0, SKILL_BACKSTAB);
+	}
 
-  percent=number(1,101); /* 101% is a complete failure */
-
-  if (ch->skills[SKILL_BACKSTAB].learned) {
-    if (percent > ch->skills[SKILL_BACKSTAB].learned) {
-	char buff[255];
-      if (AWAKE(victim))       {
-        AddHated(victim, ch);
-	damage(ch, victim, 0, SKILL_BACKSTAB);
-      } else {             /* failed but vic is asleep */
-	base += 2;
-	GET_HITROLL(ch) += base;
-
-
-	AddHated(victim, ch);
-	hit(ch,victim,SKILL_BACKSTAB);
-
-	GET_HITROLL(ch) -= base;
-      }
-
-      LearnFromMistake(ch, SKILL_BACKSTAB, 0, 95);
-    }
-
-    else {
-	char buff[256];
-
-        GET_HITROLL(ch) += base;
-
-
-        AddHated(victim, ch);
-        if (IS_PC(ch) && IS_PC(victim))
-			GET_ALIGNMENT(ch)-=50;
-
-        hit(ch,victim,SKILL_BACKSTAB);
-
-        GET_HITROLL(ch) -= base;
-
-    }
-  } else {
-	char buff[256];
-        AddHated(victim, ch);
-        damage(ch, victim, 0, SKILL_BACKSTAB);
-  }
-  WAIT_STATE(ch, PULSE_VIOLENCE*2);
+	if (OnlyClass(ch,CLASS_THIEF)) {
+		WAIT_STATE(ch, PULSE_VIOLENCE); /* one round lag for sc thieves */
+	} else {
+		WAIT_STATE(ch, PULSE_VIOLENCE*2); /* two rounds lag for multi thieves */
+	}
 }
 
 

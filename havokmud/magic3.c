@@ -1097,12 +1097,12 @@ void spell_animal_summon(byte level, struct char_data *ch,
 
   for (i=0;i<4;i++) {
 
-    mob = read_mobile(num+number(0,5), VIRTUAL);
+    mob = read_mobile(num+number(0,6), VIRTUAL);
 
     if (!mob) continue;
 
     char_to_room(mob, ch->in_room);
-    act("$n strides into the room", FALSE, mob, 0, 0, TO_ROOM);
+    act("$n strides into the room.", FALSE, mob, 0, 0, TO_ROOM);
   if(too_many_followers(ch)){
 	act("$N takes one look at the size of your posse and justs says no!",
 	    TRUE, ch, 0, victim, TO_CHAR);

@@ -298,3 +298,70 @@ int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int
 		}
 	}
 }
+
+int mermaid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	struct char_data *i, *next;
+	struct affected_type af;
+	int r_num = 0;
+	char buf[128];
+
+	if (cmd || !AWAKE(ch))
+		return(FALSE);
+
+	if (GET_POS(ch)<POSITION_SITTING)
+      return(FALSE);
+
+    if (check_soundproof(ch))
+    	return(FALSE);
+
+	if (check_nomagic(ch, 0, 0))
+		return(FALSE);
+
+	/*if ch is fighting, don't fire */
+	if (ch->specials.fighting)
+		return(FALSE);
+
+	/* if ch already has a follower, don't fire */
+	if (ch->followers)
+		return(FALSE);
+
+	/* ch not fighting, let's look for a victim */
+	if (ch->in_room > -1) {
+		/* there's victims, let's see if we can harrass one */
+	    for (i = real_roomp(ch->in_room)->people; i; i = next) {
+			next = i->next_in_room;
+			if ((GET_RACE(i) == RACE_HUMAN) && (GET_SEX(i) == SEX_MALE)) {
+				if (!IS_NPC(i) && !IS_LINKDEAD(i) && !IS_IMMORTAL(i)
+								&& !affected_by_spell(i,SPELL_CHARM_PERSON)) {
+					if (!IsImmune(i, IMM_CHARM)) {
+						if (!saves_spell(i, SAVING_PARA)) { /* didn't make his save, his ass is mine! */
+							act("$n sings a beautiful song, oh my.. Your heart is sold to $m.",FALSE,ch,0,i,TO_VICT);
+							act("$n hums a merry tune while looking $N in the eyes.",TRUE,ch,0,i,TO_NOTVICT);
+							act("$N grins like the moron he is. $n's charms enchanted him.",TRUE,ch,0,i,TO_NOTVICT);
+							if (i->master)
+								  stop_follower(i);
+							add_follower(i, ch);
+							af.type      = SPELL_CHARM_PERSON;
+							af.duration  = 24;
+							af.modifier  = 0;
+							af.location  = 0;
+							af.bitvector = AFF_CHARM;
+							affect_to_char(i, &af);
+							return(TRUE);
+						} else { /* made his save, give him some notice */
+							act("$n sings a beautiful song, oh my.. You're almost willing to follow $m.",FALSE,ch,0,i,TO_VICT);
+							act("$n hums a merry tune while looking $N in the eyes.",TRUE,ch,0,i,TO_NOTVICT);
+						}
+					} else { /* victim imm:charm, make him pay! */
+						act("$n sings a beautiful song. At the end, you applaud and give $m some coins.",FALSE,ch,0,i,TO_VICT);
+						act("$n hums a merry tune while looking $N in the eyes.",TRUE,ch,0,i,TO_NOTVICT);
+						act("When it's finished, $N gives $m a round of applause and hands over some coins.",TRUE,ch,0,i,TO_NOTVICT);
+						sprintf(buf,"20 coins %s",GET_NAME(ch));
+						do_give(i,buf,0);
+					}
+				} /* npc, linkdead, immortal, or already charmed */
+			} /* not a male human */
+		} /* end for */
+	} /* feh, noone here to harass */
+}
