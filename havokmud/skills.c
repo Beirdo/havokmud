@@ -2784,13 +2784,15 @@ void do_great_sight(struct char_data *ch, char *argument, int cmd)
         send_to_char("You haven't learned to enhance your sight yet.\n\r", ch);
         return;
     }
-
-    if (affected_by_spell(ch, SPELL_DETECT_INVISIBLE | SPELL_SENSE_LIFE | 
-                              SPELL_TRUE_SIGHT)) {
-        send_to_char("You already have partial great sight.\n\r", ch);
+    
+    if (affected_by_spell(ch, SPELL_DETECT_INVISIBLE) &&
+	affected_by_spell(ch, SPELL_SENSE_LIFE) &&
+	affected_by_spell(ch, SPELL_TRUE_SIGHT)) {
+        send_to_char("You cannot seem to benifit anything from this.\n\r",
+		     ch);
         return;
     }
-
+  
     if (GET_MANA(ch) < 50) {
         send_to_char("You haven't got the mental strength to try this.\n\r",
                      ch);
