@@ -28,32 +28,45 @@ int GetClassLevel(struct char_data *ch, int class)
 
 int CountBits(int class)
 {
-    if (class == 1)
+    if (class == 1) {
         return (1);
-    if (class == 2)
+    }
+    if (class == 2) {
         return (2);
-    if (class == 4)
+    }
+    if (class == 4) {
         return (3);
-    if (class == 8)
+    }
+    if (class == 8) {
         return (4);
-    if (class == 16)
+    }
+    if (class == 16) {
         return (5);
-    if (class == 32)
+    }
+    if (class == 32) {
         return (6);
-    if (class == 64)
+    }
+    if (class == 64) {
         return (7);
-    if (class == 128)
+    }
+    if (class == 128) {
         return (8);
-    if (class == 256)
+    }
+    if (class == 256) {
         return (9);
-    if (class == 512)
+    }
+    if (class == 512) {
         return (10);
-    if (class == 1024)
+    }
+    if (class == 1024) {
         return (11);
-    if (class == 2048)
+    }
+    if (class == 2048) {
         return (12);
-    if (class == CLASS_NECROMANCER)
+    }
+    if (class == CLASS_NECROMANCER) {
         return (13);
+    }
 }
 
 int OnlyClass(struct char_data *ch, int class)
@@ -94,9 +107,9 @@ int HasClass(struct char_data *ch, int class)
     /*
      * was NPC 
      */
-    if (IS_SET(ch->player.class, class))
+    if (IS_SET(ch->player.class, class)) {
         return (TRUE);
-
+    }
     return FALSE;
 }
 
@@ -114,41 +127,42 @@ int HowManyClasses(struct char_data *ch)
     if (tot) {
         return (tot);
     } else {
-        if (IS_SET(ch->player.class, CLASS_MAGIC_USER))
+        if (IS_SET(ch->player.class, CLASS_MAGIC_USER)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_WARRIOR))
+        }
+        if (IS_SET(ch->player.class, CLASS_WARRIOR)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_THIEF))
+        }
+        if (IS_SET(ch->player.class, CLASS_THIEF)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_CLERIC))
+        }
+        if (IS_SET(ch->player.class, CLASS_CLERIC)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_DRUID))
+        }
+        if (IS_SET(ch->player.class, CLASS_DRUID)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_MONK))
+        }
+        if (IS_SET(ch->player.class, CLASS_MONK)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_BARBARIAN))
+        }
+        if (IS_SET(ch->player.class, CLASS_BARBARIAN)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_SORCERER))
+        }
+        if (IS_SET(ch->player.class, CLASS_SORCERER)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_PALADIN))
+        }
+        if (IS_SET(ch->player.class, CLASS_PALADIN)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_RANGER))
+        }
+        if (IS_SET(ch->player.class, CLASS_RANGER)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_PSI))
+        }
+        if (IS_SET(ch->player.class, CLASS_PSI)) {
             tot++;
-
-        if (IS_SET(ch->player.class, CLASS_NECROMANCER))
+        }
+        if (IS_SET(ch->player.class, CLASS_NECROMANCER)) {
             tot++;
+        }
     }
 
     return (tot);
@@ -157,32 +171,42 @@ int HowManyClasses(struct char_data *ch)
 int BestFightingClass(struct char_data *ch)
 {
 
-    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
+    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) {
         return (WARRIOR_LEVEL_IND);
-    if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) {
         return (PALADIN_LEVEL_IND);
-
-    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) {
         return (BARBARIAN_LEVEL_IND);
-    if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, RANGER_LEVEL_IND)) {
         return (RANGER_LEVEL_IND);
-
-    if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, CLERIC_LEVEL_IND)) {
         return (CLERIC_LEVEL_IND);
-    if (GET_LEVEL(ch, DRUID_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, DRUID_LEVEL_IND)) {
         return (DRUID_LEVEL_IND);
-    if (GET_LEVEL(ch, MONK_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MONK_LEVEL_IND)) {
         return (MONK_LEVEL_IND);
-    if (GET_LEVEL(ch, THIEF_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
         return (THIEF_LEVEL_IND);
-    if (GET_LEVEL(ch, PSI_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PSI_LEVEL_IND)) {
         return (PSI_LEVEL_IND);
-    if (GET_LEVEL(ch, MAGE_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MAGE_LEVEL_IND)) {
         return (MAGE_LEVEL_IND);
-    if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) {
         return (SORCERER_LEVEL_IND);
-    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)) {
         return (NECROMANCER_LEVEL_IND);
+    }
     log("Massive error.. character has no recognized class.");
     log(GET_NAME(ch));
     assert(0);
@@ -195,56 +219,68 @@ int BestFightingClass(struct char_data *ch)
  */
 int HasFightingClass(struct char_data *ch)
 {
-    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
+    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) {
         return (TRUE);
-    if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) {
         return (TRUE);
-
-    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) {
         return (TRUE);
-    if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, RANGER_LEVEL_IND)) {
         return (TRUE);
-
-    if (GET_LEVEL(ch, DRUID_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, DRUID_LEVEL_IND)) {
         return (TRUE);
-    if (GET_LEVEL(ch, MONK_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MONK_LEVEL_IND)) {
         return (TRUE);
-    if (GET_LEVEL(ch, THIEF_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
         return (TRUE);
-
+    }
     return (FALSE);
 }
 
 int BestThiefClass(struct char_data *ch)
 {
-    if (GET_LEVEL(ch, THIEF_LEVEL_IND))
+    if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
         return (THIEF_LEVEL_IND);
-    if (GET_LEVEL(ch, MONK_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MONK_LEVEL_IND)) {
         return (MONK_LEVEL_IND);
-    if (GET_LEVEL(ch, PSI_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PSI_LEVEL_IND)) {
         return (PSI_LEVEL_IND);
-
-    if (GET_LEVEL(ch, MAGE_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MAGE_LEVEL_IND)) {
         return (MAGE_LEVEL_IND);
-    if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) {
         return (SORCERER_LEVEL_IND);
-
-    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) {
         return (WARRIOR_LEVEL_IND);
-    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) {
         return (BARBARIAN_LEVEL_IND);
-    if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, RANGER_LEVEL_IND)) {
         return (RANGER_LEVEL_IND);
-    if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) {
         return (PALADIN_LEVEL_IND);
-
-    if (GET_LEVEL(ch, DRUID_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, DRUID_LEVEL_IND)) {
         return (DRUID_LEVEL_IND);
-    if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, CLERIC_LEVEL_IND)) {
         return (CLERIC_LEVEL_IND);
-    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)) {
         return (NECROMANCER_LEVEL_IND);
-
+    }
     log("Massive error.. character has no recognized class.");
     log(GET_NAME(ch));
     assert(0);
@@ -254,34 +290,42 @@ int BestThiefClass(struct char_data *ch)
 
 int BestMagicClass(struct char_data *ch)
 {
-    if (GET_LEVEL(ch, MAGE_LEVEL_IND))
+    if (GET_LEVEL(ch, MAGE_LEVEL_IND)) {
         return (MAGE_LEVEL_IND);
-    if (GET_LEVEL(ch, SORCERER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, SORCERER_LEVEL_IND)) {
         return (SORCERER_LEVEL_IND);
-    if (GET_LEVEL(ch, DRUID_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, DRUID_LEVEL_IND)) {
         return (DRUID_LEVEL_IND);
-    if (GET_LEVEL(ch, CLERIC_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, CLERIC_LEVEL_IND)) {
         return (CLERIC_LEVEL_IND);
-    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND)) {
         return (NECROMANCER_LEVEL_IND);
-
-    if (GET_LEVEL(ch, PALADIN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PALADIN_LEVEL_IND)) {
         return (PALADIN_LEVEL_IND);
-    if (GET_LEVEL(ch, PSI_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, PSI_LEVEL_IND)) {
         return (PSI_LEVEL_IND);
-    if (GET_LEVEL(ch, RANGER_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, RANGER_LEVEL_IND)) {
         return (RANGER_LEVEL_IND);
-
-    if (GET_LEVEL(ch, THIEF_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, THIEF_LEVEL_IND)) {
         return (THIEF_LEVEL_IND);
-    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, WARRIOR_LEVEL_IND)) {
         return (WARRIOR_LEVEL_IND);
-    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND)) {
         return (BARBARIAN_LEVEL_IND);
-
-    if (GET_LEVEL(ch, MONK_LEVEL_IND))
+    }
+    if (GET_LEVEL(ch, MONK_LEVEL_IND)) {
         return (MONK_LEVEL_IND);
-
+    }
     log("Massive error.. character has no recognized class.");
     log(GET_NAME(ch));
     ch->player.class = 4;
