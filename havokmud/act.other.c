@@ -3325,22 +3325,6 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
                 send_to_char("Set email address to what?\n\r", ch);
             }
         }
-    } else if (!strcmp(type, "clan")) {
-        if (*field) {
-            if (ch->specials.clan) {
-                free(ch->specials.clan);
-            }
-            ch->specials.clan = strdup(field);
-            if (cmd == 280) {
-                write_char_extra(ch);
-                send_to_char("Clan Field set.\n\r", ch);
-            }
-        } else {
-            if (ch->specials.clan) {
-                free(ch->specials.clan);
-            }
-            send_to_char("Set Clan field to None.\n\r", ch);
-        }
     } else {
         send_to_char("Unknown type to set.\n\r", ch);
         return;
@@ -3430,12 +3414,8 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
         /*
          * Display clan info
          */
-        if (finger->specials.clan == NULL) {
-            sprintf(buf, "$c000BClan info             : $c0007None\n\r");
-        } else {
-            sprintf(buf, "$c000BClan info             : $c0007%s\n\r",
-                    CAP(finger->specials.clan));
-        }
+        sprintf(buf, "$c000BClan info             : $c0007%s\n\r",
+                         clan_list[GET_CLAN(finger)].name);
         send_to_char(buf, ch);
 
         if (IS_IMMORTAL(ch)) {

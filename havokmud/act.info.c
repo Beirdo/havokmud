@@ -3926,12 +3926,13 @@ void do_where_person(struct char_data *ch, struct char_data *person,
         return;
 	}
 
-    sprintf(buf, "%-30s- %s ", PERS(person, ch),
+    sprintf(buf, "$c000W%-30s$c000B- $c000Y%s ", PERS(person, ch),
             (person->in_room > -1 ?
-             real_roomp(person->in_room)->name : "Nowhere"));
+             real_roomp(person->in_room)->name : "$c000RNowhere$c000w"));
 
     if (GetMaxLevel(ch) >= LOW_IMMORTAL) {
-        sprintf(buf + strlen(buf), "[%ld]", person->in_room);
+        sprintf(buf + strlen(buf), "$c000B[$c000W%ld$c000B]$c000w", 
+                person->in_room);
 	}
     strcpy(buf + strlen(buf), "\n\r");
 
@@ -3949,32 +3950,32 @@ void do_where_object(struct char_data *ch, struct obj_data *obj,
 		/*
 		 * object in a room
 		 */
-        sprintf(buf, "%-30s- %s [%d]\n\r",
-                obj->short_description,
+        sprintf(buf, "$c000W%-30s$c000B- $c000Y%s $c000B[$c000W%d"
+                     "$c000B]$c000w\n\r", obj->short_description,
                 real_roomp(obj->in_room)->name, obj->in_room);
     } else if (obj->carried_by != NULL) {
 		/*
 		 * object carried by monster
 		 */
-        sprintf(buf, "%-30s- carried by %s\n\r",
-                obj->short_description,
+        sprintf(buf, "$c000W%-30s$c000B- carried by: [$c000W%s$c000B]"
+                     "$c000w\n\r", obj->short_description,
                 numbered_person(ch, obj->carried_by));
     } else if (obj->equipped_by != NULL) {
 		/*
 		 * object equipped by monster
 		 */
-        sprintf(buf, "%-30s- equipped by %s\n\r",
-                obj->short_description,
+        sprintf(buf, "$c000W%-30s$c000B- equipped by: [$c000W%s$c000B]"
+                     "$c000w\n\r", obj->short_description,
                 numbered_person(ch, obj->equipped_by));
     } else if (obj->in_obj) {
 		/*
 		 * object in object
 		 */
-        sprintf(buf, "%-30s- in %s\n\r",
+        sprintf(buf, "$c000W%-30s$c000B- in: [$c000W%s$c000B]$c000w\n\r",
                 obj->short_description, obj->in_obj->short_description);
     } else {
-        sprintf(buf, "%-30s- god doesn't even know where...\n\r",
-                obj->short_description);
+        sprintf(buf, "$c000W%-30s$c000B- $c000Rgod doesn't even know "
+                     "where...\n\r", obj->short_description);
     }
     if (*buf) {
         append_to_string_block(sb, buf);
@@ -4014,7 +4015,7 @@ void do_where(struct char_data *ch, char *argument, int cmd)
             return;
         } else {
             init_string_block(&sb);
-            append_to_string_block(&sb, "Players:\n\r--------\n\r");
+            append_to_string_block(&sb, "$c000BPlayers:\n\r--------\n\r");
 
             for (d = descriptor_list; d; d = d->next) {
                 if (d->character && d->connected == CON_PLYNG &&
@@ -4024,13 +4025,16 @@ void do_where(struct char_data *ch, char *argument, int cmd)
                     /*
                      * If switched
                      */
-                        sprintf(buf, "%-20s - %s [%ld] In body of %s\n\r",
+                        sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
+                                     "$c000B[$c000W%ld$c000B] In body of: "
+                                     "[$c000W%s$c000B]$c000w\n\r",
                                 d->original->player.name,
                                 real_roomp(d->character->in_room)->name,
                                 d->character->in_room,
                                 fname(d->character->player.name));
                     } else {
-                        sprintf(buf, "%-20s - %s [%ld]\n\r",
+                        sprintf(buf, "$c000W%-20s $c000B- $c000Y%s "
+                                     "$c000B[$c000W%ld$c000B]$c000w\n\r",
                                 d->character->player.name,
                                 real_roomp(d->character->in_room)->name,
                                 d->character->in_room);
