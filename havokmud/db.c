@@ -4075,6 +4075,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 	ch->specials.m_deaths = st->m_deaths;
 	ch->specials.m_kills = st->m_kills;
 
+	ch->specials.remortclass = 1; //st->remortclass;
 
   ch->specials.spells_to_learn = st->spells_to_learn;
   ch->specials.alignment    = st->alignment;

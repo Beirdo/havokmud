@@ -2916,7 +2916,7 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 		}
 	}
 
-	if(avg/num<50 || GET_LEADERSHIP_EXP(ch)< 50000000) { /* Average level is 50?? they maxxed out?? */
+	if(avg/num<50 || GET_LEADERSHIP_EXP(ch) < 50000000) { /* Average level is 50?? they maxxed out?? */
 		do_mobTell2(ch,mob,"You don't look strong enough or worthy enough to be in my presences.");
 		return (TRUE);
 	}
@@ -2945,7 +2945,9 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 			ch_printf(ch,"You just obtained a new class!!! %d",pc_num_class(choose));
 			ch->player.class=hasclass;
 			do_restore(ch, GET_NAME(ch), 0);
+			ch->specials.remortclass=choose;
 
+			ch->points.max_hit=ch->points.max_hit / GET_CON(ch);
 
 
 			/*reset the char */
@@ -2953,7 +2955,8 @@ int remort_guild(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	 			if (HasClass(ch, pc_num_class(x))) { //set all classes to level 1
 					ch->player.level[x]=1;
 
-				}
+				} else
+					ch->player.level[x]=0;
 			}
 			GET_EXP(ch)=1;
 			GET_LEADERSHIP_EXP(ch)=1;

@@ -1270,6 +1270,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
   extern char *position_types[];
   extern char *connected_types[];
   extern char *RaceName[];
+  extern const char *class_names[];
   extern struct str_app_type str_app[];
   extern const struct clan clan_list[MAX_CLAN];
 dlog("in do_stat");
@@ -1446,6 +1447,8 @@ sprintf(buf,"$c0005Level [$c0014%d$c0005/$c0015%d$c0005/$c0014%d$c0005/$c0015%d$
 	      k->player.level[10],k->player.level[11],
 	      k->player.level[12],GET_ALIGNMENT(k));
 act(buf,FALSE,ch,0,0,TO_CHAR);
+
+ch_printf(ch,"$c0005Remort Class: $c000W%s$c000P.\n\r", class_names[k->specials.remortclass]);
 
 sprintf(buf,"$c0005Birth : [$c0014%ld$c0005]secs, Logon[$c0014%ld$c0005]secs, Played[$c0014%d$c0005]secs",
 	      k->player.time.birth,
@@ -2319,6 +2322,7 @@ dlog("in do_set");
 	"mdeaths - Set number of deaths by mobiles.\n\r"
 	"akills - Set number of arena kills.\n\r"
 	"adeaths - Set number of arena deaths.\n\r"
+	"remortclass - set the class the char is remorting into.\n\r"
 	"\n\r"
 	"Remember, be careful how you use this command!\n\r",ch);
 
@@ -2501,6 +2505,9 @@ send_to_char("@\n\r"
     } else if (!strcmp(field, "hit")) {
       sscanf(parmstr,"%d",&parm);
       GET_HIT(mob) = parm;
+    } else if (!strcmp(field, "remortclass")) {
+      sscanf(parmstr,"%d",&parm);
+      mob->specials.remortclass = parm;
     } else if (!strcmp(field, "mhit")) {
       sscanf(parmstr,"%d",&parm);
       mob->points.max_hit = parm;

@@ -1359,6 +1359,7 @@ struct char_special_data
 	int is_playing;
 	int is_hearing;
 
+	int remortclass;
   };
 
 /* skill_data flags */

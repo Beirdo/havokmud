@@ -1678,7 +1678,9 @@ dlog("in do_look");
 
       /* look ''                */
     case 8 : {
-      send_to_char(real_roomp(ch->in_room)->name, ch);
+
+      ch_printf(ch,"$c000W%s",real_roomp(ch->in_room)->name);
+
       send_to_char("\n\r", ch);
       if (!IS_SET(ch->specials.act, PLR_BRIEF))
 	send_to_char(real_roomp(ch->in_room)->description, ch);
@@ -2130,6 +2132,10 @@ void do_score(struct char_data *ch, char *argument, int cmd)  {
 		ch_printf(ch,"%sYou are a level %s%d %simmortal.\n\r",color, color2,GetMaxLevel(ch),color);
 	}
 
+
+	ch_printf(ch,"%sYour main character class is a %s%s%s.\n\r", color, color2, class_names[ch->specials.remortclass], color);
+
+
    ch_printf(ch,"%sYou have killed %s%d%s monsters, and have died %s%d%s times. Arena: %s%d%s/%s%d%s\n\r",
     	color, color2, ch->specials.m_kills,color, color2, ch->specials.m_deaths,color, color2, ch->specials.a_kills,color, color2, ch->specials.a_deaths,color);
 /*ch_printf(ch,"%sKills: %s%d%s   Deaths: %s%d%s   Arena Kills: %s%d%s   Arena Deaths: %s%d%s\n\r"
@@ -2540,38 +2546,14 @@ char *GetLevelTitle(struct char_data *ch) {
 
 
 	if(GET_SEX(ch)==SEX_FEMALE) {
-		sprintf(buf,"%s%s", color, titles[BestMagicClass(ch)][level].title_f);
+		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_f);
 		return buf;
 	} else {
-		sprintf(buf,"%s%s", color, titles[BestMagicClass(ch)][level].title_m);
-		return buf;
+		sprintf(buf,"%s%s", color, titles[ch->specials.remortclass][level].title_m);
+		return buf; //BestMagicClass(ch)
 	}
 }
 
-int checkflags(char *arguments) {
-	switch (arguments[1]) {
-		case 's':
-			return 1;
-		case 'c':
-			return 2;
-		case 'd'://linkdead
-			return 3;
-		case 'm'://stats
-			return 4;
-		case 'l'://level
-			return 5;
-		case 'g': //god
-			return 6;
-
-	default:
-			return 0;
-
-			/*-]i=idle l=levels t=title h=hit/mana/move s=stats r=race
-			[-]d=linkdead g=God o=Mort [1]Mage[2]Cleric[3]War[4]Thief[5]Druid
-			[-][6]Monk[7]Barb[8]Sorc[9]Paladin[!]Ranger[@]Psi*/
-
-	}
-}
 char *SPECIAL_FLAGS(struct char_data *ch, struct char_data *person) {
 	static char buffer[MAX_STRING_LENGTH]="",tbuf[1024]="";
 
