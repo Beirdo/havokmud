@@ -3711,11 +3711,12 @@ void reset_char(struct char_data *ch)
   Clear out order/AFK flags
 */
 
- if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER))
-    REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
-if (IS_AFFECTED2(ch,AFF2_AFK))
-	REMOVE_BIT(ch->specials.affected_by2,AFF2_AFK);
-
+	if (IS_SET(ch->specials.affected_by2,AFF2_CON_ORDER))
+	  REMOVE_BIT(ch->specials.affected_by2,AFF2_CON_ORDER);
+	
+	if (IS_AFFECTED2(ch,AFF2_AFK))
+	  REMOVE_BIT(ch->specials.affected_by2,AFF2_AFK);
+	
 /*
 	Remove bogus flags on mortals
 */

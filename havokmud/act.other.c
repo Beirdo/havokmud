@@ -2347,13 +2347,32 @@ dlog("in do_set_afk");
     return;
   if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
     return;
-
-  act("$c0006$n quietly goes Away From Keyboard.", TRUE, ch, 0, 0, TO_ROOM);
-  act("$c0006You quietly go AFK.", TRUE, ch, 0, 0, TO_CHAR);
-  SET_BIT(ch->specials.affected_by2, AFF2_AFK);
-  if (ch->pc)
-  	SET_BIT(ch->pc->comm,COMM_AFK);
+  
+  if(IS_AFFECTED2(ch,AFF2_AFK)) {
+    act("$c0006$n has returned to $s keyboard", TRUE, ch, 0, 0, TO_ROOM);
+    act("$c0006You return to the keyboard.", TRUE, ch, 0, 0, TO_CHAR);
+    REMOVE_BIT(ch->specials.affected_by2, AFF2_AFK);
+    if (ch->pc)
+      REMOVE_BIT(ch->pc->comm,COMM_AFK);
+  } else {
+    act("$c0006$n quietly goes Away From Keyboard.", TRUE, ch, 0, 0, TO_ROOM);
+    act("$c0006You quietly go AFK.", TRUE, ch, 0, 0, TO_CHAR);
+    SET_BIT(ch->specials.affected_by2, AFF2_AFK);
+    if (ch->pc)
+      SET_BIT(ch->pc->comm,COMM_AFK); 
+  }
 }
+void do_flag_status(struct char_data *ch,char *argument,int cmd) {
+  send_to_char("Flag Status: ",ch);
+  
+  if(IS_AFFECTED2(ch,AFF2_AFK))
+    send_to_char("AFK [X]",ch);
+  else
+    send_to_char("AFK [ ]",ch);
+
+
+}
+
 
 #define RACE_WAR_MIN_LEVEL 10	/* this is the level a user can turn race war ON */
 void do_set_flags(struct char_data *ch, char *argument, int cmd)

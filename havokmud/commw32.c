@@ -608,6 +608,17 @@ memory_check("end 5, begin 6");
 	       } else {
 	       construct_prompt(promptbuf,point->character);
 	     }
+
+
+ if (has_mail((char *)GET_NAME(point->character)))
+	    write_to_descriptor(point->descriptor,ParseAnsiColors( \
+			      IS_SET(point->character->player.user_flags,USE_ANSI), \
+			      "$c0003[MAIL] "));
+	    if(IS_AFFECTED2(point->character,AFF2_AFK))
+	    write_to_descriptor(point->descriptor,ParseAnsiColors( \
+			      IS_SET(point->character->player.user_flags,USE_ANSI), \
+			      "$c0006[AFK] "));
+
 	  write_to_descriptor(point->descriptor,ParseAnsiColors( \
 			      IS_SET(point->character->player.user_flags,USE_ANSI), \
 			      promptbuf));

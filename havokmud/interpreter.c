@@ -457,12 +457,14 @@ if (HasClass(ch,TempDis) && GetMaxLevel(ch) < 58 && IS_PC(ch)) {
 }
 
   REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
-  if(IS_AFFECTED2(ch,AFF2_AFK)) {
+  
+  /* Removed by Greg Hovey  (FALSE) */
+  if(IS_AFFECTED2(ch,AFF2_AFK) && FALSE) {
     act("$c0006$n has returned to $s keyboard", TRUE, ch, 0, 0, TO_ROOM);
     act("$c0006You return to the keyboard.", TRUE, ch, 0, 0, TO_CHAR);
     REMOVE_BIT(ch->specials.affected_by2, AFF2_AFK);
-if (ch->pc)
-	REMOVE_BIT(ch->pc->comm,COMM_AFK);
+    if (ch->pc)
+      REMOVE_BIT(ch->pc->comm,COMM_AFK);
   }
 
   if (MOUNTED(ch)) {
