@@ -1285,6 +1285,7 @@ void assign_mobiles()
   {45406, braxis_swamp_dragon},
   {45409, nadia},
   {45410, mime_jerry},
+  {45413, zork},
   {45417, elamin},
   {45443, goblin_chuirgeon},
 

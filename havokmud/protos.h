@@ -1471,6 +1471,7 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 /* From spell_parser.c */
 void spello(int nr, byte beat, byte pos, byte mlev, byte clev, byte dlev,

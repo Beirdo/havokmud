@@ -4797,3 +4797,200 @@ int goblin_chuirgeon (struct char_data *ch, int cmd, char *arg, struct char_data
 
 	return (FALSE);
 }
+
+#define BLACK_PILL 45492
+#define BLUE_PILL 45493
+#define ZORK 45413
+#define ZORK_ROOM 45496
+int zork(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  struct char_data *temp_ch;
+  struct obj_data *i;
+  char argument[150];
+  char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+  char tbuf[80];
+  struct char_data *vict;
+  struct obj_data *obj;
+  int test=0, r_num=0;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	if (cmd == 531) /*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+	      	if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+	      	if (mob_index[vict->nr].virtual != ZORK) return(FALSE);		
+		
+		if (get_obj_vis_world(ch, "black pill thunder mountain", NULL))
+		{
+			test = 1;
+		}
+		if (get_obj_vis_world(ch, "blue pill thunder mountain", NULL))
+		{
+			test = 1;
+		}
+		if (get_obj_vis_world(ch, "elamin pen might", NULL))
+		{
+			test = 1;
+		}
+
+		if (test == 0)
+		{
+			act("$n says, 'So, Elamin has finally found a courier to aid him.'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'How quaint.  Well, I'll tell you what I'll do.  If'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'you can figure out a simple riddle, I will grant'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'poor Elamin's pen.  Eat the correct pill and the'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'pen will be yours.  Eat the wrong pill and you will'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'face an instant death.'", FALSE, vict, 0, 0, TO_ROOM);			
+			if ((r_num = real_object(BLACK_PILL)) >= 0) {
+				obj = read_object(r_num, REAL);
+				obj_to_char(obj, ch);
+			}
+			if ((r_num = real_object(BLUE_PILL)) >= 0) {
+				obj = read_object(r_num, REAL);
+				obj_to_char(obj, ch);
+			}
+			act("$n hands over 2 pills: one black and one blue.", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'The riddle is this:'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'When one stands on sold ground'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'They look up and cannot deny'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'That the law of nature's demand'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'Determines the shade of this cloudless sky'", FALSE, vict, 0, 0, TO_ROOM);
+
+			return(TRUE);
+		}
+		if (test == 1)
+		{
+			act("$n says, 'I can only tell you the riddle:'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'When one stands on sold ground'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'They look up and cannot deny'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'That the law of nature's demand'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'Determines the shade of this cloudless sky'", FALSE, vict, 0, 0, TO_ROOM);
+			
+			return(TRUE);
+		}
+	}
+
+  if(IS_PC(ch))
+    return(0);
+
+  temp_ch = FindAnyVictim(ch);
+	if (temp_ch && IS_PC(temp_ch)) {
+
+  switch (number(0, 30))
+	{
+	case 0:
+		strcpy(argument, "like Cheese!");
+	break;
+	case 1:
+		strcpy(argument, "loves to rock and roll all night!");
+	break;
+	case 2:
+		strcpy(argument, "smells what the rock is cookin'!");
+	break;
+	case 3:
+		strcpy(argument, "wants to be just like Xenon!");
+	break;
+	case 4:
+		strcpy(argument, "just got whupped by Zork, The Jester!");
+	break;
+	case 5:
+		strcpy(argument, "has $c0009'LOSER' $c0007stamped across their forehead.");
+	break;
+	case 6:
+		strcpy(argument, "would like to be spanked!");
+	break;
+	case 7:
+		strcpy(argument, "has a brown wallet!");
+	break;
+	case 8:
+		strcpy(argument, "killed Kenny!");
+	break;
+	case 9:
+		strcpy(argument, "the Stone Giant Fibber/Wannabee");
+	break;
+	case 10:
+		strcpy(argument, "the $c0012Dark Clown $c0007Worshipper");
+	break;
+	case 11:
+		strcpy(argument, "thinks Pentak is on shrumes");
+	break;
+	case 12:
+		strcpy(argument, "StormLight, The Warder of the Titanic Broodkins");
+	break;
+	case 13:
+		strcpy(argument, "CoolGuy, Leader of the Fonzies");
+	break;
+	case 14:
+		strcpy(argument, "Presley, The King has entered the Mud");
+	break;
+	case 15:
+		strcpy(argument, "has fallen off of the stupid tree and hit every branch on the way down.");
+	break;
+	case 16:
+		strcpy(argument, "is a toad!!");
+	break;
+	case 17:
+		strcpy(argument, "likes sheep and other assorted farm animals");
+	break;
+	case 18:
+		strcpy(argument, "suffers from stupiditis");
+	break;
+	case 19:
+		strcpy(argument, "says, 'Do not listen to a word I say, I'm incompetent'");
+	break;
+	case 20:
+		strcpy(argument, "wants you now!  Need only apply!");
+	break;
+	case 21:
+		strcpy(argument, "is having passionate thoughts about...everyone...all at once...");
+	break;
+	case 22:
+		strcpy(argument, "is a sissy!");
+	break;
+	case 23:
+		strcpy(argument, "was with Zork, The Jester all last night.");
+	break;
+	case 24:
+		strcpy(argument, "is dumb");
+	break;
+	case 25:
+		strcpy(argument, "White and the Seven Dorks.");
+	break;
+	case 26:
+		strcpy(argument, "is downloading naughty things");
+	break;
+	case 27:
+		strcpy(argument, "is afraid of Puff, the Magic Dragon");
+	break;
+	case 28:
+		strcpy(argument, "thinks that he could easily beat Pentak up");
+	break;
+	case 29:
+		strcpy(argument, "Marley - Soul Rebel");
+	break;
+	case 30:
+		strcpy(argument, "is telepathetic");
+	break;
+		default:
+
+    return(0);
+	}
+
+	if (temp_ch->player.title)
+          free(temp_ch->player.title);
+    temp_ch->player.title = strdup(argument);
+    return(1);
+	}
+
+
+
+return(0);
+}
