@@ -3323,9 +3323,9 @@ void zone_update()
 					return;
 				}
 				obj_to_char(travelqp, newch);
+			log("a traveling quest token was inited");
 			}
 		}
-		log("travelqp inited");
 	}
 }
 

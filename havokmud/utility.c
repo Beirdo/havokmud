@@ -3254,24 +3254,25 @@ void traveling_qp(int pulse)
     extern struct index_data *mob_index;
     extern int top_of_world;
     int to_room = 0;
-    int k;
+    int k, f;
 
 	qp_patience++; /* some secs have passed */
 
 	for(k = 1; k <= TQP_AMOUNT; k++) {
+		f = 1;
 		if(!(travelqp = find_tqp(k))) {
-			return;
+			f = 0;
 		}
 
 		if(init_counter()<MIN_INIT_TQP) {
 			extract_obj(travelqp);
-			return;
+			f = 0;
 		}
 
 		if(!(ch = travelqp->carried_by)) {
 			log("not carried, extracting");
 			extract_obj(travelqp);
-			return;
+			f = 0;
 		}
 
 		if(!IS_NPC(ch)) {
@@ -3284,36 +3285,38 @@ void traveling_qp(int pulse)
 			sprintf(buf,"%s just found a quest token.\n\r", GET_NAME(ch));
 			qlog(buf);
 			extract_obj(travelqp);
-			return;
+			f = 0;
 		}
 
 		if(qp_patience < 8) { // hasn't been in inventory long enough yet
-			return;
+			f = 0;
 		}
 
 		if(!(qp_patience > 60)) // hasn't been sitting here too long yet
-			if(number(0,3)) { // 75% of not moving
-				return;
+			if(number(k,3)==3) { // 67, 50, 0% chance of not moving
+				f = 0;
 			}
 
 		// find a new mob
-		newch = 0;
-		while (!newch) { // this MAY cause endless loop, may have to go    for(1..100)
-			to_room = number(0, top_of_world);
-			room = real_roomp(to_room);
-			if (room) {
-				if(newch = room->people) {
-					if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF) || newch == ch) {
-						newch = 0;
+		if(f) {
+			newch = 0;
+			while (!newch) { // this may cause endless loop, maybe use    for(1..100)
+				to_room = number(0, top_of_world);
+				room = real_roomp(to_room);
+				if (room) {
+					if(newch = room->people) {
+						if (IS_PC(newch) || IS_SET(newch->specials.act, ACT_POLYSELF) || newch == ch || newch->specials.fighting) {
+							newch = 0;
+						}
 					}
 				}
 			}
+			obj_from_char(travelqp);
+			act("$n ceases to be outlined by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue.",FALSE,ch,0,0,TO_ROOM);
+			obj_to_char(travelqp, newch);
+			act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!",FALSE,newch,0,0,TO_ROOM);
+			qp_patience=0;
 		}
-		obj_from_char(travelqp);
-		act("$n ceases to be outlined by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue.",FALSE,ch,0,0,TO_ROOM);
-		obj_to_char(travelqp, newch);
-		act("$n is suddenly surrounded by a $c000Rm$c000Yu$c000Gl$c000Bt$c000Ci$c000wcolored hue!",FALSE,newch,0,0,TO_ROOM);
-		qp_patience=0;
 	}
 }
 
