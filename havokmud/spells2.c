@@ -1361,6 +1361,7 @@ void cast_heal( byte level, struct char_data *ch, char *arg, int type,
          break;
     case SPELL_TYPE_SCROLL:
 	 spell_heal(level, ch, tar_ch, 0);
+  	 WAIT_STATE(ch, PULSE_VIOLENCE);
 	 break;
     case SPELL_TYPE_STAFF:
          for (tar_ch = real_roomp(ch->in_room)->people ;
