@@ -6960,7 +6960,7 @@ int trinketcount(struct char_data *ch, int cmd, char *argument, struct obj_data 
      char buf[MAX_INPUT_LENGTH+80];
 
 
-  if(cmd != 67) //rub alter
+  if(cmd != 67) /* put */
     return(FALSE);
 
    dlog("in your stash");
@@ -7114,7 +7114,7 @@ int guardian_sin(struct char_data *ch, struct char_data *vict)
 	obj=ch->equipment[WIELD];
 
 	/* I'm thinking 1% chance for each spec to happen  Try 0-8 to test specs. may have to tweak the rate */
-	switch (number(0, 20)) {
+	switch (number(0, 100)) {
  	case 1:
  		/* cool! let's berserk the wielder of the mace, regardless of class. */
  		act("$c0008Your Guardian of Sin leaps up to defend you.$c0007", FALSE, ch, 0, 0, TO_CHAR);
