@@ -3767,13 +3767,13 @@ dlog("in do_world");
   ot = Uptime;
   otmstr = asctime(localtime(&ot));
   *(otmstr + strlen(otmstr) - 1) = '\0';
-  sprintf(buf, "$c0005Start time was: $c0015%s $c0005(EST)", otmstr);
+  sprintf(buf, "$c0005Start time was: $c0015%s $c0005(PST)", otmstr);
   act(buf,FALSE, ch,0,0,TO_CHAR);
 
   ct = time(0);
   tmstr = asctime(localtime(&ct));
   *(tmstr + strlen(tmstr) - 1) = '\0';
-  sprintf(buf, "$c0005Current time is: $c0015%s $c0005(EST)", tmstr);
+  sprintf(buf, "$c0005Current time is: $c0015%s $c0005(PST)", tmstr);
   act(buf,FALSE, ch,0,0,TO_CHAR);
 
 if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
