@@ -1703,7 +1703,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
   struct char_data *tar_char;
   char name[MAX_INPUT_LENGTH];
   char ori_argument[256];     /* make a copy of argument for log */
-  int qend, spl, i;
+  int qend, spl, i,exp;
 #if 0
   int  mlev, clev, dlev, minl;
 #endif
@@ -2175,9 +2175,11 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL)) {
 	} else {
 	  GET_MANA(ch) -= cost;
 	}
-	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",cost*50);
+
+	exp = NewExpCap(ch, cost*50);
+	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",exp);
 	send_to_char(buf,ch);
-	gain_exp(ch, cost*50);
+	gain_exp(ch, exp);
       }
 
     }	/* if GET_POS < min_pos */

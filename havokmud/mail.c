@@ -140,7 +140,7 @@ mail_index_type *find_char_in_index(char *searchee)
 {
    mail_index_type * temp_rec;
 
-   if (!searchee) { //Lets try this!*searchee) {  /*this crashed i think (GH) */
+   if (!searchee) { //Lets try this	!*searchee) {  /*this crashed i think (GH) */
       log("SYSERR: Mail system -- non fatal error #1.");
       return 0;
    }

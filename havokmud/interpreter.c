@@ -1872,7 +1872,7 @@ void nanny(struct descriptor_data *d, char *arg)
 					if (HasClass(d->character, CLASS_RANGER))
 						sprintf(bufx,"Please select your alignment ($c000WGood$c000w/Neutral$c000w)");
 					else
-						sprintf(bufx,"Please select your alignment ($c000WGood$c000w	/Neutral$c000w/$c000REvil$c000w)");
+						sprintf(bufx,"Please select your alignment ($c000WGood$c000w/Neutral$c000w/$c000REvil$c000w)");
 
 			send_to_char(bufx,d->character);
        	    STATE(d) = CON_ALIGNMENT;

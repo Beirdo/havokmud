@@ -1799,7 +1799,7 @@ if (IS_LINKDEAD(victim)) {
 		exp= NewExpCap(ch, exp);
 
 	  gain_exp(ch, exp);
-	  sprintf(buf,"You receive %d experience from your battles.", exp);
+	  sprintf(buf,"You receive %d experience from your battles.\n\r", exp);
 	  send_to_char(buf,ch);
 	}
 	change_alignment(ch, victim);
