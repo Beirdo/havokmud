@@ -506,8 +506,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                     die,
                     percent,
                     charm;
-    void            gain_exp(struct char_data *ch, int gain);
-    int             special(struct char_data *ch, int cmd, char *arg);
     struct room_data *rp;
     int             panic,
                     j;
