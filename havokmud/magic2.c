@@ -2373,44 +2373,46 @@ void spell_faerie_fire (byte level, struct char_data *ch,
 
 }
 
-void spell_faerie_fog (byte level, struct char_data *ch,
-   struct char_data *victim, struct obj_data *obj)
+void spell_faerie_fog (byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  struct char_data *tmp_victim;
+	struct char_data *tmp_victim;
+	int revealed = 0;
 
-  assert(ch);
+	assert(ch);
 
-  act("$n snaps $s fingers, and a cloud of purple smoke billows forth",
-      TRUE, ch, 0, 0, TO_ROOM);
-  act("You snap your fingers, and a cloud of purple smoke billows forth",
-      TRUE, ch, 0, 0, TO_CHAR);
+	act("$n snaps $s fingers, and a cloud of purple smoke billows forth", TRUE, ch, 0, 0, TO_ROOM);
+	act("You snap your fingers, and a cloud of purple smoke billows forth", TRUE, ch, 0, 0, TO_CHAR);
 
 
-   for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
-	tmp_victim = tmp_victim->next_in_room) {
-      if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-	 if (IS_IMMORTAL(tmp_victim))
-	    break;
-	 if (!in_group(ch, tmp_victim)) {
-	   if (IS_AFFECTED(tmp_victim, AFF_INVISIBLE)) {
-	    if ( saves_spell(tmp_victim, SAVING_SPELL) ) {
-	      REMOVE_BIT(tmp_victim->specials.affected_by, AFF_INVISIBLE);
-	      act("$n is briefly revealed, but dissapears again.",
-		  TRUE, tmp_victim, 0, 0, TO_ROOM);
-	      act("You are briefly revealed, but dissapear again.",
-		  TRUE, tmp_victim, 0, 0, TO_CHAR);
-	      SET_BIT(tmp_victim->specials.affected_by, AFF_INVISIBLE);
-	    } else {
-	      REMOVE_BIT(tmp_victim->specials.affected_by, AFF_INVISIBLE);
-	      act("$n is revealed!",
-		  TRUE, tmp_victim, 0, 0, TO_ROOM);
-	      act("You are revealed!",
-		  TRUE, tmp_victim, 0, 0, TO_CHAR);
-	    }
-	   }
-	 }
-       }
-    }
+	for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim; tmp_victim = tmp_victim->next_in_room) {
+		if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
+			if (IS_IMMORTAL(tmp_victim))
+				break;
+			if (!in_group(ch, tmp_victim)) {
+				if (IS_AFFECTED(tmp_victim, AFF_HIDE)) {
+					if ( ImpSaveSpell(tmp_victim, SAVING_SPELL, -10) ) {
+						REMOVE_BIT(tmp_victim->specials.affected_by, AFF_HIDE);
+						act("$n is briefly revealed, but disappears again.", TRUE, tmp_victim, 0, 0, TO_ROOM);
+						act("You are briefly revealed, but disappear again.", TRUE, tmp_victim, 0, 0, TO_CHAR);
+						SET_BIT(tmp_victim->specials.affected_by, AFF_HIDE);
+						revelead = 1;
+					} else {
+						REMOVE_BIT(tmp_victim->specials.affected_by, AFF_HIDE);
+						act("$n is revealed!",TRUE, tmp_victim, 0, 0, TO_ROOM);
+						act("You are revealed!",TRUE, tmp_victim, 0, 0, TO_CHAR);
+						revealed = 1;
+					}
+				}
+				if(IS_AFFECTED(tmp_victim, AFF_INVISIBLE)) {
+					REMOVE_BIT(tmp_victim->specials.affected_by, AFF_INVISIBLE);
+					if(!revealed) {
+						act("$n is revealed!",TRUE, tmp_victim, 0, 0, TO_ROOM);
+						act("You are revealed!",TRUE, tmp_victim, 0, 0, TO_CHAR);
+					}
+				}
+			}
+		}
+	}
 }
 
 

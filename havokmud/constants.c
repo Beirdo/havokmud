@@ -5274,13 +5274,13 @@ const struct skillset thfninjaskills[] = {
 };
 const struct skillset warninjaskills[] = {
   { "disarm",            SKILL_DISARM,          1},
-  { "disengage",		 SKILL_DISENGAGE,		1},
   { "doorbash",          SKILL_DOORBASH,        1},
 //  { "switch opponents",  SKILL_SWITCH_OPP,      1}, Is a basic warrior skill already.
   { "None",				 -1	,				   -1}
 };
 const struct skillset allninjaskills[] = {
   { "riding",            SKILL_RIDE,            1},
+  { "disengage",		 SKILL_DISENGAGE,		1},
   { "None",				-1						,-1}
 };
 const struct skillset warmonkskills[] = {
