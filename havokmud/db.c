@@ -1095,6 +1095,7 @@ struct index_data *generate_indices(FILE * fl, int *top, int *sort_top,
     }
     *alloc_top = bc;
     *top = i;
+    closedir(dir);
     return (index);
 }
 
@@ -1457,6 +1458,8 @@ void boot_saved_zones()
         LoadZoneFile(fp, zone);
         fclose(fp);
     }
+
+    closedir(dir);
 }
 
 void boot_saved_rooms()
@@ -1516,6 +1519,8 @@ void boot_saved_rooms()
         sprintf(buf, "Loaded %ld rooms", rooms);
         Log(buf);
     }
+
+    closedir(dir);
 }
 
 #define LOG_ZONE_ERROR(ch, type, zone, cmd) {\

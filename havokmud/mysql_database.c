@@ -318,8 +318,8 @@ void db_load_classes(void)
                     classes[i].mainskills[j].maxlearn = atoi(row[3]);
                 }
             }
-            mysql_free_result(resSkill);
         }
+        mysql_free_result(resSkill);
 
         sprintf( buf, "SELECT level, thaco, maleTitle, femaleTitle, minExp "
                       "FROM classLevels WHERE classId = %d ORDER BY level",
@@ -411,8 +411,8 @@ void db_load_skills(void)
             if( resMsg && mysql_num_rows(resMsg) ) {
                 row = mysql_fetch_row(resMsg);
                 skills[i].message[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
             }
+            mysql_free_result(resMsg);
         }
     }
     mysql_free_result(resSkill);
@@ -686,8 +686,8 @@ void db_load_socials(void)
             if( resMsg && mysql_num_rows(resMsg) ) {
                 row = mysql_fetch_row(resMsg);
                 socialMessages[i].msg[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
             }
+            mysql_free_result(resMsg);
         }
     }
     mysql_free_result(res);
@@ -803,8 +803,8 @@ void db_load_poses(void)
             if( resMsg && mysql_num_rows(resMsg) ) {
                 row = mysql_fetch_row(resMsg);
                 poseMessages[i].poser_msg[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
             }
+            mysql_free_result(resMsg);
 
             sprintf( buf, "SELECT text FROM skillMessages "
                           "WHERE `skillId` = %d AND `msgId` = 6 AND "
@@ -815,8 +815,8 @@ void db_load_poses(void)
             if( resMsg && mysql_num_rows(resMsg) ) {
                 row = mysql_fetch_row(resMsg);
                 poseMessages[i].room_msg[j] = strdup(row[0]);
-                mysql_free_result(resMsg);
             }
+            mysql_free_result(resMsg);
         }
     }
     mysql_free_result(res);
@@ -1032,7 +1032,10 @@ void db_load_races(void)
         races[i].middle = atoi(row[8]);
         races[i].old = atoi(row[9]);
         races[i].venerable = atoi(row[10]);
-        races[i].nativeLanguage = atoi(row[11]);
+        races[i].nativeLanguage = atoi(row[11]) - 1;
+        if( races[i].nativeLanguage < 0 ) {
+            races[i].nativeLanguage = 0;
+        }
 
         races[i].racialMax = (int *)malloc(classCount * sizeof(int));
         if( !races[i].racialMax ) {
@@ -1052,8 +1055,8 @@ void db_load_races(void)
             if( resMax && mysql_num_rows(resMax) ) {
                 row = mysql_fetch_row(resMax);
                 races[i].racialMax[j] = atoi(row[0]);
-                mysql_free_result(resMax);
             }
+            mysql_free_result(resMax);
         }
     }
     mysql_free_result(res);
@@ -1295,15 +1298,14 @@ void db_delete_board_message(struct board_def *board, short message_id)
     mysql_query(sql, buf);
 
     res = mysql_store_result(sql);
-    if( res ) {
-        count = mysql_num_rows(res);
+    if( res && (count = mysql_num_rows(res)) ) {
         for( i = 0; i < count; i++ ) {
             row = mysql_fetch_row(res);
             msgId = atoi(row[0]);
             db_delete_board_message(board, msgId);
         }
-        mysql_free_result(res);
     }
+    mysql_free_result(res);
 
     sprintf(buf, "DELETE FROM `boardMessages` where `messageNum` = %d AND "
                  "`boardId` = %d", message_id, board->boardId );
@@ -1331,6 +1333,7 @@ struct board_def *db_lookup_board(int vnum)
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
         return( NULL );
     }
 
@@ -1339,6 +1342,7 @@ struct board_def *db_lookup_board(int vnum)
     board = (struct board_def *)malloc(sizeof(struct board_def));
     if( !board ) {
         Log( "Out of memory allocating a board structure!" );
+        mysql_free_result(res);
         return( NULL );
     }
 
@@ -1366,6 +1370,7 @@ struct bulletin_board_message *db_get_board_message(int boardId, int msgNum)
 
     res = mysql_store_result(sql);
     if( !res || !mysql_num_rows(res) ) {
+        mysql_free_result(res);
         return( NULL );
     }
 
@@ -1430,6 +1435,7 @@ int db_get_board_replies(struct board_def *board, int msgId,
 
     res = mysql_store_result(sql);
     if( !res || !(count = mysql_num_rows(res)) ) {
+        mysql_free_result(res);
         *msg = NULL;
         return( 0 );
     }

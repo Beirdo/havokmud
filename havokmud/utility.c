@@ -5434,12 +5434,14 @@ void SetDefaultLang(struct char_data *ch)
 {
     int             skill;
     int             race;
+    int             index;
 
     race = GET_RACE(ch);
+    index = races[race].nativeLanguage;
 
-    ch->player.speaks = languages[race].langSpeaks;
+    ch->player.speaks = languages[index].langSpeaks;
 
-    skill = languages[race].langSkill;
+    skill = languages[index].langSkill;
     if( skill ) {
         ch->skills[skill].learned = 95;
         SET_BIT(ch->skills[skill].flags, SKILL_KNOWN);
