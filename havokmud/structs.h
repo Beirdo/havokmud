@@ -1912,7 +1912,7 @@ struct descriptor_data {
 
     char           *name;       /* ptr to name for mail system */
 
-    char            host[50];   /* hostname */
+    char            host[256];  /* hostname */
     char            pwd[12];    /* password */
     int             pos;        /* position in player-file */
     int             connected;  /* mode of 'connectedness' */
