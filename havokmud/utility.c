@@ -5318,7 +5318,7 @@ int MaxCanMemorize(struct char_data *ch, int spell)
         return (8 + BONUS);
     } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 46) {
         return (9 + BONUS);
-    } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 51) {
+    } else if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < IMMORTAL) {
         return (10 + BONUS);
     } else {
         /*

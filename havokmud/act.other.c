@@ -2898,7 +2898,7 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
                 if (i->character && !i->connected &&
                     IS_IMMORTAL(i->character) &&
                     IS_AFFECTED2(i->character, AFF2_QUEST) &&
-                    i->character->invis_level < 51) {
+                    i->character->invis_level < IMMORTAL) {
                     /*
                      * there is, just stop questing
                      */

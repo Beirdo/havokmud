@@ -2952,7 +2952,7 @@ bool ImpSaveSpell(struct char_data * ch, sh_int save_type, int mod)
     if (!IS_NPC(ch)) {
         save += saving_throws[BestMagicClass(ch)][save_type]
                              [(int)GET_LEVEL(ch, BestMagicClass(ch))];
-        if (GetMaxLevel(ch) >= IMMORTAL) {
+        if (IS_IMMORTAL(ch)) {
             return (TRUE);
         }
     }
@@ -3467,8 +3467,8 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
                 return;
             } 
             
-            if (GetMaxLevel(ch) < IMMORTAL &&
-                (GET_MANA(ch) < USE_MANA(ch, spl) || GET_MANA(ch) <= 0)) {
+            if (!IS_IMMORTAL(ch) && (GET_MANA(ch) < USE_MANA(ch, spl) || 
+                                     GET_MANA(ch) <= 0)) {
                 send_to_char("You can't summon enough energy!\n\r", ch);
                 return;
             }

@@ -637,7 +637,7 @@ void mind_ultra_blast(int level, struct char_data *ch,
                       struct char_data *victim, struct obj_data *obj)
 {
     int             dam,
-                    fulldam,
+                    rdam,
                     count = 0;
     struct char_data *tmp_victim,
                    *temp;
@@ -645,48 +645,41 @@ void mind_ultra_blast(int level, struct char_data *ch,
     assert(ch);
     assert((level >= 1) && (level <= ABS_MAX_LVL));
 
-    /*
-     * damage = level d4, +level 
-     */
-    dam = dice(level, 4);
-    dam += level;
-    fulldam = dam;
+    dam = dice(level, 4) + level;
+    rdam = dam;
 
     act("You blast out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, victim, TO_CHAR);
     act("$n blasts out a massive wave of destructive psionic energy!",
         FALSE, ch, 0, 0, TO_ROOM);
 
-    for (tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
-        temp = tmp_victim->next;
-        dam = fulldam;
+    for (tmp_victim = real_roomp(ch->in_room)->people; tmp_victim; 
+         tmp_victim = temp) {
+        temp = tmp_victim->next_in_room;
+        rdam = dam;
         count ++;
         if (count >= 7) {
             break;
         }
-        if ((ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
-            if (!in_group(ch, tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
+        if (ch->in_room == tmp_victim->in_room && ch != tmp_victim) {
+            if (IS_IMMORTAL(tmp_victim)) {
+                return;
+            }
+            if (!in_group(ch, tmp_victim)) {
+                
                 if (!saves_spell(tmp_victim, SAVING_SPELL)) {
-                    /*
-                     * half damage if effected by TOWER OF IRON WILL 
-                     */
                     if (affected_by_spell(tmp_victim, SKILL_TOWER_IRON_WILL)) {
-                        dam >>= 1;
+                        rdam >>= 1;
                     }
-                    MissileDamage(ch, tmp_victim, dam, SKILL_ULTRA_BLAST);
+                    MissileDamage(ch, tmp_victim, rdam, SKILL_ULTRA_BLAST);
                 } else {
-                    dam >>= 1;  
-                    /* 
-                     * half dam 
-                     */
-                    /*
-                     * NO damage if effected by TOWER OF IRON WILL 
-                     */
+                    rdam >>= 1;  
                     if (affected_by_spell(tmp_victim, SKILL_TOWER_IRON_WILL)) {
-                        dam = 0;
+                        rdam = 0;
                     }
-                    MissileDamage(ch, tmp_victim, dam, SKILL_ULTRA_BLAST);
+                    MissileDamage(ch, tmp_victim, rdam, SKILL_ULTRA_BLAST);
                 }
+            
             } else {
                 act("You manage to get out of the way of the massive psionic "
                     "blast!", FALSE, ch, 0, tmp_victim, TO_VICT);

@@ -439,7 +439,7 @@ void update_file(struct char_data *ch, struct obj_file_u *st)
 
 #if 0
     /*
-     * this appears to fuck with saving for polies.. not exactly sure why. 
+     * this appears to interfere with saving for polies.. not exactly sure why. 
      * (jdb) 
      */
     if (IS_SET(ch->specials.act, ACT_POLYSELF))

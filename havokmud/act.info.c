@@ -4483,7 +4483,7 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
         if( index == -1 ) {
             continue;
         }
-        if (GetMaxLevel(ch) > IMMORTAL ||
+        if (IS_IMMORTAL(ch) ||
             spell_info[index].min_level_cleric < ABS_MAX_LVL) {
             if (!spells[spl]) {
                 sprintf(tbuf, "!spells[spl] on %d, do_spells in act.info.c", i);

@@ -517,9 +517,6 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
         send_to_char("You can think of nothing but the battle!\n\r", ch);
         return;
     }
-    /*
-     * NO_FLEE flag on rooms, Lennya 20030602
-     */
     if (IS_SET(real_roomp(ch->in_room)->room_flags, NO_FLEE) &&
         !IS_IMMORTAL(ch)) {
         send_to_char("Your feet feel like lead, and refuse to move!\n\r", ch);
