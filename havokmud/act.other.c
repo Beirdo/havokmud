@@ -1631,8 +1631,16 @@ dlog("in do_recite");
 			  "The magic dissolves powerlessly"))
 	  continue;
 
+#if 0
+    /*Scroll is recited at scroll level (value 0) this way*/
 	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
-	 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL, victim, obj));
+	 ((byte) scroll->obj_flags.value[0], ch, "", SPELL_TYPE_SCROLL,victim, obj));
+#else
+   /* Scroll is recited at best caster level regardless of scroll level*/
+	((*spell_info[scroll->obj_flags.value[i]].spell_pointer)
+	 (BestMagicClass(ch), ch, "", SPELL_TYPE_SCROLL,victim, obj));
+
+#endif
       }
     } else {
       /* this is a learning scroll */

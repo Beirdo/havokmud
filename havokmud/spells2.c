@@ -1838,7 +1838,7 @@ void cast_word_of_recall( byte level, struct char_data *ch, char *arg,int type,
 			break;
     case SPELL_TYPE_SCROLL:
          if(tar_obj) return;
-	 tar_ch = ch;
+	 //tar_ch = ch;
          spell_word_of_recall(level, ch, tar_ch, 0);
          break;
     case SPELL_TYPE_WAND:
