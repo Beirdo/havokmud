@@ -1,6 +1,6 @@
 /*
  * DaleMUD v2.0 Released 2/1994 See license.doc for distribution terms.
- * DaleMUD is based on DIKUMUD 
+ * DaleMUD is based on DIKUMUD
  */
 
 #include "config.h"
@@ -214,7 +214,7 @@ const char     *spell_wear_off_msg[] = {
     "",                         /* 200 geyser */
     "Your wings finally cramp and give out.",   /* 201 Wings Fly */
     "Your wings stop feeling sore and tired.",  /* 202 Wings Tired */
-    "At long last your wings have healed enough to allow flight.",  
+    "At long last your wings have healed enough to allow flight.",
     /* 203 Wings Burned */
     "You feel less protected from good beings.",
     "You no longer feel big.",
@@ -274,7 +274,7 @@ const char     *spell_wear_off_msg[] = {
     "You feel more fearful of electricity again",
     "",
     "",
-    "You think it would be best to avoid fire breathing dragons now",   /* 262 
+    "You think it would be best to avoid fire breathing dragons now",   /* 262
                                                                          */
     "You think it would be best to avoid frost breathing dragons now",
     "You think it would be best to avoid electric breathing dragons now",
@@ -323,7 +323,7 @@ const char     *spell_wear_off_msg[] = {
     "You slowly fade back into the undead's view.",
     "",
     "The bones reinfusing your armor fall apart.",
-    "The battlescarred armor surrounding you winks out of existence.",/* 310 */ 
+    "The battlescarred armor surrounding you winks out of existence.",/* 310 */
     "The cloak of darkness lift, and you can see once more.",
     "You feel in control of yourself once more.",
     "",
@@ -853,7 +853,7 @@ const char     *spell_wear_off_soon_msg[] = {
     "Your link to the Elemental Plane of Fire is becoming tenuous.",
     "Your link to the Elemental Plane of Earth is becoming tenuous.",
     "Your link to the Elemental Plane of Water is becoming tenuous.",
-    "Your link to the Elemental Plane of Air is becoming tenuous.",     
+    "Your link to the Elemental Plane of Air is becoming tenuous.",
     "spell 136 please report.",
     "spell 137 please report.",
     "spell 138 please report.",
@@ -1276,7 +1276,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "",
     "",
     "",                         /* 200 */
-    "$n's wings falter momentarily, but continue to keep $s aloft.",/* 201 */ 
+    "$n's wings falter momentarily, but continue to keep $s aloft.",/* 201 */
     "",
     "",
     "",
@@ -1338,7 +1338,7 @@ const char     *spell_wear_off_soon_room_msg[] = {
     "$n's energy protection wavers briefly",
     "$n's electric protection wavers briefly",
     "",                         /* 260 */
-    "",                 
+    "",
     "$n's fire breath globe of protection shimmers for a moment", /* 262 */
     "$n's frost breath globe of protection shimmers for a moment",
     "$n's electricity breath globe of protection shimmers for a moment",
@@ -1483,7 +1483,7 @@ const char     *exits[] = {
     "Down "
 };
                 /*
-                 * used in listing exits for this room 
+                 * used in listing exits for this room
                  */
 const char     *listexits[] = {
     "$c0010North",
@@ -1631,358 +1631,358 @@ const char     *drinknames[] = {
 const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
 
     /*
-     * m c f t d k b s p r psi nec 
+     * m c f t d k b s p r psi nec
      */
     /*
-     * mutt 
-     */ 
+     * mutt
+     */
      {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
     /*
-     * Hum 
-     */ 
+     * Hum
+     */
      {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
     /*
      * moonelf
-     */ 
+     */
      {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40, 0},
     /*
-     * dwrf 
-     */ 
+     * dwrf
+     */
      {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0, 0},
     /*
-     * 1/2 
-     */ 
+     * 1/2
+     */
      {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0, 0},
     /*
      * r_gnm
-     */ 
+     */
      {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0, 0},
     /*
-     * rep 
-     */ 
+     * rep
+     */
      {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0, 0},
     /*
-     * Myst 
-     */ 
+     * Myst
+     */
      {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0, 0},
     /*
-     * were 
-     */ 
+     * were
+     */
      {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0, 0},
     /*
-     * drag 
-     */ 
+     * drag
+     */
      {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0, 0},
     /*
      * unded
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0, 0},
     /*
-     * ork 
-     */ 
+     * ork
+     */
      {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0, 0},
     /*
      * insct
-     */ 
+     */
      {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0, 0},
     /*
      * arach
-     */ 
+     */
      {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * saur 
-     */ 
+     * saur
+     */
      {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * fish 
-     */ 
+     * fish
+     */
      {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * bird 
-     */ 
+     * bird
+     */
      {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0, 0},
     /*
      * giant
-     */ 
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * pred 
-     */ 
+     * pred
+     */
      {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0, 0},
     /*
-     * para 
-     */ 
+     * para
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * slime
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * demon
-     */ 
+     */
      {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0, 0},
     /*
      * snake
-     */ 
+     */
      {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0, 0},
     /*
-     * herb 
-     */ 
+     * herb
+     */
      {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
     /*
-     * tree 
-     */ 
+     * tree
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * vegan
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * elmnt
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * planr
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * devil
-     */ 
+     */
      {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0, 0},
     /*
      * ghost
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * gobln
-     */ 
+     */
      {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0, 50},
     /*
      * troll
-     */ 
+     */
      {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0, 0},
     /*
      * vegmn
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * mndf 
-     */ 
+     * mndf
+     */
      {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0, 0},
     /*
-     * prim 
-     */ 
+     * prim
+     */
      {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0, 0},
     /*
-     * enfn 
-     */ 
+     * enfn
+     */
      {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
     /*
-     * drow 
-     */ 
+     * drow
+     */
      {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40, 40},
     /*
      * golem
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * skexi
-     */ 
+     */
      {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0, 0},
     /*
-     * trog 
-     */ 
+     * trog
+     */
      {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0, 0},
     /*
      * patrn
-     */ 
+     */
      {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0, 0},
     /*
      * labrn
-     */ 
+     */
      {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0, 0},
     /*
      * sartn
-     */ 
+     */
      {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0, 0},
     /*
-     * tytn 
-     */ 
+     * tytn
+     */
      {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0, 0},
     /*
-     * smrf 
-     */ 
+     * smrf
+     */
      {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0},
     /*
-     * roo 
-     */ 
+     * roo
+     */
      {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0, 0},
     /*
      * horse
-     */ 
+     */
      {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0, 0},
     /*
      * drgdm
-     */ 
+     */
      {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0, 0},
     /*
      * astrl
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * god 
-     */ 
+     * god
+     */
      {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50, 50},
     /*
-     * giant hill 
-     */ 
+     * giant hill
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * giant frost 
-     */ 
+     * giant frost
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * giant fire 
-     */ 
+     * giant fire
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * giant cloud 
-     */ 
+     * giant cloud
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * giant storm 
-     */ 
+     * giant storm
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * giant stone 
-     */ 
+     * giant stone
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0, 0},
     /*
-     * drag red 
-     */ 
+     * drag red
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
-     * drag black 
-     */ 
+     * drag black
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag green
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
-     * drag white 
-     */ 
+     * drag white
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
-     * drag blue 
-     */ 
+     * drag blue
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag silver
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag gold
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag bronze
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * drag cooper
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
-     * drag brass 
-     */ 
+     * drag brass
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0, 0},
     /*
      * unded vamp
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded lich
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded wigh
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded ghas
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded spec
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded zomb
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded skel
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
      * unded ghou
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0, 0},
     /*
-     * halfelf 
-     */ 
+     * halfelf
+     */
      {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40, 0},
     /*
      * half-ogre
-     */ 
+     */
      {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * half-orc 
-     */ 
+     * half-orc
+     */
      {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-gian
-     */ 
+     */
      {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0, 0},
     /*
      * lizardman
-     */ 
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
     /*
-     * dar-dwrf 
-     */ 
+     * dar-dwrf
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 40},
     /*
      * dep-gnome
-     */ 
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0, 50},
     /*
-     * gnoll 
-     */ 
+     * gnoll
+     */
      {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0, 0},
     /*
-     * goldelf 
-     */ 
+     * goldelf
+     */
      {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40, 0},
     /*
-     * wildelf 
-     */ 
+     * wildelf
+     */
      {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40, 0},
     /*
-     * sea-elf 
-     */ 
+     * sea-elf
+     */
      {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40, 0},
     /*
-     * for-gnm 
-     */ 
+     * for-gnm
+     */
      {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0, 0},
     /*
-     * avariel 
-     */ 
+     * avariel
+     */
      {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0}
     /*
-     * m c f t d k b s p r psi ne 
+     * m c f t d k b s p r psi ne
      */
 
 };
@@ -1992,355 +1992,355 @@ const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
 const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
 
     /*
-     * m c f t d k b s p r psi 
+     * m c f t d k b s p r psi
      */
     /*
-     * mutt 
-     */ 
+     * mutt
+     */
      {25, 25, 25, 25, 25, 25, 10, 25, 0, 0, 0, 0},
     /*
-     * Hum 
-     */ 
+     * Hum
+     */
      {51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51},
     /*
      * moonelf
-     */ 
+     */
      {51, 30, 20, 51, 51, 20, 0, 51, 40, 51, 40},
     /*
-     * dwrf 
-     */ 
+     * dwrf
+     */
      {0, 51, 51, 35, 0, 0, 0, 0, 45, 30, 0},
     /*
-     * 1/2 
-     */ 
+     * 1/2
+     */
      {20, 40, 30, 51, 51, 20, 0, 20, 0, 0, 0},
     /*
      * r_gnm
-     */ 
+     */
      {51, 51, 30, 40, 20, 20, 0, 51, 0, 0, 0},
     /*
-     * rep 
-     */ 
+     * rep
+     */
      {20, 30, 40, 50, 51, 40, 0, 20, 0, 0, 0},
     /*
-     * Myst 
-     */ 
+     * Myst
+     */
      {50, 50, 50, 1, 51, 1, 0, 50, 0, 0, 0},
     /*
-     * were 
-     */ 
+     * were
+     */
      {30, 30, 51, 50, 40, 20, 0, 30, 0, 0, 0},
     /*
-     * drag 
-     */ 
+     * drag
+     */
      {51, 20, 51, 30, 20, 51, 0, 51, 0, 0, 0},
     /*
      * unded
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 0, 35, 0, 0, 0},
     /*
-     * ork 
-     */ 
+     * ork
+     */
      {20, 30, 51, 45, 0, 0, 40, 0, 0, 0, 0},
     /*
      * insct
-     */ 
+     */
      {30, 20, 40, 51, 50, 30, 10, 30, 0, 0, 0},
     /*
      * arach
-     */ 
+     */
      {20, 30, 40, 51, 50, 30, 10, 20, 0, 0, 0},
     /*
-     * saur 
-     */ 
+     * saur
+     */
      {20, 30, 51, 40, 50, 30, 10, 20, 0, 0, 0},
     /*
-     * fish 
-     */ 
+     * fish
+     */
      {20, 40, 30, 50, 51, 30, 10, 20, 0, 0, 0},
     /*
-     * bird 
-     */ 
+     * bird
+     */
      {40, 30, 30, 50, 51, 20, 10, 40, 0, 0, 0},
     /*
      * giant
-     */ 
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * pred 
-     */ 
+     * pred
+     */
      {40, 30, 51, 20, 30, 50, 10, 40, 0, 0, 0},
     /*
-     * para 
-     */ 
+     * para
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * slime
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * demon
-     */ 
+     */
      {51, 30, 40, 50, 30, 20, 10, 51, 0, 0, 0},
     /*
      * snake
-     */ 
+     */
      {40, 30, 30, 51, 50, 20, 10, 40, 0, 0, 0},
     /*
-     * herb 
-     */ 
+     * herb
+     */
      {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
     /*
-     * tree 
-     */ 
+     * tree
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * vegan
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * elmnt
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * planr
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * devil
-     */ 
+     */
      {50, 51, 40, 20, 30, 40, 10, 50, 0, 0, 0},
     /*
      * ghost
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * gobln
-     */ 
+     */
      {20, 30, 50, 51, 0, 0, 30, 0, 0, 0, 0},
     /*
      * troll
-     */ 
+     */
      {0, 35, 51, 35, 0, 0, 45, 0, 0, 0, 0},
     /*
      * vegmn
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * mndf 
-     */ 
+     * mndf
+     */
      {51, 40, 30, 30, 30, 50, 10, 51, 0, 0, 0},
     /*
-     * prim 
-     */ 
+     * prim
+     */
      {30, 30, 40, 50, 20, 51, 10, 30, 0, 0, 0},
     /*
-     * enfn 
-     */ 
+     * enfn
+     */
      {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
     /*
-     * drow 
-     */ 
+     * drow
+     */
      {50, 51, 30, 40, 20, 30, 0, 50, 40, 51, 40},
     /*
      * golem
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
      * skexi
-     */ 
+     */
      {50, 30, 40, 51, 30, 20, 10, 50, 0, 0, 0},
     /*
-     * trog 
-     */ 
+     * trog
+     */
      {30, 40, 50, 51, 30, 20, 10, 30, 0, 0, 0},
     /*
      * patrn
-     */ 
+     */
      {51, 30, 50, 30, 20, 40, 10, 51, 0, 0, 0},
     /*
      * labrn
-     */ 
+     */
      {50, 30, 51, 40, 20, 30, 10, 50, 0, 0, 0},
     /*
      * sartn
-     */ 
+     */
      {50, 51, 30, 20, 40, 30, 10, 50, 0, 0, 0},
     /*
-     * tytn 
-     */ 
+     * tytn
+     */
      {50, 30, 51, 30, 40, 20, 10, 50, 0, 0, 0},
     /*
-     * smrf 
-     */ 
+     * smrf
+     */
      {10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0},
     /*
-     * roo 
-     */ 
+     * roo
+     */
      {40, 30, 51, 30, 20, 50, 10, 40, 0, 0, 0},
     /*
      * horse
-     */ 
+     */
      {30, 40, 20, 30, 51, 50, 10, 30, 0, 0, 0},
     /*
      * drgdm
-     */ 
+     */
      {51, 30, 20, 51, 40, 20, 10, 51, 0, 0, 0},
     /*
      * astrl
-     */ 
+     */
      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * god 
-     */ 
+     * god
+     */
      {50, 50, 50, 50, 51, 50, 50, 50, 50, 50, 50},
     /*
-     * giant hill 
-     */ 
+     * giant hill
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * giant frost 
-     */ 
+     * giant frost
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * giant fire 
-     */ 
+     * giant fire
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * giant cloud 
-     */ 
+     * giant cloud
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * giant storm 
-     */ 
+     * giant storm
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * giant stone 
-     */ 
+     * giant stone
+     */
      {20, 40, 51, 50, 30, 30, 10, 20, 0, 0, 0},
     /*
-     * drag red 
+     * drag red
      */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
-     * drag black 
-     */ 
+     * drag black
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag green
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
-     * drag white 
-     */ 
+     * drag white
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
-     * drag blue 
-     */ 
+     * drag blue
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag silver
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag gold
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag bronze
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * drag cooper
-     */ 
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
-     * drag brass 
-     */ 
+     * drag brass
+     */
      {51, 20, 51, 30, 20, 51, 10, 51, 0, 0, 0},
     /*
      * unded vamp
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded lich
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded wigh
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded ghas
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded spec
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded zomb
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded skel
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
      * unded ghou
-     */ 
+     */
      {35, 35, 35, 35, 35, 35, 10, 35, 0, 0, 0},
     /*
-     * halfelf 
-     */ 
+     * halfelf
+     */
      {30, 35, 35, 51, 35, 30, 0, 30, 51, 51, 40},
     /*
      * half-ogre
-     */ 
+     */
      {0, 30, 51, 0, 0, 0, 0, 0, 0, 0, 0},
     /*
-     * half-orc 
-     */ 
+     * half-orc
+     */
      {0, 30, 45, 51, 0, 0, 0, 0, 0, 0, 0},
     /*
      * half-gian
-     */ 
+     */
      {0, 0, 51, 0, 0, 0, 45, 0, 0, 0, 0},
     /*
      * lizardman
-     */ 
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
-     * dar-dwrf 
-     */ 
+     * dar-dwrf
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
      * dep-gnome
-     */ 
+     */
      {20, 51, 51, 35, 15, 40, 0, 20, 45, 30, 0},
     /*
-     * gnoll 
-     */ 
+     * gnoll
+     */
      {20, 40, 51, 50, 30, 30, 0, 20, 0, 0, 0},
     /*
-     * goldelf 
-     */ 
+     * goldelf
+     */
      {51, 35, 15, 51, 51, 20, 0, 51, 45, 51, 40},
     /*
-     * wildelf 
-     */ 
+     * wildelf
+     */
      {30, 35, 51, 51, 51, 0, 0, 30, 0, 51, 40},
     /*
-     * sea-elf 
-     */ 
+     * sea-elf
+     */
      {51, 30, 30, 51, 51, 20, 0, 51, 40, 51, 40},
     /*
-     * for-gnm 
-     */ 
+     * for-gnm
+     */
      {30, 50, 40, 45, 50, 0, 0, 30, 0, 50, 0},
     /*
-     * avariel 
-     */ 
+     * avariel
+     */
      {45, 40, 50, 0, 0, 0, 0, 45, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},  /* New Races */
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -2389,7 +2389,7 @@ const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
     /*
-     * m c f t d k b s p r psi 
+     * m c f t d k b s p r psi
      */
 
 };
@@ -2397,7 +2397,7 @@ const int       RacialMax[MAX_RACE + 1][MAX_CLASS] = {
 #endif
 
 /*
- * fire cold elec blow acid 
+ * fire cold elec blow acid
  */
 
 int             ItemSaveThrows[22][5] = {
@@ -2472,7 +2472,7 @@ const char     *fullness[] = {
 };
 
 /*
- * new level titles supplied by alfred 
+ * new level titles supplied by alfred
  */
 const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
     {{"Man", "Woman", 0},       /* Mage */
@@ -2907,14 +2907,14 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
      {"Immortal", "Immortal", 233000000},
      {"Immortal", "Immortal", 234500000},
      {"Immortal", "Immortal", 235500000},
-     {"Immortal", "Immortal", 236500000},       
+     {"Immortal", "Immortal", 236500000},
      {"Extirpator", "Queen", 237500000},
      {"God", "Goddess", 238500000},
      {"Implementor", "Implementrix", 239500000},
      {"Implementor", "Implementrix", 241000000}
      },
     /*
-     * sorcerer 
+     * sorcerer
      */
     {
      {"Man", "Woman", 0},
@@ -2981,7 +2981,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
      },
 
     /*
-     * paladin 
+     * paladin
      */
     {
      {"Man", "Woman", 0},
@@ -3048,7 +3048,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
      },
 
     /*
-     * ranger 
+     * ranger
      */
     {
      {"Man", "Woman", 0},
@@ -3114,7 +3114,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
      {"Immortal Ranger", "Immortal Ranger", 239000000}  /* 60 */
      },
     /*
-     * psionist 
+     * psionist
      */
     {
      {"Man", "Woman", 0},
@@ -4012,18 +4012,18 @@ const char     *connected_types[] = {
 };
 
 /*
- * [class], [level] (all) 
+ * [class], [level] (all)
  */
 const int       thaco[MAX_CLASS][ABS_MAX_LVL] = {
     /*
-     * mage 
+     * mage
      */
     {100, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 18, 18, 18, 18, 18, 17,
      17, 17, 17, 17, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 14, 14, 14,
      14, 14, 13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 11, 11, 11, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * cleric 
+     * cleric
      */
     {100, 20, 20, 20, 19, 19, 19, 18, 18, 18, 17, 17, 17, 16, 16, 16, 15,
      15, 15, 14, 14, 14, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10, 9,
@@ -4031,21 +4031,21 @@ const int       thaco[MAX_CLASS][ABS_MAX_LVL] = {
      1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * fighter 
+     * fighter
      */
     {100, 20, 20, 19, 19, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13,
      12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2,
      2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * thief 
+     * thief
      */
     {100, 20, 20, 20, 19, 19, 19, 19, 18, 18, 18, 17, 17, 17, 17, 16, 16,
      16, 15, 15, 15, 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 11, 11,
      11, 11, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 7, 7, 7, 7, 6, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * druid 
+     * druid
      */
     {100, 20, 20, 20, 19, 19, 19, 18, 18, 18, 17, 17, 17, 16, 16, 16, 15,
      15, 15, 14, 14, 14, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10, 9,
@@ -4053,49 +4053,49 @@ const int       thaco[MAX_CLASS][ABS_MAX_LVL] = {
      1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * monk 
+     * monk
      */
     {100, 20, 20, 19, 19, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13,
      12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2,
      2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * barbarian 
+     * barbarian
      */
     {100, 20, 20, 19, 19, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13,
      12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2,
      2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * sorcerer 
+     * sorcerer
      */
     {100, 20, 20, 20, 20, 20, 19, 19, 19, 19, 19, 18, 18, 18, 18, 18, 17,
      17, 17, 17, 17, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 14, 14, 14,
      14, 14, 13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 11, 11, 11, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * paladin 
+     * paladin
      */
     {100, 20, 20, 19, 19, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13,
      12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2,
      2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * ranger 
+     * ranger
      */
     {100, 20, 20, 19, 19, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13,
      12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2,
      2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * psionist 
+     * psionist
      */
     {100, 20, 20, 20, 19, 19, 19, 19, 18, 18, 18, 17, 17, 17, 17, 16, 16,
      16, 15, 15, 15, 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 11, 11,
      11, 11, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 7, 7, 7, 7, 6, 1, 1, 1, 1, 1,
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /*
-     * Necromancer 
+     * Necromancer
      */
     {100, 20, 20, 20, 19, 19, 19, 18, 18, 18, 17, 17, 17, 16, 16, 16, 15,
      15, 15, 14, 14, 14, 13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10, 10, 9,
@@ -4105,7 +4105,7 @@ const int       thaco[MAX_CLASS][ABS_MAX_LVL] = {
 };
 
 /*
- * [ch] strength apply (all) 
+ * [ch] strength apply (all)
  */
 const struct str_app_type str_app[31] = {
     {-5, -4, 0, 0},             /* 0 */
@@ -4142,7 +4142,7 @@ const struct str_app_type str_app[31] = {
 };
 
 /*
- * [dex] skillapply (thieves only) 
+ * [dex] skillapply (thieves only)
  */
 const struct dex_skill_type dex_app_skill[26] = {
     {-99, -99, -90, -99, -60},  /* 0 */
@@ -4174,7 +4174,7 @@ const struct dex_skill_type dex_app_skill[26] = {
 };
 
 /*
- * [level] backstab multiplyer (thieves only) 
+ * [level] backstab multiplyer (thieves only)
  */
 const byte      backstab_mult[ABS_MAX_LVL] = {
     1,                          /* 0 */
@@ -4325,7 +4325,7 @@ const byte      lesser_backstab_mult[ABS_MAX_LVL] = {
 };
 
 /*
- * [dex] apply (all) 
+ * [dex] apply (all)
  */
 struct dex_app_type dex_app[41] = {
     {-7, -7, 60},               /* 0 */
@@ -4358,7 +4358,7 @@ struct dex_app_type dex_app[41] = {
 };
 
 /*
- * [con] apply (all) 
+ * [con] apply (all)
  */
 struct con_app_type con_app[26] = {
     {-4, 20},                   /* 0 */
@@ -4390,7 +4390,7 @@ struct con_app_type con_app[26] = {
 };
 
 /*
- * [int] apply (all) 
+ * [int] apply (all)
  */
 struct int_app_type int_app[26] = {
     {0},
@@ -4451,7 +4451,7 @@ struct int_app_type int_sf_modifier[26] = {
 };
 
 /*
- * [wis] apply (all) 
+ * [wis] apply (all)
  */
 struct wis_app_type wis_app[26] = {
     {0},
@@ -4873,7 +4873,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {109, "A child's favorite place holds the object of my desire, on "
               "the dark river\n\r"},
         /*
-         * 10 
+         * 10
          */
         {3628, "The latest in New padded footwear\n\r"},
         {113, "A child might play with one, when the skexies aren't "
@@ -4887,7 +4887,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {7204, "Vaulted lightning\n\r"},
         {16043, "Precious elements can come in dull, dark mines\n\r"},
         /*
-         * 20 
+         * 20
          */
         {20007, "You'll catch him napping, no guardian of passing time."},
         {16903, "Nature's mistake, carried by a man on a new moon, "
@@ -4926,7 +4926,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {21125, "With enough of this strong amber drink you'd forget about "
                 "the nightly ghosts."},  /* Crate, ARO */
         /*
-         * 40 
+         * 40
          */
         {5309, "Powerful items of magic follow... first bring me a medallion "
                "of mana\n\r"},
@@ -4941,7 +4941,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {5020, "You're not a real mage till you get platinum from purple\n\r"},
         {1599, "Grand Major\n\r"},
         {20002, "She's hiding in her room, but she has my hat!\n\r"}
-    }, 
+    },
     {                       /* cleric */
         {0, ""},
         {1, "It can be found in the donation room, or on your head\n\r"},
@@ -4956,7 +4956,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {4000, "I have a weakness for cheap rings\n\r"},
         {3025, "cleaver for hire, just outside of midgaard\n\r"},
         /*
-         * 10 
+         * 10
          */
         {3649, "My wife needs something New, to help keep her girlish "
                "figure\n\r"},
@@ -4996,7 +4996,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {21109, "A bow made of dark wood, carried by a "
                 "troglodyte."},  /* Trog, CT */
         /*
-         * 30 
+         * 30
          */
         {15817, "In an secret cold place, a dark flower is carried by a "
                 "midnight one."},  /* Bechemel, SK */
@@ -5018,7 +5018,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {13901, "On the shore, down the river from the "
                 "troll-bridge"}, /* RHY */
         /*
-         * 40 
+         * 40
          */
         {5104, "Four heads are better than one\n\r"},
         {15806, "You don't stand a ghost of a chance against a glow of "
@@ -5031,7 +5031,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {1563, "Famous, blue and very very rare"},
         {5001, "Search for a banded male\n\r"},
         {20003, "Ensnared for power, she holds the helmet of the wise"}
-    }, 
+    },
     {                   /* warrior */
         {2402, "An unusual way of looking at things."},
         {11, "Something you might find in the donation room, or on "
@@ -5047,7 +5047,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {123, "A mule stole my hat, now he fights in front of an "
               "audience\n\r"},
         /*
-         * 10 
+         * 10
          */
         {3621, "Thank goodness when I broke my arm, I still had my New "
                "shield\n\r"},
@@ -5065,7 +5065,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "the obvious\n\r"},
         {3685, "Mightier than a sword, wielded by a four man\n\r"},
         /*
-         * 20 
+         * 20
          */
         {5100, "Learn humility: I want a common sword\n\r"},
         {16902, "They'd all be normal in a moonless world. You need to "
@@ -5085,7 +5085,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {16901, "Only an elephant's might be as big as this bores' "
                 "mouthpiece."},  /* Boarish, LY */
         /*
-         * 30 
+         * 30
          */
         {6511, "A bearded woman might be so engaged, but a guard's got "
                "this one."},
@@ -5105,7 +5105,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
                "worm."},     /* Worm, GED */
         {10002, "This item can be found on 'Al'"}, /* On Corpse, DCE */
         /*
-         * 40 
+         * 40
          */
         {5221, "Weapons are the keys to the remaining quests. First, bring "
                "me a Stone golem's sword"},
@@ -5121,7 +5121,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {1430, "It rises from the ashes, and guards a tower\n\r"},
         {5019, "You're not a REAL fighter til you've had one of these, "
                "enchanted\n\r"}
-    }, 
+    },
     {               /* thief */
         {2402, "An unusual way of looking at things."},
         {4, "You might find one of these in the donation room, or in "
@@ -5148,7 +5148,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {3690, "I am an old man, but I will crush you at chess\n\r"},
         {5000, "Find a dark dwarf. Pick something silver\n\r"},
         /*
-         * 20 
+         * 20
          */
         {15802, "It's easy work to work a rejected bird for the means "
                 "to his former home."},   /* Skexie Reject, SK */
@@ -5170,7 +5170,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {3690, "An old man at the park might have one, but these old men "
                "are in the new city."},       /* Old man, NT */
         /*
-         * 30 
+         * 30
          */
         {1729, "In the forest north of the new city a traveller lost "
                "his way. It's on him."},  /* Lost Adventurer, MT */
@@ -5192,7 +5192,7 @@ const struct QuestItem QuestList[4][IMMORTAL] = {
         {1533, "Three witches in the mage's tower have the orb you "
                "need"},     /* Pot, MT */
         /*
-         * 40 
+         * 40
          */
         {9425, "A huge gemstone, guarded by ice toads, beware their poison"},
         {5113, "The weapon of a maiden, shaped like a goddess"},
@@ -5447,7 +5447,7 @@ const int       preproomexitsquad4[] = {
  * Lennya: Let's make these for all classes, preferably in alphabetical
  * order for skills command.  Perhaps make a similar listing called
  * pracset warriorprac[] for GM purposes? would be easy to get spells at
- * GM in spell order (new spells at bottom). 
+ * GM in spell order (new spells at bottom).
  */
 const struct skillset mainmageskills[] = {
     {"anti magic shell", SPELL_ANTI_MAGIC_SHELL, 48, 45},
@@ -5646,9 +5646,9 @@ const struct skillset sorcskills[] = {
 const struct skillset mainpaladinskills[] = {
     {"aura of power", SPELL_AURA_POWER, 15, 45},
     {"call steed", SKILL_STEED, 11, 45},
-#if 0    
+#if 0
     {"circle of protection", SPELL_CIRCLE_PROTECTION ,1},
-#endif    
+#endif
     {"enlightenment", SPELL_ENLIGHTENMENT, 25, 45},
     {"holy armor", SPELL_HOLY_ARMOR, 5, 45},
     {"holy strength", SPELL_HOLY_STRENGTH, 3, 45},
@@ -5753,6 +5753,7 @@ const struct skillset psiskills[] = {
     {"psionic blast", SKILL_PSIONIC_BLAST, 1, 45},
     {"psionic danger sense", SKILL_DANGER_SENSE, 23, 45},
     {"psionic disintegrate", SKILL_DISINTEGRATE, 38, 45},
+    {"psionic teleport", SKILL_PSI_TELEPORT, 12, 30},
     {"psychic crush", SKILL_PSYCHIC_CRUSH, 37, 45},
     {"psychic impersonation", SKILL_PSYCHIC_IMPERSONATION, 3, 45},
     {"scry", SKILL_SCRY, 7, 45},
@@ -5944,7 +5945,7 @@ const struct skillset mainwarriorskills[] = {
 const struct skillset warriorskills[] = {
     {"bash", SKILL_BASH, 1, 45},
     {"bellow", SKILL_BELLOW, 1, 45},
-#if 0    
+#if 0
     {"doorbash", SKILL_DOORBASH, 1}, / *this one learned at ninjamaster */
 #endif
     {"kick", SKILL_KICK, 1, 45},
@@ -5971,7 +5972,7 @@ const struct skillset thiefskills[] = {
 };
 const struct skillset loreskills[] = {
     /*
-     * lores 
+     * lores
      */
     {"animal lore", SKILL_CONS_ANIMAL, 1, 94},
     {"demonology", SKILL_CONS_DEMON, 1, 94},
@@ -5984,7 +5985,7 @@ const struct skillset loreskills[] = {
     {"read magic", SKILL_READ_MAGIC, 1, 94},
     {"sign language", SKILL_SIGN, 1, 94},
     /*
-     * languages 
+     * languages
      */
     {"common", LANG_COMMON, 1, 94},
     {"dwarvish", LANG_DWARVISH, 1, 94},
@@ -6001,7 +6002,7 @@ const struct skillset archerskills[] = {
     {"None", -1, -1, -1}
 };
 /*
- * divided ninjaskills into 3 parts, seems easier 
+ * divided ninjaskills into 3 parts, seems easier
  */
 const struct skillset thfninjaskills[] = {
     {"climb", SKILL_CLIMB, 1, 94},
@@ -6129,7 +6130,7 @@ const struct skillset necroskills[] = {
     {"None", -1, -1, -1}
 };
 
-/* 
+/*
  * '0=General size,1=tiny, 2=small, 3=medium, 4=large, 5=huge,
  * 6=gargantuan '
  */
@@ -6222,7 +6223,7 @@ const struct race_type race_list[] = {
     {RACE_FOREST_GNOME, "Forest-Gnome", 45, 0, 91, 181, 271, 406, 541, 2},
     {RACE_AVARIEL, "Avariel", 120, 0, 151, 301, 451, 676, 901, 3},
     /*
-     * start of new Races by greg Hovey (GH) 
+     * start of new Races by greg Hovey (GH)
      */
     {RACE_ETTIN, "Ettin", 17, 0, 21, 41, 61, 91, 121, 3},
     {RACE_COCKATRICE, "Cockatrice", 17, 0, 21, 41, 61, 91, 121, 5},
@@ -6889,10 +6890,10 @@ const char     *AttackType[] = {
     "Blast",
     "Impale",
     "Range Weapon",
-#if 0    
+#if 0
     "Unknown", /* 15 */
     "Unknown", /* 16 */
-#endif    
+#endif
     "Jab",
     "Punch",
     "Strike",
@@ -7089,7 +7090,7 @@ const char     *languagelist[] = {
 char           *classname[] =
     { "Mu", "Cl", "Wa", "Th", "Dr", "Mo", "Ba", "So", "Pa", "Ra", "Ps",
 "Ne" };
-/* 
+/*
  * None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon,
  * Returners
  */
@@ -7101,58 +7102,58 @@ const char *MortalLevel[7][3] = {
     {"$c0014Adventurer","$c0014Adventurer" ,"$c0014Adventurer"},
     {"$c0015Mystical" ,"$c0015Mystical" ,"$c0015Mystical"}, {"$c000BHero"
      ,"$c000BHero" ,"$c000BHero"}, {"$c000RHero" ,"$c000RHeroine"
-     ,"$c000RHero"} }; 
- 
+     ,"$c000RHero"} };
 
-    case 51: 
-        sprintf(levels,"Newbie Immortal"); 
-        break; 
+
+    case 51:
+        sprintf(levels,"Newbie Immortal");
+        break;
     case 52:
-        sprintf(levels,"Saint"); 
-        break; 
-    case 53: 
+        sprintf(levels,"Saint");
+        break;
+    case 53:
         sprintf(levels,"Creator");
-        break; 
-    case 54: 
-        sprintf(levels,"Demi God"); 
-        break; 
+        break;
+    case 54:
+        sprintf(levels,"Demi God");
+        break;
     case 55:
-        sprintf(levels,"God"); 
-        break; 
-    case 56: 
+        sprintf(levels,"God");
+        break;
+    case 56:
         sprintf(levels,"Greater God");
-        break; 
-    case 57: 
-        sprintf(levels,"Overseer"); 
-        break; 
+        break;
+    case 57:
+        sprintf(levels,"Overseer");
+        break;
     case 58:
-        sprintf(levels,"SD Lord"); 
-        break; 
-    case 59: 
-        sprintf(levels,"Lord of Realm"); 
-        break; 
-    case 60: 
-        sprintf(levels,"God of Realm"); 
-        break; 
+        sprintf(levels,"SD Lord");
+        break;
+    case 59:
+        sprintf(levels,"Lord of Realm");
+        break;
+    case 60:
+        sprintf(levels,"God of Realm");
+        break;
         Lesser
  /* using new names for levels */
-const char *ImmortalLevel[10][3] = { 
-    
-    {"Supreme Being","Supreme Being","Supreme Being"}, /* 60 */ 
-    {"Lesser Deity","Lesser Deity","Lesser Deity"}, /* 51 */ 
-    {"Deity","Deity","Deity"}, /* 52 */ 
-    {"Greater Deity","Greater Deity","Greater Deity"}, /* 53 */ 
-    {"Lesser God", "Lesser Goddess", "Lesser God"}, /* 54 */ 
-    {"God","Goddess","God"}, /* 55 */ 
-    {"Greater God", "Greater Goddess","Greater God"}, /* 56 */ 
-    {"God of Judgement""Goddess of Judgement", "Judgement Caller"}, /* 57 */ 
+const char *ImmortalLevel[10][3] = {
+
+    {"Supreme Being","Supreme Being","Supreme Being"}, /* 60 */
+    {"Lesser Deity","Lesser Deity","Lesser Deity"}, /* 51 */
+    {"Deity","Deity","Deity"}, /* 52 */
+    {"Greater Deity","Greater Deity","Greater Deity"}, /* 53 */
+    {"Lesser God", "Lesser Goddess", "Lesser God"}, /* 54 */
+    {"God","Goddess","God"}, /* 55 */
+    {"Greater God", "Greater Goddess","Greater God"}, /* 56 */
+    {"God of Judgement""Goddess of Judgement", "Judgement Caller"}, /* 57 */
     {"Lord", "Lady", "Thing"}, /* 58 */
     {"Supreme Lady", "Supreme Lord", "Supreme Thing"} /* 59 */
-}; 
- 
+};
+
 #endif
 /*
- * xcoord, y coord, Disembark room, embark room 
+ * xcoord, y coord, Disembark room, embark room
  */
 const struct map_coord map_coords[] = {
     {33, 46, 3005, 10000},
