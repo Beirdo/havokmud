@@ -32,15 +32,11 @@
  */
 
 #include <string.h>
-/*
- * #include <stdlib.h>
- */
-/*
- * #include <bsd/types.h>
- */
-/*
- * #include <sys/cdefs.h>
- */
+#if 0
+#include <stdlib.h>
+#include <bsd/types.h>
+#include <sys/cdefs.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -65,8 +61,9 @@ char           *strdup(const char *str)
     char           *copy;
 
     len = strlen(str) + 1;
-    if (!(copy = (char *) malloc((u_int) len)))
+    if (!(copy = (char *) malloc((u_int) len))) {
         return ((char *) NULL);
+    }
     bcopy(str, copy, len);
     return (copy);
 }
@@ -175,7 +172,10 @@ static u_int    nmalloc[NBUCKETS];
 static botch(char *s)
 {
     fprintf(stderr, "\r\nassertion botched: %s\r\n", s);
-    (void) fflush(stderr);      /* just in case user buffered it */
+    (void) fflush(stderr);      
+    /* 
+     * just in case user buffered it 
+     */
     abort();
 }
 #else
@@ -199,11 +199,13 @@ void           *malloc(size_t nbytes)
         pagesz = n = getpagesize();
         op = (union overhead *) sbrk(0);
         n = n - sizeof(*op) - ((int) op & (n - 1));
-        if (n < 0)
+        if (n < 0) {
             n += pagesz;
+        }
         if (n) {
-            if (sbrk(n) == (char *) -1)
+            if (sbrk(n) == (char *) -1) {
                 return (NULL);
+            }
         }
         bucket = 0;
         amt = 8;
@@ -220,10 +222,16 @@ void           *malloc(size_t nbytes)
      */
     if (nbytes <= (n = pagesz - sizeof(*op) - RSLOP)) {
 #ifndef RCHECK
-        amt = 8;                /* size of first bucket */
+        amt = 8;                
+        /* 
+         * size of first bucket 
+         */
         bucket = 0;
 #else
-        amt = 16;               /* size of first bucket */
+        amt = 16;               
+        /* 
+         * size of first bucket 
+         */
         bucket = 1;
 #endif
         n = -(sizeof(*op) + RSLOP);
@@ -233,8 +241,9 @@ void           *malloc(size_t nbytes)
     }
     while (nbytes > amt + n) {
         amt <<= 1;
-        if (amt == 0)
+        if (amt == 0) {
             return (NULL);
+        }
         bucket++;
     }
     /*
@@ -243,8 +252,9 @@ void           *malloc(size_t nbytes)
      */
     if ((op = nextf[bucket]) == NULL) {
         morecore(bucket);
-        if ((op = nextf[bucket]) == NULL)
+        if ((op = nextf[bucket]) == NULL) {
             return (NULL);
+        }
     }
     /*
      * remove from linked list 
@@ -274,9 +284,9 @@ void           *malloc(size_t nbytes)
     }
     ptrs[nptr] = (void *) op;
     nptr++;
-    if (nptr > maxptr)
+    if (nptr > maxptr) {
         maxptr = nptr;
-
+    }
     return ((char *) (op + 1));
 }
 
@@ -298,8 +308,9 @@ static void morecore(int bucket)
 #ifdef DEBUG
     ASSERT(sz > 0);
 #else
-    if (sz <= 0)
+    if (sz <= 0) {
         return;
+    }
 #endif
     if (sz < pagesz) {
         amt = pagesz;
@@ -312,8 +323,9 @@ static void morecore(int bucket)
     /*
      * no more room! 
      */
-    if ((int) op == -1)
+    if ((int) op == -1) {
         return;
+    }
     /*
      * Add new memory allocated to that on
      * free list for this hash bucket.
@@ -331,9 +343,9 @@ void free(void *cp)
                     i;
     register union overhead *op;
 
-    if (cp == NULL)
+    if (cp == NULL) {
         return;
-
+    }
     for (i = 0; i < maxptr; i++) {
         if (ptrs[i] + sizeof(union overhead) == cp) {
             ptrs[i] = NULL;
@@ -343,15 +355,22 @@ void free(void *cp)
     }
     fprintf(stderr, "bsd.c : cant find freed pointer!\r\n");
     fflush(stderr);
-    abort(1);
+    abort;
   qqq:
 
     op = (union overhead *) ((caddr_t) cp - sizeof(union overhead));
 #ifdef DEBUG
-    ASSERT(op->ov_magic == MAGIC);      /* make sure it was in use */
+    ASSERT(op->ov_magic == MAGIC);      
+    /* 
+     * make sure it was in use 
+     */
 #else
-    if (op->ov_magic != MAGIC)
-        return;                 /* sanity */
+    if (op->ov_magic != MAGIC) {
+        return;
+        /* 
+         * sanity 
+         */
+    }
 #endif
 #ifdef RCHECK
     ASSERT(op->ov_rmagic == RMAGIC);
@@ -359,7 +378,10 @@ void free(void *cp)
 #endif
     size = op->ov_index;
     ASSERT(size < NBUCKETS);
-    op->ov_next = nextf[size];  /* also clobbers ov_magic */
+    op->ov_next = nextf[size];  
+    /* 
+     * also clobbers ov_magic 
+     */
     nextf[size] = op;
 #ifdef MSTATS
     nmalloc[size]--;
@@ -388,8 +410,9 @@ void           *realloc(void *cp, size_t nbytes)
     char           *res;
     int             was_alloced = 0;
 
-    if (cp == NULL)
+    if (cp == NULL) {
         return (malloc(nbytes));
+    }
     op = (union overhead *) ((caddr_t) cp - sizeof(union overhead));
     if (op->ov_magic == MAGIC) {
         was_alloced++;
@@ -410,24 +433,27 @@ void           *realloc(void *cp, size_t nbytes)
          * is gibbous.  However, that is very unlikely.
          */
         if ((i = findbucket(op, 1)) < 0 &&
-            (i = findbucket(op, realloc_srchlen)) < 0)
+            (i = findbucket(op, realloc_srchlen)) < 0) {
             i = NBUCKETS;
+        }
     }
     onb = 1 << (i + 3);
-    if (onb < pagesz)
+    if (onb < pagesz) {
         onb -= sizeof(*op) + RSLOP;
-    else
+    } else {
         onb += pagesz - sizeof(*op) - RSLOP;
+    }
     /*
      * avoid the copy if same size block 
      */
     if (was_alloced) {
         if (i) {
             i = 1 << (i + 2);
-            if (i < pagesz)
+            if (i < pagesz) {
                 i -= sizeof(*op) + RSLOP;
-            else
+            } else {
                 i += pagesz - sizeof(*op) - RSLOP;
+            }
         }
         if (nbytes <= onb && nbytes > i) {
 #ifdef RCHECK
@@ -435,13 +461,17 @@ void           *realloc(void *cp, size_t nbytes)
             *(u_short *) ((caddr_t) (op + 1) + op->ov_size) = RMAGIC;
 #endif
             return (cp);
-        } else
+        } else {
             free(cp);
+        }
     }
-    if ((res = malloc(nbytes)) == NULL)
+    if ((res = malloc(nbytes)) == NULL) {
         return (NULL);
+    }
     if (cp != res) {
-        /* common optimization if "compacting" */
+        /* 
+         * common optimization if "compacting" 
+         */
         bcopy(cp, res, (nbytes < onb) ? nbytes : onb);
     }
     return (res);
@@ -461,8 +491,9 @@ static findbucket(union overhead *freep, int srchlen)
     for (i = 0; i < NBUCKETS; i++) {
         j = 0;
         for (p = nextf[i]; p && j != srchlen; p = p->ov_next) {
-            if (p == freep)
+            if (p == freep) {
                 return (i);
+            }
             j++;
         }
     }
@@ -487,7 +518,11 @@ void mstats(char *s)
 
     fprintf(stderr, "Memory allocation statistics %s\nfree:\t", s);
     for (i = 0; i < NBUCKETS; i++) {
-        for (j = 0, p = nextf[i]; p; p = p->ov_next, j++);
+        for (j = 0, p = nextf[i]; p; p = p->ov_next, j++) {
+            /*
+             * Empty loop
+             */
+        }
         fprintf(stderr, " %d", j);
         totfree += j * (1 << (i + 3));
     }
@@ -506,8 +541,9 @@ void           *calloc(size_t num, register size_t size)
     register void  *p;
 
     size *= num;
-    if (p = (void *) malloc(size))
+    if (p = (void *) malloc(size)) {
         bzero(p, size);
+    }
     return (p);
 }
 
@@ -522,8 +558,9 @@ void memory_check(char *p)
     register union overhead *op;
 
     for (i = 0; i < maxptr; i++) {
-        if (!ptrs[i])
+        if (!ptrs[i]) {
             continue;
+        }
         op = ptrs[i];
         if (op->ov_rmagic != RMAGIC) {
             fprintf(stderr, "BSD.C memory_check failed: %s!\r\n", p);
