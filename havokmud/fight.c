@@ -5150,10 +5150,10 @@ void specdamage(struct char_data *ch, struct char_data *v)
 
 	if (affected_by_spell(ch, SPELL_VAMPIRIC_EMBRACE) && ch != v && !IsUndead(v)) {
 		if(HasClass(ch, CLASS_WARRIOR)) {
-			if(number(1,100) < 5)
+			if(number(1,100) < 9)
 				vampiric_embrace(ch,v);
 		} else {
-			if(number(1,100) < 9)
+			if(number(1,100) < 18)
 				vampiric_embrace(ch,v);
 		}
 	}
