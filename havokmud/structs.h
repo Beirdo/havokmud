@@ -1281,6 +1281,26 @@ struct pc_data
 	long 	comm;		/* flags used for remote communications */
 };
 
+struct weaponskills
+{
+	int slot1;
+	int slot2;
+	int slot3;
+	int slot4;
+	int slot5;
+	int slot6;
+	int slot7;
+	int slot8;
+	int grade1;
+	int grade2;
+	int grade3;
+	int grade4;
+	int grade5;
+	int grade6;
+	int grade7;
+	int grade8;
+};
+
 struct char_special_data
 {
   byte spellfail;        /* max # for spell failure (101) */
@@ -1504,6 +1524,7 @@ struct char_data
 	                                         the char */
         int old_exp;                  /* For energe restore -MW */
 	int style;  					/* Fighting Style!!!*/
+	struct weaponskills weaponskills; // the weaponry shiznit -Lennya
 
 };
 
@@ -1588,6 +1609,23 @@ struct char_file_u
 	long m_kills;
 
 	int remortclass;
+
+	int slot1;
+	int slot2;
+	int slot3;
+	int slot4;
+	int slot5;
+	int slot6;
+	int slot7;
+	int slot8;
+	int grade1;
+	int grade2;
+	int grade3;
+	int grade4;
+	int grade5;
+	int grade6;
+	int grade7;
+	int grade8;
 
 };
 
