@@ -2923,17 +2923,32 @@ int kings_hall(struct char_data *ch, int cmd, char *arg)
 int Donation(struct char_data *ch, int cmd, char *arg,
              struct room_data *rp, int type)
 {
-    char            check[40];
-
+    char            arg1[40];
+    char            arg2[40];
+    struct obj_data *sub_object;
+    
     if ((cmd != 10) && (cmd != 167)) {
         return (FALSE);
     }
+    
+    argument_interpreter(arg, arg1, arg2);
 
-    one_argument(arg, check);
-
-    if (*check && !strncmp(check, "all", 3) && GetMaxLevel(ch) < 51) {
+    if (*arg1 && !strncmp(arg1, "all", 3) && !*arg2) {
+       
+        /* removed check for immortal to test */
         send_to_char("Now now, that would be greedy!\n\r", ch);
         return (TRUE);
+    }
+    if (*arg2) { 
+        sub_object = (struct obj_data *)get_obj_vis_accessible(ch, arg2);
+        if ((sub_object) && (GET_ITEM_TYPE(sub_object) == ITEM_CONTAINER)) {
+            if ((sub_object = get_obj_in_list_vis(ch, arg2, ch->carrying))) {
+                return (FALSE);
+            } else {
+                send_to_char("Now now, that would be greedy!\n\r", ch);
+                return (TRUE);
+            }
+        }
     }
     return (FALSE);
 }
