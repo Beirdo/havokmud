@@ -1332,7 +1332,18 @@ void do_tan(struct char_data *ch, char *arg, int cmd)
         send_to_char("Where did that carcass go?\n\r", ch);
         return;
     }
-
+    if ((strcmp(itemtype, "shield")) &&
+        (strcmp(itemtype, "jacket")) &&
+        (strcmp(itemtype, "boots")) &&
+        (strcmp(itemtype, "gloves")) &&
+        (strcmp(itemtype, "leggings")) &&
+        (strcmp(itemtype, "sleeves")) &&
+        (strcmp(itemtype, "helmet")) &&
+        (strcmp(itemtype, "bag"))) {
+        send_to_char("You can't make that.\n\rTry shield, jacket, boots, "
+                     "gloves, leggings, sleeves, helmet, or bag.\n\r", ch);
+        return;
+    }
     /*
      * affect[0] == race of corpse, affect[1] == level of corpse 
      */
