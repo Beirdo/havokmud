@@ -86,7 +86,7 @@ int             mudshutdown = 0;        /* clean shutdown */
 int             reboot_now = 0;     /* reboot the game after a shutdown */
 int             no_specials = 0;        /* Suppress ass. of special
                                          * routines */
-long            Uptime;         /* time that the game has been up */
+time_t          Uptime;         /* time that the game has been up */
 long            SystemFlags;
 long            TempDis = 0;
 

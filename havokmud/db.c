@@ -3301,7 +3301,8 @@ void write_obj_to_file(struct obj_data *obj, FILE * f)
 
     fprintf(f, "%d %d %d %d %d %ld %d %d %d\n", obj->obj_flags.weight,
             obj->obj_flags.cost, obj->obj_flags.cost_per_day, obj->level,
-            obj->max, obj->modified, obj->speed, obj->weapontype, obj->tweak);
+            obj->max, (long)obj->modified, obj->speed, obj->weapontype, 
+            obj->tweak);
 
     /*
      *** extra descriptions ***
@@ -3363,13 +3364,14 @@ void save_new_object_structure(struct obj_data *obj, FILE * f)
                 obj->obj_flags.cost,
                 (obj->obj_flags.cost_per_day == -1 ? -1 :
                  obj->obj_flags.cost_per_day), obj->level, obj->max,
-                obj->modified, obj->speed, weaponconvert(obj), obj->tweak);
+                (long)obj->modified, obj->speed, weaponconvert(obj),
+                obj->tweak);
     } else {
         fprintf(f, "%d %d %d %d %d %ld 0 0 %d\n", obj->obj_flags.weight,
                 obj->obj_flags.cost,
                 (obj->obj_flags.cost_per_day == -1 ? -1 :
                  obj->obj_flags.cost_per_day), obj->level, obj->max,
-                obj->modified, obj->tweak);
+                (long)obj->modified, obj->tweak);
     }
 
     /*

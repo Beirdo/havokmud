@@ -488,7 +488,7 @@ int preperationproc(struct char_data *ch, int cmd, char *arg,
                     randnum = 0,
                     x = 0,
                     zone = 0;
-    long            curr_time;
+    time_t            curr_time;
     struct tm      *t_info;
 
     if (cmd != 224) {
@@ -5148,8 +5148,7 @@ int shopkeeper(struct char_data *ch, int cmd, char *arg,
 int knockproc(struct char_data *ch, int cmd, char *arg,
               struct room_data *rp, int type)
 {
-
-    long            curr_time;
+    time_t          curr_time;
     struct tm      *t_info;
 
     Log("Knockproc");

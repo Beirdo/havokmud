@@ -1620,8 +1620,8 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 
             sprintf(buf, "%sBirth : [%s%ld%s]secs, Logon[%s%ld%s]secs, "
                          "Played[%s%d%s]secs",
-                    color1, color2, k->player.time.birth, color1, color2,
-                    k->player.time.logon, color1, color2,
+                    color1, color2, (long)k->player.time.birth, color1, color2,
+                    (long)k->player.time.logon, color1, color2,
                     k->player.time.played, color1);
             act(buf, FALSE, ch, 0, 0, TO_CHAR);
 

@@ -63,7 +63,7 @@ extern char    *apply_types[];
 extern char    *affected_bits[];
 extern char    *affected_bits2[];
 extern char    *immunity_names[];
-extern long     Uptime;
+extern time_t   Uptime;
 extern long     room_count;
 extern long     mob_count;
 extern long     obj_count;
@@ -4059,7 +4059,7 @@ void do_world(struct char_data *ch, char *argument, int cmd)
 {
     char            buf[1000];
     char            tbuf[256];
-    long            ct,
+    time_t          ct,
                     ot;
     char           *tmstr,
                    *otmstr;

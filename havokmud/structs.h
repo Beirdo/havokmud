@@ -658,7 +658,7 @@ struct obj_data {
     int             tweak;
 
     char           *modBy;
-    long            modified;
+    time_t          modified;
 };
 /*
  * ======================================================================
@@ -1728,7 +1728,7 @@ struct help_file_u {
     char           *references;
     int             wizard;
     char           *modBy;
-    long            modified;
+    time_t          modified;
     int             newfile;
     long            index;
 };
