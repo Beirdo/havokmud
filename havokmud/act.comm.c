@@ -1386,10 +1386,18 @@ void do_reply(struct char_data *ch, char *argument, int cmd)
         return;
 	}
     strncpy(name, ch->last_tell, 80);
+
+    if(!strcasecmp(name, GET_NAME(ch)) || strlen(name) == 0) {
+        send_to_char("You would be replying to yourself, how strange.", ch);
+        return;
+    }
+
+
     if (!(vict = get_char(name))) {
         send_to_char("They seem to have left...", ch);
         return;
     }
+
 	if (!(vict = get_char_vis(ch, name))) {
         send_to_char("They seem to have left...", ch);
         return;
