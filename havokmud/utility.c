@@ -3102,7 +3102,7 @@ char *advicelist[] = {
 	"To see if anyone is in the arena battling, type$c000W WHOARENA",
 	"Karysinya Coach is a quick and easy way to travel the lands. (From Meeting Square go $c000Wsesu$c000w)",
 	"Type $c000WWORLD $c000wto see some interesting facts about Havok.",
-	"$c000WATTRIBUTES $c000wcommand is used to see what spell affects and stats your character has. It can be accessed from lvl 5 upwards.",
+	"After level five, $c000WATTRIBUTES $c000wcommand is used to see what spell affects and stats your character has.",
 	"Did you know that you can request immortality if your character gains 200mil xp or more?",
 	"Immortals/Gods are the people that rule the mud. Type $c000WWIZLIST $c000wto see a list of all of them.",
 	"Before attacking someone, use the $c000WCONSIDER$c000w command to determine how strong they are.",
@@ -3121,8 +3121,8 @@ char *advicelist[] = {
 	"You may want to read $c0015HELP NEWBIE$c0007 for some useful information to get you started.",
 	"When confused, try $c0015HELP <feature>$c0007, there may be a helpfile about it!",
 	"Some of Havok's monsters are smart. They may attack you, talk to you, cast spells on you, or help each other out.",
-	"In the $c0015ARENA$c0007, players can battle each other. Dont worry, there are no penalties for dying in the Arena."//38
-
+	"In the $c0015ARENA$c0007, players can battle each other. Dont worry, there are no penalties for dying in the Arena.",//38
+	"Use $c0015GET ALL.<ITEMNAME>$c0007 to pick up all of a specific item in a room, such as all.coins"
 };
 
 void AdvicePulseStuff(int pulse)

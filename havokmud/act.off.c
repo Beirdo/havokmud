@@ -2665,10 +2665,11 @@ void do_qchat(struct char_data *ch, char *argument, int cmd) {
 	    send_to_char("Your fellow questees aren't interested in hearing nothing.\n\r", ch);
 	  else {
 	    if (IS_NPC(ch) || IS_SET(ch->specials.act, PLR_ECHO)) {
-	      sprintf(buf1,"$c000wYou $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct $c0008'$c000w%s$c0008'", argument);
+	      sprintf(buf1,"$c0008You $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct $c0008'$c000C%s$c0008'", argument);
 	      act(buf1,FALSE, ch,0,0,TO_CHAR);
 	    }
-	    sprintf(buf1, "$c0008-=$c000w%s$c0008=- $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000Ps $c0008'$c000w%s$c0008'\n\r",GET_NAME(ch), argument);
+	    sprintf(buf1, "$c0008-=$c000c%s$c0008=- $c000Rq$c000Yu$c000Ge$c000Bs$c000Ct$c000Ps $c0008'$c000C%s$c0008'\n\r",GET_NAME(ch), argument);
+
 
 	    for (i = descriptor_list; i; i = i->next)
 	      if (i->character != ch && !i->connected && (IS_NPC(i->character) ||
