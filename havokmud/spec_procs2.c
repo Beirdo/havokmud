@@ -5873,7 +5873,7 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch)) {
@@ -6010,7 +6010,7 @@ int PsiGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *m
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch)) {
@@ -6129,7 +6129,7 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch)) {

@@ -163,7 +163,7 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch))
@@ -342,7 +342,7 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch)) {
@@ -355,7 +355,7 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 
   if (HasClass(ch, CLASS_CLERIC)) {
 #ifdef QUEST_GAIN
-     if (cmd == 243 || cmd == 72) /*gain or give */
+     if (cmd == 243) /*gain or give */
 #else
 	if (cmd == 243) /*gain */
 #endif
@@ -676,7 +676,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 
   if (!guildmaster) return(FALSE);
 
-  if ((cmd != 164) && (cmd != 170) && (cmd != 243) && (cmd != 72))
+  if ((cmd != 164) && (cmd != 170) && (cmd != 243))
       return(FALSE);
 
   if (IS_NPC(ch)) {
@@ -690,7 +690,7 @@ int WarriorGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_dat
   if (HasClass(ch, CLASS_WARRIOR)) {
 
 #ifdef QUEST_GAIN
-     if (cmd == 243 || cmd == 72)   /* gain or give */
+     if (cmd == 243)   /* gain or give */
 #else
 	if (cmd == 243)
 #endif
