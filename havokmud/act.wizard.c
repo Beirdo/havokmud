@@ -5259,7 +5259,7 @@ void do_beep(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!generic_find(argument, FIND_CHAR_WORLD, ch, &victim, &dummy)) {
+    if (!generic_find(name, FIND_CHAR_WORLD, ch, &victim, &dummy)) {
         send_to_char("No such person in the world.\n\r", ch);
         return;
     }
