@@ -2495,6 +2495,13 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							tar_char = ch;
 							target_ok = TRUE;
 						}
+					/* group spells */
+					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_GROUP))
+						if (tar_char = get_char_vis(ch, name))
+							if (IS_AFFECTED(tar_char, AFF_GROUP) && in_group(ch, tar_char)) {
+								tar_char = ch;
+								target_ok = TRUE;
+							}
 					/* name spells (?) */
 					if (!target_ok && IS_SET(spell_info[spl].targets, TAR_NAME)) {
 						tar_obj = (void*)name;
@@ -2508,6 +2515,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 							}
 					}
 				} else { /* No argument was typed */
+					if (IS_SET(spell_info[spl].targets, TAR_GROUP))
+						if (IS_AFFECTED(ch, AFF_GROUP)) {
+							tar_char = ch;
+							target_ok = TRUE;
+						}
 					if (IS_SET(spell_info[spl].targets, TAR_FIGHT_SELF))
 						if (ch->specials.fighting) {
 							tar_char = ch;
@@ -2543,8 +2555,12 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 						send_to_char("You are not wearing anything like that.\n\r", ch);
 					else if (IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 						send_to_char("Nothing at all by that name.\n\r", ch);
+					else if (IS_SET(spell_info[spl].targets, TAR_GROUP))
+						send_to_char("You can only cast this spell when grouped.\n\r",ch);
 				} else { /* Nothing was given as argument */
-					if (spell_info[spl].targets < TAR_OBJ_INV) {
+					if (IS_SET(spell_info[spl].targets, TAR_GROUP))
+						send_to_char("You can only cast this spell when grouped.\n\r",ch);
+					else if (spell_info[spl].targets < TAR_OBJ_INV) {
 						if(cmd != 600)
 							send_to_char("Who should the spell be cast upon?\n\r", ch);
 						else
@@ -4218,7 +4234,7 @@ spello(234,0, POSITION_STANDING,IMMORTAL,IMMORTAL,10,
 
 	spello(380,36,POSITION_STANDING, LOW_IMMORTAL, LOW_IMMORTAL,  LOW_IMMORTAL,
 	LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,  LOW_IMMORTAL,
-	80, TAR_IGNORE | TAR_CHAR_ROOM | TAR_GROUP, play_heros_chant, 0,0, 50, LOW_IMMORTAL);
+	80, TAR_CHAR_ROOM | TAR_GROUP, play_heros_chant, 0,0, 50, LOW_IMMORTAL);
 /* end bard stuff */
 
 }

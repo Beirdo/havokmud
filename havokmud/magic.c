@@ -2456,301 +2456,309 @@ void spell_comp_languages(byte level, struct char_data *ch,
 
 void sprintbit(unsigned long, char *[], char *);
 
-void spell_identify(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void spell_identify(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  char buf[256], buf2[256];
-  int i;
-  bool found;
-extern const struct skillset weaponskills[];
-  struct time_info_data age(struct char_data *ch);
+	char buf[256], buf2[256];
+	int i;
+	bool found;
+	extern const struct skillset weaponskills[];
+	struct time_info_data age(struct char_data *ch);
+	extern char *spells[];
+	extern char *RaceName[];
+	extern char *AttackType[];
+	extern struct index_data *obj_index;
+	extern char *item_types[];
+	extern char *extra_bits[];
+	extern char *apply_types[];
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	extern char *immunity_names[];
+	extern char *wear_bits[];
+	extern struct char_data *auctioneer;
 
-  /* Spell Names */
-  extern char *spells[];
+	char color1[10], color2[10];
 
-  /* races */
-  extern char *RaceName[];
+	assert(ch && (obj || victim));
 
+	if (obj) {
+		if(auctioneer) {
+			if(auctioneer->specials.auction) {
+				if(obj == auctioneer->specials.auction) {
+					sprintf(color1,"$c000c");
+					sprintf(color2,"$c000w");
+					send_to_char("$c000cThe item currently on auction has the following stats:\n\r", ch);
+				} else if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+					sprintf(color1,"$c000p");
+					sprintf(color2,"$c000C");
+					sprintf(buf,"%sYou feel informed:\n\r",color1);
+					send_to_char(buf, ch);
+				} else {
+					sprintf(color1,"$c000B");
+					sprintf(color2,"$c000w");
+					sprintf(buf,"%sYou feel informed:\n\r",color1);
+					send_to_char(buf, ch);
+				}
+			}
+		} else if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+			sprintf(color1,"$c000p");
+			sprintf(color2,"$c000C");
+			sprintf(buf,"%sYou feel informed:\n\r",color1);
+			send_to_char(buf, ch);
+		} else {
+			sprintf(color1,"$c000B");
+			sprintf(color2,"$c000w");
+			sprintf(buf,"%sYou feel informed:\n\r",color1);
+			send_to_char(buf, ch);
+		}
 
-  /* For Objects */
-  extern char *AttackType[];
-
-
-  extern struct index_data *obj_index;
-  extern char *item_types[];
-  extern char *extra_bits[];
-  extern char *apply_types[];
-  extern char *affected_bits[];
-  extern char *affected_bits2[];
-  extern char *immunity_names[];
-  extern char *wear_bits[];
-
-  assert(ch && (obj || victim));
-
-  if (obj) {
-    send_to_char("$c0005You feel informed:\n\r", ch);
-
-    sprintf(buf, "$c0005Object '$c0014%s$c0005', Item type: $c0014", obj->name);
-    sprinttype(GET_ITEM_TYPE(obj),item_types,buf2);
-
-
-    strcat(buf,buf2);
-
-	if(IS_WEAPON(obj)) {
-    	if(IS_IMMORTAL(ch))
-			sprintf(buf2,"$c000p, Weapon Speed: $c000C%s$c000p($c000C%.2f$c000p)",SpeedDesc(obj->speed),(float)obj->speed/100);
-	  	else
-    		sprintf(buf2,"$c000p, Weapon Speed: $c000C%s$c000p",SpeedDesc(obj->speed));
-
+		sprintf(buf, "%sObject '%s%s%s', Item type: %s"
+			, color1, color2, obj->name, color1, color2);
+		sprinttype(GET_ITEM_TYPE(obj),item_types,buf2);
 		strcat(buf,buf2);
-   	}
+		if(IS_WEAPON(obj)) {
+			if(IS_IMMORTAL(ch))
+				sprintf(buf2,"%s, Weapon Speed: %s%s%s (%s%.2f%s)"
+					, color1, color2, SpeedDesc(obj->speed), color1, color2,(float)obj->speed/100, color1);
+	  		else
+    			sprintf(buf2,"%s, Weapon Speed: %s%s"
+    				, color1, color2, SpeedDesc(obj->speed));
+			strcat(buf,buf2);
+		}
+		strcat(buf,"\n\r");
+		send_to_char(buf, ch);
 
-strcat(buf,"\n\r");
-    send_to_char(buf, ch);
+		/* alittle more info for immortals -bcw */
+		if (GetMaxLevel(ch)>LOW_IMMORTAL) {
+			sprintf(buf, "%sR-number: [%s%d%s], V-number: [%s%d%s]"
+			, color1, color2, obj->item_number, color1, color2
+			, (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0, color1);
+			if (obj->max==0)
+				sprintf(buf2,"%s","unlimited");
+			else
+				sprintf(buf2,"%d", obj->max,obj->level);
+			sprintf(buf,"%s %sObjMax: [%s%s%s], Tweak Rate: [%s%d%s], ObjValue[%s%d%s]\n\r"
+				, buf, color1, color2, buf2, color1, color2, obj->tweak, color1, color2, eval(obj),color1);
+			send_to_char(buf, ch);
 
-    /* alittle more info for immortals -bcw */
-    if (GetMaxLevel(ch)>LOW_IMMORTAL) {
-      sprintf(buf, "$c0005R-number: [$c0014%d$c0005], V-number: [$c0014%d$c0005]",
-	      obj->item_number,
-	      (obj->item_number >= 0) ? obj_index[obj->item_number].virtual : 0);
-      if (obj->max==0)
-        sprintf(buf2,"$c0014%s","unlimited");
-      else
-        sprintf(buf2,"$c0014%d$c0005", obj->max,obj->level);//obj_index[obj->item_number].MaxObjCount);
-      sprintf(buf,"%s $c0005ObjMax: [$c0014%s$c0005], Tweak Rate: [$c0014%d$c0005], ObjValue[$c0014%d$c0005]\n\r", buf, buf2, obj->tweak, eval(obj));
-      send_to_char(buf, ch);
-    	if(obj->level==0)
-    		sprintf(buf2,"$c0005Ego: $c0014None$c0005, ");
-    	else
-    	    sprintf(buf2,"$c0005Ego: $c0014Level %d$c0005, ",obj->level);
-    	send_to_char(buf2,ch);
+			if(obj->level==0)
+				sprintf(buf2,"%sEgo: %sNone%s, ", color1, color2, color1);
+			else
+				sprintf(buf2,"%sEgo: %sLevel %d%s, ", color1, color2, obj->level, color1);
+			send_to_char(buf2, ch);
 
-    	sprintf(buf2,"$c0005Last modified by $c0014%s $c0005on $c0014%s",obj->modBy,asctime(localtime(&obj->modified)));
-    	send_to_char(buf2,ch);
+			sprintf(buf2,"%sLast modified by %s%s%s on %s%s"
+				, color1, color2, obj->modBy ? obj->modBy : "unmodified", color1, color2, asctime(localtime(&obj->modified)));
+			send_to_char(buf2,ch);
+		}
 
+		if (obj->obj_flags.bitvector) {
+			sprintf(buf2, "%sItem will give you following abilities:%s  ", color1, color2);
+			send_to_char(buf2,ch);
+			sprintbit((unsigned)obj->obj_flags.bitvector,affected_bits,buf);
+			strcat(buf,"\n\r");
+			send_to_char(buf, ch);
+		}
 
+		sprintf(buf,"%sItem is:%s ", color1, color2);
+		send_to_char(buf, ch);
+		sprintbit( (unsigned)obj->obj_flags.extra_flags, extra_bits, buf2);
+		strcat(buf2,"\n\r");
+		send_to_char(buf2,ch);
 
-   }
+		sprintf(buf,"%sWeight: %s%d%s, Value: %s%d%s, Rent cost: %s%d%s "
+			, color1, color2, obj->obj_flags.weight, color1, color2, obj->obj_flags.cost
+			, color1, color2, obj->obj_flags.cost_per_day, color1);
+		send_to_char(buf, ch);
+		if(IS_RARE(obj)) {
+			sprintf(buf,"%s[%sRARE%s]", color1, color2, color1);
+			send_to_char(buf, ch);
+		}
+		send_to_char("\n\r", ch);
 
-    if (obj->obj_flags.bitvector) {
-      send_to_char("$c0005Item will give you following abilities:$c0014  ", ch);
-      sprintbit((unsigned)obj->obj_flags.bitvector,affected_bits,buf);
-      strcat(buf,"\n\r");
-      send_to_char(buf, ch);
-    }
+		sprintf(buf, "%sCan be worn on:%s ", color1, color2);
+		send_to_char(buf, ch);
+		sprintbit((unsigned)obj->obj_flags.wear_flags, wear_bits, buf2);
+		strcat(buf2,"\n\r");
+		send_to_char(buf2, ch);
 
-    send_to_char("$c0005Item is:$c0015 ", ch);
-    sprintbit( (unsigned)obj->obj_flags.extra_flags,extra_bits,buf);
-    sprintf(buf2,"$c0015");
-    strcat(buf2,buf);
-    strcat(buf2,"\n\r");
-    send_to_char(buf2,ch);
+		switch (GET_ITEM_TYPE(obj)) {
 
-    sprintf(buf,"$c0005Weight:$c0014 %d$c0005, Value: $c0014%d,$c0005 Rent cost:"
-	    " $c0014 %d$c0014  %s\n\r",
-	    obj->obj_flags.weight, obj->obj_flags.cost,
-	    obj->obj_flags.cost_per_day
-	    , IS_RARE(obj)?
-	    "$c0005[$c0015RARE$c0005]":" ");
+			case ITEM_SCROLL :
+			case ITEM_POTION :
+				sprintf(buf, "%sLevel %s%d%s spells of:\n\r"
+					, color1, color2, obj->obj_flags.value[0], color1);
+				send_to_char(buf, ch);
+				if (obj->obj_flags.value[1] >= 1) {
+					sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+					sprintf(buf2,"%s%s",color2, buf);
+					strcat(buf2,"\n\r");
+					send_to_char(buf2, ch);
+				}
+				if (obj->obj_flags.value[2] >= 1) {
+					sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+					sprintf(buf2,"%s%s",color2, buf);
+					strcat(buf2,"\n\r");
+					send_to_char(buf2, ch);
+				}
+				if (obj->obj_flags.value[3] >= 1) {
+					sprinttype(obj->obj_flags.value[1]-1,spells,buf);
+					sprintf(buf2,"%s%s",color2, buf);
+					strcat(buf2,"\n\r");
+					send_to_char(buf2, ch);
+				}
+				break;
 
-    send_to_char(buf, ch);
+			case ITEM_WAND :
+			case ITEM_STAFF :
+				sprintf(buf, "%sCosts %s%d%s mana to use, with %s%d%s charges left.\n\r"
+					, color1, color2, obj->obj_flags.value[1], color1, color2, obj->obj_flags.value[2], color1);
+				send_to_char(buf, ch);
+				sprintf(buf, "%sLevel %s%d%s spell of:\n\r"
+					, color1, color2, obj->obj_flags.value[0], color1);
+				send_to_char(buf, ch);
+				if (obj->obj_flags.value[3] >= 1) {
+					sprinttype(obj->obj_flags.value[3]-1,spells,buf);
+					sprintf(buf2,"%s%s",color2, buf);
+					strcat(buf2,"\n\r");
+					send_to_char(buf2, ch);
+				}
+				break;
 
-    send_to_char("$c0005Can be worn on :$c0014", ch);
-    sprintbit((unsigned)obj->obj_flags.wear_flags,wear_bits,buf);
-    sprintf(buf2,"$c0014");
-    strcat(buf2,buf);
-    strcat(buf2,"\n\r");
-    send_to_char(buf2, ch);
+			case ITEM_WEAPON :
+				sprintf(buf, "%sDamage Dice is '%s%dD%d%s' [%s%s%s] [%s%s%s]\n\r"
+					, color1, color2, obj->obj_flags.value[1], obj->obj_flags.value[2]
+					, color1, color2, AttackType[obj->obj_flags.value[3]], color1
+					, color2, weaponskills[obj->weapontype].name, color1);
+				send_to_char(buf, ch);
+				break;
 
-    switch (GET_ITEM_TYPE(obj)) {
+			case ITEM_ARMOR :
+				sprintf(buf, "%sAC-apply is: %s%d%s,   Size of armor is: %s%s\n\r"
+					, color1, color2, obj->obj_flags.value[0], color1, color2, ArmorSize(obj->obj_flags.value[2]));
+				send_to_char(buf, ch);
+				break;
+		}
 
-    case ITEM_SCROLL :
-    case ITEM_POTION :
-      sprintf(buf, "$c0005Level$c0014 %d $c0005spells of:$c0014\n\r",
-	      obj->obj_flags.value[0]);
-      send_to_char(buf, ch);
-      if (obj->obj_flags.value[1] >= 1) {
-	sprinttype(obj->obj_flags.value[1]-1,spells,buf);
-	sprintf(buf2,"$c0014%s",buf);
-	strcat(buf2,"\n\r");
-	send_to_char(buf2, ch);
-      }
-      if (obj->obj_flags.value[2] >= 1) {
-	sprinttype(obj->obj_flags.value[2]-1,spells,buf);
+		found = FALSE;
 
-	sprintf(buf2,"$c0014%s",buf);
-	strcat(buf2,"\n\r");
-	send_to_char(buf2, ch);
-      }
-      if (obj->obj_flags.value[3] >= 1) {
-	sprinttype(obj->obj_flags.value[3]-1,spells,buf);
-	sprintf(buf2,"$c0014%s",buf);
-	strcat(buf2,"\n\r");
-	send_to_char(buf2, ch);
-      }
-      break;
+		for (i=0;i<MAX_OBJ_AFFECT;i++) {
+			if ((obj->affected[i].location != APPLY_NONE) && (obj->affected[i].modifier != 0)) {
+				if (!found) {
+					sprintf(buf, "%sCan affect you as:\n\r", color1);
+					send_to_char(buf, ch);
+					found = TRUE;
+				}
 
-    case ITEM_WAND :
-    case ITEM_STAFF :
-      sprintf(buf, "$c0005Costs $c0014%d $c0005mana to use, with$c0014 %d$c0005 charges left.\n\r",
-	      obj->obj_flags.value[1],
-	      obj->obj_flags.value[2]);
-      send_to_char(buf, ch);
+				sprinttype(obj->affected[i].location,apply_types,buf2);
+				sprintf(buf,"%s    Affects: %s%s%s by %s", color1, color2, buf2, color1, color2);
+				send_to_char(buf,ch);
+				switch(obj->affected[i].location) {
+					case APPLY_M_IMMUNE:
+					case APPLY_IMMUNE:
+					case APPLY_SUSC:
+						sprintbit(obj->affected[i].modifier,immunity_names,buf2);
+//						sprintf(buf,"%s", color2);
+//						strcat(buf,buf2);
+//						sprintf(buf2,buf);
+						strcat(buf2,"\n\r");
+						break;
 
-      sprintf(buf, "$c0005Level $c0014%d $c0005spell of:$c0014\n\r",	obj->obj_flags.value[0]);
-      send_to_char(buf, ch);
+					case APPLY_ATTACKS:
+						sprintf(buf2,"%.2f\n\r", obj->affected[i].modifier/10);
+						break;
 
-      if (obj->obj_flags.value[3] >= 1) {
-	sprinttype(obj->obj_flags.value[3]-1,spells,buf);
-	sprintf(buf2,"$c0014%s",buf);
-	strcat(buf2,"\n\r");
-	send_to_char(buf2, ch);
-      }
-      break;
+					case APPLY_WEAPON_SPELL:
+					case APPLY_EAT_SPELL:
+						sprintf(buf2,"%s\n\r", spells[obj->affected[i].modifier-1]);
+						break;
 
-    case ITEM_WEAPON :
+					case APPLY_SPELL:
+						sprintbit(obj->affected[i].modifier,affected_bits, buf2);
+//	   sprintf(buf,"$c0015");
+//	   strcat(buf,buf2);
+//	   sprintf(buf2,buf);
+						strcat(buf2,"\n\r");
+						break;
 
-      sprintf(buf, "$c0005Damage Dice is '$c0014%dD%d$c0005'$c0015[%s]$c0005 [%s]\n\r",
-	      obj->obj_flags.value[1],
-	      obj->obj_flags.value[2],
-	      AttackType[obj->obj_flags.value[3]/*-1*/],
-	      weaponskills[obj->weapontype].name);
+					case APPLY_SPELL2:
+						sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
+//	   sprintf(buf,"$c0015");
+//	   strcat(buf,buf2);
+//	   sprintf(buf2,buf);
+						strcat(buf2,"\n\r");
+						break;
 
-      send_to_char(buf, ch);
-      break;
+					case APPLY_RACE_SLAYER:
+						sprintf(buf2,"%s\n\r", RaceName[obj->affected[i].modifier]);
+						break;
 
-    case ITEM_ARMOR :
-      sprintf(buf, "$c0005AC-apply is: $c0014%d,   ",
-	      obj->obj_flags.value[0]);
+					case APPLY_ALIGN_SLAYER:
+						if (obj->affected[i].modifier > 1)
+							sprintf(buf2,"SLAY GOOD\n\r");
+						else if (obj->affected[i].modifier == 1 )
+							sprintf(buf2,"SLAY NEUTRAL\n\r");
+						else /* less than 1 == slay evil */
+							sprintf(buf2,"SLAY EVIL\n\r");
+						break;
 
-      send_to_char(buf, ch);
+					default:
+						sprintf(buf2,"%d\n\r", obj->affected[i].modifier);
+						break;
+				}
+				send_to_char(buf2,ch);
+			}
+		}
+	} else {       /* victim */
+		if (!IS_NPC(victim)) {
+			struct time_info_data ma;
 
-      sprintf(buf, "$c0005Size of armor is: $c0014%s\n\r",
-	  	      ArmorSize(obj->obj_flags.value[2]));
+			if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+				sprintf(color1,"$c000p");
+				sprintf(color2,"$c000C");
+			} else {
+				sprintf(color1,"$c000B");
+				sprintf(color2,"$c000w");
+			}
+			sprintf(buf,"%sYou feel informed:\n\r",color1);
+			send_to_char(buf, ch);
 
-      send_to_char(buf, ch);
-      break;
+			sprintf(buf,"%sName: %s%s is ", color1, color2, GET_NAME(victim));
+			send_to_char(buf,ch);
 
-    }
+			age2(victim, &ma);
+			sprintf(buf,"%s%d%s years,  %s%d%s months, %s%d%s days, %s%d%s hours old.\n\r"
+				, color2, ma.year, color1, color2, ma.month, color1, color2, ma.day, color1, color2, ma.hours, color1);
+			send_to_char(buf,ch);
 
-    found = FALSE;
+			sprintf(buf,"%sHeight:  %s%d%s cm, Weight:  %s%d%s pounds.\n\r"
+				, color1, color2, GET_HEIGHT(victim), color1, color2, GET_WEIGHT(victim), color1);
+			send_to_char(buf,ch);
 
-    for (i=0;i<MAX_OBJ_AFFECT;i++) {
-      if ((obj->affected[i].location != APPLY_NONE) &&
-	  (obj->affected[i].modifier != 0)) {
-	if (!found) {
-	  send_to_char("$c0005Can affect you as :$c0014\n\r", ch);
-	  found = TRUE;
+			sprintf(buf,"%sArmor Class %s%d\n\r", color1, color2,victim->points.armor);
+			send_to_char(buf,ch);
+
+			if (GET_LEVEL(ch,BestMagicClass(ch)) > 30) {
+				sprintf(buf,"%sStr %s%d%s/%s%d%s, Int %s%d%s, Wis %s%d%s, Dex %s%d%s, Con %s%d$%s, Ch %s%d\n\r"
+					, color1, color2, GET_STR(victim)
+					, color1, color2, GET_ADD(victim)
+					, color1, color2, GET_INT(victim)
+					, color1, color2, GET_WIS(victim)
+					, color1, color2, GET_DEX(victim)
+					, color1, color2, GET_CON(victim)
+					, color1, color2, GET_CHR(victim));
+				send_to_char(buf,ch);
+			}
+		} else {
+			send_to_char("You learn nothing new.\n\r", ch);
+		}
 	}
-
-	sprinttype(obj->affected[i].location,apply_types,buf2);
-
-	sprintf(buf," $c0005   Affects :$c0014 %s$c0005 By $c0015", buf2);
-	send_to_char(buf,ch);
-	switch(obj->affected[i].location) {
-	case APPLY_M_IMMUNE:
-	case APPLY_IMMUNE:
-	case APPLY_SUSC:
-	  sprintbit(obj->affected[i].modifier,immunity_names,buf2);
-	  sprintf(buf,"$c0015");
-	  strcat(buf,buf2);
-	  sprintf(buf2,buf);
-	  strcat(buf2,"\n\r");
-	  break;
-	case APPLY_ATTACKS:
-	   sprintf(buf2,"$c0015%f\n\r", obj->affected[i].modifier/10);
-	   break;
-        case APPLY_WEAPON_SPELL:
-	case APPLY_EAT_SPELL:
-	   sprintf(buf2,"$c0015%s\n\r", spells[obj->affected[i].modifier-1]);
-	   break;
-	case APPLY_SPELL:
-
-	   sprintbit(obj->affected[i].modifier,affected_bits, buf2);
-	   sprintf(buf,"$c0015");
-	   strcat(buf,buf2);
-	   strcat(buf,"\n\r");
-	   sprintf(buf2,buf);
-	   break;
-	//(GH)Should i put this here??  case APPLY_BV2:
-	case APPLY_SPELL2:
-	   sprintbit(obj->affected[i].modifier,affected_bits2, buf2);
-	   sprintf(buf,"$c0015");
-	   strcat(buf,buf2);
-	   strcat(buf,"\n\r");
-	   sprintf(buf2,buf);
-	   break;
-
-        case APPLY_RACE_SLAYER:
-           sprintf(buf2,"$c0015%s\n\r", RaceName[obj->affected[i].modifier]);
-           break;
-        case APPLY_ALIGN_SLAYER:
-          if (obj->affected[i].modifier > 1 )
-            sprintf(buf2,"$c0015SLAY GOOD\n\r");
-          else if (obj->affected[i].modifier == 1 )
-            sprintf(buf2,"$c0015SLAY NEUTRAL\n\r");
-          else /* less than 1 == slay evil */
-            sprintf(buf2,"$c0015SLAY EVIL\n\r");
-           break;
-
-	 default:
-	   sprintf(buf2,"$c0015%d\n\r", obj->affected[i].modifier);
-	   break;
+	if (GetMaxLevel(ch)<LOW_IMMORTAL) {
+//		act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
+//		act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
+		WAIT_STATE(ch,PULSE_VIOLENCE*2);//*12);
+//		GET_POS(ch) = POSITION_STUNNED;
 	}
-	send_to_char(buf2,ch);
-      }
-    }
-
-  } else {       /* victim */
-
-    if (!IS_NPC(victim)) {
-      struct time_info_data ma;
-      send_to_char("$c0005You feel informed:\n\r", ch);
-
-      sprintf(buf,"$c0005Name: $c0015%s\n\r",GET_NAME(victim));
-      send_to_char(buf,ch);
-      age2(victim, &ma);
-      sprintf(buf,"$c0014%d $c0005Years,  $c0014%d$c0005 Months, $c0014 %d$c0005"
-	      " Days, $c0014 %d $c0005Hours old.\n\r",
-	      ma.year, ma.month,
-	      ma.day, ma.hours);
-      send_to_char(buf,ch);
-
-      sprintf(buf,"$c0005Height$c0014 %d$c0005cm, Weight$c0014 %d$c0005 pounds\n\r"
-	      ,GET_HEIGHT(victim), GET_WEIGHT(victim));
-      send_to_char(buf,ch);
-
-      sprintf(buf,"$c0005Armor Class $c0014%d\n\r",victim->points.armor);
-      send_to_char(buf,ch);
-
-      if (GET_LEVEL(ch,BestMagicClass(ch)) > 30) {
-
-	sprintf(buf,"$c0005Str $c0014%d$c0005/$c0014%d$c0005, Int$c0014 %d$c0005,"
-	   " Wis$c0014 %d$c0005, Dex $c0014%d$c0005, Con $c0014%d$c0005, Ch $c0014%d\n\r",
-	GET_STR(victim), GET_ADD(victim),
-	GET_INT(victim),
-	GET_WIS(victim),
-	GET_DEX(victim),
-	GET_CON(victim),
-	GET_CHR(victim));
-	send_to_char(buf,ch);
-      }
-    } else {
-      send_to_char("You learn nothing new.\n\r", ch);
-    }
-  }
-
-  if (GetMaxLevel(ch)<LOW_IMMORTAL) {
-//  act("You are overcome by a wave of exhaustion.",FALSE,ch,0,0,TO_CHAR);
-//  act("$n slumps to the ground, exhausted.",FALSE,ch,0,0,TO_ROOM);
-    WAIT_STATE(ch,PULSE_VIOLENCE*2);//*12);
-//  GET_POS(ch) = POSITION_STUNNED;
-  }
-
 }
-
-
-
 
 void spell_enchant_armor(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)

@@ -84,7 +84,6 @@ void do_say(struct char_data *ch, char *argument, int cmd);
 void do_shout(struct char_data *ch, char *argument, int cmd);
 void do_bid(struct char_data *ch, char *argument, int cmd);
 void do_auction(struct char_data *ch, char *argument, int cmd);
-void auction_id(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj);
 void do_yell(struct char_data *ch, char *argument, int cmd);
 void do_commune(struct char_data *ch, char *argument, int cmd);
 void do_tell(struct char_data *ch, char *argument, int cmd);

@@ -3938,158 +3938,159 @@ if (GetMaxLevel(ch) >=LOW_IMMORTAL) {
 
 }
 
-void do_resistances(struct char_data *ch, char *argument, int cmd) {
-   int x;
+void do_resistances(struct char_data *ch, char *argument, int cmd)
+{
+	int x;
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
+	char color1[10], color2[10], buf[MAX_STRING_LENGTH];
 
-	send_to_char("\n\r$c0005Current resistances:\n\r--------------\n\r",ch);
-	for(x=1;x<=BV12;x=x*2) {
-
-	  if(IS_IMMUNE(ch,x))
-	    	  ch_printf(ch,"$c000pYou are $c000CImmune $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
-	  	else
-	  	if(IsResist(ch, x) && !IsSusc(ch, x))
-	  	 	ch_printf(ch,"$c000pYou are $c000CResistant $c000pto $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
-	  	else
-	   	  if(IsSusc(ch, x) && !IsResist(ch, x))
-	  	  	ch_printf(ch,"$c000pYou are $c000CSusceptible$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
-	  	  else
-	  	  	ch_printf(ch,"$c000pYou are $c000CDefenseless$c000p to $c000C%s.\n\r",immunity_names[bitvector_num(x)]);
+	if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+		sprintf(color1,"$c000p");
+		sprintf(color2,"$c000C");
+	} else {
+		sprintf(color1,"$c000B");
+		sprintf(color2,"$c000w");
 	}
 
+	sprintf(buf, "%sCurrent resistances:\n\r--------------\n\r",color1);
+	send_to_char(buf, ch);
+
+	for(x=1;x<=BV12;x=x*2) {
+		if(IS_IMMUNE(ch,x))
+			ch_printf(ch,"%sYou are %sImmune      %sto %s%s%s.\n\r"
+				, color1, color2, color1, color2, immunity_names[bitvector_num(x)], color1);
+		else
+			if(IsResist(ch, x) && !IsSusc(ch, x))
+				ch_printf(ch,"%sYou are %sResistant   %sto %s%s%s.\n\r"
+					, color1, color2, color1, color2, immunity_names[bitvector_num(x)], color1);
+			else
+				if(IsSusc(ch, x) && !IsResist(ch, x))
+					ch_printf(ch,"%sYou are %sSusceptible %sto %s%s%s.\n\r"
+						, color1, color2, color1, color2, immunity_names[bitvector_num(x)], color1);
+				else
+					ch_printf(ch,"%sYou are %sDefenseless %sto %s%s%s.\n\r"
+						, color1, color2, color1, color2, immunity_names[bitvector_num(x)], color1);
+	}
 }
 
 
 void do_attribute(struct char_data *ch, char *argument, int cmd)
 {
 #define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
-   char buf[MAX_STRING_LENGTH];
-   struct affected_type *aff;
-   struct time_info_data my_age;
-   int i = 0, j2 = 0, Worn_Index = 0;
-   short last_type;
-   char buf2[MAX_STRING_LENGTH];
-   struct obj_data *j=0;
-   extern char *affected_bits[];
-   extern char *affected_bits2[];
-	char color[10];
-  dlog("in do_attrib");
+	char buf[MAX_STRING_LENGTH];
+	struct affected_type *aff;
+	struct time_info_data my_age;
+	int i = 0, j2 = 0, Worn_Index = 0;
+	short last_type;
+	char buf2[MAX_STRING_LENGTH];
+	struct obj_data *j=0;
+	extern char *affected_bits[];
+	extern char *affected_bits2[];
+	char color1[10], color2[10];
 
-		if(IS_SET(ch->player.user_flags,OLD_COLORS))
-			sprintf(color,"$c000p");
-		else
-			sprintf(color,"$c000B");
+dlog("in do_attrib");
 
-   age2(ch, &my_age);
+	if(IS_SET(ch->player.user_flags,OLD_COLORS)) {
+		sprintf(color1,"$c000p");
+		sprintf(color2,"$c000C");
+	} else {
+		sprintf(color1,"$c000B");
+		sprintf(color2,"$c000w");
+	}
 
-   sprintf(buf, "$c0005You are $c0014%d$c0005 years and $c0014%d$c0005 months, \
-$c0014%d$c0005 cms, and you weigh $c0014%d$c0005 lbs.\n\r", my_age.year, my_age.month,
-           ch->player.height, ch->player.weight);
+	age2(ch, &my_age);
 
-   send_to_char(buf,ch);
+	sprintf(buf, "%sYou are %s%d%s years and %s%d%s months, %s%d%s cms, and you weigh %s%d%s lbs.\n\r"
+		, color1, color2, my_age.year, color1, color2, my_age.month, color1
+		, color2, ch->player.height, color1, color2, ch->player.weight, color1);
+	send_to_char(buf,ch);
 
-   sprintf(buf, "$c0005You are carrying $c0014%d$c0005 lbs of equipment.\n\r",
-           IS_CARRYING_W(ch));
-   send_to_char(buf,ch);
+	sprintf(buf, "%sYou are carrying %s%d%s lbs of equipment.\n\r"
+		, color1, color2, IS_CARRYING_W(ch), color1);
+	send_to_char(buf,ch);
 
-   sprintf(buf,"$c0005You are$c0014 %s\n\r",ArmorDesc(ch->points.armor));
-   send_to_char(buf,ch);
+	sprintf(buf,"%sYou are %s%s%s.\n\r", color1, color2, ArmorDesc(ch->points.armor), color1);
+	send_to_char(buf,ch);
 
-   if(GetMaxLevel(ch) > 5)
-   {
-      sprintf(buf,"$c0005You have $c0014%d$c0005/$c0015%d $c0005STR, $c0014%d $c0005INT, \
-$c0014%d $c0005WIS, $c0014%d $c0005DEX, $c0014%d $c0005CON, $c0014%d $c0005CHR\n\r",
-              GET_STR(ch), GET_ADD(ch), GET_INT(ch), GET_WIS(ch), GET_DEX(ch),
-              GET_CON(ch), GET_CHR(ch));
-      send_to_char(buf,ch);
-   }
+	if(GetMaxLevel(ch) > 5) {
+		sprintf(buf,"%sYou have %s%d%s/%s%d %sSTR, %s%d %sINT, %s%d %sWIS, %s%d %sDEX, %s%d %sCON, %s%d %sCHR\n\r"
+			, color1, color2, GET_STR(ch), color1, color2, GET_ADD(ch), color1, color2, GET_INT(ch), color1, color2
+			, GET_WIS(ch), color1, color2, GET_DEX(ch), color1, color2, GET_CON(ch), color1, color2, GET_CHR(ch), color1);
+		send_to_char(buf,ch);
+	}
 
-   sprintf(buf, "$c0005Your hit bonus and damage bonus are $c0014%s$c0005 and \
-$c0014%s$c0005 respectively.\n\r",
-           HitRollDesc(GET_HITROLL(ch)), DamRollDesc(GET_DAMROLL(ch)));
-   send_to_char(buf,ch);
+	sprintf(buf, "%sYour hit bonus and damage bonus are %s%s%s and %s%s%s respectively.\n\r"
+		, color1, color2, HitRollDesc(GET_HITROLL(ch)), color1, color2, DamRollDesc(GET_DAMROLL(ch)), color1);
+	send_to_char(buf,ch);
 
+	sprintf(buf,"\n\r%sType 'Resist' to see a list of your resistances:\n\r",color1);
+	send_to_char(buf,ch);
 
+	/* by popular demand -- affected stuff */
+	sprintf(buf, "\n\r%sCurrent affects:\n\r--------------\n\r",color1);
+	send_to_char(buf,ch);
 
-/* letrs say the resistances*/
+	if(ch->affected) {
+		for(aff = ch->affected; aff; aff = aff->next) {
+			if (aff->type <= MAX_EXIST_SPELL) {
+				switch(aff->type) {
+					case SKILL_SNEAK:
+					case SPELL_PRAYER:
+					case SKILL_HIDE:
+					case SKILL_QUIV_PALM:
+					case SKILL_HUNT:
+					case SKILL_DISGUISE:
+					case SKILL_SWIM:
+					case SKILL_SPY:
+					case SKILL_FIRST_AID:
+					case SKILL_LAY_ON_HANDS:
+					case SKILL_MEDITATE:
+	break;
+					case SKILL_MEMORIZE:
+	sprintf(buf, "%sMemorizing : '%s%s%s' will complete in %s%d%s minutes.\n\r"
+		, color1, color2, spells[aff->modifier-1], color1, color2, (aff->duration*4), color1);
+	send_to_char(buf,ch);
+	break;
 
-send_to_char("\n\r$c0005Type 'Resist' to see a list of your resistances:\n\r",ch);
+					default:
+	sprintf(buf, "%sSpell      : '%s%s%s' will expire in %s%d%s hours.\n\r"
+		, color1, color2, spells[aff->type-1], color1, color2, aff->duration, color1);
+	if(aff->type != last_type)
+		send_to_char(buf,ch);
+		break;
+				}
+				last_type = aff->type;
+			}
+		}
+	}
 
-
-   /*
-   **   by popular demand -- affected stuff
-   */
-   send_to_char("\n\r$c0005Current affects:\n\r--------------\n\r",ch);
-
-
-   if(ch->affected)
-   {
-      for(aff = ch->affected; aff; aff = aff->next)
-      {
-         if (aff->type <= MAX_EXIST_SPELL)
-         {
-            switch(aff->type)
-            {
-               case SKILL_SNEAK:
-               case SPELL_PRAYER:
-               case SKILL_HIDE:
-               case SKILL_QUIV_PALM:
-               case SKILL_HUNT:
-               case SKILL_DISGUISE:
-               case SKILL_SWIM:
-               case SKILL_SPY:
-               case SKILL_FIRST_AID:
-               case SKILL_LAY_ON_HANDS:
-               case SKILL_MEDITATE:
-                  break;
-               case SKILL_MEMORIZE:
-                  sprintf(buf, "$c0005Memorizing : '$c0014%s$c0005' will complete \
-in $c0014%d $c0005minutes.\n\r", spells[aff->modifier-1], (aff->duration*4));
-                  send_to_char(buf,ch);
-                  break;
-
-               default:
-                  sprintf(buf, "$c0005Spell : '$c0014%s$c0005' will expire in \
-$c0014%d $c0005hours.\n\r",spells[aff->type-1], aff->duration);
-                  if(aff->type != last_type)
-                     send_to_char(buf,ch);
-                  break;
-            }
-            last_type = aff->type;
-         }
-      }
-   }
-
-   for(Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++)
-   {
-      if(ch->equipment[j2])
-      {
-         j = ch->equipment[j2];
-         for (i=0;i<MAX_OBJ_AFFECT;i++)
-         {
-            switch(j->affected[i].location)
-            {
-               case APPLY_SPELL:
-                  sprintbit(j->affected[i].modifier,affected_bits,buf2);
-                  if(strcmp(buf2, "NOBITS")==0)
-                     break;
-                  sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
-                  send_to_char(buf, ch);
-                  break;
-               case APPLY_SPELL2:
-                  sprintbit(j->affected[i].modifier,affected_bits2,buf2);
-                  if(strcmp(buf2, "NOBITS")==0)
-                     break;
-                  sprintf(buf,"$c0005Spell : '$c0014%s$c0005' granted though an item.\n\r", buf2);
-                  send_to_char(buf, ch);
-                  break;
-               default:
-                  break;
-            }
-         }
-      }
-   }
-
+	for(Worn_Index = j2=0; j2 < (MAX_WEAR - 1); j2++) {
+		if(ch->equipment[j2]) {
+			j = ch->equipment[j2];
+			for (i=0;i<MAX_OBJ_AFFECT;i++) {
+				switch(j->affected[i].location) {
+					case APPLY_SPELL:
+						sprintbit(j->affected[i].modifier,affected_bits,buf2);
+						if(strcmp(buf2, "NOBITS")==0)
+							break;
+						sprintf(buf,"%sSpell      : '%s%s%s' granted though an item.\n\r"
+							, color1, color2, buf2, color1);
+						send_to_char(buf, ch);
+						break;
+					case APPLY_SPELL2:
+						sprintbit(j->affected[i].modifier,affected_bits2,buf2);
+						if(strcmp(buf2, "NOBITS")==0)
+							break;
+						sprintf(buf,"%sSpell      : '%s%s%s' granted though an item.\n\r"
+							, color1, color2, buf2, color1);
+						send_to_char(buf, ch);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
 }
 
 void do_value(struct char_data *ch, char *argument, int cmd)
