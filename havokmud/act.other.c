@@ -252,8 +252,8 @@ void do_title(struct char_data *ch, char *argument, int cmd)
 
       argument = one_argument(argument, buf);
 		  argument = one_argument(argument, buf2);
-		send_to_char(CAP(buf2),ch);
-		send_to_char(GET_NAME(ch),ch);
+		//send_to_char(CAP(buf2),ch);
+		//send_to_char(GET_NAME(ch),ch);
 
 		if(strstr(CAP(buf2),GET_NAME(ch))) {  //!strcmp(CAP(buf2),GET_NAME(ch))) {
 			sprintf(buf2, "%s",temp);

@@ -5066,7 +5066,7 @@ dlog("in do_whoarena");
       person=(d->original?d->original:d->character);
       if (CAN_SEE(ch, d->character) &&
 	  (real_roomp(person->in_room)) &&
-	  (real_roomp(person->in_room)->zone != 124)) {
+	  (real_roomp(person->in_room)->zone == 124)) {
 	if (OK_NAME(person,name_mask)) {
 	  count++;
 	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */

@@ -4943,3 +4943,56 @@ char buf[256];
 		fclose(fl);
 	}
 }
+
+
+
+
+void do_orebuild(struct char_data *ch, char *argument, char cmd)
+{
+   char fn[80], temp[2048], buf[128];
+   long rstart, rend, i, j, k, x, r;
+   //struct extra_descr_data *exptr;
+   FILE *fp;
+   //struct room_data     *rp;
+   //struct room_direction_data   *rdd;
+   //struct descriptor_data *desc;
+	extern int top_of_objt;
+   struct obj_data *obj;
+ 	int count = 0;
+
+   if(!ch->desc)
+     return;
+
+   rstart = 0;
+   rend = top_of_objt;
+
+   if((fp=fopen("tinyworld.obj.new","w")) == NULL) {
+     send_to_char("Can't create .obj file\r\n",ch);
+     return;
+   }
+
+   sprintf(buf,"%s resorts the objects (The game will pause for a few moments).\r\n", ch->player.name);
+   send_to_all(buf);
+
+   sprintf(buf,"Saving Objects (%ld items)\n\r",(long)rend);
+   send_to_char(buf,ch);
+
+   for (i=rstart;i<=rend;i++) {
+		obj = read_object(i, VIRTUAL);
+     if (obj) {
+
+	  fprintf(fp,"#%ld\n",i);
+	  write_obj_to_file(obj,fp);
+		count++;
+ 	 }
+   }
+   fclose(fp);
+
+   sprintf(buf,"The world returns to normal as %s finishes the job.\r\n", ch->player.name);
+   send_to_all(buf);
+   send_to_char("\n\rDone\n\r",ch);
+	sprintf(buf,"(%d) Objects saved!\n\r",count);
+	send_to_char(buf,ch);
+ return;
+}
+

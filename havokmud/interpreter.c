@@ -1542,7 +1542,7 @@ AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
 AddCommand("yell",do_yell,563,POSITION_RESTING,0);
 AddCommand("legsweep",do_leg_sweep, 564, POSITION_STANDING,0);
 AddCommand("charge",do_charge, 565, POSITION_STANDING,0);
-
+AddCommand("orebuild",do_orebuild,566,POSITION_STANDING,59);
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses
 wince
