@@ -667,14 +667,16 @@ memory_check("end 5, begin 6");
       if ( time_info.hours == 1 )
 	update_time();
     }
-/*    
+    
     if(!(pulse % PULSE_MAILCHECK)) {
     	 for (point = descriptor_list; point; point = point->next) {
-			if(!(IS_NPC((point->character))))
-				point->character->player.has_mail=has_mail(point->character->player.name);
+			if(point->character) {
+				if(!(IS_NPC((point->character))))
+					point->character->player.has_mail=has_mail(point->character->player.name);
+			}
 	    }
     }
-*/
+
   memory_check("loop end");
     
     if (pulse >= 2400) {
