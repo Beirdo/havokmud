@@ -1495,7 +1495,7 @@ void spell_dispel_magic(byte level, struct char_data *ch,
     }
     if (affected_by_spell(victim,SPELL_PROTECT_FROM_GOOD))
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
-	affect_from_char(victim,SPELL_PROTECT_FROM_EVIL);
+	affect_from_char(victim,SPELL_PROTECT_FROM_GOOD);
 	send_to_char("Some of your evilness dissipates into the ether.\n\r",victim);
 	}
     if (affected_by_spell(victim,SPELL_INFRAVISION))

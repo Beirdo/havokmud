@@ -3448,7 +3448,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	int count = 0;
 	char buf[256], buffer[MAX_STRING_LENGTH],skillname[254];
 	static int percent = 0;
-	static int x; //for loop
+	static int x = 0; //for loop
 	int i = 0,charge = 0,skillnum = 0; //while loop
 	struct char_data *guildmaster;
 
@@ -3474,6 +3474,8 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 				strcat(buffer, "\r");
 				i++;
 			}
+			page_string(ch->desc, buffer, 1);
+			return(TRUE);
 		} else { /* includes arg.. */
 			x=0;
 			while (loreskills[x].level != -1) {
@@ -3493,7 +3495,7 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 							if (ch->skills)
 								if (!ch->skills[SKILL_READ_MAGIC].learned)
 									ch->skills[SKILL_READ_MAGIC].learned = 95;
-									return(TRUE);
+							return(TRUE);
 						}
 					}
 
@@ -3502,6 +3504,12 @@ int loremaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 									" 'You don't have enough practice points.'\n\r",ch);
 						return(TRUE);
 					}
+
+					if (ch->skills[loreskills[x].skillnum].learned >= 95) {
+						send_to_char("$c0013[$c0015The loremaster$c0013] tells you"
+									" 'You're already a master of this art!'\n\r", ch);
+					      return(TRUE);
+    				}
 
 					charge = GetMaxLevel(ch) * 100;
 					if (GET_GOLD(ch) < charge) {

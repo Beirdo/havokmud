@@ -2508,8 +2508,8 @@ void perform_violence(int pulse)
 
                if(ch->style==FIGHTING_STYLE_BERSERKED && !IS_SET(ch->specials.affected_by2, AFF2_STYLE_BERSERK)) {
 				   	if (FSkillCheck(ch, FIGHTING_STYLE_BERSERKED)) { /* yay, let's go 'zerk! */
-						act("*c000B$n turns red and suddently becomes raged with anger!$c000w",TRUE,ch,0,0,TO_ROOM);
-						send_to_char("*c000BYou feel your rage overcome you!!\n\r$c000w",ch);
+						act("$c000B$n turns red and suddently becomes raged with anger!$c000w",TRUE,ch,0,0,TO_ROOM);
+						send_to_char("$c000BYou feel your rage overcome you!!\n\r$c000w",ch);
 						SET_BIT(ch->specials.affected_by2, AFF2_STYLE_BERSERK);
 					}
 			   }

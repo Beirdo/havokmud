@@ -7005,11 +7005,11 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_da
 
 	if (cmd==164 || cmd == 170) {
 
-		if (!HasClass(ch, CLASS_WARRIOR|CLASS_THIEF|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN|CLASS_MONK)) {
-			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
-						" 'You don't have any combat skills to begin with!'\n\r",ch);
-			return(TRUE);
-		}
+//		if (!HasClass(ch, CLASS_WARRIOR|CLASS_THIEF|CLASS_PALADIN|CLASS_RANGER|CLASS_BARBARIAN|CLASS_MONK)) {
+//			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+//						" 'You don't have any combat skills to begin with!'\n\r",ch);
+//			return(TRUE);
+//		}
 
 		if (GetMaxLevel(ch) < 10) {
 			send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
@@ -7048,6 +7048,12 @@ int FightingGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_da
 					if(ch->specials.spells_to_learn <=1) {
 						send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
 									" 'You don't have enough practice points.'\n\r",ch);
+						return(TRUE);
+					}
+
+					if(ch->skills[loreskills[x].skillnum].learned >= 95) {
+						send_to_char("$c0013[$c0015Darkthorn$c0013] tells you"
+									" 'You're already a master of this art!'\n\r",ch);
 						return(TRUE);
 					}
 
