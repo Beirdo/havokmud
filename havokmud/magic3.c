@@ -792,7 +792,7 @@ void spell_feeblemind(int level, struct char_data *ch,
 {
     struct affected_type af;
 
-    if (!affected_by_spell(victim, SKILL_MINDBLANK) ||
+    if (!affected_by_spell(victim, SKILL_MINDBLANK) &&
         !saves_spell(victim, SAVING_SPELL)) {
 
         if (affected_by_spell(victim, SPELL_FEEBLEMIND)) {
