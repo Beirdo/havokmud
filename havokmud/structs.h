@@ -459,7 +459,7 @@ typedef struct {
 #define ITEM_BOARD     24
 #define ITEM_TREE      25
 #define ITEM_ROCK      26
-
+#define ITEM_PORTAL		27
 /* Bitvector For 'wear_flags' */
 
 #define ITEM_TAKE              1

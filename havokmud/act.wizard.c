@@ -488,6 +488,7 @@ dlog("in do_ zload");
 
 /* oh well, do some things with that zone */
   CleanZone(zone);
+//  send_to_zone("\r\n\r\nSwirling winds of Chaos reform reality around you!\r\n\r\n",ch);
   LoadZoneFile(fp, zone);
   fclose(fp);
   renum_zone_table(zone);
@@ -1818,7 +1819,7 @@ if (aff->type <=MAX_EXIST_SPELL) {
 		buf2);
 	break;
       case ITEM_NOTE :
-	sprintf(buf, "Tounge : %d",
+	sprintf(buf, "Tongue : %d",
 		j->obj_flags.value[0]);
 	break;
       case ITEM_KEY :
@@ -1829,6 +1830,13 @@ if (aff->type <=MAX_EXIST_SPELL) {
 	sprintf(buf, "Makes full : %d\n\rPoisoned : %d",
 		j->obj_flags.value[0],
 		j->obj_flags.value[3]);
+	break;
+	  case ITEM_PORTAL :
+	sprintf(buf, "Portals to room : %d",
+		j->obj_flags.value[0]);
+	break;
+	  case ITEM_AUDIO :
+	sprintf(buf, "Sound : %s\0\0",(j->action_description ? j->action_description:"None"));
 	break;
 	default :
 	  sprintf(buf,"Values 0-3 : [%d] [%d] [%d] [%d]",
@@ -6475,16 +6483,16 @@ void do_setobjmax(struct char_data *ch, char *argument, int cmd)
 
         if (!*objec) {
 	     	send_to_char("Give what?\n\r",ch);
-	      	return(FALSE);
+	      	return;
 	      }
 	      if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
 	      	send_to_char("where is that?\n\r",ch);
-	      	return(TRUE);
+	      	return;
       }
       obj->max = number;
 		sprintf(buf,"Set object max to %d\n\r",number);
 		send_to_char(buf,ch);
-      return(TRUE);
+      return;
 /*
   obj = read_object(rnum, REAL);
   if (obj) {
@@ -6522,11 +6530,11 @@ long number;
 
         if (!*objec) {
 	     	send_to_char("Give what?\n\r",ch);
-	      	return(FALSE);
+	      	return;
 	      }
 	      if (!(obj = get_obj_in_list_vis(ch, objec, ch->carrying))) {
 	      	send_to_char("where is that?\n\r",ch);
-	      	return(TRUE);
+	      	return;
       }
       if(number >= 0 && number <= 100) {
       	obj->speed = number;
@@ -6535,7 +6543,50 @@ long number;
 	  } else {
 	  	send_to_char("Speed values between 0 and 100 please. (0 is slow, 100 is fast)",ch);
       }
-      return(TRUE);
+      return;
+}
+
+void do_setsound(struct char_data *ch, char *argument, int cmd)
+{
+	struct obj_data *obj;
+	struct char_data *dummy;
+	char name[100], sound[100], buf[100];
+	int vnum, rnum ;
+
+dlog("in do_setsound");
+
+	if (IS_NPC(ch))
+		return;
+
+	half_chop(argument, name, sound);
+
+	if (!*name) {
+		send_to_char("Usage:\n\r  To set a sound:     setsound <itemname> <sound string>\n\r  To remove a sound:  setsound <itemname>\n\r", ch);
+		return;
+	}
+
+	if(generic_find(name, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &dummy, &obj)) {
+		if (ITEM_TYPE(obj) == ITEM_AUDIO) {
+			if(!*sound) {
+				sprintf(buf,"Setting sound for %s to none.\n\r",obj->short_description);
+				send_to_char(buf,ch);
+				if (obj->action_description)
+					free(obj->action_description);
+				send_to_char("Okay.\n\r",ch);
+			} else {
+				sprintf(buf,"Setting sound '%s' to %s.\n\r",sound, obj->short_description);
+				send_to_char(buf,ch);
+				strcat(sound, "\n\r");
+				obj->action_description = strdup(sound);
+				send_to_char("Okay.\n\r",ch);
+				return;
+			}
+		} else {
+			send_to_char("That object isn't flagged TYPE_AUDIO.\n\r",ch);
+		}
+	} else {
+		send_to_char("Which item was that?\n\r",ch);
+	}
 }
 
 int ZoneCleanable (int zone);

@@ -521,7 +521,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
 
  if(type != ENTER_CHECK) {
     switch(ch->specials.oedit) {
-    case CHANGE_OBJ_TYPE: if(update < 0 || update > 24)
+    case CHANGE_OBJ_TYPE: if(update < 0 || update > 27)
                             return;
                           else {
                             ch->specials.objedit->obj_flags.type_flag = update;
@@ -538,7 +538,7 @@ void ChangeObjType(struct char_data *ch, char *arg, int type)
  send_to_char(buf, ch);
 
  row = 0;
- for(i = 0; i < 25; i++) {
+ for(i = 0; i < 28; i++) {
     sprintf(buf, VT_CURSPOS, row + 4, ((i & 1) ? 45 : 5));
     if(i & 1)
        row++;
@@ -1172,13 +1172,10 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    if ((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL &&
-	(value != 0)) ||
-       ((ch->specials.objedit->obj_flags.type_flag==ITEM_WAND) &&
-        (value == 3)) ||
-       ((ch->specials.objedit->obj_flags.type_flag==ITEM_STAFF) &&
-        (value == 3)) ||
-       (ch->specials.objedit->obj_flags.type_flag==ITEM_POTION && value != 0)) {
+    if ((ch->specials.objedit->obj_flags.type_flag==ITEM_SCROLL && (value != 0)) ||
+       ((ch->specials.objedit->obj_flags.type_flag==ITEM_WAND)  && (value == 3)) ||
+       ((ch->specials.objedit->obj_flags.type_flag==ITEM_STAFF) && (value == 3)) ||
+        (ch->specials.objedit->obj_flags.type_flag==ITEM_POTION && (value != 0)) ){
        if(update>=45 && update<=52)
          skill=TRUE;
        if(update>=171 && update<=214)
@@ -1383,6 +1380,32 @@ void ChangeObjValue(struct char_data *ch, char *arg, int type)
      else
        send_to_char("\n\rValue not used for this item type.\n\r",ch);
      break;
+	case ITEM_AUDIO:
+     if(value==0)
+       send_to_char("\n\rTo set the sound on the item, use the setsound command.",ch);
+     else
+       send_to_char("\n\rValue not used for this item type.\n\r",ch);
+     break;
+   case ITEM_ROCK:
+     if(value==0)
+       send_to_char("\n\rRock Mobs are determined by weight, not obj value.",ch);
+     else
+       send_to_char("\n\rValue not used for this item type.\n\r",ch);
+	 break;
+	case ITEM_PORTAL:
+     if(value==0)
+       send_to_char("\n\rValue1 is the room to portal to.",ch);
+     else
+       send_to_char("\n\rValue not used for this item type.\n\r",ch);
+	 break;
+	case ITEM_TREE:
+     if(value==0)
+       send_to_char("\n\rTrees are found by name search, make sure to set name before tree keyword.
+       				 \n\rExample: 'Rufus tree'.  Don't do: 'tree Rufus'.
+       				 \n\rValue not used for this item type.\n\r",ch);
+     else
+       send_to_char("\n\rValue not used for this item type.\n\r",ch);
+	 break;
    default:
      send_to_char("Value not used for this item type.\n\r",ch);
      break;

@@ -453,8 +453,6 @@ void CleanZone(int zone)
       next_v=vict->next_in_room;
       if (IS_NPC(vict) && (!IS_SET(vict->specials.act, ACT_POLYSELF)))
         extract_char(vict);
-      else
-        send_to_char("\r\n\r\nSwirling winds of Chaos reform reality around you!\r\n\r\n",vict);
     }
 
     for (obj = rp->contents; obj; obj = next_o) {

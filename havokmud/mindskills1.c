@@ -29,7 +29,7 @@ void mind_burn(byte level, struct char_data *ch,
   act("$n sends a gout of flame shooting from $s mind!\n\r",
 	  FALSE, ch, 0, 0, TO_ROOM);
 
-  for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim; 
+  for ( tmp_victim = real_roomp(ch->in_room)->people; tmp_victim;
        tmp_victim = temp ) {
     temp = tmp_victim->next_in_room;
     if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
@@ -59,10 +59,10 @@ void mind_teleport(byte level, struct char_data *ch,
   int to_room, try = 0;
   extern int top_of_world;      /* ref to the top element of world */
   struct room_data *room;
-  
+
   if (!ch || !victim)
   	return;
-  
+
   if (victim != ch) {
     if (saves_spell(victim,SAVING_SPELL)) {
       send_to_char("You can't seem to force them to blink out.\n\r",ch);
@@ -83,7 +83,7 @@ void mind_teleport(byte level, struct char_data *ch,
     return;
   }
 
-  
+
   do {
     to_room = number(0, top_of_world);
     room = real_roomp(to_room);
@@ -97,9 +97,9 @@ void mind_teleport(byte level, struct char_data *ch,
         try++;
 	}
     }
-    
+
   } while (!room && try < 10);
-  
+
   if (try >= 10) {
     send_to_char("The skill fails.\n\r", ch);
     return;
@@ -109,10 +109,10 @@ void mind_teleport(byte level, struct char_data *ch,
   char_from_room(ch);
   char_to_room(ch, to_room);
   act("A mass of flying particles form into $n!", FALSE, ch,0,0,TO_ROOM);
-  
+
   do_look(ch, "", 0);
-  
-  if (IS_SET(real_roomp(to_room)->room_flags, DEATH) && 
+
+  if (IS_SET(real_roomp(to_room)->room_flags, DEATH) &&
       GetMaxLevel(ch) < LOW_IMMORTAL) {
     NailThisSucker(ch);
     return;
@@ -136,20 +136,20 @@ if (IS_SET(SystemFlags,SYS_NOASTRAL)) {
  }
 
   rp = real_roomp(ch->in_room);
-  
+
   for (tmp = rp->people;tmp;tmp=tmp2) {
     tmp2 = tmp->next_in_room;
-    if (in_group(ch, tmp) && 
+    if (in_group(ch, tmp) &&
        (!tmp->specials.fighting) &&
        (IS_PC(tmp)||IS_SET(tmp->specials.act,ACT_POLYSELF)) &&
         IS_AFFECTED(tmp,AFF_GROUP)) {
       act("$n wavers as $N sends $m to another plane.", FALSE, tmp, 0, ch, TO_ROOM);
       char_from_room(tmp);
-      char_to_room(tmp, PROBABILITY_TRAVEL_ENTRANCE);      
+      char_to_room(tmp, PROBABILITY_TRAVEL_ENTRANCE);
       do_look(tmp, "\0", 0);
-      act("$n wavers into existance", FALSE, tmp, 0, 0, TO_ROOM);      
+      act("$n wavers into existance", FALSE, tmp, 0, 0, TO_ROOM);
     }
-  }  
+  }
 
 }
 
@@ -166,7 +166,7 @@ void mind_danger_sense(byte level, struct char_data *ch,
       } else {
      act("$n seems to look more intently about.",TRUE,victim,0,0,TO_ROOM);
      act("You open your mind and eyes for hidden dangers.",TRUE,victim,0,0,TO_CHAR);
-    } 
+    }
 
     af.type      = SKILL_DANGER_SENSE;
     af.duration  = (int)level/10;
@@ -223,7 +223,7 @@ void mind_disintegrate(byte level, struct char_data *ch,
 	/* if not fighting, shove the mob/pc out'a the room if suffcient */
 	/* level and they do not save, otherwise set fighting. If fighting */
 	/* then if they fail, treat as bashed and the mobs/pc sits */
-#if 0	
+#if 0
 void mind_telekinesis(byte level, struct char_data *ch,
   struct char_data *victim, int dir_num)
 {
@@ -237,14 +237,14 @@ void mind_telekinesis(byte level, struct char_data *ch,
  	log("!victim in telekenisis");
  	return;
  	}
- 
+
 	/* not fighting, shove him */
  if (!ch->specials.fighting) {
-    
+
     if (saves_spell(victim,SAVING_SPELL) ||
 	    IS_SET(victim->specials.act,ACT_SENTINEL) &&
 	    IS_SET(victim->specials.act,ACT_HUGE)) {
-		  /* saved, make fight */	    
+		  /* saved, make fight */
 	act("Your mind suffers a breif weakness that forces you to drop $N!",FALSE,ch,0,victim,TO_CHAR);
 	act("$n tries to telekinesis you, but your mind resists!",FALSE,ch,0,victim,TO_VICT);
 	act("$n tries to telekinesis $N out of the area, but FAILS!",FALSE,ch,0,victim,TO_ROOM);
@@ -254,10 +254,10 @@ void mind_telekinesis(byte level, struct char_data *ch,
 	act("You lift $N with a thought and force $M from the area!",FALSE,ch,0,victim,TO_CHAR);
 	act("$n lifts you with $s mind, flinging you out the area!",FALSE,ch,0,victim,TO_VICT);
 	act("$n summons great mental powers and lifts $N, only to toss $M from the area!",FALSE,ch,0,victim,TO_ROOM);
-	    do_move(victim,"\0",dir_num);		  
+	    do_move(victim,"\0",dir_num);
 	  }
      } /* end was not fighting */
-      
+
        else
 
      /* was fighting, bash him */
@@ -276,12 +276,12 @@ void mind_telekinesis(byte level, struct char_data *ch,
 	act("$n slams $N to the ground with $s telekinetic powers!",FALSE,ch,0,victim,TO_ROOM);
 
      		  GET_POS(victim) = POSITION_SITTING;
-	    if (!victim->specials.fighting) 
+	    if (!victim->specials.fighting)
      		   set_fighting(victim,ch);
      		}
      } /* end was fighting */
-     
- 
+
+
 }
 #endif
 #if 1
@@ -307,7 +307,7 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
     }
 
 
- 
+
   if (!CAN_SEE(ch, victim)) {
 	send_to_char("Who do you wish to move with your mind?\n\r", ch);
 	return;
@@ -321,40 +321,40 @@ void mind_telekinesis(byte level, struct char_data *ch, struct char_data
 
 	/* not fighting, shove him */
  if (!ch->specials.fighting && dir_num > -1) {
-   	    
+
   	if (percent > ch->skills[SKILL_TELEKINESIS].learned) {
 		act("Your mind suffers a breif weakness that forces you to drop $N!",FALSE,ch,0,victim,TO_CHAR);
 		act("$n tries to telekinesis you, but your mind resists!",FALSE,ch,0,victim,TO_VICT);
 		act("$n tries to telekinesis $N out of the area, but FAILS!",FALSE,ch,0,victim,TO_ROOM);
         	hit(victim,ch,TYPE_UNDEFINED);
-    	} 
+    	}
     	else {
 		act("You lift $N with a thought and force $M from the area!",FALSE,ch,0,victim,TO_CHAR);
 		act("$n lifts you with $s mind, flinging you out the area!",FALSE,ch,0,victim,TO_VICT);
 		act("$n summons great mental powers and lifts $N, only to toss $M from the area!",FALSE,ch,0,victim,TO_ROOM);
-	    	do_move(victim,"\0",dir_num);		  
+	    	do_move(victim,"\0",dir_num);
     }
  } /* end was not fighting */
-      
+
  else {
 	if (percent > ch->skills[SKILL_TELEKINESIS].learned) {
 		act("You cannot seem to focus your mind enough for the telekinetic force.",FALSE,ch,0,victim,TO_CHAR);
 		act("$n fails to lift you with $s mind!",FALSE,ch,0,victim,TO_VICT);
 		act("$n attemps to use $s telekinetic powers on $N, but fails!",FALSE,ch,0,victim,TO_ROOM);
-    	} 
+    	}
     	else {
      		act("You slam $N to the ground with a single thought!",FALSE,ch,0,victim,TO_CHAR);
 		act("$n lifts you with $s mind, then slams you to the ground!",FALSE,ch,0,victim,TO_VICT);
 		act("$n slams $N to the ground with $s telekinetic powers!",FALSE,ch,0,victim,TO_ROOM);
 
   		GET_POS(victim) = POSITION_SITTING;
-		if (!victim->specials.fighting) 
+		if (!victim->specials.fighting)
      			set_fighting(victim,ch);
-		WAIT_STATE(victim, PULSE_VIOLENCE*3);		
+		WAIT_STATE(victim, PULSE_VIOLENCE*3);
     	}
  } /* end was fighting */
-     
- 
+
+
 }
 
 #endif
@@ -403,7 +403,7 @@ if (!ch) {
 
 if (ch != victim) {
 	send_to_char("You cannot use this skill on others.\n\r",ch);
-	return;	
+	return;
 	}
 
 	act("You begin the process of altering your body's cells.",FALSE,ch,0,victim,TO_CHAR);
@@ -411,15 +411,15 @@ if (ch != victim) {
 
 	if (GET_HIT(victim) + 100 > GET_MAX_HIT(victim)) {
 		act("You completely heal your body.",FALSE,victim,0,0,TO_CHAR);
-		GET_HIT(victim) = GET_MAX_HIT(victim);	
+		GET_HIT(victim) = GET_MAX_HIT(victim);
 	} else {
-	 act("You manage to heal some of your body through cell adjustment.",FALSE,victim,0,0,TO_CHAR); 
-	 GET_HIT(victim) +=100;	
+	 act("You manage to heal some of your body through cell adjustment.",FALSE,victim,0,0,TO_CHAR);
+	 GET_HIT(victim) +=100;
 	}
-	
+
    if (GetMaxLevel(ch)<LOW_IMMORTAL) {
 	act("You are overcome by exhaustion.",FALSE,ch,0,0,TO_CHAR);
-	act("$n slumps to the ground exhausted.",FALSE,ch,0,0,TO_ROOM);	
+	act("$n slumps to the ground exhausted.",FALSE,ch,0,0,TO_ROOM);
 	WAIT_STATE(ch,PULSE_VIOLENCE*12);
 	GET_POS(ch) = POSITION_STUNNED;
       }
@@ -435,7 +435,7 @@ if (!ch)
 	return;
 
   if (IS_AFFECTED(ch,AFF_HIDE))  {
-	REMOVE_BIT(ch->specials.affected_by,AFF_HIDE);	
+	REMOVE_BIT(ch->specials.affected_by,AFF_HIDE);
     }
 
    act("You camoflauge yourself in others minds.",FALSE,ch,0,0,TO_CHAR);
@@ -467,12 +467,12 @@ void mind_psi_strength(byte level, struct char_data *ch,
         af.modifier = number(1,6);
      else {
 
-       if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) ) 
+       if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) )
            af.modifier = number(1,8);
-       else 
+       else
        if (HasClass(ch, CLASS_CLERIC|CLASS_THIEF|CLASS_PSI))
            af.modifier = number(1,6);
-       else 
+       else
 	 af.modifier = number(1,4);
      }
      af.location  = APPLY_STR;
@@ -515,7 +515,7 @@ void mind_mind_over_body(byte level, struct char_data *ch,
     af.bitvector = 0;
     affect_to_char(victim, &af);
 
-    
+
   } else {
   	if (ch != victim)
   	   act("$N does not require your help.",FALSE,ch,0,victim,TO_CHAR);
@@ -597,27 +597,27 @@ void mind_psychic_impersonation(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {
   struct affected_type af;
-    struct char_data *k;  
-    
+    struct char_data *k;
+
    act("You attempt to make others see you as someone else.",FALSE,ch,0,victim,TO_VICT);
    act("$N's features shift and waver before your eyes!",FALSE,ch,0,victim,TO_NOTVICT);
-   
+
   if (affected_by_spell(victim, SKILL_PSYCHIC_IMPERSONATION)) {
     send_to_char("You are already attempting to do that\n\r", victim);
     return;
   }
 
-    for (k=character_list; k; k=k->next) 
+    for (k=character_list; k; k=k->next)
     {
-      if (k->specials.hunting == victim) 
+      if (k->specials.hunting == victim)
       {
 	k->specials.hunting = 0;
       }
-	if (Hates(k, victim)) 
+	if (Hates(k, victim))
 	{
 	  ZeroHatred(k, victim);
 	}
-	if (Fears(k, victim)) 
+	if (Fears(k, victim))
 	{
 	  ZeroFeared(k, victim);
 	}
@@ -628,7 +628,7 @@ void mind_psychic_impersonation(byte level, struct char_data *ch,
   	af.modifier = 0;
   	af.location = APPLY_NONE;
   	af.bitvector = 0;
-  	affect_to_char(victim, &af);    
+  	affect_to_char(victim, &af);
 
 }
 
@@ -636,48 +636,43 @@ void mind_psychic_impersonation(byte level, struct char_data *ch,
 
 
 	/* area effect psionic blast type skill */
-void mind_ultra_blast(byte level, struct char_data *ch,
-  struct char_data *victim, struct obj_data *obj)
+void mind_ultra_blast(byte level, struct char_data *ch, struct char_data *victim, struct obj_data *obj)
 {
-  int dam;
-  struct char_data *tmp_victim, *temp;
+	int dam;
+	struct char_data *tmp_victim, *temp;
 
   assert(ch);
-  assert((level >= 1) && (level <= ABS_MAX_LVL)); 
+  assert((level >= 1) && (level <= ABS_MAX_LVL));
 
-/* damage = level d4, +level */
-  dam = dice(level,4);
-  dam +=level;
+	/* damage = level d4, +level */
+	dam = dice(level,4);
+	dam +=level;
 
-  act("You blast out a massive wave of destructive psionic energy!",FALSE,ch,0,victim,TO_CHAR);
-  act("$n blasts out a massive wave of destructive psionic energy!",FALSE,ch,0,0,TO_ROOM);
-  
-   for(tmp_victim = character_list; tmp_victim; tmp_victim = temp)    {
-      temp = tmp_victim->next;
-      if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)){
-	if (!in_group(ch,tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
-	   if (!saves_spell(tmp_victim, SAVING_SPELL)) {
+	act("You blast out a massive wave of destructive psionic energy!",FALSE,ch,0,victim,TO_CHAR);
+	act("$n blasts out a massive wave of destructive psionic energy!",FALSE,ch,0,0,TO_ROOM);
 
-	 /* half damage if effected by TOWER OF IRON WILL */
-	   if (affected_by_spell(tmp_victim,SKILL_TOWER_IRON_WILL)) 
-	    dam >>=1;
-	    
-	      MissileDamage(ch,tmp_victim,dam,SKILL_ULTRA_BLAST);
-	        /* damage here */
-	    } else           {
-	     dam >>=1;  /* half dam */
+	for(tmp_victim = character_list; tmp_victim; tmp_victim = temp) {
+		temp = tmp_victim->next;
+		if ( (ch->in_room == tmp_victim->in_room) && (ch != tmp_victim)) {
+			if (!in_group(ch,tmp_victim) && !IS_IMMORTAL(tmp_victim)) {
+				if (!saves_spell(tmp_victim, SAVING_SPELL)) {
 
-	 /* NO damage if effected by TOWER OF IRON WILL */
-	   if (affected_by_spell(tmp_victim,SKILL_TOWER_IRON_WILL)) 
-	    dam =0;
-
-	     MissileDamage(ch,tmp_victim,dam,SKILL_ULTRA_BLAST);
-	  }
-	 } else
-           act("You manage to get out of the way of the massive psionic blast!",FALSE, ch, 0, tmp_victim, TO_VICT);	 
-	}           
-    }	  /* end for */
-
+					/* half damage if effected by TOWER OF IRON WILL */
+					if (affected_by_spell(tmp_victim,SKILL_TOWER_IRON_WILL))
+						dam >>=1;
+					MissileDamage(ch,tmp_victim,dam,SKILL_ULTRA_BLAST);
+						/* damage here */
+				} else {
+					dam >>=1;  /* half dam */
+					/* NO damage if effected by TOWER OF IRON WILL */
+					if (affected_by_spell(tmp_victim,SKILL_TOWER_IRON_WILL))
+						dam =0;
+					MissileDamage(ch,tmp_victim,dam,SKILL_ULTRA_BLAST);
+				}
+			} else
+				act("You manage to get out of the way of the massive psionic blast!",FALSE, ch, 0, tmp_victim, TO_VICT);
+		}
+	}	  /* end for */
 }
 
 	/* massive single person attack */
@@ -687,7 +682,7 @@ void mind_psychic_crush(byte level, struct char_data *ch,
   int dam;
 
   assert(victim && ch);
-  assert((level >= 1) && (level <= ABS_MAX_LVL)); 
+  assert((level >= 1) && (level <= ABS_MAX_LVL));
 
 /* damage = level d6, +1 for every two levels of the psionist */
 
@@ -709,7 +704,7 @@ void mind_psychic_crush(byte level, struct char_data *ch,
 
 
 	/* increate int,wis or con, reduce the unselected attribs the same */
-	
+
 void mind_intensify(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {

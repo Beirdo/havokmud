@@ -343,10 +343,10 @@ void cast_commune( byte level, struct char_data *ch, char *arg,
 
 void cast_animal_summon_1( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_animal_summon_2( byte level, struct char_data *ch, char *arg,
-		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
-void cast_animal_summon_3( byte level, struct char_data *ch, char *arg,
-		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
+//void cast_animal_summon_2( byte level, struct char_data *ch, char *arg,
+//		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
+//void cast_animal_summon_3( byte level, struct char_data *ch, char *arg,
+//		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);
 
 void cast_fire_servant( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj);

@@ -224,6 +224,7 @@ void do_hit(struct char_data *ch, char *argument, int cmd);
 void do_kill(struct char_data *ch, char *argument, int cmd);
 void do_backstab(struct char_data *ch, char *argument, int cmd);
 void do_order(struct char_data *ch, char *argument, int cmd);
+void do_dismiss(struct char_data *ch, char *arg, int cmd);
 void do_flee(struct char_data *ch, char *argument, int cmd);
 void do_bash(struct char_data *ch, char *argument, int cmd);
 void do_leg_sweep(struct char_data *ch, char *argument, int cmd);
@@ -367,7 +368,7 @@ void do_drainlevel(struct char_data *ch, char *argument , int cmd);
 void do_permission(struct char_data *ch, char *argument , int cmd);
 void do_qtrans(struct char_data *ch, char *argument, int cmd);
 void do_set_nooutdoor(struct char_data *ch, char *argument, int cmd);
-
+void do_setsound(struct char_data *ch, char *argument, int cmd);
 /* From board.c */
 
 void board_write_msg(struct char_data *ch, char *arg, int bnum);
@@ -1422,6 +1423,7 @@ void invert(char *arg1, char *arg2);
 int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type);
 int godsay(struct char_data *ch, int cmd, char *argument, struct obj_data *obj, int type);
 int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int cleric(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int ninja_master(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int barbarian_guildmaster(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
@@ -2280,14 +2282,13 @@ int ValidRoom(struct char_data *ch );
 
 /* Spec_procs4.c */
 int TrainingGuild(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int qp_potion(struct char_data *ch, int cmd, char *arg);
 
 /* King's Grove */
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int generate_legend_statue();
 int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-int druid(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int pick_berries(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-void do_dismiss(struct char_data *ch, char *arg, int cmd);
 				/* Heximal's zone */
 int riddle_exit(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int Deshima(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

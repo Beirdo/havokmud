@@ -2673,29 +2673,34 @@ const char *RaceName[] = {
 };
 
 const char *item_types[] = {
-	"UNDEFINED",
+	"UNDEFINED", //0
 	"LIGHT",
 	"SCROLL",
 	"WAND",
 	"STAFF",
-	"WEAPON",
+	"WEAPON", //5
 	"FIRE WEAPON",
 	"MISSILE",
 	"TREASURE",
 	"ARMOR",
-	"POTION",
+	"POTION", //10
 	"WORN",
 	"OTHER",
 	"TRASH",
 	"TRAP",
-	"CONTAINER",
+	"CONTAINER",//15
 	"NOTE",
 	"LIQUID CONTAINER",
 	"KEY",
 	"FOOD",
-	"MONEY",
+	"MONEY", //20
 	"PEN",
 	"BOAT",
+"AUDIO",
+"BOARD",
+"TREE", //25
+"ROCK",
+"PORTAL",//27
 	"\n"
 };
 
@@ -4621,7 +4626,7 @@ const struct skillset druidskills[] = {
 	{"continual light",			SPELL_CONT_LIGHT			,16},
 	{"control weather",			SPELL_CONTROL_WEATHER		,15},
 	{"create light",			SPELL_LIGHT					,3},
-	{"creeping death (disabled)",SPELL_CREEPING_DEATH		,45},
+	{"creeping death",			SPELL_CREEPING_DEATH		,45},
 	{"cure critic",				SPELL_CURE_CRITIC			,13},
 	{"cure light",				SPELL_CURE_LIGHT			,2},
 	{"cure serious",			SPELL_CURE_SERIOUS			,8},

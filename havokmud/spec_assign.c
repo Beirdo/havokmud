@@ -1463,6 +1463,8 @@ void assign_objects()
    {51827, applepie },
    {51832, trinketcount },
    /*End Thunder Mountain Keep Objects*/
+/* King's Grove */
+	{ 718, qp_potion },
 
    { 51152, chestproc },  //royal rumble proc
 

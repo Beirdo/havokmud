@@ -143,3 +143,4 @@ struct help_index_element
 #define ZONE_ARCTIC      16
 #define ZONE_UNDER_GROUND 32
 #define ZONE_CLOSED       64
+

@@ -1314,38 +1314,63 @@ dlog("in do_pick");
 
 void do_enter(struct char_data *ch, char *argument, int cmd)
 {
-  int door;
-  char buf[MAX_INPUT_LENGTH+80], tmp[MAX_STRING_LENGTH];
-  struct room_direction_data	*exitp;
-  struct room_data	*rp;
+	int door;
+	char buf[MAX_INPUT_LENGTH+80], tmp[MAX_STRING_LENGTH];
+	struct room_direction_data *exitp;
+	struct room_data *rp;
+	struct obj_data *portal;
+	struct char_data *victim;
+	int to_room = 0;
 
 dlog("in do_enter");
 
-  one_argument(argument, buf);
+	one_argument(argument, buf);
 
-  if (*buf) { /* an argument was supplied, search for door keyword */
-    for (door = 0; door <= 5; door++)
-      if (exit_ok(exitp=EXIT(ch, door), NULL) && exitp->keyword &&
-	  0==str_cmp(exitp->keyword, buf)) {
-	do_move(ch, "", ++door);
-	return;
-      }
-    sprintf(tmp, "There is no %s here.\n\r", buf);
-    send_to_char(tmp, ch);
-  } else if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
-    send_to_char("You are already indoors.\n\r", ch);
-  } else {
-    /* try to locate an entrance */
-    for (door = 0; door <= 5; door++)
-      if (exit_ok(exitp=EXIT(ch, door), &rp) &&
-	  !IS_SET(exitp->exit_info, EX_CLOSED) &&
-	  IS_SET(rp->room_flags, INDOORS))
-	{
-	  do_move(ch, "", ++door);
-	  return;
+	if (*buf) { /* an argument was supplied, search for PORTAL items in room with keywords first */
+		/* check inventory too, maybe people will be able to carry portal items in the future? */
+		if (generic_find(buf, FIND_OBJ_INV | FIND_OBJ_ROOM, ch, &victim, &portal)) {
+			if (ITEM_TYPE(portal) != ITEM_PORTAL) {
+				send_to_char("You can't enter that!",ch);
+				return;
+			} else { /* valid portal */
+				to_room = portal->obj_flags.value[0];
+				if(rp<0) {
+					rp=0;
+					sprintf(tmp,"Bad ObjValue1 for portal object, vnum %d",obj_index[portal->item_number].virtual);
+					log(tmp);
+					log("char sent to void (room 0)");
+				}
+				act("You step into $p and emerge elsewhere.\n\r", FALSE , ch, portal, 0, TO_CHAR);
+				act("$n steps into $p and slowly fades out of existence.", FALSE , ch, portal, 0, TO_ROOM);
+				char_from_room(ch);
+				char_to_room(ch,to_room);
+				act("$n materializes out of thin air!", FALSE, ch, 0, 0, TO_ROOM);
+				do_look(ch, "", 0);
+				return;
+			}
+		} else {
+			for (door = 0; door <= 5; door++)
+				if (exit_ok(exitp=EXIT(ch, door), NULL) && exitp->keyword &&
+											0==str_cmp(exitp->keyword, buf)) {
+					do_move(ch, "", ++door);
+					return;
+				}
+			sprintf(tmp, "There is no %s here.\n\r", buf);
+			send_to_char(tmp, ch);
+		}
+	} else if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
+		send_to_char("You are already indoors.\n\r", ch);
+	} else {
+		/* try to locate an entrance */
+		for (door = 0; door <= 5; door++)
+			if (exit_ok(exitp=EXIT(ch, door), &rp) &&
+					!IS_SET(exitp->exit_info, EX_CLOSED) &&
+					IS_SET(rp->room_flags, INDOORS)) {
+				do_move(ch, "", ++door);
+				return;
+			}
+		send_to_char("You can't seem to find anything to enter.\n\r", ch);
 	}
-    send_to_char("You can't seem to find anything to enter.\n\r", ch);
-  }
 }
 
 

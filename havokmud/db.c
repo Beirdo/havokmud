@@ -248,15 +248,7 @@ void boot_db()
 
 	reset_q.head = reset_q.tail = 0;
 
-//	Let's see if this works for building the player statues
-/*	CleanZone(zone);
-	LoadZoneFile(fp, zone);
-	fclose(fp);
-	renum_zone_table(zone);
-	zone_table[zone].start=0;
-	reset_zone(zone);
-*/
-
+	/* cycle through pfiles to see if anyone get a statue */
 	generate_legend_statue();
 
 	log("Boot db -- DONE.");
@@ -2621,67 +2613,69 @@ void zone_update()
 
   /* enqueue zones */
 
-  for (i = 0; i <= top_of_zone_table; i++)      {
-    if (zone_table[i].start) {
-      if (zone_table[i].age < zone_table[i].lifespan &&
-	  zone_table[i].reset_mode)
-	(zone_table[i].age)++;
-      else
-	if (zone_table[i].age < ZO_DEAD && zone_table[i].reset_mode)    {
-	  /* enqueue zone */
+	for (i = 0; i <= top_of_zone_table; i++) {
+		if (zone_table[i].start) { /* has been reset already */
+			if (zone_table[i].age < zone_table[i].lifespan && zone_table[i].reset_mode)
+				(zone_table[i].age)++;
+			else if (zone_table[i].age < ZO_DEAD && zone_table[i].reset_mode) {
+				/* enqueue zone */
 
-	  CREATE(update_u, struct reset_q_element, 1);
+				CREATE(update_u, struct reset_q_element, 1);
 
-	  update_u->zone_to_reset = i;
-	  update_u->next = 0;
+				update_u->zone_to_reset = i;
+				update_u->next = 0;
 
-	  if (!reset_q.head)
-	    reset_q.head = reset_q.tail = update_u;
-	  else  {
-	    reset_q.tail->next = update_u;
-	    reset_q.tail = update_u;
-	  }
-
-	  zone_table[i].age = ZO_DEAD;
+				if (!reset_q.head)
+					reset_q.head = reset_q.tail = update_u;
+				else  {
+					reset_q.tail->next = update_u;
+					reset_q.tail = update_u;
+				}
+				zone_table[i].age = ZO_DEAD;
+			}
+		}
 	}
-    }
-  }
 
-  /* dequeue zones (if possible) and reset */
+	/* dequeue zones (if possible) and reset */
+	for (update_u = reset_q.head; update_u; update_u = tmp2) {
+		if (update_u->zone_to_reset > top_of_zone_table) {
 
-  for (update_u = reset_q.head; update_u; update_u = tmp2) {
-    if (update_u->zone_to_reset > top_of_zone_table) {
+		/*  this may or may not work */
+		/*  may result in some lost memory, but the loss is not signifigant
+		 *	over the short run
+		 */
 
-      /*  this may or may not work */
-      /*  may result in some lost memory, but the loss is not signifigant
-	  over the short run
-	  */
-      update_u->zone_to_reset = 0;
-      update_u->next = 0;
-    }
-    tmp2 = update_u->next;
+			update_u->zone_to_reset = 0;
+			update_u->next = 0;
+		}
+		tmp2 = update_u->next;
 
-    if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_ALWAYS) ||
-       (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_EMPTY) &&
-	       is_empty(update_u->zone_to_reset))) {
-      reset_zone(update_u->zone_to_reset);
-      /* dequeue */
+		if (IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_ALWAYS) ||
+			(IS_SET(zone_table[update_u->zone_to_reset].reset_mode, ZONE_EMPTY) &&
+			is_empty(update_u->zone_to_reset))) {
 
-      if (update_u == reset_q.head)
-	reset_q.head = reset_q.head->next;
-      else {
-	for (temp = reset_q.head; temp->next != update_u; temp = temp->next)
-	  ;
+			/* ALWAYS but occupied should just reset, not clean */
+			if (!is_empty(update_u->zone_to_reset)) {
+				reset_zone(update_u->zone_to_reset);
+			} else {
+				CleanZone(update_u->zone_to_reset);
+				zone_table[update_u->zone_to_reset].start=0;
+			}
 
-	if (!update_u->next)
-	  reset_q.tail = temp;
-
-	temp->next = update_u->next;
-      }
-	if (update_u)
-	      free(update_u);
-    }
-  }
+			/* dequeue */
+			if (update_u == reset_q.head)
+				reset_q.head = reset_q.head->next;
+			else {
+				for (temp = reset_q.head; temp->next != update_u; temp = temp->next)
+					;
+				if (!update_u->next)
+					reset_q.tail = temp;
+				temp->next = update_u->next;
+			}
+			if (update_u)
+				free(update_u);
+		}
+	}
 }
 
 

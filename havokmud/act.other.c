@@ -1929,7 +1929,7 @@ dlog("in do_group_name");
   }
   /* set ch->specials.group_name to the argument    */
   for (;*arg==' ';arg++);
-  send_to_char("\n\rSetting your group name to :", ch);send_to_char(arg, ch);
+  send_to_char("Setting your group name to: ", ch);send_to_char(arg, ch);
   send_to_char("\n\r",ch);
   ch->specials.group_name =strdup(arg);
 
@@ -3070,121 +3070,115 @@ void do_auto(struct char_data *ch, char *argument, int cmd) {
 }
 void do_set_flags(struct char_data *ch, char *argument, int cmd)
 {
- char type[255],field[255];
+	char type[255],field[255], name[254], gname[254];
 
 dlog("in do_set_flags");
 
- if (!ch)
-    return;
+	if (!ch)
+		return;
 
- argument = one_argument(argument,type);
+	half_chop(argument, type, field);
+//	argument = one_argument(argument,type);
 
- if (!*type) {
- 	send_to_char("Set, but set what?!?!? type help set for further details on\n\r",ch);
- 	send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak\n\r",ch);
- 	return;
-  }
+	if (!*type) {
+		send_to_char("Set, but set what?!?!? type help set for further details on\n\r",ch);
+		send_to_char("email, answer, autoexits, group name, clan, pause, autoloot, autogold, autoassist, autosplit, ansi, advice, sound, cloak\n\r",ch);
+		return;
+	}
 
- argument = one_argument(argument,field);
+//	argument = one_argument(argument,field);
 
- if (!strcmp("war",type) &&  (!*field)) {
-   send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU CANNOT REMOVE IT!\n\r",ch);
-   send_to_char("Be sure to READ the help on RACE WAR.\n\r",ch);
-   return;
- }
+	if (!strcmp("war",type) &&  (!*field)) {
+		send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU CANNOT REMOVE IT!\n\r",ch);
+		send_to_char("Be sure to READ the help on RACE WAR.\n\r",ch);
+		return;
+	}
 
- /*Cloak Set - Allows you to set the cloak flag so people can't see your eq
-  * By Greg Hovey -Banon
-  * Usage: set cloak  (Will toggle on and off like a light switch)
-  * Currently disabled until further coding has been done.. (FALSE)
-  */
- if (!strcmp(type,"cloak")) {
-   if (!IS_SET(ch->player.user_flags, CLOAKED)) {
-     if(!ch->equipment[12]){
-       send_to_char("You don't have a cloak to do that with.",ch);
-       return;
-     }
-     SET_BIT(ch->player.user_flags,CLOAKED);
-     act("You pull $p down over your body.", FALSE,ch,ch->equipment[12],0,TO_CHAR);
-     act("$n pulls $p down over $s body.",FALSE,ch, ch->equipment[12],0,TO_NOTVICT);
-     //send_to_char("You pull your cloak over your body!\n\r",ch);
-     return;
-   } else {
-     REMOVE_BIT(ch->player.user_flags, CLOAKED);
-     if(!ch->equipment[12]) {
-       send_to_char("You don't even have a cloak on.",ch);
-       return;
-     }
-     //send_to_char("You pull back your cloak.\n\r",ch);
-     act("You pull $p back away from your body.", FALSE, ch, ch->equipment[12],0,TO_CHAR);
-     act("$n pulls back $p away from $s body.", FALSE, ch, ch->equipment[12], 0, TO_NOTVICT);
-   }
-   return;
- }
+   /* Cloak Set - Allows you to set the cloak flag so people can't see your eq
+	* By Greg Hovey -Banon
+	* Usage: set cloak  (Will toggle on and off like a light switch)
+	* Currently disabled until further coding has been done.. (FALSE)
+	*/
+	if (!strcmp(type,"cloak")) {
+		if (!IS_SET(ch->player.user_flags, CLOAKED)) {
+			if(!ch->equipment[12]){
+				send_to_char("You don't have a cloak to do that with.",ch);
+				return;
+			}
+			SET_BIT(ch->player.user_flags,CLOAKED);
+			act("You pull $p down over your body, cloaking your equipment from view.", FALSE,ch,ch->equipment[12],0,TO_CHAR);
+			act("$n pulls $p down over $s body, cloaking $s equipment from view.",FALSE,ch, ch->equipment[12],0,TO_NOTVICT);
+			//send_to_char("You pull your cloak over your body!\n\r",ch);
+			return;
+		} else {
+			REMOVE_BIT(ch->player.user_flags, CLOAKED);
+			if(!ch->equipment[12]) {
+				send_to_char("You don't even have a cloak on.",ch);
+				return;
+			}
+			//send_to_char("You pull back your cloak.\n\r",ch);
+			act("You pull $p back away from your body.", FALSE, ch, ch->equipment[12],0,TO_CHAR);
+			act("$n pulls back $p away from $s body.", FALSE, ch, ch->equipment[12], 0, TO_NOTVICT);
+		}
+		return;
+	}
 
- if (!*field) {
-   send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
-   return;
- }
+	if (!*field) {
+		send_to_char("Set it to what? (Enable,Disable/Off)\n\r",ch);
+		return;
+	}
 
- if (!strcmp(type,"sound")) {		/* turn ansi stuff ON/OFF */
-   if (is_abbrev(field,"enable")) {
-         send_to_char("Sound and Music enabled.\n\r",ch);
-         SET_BIT(ch->player.user_flags,ZONE_SOUNDS);
-   } else {
-     act("Sound and Music disabled.",FALSE,ch,0,0,TO_CHAR);
-     if (IS_SET(ch->player.user_flags,ZONE_SOUNDS))
-       REMOVE_BIT(ch->player.user_flags, ZONE_SOUNDS);
-   }
- } /* private */
- else
- if (!strcmp(type,"private")) {		/* turn ansi stuff ON/OFF */
-   if (is_abbrev(field,"enable")) {
-         send_to_char("Private flag enabled.\n\r",ch);
-         SET_BIT(ch->player.user_flags,CHAR_PRIVATE);
-   } else {
-     act("Private flag disabled.",FALSE,ch,0,0,TO_CHAR);
-     if (IS_SET(ch->player.user_flags,CHAR_PRIVATE))
-       REMOVE_BIT(ch->player.user_flags,CHAR_PRIVATE);
-   }
- } /* private */
- else
- if (!strcmp(type,"ansi") || !strcmp(type, "color")) {		/* turn ansi stuff ON/OFF */
-   if (is_abbrev(field,"enable")) {
-         send_to_char("Setting ansi colors enabled.\n\r",ch);
-         SET_BIT(ch->player.user_flags,USE_ANSI);
-   } else {
-     act("Setting ansi colors off.",FALSE,ch,0,0,TO_CHAR);
-     if (IS_SET(ch->player.user_flags,USE_ANSI))
-       REMOVE_BIT(ch->player.user_flags,USE_ANSI);
-   }
- } /* was ansi */
-   else
-     if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
-       if (strstr(field,"enable")) {
-         send_to_char("Setting page pause mode enabled.\n\r",ch);
-         SET_BIT(ch->player.user_flags,USE_PAGING);
-       } else {
-         act("Turning page pause off.",FALSE,ch,0,0,TO_CHAR);
-         if (IS_SET(ch->player.user_flags,USE_PAGING))
-	   REMOVE_BIT(ch->player.user_flags,USE_PAGING);
-       }
-     }
+	/* get rid of annoying carriage returns   -Lennya */
+	while ((field[strlen(field)-1]=='\r') || (field[strlen(field)-1]=='\n') || (field[strlen(field)-1]==' ')) {
+		field[strlen(field)-1] = '\0';
+	}
 
-     else
-       if (!strcmp(type,"group")) {
-	 if (!strcmp(field,"name")) {
-	   if (argument)
-	     do_group_name(ch,argument,0);
-	 }
-
-	 else {
-	   send_to_char("Unknown set group command\n",ch);
-	 }
-       } /* end was a group command */
-
-       else
-	 if (!strcmp(type,"autoexits")) {
+	if (!strcmp(type,"sound")) {		/* turn ansi stuff ON/OFF */
+		if (is_abbrev(field,"enable")) {
+			send_to_char("Sound and Music enabled.\n\r",ch);
+			SET_BIT(ch->player.user_flags,ZONE_SOUNDS);
+		} else {
+			act("Sound and Music disabled.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,ZONE_SOUNDS))
+				REMOVE_BIT(ch->player.user_flags, ZONE_SOUNDS);
+		}
+	} else if (!strcmp(type,"private")) {		/* turn ansi stuff ON/OFF */
+		if (is_abbrev(field,"enable")) {
+			send_to_char("Private flag enabled.\n\r",ch);
+			SET_BIT(ch->player.user_flags,CHAR_PRIVATE);
+		} else {
+			act("Private flag disabled.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,CHAR_PRIVATE))
+				REMOVE_BIT(ch->player.user_flags,CHAR_PRIVATE);
+		}
+	} else if (!strcmp(type,"ansi") || !strcmp(type, "color")) {		/* turn ansi stuff ON/OFF */
+		if (is_abbrev(field,"enable")) {
+			send_to_char("Setting ansi colors enabled.\n\r",ch);
+			SET_BIT(ch->player.user_flags,USE_ANSI);
+		} else {
+			act("Setting ansi colors off.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,USE_ANSI))
+				REMOVE_BIT(ch->player.user_flags,USE_ANSI);
+		}
+	} else if (!strcmp(type,"pause")) {             /* turn page mode ON/OFF */
+		if (strstr(field,"enable")) {
+			send_to_char("Setting page pause mode enabled.\n\r",ch);
+			SET_BIT(ch->player.user_flags,USE_PAGING);
+		} else {
+			act("Turning page pause off.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,USE_PAGING))
+				REMOVE_BIT(ch->player.user_flags,USE_PAGING);
+		}
+	} else if (!strcmp(type,"group")) {
+//		only_argument(field, name);
+		argument_split_2(field,name,gname);
+		if (!strcmp(name,"name")) {
+			if (gname)
+				do_group_name(ch,gname,0);
+		} else {
+			send_to_char("Unknown set group command.\n\r",ch);
+		}
+	} else if (!strcmp(type,"autoexits")) {
 	   if (strstr(field,"enable")) {
 	     act("Setting autodisplay exits on.",FALSE,ch,0,0,TO_CHAR);
 	     if (!IS_SET(ch->player.user_flags,SHOW_EXITS))
@@ -3194,9 +3188,7 @@ dlog("in do_set_flags");
 	     if (IS_SET(ch->player.user_flags,SHOW_EXITS))
 	       REMOVE_BIT(ch->player.user_flags,SHOW_EXITS);
 	   }
-	 }
-	 else
-	 if (!strcmp(type,"autosplit")) {
+	} else if (!strcmp(type,"autosplit")) {
 	 	   if (strstr(field,"enable")) {
 	 	     act("Setting autosplit on.",FALSE,ch,0,0,TO_CHAR);
 	 	     if (!IS_SET(ch->specials.act, PLR_AUTOSPLIT))
@@ -3206,10 +3198,7 @@ dlog("in do_set_flags");
 	 	     if (IS_SET(ch->specials.act, PLR_AUTOSPLIT))
 	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOSPLIT);
 	 	   }
-	 	 }
-
- 	else
-	 if (!strcmp(type,"autogold")) {
+	} else if (!strcmp(type,"autogold")) {
 	 	   if (strstr(field,"enable")) {
 	 	     act("Setting autogold on.",FALSE,ch,0,0,TO_CHAR);
 	 	     if (!IS_SET(ch->specials.act, PLR_AUTOGOLD))
@@ -3219,83 +3208,71 @@ dlog("in do_set_flags");
 	 	     if (IS_SET(ch->specials.act, PLR_AUTOGOLD))
 	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOGOLD);
 	 	   }
-	 	 }
-	 else
-	 if (!strcmp(type,"autoloot")) {
-	 	   if (strstr(field,"enable")) {
-	 	     act("Setting autoloot on.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (!IS_SET(ch->specials.act, PLR_AUTOLOOT))
-	 	       SET_BIT(ch->specials.act, PLR_AUTOLOOT);
-	 	   } else {
-	 	     act("Setting autoloot off.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (IS_SET(ch->specials.act, PLR_AUTOLOOT))
-	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOLOOT);
-	 	   }
-	 	 }
-	 else
-		if (!strcmp(type,"autoassist")) {
-	 	   if (strstr(field,"enable")) {
-	 	     act("Setting autoassist on.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (!IS_SET(ch->specials.act, PLR_AUTOASSIST))
-	 	       SET_BIT(ch->specials.act, PLR_AUTOASSIST);
-	 	   } else {
-	 	     act("Setting autoassist off.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (IS_SET(ch->specials.act, PLR_AUTOASSIST))
-	 	       REMOVE_BIT(ch->specials.act,PLR_AUTOASSIST);
-	 	   }
-	 	 }
-	 else
-
-	 if (!strcmp(type,"advice")) {
-	 	   if (strstr(field,"enable")) {
-	 	     act("Turning on Newbie Help.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (!IS_SET(ch->player.user_flags,NEW_USER))
-	 	       SET_BIT(ch->player.user_flags,NEW_USER);
-	 	   } else {
-	 	     act("Turning newbie help OFF.",FALSE,ch,0,0,TO_CHAR);
-	 	     if (IS_SET(ch->player.user_flags,NEW_USER))
-	 	       REMOVE_BIT(ch->player.user_flags,NEW_USER);
-	 	   }
-	 	 }
-	 	 else
-
-	   if (!strcmp(type,"email")) {
-	     if (*field) {
-	       /* set email to field */
-
+	} else if (!strcmp(type,"autoloot")) {
+		if (strstr(field,"enable")) {
+			act("Setting autoloot on.",FALSE,ch,0,0,TO_CHAR);
+			if (!IS_SET(ch->specials.act, PLR_AUTOLOOT))
+				SET_BIT(ch->specials.act, PLR_AUTOLOOT);
+		} else {
+			act("Setting autoloot off.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->specials.act, PLR_AUTOLOOT))
+				REMOVE_BIT(ch->specials.act,PLR_AUTOLOOT);
+		}
+	} else if (!strcmp(type,"autoassist")) {
+		if (strstr(field,"enable")) {
+			act("Setting autoassist on.",FALSE,ch,0,0,TO_CHAR);
+			if (!IS_SET(ch->specials.act, PLR_AUTOASSIST))
+				SET_BIT(ch->specials.act, PLR_AUTOASSIST);
+		} else {
+			act("Setting autoassist off.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->specials.act, PLR_AUTOASSIST))
+				REMOVE_BIT(ch->specials.act,PLR_AUTOASSIST);
+		}
+	} else if (!strcmp(type,"advice")) {
+		if (strstr(field,"enable")) {
+			act("Turning on Newbie Help.",FALSE,ch,0,0,TO_CHAR);
+			if (!IS_SET(ch->player.user_flags,NEW_USER))
+				SET_BIT(ch->player.user_flags,NEW_USER);
+		} else {
+			act("Turning newbie help OFF.",FALSE,ch,0,0,TO_CHAR);
+			if (IS_SET(ch->player.user_flags,NEW_USER))
+				REMOVE_BIT(ch->player.user_flags,NEW_USER);
+		}
+	} else if (!strcmp(type,"email")) {
+		if (*field) {
+			/* set email to field */
 			if (ch->specials.email)
 				free(ch->specials.email);
-	       ch->specials.email= strdup(field);
-
-	       if (cmd){
-		 write_char_extra(ch);
-		 send_to_char("Email address set.\n\r",ch);
-	       }
-	     } else {
-	       if (cmd)
-		 send_to_char("Set email address to what?\n\r",ch);
-	     }
-	   } else
-	     if(!strcmp(type, "clan")) {
-	       if(*field) {
-			   if (ch->specials.clan)
-			   		free(ch->specials.clan);
-		 ch->specials.clan = strdup(field);
-		 if(cmd==280) {
-		   write_char_extra(ch);
-		   //load_char_extra(ch);
-		   send_to_char("Clan Field set..",ch);
-		 }
-	       } else
-		 send_to_char("Set Clan field to what??",ch);
-	     }
-	     else /* end email */
-	       {
-		 send_to_char("Unknown type to set.\n\r",ch);
-		 return;
-	       }
-
+			ch->specials.email= strdup(field);
+			if (cmd){
+				write_char_extra(ch);
+				send_to_char("Email address set.\n\r",ch);
+			}
+		} else {
+			if (cmd)
+				send_to_char("Set email address to what?\n\r",ch);
+		}
+	} else if(!strcmp(type, "clan")) {
+		if(*field) {
+			if (ch->specials.clan)
+				free(ch->specials.clan);
+			ch->specials.clan = strdup(field);
+			if(cmd==280) {
+				write_char_extra(ch);
+				//load_char_extra(ch);
+				send_to_char("Clan Field set.\n\r",ch);
+			}
+		} else {
+			if (ch->specials.clan)
+				free(ch->specials.clan);
+			send_to_char("Set Clan field to None.\n\r",ch);
+		}
+	} else {
+		send_to_char("Unknown type to set.\n\r",ch);
+		return;
+	}
 }
+
 /* Whois command code.
  * Revised: Greg Hovey
  * Last updated: Feb 12, 2001
@@ -3307,6 +3284,8 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
   struct char_data *finger = 0;
   struct char_data *i;
   struct char_file_u tmp_store;
+  int ratio;
+  int akills = 0, adeaths = 0;
 
   dlog("in do_finger");
 
@@ -3330,45 +3309,53 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
       send_to_char("No person by that name.\n\r",ch);
       return;
     }
-    /*Display Character information*/
-    sprintf(buf,"\n\r$c0015%s's$c0005 adventurer information:\n\r",
-	    GET_NAME(finger));
-    send_to_char(buf,ch);
+    /* Display Character information */
+      sprintf(buf,"$c0005Adventurer information:\n\r");
+      send_to_char(buf,ch);
+      sprintf(buf,"$c000pName                  : %s\n\r",finger->player.title);
+	  send_to_char(buf, ch);
 
-	 i = get_char(name); /* used for last time sighted */
-    /*Last time sited??*/
+/* prefix */
+
+
+
+
+
+
+
+	 i = get_char(name); /* used for last time sited */
+    /* Last time sited?? */
     if(IS_IMMORTAL(finger) && !IS_IMMORTAL(ch))//if vic is immortal & U arn't
-      sprintf(buf,"$c0005Last time sited    : $c0014Unknown\n\r");
+      sprintf(buf,"$c0005Last time sited       : $c0014Unknown\n\r");
     else if(i && i->desc)  /* if there is a name, and a file descriptor */
-      sprintf(buf,"$c0005Last time sited    : $c0014Currently Playing\n\r");
+      sprintf(buf,"$c0005Last time sited       : $c0014Currently Playing\n\r");
     else
-      sprintf(buf,"$c0005Last time sited    : $c0014%s"
+      sprintf(buf,"$c0005Last time sited       : $c0014%s"
 	      ,asctime(localtime(&tmp_store.last_logon)));
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
 
-    /*Display char Email addy*/
+    /* Display char email addy */
     if(finger->specials.email==NULL)
-      sprintf(buf, "$c0005Known message drop : $c0014None\n\r");
+      sprintf(buf,"$c0005Known message drop    : $c0014None\n\r");
     else
-      sprintf(buf, "$c0005Known message drop : $c0014%-60s\n\r"
-	      , finger->specials.email);//GET_EMAIL(finger));
-    //strcat(buf,GET_EMAIL(ch));
-    send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
+      sprintf(buf,"$c0005Known message drop    : $c0014%-60s\n\r"
+	      , finger->specials.email);
+    send_to_char(buf,ch);
 
     /*Display clan info*/
     if(finger->specials.clan==NULL)
-      sprintf(buf,"$c0005Clan info          : $c0014None");
+      sprintf(buf,"$c0005Clan info             : $c0014None");
     else
-      sprintf(buf,"$c0005Clan info          : $c0014%s",CAP(finger->specials.clan));
+      sprintf(buf,"$c0005Clan info             : $c0014%s",CAP(finger->specials.clan));
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
 
 
     if(IS_IMMORTAL(ch)) {
 		if(finger->specials.hostip==NULL)
-		   sprintf(buf,"$c0005HostIP             : $c0014None");
+		   sprintf(buf,"$c0005HostIP                : $c0014None");
 		 else {
-			sprintf(buf,"$c0005HostIP             : $c0014%s","None");//,finger->specials.hostip, strlen(finger->specials.hostip));
+			sprintf(buf,"$c0005HostIP                : $c0014%s","None");//,finger->specials.hostip, strlen(finger->specials.hostip));
 	 	}
 		 strcat(buf,"\n\r");
          send_to_char(buf,ch);//(buf,FALSE,ch,0,0,TO_CHAR);
@@ -3376,16 +3363,20 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
 
 
     if(finger->specials.rumor == NULL)
-      sprintf(buf, "$c0005Rumored info       : $c0014None");
+      sprintf(buf, "$c0005Rumored info          : $c0014None");
     else
-      sprintf(buf,"$c0005Rumored info        : $c0014%s",
+      sprintf(buf,"$c0005Rumored info           : $c0014%s",
 	      finger->specials.rumor);
     strcat(buf,"\n\r");
     send_to_char(buf,ch);//act(buf,FALSE,ch,0,0,TO_CHAR);
 
-    ch_printf(ch, "$c000pArena Stats         : ($c000C%d Kills$c000p/$c000C%d Deaths$c000p).\n\r",
-    	finger->specials.m_kills, finger->specials.m_deaths);
-
+    ch_printf(ch, "$c000pArena stats           : $c000C%d kills$c000p/$c000C%d deaths$c000p\n\r",
+    	finger->specials.a_kills, finger->specials.a_deaths);
+    /* let's give em a ratio to keep working on */
+    akills = finger->specials.a_kills;
+    adeaths = finger->specials.a_deaths;
+    ch_printf(ch, "$c000pArena ratio           : $c000C%2.0f%s\n\r",
+    ((akills+adeaths) == 0) ? 0 : ( ((float)akills  / ((int) (akills+adeaths)))  * 100.0 + 0.5),"%");
 
   } /* end found finger'e*/
   else  /*Else there is no character in char DB*/

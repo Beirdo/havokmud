@@ -266,7 +266,57 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 	}
 }
 
+/* How to get rid of charmies in a neat way    -Lennya 20030604 */
+void do_dismiss(struct char_data *ch, char *arg, int cmd)
+{
+	int bits;
+	char buf[254], buf2[254];
+	struct char_data *tmp_char;
+	struct obj_data *dummy;
 
+	if(!ch)
+		return;
+	if(cmd != 588) /* dismiss */
+		return;
+
+	only_argument(arg,buf);
+	if(!arg) {
+		send_to_char("Dismiss whom?\n\r",ch);
+		return;
+	} else {
+		bits = generic_find(buf, FIND_CHAR_ROOM, ch, &tmp_char, &dummy);
+		if(tmp_char) {
+			if(tmp_char != ch) {
+				if(IS_NPC(tmp_char) && !IS_SET(tmp_char->specials.act,ACT_POLYSELF)) {
+					if(tmp_char->master == ch && IS_AFFECTED(tmp_char, AFF_CHARM)) {
+						/*valid target, let's get rid of it */
+						act("You wave you hand, and dismiss $N from your service.", FALSE, ch, 0, tmp_char, TO_CHAR);
+						act("$N wanders back to $S home.", FALSE, ch, 0, tmp_char, TO_CHAR);
+						act("$n waves $s hands, dismissing $N from $s service.", FALSE, ch, 0, tmp_char, TO_NOTVICT);
+						act("$N wanders back to $S home.", FALSE, ch, 0, tmp_char, TO_NOTVICT);
+						act("$n waves $s hands at you, dismissing you from $s service.", FALSE, ch, 0, tmp_char, TO_VICT);
+						act("You wander back to your home.", FALSE, ch, 0, tmp_char, TO_VICT);
+						extract_char(tmp_char);
+						return;
+					} else {
+						sprintf(buf2,"%s isn't under your control.\n\r",tmp_char->player.short_descr);
+						send_to_char(buf2, ch);
+						return;
+					}
+				} else {
+					send_to_char("Dismissing other players? I think not!\n\r",ch);
+					return;
+				}
+			} else {
+				send_to_char("Dismiss yourself? I think not!\n\r",ch);
+				return;
+			}
+		} else { /* no matching name found */
+			send_to_char("Dismiss whom?\n\r",ch);
+			return;
+		}
+	}
+}
 
 void do_order(struct char_data *ch, char *argument, int cmd)
 {

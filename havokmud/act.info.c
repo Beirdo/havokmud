@@ -2916,39 +2916,38 @@ dlog("in do_who");
 	    char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
 	    int i,total,classn; long bit;
 #if 1
-	    if(!IS_IMMORTAL(person)) {
-	      for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
-		if(HasClass(person,bit)) {
-		  /*                  if(strlen(levels)!=0) strcat(levels,"/");
-		  sprintf(levels+strlen(levels),"%d",person->player.level[i]);*/
-		  classn++; total+=person->player.level[i];
-		  if(strlen(classes)!=0) strcat(classes,"/");
-		  sprintf(classes+strlen(classes),"%s",classname[i]);
+	if(!IS_IMMORTAL(person)) {
+		for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
+			if(HasClass(person,bit)) {
+				classn++;
+				total+=person->player.level[i];
+				if(strlen(classes)!=0)
+					strcat(classes,"/");
+				sprintf(classes+strlen(classes),"%s",classname[i]);
+			}
 		}
-	      }
-	     if (total <=0)
-		total =1;
-	if (classn <= 0 )
-		classn =1;
-	      total/=classn;
-		   if(GetMaxLevel(person)==50) {
-		      if(GET_EXP(person) > 200000000 )  strcpy(levels,"$c0009Legend");
-                      else strcpy (levels,"$c0012Hero");
-
-	  	  }
-	      else if(total<11) strcpy(levels,"$c0008Apprentice");
-	      else if(total<21) strcpy(levels,"$c0004Pilgrim");
-	      else if(total<31) strcpy(levels,"$c0006Explorer");
-	      else if(total<41) strcpy(levels,"$c0014Adventurer");
-	      else if(total<51) strcpy(levels,"$c0015Mystical");
-              sprintf(tbuf, "%s $c0012%s",levels, classes);
-              sprintf(levels,"%32s","");
-              strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
-              sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
-                      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
-	    }
-	      else {
-	      switch(GetMaxLevel(person)) {
+		if (total <=0)
+			total =1;
+		if (classn <= 0 )
+			classn =1;
+		total/=classn;
+		if(GetMaxLevel(person)==50) {
+			if(GET_EXP(person) > 200000000 )
+				strcpy(levels,"$c0009Legend");
+			else strcpy (levels,"$c0012Hero");
+		}
+		else if(total<11) strcpy(levels,"$c0008Apprentice");
+		else if(total<21) strcpy(levels,"$c0004Pilgrim");
+		else if(total<31) strcpy(levels,"$c0006Explorer");
+		else if(total<41) strcpy(levels,"$c0014Adventurer");
+		else if(total<51) strcpy(levels,"$c0015Mystical");
+		sprintf(tbuf, "%s $c0012%s",levels, classes);
+		sprintf(levels,"%32s","");
+		strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
+		sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
+		person->player.title?person->player.title:GET_NAME(person));//"(Null)");
+	} else {
+		switch(GetMaxLevel(person)) {
 		case 51: sprintf(levels, "Lesser Deity"); break;
 		case 52: sprintf(levels,"Deity"); break;
 		case 53: sprintf(levels, "Greater Deity"); break;
