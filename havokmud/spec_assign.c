@@ -1285,6 +1285,7 @@ void assign_mobiles()
   {45406, braxis_swamp_dragon},
   {45409, nadia},
   {45410, mime_jerry},
+  {45417, elamin},
 
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */

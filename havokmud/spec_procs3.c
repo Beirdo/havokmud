@@ -4204,6 +4204,8 @@ int Thunder_Fountain(struct char_data *ch, int cmd, char *arg, struct room_data 
 
 #define MARBLES 45475
 #define BRAXIS 45406
+#define EYE_DRAGON_I 45490
+#define GATEKEEPER_KEY 45491
 /* Braxis the Swamp Dragon */
 int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
@@ -4211,7 +4213,7 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 	char tbuf[80];
 	struct char_data *vict;
 	struct obj_data *obj;
-	int test=0;
+	int test=0, r_num=0;
 	int has_marbles = 0;
         int marblesrnum = 0;
 	struct obj_data *i;
@@ -4284,8 +4286,8 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 		{
       		if ((obj_index[obj->item_number].virtual != MARBLES)) 
 			{
-      		sprintf(buf, "%s That is not the item I seek.",GET_NAME(vict));
-    			do_tell(ch,buf,19);
+      		sprintf(buf, "%s That is not the item I seek.",GET_NAME(ch));
+    			do_tell(vict,buf,19);
          		return(TRUE);
 			}
 		}
@@ -4314,6 +4316,15 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 		act("$n says, 'eyes.  Once you do so you will be transported to a wondrous'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'world of monsters and danger.  You must be brave as well as'", FALSE, vict, 0, 0, TO_ROOM);
 		act("$n says, 'strong to survive, but if you do, the rewards will be great.'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n hands over a couple of items.", FALSE, vict, 0, 0, TO_ROOM);
+		if ((r_num = real_object(EYE_DRAGON_I)) >= 0) {
+			obj = read_object(r_num, REAL);
+			obj_to_char(obj, ch);
+		}
+		if ((r_num = real_object(GATEKEEPER_KEY)) >= 0) {
+			obj = read_object(r_num, REAL);
+			obj_to_char(obj, ch);
+		}
 		return(TRUE);
 	}
 	
@@ -4324,7 +4335,6 @@ int braxis_swamp_dragon(struct char_data *ch, int cmd, char *arg, struct char_da
 #define MIME_JERRY 45410
 #define NADIA_KEY 45489
 #define NADIA_PILL 45431
-
 int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
   struct char_data *i, *tmp_ch;
@@ -4341,7 +4351,7 @@ int mime_jerry(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   inroom = ch->in_room;
    
 	if(type == EVENT_DEATH) {
-			sprintf(buf,"nadia_thunder_mountain", 0);
+			sprintf(buf,"nadia thunder mountain", 0);
 			if (tmp_ch = get_char_vis_world(ch, buf, 0)) {
 			if ((r_num = real_object(NADIA_KEY)) >= 0) {
 				target_obj = read_object(r_num, REAL);
@@ -4568,3 +4578,122 @@ int nadia(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int t
 
 
 
+#define PEN_MIGHT 45445
+#define ELAMIN 45417
+#define EYE_DRAGON_SCEPTRE 45470
+/* Elamin */
+int elamin(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+	char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+	char tbuf[80];
+	struct char_data *vict;
+	struct obj_data *obj;
+	int test=0, r_num=0;
+	int has_pen = 0;
+        int penrnum = 0;
+	struct obj_data *i;
+
+	if(!AWAKE(ch)) return(FALSE);
+
+	/*TALK TO ME!!!*/
+
+	if (cmd == 531)	/*Talk*/
+	{
+		arg=one_argument(arg, vict_name);
+		
+		if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name)))
+			|| (IS_PC(vict)) || (vict == ch)) return(FALSE);
+	      if (vict->specials.fighting) 
+		{
+		   send_to_char("Not while they are fighting!\n\r", ch);
+		   return(TRUE);
+		}
+	      if (mob_index[vict->nr].virtual != ELAMIN) return(FALSE);
+
+		penrnum = real_object(PEN_MIGHT);
+		for (i = vict->carrying; i; i = i->next_content) {
+			if (has_pen != 1) {
+				if (i->item_number == penrnum) has_pen = 1;
+				else has_pen = 0;
+	                }
+		}
+   
+		/*Quest Text*/
+		if (has_pen == 0)
+		{			
+			act("$n says, 'Hello there.  How did you manage to get so far into'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'the keep?  Nevermind, it is of no importance.  So'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'you are looking for the infamous realm of dragons eh?'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'Very well.  I'll help you since that bugger of a king'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'locked me up here.  I will give you the sceptre head'", FALSE, vict, 0, 0, TO_ROOM); 
+			act("$n says, 'if you do me a favor.  This pain in the neck jester'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'took a very powerful magical item from me a short time'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'back.  If you will go to the Jester and obtain my pen'", FALSE, vict, 0, 0, TO_ROOM);
+			act("$n says, 'and bring it back to me, the sceptre will be yours.'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+
+		else
+		{
+			act("$n says, 'Please depart at your convenience.  I have work to do'", FALSE, vict, 0, 0, TO_ROOM);
+			return(TRUE);
+		}
+	}
+
+	else if (cmd == 72)
+	{
+		arg=one_argument(arg, obj_name);
+		if ((!*obj_name) || (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying)))) return(FALSE);
+
+		arg=one_argument(arg, vict_name);
+		if ((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))) || (IS_PC(vict))) return(FALSE);
+		
+		if (vict->specials.fighting)
+		{
+			send_to_char("Not while they are fighting!\n\r", ch);
+			return(TRUE);
+		}
+		
+		if (mob_index[vict->nr].virtual != ELAMIN) return(FALSE);
+
+        	if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+      		if ((obj_index[obj->item_number].virtual != PEN_MIGHT)) 
+			{
+      		sprintf(buf, "%s That is not the item I seek.",GET_NAME(ch));
+    			do_tell(vict,buf,19);
+         		return(TRUE);
+			}
+		}
+   		else 
+		{
+			sprintf(buf,"%s %s",obj_name,vict_name);
+      		do_give(ch,buf,0);
+			if(obj_index[obj->item_number].virtual == PEN_MIGHT) test=1;
+			else return(TRUE);
+		}
+ 		if (GetMaxLevel(ch)<LOW_IMMORTAL) 
+		{
+			test=1;
+	  		do_give(ch,"pen-might elamin",0);
+ 		}
+	}
+   
+	else return(FALSE);
+
+	if (test==1)
+	{ 
+		act("$n says, 'Thank you so much.  Here is the sceptre.  Please be'", FALSE, vict, 0, 0, TO_ROOM); 
+		act("$n says, 'careful.  I wouldn't want anything bad to happen to'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n says, 'you in your journeys.'", FALSE, vict, 0, 0, TO_ROOM);
+		act("$n hands over the dragon sceptre.", FALSE, vict, 0, 0, TO_ROOM);
+                if ((r_num = real_object(EYE_DRAGON_SCEPTRE)) >= 0) {
+                        obj = read_object(r_num, REAL);
+                        obj_to_char(obj, ch);
+                }
+		return(TRUE);
+	}
+	
+	return(FALSE);
+
+}
