@@ -2512,7 +2512,7 @@ const struct title_type titles[MAX_CLASS][ABS_MAX_LVL] = {
       {"High Paladin","High Paladin",				55000000},
       {"Champion Paladin","Champion Paladin",		60000000},
       {"Lord High Paladin","Lady High Paladin",		70000000}, /* 50 */
-      {"Immortal Paladin","Immortal Paladin",229500000},
+      {"Immortal Paladin","Immortal Paladin",200000000},
       {"Immortal Paladin","Immortal Paladin",231000000},
       {"Immortal Paladin","Immortal Paladin",232000000},
       {"Immortal Paladin","Immortal Paladin",233000000},
