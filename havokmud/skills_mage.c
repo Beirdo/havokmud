@@ -8,59 +8,10 @@
 #include <strings.h>
 #include <stdlib.h>
 #include <time.h>
-
 #include "protos.h"
 #include "externs.h"
 #include "utils.h"
 
-/*
- * Global data 
- */
-
-/*
- * Extern functions 
- */
-
-void cast_acid_blast(int level, struct char_data *ch, char *arg, int type,
-                     struct char_data *victim, struct obj_data *tar_obj)
-{
-    switch (type) {
-    case SPELL_TYPE_SPELL:
-        spell_acid_blast(level, ch, victim, 0);
-        break;
-    case SPELL_TYPE_SCROLL:
-        if (victim) {
-            spell_acid_blast(level, ch, victim, 0);
-        } else {
-            spell_acid_blast(level, ch, ch, 0);
-        }
-        break;
-    case SPELL_TYPE_WAND:
-        if (victim) {
-            spell_acid_blast(level, ch, victim, 0);
-        }
-        break;
-    default:
-        Log("Serious screw-up in acid blast!");
-        break;
-    }
-}
-
-void spell_acid_blast(int level, struct char_data *ch,
-                      struct char_data *victim, struct obj_data *obj)
-{
-    int             dam;
-
-    assert(victim && ch);
-    assert((level >= 1) && (level <= ABS_MAX_LVL));
-
-    dam = dice(level, 6);
-
-    if (saves_spell(victim, SAVING_SPELL)) {
-        dam >>= 1;
-    }
-    MissileDamage(ch, victim, dam, SPELL_ACID_BLAST);
-}
 
 void spell_armor(int level, struct char_data *ch,
                  struct char_data *victim, struct obj_data *obj)
@@ -105,7 +56,9 @@ void cast_armor(int level, struct char_data *ch, char *arg, int type,
         }
         spell_armor(level, ch, ch, 0);
         break;
+    case SPELL_TYPE_STAFF:
     case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:    
         if (tar_obj) {
             return;
         }
@@ -117,17 +70,48 @@ void cast_armor(int level, struct char_data *ch, char *arg, int type,
         }
         spell_armor(level, ch, ch, 0);
         break;
-    case SPELL_TYPE_WAND:
-        if (tar_obj) {
-            return;
+    default:
+        Log("Error in cast_armor()");
+        break;
+    }
+}
+
+void spell_acid_blast(int level, struct char_data *ch,
+                      struct char_data *victim, struct obj_data *obj)
+{
+    int             dam;
+
+    assert(victim && ch);
+    assert((level >= 1) && (level <= ABS_MAX_LVL));
+
+    dam = dice(level, 6);
+
+    if (saves_spell(victim, SAVING_SPELL)) {
+        dam >>= 1;
+    }
+    MissileDamage(ch, victim, dam, SPELL_ACID_BLAST);
+}
+
+void cast_acid_blast(int level, struct char_data *ch, char *arg, int type,
+                     struct char_data *victim, struct obj_data *tar_obj)
+{
+    switch (type) {
+    case SPELL_TYPE_SPELL:
+        spell_acid_blast(level, ch, victim, 0);
+        break;
+    case SPELL_TYPE_POTION:
+        spell_acid_blast(level, ch, ch, 0);
+    case SPELL_TYPE_STAFF:
+    case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:    
+        if (victim) {
+            spell_acid_blast(level, ch, victim, 0);
+        } else {
+            spell_acid_blast(level, ch, ch, 0);
         }
-        if (affected_by_spell(tar_ch, SPELL_ARMOR)) {
-            return;
-        }
-        spell_armor(level, ch, ch, 0);
         break;
     default:
-        Log("Serious screw-up in armor!");
+        Log("Error in cast_acid_blast()");
         break;
     }
 }
@@ -141,8 +125,13 @@ void spell_blindness(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    if (saves_spell(victim, SAVING_SPELL) ||
-        affected_by_spell(victim, SPELL_BLINDNESS)) {
+    if (saves_spell(victim, SAVING_SPELL)) {
+        act("$n seems to avoid the affects of your spell!",
+            TRUE, victim, 0, 0, TO_CHAR);
+        return;
+    }
+    if (affected_by_spell(victim, SPELL_BLINDNESS)) {
+        act("$n is allready blind!", TRUE, victim, 0, 0, TO_CHAR);
         return;
     }
     act("$n seems to be blinded!", TRUE, victim, 0, 0, TO_ROOM);
@@ -150,13 +139,13 @@ void spell_blindness(int level, struct char_data *ch,
 
     af.type = SPELL_BLINDNESS;
     af.location = APPLY_HITROLL;
-    af.modifier = -4;
+    af.modifier = -12;
     af.duration = level / 2;
     af.bitvector = AFF_BLIND;
     affect_to_char(victim, &af);
 
     af.location = APPLY_AC;
-    af.modifier = +20;
+    af.modifier = +40;
     affect_to_char(victim, &af);
 
     if ((!victim->specials.fighting) && (victim != ch)) {
@@ -181,18 +170,8 @@ void cast_blindness(int level, struct char_data *ch, char *arg, int type,
         }
         spell_blindness(level, ch, ch, 0);
         break;
+    case SPELL_TYPE_STAFF:
     case SPELL_TYPE_SCROLL:
-        if (tar_obj) {
-            return;
-        }
-        if (!tar_ch) {
-            tar_ch = ch;
-        }
-        if (IS_AFFECTED(tar_ch, AFF_BLIND)) {
-            return;
-        }
-        spell_blindness(level, ch, tar_ch, 0);
-        break;
     case SPELL_TYPE_WAND:
         if (tar_obj) {
             return;
@@ -205,16 +184,8 @@ void cast_blindness(int level, struct char_data *ch, char *arg, int type,
         }
         spell_blindness(level, ch, tar_ch, 0);
         break;
-    case SPELL_TYPE_STAFF:
-        for (tar_ch = real_roomp(ch->in_room)->people;
-             tar_ch; tar_ch = tar_ch->next_in_room) {
-            if (!in_group(ch, tar_ch) && !IS_AFFECTED(tar_ch, AFF_BLIND)) {
-                spell_blindness(level, ch, tar_ch, 0);
-            }
-        }
-        break;
     default:
-        Log("Serious screw-up in blindness!");
+        Log("Error in cast_blindness()");
         break;
     }
 }
@@ -231,7 +202,7 @@ void spell_burning_hands(int level, struct char_data *ch,
     if (level < 0 || level > ABS_MAX_LVL) {
         return;
     }
-    dam = dice(1, 4) + level / 2 + 1;
+    dam = dice(3, 4) + level / 2 + 1;
 
     send_to_char("Searing flame fans out in front of you!\n\r", ch);
     act("$n sends a fan of flame shooting from the fingertips!\n\r",
@@ -269,14 +240,15 @@ void cast_burning_hands(int level, struct char_data *ch, char *arg,
                         struct obj_data *tar_obj)
 {
     switch (type) {
-    case SPELL_TYPE_WAND:
     case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_POTION:
     case SPELL_TYPE_STAFF:
     case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:
         spell_burning_hands(level, ch, 0, 0);
         break;
     default:
-        Log("Serious screw-up in burning hands!");
+        Log("Error in cast_burning_hands()");
         break;
     }
 }
@@ -474,11 +446,14 @@ void cast_cacaodemon(int level, struct char_data *ch, char *arg, int type,
 
     switch (type) {
     case SPELL_TYPE_SPELL:
+    case SPELL_TYPE_POTION:    
+    case SPELL_TYPE_STAFF:
     case SPELL_TYPE_SCROLL:
+    case SPELL_TYPE_WAND:
         spell_cacaodemon(level, ch, el, sac);
         break;
     default:
-        Log("serious screw-up in cacaodemon.");
+        Log("Error in cast_cacaodemon()");
         break;
     }
 }
@@ -493,9 +468,15 @@ void spell_calm(int level, struct char_data *ch,
      * removes aggressive bit from monsters
      */
     if (IS_NPC(victim)) {
-        if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
+        if (IS_SET(victim->specials.act, ACT_AGGRESSIVE) ||
+            IS_SET(victim->specials.act, ACT_META_AGG)) {
             if (HitOrMiss(ch, victim, CalcThaco(ch))) {
-                REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+                if (IS_SET(victim->specials.act, ACT_AGGRESSIVE)) {
+                    REMOVE_BIT(victim->specials.act, ACT_AGGRESSIVE);
+                }
+                if (IS_SET(victim->specials.act, ACT_META_AGG)) {
+                    REMOVE_BIT(victim->specials.act, ACT_META_AGG);
+                }
                 send_to_char("You sense peace.\n\r", ch);
             }
         } else {
@@ -514,6 +495,7 @@ void cast_calm(int level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
         spell_calm(level, ch, tar_ch, 0);
         break;
+    case SPELL_TYPE_POTION:
     case SPELL_TYPE_SCROLL:
         if (tar_obj) {
             return;
@@ -584,6 +566,9 @@ void cast_chain_lightn(int level, struct char_data *ch, char *arg,
         tar_ch = ch;
     }
     switch (type) {
+    case SPELL_TYPE_POTION:
+        spell_chain_lightn(level, ch, ch, 0);
+        break;
     case SPELL_TYPE_SPELL:
     case SPELL_TYPE_SCROLL:
     case SPELL_TYPE_WAND:
@@ -697,6 +682,8 @@ void cast_charm_monster(int level, struct char_data *ch, char *arg,
                         struct obj_data *tar_obj)
 {
     switch (type) {
+    case SPELL_TYPE_POTION:
+        break;
     case SPELL_TYPE_SPELL:
         spell_charm_monster(level, ch, tar_ch, 0);
         break;
@@ -706,6 +693,7 @@ void cast_charm_monster(int level, struct char_data *ch, char *arg,
         }
         spell_charm_monster(level, ch, tar_ch, 0);
         break;
+    case SPELL_TYPE_WAND:
     case SPELL_TYPE_STAFF:
         for (tar_ch = real_roomp(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
@@ -815,6 +803,8 @@ void cast_charm_person(int level, struct char_data *ch, char *arg,
                        struct obj_data *tar_obj)
 {
     switch (type) {
+    case SPELL_TYPE_POTION:
+        break;
     case SPELL_TYPE_SPELL:
         spell_charm_person(level, ch, tar_ch, 0);
         break;
@@ -824,6 +814,7 @@ void cast_charm_person(int level, struct char_data *ch, char *arg,
         }
         spell_charm_person(level, ch, tar_ch, 0);
         break;
+    case SPELL_TYPE_WAND:
     case SPELL_TYPE_STAFF:
         for (tar_ch = real_roomp(ch->in_room)->people;
              tar_ch; tar_ch = tar_ch->next_in_room) {
@@ -860,6 +851,7 @@ void cast_colour_spray(int level, struct char_data *ch, char *arg,
                        struct obj_data *tar_obj)
 {
     switch (type) {
+    case SPELL_TYPE_POTION:
     case SPELL_TYPE_SPELL:
         spell_colour_spray(level, ch, victim, 0);
         break;
@@ -928,23 +920,18 @@ void cast_comp_languages(int level, struct char_data *ch, char *arg,
 {
     switch (type) {
     case SPELL_TYPE_SPELL:
-        spell_comp_languages(level, ch, tar_ch, 0);
-        break;
     case SPELL_TYPE_POTION:
         spell_comp_languages(level, ch, tar_ch, 0);
         break;
     case SPELL_TYPE_SCROLL:
-        if (tar_obj) {
-            return;
-        }
-        spell_comp_languages(level, ch, tar_ch, 0);
-        break;
+    case SPELL_TYPE_STAFF:
     case SPELL_TYPE_WAND:
         if (tar_obj) {
             return;
         }
         spell_comp_languages(level, ch, tar_ch, 0);
         break;
+
     default:
         Log("Serious screw-up in comprehend languages!");
         break;
