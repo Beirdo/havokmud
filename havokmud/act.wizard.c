@@ -4337,7 +4337,7 @@ dlog("in do_show");
 
 		only_argument(argument, zonenum);
 
-		if(!(isdigit(zonenum))) {
+		if(!(isdigit(*zonenum))) {
 			append_to_string_block(&sb,"Usage:\n\r"
 				 "  show wearslot #\n\r"
 				 "  Number ranging from 0 (lightsource) to 22 (loaded weapon)\n\r");
