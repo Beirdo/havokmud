@@ -987,168 +987,187 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
             goodbash -= number(1,(strbonus >> 1) + (strbonus & 1));
         }
 
-        /* min is original 1 with a -4 for a -3 */
-        /* max is original 6 with a +7 for a 13 */
-        /* I'm going to make an assumption that most bashers */
-        /* will be around an 18/80 strength */
-        /* which means that the average basher will end up */
-        /* with a goodbash number between a minimum of 5 and a */
-        /* maximum of 10, an 18/100 strength pushes the minimum up to */
-        /* 7 and the maximum at 12 */
-        /* a 19 strength (half-giant, troll) will put their */
-        /* minimum at 8 range, which makes them a */
-        /* very good, almost always 2 round basher */
-        /* -3 through 3 == 1 round bashee, 2 round basher */
-        /* 4 through 8 == 1 round bashee, 1.5 round basher */
-        /* 9 through 11 == 2 round bashee, 2 round basher */
-        /* 12 through 13 == 3 round bashee, 2 round basher */
+        /* 
+         * min is original 1 with a -4 for a -3
+         * max is original 6 with a +7 for a 13
+         * I'm going to make an assumption that most bashers
+         * will be around an 18/80 strength
+         * which means that the average basher will end up
+         * with a goodbash number between a minimum of 5 and a
+         * maximum of 10, an 18/100 strength pushes the minimum up to
+         * 7 and the maximum at 12
+         * a 19 strength (half-giant, troll) will put their
+         * minimum at 8 range, which makes them a
+         * very good, almost always 2 round basher
+         * -3 through 3 == 1 round bashee, 2 round basher
+         * 4 through 8 == 1 round bashee, 1.5 round basher
+         * 9 through 11 == 2 round bashee, 2 round basher
+         * 12 through 13 == 3 round bashee, 2 round basher
+         */
         if(goodbash < 4) {
+            /* Dark Green */
             vicwait = 1;
             chwait = 2;
-            act("You push $N, sending $M to the ground but you almost hit"
-                " the ground very hard yourself!",
+            act("$c000gYou push $N, sending $M to the ground but you "
+                "lose your balance and $c000Walmost hit the ground "
+                "$c000gvery hard yourself!",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n pushes you, pushing you to the ground, but $e loses $s"
-                " balance badly, nearly falling.",
+            act("$c000g$n pushes you to the ground, but $e loses $s"
+                " balance badly, and $c000Walmost hits the ground.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n pushes $N to the ground, but stumbles and almost hits the "
-                "ground $mself, $e seems shaken.",
+            act("$c000g$n pushes $N to the ground, but loses $s "
+                "balance and $c000Walmost hits the ground $c000g$mself.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         }
         else if(goodbash < 9) {
+            /* Dark Green */
             vicwait = 1;
             chwait = 1.5;
-            act("You barely manage to slam into $N, sending $M to the ground, "
-                "it might take you longer to recover than $M.",
+            act("$c000gYou barely manage to slam into $N, sending $M "
+                "to the ground, but $E $c000Wrecovers quickly.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n stumbles and slams into you, pushing you to the ground, "
-                "but you recover quickly, even faster than $m.",
+            act("$c000g$n stumbles and slams into you, pushing you "
+                "to the ground, but you $c000Wrecover quickly, "
+                "$c000geven faster than $m.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n slams $N to the ground, but stumbles and $n recovers "
-                "more quickly than $N.",
+            act("$c000g$n slams $N to the ground, but stumbles and "
+                "$N $c000Wrecovers quickly.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else if(goodbash < 12) {
+        } else if(goodbash < 12) {
+            /* Bright Green */
             vicwait = 2;
             chwait = 2;
-            act("You slam into $N, sending $M sprawling to the ground.",
+            act("$c000GYou slam into $N, sending $M $c000Wsprawling "
+                "$c000Gto the ground.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n slams into you, sending you sprawling to the ground.",
+            act("$c000G$n slams into you, sending you $c000Wsprawling "
+                "$c000Gto the ground.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n slams into $N sending $M to the ground.",
+            act("$c000G$n slams into $N, sending $M $c000Wsprawling "
+                "$c000Gto the ground.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else {
+        } else { 
+            /* Bright Green */
             vicwait = 3;
             chwait = 2;
-            act("You slam into $N, sending $M flying through the air to land "
-                "in a crumpled heap on the ground, $E won't be getting up "
-                "anytime soon.",
+            act("$c000GYou slam into $N, sending $M $c000Wsoaring "
+                "$c000Gthrough the air to land in a crumpled heap on the "
+                "ground, $E won't be getting up anytime soon.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n slams into you, you go flying through the air to hit "
-                "the ground very hard, fireworks go off in your head.",
+            act("$c000G$n slams into you, you go $c000Wsoaring $c000Gthrough "
+                "the air to hit the ground very hard, fireworks go off in "
+                "your head.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n slams into $N, who goes soaring through the air to "
-                "land in a crumpled heap several yards away.",
+            act("$c000G$n slams into $N, who goes $c000Wsoaring "
+                "$c000Gthrough the air to land in a crumpled heap several "
+                "yards away.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         }
-    }
-    else {
-            GET_POS(ch) = POSITION_SITTING;
+    } else {
+        GET_POS(ch) = POSITION_SITTING;
         if(goodbash <= -6) {
+            /* Red */
             vicwait = 0;
             chwait = 3;
-            act("You throw yourself at $N, who sidesteps you neatly.  You end "
-                "up falling flat on your face, making you dizzy and "
-                "disoriented.",
+            act("$c000RYou throw yourself at $N, who sidesteps you neatly."
+                "You end up $c000Wfalling flat on your face"
+                "$c000R, making you dizzy and disoriented.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n attempts to slam into you, but you sidestep the clumsy "
-                "fool and $e falls flat on $s face.",
+            act("$c000R$n attempts to slam into you, but you sidestep "
+                "the clumsy fool and $e $c000Wfalls flat on $s face.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n attempts to slam $N to the ground, but $N sidesteps $m "
-                "neatly, and $n ends up falling flat on $s face.",
+            act("$c000R$n attempts to slam $N to the ground, but $N "
+                "sidesteps $m neatly, and $n ends up $c000Wfalling flat on "
+                "$s face.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else if(goodbash <= -5) {
+        } else if(goodbash <= -5) {
+            /* Red */
             vicwait = 0;
             chwait = 2.5;
-            act("You aim to slam into $N, but stumble short of your target "
-                "and end up sitting on the ground without putting $M in any "
-                "danger.",
+            act("$c000RYou aim to slam into $N, but stumble short of "
+                "your target and end up $c000Wsitting on the ground "
+                "$c000Rwithout putting $M in any danger.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n tries to charge at you, but stumbles and ends up sitting "
-                "on $s rump in front of you.",
+            act("$c000R$n tries to charge at you, but stumbles and ends up "
+                "$c000Wsitting on the ground $c000Rin front of you.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n tries to slam into $N, but trips and doesn't come even "
-                "close and actually ends up sitting on the ground in front "
-                "of $N looking stupid.",
+            act("$c000R$n tries to slam into $N, but trips and doesn't "
+                "come even close and actually ends up $c000Wsiting on the "
+                "ground $c000Rin front of $N looking stupid.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else if(goodbash <= -4) {
+        } else if(goodbash <= -4) {
+            /* Red */
             vicwait = 0;
             chwait = 2;
-            act("You attempt to slam $N to the ground, but miss badly, which "
-                "puts you on the ground instead.",
+            act("$c000RYou attempt to slam $N to the ground, but miss "
+                "$c000Wbadly $c000R, which puts you on the ground instead.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n attempts to ram $s shoulder into you, but $e misjudges "
-                "badly and ends up sprawled on the ground.",
+            act("$c000R$n attempts to ram $s shoulder into you, "
+                "but $e misjudges $c000Wbadly $c000R and ends up sprawled on "
+                "the ground.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n attempt to slam into $N, but misses badly and ends up "
-                "sprawled on the ground instead.",
+            act("$c000R$n attempts to slam into $N, but misses $c000Wbadly "
+                "$c000Rand ends up sprawled on the ground instead.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else if(goodbash <= -3) {
+        } else if(goodbash <= -3) {
+            /* Yellow */
             vicwait = 0;
             chwait = 1.5;
-            act("You attempt to slam $N to the ground, but miss, which "
-                "puts you on the ground, but in a good position to recover.",
+            act("$c000YYou attempt to slam $N to the ground, but miss, which "
+                "puts you on the ground, but in a $c000Wgood position "
+                "$c000Yto recover.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n attempts to ram $s shoulder into you, but $e misjudges "
-                "and ends up on the ground, but in good shape.",
+            act("$c000Y$n attempts to ram $s shoulder into you, but $e "
+                "misjudges and ends up on the ground, but in a "
+                "$c000Wgood position $c000Yto recover",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n attempt to slam into $N, but misses and ends up "
-                "on the ground instead, scrambling to recover.",
+            act("$c000Y$n attempt to slam into $N, but misses and ends up "
+                "on the ground instead, but in $c000Wgood position"
+                "$c000Yto scramble and recover.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else if(goodbash <= -2) {
+        } else if(goodbash <= -2) {
+            /* Yellow */
             vicwait = 0;
             chwait = 1;
-            act("You attempt to slam $N to the ground, but just miss, which "
-                "puts you on the ground, but already you are recovering for "
-                "your next attempt.",
+            act("$c000YYou attempt to slam $N to the ground, but just "
+                "miss, which puts you on the ground, but already you are "
+                "almost ready to $c000Wsurge back to your feet.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n attempts to ram $s shoulder into you, but $e misjudges "
-                "and ends up on the ground, but is surging quickly back "
-                "$s feet.",
+            act("$c000Y$n attempts to ram $s shoulder into you, "
+                "but $e misjudges and ends up on the ground, but is "
+                "$c000Wsurging back to $s feet.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n attempt to slam into $N, but misses and ends up "
-                "on the ground instead, however, $e is recovering quickly "
-                "for another attempt.",
+            act("$c000Y$n attempt to slam into $N, but misses and ends up "
+                "on the ground instead.  However, $e is recovering quickly "
+                "and already $c000Wsurging back to their feet.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
-        }
-        else {
+        } else {
+            /* Yellow */
             vicwait = 0;
             chwait = .5;
-            act("You barely miss slamming into $N, which sends you stumbling "
-                "to one knee, but you are almost instantly ready to try "
-                "again.",
+            act("$c000YYou barely miss slamming into $N, which sends "
+                "you stumbling to one knee, but you are almost "
+                "$c000Winstantly ready to try again.",
                 FALSE, ch, 0, victim, TO_CHAR);
-            act("$n just misses slamming into you, he drops to one knee to "
-                "recover, and is almost instantly ready to try again.",
+            act("$c000Y$n just misses slamming into you, he drops to one "
+                "knee to recover, and is almost $c000Winstantly ready to try "
+                "again.",
                 FALSE, ch, 0, victim, TO_VICT);
-            act("$n just misses slamming into $N, but $e recovers quickly, "
-                "dropping to one knee and looks ready to try again.",
+            act("$c000Y$n just misses slamming into $N, but $e "
+                "recovers quickly, dropping to one knee and is "
+                "$c000Winstantly ready to try again.",
                 FALSE, ch, 0, victim, TO_NOTVICT);
         }
         LearnFromMistake(ch, SKILL_BASH, 0, 90);
-            }
-    if(chwait) {
+    }
+    
+    if(chwait > 0) {
         WAIT_STATE(ch, chwait * PULSE_VIOLENCE);
-        }
-    if(vicwait) {
+    }
+
+    if(vicwait > 0) {
         WAIT_STATE(victim, vicwait * PULSE_VIOLENCE);
     }
-    return;
 }
 
 void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
