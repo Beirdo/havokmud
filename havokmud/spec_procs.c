@@ -3316,8 +3316,8 @@ int delivery_elf(struct char_data *ch, int cmd, char *arg,
         break;
 
     case ELF_GETTING:
-        do_get(ch, "all.loaf", 0);
-        do_get(ch, "all.biscuit", 0);
+        command_interpreter(ch, "get all.loaf");
+        command_interpreter(ch, "get all.biscuit");
         ch->generic = ELF_DELIVERY;
         return (FALSE);
         break;
@@ -5127,7 +5127,6 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
 {
     struct char_data *tch;
     struct obj_data *corpse;
-    char            buf[MAX_INPUT_LENGTH];
 
     if (cmd || !AWAKE(ch)) {
         return (FALSE);
@@ -5155,10 +5154,9 @@ int trogcook(struct char_data *ch, int cmd, char *arg,
                                  real_roomp(ch->in_room)->contents);
 
     if (corpse) {
-        do_get(ch, "corpse", -1);
+        command_interpreter(ch, "get corpse");
         act("$n cackles 'Into the soup with it!'", FALSE, ch, 0, 0, TO_ROOM);
-        sprintf(buf, "put corpse pot");
-        command_interpreter(ch, buf);
+        command_interpreter(ch, "put corpse pot");
         return (TRUE);
     }
     return( FALSE );

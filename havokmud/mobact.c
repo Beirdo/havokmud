@@ -237,7 +237,7 @@ void MobScavenge(struct char_data *ch)
         }
     } else if (IsHumanoid(ch) && real_roomp(ch->in_room)->contents && 
                !number(0, 4)) {
-        do_get(ch, "all", 0);
+        command_interpreter(ch, "get all");
     }
 
 #if 0
@@ -251,8 +251,7 @@ void MobScavenge(struct char_data *ch)
 #endif
 
     if (!number(0, 3) && IsHumanoid(ch) && ch->carrying) {
-        sprintf(buf, "all");
-        do_wear(ch, buf, 0);
+        command_interpreter(ch, "wear all");
     }
 }
 
@@ -734,6 +733,7 @@ int FindABetterWeapon(struct char_data * mob)
 {
     struct obj_data *o,
                    *best;
+    char            buf[MAX_STRING_LENGTH];
 
     /*
      * pick up and wield weapons Similar code for armor, etc. 
@@ -811,7 +811,8 @@ int FindABetterWeapon(struct char_data * mob)
              */
             return (TRUE);
         } else {
-            do_get(mob, best->name, 0);
+            sprintf( buf, "get %s", best->name );
+            command_interpreter( mob, buf );
         }
     } else if (mob->equipment[WIELD]) {
         do_remove(mob, mob->equipment[WIELD]->name, 0);

@@ -8399,7 +8399,7 @@ int trinketlooter(struct char_data *ch, int cmd, char *arg,
         0, TO_ROOM);
     act("$n gets a shiny trinket from $s pocket and smiles gleefully.",
         FALSE, ch, 0, 0, TO_ROOM);
-    do_put(mob, "trinket stash", 0);
+    command_interpreter(mob, "put trinket stash");
     return( TRUE );
 }
 
