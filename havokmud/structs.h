@@ -2001,6 +2001,7 @@ Monk
 	max attacks go to 5 a round at level 50
 	rather than upping their damage, we'll lower the effect of haste (see below)
 	flurry of blows, *1.3 attacks for one round, 3-4 round lag
+	flower fist, area attack
 
 Barbarian
 	immunity to poison from level 20

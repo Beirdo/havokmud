@@ -4890,10 +4890,16 @@ const int preproomexitsquad4[] = {
  *			Perhaps make a similar listing called pracset warriorprac[] for GM purposes?
  *			would be easy to get spells at GM in spell order (new spells at bottom).
  */
+const struct skillset mainmageskills[] = {
+ {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
+ {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
+ {"mana shield", 		SPELL_MANA_SHIELD			,14},
+ {"None", 				-1							,-1}
+};
+
 const struct skillset mageskills[] = {
  {"acid blast",			SPELL_ACID_BLAST			,6},
  {"animate dead",		SPELL_ANIMATE_DEAD			,16},
- {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
  {"armor",				SPELL_ARMOR					,5},
  {"blindness",			SPELL_BLINDNESS				,12},
  {"burning hands",		SPELL_BURNING_HANDS			,6},
@@ -4939,7 +4945,6 @@ const struct skillset mageskills[] = {
  {"know monster",		SPELL_KNOW_MONSTER			,9},
  {"lightning bolt",		SPELL_LIGHTNING_BOLT		,10},
  {"magic missile" ,		SPELL_MAGIC_MISSILE			,1},
- {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
  {"major track",		SPELL_MAJOR_TRACK			,20},
  {"meteor swarm" ,		SPELL_METEOR_SWARM			,36},
  {"minor creation" ,	SPELL_MINOR_CREATE			,8},
@@ -4979,12 +4984,18 @@ const struct skillset mageskills[] = {
  {"weakness" ,			SPELL_WEAKNESS				,6},
  {"web" ,				SPELL_WEB					,11},
  {"wizardeye" ,			SPELL_WIZARDEYE				,35},
+ {"None", 				-1							,-1}
+};
+
+const struct skillset mainsorcskills[] = {
+ {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
+ {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
+ {"mana shield", 		SPELL_MANA_SHIELD			,14},
  {"None", 				-1							,-1}
 };
 const struct skillset sorcskills[] = {
  {"acid blast",			SPELL_ACID_BLAST			,6},
  {"animate dead",		SPELL_ANIMATE_DEAD			,16},
- {"anti magic shell",	SPELL_ANTI_MAGIC_SHELL		,48},
  {"armor",				SPELL_ARMOR					,5},
  {"blindness",			SPELL_BLINDNESS				,12},
  {"burning hands",		SPELL_BURNING_HANDS			,6},
@@ -5030,7 +5041,6 @@ const struct skillset sorcskills[] = {
  {"know monster",		SPELL_KNOW_MONSTER			,9},
  {"lightning bolt",		SPELL_LIGHTNING_BOLT		,10},
  {"magic missile" ,		SPELL_MAGIC_MISSILE			,1},
- {"major invulnerability",SPELL_GLOBE_MAJOR_INV		,27},
  {"major track",		SPELL_MAJOR_TRACK			,20},
  {"meteor swarm" ,		SPELL_METEOR_SWARM			,36},
  {"minor creation" ,	SPELL_MINOR_CREATE			,8},
@@ -5072,22 +5082,25 @@ const struct skillset sorcskills[] = {
  {"wizardeye" ,			SPELL_WIZARDEYE				,35},
  {"None", 				-1							,-1}
 };
-const struct skillset paladinskills[] = {
+const struct skillset mainpaladinskills[] = {
 	{"aura of power",			SPELL_AURA_POWER		,15},
-	{"bash",					SKILL_BASH				,1},
-	{"blessing",				SKILL_BLESSING			,1},
 	{"call steed",				SKILL_STEED				,11},
-	{"calm",					SPELL_CALM				,18},
-	{"charge",					SKILL_CHARGE			,4},
-	{"circle of protection",	SPELL_CIRCLE_PROTECTION	,1},
-	{"cure light",				SPELL_CURE_LIGHT		,9},
-	{"cure serious",			SPELL_CURE_SERIOUS		,50},
-	{"disarm",					SKILL_DISARM			,1},
-	{"dodge",					SKILL_DODGE				,1},
+//	{"circle of protection",	SPELL_CIRCLE_PROTECTION	,1},
 	{"enlightenment",			SPELL_ENLIGHTENMENT		,25},
-	{"heroic rescue",			SKILL_HEROIC_RESCUE		,1},
 	{"holy armor",				SPELL_HOLY_ARMOR		,5},
 	{"holy strength",			SPELL_HOLY_STRENGTH		,3},
+	{"None", 				-1							,-1}
+};
+const struct skillset paladinskills[] = {
+	{"bash",					SKILL_BASH				,1},
+	{"blessing",				SKILL_BLESSING			,1},
+	{"calm",					SPELL_CALM				,18},
+	{"charge",					SKILL_CHARGE			,4},
+	{"cure light",				SPELL_CURE_LIGHT		,9},
+	{"cure serious",			SPELL_CURE_SERIOUS		,45},
+	{"disarm",					SKILL_DISARM			,1},
+	{"dodge",					SKILL_DODGE				,1},
+	{"heroic rescue",			SKILL_HEROIC_RESCUE		,1},
 	{"know alignment",			SPELL_KNOW_ALIGNMENT	,5},
 	{"lay on hands",			SKILL_LAY_ON_HANDS		,1},
 	{"pacifism",				SPELL_PACIFISM			,7},
@@ -5103,15 +5116,17 @@ const struct skillset paladinskills[] = {
 	{"warcry",					SKILL_HOLY_WARCRY		,5},
 	{"None",					-1						,-1}
 };
+const struct skillset mainrangerskills[] = {
+	{"commune",					SPELL_COMMUNE			,20},
+	{"giant growth",			SPELL_GIANT_GROWTH		,20},
+	{"None", 				-1							,-1}
+};
 const struct skillset rangerskills[] = {
 	{"animal friendship",		SPELL_ANIMAL_FRIENDSHIP	,3},
 	{"animal growth",			SPELL_ANIMAL_GROWTH		,35},
 	{"animal summon one",		SPELL_ANIMAL_SUM_1		,20},
-//	{"animal summon three",		SPELL_ANIMAL_SUM_3		,30},
-//	{"animal summon two",		SPELL_ANIMAL_SUM_2		,25},
 	{"bash",					SKILL_BASH				,1},
 	{"climb",					SKILL_CLIMB				,1},
-	{"commune",					SPELL_COMMUNE			,20},
 	{"detect poison",			SPELL_DETECT_POISON		,3},
 	{"disarm",					SKILL_DISARM			,1},
 	{"dodge",					SKILL_DODGE				,1},
@@ -5122,7 +5137,6 @@ const struct skillset rangerskills[] = {
 	{"find traps",				SPELL_FIND_TRAPS		,13},
 	{"find water",				SKILL_FIND_WATER		,1},
 	{"first aid",				SKILL_FIRST_AID			,1},
-	{"giant growth",			SPELL_GIANT_GROWTH		,20},
 	{"goodberry",				SPELL_GOODBERRY			,10},
 	{"hide",					SKILL_HIDE				,2},
 	{"hunt",					SKILL_HUNT				,1},
@@ -5144,6 +5158,11 @@ const struct skillset rangerskills[] = {
 	{"travelling",				SPELL_TRAVELLING		,15},
 	{"water breath",			SPELL_WATER_BREATH		,17},
 	{"None",					-1						,-1}
+};
+const struct skillset mainpsiskills[] = {
+ {"kinolock", 					SKILL_KINOLOCK			,9},
+ {"sense item", 				SKILL_SENSE_ITEM		,25},
+ {"None", 				-1							,-1}
 };
 const struct skillset psiskills[] = {
 	{"adrenalize",				SKILL_ADRENALIZE			,20},
@@ -5179,12 +5198,18 @@ const struct skillset psiskills[] = {
 	{"ultra blast",				SKILL_ULTRA_BLAST			,20},
 	{"None",					-1							,-1}
 };
+const struct skillset maindruidskills[] = {
+	{"creeping death",			SPELL_CREEPING_DEATH		,45},
+	{"iron skin",				SPELL_IRON_SKIN				,20},
+	{"protection acid breath",	SPELL_PROT_BREATH_ACID		,40},
+	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
+	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},
+ {"None", 				-1							,-1}
+};
 const struct skillset druidskills[] = {
 	{"animal friendship",		SPELL_ANIMAL_FRIENDSHIP		,5},
 	{"animal growth",			SPELL_ANIMAL_GROWTH			,35},
 	{"animal summon one",		SPELL_ANIMAL_SUM_1			,15},
-//	{"animal summon three",		SPELL_ANIMAL_SUM_3			,25},
-//	{"animal summon two",		SPELL_ANIMAL_SUM_2			,20},
 	{"animate rock",			SPELL_ANIMATE_ROCK			,31},
 	{"barkskin",				SPELL_BARKSKIN				,3},
 	{"call lightning",			SPELL_CALL_LIGHTNING		,18},
@@ -5201,7 +5226,6 @@ const struct skillset druidskills[] = {
 	{"continual light",			SPELL_CONT_LIGHT			,16},
 	{"control weather",			SPELL_CONTROL_WEATHER		,15},
 	{"create light",			SPELL_LIGHT					,3},
-	{"creeping death",			SPELL_CREEPING_DEATH		,45},
 	{"cure critic",				SPELL_CURE_CRITIC			,13},
 	{"cure light",				SPELL_CURE_LIGHT			,2},
 	{"cure serious",			SPELL_CURE_SERIOUS			,8},
@@ -5235,9 +5259,6 @@ const struct skillset druidskills[] = {
 	{"minor track",				SPELL_MINOR_TRACK			,7},
 	{"mount",					SPELL_MOUNT					,15},
 	{"poison",					SPELL_POISON				,8},
-	{"protection acid breath",	SPELL_PROT_BREATH_ACID		,40},
-	{"protection electric breath",SPELL_PROT_BREATH_ELEC	,39},
-	{"protection fire breath",	SPELL_PROT_BREATH_FIRE		,40},
 	{"protection from cold",	SPELL_PROT_COLD				,20},
 	{"protection from electricity",SPELL_PROT_ELEC			,18},
 	{"protection from fire",	SPELL_PROT_FIRE				,21},
@@ -5265,6 +5286,11 @@ const struct skillset druidskills[] = {
 	{"water servant",			SPELL_WATER_SERVANT			,37},
 	{"wind servant",			SPELL_WIND_SERVANT			,38},
 	{"None",					-1							,-1}
+};
+const struct skillset mainclericskills[] = {
+	{"energy restore",			SPELL_ENERGY_RESTORE		,48},
+	{"resurrection",			SPELL_RESURRECTION			,36},
+ {"None", 				-1							,-1}
 };
 const struct skillset clericskills[] = {
 	{"aid",						SPELL_AID					,4},
@@ -5302,11 +5328,9 @@ const struct skillset clericskills[] = {
 	{"dispel magic",			SPELL_DISPEL_MAGIC			,10},
 	{"dust devil",				SPELL_DUST_DEVIL			,3},
 	{"earthquake",				SPELL_EARTHQUAKE			,15},
-	{"energy restore",			SPELL_ENERGY_RESTORE		,48},
 	{"faerie fire",				SPELL_FAERIE_FIRE			,4},
 	{"faerie fog",				SPELL_FAERIE_FOG			,11},
 	{"find traps",				SPELL_FIND_TRAPS			,16},
-//	{"fireshield",				SPELL_FIRESHIELD			,45},
 	{"flamestrike",				SPELL_FLAMESTRIKE			,15},
 	{"fly",						SPELL_FLY					,22},
 	{"golem",					SPELL_GOLEM					,15},
@@ -5336,7 +5360,6 @@ const struct skillset clericskills[] = {
 	{"remove curse",			SPELL_REMOVE_CURSE			,8},
 	{"remove paralysis",		SPELL_REMOVE_PARALYSIS		,6},
 	{"remove poison",			SPELL_REMOVE_POISON			,17},
-	{"resurrection",			SPELL_RESURRECTION			,36},
 	{"sanctuary",				SPELL_SANCTUARY				,26},
 	{"second wind",				SPELL_SECOND_WIND			,9},
 	{"sense life",				SPELL_SENSE_LIFE			,4},
@@ -5348,6 +5371,10 @@ const struct skillset clericskills[] = {
 	{"word of recall",			SPELL_WORD_OF_RECALL		,15},
 	{"None",					-1							,-1}
 };
+const struct skillset mainwarriorskills[] = {
+	{"mend",		SKILL_MEND,			51},
+ {"None", 				-1							,-1}
+};
 const struct skillset warriorskills[] = {
   {"bash",      SKILL_BASH,          1},
   {"bellow",    SKILL_BELLOW,        1},
@@ -5357,9 +5384,9 @@ const struct skillset warriorskills[] = {
   {"skin",      SKILL_TAN,           1},
   {"None",		-1,					-1}
 };
-const struct skillset scwarskills[] = {
-	{"mend",		SKILL_MEND,			51},
-    {"None",		-1,					-1}
+
+const struct skillset mainthiefskills[] = {
+ {"None", 				-1							,-1}
 };
 const struct skillset thiefskills[] = {
   {"backstab",  SKILL_BACKSTAB,      1},
@@ -5425,6 +5452,11 @@ const struct skillset warmonkskills[] = {
 	{"switch opponents",SKILL_SWITCH_OPP	 ,1},
 	{"None",			-1					,-1}
 };
+const struct skillset mainmonkskills[] = {
+ {"flower fist", 		SKILL_FLOWER_FIST	,36},
+ {"flurry of blows", 	SKILL_FLURRY		,18},
+ {"None", 				-1							,-1}
+};
 const struct skillset monkskills[] = {
 	{"disarm",			SKILL_DISARM		 ,1},
 	{"dodge",			SKILL_DODGE			 ,1},
@@ -5439,6 +5471,10 @@ const struct skillset monkskills[] = {
 	{"sneak",			SKILL_SNEAK			 ,1},
 	{"spring leap",		SKILL_SPRING_LEAP	 ,1},
 	{"None",			-1					,-1}
+};
+const struct skillset mainbarbskills[] = {
+ {"None", 				-1							,-1}
+ {"None", 				-1							,-1}
 };
 const struct skillset barbskills[] = {
    {"avoid backattack",SKILL_AVOID_BACK_ATTACK, 1},
@@ -5462,9 +5498,14 @@ const struct skillset barbskills[] = {
    {"None",				-1		,			 -1}
 };
 
+const struct skillset mainnecroskills[] = {
+	{"bind affinity",		SPELL_BIND_AFFINITY			,48},
+	{"flesh golem",			SPELL_FLESH_GOLEM			,37},
+	{"vampiric embrace",	SPELL_VAMPIRIC_EMBRACE		,41},
+ {"None", 				-1							,-1}
+};
 const struct skillset necroskills[] = {
 	{"animate dead",		SPELL_ANIMATE_DEAD			,5},
-	{"bind affinity",		SPELL_BIND_AFFINITY			,48},
 	{"binding",				SPELL_BINDING				,16},
 	{"cavorting bones",		SPELL_CAVORTING_BONES		,22},
 	{"chillshield",			SPELL_CHILLSHIELD			,45},
@@ -5489,7 +5530,6 @@ const struct skillset necroskills[] = {
 	{"fear",				SPELL_FEAR					,4},
 	{"feign death",			SKILL_FEIGN_DEATH			,1},
 	{"finger of death",		SPELL_FINGER_OF_DEATH		,25},
-	{"flesh golem",			SPELL_FLESH_GOLEM			,37},
 	{"fly",					SPELL_FLY					,20},
 	{"gather shadows",		SPELL_GATHER_SHADOWS		,8},
 	{"life draw",			SPELL_LIFE_DRAW				,15},
@@ -5514,11 +5554,13 @@ const struct skillset necroskills[] = {
 	{"teleport without error",SPELL_TELEPORT_WO_ERROR	,35},
 	{"trace corpse",		SPELL_TRACE_CORPSE			,11},
 	{"unsummon",			SPELL_UNSUMMON				,7},
-	{"vampiric embrace",	SPELL_VAMPIRIC_EMBRACE		,41},
 	{"weakness",			SPELL_WEAKNESS				,9},
 	{"None",				-1							,-1}
 };
 
+const struct skillset mainbardskills[] = {
+ {"None", 				-1							,-1}
+};
 const struct skillset bardskills[] = {
 	{"bash",						SKILL_BASH						,2},// dude - bash, kick and rescue? madness!
 	{"climb",						SKILL_CLIMB						,1},
