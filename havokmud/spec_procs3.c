@@ -19,7 +19,7 @@ extern struct weather_data weather_info;
 extern char *pc_class_types[];
 extern struct title_type titles[4][ABS_MAX_LVL];
 extern char *dirs[];
-
+extern struct QuestItem QuestList[4][IMMORTAL];
 extern int gSeason;  /* what season is it ? */
 
 extern struct spell_info_type spell_info[MAX_SPL_LIST];
@@ -5831,4 +5831,144 @@ int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, in
   }
 
   return FALSE;
+}
+
+
+char questwinner[50];
+int questwon = 0;
+
+int questNumber2 = -1;
+int questNumber = -1;
+/* Questor GOD */
+int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+
+	//extern struct QuestItem QuestList[4][IMMORTAL];
+   char obj_name[80], vict_name[80], buf[MAX_INPUT_LENGTH];
+   char tbuf[80];
+   struct char_data *vict;
+   struct obj_data *obj;
+   int test;
+   static time_t time_diff = 50;
+   static time_t last_time = 0;
+	if (questNumber == -1) {
+	   questNumber = number(0,50);
+		questNumber2 = number(0,3);
+	}
+
+	//Ask what the quest is?
+	if (cmd == 86)
+	{ /* ask */
+      arg=one_argument(arg, vict_name);
+      if((!*vict_name) || (!(vict = get_char_room_vis(ch, vict_name))))
+		printf("ReturnFALSE");
+		//return(FALSE);
+
+      if(!(strcmp(arg," What is the quest?"))) {
+		do_say(vict, "Solve my quest and you shall be rewarded!",0);
+	   do_say(vict, QuestList[questNumber2][questNumber].where,0);
+		return (TRUE);
+	}
+	  return(FALSE);
+    }
+
+
+
+   if(!cmd)
+   {
+      if((time_diff > 1000))
+      {
+         time_diff = 0;  /* reset */
+         last_time = time(NULL);
+         do_say(ch, "Solve my quest and you shall be rewarded!",0);
+	     do_say(ch, QuestList[questNumber2][questNumber].where,0);
+
+         return(TRUE);
+      }
+      else
+      {
+         time_diff = time(NULL) - last_time;
+         //printf("Questor Time?? - %d.\n", time_diff);
+      }
+      return(FALSE);
+   }
+
+   if(!AWAKE(ch)) return(FALSE);
+
+   if (cmd == 72) { /* give */
+   	/* determine the correct obj */
+   	  arg=one_argument(arg,obj_name);
+      if (!*obj_name) {
+     	send_to_char("Give what?\n\r",ch);
+      	return(FALSE);
+      }
+      if (!(obj = get_obj_in_list_vis(ch, obj_name, ch->carrying))) {
+      	send_to_char("Give what?\n\r",ch);
+      	return(TRUE);
+      }
+   	  arg=one_argument(arg, vict_name);
+      if(!*vict_name)	{
+      	send_to_char("To who?\n\r",ch);
+      	return(FALSE);
+      }
+      if (!(vict = get_char_room_vis(ch, vict_name)))	{
+        send_to_char("To who?\n\r",ch);
+        return(FALSE);
+      }
+      if (vict->specials.fighting) {
+ 	 	send_to_char("Not while they are fighting!\n\r",ch);
+       	return(TRUE);
+      }
+
+      if(IS_PC(vict)) return(FALSE);
+
+      if (GetMaxLevel(ch)<99) {
+      	if ((obj_index[obj->item_number].virtual != QuestList[questNumber2][questNumber].item)) {
+      		sprintf(buf, "%s That is not the item I seek.",GET_NAME(ch));
+    			do_tell(vict,buf,19);
+         	return(TRUE);
+      	} else {
+
+
+			if(!(strcmp(questwinner,GET_NAME(ch)))) {
+				questwon++;
+			} else {
+				sprintf(questwinner,"%s",GET_NAME(ch));
+				questwon = 0;
+			}
+
+
+			do_say(vict, "Thanks-you!!  Just what i needed!! Here ya go",0);
+		     if(questwon==0) {
+		     obj = read_object(4050, VIRTUAL);
+    		 obj_to_char(obj, ch);
+
+
+    		 act("$N gives you $p.",TRUE,ch,obj,vict,TO_CHAR);
+    		 act("$N gives $p to $n.",TRUE,ch,obj,vict,TO_ROOM);
+				do_say(vict, "Hey.. I got something else for you to get too.",0);
+			} else
+			{
+				obj = read_object(9611, VIRTUAL);  //brown potion
+				obj_to_char(obj, ch);
+
+				 act("$N gives you $p.",TRUE,ch,obj,vict,TO_CHAR);
+    			 act("$N gives $p to $n.",TRUE,ch,obj,vict,TO_ROOM);
+    			do_say(vict, "Your pretty good at this... Ok.. try this one",0);
+			}
+			/*pick new quest */
+			questNumber=number(0,30);
+			questNumber2=number(0,3);
+
+			//do_say(vict, "Hey.. I got something else for you to get too.",0);
+			time_diff = 101;
+
+		}
+
+   	}
+
+
+
+  }
+	return(FALSE);
 }

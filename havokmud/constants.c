@@ -3136,6 +3136,8 @@ const char *connected_types[]	=	{
         "Re-roll",
         "Press Enter",
         "Already Playing",
+        "Getting Ansii",
+        "Creation Menu",
 	"\n"
 };
 
@@ -3795,7 +3797,7 @@ const char *spell_desc[] = {
  "\n"
 };
 
-#if 0
+#if 1
 const struct QuestItem QuestList[4][IMMORTAL] = {
   {  /* magic user */
     {0, ""},

@@ -29,10 +29,10 @@ dlog("in do_say");
   if (!*(argument + i))
     send_to_char("Yes, but WHAT do you want to say?\n\r", ch);
   else	{
-    sprintf(buf,"$n says '%s'", argument + i);
+    sprintf(buf,"$c0015$n says '%s'", argument + i);
     act(buf,FALSE,ch,0,0,TO_ROOM);
     if (IS_NPC(ch)||(IS_SET(ch->specials.act, PLR_ECHO))) {
-      sprintf(buf,"You say '%s'\n\r", argument + i);
+      sprintf(buf,"$c0015You say '%s'\n\r", argument + i);
       send_to_char(buf, ch);
     }
   }

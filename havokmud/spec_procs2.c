@@ -620,7 +620,26 @@ int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int
  }
 }
 
+/*
+int jive_box(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
+{
+ 	char buf[255];
 
+ 	if (type != PULSE_COMMAND)
+    	return(FALSE);
+
+	if(cmd==17 || cmd==169) {
+		sprintf(buf,"$c0012$s speaks '$c0015$s$c0012'",GET_NAME(ch), arg);
+		act(buf,1,ch,0,0,TO_ROOM);
+		sprintf(buf,"$c0012You speak '$c0015$s$c0012'", arg);
+		send_to_char(buf,ch);
+		return(TRUE);
+
+	}
+
+ return(FALSE);
+}
+*/
 int magic_user(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
   struct char_data *vict;

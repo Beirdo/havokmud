@@ -2429,6 +2429,10 @@ if (IS_SET(ch->specials.act,PLR_NOFLY))
 	send_to_char(buf,ch);
    }
 
+  sprintf(buf,"You have %d practice sessions remaining.\n\r",
+	      ch->specials.spells_to_learn);
+  send_to_char(buf, ch);
+
   switch(GET_POS(ch)) {
   case POSITION_DEAD :
     send_to_char("$c0009You are DEAD!\n\r", ch); break;
@@ -2585,6 +2589,7 @@ dlog("in do_help");
 	      return;
 	    }     else if (bot >= top)      {
 	      send_to_char("There is no help on that word.\n\r", ch);
+	      send_to_char("Perhaps try help skills <skill> or help spell <spell>.\n\r", ch);
 	       //(GH)NO help so add that key word to a file called ADD_HELP
 		  if (!(fl = fopen(NEWHELP_FILE, "a")))	{
 		    log("Could not open the ADD_HELP-file.\n\r");

@@ -387,11 +387,34 @@ void spell_remove_paralysis(byte level, struct char_data *ch,
 void spell_holy_word(byte level, struct char_data *ch,
    struct char_data *victim, struct obj_data *obj)
 {
+  int max = 80;
+
+  max += level;
+  max += level/2;
+
+  if (GET_MAX_HIT(victim) <= max || GetMaxLevel(ch) > 53 ) {
+    damage(ch, victim, GET_MAX_HIT(victim)*12, SPELL_HOLY_WORD);
+  } else {
+    send_to_char("They are too powerful to destroy this way\n\r", ch);
+  }
+
+
 }
 
 void spell_unholy_word(byte level, struct char_data *ch,
    struct char_data *victim, struct obj_data *obj)
 {
+  int max = 80;
+
+  max += level;
+  max += level/2;
+
+  if (GET_MAX_HIT(victim) <= max || GetMaxLevel(ch) > 53 ) {
+    damage(ch, victim, GET_MAX_HIT(victim)*12, SPELL_UNHOLY_WORD);
+  } else {
+    send_to_char("They are too powerful to destroy this way\n\r", ch);
+  }
+
 }
 
 void spell_succor(byte level, struct char_data *ch,

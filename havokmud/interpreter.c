@@ -1667,13 +1667,62 @@ if(strlen(name) > MAX_NAME_LENGTH)
   return(0);
 }
 
-
-
+char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
+char *Sex[] = {"Neutral","Male","Female"};
 /* deal with newcomers and other non-playing sockets */
+int pc_num_class(int clss);
+
+void show_menu(struct descriptor_data *d) {
+
+	int bit,ii,total,classn;
+	char buf[100];
+	  char bufx[1000];
+	  char classes[50];
+
+	sprintf(classes,"");
+	for(bit = 0; bit <= BARD_LEVEL_IND;bit++) {
+		if(HasClass(d->character, pc_num_class(bit))) {
+		  strcat(classes,classname[bit]);
+		}
+	}
+
+	if(!(strcmp(classes,"")))
+	  sprintf(classes,"None");
+
+	sprintf(bufx, "Welcome to Havoks Character Creation Screen!!\n\r");
+	strcat(bufx, " $c0015_________________________________________\n\r");
+	sprintf(buf, "/\\  $c0009%-15s$c0015                      \\\n\r",GET_NAME(d->character));
+	strcat(bufx, buf);
+	strcat(bufx, "\\_|                                        |\n\r");
+	sprintf(buf, "  |  1.$c0012Sex$c0015[$c0011%-7s$c0015%-1s       2.$c0012Color$c0015[$c0011%s$c0015]       |   O\n\r"
+			,Sex[GET_SEX(d->character)],"]"
+			,((IS_SET(d->character->player.user_flags,USE_ANSI)) ? "X" : " "));
+	strcat(bufx, buf);
+	strcat(bufx, "  |                                        |   O\n\r");
+	sprintf(buf, "  |  3.$c0012Race$c0015[$c0011%-12s$c0015%s 4.$c0012Class$c0015[$c0011%-6s$c0015]  |   *\n\r"
+			,RaceName[GET_RACE(d->character)],"]", classes);
+	strcat(bufx, buf);
+	strcat(bufx, "-=|                                        |==>0////O\n\r");
+	if(!GET_CON(d->character))
+		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011None$c0015]                         |   *\n\r");
+	 else
+		strcat(bufx, "  |  5.$c0012Stats$c0015[$c0011Done$c0015]                         |   *\n\r");
+	strcat(bufx, "  |                                        |   O\n\r");
+	strcat(bufx, "  |              D.$c0012Done$c0015                    |   O\n\r");
+	strcat(bufx, "  |    ____________________________________|\n\r");
+	strcat(bufx, "   \\_/____________________________________/\n\r");
+
+
+	strcat(bufx, "Please pick the number you'd like to change:\n\r");
+	send_to_char(bufx,d->character);
+}
+
 void nanny(struct descriptor_data *d, char *arg)
 {
+
   struct descriptor_data *i;
   char buf[100];
+  char bufx[1000];
   int player_i, count=0, oops=FALSE, index=0;
   char tmp_name[20];
   struct char_file_u tmp_store;
@@ -1688,12 +1737,107 @@ void nanny(struct descriptor_data *d, char *arg)
   void load_char_objs(struct char_data *ch);
   int load_char(char *name, struct char_file_u *char_element);
   void show_class_selection(struct descriptor_data *d, int r);
-  int count_players;
+  int count_players=0, bit=0;
+
+	char classes[50];
   write(d->descriptor, echo_on, 6);
 
   switch (STATE(d))     {
+    case CON_CREATION_MENU:
+
+	//show_menu(d);
+
+    for (; isspace(*arg); arg++);
+	    switch (*arg)
+	      {
+	      case '1':
+	      	SEND_TO_Q("What is your sex (M/F) ? ", d);
+ 			STATE(d) = CON_QSEX;
+ 			return;
+ 			break;
+ 		case '2':
+      		SEND_TO_Q("Would you like ansi colors? (Yes or No)", d);
+ 			STATE(d) = CON_ANSI;
+ 			return;
+      	    break;
+ 		case '3':
+      	    show_race_choice(d);
+			SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
+			STATE(d) = CON_QRACE;
+			d->character->player.class = 0; //Default classes to none.
+ 			return;
+      	    break;
+ 		 case '4':
+      	    send_to_char("class",d->character);
+ 			SEND_TO_Q("\n\rSelect your class now.\n\r",d);
+			show_class_selection(d,GET_RACE(d->character));
+			SEND_TO_Q("Enter ? for help.\n\r", d);
+    		SEND_TO_Q("\n\rClass :", d);
+ 			STATE(d) = CON_QCLASS;
+ 			return;
+      	    break;
+      	  case '5':
+			SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
+	     	SEND_TO_Q("Seperated y spaces.. don't duplicate\n\r", d);
+            SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
+            SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
+            SEND_TO_Q("Your choices? ",d);
+      	    STATE(d) = CON_STAT_LIST;
+      	    return;
+      	    break;
+      	  case 'd':
+      	  case 'D':
+			count_players=0;
+			for(bit = 0; bit <= BARD_LEVEL_IND;bit++) {
+				if(HasClass(d->character, pc_num_class(bit))) {
+				  count_players++;
+				}
+			}
+			if(count_players <= 0){
+				SEND_TO_Q("Please enter a valid class.",d);
+				return;
+				break;
+			}
+			if(GET_SEX(d->character)==0){
+				SEND_TO_Q("Please enter a proper sex.",d);
+				return;
+				break;
+			}
+			if(!GET_CON(d->character)) {
+				SEND_TO_Q("Please pick your stats.",d);
+				return;
+				break;
+			}
+
+      	    sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
+			log(buf);
+				/*
+				 ** now that classes are set, initialize
+				*/
+			init_char(d->character);
+				/* create an entry in the file */
+			d->pos = create_entry(GET_NAME(d->character));
+			save_char(d->character, AUTO_RENT);
+
+      	    SEND_TO_Q(NEWBIE_NOTE, d);
+			SEND_TO_Q(motd, d);
+			SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
+	 		STATE(d) = CON_RMOTD;
+      	    return;
+      	    break;
+      	  default:
+      	   show_menu(d);
+      	   send_to_char("Invalid Choice.. Try again..",d->character);
+			return;
+      	    break;
+	  }
+	 // STATE(d) = CON_CREATION_MENU;
+	 // 	return;
+
+	//break;
     case CON_ANSI:
 
+		//temp
     for (; isspace(*arg); arg++);
     switch (*arg)
       {
@@ -1704,19 +1848,17 @@ void nanny(struct descriptor_data *d, char *arg)
 
 	send_to_char("$c0012A$c0010n$c0011s$c0014i$c0007 colors enabled.\n\r\n\r"
 		     ,d->character);
-	show_race_choice(d);
-	SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
-	STATE(d) = CON_QRACE;
-	return;
-	break;
+	show_menu(d);
+	STATE(d) = CON_CREATION_MENU;
+		return;
+		break;
 
       case 'n':
       case 'N':
-	show_race_choice(d);
-	SEND_TO_Q("For help type '?'- will list level limits. \n\r RACE:  ", d);
-	STATE(d) = CON_QRACE;
-	return;
-	break;
+		STATE(d) = CON_CREATION_MENU;
+		show_menu(d);
+		return;
+		break;
 
       default:
 	SEND_TO_Q("Please type Yes or No.\n\r", d);
@@ -1750,8 +1892,9 @@ void nanny(struct descriptor_data *d, char *arg)
 	  {
 	   /* set the chars race to this */
 		GET_RACE(d->character) = race_choice[tmpi];
-		SEND_TO_Q("What is your sex (M/F) ? ", d);
-		STATE(d) = CON_QSEX;
+		show_menu(d);
+		STATE(d) = CON_CREATION_MENU;
+
 	  } else {
 		SEND_TO_Q("\n\rThat's not a race.\n\rRACE?:", d);
 		show_race_choice(d);
@@ -1788,16 +1931,7 @@ void nanny(struct descriptor_data *d, char *arg)
 
 
     if ((player_i = load_char(tmp_name, &tmp_store)) > -1)  {
-  /*  -- commented out long ago ... (bcw 13/july/1999)
-   *  check for tmp_store.max_corpse;
- if (tmp_store.max_corpse > 3) {
- SEND_TO_Q("Too many corpses in game, can't connect\n\r", d);
- sprintf(buf, "%s: too many corpses.",tmp_name);
- log(buf);
- STATE(d) = CON_WIZLOCK;
- break;
- }
-*/
+
 /* connecting an existing character ... */
       store_to_char(&tmp_store, d->character);
       strcpy(d->pwd, tmp_store.pwd);
@@ -2051,6 +2185,7 @@ if (GET_NAME(d->character))
     *(d->pwd + 10) = '\0';
     write(d->descriptor, echo_on, 6);
     SEND_TO_Q("Please retype password: ", d);
+
     write(d->descriptor, echo_off, 4);
     STATE(d) = CON_PWDCNF;
     break;
@@ -2070,8 +2205,9 @@ if (GET_NAME(d->character))
       } else {
         write(d->descriptor, echo_on, 6);
 
-        SEND_TO_Q("Would you like to have ansi colors? ",d);
-        STATE(d) = CON_ANSI;
+        //SEND_TO_Q("Would you like to have ansi colors? ",d);
+        show_menu(d);
+        STATE(d) = CON_CREATION_MENU;
 
         }
       break;
@@ -2100,11 +2236,12 @@ if (GET_NAME(d->character))
 	break;
       }
 
-    SEND_TO_Q("\n\rSelect your class now.\n\r",d);
-    show_class_selection(d,GET_RACE(d->character));
-    SEND_TO_Q("Enter ? for help.\n\r", d);
-    SEND_TO_Q("\n\rClass :", d);
-    STATE(d) = CON_QCLASS;
+    //SEND_TO_Q("\n\rSelect your class now.\n\r",d);
+    //show_class_selection(d,GET_RACE(d->character));
+    //SEND_TO_Q("Enter ? for help.\n\r", d);
+    //SEND_TO_Q("\n\rClass :", d);
+    show_menu(d);
+    STATE(d) = CON_CREATION_MENU;
     break;
 
   case CON_STAT_LIST:
@@ -2152,8 +2289,9 @@ if (GET_NAME(d->character))
       STATE(d) = CON_STAT_LIST;
       break;
     } else {
-
+		printf("\n\rROLL THIS FUCKER\n\r");
       roll_abilities(d->character);
+      printf("\n\rBLASTED!!\n\r");
       SEND_TO_Q("Your current stats are:\n\r", d);
       sprintf(buf, "STR: %s\n\r", STAT_SWORD(GET_STR(d->character)));
       SEND_TO_Q(buf,d);
@@ -2193,28 +2331,22 @@ if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
 
  if (*arg!='r' &&  *arg!='R'){
     SEND_TO_Q("Stats chosen!", d);
+
     STATE(d)= CON_RMOTD;
     if (IS_SET(SystemFlags,SYS_REQAPPROVE)) {
-      STATE(d) = CON_AUTH;
-      SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
+      //STATE(d) = CON_AUTH;
+      //SEND_TO_Q("\n\r\n***PRESS ENTER**", d);
+      show_menu(d);
+	  STATE(d) = CON_CREATION_MENU;
+
      } else {
-	sprintf(buf, "%s [%s] new player.", GET_NAME(d->character), d->host);
-	log(buf);
-	/*
-	 ** now that classes are set, initialize
-	*/
-	init_char(d->character);
-	/* create an entry in the file */
-	d->pos = create_entry(GET_NAME(d->character));
-	save_char(d->character, AUTO_RENT);
+
 
         /* page_string(d,NEWBIE_NOTE,1); */
-	 SEND_TO_Q(NEWBIE_NOTE, d);
-	 STATE(d) = CON_RMOTD;
-	 SEND_TO_Q(motd, d);
-	 SEND_TO_Q("\n\r\n*** PRESS RETURN: ", d);
-	 STATE(d) = CON_RMOTD;
-         break;
+	 show_menu(d);
+	 STATE(d) = CON_CREATION_MENU;
+
+	    break;
       }
     } else {
       if (d->character->reroll != 0){
@@ -2293,7 +2425,7 @@ case CON_PRESS_ENTER:
     d->character->player.class = 0;
     count=0;
     oops=FALSE;
-
+/*
 SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest.\n\r",d);
 SEND_TO_Q("Seperated by spaces.. don't duplicate\n\n\r", d);
 SEND_TO_Q("Stat. Description.\n\n",d);
@@ -2318,6 +2450,11 @@ SEND_TO_Q("at each level.\n\n",d);
 
 SEND_TO_Q("Charisma(Ch).  Charisma is a measure of a characters persuasiveness and personal\n",d);
 SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents.\n\n",d);
+*/
+/*temp*/
+  //STATE(d) = CON_CREATION_MENU;
+  //show_menu(d);
+  //break;
 
    switch (*arg) {
 	case '0':
@@ -2342,12 +2479,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {	STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }
                     }
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2365,12 +2499,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }
                     }
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2389,12 +2520,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }
                     }
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2411,12 +2539,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }
                     }
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2434,12 +2559,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }
                     }
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2456,12 +2578,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
 		    {
-		     SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		     STATE(d) = CON_CREATION_MENU;
+			 show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2474,12 +2593,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2496,12 +2612,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2519,12 +2632,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if ((d->character->player.class != 0))
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 
 		    else show_class_selection(d,GET_RACE(d->character));
@@ -2539,12 +2649,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2558,12 +2665,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2577,12 +2681,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2595,12 +2696,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2613,12 +2711,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 		  } break;
@@ -2632,12 +2727,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2651,12 +2743,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		   {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2670,12 +2759,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		   {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2689,12 +2775,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2707,12 +2790,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		} /* end while */
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
-		    {SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		    {STATE(d) = CON_CREATION_MENU;
+  				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 				  } break;
@@ -2727,13 +2807,9 @@ SEND_TO_Q("magnetism. A higher charisma will help when trying to charm opponents
 		if (d->character->player.class != 0)
 		    {if (!HasClass(d->character, CLASS_MAGIC_USER))
 		    {
-		     SEND_TO_Q("\n\rSelect your stat priority, by listing
-them from highest to lowest\n\r",d);
-    		     SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-                     SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-                     SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-                     SEND_TO_Q("Your choices? ",d);
-                     STATE(d) = CON_STAT_LIST;
+		     STATE(d) = CON_CREATION_MENU;
+			   				show_menu(d);
+
                     }}
 		    else show_class_selection(d,GET_RACE(d->character));
 	    } break;
@@ -2835,12 +2911,9 @@ case CON_CHECK_MAGE_TYPE:{
 	  d->character->player.class -=CLASS_MAGIC_USER;
 	  d->character->player.class +=CLASS_SORCERER;
 	} /* end we wanted Sorcerer class! */
-	SEND_TO_Q("\n\rSelect your stat priority, by listing them from highest to lowest\n\r",d);
-   	SEND_TO_Q("Seperated by spaces.. don't duplicate\n\r", d);
-   	SEND_TO_Q("for example: 'S I W D Co Ch' would put the highest roll in Strength, \n\r",d);
-        SEND_TO_Q("next in intelligence, Wisdom, Dex, Con, and lastly charisma\n\r",d);
-        SEND_TO_Q("Your choices? ",d);
-        STATE(d) = CON_STAT_LIST;
+	STATE(d) = CON_CREATION_MENU;
+	  				show_menu(d);
+
    } break;
 
   case CON_RMOTD:               /* read CR after printing motd  */

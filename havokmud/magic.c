@@ -1315,27 +1315,27 @@ void spell_locate_object(byte level, struct char_data *ch,
   char name[256];
   char buf[MAX_STRING_LENGTH],buf2[256];
   int j;
-  
+
   assert(ch);
-  
+
   if (!obj) {
     send_to_char("Everywhere, you sense them everywhere!??\n\r",ch);
     return;
   }
-  
+
   if (!obj->name || !(*obj->name)) {
     send_to_char("Which object?\n\r", ch);
     return;
   }
-  
-  
+
+
   strcpy(name, obj->name);
-  
+
   j=level>>2;
   if(j<2) j=2;
-  
+
   sprintf(buf,"");
-  
+
   for (i = object_list; i && (j>0); i = i->next)
     if (isname(name, i->name)) {
       if(i->carried_by) {
@@ -1359,13 +1359,13 @@ void spell_locate_object(byte level, struct char_data *ch,
 	j--;
       } else {
 	sprintf(buf2,"%s in %s.\n\r",i->short_description,
-		(i->in_room == NOWHERE ? "use but uncertain." : 
+		(i->in_room == NOWHERE ? "use but uncertain." :
 		 real_roomp(i->in_room)->name));
 	strcat(buf,buf2);
 	j--;
       }
     }
-  
+
 	page_string(ch->desc,buf,0);
 
   if(j==0)
@@ -2440,10 +2440,10 @@ void spell_identify(byte level, struct char_data *ch,
 
   /* races */
   extern char *RaceName[];
- 
- 
+
+
   /* For Objects */
-  extern char *AttackType[]; 
+  extern char *AttackType[];
 
 
   extern struct index_data *obj_index;
@@ -2459,12 +2459,12 @@ void spell_identify(byte level, struct char_data *ch,
 
   if (obj) {
     send_to_char("$c0005You feel informed:\n\r", ch);
-    
+
     sprintf(buf, "$c0005Object '$c0014%s$c0005', Item type: $c0014", obj->name);
     sprinttype(GET_ITEM_TYPE(obj),item_types,buf2);
     strcat(buf,buf2); strcat(buf,"\n\r");
     send_to_char(buf, ch);
-    
+
     /* alittle more info for immortals -bcw */
     if (GetMaxLevel(ch)>LOW_IMMORTAL) {
       sprintf(buf, "$c0005R-number: [$c0014%d$c0005], V-number: [$c0014%d$c0005]",

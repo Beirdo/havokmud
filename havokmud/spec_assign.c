@@ -984,7 +984,8 @@ void assign_mobiles()
 /*
 **  Lower city
 */
-    { 3047, DogCatcher },
+	{ 3047, QuestorGOD },
+   // { 3047, DogCatcher },
     { 3143, mayor },
     { 7009, MidgaardCityguard },
 

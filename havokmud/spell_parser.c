@@ -66,7 +66,7 @@ void mind_use_clairvoyance( byte level, struct char_data *ch, char *arg, int typ
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_disintegrate( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
-void mind_use_telekinesis( byte level, struct char_data *ch, char *arg, int type, 
+void mind_use_telekinesis( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
 void mind_use_levitation( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *victim, struct obj_data *tar_obj );
@@ -760,6 +760,13 @@ char *spells[]=
    "ultra blast",
    "intensify",
    "spot",
+   "holy armor",      /*289*/
+   "holy strength",
+   "enlightenment",
+   "circle of protection",
+   "wrath of god",
+   "pacifism",
+   "aura of power",     /*295 */
    "\n"
 };
 
@@ -1855,7 +1862,7 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
       if (!IS_SET(spell_info[spl].targets, TAR_IGNORE)) {
 
 	argument = one_argument(argument, name);
-	
+
 	//(GH)  if name argument == self then target == Casters name..
 	if (str_cmp(name,"self")==0){
 	  sprintf(name,"%s",GET_NAME(ch));
@@ -1882,12 +1889,12 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 #endif
 	if (*name) {
 	  if (IS_SET(spell_info[spl].targets, TAR_CHAR_ROOM)) {
-	    if ((tar_char = get_char_room_vis(ch, name)) 
+	    if ((tar_char = get_char_room_vis(ch, name))
 		||(str_cmp(GET_NAME(ch),name)==0)) {
 	      if (str_cmp(GET_NAME(ch),name)==0)
 		tar_char = ch;
 	      if (tar_char == ch || tar_char == ch->specials.fighting ||
-		  tar_char->attackers < 6 || 
+		  tar_char->attackers < 6 ||
 		  tar_char->specials.fighting == ch)
 		target_ok = TRUE;
 	      else {
@@ -1898,19 +1905,19 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	      target_ok = FALSE;
 	    }
 	  }
-	  
+
 	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_CHAR_WORLD))
 	  if (tar_char = get_char_vis(ch, name))
 	    target_ok = TRUE;
-	
+
 	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_INV))
 	  if (tar_obj = get_obj_in_list_vis(ch, name, ch->carrying))
 	    target_ok = TRUE;
-	
+
 	if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_ROOM))
 	  if (tar_obj = get_obj_in_list_vis(ch, name, real_roomp(ch->in_room)->contents))
 	    target_ok = TRUE;
-	
+
 	  if (!target_ok && IS_SET(spell_info[spl].targets, TAR_OBJ_WORLD))
 	    if (tar_obj = get_obj_vis(ch, name))
 	      target_ok = TRUE;
@@ -2072,17 +2079,17 @@ if (IS_IMMORTAL(ch) && IS_PC(ch) && GetMaxLevel(ch)<59) {
 	  max+=10; /* 20% harder to cast spells */
 		break;
 	} /* end switch */
-	
-	
+
+
 	/* end EQ check				    */
 	if (ch->attackers > 0)
 	  max += spell_info[spl].spellfail;
 	else if (ch->specials.fighting)
 	  max += spell_info[spl].spellfail/2;
-	
+
 	if (cmd == 283)  /* recall:  less chance of spell fail ... */
 	  max = max/2;
-	
+
 	/* memorized spells don't fail ... bcw */
 	if (number(1,max) > ch->skills[spl].learned &&
 	    !IsSpecialized(ch->skills[spl].special) &&
@@ -2128,17 +2135,6 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 	    "$n's spell dissolves like so much wet toilet paper"))
 	  return;
 
-#if 0
-	mlev = spell_info[spl].min_level_magic;
-	clev = spell_info[spl].min_level_cleric;
-	dlev = spell_info[spl].min_level_druid;
-
-	minl = 0;
-	if (HasClass(ch, CLASS_MAGIC_USER)) {
-	  if (!EqWBits(ch, ITEM_ANTI_MAGE))
-	    minl =
-	}
-#endif
 	send_to_char("Ok.\n\r",ch);
 	((*spell_info[spl].spell_pointer) (GET_LEVEL(ch, BestMagicClass(ch)), ch, argument, SPELL_TYPE_SPELL, tar_char, tar_obj));
 	cost = (int)USE_MANA(ch, (int)spl);
@@ -2147,6 +2143,9 @@ if (affected_by_spell(ch,SPELL_ANTI_MAGIC_SHELL) &&
 	} else {
 	  GET_MANA(ch) -= cost;
 	}
+	sprintf(buf,"You receive %d experience from your expert casting abilities\n\r.",1000);
+	send_to_char(buf,ch);
+	gain_exp(ch, 1000);
       }
 
     }	/* if GET_POS < min_pos */
@@ -3266,8 +3265,38 @@ spello(32,12,POSITION_FIGHTING, 1, LOW_IMMORTAL, LOW_IMMORTAL,  1,  LOW_IMMORTAL
   spello(167, 1, POSITION_STANDING, LOW_IMMORTAL, 48, LOW_IMMORTAL,
 	    LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL, LOW_IMMORTAL, 50,
 	    TAR_CHAR_ROOM, cast_energy_restore, 20); //Energy Restore - MW
-}
 
+/* New paladin spells */
+spello(289,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+  LOW_IMMORTAL,  5,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_holy_armor, 0); /* paladin holy armor */
+
+spello(290,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+  LOW_IMMORTAL,  3,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_holy_strength, 0); /* paladin*/
+
+spello(291,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+  LOW_IMMORTAL,  25,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_enlightenment, 0); /* paladin*/
+
+  spello(292,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+    LOW_IMMORTAL,  1,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_circle_protection, 0); /* paladin*/
+
+  spello(293,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+    LOW_IMMORTAL,  30,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_wrath_god, 0); /* paladin*/
+
+
+spello(294,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+  LOW_IMMORTAL,  7,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_pacifism, 0); /* paladin*/
+
+
+  spello(295,0, POSITION_STANDING,IMMORTAL,IMMORTAL,IMMORTAL,
+    LOW_IMMORTAL,  15,  LOW_IMMORTAL,  LOW_IMMORTAL,
+  200, TAR_CHAR_ROOM|TAR_SELF_ONLY, cast_aura_power, 0); /* paladin*/
+}
 
 
 void SpellWearOffSoon(int s, struct char_data *ch)

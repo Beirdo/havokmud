@@ -1821,12 +1821,12 @@ void spell_entangle(byte level, struct char_data *ch, struct char_data *victim, 
       	   FailSnare(victim, ch);
            return;
       }
-  } 
+  }
 
   /* if victim fails save, paralyzed for a very short time */
   if (saves_spell(victim, SAVING_PARA)) {
 
-	if (IsSusc(victim, IMM_HOLD)) 
+	if (IsSusc(victim, IMM_HOLD))
 	{
        		if (saves_spell(victim, SAVING_PARA)) {
   			FailSnare(victim, ch);
@@ -2501,6 +2501,110 @@ void spell_dragon_ride(byte level, struct char_data *ch,
   af.bitvector = AFF_DRAGON_RIDE;
   affect_to_char(ch, &af);
 }
+/*
+New Spells:
+-Holy Word
+-Holy Armor
+	void spell_holy_armor(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj)
+-Holy Strength
+-enlightenment
+-Circle of Protection
+-Wrath of god
+-Pacifism
+-Sanc
+-Aura of Power
+*/
+void spell_enlightenment(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj){
+
+}
+void spell_circle_protection(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj){
+
+
+}
+
+
+void spell_wrath_god(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj){
+
+}
+
+void spell_pacifism(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj){
+
+}
+
+void spell_aura_power(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj){
+
+}
+
+
+void spell_holy_strength(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj)
+{
+    struct affected_type af;
+
+    assert(victim);
+
+
+    if (!affected_by_spell(victim,SPELL_HOLY_STRENGTH)) {
+       act("You spirits of god make you stronger.", FALSE, victim,0,0,TO_CHAR);
+       act("$n muscles seem to expand!\n\r", FALSE, victim, 0, 0, TO_ROOM);
+
+       af.type      = SPELL_HOLY_STRENGTH;
+       af.duration  = 2*level;
+       if (IS_NPC(victim))
+          if (level >= CREATOR) {
+  	  		af.modifier = 25 - GET_STR(victim);
+          } else
+          	af.modifier = number(1,6);
+       else {
+
+         if (HasClass(ch, CLASS_WARRIOR) || HasClass(ch,CLASS_BARBARIAN) )
+             af.modifier = number(1,8);
+         else if (HasClass(ch, CLASS_CLERIC) ||
+  		HasClass(ch, CLASS_THIEF))
+             af.modifier = number(1,6);
+         else
+  	 af.modifier = number(1,4);
+       }
+       af.location  = APPLY_STR;
+       af.bitvector = 0;
+       affect_to_char(victim, &af);
+     } else {
+
+    act("Nothing seems to happen.", FALSE, ch,0,0,TO_CHAR);
+
+    }
+}
+
+
+void spell_holy_armor(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj)
+{
+  struct affected_type af;
+
+  assert(victim);
+if (level <0 || level >ABS_MAX_LVL)
+	return;
+
+  if (!affected_by_spell(victim, SPELL_HOLY_ARMOR)) {
+    af.type      = SPELL_HOLY_ARMOR;
+    af.duration  = 24;
+    af.modifier  = -20;
+    af.location  = APPLY_AC;
+    af.bitvector = 0;
+
+    affect_to_char(victim, &af);
+    send_to_char("You feel the spirits of god protecting you.\n\r", victim);
+  } else {
+    send_to_char("Nothing New seems to happen\n\r", ch);
+  }
+}
+
 
 void spell_giant_growth(byte level, struct char_data *ch,
 		 struct char_data *victim, struct obj_data *obj)

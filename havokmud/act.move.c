@@ -26,10 +26,34 @@ int make_exit_ok(struct char_data *ch, struct room_data **rpp, int dir);
 
 void NotLegalMove(struct char_data *ch)
 {
-  send_to_char("Alas, you cannot go that way...\n\r", ch);
+  //send_to_char("Alas, you cannot go that way...\n\r", ch);
+
+//
+
+ //'You don't really want to go
+ //I suggest you rethink your decision.
+switch(number(0,5)) {
+	case 0:
+		send_to_char("Must be something in the way.  can't go that way....\n\r", ch);
+		break;
+	case 1:
+			send_to_char("Something obstructs you from moving in that direction...\n\r", ch);
+	break;
+	case 2:
+			send_to_char("Alas, you cannot go that way...\n\r", ch);
+	break;
+	case 3:
+			send_to_char("Walk the other way...can't you see you can't go there??...\n\r", ch);
+	break;
+	case 4:
+				send_to_char("You don't really want to go that way...\n\r", ch);
+	break;
+	default:
+			send_to_char("Alas, you cannot go that way...\n\r", ch);
+	break;
 }
 
-
+}
 int ValidMove( struct char_data *ch, int cmd)
 {
   char tmp[256];

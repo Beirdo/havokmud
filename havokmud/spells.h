@@ -96,7 +96,7 @@
 #define SPELL_MON_SUM_6              79
 #define SPELL_MON_SUM_7              80  /* done  */
 #define SPELL_FIRESHIELD             81
-#define SPELL_CHARM_MONSTER          82 
+#define SPELL_CHARM_MONSTER          82
 #define SPELL_CURE_SERIOUS           83
 #define SPELL_CAUSE_SERIOUS          84
 #define SPELL_REFRESH                85
@@ -196,9 +196,9 @@
 #define SPELL_PORTAL                164
 #define SPELL_DRAGON_RIDE           165
 #define SPELL_MOUNT                 166
-#define SPELL_ENERGY_RESTORE        167  
+#define SPELL_ENERGY_RESTORE        167
 
-#define SPELL_DETECT_GOOD	     168 
+#define SPELL_DETECT_GOOD	     168
 #define SPELL_PROTECT_FROM_GOOD      169
 
 #define SKILL_FIRST_AID              170
@@ -253,7 +253,7 @@
 #define SKILL_FIND_WATER	 211    /* msw */
 #define SPELL_PRAYER		 212    /* msw, not a spell but I need */
 					/* a aff flag,could use PLR_*   */
-#define SKILL_MEMORIZE		 213    /* msw, used for memorization stuff */					
+#define SKILL_MEMORIZE		 213    /* msw, used for memorization stuff */
 #define SKILL_BELLOW		 214   /* msw */
 
 /* add more spells / skills here */
@@ -340,7 +340,17 @@
 #define SKILL_INTENSIFY 	287	/* increase con/int or wis +1, -3 for attribs not chosen */
 #define SKILL_SPOT		288	/* spot, for ranged weapons, archery */
 
-#define MAX_EXIST_SPELL         288   /* max number of skills/spells */
+
+/*NEW PALADIN SKILLS */
+#define SPELL_HOLY_ARMOR         289
+#define SPELL_HOLY_STRENGTH      290
+#define SPELL_ENLIGHTENMENT      291
+#define SPELL_CIRCLE_PROTECTION  292
+#define SPELL_WRATH_GOD          293
+#define SPELL_PACIFISM           294
+#define SPELL_AURA_POWER         295
+
+#define MAX_EXIST_SPELL         295   /* max number of skills/spells */
 
 #define FIRST_BREATH_WEAPON	     306 /*	201 */
 #define SPELL_FIRE_BREATH            306 /*	201 */
@@ -405,7 +415,7 @@
 
 struct spell_info_type
 {
-	void (*spell_pointer) 
+	void (*spell_pointer)
                (byte level, struct char_data *ch, char *arg, int type,
 	        struct char_data *tar_ch, struct obj_data *tar_obj);
 	byte minimum_position;  /* Position for caster 			*/

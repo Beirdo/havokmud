@@ -574,7 +574,7 @@ void do_bash(struct char_data *ch, char *argument, int cmd)
   struct char_data *victim;
   char name[256];
   byte percent;
-
+  char buf[100];
 
 dlog("in do_bash");
   if (!ch->skills)
@@ -671,6 +671,9 @@ if (IS_PC(ch) || IS_SET(ch->specials.act,ACT_POLYSELF))
       if (!damage(ch, victim, 2, SKILL_BASH)) {
          WAIT_STATE(victim, PULSE_VIOLENCE*2);
          GET_POS(victim) = POSITION_SITTING;
+        sprintf(buf,"You receive 100 experience for using your bashing abilites.\n\r.",ch);
+		send_to_char(buf,ch);
+		gain_exp(ch, 100);
       }
     }
   }

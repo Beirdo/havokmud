@@ -12,7 +12,7 @@ extern struct char_data *character_list;
 extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern struct obj_data  *object_list;
 extern int rev_dir[];
-extern char *dirs[]; 
+extern char *dirs[];
 extern int movement_loss[];
 extern struct weather_data weather_info;
 extern struct time_info_data time_info;
@@ -35,11 +35,11 @@ int NoSummon(struct char_data *ch);
 #define MAX_MAGE_POLY 48	/* total number of polies choices */
 
 struct PolyType PolyList[MAX_MAGE_POLY] = {
-  {"goblin",      4, 5100}, 
+  {"goblin",      4, 5100},
   {"parrot",      4, 9001},
   {"bat",        4, 7001},
   {"orc",         5, 4005},
-  {"trog",        5, 9210}, 
+  {"trog",        5, 9210},
   {"gnoll",       6, 9211},
   {"parrot",      6, 9010 },
   {"lizard",      6, 224},
@@ -104,7 +104,7 @@ struct PolyType DruidList[MAX_DRUID_POLY] = {
   {"mulichort",  30, 15830},
   {"tiger",      35, 9055},
   {"lion",       35, 13718},
-  {"salamander", 35, 25506}  
+  {"salamander", 35, 25506}
 };
 
 #define LAST_DRUID_MOB 16   	/* last level you get a new poly type */
@@ -151,9 +151,9 @@ void cast_major_track( byte level, struct char_data *ch, char *arg, int type,
     spell_track(level, ch, tar_ch, NULL);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
-        if (tar_ch != ch) 
+        if (tar_ch != ch)
            spell_track(level, ch, tar_ch, NULL);
     }
     break;
@@ -185,9 +185,9 @@ void cast_minor_track( byte level, struct char_data *ch, char *arg, int type,
     spell_track(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room) {
-        if (tar_ch != ch) 
+        if (tar_ch != ch)
            spell_track(level, ch, tar_ch, 0);
     }
     break;
@@ -211,15 +211,15 @@ void cast_mana( byte level, struct char_data *ch, char *arg, int type,
     spell_mana(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch) 
+      if (tar_ch != ch)
 	spell_mana(level, ch, tar_ch, 0);
   default:
     log("Serious problem in 'mana'");
     break;
   }
-  
+
 }
 void cast_armor( byte level, struct char_data *ch, char *arg, int type,
 		struct char_data *tar_ch, struct obj_data *tar_obj )
@@ -232,7 +232,7 @@ void cast_armor( byte level, struct char_data *ch, char *arg, int type,
     }
     if (ch != tar_ch)
       act("$N is protected.", FALSE, ch, 0, tar_ch, TO_CHAR);
-    
+
     spell_armor(level,ch,tar_ch,0);
     break;
   case SPELL_TYPE_POTION:
@@ -253,7 +253,7 @@ void cast_armor( byte level, struct char_data *ch, char *arg, int type,
       return;
     spell_armor(level,ch,ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in armor!");
     break;
   }
@@ -287,7 +287,7 @@ void cast_stone_skin( byte level, struct char_data *ch, char *arg, int type,
       return;
     spell_stone_skin(level,ch,ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in stone_skin!");
     break;
   }
@@ -301,19 +301,19 @@ void cast_astral_walk( byte level, struct char_data *ch, char *arg, int type,
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_POTION:
   case SPELL_TYPE_SPELL:
-        
+
     if(!tar_ch) send_to_char("Yes, but who do you wish to walk to?\n",ch);
     else spell_astral_walk(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-  
-      for (tar_ch = real_roomp(ch->in_room)->people ; 
+
+      for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch)   
+      if (tar_ch != ch)
        spell_astral_walk(level, ch, tar_ch, 0);
        break;
-       
-    default : 
+
+    default :
       log("Serious screw-up in astral walk!");
     break;
   }
@@ -331,20 +331,20 @@ void cast_teleport( byte level, struct char_data *ch, char *arg, int type,
       tar_ch = ch;
     spell_teleport(level, ch, tar_ch, 0);
     break;
-    
+
   case SPELL_TYPE_WAND:
     if(!tar_ch) tar_ch = ch;
     spell_teleport(level, ch, tar_ch, 0);
     break;
-    
+
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch) 
+      if (tar_ch != ch)
 	spell_teleport(level, ch, tar_ch, 0);
     break;
-    
-    default : 
+
+    default :
       log("Serious screw-up in teleport!");
     break;
   }
@@ -354,7 +354,7 @@ void cast_teleport( byte level, struct char_data *ch, char *arg, int type,
 void cast_bless( byte level, struct char_data *ch, char *arg, int type,
 		struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
+
   switch (type) {
   case SPELL_TYPE_SPELL:
     if (tar_obj) {        /* It's an object */
@@ -363,14 +363,14 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
 	return;
       }
       spell_bless(level,ch,0,tar_obj);
-      
+
     } else {              /* Then it is a PC | NPC */
-      
+
       if ( affected_by_spell(tar_ch, SPELL_BLESS) ||
 	  (GET_POS(tar_ch) == POSITION_FIGHTING)) {
 	send_to_char("Nothing seems to happen.\n\r", ch);
 	return;
-      } 
+      }
       spell_bless(level,ch,tar_ch,0);
     }
     break;
@@ -385,11 +385,11 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
       if ( IS_SET(tar_obj->obj_flags.extra_flags, ITEM_BLESS) )
 	return;
       spell_bless(level,ch,0,tar_obj);
-      
+
     } else {              /* Then it is a PC | NPC */
-      
+
       if (!tar_ch) tar_ch = ch;
-      
+
       if ( affected_by_spell(tar_ch, SPELL_BLESS) ||
 	  (GET_POS(tar_ch) == POSITION_FIGHTING))
 	return;
@@ -401,16 +401,16 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
       if ( IS_SET(tar_obj->obj_flags.extra_flags, ITEM_BLESS) )
 	return;
       spell_bless(level,ch,0,tar_obj);
-      
+
     } else {              /* Then it is a PC | NPC */
-      
+
       if ( affected_by_spell(tar_ch, SPELL_BLESS) ||
 	  (GET_POS(tar_ch) == POSITION_FIGHTING))
 	return;
       spell_bless(level,ch,tar_ch,0);
     }
     break;
-    default : 
+    default :
       log("Serious screw-up in bless!");
     break;
   }
@@ -419,8 +419,8 @@ void cast_bless( byte level, struct char_data *ch, char *arg, int type,
 void cast_infravision( byte level, struct char_data *ch, char *arg, int type,
 		      struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
-  
+
+
   switch (type) {
   case SPELL_TYPE_SPELL:
     if ( IS_AFFECTED(tar_ch, AFF_INFRAVISION) ){
@@ -448,23 +448,23 @@ void cast_infravision( byte level, struct char_data *ch, char *arg, int type,
     spell_infravision(level,ch,tar_ch,0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (tar_ch != ch)
 	if (!(IS_AFFECTED(tar_ch, AFF_INFRAVISION)))
 	  spell_infravision(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in infravision!");
     break;
   }
-  
+
 }
 
 void cast_true_seeing( byte level, struct char_data *ch, char *arg, int type,
 		     struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
+
   switch (type) {
   case SPELL_TYPE_SPELL:
     if ( IS_AFFECTED(tar_ch, AFF_TRUE_SIGHT) ){
@@ -492,22 +492,22 @@ void cast_true_seeing( byte level, struct char_data *ch, char *arg, int type,
     spell_true_seeing(level,ch,tar_ch,0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (tar_ch != ch)
 	if (!(IS_AFFECTED(tar_ch, AFF_TRUE_SIGHT)))
 	  spell_true_seeing(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in true_seeing!");
     break;
   }
-  
+
 }
 
 void cast_blindness( byte level, struct char_data *ch, char *arg, int type,
 		    struct char_data *tar_ch, struct obj_data *tar_obj )
-{  
+{
   switch (type) {
   case SPELL_TYPE_SPELL:
     if ( IS_AFFECTED(tar_ch, AFF_BLIND) ){
@@ -536,13 +536,13 @@ void cast_blindness( byte level, struct char_data *ch, char *arg, int type,
     spell_blindness(level,ch,tar_ch,0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group(ch, tar_ch)) 
+      if (!in_group(ch, tar_ch))
 	if (!(IS_AFFECTED(tar_ch, AFF_BLIND)))
 	  spell_blindness(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in blindness!");
     break;
   }
@@ -563,7 +563,7 @@ void cast_light( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_light(level,ch,ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in light!");
     break;
   }
@@ -584,7 +584,7 @@ void cast_cont_light( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_cont_light(level,ch,ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in continual light!");
     break;
   }
@@ -608,11 +608,11 @@ void cast_calm( byte level, struct char_data *ch, char *arg, int type,
     spell_calm(level,ch,ch,0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people; 
+    for (tar_ch = real_roomp(ch->in_room)->people;
 	 tar_ch; tar_ch = tar_ch->next_in_room)
       spell_calm(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in continual light!");
     break;
   }
@@ -636,12 +636,12 @@ void cast_web( byte level, struct char_data *ch, char *arg, int type,
     spell_web(level,ch,ch,0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people; 
+    for (tar_ch = real_roomp(ch->in_room)->people;
 	 tar_ch; tar_ch = tar_ch->next_in_room)
       if (!in_group(ch, tar_ch))
          spell_web(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in web!");
     break;
   }
@@ -660,12 +660,12 @@ void cast_control_weather(byte level,struct char_data *ch, char *arg, int type,
 {
   char buffer[MAX_STRING_LENGTH];
   extern struct weather_data weather_info;
-  
+
   switch (type) {
   case SPELL_TYPE_SPELL:
-    
+
     one_argument(arg,buffer);
-    
+
     if (str_cmp("better",buffer) && str_cmp("worse",buffer))      {
 	send_to_char("Do you want it to get better or worse?\n\r",ch);
 	return;
@@ -673,7 +673,7 @@ void cast_control_weather(byte level,struct char_data *ch, char *arg, int type,
     if (!OUTSIDE(ch)) {
       send_to_char("You need to be outside.\n\r",ch);
     }
-    
+
     if(!str_cmp("better",buffer)) {
       if (weather_info.sky == SKY_CLOUDLESS)
 	return;
@@ -682,16 +682,16 @@ void cast_control_weather(byte level,struct char_data *ch, char *arg, int type,
 	weather_info.sky=SKY_CLOUDLESS;
       }
       if (weather_info.sky == SKY_RAINING) {
-	if ((time_info.month>3)&&(time_info.month < 14)) 
+	if ((time_info.month>3)&&(time_info.month < 14))
 	  send_to_outdoor("The rain has stopped.\n\r");
-	else 
+	else
 	  send_to_outdoor("The snow has stopped. \n\r");
 	weather_info.sky=SKY_CLOUDY;
       }
       if (weather_info.sky == SKY_LIGHTNING) {
-	if ((time_info.month>3)&&(time_info.month<14)) 
+	if ((time_info.month>3)&&(time_info.month<14))
 	  send_to_outdoor("The lightning has gone, but it is still raining.\n\r");
-	else 
+	else
 	  send_to_outdoor("The blizzard is over, but it is still snowing.\n\r");
 	weather_info.sky=SKY_RAINING;
       }
@@ -703,28 +703,28 @@ void cast_control_weather(byte level,struct char_data *ch, char *arg, int type,
 	return;
       }
       if (weather_info.sky == SKY_CLOUDY) {
-	if ((time_info.month > 3) && (time_info.month < 14)) 
+	if ((time_info.month > 3) && (time_info.month < 14))
 	  send_to_outdoor("It starts to rain.\n\r");
-	else 
+	else
 	  send_to_outdoor("It starts to snow. \n\r");
 	weather_info.sky=SKY_RAINING;
       }
       if (weather_info.sky == SKY_RAINING) {
 	if ((time_info.month>3)&&(time_info.month < 14))
 	  send_to_outdoor("You are caught in lightning storm.\n\r");
-	else 
+	else
 	  send_to_outdoor("You are caught in a blizzard. \n\r");
 	weather_info.sky=SKY_LIGHTNING;
       }
       if (weather_info.sky == SKY_LIGHTNING) {
 	return;
       }
-      
+
       return;
     }
     break;
-    
-    default : 
+
+    default :
       log("Serious screw-up in control weather!");
     break;
   }
@@ -746,7 +746,7 @@ void cast_create_food( byte level, struct char_data *ch, char *arg, int type,
          if(tar_ch) return;
          spell_create_food(level,ch,0,0);
 			break;
-    default : 
+    default :
          log("Serious screw-up in create food!");
          break;
 	}
@@ -763,7 +763,7 @@ void cast_create_water( byte level, struct char_data *ch, char *arg, int type,
 			}
 			spell_create_water(level,ch,0,tar_obj);
 			break;
-      default : 
+      default :
          log("Serious screw-up in create water!");
          break;
 	}
@@ -787,7 +787,7 @@ void cast_water_breath( byte level, struct char_data *ch, char *arg, int type,
        	spell_water_breath(level,ch,tar_ch,0);
        	break;
 
-      default : 
+      default :
          log("Serious screw-up in water breath");
          break;
 	}
@@ -811,7 +811,7 @@ void cast_flying( byte level, struct char_data *ch, char *arg, int type,
        	spell_fly(level,ch,tar_ch,0);
        	break;
 
-      default : 
+      default :
          log("Serious screw-up in fly");
          break;
 	}
@@ -831,7 +831,7 @@ void cast_fly_group( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_POTION:
        	spell_fly(level,ch,tar_ch,0);
        	break;
-      default : 
+      default :
          log("Serious screw-up in fly");
          break;
   }
@@ -847,7 +847,7 @@ void cast_heroes_feast( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_STAFF:
        	spell_heroes_feast(level,ch,0,0);
        	break;
-      default : 
+      default :
          log("Serious screw-up in heroes feast");
          break;
   }
@@ -866,12 +866,12 @@ void cast_cure_blind( byte level, struct char_data *ch, char *arg, int type,
 			spell_cure_blind(level,ch,ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_cure_blind(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in cure blind!");
          break;
 	}
@@ -886,7 +886,7 @@ void cast_cure_critic( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
 			spell_cure_critic(level,ch,tar_ch,0);
 			break;
-    case SPELL_TYPE_SCROLL:			
+    case SPELL_TYPE_SCROLL:
 			spell_cure_critic(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_POTION:
@@ -897,12 +897,12 @@ void cast_cure_critic( byte level, struct char_data *ch, char *arg, int type,
 			spell_cure_critic(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_cure_critic(level,ch,tar_ch,0);
          break;
-      default : 
+      default :
          log("Serious screw-up in cure critic!");
          break;
 
@@ -926,12 +926,12 @@ void cast_cure_light( byte level, struct char_data *ch, char *arg, int type,
 			spell_cure_light(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_cure_light(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in cure light!");
          break;
   }
@@ -952,12 +952,12 @@ void cast_cure_serious( byte level, struct char_data *ch, char *arg, int type,
 			spell_cure_serious(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_cure_serious(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in cure serious!");
          break;
   }
@@ -978,12 +978,12 @@ void cast_refresh( byte level, struct char_data *ch, char *arg, int type,
 			spell_refresh(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_refresh(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in refresh!");
          break;
   }
@@ -1002,12 +1002,12 @@ void cast_second_wind( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_WAND:
 
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_second_wind(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in second_wind!");
          break;
   }
@@ -1028,12 +1028,12 @@ void cast_shield( byte level, struct char_data *ch, char *arg, int type,
 			spell_shield(level,ch,tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                spell_shield(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in shield!");
          break;
   }
@@ -1048,7 +1048,7 @@ void cast_curse( byte level, struct char_data *ch, char *arg, int type,
 
   switch (type) {
   case SPELL_TYPE_SPELL:
-    if (tar_obj)   /* It is an object */ 
+    if (tar_obj)   /* It is an object */
       spell_curse(level,ch,0,tar_obj);
     else {              /* Then it is a PC | NPC */
       spell_curse(level,ch,tar_ch,0);
@@ -1058,7 +1058,7 @@ void cast_curse( byte level, struct char_data *ch, char *arg, int type,
     spell_curse(level,ch,ch,0);
     break;
   case SPELL_TYPE_SCROLL:
-    if (tar_obj)   /* It is an object */ 
+    if (tar_obj)   /* It is an object */
       spell_curse(level,ch,0,tar_obj);
     else {              /* Then it is a PC | NPC */
       if (!tar_ch) tar_ch = ch;
@@ -1066,7 +1066,7 @@ void cast_curse( byte level, struct char_data *ch, char *arg, int type,
     }
     break;
   case SPELL_TYPE_WAND:
-    if (tar_obj)   /* It is an object */ 
+    if (tar_obj)   /* It is an object */
       spell_curse(level,ch,0,tar_obj);
     else {              /* Then it is a PC | NPC */
       if (!tar_ch) tar_ch = ch;
@@ -1074,12 +1074,12 @@ void cast_curse( byte level, struct char_data *ch, char *arg, int type,
     }
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch) 
+      if (tar_ch != ch)
 	spell_curse(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       sprintf(buf,"Serious screw up in curse! Char = %s.",ch->player.name);
       log(buf);
     break;
@@ -1104,9 +1104,9 @@ void cast_detect_evil( byte level, struct char_data *ch, char *arg, int type,
 			spell_detect_evil(level,ch,ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                if(!(IS_AFFECTED(tar_ch, AFF_DETECT_EVIL)))
                   spell_detect_evil(level,ch,tar_ch,0);
          break;
@@ -1143,7 +1143,7 @@ void cast_detect_good( byte level, struct char_data *ch, char *arg, int type,
          log("Serious screw-up in detect good!");
          break;
 	}
-} 
+}
 
 void cast_detect_invisibility( byte level, struct char_data *ch, char *arg, int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -1161,13 +1161,13 @@ void cast_detect_invisibility( byte level, struct char_data *ch, char *arg, int 
 			spell_detect_invisibility(level,ch,ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (in_group(ch,tar_ch)) 
+            if (in_group(ch,tar_ch))
                if (!(IS_AFFECTED(tar_ch, AFF_DETECT_INVISIBLE)))
                   spell_detect_invisibility(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in detect invisibility!");
          break;
 	}
@@ -1192,13 +1192,13 @@ void cast_detect_magic( byte level, struct char_data *ch, char *arg, int type,
 			spell_detect_magic(level,ch,ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                if (!(IS_AFFECTED(tar_ch, SPELL_DETECT_MAGIC)))
                   spell_detect_magic(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in detect magic!");
          break;
 	}
@@ -1224,7 +1224,7 @@ void cast_detect_poison( byte level, struct char_data *ch, char *arg, int type,
          if (!tar_ch) tar_ch = ch;
 			spell_detect_poison(level, ch, tar_ch, 0);
 			break;
-    default : 
+    default :
          log("Serious screw-up in detect poison!");
          break;
 	}
@@ -1252,12 +1252,12 @@ void cast_dispel_evil( byte level, struct char_data *ch, char *arg, int type,
 			spell_dispel_evil(level, ch, tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
               spell_dispel_evil(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in dispel evil!");
          break;
 	}
@@ -1283,12 +1283,12 @@ void cast_dispel_good( byte level, struct char_data *ch, char *arg, int type,
 			spell_dispel_good(level, ch, tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
               spell_dispel_good(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in dispel good!");
          break;
 	}
@@ -1314,12 +1314,12 @@ void cast_faerie_fire( byte level, struct char_data *ch, char *arg, int type,
 			spell_faerie_fire(level, ch, tar_ch,0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
               spell_faerie_fire(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in dispel good!");
          break;
 	}
@@ -1339,7 +1339,7 @@ void cast_enchant_weapon( byte level, struct char_data *ch, char *arg, int type,
 			if(!tar_obj) return;
 			spell_enchant_weapon(level, ch, 0,tar_obj);
 			break;
-    default : 
+    default :
       log("Serious screw-up in enchant weapon!");
       break;
 	}
@@ -1363,12 +1363,12 @@ void cast_heal( byte level, struct char_data *ch, char *arg, int type,
 	 spell_heal(level, ch, tar_ch, 0);
 	 break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (in_group(ch, tar_ch)) 
+            if (in_group(ch, tar_ch))
               spell_heal(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in heal!");
          break;
 	}
@@ -1417,13 +1417,13 @@ void cast_invisibility( byte level, struct char_data *ch, char *arg, int type,
 			}
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
             if (tar_ch != ch)
                if (!( IS_AFFECTED(tar_ch, AFF_INVISIBLE)) )
                   spell_invisibility(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in invisibility!");
          break;
 	}
@@ -1439,7 +1439,7 @@ void cast_locate_object( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
       spell_locate_object(level, ch, NULL, tar_obj);
       break;
-    default : 
+    default :
       log("Serious screw-up in locate object!");
     break;
   }
@@ -1458,12 +1458,12 @@ void cast_poison( byte level, struct char_data *ch, char *arg, int type,
 			spell_poison(level, ch, ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_poison(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in poison!");
          break;
 	}
@@ -1486,12 +1486,12 @@ void cast_protection_from_evil( byte level, struct char_data *ch, char *arg, int
 			spell_protection_from_evil(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_protection_from_evil(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in protection from evil!");
          break;
 	}
@@ -1513,12 +1513,12 @@ void cast_protection_from_evil_group( byte level, struct char_data *ch, char *ar
 			spell_protection_from_evil_group(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_protection_from_evil_group(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in protection from evil!");
          break;
 	}
@@ -1539,12 +1539,12 @@ void cast_protection_from_good( byte level, struct char_data *ch, char
 			spell_protection_from_good(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_protection_from_good(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in protection from good!");
          break;
 	}
@@ -1567,12 +1567,12 @@ void cast_protection_from_good_group( byte level, struct char_data *ch,
 			spell_protection_from_good_group(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_protection_from_good_group(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in protection from good group!");
          break;
 	}
@@ -1598,12 +1598,12 @@ void cast_remove_curse( byte level, struct char_data *ch, char *arg, int type,
 			spell_remove_curse(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_remove_curse(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in remove curse!");
          break;
 	}
@@ -1622,12 +1622,12 @@ void cast_remove_poison( byte level, struct char_data *ch, char *arg, int type,
          spell_remove_poison(level, ch, ch, 0);
          break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_remove_poison(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in remove poison!");
          break;
 	}
@@ -1648,12 +1648,12 @@ void cast_remove_paralysis( byte level, struct char_data *ch, char *arg, int typ
          spell_remove_paralysis(level, ch, tar_ch, 0);
          break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_remove_paralysis(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in remove paralysis!");
          break;
 	}
@@ -1681,12 +1681,12 @@ void cast_sanctuary( byte level, struct char_data *ch, char *arg, int type,
 			spell_sanctuary(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_sanctuary(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in sanctuary!");
          break;
 	}
@@ -1711,12 +1711,12 @@ void cast_fireshield( byte level, struct char_data *ch, char *arg, int type,
 			spell_fireshield(level, ch, tar_ch, 0);
 			break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_fireshield(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in fireshield!");
          break;
 	}
@@ -1743,12 +1743,12 @@ void cast_sleep( byte level, struct char_data *ch, char *arg, int type,
          spell_sleep(level, ch, tar_ch, 0);
          break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_sleep(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in sleep!");
          break;
 	}
@@ -1772,12 +1772,12 @@ void cast_strength( byte level, struct char_data *ch, char *arg, int type,
          spell_strength(level, ch, tar_ch, 0);
          break;
     case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_strength(level,ch,tar_ch,0);
          break;
-    default : 
+    default :
          log("Serious screw-up in strength!");
          break;
 	}
@@ -1823,7 +1823,7 @@ void cast_ventriloquate( byte level, struct char_data *ch, char *arg, int type,
 		}
 	}
 }
-     
+
 void cast_word_of_recall( byte level, struct char_data *ch, char *arg,int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
@@ -1847,11 +1847,11 @@ void cast_word_of_recall( byte level, struct char_data *ch, char *arg,int type,
     case SPELL_TYPE_STAFF:
          for (tar_ch = real_roomp(ch->in_room)->people ;tar_ch ; tar_ch = tmp_ch) {
 	    tmp_ch = tar_ch->next_in_room;
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_word_of_recall(level,ch,tar_ch,0);
 	 }
          break;
-    default : 
+    default :
          log("Serious screw-up in word of recall!");
          break;
 	}
@@ -1867,7 +1867,7 @@ void cast_summon( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
 			spell_summon(level, ch, tar_ch, 0);
 			break;
-      default : 
+      default :
          log("Serious screw-up in summon!");
          break;
 	}
@@ -1887,12 +1887,12 @@ void cast_charm_person( byte level, struct char_data *ch, char *arg, int type,
          spell_charm_person(level, ch, tar_ch, 0);
          break;
       case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
                   spell_charm_person(level,ch,tar_ch,0);
          break;
-      default : 
+      default :
          log("Serious screw-up in charm person!");
          break;
 	}
@@ -1910,12 +1910,12 @@ void cast_charm_monster( byte level, struct char_data *ch, char *arg, int type,
          spell_charm_monster(level, ch, tar_ch, 0);
          break;
       case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
                   spell_charm_monster(level,ch,tar_ch,0);
          break;
-      default : 
+      default :
          log("Serious screw-up in charm monster!");
          break;
 	}
@@ -1934,12 +1934,12 @@ void cast_sense_life( byte level, struct char_data *ch, char *arg, int type,
          spell_sense_life(level, ch, ch, 0);
          break;
       case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (tar_ch != ch) 
+            if (tar_ch != ch)
                   spell_sense_life(level,ch,tar_ch,0);
          break;
-      default : 
+      default :
          log("Serious screw-up in sense life!");
          break;
 	}
@@ -1962,7 +1962,7 @@ void cast_identify( byte level, struct char_data *ch, char *arg, int type,
   case SPELL_TYPE_SCROLL:
     spell_identify(level, ch, tar_ch, tar_obj);
     break;
-    default : 
+    default :
       log("Serious screw-up in identify!");
     break;
   }
@@ -2034,7 +2034,7 @@ void cast_fire_breath( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
 			spell_fire_breath(level, ch, tar_ch, 0);
 			break;   /* It's a spell.. But people can'c cast it! */
-      default : 
+      default :
          log("Serious screw-up in firebreath!");
          break;
 	}
@@ -2047,7 +2047,7 @@ void cast_frost_breath( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
 			spell_frost_breath(level, ch, tar_ch, 0);
 			break;   /* It's a spell.. But people can'c cast it! */
-      default : 
+      default :
          log("Serious screw-up in frostbreath!");
          break;
 	}
@@ -2060,7 +2060,7 @@ void cast_acid_breath( byte level, struct char_data *ch, char *arg, int type,
     case SPELL_TYPE_SPELL:
 			spell_acid_breath(level, ch, tar_ch, 0);
 			break;   /* It's a spell.. But people can'c cast it! */
-      default : 
+      default :
          log("Serious screw-up in acidbreath!");
          break;
 	}
@@ -2074,7 +2074,7 @@ void cast_gas_breath( byte level, struct char_data *ch, char *arg, int type,
 				spell_gas_breath(level,ch,tar_ch,0);
          break;
 			/* THIS ONE HURTS!! */
-      default : 
+      default :
          log("Serious screw-up in gasbreath!");
          break;
 	}
@@ -2087,7 +2087,7 @@ void cast_lightning_breath( byte level, struct char_data *ch, char *arg, int typ
     case SPELL_TYPE_SPELL:
 			spell_lightning_breath(level, ch, tar_ch, 0);
 			break;   /* It's a spell.. But people can'c cast it! */
-      default : 
+      default :
          log("Serious screw-up in lightningbreath!");
          break;
 	}
@@ -2131,7 +2131,7 @@ void cast_knock( byte level, struct char_data *ch, char *arg, int type,
      else if (IS_SET(EXIT(ch, door)->exit_info, EX_PICKPROOF))
        send_to_char("You seem to be unable to knock this...\n\r", ch);
      else {
-       if ((EXIT(ch, door)->keyword) && 
+       if ((EXIT(ch, door)->keyword) &&
 	   strcmp("secret", fname(EXIT(ch, door)->keyword)))
 	 act("$n magically opens the lock of the $F.", 0, ch, 0,
 	     EXIT(ch, door)->keyword, TO_ROOM);
@@ -2139,7 +2139,7 @@ void cast_knock( byte level, struct char_data *ch, char *arg, int type,
 	 act("$n magically opens the lock.", TRUE, ch, 0, 0, TO_ROOM);
        send_to_char("The lock quickly yields to your skills.\n\r", ch);
        raw_unlock_door(ch, EXIT(ch, door), door);
-       
+
      }
    }
  }
@@ -2158,7 +2158,7 @@ void cast_knock( byte level, struct char_data *ch, char *arg, int type,
        send_to_char("You magically open a lock.\n", ch);
        raw_unlock_door(ch, exitdata, door);
 
-      } 
+      }
      }
 
     return;
@@ -2170,7 +2170,7 @@ void cast_knock( byte level, struct char_data *ch, char *arg, int type,
 }
 
 
-void cast_know_alignment(byte level, struct char_data *ch, char *arg, 
+void cast_know_alignment(byte level, struct char_data *ch, char *arg,
 	  int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
@@ -2184,7 +2184,7 @@ void cast_know_alignment(byte level, struct char_data *ch, char *arg,
     if (!tar_ch) tar_ch = ch;
     spell_know_alignment(level, ch, tar_ch, 0);
     break;
-  default : 
+  default :
     log("Serious screw-up in know alignment!");
     break;
   }
@@ -2207,18 +2207,18 @@ void cast_weakness( byte level, struct char_data *ch, char *arg, int type,
     spell_weakness(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group) 
+      if (!in_group)
 	spell_weakness(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in weakness!");
     break;
   }
 }
 
-void cast_dispel_magic( byte level, struct char_data *ch, char *arg, 
+void cast_dispel_magic( byte level, struct char_data *ch, char *arg,
 	    int type,struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
@@ -2237,14 +2237,14 @@ void cast_dispel_magic( byte level, struct char_data *ch, char *arg,
     if(!tar_ch) tar_ch = ch;
     spell_dispel_magic(level, ch, tar_ch, 0);
     break;
-    
+
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch) 
+      if (tar_ch != ch)
 	spell_dispel_magic(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in dispel magic");
     break;
   }
@@ -2254,13 +2254,13 @@ void cast_dispel_magic( byte level, struct char_data *ch, char *arg,
 void cast_animate_dead( byte level, struct char_data *ch, char *arg, int type,
 	struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
+
   struct obj_data *i;
-  
+
   if (NoSummon(ch)) return;
-  
+
   switch(type) {
-    
+
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_WAND:
@@ -2287,7 +2287,7 @@ void cast_animate_dead( byte level, struct char_data *ch, char *arg, int type,
       }
     }
     break;
-    default : 
+    default :
       log("Serious screw-up in animate_dead!");
     break;
   }
@@ -2297,7 +2297,7 @@ void cast_animate_dead( byte level, struct char_data *ch, char *arg, int type,
 void cast_succor( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
+
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_WAND:
@@ -2327,12 +2327,12 @@ void cast_paralyze( byte level, struct char_data *ch, char *arg, int type,
     spell_paralyze(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (tar_ch != ch) 
+      if (tar_ch != ch)
 	spell_paralyze(level,ch,tar_ch,0);
     break;
-  default : 
+  default :
       log("Serious screw-up in paralyze");
     break;
   }
@@ -2341,7 +2341,7 @@ void cast_paralyze( byte level, struct char_data *ch, char *arg, int type,
 void cast_fear( byte level, struct char_data *ch, char *arg, int type,
   struct char_data *tar_ch, struct obj_data *tar_obj )
 {
-  
+
   switch (type) {
   case SPELL_TYPE_SPELL:
     spell_fear(level, ch, tar_ch, 0);
@@ -2360,12 +2360,12 @@ void cast_fear( byte level, struct char_data *ch, char *arg, int type,
     spell_fear(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (!in_group(tar_ch,ch) )
 	spell_fear(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in fear");
     break;
   }
@@ -2390,12 +2390,12 @@ void cast_turn( byte level, struct char_data *ch, char *arg, int type,
     spell_turn(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (!in_group(tar_ch,ch) )
 	spell_turn(level,ch,tar_ch,0);
     break;
-  default : 
+  default :
       log("Serious screw-up in turn");
     break;
   }
@@ -2410,7 +2410,7 @@ void cast_faerie_fog( byte level, struct char_data *ch, char *arg, int type,
   case SPELL_TYPE_SCROLL:
     spell_faerie_fog(level, ch, 0, 0);
     break;
-    default : 
+    default :
       log("Serious screw-up in faerie fog!");
     break;
   }
@@ -2430,10 +2430,10 @@ void cast_poly_self( byte level, struct char_data *ch, char *arg, int type,
     send_to_char("You don't really want to do that.\n\r",ch);
     return;
   }
-  
+
   switch(type) {
   case SPELL_TYPE_SPELL:   {
-    
+
     while (!found) {
       if (PolyList[X].level > level) {
 	X--;
@@ -2448,7 +2448,7 @@ void cast_poly_self( byte level, struct char_data *ch, char *arg, int type,
           break;
       }
     }
-    
+
     if (!found) {
       send_to_char("Couldn't find any of those\n\r", ch);
       return;
@@ -2461,9 +2461,9 @@ void cast_poly_self( byte level, struct char_data *ch, char *arg, int type,
       }
       return;
     }
-    
-  } break;  
-    
+
+  } break;
+
   default: {
     log("Problem in poly_self");
   } break;
@@ -2473,7 +2473,7 @@ void cast_poly_self( byte level, struct char_data *ch, char *arg, int type,
 
 
 #define LONG_SWORD   3022
-#define SHIELD       3042     
+#define SHIELD       3042
 #define RAFT         3060
 #define BAG          3032
 #define WATER_BARREL 6013
@@ -2554,7 +2554,7 @@ void cast_conjure_elemental( byte level, struct char_data *ch, char *arg, int ty
     obj = PALE_BLUE_STONE;
   } else if (!str_cmp(buffer, "air")) {
     mob = AIR_ELEMENTAL;
-    obj = CLEAR_STONE; 
+    obj = CLEAR_STONE;
  } else if (!str_cmp(buffer, "earth")) {
     mob = EARTH_ELEMENTAL;
     obj = GREY_STONE;
@@ -2566,7 +2566,7 @@ void cast_conjure_elemental( byte level, struct char_data *ch, char *arg, int ty
     send_to_char(" You must be holding the correct stone\n\r", ch);
     return;
   }
-    
+
   sac = unequip_char(ch, HOLD);
   if (sac) {
     obj_to_char(sac, ch);
@@ -2655,7 +2655,7 @@ void cast_cacaodemon( byte level, struct char_data *ch, char *arg, int type,
     send_to_char(" You must be wielding the correct item\n\r", ch);
     return;
   }
-    
+
   sac = unequip_char(ch, WIELD);
   if (sac) {
     obj_to_char(sac, ch);
@@ -2720,13 +2720,13 @@ void cast_cacaodemon( byte level, struct char_data *ch, char *arg, int type,
     send_to_char("It seems that all demons of that type are currently in the service of others.\n\r", ch);
     return;
   }
-  
+
   if (!ch->equipment[WIELD] && !ch->equipment[HOLD])
      {
       send_to_char("You must wield or hold an item to offer the demon for its services.\n\r",ch);
       return;
      }
-  
+
   if (ch->equipment[WIELD])
      {
       if (obj_index[ch->equipment[WIELD]->item_number].virtual == obj)
@@ -2745,13 +2745,13 @@ void cast_cacaodemon( byte level, struct char_data *ch, char *arg, int type,
       send_to_char("wants you to offer it something else.\n\r",ch);
       return;
      }
-  
+
   sac = unequip_char(ch,(held ? HOLD : WIELD));
   if ( (sac) && (GET_LEVEL(ch,CLERIC_LEVEL_IND) > 40) && IS_EVIL(ch))
      {
       if (sac->obj_flags.cost >= 200)
          equip_char(ch,sac,(held ? HOLD : WIELD));
-        else 
+        else
          obj_to_char(sac, ch);
      }
     else obj_to_char(sac, ch);
@@ -2930,7 +2930,7 @@ void cast_tree_travel( byte level, struct char_data *ch, char *arg, int type,
   }
 }
 
-void cast_speak_with_plants( byte level, struct char_data *ch, char *arg, 
+void cast_speak_with_plants( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -2949,7 +2949,7 @@ void cast_speak_with_plants( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_transport_via_plant( byte level, struct char_data *ch, char *arg, 
+void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   if (!tar_obj)
@@ -2966,7 +2966,7 @@ void cast_transport_via_plant( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_haste( byte level, struct char_data *ch, char *arg, 
+void cast_haste( byte level, struct char_data *ch, char *arg,
 		int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -2985,21 +2985,21 @@ void cast_haste( byte level, struct char_data *ch, char *arg,
     spell_haste(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (!in_group(tar_ch,ch) )
 	spell_haste(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in haste");
     break;
   }
 }
 
 
-void cast_slow( byte level, struct char_data *ch, char *arg, 
+void cast_slow( byte level, struct char_data *ch, char *arg,
 	       int type,  struct char_data *tar_ch, struct obj_data *tar_obj )
-{     
+{
   switch (type) {
   case SPELL_TYPE_SPELL:
     spell_slow(level, ch, tar_ch, 0);
@@ -3015,15 +3015,15 @@ void cast_slow( byte level, struct char_data *ch, char *arg,
     spell_slow(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
       if (!in_group(tar_ch,ch) )
 	spell_slow(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in slow");
     break;
-  }  
+  }
 }
 
 void cast_reincarnate( byte level, struct char_data *ch, char *arg, int type,
@@ -3047,7 +3047,7 @@ void cast_reincarnate( byte level, struct char_data *ch, char *arg, int type,
 }
 
 
-void cast_changestaff( byte level, struct char_data *ch, char *arg, 
+void cast_changestaff( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   char buffer[40];
@@ -3060,7 +3060,7 @@ void cast_changestaff( byte level, struct char_data *ch, char *arg,
     send_to_char(" You must be holding a staff!\n\r", ch);
     return;
   }
-    
+
   switch(type) {
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_SCROLL:
@@ -3076,7 +3076,7 @@ void cast_changestaff( byte level, struct char_data *ch, char *arg,
 
 
 
-void cast_pword_kill( byte level, struct char_data *ch, char *arg, 
+void cast_pword_kill( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3093,7 +3093,7 @@ void cast_pword_kill( byte level, struct char_data *ch, char *arg,
 
 }
 
-void cast_pword_blind( byte level, struct char_data *ch, char *arg, 
+void cast_pword_blind( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3111,7 +3111,7 @@ void cast_pword_blind( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_chain_lightn( byte level, struct char_data *ch, char *arg, 
+void cast_chain_lightn( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3130,7 +3130,7 @@ void cast_chain_lightn( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_scare( byte level, struct char_data *ch, char *arg, 
+void cast_scare( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3149,7 +3149,7 @@ void cast_scare( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_familiar( byte level, struct char_data *ch, char *arg, 
+void cast_familiar( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   char buf[128];
@@ -3171,10 +3171,10 @@ void cast_familiar( byte level, struct char_data *ch, char *arg,
   default:
     log("serious screw-up in familiar.");
     break;
-  }  
+  }
 }
 
-void cast_aid( byte level, struct char_data *ch, char *arg, 
+void cast_aid( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   if (!tar_ch) tar_ch = ch;
@@ -3193,7 +3193,7 @@ void cast_aid( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_holyword( byte level, struct char_data *ch, char *arg, 
+void cast_holyword( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3207,7 +3207,7 @@ void cast_holyword( byte level, struct char_data *ch, char *arg,
       break;
   }
 }
-void cast_unholyword( byte level, struct char_data *ch, char *arg, 
+void cast_unholyword( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3223,7 +3223,7 @@ void cast_unholyword( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_golem( byte level, struct char_data *ch, char *arg, 
+void cast_golem( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3256,15 +3256,15 @@ void cast_command( byte level, struct char_data *ch, char *arg,
   default:
     log("serious screw-up in command.");
     return;
-    break;    
+    break;
   }
 
   for(;*arg==' '; arg++);
 
   if (arg && *arg) {
     p = fname(arg);
-    
-    if ((GetMaxLevel(tar_ch) < 6) && (GET_INT(tar_ch) < 13) || 
+
+    if ((GetMaxLevel(tar_ch) < 6) && (GET_INT(tar_ch) < 13) ||
       !saves_spell(tar_ch, SAVING_PARA)) {
 
       if (strcmp(p, "quit")) {
@@ -3281,13 +3281,13 @@ void cast_command( byte level, struct char_data *ch, char *arg,
 
     if (!IS_PC(tar_ch))
       hit(tar_ch, ch, TYPE_UNDEFINED);
-      
+
   } else
     return;
 
 }
 
-void cast_change_form( byte level, struct char_data *ch, char *arg, 
+void cast_change_form( byte level, struct char_data *ch, char *arg,
 int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   char buffer[40];
@@ -3306,10 +3306,10 @@ int type, struct char_data *tar_ch, struct obj_data *tar_obj )
     send_to_char("You can only change form once every 12 hours\n\r", ch);
     return;
   }
-  
+
   switch(type) {
   case SPELL_TYPE_SPELL:   {
-    
+
     while (!found) {
       if (DruidList[X].level > level) {
 	X--;
@@ -3324,7 +3324,7 @@ int type, struct char_data *tar_ch, struct obj_data *tar_obj )
           break;
       }
     }
-    
+
     if (!found) {
       send_to_char("Couldn't find any of those\n\r", ch);
       return;
@@ -3345,9 +3345,9 @@ int type, struct char_data *tar_ch, struct obj_data *tar_obj )
       }
       return;
     }
-    
-  } break;  
-    
+
+  } break;
+
   default: {
     log("Problem in change form");
   } break;
@@ -3366,7 +3366,7 @@ void cast_shillelagh( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in shillelagh.");
-    break;    
+    break;
   }
 }
 
@@ -3381,7 +3381,7 @@ void cast_goodberry( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in goodberry.");
-    break;    
+    break;
   }
 }
 
@@ -3397,7 +3397,7 @@ void cast_flame_blade( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in flame blade.");
-    break;    
+    break;
   }
 }
 
@@ -3413,7 +3413,7 @@ void cast_animal_growth( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in animal_growth.");
-    break;    
+    break;
   }
 }
 
@@ -3429,7 +3429,7 @@ void cast_insect_growth( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in insect_growth.");
-    break;    
+    break;
   }
 }
 
@@ -3468,7 +3468,7 @@ void cast_creeping_death( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in creeping_death.");
-    break;    
+    break;
   }
 }
 
@@ -3482,7 +3482,7 @@ void cast_commune( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in commune.");
-    break;    
+    break;
   }
 }
 
@@ -3500,7 +3500,7 @@ void cast_feeblemind( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in feeblemind.");
-    break;    
+    break;
   }
 }
 
@@ -3518,7 +3518,7 @@ void cast_animal_summon_1( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in animal summon.");
-    break;    
+    break;
   }
 }
 
@@ -3535,7 +3535,7 @@ void cast_animal_summon_2( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in animal summon.");
-    break;    
+    break;
   }
 }
 
@@ -3552,7 +3552,7 @@ void cast_animal_summon_3( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in animal summon.");
-    break;    
+    break;
   }
 }
 
@@ -3567,7 +3567,7 @@ void cast_fire_servant( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in fire servant.");
-    break;    
+    break;
   }
 }
 
@@ -3583,7 +3583,7 @@ void cast_earth_servant( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in earth servant.");
-    break;    
+    break;
   }
 }
 
@@ -3599,7 +3599,7 @@ void cast_water_servant( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in water servant.");
-    break;    
+    break;
   }
 }
 
@@ -3615,7 +3615,7 @@ void cast_wind_servant( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in wind servant.");
-    break;    
+    break;
   }
 }
 
@@ -3633,7 +3633,7 @@ void cast_veggie_growth( byte level, struct char_data *ch, char *arg,
     break;
   default:
     log("serious screw-up in veggie_growth.");
-    break;    
+    break;
   }
 }
 
@@ -3650,12 +3650,12 @@ void cast_charm_veggie( byte level, struct char_data *ch, char *arg, int type,
          spell_charm_veggie(level, ch, tar_ch, 0);
          break;
       case SPELL_TYPE_STAFF:
-         for (tar_ch = real_roomp(ch->in_room)->people ; 
+         for (tar_ch = real_roomp(ch->in_room)->people ;
               tar_ch ; tar_ch = tar_ch->next_in_room)
-            if (!in_group(tar_ch,ch)) 
+            if (!in_group(tar_ch,ch))
                   spell_charm_veggie(level,ch,tar_ch,0);
          break;
-      default : 
+      default :
          log("Serious screw-up in charm veggie!");
          break;
 	}
@@ -3684,7 +3684,7 @@ void cast_tree( byte level, struct char_data *ch, char *arg, int type,
 
 
 
-void cast_animate_rock( byte level, struct char_data *ch, char *arg, 
+void cast_animate_rock( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3702,7 +3702,7 @@ void cast_animate_rock( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_travelling( byte level, struct char_data *ch, char *arg, 
+void cast_travelling( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3720,7 +3720,7 @@ void cast_travelling( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_animal_friendship( byte level, struct char_data *ch, char *arg, 
+void cast_animal_friendship( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3736,7 +3736,7 @@ void cast_animal_friendship( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_invis_to_animals( byte level, struct char_data *ch, char *arg, 
+void cast_invis_to_animals( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3752,7 +3752,7 @@ void cast_invis_to_animals( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_slow_poison( byte level, struct char_data *ch, char *arg, 
+void cast_slow_poison( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3770,7 +3770,7 @@ void cast_slow_poison( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_entangle( byte level, struct char_data *ch, char *arg, 
+void cast_entangle( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3782,9 +3782,9 @@ void cast_entangle( byte level, struct char_data *ch, char *arg,
       spell_entangle(level, ch, tar_ch, 0);
       break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch)) 
+      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch))
 	spell_entangle(level,ch,tar_ch,0);
 
   default:
@@ -3793,7 +3793,7 @@ void cast_entangle( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_snare( byte level, struct char_data *ch, char *arg, 
+void cast_snare( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3805,9 +3805,9 @@ void cast_snare( byte level, struct char_data *ch, char *arg,
       spell_snare(level, ch, tar_ch, 0);
       break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch)) 
+      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch))
 	spell_snare(level,ch,tar_ch,0);
 
   default:
@@ -3816,7 +3816,7 @@ void cast_snare( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_gust_of_wind( byte level, struct char_data *ch, char *arg, 
+void cast_gust_of_wind( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3834,7 +3834,7 @@ void cast_gust_of_wind( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_barkskin( byte level, struct char_data *ch, char *arg, 
+void cast_barkskin( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3846,9 +3846,9 @@ void cast_barkskin( byte level, struct char_data *ch, char *arg,
     spell_barkskin(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group(tar_ch,ch)) 
+      if (!in_group(tar_ch,ch))
 	spell_barkskin(level,ch,tar_ch,0);
   default:
       log("serious screw-up in barkskin.");
@@ -3857,7 +3857,7 @@ void cast_barkskin( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_warp_weapon( byte level, struct char_data *ch, char *arg, 
+void cast_warp_weapon( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3876,7 +3876,7 @@ void cast_warp_weapon( byte level, struct char_data *ch, char *arg,
 
 
 
-void cast_heat_stuff( byte level, struct char_data *ch, char *arg, 
+void cast_heat_stuff( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3893,7 +3893,7 @@ void cast_heat_stuff( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_sunray( byte level, struct char_data *ch, char *arg, 
+void cast_sunray( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3910,7 +3910,7 @@ void cast_sunray( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_find_traps( byte level, struct char_data *ch, char *arg, 
+void cast_find_traps( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3930,7 +3930,7 @@ void cast_find_traps( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_firestorm( byte level, struct char_data *ch, char *arg, 
+void cast_firestorm( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3947,7 +3947,7 @@ void cast_firestorm( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_dust_devil( byte level, struct char_data *ch, char *arg, 
+void cast_dust_devil( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3963,7 +3963,7 @@ void cast_dust_devil( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_know_monster( byte level, struct char_data *ch, char *arg, 
+void cast_know_monster( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3981,7 +3981,7 @@ void cast_know_monster( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_silence( byte level, struct char_data *ch, char *arg, 
+void cast_silence( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -3995,9 +3995,9 @@ void cast_silence( byte level, struct char_data *ch, char *arg,
     spell_silence(level, ch, tar_ch, 0);
     break;
   case SPELL_TYPE_STAFF:
-    for (tar_ch = real_roomp(ch->in_room)->people ; 
+    for (tar_ch = real_roomp(ch->in_room)->people ;
 	 tar_ch ; tar_ch = tar_ch->next_in_room)
-      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch)) 
+      if (!in_group(tar_ch,ch) && !IS_IMMORTAL(tar_ch))
 	spell_silence(level,ch,tar_ch,0);
   default:
       log("serious screw-up in silence.");
@@ -4005,7 +4005,7 @@ void cast_silence( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_dragon_ride( byte level, struct char_data *ch, char *arg, 
+void cast_dragon_ride( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -4024,7 +4024,7 @@ void cast_dragon_ride( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_mount( byte level, struct char_data *ch, char *arg, 
+void cast_mount( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 
@@ -4040,14 +4040,14 @@ void cast_mount( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_sending( byte level, struct char_data *ch, char *arg, 
+void cast_sending( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 }
 
 
 
-void cast_portal( byte level, struct char_data *ch, char *arg, 
+void cast_portal( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   char buf[512];
@@ -4066,7 +4066,7 @@ void cast_portal( byte level, struct char_data *ch, char *arg,
   }
 }
 
-void cast_teleport_wo_error( byte level, struct char_data *ch, char *arg, 
+void cast_teleport_wo_error( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
@@ -4075,14 +4075,14 @@ void cast_teleport_wo_error( byte level, struct char_data *ch, char *arg,
   case SPELL_TYPE_POTION:
   case SPELL_TYPE_SPELL:
   case SPELL_TYPE_STAFF:
-      
-    if  (!tar_ch) 
+
+    if  (!tar_ch)
       send_to_char("Yes, but who do you wish to teleport to?\n",ch);
-    else 
+    else
       spell_astral_walk(level, ch, tar_ch, 0);
     break;
-    
-    default : 
+
+    default :
       log("Serious screw-up in teleport without error!");
     break;
   }
@@ -4091,7 +4091,7 @@ void cast_teleport_wo_error( byte level, struct char_data *ch, char *arg,
 
 /* NEW STUFF */
 
-void cast_globe_darkness( byte level, struct char_data *ch, char *arg, 
+void cast_globe_darkness( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4106,7 +4106,7 @@ void cast_globe_darkness( byte level, struct char_data *ch, char *arg,
       break;
   }
 }
-void cast_globe_minor_inv( byte level, struct char_data *ch, char *arg, 
+void cast_globe_minor_inv( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4122,7 +4122,7 @@ void cast_globe_minor_inv( byte level, struct char_data *ch, char *arg,
   }
 
 }
-void cast_globe_major_inv( byte level, struct char_data *ch, char *arg, 
+void cast_globe_major_inv( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4138,7 +4138,7 @@ void cast_globe_major_inv( byte level, struct char_data *ch, char *arg,
   }
 
 }
-void cast_prot_energy_drain( byte level, struct char_data *ch, char *arg, 
+void cast_prot_energy_drain( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4154,7 +4154,7 @@ void cast_prot_energy_drain( byte level, struct char_data *ch, char *arg,
   }
 
 }
-void cast_prot_dragon_breath( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4172,7 +4172,7 @@ void cast_prot_dragon_breath( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_anti_magic_shell( byte level, struct char_data *ch, char *arg, 
+void cast_anti_magic_shell( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch (type) {
@@ -4188,7 +4188,7 @@ void cast_anti_magic_shell( byte level, struct char_data *ch, char *arg,
     if (tar_obj) return;
     spell_anti_magic_shell(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in cast_anti_magic_shell!");
     break;
   }
@@ -4212,7 +4212,7 @@ void cast_comp_languages( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_comp_languages(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in comprehend languages!");
     break;
   }
@@ -4236,7 +4236,7 @@ void cast_prot_fire( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_prot_fire(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in cast_prot_fire!");
     break;
   }
@@ -4257,7 +4257,7 @@ void cast_prot_cold( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_prot_cold(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in cast_prot_cold!");
     break;
   }
@@ -4278,7 +4278,7 @@ void cast_prot_energy( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_prot_energy(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in cast_prot_energy!");
     break;
   }
@@ -4299,7 +4299,7 @@ void cast_prot_elec( byte level, struct char_data *ch, char *arg, int type,
     if (tar_obj) return;
     spell_prot_elec(level,ch,tar_ch,0);
     break;
-    default : 
+    default :
       log("Serious screw-up in cast_prot_elec!");
     break;
   }
@@ -4317,19 +4317,19 @@ void cast_enchant_armor( byte level, struct char_data *ch, char *arg, int type,
     if(!tar_obj) return;
     spell_enchant_armor(level, ch, 0,tar_obj);
     break;
-    default : 
+    default :
       log("Serious screw-up in enchant armor!");
     break;
   }
 }
 
-void cast_messenger( byte level, struct char_data *ch, char *arg, 
+void cast_messenger( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
 }
 
 
-void cast_prot_dragon_breath_fire( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath_fire( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4346,7 +4346,7 @@ void cast_prot_dragon_breath_fire( byte level, struct char_data *ch, char *arg,
 
 }
 
-void cast_prot_dragon_breath_frost( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath_frost( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4364,7 +4364,7 @@ void cast_prot_dragon_breath_frost( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_prot_dragon_breath_elec( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath_elec( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4382,7 +4382,7 @@ void cast_prot_dragon_breath_elec( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_prot_dragon_breath_acid( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath_acid( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4400,7 +4400,7 @@ void cast_prot_dragon_breath_acid( byte level, struct char_data *ch, char *arg,
 }
 
 
-void cast_prot_dragon_breath_gas( byte level, struct char_data *ch, char *arg, 
+void cast_prot_dragon_breath_gas( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   switch(type) {
@@ -4417,7 +4417,166 @@ void cast_prot_dragon_breath_gas( byte level, struct char_data *ch, char *arg,
 
 }
 
-void cast_giant_growth( byte level, struct char_data *ch, char *arg, 
+void cast_holy_strength( byte level, struct char_data *ch, char *arg, int type,
+  struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch (type) {
+    case SPELL_TYPE_WAND:
+    case SPELL_TYPE_SPELL:
+			spell_holy_strength(level, ch, tar_ch, 0);
+			break;
+    case SPELL_TYPE_POTION:
+			spell_holy_strength(level, ch, ch, 0);
+			break;
+    case SPELL_TYPE_SCROLL:
+         if(tar_obj) return;
+         if (!tar_ch) tar_ch = ch;
+         spell_holy_strength(level, ch, tar_ch, 0);
+         break;
+    case SPELL_TYPE_STAFF:
+         for (tar_ch = real_roomp(ch->in_room)->people ;
+              tar_ch ; tar_ch = tar_ch->next_in_room)
+            if (tar_ch != ch)
+                  spell_holy_strength(level,ch,tar_ch,0);
+         break;
+    default :
+         log("Serious screw-up in holy strength!");
+         break;
+	}
+}
+
+void cast_holy_armor( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch (type) {
+  case SPELL_TYPE_SPELL:
+    if ( affected_by_spell(tar_ch, SPELL_HOLY_ARMOR) ){
+      send_to_char("Nothing seems to happen.\n\r", ch);
+      return;
+    }
+    if (ch != tar_ch)
+      act("$N is protected by the spirits of god.", FALSE, ch, 0, tar_ch, TO_CHAR);
+
+    spell_holy_armor(level,ch,tar_ch,0);
+    break;
+  case SPELL_TYPE_POTION:
+    if ( affected_by_spell(ch, SPELL_HOLY_ARMOR) )
+      return;
+    spell_holy_armor(level,ch,ch,0);
+    break;
+  case SPELL_TYPE_SCROLL:
+    if (tar_obj) return;
+    if (!tar_ch) tar_ch = ch;
+    if ( affected_by_spell(tar_ch, SPELL_HOLY_ARMOR) )
+      return;
+    spell_holy_armor(level,ch,ch,0);
+    break;
+  case SPELL_TYPE_WAND:
+    if (tar_obj) return;
+    if ( affected_by_spell(tar_ch, SPELL_HOLY_ARMOR) )
+      return;
+    spell_holy_armor(level,ch,ch,0);
+    break;
+    default :
+      log("Serious screw-up in holy armor!");
+    break;
+  }
+}
+
+/*
+-Holy Word
+-Holy Armor
+-Holy Strength
+-enlightenment
+-Circle of Protection
+-Wrath of god
+-Pacifism
+-Sanc
+-Aura of Power
+*/
+void cast_aura_power( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_aura_power(level, ch, tar_ch, 0);
+    break;
+  default:
+      log("serious screw-up in aura of power.");
+      break;
+  }
+}
+
+void cast_pacifism( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_pacifism(level, ch, tar_ch, 0);
+    break;
+  default:
+      log("serious screw-up in pacifism.");
+      break;
+  }
+}
+
+void cast_wrath_god( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_wrath_god(level, ch, tar_ch, 0);
+    break;
+  default:
+      log("serious screw-up in wrath of god.");
+      break;
+  }
+}
+
+void cast_circle_protection( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_circle_protection(level, ch, tar_ch, 0);
+    break;
+  default:
+      log("serious screw-up in circle of protection.");
+      break;
+  }
+}
+
+
+void cast_enlightenment( byte level, struct char_data *ch, char *arg,
+     int type, struct char_data *tar_ch, struct obj_data *tar_obj )
+{
+  switch(type) {
+  case SPELL_TYPE_SPELL:
+  case SPELL_TYPE_SCROLL:
+  case SPELL_TYPE_WAND:
+  case SPELL_TYPE_STAFF:
+    spell_enlightenment(level, ch, tar_ch, 0);
+    break;
+  default:
+      log("serious screw-up in enlightenment.");
+      break;
+  }
+}
+
+
+void cast_giant_growth( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj )
 {
   if (!tar_ch) tar_ch = ch;

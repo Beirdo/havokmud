@@ -656,7 +656,7 @@ if (str_cmp(buf, "add")==0) {
 
 void do_rload(struct char_data *ch, char *argument, int cmd)
 {
-
+	char buf[200];
    char i;
    int start= -1, end = -2;
 
@@ -680,8 +680,13 @@ dlog("in do_rload");
      send_to_char("Hey, end room must be >= start room\r\n", ch);
      return;
    }
-   for (i=0;start>zone_table[i].top&&i<=top_of_zone_table;i++)
-     ;
+   /*We have a problem here.. Infinite loop my ass!!  (GH)  Sept15,2002 */
+   for (i=0;start>zone_table[i].top&&i<=top_of_zone_table;i++) {
+	 //sprintf(buf,"I=%d start=%d zoneTableI=%d top of zone=%d",
+	 //	i,start,zone_table[i].top, top_of_zone_table);
+	 //	printf(buf);
+   }
+     //;
    if (i > top_of_zone_table) {
      send_to_char("Strange, start room is outside of any zone.\r\n",ch);
      return;
@@ -1008,9 +1013,13 @@ dlog("in do_goto");
 	 pers->next_in_room, i++);
     if (i > 1)
       {
-	send_to_char(
-	   "There's a private conversation going on in that room.\n\r", ch);
-	return;
+
+		 if(GetMaxLevel(ch) < 60) {
+			send_to_char(
+		   "There's a private conversation going on in that room.\n\r", ch);
+			return;
+		}else
+			send_to_char("There is a private converstion but your a level 60\n\r",ch);
       }
   }
 
@@ -3013,11 +3022,11 @@ void roll_abilities(struct char_data *ch)
 
       temp = (unsigned int)rools[0]+(unsigned int)rools[1]+(unsigned int)rools[2]+(unsigned int)rools[3] -
 	MIN((int)rools[0], MIN((int)rools[1], MIN((int)rools[2],(int)rools[3])));
-
       for(k=0; k<MAX_STAT; k++)
 	if (table[k] < temp)
 	  SWITCH(temp, table[k]);
     }
+
     for(j=0,avg=0;j<MAX_STAT;j++)
       avg += table[j];
     avg /= j;
@@ -3309,6 +3318,10 @@ if (!HasClass(ch,CLASS_DRUID) && HasClass(ch,CLASS_RANGER|CLASS_PALADIN))
 	if (!IS_SET(ch->specials.act, PLR_WIMPY))
     	SET_BIT(ch->specials.act, PLR_WIMPY);
     send_to_char("Wimpy mode activated\n\r",ch);
+
+	if (!IS_SET(ch->player.user_flags,SHOW_EXITS))
+		SET_BIT(ch->player.user_flags,SHOW_EXITS);
+    send_to_char("Autoexits activated\n\r",ch);
 
   if (IS_SET(ch->player.class, CLASS_THIEF))   {
     if (GET_RACE(ch) == RACE_HUMAN)

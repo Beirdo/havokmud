@@ -995,6 +995,22 @@ void spell_dragon_ride(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj);
 
 
+/* New Paladin spells */
+void spell_holy_strength(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_enlightenment(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_circle_protection(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_wrath_god(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_pacifism(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_aura_power(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+void spell_holy_armor(byte level, struct char_data *ch,
+		 struct char_data *victim, struct obj_data *obj);
+
 /* From magicutils.c */
 
 int SwitchStuff( struct char_data *giver, struct char_data *taker);
@@ -1853,6 +1869,25 @@ void cast_portal( byte level, struct char_data *ch, char *arg,
 void cast_teleport_wo_error( byte level, struct char_data *ch, char *arg,
      int type, struct char_data *tar_ch, struct obj_data *tar_obj );
 
+/*New Paladin Spells (GH) */
+void cast_holy_armor( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_holy_strength( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_enlightenment( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+
+void cast_circle_protection( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_wrath_god( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_pacifism( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+void cast_aura_power( byte level, struct char_data *ch, char *arg, int type,
+		struct char_data *tar_ch, struct obj_data *tar_obj );
+
+
+
 
 /* From utility.c */
 int fighting_in_room(int room_n);
@@ -2094,7 +2129,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 int Magic_Pool(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
 int Read_Room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
-
+int QuestorGOD(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 
 /*Spec_procs2*/
 
