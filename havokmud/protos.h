@@ -379,6 +379,7 @@ void do_setwtype(struct char_data *ch, char *argument, int cmd);
 void do_setsound(struct char_data *ch, char *argument, int cmd);
 void do_goodiebag(struct char_data *ch, char *argument, int cmd);
 void do_tweak(struct char_data *ch, char *argument, int cmd);
+void do_showpoofs(struct char_data *ch, char *argument, int cmd);
 /* From board.c */
 
 void board_write_msg(struct char_data *ch, char *arg, int bnum);

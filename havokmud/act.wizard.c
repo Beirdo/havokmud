@@ -7798,3 +7798,31 @@ dlog("in do_reimb");
 	return;
 }
 
+void do_showpoofs (struct char_data *ch, char *argument, int cmd)
+{
+	struct char_data *v;
+
+	char buf[MAX_INPUT_LENGTH];
+
+if ((GetMaxLevel(ch) >0 ) && (GetMaxLevel(ch) < LOW_IMMORTAL)) {
+      send_to_char("Pardon?\n\r", ch);
+      return;
+      }
+if (!IS_SET(ch->specials.pmask, BIT_POOF_OUT) || !ch->specials.poofout)
+	  send_to_char ("You have not set a bamfout.\n\r\n\r", ch);
+
+else {
+	  send_to_char ("Your bamfout is:\n\r\n\r", ch);
+	  act(ch->specials.poofout, FALSE, ch, 0, v, TO_CHAR);
+	  send_to_char ("", ch);
+     }
+
+if (!IS_SET(ch->specials.pmask, BIT_POOF_IN)|| !ch->specials.poofin)
+	send_to_char ("You have not set a bamfin.\n\r\n\r", ch);
+
+else{
+	send_to_char("Your bamfin is:\n\r\n\r", ch);
+	act(ch->specials.poofin, FALSE, ch, 0, v, TO_CHAR);
+    send_to_char("", ch);
+    }
+  }
