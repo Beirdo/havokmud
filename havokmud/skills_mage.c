@@ -2517,7 +2517,7 @@ void spell_energy_drain(int level, struct char_data *ch,
             damage(ch, victim, dam, SPELL_ENERGY_DRAIN);
             if (!IS_NPC(victim)) {
                 victim->old_exp = GET_EXP(victim);
-                drop_level(victim, BestClassBIT(victim), FALSE);
+                drop_level(victim, BestClassIND(victim), FALSE);
                 set_title(victim);
             } else {
                 tmp = GET_MAX_HIT(victim) / GetMaxLevel(victim);
@@ -2536,7 +2536,7 @@ void spell_energy_drain(int level, struct char_data *ch,
             damage(ch, victim, dam, SPELL_ENERGY_DRAIN);
             if (!IS_NPC(ch)) {
                 ch->old_exp = GET_EXP(ch);
-                drop_level(ch, BestClassBIT(ch), FALSE);
+                drop_level(ch, BestClassIND(ch), FALSE);
                 set_title(ch);
             } else {
                 tmp = GET_MAX_HIT(victim) / GetMaxLevel(victim);

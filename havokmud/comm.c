@@ -2825,7 +2825,7 @@ void construct_prompt(char *outbuf, struct char_data *ch)
                     for (l = 1, i = 0, exp = 999999999;
                          i <= NECROMANCER_LEVEL_IND; i++, l <<= 1) {
                         if (HasClass(ch, l)) {
-                            texp = classes[i].titles[GET_LEVEL(ch, i) + 1].exp -
+                            texp = classes[i].levels[GET_LEVEL(ch, i) + 1].exp -
                                    GET_EXP(ch);
                             if (texp < exp) {
                                 exp = texp;

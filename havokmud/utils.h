@@ -79,9 +79,9 @@
 
 #define GET_CLASS_TITLE(ch, class, lev)   ((ch)->player.sex ?  \
    (((ch)->player.sex == 1) ? \
-    classes[(int)(class)].titles[(int)(lev)].title_m : \
-    classes[(int)(class)].titles[(int)(lev)].title_f) : \
-    classes[(int)(class)].titles[(int)(lev)].title_m)
+    classes[(int)(class)].levels[(int)(lev)].title_m : \
+    classes[(int)(class)].levels[(int)(lev)].title_f) : \
+    classes[(int)(class)].levels[(int)(lev)].title_m)
 
 #define GET_REQ(i) (i<2  ? "Awful" :(i<4  ? "Bad"     :(i<7  ? "Poor"      :\
 (i<10 ? "Average" :(i<14 ? "Fair"    :(i<20 ? "Good"    :(i<24 ? "Very good" :\

@@ -18,6 +18,7 @@ extern int      RacialMax[][MAX_CLASS];
 extern struct wis_app_type wis_app[];
 extern struct con_app_type con_app[];
 
+
 void            do_save(struct char_data *ch, char *argument, int cmd);
 
 #define VOID_PULL_TIME   30
@@ -593,6 +594,7 @@ void advance_level(struct char_data *ch, int class)
                     add_mana = 0,
                     add_move = 0;
     char            bufx[50];
+    int             level;
 
     if (class > MAX_CLASS) {
         Log("Bad advance class.. no such class");
@@ -600,9 +602,8 @@ void advance_level(struct char_data *ch, int class)
     }
     add_move = GET_MAX_MOVE(ch);
     add_mana = GET_MAX_MANA(ch);
-    if (GET_LEVEL(ch, class) > 0 && 
-        GET_EXP(ch) < classes[class].titles[(int)GET_LEVEL(ch, class) + 1].exp)
-    {
+    level = GET_LEVEL(ch, class);
+    if (level > 0 && GET_EXP(ch) < classes[class].levels[level + 1].exp) {
         /*
          * they can't advance here 
          */
@@ -611,24 +612,19 @@ void advance_level(struct char_data *ch, int class)
     }
 
     GET_LEVEL(ch, class) += 1;
+    level++;
+
     if (class == WARRIOR_LEVEL_IND || class == BARBARIAN_LEVEL_IND || 
         class == PALADIN_LEVEL_IND || class == RANGER_LEVEL_IND) {
         add_hp = con_app[(int)GET_RCON(ch)].hitp;
     } else {
         add_hp = MIN(con_app[(int)GET_RCON(ch)].hitp, 2);
     }
+
     switch (class) {
-
     case MAGE_LEVEL_IND:
-        if (GET_LEVEL(ch, MAGE_LEVEL_IND) < 12) {
-            add_hp += number(2, 6);
-        } else {
-            add_hp += 1;
-        }
-        break;
-
     case SORCERER_LEVEL_IND:
-        if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 12) {
+        if (level < 12) {
             add_hp += number(2, 6);
         } else {
             add_hp += 1;
@@ -636,7 +632,7 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case CLERIC_LEVEL_IND:
-        if (GET_LEVEL(ch, CLERIC_LEVEL_IND) < 12) {
+        if (level < 12) {
             add_hp += number(3, 15);
         } else {
             add_hp += 3;
@@ -644,15 +640,8 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case THIEF_LEVEL_IND:
-        if (GET_LEVEL(ch, THIEF_LEVEL_IND) < 12) {
-            add_hp += number(2, 10);
-        } else {
-            add_hp += 2;
-        }
-        break;
-
     case PSI_LEVEL_IND:
-        if (GET_LEVEL(ch, PSI_LEVEL_IND) < 12) {
+        if (level < 12) {
             add_hp += number(2, 10);
         } else {
             add_hp += 2;
@@ -660,7 +649,8 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case WARRIOR_LEVEL_IND:
-        if (GET_LEVEL(ch, WARRIOR_LEVEL_IND) < 10) {
+    case PALADIN_LEVEL_IND:
+        if (level < 10) {
             add_hp += number(3, 16);
         } else {
             add_hp += 4;
@@ -668,23 +658,15 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case RANGER_LEVEL_IND:
-        if (GET_LEVEL(ch, RANGER_LEVEL_IND) < 11) {
+        if (level < 11) {
             add_hp += number(3, 13);
         } else {
             add_hp += 4;
         }
         break;
 
-    case PALADIN_LEVEL_IND:
-        if (GET_LEVEL(ch, PALADIN_LEVEL_IND) < 10) {
-            add_hp += number(3, 16);
-        } else {
-            add_hp += 4;
-        }
-        break;
-
     case BARBARIAN_LEVEL_IND:
-        if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) < 15) {
+        if (level < 15) {
             add_hp += number(3, 22);
         } else {
             add_hp += 6;
@@ -692,7 +674,7 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case DRUID_LEVEL_IND:
-        if (GET_LEVEL(ch, DRUID_LEVEL_IND) < 15) {
+        if (level < 15) {
             add_hp += number(2, 14);
         } else {
             add_hp += 3;
@@ -700,7 +682,7 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case MONK_LEVEL_IND:
-        if (GET_LEVEL(ch, MONK_LEVEL_IND) < 17) {
+        if (level < 17) {
             add_hp += number(2, 10);
         } else {
             add_hp += 2;
@@ -708,7 +690,7 @@ void advance_level(struct char_data *ch, int class)
         break;
 
     case NECROMANCER_LEVEL_IND:
-        if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) < 12) {
+        if (level < 12) {
             add_hp += number(2, 10);
         } else {
             add_hp += 2;
@@ -753,19 +735,10 @@ void advance_level(struct char_data *ch, int class)
 /*
  * Lose in various points 
  */
-
-/*
- * Tricky for multi-class...
- * Fixed by msw ....
- */
-
 void drop_level(struct char_data *ch, int class, int goddrain)
 {
-    int             add_hp,
-                    lin_class = 0;
-
-    extern struct wis_app_type wis_app[];
-    extern struct con_app_type con_app[];
+    int             add_hp;
+    int             level;
 
     if (!goddrain && IS_IMMORTAL(ch)) {
             return;
@@ -774,111 +747,73 @@ void drop_level(struct char_data *ch, int class, int goddrain)
     if (GetMaxLevel(ch) == 1) {
         return;
     }
+
     add_hp = con_app[(int)GET_RCON(ch)].hitp;
+    level = GET_LEVEL(ch, class);
 
     switch (class) {
-    case CLASS_MAGIC_USER:
-        lin_class = MAGE_LEVEL_IND;
-        if (GET_LEVEL(ch, MAGE_LEVEL_IND) < 12) {
+    case MAGE_LEVEL_IND:
+    case SORCERER_LEVEL_IND:
+        if (level < 12) {
             add_hp += number(2, 8);
         } else {
             add_hp += 2;
         }
         break;
 
-    case CLASS_SORCERER:
-        lin_class = SORCERER_LEVEL_IND;
-        if (GET_LEVEL(ch, SORCERER_LEVEL_IND) < 12) {
-            add_hp += number(2, 8);
-        } else {
-            add_hp += 2;
-        }
-        break;
-
-    case CLASS_CLERIC:
-        lin_class = CLERIC_LEVEL_IND;
-        if (GET_LEVEL(ch, CLERIC_LEVEL_IND) < 12) {
+    case CLERIC_LEVEL_IND:
+        if (level < 12) {
             add_hp += number(2, 12);
         } else {
             add_hp += 5;
         }
         break;
 
-    case CLASS_THIEF:
-        lin_class = THIEF_LEVEL_IND;
-        if (GET_LEVEL(ch, THIEF_LEVEL_IND) < 12) {
+    case THIEF_LEVEL_IND:
+    case PSI_LEVEL_IND:
+        if (level < 12) {
             add_hp += number(2, 10);
         } else {
             add_hp += 4;
         }
         break;
 
-    case CLASS_PSI:
-        lin_class = PSI_LEVEL_IND;
-        if (GET_LEVEL(ch, PSI_LEVEL_IND) < 12) {
-            add_hp += number(2, 10);
-        } else {
-            add_hp += 4;
-        }
-        break;
-
-    case CLASS_WARRIOR:
-        lin_class = WARRIOR_LEVEL_IND;
-        if (GET_LEVEL(ch, WARRIOR_LEVEL_IND) < 10) {
+    case WARRIOR_LEVEL_IND:
+    case PALADIN_LEVEL_IND:
+        if (level < 10) {
             add_hp += number(2, 16);
         } else {
             add_hp += 6;
         }
         break;
 
-    case CLASS_PALADIN:
-        lin_class = PALADIN_LEVEL_IND;
-        if (GET_LEVEL(ch, PALADIN_LEVEL_IND) < 10) {
-            add_hp += number(2, 16);
-        } else {
-            add_hp += 6;
-        }
-        break;
-
-    case CLASS_RANGER:
-        lin_class = RANGER_LEVEL_IND;
-        if (GET_LEVEL(ch, RANGER_LEVEL_IND) < 11) {
+    case RANGER_LEVEL_IND:
+        if (level < 11) {
             add_hp += number(2, 13);
         } else {
             add_hp += 6;
         }
         break;
 
-    case CLASS_DRUID:
-        lin_class = DRUID_LEVEL_IND;
-        if (GET_LEVEL(ch, DRUID_LEVEL_IND) < 15) {
+    case DRUID_LEVEL_IND:
+        if (level < 15) {
             add_hp += number(2, 12);
         } else {
             add_hp += 5;
         }
         break;
 
-    case CLASS_MONK:
-        lin_class = MONK_LEVEL_IND;
-        if (GET_LEVEL(ch, MONK_LEVEL_IND) < 17) {
+    case MONK_LEVEL_IND:
+        if (level < 17) {
             add_hp += number(2, 10);
         } else {
             add_hp += 4;
         }
         break;
 
-    case CLASS_BARBARIAN:
-        lin_class = BARBARIAN_LEVEL_IND;
-        if (GET_LEVEL(ch, BARBARIAN_LEVEL_IND) < 15) {
-            add_hp += number(2, 14);
-        } else {
-            add_hp += 8;
-        }
-        break;
-
-    case CLASS_NECROMANCER:
-        lin_class = NECROMANCER_LEVEL_IND;
-        if (GET_LEVEL(ch, NECROMANCER_LEVEL_IND) < 15) {
+    case BARBARIAN_LEVEL_IND:
+    case NECROMANCER_LEVEL_IND:
+        if (level < 15) {
             add_hp += number(2, 14);
         } else {
             add_hp += 8;
@@ -886,73 +821,67 @@ void drop_level(struct char_data *ch, int class, int goddrain)
         break;
     }
 
-    GET_LEVEL(ch, lin_class) -= 1;
-
-    if (GET_LEVEL(ch, lin_class) < 1) {
-        GET_LEVEL(ch, lin_class) = 1;
-        if (ch->points.max_hit > 20) {
-            ch->points.max_hit = 20;
-        }
-    }
-    if (class == CLASS_WARRIOR) {
+    switch( class ) {
+    case WARRIOR_LEVEL_IND:
+    case PALADIN_LEVEL_IND:
         add_hp = MAX(add_hp, 6);
-    }
-    if (class == CLASS_BARBARIAN) {
+        break;
+
+    case BARBARIAN_LEVEL_IND:
         add_hp = MAX(add_hp, 8);
-    }
-    if (class == CLASS_PALADIN) {
-        add_hp = MAX(add_hp, 6);
-    }
-    if (class == CLASS_RANGER) {
+        break;
+
+    case RANGER_LEVEL_IND:
+    case CLERIC_LEVEL_IND:
+    case DRUID_LEVEL_IND:
         add_hp = MAX(add_hp, 5);
-    }
-    if (class == CLASS_CLERIC) {
-        add_hp = MAX(add_hp, 5);
-    }
-    if (class == CLASS_THIEF) {
+        break;
+
+    case THIEF_LEVEL_IND:
+    case PSI_LEVEL_IND:
+    case MONK_LEVEL_IND:
         add_hp = MAX(add_hp, 4);
-    }
-    if (class == CLASS_PSI) {
-        add_hp = MAX(add_hp, 4);
-    }
-    if (class == CLASS_MAGIC_USER) {
+        break;
+
+    case MAGE_LEVEL_IND:
+    case SORCERER_LEVEL_IND:
+    case NECROMANCER_LEVEL_IND:
         add_hp = MAX(add_hp, 3);
+        break;
     }
-    if (class == CLASS_SORCERER) {
-        add_hp = MAX(add_hp, 3);
-    }
-    if (class == CLASS_MONK) {
-        add_hp = MAX(add_hp, 4);
-    }
-    if (class == CLASS_DRUID) {
-        add_hp = MAX(add_hp, 5);
-    }
-    if (class == CLASS_NECROMANCER) {
-        add_hp = MAX(add_hp, 3);
-    }
+
     add_hp /= HowManyClasses(ch);
 
     if (add_hp <= 2) {
         add_hp = 3;
     }
+
     ch->points.max_hit -= MAX(1, add_hp);
     if (ch->points.max_hit < 1) {
         ch->points.max_hit = 1;
     }
+
     ch->specials.spells_to_learn -=
         MAX(1, MAX(2, wis_app[(int)GET_RWIS(ch)].bonus) / HowManyClasses(ch));
 
-    if (ch->points.exp >
-        MIN(classes[lin_class].titles[(int)GET_LEVEL(ch, lin_class)].exp,
-            GET_EXP(ch))) {
-        ch->points.exp = 
-            MIN(classes[lin_class].titles[(int)GET_LEVEL(ch, lin_class)].exp,
-                GET_EXP(ch));
+
+    if (level == 1) {
+        if (ch->points.max_hit > 20) {
+            ch->points.max_hit = 20;
+        }
+    } else {
+        level--;
+        GET_LEVEL(ch, class) = level;
+    }
+
+    if (ch->points.exp > MIN(classes[class].levels[level].exp, GET_EXP(ch))) {
+        ch->points.exp = MIN(classes[class].levels[level].exp, GET_EXP(ch));
     }
 
     if (ch->points.exp < 0) {
         ch->points.exp = 0;
     }
+
     send_to_char("You lose a level.\n\r", ch);
 }
 
@@ -979,6 +908,7 @@ void gain_exp(struct char_data *ch, int gain)
     int             i;
     char            buf[256];
     short           chrace;
+    int             level;
 
     if( IS_IMMORTAL(ch) || gain == 0 ) {
         return;
@@ -1013,28 +943,24 @@ void gain_exp(struct char_data *ch, int gain)
             chrace = GET_RACE(ch);
         }
 
-        for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) && (GET_LEVEL(ch, i)) < RacialMax[chrace][i] &&
-                (GET_LEVEL(ch, i) < MAX_MORT)) {
-                if (GET_EXP(ch) >= classes[i].titles[GET_LEVEL(ch, i) + 2].exp -
-                                   1) {
+        for (i = 0; i < MAX_CLASS; i++) {
+            level = GET_LEVEL(ch, i);
+            if (level && level < RacialMax[chrace][i] && level < MAX_MORT) {
+                if (GET_EXP(ch) >= classes[i].levels[level + 2].exp - 1) {
                     /* 
                      * is already maxxed 
                      */
                     send_to_char("You must gain at your guild before"
                                  " you can acquire more experience.\n\r", ch);
                     return;
-                } else if (GET_EXP(ch) >= 
-                             classes[i].titles[GET_LEVEL(ch, i) + 1].exp &&
+                } else if (GET_EXP(ch) >= classes[i].levels[level + 1].exp &&
                            GET_EXP(ch) + gain >= 
-                               classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1)
-                {
+                               classes[i].levels[level + 2].exp - 1) {
                     /* 
                      * char was levelled, not maxxed 
                      * but hits max with this one 
                      */
-                    GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp -
-                                  1;  
+                    GET_EXP(ch) = classes[i].levels[level + 2].exp - 1;  
 
                     /* 
                      * Let's tell him then.  
@@ -1042,26 +968,24 @@ void gain_exp(struct char_data *ch, int gain)
                     send_to_char("You must gain at your guild before you "
                                  "can acquire more experience.\n\r", ch);
                     return;
-                } else if (GET_EXP(ch) <
-                               classes[i].titles[GET_LEVEL(ch, i) + 1].exp &&
+                } else if (GET_EXP(ch) < classes[i].levels[level + 1].exp &&
                            GET_EXP(ch) + gain >= 
-                               classes[i].titles[GET_LEVEL(ch, i) + 1].exp) {
+                               classes[i].levels[level + 1].exp) {
                     /* 
                      * this is the levelling stroke 
                      */
                     sprintf(buf, "You have gained enough to be a(n) %s.\n\r",
-                            GET_CLASS_TITLE(ch, i, GET_LEVEL(ch, i) + 1));
+                            GET_CLASS_TITLE(ch, i, level + 1));
                     send_to_char(buf, ch);
                     send_to_char("You must return to a guild to earn "
                                  "the level.\n\r", ch);
 
                     if (GET_EXP(ch) + gain >= 
-                            classes[i].titles[GET_LEVEL(ch, i) + 2].exp) {
+                            classes[i].levels[level + 2].exp) {
                         /* 
                          * this is the maxxing stroke 
                          */
-                        GET_EXP(ch) = 
-                            classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
+                        GET_EXP(ch) = classes[i].levels[level + 2].exp - 1;
                         
                         /* 
                          * let's notify them 
@@ -1083,17 +1007,16 @@ void gain_exp(struct char_data *ch, int gain)
             CheckLegendStatus(ch);
         }
         
-        for (i = MAGE_LEVEL_IND; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i) && GET_LEVEL(ch, i) < RacialMax[chrace][i] && 
-                GET_LEVEL(ch, i) < MAX_MORT &&
-                GET_EXP(ch) > classes[i].titles[GET_LEVEL(ch, i) + 2].exp) {
+        for (i = 0; i < MAX_CLASS; i++) {
+            level = GET_LEVEL(ch, i);
+            if (level && level < RacialMax[chrace][i] && level < MAX_MORT &&
+                GET_EXP(ch) > classes[i].levels[level + 2].exp) {
                 /* Max the XP to one less than 2 levels above current, unless
                  * the level is MAX_MORT
                  */
-                GET_EXP(ch) = classes[i].titles[GET_LEVEL(ch, i) + 2].exp - 1;
+                GET_EXP(ch) = classes[i].levels[level + 2].exp - 1;
             }
         }
-
     } else {
         /* 
          * Negative gain 
@@ -1119,7 +1042,7 @@ void gain_exp_regardless(struct char_data *ch, int gain, int class)
             GET_EXP(ch) += gain;
 
             for (i = 0; 
-                 i < ABS_MAX_LVL && classes[class].titles[i].exp <= GET_EXP(ch);
+                 i < ABS_MAX_LVL && classes[class].levels[i].exp <= GET_EXP(ch);
                  i++) {
                 if (i > GET_LEVEL(ch, class)) {
                     send_to_char("You raise a level\n\r", ch);
@@ -1129,6 +1052,7 @@ void gain_exp_regardless(struct char_data *ch, int gain, int class)
                 }
             }
         }
+
         if (gain < 0) {
             GET_EXP(ch) += gain;
         }

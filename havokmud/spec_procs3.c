@@ -997,7 +997,7 @@ int strahd_vampire(struct char_data *ch, int cmd, char *arg,
                  */
                 act("$n bites $N who looks drained and weak!", FALSE,
                     ch, 0, tmp, TO_ROOM);
-                drop_level(tmp, BestClassBIT(tmp), FALSE);
+                drop_level(tmp, BestClassIND(tmp), FALSE);
                 set_title(tmp);
                 do_save(tmp, NULL, 0);
             }
@@ -1103,7 +1103,7 @@ int banshee(struct char_data *ch, int cmd, char *arg,
                 act("$n bites $N who looks drained!", FALSE, ch, 0, tmp,
                     TO_ROOM);
                 act("$n bites you hard!", FALSE, ch, 0, tmp, TO_CHAR);
-                drop_level(tmp, BestClassBIT(tmp), FALSE);
+                drop_level(tmp, BestClassIND(tmp), FALSE);
             }
             set_title(tmp);
             do_save(tmp, NULL, 0);

@@ -104,34 +104,43 @@ int guildmaster_skeleton(struct char_data *ch, int cmd, char *arg,
          */
         if (cmd == 243) {
             if (GET_EXP(ch) <
-                classes[level_ind].titles[GET_LEVEL(ch, level_ind) + 1].exp) {
+                classes[level_ind].levels[GET_LEVEL(ch, level_ind) + 1].exp) {
                 do_mobTell2(ch, guildmaster, "You're not ready to gain yet!");
                 /*
                  * send_to_char("Your not ready to gain yet!", ch);
                  */
                 return (FALSE);
-            } else {
+            } 
+            
+            if (level_ind == MONK_LEVEL_IND) {
                 /*
                  * Special case: Monks have to do a challenge to gain
                  * after level 9
                  */
-                if (level_ind == MONK_LEVEL_IND) {
-                    if (GET_LEVEL(ch, MONK_LEVEL_IND) <= 9) {
-                        GainLevel(ch, MONK_LEVEL_IND);
-                    } else {
-                        send_to_char("You must fight another monk for this "
-                                     "title.\n\r", ch);
-                    }
-                    return (TRUE);
-                } else {
-                    /*
-                     * else just gain the level
-                     */
-                    GainLevel(ch, level_ind);
-                    return (TRUE);
+                if (GET_LEVEL(ch, MONK_LEVEL_IND) > 9) {
+                    send_to_char("You must fight another monk for this "
+                                 "title.\n\r", ch);
                 }
+                return (TRUE);
+            } 
+            
+            if (level_ind == DRUID_LEVEL_IND) {
+                /*
+                 * Special case: Monks have to do a challenge to gain
+                 * after level 9
+                 */
+                if (GET_LEVEL(ch, DRUID_LEVEL_IND) > 9) {
+                    send_to_char("You must fight another druid for this "
+                                 "title.\n\r", ch);
+                }
+                return (TRUE);
+            } 
 
-            }
+            /*
+             * else just gain the level
+             */
+            GainLevel(ch, level_ind);
+            return (TRUE);
         }
 
         if (!arg || !*arg) {
@@ -517,7 +526,7 @@ int monk_master(struct char_data *ch, int cmd, char *arg,
 
         if( GET_EXP(ch) <
             classes[MONK_LEVEL_IND].
-                titles[GET_LEVEL(ch, MONK_LEVEL_IND) + 1].exp) {
+                levels[GET_LEVEL(ch, MONK_LEVEL_IND) + 1].exp) {
             send_to_char("You're not ready to gain yet!\n\r", ch);
             return (FALSE);
         }
@@ -1477,7 +1486,7 @@ char           *how_good(int percent)
 
 int GainLevel(struct char_data *ch, int class)
 {
-    if (GET_EXP(ch) >= classes[class].titles[GET_LEVEL(ch, class) + 1].exp) {
+    if (GET_EXP(ch) >= classes[class].levels[GET_LEVEL(ch, class) + 1].exp) {
         if (GET_LEVEL(ch, class) < RacialMax[GET_RACE(ch)][class]) {
             if (GET_LEVEL(ch, class) < 50) {
                 send_to_char("You raise a level!\n\r", ch);
@@ -1532,7 +1541,7 @@ int SorcGuildMaster(struct char_data *ch, int cmd, char *arg,
         if (cmd == 243) {
             if ( GET_EXP(ch) <
                 classes[SORCERER_LEVEL_IND].
-                    titles[GET_LEVEL(ch, SORCERER_LEVEL_IND) + 1].exp) {
+                    levels[GET_LEVEL(ch, SORCERER_LEVEL_IND) + 1].exp) {
                 send_to_char("You're not ready to gain yet!", ch);
                 return (FALSE);
             } else {

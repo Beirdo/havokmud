@@ -2425,6 +2425,7 @@ void do_score(struct char_data *ch, char *argument, int cmd)
     int             x;
     char            color[10],
                     color2[10];
+    int             level;
 
     dlog("in do_score");
 
@@ -2450,9 +2451,8 @@ void do_score(struct char_data *ch, char *argument, int cmd)
               color, color2, my_age.year, color, color2,
               DescAge(my_age.year, GET_RACE(ch)), color, color2,
               playing_time.day, color, color2, playing_time.hours, color,
-              color2,
-              (my_age.month == 0 && my_age.year == 0 ?
-               "$c000w It's your birthday today.\n\r" : ""));
+              color2, (my_age.month == 0 && my_age.year == 0 ?
+                       "$c000w It's your birthday today.\n\r" : ""));
 
     if (!ch->player.speaks) {
         ch->player.speaks = SPEAK_COMMON;
@@ -2487,10 +2487,11 @@ void do_score(struct char_data *ch, char *argument, int cmd)
         buf[0] = '\0';
         for (x = 0; x < MAX_CLASS; x++) {
             if (HasClass(ch, pc_num_class(x))) {
+                level = GET_LEVEL(ch, x);
                 sprintf(buf, "%s%s     Level: %s%2d  %-15s%s", buf, color,
-                        color2, GET_LEVEL(ch, x), classes[x].name, color);
+                        color2, level, classes[x].name, color);
                 sprintf(buf, "%sExp needed: %s%s\n\r", buf, color2,
-                        formatNum((classes[x].titles[GET_LEVEL(ch, x)+1].exp) -
+                        formatNum((classes[x].levels[level+1].exp) -
                                   GET_EXP(ch)));
             }
         }
@@ -2983,11 +2984,6 @@ void do_command_list(struct char_data *ch, char *arg, int cmd)
                                 strncmp(strcpy(tmpname1,lower(GET_NAME(name))),\
                                         strcpy(tmpname2,lower(mask)),\
                                         strlen(mask))==0)
-/*
- * int OK_NAME(struct char_data *name, char *mask) { char n1[80],n2[80];
- * if(!*mask) return 1; strcpy(n1,lower(GET_NAME(name)));
- * strcpy(n2,lower(mask)); return(strncmp(n1,n2,strlen(mask))==0); }
- */
 
 char           *GetLevelTitle(struct char_data *ch)
 {
@@ -3071,35 +3067,21 @@ char           *GetLevelTitle(struct char_data *ch)
         return buf;
     } else {
         /*
-         * determine the highest xp value gained level
-         */
-#if 0
-        /*
          * Now that we have a working main class, we may as welluse the
          * main class for title
          */
-
-        for (i = 0; i < MAX_CLASS; i++) {
-            if (GET_LEVEL(ch, i)) {
-                if (classes[i].titles[(int) GET_LEVEL(ch, i)].exp > high) {
-                    high = classes[i].titles[(int) GET_LEVEL(ch, i)].exp;
-                    class = i;
-                }
-            }
-        }
-#else
         class = ch->specials.remortclass - 1;
         if (class < 0) {
             class = 0;
 		}
-#endif
+
         if (GET_SEX(ch) == SEX_FEMALE) {
             sprintf(buf, "%s%s", color,
-                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_f);
+                    classes[class].levels[(int) GET_LEVEL(ch, class)].title_f);
             return buf;
         } else {
             sprintf(buf, "%s%s", color,
-                    classes[class].titles[(int) GET_LEVEL(ch, class)].title_m);
+                    classes[class].levels[(int) GET_LEVEL(ch, class)].title_m);
             return buf;
         }
     }
@@ -3920,10 +3902,10 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
          * 8/24/94
          */
         sprintf(buf2, "[%2d] %9ld-%-9ld : %s\n\r", i,
-                classes[class].titles[i].exp, classes[class].titles[i + 1].exp,
+                classes[class].levels[i].exp, classes[class].levels[i + 1].exp,
                 (GET_SEX(ch) == SEX_FEMALE ?
-                 classes[class].titles[i].title_f : 
-                 classes[class].titles[i].title_m));
+                 classes[class].levels[i].title_f : 
+                 classes[class].levels[i].title_m));
         /*
          * send_to_char(buf, ch);
          */
