@@ -1652,7 +1652,7 @@ dlog("in do_bug");
 void do_brief(struct char_data *ch, char *argument, int cmd)
 {
 
-dlog("in do_breif");
+dlog("in do_brief");
 
 /* for some reason mobs with a func keep setting themselves to brief mode  -Lennya */
   if (IS_NPC(ch))

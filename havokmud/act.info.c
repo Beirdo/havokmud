@@ -2288,83 +2288,77 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
 dlog("in do_help");
 
-  if (!ch->desc)
-    return;
+	if (!ch->desc)
+		return;
 
-  for(;isspace(*argument); argument++)  ;
+	for(;isspace(*argument); argument++)  ;
 
 
-  if (*argument)
-    {
-      if (!help_index)  {
-	  send_to_char("No help available.\n\r", ch);
-	  return;
-	}
-      bot = 0;
-      top = top_of_helpt;
-
-      for (;;)
+	if (*argument)
 	{
-	  mid = (bot + top) / 2;
-	  minlen = strlen(argument);
-
-	  if (!(chk = strn_cmp(argument, help_index[mid].keyword, minlen)))
-	    {
-	      rewind(help_fl);
-	      fseek(help_fl, help_index[mid].pos, 0);
-	      *buffer = '\0';
-	      for (;;)  {
-		  fgets(buf, 80, help_fl);
-		  if (*buf == '#')
-		    break;
-		  if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
-		    break;
-		  strcat(buffer, buf);
-		  strcat(buffer, "\r");
+		if (!help_index)  {
+			send_to_char("No help available.\n\r", ch);
+			return;
 		}
-	      page_string(ch->desc, buffer, 1);
-	      return;
-	    }     else if (bot >= top)      {
 
-	      		if(cmd==38) {
-		  			sprintf(buf,"spell %s",argument);
+		bot = 0;
+		top = top_of_helpt;
+
+		for (;;)
+		{
+			mid = (bot + top) / 2;
+			minlen = strlen(argument);
+
+			if (!(chk = strn_cmp(argument, help_index[mid].keyword, minlen)))
+			{
+				rewind(help_fl);
+				fseek(help_fl, help_index[mid].pos, 0);
+				*buffer = '\0';
+				for (;;)  {
+					fgets(buf, 80, help_fl);
+					if (*buf == '#')
+						break;
+					if (strlen(buf)+strlen(buffer) > MAX_STRING_LENGTH-2)
+						break;
+					if(buf[strlen(buf)-1]=='~')
+						buf[strlen(buf)-1] = '\0';
+					strcat(buffer, buf);
+					strcat(buffer, "\r");
+				}
+				page_string(ch->desc, buffer, 1);
+				return;
+			} else if (bot >= top) {
+				if(cmd==38) {
+					sprintf(buf,"spell %s",argument);
 		  			do_help(ch, buf, 1);
 		  			return;
-		  		  } else
-		  		     if(cmd==1) {
-		  				  half_chop(argument,buf,buffer);
+				} else if(cmd==1) {
+					half_chop(argument,buf,buffer);
+		  			sprintf(buf,"skill %s",buffer);
+		  			do_help(ch, buf, 0);
+		  			return;
+				}
 
-		  				sprintf(buf,"skill %s",buffer);
-		  				do_help(ch, buf, 0);
-		  				return;
-					 }
+				send_to_char("There is no help on that word.\n\r", ch);
+				send_to_char("Perhaps try help skills <skill> or help spell <spell>.\n\r", ch);
 
-
-
-	      send_to_char("There is no help on that word.\n\r", ch);
-	      send_to_char("Perhaps try help skills <skill> or help spell <spell>.\n\r", ch);
-	       //(GH)NO help so add that key word to a file called ADD_HELP
-		  if (!(fl = fopen(NEWHELP_FILE, "a")))	{
-		    log("Could not open the ADD_HELP-file.\n\r");
-		    return;
-		  }
-		  sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
-		  fputs(buf, fl);
-	      fclose(fl);
-
-	      return;
-	    }
-	  else if (chk > 0)
-	    bot = ++mid;
-	  else
-	    top = --mid;
+				//(GH)NO help so add that key word to a file called ADD_HELP
+				if (!(fl = fopen(NEWHELP_FILE, "a")))	{
+					log("Could not open the ADD_HELP-file.\n\r");
+					return;
+				}
+				sprintf(buf, "**%s: help %s\n", GET_NAME(ch), argument);
+				fputs(buf, fl);
+				fclose(fl);
+				return;
+			} else if (chk > 0)
+				bot = ++mid;
+			else
+				top = --mid;
+		}
+		return;
 	}
-      return;
-    }
-
-
-  send_to_char(help, ch);
-
+	send_to_char(help, ch);
 }
 
 

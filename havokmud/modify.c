@@ -932,11 +932,11 @@ void show_string(struct descriptor_data *d, char *input)
 
   if(IS_SET(d->character->player.user_flags,USE_PAGING)) {
     if(d->character->term == 0)
-      i = 22;
+      i = 30;
     else
       i = d->character->size - 7;
   } else {
-    i = 1000;
+    i = 3000;
   }
   /* show a chunk */
   for (scan = buffer;; scan++, d->showstr_point++) {

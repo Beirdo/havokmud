@@ -1299,6 +1299,9 @@ struct char_special_data
         byte oedit;                            /*  obj editing menu at */
         struct obj_data *objedit;             /*  object editing */
 
+        byte hedit;
+        struct help_file_u *help;             /*  helpfile editing */
+
   int tick_to_lag;
 
   sbyte conditions[MAX_CONDITIONS];      /* Drunk full etc.                     */
@@ -1570,6 +1573,29 @@ struct char_file_u
 
 };
 
+/* ***********************************************************************
+*  file element for help   file. BEWARE: Changing it will ruin the file  *
+*********************************************************************** */
+
+
+struct help_file_u
+{
+	char *name;
+	char *usage;  /* for later use.... */
+	char *accumulative;
+	char *duration;
+	char *level;
+	char *damagetype;
+	char *saves;
+	char *description;
+	char *references;
+	int wizard;
+	char *modBy;
+	long modified;
+	int newfile;
+	long index;
+};
+
 
 
 /* ***********************************************************************
@@ -1706,6 +1732,7 @@ struct txt_q
 #define CON_ANSI            32
 #define CON_CREATION_MENU   33
 #define CON_ALIGNMENT       34
+#define CON_HELP_EDITING    35
 
 struct snoop_data
 {

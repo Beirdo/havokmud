@@ -5568,7 +5568,7 @@ int pc_num_class(int clss) {
 char *DescAge(int age,int race) {
 
   if (age > race_list[race].venerable)
-    return "Vernerable";
+    return "Venerable";
   else if (age > race_list[race].ancient)
     return "Ancient";
   else if (age > race_list[race].old)

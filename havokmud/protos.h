@@ -2213,8 +2213,10 @@ int     scan_mail_file(void);
 void do_ooedit(struct char_data *ch, char *argument, int cmd);
 void do_medit(struct char_data *ch, char *argument, int cmd);
 void do_oedit(struct char_data *ch, char *argument, int cmd);
+void do_hedit(struct char_data *ch, char *argument, int cmd);
 void MobEdit(struct char_data *ch, char *arg);
 void ObjEdit(struct char_data *ch, char *arg);
+void HelpEdit(struct char_data *ch, char *arg);
 /* All Done! (yay!) */
 
 void memory_check(char *p);

@@ -4144,6 +4144,7 @@ void store_to_char(struct char_file_u *st, struct char_data *ch)
 
 	ch->specials.mobedit=0;
 	ch->specials.objedit=0;
+	ch->specials.help=0;
 	ch->specials.misc=0;
 	ch->specials.fighting=0;
 	ch->specials.hunting=0;

@@ -403,34 +403,17 @@ int color_strlen(struct char_data *ch, char *arg, int cmd)
 
 	if(!*arg)
 		return(0);
-//	sprintf(buf,"%s",arg);
-//	log(buf);
-
 	abs = strlen(arg);
-//	sprintf(buf,"string length = %d",abs);
-//	log(buf);
 	for(i=0; i <= abs; i++) {
-//		sprintf(buf,"i = %d",i);
-//		log(buf);
 		if(arg[i]=='$') {
-//			if(arg[i+1]=='c') {
-
-				num++;
-//				sprintf(buf,"found match in arg[%d], num = %d",i,num);
-//				log(buf);
-//				i = i +6;
-//			}
+			num++;
 		}
 	}
-//	sprintf(buf,"end loop, num = %d",num);
-//	log(buf);
 	rel = abs - (6*num);
 	if (rel < 0) {
 		log("erps, oddness in color_strlen");
 		return(0);
 	}
-//	sprintf(buf,"color length = %d",rel);
-//	log(buf);
 	return(rel);
 }
 
@@ -1638,6 +1621,7 @@ AddCommand("ventriloquate", do_ventriloquate, 610, POSITION_SITTING, 1);
 AddCommand("allweapons", do_allweapons, 611, POSITION_SITTING, 1);
 AddCommand("setwtype", do_setwtype, 612, POSITION_STANDING, 53);
 AddCommand("init", do_zload, 613, POSITION_STANDING, 53);
+AddCommand("hedit", do_hedit, 614, POSITION_RESTING, 51);
 }
 
 
