@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 
 #include <string.h>
 #include <ctype.h>
@@ -941,27 +942,15 @@ void three_arg(char *argument, char *first_arg, char *second_arg,
 
 int is_number(char *str)
 {
-    /*
-     * int look_at;
-     */
-
     if (*str == '\0') {
-        return (0);
-    } else if (newstrlen(str) > 8) {
-        return (0);
-    } else if ((atoi(str) == 0) && (str[0] != '0')) {
-        return (0);
+        return (FALSE);
+    } else if (strnlen(str, 10) > 8) {
+        return (FALSE);
+    } else if (atoi(str) == 0 && str[0] != '0') {
+        return (FALSE);
     } else {
-        return (1);
+        return (TRUE);
     }
-#if 0
-    for(look_at=0;*(str+look_at) != '\0';look_at++) {
-        if((*(str+look_at)<'0')||(*(str+look_at)>'9')) {
-            return(0);
-        }
-        return(1);
-    }
-#endif
 }
 
 /*

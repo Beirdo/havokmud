@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <string.h>
@@ -802,6 +803,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
     }
 }
 
+#if 0
 int newstrlen(char *p)
 {
     int             i;
@@ -809,6 +811,7 @@ int newstrlen(char *p)
     for (i = 0; i < 10 && *p; i++, p++);
     return (i);
 }
+#endif
 
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
@@ -832,7 +835,7 @@ void do_give(struct char_data *ch, char *argument, int cmd)
      * sprintf(buf,"obj_name: %s",obj_name);
      */
     if (!obj && is_number(obj_name)) {
-        if (newstrlen(obj_name) >= 10) {
+        if (strnlen(obj_name, 10) == 10) {
             obj_name[10] = '\0';
         }
         amount = advatoi(obj_name);
