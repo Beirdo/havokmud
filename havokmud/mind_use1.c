@@ -387,7 +387,7 @@ void mind_use_kinolock(int level, struct char_data *ch, char *arg,
 }
 
 void mind_use_sense_object(int level, struct char_data *ch, char *arg,
-                           int si, int type, struct char_data *tar_ch,
+                           int type, struct char_data *tar_ch,
                            struct obj_data *tar_obj)
 {
     switch (type) {

@@ -332,6 +332,7 @@ struct QuestItem {
 #define IMPLEMENTOR  59
 #define BIG_GUY      60
 #define MAX_IMMORT   60
+#define NEVER_USE    61
 
         /*
          * Immune flags...

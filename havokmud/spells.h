@@ -597,13 +597,14 @@
 #define TAR_GROUP        (1<<14)        /* spells that target groupees */
 
 struct spell_info_type {
+    int             nr;                 /* Skill number */
     void            (*spell_pointer)(int level, struct char_data * ch, 
                                      char *arg, int type, 
                                      struct char_data * tar_ch,
                                      struct obj_data * tar_obj);
-    byte            minimum_position;   /* Position for caster */
     ubyte           min_usesmana;       /* Amount of mana used by a spell */
-    byte            beats;      /* Heartbeats until ready for next */
+    byte            beats;              /* Heartbeats until ready for next */
+    byte            minimum_position;   /* Position for caster */
 
     byte            min_level_cleric;   /* Level required for cleric */
     byte            min_level_magic;    /* Level required for magic user */
@@ -612,13 +613,11 @@ struct spell_info_type {
     byte            min_level_paladin;
     byte            min_level_ranger;
     byte            min_level_psi;
-
-    byte            min_level_bard;
-
-    sh_int          targets;    /* See below for use with TAR_XXX */
-    sh_int          spellfail;  /* modifier for spell failure */
-    byte            brewable;
     byte            min_level_necromancer;
+
+    int             targets;            /* See below for use with TAR_XXX */
+    sh_int          spellfail;          /* modifier for spell failure */
+    byte            brewable;
 };
 
 #define SPELL_TYPE_SPELL   0

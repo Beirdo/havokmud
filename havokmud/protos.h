@@ -2392,9 +2392,6 @@ void            cast_cont_light(int level, struct char_data *ch,
 void            cast_web(int level, struct char_data *ch, char *arg,
                          int type, struct char_data *tar_ch,
                          struct obj_data *tar_obj);
-void            cast_clone(int level, struct char_data *ch, char *arg,
-                           int type, struct char_data *tar_ch,
-                           struct obj_data *tar_obj);
 void            cast_control_weather(int level, struct char_data *ch,
                                      char *arg, int type,
                                      struct char_data *tar_ch,
@@ -4162,7 +4159,7 @@ void            mind_use_kinolock(int level, struct char_data *ch,
                                   struct obj_data *tar_obj);
 
 void mind_use_sense_object(int level, struct char_data *ch, char *arg,
-                           int si, int type, struct char_data *tar_ch,
+                           int type, struct char_data *tar_ch, 
                            struct obj_data *tar_obj);
 
 

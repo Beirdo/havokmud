@@ -8,6 +8,8 @@
 
 #endif
 
+#define NELEMS(x)   (sizeof(x) / sizeof(x[0]))
+
 #define URANGE(a, b, c)          ((b) < (a) ? (a) : ((b) > (c) ? (c) : (b)))
 
 #define TRUE  1

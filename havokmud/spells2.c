@@ -11,7 +11,6 @@
 
 extern struct room_data *world;
 extern struct char_data *character_list;
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
 extern struct obj_data *object_list;
 extern int      rev_dir[];
 extern char    *dirs[];
@@ -745,13 +744,6 @@ void cast_web(int level, struct char_data *ch, char *arg, int type,
         Log("Serious screw-up in web!");
         break;
     }
-}
-
-void cast_clone(int level, struct char_data *ch, char *arg, int type,
-                struct char_data *tar_ch, struct obj_data *tar_obj)
-{
-    send_to_char("Not *YET* implemented.", ch);
-    return;
 }
 
 void cast_control_weather(int level, struct char_data *ch, char *arg,

@@ -50,7 +50,8 @@ extern char    *RaceName[];
 extern int      RacialMax[][MAX_CLASS];
 extern char    *spell_desc[];
 extern char    *spells[];
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
+extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 extern char    *system_flag_types[];
 extern char    *exits[];
 extern char    *listexits[];
@@ -4460,6 +4461,7 @@ void do_consider(struct char_data *ch, char *argument, int cmd)
 void do_spells(struct char_data *ch, char *argument, int cmd)
 {
     int             spl,
+                    index,
                     i;
                     /*
                      * 16384
@@ -4477,30 +4479,33 @@ void do_spells(struct char_data *ch, char *argument, int cmd)
     *buf = 0;
 
     sprintf(buf + strlen(buf),
-            "[  #] %-30s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, xx, Ne\n\r",
+            "[  #] %-30s  MANA, Cl, Mu, Dr, Sc, Pa, Ra, Ps, Ne\n\r",
             "SPELL/SKILL\0");
 
     for (i = 1, spl = 0; i <= MAX_EXIST_SPELL; i++, spl++) {
+        index = spell_index[i];
+        if( index == -1 ) {
+            continue;
+        }
         if (GetMaxLevel(ch) > LOW_IMMORTAL ||
-            spell_info[i].min_level_cleric < ABS_MAX_LVL) {
+            spell_info[index].min_level_cleric < ABS_MAX_LVL) {
             if (!spells[spl]) {
                 sprintf(tbuf, "!spells[spl] on %d, do_spells in act.info.c", i);
                 Log(tbuf);
             } else {
                 sprintf(buf + strlen(buf),
-                        "[%3d] %-30s  <%3d> %2d %3d %3d %3d %3d %3d %3d %3d "
+                        "[%3d] %-30s  <%3d> %2d %3d %3d %3d %3d %3d %3d "
                         "%3d\n\r",
-                        i, spells[spl],
-                        spell_info[i].min_usesmana,
-                        spell_info[i].min_level_cleric,
-                        spell_info[i].min_level_magic,
-                        spell_info[i].min_level_druid,
-                        spell_info[i].min_level_sorcerer,
-                        spell_info[i].min_level_paladin,
-                        spell_info[i].min_level_ranger,
-                        spell_info[i].min_level_psi,
-                        spell_info[i].min_level_bard,
-                        spell_info[i].min_level_necromancer);
+                        index, spells[spl],
+                        spell_info[index].min_usesmana,
+                        spell_info[index].min_level_cleric,
+                        spell_info[index].min_level_magic,
+                        spell_info[index].min_level_druid,
+                        spell_info[index].min_level_sorcerer,
+                        spell_info[index].min_level_paladin,
+                        spell_info[index].min_level_ranger,
+                        spell_info[index].min_level_psi,
+                        spell_info[index].min_level_necromancer);
 			}
         }
     }

@@ -17,6 +17,7 @@ extern struct str_app_type str_app[];
 extern struct index_data *mob_index;
 
 extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 
 int             top_of_comp = 0;
 extern int      no_specials;
@@ -567,6 +568,7 @@ int UseViolentHeldItem(struct char_data *ch)
     char            tmp[255];
     struct obj_data *obj;
     int             i,
+                    index,
                     tokillnum = 0;
     struct char_data *v;
 
@@ -575,8 +577,10 @@ int UseViolentHeldItem(struct char_data *ch)
 #endif
     if (ch->equipment[HOLD] && HasHands(ch) && ch->specials.fighting) {
         obj = ch->equipment[HOLD];
-        if (!obj->obj_flags.value[2] <= 0 &&
-            IS_SET(spell_info[obj->obj_flags.value[3]].targets, TAR_VIOLENT)) {
+        index = spell_index[obj->obj_flags.value[3]];
+
+        if (!obj->obj_flags.value[2] <= 0 && index != -1 && 
+            IS_SET(spell_info[index].targets, TAR_VIOLENT)) {
             /* 
              * item has charges 
              */

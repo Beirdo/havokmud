@@ -26,7 +26,8 @@ extern char    *dirs[];
 extern struct QuestItem QuestList[4][IMMORTAL];
 extern int      gSeason;        /* what season is it ? */
 
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
+extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 extern char    *spells[];
 extern int      rev_dir[];
 
@@ -3153,7 +3154,8 @@ int Paladin(struct char_data *ch, int cmd, char *arg,
 /*
  * PSI_CAN is a shorthand for me, use ONLY for PSIs
  */
-#define PSI_CAN(skill,level) (spell_info[(skill)].min_level_psi <= (level))
+#define PSI_CAN(skill,level) (spell_index[(skill)] == -1 ? FALSE : \
+                     spell_info[spell_index[(skill)]].min_level_psi <= (level))
 
 /*
  * NOTAFF_N_LEARNED more shorthand, this one is general

@@ -108,7 +108,6 @@ struct weather_data weather_info;       /* the infomation about the
  */
 long            number_of_saved_rooms = 0;
 extern struct descriptor_data *descriptor_list;
-extern struct spell_info_type spell_info[MAX_SPL_LIST];
 struct index_data *insert_index(struct index_data *index, void *data,
                                 long vnum);
 struct index_data *insert_objindex(struct index_data *index, void *data,

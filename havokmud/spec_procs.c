@@ -35,41 +35,12 @@ extern int      RacialMax[][MAX_CLASS];
 
 extern struct title_type titles[MAX_CLASS][ABS_MAX_LVL];
 extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 extern char    *dirs[];
 
 extern int      drink_aff[][3];
 extern struct weather_data weather_info;
 
-#if 0
-void            name_to_drinkcon(struct obj_data *obj, int type);
-void            name_from_drinkcon(struct obj_data *obj);
-
-void            do_move(struct char_data *ch, char *argument, int cmd);
-void            do_open(struct char_data *ch, char *argument, int cmd);
-void            do_lock(struct char_data *ch, char *argument, int cmd);
-void            do_unlock(struct char_data *ch, char *argument, int cmd);
-void            do_close(struct char_data *ch, char *argument, int cmd);
-void            cast_poison(byte level, struct char_data *ch,
-                            char *arg, int type,
-                            struct char_data *tar_ch,
-                            struct obj_data *tar_obj);
-void            cast_paralyze(byte level, struct char_data *ch,
-                              char *arg, int type,
-                              struct char_data *tar_ch,
-                              struct obj_data *tar_obj);
-void            cast_energy_drain(byte level, struct char_data *ch,
-                                  char *arg, int type,
-                                  struct char_data *tar_ch,
-                                  struct obj_data *tar_obj);
-void            cast_chill_touch(byte level, struct char_data *ch,
-                                 char *arg, int type,
-                                 struct char_data *tar_ch,
-                                 struct obj_data *tar_obj);
-void            cast_weakness(byte level, struct char_data *ch,
-                              char *arg, int type,
-                              struct char_data *tar_ch,
-                              struct obj_data *tar_obj);
-#endif
 
 /*
  * Data declarations
@@ -4238,7 +4209,8 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                    *o;
     struct char_data *targ;
     struct room_data *rp;
-    int             i;
+    int             i,
+                    index;
     char            buf[256];
 
     if (cmd && cmd != 156) {
@@ -4249,6 +4221,7 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
         return (TRUE);
     }
 
+#if 0
     /*
      ** damage stuff
 
@@ -4262,10 +4235,11 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
      }
 
      Hrm... those mobs do not really need to scrap EVERYTHING they have :P */
+#endif
+
     /*
      * swallow
      */
-
     if (AWAKE(ch) && (targ = FindAnAttacker(ch)) != '\0') {
         act("$n opens $s gaping mouth", TRUE, ch, 0, 0, TO_ROOM);
         if (!CAN_SEE(ch, targ) && saves_spell(targ, SAVING_PARA)) {
@@ -4316,10 +4290,12 @@ int Tyrannosaurus_swallower(struct char_data *ch, int cmd, char *arg,
                              */
                             for (i = 1; i < 4; i++) {
                                 if (o->obj_flags.value[i] >= 1) {
-                                    ((*spell_info[o->obj_flags.value[i]].
-                                      spell_pointer)
+                                    index = spell_index[o->obj_flags.value[i]];
+                                    if( spell_info[index].spell_pointer ) {
+                                        ((*spell_info[index].spell_pointer)
                                          ((byte)o->obj_flags.value[0], ch,
                                           "", SPELL_TYPE_POTION, ch, o));
+                                    }
                                 }
                             }
                             extract_obj(o);

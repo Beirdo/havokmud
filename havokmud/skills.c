@@ -22,7 +22,8 @@ void            do_find_traps(struct char_data *ch, char *arg, int cmd);
 void            do_find_food(struct char_data *ch, char *arg, int cmd);
 void            do_find_water(struct char_data *ch, char *arg, int cmd);
 
-struct spell_info_type spell_info[MAX_SPL_LIST];
+extern struct spell_info_type spell_info[];
+extern int      spell_index[MAX_SPL_LIST];
 extern int      ArenaNoGroup,
                 ArenaNoAssist,
                 ArenaNoDispel,
@@ -4178,6 +4179,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
     struct obj_data *obj;
     int             sn = -1,
                     x,
+                    index,
                     formula = 0,
                     qend;
 
@@ -4263,7 +4265,8 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!ch->skills[sn + 1].learned) {
+    index = spell_index[sn + 1];
+    if (!ch->skills[sn + 1].learned || index == -1) {
         /* 
          * do you know that spell?
          */
@@ -4271,7 +4274,7 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(spell_info[sn + 1].min_level_cleric)) {
+    if (!(spell_info[index].min_level_cleric)) {
         /*
          * is it a mage spell?
          */
@@ -4280,12 +4283,12 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (spell_info[sn + 1].brewable == 0 && !IS_IMMORTAL(ch)) {
+    if (spell_info[index].brewable == 0 && !IS_IMMORTAL(ch)) {
         send_to_char("You can't scribe this spell.\n\r", ch);
         return;
     }
 
-    if (GET_MANA(ch) < spell_info[sn + 1].min_usesmana * 2 && 
+    if (GET_MANA(ch) < spell_info[index].min_usesmana * 2 && 
         !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mana to scribe that spell.\n\r",
                      ch);
@@ -4310,14 +4313,14 @@ void do_scribe(struct char_data *ch, char *argument, int cmd)
         act("$p goes up in flames!", TRUE, ch, obj, NULL, TO_CHAR);
         act("$p goes up in flames!", TRUE, ch, obj, NULL, TO_ROOM);
         GET_HIT(ch) -= 10;
-        GET_MANA(ch) -= spell_info[sn + 1].min_usesmana * 2;
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         act("$n yelps in pain.", TRUE, ch, 0, NULL, TO_ROOM);
         act("Ouch!", TRUE, ch, 0, NULL, TO_CHAR);
         LearnFromMistake(ch, SKILL_SCRIBE, 0, 90);
 
         extract_obj(obj);
     } else {
-        GET_MANA(ch) -= spell_info[sn + 1].min_usesmana * 2;
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         sprintf(buf, "You have imbued a spell to %s.\n\r",
                 obj->short_description);
         send_to_char(buf, ch);
@@ -4382,6 +4385,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
     char            buf[MAX_INPUT_LENGTH];
     struct obj_data *obj;
     int             sn = -1,
+                    index,
                     formula = 0,
                     qend;
 
@@ -4456,7 +4460,8 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!ch->skills[sn + 1].learned) {
+    index = spell_index[sn + 1];
+    if (!ch->skills[sn + 1].learned || index == -1) {
         /*
          * do you know that spell?
          */
@@ -4464,7 +4469,7 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!(spell_info[sn + 1].min_level_magic)) {
+    if (!(spell_info[index].min_level_magic)) {
         /*
          * is it a mage spell?
          */
@@ -4472,12 +4477,12 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (spell_info[sn + 1].brewable == 0 && !IS_IMMORTAL(ch)) {
+    if (spell_info[index].brewable == 0 && !IS_IMMORTAL(ch)) {
         send_to_char("You can't brew that spell.\n\r", ch);
         return;
     }
 
-    if (GET_MANA(ch) < spell_info[sn + 1].min_usesmana * 2 && 
+    if (GET_MANA(ch) < spell_info[index].min_usesmana * 2 && 
         !IS_IMMORTAL(ch)) {
         send_to_char("You don't have enough mana to brew that spell.\n\r", ch);
         return;
@@ -4497,15 +4502,15 @@ void do_brew(struct char_data *ch, char *argument, int cmd)
         WAIT_STATE(ch, PULSE_VIOLENCE * 5);
         act("$p explodes violently!", TRUE, ch, obj, NULL, TO_CHAR);
         act("$p explodes violently!", TRUE, ch, obj, NULL, TO_ROOM);
-        GET_HIT(ch) -= spell_info[sn + 1].min_level_magic;
-        GET_MANA(ch) -= spell_info[sn + 1].min_usesmana * 2;
+        GET_HIT(ch) -= spell_info[index].min_level_magic;
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         act("$n screams in pain as $p exploded on $m.", TRUE, ch, obj,
             NULL, TO_ROOM);
         act("You scream in pain as $p explodes.", TRUE, ch, obj, NULL, TO_CHAR);
         LearnFromMistake(ch, SKILL_BREW, 0, 90);
         extract_obj(obj);
     } else {
-        GET_MANA(ch) -= spell_info[sn + 1].min_usesmana * 2;
+        GET_MANA(ch) -= spell_info[index].min_usesmana * 2;
         sprintf(buf, "You have imbued a new spell to %s.\n\r",
                 obj->short_description);
         send_to_char(buf, ch);
