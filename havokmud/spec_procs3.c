@@ -4040,12 +4040,20 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   char buf[256];
   int x,temp=0;
 
-  int questitems[5][3] = {
-    {27146,CLASS_CLERIC,     1},
-    {123,CLASS_MAGIC_USER, 2},
-    {123,CLASS_DRUID,      3},
-    {30750,CLASS_WARRIOR,    4},
-    {27146,CLASS_RANGER,       5}
+  int questitems[13][3] = {
+    {871,CLASS_CLERIC,     6},
+    {872,CLASS_MAGIC_USER, 6},
+    {873,CLASS_DRUID,      6},
+    {874,CLASS_WARRIOR,    6},
+    {875,CLASS_RANGER,     6},
+	{876,CLASS_CLERIC,     6},
+    {877,CLASS_MAGIC_USER, 6},
+    {878,CLASS_DRUID,      6},
+    {879,CLASS_WARRIOR,    6},
+    {880,CLASS_RANGER,     6},
+    {881,CLASS_BARBARIAN,  7},
+	{882,CLASS_MAGIC_USER, 6},
+	{883,CLASS_DRUID,      6}
 
   };
   //*pc_class_types[]
@@ -4058,7 +4066,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
     sprintf(buf,"%-25s %-15s %-10s\n\r","----","-----","---");
     send_to_char(buf,ch);
 
-    for(x = 0;x < 5;x ++) {
+    for(x = 0;x < 13;x ++) {
 
       if(HasClass(ch,questitems[x][1])) {
 	temp = questitems[x][0];
@@ -4080,9 +4088,9 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
     if(cmd == 56) {
 
 
-      temp = 5;//ch->player.q_points;
+      temp = 13;//ch->player.q_points;
       //lets search for item..
-      for (x = 0;x < 5;x++) {
+      for (x = 0;x < 13;x++) {
 	temp = questitems[x][0];
 	obj = read_object(temp, VIRTUAL);
 
@@ -4143,6 +4151,34 @@ int DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data *
     }
   }
 }
+
+/* Ash's Corsair ship proc.
+ * By Greg Hovey
+ * May 5, 2001
+ */
+#if 1
+int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  struct char_data *targ;
+  struct room_data *rp;
+  int i;
+  char buf[256];
+
+  if (cmd && cmd != 156) return(FALSE);
+
+
+  if (AWAKE(ch)) {
+    if ((targ = FindAnAttacker(ch))!='\0') {
+      act("$n pushs you off the ship.", TRUE, ch, 0, 0, TO_ROOM);
+
+		char_from_room(mob);
+		char_to_room(mob,1111);  /*Find the room that the corsair ship is in*/
+
+
+    }
+  }
+}
+#endif
 
 /*Thunder Mountain Keep*/
 

@@ -1519,6 +1519,8 @@ AddCommand("beat",do_action,555,POSITION_RESTING,0);
  AddCommand("shove",do_action, 558, POSITION_RESTING,0);
  AddCommand("behead",do_behead,559,POSITION_STANDING,0);
  AddCommand("pinfo",do_flag_status, 560, POSITION_RESTING,59); /* being worked on*/
+ AddCommand("board",do_not_here,561,POSITION_STANDING,0);
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince
   tag trip grunt imitate hickey torture addict adjust anti  bbl beam

@@ -228,15 +228,15 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	       GET_LEVEL(ch,MAGE_LEVEL_IND)) &&
 	      (spell_info[i+1].min_level_magic <=
 	       GetMaxLevel(guildmaster)-10)) {
-	    
+
 	    sprintf(buf,"[%-2d] %-25s %-15s ",
 		    spell_info[i+1].min_level_magic,
 		    spells[i],how_good(ch->skills[i+1].learned));
-	    
-	    
+
+
 	    if (spell_info[i+1].min_level_magic == GET_LEVEL(ch,MAGE_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else 
+	    else
 	      sprintf(buf,"%s \n\r",buf);
 	    send_to_char(buf, ch);
 	}
@@ -250,10 +250,10 @@ int MageGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	    sprintf(buf,"[%-2d] %-25s %-15s ",
 		    spell_info[i+1].min_level_magic,
 		    spells[i],how_good(ch->skills[i+1].learned));
-	  
+
 	    if (spell_info[i+1].min_level_magic == GET_LEVEL(ch,MAGE_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else 
+	    else
 	      sprintf(buf,"%s \n\r",buf);
 	    send_to_char(buf, ch);
 	}
@@ -398,15 +398,15 @@ int ClericGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	     GET_LEVEL(ch,CLERIC_LEVEL_IND)) &&
 	    (spell_info[i+1].min_level_cleric <=
 	     GetMaxLevel(guildmaster)-10)) {
-	 
-	  
+
+
 	    sprintf(buf,"[%-2d] %-25s %-15s",
 		  spell_info[i+1].min_level_cleric,spells[i],
 		  how_good(ch->skills[i+1].learned));
-	   
+
 	    if (spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else 
+	    else
 	      sprintf(buf,"%s \n\r",buf);
 	  send_to_char(buf, ch);
 	}
@@ -5205,6 +5205,28 @@ int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
   if (cmd) {
     if (cmd == 56) { /* buy */
 
+
+
+   /* for Ash's dam/hitroll teller */
+   if(mob->nr==31818) {
+     if (GET_GOLD(ch)< 10000) {
+    	send_to_char("You do not have the money to pay me.\n\r", ch);
+    	return(TRUE);
+      } else {
+     	GET_GOLD(ch)-=10000;
+      }
+
+		choice = number(0,1);
+		if (choice==0)
+		  sprintf(buf,"I sense your damroll is about %d.",ch->points.damroll);
+		else
+		  sprintf(buf,"I sense your hitroll is about %d.",ch->points.hitroll);
+
+  		send_to_char(buf,ch);
+  		return(TRUE);
+
+	}
+
   /*
   ** randomly tells a player 3 of his/her stats.. for a price
   */
@@ -5233,7 +5255,7 @@ int StatTeller(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
 	send_to_char("We are experiencing Technical difficulties\n\r", ch);
 	return(TRUE);
       }
-
+		return(TRUE);
     } else {
       return(FALSE);
     }
@@ -6947,14 +6969,14 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
     return(FALSE);
   //170->Practice,164->Practise, 243->gain
   if (cmd==164 || cmd == 170 || cmd == 243) {
-    
+
     if(!HasClass(ch, CLASS_BARD)){
       send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
 		   " 'Your not a bard'\n\r",ch);
       return(TRUE);
     }
     //gain
-    if(cmd == 243 && 
+    if(cmd == 243 &&
        GET_EXP(ch)<titles[BARD_LEVEL_IND][GET_LEVEL(ch,BARD_LEVEL_IND)+1].exp){
       send_to_char("Your not ready to gain yet!!",ch);
       return (FALSE);
@@ -6963,8 +6985,8 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	GainLevel(ch,BARD_LEVEL_IND);
 	return (TRUE);
       }
-    } 
-    
+    }
+
     if(!*arg && (cmd == 170 || cmd == 164)) {
       init_string_block(&sb);
       sprintf(buf,"You have got %d practice sessions left.\n\r",
@@ -6975,18 +6997,18 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
       append_to_string_block(&sb,"You can practice any of these spells.\n\r");
 	for(x = 0; x < MAXBSKILLS;x++) {  //practice
 	  if(bardskills[x].level <= GET_LEVEL(ch,BARD_LEVEL_IND)) {
-	    
+
 	    count++;
 	    //if(count%25 == 0)
-	      
+
 	    sprintf(buf,"%-20s:%-15s   Level: %-15d\n\r"
 		    ,bardskills[x].name,
 		    how_good(ch->skills[bardskills[x].skillnum].learned),
-		    bardskills[x].level); 
+		    bardskills[x].level);
 	    /* Display New Spell.. not done..
 	      if(spell_info[i+1].min_level_cleric == GET_LEVEL(ch,CLERIC_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	      else 
+	      else
 	      sprintf(buf,"%s \n\r",buf);
 	    */
 	    append_to_string_block(&sb,buf);
@@ -6995,7 +7017,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 	page_string_block(&sb,ch);
 	destroy_string_block(&sb);
 	return(TRUE);
-	
+
     } else {
       for (x = 0;x < MAXBSKILLS;x++) {
 	if(is_abbrev(arg,bardskills[x].name)){  //!str_cmp(arg,n_skills[x])){
@@ -7004,7 +7026,7 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 			 " 'I don't know if i know that skill.'",ch);
 	    return(TRUE);
 	  }
-	  if(ch->skills[bardskills[x].skillnum].learned > 45) { 
+	  if(ch->skills[bardskills[x].skillnum].learned > 45) {
 	    //check if skill already practised
 	    send_to_char("$c0013[$c0015The Bard Guildmaster$c0013] tells you"
 			 " 'You must learn from experience and practice to get"
@@ -7016,11 +7038,11 @@ int BardGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data *
 			 " 'You don't have enough practice points.'\n\r",ch);
 	    return(TRUE);
 	  }
-	  
+
 	  sprintf(buf,"You practice %s %s for a while.\n\r",arg,bardskills[x].name);
 	  send_to_char(buf,ch);
 	  ch->specials.spells_to_learn--;
-	  
+
 	  if(!IS_SET(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN)) {
 	    SET_BIT(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN);
 	    SET_BIT(ch->skills[bardskills[x].skillnum].flags,SKILL_KNOWN_BARD);

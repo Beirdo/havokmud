@@ -4180,7 +4180,7 @@ int DruidGuildMaster(struct char_data *ch, int cmd, char *arg, struct char_data 
 		    spells[i],how_good(ch->skills[i+1].learned));
 	    if (spell_info[i+1].min_level_druid == GET_LEVEL(ch,DRUID_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else 
+	    else
 	      sprintf(buf,"%s \n\r",buf);
 
 	    send_to_char(buf, ch);
@@ -4839,9 +4839,9 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
 */
 int glass_teleport_ring(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
-  
-  
-  
+
+
+
 }
 
 #endif
@@ -4852,18 +4852,18 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 {
   struct obj_data *port;
   char obj_name[50];
-  
+
   if (type == PULSE_COMMAND) {
     if (cmd != ENTER) return(FALSE);
-    
+
     arg=one_argument(arg,obj_name);
     if (!(port = get_obj_in_list_vis(ch, obj_name, real_roomp(ch->in_room)->contents)))	{
       return(FALSE);
     }
-    
+
     if (port != obj)
       return(FALSE);
-    
+
     if (port->obj_flags.value[1] <= 0 ||
 	port->obj_flags.value[1] > 50000) {
       send_to_char("The portal leads nowhere\n\r", ch);
@@ -4892,13 +4892,13 @@ int portal(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 
 int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
 {
-  
+
   if (type == PULSE_COMMAND) {
     return(FALSE);
   } else {
     if (obj->obj_flags.value[0])
       obj->obj_flags.value[0]--;
-    
+
     if (obj->obj_flags.value[0] == 0 && obj->in_room) {
       if ((obj->in_room != NOWHERE) &&(real_roomp(obj->in_room)->people)) {
 	act("$p disintegrates into atomic particles!",
@@ -4916,18 +4916,18 @@ int scraps(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int t
 int attack_rats(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
  int dir;
- 
+
  if(type == PULSE_COMMAND)
    return(FALSE);
- 
+
  if(type == EVENT_WINTER) {
    ch->generic = ATTACK_ROOM+number(0,26);
    AddHatred(ch,OP_RACE,RACE_HUMAN);  /* so they'll attack beggars, etc */
  }
- 
+
  if(type == EVENT_SPRING)
    ch->generic = 0;
- 
+
  if (ch->generic == 0)
    return(FALSE);
 
@@ -4936,7 +4936,7 @@ int attack_rats(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
    ch->generic = 0; /* assume we found it.. start wandering */
    return(FALSE); /* We Can't Go Anywhere. */
  }
- 
+
  go_direction(ch, dir);
 }
 
@@ -4949,7 +4949,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
   register struct char_data *i, *j;
   int found = FALSE, dir, count;
   char buf[255];
-  
+
   /* if(type == PULSE_COMMAND) {
      if(cmd == 19)
      if(!strncasecmp(arg, "biff", 4)) {
@@ -4959,7 +4959,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
      }
      return(FALSE);
  }*/
-  
+
   if(type == PULSE_TICK) {
     if(ch->specials.position == POSITION_SITTING) {
       ch->generic = 0;
@@ -4971,7 +4971,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
 	break;
       default: break;
       }
-      
+
       return(TRUE);
     }
     if(ch->specials.position == POSITION_STANDING) {
@@ -4979,7 +4979,7 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
            ch->generic++;
            return(FALSE);
       }
-      
+
       else if(ch->generic == 21) {
 	for(i = character_list; i; i = i->next)
 	  if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
@@ -5026,27 +5026,27 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
 	  ch->generic = 25;
 	  do_say(ch, "Ack! The dragon is dead! I'm going back to the bar!", 0);
 	}
-	
+
 	else {
 	  dir = choose_exit_global(ch->in_room, i->in_room, MAX_ROOMS);
 	  if(dir == -1) /* can't go anywhere, wait... */
 	    return(FALSE);
 	  go_direction(ch, dir);
-	  
+
 	  if(ch->in_room == i->in_room) { /* we're here! */
                   do_shout(ch, "The dragon must die!", 0);
-		  
+
                   for(j = real_roomp(ch->in_room)->people; j; j = j->next_in_room)
                     if(IS_MOB(j) && (mob_index[j->nr].virtual == WHO_TO_CALL))
                       (*mob_index[j->nr].func)(j, 0, "", i, EVENT_ATTACK);
-		  
+
                   ch->generic = 24;
                   hit(ch, i, TYPE_UNDEFINED);
 	  }
 	  return(FALSE);
 	}
       }
-      
+
       else if(ch->generic == 24) {
               do_say(ch, "Guess it's back to the bar for me! I need a drink!", 0);
               ch->generic = 25;
@@ -5068,11 +5068,11 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
       }
     }
   }
-  
+
   if(type == EVENT_WEEK) { /* months are TOO long */
     if(ch->specials.position != POSITION_SITTING)
       return(FALSE); /* We're doing something else, ignore */
-    
+
     for(i = character_list; i; i = i->next)
       if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_HUNT)) {
 	found = TRUE;
@@ -5080,26 +5080,26 @@ int DragonHunterLeader(struct char_data *ch, int cmd, char *arg, struct char_dat
       }
     if(!found)
       return(FALSE); /* No Dragon in the game, ignore */
-    
+
     for(i = character_list; i; i = i->next)
       if(IS_MOB(i) && (mob_index[i->nr].virtual == WHO_TO_CALL)) {
         (*mob_index[i->nr].func)(i, 0, "", ch, EVENT_GATHER);
       }
-    
+
     do_shout(ch, "All who want to hunt a dragon, come to me!", 0);
     do_stand(ch, "", 0);
   }
-  
+
   return(FALSE);
 }
 
 int HuntingMercenary(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
   int dir;
-  
+
   if(type == PULSE_COMMAND)
     return(FALSE);
-  
+
   if(type == PULSE_TICK) {
     if(ch->generic == 1) { /* Going to room */
       if(!IS_SET(ch->specials.act, ACT_SENTINEL) )
@@ -5108,7 +5108,7 @@ int HuntingMercenary(struct char_data *ch, int cmd, char *arg, struct char_data 
       if(dir == -1)
         return(FALSE);
       go_direction(ch, dir);
-      
+
       if(ch->in_room == WHERE_TO_SIT)
         ch->generic = 0;
     }
@@ -5119,12 +5119,12 @@ int HuntingMercenary(struct char_data *ch, int cmd, char *arg, struct char_data 
     ch->generic = 1;
     return(FALSE);
  }
-  
+
   if(type == EVENT_ATTACK) {
     hit(ch, mob, TYPE_UNDEFINED);
     return(FALSE);
  }
-  
+
   if(type == EVENT_FOLLOW) {
    if(ch == mob) {
      if(IS_SET(ch->specials.act, ACT_SENTINEL))
@@ -5258,7 +5258,7 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   char buf[50];
   int j;
   struct char_data *portal;
-  
+
   destination[0]=41925;		/* mob 2715 */
   destination[1]=21108;		/* mob 2716 */
   destination[2]=1474;		/* ... */
@@ -5282,9 +5282,10 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
   destination[20]=15841;
   destination[21]=13423;
   destination[22]=44980;        /* mob 2737 */
+  destination[23]=31908;        /* Ash's winterfell */
   /* To add another color pool, create another mobile (2733, etc) and add */
   /* another destination.                                                 */
-  
+
   if(cmd!=7) return(FALSE);	/* enter */
   one_argument(arg,buf);
   if(*buf) {
@@ -5320,15 +5321,31 @@ int astral_portal(struct char_data *ch, int cmd, char *arg, struct char_data *mo
 //{32030,  Etheral_post  }, /* in room 32030, to Desolate Caves/room 32800) */
 //{32024, Etheral_post }, /*  ethereal post (in room 32024, to Karsinya/room 3014)*/
 //{32032,  Etheral_post  }, /*  ethereal post (in room 32032, to Abyss/room 25002)*/
- 
-const int post_list[] = { 
+
+
+//{33180, Etheral_post  }, /*	32004	high seas ethereal post */
+//{31804,	Etheral_post  }, /*32000	winterfell ethereal post*/
+//{32600,	Etheral_post  }, /*32011	keep ethereal post*/
+//{32300,	Etheral_post  }, /*32009	sewers ethereal post*/
+//{32801,	Etheral_post  }, /*32030	desolate caves ethereal post*/
+//{32803,	Etheral_post  }, /*32024	Karsinya Ethereal Post*/
+//{32802,	Etheral_post  }, /*32032	Abyss Ethereal Post*/
+
+const int post_list[] = {
   32001,
   32004,
   32009,
   32011,
   32030,
   32024,
-  3203
+  32032,
+  33180, /*split*/
+  31804,
+  32600,
+  32300,
+  32801,
+  32803,
+  32802
 };
 const int destination[] = {
   31804,
@@ -5337,30 +5354,37 @@ const int destination[] = {
   32600,
   32800,
   3014,
-  25002
+  25002,
+  32004,
+  32000,
+  32011,
+  32009,
+  32030,
+  32024,
+  32032
 };
 int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
 #if 1
   int check = -1,x=0;
- 
+
   int destination[10];
   char buf[50];
   char buf2[256];
   int j;
   struct char_data *post;
-  
-  if(cmd!=ENTER) return(FALSE);	/* enter */
+
+  if(cmd!=463) return(FALSE);	/* board */
   one_argument(arg,buf);
   if(*buf) {
-    
+
     *buf = tolower(*buf);
     if(!(str_cmp("post",buf)) || !(str_cmp("ethereal",buf)) ||
        !(str_cmp("ethereal post",buf))) {
       if(post=get_char_room("ethereal post",ch->in_room)) {
 	/* Check to see where the post is going */
 	check = -1;
-	
+
 	for (x = 0; x < 7; x++) {
 	  if (mob_index[post->nr].virtual==post_list[x]){
 	    check=x;
@@ -5372,13 +5396,14 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	sprintf(buf2,"Check=%d",check);
 	send_to_char(buf2,ch);
 
-	j=destination[check]; 
+	j=destination[check];
 
 	sprintf(buf2,"Going to Room# %d\n\r",j);
 	send_to_char(buf2,ch);
-	send_to_char("You touch the strange post and suddently feel your mind"
-		     " and body being torn apart.\n\r",ch);
-	
+	send_to_char("You touch the strange post and suddently feel your mind",ch);
+    send_to_char(" and body being torn appart.\n\r",ch);
+
+
 	act("$n touches the strange post and suddently dissapears!"
 	    , FALSE , ch, 0, 0, TO_ROOM);
 	char_from_room(ch);
@@ -5388,14 +5413,47 @@ int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob
 	do_look(ch, "", 0);
 	return(TRUE);
       }
-      
+
     } else return(FALSE);
   }
 #endif
   return(FALSE);
 }
+#if 1
+int board_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
+{
+  int j;
+  char buf[256];
+  struct char_data *ship;
+  if(cmd!=561) return(FALSE);	/* board ship */
 
+  one_argument(arg,buf);
+  if(*buf) {
 
+    *buf = tolower(*buf);
+    if(!(str_cmp("ship",buf))) {
+      if(ship=get_char_room("corsair ship",ch->in_room)) {
+	     /* Check to see where the post is going */
+
+	     j=32033;
+
+	     send_to_char("You enter the ship.\n\r",ch);
+
+	     act("$n enters the ship.", FALSE , ch, 0, 0, TO_ROOM);
+	     char_from_room(ch);
+	     char_to_room(ch,j);
+	     act("Walks onto the ship.", FALSE, ch, 0, 0, TO_ROOM);
+	     do_look(ch, "", 0);
+	     return(TRUE);
+      }
+	  return(FALSE);
+    } else return(FALSE);
+  }
+
+  return(FALSE);
+}
+
+#endif
 
 
 extern int gevent;
@@ -5923,10 +5981,10 @@ int RangerGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_data
 	  sprintf(buf,"[%-2d] %-25s %-15s ",
 		  spell_info[i+1].min_level_ranger,spells[i],
 		  how_good(ch->skills[i+1].learned));
-	
+
 	  if (spell_info[i+1].min_level_ranger == GET_LEVEL(ch,RANGER_LEVEL_IND))
 	    sprintf(buf,"%s [New Spell] \n\r",buf);
-	  else 
+	  else
 	    sprintf(buf,"%s \n\r",buf);
 
 	  send_to_char(buf, ch);
@@ -6179,12 +6237,12 @@ int PaladinGuildmaster(struct char_data *ch, int cmd, char *arg, struct char_dat
 	  sprintf(buf,"[%-2d] %-25s %-15s ",
 		  spell_info[i+1].min_level_paladin,spells[i],
 		  how_good(ch->skills[i+1].learned));
-	  
+
 	   if (spell_info[i+1].min_level_paladin == GET_LEVEL(ch,PALADIN_LEVEL_IND))
 	      sprintf(buf,"%s [New Spell] \n\r",buf);
-	    else 
+	    else
 	      sprintf(buf,"%s \n\r",buf);
-	   
+
 	  send_to_char(buf, ch);
 	}
       return(TRUE);

@@ -397,7 +397,7 @@ void assign_mobiles()
     { 2735, astral_portal },
     { 2736, astral_portal },
     { 2737, astral_portal },
-
+    { 2738, astral_portal },  /* Ash's new winterfell pool */
     { 2703, fighter	},
     { 2702, magic_user  },
     { 2701, fighter	},
@@ -1295,7 +1295,7 @@ void assign_mobiles()
 /*End of Thunder Mountain Keep*/
     /* Ash's New Zones */
 #if 1
-    
+
     {31811,  MageGuildMaster },       /* Maeister gm guildmaster mage */
     {31825,  PsiGuildmaster },       /* Psikill psionist gm guildmaster */
     {31816,  BardGuildMaster },       /* Alvantil bard gm guildmaster*/
@@ -1324,6 +1324,22 @@ void assign_mobiles()
 {32030,  Etheral_post  }, /* in room 32030, to Desolate Caves/room 32800) */
 {32024,  Etheral_post  }, /*  ethereal post (in room 32024, to Karsinya/room 3014)*/
 {32032,  Etheral_post  }, /*  ethereal post (in room 32032, to Abyss/room 25002)*/
+
+{33180, Etheral_post  }, /*	2270	high seas ethereal post */
+{31804,	Etheral_post  }, /*2264	winterfell ethereal post*/
+{32600,	Etheral_post  }, /*2317	keep ethereal post*/
+{32300,	Etheral_post  }, /*2339	sewers ethereal post*/
+{32801,	Etheral_post  }, /*2340	desolate caves ethereal post*/
+{32803,	Etheral_post  }, /*2342	Karsinya Ethereal Post*/
+{32802,	Etheral_post  }, /*2341	Abyss Ethereal Post*/
+
+
+{31818, StatTeller },     /* Damage teller */
+{31931, citizen },        /* for guards and clerics shouting for help */
+{31913, citizen },        /* for guards and clerics shouting for help */
+{31886, RepairGuy },
+{33185, board_ship },   /* note.. Not sure which corsair does waht */
+{32034, CorsairPush },
 #endif
 
     { -1, NULL },
@@ -1451,10 +1467,10 @@ void assign_rooms()
 
     {31860, pet_shops },
     {31858, bank },  /*  Giamina bank teller (room# 31858 - bank) */
-    /* Ash's Monk and Druid challenge rooms     
+    /* Ash's Monk and Druid challenge rooms
        { 500,   druid_challenge_prep_room},
        { 501,   druid_challenge_room},
-       
+
        { 550,   monk_challenge_prep_room},
        { 551,   monk_challenge_room},
     */

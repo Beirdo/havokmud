@@ -4823,7 +4823,7 @@ dlog("in do_whoarena");
       person=(d->original?d->original:d->character);
       if (CAN_SEE(ch, d->character) &&
 	  (real_roomp(person->in_room)) &&
-	  (real_roomp(person->in_room)->zone == 124)) {
+	  (real_roomp(person->in_room)->zone != 124)) {
 	if (OK_NAME(person,name_mask)) {
 	  count++;
 	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
@@ -4924,8 +4924,56 @@ dlog("in do_whoarena");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               strcpy(levels+10-(strlen(tbuf)/2),tbuf);
-              sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s %s",levels,GET_NAME(person),
+              if(real_roomp(ch->in_room)->zone == 124) {
+                sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s %s",levels,GET_NAME(person),
                       person->player.title?person->player.title:"(Null)");
+	  		  } else {
+                 sprintf(tbuf, "$c0011%-20s $c0005: $c0007%s",levels,GET_NAME(person)
+                      );
+
+
+				switch(GET_POS(person)) {
+				  case POSITION_DEAD :
+				  	sprintf(tbuf,"%s is dead", tbuf);
+				  	break;
+				  case POSITION_MORTALLYW :
+				    sprintf(tbuf,"%s is mortally wounded", tbuf);
+				    break;
+				  case POSITION_INCAP :
+				    sprintf(tbuf,"%s is incapitated", tbuf);
+				    break;
+				  case POSITION_STUNNED :
+				    sprintf(tbuf,"%s is stunned", tbuf);
+				    break;
+				  case POSITION_SLEEPING :
+				  	sprintf(tbuf,"%s is sleeping", tbuf);
+				    break;
+				  case POSITION_RESTING  :
+				    sprintf(tbuf,"%s is resting", tbuf);
+				    break;
+				  case POSITION_SITTING  :
+				    sprintf(tbuf,"%s is sitting", tbuf);
+				    break;
+				  case POSITION_STANDING :
+				    sprintf(tbuf,"%s is standing", tbuf);
+				    break;
+				  default :
+				      sprintf(tbuf,"%s", tbuf);break;
+				  }
+
+
+				if (person->specials.fighting)
+					sprintf(tbuf,"%s and fighting %s.", tbuf, GET_NAME(person->specials.fighting));
+
+                sprintf(tbuf,"%-40s [HP:%2.0f%% MANA:%2.0f%% MV:%2.0f%%]",tbuf,
+			    ((float)GET_HIT(person)  / (int)GET_MAX_HIT(person))  * 100.0 + 0.5,
+			    ((float)GET_MANA(person) / (int)GET_MAX_MANA(person)) * 100.0 + 0.5,
+			    ((float)GET_MOVE(person) / (int)GET_MAX_MOVE(person)) * 100.0 + 0.5);
+
+
+
+			 }
+
 	    }
 #else
 	    sprintf(tbuf, "$c100%d%s %s", color_cnt,GET_NAME(person),
@@ -4937,7 +4985,7 @@ dlog("in do_whoarena");
 	if (IS_LINKDEAD(person))
 		sprintf(tbuf+strlen(tbuf),"$c0015 [LINKDEAD] $c0007");
 	if (IS_IMMORTAL(ch) && person->invis_level > 50)
-		sprintf(tbuf+strlen(tbuf), "(invis %d)",person->invis_level);
+		sprintf(tbuf+strlen(tbuf), "(invis)");
 	    sprintf(tbuf+strlen(tbuf),"\n\r");
 	    if (strlen(buffer)+strlen(tbuf) < (MAX_STRING_LENGTH*2)-512)
 	      strcat(buffer,tbuf);

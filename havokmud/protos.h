@@ -2097,7 +2097,8 @@ int  DispellerIncMob(struct char_data *ch, int cmd, char *arg, struct char_data 
 /*Spec_procs2*/
 
 int Etheral_post(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
-
+int board_ship(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int CorsairPush(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
 /* act.comm.c - used for mobs to tell people stuff */
 void do_mobTell(struct char_data *ch,char *mob, char *sentence);
 

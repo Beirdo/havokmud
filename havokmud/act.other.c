@@ -261,7 +261,7 @@ dlog("in do_quit");
   if (!*argument || strcmp(argument,"now")) {
     do_mobTell(ch,"A tiny Voice","Psst. You should really rent at an Inn Keeper.");
     do_mobTell(ch,"A tiny Voice","But if you wanna loose your stuff.. Type 'quit now'");
-   
+
     return;
   }
   if (GET_POS(ch) == POSITION_FIGHTING) {
@@ -1443,7 +1443,7 @@ dlog("in do_quaff");
       act("Your stomach can't contain anymore!",FALSE,ch,0,0,TO_CHAR);
       return;
     }
- 
+
   }
 
   if (temp->obj_flags.type_flag!=ITEM_POTION) {
@@ -2085,6 +2085,7 @@ if (affected_by_spell(ch,SKILL_MEMORIZE)) {
 #if 1
     char buf[MAX_STRING_LENGTH*2], buffer[MAX_STRING_LENGTH*2],temp[20];
     int i;
+
     send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r", ch);
 
 sprintf(buf,
@@ -2116,6 +2117,7 @@ sprintf(buf,
 	  strcat(buffer, "\r");
       }
       page_string(ch->desc, buffer, 0);
+      sprintf(buffer,"");
 #endif
 
     return;
@@ -2359,7 +2361,7 @@ dlog("in do_set_afk");
     return;
   if (IS_NPC(ch) && !IS_SET(ch->specials.act, ACT_POLYSELF))
     return;
-  
+
   if(IS_AFFECTED2(ch,AFF2_AFK)) {
     act("$c0006$n has returned to $s keyboard", TRUE, ch, 0, 0, TO_ROOM);
     act("$c0006You return to the keyboard.", TRUE, ch, 0, 0, TO_CHAR);
@@ -2371,23 +2373,23 @@ dlog("in do_set_afk");
     act("$c0006You quietly go AFK.", TRUE, ch, 0, 0, TO_CHAR);
     SET_BIT(ch->specials.affected_by2, AFF2_AFK);
     if (ch->pc)
-      SET_BIT(ch->pc->comm,COMM_AFK); 
+      SET_BIT(ch->pc->comm,COMM_AFK);
   }
 }
 void do_flag_status(struct char_data *ch,char *argument,int cmd) {
   send_to_char("Flag Status: \n\r",ch);
-  
+
   if(IS_AFFECTED2(ch,AFF2_AFK))
     send_to_char("AFK [X]         ",ch);
   else
     send_to_char("AFK [ ]         ",ch);
- 
+
   if(IS_SET(ch->player.user_flags, USE_ANSI))
     send_to_char("ANSI [x] \n\r",ch);
   else
     send_to_char("ANSI [ ] \n\r",ch);
- 
-  if (IS_SET(ch->specials.act, PLR_WIMPY)) 
+
+  if (IS_SET(ch->specials.act, PLR_WIMPY))
     send_to_char("Wimpy [x]       ",ch);
   else
     send_to_char("Wimpy [ ]       ",ch);
@@ -2396,7 +2398,7 @@ void do_flag_status(struct char_data *ch,char *argument,int cmd) {
   else
     send_to_char("Zone Sounds [ ]\n\r",ch);
 
- if (IS_SET(ch->specials.act, CLOAKED)) 
+ if (IS_SET(ch->specials.act, CLOAKED))
     send_to_char("Cloaked [x]       ",ch);
   else
     send_to_char("Cloaked [ ]       ",ch);
@@ -2521,7 +2523,7 @@ dlog("in do_set_flags");
 	   send_to_char("Unknown set group command\n",ch);
 	 }
        } /* end was a group command */
- 
+
        else
 	 if (!strcmp(type,"autoexits")) {
 	   if (strstr(field,"enable")) {
