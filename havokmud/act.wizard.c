@@ -3650,73 +3650,87 @@ void roll_abilities(struct char_data *ch)
         ch->abilities.chr = 8;
     }
     ch->abilities.str_add = 0;
-    if (GET_RACE(ch) == RACE_MOON_ELF) {
-        ch->abilities.dex++;
-        ch->abilities.con--;
-    }
-    if (GET_RACE(ch) == RACE_AVARIEL) {
-        ch->abilities.dex += 2;
-        ch->abilities.con -= 2;
-    }
-    if (GET_RACE(ch) == RACE_SEA_ELF) {
-        ch->abilities.str++;
-        ch->abilities.con--;
-    }
-    if (GET_RACE(ch) == RACE_WILD_ELF) {
-        ch->abilities.str++;
-        ch->abilities.intel--;
-        ch->abilities.dex++;
-        ch->abilities.wis--;
-    }
-    if (GET_RACE(ch) == RACE_GOLD_ELF) {
-        ch->abilities.intel++;
-        ch->abilities.wis--;
-        ch->abilities.dex++;
-        ch->abilities.con--;
-    } else if (GET_RACE(ch) == RACE_DWARF || GET_RACE(ch) == RACE_DARK_DWARF) {
-        ch->abilities.con++;
-        ch->abilities.dex--;
-    } else if (GET_RACE(ch) == RACE_ROCK_GNOME) {
-        ch->abilities.intel++;
-        ch->abilities.wis--;
-    } else if (GET_RACE(ch) == RACE_DEEP_GNOME) {
-        ch->abilities.intel--;
-        ch->abilities.wis++;
-        ch->abilities.dex++;
-        ch->abilities.chr -= 2;
-    } else if (GET_RACE(ch) == RACE_FOREST_GNOME) {
-        ch->abilities.intel--;
-        ch->abilities.wis++;
-        ch->abilities.dex++;
-        ch->abilities.str--;
-    } else if (GET_RACE(ch) == RACE_HALFLING || GET_RACE(ch) == RACE_GOBLIN) {
-        ch->abilities.dex++;
-        ch->abilities.str--;
-    } else if (GET_RACE(ch) == RACE_DROW) {
-        ch->abilities.dex += 2;
-        ch->abilities.con--;
-        ch->abilities.chr--;
-    } else if (GET_RACE(ch) == RACE_HALF_OGRE) {
-        ch->abilities.str++;
-        ch->abilities.con++;
-        ch->abilities.dex--;
-        ch->abilities.intel--;
-    } else if (GET_RACE(ch) == RACE_ORC) {
-        ch->abilities.str++;
-        ch->abilities.con++;
-        ch->abilities.chr -= 2;
-        ch->abilities.intel -= 2;
-    } else if (GET_RACE(ch) == RACE_HALF_ORC) {
-        ch->abilities.con++;
-        ch->abilities.chr--;
-    } else if (GET_RACE(ch) == RACE_HALF_GIANT || GET_RACE(ch) == RACE_TROLL) {
-        ch->abilities.str += 2;
-        ch->abilities.con++;
-        ch->abilities.dex--;
-        ch->abilities.wis--;
-        ch->abilities.intel--;
-    }
 
+    switch (GET_RACE(ch)) {
+        case RACE_MOON_ELF:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_AVARIEL:
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_SEA_ELF:
+            ch->abilities.dex += 2;
+            ch->abilities.con -= 2;
+        case RACE_WILD_ELF:
+            ch->abilities.str++;
+            ch->abilities.intel--;
+            ch->abilities.dex++;
+            ch->abilities.wis--;
+            break;
+        case RACE_GOLD_ELF:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+            ch->abilities.dex++;
+            ch->abilities.con--;
+            break;
+        case RACE_DWARF:
+        case RACE_DARK_DWARF:
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            break;
+        case RACE_ROCK_GNOME:
+            ch->abilities.intel++;
+            ch->abilities.wis--;
+        case RACE_DEEP_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.chr -= 2;
+            break;
+        case RACE_FOREST_GNOME:
+            ch->abilities.intel--;
+            ch->abilities.wis++;
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_HALFLING:
+        case RACE_GOBLIN:
+            ch->abilities.dex++;
+            ch->abilities.str--;
+            break;
+        case RACE_DROW:
+            ch->abilities.dex += 2;
+            ch->abilities.con--;
+            ch->abilities.chr--;
+            break;
+        case RACE_HALF_OGRE:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.intel--;
+            break;
+        case RACE_ORC:
+            ch->abilities.str++;
+            ch->abilities.con++;
+            ch->abilities.chr -= 2;
+            ch->abilities.intel -= 2;
+            break;
+        case RACE_HALF_ORC:
+            ch->abilities.con++;
+            ch->abilities.chr--;
+        case RACE_HALF_GIANT:
+        case RACE_TROLL:
+            ch->abilities.str += 2;
+            ch->abilities.con++;
+            ch->abilities.dex--;
+            ch->abilities.wis--;
+            ch->abilities.intel--;
+            break;
+        default:
+            break;
+    }
     ch->points.max_hit = HowManyClasses(ch) * 10;
 
     /*
@@ -3726,25 +3740,30 @@ void roll_abilities(struct char_data *ch)
         ch->points.max_hit += 15;
     }
 
+    
     /*
      * class specific hps stuff
      */
-    if (HasClass(ch, CLASS_BARBARIAN)) {
-        ch->points.max_hit += 10;
-    }
-
-    if (HasClass(ch, CLASS_MAGIC_USER)) {
+    if (HasClass(ch, CLASS_MAGIC_USER) || 
+        HasClass(ch, CLASS_SORCERER) ||
+        HasClass(ch, CLASS_NECROMANCER)) {
         ch->points.max_hit += number(1, 4);
     }
-    if (HasClass(ch, CLASS_SORCERER)) {
-        ch->points.max_hit += number(1, 4);
+    if (HasClass(ch, CLASS_THIEF) || 
+        HasClass(ch, CLASS_PSI) ||
+        HasClass(ch, CLASS_MONK)) {
+        ch->points.max_hit += number(1, 6);
     }
-    if (HasClass(ch, CLASS_CLERIC)) {
+    if (HasClass(ch, CLASS_CLERIC) ||
+        HasClass(ch, CLASS_DRUID)) {
         ch->points.max_hit += number(1, 8);
     }
-    if (HasClass(ch, CLASS_WARRIOR | CLASS_BARBARIAN |
-                     CLASS_PALADIN | CLASS_RANGER)) {
+    if (HasClass(ch, CLASS_WARRIOR) || 
+        HasClass(ch, CLASS_BARBARIAN) ||
+        HasClass(ch, CLASS_PALADIN) || 
+        HasClass(ch, CLASS_RANGER)) {
         ch->points.max_hit += number(1, 10);
+        
         if (ch->abilities.str == 18) {
             ch->abilities.str_add = number(0, 100);
         }
@@ -3762,18 +3781,7 @@ void roll_abilities(struct char_data *ch)
         }
     }
 
-    if (HasClass(ch, CLASS_THIEF | CLASS_PSI)) {
-        ch->points.max_hit += number(1, 6);
-    }
-    if (HasClass(ch, CLASS_MONK)) {
-        ch->points.max_hit += number(1, 6);
-    }
-    if (HasClass(ch, CLASS_DRUID)) {
-        ch->points.max_hit += number(1, 8);
-    }
-
     ch->points.max_hit /= HowManyClasses(ch);
-
     ch->tmpabilities = ch->abilities;
 }
 
