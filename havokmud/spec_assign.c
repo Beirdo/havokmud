@@ -844,6 +844,7 @@ void assign_mobiles()
 	{9711, Drow}, /* drizzit */
 	{9712, Drow}, /* wandering mage */
 	{9713, Drow}, /* worker */
+	{9733, Drow}, /* 2nd malice?? ah well, let's get rid of spam here, and assign her. */
 
 /*
 	Blackmouths Tower

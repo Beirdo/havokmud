@@ -4630,7 +4630,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 {
   struct room_data *me, *chal;
   int i, newr;
-  struct obj_data *o;
+  struct obj_data *o, *tmp_obj, *next_obj;
   struct char_data *mob;
 
   me = real_roomp(ch->in_room);
@@ -4658,7 +4658,7 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 			 [GET_LEVEL(ch, DRUID_LEVEL_IND)+1].exp-100) {
       send_to_char("You cannot advance now\n\r", ch);
       return(TRUE);
-    } else if(GET_LEVEL(ch, WARRIOR_LEVEL_IND)==50)
+    } else if(GET_LEVEL(ch, DRUID_LEVEL_IND)==50)
 	     {
 	 		send_to_char("You are far too powerful to be trained here... Seek an implementor to help you", ch);
 			return(FALSE);
@@ -4674,8 +4674,15 @@ int druid_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct r
 	obj_to_char(o, ch);
       }
     }
-    while (ch->carrying)
-      extract_obj(ch->carrying);
+//    while (ch->carrying)
+//		extract_obj(ch->carrying);
+
+	for(tmp_obj = ch->carrying;tmp_obj;tmp_obj = next_obj) {
+		next_obj = tmp_obj->next_content;
+		obj_from_char(tmp_obj);
+		obj_to_room(tmp_obj,ch->in_room);
+	}
+
 
     send_to_char("You are taken into the combat room.\n\r", ch);
     act("$n is ushered into the combat room", FALSE, ch, 0, 0, TO_ROOM);
@@ -4855,7 +4862,7 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
 {
   struct room_data *me, *chal;
   int i, newr;
-  struct obj_data *o;
+  struct obj_data *o, *tmp_obj, *next_obj;
   struct char_data *mob;
 
    me = real_roomp(ch->in_room);
@@ -4895,8 +4902,13 @@ int monk_challenge_prep_room(struct char_data *ch, int cmd, char *arg, struct ro
 	obj_to_char(o, ch);
       }
     }
-    while (ch->carrying)
-      extract_obj(ch->carrying);
+//    while (ch->carrying)
+//      extract_obj(ch->carrying);
+	for(tmp_obj = ch->carrying;tmp_obj;tmp_obj = next_obj) {
+		next_obj = tmp_obj->next_content;
+		obj_from_char(tmp_obj);
+		obj_to_room(tmp_obj,ch->in_room);
+	}
 
     send_to_char("You are taken into the combat room.\n\r", ch);
     act("$n is ushered into the combat room", FALSE, ch, 0, 0, TO_ROOM);

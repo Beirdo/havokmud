@@ -248,7 +248,7 @@ const char *spell_wear_off_msg[] = {
  "",
  "",
  "",
- "",
+ "Your deity is prepared to grant you another boon.",
  "",
  "",
  "Your psionic shield flickers and then vanishes.", /* 241 */
@@ -861,7 +861,7 @@ const char *spell_wear_off_soon_msg[] = {
  "", /* 235 */
  "",
  "",
- "spell 238 report",
+ "Your deity is prepared to grant a boon soon.",
  "spell 239 report",
  "spell 240 report",
  "Your psionic shield flickers briefly",/* 241 */
@@ -4901,7 +4901,7 @@ const struct skillset archerskills[] = {
 const struct skillset thfninjaskills[] = {
   { "climb",             SKILL_CLIMB,           1},
   { "disguise",          SKILL_HIDE,            1},
-  { "retreat",           SKILL_RETREAT,         1},
+//  { "retreat",           SKILL_RETREAT,         1}, Is a basic thief skill already.
   { "spy",               SKILL_SPY,             1},
   { "None",				-1						,-1}
 };
@@ -4909,7 +4909,7 @@ const struct skillset warninjaskills[] = {
   { "disarm",            SKILL_DISARM,          1},
   { "disengage",		 SKILL_DISENGAGE,		1},
   { "doorbash",          SKILL_DOORBASH,        1},
-  { "switch opponents",  SKILL_SWITCH_OPP,      1},
+//  { "switch opponents",  SKILL_SWITCH_OPP,      1}, Is a basic warrior skill already.
   { "None",				 -1	,				   -1}
 };
 const struct skillset allninjaskills[] = {
@@ -5830,4 +5830,4 @@ const char *languagelist[] = {
 
 
 char *classname[]={"Mu","Cl","Wa","Th","Dr","Mo","Ba","So","Pa","Ra","Ps","Bd"};
-//NOne, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Dragon's Dawn, Returns
+//None, exiles, Stormcloaks, Brothers, Order, Brood, Cult of the dragon, Returners

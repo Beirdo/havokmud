@@ -2010,6 +2010,11 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 	}
 #endif
 
+	if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
+		send_to_char("You have no knowledge of this spell.\n\r",ch);
+		return;
+	}
+
 	if ((spl > 0) && (spl < MAX_SKILLS) && spell_info[spl].spell_pointer) {
 		if (GET_POS(ch) < spell_info[spl].minimum_position) {
 			switch(GET_POS(ch)) {
@@ -2264,10 +2269,10 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					max = max/2;
 				/* memorized spells don't fail ... bcw */
 				if (number(1,max) > ch->skills[spl].learned && !IsSpecialized(ch->skills[spl].special) && cmd != 283 ) {
-					if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
-						send_to_char("You have no knowledge of this spell.\n\r",ch);
-						return;
-					}
+//					if(ch->skills[spl].learned == 0) {  //not learnt.. don't try.. (GH)
+//						send_to_char("You have no knowledge of this spell.\n\r",ch);
+//						return;
+//					}
 					send_to_char("You lost your concentration!\n\r", ch);
 					cost = (int)USE_MANA(ch, (int)spl);
 					GET_MANA(ch) -= (cost>>1);
@@ -2279,7 +2284,7 @@ void do_cast(struct char_data *ch, char *argument, int cmd)
 					if (tar_char == ch) {
 						if (affected_by_spell(tar_char,SPELL_ANTI_MAGIC_SHELL)) {
 							act("Your magic fizzles against your own anti-magic shell!", FALSE, ch, 0, 0, TO_CHAR);
-							act("$n wastes a spell on their own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
+							act("$n wastes a spell on $s own anti-magic shell!", FALSE, ch, 0, 0, TO_ROOM);
 							return;
 						}
 					}

@@ -2479,67 +2479,70 @@ void do_who(struct char_data *ch, char *argument, int cmd)
   char name_mask[40]="";
   char tmpname1[80],tmpname2[80];
   char buf[256];
+
 dlog("in do_who");
 
-  /*  check for an arg */
-  argument = one_argument(argument,tbuf);
-  if(tbuf[0]=='-' && tbuf[1]!='\0')
-    strcpy(flags,tbuf+1);
-  else
-    strcpy(name_mask,tbuf);
-  if(*argument) {
-    argument = one_argument(argument,tbuf);
-    if(tbuf[0]=='-' && tbuf[1]!='\0')
-      strcpy(flags,tbuf+1);
-    else
-      strcpy(name_mask,tbuf);
-  }
+	/*  check for an arg */
+	argument = one_argument(argument,tbuf);
+	if(tbuf[0]=='-' && tbuf[1]!='\0')
+		strcpy(flags,tbuf+1);
+	else
+		strcpy(name_mask,tbuf);
+	if(*argument) {
+		argument = one_argument(argument,tbuf);
+		if(tbuf[0]=='-' && tbuf[1]!='\0')
+			strcpy(flags,tbuf+1);
+		else
+			strcpy(name_mask,tbuf);
+	}
 
-  if ( (IS_IMMORTAL(ch) && flags[0]=='\0') || !IS_IMMORTAL(ch) || cmd == 234) {
-    if( IS_IMMORTAL(ch) )
-      sprintf(buffer,"$c0005Players [God Version -? for Help]\n\r--------\n\r");
-    else if(cmd==234) {
-      sprintf(buffer,"$c0005Players\n\r");
-      strcat(buffer,"------------\n\r");
-    } else {
-      sprintf(buffer,"$c0005                        Havok Players\n\r");
-      strcat(buffer,       "                        -------------\n\r");
-    }
-	if (cmd==234) { //(gh) says zone name in whoz
-      rm = real_roomp(ch->in_room);  //new stuff for whoz(GH)
-      zd = zone_table+rm->zone;
-      sprintf(buf, "$c0005Zone: $c0015%s",zd->name);
-      strcat(buffer,buf);
-      if(IS_IMMORTAL(ch)){
-	sprintf(buf,"$c0005($c0015%ld$c0005)",rm->zone);
-	strcat(buffer,buf);
-      }
-      strcat(buffer,"\n\r\n\r");
-    }
+	if ( (IS_IMMORTAL(ch) && flags[0]=='\0') || !IS_IMMORTAL(ch) || cmd == 234) {
+		if( IS_IMMORTAL(ch) )
+			sprintf(buffer,"$c0005Players [God Version -? for Help]\n\r--------\n\r");
+		else if(cmd==234) {
+			sprintf(buffer,"$c0005Players\n\r");
+			strcat(buffer,"------------\n\r");
+		} else {
+			sprintf(buffer,"$c0005                        Havok Players\n\r");
+			strcat(buffer,       "                        -------------\n\r");
+		}
+		if (cmd==234) { //(gh) says zone name in whoz
+			rm = real_roomp(ch->in_room);  //new stuff for whoz(GH)
+			zd = zone_table+rm->zone;
+			sprintf(buf, "$c0005Zone: $c0015%s",zd->name);
+			strcat(buffer,buf);
+		if(IS_IMMORTAL(ch)) {
+			sprintf(buf,"$c0005($c0015%ld$c0005)",rm->zone);
+			strcat(buffer,buf);
+		}
+		strcat(buffer,"\n\r\n\r");
+	}
 
-    count=0;
-    for (d = descriptor_list; d; d = d->next) {
-      person=(d->original?d->original:d->character);
-      if (CAN_SEE(ch, d->character) && \
-	  (real_roomp(person->in_room)) && \
-	  (real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone || cmd!=234 ) &&
-	  (!index(flags,'g') || IS_IMMORTAL(person))) {
-	if (OK_NAME(person,name_mask)) {
-	  count++;
-	  color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
+	count=0;
+	for (d = descriptor_list; d; d = d->next) {
+		person=(d->original?d->original:d->character);
+//		if(!person->in_room) /* Let's not show people who sit at menu   -Lennya */
+//			return;
 
-	  if (cmd==234) { /* it's a whozone command */
-	    if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
-	      sprintf(tbuf,"$c0012%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
-	      if (GetMaxLevel(ch) >= LOW_IMMORTAL)
-		sprintf(tbuf+strlen(tbuf)," [%ld]", person->in_room);
-	    }
-	  } else {
-	    char levels[40]="", classes[20]="";
-	    extern char *classname[];
-	    int i,total,classn; long bit;
+		if (CAN_SEE(ch, d->character) && (real_roomp(person->in_room)) &&
+				(real_roomp(person->in_room)->zone == real_roomp(ch->in_room)->zone || cmd!=234 ) &&
+				(!index(flags,'g') || IS_IMMORTAL(person))) {
+			if (OK_NAME(person,name_mask)) {
+				count++;
+				color_cnt = (color_cnt++ % 9);  /* range 1 to 9 */
+
+				if (cmd==234) { /* it's a whozone command */
+					if ((!IS_AFFECTED(person, AFF_HIDE)) || (IS_IMMORTAL(ch))) {
+						sprintf(tbuf,"$c0012%-25s - %s", GET_NAME(person),real_roomp(person->in_room)->name);
+						if (GetMaxLevel(ch) >= LOW_IMMORTAL)
+							sprintf(tbuf+strlen(tbuf)," [%ld]", person->in_room);
+					}
+				} else {
+					char levels[40]="", classes[20]="";
+					extern char *classname[];
+					int i,total,classn; long bit;
 #if 1
-	if(!IS_IMMORTAL(person)) {
+					if(!IS_IMMORTAL(person)) {
 		for(bit=1,i=total=classn=0;i<=BARD_LEVEL_IND;i++, bit<<=1) {
 			if(HasClass(person,bit)) {
 				classn++;
@@ -5061,7 +5064,7 @@ dlog("in do_whoarena");
 	      else if(total<41) strcpy(levels,"$c0014Adventurer");
 	      else if(total<51) strcpy(levels,"$c0015Mystical");
               sprintf(tbuf, "%s $c0012%s",levels, classes);
-              //(GH)Uncommented.. does it do anything? sprintf(levels,"%32s","");
+              /*(GH)Uncommented.. does it do anything? */sprintf(levels,"%32s","");
               strcpy(levels+10-((strlen(tbuf)-12)/2),tbuf);
               sprintf(tbuf, "%-32s $c0005: $c0007%s",levels,
                       person->player.title?person->player.title:GET_NAME(person));//"(Null)");
@@ -5191,14 +5194,6 @@ dlog("in do_whoarena");
 		      person->player.title?person->player.title:GET_NAME(person));//"(Null)");
 #endif
 	  }
-
-	    if (IS_SET(person->specials.act, PLR_CLAN_LEADER)) {
-			sprintf(tbuf+strlen(tbuf)," $c000W[$c000rLeader$c000W]$c000w ");
-
-		}
-		if(GET_CLAN(person)!=0)
-			sprintf(tbuf+strlen(tbuf)," $c000W[$c000rClan$c000W]$c000w ");
-
 	  if(IS_AFFECTED2(person,AFF2_AFK))
 	      sprintf(tbuf+strlen(tbuf),"$c0008 [AFK] $c0007");
 	    if(IS_AFFECTED2(person,AFF2_QUEST))

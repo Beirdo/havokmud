@@ -1706,7 +1706,7 @@ void spell_dispel_magic(byte level, struct char_data *ch,
       if (yes || !saves_spell(victim, SAVING_SPELL) ) {
 	 affect_from_char(victim,SPELL_GLOBE_DARKNESS);
 	 send_to_char("The dark globe surrounding you vanishes.\n\r",victim);
-	 act("The globe of darkness surrounding $n vanishes.", TRUE, ch, 0, 0, TO_ROOM);
+	 act("The globe of darkness surrounding $N vanishes.", FALSE, ch, 0, victim, TO_NOTVICT);
       }
     }
     if (affected_by_spell(victim,SPELL_GLOBE_MINOR_INV)) {
@@ -1849,6 +1849,12 @@ void spell_dispel_magic(byte level, struct char_data *ch,
 
 
 	if (level >= IMPLEMENTOR)  {
+/* imp level (ie death) always gets rid of stoneskin  -Lennya */
+		if (affected_by_spell(victim, SPELL_STONE_SKIN)) {
+			affect_from_char(victim,SPELL_STONE_SKIN);
+			send_to_char("You skin softens considerably.\n\r",victim);
+		}
+
 
 		if (affected_by_spell(victim,SPELL_ANTI_MAGIC_SHELL)) {
 			affect_from_char(victim,SPELL_ANTI_MAGIC_SHELL);
