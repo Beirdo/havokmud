@@ -4035,6 +4035,11 @@ void spell_bind_affinity(byte level, struct char_data *ch, struct char_data *vic
 		return;
 	}
 
+	if(IS_SET(rp->room_flags,  PRIVATE | NO_SUM | NO_MAGIC)) {
+		send_to_char("Arcane magics  prevent you from creating a lasting connection to this place.\n\r",ch);
+		return;
+	}
+
 	send_to_char("Performing the ancient ritual of binding, you increase your affinity\n\r",ch);
 	send_to_char("with your current location so it becomes your binding space.\n\r",ch);
 
