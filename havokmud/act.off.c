@@ -444,8 +444,7 @@ void do_backstab(struct char_data *ch, char *argument, int cmd)
 void do_dismiss(struct char_data *ch, char *arg, int cmd)
 {
     int             bits;
-    char           *buf,
-                    buf2[254];
+    char           *buf;
     struct char_data *tmp_char;
     struct obj_data *dummy;
     struct obj_data *obj;
@@ -494,9 +493,8 @@ void do_dismiss(struct char_data *ch, char *arg, int cmd)
                     }
                     extract_char(tmp_char);
                 } else {
-                    sprintf(buf2, "%s isn't under your control.\n\r",
-                            tmp_char->player.short_descr);
-                    send_to_char(buf2, ch);
+                    ch_printf(ch, "%s isn't under your control.\n\r",
+                                  tmp_char->player.short_descr);
                 }
             } else {
                 send_to_char("Dismissing other players? I think not!\n\r", ch);
@@ -696,28 +694,28 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
                          */
                         send_to_char("You flee head over heels.\n\r", ch);
                         return;
-                    } else {
-                        if (!die) {
-                            act("$n tries to flee, but is too exhausted!",
-                                TRUE, ch, 0, 0, TO_ROOM);
-                        }
-                        return;
                     }
-                } else {
-                    if ((die = MoveOne(ch, attempt)) == 1) {
-                        /*
-                         * The escape has succeeded
-                         */
-                        send_to_char("You flee head over heels.\n\r", ch);
-                        return;
-                    } else {
-                        if (!die) {
-                            act("$n tries to flee, but is too exhausted!",
-                                TRUE, ch, 0, 0, TO_ROOM);
-                        }
-                        return;
+                    
+                    if (!die) {
+                        act("$n tries to flee, but is too exhausted!",
+                            TRUE, ch, 0, 0, TO_ROOM);
                     }
+                    return;
+                } 
+                
+                if ((die = MoveOne(ch, attempt)) == 1) {
+                    /*
+                     * The escape has succeeded
+                     */
+                    send_to_char("You flee head over heels.\n\r", ch);
+                    return;
                 }
+                
+                if (!die) {
+                    act("$n tries to flee, but is too exhausted!",
+                        TRUE, ch, 0, 0, TO_ROOM);
+                }
+                return;
             }
         }
         send_to_char("PANIC! You couldn't escape!\n\r", ch);
@@ -1289,7 +1287,6 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
     struct char_data *victim;
     char           *name;
     byte            percent;
-    char            buf[100];
 
     dlog("in do_leg_sweep");
 
@@ -1388,9 +1385,8 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     "underneath $M.", FALSE, ch, 0, victim, TO_NOTVICT);
                 act("$c000C$n does a quick spin and knocks your legs out from "
                     "underneath you.", FALSE, ch, 0, victim, TO_VICT);
-                sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r");
-                send_to_char(buf, ch);
+                ch_printf(ch, "$c000BYou receive $c000W100 $c000Bexperience "
+                              "for using your combat abilities.$c0007\n\r");
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
             } else {
@@ -1398,13 +1394,8 @@ void do_leg_sweep(struct char_data *ch, char *argument, int cmd)
                     FALSE, ch, 0, victim, TO_CHAR);
                 act("$c000C$n's legsweep lands a killing blow to $M.",
                     FALSE, ch, 0, victim, TO_ROOM);
-#if 0
-                   act("$c000C$n's legsweep lands a killing blow to your "
-                   "head.",FALSE, ch,0,victim,TO_VICT);
-#endif
-                sprintf(buf, "$c000BYou receive $c000W100 $c000Bexperience "
-                             "for using your combat abilities.$c0007\n\r");
-                send_to_char(buf, ch);
+                ch_printf(ch, "$c000BYou receive $c000W100 $c000Bexperience "
+                              "for using your combat abilities.$c0007\n\r");
                 gain_exp(ch, 100);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
             }
@@ -1427,8 +1418,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    if (!IS_IMMORTAL(ch)
-        && (ch->specials.remortclass != WARRIOR_LEVEL_IND + 1)) {
+    if (!IS_IMMORTAL(ch) && ch->specials.remortclass != WARRIOR_LEVEL_IND + 1) {
         send_to_char("Pardon?\n\r", ch);
         return;
     }
@@ -1477,9 +1467,8 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                 sprintf(buf, "%s tries to mend %s, but only makes things "
                              "worse.", GET_NAME(ch), obj->short_description);
                 act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                sprintf(buf, "You try to mend %s, but make matters worse.\n\r",
-                        obj->short_description);
-                send_to_char(buf, ch);
+                ch_printf(ch, "You try to mend %s, but make matters worse.\n\r",
+                              obj->short_description);
                 LearnFromMistake(ch, SKILL_MEND, 0, 95);
                 WAIT_STATE(ch, PULSE_VIOLENCE * 2);
                 return;
@@ -1489,8 +1478,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                     obj->short_description);
             act(buf, FALSE, ch, 0, 0, TO_ROOM);
-            sprintf(buf, "You expertly mend %s.\n\r", obj->short_description);
-            send_to_char(buf, ch);
+            ch_printf(ch, "You expertly mend %s.\n\r", obj->short_description);
             send_to_char("$c000BYou receive $c000W100 $c000Bexperience for "
                          "using your abilities.$c0007\n\r", ch);
             gain_exp(ch, 100);
@@ -1529,10 +1517,8 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                                  "worse.",
                             GET_NAME(ch), obj->short_description);
                     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                    sprintf(buf, "You try to mend %s, but only make things "
-                                 "worse.\n\r",
-                            obj->short_description);
-                    send_to_char(buf, ch);
+                    ch_printf(ch, "You try to mend %s, but only make things "
+                                  "worse.\n\r", obj->short_description);
                     /*
                      * did this scrap the weapon?
                      */
@@ -1541,10 +1527,8 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                                      "to junk!",
                                 GET_NAME(ch), obj->short_description);
                         act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                        sprintf(buf, "You screwed up so bad that %s is reduced"
-                                     " to junk!\n\r",
-                                obj->short_description);
-                        send_to_char(buf, ch);
+                        ch_printf(ch, "You screwed up so bad that %s is reduced"
+                                      " to junk!\n\r", obj->short_description);
                         MakeScrap(ch, NULL, obj);
                     }
                     extract_obj(cmp);
@@ -1555,9 +1539,8 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
                     sprintf(buf, "%s expertly mends %s.", GET_NAME(ch),
                             obj->short_description);
                     act(buf, FALSE, ch, 0, 0, TO_ROOM);
-                    sprintf(buf, "You expertly mend %s.\n\r",
-                            obj->short_description);
-                    send_to_char(buf, ch);
+                    ch_printf(ch, "You expertly mend %s.\n\r",
+                                  obj->short_description);
                     send_to_char("$c000BYou receive $c000W100 $c000B"
                                  "experience for using your abilities."
                                  "$c0007\n\r", ch);
@@ -1570,8 +1553,7 @@ void do_mend(struct char_data *ch, char *argument, int cmd)
             send_to_char("You can't mend that!", ch);
         }
     } else {
-        sprintf(buf, "Mend what?\n\r");
-        send_to_char(buf, ch);
+        send_to_char("Mend what?\n\r", ch);
     }
 }
 
@@ -1655,8 +1637,8 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    send_to_char("Banzai! To the rescue...\n\r", ch);
-    send_to_char("$c000BYou receive $c000W100 $c000Bexperience for using your "
+    send_to_char("Banzai! To the rescue...\n\r"
+                 "$c000BYou receive $c000W100 $c000Bexperience for using your "
                  "combat abilities.$c0007\n\r", ch);
     gain_exp(ch, 100);
     act("You are rescued by $N, you are confused!", FALSE, victim, 0, ch,
@@ -1686,9 +1668,8 @@ void do_disengage(struct char_data *ch, char *argument, int cmd)
     char            buf[256];
 
     if (argument && strcmp(argument, "-skill") == 0) {
-        sprintf(buf, "Disengage Skill----->%s.\n\r",
-                how_good(ch->skills[SKILL_DISENGAGE].learned));
-        send_to_char(buf, ch);
+        ch_printf(ch, "Disengage Skill----->%s.\n\r",
+                      how_good(ch->skills[SKILL_DISENGAGE].learned));
         return;
     }
 
@@ -2508,9 +2489,8 @@ void do_berserk(struct char_data *ch, char *arg, int cmd)
         if (ch->specials.fighting) {
             victim = ch->specials.fighting;
         } else {
-            send_to_char
-                ("You need to begin fighting before you can go berserk.\n\r",
-                 ch);
+            send_to_char("You need to begin fighting before you can go "
+                         "berserk.\n\r", ch);
             return;
         }
     }
@@ -3012,14 +2992,9 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
          * Friendly throw
          */
 
-#if 0
-        if (cmd!=263)
-#endif
         send_to_char("OK.\n\r", ch);
         obj_from_char(throw);
-#if 0
-        if (cmd!=263)
-#endif
+
         act("$n throws $p!", TRUE, ch, throw, 0, TO_ROOM);
         obj_to_room(throw, ch->in_room);
         throw_object(throw, tdir, ch->in_room);
@@ -3030,19 +3005,11 @@ void do_throw(struct char_data *ch, char *argument, int cmd)
                          ch);
             return;
         }
-#if 0
-        if (cmd!=263)
-#endif
+
         send_to_char("OK.\n\r", ch);
         obj_from_char(throw);
-#if 0
-        if (cmd!=263)
-#endif
         act("$n throws $p!", TRUE, ch, throw, 0, TO_ROOM);
         throw_weapon(throw, tdir, targ, ch);
-#if 0
-        if (cmd!=263)
-#endif
         WAIT_STATE(ch, 1);
     }
 }
@@ -3233,8 +3200,8 @@ void do_chat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (IS_NPC(ch) && Silence == 1 && IS_SET(ch->specials.act, ACT_POLYSELF)) {
-        send_to_char("Polymorphed worldwide comms has been banned.\n\r", ch);
-        send_to_char("It may return after a bit.\n\r", ch);
+        send_to_char("Polymorphed worldwide comms has been banned.\n\r"
+                     "It may return after a bit.\n\r", ch);
         return;
     }
     if ((GET_MOVE(ch) < 5 || GET_MANA(ch) < 5) && !IS_IMMORTAL(ch)) {
@@ -3313,8 +3280,8 @@ void do_qchat(struct char_data *ch, char *argument, int cmd)
         return;
     }
     if (IS_NPC(ch) && Silence == 1 && IS_SET(ch->specials.act, ACT_POLYSELF)) {
-        send_to_char("Polymorphed worldwide comms has been banned.\n\r", ch);
-        send_to_char("It may return after a bit.\n\r", ch);
+        send_to_char("Polymorphed worldwide comms has been banned.\n\r"
+                     "It may return after a bit.\n\r", ch);
         return;
     }
     if (apply_soundproof(ch)) {

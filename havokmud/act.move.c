@@ -58,7 +58,6 @@ void NotLegalMove(struct char_data *ch)
 }
 int ValidMove(struct char_data *ch, int cmd)
 {
-    char            tmp[256];
     struct room_direction_data *exitp;
     struct room_data *rp;
 
@@ -66,9 +65,8 @@ int ValidMove(struct char_data *ch, int cmd)
 
     if (affected_by_spell(ch, SPELL_WEB)) {
         if (!saves_spell(ch, SAVING_PARA)) {
-            send_to_char("You are entrapped in sticky webs!\n\r", ch);
-            send_to_char("Your struggles only entrap you further!\n\r",
-                         ch);
+            send_to_char("You are entrapped in sticky webs!\n\r"
+                         "Your struggles only entrap you further!\n\r", ch);
             WAIT_STATE(ch, PULSE_VIOLENCE * 5);
             if (!IS_PC(ch)) {
                 GET_MOVE(ch) = 0;
@@ -77,8 +75,8 @@ int ValidMove(struct char_data *ch, int cmd)
         } else {
             WAIT_STATE(ch, PULSE_VIOLENCE);
             GET_MOVE(ch) -= 50;
-            send_to_char
-                ("You briefly pull free from the sticky webbing!\n\r", ch);
+            send_to_char("You briefly pull free from the sticky webbing!\n\r",
+                         ch);
         }
     }
 
@@ -111,11 +109,10 @@ int ValidMove(struct char_data *ch, int cmd)
         }
     } else if (IS_SET(exitp->exit_info, EX_CLOSED)) {
         if (exitp->keyword) {
-            if (!IS_SET(exitp->exit_info, EX_SECRET)
-                && (strcmp(fname(exitp->keyword), "secret"))) {
-                sprintf(tmp, "The %s seems to be closed.\n\r",
-                        fname(exitp->keyword));
-                send_to_char(tmp, ch);
+            if (!IS_SET(exitp->exit_info, EX_SECRET) && 
+                strcmp(fname(exitp->keyword), "secret")) {
+                ch_printf(ch, "The %s seems to be closed.\n\r",
+                              fname(exitp->keyword));
                 return (FALSE);
             } else {
                 NotLegalMove(ch);
@@ -131,34 +128,28 @@ int ValidMove(struct char_data *ch, int cmd)
                      "get there!\n\r", ch);
         return (FALSE);
     } else {
-        struct room_data *rp;
         rp = real_roomp(exitp->to_room);
-        if (IS_SET(rp->room_flags, TUNNEL)) {
-            if ((MobCountInRoom(rp->people) >= rp->moblim) && 
-                (!IS_IMMORTAL(ch))) {
-                send_to_char("Sorry, there is no room to get in there.\n\r", 
-                             ch);
-                return (FALSE);
-            }
+        if (IS_SET(rp->room_flags, TUNNEL) &&
+            MobCountInRoom(rp->people) >= rp->moblim && !IS_IMMORTAL(ch)) {
+            send_to_char("Sorry, there is no room to get in there.\n\r", ch);
+            return (FALSE);
         }
-        if (IS_SET(rp->room_flags, PRIVATE)) {
-            if (MobCountInRoom(rp->people) > 2) {
-                send_to_char("Sorry, that room is private.\n\r", ch);
-                return (FALSE);
-            }
+
+        if (IS_SET(rp->room_flags, PRIVATE) && MobCountInRoom(rp->people) > 2) {
+            send_to_char("Sorry, that room is private.\n\r", ch);
+            return (FALSE);
         }
-        if (IS_SET(rp->room_flags, INDOORS)) {
-            if (MOUNTED(ch)) {
-                send_to_char("Your mount refuses to go that way\n\r", ch);
-                return (FALSE);
-            }
+
+        if (IS_SET(rp->room_flags, INDOORS) && MOUNTED(ch)) {
+            send_to_char("Your mount refuses to go that way\n\r", ch);
+            return (FALSE);
         }
-        if (IS_SET(rp->room_flags, DEATH)) {
-            if (MOUNTED(ch)) {
-                send_to_char("Your mount refuses to go that way\n\r", ch);
-                return (FALSE);
-            }
+
+        if (IS_SET(rp->room_flags, DEATH) && MOUNTED(ch)) {
+            send_to_char("Your mount refuses to go that way\n\r", ch);
+            return (FALSE);
         }
+
         return (TRUE);
     }
 }
@@ -203,6 +194,7 @@ int RawMove(struct char_data *ch, int dir)
         send_to_char("Uh-oh.  The ground melts beneath you as you fall into "
                      "the swirling chaos.\n\r", ch);
         do_look(ch, NULL, 15);
+
         if (IS_SET(ch->player.user_flags, SHOW_EXITS)) {
             act("$c0015-----------------", FALSE, ch, 0, 0, TO_CHAR);
             do_exits(ch, "", 8);
@@ -293,32 +285,26 @@ int RawMove(struct char_data *ch, int dir)
     /*
      * Movement in SECT_AIR 
      */
-    if ((from_here->sector_type == SECT_AIR) ||
-        (to_here->sector_type == SECT_AIR)) {
-        if (!IS_AFFECTED(ch, AFF_FLYING)) {
-            if ((!MOUNTED(ch) || !IS_AFFECTED(MOUNTED(ch), AFF_FLYING))) {
-                send_to_char("You would have to fly to go there!\n\r", ch);
-                return (FALSE);
-            }
-        }
+    if ((from_here->sector_type == SECT_AIR || 
+         to_here->sector_type == SECT_AIR) && !IS_AFFECTED(ch, AFF_FLYING) &&
+         (!MOUNTED(ch) || !IS_AFFECTED(MOUNTED(ch), AFF_FLYING))) {
+        send_to_char("You would have to fly to go there!\n\r", ch);
+        return (FALSE);
     }
 
     /*
      * Movement in SECT_UNDERWATER 
      */
-    if ((from_here->sector_type == SECT_UNDERWATER) ||
-        (to_here->sector_type == SECT_UNDERWATER)) {
+    if ((from_here->sector_type == SECT_UNDERWATER ||
+         to_here->sector_type == SECT_UNDERWATER)) {
         if (!IS_AFFECTED(ch, AFF_WATERBREATH)) {
             send_to_char("You would need gills to go there!\n\r", ch);
             return (FALSE);
         }
 
-        if (MOUNTED(ch)) {
-            if (!IS_AFFECTED(MOUNTED(ch), AFF_WATERBREATH)) {
-                send_to_char("Your mount would need gills to go "
-                             "there!\n\r", ch);
-                return (FALSE);
-            }
+        if (MOUNTED(ch) && !IS_AFFECTED(MOUNTED(ch), AFF_WATERBREATH)) {
+            send_to_char("Your mount would need gills to go there!\n\r", ch);
+            return (FALSE);
         }
     }
 
@@ -329,12 +315,11 @@ int RawMove(struct char_data *ch, int dir)
                          "go there!\n\r", ch);
             return (FALSE);
         }
-        if (MOUNTED(ch)) {
-            if (!IS_AFFECTED(MOUNTED(ch), AFF_TREE_TRAVEL)) {
-                send_to_char("Your mount would have to be able to walk "
-                             "through trees to go there!\n\r", ch);
-                return (FALSE);
-            }
+
+        if (MOUNTED(ch) && !IS_AFFECTED(MOUNTED(ch), AFF_TREE_TRAVEL)) {
+            send_to_char("Your mount would have to be able to walk "
+                         "through trees to go there!\n\r", ch);
+            return (FALSE);
         }
     }
 
@@ -358,12 +343,10 @@ int RawMove(struct char_data *ch, int dir)
     if (!IS_IMMORTAL(ch) || MOUNTED(ch)) {
         if (IS_NPC(ch)) {
             GET_MOVE(ch) -= 1;
+        } else if (MOUNTED(ch)) {
+            GET_MOVE(MOUNTED(ch)) -= need_movement;
         } else {
-            if (MOUNTED(ch)) {
-                GET_MOVE(MOUNTED(ch)) -= need_movement;
-            } else {
-                GET_MOVE(ch) -= need_movement;
-            }
+            GET_MOVE(ch) -= need_movement;
         }
     }
 
@@ -376,6 +359,7 @@ int RawMove(struct char_data *ch, int dir)
         char_from_room(ch);
         char_to_room(ch, new_r);
     }
+
     do_look(ch, NULL, 15);
     if (IS_SET(to_here->room_flags, DEATH) && !IS_IMMORTAL(ch)) {
         if (MOUNTED(ch)) {
@@ -390,17 +374,14 @@ int RawMove(struct char_data *ch, int dir)
      */
 
     if (IS_NPC(ch)) {
-        if (ch->specials.hunting) {
-            if (IS_SET(ch->specials.act, ACT_HUNTING) && ch->desc) {
-                WAIT_STATE(ch, PULSE_VIOLENCE);
-            }
+        if (ch->specials.hunting && IS_SET(ch->specials.act, ACT_HUNTING) && 
+            ch->desc) {
+            WAIT_STATE(ch, PULSE_VIOLENCE);
         }
     } else {
-        if (ch->specials.hunting) {
-            if (IS_SET(ch->specials.act, PLR_HUNTING)) {
-                send_to_char("You search for a trail\n\r", ch);
-                WAIT_STATE(ch, PULSE_VIOLENCE);
-            }
+        if (ch->specials.hunting && IS_SET(ch->specials.act, PLR_HUNTING)) {
+            send_to_char("You search for a trail\n\r", ch);
+            WAIT_STATE(ch, PULSE_VIOLENCE);
         }
     }
     /*
@@ -533,12 +514,10 @@ void do_move(struct char_data *ch, char *argument, int cmd)
 
     if (!ch->followers && !ch->master) {
         MoveOne(ch, cmd);
+    } else if (!ch->followers) {
+        MoveOne(ch, cmd);
     } else {
-        if (!ch->followers) {
-            MoveOne(ch, cmd);
-        } else {
-            MoveGroup(ch, cmd);
-        }
+        MoveGroup(ch, cmd);
     }
 }
 
@@ -604,8 +583,7 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
                     }
                 }
             }
-            sprintf(tmp, "%s", CAP(tmp));
-            send_to_char(tmp, tmp_ch);
+            send_to_char(CAP(tmp), tmp_ch);
         }
     }
 
@@ -709,9 +687,7 @@ int DisplayMove(struct char_data *ch, int dir, int was_in, int total)
             if (total > 1) {
                 sprintf(tmp + strlen(tmp), " [%d]", total);
             }
-            strcat(tmp, "\n\r");
-            sprintf(tmp, "%s", CAP(tmp));
-            send_to_char(tmp, tmp_ch);
+            ch_printf(tmp_ch, "%s\n\r", CAP(tmp));
         }
     }
     return (TRUE);
@@ -746,7 +722,6 @@ int AddToCharHeap(struct char_data *heap[50], int *top, int total[50],
 
 int find_door(struct char_data *ch, char *type, char *dir)
 {
-    char            buf[MAX_STRING_LENGTH];
     int             door;
 
     struct room_direction_data *exitp;
@@ -774,12 +749,10 @@ int find_door(struct char_data *ch, char *type, char *dir)
             } 
 
             if ((door = find_direction(type)) != -1) {
-                send_to_char("Thats a direction, not a portal.\n\r",
-                             ch);
+                send_to_char("Thats a direction, not a portal.\n\r", ch);
                 return (-1);
             }
-            sprintf(buf, "I see no %s there.\n\r", type);
-            send_to_char(buf, ch);
+            ch_printf(ch, "I see no %s there.\n\r", type);
             return (-1);
         } 
 
@@ -787,8 +760,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
             send_to_char("Thats a direction, not a portal.\n\r", ch);
             return (-1);
         }
-        sprintf(buf, "I see no %s there.\n\r", type);
-        send_to_char(buf, ch);
+        ch_printf(ch, "I see no %s there.\n\r", type);
         return (-1);
     } 
 
@@ -809,8 +781,7 @@ int find_door(struct char_data *ch, char *type, char *dir)
         }
     }
 
-    sprintf(buf, "I see no %s here.\n\r", type);
-    send_to_char(buf, ch);
+    ch_printf(ch, "I see no %s here.\n\r", type);
     return (-1);
 }
 
@@ -917,9 +888,7 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
     argument = get_argument(argument, &dir);
 
     if (!type) {
-        sprintf(buf, "%s what?!\r\n", cmdname);
-        *buf = toupper((int)*buf);   /* ;-) */
-        send_to_char(buf, ch);
+        ch_printf(ch, "%s what?!\r\n", cmdname);
         return;
     }
         
@@ -944,9 +913,10 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                             cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
-                sprintf(buf, "You %s the %s and close the passage %s\r\n",
-                        cmdname, fname(exitp->keyword), direction[door].desc);
-                send_to_char(buf, ch);
+                ch_printf(ch, "You %s the %s and close the passage %s\r\n",
+                              cmdname, fname(exitp->keyword),
+                              direction[door].desc);
+
                 /*
                  * handle backdoor 
                  */
@@ -970,9 +940,9 @@ void do_open_exit(struct char_data *ch, char *argument, int cmd)
                             cmdname, direction[door].desc);
                     act(buf, 0, ch, 0, exitp->keyword, TO_ROOM);
                 }
-                sprintf(buf, "You %s the %s and open a passage %s\r\n",
-                        cmdname, fname(exitp->keyword), direction[door].desc);
-                send_to_char(buf, ch);
+                ch_printf(ch, "You %s the %s and open a passage %s\r\n",
+                              cmdname, fname(exitp->keyword),
+                              direction[door].desc);
             }
         } else {
             send_to_char("No-no! do it somewhere else, please...\n\r", ch);
@@ -1222,8 +1192,7 @@ void do_lock(struct char_data *ch, char *argument, int cmd)
         } else {
             SET_BIT(obj->obj_flags.value[1], CONT_LOCKED);
             send_to_char("*Cluck*\n\r", ch);
-            act("$n locks $p - 'cluck', it says.", FALSE, ch, obj, 0,
-                TO_ROOM);
+            act("$n locks $p - 'cluck', it says.", FALSE, ch, obj, 0, TO_ROOM);
         }
     } else if ((door = find_door(ch, type, dir)) >= 0) {
         /*
@@ -1409,8 +1378,7 @@ void do_pick(struct char_data *ch, char *argument, int cmd)
 void do_enter(struct char_data *ch, char *argument, int cmd)
 {
     int             door;
-    char           *buf,
-                    tmp[MAX_STRING_LENGTH];
+    char           *buf;
     struct room_direction_data *exitp;
     struct room_data *rp;
     struct obj_data *portal;
@@ -1435,35 +1403,34 @@ void do_enter(struct char_data *ch, char *argument, int cmd)
             if (ITEM_TYPE(portal) != ITEM_PORTAL) {
                 send_to_char("You can't enter that!", ch);
                 return;
-            } else {
-                to_room = portal->obj_flags.value[0];
-                if (!rp) {
-                    Log("Bad ObjValue1 for portal object, vnum %ld",
-                        obj_index[portal->item_number].virtual);
-                    Log("char sent to void (room 0)");
-                }
-                act("You step into $p and emerge elsewhere.\n\r", FALSE,
-                    ch, portal, 0, TO_CHAR);
-                act("$n steps into $p and slowly fades out of existence.",
-                    FALSE, ch, portal, 0, TO_ROOM);
-                char_from_room(ch);
-                char_to_room(ch, to_room);
-                act("$n materializes out of thin air!", FALSE, ch, 0, 0,
-                    TO_ROOM);
-                do_look(ch, NULL, 0);
+            } 
+
+            to_room = portal->obj_flags.value[0];
+            if (!rp) {
+                Log("Bad ObjValue1 for portal object, vnum %ld",
+                    obj_index[portal->item_number].virtual);
+                Log("char sent to void (room 0)");
+            }
+            act("You step into $p and emerge elsewhere.\n\r", FALSE,
+                ch, portal, 0, TO_CHAR);
+            act("$n steps into $p and slowly fades out of existence.",
+                FALSE, ch, portal, 0, TO_ROOM);
+            char_from_room(ch);
+            char_to_room(ch, to_room);
+            act("$n materializes out of thin air!", FALSE, ch, 0, 0,
+                TO_ROOM);
+            do_look(ch, NULL, 0);
+            return;
+        } 
+
+        for (door = 0; door <= 5; door++) {
+            if (exit_ok(exitp = EXIT(ch, door), NULL) && exitp->keyword && 
+                !strcasecmp(exitp->keyword, buf)) {
+                do_move(ch, "", ++door);
                 return;
             }
-        } else {
-            for (door = 0; door <= 5; door++) {
-                if (exit_ok(exitp = EXIT(ch, door), NULL) && exitp->keyword && 
-                    !strcasecmp(exitp->keyword, buf)) {
-                    do_move(ch, "", ++door);
-                    return;
-                }
-            }
-            sprintf(tmp, "There is no %s here.\n\r", buf);
-            send_to_char(tmp, ch);
         }
+        ch_printf(ch, "There is no %s here.\n\r", buf);
     } else if (IS_SET(real_roomp(ch->in_room)->room_flags, INDOORS)) {
         send_to_char("You are already indoors.\n\r", ch);
     } else {
@@ -1493,13 +1460,14 @@ void do_leave(struct char_data *ch, char *argument, int cmd)
     if (!IS_SET(RM_FLAGS(ch->in_room), INDOORS)) {
         send_to_char("You are outside.. where do you want to go?\n\r", ch);
     } else {
-        for (door = 0; door <= 5; door++)
+        for (door = 0; door <= 5; door++) {
             if (exit_ok(exitp = EXIT(ch, door), &rp) &&
                 !IS_SET(exitp->exit_info, EX_CLOSED) &&
                 !IS_SET(rp->room_flags, INDOORS)) {
                 do_move(ch, "", ++door);
                 return;
             }
+        }
         send_to_char("I see no obvious exits to the outside.\n\r", ch);
     }
 }
@@ -1824,10 +1792,12 @@ void do_run(struct char_data *ch, char *argument, int cmd)
                      "open direction!", ch);
         return;
     }
+
     if (!clearpath(ch, ch->in_room, keyno)) {
         send_to_char("To run in that direction seems futile.\n\r", ch);
         return;
     }
+
     exitdata = (real_roomp(ch->in_room)->dir_option[keyno]);
     if (exitdata->to_room == ch->in_room) {
         send_to_char("To run in that direction seems futile.\n\r", ch);
@@ -1871,15 +1841,18 @@ void do_land(struct char_data *ch)
         if (!rp) {
             return;
         }
+
         if (rp->sector_type == SECT_AIR) {
             send_to_char("There is nowhere for you to land!\n\r", ch);
             return;
         }
+
         if (affected_by_spell(ch, SPELL_FLY) ||
             affected_by_spell(ch, SKILL_LEVITATION)) {
             affect_from_char(ch, SPELL_FLY);
             affect_from_char(ch, SKILL_LEVITATION);
         }
+
         /*
          * Removes the spells from the character
          */
@@ -1900,6 +1873,7 @@ void do_land(struct char_data *ch)
             affect_to_char(ch, &af2);
 
         }
+
         if (HasFlyItem(ch)) {
             SET_BIT(ch->specials.act, PLR_NOFLY);
             send_to_char("You start walking, in spite of your fly item.\n\r", 
@@ -1908,17 +1882,16 @@ void do_land(struct char_data *ch)
             REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
             return;
         }
+
         /*
          * Hopefully keeps them walking even if they have a fly item...
          */
         send_to_char("Ok, you land.\n\r", ch);
         act("$n lands.", FALSE, ch, 0, 0, TO_ROOM);
         REMOVE_BIT(ch->specials.affected_by, AFF_FLYING);
-
     } else {
         /* if character isn't flying... */
         send_to_char("You brace for landing... wow, that was smooth.\n\r", ch);
-        return;
     }
 }
 
@@ -1973,11 +1946,9 @@ void do_launch(struct char_data *ch)
         }
 
         affect_from_char(ch, COND_WINGS_TIRED);
-        send_to_char
-            ("You force your fatigued wings to lift you into the air.\n\r",
-             ch);
-        act("$n unfolds $s wings and takes flight!", TRUE, ch, 0, 0,
-            TO_ROOM);
+        send_to_char("You force your fatigued wings to lift you into the "
+                     "air.\n\r", ch);
+        act("$n unfolds $s wings and takes flight!", TRUE, ch, 0, 0, TO_ROOM);
 
         /*
          * We add one to the tired amount on the theory that launching
@@ -1990,10 +1961,8 @@ void do_launch(struct char_data *ch)
         af2.bitvector = AFF_FLYING;
         affect_to_char(ch, &af2);
     } else if (!HasFlyItem(ch) && HasWings(ch)) {
-        send_to_char("You stretch out your wings and take flight!\n\r",
-                     ch);
-        act("$n unfolds $s wings and takes flight!", TRUE, ch, 0, 0,
-            TO_ROOM);
+        send_to_char("You stretch out your wings and take flight!\n\r", ch);
+        act("$n unfolds $s wings and takes flight!", TRUE, ch, 0, 0, TO_ROOM);
         af2.type = COND_WINGS_FLY;
         af2.duration = GET_CON(ch);
         af2.modifier = 0;
@@ -2006,8 +1975,7 @@ void do_launch(struct char_data *ch)
             0, TO_ROOM);
         SET_BIT(ch->specials.affected_by, AFF_FLYING);
     } else {
-        send_to_char("You don't seem to be able to fly right now.\n\r",
-                     ch);
+        send_to_char("You don't seem to be able to fly right now.\n\r", ch);
     }
 }
 

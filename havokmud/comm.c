@@ -1165,37 +1165,6 @@ int new_descriptor(int s)
 
     CREATE(newd, struct descriptor_data, 1);
 
-#if 0
-    /*
-     * older code replaced 
-     */
-
-    *newd->host = '\0';
-    /*
-     * find info 
-     */
-    size = sizeof(sock);
-    if (getpeername(desc, (struct sockaddr *) &sock, &size) < 0) {
-        perror("getpeername");
-        *newd->host = '\0';
-    }
-
-    if (*newd->host == '\0') {
-#ifndef __sun__
-        if ((long) strncpy(newd->host, inet_ntoa(sock.sin_addr), 49) > 0) {
-            *(newd->host + 49) = '\0';
-            sprintf(buf, "New connection from addr %s: %d: %d", newd->host,
-                    desc, maxdesc);
-            log_sev(buf, 3);
-        }
-#else
-        strcpy(newd->host, (char *) inet_ntoa(&sock.sin_addr));
-#endif
-    }
-#endif
-    /*
-     * newer code 
-     */
     /*
      * find info 
      */
@@ -1246,9 +1215,9 @@ int new_descriptor(int s)
     newd->wait = 1;
     newd->prompt_mode = 0;
     *newd->buf = '\0';
-    newd->str = 0;
-    newd->showstr_head = 0;
-    newd->showstr_point = 0;
+    newd->str = NULL;
+    newd->showstr_head = NULL;
+    newd->showstr_point = NULL;
     *newd->last_input = '\0';
 #ifndef BLOCK_WRITE
     newd->output.head = NULL;
@@ -1260,10 +1229,10 @@ int new_descriptor(int s)
 #endif
     newd->input.head = NULL;
     newd->next = descriptor_list;
-    newd->character = 0;
-    newd->original = 0;
-    newd->snoop.snooping = 0;
-    newd->snoop.snoop_by = 0;
+    newd->character = NULL;
+    newd->original = NULL;
+    newd->snoop.snooping = NULL;
+    newd->snoop.snoop_by = NULL;
 
     /*
      * prepend to list 
@@ -1271,11 +1240,6 @@ int new_descriptor(int s)
 
     descriptor_list = newd;
 
-#if 0
-    write_to_descriptor(newd, ParseAnsiColors(
-                IS_SET(point->character->player.user_flags,USE_ANSI),login));
-    SEND_TO_Q(login, newd);
-#endif
     SEND_TO_Q(ParseAnsiColors(1, login), newd);
     SEND_TO_Q("If you're using Tintin or Lyntin, your client may not display "
               "the password\n\r", newd);
@@ -2019,16 +1983,19 @@ char           *ParseAnsiColors(int UsingAnsi, char *txt)
 /*
  * source: EOD, by John Booth <???> 
  */
-void ch_printf(struct char_data *ch, char *fmt, ...)
+int ch_printf(struct char_data *ch, char *fmt, ...)
 {
     char            buf[MAX_STRING_LENGTH];     /* better safe than sorry */
+    int             len;
     va_list         args;
 
     va_start(args, fmt);
-    vsprintf(buf, fmt, args);
+    len = vsnprintf(buf, MAX_STRING_LENGTH, fmt, args);
     va_end(args);
 
     send_to_char(buf, ch);
+
+    return(len);
 }
 
 void send_to_char(char *messg, struct char_data *ch)
@@ -2631,12 +2598,11 @@ void act2(char *str, int hide_invisible, struct char_data *ch,
 void raw_force_all(char *to_force)
 {
     struct descriptor_data *i;
-    char            buf[400];
 
     for (i = descriptor_list; i; i = i->next) {
         if (!i->connected) {
-            sprintf(buf, "The game has forced you to '%s'.\n\r", to_force);
-            send_to_char(buf, i->character);
+            ch_printf(i->character, "The game has forced you to '%s'.\n\r", 
+                                    to_force);
             command_interpreter(i->character, to_force);
         }
     }
@@ -3141,39 +3107,24 @@ void UpdateScreen(struct char_data *ch, int update)
 
 void InitScreen(struct char_data *ch)
 {
-    char            buf[255];
     int             size;
 
     size = ch->size;
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, VT_MARGSET, 0, size - 5);
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 4, 1);
-    send_to_char(buf, ch);
-    sprintf(buf, "-========================================================="
-                 "==================-");
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 3, 1);
-    send_to_char(buf, ch);
-    sprintf(buf, "Hit Points: ");
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 3, 40);
-    send_to_char(buf, ch);
-    sprintf(buf, "Movement Points: ");
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 2, 1);
-    send_to_char(buf, ch);
-    sprintf(buf, "Mana: ");
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 2, 40);
-    send_to_char(buf, ch);
-    sprintf(buf, "Gold: ");
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 1, 1);
-    send_to_char(buf, ch);
-    sprintf(buf, "Experience Points: ");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, VT_MARGSET, 0, size - 5);
+    ch_printf(ch, VT_CURSPOS, size - 4, 1);
+    ch_printf(ch, "-========================================================="
+                  "==================-");
+    ch_printf(ch, VT_CURSPOS, size - 3, 1);
+    ch_printf(ch, "Hit Points: ");
+    ch_printf(ch, VT_CURSPOS, size - 3, 40);
+    ch_printf(ch, "Movement Points: ");
+    ch_printf(ch, VT_CURSPOS, size - 2, 1);
+    ch_printf(ch, "Mana: ");
+    ch_printf(ch, VT_CURSPOS, size - 2, 40);
+    ch_printf(ch, "Gold: ");
+    ch_printf(ch, VT_CURSPOS, size - 1, 1);
+    ch_printf(ch, "Experience Points: ");
 
     ch->last.mana = GET_MANA(ch);
     ch->last.mmana = GET_MAX_MANA(ch);
@@ -3187,30 +3138,18 @@ void InitScreen(struct char_data *ch)
     /*
      * Update all of the info parts 
      */
-    sprintf(buf, VT_CURSPOS, size - 3, 13);
-    send_to_char(buf, ch);
-    sprintf(buf, "%d(%d)", GET_HIT(ch), GET_MAX_HIT(ch));
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 3, 58);
-    send_to_char(buf, ch);
-    sprintf(buf, "%d(%d)", GET_MOVE(ch), GET_MAX_MOVE(ch));
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 2, 7);
-    send_to_char(buf, ch);
-    sprintf(buf, "%d(%d)", GET_MANA(ch), GET_MAX_MANA(ch));
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 2, 47);
-    send_to_char(buf, ch);
-    sprintf(buf, "%d", GET_GOLD(ch));
-    send_to_char(buf, ch);
-    sprintf(buf, VT_CURSPOS, size - 1, 20);
-    send_to_char(buf, ch);
-    sprintf(buf, "%d", GET_EXP(ch));
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_CURSPOS, size - 3, 13);
+    ch_printf(ch, "%d(%d)", GET_HIT(ch), GET_MAX_HIT(ch));
+    ch_printf(ch, VT_CURSPOS, size - 3, 58);
+    ch_printf(ch, "%d(%d)", GET_MOVE(ch), GET_MAX_MOVE(ch));
+    ch_printf(ch, VT_CURSPOS, size - 2, 7);
+    ch_printf(ch, "%d(%d)", GET_MANA(ch), GET_MAX_MANA(ch));
+    ch_printf(ch, VT_CURSPOS, size - 2, 47);
+    ch_printf(ch, "%d", GET_GOLD(ch));
+    ch_printf(ch, VT_CURSPOS, size - 1, 20);
+    ch_printf(ch, "%d", GET_EXP(ch));
 
-    sprintf(buf, VT_CURSPOS, 0, 0);
-    send_to_char(buf, ch);
-
+    ch_printf(ch, VT_CURSPOS, 0, 0);
 }
 
 void identd_test(struct sockaddr_in in_addr)

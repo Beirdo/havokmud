@@ -3529,7 +3529,7 @@ int             remort_guild(struct char_data *ch, int cmd, char *arg,
 
 void            do_OOCaction(struct char_data *ch, char *argument,
                              int cmd);
-void            ch_printf(struct char_data *ch, char *fmt, ...);
+int             ch_printf(struct char_data *ch, char *fmt, ...);
 
 int             ships_helm(struct char_data *ch, int cmd, char *argument,
                            struct obj_data *obj, int type);

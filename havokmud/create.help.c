@@ -335,15 +335,12 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
 
 void UpdateHelpMenu(struct char_data *ch)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
     send_to_char(VT_HOMECLR, ch);
-    sprintf(buf, VT_CURSPOS, 1, 1);
-    send_to_char(buf, ch);
-    sprintf(buf, "Helpfile Name: %s\n\r", hlp->name);
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_CURSPOS, 1, 1);
+    ch_printf(ch, "Helpfile Name: %s\n\r", hlp->name);
 
     if ((char *) hlp->usage) {
         send_to_char("\n\r   Usage        : ", ch);
@@ -827,7 +824,6 @@ int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
 
 void ChangeHelpName(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
@@ -847,10 +843,8 @@ void ChangeHelpName(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current Helpfile Name: %s", hlp->name);
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current Helpfile Name: %s", hlp->name);
     send_to_char("\n\r\n\rNew Helpfile Name: \n\r\n\r", ch);
     send_to_char("Example: WIMP \"WIMP MODE\" WIMPY\n", ch);
     return;
@@ -859,7 +853,6 @@ void ChangeHelpName(struct char_data *ch, char *arg, int type)
 
 void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -883,10 +876,9 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current command usage: %s", hlp->usage ? hlp->usage : "None");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current command usage: %s", 
+                  (hlp->usage ? hlp->usage : "None"));
     send_to_char("\n\r\n\rNew command usage: ", ch);
     send_to_char("\n\r(No input (hit ENTER) deletes this line from "
                  "file.\n\r\n\r", ch);
@@ -895,7 +887,6 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
 
 void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -919,11 +910,9 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current status of accumulative: %s",
-            hlp->accumulative ? hlp->accumulative : "Not specified");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current status of accumulative: %s",
+                  (hlp->accumulative ? hlp->accumulative : "Not specified"));
     send_to_char("\n\r\n\rIs this skill accumulative? (enter Yes or No): ", ch);
     send_to_char("\n\r(No input (hit ENTER) deletes this line from "
                  "file.\n\r\n\r", ch);
@@ -932,7 +921,6 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
 
 void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -956,24 +944,22 @@ void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current skill/spell duration: %s",
-            hlp->duration ? hlp->duration : "Not specified");
-    send_to_char(buf, ch);
-    send_to_char("\n\r\n\rPlease enter skill/spell duration: ", ch);
-    send_to_char("\n\r(No input (hit ENTER) deletes this line from "
-                 "file.\n\r\n\r", ch);
-    send_to_char("Examples: 24 hours\n", ch);
-    send_to_char("          (level of caster) hours\n", ch);
-    send_to_char("          Instantaneous\n", ch);
-    send_to_char("          Permanent\n", ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current skill/spell duration: %s",
+                  (hlp->duration ? hlp->duration : "Not specified"));
+    send_to_char("\n\r\n\rPlease enter skill/spell duration: "
+                 "\n\r(No input (hit ENTER) deletes this line from "
+                 "file.\n\r\n\r"
+                 "Examples: 24 hours\n"
+                 "          (level of caster) hours\n"
+                 "          Instantaneous\n"
+                 "          Permanent\n", ch);
 }
 
 void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
+
     hlp = ch->specials.help;
     if (type != ENTER_CHECK && (!arg || !*arg || (*arg == '\n'))) {
         if (hlp->level) {
@@ -995,22 +981,19 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current level of skill: %s",
-            hlp->level ? hlp->level : "Not specified");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current level of skill: %s",
+                  (hlp->level ? hlp->level : "Not specified"));
     send_to_char("\n\r\n\rPlease enter skill/spell levels (for various "
-                 "classes if needed): ", ch);
-    send_to_char("\n\r(No input (hit ENTER) deletes this line from "
-                 "file.\n\r\n\r", ch);
-    send_to_char("Examples: 4 Mage, 1 Cleric\n", ch);
-    send_to_char("          53\n", ch);
+                 "classes if needed): "
+                 "\n\r(No input (hit ENTER) deletes this line from "
+                 "file.\n\r\n\r"
+                 "Examples: 4 Mage, 1 Cleric\n"
+                 "          53\n", ch);
 }
 
 void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -1034,21 +1017,18 @@ void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current type of damage: %s",
-            hlp->damagetype ? hlp->damagetype : "Not specified");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current type of damage: %s",
+                  (hlp->damagetype ? hlp->damagetype : "Not specified"));
     send_to_char("\n\r\n\rPlease enter the type of damage of this "
-                 "skill/spell: ", ch);
-    send_to_char("\n\r(No input (hit ENTER) deletes this line from "
-                 "file.\n\r\n\r", ch);
-    send_to_char("Example: Fire\n", ch);
+                 "skill/spell: "
+                 "\n\r(No input (hit ENTER) deletes this line from "
+                 "file.\n\r\n\r"
+                 "Example: Fire\n", ch);
 }
 
 void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -1072,23 +1052,20 @@ void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current saving throw: %s",
-            hlp->saves ? hlp->saves : "Not specified");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current saving throw: %s",
+                  (hlp->saves ? hlp->saves : "Not specified"));
     send_to_char("\n\r\n\rPlease enter the saving throw, or 'None' if no "
-                 "save is possible: ", ch);
-    send_to_char("\n\r(No input (hit ENTER) deletes this line from "
-                 "file.\n\r\n\r", ch);
-    send_to_char("Examples: None\n", ch);
-    send_to_char("          vs. spell for half damage\n", ch);
-    send_to_char("          vs. para for negate\n", ch);
+                 "save is possible: "
+                 "\n\r(No input (hit ENTER) deletes this line from "
+                 "file.\n\r\n\r"
+                 "Examples: None\n"
+                 "          vs. spell for half damage\n"
+                 "          vs. para for negate\n", ch);
 }
 
 void ChangeHelpDescription(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     if (type != ENTER_CHECK) {
@@ -1097,11 +1074,9 @@ void ChangeHelpDescription(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
     hlp = ch->specials.help;
-    sprintf(buf, "Current Helpfile Description:\n\r");
-    send_to_char(buf, ch);
+    ch_printf(ch, "Current Helpfile Description:\n\r");
     send_to_char(hlp->description, ch);
     send_to_char("\n\r\n\rNew Helpfile Description:\n\r", ch);
     send_to_char("(Use /? for help on editing strings. Press <C/R> again to"
@@ -1116,7 +1091,6 @@ void ChangeHelpDescription(struct char_data *ch, char *arg, int type)
 
 void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
 {
-    char            buf[255];
     struct help_file_u *hlp;
 
     hlp = ch->specials.help;
@@ -1140,22 +1114,19 @@ void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
         return;
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
-    sprintf(buf, "Current cross-references: %s",
-            hlp->references ? hlp->references : "None specified");
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
+    ch_printf(ch, "Current cross-references: %s",
+                  (hlp->references ? hlp->references : "None specified"));
     send_to_char("\n\r\n\rPlease enter any appropriate cross-references "
-                 "(in caps, divided by commas): ", ch);
-    send_to_char("\n\r(No input (hit ENTER) sets to default (-) \n\r\n\r", ch);
-    send_to_char("Examples: SPELL COLOR SPRAY, SPELL INFRAVISION\n", ch);
-    send_to_char("          WHO\n", ch);
+                 "(in caps, divided by commas): "
+                 "\n\r(No input (hit ENTER) sets to default (-) \n\r\n\r"
+                 "Examples: SPELL COLOR SPRAY, SPELL INFRAVISION\n"
+                 "          WHO\n", ch);
 }
 
 void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
 {
     int             update;
-    char            buf[255];
     struct help_file_u *hlp;
 
     if (type != ENTER_CHECK && (!arg || !*arg || *arg == '\n')) {
@@ -1183,19 +1154,17 @@ void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
         }
     }
 
-    sprintf(buf, VT_HOMECLR);
-    send_to_char(buf, ch);
+    ch_printf(ch, VT_HOMECLR);
 
     if (!(hlp->newfile)) {
         send_to_char("This option is only settable for newly added "
-                     "helpfiles.\n\r", ch);
-        send_to_char("Edited helpfiles can not be interchanged between "
-                     "wizhelp & help.\n\r", ch);
-        send_to_char("Hit <enter> to return to main menu.\n\r", ch);
+                     "helpfiles.\n\r"
+                     "Edited helpfiles can not be interchanged between "
+                     "wizhelp & help.\n\r"
+                     "Hit <enter> to return to main menu.\n\r", ch);
     } else {
-        sprintf(buf, "%s\n\r\n\r", hlp->wizard ? "This is a wizhelp file." :
+        ch_printf(ch, "%s\n\r\n\r", hlp->wizard ? "This is a wizhelp file." :
                                    "This is not a wizhelp file.");
-        send_to_char(buf, ch);
         send_to_char("If this should be a wizhelp file, type 1, else type 0 ",
                      ch);
     }

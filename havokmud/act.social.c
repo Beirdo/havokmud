@@ -94,8 +94,7 @@ void do_action(struct char_data *ch, char *argument, int cmd)
     }
 
     if (!buf) {
-        send_to_char(action->msg[MSG_SOCIAL_NO_ARG_SELF], ch);
-        send_to_char("\n\r", ch);
+        ch_printf(ch, "%s\n\r", action->msg[MSG_SOCIAL_NO_ARG_SELF]);
         act(action->msg[MSG_SOCIAL_NO_ARG_ROOM], action->hide, ch, 0, 0,
             TO_ROOM);
         return;
@@ -110,11 +109,9 @@ void do_action(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        send_to_char(action->msg[MSG_SOCIAL_ARG_NO_VICTIM], ch);
-        send_to_char("\n\r", ch);
+        ch_printf(ch, "%s\n\r", action->msg[MSG_SOCIAL_ARG_NO_VICTIM]);
     } else if (vict == ch) {
-        send_to_char(action->msg[MSG_SOCIAL_ARG_AUTO_SELF], ch);
-        send_to_char("\n\r", ch);
+        ch_printf(ch, "%s\n\r", action->msg[MSG_SOCIAL_ARG_AUTO_SELF]);
         act(action->msg[MSG_SOCIAL_ARG_AUTO_ROOM], action->hide, ch, 0, 0,
             TO_ROOM);
     } else {
@@ -133,7 +130,6 @@ void do_action(struct char_data *ch, char *argument, int cmd)
 
 void do_insult(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[100];
     char           *arg;
     struct char_data *victim;
 
@@ -156,8 +152,7 @@ void do_insult(struct char_data *ch, char *argument, int cmd)
         return;
     }
 
-    sprintf(buf, "You insult %s.\n\r", GET_NAME(victim));
-    send_to_char(buf, ch);
+    ch_printf(ch, "You insult %s.\n\r", GET_NAME(victim));
 
     switch (number(0,2)) {
     case 0:
@@ -337,8 +332,7 @@ void do_OOCaction(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        send_to_char(action->msg[MSG_SOCIAL_ARG_NO_VICTIM], ch);
-        send_to_char("\n\r", ch);
+        ch_printf(ch, "%s\n\r", action->msg[MSG_SOCIAL_ARG_NO_VICTIM]);
         return;
     } 
     

@@ -74,7 +74,6 @@ void            raw_kill_arena(struct char_data *ch);
 
 void            DeleteHatreds(struct char_data *ch);
 int             IsMagicSpell(int spell_num);
-void            ch_printf(struct char_data *ch, char *fmt, ...);
 int             clearpath(struct char_data *ch, long room, int direc);
  /*
   * Weapon attack texts

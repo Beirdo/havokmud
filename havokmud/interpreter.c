@@ -2173,7 +2173,7 @@ void nanny(struct descriptor_data *d, char *arg)
                     if (k->original) {
                         if (GET_NAME(k->original) &&
                             strcasecmp(GET_NAME(k->original),
-                                    GET_NAME(d->character)) == 0) {
+                                       GET_NAME(d->character)) == 0) {
                             already_p = 1;
                         }
                     } else {
@@ -2182,7 +2182,7 @@ void nanny(struct descriptor_data *d, char *arg)
                          */
                         if (GET_NAME(k->character) &&
                             strcasecmp(GET_NAME(k->character),
-                                    GET_NAME(d->character)) == 0) {
+                                       GET_NAME(d->character)) == 0) {
                             already_p = 1;
                         }
                     }
@@ -2211,13 +2211,16 @@ void nanny(struct descriptor_data *d, char *arg)
                     tmp_ch->desc = d;
                     d->character = tmp_ch;
                     tmp_ch->specials.timer = 0;
+
                     if (!IS_IMMORTAL(tmp_ch)) {
                         tmp_ch->invis_level = 0;
                     }
+
                     if (tmp_ch->orig) {
                         tmp_ch->desc->original = tmp_ch->orig;
                         tmp_ch->orig = 0;
                     }
+
                     d->character->persist = 0;
 
                     if (!IS_IMMORTAL(tmp_ch) || tmp_ch->invis_level <= 58) {
@@ -2229,6 +2232,7 @@ void nanny(struct descriptor_data *d, char *arg)
                     if (d->character->specials.hostip) {
                         free(d->character->specials.hostip);
                     }
+
                     d->character->specials.hostip = strdup(d->host);
 
                     write_char_extra(d->character);
@@ -2244,20 +2248,18 @@ void nanny(struct descriptor_data *d, char *arg)
                     Log("%s[%s] has connected.\n\r", GET_NAME(d->character),
                         d->host);
                 }
-            } else {
-                if (!IS_IMMORTAL(d->character) ||
-                    d->character->invis_level <= 58) {
-                    Log("%s[%s] has connected - Last connected from[%s]", 
-                        GET_NAME(d->character), d->host,
-                        d->character->specials.hostip);
-                }
-                SEND_TO_Q(buf, d);
+            } else if (!IS_IMMORTAL(d->character) ||
+                       d->character->invis_level <= 58) {
+                Log("%s[%s] has connected - Last connected from[%s]", 
+                    GET_NAME(d->character), d->host,
+                    d->character->specials.hostip);
             }
 
             if (d->character->specials.hostip) {
                 free(d->character->specials.hostip);
             }
             d->character->specials.hostip = strdup(d->host);
+            d->character->last_tell = NULL;
 
             write_char_extra(d->character);
             EnterState(d, CON_RMOTD);

@@ -1600,7 +1600,7 @@ struct char_data {
     struct follow_type *followers;      /* List of chars followers */
     struct char_data *master;   /* Who is char following? */
     int             invis_level;        /* visibility of gods */
-    char            last_tell[80];      /* Who last telled something to
+    char           *last_tell;          /* Who last telled something to
                                          * the char */
     int             old_exp;    /* For energe restore -MW */
     int             style;      /* Fighting Style!!! */

@@ -2355,6 +2355,8 @@ int read_mob_from_file(struct char_data *mob, FILE * mob_fi)
     mob->commandp2 = 0;
     mob->waitp = 0;
 
+    mob->last_tell = NULL;
+
     /*
      * Check to see if associated with a script, if so, set it up
      */
@@ -2627,6 +2629,8 @@ int read_mob_from_new_file(struct char_data *mob, FILE * mob_fi)
     mob->commandp = 0;
     mob->commandp2 = 0;
     mob->waitp = 0;
+
+    mob->last_tell = NULL;
 
     /*
      * Check to see if associated with a script, if so, set it up

@@ -67,22 +67,20 @@ void do_guard(struct char_data *ch, char *argument, int cmd)
                 TO_NOTVICT);
             send_to_char("You snap to attention\n\r", ch);
         }
-    } else {
-        if (!strcasecmp(argument, "on")) {
-            if (!IS_SET(ch->specials.act, ACT_GUARDIAN)) {
-                SET_BIT(ch->specials.act, ACT_GUARDIAN);
-                act("$n alertly watches you.", FALSE, ch, 0, ch->master,
-                    TO_VICT);
-                act("$n alertly watches $N.", FALSE, ch, 0, ch->master,
-                    TO_NOTVICT);
-                send_to_char("You snap to attention\n\r", ch);
-            }
-        } else if (!strcasecmp(argument, "off")) {
-            if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
-                act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
-                send_to_char("You relax.\n\r", ch);
-                REMOVE_BIT(ch->specials.act, ACT_GUARDIAN);
-            }
+    } else if (!strcasecmp(argument, "on")) {
+        if (!IS_SET(ch->specials.act, ACT_GUARDIAN)) {
+            SET_BIT(ch->specials.act, ACT_GUARDIAN);
+            act("$n alertly watches you.", FALSE, ch, 0, ch->master,
+                TO_VICT);
+            act("$n alertly watches $N.", FALSE, ch, 0, ch->master,
+                TO_NOTVICT);
+            send_to_char("You snap to attention\n\r", ch);
+        }
+    } else if (!strcasecmp(argument, "off")) {
+        if (IS_SET(ch->specials.act, ACT_GUARDIAN)) {
+            act("$n relaxes.", FALSE, ch, 0, 0, TO_ROOM);
+            send_to_char("You relax.\n\r", ch);
+            REMOVE_BIT(ch->specials.act, ACT_GUARDIAN);
         }
     }
 }
@@ -198,7 +196,6 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
         42, "$c000BR:$c000W%R $c000BZ:$c000W%z $c000BFlags:$c000W%iF"
             " $c000BSect:$c000W%is $c000BI:$c000W%iI$c000B>"}, {
     0, NULL}};
-    char            buf[512];
     int             i,
                     n;
 
@@ -219,41 +216,30 @@ void do_set_prompt(struct char_data *ch, char *argument, int cmd)
             }
             for (i = 0; prompts[i].pr; i++) {
                 if (prompts[i].n == n) {
-#if 0
-                    sprintf(buf, "Your prompt now is : <%s>\n\r",
-                    argument); send_to_char(buf, ch);
-#endif
                     if (ch->specials.prompt) {
                         free(ch->specials.prompt);
                     }
                     ch->specials.prompt = strdup(prompts[i].pr);
                     if (cmd != 0) {
-                        sprintf(buf, "Your new prompt is : <%s>\n\r",
-                                ch->specials.prompt);
-                        send_to_char(buf, ch);
+                        ch_printf(ch, "Your new prompt is : <%s>\n\r",
+                                      ch->specials.prompt);
                     }
                     return;
                 }
             }
             send_to_char("Invalid prompt number\n\r", ch);
         } else {
-#if 0
-            sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
-            send_to_char(buf, ch);
-#endif
             if (ch->specials.prompt) {
                 free(ch->specials.prompt);
             }
             ch->specials.prompt = strdup(argument);
             if (cmd != 0) {
-                sprintf(buf, "Your new prompt is : <%s>\n\r",
-                        ch->specials.prompt);
-                send_to_char(buf, ch);
+                ch_printf(ch, "Your new prompt is : <%s>\n\r",
+                              ch->specials.prompt);
             }
         }
     } else {
-        sprintf(buf, "Your current prompt is : %s\n\r", ch->specials.prompt);
-        send_to_char(buf, ch);
+        ch_printf(ch, "Your current prompt is : %s\n\r", ch->specials.prompt);
     }
 }
 
@@ -279,7 +265,6 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
         40, "H:%h R:%R> "}, {
         41, "H:%h R:%R i%iI+> "}, {
     0, NULL}};
-    char            buf[512];
     int             i,
                     n;
 
@@ -298,43 +283,32 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
             }
             for (i = 0; prompts[i].pr; i++) {
                 if (prompts[i].n == n) {
-#if 0
-                    sprintf(buf, "Your prompt now is : <%s>\n\r",
-                    argument); send_to_char(buf, ch);
-#endif
                     if (ch->specials.bprompt) {
                         free(ch->specials.bprompt);
                     }
                     ch->specials.bprompt = strdup(prompts[i].pr);
                     if (cmd != 0) {
-                        sprintf(buf, "Your new battle prompt is : <%s>\n\r",
-                                ch->specials.bprompt);
-                        send_to_char(buf, ch);
+                        ch_printf(ch, "Your new battle prompt is : <%s>\n\r",
+                                      ch->specials.bprompt);
                     }
                     return;
                 }
             }
             send_to_char("Invalid prompt number\n\r", ch);
         } else {
-#if 0
-            sprintf(buf, "Your prompt now is : <%s>\n\r", argument);
-            send_to_char(buf, ch);
-#endif
             if (ch->specials.bprompt) {
                 free(ch->specials.bprompt);
             }
             ch->specials.bprompt = strdup(argument);
             if (cmd != 0) {
-                sprintf(buf, "Your new battle prompt is : <%s>\n\r",
-                        ch->specials.bprompt);
-                send_to_char(buf, ch);
+                ch_printf(ch, "Your new battle prompt is : <%s>\n\r",
+                              ch->specials.bprompt);
             }
 
         }
     } else {
-        sprintf(buf, "Your current battle prompt is : %s\n\r",
-                ch->specials.bprompt);
-        send_to_char(buf, ch);
+        ch_printf(ch, "Your current battle prompt is : %s\n\r",
+                      ch->specials.bprompt);
     }
 }
 
@@ -345,7 +319,6 @@ void do_set_bprompt(struct char_data *ch, char *argument, int cmd)
 
 void do_title(struct char_data *ch, char *argument, int cmd)
 {
-    char            buf[512];
     char            buf2[512];
     char           *arg1,
                    *arg2;
@@ -380,8 +353,7 @@ void do_title(struct char_data *ch, char *argument, int cmd)
         }
         free( temp );
 
-        sprintf(buf, "Your title has been set to : <%s>\n\r", buf2);
-        send_to_char(buf, ch);
+        ch_printf(ch, "Your title has been set to : <%s>\n\r", buf2);
         if (ch->player.title) {
             free(ch->player.title);
         }
@@ -578,20 +550,22 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
         send_to_char("You are no longer sneaky.\n\r", ch);
         return;
     }
+
     if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
         send_to_char("You're not trained to walk silently!\n\r", ch);
         return;
     }
-    if (HasClass(ch, CLASS_RANGER) && !OUTSIDE(ch)) {
-        if (!IS_IMMORTAL(ch)) {
-            send_to_char("You must do this outdoors!\n\r", ch);
-            return;
-        }
+
+    if (HasClass(ch, CLASS_RANGER) && !OUTSIDE(ch) && !IS_IMMORTAL(ch)) {
+        send_to_char("You must do this outdoors!\n\r", ch);
+        return;
     }
+
     if (MOUNTED(ch)) {
         send_to_char("Yeah... right... while mounted\n\r", ch);
         return;
     }
+
     if (!IS_AFFECTED(ch, AFF_SILENCE)) {
         /*
          * removed this to balance with to many sneak items.. (GH)
@@ -608,11 +582,13 @@ void do_sneak(struct char_data *ch, char *argument, int cmd)
             return;
         }
     }
+
     send_to_char("Ok, you'll try to move silently for a while.\n\r", ch);
-    percent = number(1, 101);
+
     /*
      * 101% is a complete failure
      */
+    percent = number(1, 101);
     if (!ch->skills) {
         return;
     }
@@ -656,38 +632,46 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
         send_to_char("Hey, you can't do that!\n\r", ch);
         return;
     }
+
     if (cmd == 153 && !HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_RANGER)) {
         send_to_char("Hey, you can't do that!\n\r", ch);
         return;
     }
+
     if (IS_AFFECTED(ch, AFF_HIDE)) {
         REMOVE_BIT(ch->specials.affected_by, AFF_HIDE);
     }
+
     if (!HasClass(ch, CLASS_THIEF | CLASS_MONK | CLASS_BARBARIAN |
                       CLASS_RANGER)) {
         send_to_char("You're not trained to hide!\n\r", ch);
         return;
     }
+
     if (!HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER)) {
         send_to_char("You attempt to hide in the shadows.\n\r", ch);
     } else {
         send_to_char("You attempt to camouflage yourself.\n\r", ch);
     }
+
     if (HasClass(ch, CLASS_BARBARIAN | CLASS_RANGER) && !OUTSIDE(ch)) {
         send_to_char("You must do this outdoors.\n\r", ch);
         return;
     }
+
     if (MOUNTED(ch)) {
         send_to_char("Yeah... right... while mounted\n\r", ch);
         return;
     }
-    percent = number(1, 101);
+
     /*
      * 101% is a complete failure
      */
+    percent = number(1, 101);
     if (!ch->skills) {
         return;
     }
+
     if (percent > ch->skills[SKILL_HIDE].learned +
         dex_app_skill[(int)GET_DEX(ch)].hide) {
         LearnFromMistake(ch, SKILL_HIDE, 1, 90);
@@ -696,6 +680,7 @@ void do_hide(struct char_data *ch, char *argument, int cmd)
         }
         return;
     }
+
     SET_BIT(ch->specials.affected_by, AFF_HIDE);
     if (cmd) {
         WAIT_STATE(ch, PULSE_VIOLENCE * 1);
@@ -759,8 +744,8 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
 
     if ((GetMaxLevel(ch) < 2) && (!IS_NPC(victim))) {
         send_to_char("Due to misuse of steal, you can't steal from other "
-                     "players\n\r", ch);
-        send_to_char("unless you are at least 2nd level. \n\r", ch);
+                     "players\n\r"
+                     "unless you are at least 2nd level. \n\r", ch);
         return;
     }
 
@@ -897,8 +882,7 @@ void do_steal(struct char_data *ch, char *argument, int cmd)
             if (gold > 0) {
                 GET_GOLD(ch) += gold;
                 GET_GOLD(victim) -= gold;
-                sprintf(buf, "Bingo! You got %d gold coins.\n\r", gold);
-                send_to_char(buf, ch);
+                ch_printf(ch, "Bingo! You got %d gold coins.\n\r", gold);
                 if (IS_PC(ch) && IS_PC(victim)) {
                     GET_ALIGNMENT(ch) -= 20;
                 }
@@ -1343,25 +1327,26 @@ void do_group_name(struct char_data *ch, char *arg, int cmd)
             count++;
         }
     }
+
     if (count < 1) {
         send_to_char("You can't have a group with just one player!\n\r", ch);
         return;
     }
+
     /*
      * free the old ch->specials.group_name
      */
     if (ch->specials.group_name) {
         free(ch->specials.group_name);
-        ch->specials.group_name = 0;
+        ch->specials.group_name = NULL;
     }
+
     /*
      * set ch->specials.group_name to the argument
      */
     arg = skip_spaces(arg);
     if( arg ) {
-        send_to_char("Setting your group name to: ", ch);
-        send_to_char(arg, ch);
-        send_to_char("\n\r", ch);
+        ch_printf(ch, "Setting your group name to: %s\n\r", arg);
         ch->specials.group_name = strdup(arg);
     } else {
         send_to_char("Clearing your group name\n\r", ch);
@@ -1747,8 +1732,7 @@ void do_use(struct char_data *ch, char *argument, int cmd)
     dlog("in do_use");
 
     if (A_NOMAGIC(ch)) {
-        send_to_char("The arena rules do not allow the use of magic!\n\r",
-                     ch);
+        send_to_char("The arena rules do not allow the use of magic!\n\r", ch);
         return;
     }
 
@@ -1866,9 +1850,6 @@ void do_use(struct char_data *ch, char *argument, int cmd)
 
                 if (stick->obj_flags.value[3] != SPELL_KNOCK) {
                     send_to_char("That spell is useless on doors.\n\r", ch);
-                    /*
-                     * Spell is not knock, error and return
-                     */
                     return;
                 }
 
@@ -2024,9 +2005,8 @@ void do_alias(struct char_data *ch, char *arg, int cmd)
             if (ch->specials.A_list) {
                 for (i = 0; i < 10; i++) {
                     if (ch->specials.A_list->com[i]) {
-                        sprintf(buf, "[%d] %s\n\r", i,
-                                ch->specials.A_list->com[i]);
-                        send_to_char(buf, ch);
+                        ch_printf(ch, "[%d] %s\n\r", i,
+                                      ch->specials.A_list->com[i]);
                     }
                 }
             } else {
@@ -2260,13 +2240,11 @@ void do_memorize(struct char_data *ch, char *argument, int cmd)
         send_to_char("Memorize 'spell name'\n\rCurrent spells in memory:\n\r",
                      ch);
 
-        sprintf(buf, "You can memorize one spell %d times, with a total of "
-                     "%d spells memorized.\n\r",
-                MaxCanMemorize(ch, 0), TotalMaxCanMem(ch));
-        send_to_char(buf, ch);
-        sprintf(buf, "You currently have %d spells memorized.\n\r",
-                TotalMemorized(ch));
-        send_to_char(buf, ch);
+        ch_printf(ch, "You can memorize one spell %d times, with a total of "
+                      "%d spells memorized.\n\r",
+                      MaxCanMemorize(ch, 0), TotalMaxCanMem(ch));
+        ch_printf(ch, "You currently have %d spells memorized.\n\r",
+                      TotalMemorized(ch));
         send_to_char("Your spellbook holds these spells:\n\r", ch);
 
         buffer[0] = '\0';
@@ -2733,32 +2711,6 @@ void do_set_quest(struct char_data *ch, char *argument, int cmd)
 void do_flag_status(struct char_data *ch, char *argument, int cmd)
 {
     send_to_char("Flag Status: \n\r", ch);
-#if 0
-    ch_printf("AFK [%s] ANSI [%s]\n\r" ,(IS_AFFECTED2(ch,AFF2_AFK) ?
-        "X" : " "),(IS_SET(ch->player.user_flags, USE_ANSI) ? "X":" ") );
-
-    ch_printf("%15s [%s] %15s [%s]\n\r"
-        ,"Wimpy",(IS_SET(ch->specials.act, PLR_WIMPY) ? "X" : " "), "Zone "
-        "Sounds",(IS_SET(ch->specials.act, ZONE_SOUNDS) ? "X":" ") );
-
-    ch_printf("%15s [%s] %15s [%s]\n\r"
-        ,"Cloaked",(IS_SET(ch->specials.act, CLOAKED) ? "X" : " "),
-        "Private",(IS_SET(ch->specials.act, CHAR_PRIVATE) ? "X":" ") );
-
-    send_to_char("Auto settings.",ch);
-
-    ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
-        "Assist",(IS_SET(ch->specials.act, PLR_AUTOASSIST) ? "X" : " "),
-        "Auto Split",(IS_SET(ch->specials.act, PLR_AUTOSPLIT) ? "X":" ") );
-
-    ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
-        "Exit",(IS_SET(ch->specials.act, PLR_AUTOEXIT) ? "X" : " "), "Auto "
-        "Loot",(IS_SET(ch->specials.act, PLR_AUTOLOOT) ? "X":" ") );
-
-    ch_printf("%15s [%s] %15s [%s]\n\r" ,"Auto "
-            "Gold",(IS_SET(ch->specials.act, PLR_AUTOGOLD) ? "X" : " "),
-            "Auto Sac",(IS_SET(ch->specials.act, PLR_AUTOSAC) ? "X":" ") );
-#endif
 }
 
 
@@ -2838,8 +2790,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 
     if (!type) {
         send_to_char("Set, but set what?!?!? type help set for further "
-                     "details on\n\r", ch);
-        send_to_char("email, answer, autoexits, groupname, clan, pause, "
+                     "details on\n\r"
+                     "email, answer, autoexits, groupname, clan, pause, "
                      "autoloot, autogold, autoassist, autosplit, ansi, "
                      "advice, sound, cloak oldcolors\n\r", ch);
         return;
@@ -2847,8 +2799,8 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 
     if (!strcmp("war", type) && (!field)) {
         send_to_char("Use 'set war enable', REMEMBER ONCE THIS IS SET YOU "
-                     "CANNOT REMOVE IT!\n\r", ch);
-        send_to_char("Be sure to READ the help on RACE WAR.\n\r", ch);
+                     "CANNOT REMOVE IT!\n\r"
+                     "Be sure to READ the help on RACE WAR.\n\r", ch);
         return;
     }
 
@@ -2858,6 +2810,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
                 send_to_char("You don't have a cloak to do that with.", ch);
                 return;
             }
+
             SET_BIT(ch->player.user_flags, CLOAKED);
             act("You pull $p down over your body, cloaking your equipment "
                 "from view.", FALSE, ch, ch->equipment[12], 0, TO_CHAR);
@@ -3085,8 +3038,7 @@ void do_set_flags(struct char_data *ch, char *argument, int cmd)
 
 void do_finger(struct char_data *ch, char *argument, int cmd)
 {
-    char           *name,
-                    buf[254];
+    char           *name;
     struct char_data *temp = 0;
     struct char_data *finger = 0;
     struct char_data *i;
@@ -3124,12 +3076,10 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
         /*
          * Display Character information
          */
-        sprintf(buf, "        $c0008-=* $c000BAdventurer information $c0008"
-                     "*=-\n\r");
-        send_to_char(buf, ch);
-        sprintf(buf, "$c000BName                  : $c0007%s\n\r",
-                finger->player.title);
-        send_to_char(buf, ch);
+        send_to_char("        $c0008-=* $c000BAdventurer information $c0008"
+                     "*=-\n\r", ch);
+        ch_printf(ch, "$c000BName                  : $c0007%s\n\r",
+                      finger->player.title);
         i = get_char(name);
 
         /*
@@ -3137,55 +3087,50 @@ void do_finger(struct char_data *ch, char *argument, int cmd)
          */
         if ((IS_IMMORTAL(finger) && !IS_IMMORTAL(ch)) ||
             GetMaxLevel(finger) > GetMaxLevel(ch)) {
-            sprintf(buf, "$c000BLast time sited       : $c0007Unknown\n\r");
+            ch_printf(ch, "$c000BLast time sited       : $c0007Unknown\n\r");
         } else if (i && i->desc) {
             /*
              * if there is a name, and a file descriptor
              */
-            sprintf(buf, "$c000BLast time sited       : $c0007Currently "
-                    "Playing\n\r");
+            ch_printf(ch, "$c000BLast time sited       : $c0007Currently "
+                          "Playing\n\r");
         } else {
             /* NOTE: asctime includes a \n\r at the end of the string */
-            sprintf(buf, "$c000BLast time sited       : $c0007%s",
-                    asctime(localtime(&tmp_store.last_logon)));
+            ch_printf(ch, "$c000BLast time sited       : $c0007%s",
+                          asctime(localtime(&tmp_store.last_logon)));
         }
-        send_to_char(buf, ch);
 
         /*
          * Display char email addy
          */
         if (finger->specials.email == NULL) {
-            sprintf(buf, "$c000BKnown message drop    : $c0007None\n\r");
+            ch_printf(ch, "$c000BKnown message drop    : $c0007None\n\r");
         } else {
-            sprintf(buf, "$c000BKnown message drop    : $c0007%s\n\r",
-                    finger->specials.email);
+            ch_printf(ch, "$c000BKnown message drop    : $c0007%s\n\r",
+                          finger->specials.email);
         }
-        send_to_char(buf, ch);
 
         /*
          * Display clan info
          */
-        sprintf(buf, "$c000BClan info             : $c0007%s\n\r",
-                         clan_list[GET_CLAN(finger)].name);
-        send_to_char(buf, ch);
+        ch_printf(ch, "$c000BClan info             : $c0007%s\n\r",
+                      clan_list[GET_CLAN(finger)].name);
 
         if (IS_IMMORTAL(ch)) {
             if (finger->specials.hostip == NULL) {
-                sprintf(buf, "$c000BHostIP                : $c0007None\n\r");
+                ch_printf(ch, "$c000BHostIP                : $c0007None\n\r");
             } else {
-                sprintf(buf, "$c000BHostIP                : $c0007%s\n\r",
-                        finger->specials.hostip);
+                ch_printf(ch, "$c000BHostIP                : $c0007%s\n\r",
+                              finger->specials.hostip);
             }
-            send_to_char(buf, ch);
         }
 
         if (finger->specials.rumor == NULL) {
-            sprintf(buf, "$c000BRumored info          : $c0007None\n\r");
+            ch_printf(ch, "$c000BRumored info          : $c0007None\n\r");
         } else {
-            sprintf(buf, "$c000BRumored info           : $c0007%s\n\r",
-                    finger->specials.rumor);
+            ch_printf(ch, "$c000BRumored info           : $c0007%s\n\r",
+                          finger->specials.rumor);
         }
-        send_to_char(buf, ch);
 
         ch_printf(ch, "$c000BArena stats           : $c0007%d kills$c000B/"
                       "$c0007%d deaths\n\r",
@@ -3546,8 +3491,7 @@ void do_behead(struct char_data *ch, char *argument, int cmd)
         }
         j->description = strdup(buf);
 
-        sprintf(buf, "You behead %s.\n\r", j->short_description);
-        send_to_char(buf, ch);
+        ch_printf(ch, "You behead %s.\n\r", j->short_description);
 
         sprintf(buf, "%s beheads %s.", GET_NAME(ch), j->short_description);
         act(buf, TRUE, ch, 0, 0, TO_ROOM);

@@ -59,9 +59,8 @@ void get(struct char_data *ch, struct obj_data *obj_object,
              * don't notify if it's 1 coin or less
              */
             if (obj_object->obj_flags.value[0] > 1) {
-                sprintf(buffer, "There was %s coins.\n\r",
-                        formatNum(obj_object->obj_flags.value[0]));
-                send_to_char(buffer, ch);
+                ch_printf(ch, "There was %s coins.\n\r",
+                              formatNum(obj_object->obj_flags.value[0]));
             }
 
             /*
@@ -91,7 +90,6 @@ void do_get(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg1;
     char           *arg2;
-    char            buffer[MAX_STRING_LENGTH];
     struct obj_data *sub_object,
                    *obj_object,
                    *next_obj,
@@ -190,17 +188,14 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                             fail = TRUE;
                         }
                     } else {
-                        sprintf(buffer, "%s : You can't carry that much "
-                                        "weight.\n\r",
-                                obj_object->short_description);
-                        send_to_char(buffer, ch);
+                        ch_printf(ch, "%s : You can't carry that much "
+                                      "weight.\n\r", 
+                                      obj_object->short_description);
                         fail = TRUE;
                     }
                 } else {
-                    sprintf(buffer, "%s : You can't carry that many "
-                                    "items.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
+                    ch_printf(ch, "%s : You can't carry that many items.\n\r",
+                                  obj_object->short_description);
                     fail = TRUE;
                 }
             }
@@ -259,25 +254,21 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                             num = 0;
                         }
                     } else {
-                        sprintf(buffer, "%s : You can't carry that much "
-                                        "weight.\n\r",
-                                obj_object->short_description);
-                        send_to_char(buffer, ch);
+                        ch_printf(ch, "%s : You can't carry that much "
+                                      "weight.\n\r",
+                                      obj_object->short_description);
                         fail = TRUE;
                         num = 0;
                     }
                 } else {
-                    sprintf(buffer, "%s : You can't carry that many "
-                                    "items.\n\r",
-                            obj_object->short_description);
-                    send_to_char(buffer, ch);
+                    ch_printf(ch, "%s : You can't carry that many items.\n\r",
+                                  obj_object->short_description);
                     fail = TRUE;
                     num = 0;
                 }
             } else {
                 if (num > 0) {
-                    sprintf(buffer, "You do not see a %s here.\n\r", arg1);
-                    send_to_char(buffer, ch);
+                    ch_printf(ch, "You do not see a %s here.\n\r", arg1);
                 }
                 num = 0;
                 fail = TRUE;
@@ -329,37 +320,32 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                                     fail = TRUE;
                                 }
                             } else {
-                                sprintf(buffer, "%s : You can't carry "
-                                                "that much weight.\n\r",
-                                        obj_object->short_description);
-                                send_to_char(buffer, ch);
+                                ch_printf(ch, "%s : You can't carry "
+                                              "that much weight.\n\r",
+                                              obj_object->short_description);
                                 fail = TRUE;
                             }
                         } else {
-                            sprintf(buffer, "%s : You can't carry that "
-                                            "many items.\n\r",
-                                    obj_object->short_description);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "%s : You can't carry that "
+                                          "many items.\n\r",
+                                          obj_object->short_description);
                             fail = TRUE;
                         }
                     }
                 }
 
                 if (!found && !fail) {
-                    sprintf(buffer, "You do not see anything in %s.\n\r",
-                            sub_object->short_description);
-                    send_to_char(buffer, ch);
+                    ch_printf(ch, "You do not see anything in %s.\n\r",
+                                  sub_object->short_description);
                     fail = TRUE;
                 }
             } else {
-                sprintf(buffer, "%s is not a container.\n\r",
-                        sub_object->short_description);
-                send_to_char(buffer, ch);
+                ch_printf(ch, "%s is not a container.\n\r",
+                              sub_object->short_description);
                 fail = TRUE;
             }
         } else {
-            sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
-            send_to_char(buffer, ch);
+            ch_printf(ch, "You do not see or have the %s.\n\r", arg2);
             fail = TRUE;
         }
         break;
@@ -413,26 +399,23 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                                     num = 0;
                                 }
                             } else {
-                                sprintf(buffer, "%s : You can't carry that"
-                                                " much weight.\n\r",
-                                        obj_object->short_description);
-                                send_to_char(buffer, ch);
+                                ch_printf(ch, "%s : You can't carry that"
+                                              " much weight.\n\r",
+                                              obj_object->short_description);
                                 fail = TRUE;
                                 num = 0;
                             }
                         } else {
-                            sprintf(buffer, "%s : You can't carry that "
-                                            "many items.\n\r",
-                                    obj_object->short_description);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "%s : You can't carry that "
+                                          "many items.\n\r",
+                                          obj_object->short_description);
                             fail = TRUE;
                             num = 0;
                         }
                     } else {
                         if (num > 0) {
-                            sprintf(buffer, "%s does not contain the %s.\n\r",
-                                    sub_object->short_description, arg1);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "%s does not contain the %s.\n\r",
+                                          sub_object->short_description, arg1);
                         }
                         num = 0;
                         fail = TRUE;
@@ -443,14 +426,12 @@ void do_get(struct char_data *ch, char *argument, int cmd)
                     }
                 }
             } else {
-                sprintf(buffer, "%s is not a container.\n\r",
-                        sub_object->short_description);
-                send_to_char(buffer, ch);
+                ch_printf(ch, "%s is not a container.\n\r",
+                              sub_object->short_description);
                 fail = TRUE;
             }
         } else {
-            sprintf(buffer, "You do not see or have the %s.\n\r", arg2);
-            send_to_char(buffer, ch);
+            ch_printf(ch, "You do not see or have the %s.\n\r", arg2);
             fail = TRUE;
         }
         break;
@@ -461,7 +442,6 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 {
     char           *arg;
     int             amount;
-    char            buffer[MAX_STRING_LENGTH];
     struct obj_data *tmp_object;
     struct obj_data *next_obj;
     bool            test = FALSE;
@@ -496,8 +476,7 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        sprintf(buffer, "You drop %s coins.\n\r", formatNum(amount));
-        send_to_char(buffer, ch);
+        ch_printf(ch, "You drop %s coins.\n\r", formatNum(amount));
 
         act("$n drops some gold.", FALSE, ch, 0, 0, TO_ROOM);
         tmp_object = create_money(amount);
@@ -517,15 +496,12 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
                 test = TRUE;
             } else if (CAN_SEE_OBJ(ch, tmp_object)) {
                 if (singular(tmp_object)) {
-                    sprintf(buffer,
-                            "You can't drop %s, it must be CURSED!\n\r",
-                            tmp_object->short_description);
+                    ch_printf(ch, "You can't drop %s, it must be CURSED!\n\r",
+                                  tmp_object->short_description);
                 } else {
-                    sprintf(buffer,
-                            "You can't drop %s, they must be CURSED!\n\r",
-                            tmp_object->short_description);
+                    ch_printf(ch, "You can't drop %s, they must be CURSED!\n\r",
+                                  tmp_object->short_description);
                 }
-                send_to_char(buffer, ch);
                 test = TRUE;
             }
         }
@@ -555,9 +531,8 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
         tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
         if (tmp_object) {
             if (!IS_SET(tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
-                sprintf(buffer, "You drop %s.\n\r",
-                        tmp_object->short_description);
-                send_to_char(buffer, ch);
+                ch_printf(ch, "You drop %s.\n\r",
+                              tmp_object->short_description);
                 act("$n drops $p.", 1, ch, tmp_object, 0, TO_ROOM);
                 obj_from_char(tmp_object);
                 obj_to_room(tmp_object, ch->in_room);
@@ -592,7 +567,6 @@ void do_drop(struct char_data *ch, char *argument, int cmd)
 
 void do_put(struct char_data *ch, char *argument, int cmd)
 {
-    char            buffer[256];
     char           *arg1;
     char           *arg2;
     struct obj_data *obj_object;
@@ -639,23 +613,17 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         next_object = tmp_object->next_content;
                         if (IS_SET(tmp_object->obj_flags.extra_flags,
                                    ITEM_NODROP)) {
-                            sprintf(buffer, "%s : CURSED!\n\r",
-                                    tmp_object->short_description);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "%s : CURSED!\n\r",
+                                          tmp_object->short_description);
                         } else if (tmp_object != sub_object) {
                             if ((tmp_object->obj_flags.weight +
                                  sub_object->obj_flags.weight) >
                                 sub_object->obj_flags.value[0] - 1) {
-                                sprintf(buffer, "%s : It won't fit.\n\r",
-                                        tmp_object->short_description);
-                                send_to_char(buffer, ch);
-                                /*
-                                 * return;
-                                 */
+                                ch_printf(ch, "%s : It won't fit.\n\r",
+                                              tmp_object->short_description);
                             } else {
-                                sprintf(buffer, "%s : OK\n\r",
-                                        tmp_object->short_description);
-                                send_to_char(buffer, ch);
+                                ch_printf(ch, "%s : OK\n\r",
+                                              tmp_object->short_description);
                                 obj_from_char(tmp_object);
                                 if (sub_object->carried_by) {
                                     IS_CARRYING_W(ch) +=
@@ -669,9 +637,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                         FALSE, ch, sub_object, 0, TO_ROOM);
                     return;
                 } else {
-                    sprintf(buffer, "You do not see or have the %s.\n\r.",
-                            arg2);
-                    send_to_char(buffer, ch);
+                    ch_printf(ch, "You do not see or have the %s.\n\r.", arg2);
                 }
             } else {
                 while (num != 0) {
@@ -747,20 +713,17 @@ void do_put(struct char_data *ch, char *argument, int cmd)
                                     num = 0;
                                 }
                             } else {
-                                sprintf(buffer, "%s is not a container.\n\r",
-                                        sub_object->short_description);
-                                send_to_char(buffer, ch);
+                                ch_printf(ch, "%s is not a container.\n\r",
+                                              sub_object->short_description);
                                 num = 0;
                             }
                         } else {
-                            sprintf(buffer, "You don't have the %s.\n\r", arg2);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "You don't have the %s.\n\r", arg2);
                             num = 0;
                         }
                     } else {
                         if (num > 0 || num == -1) {
-                            sprintf(buffer, "You don't have the %s.\n\r", arg1);
-                            send_to_char(buffer, ch);
+                            ch_printf(ch, "You don't have the %s.\n\r", arg1);
                         }
                         num = 0;
                     }
@@ -770,8 +733,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
 #endif
             }
         } else {
-            sprintf(buffer, "Put %s in what?\n\r", arg1);
-            send_to_char(buffer, ch);
+            ch_printf(ch, "Put %s in what?\n\r", arg1);
         }
     } else {
         send_to_char("Put what in what?\n\r", ch);
@@ -782,8 +744,7 @@ void do_put(struct char_data *ch, char *argument, int cmd)
 void do_give(struct char_data *ch, char *argument, int cmd)
 {
     char           *obj_name,
-                   *vict_name,
-                    buf[132];
+                   *vict_name;
     char           *arg,
                     newarg[100];
     int             amount,
@@ -809,8 +770,8 @@ void do_give(struct char_data *ch, char *argument, int cmd)
         amount = advatoi(obj_name);
         argument = get_argument(argument, &arg);
 
-        if (arg && strcasecmp("coins", arg) != 0 && strcasecmp("coin", arg) != 0 &&
-            strcasecmp("gold", arg) != 0) {
+        if (arg && strcasecmp("coins", arg) && strcasecmp("coin", arg) &&
+            strcasecmp("gold", arg)) {
             send_to_char("Do you mean, 'give <number> coins <person>' ?\n\r",
                          ch);
             return;
@@ -839,12 +800,10 @@ void do_give(struct char_data *ch, char *argument, int cmd)
             return;
         }
 
-        sprintf(buf, "You give %s gold coins to %s.\n\r", formatNum(amount),
-                PERS(vict, ch));
-        send_to_char(buf, ch);
-        sprintf(buf, "%s gives you %s gold coins.\n\r", PERS(ch, vict),
-                formatNum(amount));
-        send_to_char(buf, vict);
+        ch_printf(ch, "You give %s gold coins to %s.\n\r", formatNum(amount),
+                      PERS(vict, ch));
+        ch_printf(vict, "%s gives you %s gold coins.\n\r", PERS(ch, vict),
+                        formatNum(amount));
         act("$n gives some gold coins to $N.", 1, ch, 0, vict, TO_NOTVICT);
 
         if (IS_NPC(ch) || GetMaxLevel(ch) < DEMIGOD) {
@@ -922,28 +881,25 @@ void do_give(struct char_data *ch, char *argument, int cmd)
 
             if ((IS_OBJ_STAT(obj, ITEM_NODROP)) && (!IS_IMMORTAL(ch))) {
                 if (singular(obj)) {
-                    sprintf(buf, "You can't let go of %s, it must be CURSED!\r",
-                            obj->short_description);
-                    send_to_char(buf, ch);
+                    ch_printf(ch, "You can't let go of %s, it must be "
+                                  "CURSED!\r", obj->short_description);
                 } else {
-                    sprintf(buf, "You can't let go of %s, they must be "
-                                 "CURSED!\r",
-                            obj->short_description);
-                    send_to_char(buf, ch);
+                    ch_printf(ch, "You can't let go of %s, they must be "
+                                  "CURSED!\r", obj->short_description);
                 }
                 return;
-            } else {
-                act("$n gives $p to $N.", 1, ch, obj, vict, TO_NOTVICT);
-                act("$n gives you $p.", 0, ch, obj, vict, TO_VICT);
-                act("You give $p to $N", 0, ch, obj, vict, TO_CHAR);
-                obj_from_char(obj);
-                obj_to_char(obj, vict);
-                if (num > 0)
-                    num--;
-                count++;
-            }
+            } 
 
+            act("$n gives $p to $N.", 1, ch, obj, vict, TO_NOTVICT);
+            act("$n gives you $p.", 0, ch, obj, vict, TO_VICT);
+            act("You give $p to $N", 0, ch, obj, vict, TO_CHAR);
+            obj_from_char(obj);
+            obj_to_char(obj, vict);
+            if (num > 0)
+                num--;
+            count++;
         }
+
 #ifndef DUPLICATES
         do_save(ch, "", 0);
         do_save(vict, "", 0);
@@ -959,12 +915,11 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
 
     char           *arg;
     int             value;
-    char            buffer[MAX_STRING_LENGTH];
     struct obj_data *tmp_object;
     struct obj_data *next_obj;
     bool            test = FALSE;
     char            newarg[1000];
-    int             num,
+    int             num = 0,
                     p;
 
     dlog("in do_donate");
@@ -986,19 +941,19 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                 } else {
                     if (CAN_SEE_OBJ(ch, tmp_object)) {
                         if (singular(tmp_object)) {
-                            sprintf(buffer, "You can't donate %s, it must be "
-                                            "CURSED!\n\r",
-                                    tmp_object->short_description);
+                            ch_printf(ch, "You can't donate %s, it must be "
+                                          "CURSED!\n\r",
+                                          tmp_object->short_description);
                         } else {
-                            sprintf(buffer, "You can't donate %s, they must "
-                                            "be CURSED!\n\r",
-                                    tmp_object->short_description);
+                            ch_printf(ch, "You can't donate %s, they must "
+                                          "be CURSED!\n\r",
+                                          tmp_object->short_description);
                         }
-                        send_to_char(buffer, ch);
                         test = TRUE;
                     }
                 }
             }
+
             if (!test) {
                 send_to_char("You do not seem to have anything.\n\r", ch);
             } else {
@@ -1006,67 +961,63 @@ void do_donate(struct char_data *ch, char *argument, int cmd)
                     0, 0, TO_CHAR);
                 act("$n donates everything he carries!.", 1, ch, 0, 0, TO_ROOM);
             }
+
 #ifndef DUPLICATES
             do_save(ch, "", 0);
 #endif
+        } else if (getall(arg, newarg) == TRUE) {
+            num = -1;
+            strcpy(arg, newarg);
+        } else if ((p = getabunch(arg, newarg)) != '\0') {
+            num = p;
+            strcpy(arg, newarg);
         } else {
-            if (getall(arg, newarg) == TRUE) {
-                num = -1;
-                strcpy(arg, newarg);
-            } else if ((p = getabunch(arg, newarg)) != '\0') {
-                num = p;
-                strcpy(arg, newarg);
-            } else {
-                num = 1;
-            }
-            value = 0;
-            while (num != 0) {
-                tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
-                if (tmp_object) {
-                    if (!IS_SET
-                        (tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
-                        sprintf(buffer, "%s disappears from your hands! A "
-                                        "small voice says: 'Thank you'.\n\r",
-                                tmp_object->short_description);
-                        send_to_char(buffer, ch);
-                        sprintf(buffer, "$c0004The gods thank you for your "
-                                        "donation!\n\r");
-                        send_to_char(buffer, ch);
-                        act("$p disappears from $n's hands!.", 1, ch,
-                            tmp_object, 0, TO_ROOM);
-                        obj_from_char(tmp_object);
-                        obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
-                                    donations1 : donations2);
-                        value += ((tmp_object->obj_flags.cost) * 10 / 100);
-                    } else {
-                        if (singular(tmp_object)) {
-                            send_to_char("You can't donate it, it must be "
-                                         "CURSED!\n\r", ch);
-                        } else {
-                            send_to_char("You can't donate them, they must be"
-                                         " CURSED!\n\r", ch);
-                        }
-                        num = 0;
-                    }
-                } else {
-                    if (num > 0) {
-                        send_to_char("Try donating something you have, "
-                                     "silly!\n\r", ch);
-                    }
+            num = 1;
+        }
 
+        value = 0;
+        while (num != 0) {
+            tmp_object = get_obj_in_list_vis(ch, arg, ch->carrying);
+            if (tmp_object) {
+                if (!IS_SET
+                    (tmp_object->obj_flags.extra_flags, ITEM_NODROP)) {
+                    ch_printf(ch, "%s disappears from your hands! A "
+                                  "small voice says: 'Thank you'.\n\r",
+                                  tmp_object->short_description);
+                    ch_printf(ch, "$c0004The gods thank you for your "
+                                  "donation!\n\r");
+                    act("$p disappears from $n's hands!.", 1, ch,
+                        tmp_object, 0, TO_ROOM);
+                    obj_from_char(tmp_object);
+                    obj_to_room(tmp_object, ((number(0, 1) == 1)) ?
+                                donations1 : donations2);
+                    value += ((tmp_object->obj_flags.cost) * 10 / 100);
+                } else {
+                    if (singular(tmp_object)) {
+                        send_to_char("You can't donate it, it must be "
+                                     "CURSED!\n\r", ch);
+                    } else {
+                        send_to_char("You can't donate them, they must be"
+                                     " CURSED!\n\r", ch);
+                    }
                     num = 0;
                 }
+            } else {
                 if (num > 0) {
-                    num--;
+                    send_to_char("Try donating something you have, "
+                                 "silly!\n\r", ch);
                 }
+
+                num = 0;
             }
-#ifndef DUPLICATES
-            do_save(ch, "", 0);
-#endif
-            /*
-             * GET_GOLD(ch) += value;
-             */
+
+            if (num > 0) {
+                num--;
+            }
         }
+#ifndef DUPLICATES
+        do_save(ch, "", 0);
+#endif
     } else {
         send_to_char("Normally, you gotta donate something!?\n\r", ch);
     }
