@@ -2977,7 +2977,13 @@ void cast_haste( byte level, struct char_data *ch, char *arg,
     break;
   case SPELL_TYPE_SCROLL:
   case SPELL_TYPE_POTION:
-    if(tar_obj) return;
+	 // Fix to work with potions - brian
+    //if(tar_obj) return;
+	 if(tar_obj)
+	 {
+		 if(tar_obj->obj_flags.type_flag != ITEM_POTION)
+			 return;
+	 }
     if (!tar_ch) tar_ch = ch;
     spell_haste(level, ch, tar_ch, 0);
     break;
