@@ -2860,9 +2860,9 @@ dlog("in do_who");
 		classn =1;
 	      total/=classn;
 		   if(GetMaxLevel(person)==50) {
-			  strcpy (levels,"$c0012Hero");
-		      if(GET_EXP(person) > 100000000 )  strcpy(levels,"$c0015Hero");
 		      if(GET_EXP(person) > 200000000 )  strcpy(levels,"$c0009Legend");
+                      else strcpy (levels,"$c0012Hero");
+
 	  	  }
 	      else if(total<11) strcpy(levels,"$c0008Apprentice");
 	      else if(total<21) strcpy(levels,"$c0004Pilgrim");
@@ -2931,7 +2931,7 @@ dlog("in do_who");
 		break;
 	      } else if (GET_SEX(person) == SEX_MALE) {
 		sprintf(levels,"Supreme Lord");
-		//break;
+		break;
 	      } else {
 		sprintf(levels,"Supreme Thing");
 		break;
@@ -2947,7 +2947,9 @@ dlog("in do_who");
 	      else if(!strcmp(GET_NAME(person), "Keirstad"))
 		sprintf(levels, "Lord of Building");
 	       else if(!str_cmp(GET_NAME(person), "Ignatius"))
-      		sprintf(levels, "Lord of the Flies");
+      		sprintf(levels, "Dragon Lord");
+              else if(!str_cmp(GET_NAME(person), "Pentak"))
+                sprintf(levels, "Creator");
               sprintf(tbuf, "%s",levels);
               sprintf(levels,"%30s","");
               if(!strcmp(GET_NAME(person), "Banon")) {
