@@ -1426,7 +1426,7 @@ dlog("in do_stat");
 			}
 			act(buf,FALSE,ch,0,0,TO_CHAR);
 
-			sprintf(buf,"%sLevel [%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s] Alignment[%s%d%s]",
+			sprintf(buf,"%sLevel [%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s/%s%d%s] Alignment[%s%d%s]",
 				color1, color2, k->player.level[0], color1, color3, k->player.level[1],
 				color1, color2, k->player.level[2], color1, color3, k->player.level[3],
 				color1, color2, k->player.level[4], color1, color3, k->player.level[5],
