@@ -1406,7 +1406,6 @@ void assign_mobiles()
 	{49702, portal_regulator }, /* mob to stick the portal proc on */
     {49611, receptionist },
 
-
 /* Heximal's new zone */
 	{50998, Deshima },
 	{23201    , TrainingGuild },
@@ -1414,7 +1413,6 @@ void assign_mobiles()
 
 /* King's Grove */
 	{702, DruidGuildMaster },
-//	{703, shopkeeper },
 	{705, gnome_collector },
 
 
@@ -1641,11 +1639,11 @@ void assign_rooms()
 	{50964, riddle_exit },
 
 /* The King's Grove */
-	{ 697, gnome_home },
-	{ 706, climb_room },
-	{ 708, pick_acorns },
-	{ 717, legendfountain },
-	{ 721, pick_berries },
+	{ 2897, gnome_home },
+	{ 2906, climb_room },
+	{ 2908, pick_acorns },
+	{ 2917, legendfountain },
+	{ 2921, pick_berries },
 
 /* Sentinel's Zone */
 	{ 51195, cog_room },

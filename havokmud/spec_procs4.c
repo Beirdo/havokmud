@@ -781,21 +781,21 @@ int generate_legend_statue()//struct char_data *ch, char *argument, int cmd)
 				/* coolness, the are! Determine the item. */
 				if(tmp->specials.m_kills >= 40000) {
 					itype = LEGEND_BIOGRAPHY;
-					rnum = number(732,734);
+					rnum = number(2932,2934);
 					sprintf(name,"biography tome %s",GET_NAME(tmp));
 					sprintf(shdesc,"a biography of %s",GET_NAME(tmp));
 					sprintf(desc,"A large tome lies here, titled 'The Biography of %s'.",GET_NAME(tmp));
 					sprintf(exdesc,"This book is a treatise on the life and accomplishments of %s.\n\rIt is an extensive volume, detailing many a feat. Most impressive.",GET_NAME(tmp));
 				} else if(tmp->specials.m_kills >= 20000) {
 					itype = LEGEND_PAINTING;
-					rnum = number(726,731);
+					rnum = number(2926,2931);
 					sprintf(name,"painting %s",GET_NAME(tmp));
 					sprintf(shdesc,"a painting of %s",GET_NAME(tmp));
 					sprintf(desc,"On the wall, one can admire a painting of %s, slaying a fearsome beast.",GET_NAME(tmp));
 					sprintf(exdesc,"%s is in the process of slaying a fearsome beast.\n\rTruly, %s is one of the greatest of these times.",GET_NAME(tmp),GET_NAME(tmp));
 				} else {
 					itype = LEGEND_STATUE;
-					rnum = number(701,724);
+					rnum = number(2901,2924);
 					sprintf(name,"statue %s",GET_NAME(tmp));
 					sprintf(shdesc,"a statue of %s",GET_NAME(tmp));
 					sprintf(desc,"A statue of the legendary %s has been erected here.",GET_NAME(tmp));
@@ -1074,7 +1074,7 @@ int legendfountain(struct char_data *ch, int cmd, char *arg, struct room_data *r
 	}
 }
 
-#define GNOME_HOME 697
+#define GNOME_HOME 2897
 #define GNOME_MOB  705
 int gnome_home(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
@@ -1343,7 +1343,7 @@ int qp_potion(struct char_data *ch, int cmd, char *arg)
 	}
 }
 
-#define CLIMB_ROOM 696
+#define CLIMB_ROOM 2896
 int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type)
 {
 	char buf[254], buffer[254];
@@ -1358,7 +1358,7 @@ int climb_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, i
 		only_argument(arg,buf);
 		if(*buf) {
 			if(!(str_cmp("up", buf)) || !(str_cmp("u", buf)) || !(str_cmp("Up", buf))) {
-				send_to_char("One would have a marvellous view when high up in the canopy.\n\r",ch);
+				send_to_char("One would have a marvelous view when high up in the canopy.\n\r",ch);
 				return(TRUE);
 			}
 		}

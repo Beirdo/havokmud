@@ -3675,6 +3675,8 @@ const char *connected_types[]	=	{
         "Already Playing",
         "Getting Ansii",
         "Creation Menu",
+        "Picking Alignment",
+        "Help File Editing",
 	"\n"
 };
 

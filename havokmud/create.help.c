@@ -1,4 +1,7 @@
-
+/*
+ * Online helpfile editor. Reads, edits, and saves existing files. Creates new files.
+ * Done by Lennya, Sept 2003
+ */
 #include <stdio.h>
 #include "protos.h"
 
@@ -36,6 +39,7 @@ char *help_edit_menu = "    1) Name(s) of file         2) Usage\n\r"
 void UpdateHelpMenu(struct char_data *ch);
 int is_help_elem(struct help_file_u *hlp, char *arg);
 int read_help_from_file(struct char_data *ch, char *argument, int cmd);
+int write_one_help(struct char_data *ch, FILE *f_temp);
 int write_help_to_file(struct char_data *ch, struct help_file_u *hlp);
 void ChangeHelpName(struct char_data *ch, char *arg, int type);
 void ChangeHelpUsage(struct char_data *ch, char *arg, int type);
@@ -374,7 +378,7 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
 {
 	struct help_file_u *hlp;
 	int minlen, i;
-	char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
+	char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH], tmp[126];
 
 	if (!ch->desc)
 		return(FALSE);
@@ -395,15 +399,12 @@ int read_help_from_file(struct char_data *ch, char *argument, int cmd)
 					return(FALSE);
 				hlp->wizard = 0; /* found in mortal helpfiles */
 				hlp->newfile = 0;
-				hlp->index = help_index[i].pos;
+				hlp->index = i;
 				rewind(help_fl);
 				fseek(help_fl, help_index[i].pos, 0);
 				*buffer = '\0';
 
 				fgets(buf, 80, help_fl);
-//				get rid of carriage return
-//				if(buf[strlen(buf)-1]=='\n')
-//					buf[strlen(buf)-1] = '\0';
 				if(buf[strlen(buf)-1]=='~')
 					buf[strlen(buf)-1] = '\0';
 				hlp->name = (char *)strdup(buf);
@@ -582,14 +583,16 @@ void HelpEdit(struct char_data *ch, char *arg)
 					send_to_char("File saved successfully.\n\r", ch);
 				else
 					send_to_char("File save unsuccessful. Something went pear shaped :(\n\r", ch);
-/*				if(ch->specials.help->wizard) {
-					send_to_char("Reindexing wizhelp table.\n\r", ch);
-					help_index = build_help_index(help_fl, &top_of_helpt);
-				} else {
-					send_to_char("Reindexing help table.\n\r", ch);
+				if(ch->specials.help->wizard) {
+					send_to_char("Reindexing wizhelp table...\n\r", ch);
 					wizhelp_index = build_help_index(wizhelp_fl, &top_of_wizhelpt);
+					send_to_char("Done.\n\r", ch);
+				} else {
+					send_to_char("Reindexing help table...\n\r", ch);
+					help_index = build_help_index(help_fl, &top_of_helpt);
+					send_to_char("Done.\n\r", ch);
 				}
-*/				ch->specials.help = 0;
+				ch->specials.help = 0;
 				return;
 			case 100:
 				ch->desc->connected = CON_PLYNG;
@@ -641,12 +644,102 @@ void HelpEdit(struct char_data *ch, char *arg)
 	}
 }
 
+int write_one_help(struct char_data *ch, FILE *f_temp)
+{
+	char buf[MAX_STRING_LENGTH*2], buffer[MAX_STRING_LENGTH*2];
+	struct help_file_u *hlp;
+
+	if(!f_temp)
+		return(FALSE);
+
+	if(!ch)
+		return(FALSE);
+
+	hlp = ch->specials.help;
+
+	if(!hlp)
+		return(FALSE);
+
+	if (hlp->modBy)
+		free(hlp->modBy);
+
+	hlp->modBy = (char *)strdup(GET_NAME(ch));
+	hlp->modified = time(0);
+
+	sprintf(buf,"%s", hlp->name);
+	if(buf[strlen(buffer)-1]=='~')
+		buf[strlen(buffer)-1] = '\0';
+	strcat(buf, "\n");
+	fputs(buf, f_temp);
+
+	if(hlp->usage) {
+		sprintf(buf,"   Usage        : %s", hlp->usage);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->accumulative) {
+		sprintf(buf,"   Accumulative : %s", hlp->accumulative);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->duration) {
+		sprintf(buf,"   Duration     : %s", hlp->duration);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->level) {
+		sprintf(buf,"   Level        : %s", hlp->level);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->damagetype) {
+		sprintf(buf,"   Damagetype   : %s", hlp->damagetype);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->saves) {
+		sprintf(buf,"   Save         : %s", hlp->saves);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		strcat(buf, "\n");
+		fputs(buf, f_temp);
+	}
+	if(hlp->description) {
+		fputs("\n", f_temp);
+		remove_cr(buf,hlp->description);
+		if(buf[strlen(buffer)-1]=='~')
+			buf[strlen(buffer)-1] = '\0';
+		fputs(buf, f_temp);
+	}
+	sprintf(buf,"\nAlso see: %s\n", hlp->references?hlp->references:"-");
+	if(buf[strlen(buffer)-1]=='~')
+		buf[strlen(buffer)-1] = '\0';
+	fputs(buf, f_temp);
+
+	sprintf(buf,"\nDone by %s, %s", hlp->modBy, asctime(localtime(&hlp->modified)));
+	fputs(buf, f_temp);
+
+	fputs("#", f_temp);
+	return(TRUE);
+}
+
 int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
 {
 	FILE *f;
 	FILE *f_temp;
 	char buf[MAX_STRING_LENGTH*2], buffer[MAX_STRING_LENGTH*2];
-	long i;
+	int i, top = 0, last = 0, tmp = 0;
+	char store[3];
 
 
 	if(!hlp) {
@@ -661,148 +754,150 @@ int write_help_to_file(struct char_data *ch, struct help_file_u *hlp)
 
 
 	if(hlp->wizard) {
-		sprintf(buf,"wizhelp_temp",hlp->name);
+		sprintf(buf,"wizhelp_temp");
 		if ((f_temp = fopen(buf,"w")) == NULL) {
 			send_to_char("Cannot access tmp wizhelpfile.\n\r",ch);
 			return(FALSE);
 		}
-	} else {
-		sprintf(buf,"help_temp",hlp->name);
-		if ((f_temp = fopen(buf,"w")) == NULL) {
-			send_to_char("Cannot access tmp helpfile.\n\r",ch);
-			return(FALSE);
-		}
-	}
-
-	if(hlp->wizard) {
-		sprintf(buf,"wizhelp_table",hlp->name);
+		sprintf(buf,"wizhelp_table");
 		if ((f = fopen(buf,"r")) == NULL) {
 			send_to_char("Cannot access wizhelpfile.\n\r",ch);
 			return(FALSE);
 		}
+		top = top_of_wizhelpt;
 	} else {
-		sprintf(buf,"help_table",hlp->name);
+		sprintf(buf,"help_temp");
+		if ((f_temp = fopen(buf,"w")) == NULL) {
+			send_to_char("Cannot access tmp helpfile.\n\r",ch);
+			return(FALSE);
+		}
+		sprintf(buf,"help_table");
 		if ((f = fopen(buf,"r")) == NULL) {
 			send_to_char("Cannot access helpfile.\n\r",ch);
 			return(FALSE);
 		}
+		top = top_of_helpt;
 	}
 
+	send_to_char("Saving into temporary file.\n\r",ch);
 
-	if(hlp->index) { /* it's an existing one */
-		/* load all previous helpfiles and stick em in the temp */
-		for(i = 0; i < hlp->index; i++) {
-			rewind(f);
-			fseek(f, help_index[i].pos, 0);
-			*buffer = '\0';
-			fputs("#",f_temp);
-			for (;;)  {
-				fgets(buffer, 80, f);
-				if (*buffer == '#') {
+	if(hlp->index) {
+		send_to_char("Oversaving existing file.\n\r",ch);
+		rewind(f);
+		while(ftell(f) != help_index[hlp->index].pos) {
+			tmp = fgetc(f);
+			store[0] = (char)tmp;
+			fprintf(f_temp, store);
+		}
+		/* now move cursor to where the next help element starts */
+		do
+			fgets(buf, 81, f);
+		while (*buf != '#');
+
+		/* write edited file */
+		if(!(write_one_help(ch, f_temp))) {
+			send_to_char("Single file not saved right, Aborting.\n\r",ch);
+			return(FALSE);
+		} else {
+			send_to_char("Inserted file.\n\r",ch);
+		}
+
+		/* write remainder */
+		while(!feof(f)) {
+			tmp = fgetc(f);
+			store[0] = (char)tmp;
+			fprintf(f_temp, store);
+		}
+		/* make sure it ends with #~ */
+		fprintf(f_temp, "#~");
+	} else {
+		send_to_char("Adding new file.\n\r",ch);
+		rewind(f);
+		*(buf + strlen(buf) - 1) = '\0';
+		i = 0;
+		/* place new files second from top, */
+		while(i<2) {
+			fgets(buf, 81, f);
+			if(*buf == '#')
+				i++;
+			fputs(buf, f_temp);
+		}
+		/* write new file */
+		if(!(write_one_help(ch, f_temp))) {
+			send_to_char("Single file not saved right, Aborting.\n\r",ch);
+			return(FALSE);
+		} else {
+			send_to_char("Added file.\n\r",ch);
+		}
+		/* write remainder */
+		for(;;) {
+			fgets(buf, 81, f);
+			fputs(buf, f_temp);
+			if(*buf == '#')
+				if(*(buf + 1) == '~')
 					break;
-				}
-				if (strlen(buffer)> MAX_STRING_LENGTH-2)
-					break;
-//				if(buf[strlen(buf)-1]=='~')
-//					buf[strlen(buf)-1] = '\0';
-				fputs(buffer, f_temp);
-			}
 		}
-		/* write the edited helpfile */
-		fputs("#", f_temp);
-
-		if (hlp->modBy)
-			free(hlp->modBy);
-
-		hlp->modBy = (char *)strdup(GET_NAME(ch));
-		hlp->modified = time(0);
-
-		/* write info into file */
-		sprintf(buf,"%s", hlp->name);
-		if(buf[strlen(buffer)-1]=='~')
-			buf[strlen(buffer)-1] = '\0';
-		strcat(buf, "\n\r");
-		fputs(buf, f_temp);
-
-		if(hlp->usage) {
-			sprintf(buf,"   Usage        : %s", hlp->usage);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->accumulative) {
-			sprintf(buf,"   Accumulative : %s", hlp->accumulative);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->duration) {
-			sprintf(buf,"   Duration     : %s", hlp->duration);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->level) {
-			sprintf(buf,"   Level        : %s", hlp->level);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->damagetype) {
-			sprintf(buf,"   Damagetype   : %s", hlp->damagetype);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->saves) {
-			sprintf(buf,"   Save         : %s", hlp->saves);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			strcat(buf, "\n");
-			fputs(buf, f_temp);
-		}
-		if(hlp->description) {
-			fputs("\n", f_temp);
-			remove_cr(buf,hlp->description);
-			if(buf[strlen(buffer)-1]=='~')
-				buf[strlen(buffer)-1] = '\0';
-			fputs(buf, f_temp);
-		}
-		sprintf(buf,"\nAlso see: %s\n", hlp->references?hlp->references:"-");
-		if(buf[strlen(buffer)-1]=='~')
-			buf[strlen(buffer)-1] = '\0';
-		fputs(buf, f_temp);
-
-		sprintf(buf,"\nDone by %s, %s\n", hlp->modBy, asctime(localtime(&hlp->modified)));
-		fputs(buf, f_temp);
-
-		/* now write the remaining files */
-		for(i = (hlp->index + 1); help_index[i].pos; i++) {
-			rewind(f);
-			fseek(f, help_index[i].pos, 0);
-			*buffer = '\0';
-			for (;;)  {
-				fgets(buffer, 80, f);
-				if (*buffer == '#') {
-					fputs(buffer, f_temp);
-					break;
-				}
-				if (strlen(buffer)> MAX_STRING_LENGTH-2)
-					break;
-//				if(buf[strlen(buf)-1]=='~')
-//					buf[strlen(buf)-1] = '\0';
-				fputs(buffer, f_temp);
-			}
-		}
-		fputs("#~\n\r", f_temp);
 	}
+	send_to_char("Done.\n\r",ch);
+
 	fclose(f_temp);
 	fclose(f);
+
+	/* now copy f_temp into f
+	   but close global helps first */
+	fclose(wizhelp_fl);
+	fclose(help_fl);
+
+	if(hlp->wizard) {
+		sprintf(buf,"wizhelp_temp");
+		if ((f_temp = fopen(buf,"r")) == NULL) {
+			send_to_char("Cannot access tmp wizhelpfile.\n\r",ch);
+			return(FALSE);
+		}
+		sprintf(buf,"wizhelp_table");
+		if ((f = fopen(buf,"w")) == NULL) {
+			send_to_char("Cannot access wizhelpfile.\n\r",ch);
+			return(FALSE);
+		}
+	} else {
+		sprintf(buf,"help_temp");
+		if ((f_temp = fopen(buf,"r")) == NULL) {
+			send_to_char("Cannot access tmp helpfile.\n\r",ch);
+			return(FALSE);
+		}
+		sprintf(buf,"help_table");
+		if ((f = fopen(buf,"w")) == NULL) {
+			send_to_char("Cannot access helpfile.\n\r",ch);
+			return(FALSE);
+		}
+	}
+	send_to_char("Overwriting old file...\n\r",ch);
+
+	rewind(f_temp);
+	for(;;) {
+		fgets(buf, 81, f_temp);
+		if(*buf == '#')
+			if(*(buf + 1) == '~')
+				break;
+		fputs(buf, f);
+	}
+	fputs("#~", f);
+
+	send_to_char("Done.\n\r",ch);
+
+	fclose(f_temp);
+	fclose(f);
+
+	/* open up the global helps */
+	if ((wizhelp_fl = fopen(WIZ_HELP_FILE,"r")) == NULL) {
+		send_to_char("Cannot open new version of wizhelpfile.\n\r",ch);
+		return(FALSE);
+	}
+	if ((help_fl = fopen(HELP_KWRD_FILE,"r")) == NULL) {
+		send_to_char("Cannot open new version of helpfile.\n\r",ch);
+		return(FALSE);
+	}
+
 	return(TRUE);
 }
 
@@ -833,8 +928,8 @@ void ChangeHelpName(struct char_data *ch, char *arg, int type)
 
 	sprintf(buf, "Current Helpfile Name: %s", hlp->name);
 	send_to_char(buf, ch);
-	send_to_char("\n\r\n\rNew Helpfile Name: ", ch);
-	send_to_char("\n\rExample: WIMP \"WIMP MODE\" WIMPY\n", ch);
+	send_to_char("\n\r\n\rNew Helpfile Name: \n\r\n\r", ch);
+	send_to_char("Example: WIMP \"WIMP MODE\" WIMPY\n", ch);
 
 	return;
 }
@@ -871,8 +966,8 @@ void ChangeHelpUsage(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current command usage: %s", hlp->usage?hlp->usage:"None");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rNew command usage: ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExample: wield <weapon>\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Example: wield <weapon>\n", ch);
 
 	return;
 }
@@ -909,8 +1004,8 @@ void ChangeHelpAccumulative(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current status of accumulative: %s", hlp->accumulative?hlp->accumulative:"Not specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rIs this skill accumulative? (enter Yes or No): ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExample: Yes\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Example: Yes\n", ch);
 
 	return;
 }
@@ -947,8 +1042,8 @@ void ChangeHelpDuration(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current skill/spell duration: %s", hlp->duration?hlp->duration:"Not specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rPlease enter skill/spell duration: ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExamples: 24 hours\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Examples: 24 hours\n", ch);
 	send_to_char("          (level of caster) hours\n", ch);
 	send_to_char("          Instantaneous\n", ch);
 	send_to_char("          Permanent\n", ch);
@@ -987,8 +1082,8 @@ void ChangeHelpLevel(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current level of skill: %s", hlp->level?hlp->level:"Not specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rPlease enter skill/spell levels (for various classes if needed): ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExamples: 4 Mage, 1 Cleric\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Examples: 4 Mage, 1 Cleric\n", ch);
 	send_to_char("          53\n", ch);
 
 	return;
@@ -1026,8 +1121,8 @@ void ChangeHelpDamtype(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current type of damage: %s", hlp->damagetype?hlp->damagetype:"Not specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rPlease enter the type of damage of this skill/spell: ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExample: Fire\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Example: Fire\n", ch);
 
 	return;
 }
@@ -1064,8 +1159,8 @@ void ChangeHelpSaves(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current saving throw: %s", hlp->saves?hlp->saves:"Not specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rPlease enter the saving throw, or 'None' if no save is possible: ", ch);
-	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.", ch);
-	send_to_char("\n\rExamples: None\n", ch);
+	send_to_char("\n\r(No input (hit ENTER) deletes this line from file.\n\r\n\r", ch);
+	send_to_char("Examples: None\n", ch);
 	send_to_char("          vs. spell for half damage\n", ch);
 	send_to_char("          vs. para for negate\n", ch);
 
@@ -1133,10 +1228,9 @@ void ChangeHelpReferences(struct char_data *ch, char *arg, int type)
 	sprintf(buf, "Current cross-references: %s", hlp->references?hlp->references:"None specified");
 	send_to_char(buf, ch);
 	send_to_char("\n\r\n\rPlease enter any appropriate cross-references (in caps, divided by commas): ", ch);
-	send_to_char("\n\r(No input (hit ENTER) sets to default (-) \n\r", ch);
+	send_to_char("\n\r(No input (hit ENTER) sets to default (-) \n\r\n\r", ch);
 	send_to_char("Examples: SPELL COLOR SPRAY, SPELL INFRAVISION\n", ch);
 	send_to_char("          WHO\n", ch);
-	send_to_char("          vs. para for negate\n", ch);
 
 	return;
 }
@@ -1163,7 +1257,8 @@ void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
 				if(update < 0 || update > 1)
 					return;
 			else {
-				hlp->wizard = update;
+				if(hlp->newfile)
+					hlp->wizard = update;
 				ch->specials.hedit = HELP_MAIN_MENU;
 				UpdateHelpMenu(ch);
 				return;
@@ -1173,7 +1268,13 @@ void ChangeHelpWizard(struct char_data *ch, char *arg, int type)
 
 	sprintf(buf, VT_HOMECLR);
 	send_to_char(buf, ch);
-	sprintf(buf, "%s\n\r\n\r", hlp->wizard?"This is a wizhelp file.":"This is not a wizhelp file.");
-	send_to_char(buf, ch);
-	send_to_char("If this should be a wizhelp file, type 1, else type 0 ", ch);
+	if(!(hlp->newfile)) {
+		send_to_char("This option is only settable for newly added helpfiles.\n\r", ch);
+		send_to_char("Edited helpfiles can not be interchanged between wizhelp & help.\n\r", ch);
+		send_to_char("Hit <enter> to return to main menu.\n\r", ch);
+	} else {
+		sprintf(buf, "%s\n\r\n\r", hlp->wizard?"This is a wizhelp file.":"This is not a wizhelp file.");
+		send_to_char(buf, ch);
+		send_to_char("If this should be a wizhelp file, type 1, else type 0 ", ch);
+	}
 }

@@ -2311,6 +2311,11 @@ dlog("in do_help");
 
 			if (!(chk = strn_cmp(argument, help_index[mid].keyword, minlen)))
 			{
+sprintf(buf, "indexnr = %d", mid);
+log(buf);
+sprintf(buf, "linenr = %d", help_index[mid].pos);
+log(buf);
+
 				rewind(help_fl);
 				fseek(help_fl, help_index[mid].pos, 0);
 				*buffer = '\0';
