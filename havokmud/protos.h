@@ -4071,9 +4071,17 @@ void            write_mob_to_file(struct char_data *mob, FILE * mob_fi);
 void ShowHates(struct char_data *ch, char *buffer);
 void ShowFears(struct char_data *ch, char *buffer);
 
+/*************************************************************************
+ * Support for different platforms
+ *************************************************************************/
 #if defined( __CYGWIN__ )
 /* Since stupid cygwin doesn't define this in the standard place */
 char *crypt(const char *key, const char *salt);
+#endif
+
+#if defined( __FreeBSD__ )
+/* FreeBSD seems to be missing strnlen */
+size_t strnlen(const char *s, size_t maxlen);
 #endif
 
 

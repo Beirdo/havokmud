@@ -93,7 +93,7 @@ int             lawful = 0;     /* work like the game regulator */
 int             slow_death = 0; /* Shut her down, Martha, she's sucking
                                  * mud */
 int             mudshutdown = 0;        /* clean shutdown */
-int             reboot = 0;     /* reboot the game after a shutdown */
+int             reboot_now = 0;     /* reboot the game after a shutdown */
 int             no_specials = 0;        /* Suppress ass. of special
                                          * routines */
 long            Uptime;         /* time that the game has been up */
@@ -353,7 +353,7 @@ int run_the_game(int port)
 
     PROFILE(monitor(0);)
 
-    if (reboot) {
+    if (reboot_now) {
         Log("Rebooting.");
     }
 

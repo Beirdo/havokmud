@@ -1,6 +1,5 @@
 #include "config.h"
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -6421,6 +6420,27 @@ char           *skip_word(char *string)
 
     return (string);
 }
+
+
+/*************************************************************************
+ * Support for different platforms
+ *************************************************************************/
+
+#if defined( __FreeBSD__ )
+/* FreeBSD seems to be missing strnlen */
+
+size_t strnlen(const char *s, size_t maxlen) 
+{
+    size_t len;
+
+    for( len = 0; *s && len < maxlen; s++, len++ ) {
+        /* Empty loop */
+    }
+
+    return( len );
+}
+
+#endif
 
 
 /*
