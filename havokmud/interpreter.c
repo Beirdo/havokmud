@@ -1521,6 +1521,9 @@ AddCommand("beat",do_action,555,POSITION_RESTING,0);
  AddCommand("pinfo",do_flag_status, 560, POSITION_RESTING,59); /* being worked on*/
  AddCommand("board",do_not_here,561,POSITION_STANDING,0);
 
+ /* New command for editing gossiping scribe's messages -bwise */
+ AddCommand("gosmsg", do_not_here, 562, POSITION_RESTING, 58);
+
 /*
   talk disagree beckon pounce amaze tank hshake backhand surrender collapses wince
   tag trip grunt imitate hickey torture addict adjust anti  bbl beam

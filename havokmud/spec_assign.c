@@ -785,7 +785,7 @@ void assign_mobiles()
 ** Celestian's Specials
 */
    { 1943, mage_specialist_guildmaster }, /* specialist gm */
-   { 1901, PostMaster},	/* PostMaster for mail/send/receive */
+   { 1901, PostMaster},	/* PostMaster for mail/send/receive/ */
 /*   { 1900, avatar_celestian},     */
 	{ 1900, archer},
 

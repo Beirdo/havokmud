@@ -2842,15 +2842,28 @@ int GenericCityguard(struct char_data *ch, int cmd, char *arg, struct char_data 
 
 /* Realms of Delbrandor (Coal) Special Procedures */
 
-/* Avatar of Blibdoolpoolp */
+/* Avatar of Blibdoolpoolp - will shout every hour (approx) */
 int ABShout(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type)
 {
+   static time_t time_diff = 0;
+   static time_t last_time = 0;
 
    if(cmd) return(FALSE);
-	if(number(0,500) == 0) {
+
+   /* If it has been an hour, there is a 33% chance he will shout */
+   if((time_diff > 3600) && !number(0,2))
+   {
+      time_diff = 0;  /* reset */
+      last_time = time(NULL);
       do_shout(ch, "You puny mortals, come release me!  I have a pest dragon whom imprisoned me to slay, and some sea elves to boot!", 0);
       return(TRUE);
    }
+   else  /* not been an hour, update how long it has been */
+   {
+      time_diff = time(NULL) - last_time;
+      printf("Avatar of Blibdoolpoolp - %d.\n", time_diff);
+   }
+
    return(FALSE);
 }
 
@@ -2862,12 +2875,24 @@ int AvatarPosereisn(struct char_data *ch, int cmd, char *arg, struct char_data *
    struct char_data *vict;
    struct obj_data *obj;
    int test=0;
+   static time_t time_diff = 0;
+   static time_t last_time = 0;
 
-   if(!cmd) {
-   	if(number(0,500) == 0) {
-   		do_shout(ch, "Might a noble mortal bring me what is rightfully mine?  You shall be generously rewarded!", 0);
-      	return(TRUE);
-   	}
+   if(!cmd)
+   {
+      /* If it has been an hour, there is a 33% chance he will shout */
+      if((time_diff > 3600) && (!number(0,2)))
+      {
+         time_diff = 0;  /* reset */
+         last_time = time(NULL);
+         do_shout(ch, "Might a noble mortal bring me what is rightfully mine?  You shall be generously rewarded!", 0);
+         return(TRUE);
+      }
+      else
+      {
+         time_diff = time(NULL) - last_time;
+         printf("Avatar of Posereisn - %d.\n", time_diff);
+      }
    }
 
    if(!AWAKE(ch)) return(FALSE);
