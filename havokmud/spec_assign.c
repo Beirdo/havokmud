@@ -1406,6 +1406,18 @@ void assign_mobiles()
 	{52850, DruidGuildMaster },
 	{52853, gnome_collector },
 
+// ideaguy mob procedures
+	{ 37802, sageactions},
+	{ 37803, guardianextraction},
+	{ 37804, ghastsmell},
+	{ 37805, ghoultouch},
+	{ 37806, shadowtouch},
+	{ 37807, moldexplosion},
+	{ 37809, boneshardbreather},
+	{ 37810, mistgolemtrap},
+	{ 37811, confusionmob},
+
+
 
 
 
@@ -1492,6 +1504,9 @@ void assign_objects()
    /*End Thunder Mountain Keep Objects*/
 /* King's Grove */
 	{ 27, qp_potion },
+// ideaguy object procedures
+	{37821, mirrorofopposition },
+
 
    { 51152, chestproc },  //royal rumble proc
 
@@ -1678,6 +1693,12 @@ void assign_rooms()
 { 51151, preperationproc },  //Royal rumble proc.
 
     { 53025,   Fountain}, /* Luna's fountain */
+
+// ideaguy room procedures
+	{ 37840, traproom},
+	{ 37823, guardianroom},
+	{ 37857, trapjawsroom},
+	{ 37839, ventroom},
 
 
 { 11353, knockproc },

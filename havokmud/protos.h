@@ -566,6 +566,9 @@ void hit(struct char_data *ch, struct char_data *victim, int type);
 void perform_violence(int pulse);
 struct char_data *FindVictim( struct char_data *ch);
 struct char_data *FindAnyVictim( struct char_data *ch);
+struct char_data *CreateAMob(struct char_data *mob, int vmobnum, int MobAdjust, char *buf);
+struct char_data *AttackRandomChar(struct char_data *mob);
+int doroomdamage(struct char_data *tempchar, int dam, int attacktype);
 void BreakLifeSaverObj( struct char_data *ch);
 void BrittleCheck(struct char_data *ch, struct char_data *v, int dam);
 int PreProcDam(struct char_data *ch, int type, int dam);
@@ -2367,6 +2370,22 @@ void do_sharpen(struct char_data *ch, char *argument, int cmd);
 
 /* Sentinel's Zone */
 int cog_room(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+
+/* Ideaguy's zone */
+int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type);
+int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int ghoultouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int shadowtouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int moldexplosion(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int boneshardbreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);
+int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type);
 
 /* Citystate of Tarantis */
 int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type);

@@ -3750,6 +3750,121 @@ struct char_data *FindAnyVictim( struct char_data *ch)
 
 }
 
+/* @Name: CreateAMob
+ * @description: Helper function for 'summoning' mobs.  Will use a current mob as a focal point,
+    and capable of giving default actions and descriptions, or specialized
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: N/A
+ */
+struct char_data *CreateAMob(struct char_data *mob, int vmobnum, int MobAdjust, char *buf) {
+	// create a mob, assign it as a follower, order it to attack a random pc in room
+	// MobAdjust bitflags 1 = make follower, 2 = guard on, 4 = attack a random char (if no char, be aggressive)
+	struct char_data *mobtmp;
+	mobtmp = read_mobile(real_mobile(vmobnum),REAL);
+	if(!mobtmp) {
+		return NULL;
+	}
+	char_to_room(mobtmp, mob->in_room);
+	if(*buf) {
+		act(buf, TRUE, mobtmp, 0, 0, TO_ROOM);
+	}
+	else {
+		act("$n suddenly springs into being!", TRUE, mobtmp, 0, 0, TO_ROOM);
+	}
+	if(IS_SET(MobAdjust,1)) {
+		add_follower(mobtmp, mob);
+		SET_BIT(mobtmp->specials.affected_by, AFF_CHARM);
+	}
+	if(IS_SET(MobAdjust,2)) {
+		do_order(mob, "followers guard on", 0);
+	}
+	if(IS_SET(MobAdjust,4)) {
+		if(AttackRandomChar(mobtmp) == NULL) {
+			if (!IS_SET(mobtmp->specials.act, ACT_AGGRESSIVE)) {
+				SET_BIT(mobtmp->specials.act, ACT_AGGRESSIVE);
+			}
+		}
+	}
+	return mobtmp;
+}
+
+
+/* @Name: AttackRandomChar
+ * @description: Helper function for mobs.  Will use a current mob as a focal point, and will attack any non-immortal PC
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: N/A
+ */
+struct char_data *AttackRandomChar(struct char_data *mob) {
+	struct char_data *tempchar;
+	int i = 0;
+	for(tempchar = real_roomp(mob->in_room)->people; tempchar; tempchar = tempchar->next_in_room) {
+		if(IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
+			i++;
+		}
+	}
+	if(i > 0) {
+		int pctoattack = number(1,i);
+		int k = 1;
+		for(tempchar = real_roomp(mob->in_room)->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
+				if(pctoattack == k) {
+					MobHit(mob, tempchar, 0);
+					return tempchar;
+				}
+				k++;
+			}
+		}
+	}
+	return NULL;
+}
+
+/* @Name: doroomdamage
+ * @description: A helper function, to handle the odd damage things that happen in the various rooms and mobiles
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: N/A
+ */
+int doroomdamage(struct char_data *tempchar, int dam, int attacktype) {
+
+	if (DamCheckDeny(tempchar, tempchar, attacktype))
+		return(FALSE);
+
+	dam = SkipImmortals(tempchar, dam, attacktype);
+
+	dam = PreProcDam(tempchar, attacktype, dam);
+
+	if(dam <= 0) {
+		if(attacktype == SPELL_INCENDIARY_CLOUD) {
+			act("The fire roars around you, but doesn't touch you.", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+		else if(attacktype == SPELL_BLADE_BARRIER) {
+			act("The jaws try to clamp down on you, but you avoid their slashing edges.", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+		else if(attacktype == TYPE_SLASH) {
+			act("The bone shards fly into you, but do not cut you.", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+		return(FALSE);
+	}
+	else {
+		if(attacktype == SPELL_INCENDIARY_CLOUD) {
+			act("You are blasted by the fire, it burns unnaturally hot, like demonfire!.", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+		else if(attacktype == SPELL_BLADE_BARRIER) {
+			act("The jaws clamp down on you, cutting through skin, muscle, and bone!", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+		else if(attacktype == TYPE_SLASH) {
+			act("The bone shards cut you badly, your flesh is being flayed from your bones!", FALSE, tempchar, 0, 0, TO_CHAR);
+		}
+	}
+
+	if (DoDamage(tempchar, tempchar, dam, attacktype))
+		return(TRUE);
+
+	if(DamageEpilog(tempchar, tempchar, attacktype))
+		return(TRUE);
+
+	return(FALSE);
+
+}
 
 void BreakLifeSaverObj( struct char_data *ch)
 {

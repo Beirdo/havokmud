@@ -53,6 +53,9 @@ extern struct zone_data *zone_table;
 extern int cog_sequence;
 int chest_pointer = 0;
 
+#define IS_IMMUNE(ch, bit) (IS_SET((ch)->M_immune, bit))
+extern struct obj_data *object_list;
+
 char oceanmap[101][260] = {
 	"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=++++++++++++++++++++++++++++++++++",
 	"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
@@ -2440,6 +2443,1263 @@ int nightwalker(struct char_data *ch, int cmd, char *arg, struct char_data *mob,
 }
 
 /* End Tarantis */
+
+/* start Ideaguy procs */
+
+// vnum assignments
+#define WAITTOGOHOME  98765
+#define INPEACEROOM  98764
+#define CORPSEOBJVNUM  37817
+#define VENTOBJVNUM 37813
+#define VENTROOMVNUM 37865
+#define PHYLOBJVNUM 37812
+#define MOBROOMVNUM 37859
+#define HOMEZONE 115
+#define ZOMBIEVNUM 37800
+#define SKELETONVNUM 37801
+// these are the vnums for the rooms where the 'specialty' mobs are stored
+#define DEMILICHSTORAGE  37860
+#define DRACOLICHSTORAGE  37861
+#define DEATHKNIGHTSTORAGE  37862
+#define VAMPIRESTORAGE  37863
+#define UNDEADDEMONSTORAGE 37864
+
+#define GUARDIANMOBVNUM 37803  // MUST be same as guardianextraction proc mob
+#define GUARDIANHOMEROOMVNUM 37823
+#define CLOSETROOMVNUM 37839
+#define MISTROOMVNUM 37866
+#define GENERICMOBVNUM 37816
+
+/* @Name: sageactions
+ * @description: The sage acts like a lich with phylactery.  If the item (37812) is not where it should be, he chases it.  If it doesn't exist at all, he dies.  In combat he can summon help
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37802)
+*/
+int sageactions(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+	int i = 0;
+	int j = 0;
+	int temp = 0;
+	int currroomnum = -1;
+	char buf[80];
+	struct obj_data *curritem;  // temporary var
+	struct obj_data *theitem;  // the phylactery sort of item (tome of knowledge currently)
+	struct obj_data *ventobj;  // vent container where phylactery is stored
+	struct room_data *ventroom; // room where vent is contained
+	struct obj_data *corpse;   // The corpse that is used to provide realism in teleporting about
+	struct obj_data *tempobj;  // just a temporary var
+	struct obj_data *nextobj;  // another temporary var
+	struct char_data *tempchar; // another temporary var
+	struct room_data *currroom; // temporary var
+
+	if(cmd) {
+		return(FALSE);
+	}
+
+	int realcorpseid = real_object(CORPSEOBJVNUM);  // For the corpse that we toss around
+	ventroom = real_roomp(VENTROOMVNUM);
+	int ventobjrnum = real_object(VENTOBJVNUM);
+	ventobj = get_obj_in_list_num(ventobjrnum, ventroom->contents);
+	if(ventobj == NULL) {  // no ventobj = no tome, no tome = no mob, kill him
+		act("$n suddenly screams in agony and falls into a pile of dust.", FALSE, mob, 0, 0, TO_ROOM);
+		for (j=0; j < MAX_WEAR; j++) {
+			if(tempobj = mob->equipment[j]) {
+				if(tempobj->contains) {
+					obj_to_char(unequip_char(mob, j), mob);
+				}
+				else {
+					MakeScrap(mob, NULL, tempobj);
+				}
+			}
+		}
+
+		while(tempobj = mob->carrying) {
+			if(!tempobj->contains) {
+				MakeScrap(mob, NULL, tempobj);
+			}
+			else {
+				while(nextobj = tempobj->contains) {
+					obj_from_obj(nextobj);
+					obj_to_char(nextobj, mob);
+				}
+			}
+		}
+
+		GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
+		damage(mob, mob, GET_MAX_HIT(mob)*2, TYPE_SUFFERING);
+		return(TRUE);
+	}
+
+
+	if(mob->specials.fighting || GET_POS(mob) < POSITION_STANDING) {
+
+		if(!number(0,3)) { // 1 in 4 chance of summoning an undead helper - the special caster types load with zone in a dark-no-everything room, then get transferred in, so that they are spelled up
+			int whatundead = number(1,75);
+
+			switch(whatundead) {
+				case 1: {  // demi-lich v25000 r2069 in DEMILICHSTORAGE
+					// if demi-lich in rnum
+					if(tempchar = get_char_room("demi lich", DEMILICHSTORAGE)) {
+						do_say(mob, "I call for you, your debt will be removed for this service!", 0);
+						char_from_room(tempchar);
+						char_to_room(tempchar, mob->in_room);
+						act("$n suddenly appears, with cold hostility in the remains of its eyes.", TRUE, tempchar, 0, 0, TO_ROOM);
+						AttackRandomChar(tempchar);
+					}
+					break;
+				}
+				case 2: {  // dracolich v5010 r942 in DRACOLICHSTORAGE
+					// if dracolich in rnum
+					if(tempchar = get_char_room("dracolich lich", DRACOLICHSTORAGE)) {
+						do_say(mob, "I helped create you, come and fulfill your debt!", 0);
+						char_from_room(tempchar);
+						char_to_room(tempchar, mob->in_room);
+						act("$n abruptly appears, filling the room with its bulk and its malevolence.", TRUE, tempchar, 0, 0, TO_ROOM);
+						AttackRandomChar(tempchar);
+					}
+					// else he has enough help!
+					break;
+				}
+				case 3: {  // The Wretched Vampire v2573 r2473 in VAMPIRESTORAGE
+					// if The Wretched Vampire in rnum
+					if(tempchar = get_char_room("The Wretched Vampire", VAMPIRESTORAGE)) {
+						do_say(mob, "I provide you with sustenance, avail yourself and aid me!", 0);
+						char_from_room(tempchar);
+						char_to_room(tempchar, mob->in_room);
+						act("A swirl of darkness coalesces, and the horrific figure of $n becomes visible.", TRUE, tempchar, 0, 0, TO_ROOM);
+						AttackRandomChar(tempchar);
+					}
+					// else he has enough help!
+					break;
+				}
+				case 4: {  // death-knight v16219 r1664 in DEATHKNIGHTSTORAGE
+					// if death knight in rnum
+					if(tempchar = get_char_room("death knight", DEATHKNIGHTSTORAGE)) {
+						do_say(mob, "I can aid you in your quest of death if you come to my side now!", 0);
+						GET_RACE(tempchar) = RACE_UNDEAD;
+						char_from_room(tempchar);
+						char_to_room(tempchar, mob->in_room);
+						act("A dark portal appears, and the terrifying figure of the $n steps through.", TRUE, tempchar, 0, 0, TO_ROOM);
+						AttackRandomChar(tempchar);
+					}
+					// else he has enough help!
+					break;
+				}
+				case 5: {  // Ghastly Undead Demon v23022 r2439 in UNDEADDEMONSTORAGE
+					// if ghastly-undead-demon in rnum
+					if(tempchar = get_char_room("Ghastly Undead Demon", UNDEADDEMONSTORAGE)) {
+						do_say(mob, "I will remove your torment, if you remove my foes!", 0);
+						char_from_room(tempchar);
+						char_to_room(tempchar, mob->in_room);
+						act("From the ground, $n rises up, clawing his way towards you.", TRUE, tempchar, 0, 0, TO_ROOM);
+						AttackRandomChar(tempchar);
+					}
+					// else he has enough help!
+					break;
+				}
+				default: {  // load a slightly random, but straight fighting undead
+					act("$n makes an arcane gesture and shouts, 'Come servant, come to my aid!'", TRUE, mob, 0, 0, TO_ROOM);
+					switch(number(1,50)) {
+						case 1: {  // Death v6999 r1118
+							CreateAMob(mob,6999,5,"");
+							break;
+						}
+						case 2: {  // master-centaur v13769 r1446
+							CreateAMob(mob,13769,5,"");
+							break;
+						}
+						case 3: {  // ringwraith v26900 r2576
+							CreateAMob(mob,26900,5,"");
+							break;
+						}
+						case 4: {  // ghost-captain v21140 r1902
+							CreateAMob(mob,21140,5,"");
+							break;
+						}
+						case 5: {  // soul-lost v30118 r2239
+							CreateAMob(mob,30118,5,"");
+							break;
+						}
+						default: {  // load either a zombie or a skeleton
+							if(number(0,1)) {
+								// zombie v37800 r3104
+								CreateAMob(mob,ZOMBIEVNUM,5,"");
+							}
+							else {
+								// skeleton v37801 r3105
+								CreateAMob(mob,SKELETONVNUM,5,"");
+							}
+							break;
+						}
+					}
+					break;
+				}
+
+			}
+
+		}
+
+		return(necromancer(mob, cmd, arg, mob, type));
+	}
+
+	int GoodItemReal = real_object(PHYLOBJVNUM);
+  	for (curritem = object_list; curritem; curritem = curritem->next) {
+    	if (curritem->item_number == GoodItemReal) {
+			theitem = curritem;
+			i++;
+		}
+	}
+
+	if(!number(0,2)) {
+		if(i == 0) {
+			// Kill off char, and all that he carries
+			act("$n suddenly screams in agony and falls into a pile of dust.", FALSE, mob, 0, 0, TO_ROOM);
+			for (j=0; j < MAX_WEAR; j++) {
+				if(tempobj = mob->equipment[j]) {
+					if(tempobj->contains) {
+						obj_to_char(unequip_char(mob, j), mob);
+					}
+					else {
+						MakeScrap(mob, NULL, tempobj);
+					}
+				}
+			}
+
+			while(tempobj = mob->carrying) {
+				if(!tempobj->contains) {
+					MakeScrap(mob, NULL, tempobj);
+				}
+				else {
+					while(nextobj = tempobj->contains) {
+						obj_from_obj(nextobj);
+						obj_to_char(nextobj, mob);
+					}
+				}
+			}
+
+			GET_RACE(mob) = RACE_UNDEAD_ZOMBIE;
+			damage(mob, mob, GET_MAX_HIT(mob)*2, TYPE_SUFFERING);
+			return(TRUE);
+		}
+		else if(i == 1) {  // ok there's only one item found, now what is it on?
+			// Check to see if it's in the correct obj, if not go hunt it
+			if(theitem->in_obj == ventobj) {  // In correct obj
+				if(mob->generic == WAITTOGOHOME) {
+					currroom = real_roomp(mob->in_room);
+					temp = 0;
+					for(corpse = currroom->contents; corpse; corpse = corpse->next_content) {
+						if(corpse->item_number == realcorpseid) {
+							temp = 1;
+							break;
+						}
+					}
+					if(temp) {
+						// remove the corpse, head back for home;
+						act("With a glance, $n dissolves the corpse, looking stronger for it.", TRUE, mob, 0, 0, TO_ROOM);
+						extract_obj(corpse);
+					}
+					act("$n seems to biodegrade into nothingness, leaving only the stench of decay.", TRUE, mob, 0, 0, TO_ROOM);
+					char_from_room(mob);
+					char_to_room(mob, MOBROOMVNUM);
+					act("A smell of death and decay wafts by as $n emerges from nothingness.", TRUE, mob, 0, 0, TO_ROOM);
+					mob->generic = 0;
+					return(TRUE);
+				}
+				else {
+					mob->generic = 0;
+					return(FALSE);
+				}
+			}
+			else {  // Not in the vent
+				if(theitem->in_room != -1) {
+					// In room, just go get it (but use messages, and ch->generic to have him take his time)
+					if(mob->generic != theitem->in_room) {
+						// we will set ch->generic to in_room, and drop corpse there, after that we will go to corpse and get item, then return home
+						mob->generic = theitem->in_room;
+						for(tempobj = (real_roomp(theitem->in_room))->contents; tempobj; tempobj = tempobj->next) {
+							if(tempobj->item_number == realcorpseid) {
+								return(TRUE);
+							}
+						}
+						corpse = read_object(CORPSEOBJVNUM, VIRTUAL);
+						obj_to_room(corpse,theitem->in_room);
+						currroomnum = mob->in_room;
+						char_from_room(mob);
+						char_to_room(mob,mob->generic);
+						act("An old rotted corpse suddenly appears ten feet above the ground and falls to the ground with a sickening thud.", FALSE, mob, 0, 0, TO_ROOM);
+						char_from_room(mob);
+						char_to_room(mob,currroomnum);
+						return(TRUE);
+					}
+					else {
+						// go to room, send item to storage, wait a pulse, set ch->generic to go home again
+						act("$n waves $s hands, and a pair of rotted hands reaches up through the ground and drags $m under.", TRUE, mob, 0, 0, TO_ROOM);
+						char_from_room(mob);
+						char_to_room(mob,mob->generic);
+						act("The rotting corpse suddenly sits up, it reaches down into the ground like it was water, and pulls up another being.",FALSE, mob, 0, 0, TO_ROOM);
+						if(theitem->in_room == mob->in_room) {
+							act("$n gestures and a bauble disappears from the ground.", TRUE, mob, 0, 0, TO_ROOM);
+							obj_from_room(theitem);
+							obj_to_obj(theitem, ventobj);
+							mob->generic = WAITTOGOHOME;
+							return(TRUE);
+						}
+						else {
+							act("$n looks frustrated by something.", TRUE, mob, 0, 0, TO_ROOM);
+							act("$n seems to biodegrade into nothingness, leaving only the stench of decay.", TRUE, mob, 0, 0, TO_ROOM);
+							char_from_room(mob);
+							char_to_room(mob, MOBROOMVNUM);
+							act("A smell of death and decay wafts by as $n emerges from nothingness.", TRUE, mob, 0, 0, TO_ROOM);
+							mob->generic = 0;
+							return(TRUE);
+						}
+					}
+				}
+				else { // object exists, but not in room, must be on person or in container in room
+					temp = 0;
+					for(tempchar = character_list; tempchar; tempchar = tempchar->next) {
+						if(HasObject(tempchar,PHYLOBJVNUM)) {
+							temp = 1;
+							break;
+						}
+					}
+					if(temp) { // a character has it let's go get him/her
+						if(real_roomp(tempchar->in_room)->zone == HOMEZONE) {  // don't go hunting if char is still in zone
+							if(mob->in_room == tempchar->in_room && mob->generic != INPEACEROOM) { // what to do when you find him
+								if(!IS_SET(real_roomp(mob->in_room)->room_flags,PEACEFUL)) {
+									act("$n glares at you, and launches to the attack!", TRUE, mob, 0, tempchar, TO_VICT);
+									act("$n suddenly launches $mself at $N!", TRUE, mob, 0, tempchar, TO_NOTVICT);
+									MobHit(mob, tempchar, 0);
+								}
+								else {
+									sprintf(buf, "I will wait for you, %s.", GET_NAME(tempchar));
+									do_say(mob, buf, 0);
+									act("$n becomes completely motionless.", TRUE, mob, 0, 0, TO_ROOM);
+									mob->generic = INPEACEROOM;
+								}
+							}
+							return(FALSE);
+						}
+						if(mob->generic != tempchar->in_room) {  // mob has not dropped a corpse in the correct room yet
+							mob->generic = tempchar->in_room;
+							for(tempobj = (real_roomp(tempchar->in_room))->contents; tempobj; tempobj = tempobj->next) {
+								if(tempobj->item_number == realcorpseid) {
+									return(TRUE);
+								}
+							}
+							corpse = read_object(CORPSEOBJVNUM, VIRTUAL);
+							obj_to_room(corpse,mob->generic);
+							currroomnum = mob->in_room;
+							char_from_room(mob);
+							char_to_room(mob,tempchar->in_room);
+							act("An old rotted corpse suddenly appears ten feet above the ground and falls to the ground with a sickening thud.", FALSE, mob, 0, 0, TO_ROOM);
+							char_from_room(mob);
+							char_to_room(mob,currroomnum);
+							return(TRUE);
+						}
+						else { // mob dropped corpse in room, and char is still there so use corpse to transfer mob, then attack if not peace room
+							act("$n waves $s hands, and a pair of rotted hands reaches up through the ground and drags $m under.", TRUE, mob, 0, 0, TO_ROOM);
+							char_from_room(mob);
+							char_to_room(mob,mob->generic);
+							act("The rotting corpse suddenly sits up, it reaches down into the ground like it was water, and pulls up another being.",FALSE, mob, 0, 0, TO_ROOM);
+							act("$n points at you, that can't be good.", TRUE, mob, 0, tempchar, TO_VICT);
+							act("$n slowly points at $N, which bodes ill for $N.", TRUE, mob, 0, tempchar, TO_NOTVICT);
+							if(mob->in_room == tempchar->in_room && mob->generic != INPEACEROOM) {
+								if(!IS_SET(real_roomp(mob->in_room)->room_flags,PEACEFUL)) {
+									act("$n glares at you, and launches to the attack!", TRUE, mob, 0, tempchar, TO_VICT);
+									act("$n suddenly launches $mself at $N!", TRUE, mob, 0, tempchar, TO_NOTVICT);
+									MobHit(mob, tempchar, 0);
+									mob->generic = WAITTOGOHOME;
+									return(TRUE);
+								}
+								else {
+									sprintf(buf, "I will wait for you, %s.", GET_NAME(tempchar));
+									do_say(mob, buf, 0);
+									act("$n becomes completely motionless.", TRUE, mob, 0, 0, TO_ROOM);
+									mob->generic = INPEACEROOM;
+									return(TRUE);
+								}
+							}
+							return(FALSE);
+						}
+					}
+					else { // in container, in room -> how about moving outermost container to room, then moving some items out of it, until the item is out
+						if(theitem->in_obj != NULL && theitem->in_obj != ventobj) {
+							struct obj_data *tempobj, *parentobj;
+							parentobj = theitem->in_obj;
+							while(parentobj->in_obj != NULL) {
+								parentobj = parentobj->in_obj;
+							}
+							// Let's grab the parent object from the floor, move it to the vent
+							currroomnum = mob->in_room;
+							char_from_room(mob);
+							char_to_room(mob,parentobj->in_room);
+							act("A pair of skeletal hands reaches up from the earth and grabs $p, pulling it down into the ground.", TRUE, mob, parentobj, 0, TO_ROOM);
+							char_from_room(mob);
+							char_to_room(mob,currroomnum);
+							obj_from_room(parentobj);
+							obj_to_obj(parentobj, ventobj);
+
+							while(theitem->in_obj != ventobj) { // it's in a container take out items until it's not
+								parentobj = theitem->in_obj;
+								while(parentobj->contains) {
+									tempobj = parentobj->contains;
+									obj_from_obj(tempobj);
+									obj_to_obj(tempobj,ventobj);
+								}
+							}
+						}
+						return(FALSE);
+					}
+				}
+			}
+		}
+		else if(i > 1) {
+			// I say randomly remove all but one, then hunt it
+			int j = number(1,i);
+			int k = 1;
+			for (curritem = object_list; curritem;) {
+				if (curritem->item_number == GoodItemReal) {
+					struct obj_data *remobj;
+					remobj = curritem;
+					curritem = curritem->next;
+					if(k != j) {
+						extract_obj(remobj);
+					}
+					k++;
+				}
+				else {
+					curritem = curritem->next;
+				}
+			}
+			return(necromancer(mob, cmd, arg, mob, type));
+		}
+		else {
+			// Big problem here negative number of items? :-)
+		}
+	}
+
+    return(necromancer(mob, cmd, arg, mob, type));
+}
+
+
+/* @Name: ideaguy_traproom
+ * @description: A room which does fire damage, but only once, and changes the room description
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: room(37840)
+*/
+
+int traproom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+	struct char_data *tempchar;
+	char buf[MAX_INPUT_LENGTH];
+
+	if(cmd != 15) {
+		return(FALSE);
+	}
+
+	only_argument(arg,buf);
+
+	if(*buf) {
+		if (0==strn_cmp(buf,"at",2) && isspace(buf[2]))
+			only_argument(arg+3, buf);
+
+    	if(!(str_cmp("green",buf)) || !(strcmp("powder",buf)) || !(strcmp("powder-green",buf)) || !(strcmp("green-powder",buf))) {
+			if(rp->special == 1) {
+				return(FALSE);
+			}
+
+			act("As you lean over to look at the strange powder, a drop of your sweat falls.", FALSE, ch, 0, 0, TO_CHAR);
+			act("You hardly pay it any attention but then it sparks as it hits the powder.", FALSE, ch, 0, 0, TO_CHAR);
+			act("$c000RSuddenly, the whole room bursts into flame!", FALSE, ch, 0, 0, TO_CHAR);
+			act("As $N leans over to look at the strange powder, $E jerks back suddenly!", FALSE, ch, 0, 0, TO_ROOM);
+			act("$c000RThere is a flash, and the room bursts into flames!", FALSE, ch, 0, 0, TO_ROOM);
+
+			int trapdam = dice(50,5);  // randomize it, but average 150
+			int trapdamsave = trapdam >> 1;
+
+			for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
+				if(!IS_IMMORTAL(tempchar)) {
+					if (!saves_spell(tempchar, SAVING_SPELL)) {
+						if(!saves_spell(tempchar, SAVING_SPELL-4)) {
+							BurnWings(tempchar);  /*Fail two saves, wings burn*/
+						}
+						heat_blind(tempchar);
+						doroomdamage(tempchar,trapdam,SPELL_INCENDIARY_CLOUD);
+					}
+					else {
+						heat_blind(tempchar);
+						doroomdamage(tempchar,trapdamsave,SPELL_INCENDIARY_CLOUD);
+					}
+				}
+			}
+			// Now do room description change, and set a flag to indicate no more damage can be done
+			rp->special = 1;
+
+			char newdesc[400];
+			strcpy(newdesc,"");
+			strcat(newdesc,"  This room has been completely stripped by fire.  Scorch\n\r");
+			strcat(newdesc,"marks are now the only thing of note.  The fact that every\n\r");
+			strcat(newdesc,"surface of the room is almost uniformly blackened by char\n\r");
+			strcat(newdesc,"makes this room darker than it should be.  The scorch marks\n\r");
+			strcat(newdesc,"bleed out into the hallway slightly and into the closet.\n\r");
+			if(rp->description) {
+				free(rp->description);
+			}
+			rp->description = (char *)strdup(newdesc);
+
+			return(TRUE);
+		}
+		else {
+			return(FALSE);
+		}
+	}
+
+	return(FALSE);
+}
+
+/* @Name: guardianroom
+ * @description: A room which will create guardians, prevent people from travelling north the first time they try, then they have to fight their way through and more mobiles will jump out and join the fight
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: room(37823)
+*/
+
+int guardianroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+	struct char_data *tempchar;
+	int i = 0;
+
+	if(cmd == 1 && rp->special < 1) {
+		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
+				i++;
+			}
+		}
+		if(i == 1) {
+			CreateAMob(ch,GUARDIANMOBVNUM,4, "One of the reliefs on the walls jumps out and attacks you!");
+			CreateAMob(ch,GUARDIANMOBVNUM,4, "One of the reliefs on the walls jumps out and attacks you!");
+		}
+		else {
+			for(i; i > 0;i--) {
+				CreateAMob(ch,GUARDIANMOBVNUM,4, "One of the reliefs on the walls jumps out and attacks you!");
+			}
+		}
+		rp->special = 1;
+		return(TRUE);
+	}
+	else if(rp->special >= 1) {
+
+		i = 0;
+		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
+				i++;
+			}
+		}
+		if(i >= 1) {
+			if(rp->special % 3 == 0) {
+				// create more mobs
+				int numbertocreate = MAX(1, i>>1);
+				int j = 0;
+				for(j; j < numbertocreate; j++) {
+					CreateAMob(ch,GUARDIANMOBVNUM,4, "Another relief jumps off the wall, becoming real and deadly!");
+				}
+			}
+			rp->special = rp->special + 1;
+		}
+	}
+	return(FALSE);
+}
+
+
+/* @Name: ideaguy_guardianextraction
+ * @description: A mob function used by the guardians from ideaguy_guardianroom to clean themselves out of the room if there are no PC's there to fight, also resets the trap
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: room(37823)
+*/
+
+int guardianextraction(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+	struct char_data *tempchar;
+	int i = 0;
+	struct room_data *rp;
+
+	if(ch->in_room != GUARDIANHOMEROOMVNUM) {
+		return(FALSE);
+	}
+
+	rp = real_roomp(ch->in_room);
+
+
+	for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
+		if(IS_PC(tempchar) && !IS_IMMORTAL(tempchar)) {
+			i++;
+		}
+	}
+	if(i == 0) {
+		struct char_data *next_v;
+		for (tempchar = rp->people; tempchar; tempchar=next_v) {
+			next_v=tempchar->next_in_room;
+			if (IS_NPC(tempchar) && (!IS_SET(tempchar->specials.act, ACT_POLYSELF))) {
+				extract_char(tempchar);
+			}
+		}
+		rp->special = 0;
+	}
+	return(FALSE);
+}
+
+/* @Name: trapjawsroom
+ * @description: A room which prevents people from going north, slashing them, unless they deactivate
+    the trap using the toss object command.  toss person will result in a pissed off person
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: room(37857)
+ */
+int trapjawsroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+
+	if((cmd != 1) && (cmd != 459) && (cmd != 258)) {
+		return(FALSE);
+	}
+
+	if(rp->special == 1) {
+		return(FALSE);
+	}
+
+	if((cmd == 1) || (cmd == 258)) {
+		// prevent them from going north, hit character with trap damage
+			act("You head north, but as you pass through the jaws, they suddenly slam down upon you, cutting you badly!", FALSE, ch, 0, 0, TO_CHAR);
+			act("$n starts to head north through the jaws, but they clamp down just as $e passes through them, slicing $m badly!", FALSE, ch, 0, ch, TO_ROOM);
+			int dam = dice(30,8);
+			if(GET_DEX(ch) < dice(4,6)) {
+				dam = dam >> 1;
+			}
+			doroomdamage(ch, dam, SPELL_BLADE_BARRIER);
+			act("If only there was a way to trick the jaws into closing on nothing, perhaps they would cease to function.", FALSE, ch, 0, ch, TO_CHAR);
+			act("If only there was a way to trick the jaws into closing on nothing, perhaps they would cease to function.", FALSE, ch, 0, ch, TO_ROOM);
+			// slice up character badly
+			return(TRUE);
+
+	}
+	else if(cmd == 459) {
+		char buf[MAX_INPUT_LENGTH];
+		struct obj_data *tossitem;
+		struct char_data *tempchar;
+		// toss object, disarm trap, scrap object
+		// toss person, ouch, hit them with big trap damage
+
+		only_argument(arg,buf);
+
+		if(tossitem = get_obj_in_list_vis(ch, buf, ch->carrying)) {
+			act("You toss $p towards the gaping jaws and they crash down suddenly on it, smashing it to pieces.", FALSE, ch, tossitem, 0, TO_CHAR);
+			act("$n tosses $p towards the gaping jaws and they crash down suddenly on it, smashing it to pieces.", FALSE, ch, tossitem, 0, TO_ROOM);
+			act("The jaws crash down together, and with a sharp snapping sound, they break apart!",FALSE, ch, 0, 0, TO_CHAR);
+			act("The jaws crash down together, and with a sharp snapping sound, they break apart!",FALSE, ch, 0, 0, TO_ROOM);
+			// scrap item
+			MakeScrap(ch, NULL, tossitem);
+
+			char newdesc[400];
+			strcpy(newdesc,"");
+			strcat(newdesc,"  This room's former skull shape has been completely ruined\n\r");
+			strcat(newdesc,"by the collapse of the jaw.  The broken pieces of the jaw\n\r");
+			strcat(newdesc,"show an advanced mechanism inside to drive the former trap.\n\r");
+			strcat(newdesc,"Now you can make your way through the rubble towards the north\n\r");
+			strcat(newdesc,"or clamber up the remains of the staircase.\n\r");
+			if(rp->description) {
+				free(rp->description);
+			}
+			rp->description = (char *)strdup(newdesc);
+
+			rp->special = 1;
+			return(TRUE);
+		}
+		else if(tempchar = get_char_room(buf, ch->in_room)) {
+			if(tempchar == ch) {
+				act("You want to toss yourself?", FALSE, ch, 0, 0, TO_CHAR);
+			}
+			else {
+				act("You toss $N in the air, but they drift too close to the jaws and the jaws suddenly slam down, slicing $M badly!", FALSE, ch, 0, tempchar, TO_CHAR);
+				act("$n grabs you and tosses you in the air, you fly too close to the jaws of the doorway and they slam shut, cutting you!", FALSE, ch, 0, tempchar, TO_VICT);
+				act("$n tosses $N in the air, but the jaws suddenly slam down on $M, slashing $M terribly!.", FALSE, ch, 0, tempchar, TO_NOTVICT);
+				// slice up character badly
+				int dam = dice(40,8);
+				doroomdamage(tempchar, dam, SPELL_BLADE_BARRIER);
+			}
+			return(TRUE);
+		}
+		else {
+			return(FALSE);
+		}
+	}
+	return(FALSE);
+}
+
+
+/* @Name: ideaguy_confusionmob
+ * @description: This mob will attempt to make players flee using their 'best' method.
+    Uses ability scores as saves rather than saves vs spells
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37811)
+*/
+
+// Ideally, I'd like this to force characters to do semi-random commands instead of fleeing
+// (maybe 3 out of 4 are random, 1 is user choice), but that would probably mean adding an affect, blah blah
+int confusionmob(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+	struct char_data *tempchar;
+	int makethemflee = 1;
+	if(tempchar = mob->specials.fighting) {
+		if(number(0,4) > 0) {
+		    if(dice(4,6) < GET_CHR(tempchar))  { // three saves to avoid it fail any of the three, and it's time to flee, this one is charisma
+		    									 // to show what kind of confidence you have in yourself
+			    if(dice(4,6) < GET_INT(tempchar))  { // two saves to avoid it, this one intelligence to understand what it is trying to do
+				    if(dice(4,6) < GET_WIS(tempchar))  { // final save to avoid it, this one wisdom, to show strength of will to avoid fleeing
+						makethemflee = 0;  // they made 3 saves, I guess they can stay
+					}
+				}
+			}
+			if(makethemflee) {
+				int currroomnum = tempchar->in_room;
+				act("You gaze into $n's eyes and suddenly get frightened for no reason!", FALSE, mob, 0, tempchar, TO_VICT);
+				act("$n stares at $N and they suddenly look very scared!  They've even stopped fighting back!", FALSE, mob, 0, tempchar, TO_NOTVICT);
+				// mages teleport
+				stop_fighting(tempchar);
+				if(HasClass(tempchar,CLASS_MAGIC_USER)) {
+					act("You panic and attempt to teleport to safety!", FALSE, tempchar, 0, 0, TO_CHAR);
+					spell_teleport(GET_LEVEL(tempchar,MAGE_LEVEL_IND), tempchar, tempchar, 0);
+				}
+				// clerics word and necromancers bind
+				else if(HasClass(tempchar,CLASS_CLERIC)) {
+					act("You panic and attempt to recall to safety!", FALSE, tempchar, 0, 0, TO_CHAR);
+					spell_word_of_recall(GET_LEVEL(tempchar,CLERIC_LEVEL_IND), tempchar, tempchar, 0);
+				}
+				else if(HasClass(tempchar,CLASS_NECROMANCER)) {
+					act("You panic and attempt to step through the shadows to safety!", FALSE, tempchar, 0, 0, TO_CHAR);
+					spell_binding(GET_LEVEL(tempchar, NECROMANCER_LEVEL_IND), tempchar, tempchar, 0);
+				}
+				// psis doorway to Zifnab
+				else if(HasClass(tempchar,CLASS_PSI)) {
+					act("You panic and attempt to doorway to safety!", FALSE, tempchar, 0, 0, TO_CHAR);
+					do_doorway(tempchar, "Zifnab", 0);
+				}
+				// warriors types, druids, thieves, sorcerers flee
+				else {
+					act("You panic and attempt to run away!", FALSE, tempchar, 0, 0, TO_CHAR);
+					do_flee(tempchar, "", 0);
+				}
+				if(tempchar->in_room == currroomnum) {
+					act("You failed to get away, run!  RUN AWAY NOW!", FALSE, tempchar, 0, 0, TO_CHAR);
+					do_flee(tempchar, "", 0);
+				}
+			}
+		}
+	}
+	return(FALSE);
+}
+
+/* @Name: ventroom
+ * @description: A room will capture commands, looking for object based commands to use on the vent, which exists in another room
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: room(37839)
+ */
+int ventroom(struct char_data *ch, int cmd, char *arg, struct room_data *rp, int type) {
+
+	if(!cmd) {
+		return(FALSE);
+	}
+
+	if((cmd != 99) && (cmd != 15) && (cmd != 10) && (cmd != 167) && (cmd != 67)) { // open, look, get, take, put
+		return(FALSE);
+	}
+
+	char buf1[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+
+	struct obj_data *ventobj;
+	struct room_data *ventroom;
+
+	ventroom = real_roomp(VENTROOMVNUM);
+	ventobj = get_obj_in_list_num(VENTOBJVNUM,ventroom->contents);
+
+	if(!ventobj) {
+		return(FALSE);
+	}
+
+	argument_interpreter(arg,buf1,buf2);
+
+	if(*buf1) {
+
+    	if(strcmp(buf1,"vent") && strcmp(buf2,"vent")) {
+			return(FALSE);
+		}
+
+		if(cmd == 99) { // open (only with 19 strength)
+			if(GET_STR(ch) == 19) {
+				// go to room, do command
+				char_from_room(ch);
+				char_to_room(ch, VENTROOMVNUM);
+				do_open(ch, arg, -1);
+				char_from_room(ch);
+				char_to_room(ch, CLOSETROOMVNUM);
+				rp->special = 1;
+			}
+			else {
+				act("You are not strong enough to pull open the vent.", FALSE, ch, 0, 0, TO_CHAR);
+				act("$n attempts to pull open the vent, but fails, chest heaving from the exertion.", FALSE, ch, 0, 0, TO_ROOM);
+				return(TRUE);
+			}
+		}
+		else if(cmd == 15) {  // look
+			// go to room, do command
+				char_from_room(ch);
+				char_to_room(ch, VENTROOMVNUM);
+				do_look(ch, arg, -1);
+				char_from_room(ch);
+				char_to_room(ch, CLOSETROOMVNUM);
+		}
+		else if(cmd == 10 || cmd == 167) { // get, take
+			// go to room, do command (NO TAKE FLAG on VENT OBJECT)
+			if(rp->special != 1) {
+				act("You attempt to fiddle with the vent, but realize that you can't take it, and it's not opened.", FALSE, ch, 0, 0, TO_CHAR);
+			}
+			else {
+				char_from_room(ch);
+				char_to_room(ch, VENTROOMVNUM);
+				do_get(ch, arg, -1);
+				char_from_room(ch);
+				char_to_room(ch, CLOSETROOMVNUM);
+				rp->special = 0;
+				act("You manage to accidently slam the vent closed, you will have to open it again to get back into it.", FALSE, ch, 0, 0, TO_CHAR);
+				act("With a 'BANG!' $n accidently slams the vent closed, you will have to open it again to get back into it.", FALSE, ch, 0, 0, TO_ROOM);
+				if(!IS_SET(ventobj->obj_flags.value[1],CONT_CLOSED)) {
+					SET_BIT(ventobj->obj_flags.value[1], CONT_CLOSED);
+				}
+			}
+		}
+		else if(cmd == 67) {  //put
+			char_from_room(ch);
+			char_to_room(ch, VENTROOMVNUM);
+			do_put(ch,arg,-1);
+			char_from_room(ch);
+			char_to_room(ch, CLOSETROOMVNUM);
+		}
+		else {  // shouldn't happen
+			return(FALSE);
+		}
+	}
+	else {
+		return(FALSE);
+	}
+	return(TRUE);
+}
+
+/* @Name: ideaguy_ghastsmell
+ * @description: A mob proc which will disease people, but only if the mob is fighting,
+    and only when a player does a command, so the more you struggle, the worse it gets
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37804)
+ */
+// ghast smell which makes all in room get diseased if they are fighting someone
+int ghastsmell(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	struct char_data *tempchar;
+	struct room_data *rp;
+
+	if(GET_POS(mob) < POSITION_FIGHTING) {
+		return(FALSE);
+	}
+
+	if(cmd) {
+		if(!number(0,1)) {
+			return(FALSE);
+		}
+	}
+
+	if(mob->specials.fighting)
+	{
+		struct affected_type af;
+		af.type      = SPELL_DISEASE;
+		af.duration  = 6;
+		af.modifier  = 0;
+		af.location  = 0;
+		af.bitvector = 0;
+
+		rp = real_roomp(mob->in_room);
+
+		for(tempchar = rp->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
+				act("A wave of stench rolls out from $n, if a skunk's spray is like a dagger, \n\rthis is like a claymore.  You immediately feel incredibly sick.", TRUE, mob, 0, tempchar, TO_VICT);
+				if(!saves_spell(tempchar, SAVING_BREATH)) {
+					affect_join(tempchar, &af, TRUE, FALSE);
+				}
+			}
+		}
+	}
+
+	return(FALSE);
+}
+
+
+/* @Name: ghoultouch
+ * @description: A mob proc which will stun people at pretty much every opportunity, probably more of an annoyance than truly deadly if you have a group, but potentially killer if you are attempting to solo
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37805)
+ */
+// ghoul touch which does stunned for a round (GET_POS(ch) == POS_STUNNED, WAIT_STATE) (make this happen even if bashed)
+int ghoultouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	struct char_data *opponent;
+	opponent = mob->specials.fighting;
+
+	if(opponent && number(0,1) && !IS_IMMUNE(opponent, IMM_HOLD)) {
+		act("$n reaches out and touches you, you reel, losing focus!", FALSE, mob, 0, opponent, TO_VICT);
+		act("$n reaches out and sends $N reeling, falling to the ground!", FALSE, mob, 0, opponent, TO_NOTVICT);
+		GET_POS(opponent) = POSITION_STUNNED;
+		WAIT_STATE(opponent, PULSE_VIOLENCE);
+	}
+
+	return(FALSE);
+}
+
+/* @Name: shadowtouch
+ * @description: A mob proc which will weaken, and tire opponents.  Weaken bigtime, down to a nautral 3 str + magical effects, and move get reduced 40% each time
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37806)
+ */
+// shadow touch which does -str and -move
+int shadowtouch(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+	struct char_data *opponent;
+	opponent = mob->specials.fighting;
+
+	struct affected_type af;
+
+	if(opponent && number(0,1) && !IS_IMMUNE(opponent,IMM_DRAIN)) {
+		act("$n reaches out and touches you, your limbs lose all their strength!", FALSE, mob, 0, opponent, TO_VICT);
+		act("$n reaches out and touches $N, suddenly they look exhausted.", FALSE, mob, 0, opponent, TO_NOTVICT);
+	  	if (!affected_by_spell(opponent,SPELL_WEAKNESS)) {
+			int oppstr = GET_RSTR(opponent);
+			int mod = oppstr - 3; // basically take their natural strength and subtract enough to leave them with 3, anything magical added afterwards is ok
+
+			af.type      = SPELL_WEAKNESS;
+			af.duration  = 3;
+			af.modifier  = 0 - mod;
+			af.location  = APPLY_STR;
+			af.bitvector = 0;
+			affect_to_char(opponent, &af);
+		}
+		GET_MOVE(opponent) = (int) GET_MOVE(opponent) * .6;
+	}
+	return(FALSE);
+}
+
+/* @Name: moldexplosion
+ * @description: A mob proc which if a player kills the mob, it poisons everybody in the room, no save except IMM_POISON.
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37807)
+*/
+// mold, which is fine if left alone, and blows up and poisons everybody in room if it dies : type == EVENT_DEATH
+int moldexplosion(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	if(type != EVENT_DEATH || cmd) {
+		return(FALSE);
+	}
+
+	if(type == EVENT_DEATH) {
+		struct char_data *tempchar;
+		struct affected_type af;
+	    af.type = SPELL_POISON;
+	    af.duration = 3;
+        af.modifier = 0;
+        af.location = APPLY_NONE;
+        af.bitvector = AFF_POISON;
+
+		act("Suddenly, the mold explodes, throwing a huge cloud of spores into the air!", FALSE, mob, 0, 0, TO_ROOM);
+		for(tempchar = real_roomp(mob->in_room)->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(!IS_IMMORTAL(tempchar) && !IS_IMMUNE(tempchar, IMM_POISON)) {
+				affect_to_char(tempchar,&af);
+		    	send_to_char("You feel very sick.\n\r", tempchar);
+			}
+		}
+	}
+	return(FALSE);
+}
+
+
+/* @Name: boneshardbreather
+ * @description: A mob proc which does a breath weapon for a bone golem.
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37809)
+ */
+// bone golem (breathe bone shards!)
+int boneshardbreather(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	if(cmd) {
+		return(FALSE);
+	}
+
+	if(mob->specials.fighting && !number(0,3)) {
+		act("The dragon skull embedded in the bone golem's chest opens wide\n\rand spews out shards of bones that slice like the sharpest of daggers!", FALSE, mob, 0, 0, TO_ROOM);
+		struct char_data *tempchar;
+		for(tempchar = real_roomp(mob->in_room)->people; tempchar; tempchar = tempchar->next_in_room) {
+			if(!IS_NPC(tempchar) && !IS_IMMORTAL(tempchar)) {
+				int dam;
+				dam = dice(25,10);
+				if(saves_spell(tempchar, SAVING_SPELL)) {
+					dam = dam >> 1;
+				}
+				doroomdamage(tempchar, dam, TYPE_SLASH);
+			}
+		}
+
+	}
+	return(FALSE);
+}
+
+/* @Name: mistgolemtrap
+ * @description: A mob proc which will 'capture' a PC (transfer him to a no-magic, no exit, silenced room) but everybody will be returned when mist golem dies.
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: mob(37810)
+ */
+// mist golem (sucks somebody in, teleports them to a room "The Mist" where can't get out until mist golem dies)
+int mistgolemtrap(struct char_data *ch, int cmd, char *arg, struct char_data *mob, int type) {
+
+	if(cmd) {
+		return(FALSE);
+	}
+
+	if(type == EVENT_DEATH) {
+		struct char_data *tempchar;
+		struct char_data *nextchar;
+		for(tempchar = real_roomp(MISTROOMVNUM)->people; tempchar; tempchar = nextchar) {
+			nextchar = tempchar->next_in_room;
+			char_from_room(tempchar);
+			char_to_room(tempchar, mob->in_room);
+			act("Suddenly, the mist disappears and you find yourself somewhere else!", TRUE, tempchar, 0, 0, TO_CHAR);
+			act("Suddenly, $n appears, looking bewildered.", TRUE, tempchar, 0, 0, TO_ROOM);
+			do_look(tempchar,"",15);
+		}
+	}
+
+	if(mob->specials.fighting && !number(0,1)) {
+		struct char_data *opponent;
+		opponent = mob->specials.fighting;
+		act("The mist golem suddenly leans forward and engulfs you!\n\rYou find yourself in another place.", TRUE, opponent, 0, 0, TO_CHAR);
+		act("The mist golem suddenly leans forward and engulfs $n!\n\rThey disappear into the body of the golem.", TRUE, opponent, 0, 0, TO_ROOM);
+		stop_fighting(opponent);
+		stop_fighting(mob);
+		char_from_room(opponent);
+		char_to_room(opponent,MISTROOMVNUM);
+		do_look(opponent,"",15);
+		AttackRandomChar(mob);
+	}
+	return(FALSE);
+}
+
+/* @Name: mirrorofopposition
+ * @description: An obj proc which will dopplegang a PC.  Copies just about everything I could think of, makes mob
+    hate him, and attack him using his own equipment.  Players will probably really hate being on the receiving end
+    of their +30 hasted damrolls.
+ * @Author: Rick Peplinski (Ideaguy)
+ * @Assigned to obj/mob/room: obj(37821)
+*/
+int mirrorofopposition(struct char_data *ch, int cmd, char *arg, struct obj_data *obj, int type)
+{
+	if(obj->in_room == -1) {
+		return(FALSE);
+	}
+	if(cmd != 15) {
+		return(FALSE);
+	}
+	if(IS_IMMORTAL(ch)) {
+		return(FALSE);
+	}
+
+	char buf1[MAX_INPUT_LENGTH];
+	char buf2[MAX_INPUT_LENGTH];
+
+	argument_interpreter(arg,buf1,buf2);
+
+  	if(strcmp(buf1,"mirror") && strcmp(buf2,"mirror")) {
+		return(FALSE);
+	}
+	// CreateAMob -> generic mob (naked) -> no follower, no random attack
+	struct char_data *mob;
+	mob = CreateAMob(ch, GENERICMOBVNUM, 0, "A figure suddenly steps out of the mirror.");
+
+	// start doing pc info:
+	// name, title, classes, hitroll = MAX (1,20 - biggestlevel*.5), armor will be done by what's being worn
+	sprintf(buf1,"%s Bizarro",GET_NAME(ch));
+	mob->player.name = (char *)strdup(buf1);
+	mob->player.short_descr = (char *)strdup(GET_NAME(ch));
+	sprintf(buf1,"%s is standing here.",ch->player.title);
+	mob->player.long_descr = (char *)strdup(buf1);
+	mob->player.class = ch->player.class;
+	int i;
+
+	for(i = 0;i < 12;i++) {
+		mob->player.level[i] = ch->player.level[i];
+	}
+
+	int maxlevel;
+	maxlevel = GetMaxLevel(mob);
+	GET_HITROLL(mob) = MAX(1,20 - (maxlevel>>1));
+	// max (hp, mana, move) current (stats, race, spell affects)
+	mob->points.max_hit = GET_MAX_HIT(ch);
+	mob->points.max_mana = GET_MAX_MANA(ch);
+	mob->points.max_move = GET_MAX_MOVE(ch);
+	mob->points.hit = GET_MAX_HIT(ch);
+	mob->points.mana = GET_MAX_MANA(ch);
+	mob->points.move = GET_MAX_MOVE(ch);
+	mob->mult_att = ch->mult_att;
+	GET_ALIGNMENT(mob) = -1 * GET_ALIGNMENT(ch);
+
+	struct affected_type *af;
+	for(af = ch->affected;af;af = af->next) {
+		affect_to_char(mob,af);
+	}
+
+	GET_RACE(mob) = GET_RACE(ch);
+	GET_RSTR(mob) = GET_RSTR(ch);
+	GET_RADD(mob) = GET_RADD(ch);
+	GET_RCON(mob) = GET_RCON(ch);
+	GET_RDEX(mob) = GET_RDEX(ch);
+	GET_RWIS(mob) = GET_RWIS(ch);
+	GET_RINT(mob) = GET_RINT(ch);
+	GET_RCHR(mob) = GET_RCHR(ch);
+
+	struct obj_file_u st;
+	struct obj_data *tempobj;
+	FILE *fl;
+	sprintf(buf1, "reimb/%s", lower(ch->player.name));
+	if (!(fl = fopen(buf1, "r+b")))  {
+		act("The figure looks around, and promptly disappears!.", TRUE, mob, 0, 0, TO_ROOM);
+		char_from_room(mob);
+		extract_char(mob);
+		return(TRUE);
+	}
+
+	rewind(fl);
+
+	if (!ReadObjs(fl, &st)) {
+		act("The figure looks around, and promptly disappears!.", TRUE, mob, 0, 0, TO_ROOM);
+		char_from_room(mob);
+		extract_char(mob);
+		return(TRUE);
+	}
+
+	for(i = 0; i < MAX_WEAR; i++) {
+		if(mob->equipment[i])
+			extract_obj(unequip_char(mob, i));
+	}
+	while(mob->carrying)
+		extract_obj(mob->carrying);
+
+	obj_store_to_char(mob, &st);
+
+	while(mob->carrying)
+		extract_obj(mob->carrying);
+
+	// set all equipment to useless somehow (anti_everything? anti_gne? norent? anti_sun? Organic_decay?)
+	// lennya said maybe that timer could be used for any equipment, not just specific equipment
+	int total_equip_cost;
+	total_equip_cost = 0;
+	for(i = 0; i < MAX_WEAR; i++) {
+		if(mob->equipment[i]) {
+			total_equip_cost += mob->equipment[i]->obj_flags.cost;
+			mob->equipment[i]->obj_flags.timer = 500;
+			if(GET_ITEM_TYPE(mob->equipment[i]) == ITEM_CONTAINER) {
+				while(tempobj = mob->equipment[i]->contains) {
+					extract_obj(tempobj);
+				}
+			}
+		}
+	}
+
+	// if has class to have 'normal' spells (sanc, fs, bb), add the affect (like casting, not by setting perma-flag)
+	struct affected_type af2;
+	if(IS_SET(mob->player.class,CLASS_NECROMANCER)) {
+		if(!affected_by_spell(mob,SPELL_CHILLSHIELD)) {
+			af2.type       = SPELL_CHILLSHIELD;
+			af2.duration   = 3;
+			af2.modifier   = 0;
+			af2.location   = 0;
+			af2.bitvector  = AFF_CHILLSHIELD;
+			affect_to_char (mob,&af2);
+		}
+	}
+	if(IS_SET(mob->player.class,CLASS_MAGIC_USER|CLASS_PSI) && !IS_SET(mob->player.class,CLASS_CLERIC)) {
+		if(!affected_by_spell(mob,SPELL_FIRESHIELD)) {
+			af2.type       = SPELL_FIRESHIELD;
+			af2.duration   = 3;
+			af2.modifier   = 0;
+			af2.location   = 0;
+			af2.bitvector  = AFF_FIRESHIELD;
+			affect_to_char (mob,&af2);
+		}
+	}
+	if(IS_SET(mob->player.class,CLASS_CLERIC)) {
+		if(!affected_by_spell(mob,SPELL_SANCTUARY)) {
+			af2.type      = SPELL_SANCTUARY;
+			af2.duration  = 3;
+			af2.modifier  = 0;
+			af2.location  = APPLY_NONE;
+			af2.bitvector = AFF_SANCTUARY;
+			affect_to_char(mob, &af2);
+		}
+		if(!affected_by_spell(mob,SPELL_BLADE_BARRIER)) {
+			af2.type      = SPELL_BLADE_BARRIER;
+			af2.duration  = 3;
+			af2.modifier  = 0;
+			af2.location  = APPLY_NONE;
+			af2.bitvector = AFF_BLADE_BARRIER;
+			affect_to_char(mob, &af2);
+		}
+	}
+	// Make him act like class he is if possible:
+	if(IS_SET(mob->player.class,CLASS_NECROMANCER)) {
+		SET_BIT(mob->specials.act,ACT_NECROMANCER);
+	}
+	if(IS_SET(mob->player.class,CLASS_MAGIC_USER)) {
+		SET_BIT(mob->specials.act,ACT_MAGIC_USER);
+	}
+	if(IS_SET(mob->player.class,CLASS_CLERIC)) {
+		SET_BIT(mob->specials.act,ACT_CLERIC);
+	}
+	if(IS_SET(mob->player.class,CLASS_WARRIOR)) {
+		SET_BIT(mob->specials.act,ACT_WARRIOR);
+	}
+	if(IS_SET(mob->player.class,CLASS_THIEF)) {
+		SET_BIT(mob->specials.act,ACT_THIEF);
+	}
+	if(IS_SET(mob->player.class,CLASS_DRUID)) {
+		SET_BIT(mob->specials.act,ACT_DRUID);
+	}
+	if(IS_SET(mob->player.class,CLASS_MONK)) {
+		SET_BIT(mob->specials.act,ACT_MONK);
+	}
+	if(IS_SET(mob->player.class,CLASS_BARBARIAN)) {
+		SET_BIT(mob->specials.act,ACT_BARBARIAN);
+	}
+	if(IS_SET(mob->player.class,CLASS_PALADIN)) {
+		SET_BIT(mob->specials.act,ACT_PALADIN);
+	}
+	if(IS_SET(mob->player.class,CLASS_RANGER)) {
+		SET_BIT(mob->specials.act,ACT_RANGER);
+	}
+	if(IS_SET(mob->player.class,CLASS_PSI)) {
+		SET_BIT(mob->specials.act,ACT_PSI);
+	}
+	if(IsGiant(mob)) {
+		SET_BIT(mob->specials.act,ACT_HUGE);
+	}
+
+
+	// set experience, figure .005 of players total exp + equipment cost?
+	mob->points.exp = GET_EXP(ch)*.005 + total_equip_cost;
+	// have him go to town on character
+
+
+
+	MobHit(mob, ch, 0);
+
+	return(TRUE);
+}
+
+/* end Ideaguy procs */
+
 
 /* start shopkeeper .. this to make shops easier to build  -Lennya  20030731*/
 int shopkeeper(struct char_data *ch, int cmd, char *arg, struct char_data *shopkeep, int type)
