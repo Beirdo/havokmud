@@ -793,12 +793,6 @@ if (!ch || !i) {
 		sprintf(buffer,"$c000B%s",buf);
 		send_to_char(buffer,ch);
 	}
-	if  (IS_AFFECTED(i,AFF_BLADE_BARRIER)){
-		sprintf(buffer,"%s is surrounded by whirling blades!\n\r",IS_NPC(i)?i->player.short_descr:GET_NAME(i));
-		sprintf(buf,"%s", CAP(buffer));
-		sprintf(buffer,"$c000B%s",buf);
-		send_to_char(buffer,ch);
-	}
 	for(k = 1; k <= TQP_AMOUNT; k++) {
 		if(tqp = find_tqp(k)) {
 			if(i == tqp->carried_by) {

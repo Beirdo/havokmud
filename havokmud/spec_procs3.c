@@ -4126,11 +4126,7 @@ int QPSalesman(struct char_data *ch, int cmd, char *arg, struct char_data *mob, 
     {877,CLASS_MAGIC_USER, 1},
     {878,CLASS_DRUID,      1},
     {879,CLASS_WARRIOR,    1},
-    {880,CLASS_RANGER,     1},
-    {881,CLASS_BARBARIAN,  1},
-	{882,CLASS_MAGIC_USER, 1},
-	{883,CLASS_DRUID,      1},
-	{ -1, -1, -1 }
+    { -1, -1, -1 }
 
   };
 
