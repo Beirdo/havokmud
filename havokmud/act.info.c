@@ -3476,7 +3476,6 @@ char           *PrintTitle(struct char_data *person, char type)
                 GET_MANA(person), GET_MAX_MANA(person), GET_MOVE(person),
                 GET_MAX_MOVE(person));
         break;
-
     case 's':
         if (GET_STR(person) < 18) {
             sprintf(buffer, "%s [ $c000BSTR:$c000W%-2d  "
@@ -3488,16 +3487,16 @@ char           *PrintTitle(struct char_data *person, char type)
                     GET_CHR(person));
         } else {
             sprintf(buffer, "%s [ $c000BSTR:$c000W%-2d$c000B"
-                            "($c000W%1d$c000B)  $c000BINT:$c000W%-2d  "
+                            "($c000W%1d%s)  $c000BINT:$c000W%-2d  "
                             "$c000BWIS:$c000W%-2d  $c000BCON:$c000W%-2d  "
-                            "$c000BDEX:$c000W%-2d  $c000BCHR:$c000W%-2d"
+                            "$c000BDEX:$c000W%-2d  $c000BCHR:$c000W%-2d "
                             "$c000w ]",
                     GET_NAME(person), GET_STR(person), GET_ADD(person),
+                    "$c000B",
                     GET_INT(person), GET_WIS(person), GET_CON(person),
                     GET_DEX(person), GET_CHR(person));
 		}
         break;
-
     case 't':
         sprintf(buffer, "%s ", (person->player.title ? person->player.title :
                                 GET_NAME(person)));
