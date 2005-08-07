@@ -5323,7 +5323,8 @@ void do_show(struct char_data *ch, char *argument, int cmd)
                                "  show rooms (zone#|death|private)\n\r"
                                "  show itemtype (#)\n\r"
                                "  show loadrate (zone#)\n\r"
-                               "  show wearslot (#)\n\r");
+                               "  show wearslot (#)\n\r"
+                               "  show summary (zone#)\n\r");
         if (GetMaxLevel(ch) > 55) {
             append_to_string_block(&sb, "  show report (zone#)\n\r");
         }
